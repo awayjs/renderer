@@ -7,7 +7,7 @@ module away3d.events {
      * Base class for dispatching events
      *
      * @class away3d.events.EventDispatcher
-     *
+     * merge   ?
      */
     export class EventDispatcher{
 
