@@ -923,10 +923,10 @@ package away3d.loaders.parsers
 				{
 					if (shadowMapperType == 1)
 						newShadowMapper = new DirectionalShadowMapper();
-					if (shadowMapperType == 2)
-						newShadowMapper = new NearDirectionalShadowMapper(props.get(11, 0.5));
-					if (shadowMapperType == 3)
-						newShadowMapper = new CascadeShadowMapper(props.get(12, 3));
+//					if (shadowMapperType == 2)
+//						newShadowMapper = new NearDirectionalShadowMapper(props.get(11, 0.5));
+//					if (shadowMapperType == 3)
+//						newShadowMapper = new CascadeShadowMapper(props.get(12, 3));
 				}
 			}
 			light.color = props.get(3, 0xffffff);
