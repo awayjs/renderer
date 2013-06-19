@@ -97,6 +97,7 @@ module away3d.events {
         constructor( type : string ) {
 
             this.type = type;
+            this;
 
         }
 
