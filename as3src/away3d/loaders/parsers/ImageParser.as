@@ -1,18 +1,15 @@
 package away3d.loaders.parsers
 
 {
-	import away3d.arcane;
-	import away3d.events.AssetEvent;
-	import away3d.library.assets.BitmapDataAsset;
-	import away3d.textures.ATFTexture;
-	import away3d.textures.BitmapTexture;
-	import away3d.textures.Texture2DBase;
-	import away3d.tools.utils.TextureUtils;
-	import flash.display.Bitmap;
-	import flash.display.BitmapData;
-	import flash.display.Loader;
-	import flash.events.Event;
-	import flash.utils.ByteArray;
+	import away3d.*;
+	import away3d.events.*;
+	import away3d.library.assets.*;
+	import away3d.textures.*;
+	import away3d.tools.utils.*;
+	
+	import flash.display.*;
+	import flash.events.*;
+	import flash.utils.*;
 
 	use namespace arcane;
 
