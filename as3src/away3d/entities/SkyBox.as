@@ -1,4 +1,4 @@
-package away3d.primitives
+package away3d.entities
 {
 
 	import away3d.animators.IAnimator;
@@ -11,7 +11,6 @@ package away3d.primitives
 	import away3d.core.managers.Stage3DProxy;
 	import away3d.core.partition.EntityNode;
 	import away3d.core.partition.SkyBoxNode;
-	import away3d.entities.Entity;
 	import away3d.errors.AbstractMethodError;
 	import away3d.library.assets.AssetType;
 	import away3d.materials.MaterialBase;

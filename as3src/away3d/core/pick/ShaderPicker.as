@@ -9,7 +9,7 @@ package away3d.core.pick
 	import away3d.core.math.*;
 	import away3d.core.traverse.*;
 	import away3d.entities.*;
-	import away3d.tools.utils.GeomUtil;
+	import away3d.utils.GeometryUtils;
 
 	import flash.display.*;
 	import flash.display3D.*;
@@ -429,7 +429,7 @@ package away3d.core.pick
 						_hitUV.y = v + t*(uvs[ui2+1] - v) + s*(uvs[ui3+1] - v);
 
 						_faceIndex = i;
-						_subGeometryIndex = GeomUtil.getMeshSubMeshIndex(SubMesh(_hitRenderable));
+						_subGeometryIndex = GeometryUtils.getMeshSubMeshIndex(SubMesh(_hitRenderable));
 
 						return;
 					}

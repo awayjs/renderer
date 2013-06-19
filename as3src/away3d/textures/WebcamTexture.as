@@ -1,6 +1,6 @@
 package away3d.textures
 {
-	import away3d.tools.utils.TextureUtils;
+	import away3d.utils.TextureUtils;
 	
 	import flash.display.BitmapData;
 	import flash.display3D.textures.TextureBase;
