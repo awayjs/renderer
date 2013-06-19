@@ -1,4 +1,4 @@
-package away3d.tools.utils
+package away3d.utils
 {
 	import away3d.arcane;
 	import away3d.core.base.CompactSubGeometry;
@@ -8,7 +8,7 @@ package away3d.tools.utils
 	
 	use namespace arcane;
 
-	public class GeomUtil
+	public class GeometryUtils
 	{
 		/**
 		 * Build a list of sub-geometries from raw data vectors, splitting them up in 

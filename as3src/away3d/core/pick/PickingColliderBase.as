@@ -2,7 +2,7 @@ package away3d.core.pick
 {
 	import flash.geom.*;
 
-	import away3d.tools.utils.GeomUtil;
+	import away3d.utils.GeometryUtils;
 	import away3d.core.base.SubGeometry;
 	import away3d.core.base.SubMesh;
 
@@ -48,12 +48,12 @@ package away3d.core.pick
 
 		protected function getMeshSubgeometryIndex(subGeometry:SubGeometry):uint
 		{
-			return GeomUtil.getMeshSubgeometryIndex(subGeometry);
+			return GeometryUtils.getMeshSubgeometryIndex(subGeometry);
 		}
 
 		protected function getMeshSubMeshIndex(subMesh:SubMesh):uint
 		{
-			return GeomUtil.getMeshSubMeshIndex(subMesh);
+			return GeometryUtils.getMeshSubMeshIndex(subMesh);
 		}
 
 		/**

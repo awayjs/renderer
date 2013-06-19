@@ -1,7 +1,7 @@
 package away3d.core.partition {
 	import away3d.core.math.Plane3D;
 	import away3d.core.traverse.PartitionTraverser;
-	import away3d.primitives.SkyBox;
+	import away3d.entities.SkyBox;
 
 	/**
 	 * SkyBoxNode is a space partitioning leaf node that contains a SkyBox object.

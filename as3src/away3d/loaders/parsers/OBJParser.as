@@ -1,26 +1,18 @@
 package away3d.loaders.parsers
 {
-	import flash.net.URLRequest;
+	import away3d.*;
+	import away3d.core.base.*;
+	import away3d.entities.*;
+	import away3d.library.assets.*;
+	import away3d.loaders.misc.*;
+	import away3d.loaders.parsers.utils.*;
+	import away3d.materials.*;
+	import away3d.materials.methods.*;
+	import away3d.materials.utils.*;
+	import away3d.textures.*;
+	import away3d.utils.*;
 	
-	import away3d.arcane;
-	import away3d.core.base.Geometry;
-	import away3d.core.base.ISubGeometry;
-	import away3d.core.base.data.UV;
-	import away3d.core.base.data.Vertex;
-	import away3d.entities.Mesh;
-	import away3d.library.assets.AssetType;
-	import away3d.library.assets.IAsset;
-	import away3d.loaders.misc.ResourceDependency;
-	import away3d.loaders.parsers.utils.ParserUtil;
-	import away3d.materials.ColorMaterial;
-	import away3d.materials.ColorMultiPassMaterial;
-	import away3d.materials.MaterialBase;
-	import away3d.materials.TextureMaterial;
-	import away3d.materials.TextureMultiPassMaterial;
-	import away3d.materials.methods.BasicSpecularMethod;
-	import away3d.materials.utils.DefaultMaterialManager;
-	import away3d.textures.Texture2DBase;
-	import away3d.tools.utils.GeomUtil;
+	import flash.net.*;
 
 	use namespace arcane;
 	
@@ -360,7 +352,7 @@ package away3d.loaders.parsers
 				}
 			}
 			if (vertices.length > 0) {
-				subs = GeomUtil.fromVectors(vertices, indices, uvs, normals, null, null, null);
+				subs = GeometryUtils.fromVectors(vertices, indices, uvs, normals, null, null, null);
 				for (i=0; i<subs.length; i++) {
 					geometry.addSubGeometry(subs[i]);
 				}
@@ -848,9 +840,10 @@ package away3d.loaders.parsers
 		}
 	}
 }
-import away3d.materials.MaterialBase;
-import away3d.materials.methods.BasicSpecularMethod;
-import away3d.textures.Texture2DBase;
+import away3d.core.base.data.*;
+import away3d.materials.*;
+import away3d.materials.methods.*;
+import away3d.textures.*;
 
 class ObjectGroup
 {
@@ -903,4 +896,160 @@ class FaceData
 	public var normalIndices:Vector.<uint> = new Vector.<uint>();
 	public var indexIds:Vector.<String> = new Vector.<String>();	// used for real index lookups
 	public function FaceData() {}
+}
+
+/**
+ * Texture coordinates value object.
+ */
+class UV
+{
+	private var _u:Number;
+	private var _v:Number;
+	
+	/**
+	 * Creates a new <code>UV</code> object.
+	 *
+	 * @param	u		[optional]	The horizontal coordinate of the texture value. Defaults to 0.
+	 * @param	v		[optional]	The vertical coordinate of the texture value. Defaults to 0.
+	 */
+	public function UV(u:Number = 0, v:Number = 0)
+	{
+		_u = u;
+		_v = v;
+	}
+	
+	/**
+	 * Defines the vertical coordinate of the texture value.
+	 */
+	public function get v():Number
+	{
+		return _v;
+	}
+	public function set v(value:Number):void
+	{
+		_v = value;
+	}
+	
+	/**
+	 * Defines the horizontal coordinate of the texture value.
+	 */
+	public function get u():Number
+	{
+		return _u;
+	}
+	
+	public function set u(value:Number):void
+	{
+		_u = value;
+	}
+	
+	/**
+	 * returns a new UV value Object
+	 */
+	public function clone():UV
+	{
+		return new UV(_u, _v);
+	}
+	
+	/**
+	 * returns the value object as a string for trace/debug purpose
+	 */
+	public function toString():String
+	{
+		return _u+","+ _v;
+	}
+}
+
+class Vertex
+{
+	private var _x:Number;
+	private var _y:Number;
+	private var _z:Number;
+	private var _index:uint;
+	
+	/**
+	 * Creates a new <code>Vertex</code> value object.
+	 *
+	 * @param	x			[optional]	The x value. Defaults to 0.
+	 * @param	y			[optional]	The y value. Defaults to 0.
+	 * @param	z			[optional]	The z value. Defaults to 0.
+	 * @param	index		[optional]	The index value. Defaults is NaN.
+	 */
+	public function Vertex(x:Number = 0, y:Number = 0, z:Number = 0, index:uint = 0)
+	{
+		_x = x;
+		_y = y;
+		_z = z;
+		_index = index;
+	}
+	/**
+	 * To define/store the index of value object
+	 * @param	ind		The index
+	 */
+	public function set index(ind:uint):void
+	{
+		_index = ind;
+	}
+	public function get index():uint
+	{
+		return _index;
+	}
+	
+	/**
+	 * To define/store the x value of the value object
+	 * @param	value		The x value
+	 */
+	public function get x():Number
+	{
+		return _x;
+	}
+	public function set x(value:Number):void
+	{
+		_x = value;
+	}
+	
+	/**
+	 * To define/store the y value of the value object
+	 * @param	value		The y value
+	 */
+	public function get y():Number
+	{
+		return _y;
+	}
+	public function set y(value:Number):void
+	{
+		_y = value;
+	}
+	
+	/**
+	 * To define/store the z value of the value object
+	 * @param	value		The z value
+	 */
+	public function get z():Number
+	{
+		return _z;
+	}
+	
+	public function set z(value:Number):void
+	{
+		_z = value;
+	}
+	
+	/**
+	 * returns a new Vertex value Object
+	 */
+	public function clone():Vertex
+	{
+		return new Vertex(_x, _y, _z);
+	}
+	
+	/**
+	 * returns the value object as a string for trace/debug purpose
+	 */
+	public function toString():String
+	{
+		return _x+","+_y+","+ _z;
+	}
+	
+	
 }

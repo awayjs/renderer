@@ -7,7 +7,7 @@ package away3d.loaders.parsers {
 	import away3d.library.assets.IAsset;
 	import away3d.loaders.misc.ResourceDependency;
 	import away3d.loaders.parsers.utils.ParserUtil;
-	import away3d.tools.utils.TextureUtils;
+	import away3d.utils.TextureUtils;
 
 	import flash.display.BitmapData;
 	import flash.events.EventDispatcher;

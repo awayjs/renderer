@@ -23,7 +23,7 @@ package away3d.loaders.parsers {
 	import away3d.materials.TextureMultiPassMaterial;
 	import away3d.materials.utils.DefaultMaterialManager;
 	import away3d.textures.Texture2DBase;
-	import away3d.tools.utils.GeomUtil;
+	import away3d.utils.GeometryUtils;
 	
 	use namespace arcane;
 
@@ -527,7 +527,7 @@ package away3d.loaders.parsers {
 				
 				// Construct sub-geometries (potentially splitting buffers)
 				// and add them to geometry.
-				subs = GeomUtil.fromVectors(obj.verts, obj.indices, obj.uvs, null, null, null, null);
+				subs = GeometryUtils.fromVectors(obj.verts, obj.indices, obj.uvs, null, null, null, null);
 				for (i=0; i<subs.length; i++) {
 					geom.subGeometries.push(subs[i]);
 				}

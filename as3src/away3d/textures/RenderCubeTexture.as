@@ -2,7 +2,7 @@
 {
 	import away3d.arcane;
 	import away3d.materials.utils.MipmapGenerator;
-	import away3d.tools.utils.TextureUtils;
+	import away3d.utils.TextureUtils;
 
 	import flash.display.BitmapData;
 	import flash.display3D.Context3D;

@@ -10,7 +10,7 @@ package away3d.textures
 	import away3d.core.render.DefaultRenderer;
 	import away3d.core.render.RendererBase;
 	import away3d.core.traverse.EntityCollector;
-	import away3d.tools.utils.TextureUtils;
+	import away3d.utils.TextureUtils;
 
 	import flash.display.BitmapData;
 	import flash.display3D.textures.TextureBase;

@@ -1,6 +1,6 @@
 package away3d.core.managers
 {
-	import away3d.tools.utils.TextureUtils;
+	import away3d.utils.TextureUtils;
 
 	import flash.display3D.Context3D;
 
