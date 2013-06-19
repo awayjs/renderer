@@ -20,7 +20,7 @@ package away3d.loaders.parsers
 	import away3d.materials.utils.*;
 	import away3d.primitives.*;
 	import away3d.textures.*;
-	import away3d.tools.utils.*;
+	import away3d.utils.*;
 	
 	import flash.display.*;
 	import flash.geom.*;
@@ -659,7 +659,7 @@ package away3d.loaders.parsers
 				}
 				parseUserAttributes(); // Ignore sub-mesh attributes for now
 				
-				sub_geoms = GeomUtil.fromVectors(verts, indices, uvs, normals, null, weights, w_indices);
+				sub_geoms = GeometryUtils.fromVectors(verts, indices, uvs, normals, null, weights, w_indices);
 				for (i = 0; i < sub_geoms.length; i++)
 				{
 					geom.addSubGeometry(sub_geoms[i]);

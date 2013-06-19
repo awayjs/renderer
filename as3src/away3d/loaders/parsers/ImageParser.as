@@ -5,7 +5,7 @@ package away3d.loaders.parsers
 	import away3d.events.*;
 	import away3d.library.assets.*;
 	import away3d.textures.*;
-	import away3d.tools.utils.*;
+	import away3d.utils.*;
 	
 	import flash.display.*;
 	import flash.events.*;
