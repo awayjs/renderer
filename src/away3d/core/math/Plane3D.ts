@@ -28,7 +28,7 @@ module away3d.core.math {
 		 */
 		public d : number;
 
-		public _alignment : number; // ARCANE
+		public ARCANE_alignment : number; // ARCANE
 
 		// indicates the alignment of the plane
 		public static ALIGN_ANY : number = 0;
@@ -45,10 +45,10 @@ module away3d.core.math {
 			this.b = b;
 			this.c = c;
 			this.d = d;
-			if (a == 0 && b == 0) this._alignment = Plane3D.ALIGN_XY_AXIS;
-			else if (b == 0 && c == 0) this._alignment = Plane3D.ALIGN_YZ_AXIS;
-			else if (a == 0 && c == 0) this._alignment = Plane3D.ALIGN_XZ_AXIS;
-			else this._alignment = Plane3D.ALIGN_ANY;
+			if (a == 0 && b == 0) this.ARCANE_alignment = Plane3D.ALIGN_XY_AXIS;
+			else if (b == 0 && c == 0) this.ARCANE_alignment = Plane3D.ALIGN_YZ_AXIS;
+			else if (a == 0 && c == 0) this.ARCANE_alignment = Plane3D.ALIGN_XZ_AXIS;
+			else this.ARCANE_alignment = Plane3D.ALIGN_ANY;
 		}
 
 		/**
@@ -73,10 +73,10 @@ module away3d.core.math {
             this.d = this.a * p0.x + this.b * p0.y + this.c * p0.z;
 
 			// not using epsilon, since a plane is infinite and a small incorrection can grow very large
-			if (this.a == 0 && this.b == 0) this._alignment = Plane3D.ALIGN_XY_AXIS;
-			else if (this.b == 0 && this.c == 0) this._alignment = Plane3D.ALIGN_YZ_AXIS;
-			else if (this.a == 0 && this.c == 0) this._alignment = Plane3D.ALIGN_XZ_AXIS;
-			else this._alignment = Plane3D.ALIGN_ANY;
+			if (this.a == 0 && this.b == 0) this.ARCANE_alignment = Plane3D.ALIGN_XY_AXIS;
+			else if (this.b == 0 && this.c == 0) this.ARCANE_alignment = Plane3D.ALIGN_YZ_AXIS;
+			else if (this.a == 0 && this.c == 0) this.ARCANE_alignment = Plane3D.ALIGN_XZ_AXIS;
+			else this.ARCANE_alignment = Plane3D.ALIGN_ANY;
 		}
 
 		/**
@@ -90,10 +90,10 @@ module away3d.core.math {
             this.b = normal.y;
             this.c = normal.z;
             this.d = this.a * point.x + this.b * point.y + this.c * point.z;
-			if (this.a == 0 && this.b == 0) this._alignment = Plane3D.ALIGN_XY_AXIS;
-			else if (this.b == 0 && this.c == 0) this._alignment = Plane3D.ALIGN_YZ_AXIS;
-			else if (this.a == 0 && this.c == 0) this._alignment = Plane3D.ALIGN_XZ_AXIS;
-			else this._alignment = Plane3D.ALIGN_ANY;
+			if (this.a == 0 && this.b == 0) this.ARCANE_alignment = Plane3D.ALIGN_XY_AXIS;
+			else if (this.b == 0 && this.c == 0) this.ARCANE_alignment = Plane3D.ALIGN_YZ_AXIS;
+			else if (this.a == 0 && this.c == 0) this.ARCANE_alignment = Plane3D.ALIGN_XZ_AXIS;
+			else this.ARCANE_alignment = Plane3D.ALIGN_ANY;
 		}
 
 		/**
@@ -117,11 +117,11 @@ module away3d.core.math {
 		 */
 		public distance(p : away3d.core.math.Vector3D ) : number
 		{
-			if (this._alignment == Plane3D.ALIGN_YZ_AXIS)
+			if (this.ARCANE_alignment == Plane3D.ALIGN_YZ_AXIS)
 				return this.a*p.x - this.d;
-			else if (this._alignment == Plane3D.ALIGN_XZ_AXIS)
+			else if (this.ARCANE_alignment == Plane3D.ALIGN_XZ_AXIS)
 				return this.b*p.y - this.d;
-			else if (this._alignment == Plane3D.ALIGN_XY_AXIS)
+			else if (this.ARCANE_alignment == Plane3D.ALIGN_XY_AXIS)
 				return this.c*p.z - this.d;
             else
 				return this.a*p.x + this.b*p.y + this.c*p.z - this.d;
@@ -138,11 +138,11 @@ module away3d.core.math {
 			if (this.d != this.d) return away3d.core.math.PlaneClassification.FRONT;
 
 			var len : number;
-			if (this._alignment == Plane3D.ALIGN_YZ_AXIS)
+			if (this.ARCANE_alignment == Plane3D.ALIGN_YZ_AXIS)
 				len = this.a*p.x - this.d;
-			else if (this._alignment == Plane3D.ALIGN_XZ_AXIS)
+			else if (this.ARCANE_alignment == Plane3D.ALIGN_XZ_AXIS)
 				len = this.b*p.y - this.d;
-			else if (this._alignment == Plane3D.ALIGN_XY_AXIS)
+			else if (this.ARCANE_alignment == Plane3D.ALIGN_XY_AXIS)
 				len = this.c*p.z - this.d;
 			else
 				len = this.a*p.x + this.b*p.y + this.c*p.z - this.d;
