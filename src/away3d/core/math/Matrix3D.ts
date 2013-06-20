@@ -224,4 +224,3 @@ module away3d.core.math
     }
 
 }
-
