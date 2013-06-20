@@ -6,19 +6,19 @@ module away3d.core.math
     export class Matrix3D
     {
 
-        public rawData : Array<number> = new Array<number>(16);
+        public rawData : number[] = new Array<number>(16);
+
 
         // TODO: implement
-        constructor( data ? )
+        constructor( data ? : number[] )
         {
 
         }
 
         // TODO: implement
         //public copyRawDataFrom( m : Array<number> ) : Matrix3D
-        public copyRawDataFrom( m : Array ) : Matrix3D
+        public copyRawDataFrom( m : number[]) : Matrix3D
         {
-
             return new away3d.core.math.Matrix3D();// todo: implement
 
         }
@@ -39,7 +39,7 @@ module away3d.core.math
         // TODO: implement
         public decompose( orientationStyle : string = "eulerAngles" ) : Array
         {
-            var a : Array<away3d.core.math.Vector3D> = new Array<away3d.core.math.Vector3D>();
+            var a : away3d.core.math.Vector3D[] = new Array<away3d.core.math.Vector3D>();
                 a.push( new away3d.core.math.Vector3D() );
             return a;//new Array<away3d.core.math.Vector3D>(16);
 
@@ -48,4 +48,3 @@ module away3d.core.math
     }
 
 }
-

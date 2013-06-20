@@ -14,7 +14,7 @@ module away3d.core.math
 		/**
 		 * A reference to a Vector to be used as a temporary raw data container, to prevent object creation.
 		 */
-		public static RAW_DATA_CONTAINER : Array<number> = new Array<number> (16);
+		public static RAW_DATA_CONTAINER : number[] = new Array<number> (16);
 
 		public static CALCULATION_MATRIX : away3d.core.math.Matrix3D = new away3d.core.math.Matrix3D(); // Note: Native AS3 API - to implement
 
@@ -140,7 +140,7 @@ module away3d.core.math
 			var dirN : Vector3D;
 			var upN : Vector3D;
 			var lftN : Vector3D;
-			var raw : Array<number>= Matrix3DUtils.RAW_DATA_CONTAINER;
+			var raw : number[]= Matrix3DUtils.RAW_DATA_CONTAINER;
 
 			lftN = dir.crossProduct(up);
 			lftN.normalize();

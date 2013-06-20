@@ -321,7 +321,7 @@ module away3d.core.math
 		 * @param target The Vector.&lt;Number&gt; to contain the raw matrix data.
 		 * @param exclude4thRow If true, the last row will be omitted, and a 4x3 matrix will be generated instead of a 4x4.
 		 */
-		public toRawData(target : Array<number> , exclude4thRow : boolean = false) : void
+		public toRawData(target : number[] , exclude4thRow : boolean = false) : void
 		{
 			var xy2 : number = 2.0 * this.x * this.y, xz2 : number = 2.0 * this.x * this.z, xw2 : number = 2.0 * this.x * this.w;
 			var yz2 : number = 2.0 * this.y * this.z, yw2 : number = 2.0 * this.y * this.w, zw2 : number = 2.0 * this.z * this.w;
@@ -354,9 +354,7 @@ module away3d.core.math
 
 		public clone() : away3d.core.math.Quaternion
 		{
-            console.log('helloKarim');
 			return new away3d.core.math.Quaternion(this.x, this.y, this.z, this.w);
-
 		}
 
 		/**
