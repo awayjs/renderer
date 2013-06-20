@@ -1,5 +1,6 @@
 /// <reference path="Orientation3D.ts" />
 /// <reference path="Matrix3D.ts" />
+/// <reference path="Matrix3DUtils.ts" />
 module away3d.core.math
 {
 	//import flash.geom.Matrix3D;
@@ -267,7 +268,7 @@ module away3d.core.math
 		 */
 		public toMatrix3D(target : away3d.core.math.Matrix3D = null) : away3d.core.math.Matrix3D
 		{
-			var rawData : Array<number> = Matrix3DUtils.RAW_DATA_CONTAINER;
+			var rawData : Array<number> = away3d.core.math.Matrix3DUtils.RAW_DATA_CONTAINER;
 			var xy2 : number = 2.0 * this.x * this.y, xz2 : number = 2.0 * this.x * this.z, xw2 : number = 2.0 * this.x * this.w;
 			var yz2 : number = 2.0 * this.y * this.z, yw2 : number = 2.0 * this.y * this.w, zw2 : number = 2.0 * this.z * this.w;
 			var xx : number = this.x * this.x, yy : number = this.y * this.y, zz : number = this.z * this.z, ww : number = this.w * this.w;
