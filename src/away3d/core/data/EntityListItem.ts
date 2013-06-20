@@ -5,6 +5,7 @@ module away3d.core.data
 
 	export class EntityListItem
 	{
+        // TODO: imeplement Entity
 		public entity:Entity;
 		public next:EntityListItem;
 		

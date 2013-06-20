@@ -3,9 +3,9 @@ module away3d.core.data
 {
 	export class RenderableListItemPool
 	{
-		private var _pool : away3d.core.data.RenderableListItem[];
-		private var _index : number;//int
-		private var _poolSize : number;//int
+		private _pool : away3d.core.data.RenderableListItem[];
+		private _index : number;//int
+		private _poolSize : number;//int
 
 		constructor()
 		{
@@ -34,3 +34,4 @@ module away3d.core.data
 		}
 	}
 }
+

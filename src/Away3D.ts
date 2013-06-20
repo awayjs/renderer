@@ -19,6 +19,11 @@
 /// <reference path="away3d/core/math/PlaneClassification.ts" />
 /// <reference path="away3d/core/math/Quaternion.ts" />
 
+
+/// <reference path="away3d/core/data/EntityListItemPool.ts" />
+/// <reference path="away3d/core/data/RenderableListItemPool.ts" />
+
+
 module test{
 
     export class CoreMathTest {
