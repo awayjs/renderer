@@ -163,7 +163,7 @@ module away3d.core.math {
          * Compares the elements of the current Vector3D object with the elements of a specified Vector3D object to
          * determine whether they are nearly equal.
          */
-        public nearEquals(cmp:Vector3D, epsilon:Number, allFour:bool = true):bool
+        public nearEquals(cmp:Vector3D, epsilon:number, allFour:bool = true):bool
         {
             if((Math.abs(this.x - cmp.x) < epsilon )
              ||(Math.abs(this.y - cmp.y) < epsilon )

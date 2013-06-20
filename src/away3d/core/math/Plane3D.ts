@@ -137,7 +137,7 @@ module away3d.core.math {
 			// check NaN
 			if (this.d != this.d) return away3d.core.math.PlaneClassification.FRONT;
 
-			var len : Number;
+			var len : number;
 			if (this._alignment == Plane3D.ALIGN_YZ_AXIS)
 				len = this.a*p.x - this.d;
 			else if (this._alignment == Plane3D.ALIGN_XZ_AXIS)
