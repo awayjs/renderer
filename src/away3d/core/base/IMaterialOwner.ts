@@ -12,14 +12,13 @@ module away3d.core.base
 		 * The material with which to render the object.
 		 */
         // TODO: imeplement MaterialBase
-		//function get material() : MaterialBase;
-		//function set material(value : MaterialBase) : void;
+		//material : MaterialBase;
 
 		/**
 		 * The animation used by the material to assemble the vertex code.
 		 */
         // TODO: imeplement IAnimator
-		//function get animator() : IAnimator;	// in most cases, this will in fact be null
+		//animator : IAnimator;	// in most cases, this will in fact be null
 
 	}
 }
