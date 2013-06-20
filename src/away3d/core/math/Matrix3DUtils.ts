@@ -62,7 +62,7 @@ module away3d.core.math
 		* @param	v 		[optional] A vector holder to prevent make new Vector3D instance if already exists. Default is null.
     	* @return			The forward vector
         */
-        public static getForward(m:away3d.core.math.Matrix3D, v:away3d.core.math.Vector3D = null):Vector3D
+        public static getForward(m:away3d.core.math.Matrix3D, v:away3d.core.math.Vector3D = null):away3d.core.math.Vector3D
         {
             if ( v === null )
             {
@@ -83,7 +83,7 @@ module away3d.core.math
 		* @param	v 		[optional] A vector holder to prevent make new Vector3D instance if already exists. Default is null.
     	* @return			The up vector
         */
-        public static getUp(m:away3d.core.math.Matrix3D, v:away3d.core.math.Vector3D = null):Vector3D
+        public static getUp(m:away3d.core.math.Matrix3D, v:away3d.core.math.Vector3D = null):away3d.core.math.Vector3D
         {
             if ( v === null )
             {
@@ -104,7 +104,7 @@ module away3d.core.math
 		* @param	v 		[optional] A vector holder to prevent make new Vector3D instance if already exists. Default is null.
     	* @return			The right vector
         */
-        public static getRight(m:away3d.core.math.Matrix3D, v:away3d.core.math.Vector3D = null):Vector3D
+        public static getRight(m:away3d.core.math.Matrix3D, v:away3d.core.math.Vector3D = null):away3d.core.math.Vector3D
         {
             if ( v === null )
             {
