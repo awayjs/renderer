@@ -24,7 +24,7 @@ module away3d.core.math
         }
 
         // TODO: implement
-        public copyRawDataTo( m : Array , index : number = 0 , transpose : bool = false ) : void
+        public copyRawDataTo( m : Array , index : number = 0 , transpose : boolean = false ) : void
         {
 
         }
@@ -48,3 +48,4 @@ module away3d.core.math
     }
 
 }
+

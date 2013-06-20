@@ -5,4 +5,5 @@
 /// <reference path="away3d/core/math/Matrix3D.ts" />
 /// <reference path="away3d/core/math/Plane3D.ts" />
 /// <reference path="away3d/core/math/PlaneClassification.ts" />
+/// <reference path="away3d/core/math/Quaternion.ts" />
 

@@ -122,7 +122,7 @@ module away3d.core.math
      	/**
          * Returns a boolean value representing whether there is any significant difference between the two given 3d matrices.
          */
-        public static compare(m1:away3d.core.math.Matrix3D, m2:away3d.core.math.Matrix3D):bool
+        public static compare(m1:away3d.core.math.Matrix3D, m2:away3d.core.math.Matrix3D):boolean
         {
         	var r1 : Array<number> = Matrix3DUtils.RAW_DATA_CONTAINER;
         	var r2 : Array<number> = m2.rawData;

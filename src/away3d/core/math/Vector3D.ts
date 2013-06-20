@@ -139,7 +139,7 @@ module away3d.core.math {
          * Determines whether two Vector3D objects are equal by comparing the x, y, and z elements of the current
          * Vector3D object with a specified Vector3D object.
          */
-        public equals(cmp:Vector3D, allFour:bool = false):bool
+        public equals(cmp:Vector3D, allFour:boolean = false):boolean
         {
             if( !allFour )
             {
@@ -163,7 +163,7 @@ module away3d.core.math {
          * Compares the elements of the current Vector3D object with the elements of a specified Vector3D object to
          * determine whether they are nearly equal.
          */
-        public nearEquals(cmp:Vector3D, epsilon:number, allFour:bool = true):bool
+        public nearEquals(cmp:Vector3D, epsilon:number, allFour:boolean = true):boolean
         {
             if((Math.abs(this.x - cmp.x) < epsilon )
              ||(Math.abs(this.y - cmp.y) < epsilon )
