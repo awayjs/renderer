@@ -1,5 +1,6 @@
 /// <reference path="Matrix3D.ts" />
 /// <reference path="Quaternion.ts" />
+/// <reference path="Plane3D.ts" />
 
 module away3d.core.math
 {
@@ -173,8 +174,8 @@ module away3d.core.math
 		}
 
         // TODO: Implement ( requires Plane3D )
-        /*
-		public static reflection(plane : Plane3D, target : away3d.core.math.Matrix3D = null) : Matrix3D
+
+		public static reflection(plane : away3d.core.math.Plane3D, target : away3d.core.math.Matrix3D = null) : Matrix3D
 		{
             if ( target === null )
             {
@@ -183,11 +184,11 @@ module away3d.core.math
 
             }
 
-			var a : Number = plane.a, b : Number = plane.b, c : Number = plane.c, d : Number = plane.d;
-			var rawData : Array<number> = Matrix3DUtils.Matrix3DUtils.RAW_DATA_CONTAINER;
-			var ab2 : Number = -2*a*b;
-			var ac2 : Number = -2*a*c;
-			var bc2 : Number = -2*b*c;
+			var a : number = plane.a, b : number = plane.b, c : number = plane.c, d : number = plane.d;
+			var rawData : Array<number> = away3d.core.math.Matrix3DUtils.RAW_DATA_CONTAINER;
+			var ab2 : number = -2*a*b;
+			var ac2 : number = -2*a*c;
+			var bc2 : number = -2*b*c;
 			// reflection matrix
 			rawData[0] = 1-2*a*a;	rawData[4] = ab2;		rawData[8] = ac2;		rawData[12] = -2*a*d;
 			rawData[1] = ab2;		rawData[5] = 1-2*b*b;	rawData[9] = bc2;		rawData[13] = -2*b*d;
@@ -196,8 +197,8 @@ module away3d.core.math
 			target.copyRawDataFrom(rawData);
 
 			return target;
+
 		}
-		*/
 
 	}
 
