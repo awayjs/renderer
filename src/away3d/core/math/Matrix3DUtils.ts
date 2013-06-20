@@ -173,8 +173,6 @@ module away3d.core.math
 			matrix.copyRawDataFrom(raw);
 		}
 
-        // TODO: Implement ( requires Plane3D )
-
 		public static reflection(plane : away3d.core.math.Plane3D, target : away3d.core.math.Matrix3D = null) : Matrix3D
 		{
             if ( target === null )
@@ -185,7 +183,7 @@ module away3d.core.math
             }
 
 			var a : number = plane.a, b : number = plane.b, c : number = plane.c, d : number = plane.d;
-			var rawData : Array<number> = away3d.core.math.Matrix3DUtils.RAW_DATA_CONTAINER;
+			var rawData : number[] = away3d.core.math.Matrix3DUtils.RAW_DATA_CONTAINER;
 			var ab2 : number = -2*a*b;
 			var ac2 : number = -2*a*c;
 			var bc2 : number = -2*b*c;

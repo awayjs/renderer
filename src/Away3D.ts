@@ -1,7 +1,12 @@
 //--------------------------------------------------------------------------------------------
-// Note: WebStorm test compile ( not commiting the export JS yet):
+// WebStorm compile param strings
+//--------------------------------------------------------------------------------------------
 //
+// Multiple JS export:
 //  --sourcemap $ProjectFileDir$/src/Away3D.ts --target ES5  --comments --declaration --out $ProjectFileDir$/bin-debug/js/
+//
+// Single JS export:
+//  --sourcemap $ProjectFileDir$/src/Away3D.ts --target ES5  --comments --declaration --out $ProjectFileDir$/bin-debug/js/Away3D_all.js
 //
 //--------------------------------------------------------------------------------------------
 
@@ -24,16 +29,30 @@ module test{
         private ma : away3d.core.math.Matrix3D  = new away3d.core.math.Matrix3D();
         private mb : away3d.core.math.Matrix3D  = new away3d.core.math.Matrix3D();
 
-        private qa : away3d.core.math.Quaternion= new away3d.core.math.Quaternion();
-        private qb : away3d.core.math.Quaternion= new away3d.core.math.Quaternion();
+        private qa : away3d.core.math.Quaternion= new away3d.core.math.Quaternion(1,2,3,4);
+        private qb : away3d.core.math.Quaternion= new away3d.core.math.Quaternion(1,2,3,5);
+        private qc : away3d.core.math.Quaternion= new away3d.core.math.Quaternion(11,12,13,14);
+
+        private plane3d : away3d.core.math.Plane3D= new away3d.core.math.Plane3D(.1,.5,.7,1.1 );
 
         public start() : void {
+
+            // Quick tests to make sure it compiles
 
             this.va.subtract( this.vb );
             console.log( this.va , this.va.toString() );
 
-        }
+            this.qa.lerp( this.qb, this.qc,.25);
+            console.log( this.qa , this.qa.toString() );
 
+            this.plane3d.normalize();
+            console.log( this.plane3d, this.plane3d.toString() );
+
+            this.va.normalize()
+            this.plane3d.fromNormalAndPoint( this.va , this.vb )
+
+            console.log( 'Matrix3DUtils.compare:' + away3d.core.math.Matrix3DUtils.compare( this.ma , this.ma ) );
+        }
 
     }
 
