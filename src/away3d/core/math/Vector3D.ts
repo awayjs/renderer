@@ -3,7 +3,7 @@
  * @created 6/19/13
  * @module away3d.math
  */
-module away3d.math {
+module away3d.core.math {
 
     export class Vector3D
     {
