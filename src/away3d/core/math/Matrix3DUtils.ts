@@ -1,5 +1,6 @@
 /// <reference path="Matrix3D.ts" />
 /// <reference path="Quaternion.ts" />
+
 module away3d.core.math
 {
 	//import flash.geom.*;
@@ -122,8 +123,9 @@ module away3d.core.math
          */
         public static compare(m1:away3d.core.math.Matrix3D, m2:away3d.core.math.Matrix3D):bool
         {
-        	var r1 : Array<number> = Matrix3DUtils.Matrix3DUtils.RAW_DATA_CONTAINER;
+        	var r1 : Array<number> = Matrix3DUtils.RAW_DATA_CONTAINER;
         	var r2 : Array<number> = m2.rawData;
+
 			m1.copyRawDataTo(r1);
 
 			for (var i : number = 0; i < 16; ++i)
@@ -170,6 +172,8 @@ module away3d.core.math
 			matrix.copyRawDataFrom(raw);
 		}
 
+        // TODO: Implement ( requires Plane3D )
+        /*
 		public static reflection(plane : Plane3D, target : away3d.core.math.Matrix3D = null) : Matrix3D
 		{
             if ( target === null )
@@ -193,5 +197,8 @@ module away3d.core.math
 
 			return target;
 		}
+		*/
+
 	}
+
 }

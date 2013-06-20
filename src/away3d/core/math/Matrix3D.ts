@@ -17,12 +17,11 @@ module away3d.core.math
         public copyRawDataFrom( m : Array<number> ) : away3d.core.math.Matrix3D
         {
 
-
             return new away3d.core.math.Matrix3D();// todo: implement
 
         }
 
-        public copyRawDataTo( m : Matrix3D , index : number = 0 , transpose : bool = false ) : void
+        public copyRawDataTo( m : Array<number> , index : number = 0 , transpose : bool = false ) : void
         {
 
             //return new away3d.core.math.Matrix3D();// todo: implement
@@ -36,10 +35,9 @@ module away3d.core.math
 
         }
 
-        public decompose( orientationStyle : string = "eulerAngles" ) : Array<number>
+        public decompose( orientationStyle : string = "eulerAngles" ) : Array<away3d.core.math.Vector3D>
         {
-
-            return new Array<number>(16);
+            return new Array<away3d.core.math.Vector3D>(16);
 
         }
 

@@ -1,3 +1,5 @@
+/// <reference path="Orientation3D.ts" />
+/// <reference path="Matrix3D.ts" />
 module away3d.core.math
 {
 	//import flash.geom.Matrix3D;
@@ -36,7 +38,7 @@ module away3d.core.math
 		 * @param z The z value of the quaternion.
 		 * @param w The w value of the quaternion.
 		 */
-		public Quaternion(x : number = 0, y : number = 0, z : number = 0, w : number = 1)
+		constructor(x : number = 0, y : number = 0, z : number = 0, w : number = 1)
 		{
 			this.x = x;
 			this.y = y;
@@ -301,27 +303,28 @@ module away3d.core.math
 		 */
 
         //TODO: implement / uncomment
-        /*
+
 		public fromMatrix(matrix : away3d.core.math.Matrix3D) : void
 		{
-			var v : Vector3D = matrix.decompose(Orientation3D.QUATERNION)[1];
+			var v : Vector3D = matrix.decompose(away3d.core.math.Orientation3D.QUATERNION)[1];
 			this.x = v.x;
             this.y = v.y;
             this.z = v.z;
             this.w = v.w;
+
 		}
-        */
+
 
 		/**
 		 * Converts the quaternion to a Vector.&lt;Number&gt; matrix representation of a rotation equivalent to this quaternion.
 		 * @param target The Vector.&lt;Number&gt; to contain the raw matrix data.
 		 * @param exclude4thRow If true, the last row will be omitted, and a 4x3 matrix will be generated instead of a 4x4.
 		 */
-		public toRawData(target : Array<number> , exclude4thRow : Boolean = false) : void
+		public toRawData(target : Array<number> , exclude4thRow : bool = false) : void
 		{
-			var xy2 : Number = 2.0 * x * y, xz2 : Number = 2.0 * x * z, xw2 : Number = 2.0 * x * w;
-			var yz2 : Number = 2.0 * y * z, yw2 : Number = 2.0 * y * w, zw2 : Number = 2.0 * z * w;
-			var xx : Number = x * x, yy : Number = y * y, zz : Number = z * z, ww : Number = w * w;
+			var xy2 : number = 2.0 * this.x * this.y, xz2 : number = 2.0 * this.x * this.z, xw2 : number = 2.0 * this.x * this.w;
+			var yz2 : number = 2.0 * this.y * this.z, yw2 : number = 2.0 * this.y * this.w, zw2 : number = 2.0 * this.z * this.w;
+			var xx : number = this.x * this.x, yy : number = this.y * this.y, zz : number = this.z * this.z, ww : number = this.w * this.w;
 
 			target[0] = xx - yy - zz + ww;
 			target[1] = xy2 - zw2;
@@ -335,20 +338,25 @@ module away3d.core.math
 			target[3] = target[7] = target[11] = 0;
 
 			if (!exclude4thRow) {
+
 				target[12] = target[13] = target[14] = 0;
 				target[15] = 1;
+
 			}
+
 		}
 
 		/**
 		 * Clones the quaternion.
 		 * @return An exact duplicate of the current Quaternion.
 		 */
-		public clone() : Quaternion
-		{
-			return new Quaternion(this.x, this.y, this.z, this.w);
-		}
 
+		public clone() : away3d.core.math.Quaternion
+		{
+            console.log('helloKarim');
+			return new away3d.core.math.Quaternion(this.x, this.y, this.z, this.w);
+
+		}
 
 		/**
 		 * Rotates a point.
@@ -356,10 +364,15 @@ module away3d.core.math
 		 * @param target An optional Vector3D object that will contain the rotated coordinates. If not provided, a new object will be created.
 		 * @return A Vector3D object containing the rotated point.
 		 */
-		public rotatePoint( vector : away3d.core.math.Vector3D , target : away3d.core.math.Vector3D = null) : away3d.core.math.Vector3D
+		public rotatePoint( vect : away3d.core.math.Vector3D , target : away3d.core.math.Vector3D = null) : away3d.core.math.Vector3D
 		{
-			var x1 : Number, y1 : Number, z1 : Number, w1 : Number;
-			var x2 : Number = vector.x, y2 : Number = vector.y, z2 : Number = vector.z;
+			var x1 : number;
+            var y1 : number;
+            var z1 : number;
+            var w1 : number;
+			var x2 : number = vect.x;
+            var y2 : number = vect.y;
+            var z2 : number = vect.z;
 
 			if ( target === null )
             {
@@ -369,14 +382,14 @@ module away3d.core.math
             }
 
 			// p*q'
-			w1 = - x * x2 - y * y2 - z * z2;
-			x1 = w * x2 + y * z2 - z * y2;
-			y1 = w * y2 - x * z2 + z * x2;
-			z1 = w * z2 + x * y2 - y * x2;
+			w1 = - this.x * x2 - this.y * y2 - this.z * z2;
+			x1 = this.w * x2 + this.y * z2 - this.z * y2;
+			y1 = this.w * y2 - this.x * z2 + this.z * x2;
+			z1 = this.w * z2 + this.x * y2 - this.y * x2;
 
-			target.x = -w1 * x + x1 * w - y1 * z + z1 * y;
-			target.y = -w1 * y + x1 * z + y1 * w - z1 * x;
-			target.z = -w1 * z - x1 * y + y1 * x + z1 * w;
+			target.x = -w1 * this.x + x1 * this.w - y1 * this.z + z1 * this.y;
+			target.y = -w1 * this.y + x1 * this.z + y1 * this.w - z1 * this.x;
+			target.z = -w1 * this.z - x1 * this.y + y1 * this.x + z1 * this.w;
 
 			return target;
 		}
@@ -385,12 +398,12 @@ module away3d.core.math
 		 * Copies the data from a quaternion into this instance.
 		 * @param q The quaternion to copy from.
 		 */
-		public copyFrom(q : Quaternion) : void
+		public copyFrom(q :away3d.core.math.Quaternion) : void
 		{
-			x = q.x;
-			y = q.y;
-			z = q.z;
-			w = q.w;
+			this.x = q.x;
+            this.y = q.y;
+            this.z = q.z;
+            this.w = q.w;
 		}
 	}
 }
