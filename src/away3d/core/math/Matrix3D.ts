@@ -8,12 +8,13 @@ module away3d.core.math
 
         public rawData : Array<number> = new Array<number>(16);
 
+        // TODO: implement
         constructor( data ? )
         {
-            // TODO: implement
 
         }
 
+        // TODO: implement
         public copyRawDataFrom( m : Array<number> ) : away3d.core.math.Matrix3D
         {
 
@@ -21,6 +22,7 @@ module away3d.core.math
 
         }
 
+        // TODO: implement
         public copyRawDataTo( m : Array<number> , index : number = 0 , transpose : bool = false ) : void
         {
 
@@ -28,13 +30,14 @@ module away3d.core.math
 
         }
 
-
+        // TODO: implement
         public copyColumnTo(column : number, v : away3d.core.math.Vector3D ) : void
         {
 
 
         }
 
+        // TODO: implement
         public decompose( orientationStyle : string = "eulerAngles" ) : Array<away3d.core.math.Vector3D>
         {
             return new Array<away3d.core.math.Vector3D>(16);

@@ -14,5 +14,6 @@ module away3d.core.math
 		 * The amount to multiply with when converting degrees to radians.
 		 */
 		public static DEGREES_TO_RADIANS : Number = Math.PI / 180;
+
 	}
 }
