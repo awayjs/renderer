@@ -1,3 +1,5 @@
+/// <reference path="Matrix3D.ts" />
+/// <reference path="Quaternion.ts" />
 module away3d.core.math
 {
 	//import flash.geom.*;
@@ -12,14 +14,14 @@ module away3d.core.math
 		 */
 		public static RAW_DATA_CONTAINER : Array<number> = new Array<number> (16);
 
-		public static CALCULATION_MATRIX : Matrix3D = new Matrix3D(); // Note: Native AS3 API - to implement
+		public static CALCULATION_MATRIX : away3d.core.math.Matrix3D = new away3d.core.math.Matrix3D(); // Note: Native AS3 API - to implement
 
         /**
         * Fills the 3d matrix object with values representing the transformation made by the given quaternion.
         * 
         * @param	quarternion	The quarterion object to convert.
         */
-        public static quaternion2matrix(quarternion:Quaternion, m : Matrix3D = null):Matrix3D
+        public static quaternion2matrix(quarternion:away3d.core.math.Quaternion, m : away3d.core.math.Matrix3D = null):away3d.core.math.Matrix3D
         {
         	var x:number = quarternion.x;
         	var y:number = quarternion.y;
@@ -38,7 +40,7 @@ module away3d.core.math
             var zz:number = z * z;
             var zw:number = z * w;
 
-			var raw : Vector.<Number> = Matrix3DUtils.RAW_DATA_CONTAINER;
+			var raw : Array<number> = Matrix3DUtils.RAW_DATA_CONTAINER;
 			raw[0] = 1 - 2 * (yy + zz); raw[1] = 2 * (xy + zw); raw[2] = 2 * (xz - yw); raw[4] = 2 * (xy - zw);
 			raw[5] = 1 - 2 * (xx + zz); raw[6] = 2 * (yz + xw); raw[8] = 2 * (xz + yw); raw[9] = 2 * (yz - xw);
 			raw[10] = 1 - 2 * (xx + yy);
@@ -50,7 +52,7 @@ module away3d.core.math
 				return m;
 			}
 			else
-				return new Matrix3D(raw);
+				return new away3d.core.math.Matrix3D(raw);
         }
         
         /**
@@ -59,9 +61,15 @@ module away3d.core.math
 		* @param	v 		[optional] A vector holder to prevent make new Vector3D instance if already exists. Default is null.
     	* @return			The forward vector
         */
-        public static getForward(m:Matrix3D, v:Vector3D = null):Vector3D
+        public static getForward(m:away3d.core.math.Matrix3D, v:away3d.core.math.Vector3D = null):Vector3D
         {
-			v ||= new Vector3D(0.0, 0.0, 0.0);
+            if ( v === null )
+            {
+
+                v = new away3d.core.math.Vector3D(0.0, 0.0, 0.0);
+
+            }
+
 			m.copyColumnTo(2, v);
         	v.normalize();
 
@@ -74,9 +82,15 @@ module away3d.core.math
 		* @param	v 		[optional] A vector holder to prevent make new Vector3D instance if already exists. Default is null.
     	* @return			The up vector
         */
-        public static getUp(m:Matrix3D, v:Vector3D = null):Vector3D
+        public static getUp(m:away3d.core.math.Matrix3D, v:away3d.core.math.Vector3D = null):Vector3D
         {
-        	v ||= new Vector3D(0.0, 0.0, 0.0);
+            if ( v === null )
+            {
+
+                v = new away3d.core.math.Vector3D(0.0, 0.0, 0.0);
+
+            }
+
 			m.copyColumnTo(1, v);
         	v.normalize();
 
@@ -89,9 +103,14 @@ module away3d.core.math
 		* @param	v 		[optional] A vector holder to prevent make new Vector3D instance if already exists. Default is null.
     	* @return			The right vector
         */
-        public static getRight(m:Matrix3D, v:Vector3D = null):Vector3D
+        public static getRight(m:away3d.core.math.Matrix3D, v:away3d.core.math.Vector3D = null):Vector3D
         {
-        	v ||= new Vector3D(0.0, 0.0, 0.0);
+            if ( v === null )
+            {
+
+                v = new away3d.core.math.Vector3D(0.0, 0.0, 0.0);
+            }
+
 			m.copyColumnTo(0, v);
         	v.normalize();
 
@@ -101,24 +120,24 @@ module away3d.core.math
      	/**
          * Returns a boolean value representing whether there is any significant difference between the two given 3d matrices.
          */
-        public static compare(m1:Matrix3D, m2:Matrix3D):bool
+        public static compare(m1:away3d.core.math.Matrix3D, m2:away3d.core.math.Matrix3D):bool
         {
-        	var r1 : Vector.<Number> = Matrix3DUtils.Matrix3DUtils.RAW_DATA_CONTAINER;
-        	var r2 : Vector.<Number> = m2.rawData;
+        	var r1 : Array<number> = Matrix3DUtils.Matrix3DUtils.RAW_DATA_CONTAINER;
+        	var r2 : Array<number> = m2.rawData;
 			m1.copyRawDataTo(r1);
 
-			for (var i : uint = 0; i < 16; ++i)
+			for (var i : number = 0; i < 16; ++i)
 				if (r1[i] != r2[i]) return false;
 			
 			return true;
         }
 
-		public static lookAt(matrix : Matrix3D, pos : Vector3D, dir : Vector3D, up : Vector3D) : void
+		public static lookAt(matrix : away3d.core.math.Matrix3D, pos : away3d.core.math.Vector3D, dir : away3d.core.math.Vector3D, up : away3d.core.math.Vector3D) : void
 		{
 			var dirN : Vector3D;
 			var upN : Vector3D;
 			var lftN : Vector3D;
-			var raw : Vector.<Number> = Matrix3DUtils.RAW_DATA_CONTAINER;
+			var raw : Array<number>= Matrix3DUtils.RAW_DATA_CONTAINER;
 
 			lftN = dir.crossProduct(up);
 			lftN.normalize();
@@ -151,11 +170,17 @@ module away3d.core.math
 			matrix.copyRawDataFrom(raw);
 		}
 
-		public static reflection(plane : Plane3D, target : Matrix3D = null) : Matrix3D
+		public static reflection(plane : Plane3D, target : away3d.core.math.Matrix3D = null) : Matrix3D
 		{
-			target ||= new Matrix3D();
+            if ( target === null )
+            {
+
+                target = new away3d.core.math.Matrix3D();
+
+            }
+
 			var a : Number = plane.a, b : Number = plane.b, c : Number = plane.c, d : Number = plane.d;
-			var rawData : Vector.<Number> = Matrix3DUtils.Matrix3DUtils.RAW_DATA_CONTAINER;
+			var rawData : Array<number> = Matrix3DUtils.Matrix3DUtils.RAW_DATA_CONTAINER;
 			var ab2 : Number = -2*a*b;
 			var ac2 : Number = -2*a*c;
 			var bc2 : Number = -2*b*c;

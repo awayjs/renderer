@@ -74,7 +74,7 @@ module away3d.core.math {
          */
         static angleBetween(a:Vector3D, b:Vector3D):number
         {
-            //TODO
+            return null; // TODO : implement
         }
 
         /**

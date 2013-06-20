@@ -7,27 +7,27 @@ module away3d.core.math
 	/**
 	 * A Quaternion object which can be used to represent rotations.
 	 */
-	public final class Quaternion
+	export class Quaternion
 	{
 		/**
 		 * The x value of the quaternion.
 		 */
-		public x : Number = 0;
+		public x : number = 0;
 
 		/**
 		 * The y value of the quaternion.
 		 */
-		public y : Number = 0;
+		public y : number = 0;
 
 		/**
 		 * The z value of the quaternion.
 		 */
-		public z : Number = 0;
+		public z : number = 0;
 
 		/**
 		 * The w value of the quaternion.
 		 */
-		public w : Number = 1;
+		public w : number = 1;
 
 		/**
 		 * Creates a new Quaternion object.
@@ -36,7 +36,7 @@ module away3d.core.math
 		 * @param z The z value of the quaternion.
 		 * @param w The w value of the quaternion.
 		 */
-		public Quaternion(x : Number = 0, y : Number = 0, z : Number = 0, w : Number = 1)
+		public Quaternion(x : number = 0, y : number = 0, z : number = 0, w : number = 1)
 		{
 			this.x = x;
 			this.y = y;
@@ -47,9 +47,11 @@ module away3d.core.math
 		/**
 		 * Returns the magnitude of the quaternion object.
 		 */
-		public get magnitude() : Number
+		public get magnitude() : number
 		{
-			return Math.sqrt(w * w + x * x + y * y + z * z);
+
+            return Math.sqrt( this.w * this.w + this.x * this.x + this.y * this.y + this.z * this.z );
+
 		}
 
 		/**
@@ -60,27 +62,34 @@ module away3d.core.math
 		 */
 		public multiply(qa : Quaternion, qb : Quaternion) : void
 		{
-			var w1 : Number = qa.w, x1 : Number = qa.x, y1 : Number = qa.y, z1 : Number = qa.z;
-			var w2 : Number = qb.w, x2 : Number = qb.x, y2 : Number = qb.y, z2 : Number = qb.z;
+			var w1 : number = qa.w, x1 : number = qa.x, y1 : number = qa.y, z1 : number = qa.z;
+			var w2 : number = qb.w, x2 : number = qb.x, y2 : number = qb.y, z2 : number = qb.z;
 
-			w = w1 * w2 - x1 * x2 - y1 * y2 - z1 * z2;
-			x = w1 * x2 + x1 * w2 + y1 * z2 - z1 * y2;
-			y = w1 * y2 - x1 * z2 + y1 * w2 + z1 * x2;
-			z = w1 * z2 + x1 * y2 - y1 * x2 + z1 * w2;
+			this.w = w1 * w2 - x1 * x2 - y1 * y2 - z1 * z2;
+            this.x = w1 * x2 + x1 * w2 + y1 * z2 - z1 * y2;
+            this.y = w1 * y2 - x1 * z2 + y1 * w2 + z1 * x2;
+            this.z = w1 * z2 + x1 * y2 - y1 * x2 + z1 * w2;
+
 		}
 
-		public multiplyVector(vector : Vector3D, target : Quaternion = null) : Quaternion
+		public multiplyVector(vector : away3d.core.math.Vector3D, target : Quaternion = null) : Quaternion
 		{
-			target ||= new Quaternion();
+            if ( target === null )
+            {
 
-			var x2 : Number = vector.x;
-			var y2 : Number = vector.y;
-			var z2 : Number = vector.z;
+                target = new away3d.core.math.Quaternion();
 
-			target.w = - x * x2 - y * y2 - z * z2;
-			target.x = w * x2 + y * z2 - z * y2;
-			target.y = w * y2 - x * z2 + z * x2;
-			target.z = w * z2 + x * y2 - y * x2;
+            }
+
+
+			var x2 : number = vector.x;
+			var y2 : number = vector.y;
+			var z2 : number = vector.z;
+
+			target.w = - this.x * x2 - this.y * y2 - this.z * z2;
+			target.x = this.w * x2 + this.y * z2 - this.z * y2;
+			target.y = this.w * y2 - this.x * z2 + this.z * x2;
+			target.z = this.w * z2 + this.x * y2 - this.y * x2;
 
 			return target;
 		}
@@ -91,16 +100,18 @@ module away3d.core.math
 		 * @param	axis	The axis around which to rotate
 		 * @param	angle	The angle in radians of the rotation.
 		 */
-		public fromAxisAngle(axis : Vector3D, angle : Number) : void
+		public fromAxisAngle(axis : Vector3D, angle : number) : void
 		{
-			var sin_a : Number = Math.sin(angle / 2);
-			var cos_a : Number = Math.cos(angle / 2);
+			var sin_a : number = Math.sin(angle / 2);
+			var cos_a : number = Math.cos(angle / 2);
 
-			x = axis.x * sin_a;
-			y = axis.y * sin_a;
-			z = axis.z * sin_a;
-			w = cos_a;
-			normalize();
+            this.x = axis.x * sin_a;
+            this.y = axis.y * sin_a;
+            this.z = axis.z * sin_a;
+
+            this.w = cos_a;
+
+			this.normalize();
 		}
 
 		/**
@@ -109,11 +120,11 @@ module away3d.core.math
 		 * @param qb The second quaternion to interpolate.
 		 * @param t The interpolation weight, a value between 0 and 1.
 		 */
-		public slerp(qa : Quaternion, qb : Quaternion, t : Number) : void
+		public slerp(qa : Quaternion, qb : Quaternion, t : number) : void
 		{
-			var w1 : Number = qa.w, x1 : Number = qa.x, y1 : Number = qa.y, z1 : Number = qa.z;
-			var w2 : Number = qb.w, x2 : Number = qb.x, y2 : Number = qb.y, z2 : Number = qb.z;
-			var dot : Number = w1 * w2 + x1 * x2 + y1 * y2 + z1 * z2;
+			var w1 : number = qa.w, x1 : number = qa.x, y1 : number = qa.y, z1 : number = qa.z;
+			var w2 : number = qb.w, x2 : number = qb.x, y2 : number = qb.y, z2 : number = qb.z;
+			var dot : number = w1 * w2 + x1 * x2 + y1 * y2 + z1 * z2;
 
 			// shortest direction
 			if (dot < 0) {
@@ -126,26 +137,26 @@ module away3d.core.math
 
 			if (dot < 0.95) {
 				// interpolate angle linearly
-				var angle : Number = Math.acos(dot);
-				var s : Number = 1 / Math.sin(angle);
-				var s1 : Number = Math.sin(angle * (1 - t)) * s;
-				var s2 : Number = Math.sin(angle * t) * s;
-				w = w1 * s1 + w2 * s2;
-				x = x1 * s1 + x2 * s2;
-				y = y1 * s1 + y2 * s2;
-				z = z1 * s1 + z2 * s2;
+				var angle : number = Math.acos(dot);
+				var s : number = 1 / Math.sin(angle);
+				var s1 : number = Math.sin(angle * (1 - t)) * s;
+				var s2 : number = Math.sin(angle * t) * s;
+                this.w = w1 * s1 + w2 * s2;
+                this.x = x1 * s1 + x2 * s2;
+                this.y = y1 * s1 + y2 * s2;
+                this.z = z1 * s1 + z2 * s2;
 			}
 			else {
 				// nearly identical angle, interpolate linearly
-				w = w1 + t * (w2 - w1);
-				x = x1 + t * (x2 - x1);
-				y = y1 + t * (y2 - y1);
-				z = z1 + t * (z2 - z1);
-				var len : Number = 1.0 / Math.sqrt(w * w + x * x + y * y + z * z);
-				w *= len;
-				x *= len;
-				y *= len;
-				z *= len;
+                this.w = w1 + t * (w2 - w1);
+                this.x = x1 + t * (x2 - x1);
+                this.y = y1 + t * (y2 - y1);
+                this.z = z1 + t * (z2 - z1);
+				var len : number = 1.0 / Math.sqrt(this.w * this.w + this.x * this.x + this.y * this.y + this.z * this.z);
+                this.w *= len;
+                this.x *= len;
+                this.y *= len;
+                this.z *= len;
 			}
 		}
 
@@ -155,11 +166,11 @@ module away3d.core.math
 		 * @param qb The second quaternion to interpolate.
 		 * @param t The interpolation weight, a value between 0 and 1.
 		 */
-		public lerp(qa : Quaternion, qb : Quaternion, t : Number) : void
+		public lerp(qa : Quaternion, qb : Quaternion, t : number) : void
 		{
-			var w1 : Number = qa.w, x1 : Number = qa.x, y1 : Number = qa.y, z1 : Number = qa.z;
-			var w2 : Number = qb.w, x2 : Number = qb.x, y2 : Number = qb.y, z2 : Number = qb.z;
-			var len : Number;
+			var w1 : number = qa.w, x1 : number = qa.x, y1 : number = qa.y, z1 : number = qa.z;
+			var w2 : number = qb.w, x2 : number = qb.x, y2 : number = qb.y, z2 : number = qb.z;
+			var len : number;
 
 			// shortest direction
 			if (w1 * w2 + x1 * x2 + y1 * y2 + z1 * z2 < 0) {
@@ -169,16 +180,17 @@ module away3d.core.math
 				z2 = -z2;
 			}
 
-			w = w1 + t * (w2 - w1);
-			x = x1 + t * (x2 - x1);
-			y = y1 + t * (y2 - y1);
-			z = z1 + t * (z2 - z1);
+            this.w = w1 + t * (w2 - w1);
+            this.x = x1 + t * (x2 - x1);
+            this.y = y1 + t * (y2 - y1);
+            this.z = z1 + t * (z2 - z1);
 
-			len = 1.0 / Math.sqrt(w * w + x * x + y * y + z * z);
-			w *= len;
-			x *= len;
-			y *= len;
-			z *= len;
+			len = 1.0 / Math.sqrt(this.w * this.w + this.x * this.x + this.y * this.y + this.z * this.z);
+
+            this.w *= len;
+            this.x *= len;
+            this.y *= len;
+            this.z *= len;
 		}
 
 		/**
@@ -188,17 +200,17 @@ module away3d.core.math
 		 * @param	ay		The angle in radians of the rotation around the ay axis.
 		 * @param	az		The angle in radians of the rotation around the az axis.
 		 */
-		public fromEulerAngles(ax : Number, ay : Number, az : Number) : void
+		public fromEulerAngles(ax : number, ay : number, az : number) : void
 		{
-			var halfX : Number = ax*.5, halfY : Number = ay*.5, halfZ : Number = az*.5;
-			var cosX : Number = Math.cos(halfX), sinX : Number = Math.sin(halfX);
-			var cosY : Number = Math.cos(halfY), sinY : Number = Math.sin(halfY);
-			var cosZ : Number = Math.cos(halfZ), sinZ : Number = Math.sin(halfZ);
+			var halfX : number = ax*.5, halfY : number = ay*.5, halfZ : number = az*.5;
+			var cosX : number = Math.cos(halfX), sinX : number = Math.sin(halfX);
+			var cosY : number = Math.cos(halfY), sinY : number = Math.sin(halfY);
+			var cosZ : number = Math.cos(halfZ), sinZ : number = Math.sin(halfZ);
 
-			w = cosX*cosY*cosZ + sinX*sinY*sinZ;
-			x = sinX*cosY*cosZ - cosX*sinY*sinZ;
-			y = cosX*sinY*cosZ + sinX*cosY*sinZ;
-			z = cosX*cosY*sinZ - sinX*sinY*cosZ;
+            this.w = cosX*cosY*cosZ + sinX*sinY*sinZ;
+            this.x = sinX*cosY*cosZ - cosX*sinY*sinZ;
+            this.y = cosX*sinY*cosZ + sinX*cosY*sinZ;
+            this.z = cosX*cosY*sinZ - sinX*sinY*cosZ;
 		}
 
 		/**
@@ -206,26 +218,34 @@ module away3d.core.math
 		 * @param target An optional Vector3D object to contain the Euler angles. If not provided, a new object is created.
 		 * @return The Vector3D containing the Euler angles.
 		 */
-		public toEulerAngles(target : Vector3D = null) : Vector3D
+		public toEulerAngles(target : away3d.core.math.Vector3D = null) : away3d.core.math.Vector3D
 		{
-			target ||= new Vector3D();
-			target.x = Math.atan2(2 * (w * x + y * z), 1 - 2 * (x * x + y * y));
-			target.y = Math.asin(2 * (w * y - z * x));
-			target.z = Math.atan2(2 * (w * z + x * y), 1 - 2 * (y * y + z * z));
+
+            if ( target === null )
+            {
+
+                target = new away3d.core.math.Vector3D();
+
+            }
+
+			target.x = Math.atan2(2 * (this.w * this.x + this.y * this.z), 1 - 2 * (this.x * this.x + this.y * this.y));
+			target.y = Math.asin(2 * (this.w * this.y - this.z * this.x));
+			target.z = Math.atan2(2 * (this.w * this.z + this.x * this.y), 1 - 2 * (this.y * this.y + this.z * this.z));
+
 			return target;
 		}
 
 		/**
 		 * Normalises the quaternion object.
 		 */
-		public normalize(val : Number = 1) : void
+		public normalize(val : number = 1) : void
 		{
-			var mag : Number = val / Math.sqrt(x * x + y * y + z * z + w * w);
+			var mag : number = val / Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w);
 
-			x *= mag;
-			y *= mag;
-			z *= mag;
-			w *= mag;
+            this.x *= mag;
+            this.y *= mag;
+            this.z *= mag;
+            this.w *= mag;
 		}
 
 		/**
@@ -233,9 +253,9 @@ module away3d.core.math
 		 *
 		 * @return A string representation of the quaternion object.
 		 */
-		public toString() : String
+		public toString() : string
 		{
-			return "{x:" + x + " y:" + y + " z:" + z + " w:" + w + "}";
+			return "{x:" + this.x + " y:" + this.y + " z:" + this.z + " w:" + this.w + "}";
 		}
 
 		/**
@@ -243,12 +263,12 @@ module away3d.core.math
 		 * @param target An optional Matrix3D container to store the transformation in. If not provided, a new object is created.
 		 * @return A Matrix3D object representing an equivalent rotation.
 		 */
-		public toMatrix3D(target : Matrix3D = null) : Matrix3D
+		public toMatrix3D(target : away3d.core.math.Matrix3D = null) : away3d.core.math.Matrix3D
 		{
-			var rawData : Vector.<Number> = Matrix3DUtils.RAW_DATA_CONTAINER;
-			var xy2 : Number = 2.0 * x * y, xz2 : Number = 2.0 * x * z, xw2 : Number = 2.0 * x * w;
-			var yz2 : Number = 2.0 * y * z, yw2 : Number = 2.0 * y * w, zw2 : Number = 2.0 * z * w;
-			var xx : Number = x * x, yy : Number = y * y, zz : Number = z * z, ww : Number = w * w;
+			var rawData : Array<number> = Matrix3DUtils.RAW_DATA_CONTAINER;
+			var xy2 : number = 2.0 * this.x * this.y, xz2 : number = 2.0 * this.x * this.z, xw2 : number = 2.0 * this.x * this.w;
+			var yz2 : number = 2.0 * this.y * this.z, yw2 : number = 2.0 * this.y * this.w, zw2 : number = 2.0 * this.z * this.w;
+			var xx : number = this.x * this.x, yy : number = this.y * this.y, zz : number = this.z * this.z, ww : number = this.w * this.w;
 
 			rawData[0] = xx - yy - zz + ww;
 			rawData[4] = xy2 - zw2;
@@ -267,32 +287,37 @@ module away3d.core.math
 			rawData[11] = 0;
 			rawData[15] = 1;
 
-			if (!target) return new Matrix3D(rawData);
+			if (!target) return new away3d.core.math.Matrix3D(rawData);
 
 			target.copyRawDataFrom(rawData);
 
 			return target;
+
 		}
 
 		/**
 		 * Extracts a quaternion rotation matrix out of a given Matrix3D object.
 		 * @param matrix The Matrix3D out of which the rotation will be extracted.
 		 */
-		public fromMatrix(matrix : Matrix3D) : void
+
+        //TODO: implement / uncomment
+        /*
+		public fromMatrix(matrix : away3d.core.math.Matrix3D) : void
 		{
 			var v : Vector3D = matrix.decompose(Orientation3D.QUATERNION)[1];
-			x = v.x;
-			y = v.y;
-			z = v.z;
-			w = v.w;
+			this.x = v.x;
+            this.y = v.y;
+            this.z = v.z;
+            this.w = v.w;
 		}
+        */
 
 		/**
 		 * Converts the quaternion to a Vector.&lt;Number&gt; matrix representation of a rotation equivalent to this quaternion.
 		 * @param target The Vector.&lt;Number&gt; to contain the raw matrix data.
 		 * @param exclude4thRow If true, the last row will be omitted, and a 4x3 matrix will be generated instead of a 4x4.
 		 */
-		public toRawData(target : Vector.<Number>, exclude4thRow : Boolean = false) : void
+		public toRawData(target : Array<number> , exclude4thRow : Boolean = false) : void
 		{
 			var xy2 : Number = 2.0 * x * y, xz2 : Number = 2.0 * x * z, xw2 : Number = 2.0 * x * w;
 			var yz2 : Number = 2.0 * y * z, yw2 : Number = 2.0 * y * w, zw2 : Number = 2.0 * z * w;
@@ -321,7 +346,7 @@ module away3d.core.math
 		 */
 		public clone() : Quaternion
 		{
-			return new Quaternion(x, y, z, w);
+			return new Quaternion(this.x, this.y, this.z, this.w);
 		}
 
 
@@ -331,12 +356,17 @@ module away3d.core.math
 		 * @param target An optional Vector3D object that will contain the rotated coordinates. If not provided, a new object will be created.
 		 * @return A Vector3D object containing the rotated point.
 		 */
-		public rotatePoint(vector : Vector3D, target : Vector3D = null) : Vector3D
+		public rotatePoint( vector : away3d.core.math.Vector3D , target : away3d.core.math.Vector3D = null) : away3d.core.math.Vector3D
 		{
 			var x1 : Number, y1 : Number, z1 : Number, w1 : Number;
 			var x2 : Number = vector.x, y2 : Number = vector.y, z2 : Number = vector.z;
 
-			target ||= new Vector3D();
+			if ( target === null )
+            {
+
+                target = new away3d.core.math.Vector3D();
+
+            }
 
 			// p*q'
 			w1 = - x * x2 - y * y2 - z * z2;
