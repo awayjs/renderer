@@ -15,10 +15,10 @@ module away3d.core.math
         }
 
         // TODO: implement
-        public copyRawDataFrom( m : Array<number> ) : away3d.core.math.Matrix3D
+        public copyRawDataFrom( m : Array<number> ) : Matrix3D
         {
 
-            return new away3d.core.math.Matrix3D();// todo: implement
+            return new Matrix3D();// todo: implement
 
         }
 
