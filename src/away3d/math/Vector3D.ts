@@ -74,7 +74,7 @@ module away3d.math {
          */
         static angleBetween(a:Vector3D, b:Vector3D):number
         {
-            //TODO
+            return Math.acos(a.dotProduct(b) /(a.length* b.length));
         }
 
         /**
@@ -118,7 +118,7 @@ module away3d.math {
         /**
          * [static] Returns the distance between two Vector3D objects.
          */
-        static distance(pt1:Vector3D, pt2:Vector3D)
+        static distance(pt1:Vector3D, pt2:Vector3D):number
         {
             var dx:number = (pt1.x - pt2.x) * (pt1.x - pt2.x);
             var dy:number = (pt1.y - pt2.y) * (pt1.y - pt2.y);
@@ -139,7 +139,7 @@ module away3d.math {
          * Determines whether two Vector3D objects are equal by comparing the x, y, and z elements of the current
          * Vector3D object with a specified Vector3D object.
          */
-        public equals(cmp:Vector3D, allFour:bool = false)
+        public equals(cmp:Vector3D, allFour:bool = false):bool
         {
             if( !allFour )
             {
@@ -163,9 +163,15 @@ module away3d.math {
          * Compares the elements of the current Vector3D object with the elements of a specified Vector3D object to
          * determine whether they are nearly equal.
          */
-        public nearEquals(cmp:Vector3D, epsilon:Number, allFour:bool = true)
+        public nearEquals(cmp:Vector3D, epsilon:Number, allFour:bool = true):bool
         {
-            //TODO
+            if((Math.abs(this.x - cmp.x) < epsilon )
+             ||(Math.abs(this.y - cmp.y) < epsilon )
+             ||(Math.abs(this.z - cmp.z) < epsilon ))
+            {
+                return false;
+            }
+            return Math.abs(this.w - cmp.w) > epsilon;
         }
 
         /**
