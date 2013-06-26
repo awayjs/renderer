@@ -345,9 +345,12 @@
         $output = str_replace(':Dictionary', ':Object', $output);
         $output = str_replace(': Dictionary', ': Object', $output);
 
+        // #30 convert Matrix3DUtils to use full qualified path - Karim
+        $output = str_replace(' Matrix3DUtils', ' away3d.core.math.Matrix3DUtils', $output);
 
-
-
+        // #31 convert uint Vectors - number arrays (definitions only) - Karim
+        $output = str_replace(':Vector.<uint>', ':number[] /*uint*/', $output);
+        $output = str_replace(': Vector.<uint>', ': number[] /*uint*/', $output);
 
         // #28 convert basic definitions of Vector3D / Matrix3D / Quaternion to full TS path..
         $output = str_replace(': Vector3D', ': away3d.core.math.Vector3D', $output);
