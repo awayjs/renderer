@@ -308,8 +308,16 @@
         //  #19 - remove :Array
         $output = str_replace(':Array', '', $output);
 
+        // convert number Vectors - number arrays (definitions only)
         $output = str_replace(':Vector.<Number>', ':number[]', $output);
         $output = str_replace(': Vector.<Number>', ': number[]', $output);
+
+        $output = str_replace(':Vector.<String>', ':string[]', $output);
+        $output = str_replace(': Vector.<String>', ': string[]', $output);
+
+        $output = str_replace(': Vector3D', ': away3d.core.math.Vector3D', $output);
+        $output = str_replace(': Matrix3D', ': away3d.core.math.Matrix3D', $output);
+        $output = str_replace(': Quaternion', ': away3d.core.math.Quaternion', $output);
 
         //  #20 - remove :Function
         $output = str_replace(':Function', '', $output);
