@@ -312,7 +312,7 @@
         $output = str_replace(':Function', '', $output);
 
         //  #21 - String to string
-        $output = str_replace(':String', 'string', $output);
+        $output = str_replace(':String', ':string', $output);
         $output = str_replace(': String', ': string', $output);
 
         //  #22 - new Array() to []
