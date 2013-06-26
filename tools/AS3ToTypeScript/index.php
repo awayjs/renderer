@@ -239,16 +239,20 @@
         }
 
         //  #1 - Boolean to bool
-        $output = str_replace(':Boolean', ':bool', $output);
+        $output = str_replace(':Boolean', ':boolean', $output);
+        $output = str_replace(': Boolean', ': boolean', $output);
 
         //  #2 - uint to number
         $output = str_replace(':uint', ':number', $output);
+        $output = str_replace(': uint', ': number', $output);
 
         //  #3 - int to number
         $output = str_replace(':int', ':number', $output);
+        $output = str_replace(': int', ': number', $output);
 
         //  #4 - Number to number
         $output = str_replace(':Number', ':number', $output);
+        $output = str_replace(': Number', ': number', $output);
 
         //  #5 - remove :void
         $output = str_replace(':void', '', $output);
@@ -304,11 +308,15 @@
         //  #19 - remove :Array
         $output = str_replace(':Array', '', $output);
 
+        $output = str_replace(':Vector.<Number>', ':number[]', $output);
+        $output = str_replace(': Vector.<Number>', ': number[]', $output);
+
         //  #20 - remove :Function
         $output = str_replace(':Function', '', $output);
 
         //  #21 - String to string
         $output = str_replace(':String', 'string', $output);
+        $output = str_replace(': String', ': string', $output);
 
         //  #22 - new Array() to []
         $output = str_replace('new Array()', '[]', $output);
