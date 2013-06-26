@@ -308,17 +308,6 @@
         //  #19 - remove :Array
         $output = str_replace(':Array', '', $output);
 
-        // convert number Vectors - number arrays (definitions only)
-        $output = str_replace(':Vector.<Number>', ':number[]', $output);
-        $output = str_replace(': Vector.<Number>', ': number[]', $output);
-
-        $output = str_replace(':Vector.<String>', ':string[]', $output);
-        $output = str_replace(': Vector.<String>', ': string[]', $output);
-
-        $output = str_replace(': Vector3D', ': away3d.core.math.Vector3D', $output);
-        $output = str_replace(': Matrix3D', ': away3d.core.math.Matrix3D', $output);
-        $output = str_replace(': Quaternion', ': away3d.core.math.Quaternion', $output);
-
         //  #20 - remove :Function
         $output = str_replace(':Function', '', $output);
 
@@ -334,6 +323,31 @@
 
         //  #24 - remove :Class
         $output = str_replace(':Class', '', $output);
+
+
+        // #25 convert number Vectors - number arrays (definitions only) - Karim
+        $output = str_replace(':Vector.<Number>', ':number[]', $output);
+        $output = str_replace(': Vector.<Number>', ': number[]', $output);
+
+        // #26 convert string Vectors - string arrays (definitions only) - Karim
+        $output = str_replace(':Vector.<String>', ':string[]', $output);
+        $output = str_replace(': Vector.<String>', ': string[]', $output);
+
+        // #27 convert boolean Vectors - boolean arrays (definitions only) - Karim
+        $output = str_replace(':Vector.<Boolean>', ':boolean[]', $output);
+        $output = str_replace(': Vector.<Boolean>', ': boolean[]', $output);
+
+        // #28 convert Plane3D Vectors - - Karim
+        $output = str_replace(':Vector.<Plane3D>', ':away3d.core.math.Plane3D[]', $output);
+        $output = str_replace(': Vector.<Plane3D>', ': away3d.core.math.Plane3D[]', $output);
+
+
+
+
+        // #28 convert basic definitions of Vector3D / Matrix3D / Quaternion to full TS path..
+        $output = str_replace(': Vector3D', ': away3d.core.math.Vector3D', $output);
+        $output = str_replace(': Matrix3D', ': away3d.core.math.Matrix3D', $output);
+        $output = str_replace(': Quaternion', ': away3d.core.math.Quaternion', $output);
 
         //  TODO - Append 'this.' before all class level vars.
         //  It needs a way of alsl picking up vars defined from an extended class
