@@ -74,6 +74,13 @@ module away3d.events {
 
         }
 
+
+        public hasEventListener( type : string ) : boolean {
+
+            return true; // TODO: IMPLEMENT
+
+        }
+
     }
 
     /**
@@ -98,6 +105,14 @@ module away3d.events {
 
             this.type = type;
             this;//changed this as well
+
+        }
+
+        public clone() : Event{
+
+            var e : Event = new Event( this.type );
+                e.target = this.target;
+            return e;
 
         }
 
