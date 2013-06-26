@@ -337,9 +337,14 @@
         $output = str_replace(':Vector.<Boolean>', ':boolean[]', $output);
         $output = str_replace(': Vector.<Boolean>', ': boolean[]', $output);
 
-        // #28 convert Plane3D Vectors - - Karim
+        // #28 convert Plane3D Vectors - Karim
         $output = str_replace(':Vector.<Plane3D>', ':away3d.core.math.Plane3D[]', $output);
         $output = str_replace(': Vector.<Plane3D>', ': away3d.core.math.Plane3D[]', $output);
+
+        // #29 convert Dictionary to Object - Karim
+        $output = str_replace(':Dictionary', ':Object', $output);
+        $output = str_replace(': Dictionary', ': Object', $output);
+
 
 
 
