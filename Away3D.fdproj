@@ -26,7 +26,7 @@
     <!-- example: <hidden path="..." /> -->
   </hiddenPaths>
   <!-- Executed before build -->
-  <preBuildCommand>"%APPDATA%\npm\tsc.cmd" --out "bin/Away3D.js" "src/App.ts" -target ES5</preBuildCommand>
+  <preBuildCommand>"%APPDATA%\npm\tsc.cmd" --out "bin/Away3D.js" "src/Main.ts" -target ES5</preBuildCommand>
   <!-- Executed after build -->
   <postBuildCommand alwaysRun="False" />
   <!-- Other project options -->
