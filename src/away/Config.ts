@@ -8,7 +8,7 @@ module away
 {
 	export class Config
 	{
-		private _canvas					: HTMLCanvasElement;
+		//private _canvas					: HTMLCanvasElement;
 		private _alpha                	: number;
         private _premultipliedAlpha   	: number;
         private _antialias            	: boolean;
@@ -16,7 +16,7 @@ module away
         private _preserveDrawingBuffer	: boolean;
 		
 		constructor(
-			canvas = null,
+			//canvas = null,
 			alpha = 1,
 			premultipliedAlpha = 1,
 			antialias = true,
@@ -24,7 +24,7 @@ module away
 			preserveDrawingBuffer = true
 		)
 		{
-			this._canvas = canvas;
+			//this._canvas = canvas;
 			this._alpha = alpha,
 			this._premultipliedAlpha = premultipliedAlpha,
 			this._antialias = antialias,
@@ -32,6 +32,32 @@ module away
 			this._preserveDrawingBuffer = preserveDrawingBuffer
 		}
 		
+		public get alpha():number
+		{
+			return this._alpha;
+		}
+		
+		public get premultipliedAlpha():number
+		{
+			return this._premultipliedAlpha;
+		}
+		
+		public get antialias():boolean
+		{
+			return this._antialias;
+		}
+		
+		public get stencil():boolean
+		{
+			return this._stencil;
+		}
+		
+		public get preserveDrawingBuffer():boolean
+		{
+			return this._preserveDrawingBuffer;
+		}
+		
+		/*
 		public get Z_INTERNAL_canvas():HTMLCanvasElement
 		{
 			return this._canvas;
@@ -41,7 +67,7 @@ module away
 		{
 			this._canvas = value;
 		}
-		
+		*/
 	}
 	
 }
