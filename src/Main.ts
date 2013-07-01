@@ -4,31 +4,27 @@
  */
  
 ///<reference path="def/webgl.d.ts"/>
-///<reference path="App.ts" />
-///<reference path="away/events/EventDispatcher.ts" />
-///<reference path="away/events/AwayEvent.ts" />
-///<reference path="away/geom/Rectangle.ts" />
+///<reference path="Away.ts" />
 ///<reference path="away/Config.ts" />
 
 class Main extends away.events.EventDispatcher
 {
 	
-	private _app:App;
+	private _away:Away;
 	
 	constructor(config:away.Config)
 	{
 		super();
 		
+		this._away = new Away(config);
+		
+		/*
 		if( !config.Z_INTERNAL_canvas )
 		{
 			config.Z_INTERNAL_canvas = document.createElement( "canvas" );
 		}
 		
 		var canvas:HTMLCanvasElement = config.Z_INTERNAL_canvas;
-		canvas.style.width = viewport.width + "px";
-		canvas.style.height = viewport.height + "px";
-		
-		var viewport:away.geom.Rectangle = config.Z_INTERNAL_viewport;
 		
 		var gl:WebGLRenderingContext;
 		try
@@ -46,11 +42,12 @@ class Main extends away.events.EventDispatcher
 			alert("WebGL is not available.");
 		}
 		
-		this._app = new App(canvas, gl);
+		this._away = new Away(config, canvas, gl);
+		*/
 	}
 	
-	public get app():App
+	public get away():Away
 	{
-		return this._app;
+		return this._away;
 	}
 }
