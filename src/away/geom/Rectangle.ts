@@ -2,21 +2,54 @@
  * ...
  * @author Gary Paluk - http://www.plugin.io
  */
+ 
+///<reference path="Point.ts" />
+
 module away.geom
 {
 	export class Rectangle
 	{
-		private _x: number;
-		private _y: number;
-		private _width:number;
-		private _height:number;
+		public x:number;
+		public y:number;
+		public width:number;
+		public height:number;
 		
 		constructor( x:number = 0, y:number = 0, width:number = 0, height:number = 0 )
 		{
-			this._x = x;
-			this._y = y;
-			this._width = width;
-			this._height = height;
+			this.x = x;
+			this.y = y;
+			this.width = width;
+			this.height = height;
+		}
+		
+		public get left():number
+		{
+			return this.x;
+		}
+		
+		public get right():number
+		{
+			return this.x + this.width;
+		}
+		
+		public get top():number
+		{
+			return this.y;
+		}
+		
+		public get bottom():number
+		{
+			return this.y + this.height;
+		}
+		
+		public get topLeft():away.geom.Point
+		{
+			return new away.geom.Point( this.x, this.y );
+		}
+		
+		public get bottomRight():away.geom.Point
+		{
+			return new away.geom.Point( this.x + this.width, this.y + this.height );
 		}
 	}
 }

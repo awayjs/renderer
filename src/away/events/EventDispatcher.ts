@@ -2,6 +2,9 @@
  * Author: mr.doob / https://github.com/mrdoob/eventdispatcher.js/
  * TypeScript Conversion : Karim Beyrouti ( karim@kurst.co.uk )
  */
+ 
+ ///<reference path="Event.ts" />
+
 /**
  * @module kurst.events
  */
@@ -76,32 +79,6 @@ module away.events {
 
                 }
             }
-
-        }
-
-    }
-
-    /**
-     * Base event class
-     * @class kurst.events.Event
-     */
-    export class Event {
-        /**
-         * Type of event
-         * @property type
-         * @type String
-         */
-        public type     : string = undefined;
-        /**
-         * Reference to target object
-         * @property target
-         * @type Object
-         */
-        public target   : Object = undefined;
-
-        constructor( type : string ) {
-
-            this.type = type;
 
         }
 
