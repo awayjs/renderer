@@ -30,7 +30,7 @@ module away.display3d
 			}
 			catch( e )
 			{
-				alert( "An error occured" );
+                this.dispatchEvent( new away.events.AwayEvent( away.events.AwayEvent.INITIALIZE_FAILED, e ) ); // TODO: check why removed/ Rename event ?
 			}
 			
 			if( this._context3D)
