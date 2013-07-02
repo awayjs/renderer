@@ -30,9 +30,9 @@ module away.display3d
 			}
 			catch( e )
 			{
-                this.dispatchEvent( new away.events.AwayEvent( away.events.AwayEvent.INITIALIZE_FAILED, e ) ); // TODO: check why removed/ Rename event ?
+                this.dispatchEvent( new away.events.AwayEvent( away.events.AwayEvent.ERROR, e ) );
 			}
-			
+
 			if( this._context3D)
 			{
 				this.dispatchEvent( new away.events.AwayEvent( away.events.AwayEvent.CONTEXT3D_CREATE ) );
