@@ -27,7 +27,7 @@ class Away3D extends away.events.EventDispatcher
 		}
 		
 		this._stage3D = new away.display3d.Stage3D( canvas );
-		this._stage3D.addEventListener( away.events.AwayEvent.CONTEXT3D_CREATE, this.onContext3DCreateHandler );
+		this._stage3D.addEventListener( away.events.AwayEvent.CONTEXT3D_CREATE, ( e ) => this.onContext3DCreateHandler( e ) );
 		this._stage3D.requestContext();
 	}
 	
@@ -51,3 +51,4 @@ class Away3D extends away.events.EventDispatcher
 	}
 	
 }
+
