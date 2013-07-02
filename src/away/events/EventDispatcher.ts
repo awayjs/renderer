@@ -16,28 +16,34 @@ module away.events {
      * @class kurst.events.EventDispatcher
      *
      */
-
     export class EventDispatcher{
 
         private listeners   : Object[] = new Array<Object>();
         private lFncLength  : number;
+
         /**
          * Add an event listener
          * @method addEventListener
          * @param {String} Name of event to add a listener for
          * @param {Function} Callback function
+         * @param {Object} Target object listener is added to
          */
-        public addEventListener ( type : string , listener : Function ) {
+        public addEventListener ( type : string , listener : Function , target : Object ) {
 
             if ( this.listeners[ type ] === undefined ) {
 
-                this.listeners[ type ] = new Array<Function>();//Function[];
+                this.listeners[ type ] = new Array<EventData>();
 
             }
 
-            if ( this.listeners[ type ].indexOf( listener ) === - 1 ) {
+            if ( this.getEventListenerIndex( type , listener , target ) === -1 ) {
 
-                this.listeners[ type ].push( listener );
+                var d : EventData   = new EventData();
+                    d.listener      = listener;
+                    d.type          = type;
+                    d.target        = target;
+
+                this.listeners[ type ].push( d );
 
             }
 
@@ -47,10 +53,11 @@ module away.events {
          * @method removeEventListener
          * @param {String} Name of event to remove a listener for
          * @param {Function} Callback function
+         * @param {Object} Target object listener is added to
          */
-        public removeEventListener ( type : string , listener : Function ) {
+        public removeEventListener ( type : string , listener : Function , target : Object ) {
 
-            var index = this.listeners[ type ].indexOf( listener );
+            var index : number = this.getEventListenerIndex( type , listener , target );
 
             if ( index !== - 1 ) {
 
@@ -66,21 +73,79 @@ module away.events {
          */
         public dispatchEvent ( event : Event ) {
 
-            var listenerArray : Function[] = <Function[]> this.listeners[ event.type ];
+            var listenerArray : Array<EventData> = this.listeners[ event.type ];
 
             if ( listenerArray !== undefined ) {
 
                 this.lFncLength     = listenerArray.length;
                 event.target        = this;
 
+                var eventData : EventData;
+
                 for ( var i = 0, l = this.lFncLength; i < l; i ++ ) {
 
-                    listenerArray[ i ].call( this, event );
+                    eventData = listenerArray[i];
+                    eventData.listener.call( eventData.target , event );
 
                 }
             }
 
         }
+        /**
+         * get Event Listener Index in array. Returns -1 if no listener is added
+         * @method getEventListenerIndex
+         * @param {String} Name of event to remove a listener for
+         * @param {Function} Callback function
+         * @param {Object} Target object listener is added to
+         */
+        private getEventListenerIndex( type : string , listener : Function , target : Object ) : number {
+
+            if ( this.listeners[ type ] !== undefined ) {
+
+                var a : Array<EventData> = this.listeners[ type ];
+                var l : number = a.length;
+                var d : EventData;
+
+                for ( var c : number = 0 ; c < l ; c ++ ){
+
+                    d = a[c];
+
+                    if ( target == d.target && listener == d.listener ){
+
+                        return c;
+
+                    }
+
+                }
+
+
+            }
+
+            return -1;
+
+        }
+        /**
+         * check if an object has an event listener assigned to it
+         * @method hasListener
+         * @param {String} Name of event to remove a listener for
+         * @param {Function} Callback function
+         * @param {Object} Target object listener is added to
+         */
+        public hasEventListener( type : string , listener : Function , target : Object ) : boolean {
+
+            return ( this.getEventListenerIndex( type, listener , target ) !== -1 ) ;
+
+        }
+
+    }
+    /**
+     * Event listener data container
+     */
+    class EventData{
+
+        public listener     : Function;
+        public target       : Object;
+        public type         : string;
 
     }
 
