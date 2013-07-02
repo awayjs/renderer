@@ -11,6 +11,7 @@ module away.display3D
 	{
 		private _gl:WebGLRenderingContext;
 		private _numIndices:number;
+		private _buffer: WebGLBuffer;
 		
 		constructor(gl:WebGLRenderingContext, numIndices:number)
 		{

@@ -6,6 +6,7 @@
 ///<reference path="../../def/webgl.d.ts"/>
 ///<reference path="VertexBuffer3D.ts"/>
 ///<reference path="IndexBuffer3D.ts"/>
+///<reference path="Program3D.ts"/>
 
 module away.display3d
 {
@@ -56,5 +57,14 @@ module away.display3d
 			return new away.display3D.VertexBuffer3D( this._gl, numVertices, data32PerVertex );
 		}
 		
+		public createProgram3D(): away.display3D.Program3D
+		{
+			return new away.display3D.Program3D( this._gl );
+		}
+		
+		public setProgram( program:away.display3D.Program3D )
+		{
+			program.focusProgram();
+		}
 	}
 }
