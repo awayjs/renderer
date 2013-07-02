@@ -2,151 +2,52 @@
  * ...
  * @author Gary Paluk - http://www.plugin.io
  */
+ 
 ///<reference path="def/webgl.d.ts"/>
-///<reference path="away/Config.ts"/>
 ///<reference path="away/events/AwayEvent.ts" />
-///<reference path="away/geom/Rectangle.ts" />
 ///<reference path="away/events/EventDispatcher.ts" />
+
+///<reference path="away/display3D/Stage3D.ts" />
+///<reference path="away/display3D/Context3D.ts" />
+///<reference path="away/display3D/VertexBuffer3D.ts" />
 
 class Away3D extends away.events.EventDispatcher
 {
 	
-	private _config:away.Config;
-	private _canvas:HTMLCanvasElement;
-	private _gl:WebGLRenderingContext;
-	private _viewport:away.geom.Rectangle;
+	private _stage3D:away.display3d.Stage3D;
 	
-	constructor(config:away.Config = null, canvas:HTMLCanvasElement = null)
+	constructor(canvas:HTMLCanvasElement = null)
 	{
 		super();
 		
-		if( !config )
-		{
-			this._config = new away.Config();
-		}
-		else
-		{
-			this._config = config;
-		}
-		
 		if( !canvas )
 		{
-			this._canvas = document.createElement( "canvas" );
-			document.body.appendChild( this._canvas );
-		}
-		else
-		{
-			this._canvas = canvas;
+			canvas = document.createElement( "canvas" );
+			document.body.appendChild( canvas );
 		}
 		
-		this.configure(this._config);
-		
+		this._stage3D = new away.display3d.Stage3D( canvas );
+		this._stage3D.addEventListener( away.events.AwayEvent.CONTEXT3D_CREATE, this.onContext3DCreateHandler );
+		this._stage3D.requestContext();
+	}
+	
+	private onContext3DCreateHandler( e )
+	{
 		// test
-		this._gl.clearColor(1.0, 0.0, 0.0, 1.0);
-		this._gl.enable(this._gl.DEPTH_TEST);
-		this._gl.clear(this._gl.COLOR_BUFFER_BIT | this._gl.DEPTH_BUFFER_BIT);
-	}
-	
-	public requestContext()
-	{
-		if( !this._gl )
-		{
-			this.createContext();
-		}
-		this.dispatchEvent( new away.events.AwayEvent( away.events.AwayEvent.CONTEXT3D_CREATE ) );
-	}
-	
-	private createConfig()
-	{
-		this._config = new away.Config();
-	}
-	
-	private createContext()
-	{
+		var stage3D: away.display3d.Stage3D = <away.display3d.Stage3D> e.target;
+		var context3D: away.display3d.Context3D = stage3D.context3D;
 		
-		var gl:WebGLRenderingContext;
-		try
-		{
-			gl = <WebGLRenderingContext> this._canvas.getContext("experimental-webgl") || <WebGLRenderingContext> this._canvas.getContext("webgl");
-			this.dispatchEvent( new away.events.AwayEvent( away.events.AwayEvent.INITIALIZE_SUCCESS ) );
-		}
-		catch(e)
-		{
-			this.dispatchEvent( new away.events.AwayEvent( away.events.AwayEvent.INITIALIZE_FAILED, e ) );
-		}
+		var vertices:number[] = [ 1, 0, 0,
+								  0, 1, 0,
+								  0, 0, 1 ];
 		
-		if (!gl) {
-			alert("WebGL is not available.");
-		}
+		var vBuffer: away.display3D.VertexBuffer3D = context3D.createVertexBuffer( 3, 3 );
+		vBuffer.upload( vertices, 0, 0 );
 		
-		this._gl = gl;
-	}
-	
-	private createCanvas()
-	{
-		this._canvas = document.createElement( "canvas" );
-		document.body.appendChild( this._canvas );
-	}
-	
-	public set viewportWidth( width:number )
-	{
-		this._canvas.style.width = width+"px";
-		this._gl.viewport.width = width;
-	}
-	
-	public set viewportHeight( height:number )
-	{
-		this._canvas.style.height = height+"px";
-		this._gl.viewport.height = height;
-	}
-	
-	public set viewport( rect:away.geom.Rectangle )
-	{
-		this._canvas.style.position = "absolute";
-		this._canvas.style.width = rect.width + "px";
-		this._canvas.style.height = rect.height + "px";
-		this._canvas.style.left = rect.left + "px";
-		this._canvas.style.top = rect.top + "px";
+		context3D.clear( 1, 0, 0, 1 );
+		context3D.present();
 		
-		this._gl.viewport.width = rect.width;
-		this._gl.viewport.height = rect.height;
+		this._stage3D.removeEventListener( away.events.AwayEvent.CONTEXT3D_CREATE, this.onContext3DCreateHandler );
 	}
 	
-	public configure(config:away.Config)
-	{
-		this._config = config;
-		
-		if( !this._canvas )
-		{
-			this.createCanvas();
-		}
-		
-		if( !this._gl )
-		{
-			this.createContext();
-		}
-		
-		/*
-		this._gl.alpha = config.alpha;
-		this._gl.premultipliedAlpha = config.premultipliedAlpha;
-		this._gl.antialias = config.antialias;
-		this._gl.stencil = config.stencil;
-		this._gl.preserveDrawingBuffer = config.preserveDrawingBuffer;
-		*/
-	}
-	
-	public get canvas():HTMLCanvasElement
-	{
-		return this._canvas;
-	}
-	
-	public get gl():WebGLRenderingContext
-	{
-		return this._gl;
-	}
-	
-	public get config():away.Config
-	{
-		return this._config;
-	}
 }

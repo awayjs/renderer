@@ -2,6 +2,7 @@
  * ...
  * @author Gary Paluk - http://www.plugin.io
  */
+ 
 module away.geom
 {
 	export class Point
