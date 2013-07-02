@@ -41,6 +41,7 @@ class Away3D extends away.events.EventDispatcher
 		// test
 		var stage3D: away.display3d.Stage3D = <away.display3d.Stage3D> e.target;
 		var context3D: away.display3d.Context3D = stage3D.context3D;
+		context3D.clear( 1, 0, 0, 1 );
 		
 		var vertices:number[] = [
 							-1.0, -1.0, 
@@ -61,13 +62,12 @@ class Away3D extends away.events.EventDispatcher
 							  "}\n";
 		
 		var fProgram:string = "void main() {\n" +
-							  "	gl_FragColor = vec4(0,1,0,1);\n" +
+							  "	gl_FragColor = vec4(0.3,0.6,0.9,1);\n" +
 							  "}\n";
 		
 		program.upload( vProgram, fProgram );
-		
-		context3D.clear( 1, 0, 0, 1 );
-		context3D.present();
+		context3D.setProgram( program ); // will set to VBOs and require indices call drawTriangles()
+		context3D.present(); // placeholder not require atm
 		
 	}
 	

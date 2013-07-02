@@ -24,22 +24,8 @@ module away.display3D
 		public upload( vertexProgram:string, fragmentProgram:string )
 		{
 			
-			if( !this._gl )
-			{
-				alert("We have no GL context" );
-			}
 			this._vertexShader = this._gl.createShader( this._gl.VERTEX_SHADER );
-			
-			if( !this._vertexShader )
-			{
-				alert("We have no vertexShader" );
-			}
-			
 			this._fragmentShader = this._gl.createShader( this._gl.FRAGMENT_SHADER );
-			if( !this._fragmentShader )
-			{
-				alert("We have no fragmentShader" );
-			}
 			
 			this._gl.shaderSource( this._vertexShader, vertexProgram );
 			this._gl.compileShader( this._vertexShader );
@@ -68,6 +54,13 @@ module away.display3D
 				alert("Could not link the program."); //TODO throw errors
 			}
 			
+			this._gl.useProgram( this._program ); // TODO remove this and carriage through to sequential calls
+			
+			var positionLocation:number = this._gl.getAttribLocation( this._program, "a_position" );
+			this._gl.enableVertexAttribArray(positionLocation);
+			this._gl.vertexAttribPointer(positionLocation, 2, this._gl.FLOAT, false, 0, 0);
+			
+			this._gl.drawArrays( this._gl.TRIANGLES, 0, 6 );
 		}
 		
 		public focusProgram()

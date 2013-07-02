@@ -37,14 +37,15 @@ module away.display3d
 		public clear( red:number = 0, green:number = 0, blue:number = 0, alpha:number = 1,
 					  depth:number = 1, stencil:number = 0, mask:number = 0xffffffff )
 		{
-			this._gl.clearColor( red, green, blue, alpha ); 
+			this._gl.clearColor( red, green, blue, alpha );
+			// TODO set these as per params
+			this._gl.enable(this._gl.DEPTH_TEST);
+			this._gl.clear(this._gl.COLOR_BUFFER_BIT | this._gl.DEPTH_BUFFER_BIT);
 		}
 		
 		public present()
 		{
-			// test
-			this._gl.enable(this._gl.DEPTH_TEST);
-			this._gl.clear(this._gl.COLOR_BUFFER_BIT | this._gl.DEPTH_BUFFER_BIT);
+			// TODO implement
 		}
 		
 		public createIndexBuffer3D( numIndices:number): away.display3D.IndexBuffer3D

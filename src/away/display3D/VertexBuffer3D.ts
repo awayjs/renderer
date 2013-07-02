@@ -28,12 +28,10 @@ module away.display3D
 		
 		public upload( vertices:number[], startVertex:number, numVertices:number)
 		{
-			var gl: WebGLRenderingContext = this._gl;
-			
-			gl.bufferData(
-					gl.ARRAY_BUFFER, 
-					new Float32Array(vertices), 
-					gl.STATIC_DRAW
+			this._gl.bufferData(
+					this._gl.ARRAY_BUFFER, 
+					new Float32Array( vertices ), 
+					this._gl.STATIC_DRAW
 				);
 		}
 		
