@@ -60,6 +60,8 @@ module away.display3D
 			this._gl.enableVertexAttribArray(positionLocation);
 			this._gl.vertexAttribPointer(positionLocation, 2, this._gl.FLOAT, false, 0, 0);
 			
+			
+			
 			this._gl.drawArrays( this._gl.TRIANGLES, 0, 6 );
 		}
 		

@@ -7,6 +7,7 @@
 ///<reference path="VertexBuffer3D.ts"/>
 ///<reference path="IndexBuffer3D.ts"/>
 ///<reference path="Program3D.ts"/>
+///<reference path="../geom/Matrix3D.ts"/>
 
 module away.display3d
 {
