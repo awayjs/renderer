@@ -22,8 +22,8 @@ module away.display3D
 			this._numVertices = numVertices;
 			this._data32PerVertex = data32PerVertex;
 			
-			this._buffer = gl.createBuffer();
-			gl.bindBuffer(gl.ARRAY_BUFFER, this._buffer); // TODO ELEMENT_ARRAY_BUFFER VBOs
+			this._buffer = this._gl.createBuffer();
+			this._gl.bindBuffer( this._gl.ARRAY_BUFFER, this._buffer ); // TODO ELEMENT_ARRAY_BUFFER VBOs
 		}
 		
 		public upload( vertices:number[], startVertex:number, numVertices:number)

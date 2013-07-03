@@ -8,6 +8,8 @@
 ///<reference path="IndexBuffer3D.ts"/>
 ///<reference path="Program3D.ts"/>
 ///<reference path="../geom/Matrix3D.ts"/>
+///<reference path="Context3DTextureFormat.ts"/>
+///<reference path="Texture.ts"/>
 
 module away.display3D
 {
@@ -21,6 +23,7 @@ module away.display3D
 		private _blendEnabled:boolean;
 		private _blendSourceFactor:number;
 		private _blendDestinationFactor:number;
+		private _currentProgram:WebGLProgram;
 		
 		constructor( canvas: HTMLCanvasElement )
 		{
@@ -54,16 +57,17 @@ module away.display3D
 			this._gl.clear( mask );
 		}
 		
-		
-		public configureBackBuffer( width:number, height:number, antiAlias:number, enableDepthAndStencil:boolean = true)
+		public configureBackBuffer( width:number, height:number, antiAlias:number, enableDepthAndStencil:boolean = true )
 		{
 			if( enableDepthAndStencil )
 			{
 				this._gl.enable( this._gl.DEPTH_STENCIL );
 				this._gl.enable( this._gl.DEPTH_TEST );
 			}
-			//TODO add antialias
+			//TODO add antialias (seems to be a webgl bug)
 			//TODO set webgl dimensions
+			this._gl.viewport.width = width;
+			this._gl.viewport.height = height;
 		}
 		
 		public drawTriangles( indexBuffer:IndexBuffer3D, firstIndex:number = 0, numTriangles:number = -1 )
@@ -113,14 +117,19 @@ module away.display3D
 			return new away.display3D.VertexBuffer3D( this._gl, numVertices, data32PerVertex );
 		}
 		
-		public createProgram3D(): away.display3D.Program3D
+		public createProgram(): away.display3D.Program3D
 		{
 			return new away.display3D.Program3D( this._gl );
 		}
 		
-		public setProgram( program:away.display3D.Program3D )
+		public createTexture( width:number, height:number, format:string, optimizeForRenderToTexture:boolean, streamingLevels:number = 0 ): away.display3D.Texture
 		{
-			program.focusProgram();
+			return new away.display3D.Texture( this._gl, width, height );
+		}
+		
+		public setProgram( program3D:away.display3D.Program3D )
+		{
+			program3D.focusProgram();
 		}
 		
 		private updateBlendStatus() 

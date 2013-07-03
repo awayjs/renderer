@@ -12,6 +12,8 @@
 ///<reference path="away/display3D/Program3D.ts" />
 ///<reference path="away/display3D/VertexBuffer3D.ts" />
 ///<reference path="away/display3D/IndexBuffer3D.ts" />
+///<reference path="away/display3D/Texture.ts" />
+///<reference path="away/display3D/Context3DTextureFormat.ts" />
 
 class Away3D extends away.events.EventDispatcher
 {
@@ -41,6 +43,10 @@ class Away3D extends away.events.EventDispatcher
 		// test
 		var stage3D: away.display3D.Stage3D = <away.display3D.Stage3D> e.target;
 		var context3D: away.display3D.Context3D = stage3D.context3D;
+		
+		context3D.createTexture( 512, 512, "bgra", true );
+		
+		context3D.configureBackBuffer( 800, 600, 0, true );
 		context3D.clear( 1, 0, 0, 1 );
 		
 		var vertices:number[] = [
@@ -54,7 +60,7 @@ class Away3D extends away.events.EventDispatcher
 		var vBuffer: away.display3D.VertexBuffer3D = context3D.createVertexBuffer( 0, 0 );
 		vBuffer.upload( vertices, 0, 0 );
 		
-		var program:away.display3D.Program3D = context3D.createProgram3D();
+		var program:away.display3D.Program3D = context3D.createProgram();
 		
 		var vProgram:string = "attribute vec2 a_position;\n" +
 							  "void main() {\n" +
