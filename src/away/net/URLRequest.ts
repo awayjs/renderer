@@ -1,4 +1,5 @@
 ///<reference path="URLRequestMethod.ts" />
+///<reference path="URLVariables.ts" />
 module away.net {
 
     /**
@@ -16,6 +17,7 @@ module away.net {
         public contentType      : string = 'application/x-www-form-urlencoded'; //The MIME content type of the content in the the data property.
         public data             : Object;                                       // Object containing data to be transmited with URL Request ( URL Variables / binary / string )
         public method           : string = away.net.URLRequestMethod.GET;
+        public async            : boolean = true;
         private _url            : string;
 
         constructor( url : string = null )
