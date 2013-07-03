@@ -9,13 +9,18 @@
 ///<reference path="Program3D.ts"/>
 ///<reference path="../geom/Matrix3D.ts"/>
 
-module away.display3d
+module away.display3D
 {
 	
 	export class Context3D
 	{
 		
 		private _gl:WebGLRenderingContext;
+		
+		private _drawing:boolean;
+		private _blendEnabled:boolean;
+		private _blendSourceFactor:number;
+		private _blendDestinationFactor:number;
 		
 		constructor( canvas: HTMLCanvasElement )
 		{
@@ -38,15 +43,64 @@ module away.display3d
 		public clear( red:number = 0, green:number = 0, blue:number = 0, alpha:number = 1,
 					  depth:number = 1, stencil:number = 0, mask:number = 0xffffffff )
 		{
+			if (!this._drawing) 
+			{
+				this.updateBlendStatus();
+				this._drawing = true;
+			}
 			this._gl.clearColor( red, green, blue, alpha );
-			// TODO set these as per params
-			this._gl.enable(this._gl.DEPTH_TEST);
-			this._gl.clear(this._gl.COLOR_BUFFER_BIT | this._gl.DEPTH_BUFFER_BIT);
+			this._gl.clearDepth( depth );
+			this._gl.clearStencil( stencil );
+			this._gl.clear( mask );
 		}
+		
+		
+		public configureBackBuffer( width:number, height:number, antiAlias:number, enableDepthAndStencil:boolean = true)
+		{
+			if( enableDepthAndStencil )
+			{
+				this._gl.enable( this._gl.DEPTH_STENCIL );
+				this._gl.enable( this._gl.DEPTH_TEST );
+			}
+			//TODO add antialias
+			//TODO set webgl dimensions
+		}
+		
+		public drawTriangles( indexBuffer:IndexBuffer3D, firstIndex:number = 0, numTriangles:number = -1 )
+		{
+			if ( !this._drawing ) 
+			{
+				throw "Need to clear before drawing if the buffer has not been cleared since the last present() call.";
+			}
+			var numIndices:number = 0;
+			
+			if (numTriangles == -1) 
+			{
+				numIndices = indexBuffer.numIndices;
+			}
+			else 
+			{
+				numIndices = numTriangles * 3;
+			}
+			
+			this._gl.drawElements( this._gl.TRIANGLES, numIndices, this._gl.UNSIGNED_SHORT, firstIndex );
+		}
+		
+		/*
+		public setProgramConstantsFromMatrix(programType:string, firstRegister:number, matrix:away.geom.Matrix3D, transposedMatrix:boolean = false )
+		{
+			
+		}
+		
+		public setProgramConstantsFromVector(programType:string, firstRegister:number, matrix:away.geom.Matrix3D, transposedMatrix:boolean = false )
+		{
+			
+		}*/
 		
 		public present()
 		{
-			// TODO implement
+			this._drawing = false;
+			this._gl.useProgram( null );
 		}
 		
 		public createIndexBuffer3D( numIndices:number): away.display3D.IndexBuffer3D
@@ -67,6 +121,20 @@ module away.display3d
 		public setProgram( program:away.display3D.Program3D )
 		{
 			program.focusProgram();
+		}
+		
+		private updateBlendStatus() 
+		{
+			if ( this._blendEnabled ) 
+			{
+				this._gl.enable( this._gl.BLEND );
+				this._gl.blendEquation( this._gl.FUNC_ADD );
+				this._gl.blendFunc( this._blendSourceFactor, this._blendDestinationFactor );
+			}
+			else
+			{
+				this._gl.disable( this._gl.BLEND );
+			}
 		}
 	}
 }
