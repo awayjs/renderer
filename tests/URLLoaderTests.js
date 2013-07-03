@@ -1,9 +1,25 @@
 var away;
 (function (away) {
+    /**
+    * Base event class
+    * @class kurst.events.Event
+    *
+    * @author Karim Beyrouti
+    */
     (function (events) {
         var Event = (function () {
             function Event(type) {
+                /**
+                * Type of event
+                * @property type
+                * @type String
+                */
                 this.type = undefined;
+                /**
+                * Reference to target object
+                * @property target
+                * @type Object
+                */
                 this.target = undefined;
                 this.type = type;
             }
@@ -23,6 +39,7 @@ var __extends = this.__extends || function (d, b) {
 };
 var away;
 (function (away) {
+    ///<reference path="Event.ts" />
     (function (events) {
         var IOErrorEvent = (function (_super) {
             __extends(IOErrorEvent, _super);
@@ -38,6 +55,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
+    ///<reference path="Event.ts" />
     (function (events) {
         var HTTPStatusEvent = (function (_super) {
             __extends(HTTPStatusEvent, _super);
@@ -56,11 +74,32 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
+    /*
+    * Author: mr.doob / https://github.com/mrdoob/eventdispatcher.js/
+    * TypeScript Conversion : Karim Beyrouti ( karim@kurst.co.uk )
+    */
+    ///<reference path="Event.ts" />
+    /**
+    * @module kurst.events
+    */
     (function (events) {
+        /**
+        * Base class for dispatching events
+        *
+        * @class kurst.events.EventDispatcher
+        *
+        */
         var EventDispatcher = (function () {
             function EventDispatcher() {
                 this.listeners = new Array();
             }
+            /**
+            * Add an event listener
+            * @method addEventListener
+            * @param {String} Name of event to add a listener for
+            * @param {Function} Callback function
+            * @param {Object} Target object listener is added to
+            */
             EventDispatcher.prototype.addEventListener = function (type, listener, target) {
                 if (this.listeners[type] === undefined) {
                     this.listeners[type] = new Array();
@@ -76,6 +115,13 @@ var away;
                 }
             };
 
+            /**
+            * Remove an event listener
+            * @method removeEventListener
+            * @param {String} Name of event to remove a listener for
+            * @param {Function} Callback function
+            * @param {Object} Target object listener is added to
+            */
             EventDispatcher.prototype.removeEventListener = function (type, listener, target) {
                 var index = this.getEventListenerIndex(type, listener, target);
 
@@ -84,6 +130,11 @@ var away;
                 }
             };
 
+            /**
+            * Dispatch an event
+            * @method dispatchEvent
+            * @param {Event} Event to dispatch
+            */
             EventDispatcher.prototype.dispatchEvent = function (event) {
                 var listenerArray = this.listeners[event.type];
 
@@ -100,6 +151,13 @@ var away;
                 }
             };
 
+            /**
+            * get Event Listener Index in array. Returns -1 if no listener is added
+            * @method getEventListenerIndex
+            * @param {String} Name of event to remove a listener for
+            * @param {Function} Callback function
+            * @param {Object} Target object listener is added to
+            */
             EventDispatcher.prototype.getEventListenerIndex = function (type, listener, target) {
                 if (this.listeners[type] !== undefined) {
                     var a = this.listeners[type];
@@ -118,6 +176,13 @@ var away;
                 return -1;
             };
 
+            /**
+            * check if an object has an event listener assigned to it
+            * @method hasListener
+            * @param {String} Name of event to remove a listener for
+            * @param {Function} Callback function
+            * @param {Object} Target object listener is added to
+            */
             EventDispatcher.prototype.hasEventListener = function (type, listener, target) {
                 return (this.getEventListenerIndex(type, listener, target) !== -1);
             };
@@ -125,6 +190,9 @@ var away;
         })();
         events.EventDispatcher = EventDispatcher;
 
+        /**
+        * Event listener data container
+        */
         var EventData = (function () {
             function EventData() {
             }
@@ -135,6 +203,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
+    ///<reference path="Event.ts" />
     (function (events) {
         var ProgressEvent = (function (_super) {
             __extends(ProgressEvent, _super);
@@ -165,8 +234,13 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
+    ///<reference path="../events/EventDispatcher.ts" />
     (function (net) {
         var URLVariables = (function () {
+            /**
+            *
+            * @param source
+            */
             function URLVariables(source) {
                 if (typeof source === "undefined") { source = null; }
                 this._variables = new Object();
@@ -174,6 +248,10 @@ var away;
                     this.decode(source);
                 }
             }
+            /**
+            *
+            * @param source
+            */
             URLVariables.prototype.decode = function (source) {
                 source = source.split("+").join(" ");
 
@@ -184,15 +262,27 @@ var away;
                 }
             };
 
+            /**
+            *
+            * @returns {string}
+            */
             URLVariables.prototype.toString = function () {
                 return '';
             };
 
             Object.defineProperty(URLVariables.prototype, "variables", {
-                get: function () {
+                get: /**
+                *
+                * @returns {Object}
+                */
+                function () {
                     return this._variables;
                 },
-                set: function (obj) {
+                set: /**
+                *
+                * @returns {Object}
+                */
+                function (obj) {
                     this._variables = obj;
                 },
                 enumerable: true,
@@ -200,7 +290,11 @@ var away;
             });
 
             Object.defineProperty(URLVariables.prototype, "formData", {
-                get: function () {
+                get: /**
+                *
+                * @returns {Object}
+                */
+                function () {
                     var fd = new FormData();
 
                     for (var s in this._variables) {
@@ -222,20 +316,38 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
+    ///<reference path="URLRequestMethod.ts" />
+    ///<reference path="URLVariables.ts" />
     (function (net) {
+        /**
+        *
+        */
         var URLRequest = (function () {
             function URLRequest(url) {
                 if (typeof url === "undefined") { url = null; }
+                //public authenticate     : boolean = false;
+                //public cacheResponse    : boolean = true;
+                //public idleTimeout      : number;
+                //public requestHeader    : Array;
+                //public userAgent        : string;
                 this.contentType = 'application/x-www-form-urlencoded';
                 this.method = away.net.URLRequestMethod.GET;
                 this.async = true;
                 this._url = url;
             }
             Object.defineProperty(URLRequest.prototype, "url", {
-                get: function () {
+                get: /**
+                *
+                * @returns {string}
+                */
+                function () {
                     return this._url;
                 },
-                set: function (value) {
+                set: /**
+                *
+                * @param value
+                */
+                function (value) {
                     this._url = value;
                 },
                 enumerable: true,
@@ -265,6 +377,15 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
+    ///<reference path="../events/EventDispatcher.ts" />
+    ///<reference path="../events/Event.ts" />
+    ///<reference path="../events/IOErrorEvent.ts" />
+    ///<reference path="../events/HTTPStatusEvent.ts" />
+    ///<reference path="../events/ProgressEvent.ts" />
+    ///<reference path="URLRequest.ts" />
+    ///<reference path="URLLoaderDataFormat.ts" />
+    ///<reference path="URLRequestMethod.ts" />
+    ///<reference path="URLRequest.ts" />
     (function (net) {
         var URLLoader = (function (_super) {
             __extends(URLLoader, _super);
@@ -275,6 +396,11 @@ var away;
                 this._dataFormat = away.net.URLLoaderDataFormat.TEXT;
                 this._loadError = false;
             }
+            // Public
+            /**
+            *
+            * @param request
+            */
             URLLoader.prototype.load = function (request) {
                 this.initXHR();
                 this._request = request;
@@ -286,17 +412,40 @@ var away;
                 }
             };
 
+            /**
+            *
+            */
             URLLoader.prototype.close = function () {
                 this._XHR.abort();
                 this.destroyXHR();
             };
 
+            /**
+            *
+            */
+            URLLoader.prototype.dispose = function () {
+                this._XHR.abort();
+                this.destroyXHR();
+
+                this._data = null;
+                this._request = null;
+            };
+
 
             Object.defineProperty(URLLoader.prototype, "dataFormat", {
-                get: function () {
+                get: /**
+                *
+                * @returns {string}
+                */
+                function () {
                     return this._dataFormat;
                 },
-                set: function (format) {
+                set: // Get / Set
+                /**
+                *
+                * @param format
+                */
+                function (format) {
                     if (format === away.net.URLLoaderDataFormat.BINARY || format === away.net.URLLoaderDataFormat.TEXT || format === away.net.URLLoaderDataFormat.VARIABLES) {
                         this._dataFormat = format;
                     } else {
@@ -307,18 +456,53 @@ var away;
             });
 
             Object.defineProperty(URLLoader.prototype, "data", {
-                get: function () {
+                get: /**
+                *
+                * @returns {*}
+                */
+                function () {
                     return this._data;
                 },
                 enumerable: true,
                 configurable: true
             });
 
+            Object.defineProperty(URLLoader.prototype, "bytesLoaded", {
+                get: /**
+                *
+                * @returns {number}
+                */
+                function () {
+                    return this._bytesLoaded;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(URLLoader.prototype, "bytesTotal", {
+                get: /**
+                *
+                * @returns {number}
+                */
+                function () {
+                    return this._bytesTotal;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            // Private
+            /**
+            *
+            */
             URLLoader.prototype.getRequest = function (request) {
                 this._XHR.open(request.method, request.url, request.async);
                 this._XHR.send();
             };
 
+            /**
+            *
+            */
             URLLoader.prototype.postRequest = function (request) {
                 this._loadError = false;
 
@@ -338,6 +522,9 @@ var away;
                 }
             };
 
+            /**
+            *
+            */
             URLLoader.prototype.initXHR = function () {
                 var _this = this;
                 if (!this._XHR) {
@@ -370,6 +557,9 @@ var away;
                 }
             };
 
+            /**
+            *
+            */
             URLLoader.prototype.destroyXHR = function () {
                 if (this._XHR !== null) {
                     this._XHR.onloadstart = null;
@@ -384,6 +574,10 @@ var away;
                 }
             };
 
+            /**
+            *
+            * @param source
+            */
             URLLoader.prototype.decodeURLVariables = function (source) {
                 var result = new Object();
 
@@ -398,41 +592,71 @@ var away;
                 return result;
             };
 
+            // XMLHttpRequest - Event Handlers
+            /**
+            * When XHR state changes
+            * @param event
+            */
             URLLoader.prototype.onReadyStateChange = function (event) {
                 if (this._XHR.readyState == 4) {
                     if (this._XHR.status == 404) {
                         this._loadError = true;
                         this.dispatchEvent(new away.events.IOErrorEvent(away.events.IOErrorEvent.IO_ERROR));
                     }
-                }
 
-                this.dispatchEvent(new away.events.HTTPStatusEvent(away.events.HTTPStatusEvent.HTTP_STATUS, this._XHR.status));
+                    this.dispatchEvent(new away.events.HTTPStatusEvent(away.events.HTTPStatusEvent.HTTP_STATUS, this._XHR.status));
+                }
             };
 
+            /**
+            * When the request has completed, regardless of whether or not it was successful.
+            * @param event
+            */
             URLLoader.prototype.onLoadEnd = function (event) {
                 if (this._loadError === true)
                     return;
             };
 
+            /**
+            * When the author specified timeout has passed before the request could complete.
+            * @param event
+            */
             URLLoader.prototype.onTimeOut = function (event) {
             };
 
+            /**
+            * When the request has been aborted, either by invoking the abort() method or navigating away from the page.
+            * @param event
+            */
             URLLoader.prototype.onAbort = function (event) {
             };
 
+            /**
+            * While loading and sending data.
+            * @param event
+            */
             URLLoader.prototype.onProgress = function (event) {
+                this._bytesTotal = event.total;
+                this._bytesLoaded = event.loaded;
+
                 var progressEvent = new away.events.ProgressEvent(away.events.ProgressEvent.PROGRESS);
-
-                progressEvent.bytesLoaded = event.loaded;
-                progressEvent.bytesLoaded = event.total;
-
+                progressEvent.bytesLoaded = this._bytesLoaded;
+                progressEvent.bytesTotal = this._bytesTotal;
                 this.dispatchEvent(progressEvent);
             };
 
+            /**
+            * When the request starts.
+            * @param event
+            */
             URLLoader.prototype.onLoadStart = function (event) {
                 this.dispatchEvent(new away.events.Event(away.events.Event.OPEN));
             };
 
+            /**
+            * When the request has successfully completed.
+            * @param event
+            */
             URLLoader.prototype.onLoadComplete = function (event) {
                 if (this._loadError === true)
                     return;
@@ -449,6 +673,8 @@ var away;
                         break;
 
                     case away.net.URLLoaderDataFormat.BINARY:
+                        this._data = this._XHR.response;
+
                         break;
 
                     default:
@@ -460,6 +686,10 @@ var away;
                 this.dispatchEvent(new away.events.Event(away.events.Event.COMPLETE));
             };
 
+            /**
+            * When the request has failed. ( due to network issues ).
+            * @param event
+            */
             URLLoader.prototype.onLoadError = function (event) {
                 this._loadError = true;
                 this.dispatchEvent(new away.events.IOErrorEvent(away.events.IOErrorEvent.IO_ERROR));
@@ -470,8 +700,22 @@ var away;
     })(away.net || (away.net = {}));
     var net = away.net;
 })(away || (away = {}));
+/**
+* ...
+* @author Gary Paluk - http://www.plugin.io
+*/
+///<reference path="../src/away/events/Event.ts" />
+///<reference path="../src/away/events/IOErrorEvent.ts" />
+///<reference path="../src/away/events/HTTPStatusEvent.ts" />
+///<reference path="../src/away/net/URLLoader.ts" />
+///<reference path="../src/away/net/URLRequest.ts" />
+///<reference path="../src/away/net/URLVariables.ts" />
+///<reference path="../src/away/net/URLRequestMethod.ts" />
 var LoaderTest = (function () {
     function LoaderTest() {
+        //---------------------------------------------------------------------------------------------------------------------------------------------------------
+        // POST URL Variables to PHP script
+        //---------------------------------------------------------------------------------------------------------------------------------------------------------
         this.urlLoaderPostURLVars = new away.net.URLLoader();
         this.urlLoaderPostURLVars.dataFormat = away.net.URLLoaderDataFormat.VARIABLES;
 
@@ -483,14 +727,22 @@ var LoaderTest = (function () {
         req.data = urlVars;
 
         this.urlLoaderPostURLVars.addEventListener(away.events.Event.COMPLETE, this.postURLTestComplete, this);
+        this.urlLoaderPostURLVars.load(req);
 
+        //---------------------------------------------------------------------------------------------------------------------------------------------------------
+        // GET CSV File
+        //---------------------------------------------------------------------------------------------------------------------------------------------------------
         var csrReq = new away.net.URLRequest('URLLoaderTestData/airports.csv');
 
         this.urlLoaderGetCSV = new away.net.URLLoader();
         this.urlLoaderGetCSV.dataFormat = away.net.URLLoaderDataFormat.TEXT;
         this.urlLoaderGetCSV.addEventListener(away.events.Event.COMPLETE, this.getCsvComplete, this);
         this.urlLoaderGetCSV.addEventListener(away.events.Event.OPEN, this.getCsvOpen, this);
+        this.urlLoaderGetCSV.load(csrReq);
 
+        //---------------------------------------------------------------------------------------------------------------------------------------------------------
+        // ERROR test - load a non-existing object
+        //---------------------------------------------------------------------------------------------------------------------------------------------------------
         var errorReq = new away.net.URLRequest('URLLoaderTestData/generatingError');
 
         this.urlLoaderErrorTest = new away.net.URLLoader();
@@ -498,14 +750,33 @@ var LoaderTest = (function () {
         this.urlLoaderErrorTest.addEventListener(away.events.Event.COMPLETE, this.errorComplete, this);
         this.urlLoaderErrorTest.addEventListener(away.events.IOErrorEvent.IO_ERROR, this.ioError, this);
         this.urlLoaderErrorTest.addEventListener(away.events.HTTPStatusEvent.HTTP_STATUS, this.httpStatusChange, this);
+        this.urlLoaderErrorTest.load(errorReq);
 
+        //---------------------------------------------------------------------------------------------------------------------------------------------------------
+        // GET URL Vars - get URL variables
+        //---------------------------------------------------------------------------------------------------------------------------------------------------------
         var csrReq = new away.net.URLRequest('URLLoaderTestData/getUrlVars.php');
 
         this.urlLoaderGetURLVars = new away.net.URLLoader();
         this.urlLoaderGetURLVars.dataFormat = away.net.URLLoaderDataFormat.VARIABLES;
         this.urlLoaderGetURLVars.addEventListener(away.events.Event.COMPLETE, this.getURLVarsComplete, this);
         this.urlLoaderGetURLVars.load(csrReq);
+
+        //---------------------------------------------------------------------------------------------------------------------------------------------------------
+        // LOAD Binary file
+        //---------------------------------------------------------------------------------------------------------------------------------------------------------
+        var binReq = new away.net.URLRequest('URLLoaderTestData/suzanne.awd');
+
+        this.urlLoaderBinary = new away.net.URLLoader();
+        this.urlLoaderBinary.dataFormat = away.net.URLLoaderDataFormat.BINARY;
+        this.urlLoaderBinary.addEventListener(away.events.Event.COMPLETE, this.binFileLoaded, this);
+        this.urlLoaderBinary.load(binReq);
     }
+    LoaderTest.prototype.binFileLoaded = function (event) {
+        var loader = event.target;
+        console.log('binFileLoaded', loader.data.length);
+    };
+
     LoaderTest.prototype.getURLVarsComplete = function (event) {
         var loader = event.target;
         console.log('getURLVarsComplete', loader.data);

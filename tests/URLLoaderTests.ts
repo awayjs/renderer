@@ -18,12 +18,15 @@ class LoaderTest //extends away.events.EventDispatcher
     private urlLoaderGetCSV             : away.net.URLLoader;
     private urlLoaderErrorTest          : away.net.URLLoader;
     private urlLoaderGetURLVars         : away.net.URLLoader;
+    private urlLoaderBinary            : away.net.URLLoader;
 
     constructor()
     {
 
-        //---------------------------------------------------
-        // POST URL Variable ( test )
+        //---------------------------------------------------------------------------------------------------------------------------------------------------------
+        // POST URL Variables to PHP script
+        //---------------------------------------------------------------------------------------------------------------------------------------------------------
+
         this.urlLoaderPostURLVars               = new away.net.URLLoader();
         this.urlLoaderPostURLVars.dataFormat    = away.net.URLLoaderDataFormat.VARIABLES;
 
@@ -35,85 +38,115 @@ class LoaderTest //extends away.events.EventDispatcher
             req.data            = urlVars;
 
         this.urlLoaderPostURLVars.addEventListener( away.events.Event.COMPLETE , this.postURLTestComplete , this );
-        //this.urlLoaderPostURLVars.load( req );
+        this.urlLoaderPostURLVars.load( req );
 
-        //---------------------------------------------------
+        //---------------------------------------------------------------------------------------------------------------------------------------------------------
         // GET CSV File
+        //---------------------------------------------------------------------------------------------------------------------------------------------------------
 
-        var csrReq              = new away.net.URLRequest( 'URLLoaderTestData/airports.csv' );
+        var csrReq = new away.net.URLRequest( 'URLLoaderTestData/airports.csv' );
 
         this.urlLoaderGetCSV                    = new away.net.URLLoader();
         this.urlLoaderGetCSV.dataFormat         = away.net.URLLoaderDataFormat.TEXT;
         this.urlLoaderGetCSV.addEventListener( away.events.Event.COMPLETE , this.getCsvComplete , this );
         this.urlLoaderGetCSV.addEventListener( away.events.Event.OPEN, this.getCsvOpen , this );
-        //this.urlLoaderGetCSV.load( csrReq );
+        this.urlLoaderGetCSV.load( csrReq );
 
-        //---------------------------------------------------
-        // ERROR test
+        //---------------------------------------------------------------------------------------------------------------------------------------------------------
+        // ERROR test - load a non-existing object
+        //---------------------------------------------------------------------------------------------------------------------------------------------------------
 
-        var errorReq              = new away.net.URLRequest( 'URLLoaderTestData/generatingError' );
+        var errorReq = new away.net.URLRequest( 'URLLoaderTestData/generatingError' );
 
         this.urlLoaderErrorTest                    = new away.net.URLLoader();
         this.urlLoaderErrorTest.dataFormat         = away.net.URLLoaderDataFormat.TEXT;
         this.urlLoaderErrorTest.addEventListener( away.events.Event.COMPLETE , this.errorComplete , this );
         this.urlLoaderErrorTest.addEventListener( away.events.IOErrorEvent.IO_ERROR, this.ioError, this );
         this.urlLoaderErrorTest.addEventListener( away.events.HTTPStatusEvent.HTTP_STATUS, this.httpStatusChange, this );
-        //this.urlLoaderErrorTest.load( errorReq );
+        this.urlLoaderErrorTest.load( errorReq );
 
-        //---------------------------------------------------
-        // GET URL Vars
+        //---------------------------------------------------------------------------------------------------------------------------------------------------------
+        // GET URL Vars - get URL variables
+        //---------------------------------------------------------------------------------------------------------------------------------------------------------
 
-        var csrReq              = new away.net.URLRequest( 'URLLoaderTestData/getUrlVars.php' );
+        var csrReq = new away.net.URLRequest( 'URLLoaderTestData/getUrlVars.php' );
 
         this.urlLoaderGetURLVars                    = new away.net.URLLoader();
         this.urlLoaderGetURLVars.dataFormat         = away.net.URLLoaderDataFormat.VARIABLES;
         this.urlLoaderGetURLVars.addEventListener( away.events.Event.COMPLETE , this.getURLVarsComplete , this );
         this.urlLoaderGetURLVars.load( csrReq );
 
+        //---------------------------------------------------------------------------------------------------------------------------------------------------------
+        // LOAD Binary file
+        //---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+        var binReq                              = new away.net.URLRequest( 'URLLoaderTestData/suzanne.awd' );
+
+        this.urlLoaderBinary                    = new away.net.URLLoader(  );
+        this.urlLoaderBinary.dataFormat         = away.net.URLLoaderDataFormat.BINARY;
+        this.urlLoaderBinary.addEventListener( away.events.Event.COMPLETE , this.binFileLoaded , this );
+        this.urlLoaderBinary.load( binReq );
+
     }
 
-    private getURLVarsComplete( event : away.events.Event ) : void {
+    private binFileLoaded( event : away.events.Event ) : void
+    {
+
+        var loader : away.net.URLLoader = <away.net.URLLoader> event.target;
+        console.log( 'binFileLoaded' , loader.data.length );
+
+    }
+
+    private getURLVarsComplete( event : away.events.Event ) : void
+    {
 
         var loader : away.net.URLLoader = <away.net.URLLoader> event.target;
         console.log( 'getURLVarsComplete' , loader.data );
 
+
     }
 
-    private httpStatusChange( event : away.events.HTTPStatusEvent ) : void {
+    private httpStatusChange( event : away.events.HTTPStatusEvent ) : void
+    {
 
         console.log( 'httpStatusChange' , event.status );
 
     }
 
-    private ioError( event ) : void {
+    private ioError( event ) : void
+    {
 
         var loader : away.net.URLLoader = <away.net.URLLoader> event.target;
         console.log( 'ioError' );
 
     }
 
-    private errorComplete( event ) : void {
+    private errorComplete( event ) : void
+    {
 
         var loader : away.net.URLLoader = <away.net.URLLoader> event.target;
         console.log( 'errorComplete' );//, loader.data );
 
     }
 
-    private postURLTestComplete( event ) : void {
+    private postURLTestComplete( event ) : void
+    {
 
         var loader : away.net.URLLoader = <away.net.URLLoader> event.target;
         console.log( 'postURLTestComplete' , loader.data );
 
     }
 
-    private getCsvComplete( event ) : void {
+    private getCsvComplete( event ) : void
+    {
 
         var loader : away.net.URLLoader = <away.net.URLLoader> event.target;
         console.log( 'getCsvComplete' );//, loader.data );
 
     }
 
-    private getCsvOpen( event ) : void {
+    private getCsvOpen( event ) : void
+    {
 
         var loader : away.net.URLLoader = <away.net.URLLoader> event.target;
         console.log( 'getCsvOpen' );
@@ -127,4 +160,3 @@ window.onload = function () {
     var test = new LoaderTest();
 
 }
-
