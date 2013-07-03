@@ -15,7 +15,6 @@ module away.net {
     {
 
         private _XHR            : XMLHttpRequest;
-
         private _bytesLoaded    : number = 0;
         private _bytesTotal     : number = 0;
         private _data           : any;
@@ -31,6 +30,7 @@ module away.net {
         }
 
         // Public
+
         /**
          *
          * @param request
@@ -53,6 +53,7 @@ module away.net {
             }
 
         }
+
         /**
          *
          */
@@ -64,7 +65,22 @@ module away.net {
 
         }
 
+        /**
+         *
+         */
+        public dispose() : void
+        {
+
+            this._XHR.abort();
+            this.destroyXHR();
+
+            this._data      = null;
+            this._request   = null;
+
+        }
+
         // Get / Set
+
         /**
          *
          * @param format
@@ -85,6 +101,7 @@ module away.net {
             }
 
         }
+
         /**
          *
          * @returns {string}
@@ -95,13 +112,37 @@ module away.net {
             return this._dataFormat;
 
         }
+
         /**
          *
          * @returns {*}
          */
-        public get data() : any {
+        public get data() : any
+        {
 
             return this._data;
+
+        }
+
+        /**
+         *
+         * @returns {number}
+         */
+        public get bytesLoaded() : number
+        {
+
+            return this._bytesLoaded;
+
+        }
+
+        /**
+         *
+         * @returns {number}
+         */
+        public get bytesTotal() : number
+        {
+
+            return this._bytesTotal;
 
         }
 
@@ -117,6 +158,7 @@ module away.net {
             this._XHR.send(); // No data to send
 
         }
+
         /**
          *
          */
@@ -156,6 +198,7 @@ module away.net {
             }
 
         }
+
         /**
          *
          */
@@ -179,6 +222,7 @@ module away.net {
             }
 
         }
+
         /**
          *
          */
@@ -201,6 +245,7 @@ module away.net {
             }
 
         }
+
         /**
          *
          * @param source
@@ -227,6 +272,7 @@ module away.net {
         }
 
         // XMLHttpRequest - Event Handlers
+
         /**
          * When XHR state changes
          * @param event
@@ -243,11 +289,12 @@ module away.net {
 
                 }
 
+                this.dispatchEvent( new away.events.HTTPStatusEvent( away.events.HTTPStatusEvent.HTTP_STATUS , this._XHR.status ));
+
             }
 
-            this.dispatchEvent( new away.events.HTTPStatusEvent( away.events.HTTPStatusEvent.HTTP_STATUS , this._XHR.status ));
-
         }
+
         /**
          * When the request has completed, regardless of whether or not it was successful.
          * @param event
@@ -258,6 +305,7 @@ module away.net {
             if( this._loadError === true ) return;
 
         }
+
         /**
          * When the author specified timeout has passed before the request could complete.
          * @param event
@@ -268,6 +316,7 @@ module away.net {
             //TODO: Timeout not currently implemented ( also not part of AS3 API )
 
         }
+
         /**
          * When the request has been aborted, either by invoking the abort() method or navigating away from the page.
          * @param event
@@ -277,6 +326,7 @@ module away.net {
 
 
         }
+
         /**
          * While loading and sending data.
          * @param event
@@ -284,14 +334,16 @@ module away.net {
         private onProgress( event )
         {
 
+            this._bytesTotal    = event.total;
+            this._bytesLoaded   = event.loaded;
+
             var progressEvent : away.events.ProgressEvent   = new away.events.ProgressEvent( away.events.ProgressEvent.PROGRESS );
-
-                progressEvent.bytesLoaded                   = event.loaded;
-                progressEvent.bytesLoaded                   = event.total;
-
+                progressEvent.bytesLoaded                   = this._bytesLoaded;
+                progressEvent.bytesTotal                    = this._bytesTotal;
             this.dispatchEvent( progressEvent );
 
         }
+
         /**
          * When the request starts.
          * @param event
@@ -302,6 +354,7 @@ module away.net {
             this.dispatchEvent( new away.events.Event( away.events.Event.OPEN ));
 
         }
+
         /**
          * When the request has successfully completed.
          * @param event
@@ -312,6 +365,7 @@ module away.net {
             if( this._loadError === true ) return;
 
             // TODO: Assert received data format
+
             switch ( this._dataFormat ){
 
                 case away.net.URLLoaderDataFormat.TEXT:
@@ -328,7 +382,7 @@ module away.net {
 
                 case away.net.URLLoaderDataFormat.BINARY:
 
-                    // TODO: Implement Binary data format
+                    this._data = this._XHR.response;
 
                     break;
 
@@ -343,6 +397,7 @@ module away.net {
             this.dispatchEvent( new away.events.Event( away.events.Event.COMPLETE ));
 
         }
+
         /**
          * When the request has failed. ( due to network issues ).
          * @param event
