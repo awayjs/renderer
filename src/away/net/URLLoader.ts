@@ -2,11 +2,11 @@
 ///<reference path="../events/Event.ts" />
 ///<reference path="../events/IOErrorEvent.ts" />
 ///<reference path="../events/HTTPStatusEvent.ts" />
+///<reference path="../events/ProgressEvent.ts" />
 ///<reference path="URLRequest.ts" />
 ///<reference path="URLLoaderDataFormat.ts" />
 ///<reference path="URLRequestMethod.ts" />
 ///<reference path="URLRequest.ts" />
-
 
 module away.net {
 
@@ -123,6 +123,8 @@ module away.net {
         private postRequest( request : away.net.URLRequest ) : void
         {
 
+            this._loadError = false;
+
             this._XHR.open( request.method , request.url , request.async );
 
             if ( request.data != null )
@@ -134,9 +136,6 @@ module away.net {
 
                     var urlVars : away.net.URLVariables = <away.net.URLVariables> request.data;
 
-                    console.log( 'sendURLVariables');
-
-
                     this._XHR.responseType = 'text';
                     this._XHR.send( urlVars.formData );
 
@@ -144,7 +143,6 @@ module away.net {
                 else
                 {
 
-                    console.log( 'no data to send');
                     this._XHR.send(); // no data to send
 
                 }
@@ -230,7 +228,7 @@ module away.net {
 
         // XMLHttpRequest - Event Handlers
         /**
-         *
+         * When XHR state changes
          * @param event
          */
         private onReadyStateChange( event )
@@ -251,48 +249,51 @@ module away.net {
 
         }
         /**
-         *
+         * When the request has completed, regardless of whether or not it was successful.
          * @param event
          */
         private onLoadEnd( event )
         {
 
             if( this._loadError === true ) return;
-            //console.log( 'onLoadEnd');
 
         }
         /**
-         *
+         * When the author specified timeout has passed before the request could complete.
          * @param event
          */
         private onTimeOut( event )
         {
 
-            console.log( 'onTimeOut');
+            //TODO: Timeout not currently implemented ( also not part of AS3 API )
 
         }
         /**
-         *
+         * When the request has been aborted, either by invoking the abort() method or navigating away from the page.
          * @param event
          */
         private onAbort( event )
         {
 
-            console.log( 'onAbort');
 
         }
         /**
-         *
-          * @param event
+         * While loading and sending data.
+         * @param event
          */
         private onProgress( event )
         {
 
-            console.log( 'onProgress');
+            var progressEvent : away.events.ProgressEvent   = new away.events.ProgressEvent( away.events.ProgressEvent.PROGRESS );
+
+                progressEvent.bytesLoaded                   = event.loaded;
+                progressEvent.bytesLoaded                   = event.total;
+
+            this.dispatchEvent( progressEvent );
 
         }
         /**
-         *
+         * When the request starts.
          * @param event
          */
         private onLoadStart( event )
@@ -302,7 +303,7 @@ module away.net {
 
         }
         /**
-         *
+         * When the request has successfully completed.
          * @param event
          */
         private onLoadComplete( event )
@@ -343,13 +344,14 @@ module away.net {
 
         }
         /**
-         *
+         * When the request has failed. ( due to network issues ).
          * @param event
          */
         private onLoadError( event )
         {
 
-            console.log( 'onLoadError');
+            this._loadError = true;
+            this.dispatchEvent( new away.events.IOErrorEvent(away.events.IOErrorEvent.IO_ERROR ));
 
         }
 
