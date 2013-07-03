@@ -18,5 +18,10 @@ module away.display3D
 			this._gl = gl;
 			this._numIndices = numIndices;
 		}
+		
+		public get numIndices():number
+		{
+			return 3;
+		}
 	}
 }

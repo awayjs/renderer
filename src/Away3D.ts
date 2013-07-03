@@ -16,7 +16,7 @@
 class Away3D extends away.events.EventDispatcher
 {
 	
-	private _stage3D:away.display3d.Stage3D;
+	private _stage3D:away.display3D.Stage3D;
 	
 	constructor(canvas:HTMLCanvasElement = null)
 	{
@@ -28,7 +28,7 @@ class Away3D extends away.events.EventDispatcher
 			document.body.appendChild( canvas );
 		}
 		
-		this._stage3D = new away.display3d.Stage3D( canvas );
+		this._stage3D = new away.display3D.Stage3D( canvas );
 		this._stage3D.addEventListener( away.events.AwayEvent.CONTEXT3D_CREATE, this.onContext3DCreateHandler, this );
 		this._stage3D.requestContext();
 	}
@@ -39,8 +39,8 @@ class Away3D extends away.events.EventDispatcher
 		this._stage3D.removeEventListener( away.events.AwayEvent.CONTEXT3D_CREATE, this.onContext3DCreateHandler, this );
 		
 		// test
-		var stage3D: away.display3d.Stage3D = <away.display3d.Stage3D> e.target;
-		var context3D: away.display3d.Context3D = stage3D.context3D;
+		var stage3D: away.display3D.Stage3D = <away.display3D.Stage3D> e.target;
+		var context3D: away.display3D.Context3D = stage3D.context3D;
 		context3D.clear( 1, 0, 0, 1 );
 		
 		var vertices:number[] = [

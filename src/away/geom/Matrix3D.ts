@@ -11,8 +11,17 @@ module away.geom
 	export class Matrix3D
 	{
 		
+		/**
+		 * A Vector of 16 Numbers, where every four elements is a column of a 4x4 matrix.
+		 *
+		 * <p>An exception is thrown if the rawData property is set to a matrix that is not invertible. The Matrix3D 
+		 * object must be invertible. If a non-invertible matrix is needed, create a subclass of the Matrix3D object.</p>
+		 */
 		public rawData:number[];
 		
+		/**
+		 * Creates a Matrix3D object.
+		 */
 		constructor( v:number[] = null )
 		{
 			if( v != null && v.length == 16 )
@@ -28,6 +37,9 @@ module away.geom
 			}
 		}
 		
+		/**
+		 * Appends the matrix by multiplying another Matrix3D object by the current Matrix3D object.
+		 */
 		public append( lhs:Matrix3D )
 		{
 			var m111:number = this.rawData[0], m121:number = this.rawData[4], m131:number = this.rawData[8], m141:number = this.rawData[12],
@@ -60,6 +72,9 @@ module away.geom
 			this.rawData[15] = m141 * m214 + m142 * m224 + m143 * m234 + m144 * m244;
 		}
 		
+		/**
+		 * Appends an incremental rotation to a Matrix3D object.
+		 */
 		public appendRotation( degrees:number, axis:Vector3D, pivotPoint:Vector3D = null ) 
 		{
 			var m:Matrix3D = Matrix3D.getAxisRotation( axis.x, axis.y, axis.z, degrees );
@@ -73,11 +88,17 @@ module away.geom
 			this.append(m);
 		}
 		
+		/**
+		 * Appends an incremental scale change along the x, y, and z axes to a Matrix3D object.
+		 */
 		public appendScale( xScale:number, yScale:number, zScale:number )
 		{
 			this.append(new Matrix3D( [ xScale, 0.0, 0.0, 0.0, 0.0, yScale, 0.0, 0.0, 0.0, 0.0, zScale, 0.0, 0.0, 0.0, 0.0, 1.0 ] ));
 		}
 		
+		/**
+		 * Appends an incremental translation, a repositioning along the x, y, and z axes, to a Matrix3D object.
+		 */
 		public appendTranslation( x:number, y:number, z:number ) 
 		{
 			this.rawData[12] += x;
@@ -85,12 +106,17 @@ module away.geom
 			this.rawData[14] += z;
 		}
 		
+		/**
+		 * Returns a new Matrix3D object that is an exact copy of the current Matrix3D object.
+		 */
 		public clone():Matrix3D
 		{
 			return new Matrix3D( this.rawData.slice( 0 ) );
 		}
 		
-		
+		/**
+		 * Copies a Vector3D object into specific column of the calling Matrix3D object.
+		 */
 		public copyColumnFrom( column:number, vector3D:Vector3D )
 		{
 			switch( column )
@@ -124,7 +150,9 @@ module away.geom
 			}
 		}
 		
-		
+		/**
+		 * Copies specific column of the calling Matrix3D object into the Vector3D object.
+		 */
 		public copyColumnTo( column:number, vector3D:Vector3D )
 		{
 			switch( column )
@@ -158,6 +186,9 @@ module away.geom
 			}
 		}
 		
+		/**
+		 * Copies all of the matrix data from the source Matrix3D object into the calling Matrix3D object.
+		 */
 		public copyFrom( sourceMatrix3D: Matrix3D )
 		{
 			this.rawData = sourceMatrix3D.rawData.slice( 0 );
@@ -175,6 +206,9 @@ module away.geom
 		}
 		*/
 		
+		/**
+		 * Copies a Vector3D object into specific row of the calling Matrix3D object.
+		 */
 		public copyRowFrom( row:number, vector3D:Vector3D )
 		{
 			switch( row )
@@ -208,6 +242,9 @@ module away.geom
 			}
 		}
 		
+		/**
+		 * Copies specific row of the calling Matrix3D object into the Vector3D object.
+		 */
 		public copyRowTo( row:number, vector3D:Vector3D )
 		{
 			switch( row )
@@ -241,12 +278,18 @@ module away.geom
 			}
 		}
 		
+		/**
+		 * Copies this Matrix3D object into a destination Matrix3D object.
+		 */
 		public copyToMatrix3D( dest:Matrix3D )
 		{
 			dest.rawData = this.rawData.slice(0);
 		}
 		
 		// TODO orientationStyle:string = "eulerAngles"
+		/**
+		 * Returns the transformation matrix's translation, rotation, and scale settings as a Vector of three Vector3D objects.
+		 */
 		public decompose():Vector3D[]
 		{
 			var vec:Vector3D[] = [];
@@ -301,6 +344,10 @@ module away.geom
 			return vec;
 		}
 		
+		/**
+		 * Uses the transformation matrix without its translation elements to transform a Vector3D object from one space
+		 * coordinate to another.
+		 */
 		public deltaTransformVector( v:Vector3D ):Vector3D
 		{
 			var x:number = v.x, y:number = v.y, z:number = v.z;
@@ -311,11 +358,17 @@ module away.geom
 					0);
 		}
 		
+		/**
+		 * Converts the current matrix to an identity or unit matrix.
+		 */
 		public identity()
 		{
 			this.rawData = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 ];
 		}
 		
+		/**
+		 * [static] Interpolates the translation, rotation, and scale transformation of one matrix toward those of the target matrix.
+		 */
 		static interpolate( thisMat:Matrix3D, toMat:Matrix3D, percent:number ):Matrix3D
 		{
 			var m:Matrix3D = new Matrix3D();
@@ -326,6 +379,9 @@ module away.geom
 			return m;
 		}
 		
+		/**
+		 * Interpolates this matrix towards the translation, rotation, and scale transformations of the target matrix.
+		 */
 		public interpolateTo( toMat:Matrix3D, percent:number )
 		{
 			for( var i: number = 0; i < 16; ++i )
@@ -334,6 +390,9 @@ module away.geom
 			}
 		}
 		
+		/**
+		 * Inverts the current matrix.
+		 */
 		public invert():boolean
 		{
 			var d = this.determinant;
@@ -373,6 +432,9 @@ module away.geom
 		}
 		*/
 		
+		/**
+		 * Prepends a matrix by multiplying the current Matrix3D object by another Matrix3D object.
+		 */
 		public prepend( rhs:Matrix3D )
 		{
 			var m111:number = rhs.rawData[0], m121:number = rhs.rawData[4], m131:number = rhs.rawData[8], m141:number = rhs.rawData[12],
@@ -405,6 +467,9 @@ module away.geom
 			this.rawData[15] = m141 * m214 + m142 * m224 + m143 * m234 + m144 * m244;
 		}
 		
+		/**
+		 * Prepends an incremental rotation to a Matrix3D object.
+		 */
 		public prependRotation( degrees:number, axis:Vector3D, pivotPoint:Vector3D = null )
 		{
 			var m: Matrix3D = Matrix3D.getAxisRotation( axis.x, axis.y, axis.z, degrees );
@@ -416,11 +481,17 @@ module away.geom
 			this.prepend( m );
 		}
 		
+		/**
+		 * Prepends an incremental scale change along the x, y, and z axes to a Matrix3D object.
+		 */
 		public prependScale( xScale:number, yScale:number, zScale:number )
 		{
 			this.prepend(new Matrix3D( [ xScale, 0, 0, 0, 0, yScale, 0, 0, 0, 0, zScale, 0, 0, 0, 0, 1 ] ));
 		}
 		
+		/**
+		 * Prepends an incremental translation, a repositioning along the x, y, and z axes, to a Matrix3D object.
+		 */
 		public prependTranslation( x:number, y:number, z:number )
 		{
 			var m = new Matrix3D();
@@ -429,6 +500,9 @@ module away.geom
 		}
 		
 		// TODO orientationStyle
+		/**
+		 * Sets the transformation matrix's translation, rotation, and scale settings.
+		 */
 		public recompose( components:Vector3D[] ): boolean
 		{
 			if (components.length < 3 || components[2].x == 0 || components[2].y == 0 || components[2].z == 0) return false;
@@ -450,6 +524,9 @@ module away.geom
 			return true;
 		}
 		
+		/**
+		 * Uses the transformation matrix to transform a Vector of Numbers from one coordinate space to another.
+		 */
 		public transformVectors( vin:number[], vout:number[] )
 		{
 			var i:number = 0;
@@ -467,6 +544,9 @@ module away.geom
 			}
 		}
 		
+		/**
+		 * Converts the current Matrix3D object to a matrix where the rows and columns are swapped.
+		 */
 		public transpose()
 		{
 			var oRawData:number[] = this.rawData.slice( 0 );
@@ -514,8 +594,11 @@ module away.geom
 			
 			return m;
 		}
-	   
-		private get determinant(): number
+		
+		/**
+		 * [read-only] A Number that determines whether a matrix is invertible.
+		 */
+		public get determinant(): number
 		{
 			return	-1 * ((this.rawData[0] * this.rawData[5] - this.rawData[4] * this.rawData[1]) * (this.rawData[10] * this.rawData[15] - this.rawData[14] * this.rawData[11])
 				- (this.rawData[0] * this.rawData[9] - this.rawData[8] * this.rawData[1]) * (this.rawData[6] * this.rawData[15] - this.rawData[14] * this.rawData[7])
@@ -525,6 +608,10 @@ module away.geom
 				+ (this.rawData[8] * this.rawData[13] - this.rawData[12] * this.rawData[9]) * (this.rawData[2] * this.rawData[7] - this.rawData[6] * this.rawData[3]));
 		}
 		
+		/**
+		 * A Vector3D object that holds the position, the 3D coordinate (x,y,z) of a display object within the
+		 * transformation's frame of reference.
+		 */
 		public get position():Vector3D
 		{
 			return new Vector3D( this.rawData[12], this.rawData[13], this.rawData[14] );
