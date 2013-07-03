@@ -65,6 +65,26 @@ module away.net {
          *
          * @returns {Object}
          */
+        public get formData() : FormData{
+
+            var fd : FormData = new FormData();
+
+            for ( var s in this._variables ){
+
+                console.log( s , this._variables[s] );
+                fd.append( s , this._variables[s] );
+
+
+            }
+
+            return fd;
+
+
+        }
+        /**
+         *
+         * @returns {Object}
+         */
         public set variables( obj : Object ) {
 
             this._variables = obj;
