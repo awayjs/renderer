@@ -11,7 +11,7 @@ module away.events
         public static IO_ERROR: string = "IOErrorEvent_IO_ERROR";
 
 		
-		constructor(type:string, message:string = "")
+		constructor( type : string )
 		{
 			super(type);
 
