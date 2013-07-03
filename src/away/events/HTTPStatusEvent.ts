@@ -12,9 +12,11 @@ module away.events
 
         public status : number;
 		
-		constructor(type:string, message:string = "")
+		constructor(type : string , status : number = null )
 		{
 			super(type);
+
+            this.status = status;
 
 		}
 	}
