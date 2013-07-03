@@ -15,7 +15,7 @@ module away.geom
 		
 		constructor( v:number[] = null )
 		{
-			if( v != null )
+			if( v != null && v.length == 16 )
 			{
 				this.rawData = v;
 			}
@@ -90,42 +90,164 @@ module away.geom
 			return new Matrix3D( this.rawData.slice( 0 ) );
 		}
 		
-		/*
+		
 		public copyColumnFrom( column:number, vector3D:Vector3D )
 		{
-			
+			switch( column )
+			{
+				case 0:
+						vector3D.x = this.rawData[ 0 ];
+						vector3D.y = this.rawData[ 4 ];
+						vector3D.z = this.rawData[ 8 ];
+						vector3D.w = this.rawData[ 12 ];
+					break;
+				case 1:
+						vector3D.x = this.rawData[ 1 ];
+						vector3D.y = this.rawData[ 5 ];
+						vector3D.z = this.rawData[ 9 ];
+						vector3D.w = this.rawData[ 13 ];
+					break;
+				case 2:
+						vector3D.x = this.rawData[ 2 ];
+						vector3D.y = this.rawData[ 6 ];
+						vector3D.z = this.rawData[ 10 ];
+						vector3D.w = this.rawData[ 14 ];
+					break;
+				case 3:
+						vector3D.x = this.rawData[ 3 ];
+						vector3D.y = this.rawData[ 7 ];
+						vector3D.z = this.rawData[ 11 ];
+						vector3D.w = this.rawData[ 15 ];
+					break;
+				default:
+					// TODO throw
+			}
 		}
+		
 		
 		public copyColumnTo( column:number, vector3D:Vector3D )
 		{
+			switch( column )
+			{
+				case 0:
+						this.rawData[ 0 ] = vector3D.x;
+						this.rawData[ 4 ] = vector3D.y;
+						this.rawData[ 8 ] = vector3D.z;
+						this.rawData[ 12 ] = vector3D.w;
+					break;
+				case 1:
+						this.rawData[ 1 ] = vector3D.x;
+						this.rawData[ 5 ] = vector3D.y;
+						this.rawData[ 9 ] = vector3D.z;
+						this.rawData[ 13 ] = vector3D.w;
+					break;
+				case 2:
+						this.rawData[ 2 ] = vector3D.x;
+						this.rawData[ 6 ] = vector3D.y;
+						this.rawData[ 10 ] = vector3D.z;
+						this.rawData[ 14 ] = vector3D.w;
+					break;
+				case 3:
+						this.rawData[ 3 ] = vector3D.x;
+						this.rawData[ 7 ] = vector3D.y;
+						this.rawData[ 11 ] = vector3D.z;
+						this.rawData[ 15 ] = vector3D.w;
+					break;
+				default:
+					// TODO throw
+			}
 		}
 		
 		public copyFrom( sourceMatrix3D: Matrix3D )
 		{
+			this.rawData = sourceMatrix3D.rawData.slice( 0 );
 		}
 		
+		/* TODO implement copyRawDataFrom
 		public copyRawDataFrom( vector:number[], index:number = 0, transpose:boolean = false )
-		{
-		}
-		
-		public copyRawDataTo( vector:number[], index:number = 0, transpose:boolean = false )
-		{
-		}
-		
-		public copyRowFrom( row:number, vector3D:Vector3D )
-		{
-		}
-		
-		public copyRowTo( row:number, vector3D:Vector3D )
-		{
-		}
-		
-		public copyToMatrix3D( dest:Matrix3D )
 		{
 		}
 		*/
 		
-		public decompose( orientationStyle:string = "eulerAngles" ):Vector3D[]
+		/* TODO implement copyRawDataTo
+		public copyRawDataTo( vector:number[], index:number = 0, transpose:boolean = false )
+		{
+		}
+		*/
+		
+		public copyRowFrom( row:number, vector3D:Vector3D )
+		{
+			switch( row )
+			{
+				case 0:
+						vector3D.x = this.rawData[ 0 ];
+						vector3D.y = this.rawData[ 1 ];
+						vector3D.z = this.rawData[ 2 ];
+						vector3D.w = this.rawData[ 3 ];
+					break;
+				case 1:
+						vector3D.x = this.rawData[ 4 ];
+						vector3D.y = this.rawData[ 5 ];
+						vector3D.z = this.rawData[ 6 ];
+						vector3D.w = this.rawData[ 7 ];
+					break;
+				case 2:
+						vector3D.x = this.rawData[ 8 ];
+						vector3D.y = this.rawData[ 9 ];
+						vector3D.z = this.rawData[ 10 ];
+						vector3D.w = this.rawData[ 11 ];
+					break;
+				case 3:
+						vector3D.x = this.rawData[ 12 ];
+						vector3D.y = this.rawData[ 13 ];
+						vector3D.z = this.rawData[ 14 ];
+						vector3D.w = this.rawData[ 15 ]
+					break;
+				default:
+					// TODO throw
+			}
+		}
+		
+		public copyRowTo( row:number, vector3D:Vector3D )
+		{
+			switch( row )
+			{
+				case 0:
+						this.rawData[ 0 ] = vector3D.x;
+						this.rawData[ 1 ] = vector3D.y;
+						this.rawData[ 2 ] = vector3D.z;
+						this.rawData[ 3 ] = vector3D.w;
+					break;
+				case 1:
+						this.rawData[ 4 ] = vector3D.x;
+						this.rawData[ 5 ] = vector3D.y;
+						this.rawData[ 6 ] = vector3D.z;
+						this.rawData[ 7 ] = vector3D.w;
+					break;
+				case 2:
+						this.rawData[ 8 ] = vector3D.x;
+						this.rawData[ 9 ] = vector3D.y;
+						this.rawData[ 10 ] = vector3D.z;
+						this.rawData[ 11 ] = vector3D.w;
+					break;
+				case 3:
+						this.rawData[ 12 ] = vector3D.x;
+						this.rawData[ 13 ] = vector3D.y;
+						this.rawData[ 14 ] = vector3D.z;
+						this.rawData[ 15 ] = vector3D.w;
+					break;
+				default:
+					// TODO throw
+			}
+		}
+		
+		public copyToMatrix3D( dest:Matrix3D )
+		{
+			dest.rawData = this.rawData.slice(0);
+		}
+		
+		// TODO orientationStyle:string = "eulerAngles"
+		public decompose():Vector3D[]
 		{
 			var vec:Vector3D[] = [];
 			var m = this.clone();
@@ -245,9 +367,11 @@ module away.geom
 			return invertable;
 		}
 		
+		/* TODO implement pointAt
 		public pointAt( pos:Vector3D, at:Vector3D = null, up:Vector3D = null )
 		{
 		}
+		*/
 		
 		public prepend( rhs:Matrix3D )
 		{
@@ -401,7 +525,7 @@ module away.geom
 				+ (this.rawData[8] * this.rawData[13] - this.rawData[12] * this.rawData[9]) * (this.rawData[2] * this.rawData[7] - this.rawData[6] * this.rawData[3]));
 		}
 		
-		private get pos():Vector3D
+		public get position():Vector3D
 		{
 			return new Vector3D( this.rawData[12], this.rawData[13], this.rawData[14] );
 		}
