@@ -7,7 +7,10 @@
 module away.events
 {
 	export class Event {
-		
+
+        public static COMPLETE  : string = 'Event_Complete';
+        public static OPEN      : string = 'Event_Open';
+
         /**
          * Type of event
          * @property type
