@@ -61,8 +61,13 @@ class Away3D extends away.events.EventDispatcher
 							-1.0,  1.0, 
 							 1.0, -1.0, 
 							 1.0,  1.0 ];
+							 
+		var indices:number[] = [
+							0, 1, 2,
+							0, 2, 3
+							]
 		
-		var vBuffer: away.display3D.VertexBuffer3D = context3D.createVertexBuffer( 0, 0 );
+		var vBuffer: away.display3D.VertexBuffer3D = context3D.createVertexBuffer( 6, 2 );
 		vBuffer.upload( vertices, 0, 0 );
 		
 		var program:away.display3D.Program3D = context3D.createProgram();
