@@ -23,6 +23,13 @@ var away;
                 this.target = undefined;
                 this.type = type;
             }
+            /**
+            * Clones the current event.
+            * @return An exact duplicate of the current event.
+            */
+            Event.prototype.clone = function () {
+                return new Event(this.type);
+            };
             Event.COMPLETE = 'Event_Complete';
             Event.OPEN = 'Event_Open';
             return Event;
@@ -298,7 +305,6 @@ var away;
                     var fd = new FormData();
 
                     for (var s in this._variables) {
-                        console.log(s, this._variables[s]);
                         fd.append(s, this._variables[s]);
                     }
 
@@ -323,6 +329,10 @@ var away;
         *
         */
         var URLRequest = (function () {
+            /**
+            
+            * @param url
+            */
             function URLRequest(url) {
                 if (typeof url === "undefined") { url = null; }
                 //public authenticate     : boolean = false;
@@ -330,8 +340,23 @@ var away;
                 //public idleTimeout      : number;
                 //public requestHeader    : Array;
                 //public userAgent        : string;
+                /**
+                * The MIME content type of the content in the the data property.
+                * @type {string}
+                */
                 this.contentType = 'application/x-www-form-urlencoded';
+                /**
+                *
+                * away.net.URLRequestMethod.GET
+                * away.net.URLRequestMethod.POST
+                *
+                * @type {string}
+                */
                 this.method = away.net.URLRequestMethod.GET;
+                /**
+                * Use asynchronous XMLHttpRequest
+                * @type {boolean}
+                */
                 this.async = true;
                 this._url = url;
             }
@@ -367,7 +392,9 @@ var away;
             function URLLoaderDataFormat() {
             }
             URLLoaderDataFormat.BINARY = 'binary';
+
             URLLoaderDataFormat.TEXT = 'text';
+
             URLLoaderDataFormat.VARIABLES = 'variables';
             return URLLoaderDataFormat;
         })();
@@ -399,7 +426,7 @@ var away;
             // Public
             /**
             *
-            * @param request
+            * @param request {away.net.URLRequest}
             */
             URLLoader.prototype.load = function (request) {
                 this.initXHR();
@@ -417,7 +444,7 @@ var away;
             */
             URLLoader.prototype.close = function () {
                 this._XHR.abort();
-                this.destroyXHR();
+                this.disposeXHR();
             };
 
             /**
@@ -425,7 +452,7 @@ var away;
             */
             URLLoader.prototype.dispose = function () {
                 this._XHR.abort();
-                this.destroyXHR();
+                this.disposeXHR();
 
                 this._data = null;
                 this._request = null;
@@ -436,12 +463,19 @@ var away;
                 get: /**
                 *
                 * @returns {string}
+                *      away.net.URLLoaderDataFormat.BINARY
+                *      away.net.URLLoaderDataFormat.TEXT
+                *      away.net.URLLoaderDataFormat.VARIABLES
                 */
                 function () {
                     return this._dataFormat;
                 },
                 set: // Get / Set
                 /**
+                *
+                * away.net.URLLoaderDataFormat.BINARY
+                * away.net.URLLoaderDataFormat.TEXT
+                * away.net.URLLoaderDataFormat.VARIABLES
                 *
                 * @param format
                 */
@@ -491,17 +525,35 @@ var away;
                 configurable: true
             });
 
+            Object.defineProperty(URLLoader.prototype, "request", {
+                get: /**
+                *
+                * @returns {away.net.URLRequest}
+                */
+                function () {
+                    return this._request;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
             // Private
             /**
             *
+            * @param request {away.net.URLRequest}
             */
             URLLoader.prototype.getRequest = function (request) {
-                this._XHR.open(request.method, request.url, request.async);
-                this._XHR.send();
+                try  {
+                    this._XHR.open(request.method, request.url, request.async);
+                    this._XHR.send();
+                } catch (e) {
+                    this.handleXmlHttpRequestException(e);
+                }
             };
 
             /**
             *
+            * @param request {away.net.URLRequest}
             */
             URLLoader.prototype.postRequest = function (request) {
                 this._loadError = false;
@@ -512,13 +564,28 @@ var away;
                     if (request.data instanceof away.net.URLVariables) {
                         var urlVars = request.data;
 
-                        this._XHR.responseType = 'text';
-                        this._XHR.send(urlVars.formData);
+                        try  {
+                            this._XHR.responseType = 'text';
+                            this._XHR.send(urlVars.formData);
+                        } catch (e) {
+                            this.handleXmlHttpRequestException(e);
+                        }
                     } else {
                         this._XHR.send();
                     }
                 } else {
                     this._XHR.send();
+                }
+            };
+
+            /**
+            *
+            * @param error {XMLHttpRequestException}
+            */
+            URLLoader.prototype.handleXmlHttpRequestException = function (error/* <XMLHttpRequestException> */ ) {
+                switch (error.code) {
+                    case 101:
+                        break;
                 }
             };
 
@@ -560,7 +627,7 @@ var away;
             /**
             *
             */
-            URLLoader.prototype.destroyXHR = function () {
+            URLLoader.prototype.disposeXHR = function () {
                 if (this._XHR !== null) {
                     this._XHR.onloadstart = null;
                     this._XHR.onprogress = null;
@@ -569,7 +636,6 @@ var away;
                     this._XHR.onload = null;
                     this._XHR.ontimeout = null;
                     this._XHR.onloadend = null;
-
                     this._XHR = null;
                 }
             };
@@ -702,7 +768,7 @@ var away;
 })(away || (away = {}));
 /**
 * ...
-* @author Gary Paluk - http://www.plugin.io
+* @author Gary Paluk - http://www.plugin.io / Karim Beyrouti - http://kurst.co.uk
 */
 ///<reference path="../src/away/events/Event.ts" />
 ///<reference path="../src/away/events/IOErrorEvent.ts" />
@@ -727,6 +793,7 @@ var LoaderTest = (function () {
         req.data = urlVars;
 
         this.urlLoaderPostURLVars.addEventListener(away.events.Event.COMPLETE, this.postURLTestComplete, this);
+        this.urlLoaderPostURLVars.addEventListener(away.events.IOErrorEvent.IO_ERROR, this.ioError, this);
         this.urlLoaderPostURLVars.load(req);
 
         //---------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -738,6 +805,7 @@ var LoaderTest = (function () {
         this.urlLoaderGetCSV.dataFormat = away.net.URLLoaderDataFormat.TEXT;
         this.urlLoaderGetCSV.addEventListener(away.events.Event.COMPLETE, this.getCsvComplete, this);
         this.urlLoaderGetCSV.addEventListener(away.events.Event.OPEN, this.getCsvOpen, this);
+        this.urlLoaderGetCSV.addEventListener(away.events.IOErrorEvent.IO_ERROR, this.ioError, this);
         this.urlLoaderGetCSV.load(csrReq);
 
         //---------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -759,6 +827,7 @@ var LoaderTest = (function () {
 
         this.urlLoaderGetURLVars = new away.net.URLLoader();
         this.urlLoaderGetURLVars.dataFormat = away.net.URLLoaderDataFormat.VARIABLES;
+        this.urlLoaderGetURLVars.addEventListener(away.events.IOErrorEvent.IO_ERROR, this.ioError, this);
         this.urlLoaderGetURLVars.addEventListener(away.events.Event.COMPLETE, this.getURLVarsComplete, this);
         this.urlLoaderGetURLVars.load(csrReq);
 
@@ -769,46 +838,47 @@ var LoaderTest = (function () {
 
         this.urlLoaderBinary = new away.net.URLLoader();
         this.urlLoaderBinary.dataFormat = away.net.URLLoaderDataFormat.BINARY;
+        this.urlLoaderBinary.addEventListener(away.events.IOErrorEvent.IO_ERROR, this.ioError, this);
         this.urlLoaderBinary.addEventListener(away.events.Event.COMPLETE, this.binFileLoaded, this);
         this.urlLoaderBinary.load(binReq);
     }
     LoaderTest.prototype.binFileLoaded = function (event) {
         var loader = event.target;
-        console.log('binFileLoaded', loader.data.length);
+        console.log('LoaderTest.binFileLoaded', loader.data.length);
     };
 
     LoaderTest.prototype.getURLVarsComplete = function (event) {
         var loader = event.target;
-        console.log('getURLVarsComplete', loader.data);
+        console.log('LoaderTest.getURLVarsComplete', loader.data);
     };
 
     LoaderTest.prototype.httpStatusChange = function (event) {
-        console.log('httpStatusChange', event.status);
+        console.log('LoaderTest.httpStatusChange', event.status);
     };
 
     LoaderTest.prototype.ioError = function (event) {
         var loader = event.target;
-        console.log('ioError');
+        console.log('LoaderTest.ioError', loader.request.url);
     };
 
     LoaderTest.prototype.errorComplete = function (event) {
         var loader = event.target;
-        console.log('errorComplete');
+        console.log('LoaderTest.errorComplete');
     };
 
     LoaderTest.prototype.postURLTestComplete = function (event) {
         var loader = event.target;
-        console.log('postURLTestComplete', loader.data);
+        console.log('LoaderTest.postURLTestComplete', loader.data);
     };
 
     LoaderTest.prototype.getCsvComplete = function (event) {
         var loader = event.target;
-        console.log('getCsvComplete');
+        console.log('LoaderTest.getCsvComplete');
     };
 
     LoaderTest.prototype.getCsvOpen = function (event) {
         var loader = event.target;
-        console.log('getCsvOpen');
+        console.log('LoaderTest.getCsvOpen');
     };
     return LoaderTest;
 })();

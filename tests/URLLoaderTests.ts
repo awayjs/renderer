@@ -1,6 +1,6 @@
 /**
  * ...
- * @author Gary Paluk - http://www.plugin.io
+ * @author Gary Paluk - http://www.plugin.io / Karim Beyrouti - http://kurst.co.uk
  */
 
 ///<reference path="../src/away/events/Event.ts" />
@@ -38,6 +38,7 @@ class LoaderTest //extends away.events.EventDispatcher
             req.data            = urlVars;
 
         this.urlLoaderPostURLVars.addEventListener( away.events.Event.COMPLETE , this.postURLTestComplete , this );
+        this.urlLoaderPostURLVars.addEventListener( away.events.IOErrorEvent.IO_ERROR, this.ioError, this );
         this.urlLoaderPostURLVars.load( req );
 
         //---------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -50,6 +51,7 @@ class LoaderTest //extends away.events.EventDispatcher
         this.urlLoaderGetCSV.dataFormat         = away.net.URLLoaderDataFormat.TEXT;
         this.urlLoaderGetCSV.addEventListener( away.events.Event.COMPLETE , this.getCsvComplete , this );
         this.urlLoaderGetCSV.addEventListener( away.events.Event.OPEN, this.getCsvOpen , this );
+        this.urlLoaderGetCSV.addEventListener( away.events.IOErrorEvent.IO_ERROR, this.ioError, this );
         this.urlLoaderGetCSV.load( csrReq );
 
         //---------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -73,6 +75,7 @@ class LoaderTest //extends away.events.EventDispatcher
 
         this.urlLoaderGetURLVars                    = new away.net.URLLoader();
         this.urlLoaderGetURLVars.dataFormat         = away.net.URLLoaderDataFormat.VARIABLES;
+        this.urlLoaderGetURLVars.addEventListener( away.events.IOErrorEvent.IO_ERROR, this.ioError, this );
         this.urlLoaderGetURLVars.addEventListener( away.events.Event.COMPLETE , this.getURLVarsComplete , this );
         this.urlLoaderGetURLVars.load( csrReq );
 
@@ -80,10 +83,11 @@ class LoaderTest //extends away.events.EventDispatcher
         // LOAD Binary file
         //---------------------------------------------------------------------------------------------------------------------------------------------------------
 
-        var binReq                              = new away.net.URLRequest( 'URLLoaderTestData/suzanne.awd' );
+        var binReq = new away.net.URLRequest( 'URLLoaderTestData/suzanne.awd' );
 
         this.urlLoaderBinary                    = new away.net.URLLoader(  );
         this.urlLoaderBinary.dataFormat         = away.net.URLLoaderDataFormat.BINARY;
+        this.urlLoaderBinary.addEventListener( away.events.IOErrorEvent.IO_ERROR, this.ioError, this );
         this.urlLoaderBinary.addEventListener( away.events.Event.COMPLETE , this.binFileLoaded , this );
         this.urlLoaderBinary.load( binReq );
 
@@ -93,7 +97,7 @@ class LoaderTest //extends away.events.EventDispatcher
     {
 
         var loader : away.net.URLLoader = <away.net.URLLoader> event.target;
-        console.log( 'binFileLoaded' , loader.data.length );
+        console.log( 'LoaderTest.binFileLoaded' , loader.data.length );
 
     }
 
@@ -101,7 +105,7 @@ class LoaderTest //extends away.events.EventDispatcher
     {
 
         var loader : away.net.URLLoader = <away.net.URLLoader> event.target;
-        console.log( 'getURLVarsComplete' , loader.data );
+        console.log( 'LoaderTest.getURLVarsComplete' , loader.data );
 
 
     }
@@ -109,7 +113,7 @@ class LoaderTest //extends away.events.EventDispatcher
     private httpStatusChange( event : away.events.HTTPStatusEvent ) : void
     {
 
-        console.log( 'httpStatusChange' , event.status );
+        console.log( 'LoaderTest.httpStatusChange' , event.status );
 
     }
 
@@ -117,7 +121,7 @@ class LoaderTest //extends away.events.EventDispatcher
     {
 
         var loader : away.net.URLLoader = <away.net.URLLoader> event.target;
-        console.log( 'ioError' );
+        console.log( 'LoaderTest.ioError' , loader.request.url );
 
     }
 
@@ -125,7 +129,7 @@ class LoaderTest //extends away.events.EventDispatcher
     {
 
         var loader : away.net.URLLoader = <away.net.URLLoader> event.target;
-        console.log( 'errorComplete' );//, loader.data );
+        console.log( 'LoaderTest.errorComplete' );//, loader.data );
 
     }
 
@@ -133,7 +137,7 @@ class LoaderTest //extends away.events.EventDispatcher
     {
 
         var loader : away.net.URLLoader = <away.net.URLLoader> event.target;
-        console.log( 'postURLTestComplete' , loader.data );
+        console.log( 'LoaderTest.postURLTestComplete' , loader.data );
 
     }
 
@@ -141,7 +145,7 @@ class LoaderTest //extends away.events.EventDispatcher
     {
 
         var loader : away.net.URLLoader = <away.net.URLLoader> event.target;
-        console.log( 'getCsvComplete' );//, loader.data );
+        console.log( 'LoaderTest.getCsvComplete' );//, loader.data );
 
     }
 
@@ -149,14 +153,16 @@ class LoaderTest //extends away.events.EventDispatcher
     {
 
         var loader : away.net.URLLoader = <away.net.URLLoader> event.target;
-        console.log( 'getCsvOpen' );
+        console.log( 'LoaderTest.getCsvOpen' );
 
     }
 
 }
 
-window.onload = function () {
+window.onload = function ()
+{
 
     var test = new LoaderTest();
 
 }
+
