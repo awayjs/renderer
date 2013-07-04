@@ -46,13 +46,13 @@ class Away3D extends away.events.EventDispatcher
 		var stage3D: away.display3D.Stage3D = <away.display3D.Stage3D> e.target;
 		var context3D: away.display3D.Context3D = stage3D.context3D;
 		
-		context3D.createTexture( 512, 512, "bgra", true );
+		context3D.createTexture( 512, 512, away.display3D.Context3DTextureFormat.BGRA, true );
 		
 		context3D.configureBackBuffer( 800, 600, 0, true );
 		
-		//context3D.setColorMask( true, true, false, false );
-		context3D.clear( 1, 0, 0, 1 );
+		context3D.setColorMask( true, false, false, true ); 
 		
+		context3D.clear( 1, 1, 0, 1 );
 		
 		var vertices:number[] = [
 							-1.0, -1.0, 
@@ -70,6 +70,9 @@ class Away3D extends away.events.EventDispatcher
 		var vBuffer: away.display3D.VertexBuffer3D = context3D.createVertexBuffer( 6, 2 );
 		vBuffer.upload( vertices, 0, 0 );
 		
+		var iBuffer: away.display3D.IndexBuffer3D = context3D.createIndexBuffer( 6 );
+		iBuffer.upload( indices, 0, 6 );
+		
 		var program:away.display3D.Program3D = context3D.createProgram();
 		
 		var vProgram:string = "attribute vec2 a_position;\n" +
@@ -83,7 +86,12 @@ class Away3D extends away.events.EventDispatcher
 		
 		program.upload( vProgram, fProgram );
 		context3D.setProgram( program ); // will set to VBOs and require indices call drawTriangles()
+		
+		//context3D.setGLSLProgramConstantsFromVector4( "a_position", [ 
+		
 		context3D.present(); // placeholder not require atm
+		
+		
 		
 	}
 	

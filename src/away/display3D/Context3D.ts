@@ -26,6 +26,9 @@ module away.display3D
 		private _blendDestinationFactor:number;
 		private _currentProgram:Program3D;
 		
+		private _textureList: Texture[] = [];
+		private _programList: Program3D[] = [];
+		
 		constructor( canvas: HTMLCanvasElement )
 		{
 			try
@@ -71,28 +74,32 @@ module away.display3D
 		{
 			if( enableDepthAndStencil )
 			{
-				GL.enable( GL.DEPTH_STENCIL );
+				GL.enable( GL.STENCIL_TEST );
 				GL.enable( GL.DEPTH_TEST );
 			}
-			//TODO add antialias (seems to be a webgl bug)
-			//TODO set webgl dimensions
-			//GL.viewport.width = width;
-			//GL.viewport.height = height;
+			// TODO add antialias (seems to be a webgl bug)
+			// TODO set webgl / canvas dimensions
+			GL.viewport.width = width;
+			GL.viewport.height = height;
 		}
 		
-		public createIndexBuffer3D( numIndices:number): away.display3D.IndexBuffer3D
+		public createIndexBuffer( numIndices:number ): away.display3D.IndexBuffer3D
 		{
 			return new away.display3D.IndexBuffer3D( numIndices );
 		}
 		
-		public createProgram(): away.display3D.Program3D
+		public createProgram(): Program3D
 		{
-			return new away.display3D.Program3D();
+			var program:Program3D = new away.display3D.Program3D();
+			this._programList.push( program );
+			return program;
 		}
 		
-		public createTexture( width:number, height:number, format:string, optimizeForRenderToTexture:boolean, streamingLevels:number = 0 ): away.display3D.Texture
+		public createTexture( width:number, height:number, format:string, optimizeForRenderToTexture:boolean, streamingLevels:number = 0 ): Texture
 		{
-			return new away.display3D.Texture( width, height );
+			var texture: Texture = new away.display3D.Texture( width, height );
+			this._textureList.push( texture );
+			return texture;
 		}
 		
 		public createVertexBuffer( numVertices:number, data32PerVertex:number ): away.display3D.VertexBuffer3D
