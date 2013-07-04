@@ -14,18 +14,49 @@ module away.net {
         //public requestHeader    : Array;
         //public userAgent        : string;
 
-        public contentType      : string = 'application/x-www-form-urlencoded'; //The MIME content type of the content in the the data property.
-        public data             : Object;                                       // Object containing data to be transmited with URL Request ( URL Variables / binary / string )
+        /**
+         * The MIME content type of the content in the the data property.
+         * @type {string}
+         */
+        public contentType      : string = 'application/x-www-form-urlencoded'; //TODO: Not used (yet)
+
+        /**
+         * Object containing data to be transmited with URL Request ( URL Variables / binary / string )
+         *
+         */
+        public data             : any;
+
+        /**
+         *
+         * away.net.URLRequestMethod.GET
+         * away.net.URLRequestMethod.POST
+         *
+         * @type {string}
+         */
         public method           : string = away.net.URLRequestMethod.GET;
+
+        /**
+         * Use asynchronous XMLHttpRequest
+         * @type {boolean}
+         */
         public async            : boolean = true;
+
+        /**
+         *
+         */
         private _url            : string;
 
+        /**
+
+         * @param url
+         */
         constructor( url : string = null )
         {
 
             this._url = url;
 
         }
+
         /**
          *
          * @returns {string}
@@ -36,6 +67,7 @@ module away.net {
             return this._url;
 
         }
+
         /**
          *
          * @param value

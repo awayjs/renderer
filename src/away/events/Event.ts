@@ -25,8 +25,20 @@ module away.events
          */
         public target   : Object = undefined;
 		
-        constructor( type : string ) {
+        constructor( type : string )
+        {
             this.type = type;
         }
+
+        /**
+         * Clones the current event.
+         * @return An exact duplicate of the current event.
+         */
+        public clone() : Event
+        {
+            return new Event( this.type );
+        }
+
 	}
+
 }
