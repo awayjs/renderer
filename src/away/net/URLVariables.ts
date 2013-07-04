@@ -56,7 +56,8 @@ module away.net {
          *
          * @returns {Object}
          */
-        public get variables() : Object {
+        public get variables() : Object
+        {
 
             return this._variables;
 
@@ -65,15 +66,15 @@ module away.net {
          *
          * @returns {Object}
          */
-        public get formData() : FormData{
+        public get formData() : FormData
+        {
 
             var fd : FormData = new FormData();
 
-            for ( var s in this._variables ){
+            for ( var s in this._variables )
+            {
 
-                console.log( s , this._variables[s] );
                 fd.append( s , this._variables[s] );
-
 
             }
 
@@ -85,7 +86,8 @@ module away.net {
          *
          * @returns {Object}
          */
-        public set variables( obj : Object ) {
+        public set variables( obj : Object )
+        {
 
             this._variables = obj;
 

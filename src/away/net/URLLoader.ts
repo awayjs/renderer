@@ -33,7 +33,7 @@ module away.net {
 
         /**
          *
-         * @param request
+         * @param request {away.net.URLRequest}
          */
         public load( request : away.net.URLRequest ) : void
         {
@@ -61,7 +61,7 @@ module away.net {
         {
 
             this._XHR.abort();
-            this.destroyXHR();
+            this.disposeXHR();
 
         }
 
@@ -72,7 +72,7 @@ module away.net {
         {
 
             this._XHR.abort();
-            this.destroyXHR();
+            this.disposeXHR();
 
             this._data      = null;
             this._request   = null;
@@ -82,6 +82,10 @@ module away.net {
         // Get / Set
 
         /**
+         *
+         * away.net.URLLoaderDataFormat.BINARY
+         * away.net.URLLoaderDataFormat.TEXT
+         * away.net.URLLoaderDataFormat.VARIABLES
          *
          * @param format
          */
@@ -105,6 +109,9 @@ module away.net {
         /**
          *
          * @returns {string}
+         *      away.net.URLLoaderDataFormat.BINARY
+         *      away.net.URLLoaderDataFormat.TEXT
+         *      away.net.URLLoaderDataFormat.VARIABLES
          */
         public get dataFormat( ) : string
         {
@@ -146,21 +153,42 @@ module away.net {
 
         }
 
+        /**
+         *
+         * @returns {away.net.URLRequest}
+         */
+        public get request() : away.net.URLRequest
+        {
+
+            return this._request;
+
+        }
+
         // Private
 
         /**
          *
+         * @param request {away.net.URLRequest}
          */
         private getRequest( request : away.net.URLRequest ) : void
         {
 
-            this._XHR.open( request.method , request.url , request.async );
-            this._XHR.send(); // No data to send
+            try {
+
+                this._XHR.open( request.method , request.url , request.async );
+                this._XHR.send(); // No data to send
+
+            } catch ( e /* <XMLHttpRequestException> */ ) {
+
+                this.handleXmlHttpRequestException( e);
+
+            }
 
         }
 
         /**
          *
+         * @param request {away.net.URLRequest}
          */
         private postRequest( request : away.net.URLRequest ) : void
         {
@@ -178,8 +206,17 @@ module away.net {
 
                     var urlVars : away.net.URLVariables = <away.net.URLVariables> request.data;
 
-                    this._XHR.responseType = 'text';
-                    this._XHR.send( urlVars.formData );
+                    try {
+
+                        this._XHR.responseType = 'text';
+                        this._XHR.send( urlVars.formData );
+
+
+                    } catch ( e /* <XMLHttpRequestException> */ ) {
+
+                        this.handleXmlHttpRequestException( e );
+
+                    }
 
                 }
                 else
@@ -196,6 +233,36 @@ module away.net {
                 this._XHR.send(); // No data to send
 
             }
+
+        }
+
+        /**
+         *
+         * @param error {XMLHttpRequestException}
+         */
+        private handleXmlHttpRequestException( error /* <XMLHttpRequestException> */ ) : void
+        {
+
+            switch ( error.code )
+            {
+
+                /******************************************************************************************************************************************************************************************************
+                 *
+                 *  XMLHttpRequestException { message: "NETWORK_ERR: XMLHttpRequest Exception 101", name: "NETWORK_ERR", code: 101, stack: "Error: A network error occurred in synchronous req…",NETWORK_ERR: 101… }
+                 *  code: 101 , message: "NETWORK_ERR: XMLHttpRequest Exception 101" ,  name: "NETWORK_ERR"
+                 *
+                 ******************************************************************************************************************************************************************************************************/
+
+                case 101:
+
+                    // Note: onLoadError event throws IO_ERROR event - this case is already Covered
+
+                    break;
+
+
+
+            }
+
 
         }
 
@@ -226,7 +293,7 @@ module away.net {
         /**
          *
          */
-        private destroyXHR()
+        private disposeXHR()
         {
 
             if ( this._XHR !== null )
@@ -239,7 +306,6 @@ module away.net {
                 this._XHR.onload        = null;
                 this._XHR.ontimeout	    = null;
                 this._XHR.onloadend	    = null;
-
                 this._XHR               = null;
 
             }
@@ -284,6 +350,7 @@ module away.net {
 
                 if (this._XHR.status==404)
                 {
+
                     this._loadError = true;
                     this.dispatchEvent( new away.events.IOErrorEvent(away.events.IOErrorEvent.IO_ERROR ));
 
@@ -412,6 +479,5 @@ module away.net {
 
 
     }
-
 
 }
