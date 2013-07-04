@@ -338,24 +338,24 @@
         $output = str_replace(': Vector.<Boolean>', ': boolean[]', $output);
 
         // #28 convert Plane3D Vectors - Karim
-        $output = str_replace(':Vector.<Plane3D>', ':away3d.core.math.Plane3D[]', $output);
-        $output = str_replace(': Vector.<Plane3D>', ': away3d.core.math.Plane3D[]', $output);
+        $output = str_replace(':Vector.<Plane3D>', ':away3d.math.Plane3D[]', $output);
+        $output = str_replace(': Vector.<Plane3D>', ': away3d.math.Plane3D[]', $output);
 
         // #29 convert Dictionary to Object - Karim
         $output = str_replace(':Dictionary', ':Object', $output);
         $output = str_replace(': Dictionary', ': Object', $output);
 
         // #30 convert Matrix3DUtils to use full qualified path - Karim
-        $output = str_replace(' Matrix3DUtils', ' away3d.core.math.Matrix3DUtils', $output);
+        $output = str_replace(' Matrix3DUtils', ' away3d.math.Matrix3DUtils', $output);
 
         // #31 convert uint Vectors - number arrays (definitions only) - Karim
         $output = str_replace(':Vector.<uint>', ':number[] /*uint*/', $output);
         $output = str_replace(': Vector.<uint>', ': number[] /*uint*/', $output);
 
         // #28 convert basic definitions of Vector3D / Matrix3D / Quaternion to full TS path..
-        $output = str_replace(': Vector3D', ': away3d.core.math.Vector3D', $output);
-        $output = str_replace(': Matrix3D', ': away3d.core.math.Matrix3D', $output);
-        $output = str_replace(': Quaternion', ': away3d.core.math.Quaternion', $output);
+        $output = str_replace(': Vector3D', ': away3d.geom.Vector3D', $output);
+        $output = str_replace(': Matrix3D', ': away3d.geom.Matrix3D', $output);
+        $output = str_replace(': Quaternion', ': away3d.math.Quaternion', $output);
 
         //  TODO - Append 'this.' before all class level vars.
         //  It needs a way of alsl picking up vars defined from an extended class
