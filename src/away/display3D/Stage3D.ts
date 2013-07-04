@@ -8,12 +8,12 @@
 ///<reference path="../events/AwayEvent.ts" />
 ///<reference path="Context3D.ts" />
 
-module away.display3d 
+module away.display3D
 {
 	
 	export class Stage3D extends away.events.EventDispatcher
 	{
-		private _context3D:away.display3d.Context3D;
+		private _context3D:Context3D;
 		private _canvas: HTMLCanvasElement;
 		
 		constructor( canvas: HTMLCanvasElement = null )
@@ -26,7 +26,7 @@ module away.display3d
 		{
 			try
 			{
-				this._context3D = new away.display3d.Context3D( this._canvas );
+				this._context3D = new Context3D( this._canvas );
 			}
 			catch( e )
 			{
