@@ -9,23 +9,17 @@ module away.display3D
 {
 	export class TextureBase
 	{
-		private _gl:WebGLRenderingContext;
+		
 		private _glTexture: WebGLTexture;
 		
-		constructor(gl:WebGLRenderingContext)
+		constructor()
 		{
-			this._gl = gl;
-			this._glTexture = this._gl.createTexture();
+			this._glTexture = GL.createTexture();
 		}
 		
 		public dispose()
 		{
-			this._gl.deleteTexture( this._glTexture );
-		}
-		
-		public get gl(): WebGLRenderingContext
-		{
-			return this._gl;
+			GL.deleteTexture( this._glTexture );
 		}
 		
 		public get glTexture(): WebGLTexture

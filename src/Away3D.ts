@@ -15,6 +15,8 @@
 ///<reference path="away/display3D/Texture.ts" />
 ///<reference path="away/display3D/Context3DTextureFormat.ts" />
 
+var GL:WebGLRenderingContext = null;
+
 class Away3D extends away.events.EventDispatcher
 {
 	
@@ -47,7 +49,10 @@ class Away3D extends away.events.EventDispatcher
 		context3D.createTexture( 512, 512, "bgra", true );
 		
 		context3D.configureBackBuffer( 800, 600, 0, true );
+		
+		//context3D.setColorMask( true, true, false, false );
 		context3D.clear( 1, 0, 0, 1 );
+		
 		
 		var vertices:number[] = [
 							-1.0, -1.0, 
@@ -78,4 +83,3 @@ class Away3D extends away.events.EventDispatcher
 	}
 	
 }
-

@@ -9,13 +9,11 @@ module away.display3D
 {
 	export class IndexBuffer3D
 	{
-		private _gl:WebGLRenderingContext;
 		private _numIndices:number;
 		private _buffer: WebGLBuffer;
 		
-		constructor(gl:WebGLRenderingContext, numIndices:number)
+		constructor( numIndices:number )
 		{
-			this._gl = gl;
 			this._numIndices = numIndices;
 		}
 		

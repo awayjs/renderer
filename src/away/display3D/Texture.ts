@@ -14,14 +14,14 @@ module away.display3D
 		private _width:number;
 		private _height:number;
 		
-		constructor( gl:WebGLRenderingContext, width:number, height:number )
+		constructor( width:number, height:number )
 		{
-			super( gl );
+			super( );
 			this._width = width;
 			this._height = height;
 			
-			//this.gl.bindTexture( this.gl.TEXTURE_2D, this.glTexture );
-			//this.gl.texImage2D( this.gl.TEXTURE_2D, 0, this.gl.RGBA, width, height, 0, this.gl.RGBA, this.gl.UNSIGNED_BYTE, null);
+			GL.bindTexture( GL.TEXTURE_2D, this.glTexture );
+			GL.texImage2D( GL.TEXTURE_2D, 0, GL.RGBA, width, height, 0, GL.RGBA, GL.UNSIGNED_BYTE, null);
 		}
 		
 		// TODO uploads
