@@ -10,6 +10,7 @@
 ///<reference path="../geom/Matrix3D.ts"/>
 ///<reference path="Context3DTextureFormat.ts"/>
 ///<reference path="Texture.ts"/>
+///<reference path="Context3DTriangleFace.ts"/>
 
 module away.display3D
 {
@@ -105,6 +106,37 @@ module away.display3D
 		{
 			this._drawing = false;
 			this._gl.useProgram( null );
+		}
+		
+		public setCulling( triangleFaceToCull:string ) 
+		{
+			if( triangleFaceToCull == Context3DTriangleFace.NONE )
+			{
+				this._gl.disable( this._gl.CULL_FACE );
+			}
+			else
+			{
+				this._gl.enable( this._gl.CULL_FACE );
+				switch( triangleFaceToCull )
+				{
+					case Context3DTriangleFace.FRONT:
+							this._gl.cullFace( this._gl.FRONT );
+						break
+					case Context3DTriangleFace.BACK:
+							this._gl.cullFace( this._gl.BACK );
+						break;
+					case Context3DTriangleFace.FRONT_AND_BACK:
+						this._gl.cullFace( this._gl.FRONT_AND_BACK );
+						break;
+					default:
+						throw "unknown Context3DTriangleFace type"; // TODO error
+				}
+			}
+		}
+		
+		public setColorMask( red:boolean, green:boolean, blue:boolean, alpha:boolean ) 
+		{
+			this._gl.colorMask( red, green, blue, alpha );
 		}
 		
 		public createIndexBuffer3D( numIndices:number): away.display3D.IndexBuffer3D
