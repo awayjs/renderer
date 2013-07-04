@@ -9,6 +9,7 @@
 ///<reference path="IndexBuffer3D.ts"/>
 ///<reference path="Program3D.ts"/>
 ///<reference path="../geom/Matrix3D.ts"/>
+///<reference path="../geom/Rectangle.ts"/>
 ///<reference path="Context3DTextureFormat.ts"/>
 ///<reference path="Texture.ts"/>
 ///<reference path="Context3DTriangleFace.ts"/>
@@ -23,21 +24,30 @@ module away.display3D
 		private _blendEnabled:boolean;
 		private _blendSourceFactor:number;
 		private _blendDestinationFactor:number;
-		private _currentProgram:WebGLProgram;
+		private _currentProgram:Program3D;
 		
 		constructor( canvas: HTMLCanvasElement )
 		{
 			try
 			{
-				GL = <WebGLRenderingContext> canvas.getContext("experimental-webgl") || <WebGLRenderingContext> canvas.getContext("webgl");
-				//this.dispatchEvent( new away.events.AwayEvent( away.events.AwayEvent.INITIALIZE_SUCCESS ) );
+				GL = <WebGLRenderingContext> canvas.getContext("experimental-webgl");
+				if( !GL )
+				{
+					GL = <WebGLRenderingContext> canvas.getContext("webgl");
+				}
 			}
 			catch(e)
 			{
 				//this.dispatchEvent( new away.events.AwayEvent( away.events.AwayEvent.INITIALIZE_FAILED, e ) );
 			}
 			
-			if (!GL) {
+			if( GL )
+			{
+				//this.dispatchEvent( new away.events.AwayEvent( away.events.AwayEvent.INITIALIZE_SUCCESS ) );
+			}
+			else
+			{
+				//this.dispatchEvent( new away.events.AwayEvent( away.events.AwayEvent.INITIALIZE_FAILED, e ) );
 				alert("WebGL is not available.");
 			}
 			
@@ -66,8 +76,33 @@ module away.display3D
 			}
 			//TODO add antialias (seems to be a webgl bug)
 			//TODO set webgl dimensions
-			GL.viewport.width = width;
-			GL.viewport.height = height;
+			//GL.viewport.width = width;
+			//GL.viewport.height = height;
+		}
+		
+		public createIndexBuffer3D( numIndices:number): away.display3D.IndexBuffer3D
+		{
+			return new away.display3D.IndexBuffer3D( numIndices );
+		}
+		
+		public createProgram(): away.display3D.Program3D
+		{
+			return new away.display3D.Program3D();
+		}
+		
+		public createTexture( width:number, height:number, format:string, optimizeForRenderToTexture:boolean, streamingLevels:number = 0 ): away.display3D.Texture
+		{
+			return new away.display3D.Texture( width, height );
+		}
+		
+		public createVertexBuffer( numVertices:number, data32PerVertex:number ): away.display3D.VertexBuffer3D
+		{
+			return new away.display3D.VertexBuffer3D( numVertices, data32PerVertex );
+		}
+		
+		public dispose()
+		{
+			// TODO store and clear all resources
 		}
 		
 		public drawTriangles( indexBuffer:IndexBuffer3D, firstIndex:number = 0, numTriangles:number = -1 )
@@ -90,21 +125,15 @@ module away.display3D
 			GL.drawElements( GL.TRIANGLES, numIndices, GL.UNSIGNED_SHORT, firstIndex );
 		}
 		
-		/*
-		public setProgramConstantsFromMatrix(programType:string, firstRegister:number, matrix:away.geom.Matrix3D, transposedMatrix:boolean = false )
-		{
-			
-		}
-		
-		public setProgramConstantsFromVector(programType:string, firstRegister:number, matrix:away.geom.Matrix3D, transposedMatrix:boolean = false )
-		{
-			
-		}*/
-		
 		public present()
 		{
 			this._drawing = false;
 			GL.useProgram( null );
+		}
+		
+		public setColorMask( red:boolean, green:boolean, blue:boolean, alpha:boolean ) 
+		{
+			GL.colorMask( red, green, blue, alpha );
 		}
 		
 		public setCulling( triangleFaceToCull:string ) 
@@ -133,35 +162,38 @@ module away.display3D
 			}
 		}
 		
-		public setColorMask( red:boolean, green:boolean, blue:boolean, alpha:boolean ) 
-		{
-			GL.colorMask( red, green, blue, alpha );
-		}
-		
-		public createIndexBuffer3D( numIndices:number): away.display3D.IndexBuffer3D
-		{
-			return new away.display3D.IndexBuffer3D( numIndices );
-		}
-		
-		public createVertexBuffer( numVertices:number, data32PerVertex:number ): away.display3D.VertexBuffer3D
-		{
-			return new away.display3D.VertexBuffer3D( numVertices, data32PerVertex );
-		}
-		
-		public createProgram(): away.display3D.Program3D
-		{
-			return new away.display3D.Program3D();
-		}
-		
-		public createTexture( width:number, height:number, format:string, optimizeForRenderToTexture:boolean, streamingLevels:number = 0 ): away.display3D.Texture
-		{
-			return new away.display3D.Texture( width, height );
-		}
-		
 		public setProgram( program3D:away.display3D.Program3D )
 		{
 			//TODO decide on construction/reference resposibilities
+			this._currentProgram = program3D;
 			program3D.focusProgram();
+		}
+		
+		/*
+		public setProgramConstantsFromMatrix(programType:string, firstRegister:number, matrix:away.geom.Matrix3D, transposedMatrix:boolean = false )
+		{
+		}
+		
+		public setProgramConstantsFromVector(programType:string, firstRegister:number, matrix:away.geom.Matrix3D, transposedMatrix:boolean = false )
+		{
+		}
+		*/
+		
+		public setGLSLProgramConstantsFromMatrix( locationName:string, matrix:away.geom.Matrix3D, transposedMatrix:boolean = false) 
+		{
+			var location:WebGLUniformLocation = GL.getUniformLocation( this._currentProgram.glProgram, locationName );
+			GL.uniformMatrix4fv( location, !transposedMatrix, new Float32Array( matrix.rawData ) );
+		}
+		
+		public setGLSLProgramConstantsFromVector4( locationName:string, data:number[], startIndex:number = 0 ) 
+		{
+			var location:WebGLUniformLocation = GL.getUniformLocation( this._currentProgram.glProgram, locationName );
+			GL.uniform4f( location, data[startIndex], data[startIndex+1], data[startIndex+2], data[startIndex+3] );
+		}
+		
+		public setScissorRectangle( rectangle:away.geom.Rectangle ) 
+		{
+			GL.scissor( rectangle.x, rectangle.y, rectangle.width, rectangle.height );
 		}
 		
 		private updateBlendStatus() 

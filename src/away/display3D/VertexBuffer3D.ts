@@ -17,15 +17,14 @@ module away.display3D
 	
 		constructor( numVertices:number, data32PerVertex:number )
 		{
+			this._buffer = GL.createBuffer();
 			this._numVertices = numVertices;
 			this._data32PerVertex = data32PerVertex;
-			
-			this._buffer = GL.createBuffer();
-			GL.bindBuffer( GL.ARRAY_BUFFER, this._buffer ); // TODO ELEMENT_ARRAY_BUFFER VBOs
 		}
 		
 		public upload( vertices:number[], startVertex:number, numVertices:number)
 		{
+			GL.bindBuffer( GL.ARRAY_BUFFER, this._buffer );
 			GL.bufferData(
 					GL.ARRAY_BUFFER, 
 					new Float32Array( vertices ), 
@@ -41,6 +40,11 @@ module away.display3D
 		public get data32PerVertex():number
 		{
 			return this._data32PerVertex;
+		}
+		
+		public dispose()
+		{
+			GL.deleteBuffer( this._buffer );
 		}
 	}
 }

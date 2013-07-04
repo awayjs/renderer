@@ -13,7 +13,7 @@ module away.display3D
 		private _vertexShader: WebGLShader;
 		private _fragmentShader: WebGLShader;
 		
-		constructor( )
+		constructor()
 		{
 			this._program = GL.createProgram();
 		}
@@ -51,18 +51,16 @@ module away.display3D
 				alert("Could not link the program."); //TODO throw errors
 			}
 			
-			GL.useProgram( this._program ); // TODO remove this and carriage through to sequential calls
-			
-			var positionLocation:number = GL.getAttribLocation( this._program, "a_position" );
-			GL.enableVertexAttribArray( positionLocation );
-			GL.vertexAttribPointer( positionLocation, 2, GL.FLOAT, false, 0, 0 );
-			
-			GL.drawArrays( GL.TRIANGLES, 0, 6 );
 		}
 		
 		public focusProgram()
 		{
 			GL.useProgram( this._program );
+		}
+		
+		public get glProgram():WebGLProgram
+		{
+			return this._program;
 		}
 	}
 }
