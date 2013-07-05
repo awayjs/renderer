@@ -71,10 +71,27 @@ module away.net {
         public dispose() : void
         {
 
-            this._XHR.abort();
+            if ( this._XHR)
+            {
+
+                this._XHR.abort();
+
+            }
+
             this.disposeXHR();
 
-            this._data      = null;
+            this._data          = null;
+            this._dataFormat    = null;
+            this._bytesLoaded   = null;
+            this._bytesTotal    = null;
+
+            if( this._request )
+            {
+
+                this._request.dispose();
+
+            }
+
             this._request   = null;
 
         }
@@ -440,6 +457,7 @@ module away.net {
         private onAbort( event )
         {
 
+            // TODO: investigate whether this needs to be an IOError
 
         }
 
