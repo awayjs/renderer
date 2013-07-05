@@ -92,7 +92,9 @@ module away.net {
         public set dataFormat( format : string )
         {
 
-            if( format === away.net.URLLoaderDataFormat.BINARY
+            if( format === away.net.URLLoaderDataFormat.BLOB
+                || format === away.net.URLLoaderDataFormat.ARRAY_BUFFER
+                || format === away.net.URLLoaderDataFormat.BINARY
                 || format === away.net.URLLoaderDataFormat.TEXT
                 || format === away.net.URLLoaderDataFormat.VARIABLES) {
 
@@ -109,9 +111,7 @@ module away.net {
         /**
          *
          * @returns {string}
-         *      away.net.URLLoaderDataFormat.BINARY
-         *      away.net.URLLoaderDataFormat.TEXT
-         *      away.net.URLLoaderDataFormat.VARIABLES
+         *      away.net.URLLoaderDataFormat
          */
         public get dataFormat( ) : string
         {
@@ -168,6 +168,44 @@ module away.net {
 
         /**
          *
+         * @param xhr
+         * @param responseType
+         */
+        private setResponseType( xhr: XMLHttpRequest , responseType : string ) : void
+        {
+
+            switch( responseType )
+            {
+
+                case away.net.URLLoaderDataFormat.ARRAY_BUFFER:
+                case away.net.URLLoaderDataFormat.BLOB:
+                case away.net.URLLoaderDataFormat.TEXT:
+
+                    xhr.responseType = responseType;
+
+                    break;
+
+                case away.net.URLLoaderDataFormat.VARIABLES:
+
+                    xhr.responseType = away.net.URLLoaderDataFormat.TEXT;
+
+                    break;
+
+
+                case away.net.URLLoaderDataFormat.BINARY:
+
+                    xhr.responseType = '';
+
+                    break;
+
+
+            }
+
+
+        }
+
+        /**
+         *
          * @param request {away.net.URLRequest}
          */
         private getRequest( request : away.net.URLRequest ) : void
@@ -176,9 +214,7 @@ module away.net {
             try {
 
                 this._XHR.open( request.method , request.url , request.async );
-
-                // this._XHR.responseType = 'blob';// TODO: Map URLRequest.contentType here.
-
+                this.setResponseType( this._XHR , this._dataFormat );
                 this._XHR.send(); // No data to send
 
             } catch ( e /* <XMLHttpRequestException> */ ) {
@@ -203,7 +239,6 @@ module away.net {
             if ( request.data != null )
             {
 
-                // TODO: Implement Binary & Text
                 if ( request.data instanceof away.net.URLVariables )
                 {
 
@@ -225,7 +260,18 @@ module away.net {
                 else
                 {
 
-                    this._XHR.send(); // no data to send
+                    this.setResponseType( this._XHR , this._dataFormat );
+
+                    if ( request.data ) {
+
+                        this._XHR.send( request.data ); // TODO: Test
+
+                    } else {
+
+                        this._XHR.send( ); // no data to send
+
+                    }
+
 
                 }
 
@@ -435,7 +481,6 @@ module away.net {
             if( this._loadError === true ) return;
 
             // TODO: Assert received data format
-            // TODO: this._dataFormat - check - if only for posting - possibly use URLRequest.responseType ( or change it to content type ) ?
 
             switch ( this._dataFormat ){
 
@@ -451,6 +496,8 @@ module away.net {
 
                     break;
 
+                case away.net.URLLoaderDataFormat.BLOB:
+                case away.net.URLLoaderDataFormat.ARRAY_BUFFER:
                 case away.net.URLLoaderDataFormat.BINARY:
 
                     this._data = this._XHR.response;
