@@ -1,4 +1,5 @@
 ///<reference path="../events/EventDispatcher.ts" />
+///<reference path="../events/TimerEvent.ts" />
 
 module away.utils
 {
@@ -11,23 +12,34 @@ module away.utils
     export class Timer extends away.events.EventDispatcher
     {
 
+        // TODO: remove for this class.
         public static getTimer() : number
         {
 
-
+            return 0;
         }
 
         private _delay          : number ;
-        private _repeatCount    : number ;
+        private _repeatCount    : number = 0;
         private _currentCount   : number = 0;
         private _iid            : number ;
         private _running        : boolean = false;
 
-        contructor (delay : number , repeatCount : number = 0)
+        constructor (delay : number , repeatCount : number = 0)
         {
+
+            super();
+
+
 
             this._delay = delay;
             this._repeatCount = repeatCount;
+
+            if (isNaN(delay) || delay < 0)
+            {
+                throw new Error("Delay is negative or not a number");
+            }
+
         }
 
         public get currentCount() : number
@@ -49,6 +61,12 @@ module away.utils
 
             this._delay = value;
 
+            if (this._running)
+            {
+                this.stop();
+                this.start();
+            }
+
         }
 
         public get repeatCount() : number
@@ -66,7 +84,12 @@ module away.utils
         public reset() : void
         {
 
-            // Check docs - stop / or just reset start time
+            if (this._running)
+            {
+                this.stop();
+            }
+
+            this._currentCount = 0;
 
         }
 
@@ -80,14 +103,16 @@ module away.utils
         public start() : void
         {
 
+            this._running = true;
             clearInterval( this._iid );
-           // this._iid = setInterval( )
+            this._iid = setInterval( () => this.tick() , this._delay );
 
         }
 
         public stop() : void
         {
 
+            this._running = false;
             clearInterval( this._iid );
 
         }
@@ -95,7 +120,22 @@ module away.utils
         private tick() : void
         {
 
+            this._currentCount ++;
 
+            if ( ( this._repeatCount > 0 ) && this._currentCount >= this._repeatCount)
+            {
+
+                this.stop();
+                this.dispatchEvent( new away.events.TimerEvent( away.events.TimerEvent.TIMER ) );
+                this.dispatchEvent( new away.events.TimerEvent( away.events.TimerEvent.TIMER_COMPLETE ) );
+
+            }
+            else
+            {
+
+                this.dispatchEvent( new away.events.TimerEvent( away.events.TimerEvent.TIMER ) );
+
+            }
 
         }
     }
