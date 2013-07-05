@@ -176,6 +176,9 @@ module away.net {
             try {
 
                 this._XHR.open( request.method , request.url , request.async );
+
+                // this._XHR.responseType = 'blob';// TODO: Map URLRequest.contentType here.
+
                 this._XHR.send(); // No data to send
 
             } catch ( e /* <XMLHttpRequestException> */ ) {
@@ -432,6 +435,7 @@ module away.net {
             if( this._loadError === true ) return;
 
             // TODO: Assert received data format
+            // TODO: this._dataFormat - check - if only for posting - possibly use URLRequest.responseType ( or change it to content type ) ?
 
             switch ( this._dataFormat ){
 
