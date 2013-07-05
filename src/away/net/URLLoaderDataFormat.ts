@@ -35,17 +35,6 @@ module away.net
          */
         public static BINARY : string = 'binary';
 
-        /**
-         *
-         * @type {string}
-         */
-        //public static DEFAULT   : string = '';
-        /*
-        public static BLOB      : string = 'blob';
-        public static DOCUMENT  : string = 'document';
-        public static JSON      : string = 'json';
-        public static ARRAY_BUFFER : string = 'arraybuffer';
-        */
 
     }
 
