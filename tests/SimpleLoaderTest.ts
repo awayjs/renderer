@@ -1,27 +1,49 @@
-///<reference path="../src/away/events/Event.ts" />
-///<reference path="../src/away/events/IOErrorEvent.ts" />
-///<reference path="../src/away/events/HTTPStatusEvent.ts" />
-///<reference path="../src/away/net/URLLoader.ts" />
-///<reference path="../src/away/net/URLRequest.ts" />
-///<reference path="../src/away/net/URLVariables.ts" />
-///<reference path="../src/away/net/URLRequestMethod.ts" />
+//<reference path="../src/away/events/Event.ts" />
+//<reference path="../src/away/events/IOErrorEvent.ts" />
+//<reference path="../src/away/events/HTTPStatusEvent.ts" />
+//<reference path="../src/away/net/URLLoader.ts" />
+//<reference path="../src/away/net/URLRequest.ts" />
+//<reference path="../src/away/net/URLVariables.ts" />
+//<reference path="../src/away/net/URLRequestMethod.ts" />
 ///<reference path="../src/away/library/assets/IAsset.ts"/>
+///<reference path="../src/away/loaders/SingleFileLoader.ts"/>
 ///<reference path="../src/away/loaders/parsers/ParserBase.ts"/>
+///<reference path="../src/away/loaders/parsers/ParserDataFormat.ts"/>
+
+//------------------------------------------------------------------------------------------------
+// Web / PHP Storm arguments string
+//------------------------------------------------------------------------------------------------
+// --sourcemap $ProjectFileDir$/tests/SimpleLoaderTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/SimpleLoaderTest.js
+//------------------------------------------------------------------------------------------------
+
 
 module tests {
-
 
     export class SimpleLoaderTest //extends away.events.EventDispatcher
     {
 
-        private iAssetTest : tests.IAssetTest = new tests.IAssetTest();
-        private parserBase : away.loaders.ParserBase;
+        private iAssetTest : tests.IAssetTest = new tests.IAssetTest(); // TEST for interface;
+
+        private parserBase      : away.loaders.ParserBase;              // Test ( for import only );
+        private simpleLoader    : away.loaders.SingleFileLoader;        // Test ( for import only );
+
         constructor()
         {
 
-            this.parserBase = new away.loaders.ParserBase();
             //------------------------------------------------------------------------------------------
-            // IAsset - Interface Test;
+            // Simple Loader - instantiated to validate against compiler - needs test implementation ( and a parser )
+            //------------------------------------------------------------------------------------------
+
+            this.simpleLoader = new away.loaders.SingleFileLoader( 1 );
+
+            //------------------------------------------------------------------------------------------
+            // Parser Base - instantiated to validate against compiler
+            //------------------------------------------------------------------------------------------
+
+            this.parserBase = new away.loaders.ParserBase( away.loaders.ParserDataFormat.PLAIN_TEXT );
+
+            //------------------------------------------------------------------------------------------
+            // IAsset - Interface Test
             //------------------------------------------------------------------------------------------
 
             this.iAssetTest.name    = 'Karim Beyrouti';
@@ -30,15 +52,15 @@ module tests {
 
             var iTest : away.library.IAsset = this.iAssetTest;
 
-                console.log( iTest.name );
-                console.log( iTest.id );
-
+            console.log( iTest.name );
+            console.log( iTest.id );
 
         }
 
 
     }
 
+    //*
     // Test implmentatoin for IAsset
     export class IAssetTest implements away.library.IAsset{
 
@@ -60,6 +82,8 @@ module tests {
         public dispose() : void{}
 
     }
+
+
 }
 window.onload = function ()
 {
@@ -67,4 +91,3 @@ window.onload = function ()
     var test = new tests.SimpleLoaderTest();
 
 }
-
