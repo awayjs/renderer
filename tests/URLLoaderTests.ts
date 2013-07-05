@@ -11,6 +11,12 @@
 ///<reference path="../src/away/net/URLVariables.ts" />
 ///<reference path="../src/away/net/URLRequestMethod.ts" />
 
+//------------------------------------------------------------------------------------------------
+// Web / PHP Storm arguments string
+//------------------------------------------------------------------------------------------------
+// --sourcemap $ProjectFileDir$/tests/URLLoaderTests.ts --target ES5 --comments --out $ProjectFileDir$/tests/URLLoaderTests.js
+//------------------------------------------------------------------------------------------------
+
 class LoaderTest //extends away.events.EventDispatcher
 {
 
