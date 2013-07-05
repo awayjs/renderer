@@ -32,6 +32,7 @@ var away;
             };
             Event.COMPLETE = 'Event_Complete';
             Event.OPEN = 'Event_Open';
+            Event.ABORT = 'Event_Abort';
             return Event;
         })();
         events.Event = Event;
@@ -319,6 +320,11 @@ var away;
 ///<reference path="../src/away/utils/Timer.ts" />
 ///<reference path="../src/away/utils/getTimer.ts" />
 ///<reference path="../src/away/events/TimerEvent.ts" />
+//------------------------------------------------------------------------------------------------
+// Web / PHP Storm arguments string
+//------------------------------------------------------------------------------------------------
+// --sourcemap $ProjectFileDir$/tests/TimerTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/TimerTest.js
+//------------------------------------------------------------------------------------------------
 var TimerTest = (function () {
     function TimerTest() {
         this.oneSecondTimer = new away.utils.Timer(1000);

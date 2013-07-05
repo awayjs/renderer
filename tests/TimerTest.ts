@@ -2,6 +2,12 @@
 ///<reference path="../src/away/utils/getTimer.ts" />
 ///<reference path="../src/away/events/TimerEvent.ts" />
 
+//------------------------------------------------------------------------------------------------
+// Web / PHP Storm arguments string
+//------------------------------------------------------------------------------------------------
+// --sourcemap $ProjectFileDir$/tests/TimerTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/TimerTest.js
+//------------------------------------------------------------------------------------------------
+
 class TimerTest
 {
 
