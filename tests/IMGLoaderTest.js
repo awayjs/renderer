@@ -334,41 +334,6 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="Event.ts" />
-    (function (events) {
-        var HTTPStatusEvent = (function (_super) {
-            __extends(HTTPStatusEvent, _super);
-            function HTTPStatusEvent(type, status) {
-                if (typeof status === "undefined") { status = null; }
-                _super.call(this, type);
-
-                this.status = status;
-            }
-            HTTPStatusEvent.HTTP_STATUS = "HTTPStatusEvent_HTTP_STATUS";
-            return HTTPStatusEvent;
-        })(away.events.Event);
-        events.HTTPStatusEvent = HTTPStatusEvent;
-    })(away.events || (away.events = {}));
-    var events = away.events;
-})(away || (away = {}));
-var away;
-(function (away) {
-    ///<reference path="Event.ts" />
-    (function (events) {
-        var ProgressEvent = (function (_super) {
-            __extends(ProgressEvent, _super);
-            function ProgressEvent(type) {
-                _super.call(this, type);
-            }
-            ProgressEvent.PROGRESS = "ProgressEvent_progress";
-            return ProgressEvent;
-        })(away.events.Event);
-        events.ProgressEvent = ProgressEvent;
-    })(away.events || (away.events = {}));
-    var events = away.events;
-})(away || (away = {}));
-var away;
-(function (away) {
     (function (net) {
         var URLRequestMethod = (function () {
             function URLRequestMethod() {
@@ -530,35 +495,9 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    (function (net) {
-        var URLLoaderDataFormat = (function () {
-            function URLLoaderDataFormat() {
-            }
-            URLLoaderDataFormat.TEXT = 'text';
-
-            URLLoaderDataFormat.VARIABLES = 'variables';
-
-            URLLoaderDataFormat.BLOB = 'blob';
-
-            URLLoaderDataFormat.ARRAY_BUFFER = 'arraybuffer';
-
-            URLLoaderDataFormat.BINARY = 'binary';
-            return URLLoaderDataFormat;
-        })();
-        net.URLLoaderDataFormat = URLLoaderDataFormat;
-    })(away.net || (away.net = {}));
-    var net = away.net;
-})(away || (away = {}));
-var away;
-(function (away) {
     ///<reference path="../events/EventDispatcher.ts" />
     ///<reference path="../events/Event.ts" />
     ///<reference path="../events/IOErrorEvent.ts" />
-    ///<reference path="../events/HTTPStatusEvent.ts" />
-    ///<reference path="../events/ProgressEvent.ts" />
-    ///<reference path="URLRequest.ts" />
-    ///<reference path="URLLoaderDataFormat.ts" />
-    ///<reference path="URLRequestMethod.ts" />
     ///<reference path="URLRequest.ts" />
     (function (net) {
         var IMGLoader = (function (_super) {
