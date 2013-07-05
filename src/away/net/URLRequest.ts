@@ -14,11 +14,11 @@ module away.net {
         //public requestHeader    : Array;
         //public userAgent        : string;
 
-        /**
+        /*
          * The MIME content type of the content in the the data property.
          * @type {string}
          */
-        public contentType      : string = 'application/x-www-form-urlencoded'; //TODO: Not used (yet)
+        //public contentType      : string = 'application/x-www-form-urlencoded'; //Note: Not used for now.
 
         /**
          * Object containing data to be transmited with URL Request ( URL Variables / binary / string )
