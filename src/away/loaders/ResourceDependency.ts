@@ -33,7 +33,7 @@ module away.loaders
 		public _iSuccess : boolean;
 
 		
-		constructor(id : string, req : URLRequest, data : any, parentParser : away.parsers.ParserBase, retrieveAsRawData : boolean = false, suppressAssetEvents : boolean = false)
+		constructor(id : string, req : away.net.URLRequest, data : any, parentParser : away.loaders.ParserBase, retrieveAsRawData : boolean = false, suppressAssetEvents : boolean = false)
 		{
 
 			this._id = id;
@@ -44,7 +44,7 @@ module away.loaders
             this._suppressAssetEvents = suppressAssetEvents;
 
             this._assets = new Array<away.library.IAsset>();//new Vector.<IAsset>();
-            this._dependencies = new Array()<ResourceDependency>();
+            this._dependencies = new Array<ResourceDependency>();
 		}
 		
 		
@@ -68,7 +68,7 @@ module away.loaders
 		
 		public get request() : away.net.URLRequest
 		{
-			return _req;
+			return this._req;
 		}
 		
 		
@@ -97,7 +97,7 @@ module away.loaders
 		 * @private
 		 * Method to set data after having already created the dependency object, e.g. after load.
 		*/
-		arcane function setData(data : any) : void
+		public _iSetData(data : any) : void
 		{
 			this._data = data;
 		}
@@ -105,7 +105,7 @@ module away.loaders
 		/**
 		 * The parser which is dependent on this ResourceDependency object.
 		 */
-		public get parentParser() : away.parsers.ParserBase
+		public get parentParser() : away.loaders.ParserBase
 		{
 			return this._parentParser;
 		}
@@ -117,7 +117,8 @@ module away.loaders
 		 */
 		public resolve() : void
 		{
-			if (this._parentParser) this._parentParser.resolveDependency(this);
+
+			if (this._parentParser) this._parentParser._iResolveDependency(this);
 		}
 		
 		/**
@@ -125,7 +126,7 @@ module away.loaders
 		 */
 		public resolveFailure() : void
 		{
-			if (this._parentParser) this._parentParser.resolveDependencyFailure(this);
+			if (this._parentParser) this._parentParser._iResolveDependencyFailure(this);
 		}
 		
 		/**
@@ -133,7 +134,7 @@ module away.loaders
 		 */
 		public resolveName(asset:away.library.IAsset) : string
 		{
-			if (this._parentParser) return this._parentParser.resolveDependencyName(this, asset);
+			if (this._parentParser) return this._parentParser._iResolveDependencyName(this, asset);
 			return asset.name;
 		}
 		
