@@ -75,7 +75,8 @@ module away.events
          */
         public clone() : away.events.Event
         {
-            return new <away.events.Event> LoaderEvent(this.type, this._url, this._isDependency, this._message);
+            return <away.events.Event> new LoaderEvent(this.type, this._url, this._isDependency, this._message);
+
         }
 
     }
