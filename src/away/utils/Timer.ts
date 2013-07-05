@@ -12,13 +12,6 @@ module away.utils
     export class Timer extends away.events.EventDispatcher
     {
 
-        // TODO: remove for this class.
-        public static getTimer() : number
-        {
-
-            return 0;
-        }
-
         private _delay          : number ;
         private _repeatCount    : number = 0;
         private _currentCount   : number = 0;
