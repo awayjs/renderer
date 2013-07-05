@@ -18,7 +18,9 @@ class LoaderTest //extends away.events.EventDispatcher
     private urlLoaderGetCSV             : away.net.URLLoader;
     private urlLoaderErrorTest          : away.net.URLLoader;
     private urlLoaderGetURLVars         : away.net.URLLoader;
-    private urlLoaderBinary            : away.net.URLLoader;
+    private urlLoaderBinary             : away.net.URLLoader;
+    private urlLoaderBlob               : away.net.URLLoader;
+    private urlLoaderArrb               : away.net.URLLoader;
 
     constructor()
     {
@@ -90,6 +92,90 @@ class LoaderTest //extends away.events.EventDispatcher
         this.urlLoaderBinary.addEventListener( away.events.IOErrorEvent.IO_ERROR, this.ioError, this );
         this.urlLoaderBinary.addEventListener( away.events.Event.COMPLETE , this.binFileLoaded , this );
         this.urlLoaderBinary.load( binReq );
+
+        //---------------------------------------------------------------------------------------------------------------------------------------------------------
+        // LOAD Blob file
+        //---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+        var blobReq = new away.net.URLRequest( 'URLLoaderTestData/2.png' );
+
+        this.urlLoaderBlob                    = new away.net.URLLoader(  );
+        this.urlLoaderBlob.dataFormat         = away.net.URLLoaderDataFormat.BLOB;
+        this.urlLoaderBlob.addEventListener( away.events.Event.COMPLETE , this.blobFileLoaded , this );
+        this.urlLoaderBlob.load( blobReq );
+
+        //---------------------------------------------------------------------------------------------------------------------------------------------------------
+        // ARRAY_BUFFER Test
+        //---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+        var arrBReq = new away.net.URLRequest( 'URLLoaderTestData/1.jpg' );
+
+        this.urlLoaderArrb                    = new away.net.URLLoader(  );
+        this.urlLoaderArrb.dataFormat         = away.net.URLLoaderDataFormat.ARRAY_BUFFER;
+        this.urlLoaderArrb.addEventListener( away.events.Event.COMPLETE , this.arrayBufferLoaded , this );
+        this.urlLoaderArrb.load( arrBReq );
+
+    }
+
+    private arrayBufferLoaded( event : away.events.Event ) : void
+    {
+
+        var arrayBuffer = this.urlLoaderArrb.data;
+        var byteArray = new Uint8Array(arrayBuffer);
+
+        console.log( 'LoaderTest.arrayBufferLoaded' , byteArray[1]);
+
+        for (var i = 0; i < byteArray.byteLength; i++) {
+            //console.log( byteArray[i] );
+        }
+
+    }
+
+    private blobFileLoaded( event : away.events.Event ) : void
+    {
+
+        var blob        = new Blob([this.urlLoaderBlob.data], {type: 'image/png'});
+        var img         = document.createElement('img');
+            img.src     = this.createObjectURL( blob );//window['URL']['createObjectURL'](blob);
+            img.onload  = function(e) {
+
+                window['URL']['revokeObjectURL'](img.src); // Clean up after yourself.
+
+            };
+
+        console.log( 'LoaderTest.blobFileLoaded' , blob );
+
+        document.body.appendChild( img );
+
+    }
+
+    private createObjectURL( fileBlob )
+    {
+
+        // For some reason TypeScript has "window.URL.createObjectURL" in it's dictionary -
+        // but window.URL causes an error
+        // cannot make my own .d.ts file either ( results in duplicate definition error )
+        // This HACK gets it to work: window['URL']['createObjectURL']
+
+        if( window['URL'] ){
+
+            if ( window['URL']['createObjectURL'] ) {
+
+                return window['URL']['createObjectURL']( fileBlob );
+
+            }
+
+        } else {
+
+            if ( window['webkitURL'] ){
+
+                return window['webkitURL']['createObjectURL']( fileBlob );
+
+            }
+
+        }
+
+        return null;
 
     }
 
@@ -165,4 +251,5 @@ window.onload = function ()
     var test = new LoaderTest();
 
 }
+
 

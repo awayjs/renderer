@@ -335,16 +335,6 @@ var away;
             */
             function URLRequest(url) {
                 if (typeof url === "undefined") { url = null; }
-                //public authenticate     : boolean = false;
-                //public cacheResponse    : boolean = true;
-                //public idleTimeout      : number;
-                //public requestHeader    : Array;
-                //public userAgent        : string;
-                /**
-                * The MIME content type of the content in the the data property.
-                * @type {string}
-                */
-                this.contentType = 'application/x-www-form-urlencoded';
                 /**
                 *
                 * away.net.URLRequestMethod.GET
@@ -391,11 +381,15 @@ var away;
         var URLLoaderDataFormat = (function () {
             function URLLoaderDataFormat() {
             }
-            URLLoaderDataFormat.BINARY = 'binary';
-
             URLLoaderDataFormat.TEXT = 'text';
 
             URLLoaderDataFormat.VARIABLES = 'variables';
+
+            URLLoaderDataFormat.BLOB = 'blob';
+
+            URLLoaderDataFormat.ARRAY_BUFFER = 'arraybuffer';
+
+            URLLoaderDataFormat.BINARY = 'binary';
             return URLLoaderDataFormat;
         })();
         net.URLLoaderDataFormat = URLLoaderDataFormat;
@@ -463,9 +457,7 @@ var away;
                 get: /**
                 *
                 * @returns {string}
-                *      away.net.URLLoaderDataFormat.BINARY
-                *      away.net.URLLoaderDataFormat.TEXT
-                *      away.net.URLLoaderDataFormat.VARIABLES
+                *      away.net.URLLoaderDataFormat
                 */
                 function () {
                     return this._dataFormat;
@@ -480,7 +472,7 @@ var away;
                 * @param format
                 */
                 function (format) {
-                    if (format === away.net.URLLoaderDataFormat.BINARY || format === away.net.URLLoaderDataFormat.TEXT || format === away.net.URLLoaderDataFormat.VARIABLES) {
+                    if (format === away.net.URLLoaderDataFormat.BLOB || format === away.net.URLLoaderDataFormat.ARRAY_BUFFER || format === away.net.URLLoaderDataFormat.BINARY || format === away.net.URLLoaderDataFormat.TEXT || format === away.net.URLLoaderDataFormat.VARIABLES) {
                         this._dataFormat = format;
                     } else {
                     }
@@ -540,11 +532,38 @@ var away;
             // Private
             /**
             *
+            * @param xhr
+            * @param responseType
+            */
+            URLLoader.prototype.setResponseType = function (xhr, responseType) {
+                switch (responseType) {
+                    case away.net.URLLoaderDataFormat.ARRAY_BUFFER:
+                    case away.net.URLLoaderDataFormat.BLOB:
+                    case away.net.URLLoaderDataFormat.TEXT:
+                        xhr.responseType = responseType;
+
+                        break;
+
+                    case away.net.URLLoaderDataFormat.VARIABLES:
+                        xhr.responseType = away.net.URLLoaderDataFormat.TEXT;
+
+                        break;
+
+                    case away.net.URLLoaderDataFormat.BINARY:
+                        xhr.responseType = '';
+
+                        break;
+                }
+            };
+
+            /**
+            *
             * @param request {away.net.URLRequest}
             */
             URLLoader.prototype.getRequest = function (request) {
                 try  {
                     this._XHR.open(request.method, request.url, request.async);
+                    this.setResponseType(this._XHR, this._dataFormat);
                     this._XHR.send();
                 } catch (e) {
                     this.handleXmlHttpRequestException(e);
@@ -571,7 +590,13 @@ var away;
                             this.handleXmlHttpRequestException(e);
                         }
                     } else {
-                        this._XHR.send();
+                        this.setResponseType(this._XHR, this._dataFormat);
+
+                        if (request.data) {
+                            this._XHR.send(request.data);
+                        } else {
+                            this._XHR.send();
+                        }
                     }
                 } else {
                     this._XHR.send();
@@ -738,6 +763,8 @@ var away;
 
                         break;
 
+                    case away.net.URLLoaderDataFormat.BLOB:
+                    case away.net.URLLoaderDataFormat.ARRAY_BUFFER:
                     case away.net.URLLoaderDataFormat.BINARY:
                         this._data = this._XHR.response;
 
@@ -841,7 +868,64 @@ var LoaderTest = (function () {
         this.urlLoaderBinary.addEventListener(away.events.IOErrorEvent.IO_ERROR, this.ioError, this);
         this.urlLoaderBinary.addEventListener(away.events.Event.COMPLETE, this.binFileLoaded, this);
         this.urlLoaderBinary.load(binReq);
+
+        //---------------------------------------------------------------------------------------------------------------------------------------------------------
+        // LOAD Blob file
+        //---------------------------------------------------------------------------------------------------------------------------------------------------------
+        var blobReq = new away.net.URLRequest('URLLoaderTestData/2.png');
+
+        this.urlLoaderBlob = new away.net.URLLoader();
+        this.urlLoaderBlob.dataFormat = away.net.URLLoaderDataFormat.BLOB;
+        this.urlLoaderBlob.addEventListener(away.events.Event.COMPLETE, this.blobFileLoaded, this);
+        this.urlLoaderBlob.load(blobReq);
+
+        //---------------------------------------------------------------------------------------------------------------------------------------------------------
+        // ARRAY_BUFFER Test
+        //---------------------------------------------------------------------------------------------------------------------------------------------------------
+        var arrBReq = new away.net.URLRequest('URLLoaderTestData/1.jpg');
+
+        this.urlLoaderArrb = new away.net.URLLoader();
+        this.urlLoaderArrb.dataFormat = away.net.URLLoaderDataFormat.ARRAY_BUFFER;
+        this.urlLoaderArrb.addEventListener(away.events.Event.COMPLETE, this.arrayBufferLoaded, this);
+        this.urlLoaderArrb.load(arrBReq);
     }
+    LoaderTest.prototype.arrayBufferLoaded = function (event) {
+        var arrayBuffer = this.urlLoaderArrb.data;
+        var byteArray = new Uint8Array(arrayBuffer);
+
+        console.log('LoaderTest.arrayBufferLoaded', byteArray[1]);
+
+        for (var i = 0; i < byteArray.byteLength; i++) {
+        }
+    };
+
+    LoaderTest.prototype.blobFileLoaded = function (event) {
+        var blob = new Blob([this.urlLoaderBlob.data], { type: 'image/png' });
+        var img = document.createElement('img');
+        img.src = this.createObjectURL(blob);
+        img.onload = function (e) {
+            window['URL']['revokeObjectURL'](img.src);
+        };
+
+        console.log('LoaderTest.blobFileLoaded', blob);
+
+        document.body.appendChild(img);
+    };
+
+    LoaderTest.prototype.createObjectURL = function (fileBlob) {
+        if (window['URL']) {
+            if (window['URL']['createObjectURL']) {
+                return window['URL']['createObjectURL'](fileBlob);
+            }
+        } else {
+            if (window['webkitURL']) {
+                return window['webkitURL']['createObjectURL'](fileBlob);
+            }
+        }
+
+        return null;
+    };
+
     LoaderTest.prototype.binFileLoaded = function (event) {
         var loader = event.target;
         console.log('LoaderTest.binFileLoaded', loader.data.length);

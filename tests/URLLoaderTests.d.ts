@@ -156,11 +156,6 @@ declare module away.net {
     */
     class URLRequest {
         /**
-        * The MIME content type of the content in the the data property.
-        * @type {string}
-        */
-        public contentType: string;
-        /**
         * Object containing data to be transmited with URL Request ( URL Variables / binary / string )
         *
         */
@@ -201,11 +196,6 @@ declare module away.net {
 declare module away.net {
     class URLLoaderDataFormat {
         /**
-        * BINARY
-        * @type {string}
-        */
-        static BINARY: string;
-        /**
         * TEXT
         * @type {string}
         */
@@ -215,6 +205,21 @@ declare module away.net {
         * @type {string}
         */
         static VARIABLES: string;
+        /**
+        *
+        * @type {string}
+        */
+        static BLOB: string;
+        /**
+        *
+        * @type {string}
+        */
+        static ARRAY_BUFFER: string;
+        /**
+        *
+        * @type {string}
+        */
+        static BINARY: string;
     }
 }
 declare module away.net {
@@ -243,9 +248,7 @@ declare module away.net {
         /**
         *
         * @returns {string}
-        *      away.net.URLLoaderDataFormat.BINARY
-        *      away.net.URLLoaderDataFormat.TEXT
-        *      away.net.URLLoaderDataFormat.VARIABLES
+        *      away.net.URLLoaderDataFormat
         */
         /**
         *
@@ -276,6 +279,12 @@ declare module away.net {
         * @returns {away.net.URLRequest}
         */
         public request : net.URLRequest;
+        /**
+        *
+        * @param xhr
+        * @param responseType
+        */
+        private setResponseType(xhr, responseType);
         /**
         *
         * @param request {away.net.URLRequest}
@@ -352,7 +361,12 @@ declare class LoaderTest {
     private urlLoaderErrorTest;
     private urlLoaderGetURLVars;
     private urlLoaderBinary;
+    private urlLoaderBlob;
+    private urlLoaderArrb;
     constructor();
+    private arrayBufferLoaded(event);
+    private blobFileLoaded(event);
+    private createObjectURL(fileBlob);
     private binFileLoaded(event);
     private getURLVarsComplete(event);
     private httpStatusChange(event);
