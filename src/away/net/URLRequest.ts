@@ -78,5 +78,18 @@ module away.net {
             this._url = value;
 
         }
+
+        /**
+         * dispose
+         */
+        public dispose() : void
+        {
+
+            this.data   = null;
+            this._url   = null;
+            this.method = null;
+            this.async  = null;
+
+        }
     }
 }
