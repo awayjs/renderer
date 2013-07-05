@@ -90,7 +90,6 @@ declare module away.events {
 }
 declare module away.utils {
     class Timer extends away.events.EventDispatcher {
-        static getTimer(): number;
         private _delay;
         private _repeatCount;
         private _currentCount;
@@ -106,6 +105,9 @@ declare module away.utils {
         public stop(): void;
         private tick();
     }
+}
+declare module away.utils {
+    function getTimer(): number;
 }
 declare class TimerTest {
     private oneSecondTimer;

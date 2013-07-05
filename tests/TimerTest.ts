@@ -1,4 +1,5 @@
 ///<reference path="../src/away/utils/Timer.ts" />
+///<reference path="../src/away/utils/getTimer.ts" />
 ///<reference path="../src/away/events/TimerEvent.ts" />
 
 class TimerTest
@@ -20,10 +21,13 @@ class TimerTest
         this.repeatTenTimes.start();
 
 
+
+
     }
 
     private repeatTenTimesEvent( e : away.events.TimerEvent ) : void
     {
+
 
         var t : away.utils.Timer = <away.utils.Timer> e.target;
         console.log('repeatTenTimesEvent' , t.currentCount );
@@ -42,6 +46,7 @@ class TimerTest
     {
 
         console.log('onSecTimerEvent, tick');
+        console.log( 'getTimer() : ' , away.utils.getTimer() );
 
     }
 

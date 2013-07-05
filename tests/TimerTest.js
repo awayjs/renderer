@@ -214,11 +214,6 @@ var away;
                     throw new Error("Delay is negative or not a number");
                 }
             }
-            Timer.getTimer = // TODO: remove for this class.
-            function () {
-                return 0;
-            };
-
             Object.defineProperty(Timer.prototype, "currentCount", {
                 get: function () {
                     return this._currentCount;
@@ -303,7 +298,26 @@ var away;
     })(away.utils || (away.utils = {}));
     var utils = away.utils;
 })(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../events/EventDispatcher.ts" />
+    ///<reference path="../events/TimerEvent.ts" />
+    (function (utils) {
+        //[native(cls="TimerClass", gc="exact", instance="TimerObject", methods="auto")]
+        //[Event(name="timerComplete", type="flash.events.TimerEvent")]
+        //[Event(name="timer", type="flash.events.TimerEvent")]
+        function getTimer() {
+            // number milliseconds of 1970/01/01
+            // this different to AS3 implementation which gets the number of milliseconds
+            // since instance of Flash player was initialised
+            return new Date().getTime();
+        }
+        utils.getTimer = getTimer;
+    })(away.utils || (away.utils = {}));
+    var utils = away.utils;
+})(away || (away = {}));
 ///<reference path="../src/away/utils/Timer.ts" />
+///<reference path="../src/away/utils/getTimer.ts" />
 ///<reference path="../src/away/events/TimerEvent.ts" />
 var TimerTest = (function () {
     function TimerTest() {
@@ -328,6 +342,7 @@ var TimerTest = (function () {
 
     TimerTest.prototype.onSecTimerEvent = function (e) {
         console.log('onSecTimerEvent, tick');
+        console.log('getTimer() : ', away.utils.getTimer());
     };
     return TimerTest;
 })();
