@@ -16,7 +16,7 @@ module away.utils
         // this different to AS3 implementation which gets the number of milliseconds
         // since instance of Flash player was initialised
 
-        return new Date().getTime();
+        return Date.now();//new Date().getTime();
 
     }
 }
