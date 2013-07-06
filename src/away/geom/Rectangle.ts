@@ -51,5 +51,12 @@ module away.geom
 		{
 			return new away.geom.Point( this.x + this.width, this.y + this.height );
 		}
+
+        public clone() : Rectangle
+        {
+
+            return new Rectangle( this.x , this.y , this.width , this.height );
+
+        }
 	}
 }
