@@ -12,6 +12,7 @@ module away.net
         private _image          : HTMLImageElement ;
         private _request        : away.net.URLRequest;
         private _name           : string ='';
+        private _loaded         : boolean = false;
 
         constructor( imageName : string = '' )
         {
@@ -29,6 +30,7 @@ module away.net
         public load( request : away.net.URLRequest ) : void
         {
 
+            this._loaded = false;
             this.initImage();
             this._request   = request;
             this._image.src = this._request.url;
@@ -71,6 +73,17 @@ module away.net
         {
 
             return this._image;
+
+        }
+
+        /**
+         * Get image width. Returns null is image is not loaded
+         * @returns {number}
+         */
+        public get loaded() : boolean
+        {
+
+            return this._loaded
 
         }
 
@@ -206,7 +219,7 @@ module away.net
          */
         private onLoadComplete( event ) : void
         {
-
+            this._loaded = true;
             this.dispatchEvent( new away.events.Event( away.events.Event.COMPLETE ));
 
         }
