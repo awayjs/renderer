@@ -1332,7 +1332,7 @@ var away;
             // number milliseconds of 1970/01/01
             // this different to AS3 implementation which gets the number of milliseconds
             // since instance of Flash player was initialised
-            return new Date().getTime();
+            return Date.now();
         }
         utils.getTimer = getTimer;
     })(away.utils || (away.utils = {}));
