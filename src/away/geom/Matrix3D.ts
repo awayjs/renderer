@@ -194,11 +194,11 @@ module away.geom
 			this.rawData = sourceMatrix3D.rawData.slice( 0 );
 		}
 		
-		/* TODO implement copyRawDataFrom
 		public copyRawDataFrom( vector:number[], index:number = 0, transpose:boolean = false )
 		{
+			//TODO fully implement
+			this.rawData = vector.splice(0);
 		}
-		*/
 		
 		/* TODO implement copyRawDataTo
 		public copyRawDataTo( vector:number[], index:number = 0, transpose:boolean = false )
