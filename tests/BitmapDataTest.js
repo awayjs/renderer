@@ -650,10 +650,10 @@ var away;
         *
         */
         var BitmapData = (function () {
-            //private _imageImageLoader   : away.net.IMGLoader;
             function BitmapData(width, height, transparent, fillColor) {
                 if (typeof transparent === "undefined") { transparent = true; }
                 if (typeof fillColor === "undefined") { fillColor = null; }
+                this._locked = false;
                 this._transparent = transparent;
                 this._imageCanvas = document.createElement("canvas");
                 this._imageCanvas.width = width;
@@ -665,22 +665,87 @@ var away;
                     this.fillRect(this._rect, fillColor);
                 }
             }
+            /**
+            *
+            */
+            BitmapData.prototype.dispose = function () {
+                this._context = null;
+                this._imageCanvas = null;
+                this._imageData = null;
+                this._rect = null;
+                this._transparent = null;
+                this._locked = null;
+            };
+
+            /**
+            *
+            */
+            BitmapData.prototype.lock = function () {
+                this._locked = true;
+                this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
+            };
+
+            /**
+            *
+            */
+            BitmapData.prototype.unlock = function () {
+                this._locked = false;
+
+                if (this._imageData) {
+                    this._context.putImageData(this._imageData, 0, 0);
+                    this._imageData = null;
+                }
+            };
+
+            /**
+            *
+            * @param x
+            * @param y
+            * @param r
+            * @param g
+            * @param b
+            * @param a
+            */
+            BitmapData.prototype.setPixel = function (x, y, r, g, b, a) {
+                if (!this._locked) {
+                    this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
+                }
+
+                if (this._imageData) {
+                    var index = (x + y * this._imageCanvas.width) * 4;
+
+                    this._imageData.data[index + 0] = r;
+                    this._imageData.data[index + 1] = g;
+                    this._imageData.data[index + 2] = b;
+                    this._imageData.data[index + 3] = a;
+                }
+
+                if (!this._locked) {
+                    this._context.putImageData(this._imageData, 0, 0);
+                    this._imageData = null;
+                }
+            };
+
+            /**
+            *
+            * @param img
+            * @param sourceRect
+            * @param destRect
+            */
             BitmapData.prototype.copyImage = function (img, sourceRect, destRect) {
                 this._context.drawImage(img, sourceRect.x, sourceRect.y, sourceRect.width, sourceRect.height, destRect.x, destRect.y, destRect.width, destRect.height);
             };
 
+            /**
+            *
+            * @param bmpd
+            * @param sourceRect
+            * @param destRect
+            */
             BitmapData.prototype.copyPixels = function (bmpd, sourceRect, destRect) {
                 this._context.drawImage(bmpd.canvas, sourceRect.x, sourceRect.y, sourceRect.width, sourceRect.height, destRect.x, destRect.y, destRect.width, destRect.height);
             };
 
-            /* http://www.w3schools.com/tags/canvas_drawimage.asp
-            public copyPixels( img : HTMLImageElement ,sx : number ,sy : number ,swidth,sheight,x,y,width,height);
-            {
-            
-            this._context.drawImage(img,sx,sy,swidth,sheight,x,y,width,height);
-            
-            }
-            */
             /**
             *
             * @param rect
@@ -694,12 +759,16 @@ var away;
             Object.defineProperty(BitmapData.prototype, "width", {
                 get: /**
                 *
-                * @returns {HTMLCanvasElement}
+                * @returns {number}
                 */
                 function () {
                     return this._imageCanvas.width;
                 },
-                set: function (value) {
+                set: /**
+                *
+                * @param {number}
+                */
+                function (value) {
                     this._rect.width = value;
                     this._imageCanvas.width = value;
                 },
@@ -707,11 +776,20 @@ var away;
                 configurable: true
             });
 
+
             Object.defineProperty(BitmapData.prototype, "height", {
-                get: function () {
+                get: /**
+                *
+                * @returns {number}
+                */
+                function () {
                     return this._imageCanvas.height;
                 },
-                set: function (value) {
+                set: /**
+                *
+                * @param {number}
+                */
+                function (value) {
                     this._rect.height = value;
                     this._imageCanvas.height = value;
                 },
@@ -719,8 +797,13 @@ var away;
                 configurable: true
             });
 
+
             Object.defineProperty(BitmapData.prototype, "rect", {
-                get: function () {
+                get: /**
+                *
+                * @param {away.geom.Rectangle}
+                */
+                function () {
                     return this._rect;
                 },
                 enumerable: true,
@@ -743,6 +826,7 @@ var away;
             * convert decimal value to Hex
             */
             BitmapData.prototype.decimalToHex = function (d, padding) {
+                // TODO - bitwise replacement would be better / Extract alpha component of 0xffffffff ( currently no support for alpha )
                 var hex = d.toString(16).toUpperCase();
                 padding = typeof (padding) === "undefined" || padding === null ? padding = 2 : padding;
 
@@ -760,6 +844,7 @@ var away;
 })(away || (away = {}));
 ///<reference path="../src/away/display/BitmapData.ts" />
 ///<reference path="../src/away/net/IMGLoader.ts" />
+///<reference path="../src/def/console.ts" />
 //------------------------------------------------------------------------------------------------
 // Web / PHP Storm arguments string
 //------------------------------------------------------------------------------------------------
@@ -768,20 +853,39 @@ var away;
 var BitmapDataTest = (function () {
     function BitmapDataTest() {
         var _this = this;
+        // Load a PNG
         this.urlRequest = new away.net.URLRequest('URLLoaderTestData/256x256.png');
         this.imgLoader = new away.net.IMGLoader();
         this.imgLoader.load(this.urlRequest);
         this.imgLoader.addEventListener(away.events.Event.COMPLETE, this.imgLoaded, this);
         this.imgLoader.addEventListener(away.events.IOErrorEvent.IO_ERROR, this.imgLoadedError, this);
 
+        // BitmapData Object - 1
         this.bitmapData = new away.display.BitmapData(256, 256, true);
         document.body.appendChild(this.bitmapData.canvas);
 
+        // BitmapData Object - 2
         this.bitmapDataB = new away.display.BitmapData(256, 256, true, 0x0000ff);
-
         this.bitmapDataB.canvas.style.position = 'absolute';
         this.bitmapDataB.canvas.style.left = '540px';
         document.body.appendChild(this.bitmapDataB.canvas);
+
+        // BitmapData - setPixel test
+        console['time']("bitmapdata");
+
+        this.bitmapDataB.lock();
+
+        for (var i = 0; i < 10000; i++) {
+            var x = Math.random() * this.bitmapDataB.width | 0;
+            var y = Math.random() * this.bitmapDataB.height | 0;
+            var r = Math.random() * 256 | 0;
+            var g = Math.random() * 256 | 0;
+            var b = Math.random() * 256 | 0;
+            this.bitmapDataB.setPixel(x, y, r, g, b, 255);
+        }
+
+        this.bitmapDataB.unlock();
+        console['timeEnd']("bitmapdata");
 
         document.onmousedown = function (e) {
             return _this.onMouseDown(e);
@@ -790,22 +894,40 @@ var BitmapDataTest = (function () {
     BitmapDataTest.prototype.onMouseDown = function (e) {
         if (this.bitmapData.width === 512) {
             if (this.imgLoader.loaded) {
+                // Resize BitmapData
                 this.bitmapData.width = 256;
                 this.bitmapData.height = 256;
-                var r = new away.geom.Rectangle(0, 0, this.imgLoader.width, this.imgLoader.height);
-                this.bitmapData.copyImage(this.imgLoader.image, r, r);
 
-                var rb = this.bitmapData.rect.clone();
-                rb.width = rb.width * 2;
-                rb.height = rb.height * 2;
+                // copy image into first bitmapdata
+                var rect = new away.geom.Rectangle(0, 0, this.imgLoader.width, this.imgLoader.height);
+                this.bitmapData.copyImage(this.imgLoader.image, rect, rect);
 
-                this.bitmapDataB.copyPixels(this.bitmapData, this.bitmapData.rect, rb);
+                // copy image into second bitmap data ( and scale it up 2X )
+                rect.width = rect.width * 2;
+                rect.height = rect.height * 2;
+
+                this.bitmapDataB.copyPixels(this.bitmapData, this.bitmapData.rect, rect);
+
+                this.bitmapDataB.lock();
+
+                for (var d = 0; d < 10000; d++) {
+                    var x = Math.random() * this.bitmapDataB.width | 0;
+                    var y = Math.random() * this.bitmapDataB.height | 0;
+                    var r = Math.random() * 256 | 0;
+                    var g = Math.random() * 256 | 0;
+                    var b = Math.random() * 256 | 0;
+                    this.bitmapDataB.setPixel(x, y, r, g, b, 255);
+                }
+
+                this.bitmapDataB.unlock();
             } else {
+                // image is not loaded - fill bitmapdata with red
                 this.bitmapData.width = 256;
                 this.bitmapData.height = 256;
                 this.bitmapData.fillRect(this.bitmapData.rect, 0xff0000);
             }
         } else {
+            // resize bitmapdata;
             this.bitmapData.width = 512;
             this.bitmapData.height = 512;
             this.bitmapData.fillRect(this.bitmapData.rect, 0x00ff00);
