@@ -14,11 +14,11 @@ module away.net {
         //public requestHeader    : Array;
         //public userAgent        : string;
 
-        /**
+        /*
          * The MIME content type of the content in the the data property.
          * @type {string}
          */
-        public contentType      : string = 'application/x-www-form-urlencoded'; //TODO: Not used (yet)
+        //public contentType      : string = 'application/x-www-form-urlencoded'; //Note: Not used for now.
 
         /**
          * Object containing data to be transmited with URL Request ( URL Variables / binary / string )
@@ -76,6 +76,19 @@ module away.net {
         {
 
             this._url = value;
+
+        }
+
+        /**
+         * dispose
+         */
+        public dispose() : void
+        {
+
+            this.data   = null;
+            this._url   = null;
+            this.method = null;
+            this.async  = null;
 
         }
     }

@@ -4,141 +4,12 @@
 ///<reference path="../../events/ParserEvent.ts" />
 ///<reference path="../../library/assets/IAsset.ts" />
 ///<reference path="../../library/assets/AssetType.ts" />
-///<reference path="../../loaders/ResourceDependency.ts" />
+///<reference path="../../loaders/misc/ResourceDependency.ts" />
 ///<reference path="../../utils/Timer.ts" />
+///<reference path="../../utils/getTimer.ts" />
 
 module away.loaders {
-	//import away3d.arcane;
-	//import away3d.errors.AbstractMethodError;
-	//import away3d.events.AssetEvent;
-	//import away3d.events.ParserEvent;
-	//import away3d.library.assets.AssetType;
-	//import away3d.library.assets.IAsset;
-	//import away3d.loaders.misc.ResourceDependency;
-	//import away3d.loaders.parsers.utils.ParserUtil;
-	//import away3d.utils.TextureUtils;
 
-	//import flash.display.BitmapData;
-	//import flash.events.EventDispatcher;
-	//import flash.events.TimerEvent;
-	//import flash.net.URLRequest;
-	//import flash.utils.ByteArray;
-	//import flash.utils.Timer;
-	//import flash.utils.getTimer;
-
-	//use namespace arcane;
-	
-	
-	/**
-	 * Dispatched when the parsing finishes.
-	 * 
-	 * @eventType away3d.events.ParserEvent
-	 */
-	[Event(name="parseComplete", type="away3d.events.ParserEvent")]
-	
-	/**
-	 * Dispatched when parser pauses to wait for dependencies, used internally to trigger
-	 * loading of dependencies which are then returned to the parser through it's interface
-	 * in the arcane namespace.
-	 * 
-	 * @eventType away3d.events.ParserEvent
-	 */
-	[Event(name="readyForDependencies", type="away3d.events.ParserEvent")]
-	
-	/**
-	 * Dispatched if an error was caught during parsing.
-	 * 
-	 * @eventType away3d.events.ParserEvent
-	 */
-	[Event(name="parseError", type="away3d.events.ParserEvent")]
-	
-	/**
-	 * Dispatched when any asset finishes parsing. Also see specific events for each
-	 * individual asset type (meshes, materials et c.)
-	 * 
-	 * @eventType away3d.events.AssetEvent
-	 */
-	[Event(name="assetComplete", type="away3d.events.AssetEvent")]
-	
-	/**
-	 * Dispatched when a geometry asset has been constructed from a resource.
-	 * 
-	 * @eventType away3d.events.AssetEvent
-	 */
-	[Event(name="geometryComplete", type="away3d.events.AssetEvent")]
-	
-	/**
-	 * Dispatched when a skeleton asset has been constructed from a resource.
-	 * 
-	 * @eventType away3d.events.AssetEvent
-	 */
-	[Event(name="skeletonComplete", type="away3d.events.AssetEvent")]
-	
-	/**
-	 * Dispatched when a skeleton pose asset has been constructed from a resource.
-	 * 
-	 * @eventType away3d.events.AssetEvent
-	 */
-	[Event(name="skeletonPoseComplete", type="away3d.events.AssetEvent")]
-	
-	/**
-	 * Dispatched when a container asset has been constructed from a resource.
-	 * 
-	 * @eventType away3d.events.AssetEvent
-	 */
-	[Event(name="containerComplete", type="away3d.events.AssetEvent")]
-		
-	/**
-	 * Dispatched when an animation set has been constructed from a group of animation state resources.
-	 * 
-	 * @eventType away3d.events.AssetEvent
-	 */
-	[Event(name="animationSetComplete", type="away3d.events.AssetEvent")]
-	
-	/**
-	 * Dispatched when an animation state has been constructed from a group of animation node resources.
-	 * 
-	 * @eventType away3d.events.AssetEvent
-	 */
-	[Event(name="animationStateComplete", type="away3d.events.AssetEvent")]
-	
-	/**
-	 * Dispatched when an animation node has been constructed from a resource.
-	 * 
-	 * @eventType away3d.events.AssetEvent
-	 */
-	[Event(name="animationNodeComplete", type="away3d.events.AssetEvent")]
-	
-	/**
-	 * Dispatched when an animation state transition has been constructed from a group of animation node resources.
-	 * 
-	 * @eventType away3d.events.AssetEvent
-	 */
-	[Event(name="stateTransitionComplete", type="away3d.events.AssetEvent")]
-	
-	/**
-	 * Dispatched when a texture asset has been constructed from a resource.
-	 * 
-	 * @eventType away3d.events.AssetEvent
-	 */
-	[Event(name="textureComplete", type="away3d.events.AssetEvent")]
-	
-	/**
-	 * Dispatched when a material asset has been constructed from a resource.
-	 * 
-	 * @eventType away3d.events.AssetEvent
-	 */
-	[Event(name="materialComplete", type="away3d.events.AssetEvent")]
-	
-	/**
-	 * Dispatched when a animator asset has been constructed from a resource.
-	 * 
-	 * @eventType away3d.events.AssetEvent
-	 */
-	[Event(name="animatorComplete", type="away3d.events.AssetEvent")]
-	
-	
-	
 	/**
 	 * <code>ParserBase</code> provides an abstract base class for objects that convert blocks of data to data structures
 	 * supported by Away3D.
@@ -166,6 +37,21 @@ module away.loaders {
 		private _data           : any;
 		private _frameLimit     : number;
 		private _lastFrameTime  : number;
+
+        //----------------------------------------------------------------------------------------------------------------------------------------------------------------
+        // TODO: add error checking for the following ( could cause a problem if this function is not implemented )
+        //----------------------------------------------------------------------------------------------------------------------------------------------------------------
+        // Needs to be implemented in all Parsers (
+        //<code>public static supportsType(extension : string) : boolean</code>
+        //* Indicates whether or not a given file extension is supported by the parser.
+        //----------------------------------------------------------------------------------------------------------------------------------------------------------------
+        public static supportsType(extension:string):boolean
+        {
+
+            //TODO: Throw error ?
+            return false;
+
+        }
 
         /* TODO: Implement ParserUtil;
 		public _pGetTextData():string
@@ -204,9 +90,12 @@ module away.loaders {
 		 */
 		constructor(format : string)
 		{
+
+            super();
+
 			this._materialMode=0;
 			this._dataFormat = format;
-			this._dependencies = new Array<ResourceDependency>();
+			this._dependencies = new Array<away.loaders.ResourceDependency>();
 		}
 		
 		/**
@@ -295,6 +184,7 @@ module away.loaders {
 		public _iResolveDependency(resourceDependency : ResourceDependency) : void
 		{
 			//throw new AbstractMethodError(); // TODO: throw
+
 		}
 		
 		/**
@@ -424,8 +314,8 @@ module away.loaders {
 					type_name = 'effectsMethod';
 					type_event = away.events.AssetEvent.SHADOWMAPMETHOD_COMPLETE;
 					break;
-				default:
-					throw new Error('Unhandled asset type '+asset.assetType+'. Report as bug!');
+                default:
+					//throw new Error('Unhandled asset type '+asset.assetType+'. Report as bug!'); // TODO: throw
 					break;
 			};
 				
@@ -434,8 +324,8 @@ module away.loaders {
 			if (!asset.name)
 				asset.name = type_name;
 			
-			dispatchEvent(new away.events.AssetEvent(away.events.AssetEvent.ASSET_COMPLETE, asset));
-			dispatchEvent(new away.events.AssetEvent(type_event, asset));
+			this.dispatchEvent(new away.events.AssetEvent(away.events.AssetEvent.ASSET_COMPLETE, asset));
+            this.dispatchEvent(new away.events.AssetEvent(type_event, asset));
 		}
 		
 		/**
@@ -459,11 +349,11 @@ module away.loaders {
                 this._timer = null;
             }
 
-			dispatchEvent(new away.events.ParserEvent(away.events.ParserEvent.PARSE_ERROR, message));
+			this.dispatchEvent(new away.events.ParserEvent(away.events.ParserEvent.PARSE_ERROR, message));
 		}
 
 		
-		public _pAddDependency(id : string, req : URLRequest, retrieveAsRawData : boolean = false, data : any = null, suppressErrorEvents : boolean = false) : void
+		public _pAddDependency(id : string, req : away.net.URLRequest, retrieveAsRawData : boolean = false, data : any = null, suppressErrorEvents : boolean = false) : void
 		{
 
 			this._dependencies.push(new away.loaders.ResourceDependency(id, req, data, this, retrieveAsRawData, suppressErrorEvents));
@@ -478,7 +368,7 @@ module away.loaders {
             }
 
 			this._parsingPaused = true;
-			dispatchEvent(new away.events.ParserEvent(away.events.ParserEvent.READY_FOR_DEPENDENCIES));
+			this.dispatchEvent(new away.events.ParserEvent(away.events.ParserEvent.READY_FOR_DEPENDENCIES));
 		}
 		
 		
@@ -489,7 +379,7 @@ module away.loaders {
 		public _pHasTime() : boolean
 		{
 
-			return ((away.utils.Timer.getTimer() - this._lastFrameTime) < this._frameLimit);
+			return ((away.utils.getTimer() - this._lastFrameTime) < this._frameLimit);
 
 		}
 		
@@ -498,7 +388,7 @@ module away.loaders {
 		 */
 		public _pOnInterval(event : away.events.TimerEvent = null) : void
 		{
-			this._lastFrameTime = away.utils.Timer.getTimer();
+			this._lastFrameTime = away.utils.getTimer();
 
 			if (this._pProceedParsing() && !this._parsingFailure){
 
@@ -536,9 +426,11 @@ module away.loaders {
 			this._timer = null;
 			this._parsingComplete = true;
 
-			dispatchEvent(new away.events.ParserEvent(away.events.ParserEvent.PARSE_COMPLETE));
+			this.dispatchEvent(new away.events.ParserEvent(away.events.ParserEvent.PARSE_COMPLETE));
 
 		}
+
 	}
+
 }
 

@@ -1,27 +1,71 @@
-///<reference path="../src/away/events/Event.ts" />
-///<reference path="../src/away/events/IOErrorEvent.ts" />
-///<reference path="../src/away/events/HTTPStatusEvent.ts" />
-///<reference path="../src/away/net/URLLoader.ts" />
-///<reference path="../src/away/net/URLRequest.ts" />
-///<reference path="../src/away/net/URLVariables.ts" />
-///<reference path="../src/away/net/URLRequestMethod.ts" />
+//<reference path="../src/away/events/Event.ts" />
+//<reference path="../src/away/events/IOErrorEvent.ts" />
+//<reference path="../src/away/events/HTTPStatusEvent.ts" />
+//<reference path="../src/away/net/URLLoader.ts" />
+//<reference path="../src/away/net/URLRequest.ts" />
+//<reference path="../src/away/net/URLVariables.ts" />
+//<reference path="../src/away/net/URLRequestMethod.ts" />
 ///<reference path="../src/away/library/assets/IAsset.ts"/>
+///<reference path="../src/away/loaders/misc/SingleFileLoader.ts"/>
 ///<reference path="../src/away/loaders/parsers/ParserBase.ts"/>
+///<reference path="../src/away/loaders/parsers/ParserDataFormat.ts"/>
+///<reference path="../src/away/loaders/misc/SingleFileImageLoader.ts"/>
+///<reference path="../src/away/loaders/misc/SingleFileURLLoader.ts"/>
+
+//------------------------------------------------------------------------------------------------
+// Web / PHP Storm arguments string
+//------------------------------------------------------------------------------------------------
+// --sourcemap $ProjectFileDir$/tests/SimpleLoaderTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/SimpleLoaderTest.js
+//------------------------------------------------------------------------------------------------
+
 
 module tests {
-
 
     export class SimpleLoaderTest //extends away.events.EventDispatcher
     {
 
-        private iAssetTest : tests.IAssetTest = new tests.IAssetTest();
-        private parserBase : away.loaders.ParserBase;
+        private iAssetTest : tests.IAssetTest = new tests.IAssetTest(); // TEST for interface;
+
+        private parserBase      : away.loaders.ParserBase;              // Test ( for import only );
+        private simpleLoader    : away.loaders.SingleFileLoader;        // Test ( for import only );
+
+        private simpleImageLoader   : away.loaders.SingleFileImageLoader;
+        private simpleURLLoader     : away.loaders.SingleFileURLLoader;
+
         constructor()
         {
 
-            this.parserBase = new away.loaders.ParserBase();
+
+
             //------------------------------------------------------------------------------------------
-            // IAsset - Interface Test;
+            // Simple Loader - instantiated to validate against compiler - needs test implementation ( and a parser )
+            //------------------------------------------------------------------------------------------
+
+            var urlRequest : away.net.URLRequest = new away.net.URLRequest( 'URLLoaderTestData/2.png' );
+
+            this.simpleLoader = new away.loaders.SingleFileLoader( 1 );
+            this.simpleLoader.load( urlRequest );
+
+            // URL Loader Interface;
+            this.simpleURLLoader = new away.loaders.SingleFileURLLoader();
+            this.simpleURLLoader.load( urlRequest );
+            this.simpleURLLoader.addEventListener( away.events.Event.COMPLETE , this.simpleURLLoaderLoadComplete , this );
+            this.simpleURLLoader.addEventListener( away.events.IOErrorEvent.IO_ERROR, this.simpleURLLoaderLoadError , this );
+
+            // Image Loader Interface;
+            this.simpleImageLoader = new away.loaders.SingleFileImageLoader();
+            this.simpleImageLoader.load( urlRequest );
+            this.simpleImageLoader.addEventListener( away.events.Event.COMPLETE , this.simpleImageLoaderLoadComplete , this );
+            this.simpleImageLoader.addEventListener( away.events.IOErrorEvent.IO_ERROR , this.simpleImageLoaderLoadError , this );
+
+            //------------------------------------------------------------------------------------------
+            // Parser Base - instantiated to validate against compiler
+            //------------------------------------------------------------------------------------------
+
+            this.parserBase = new away.loaders.ParserBase( away.loaders.ParserDataFormat.PLAIN_TEXT );
+
+            //------------------------------------------------------------------------------------------
+            // IAsset - Interface Test
             //------------------------------------------------------------------------------------------
 
             this.iAssetTest.name    = 'Karim Beyrouti';
@@ -30,15 +74,44 @@ module tests {
 
             var iTest : away.library.IAsset = this.iAssetTest;
 
-                console.log( iTest.name );
-                console.log( iTest.id );
+            console.log( iTest.name );
+            console.log( iTest.id );
+
+        }
+
+        private simpleImageLoaderLoadComplete( e )
+        {
+
+            console.log( 'simpleImageLoaderLoadComplete');
 
 
         }
 
+        private simpleURLLoaderLoadComplete( e )
+        {
+
+            console.log( 'simpleURLLoaderLoadComplete');
+
+        }
+
+        private simpleImageLoaderLoadError( e )
+        {
+
+            console.log( 'simpleImageLoaderLoadError');
+
+
+        }
+
+        private simpleURLLoaderLoadError( e )
+        {
+
+            console.log( 'simpleURLLoaderLoadError');
+
+        }
 
     }
 
+    //*
     // Test implmentatoin for IAsset
     export class IAssetTest implements away.library.IAsset{
 
@@ -60,11 +133,13 @@ module tests {
         public dispose() : void{}
 
     }
+
+
 }
+
 window.onload = function ()
 {
 
     var test = new tests.SimpleLoaderTest();
 
 }
-
