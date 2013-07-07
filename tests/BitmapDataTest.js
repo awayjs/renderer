@@ -874,7 +874,6 @@ var away;
 })(away || (away = {}));
 ///<reference path="../src/away/display/BitmapData.ts" />
 ///<reference path="../src/away/net/IMGLoader.ts" />
-///<reference path="../src/def/console.ts" />
 //------------------------------------------------------------------------------------------------
 // Web / PHP Storm arguments string
 //------------------------------------------------------------------------------------------------
