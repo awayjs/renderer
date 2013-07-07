@@ -17,6 +17,13 @@ module away.display {
         private _transparent        : boolean;
         private _locked             : boolean = false;
 
+        /**
+         *
+         * @param width
+         * @param height
+         * @param transparent
+         * @param fillColor
+         */
         constructor( width : number, height : number , transparent : boolean = true, fillColor : number = null )
         {
 
@@ -35,6 +42,8 @@ module away.display {
             }
 
         }
+
+        // Public
 
         /**
          *
@@ -159,6 +168,8 @@ module away.display {
 
         }
 
+        // Get / Set
+
         /**
          *
          * @param {ImageData}
@@ -247,6 +258,8 @@ module away.display {
             return this._imageCanvas;
 
         }
+
+        // Private
 
         /**
          * convert decimal value to Hex
