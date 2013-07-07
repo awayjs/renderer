@@ -138,7 +138,39 @@ module away.display {
         public copyImage( img : HTMLImageElement , sourceRect : away.geom.Rectangle , destRect:away.geom.Rectangle ):void
         {
 
-            this._context.drawImage(img , sourceRect.x ,sourceRect.y,sourceRect.width,sourceRect.height,destRect.x,destRect.y,destRect.width,destRect.height );
+            if ( this._locked )
+            {
+
+                // If canvas is locked:
+                //
+                //      1) copy image data back to canvas
+                //      2) draw object
+                //      3) read _imageData back out
+
+                if (  this._imageData )
+                {
+
+                    this._context.putImageData( this._imageData, 0, 0); // at coords 0,0
+
+                }
+
+                this._context.drawImage(img , sourceRect.x ,sourceRect.y,sourceRect.width,sourceRect.height,destRect.x,destRect.y,destRect.width,destRect.height );
+
+                if ( this._imageData )
+                {
+
+
+                    this._imageData = this._context.getImageData(0,0,this._rect.width,this._rect.height);
+
+                }
+
+            }
+            else
+            {
+
+                this._context.drawImage(img , sourceRect.x ,sourceRect.y,sourceRect.width,sourceRect.height,destRect.x,destRect.y,destRect.width,destRect.height );
+
+            }
 
         }
 
@@ -151,7 +183,40 @@ module away.display {
         public copyPixels( bmpd : BitmapData, sourceRect : away.geom.Rectangle , destRect:away.geom.Rectangle ):void
         {
 
-            this._context.drawImage( bmpd.canvas , sourceRect.x , sourceRect.y , sourceRect.width , sourceRect.height , destRect.x , destRect.y , destRect.width , destRect.height );
+
+            if ( this._locked )
+            {
+
+                // If canvas is locked:
+                //
+                //      1) copy image data back to canvas
+                //      2) draw object
+                //      3) read _imageData back out
+
+                if (  this._imageData )
+                {
+
+                    this._context.putImageData( this._imageData, 0, 0); // at coords 0,0
+
+                }
+
+                this._context.drawImage( bmpd.canvas , sourceRect.x , sourceRect.y , sourceRect.width , sourceRect.height , destRect.x , destRect.y , destRect.width , destRect.height );
+
+                if ( this._imageData )
+                {
+
+
+                    this._imageData = this._context.getImageData(0,0,this._rect.width,this._rect.height);
+
+                }
+
+            }
+            else
+            {
+
+                this._context.drawImage( bmpd.canvas , sourceRect.x , sourceRect.y , sourceRect.width , sourceRect.height , destRect.x , destRect.y , destRect.width , destRect.height );
+
+            }
 
         }
 
@@ -202,6 +267,7 @@ module away.display {
             return <number> this._imageCanvas.width;
 
         }
+
         /**
          *
          * @param {number}
