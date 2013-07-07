@@ -208,7 +208,7 @@ module away.display {
          *
          * @param {away.geom.Rectangle}
          */
-        public get rect()
+        public get rect() : away.geom.Rectangle
         {
 
             return this._rect;
