@@ -1072,11 +1072,11 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../events/EventDispatcher.ts" />
-    ///<reference path="../library/assets/IAsset.ts" />
-    ///<reference path="../loaders/parsers/ParserBase.ts" />
-    ///<reference path="../loaders/SingleFileLoader.ts" />
-    ///<reference path="../net/URLRequest.ts" />
+    ///<reference path="../../events/EventDispatcher.ts" />
+    ///<reference path="../../library/assets/IAsset.ts" />
+    ///<reference path="../../loaders/parsers/ParserBase.ts" />
+    ///<reference path="SingleFileLoader.ts" />
+    ///<reference path="../../net/URLRequest.ts" />
     (function (loaders) {
         //import away3d.arcane;
         //import away3d.library.assets.IAsset;
@@ -1346,7 +1346,7 @@ var away;
     ///<reference path="../../events/ParserEvent.ts" />
     ///<reference path="../../library/assets/IAsset.ts" />
     ///<reference path="../../library/assets/AssetType.ts" />
-    ///<reference path="../../loaders/ResourceDependency.ts" />
+    ///<reference path="../../loaders/misc/ResourceDependency.ts" />
     ///<reference path="../../utils/Timer.ts" />
     ///<reference path="../../utils/getTimer.ts" />
     (function (loaders) {
@@ -1739,20 +1739,20 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../events/EventDispatcher.ts" />
-    ///<reference path="../events/Event.ts" />
-    ///<reference path="../events/IOErrorEvent.ts" />
-    ///<reference path="../events/HTTPStatusEvent.ts" />
-    ///<reference path="../events/ProgressEvent.ts" />
-    ///<reference path="../events/AwayEvent.ts" />
-    ///<reference path="../events/LoaderEvent.ts" />
-    ///<reference path="../net/URLRequest.ts" />
-    ///<reference path="../net/URLLoaderDataFormat.ts" />
-    ///<reference path="../net/URLRequestMethod.ts" />
-    ///<reference path="../net/URLRequest.ts" />
-    ///<reference path="../net/URLLoader.ts" />
-    ///<reference path="../loaders/parsers/ParserBase.ts" />
-    ///<reference path="../loaders/parsers/ParserDataFormat.ts" />
+    ///<reference path="../../events/EventDispatcher.ts" />
+    ///<reference path="../../events/Event.ts" />
+    ///<reference path="../../events/IOErrorEvent.ts" />
+    ///<reference path="../../events/HTTPStatusEvent.ts" />
+    ///<reference path="../../events/ProgressEvent.ts" />
+    ///<reference path="../../events/AwayEvent.ts" />
+    ///<reference path="../../events/LoaderEvent.ts" />
+    ///<reference path="../../net/URLRequest.ts" />
+    ///<reference path="../../net/URLLoaderDataFormat.ts" />
+    ///<reference path="../../net/URLRequestMethod.ts" />
+    ///<reference path="../../net/URLRequest.ts" />
+    ///<reference path="../../net/URLLoader.ts" />
+    ///<reference path="../../loaders/parsers/ParserBase.ts" />
+    ///<reference path="../../loaders/parsers/ParserDataFormat.ts" />
     (function (loaders) {
         /**
         * The SingleFileLoader is used to load a single file, as part of a resource.
@@ -2081,7 +2081,7 @@ var away;
 //<reference path="../src/away/net/URLVariables.ts" />
 //<reference path="../src/away/net/URLRequestMethod.ts" />
 ///<reference path="../src/away/library/assets/IAsset.ts"/>
-///<reference path="../src/away/loaders/SingleFileLoader.ts"/>
+///<reference path="../src/away/loaders/misc/SingleFileLoader.ts"/>
 ///<reference path="../src/away/loaders/parsers/ParserBase.ts"/>
 ///<reference path="../src/away/loaders/parsers/ParserDataFormat.ts"/>
 //------------------------------------------------------------------------------------------------
@@ -2177,6 +2177,7 @@ var tests;
     })();
     tests.IAssetTest = IAssetTest;
 })(tests || (tests = {}));
+
 window.onload = function () {
     var test = new tests.SimpleLoaderTest();
 };

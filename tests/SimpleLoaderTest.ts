@@ -6,7 +6,7 @@
 //<reference path="../src/away/net/URLVariables.ts" />
 //<reference path="../src/away/net/URLRequestMethod.ts" />
 ///<reference path="../src/away/library/assets/IAsset.ts"/>
-///<reference path="../src/away/loaders/SingleFileLoader.ts"/>
+///<reference path="../src/away/loaders/misc/SingleFileLoader.ts"/>
 ///<reference path="../src/away/loaders/parsers/ParserBase.ts"/>
 ///<reference path="../src/away/loaders/parsers/ParserDataFormat.ts"/>
 
@@ -85,6 +85,7 @@ module tests {
 
 
 }
+
 window.onload = function ()
 {
 
