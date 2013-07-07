@@ -4,7 +4,7 @@
 ///<reference path="../../events/ParserEvent.ts" />
 ///<reference path="../../library/assets/IAsset.ts" />
 ///<reference path="../../library/assets/AssetType.ts" />
-///<reference path="../../loaders/ResourceDependency.ts" />
+///<reference path="../../loaders/misc/ResourceDependency.ts" />
 ///<reference path="../../utils/Timer.ts" />
 ///<reference path="../../utils/getTimer.ts" />
 
