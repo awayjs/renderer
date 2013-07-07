@@ -650,6 +650,13 @@ var away;
         *
         */
         var BitmapData = (function () {
+            /**
+            *
+            * @param width
+            * @param height
+            * @param transparent
+            * @param fillColor
+            */
             function BitmapData(width, height, transparent, fillColor) {
                 if (typeof transparent === "undefined") { transparent = true; }
                 if (typeof fillColor === "undefined") { fillColor = null; }
@@ -665,6 +672,7 @@ var away;
                     this.fillRect(this._rect, fillColor);
                 }
             }
+            // Public
             /**
             *
             */
@@ -756,6 +764,27 @@ var away;
                 this._context.fillRect(rect.x, rect.y, rect.width, rect.height);
             };
 
+
+            Object.defineProperty(BitmapData.prototype, "imageData", {
+                get: /**
+                *
+                * @returns {ImageData}
+                */
+                function () {
+                    return this._context.getImageData(0, 0, this._rect.width, this._rect.height);
+                },
+                set: // Get / Set
+                /**
+                *
+                * @param {ImageData}
+                */
+                function (value) {
+                    this._context.putImageData(value, 0, 0);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
             Object.defineProperty(BitmapData.prototype, "width", {
                 get: /**
                 *
@@ -822,6 +851,7 @@ var away;
                 configurable: true
             });
 
+            // Private
             /**
             * convert decimal value to Hex
             */
