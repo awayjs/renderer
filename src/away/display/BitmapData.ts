@@ -228,8 +228,43 @@ module away.display {
         public fillRect( rect : away.geom.Rectangle , color : number ) : void
         {
 
-            this._context.fillStyle = '#' + this.decimalToHex( color , 6 );
-            this._context.fillRect( rect.x , rect.y , rect.width , rect.height );
+            if ( this._locked )
+            {
+
+                // If canvas is locked:
+                //
+                //      1) copy image data back to canvas
+                //      2) apply fill
+                //      3) read _imageData back out
+
+                if (  this._imageData )
+                {
+
+                    this._context.putImageData( this._imageData, 0, 0); // at coords 0,0
+
+                }
+
+                this._context.fillStyle = '#' + this.decimalToHex( color , 6 );
+                this._context.fillRect( rect.x , rect.y , rect.width , rect.height );
+
+                if ( this._imageData )
+                {
+
+
+                    this._imageData = this._context.getImageData(0,0,this._rect.width,this._rect.height);
+
+                }
+
+            }
+            else
+            {
+
+                this._context.fillStyle = '#' + this.decimalToHex( color , 6 );
+                this._context.fillRect( rect.x , rect.y , rect.width , rect.height );
+
+
+            }
+
 
         }
 
