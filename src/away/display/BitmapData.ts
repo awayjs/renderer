@@ -12,10 +12,10 @@ module away.display {
 
         private _imageCanvas        : HTMLCanvasElement;
         private _context            : CanvasRenderingContext2D;
+        private _imageData          : ImageData;
         private _rect               : away.geom.Rectangle;
         private _transparent        : boolean;
-
-        //private _imageImageLoader   : away.net.IMGLoader;
+        private _locked             : boolean = false;
 
         constructor( width : number, height : number , transparent : boolean = true, fillColor : number = null )
         {
@@ -34,10 +34,98 @@ module away.display {
 
             }
 
+        }
+
+        /**
+         *
+         */
+        public dispose()
+        {
+
+            this._context = null;
+            this._imageCanvas = null
+            this._imageData = null;
+            this._rect = null;
+            this._transparent = null;
+            this._locked = null;
+
+        }
+        /**
+         *
+         */
+        public lock()
+        {
+
+            this._locked    = true;
+            this._imageData = this._context.getImageData(0,0,this._rect.width,this._rect.height);
 
         }
 
+        /**
+         *
+         */
+        public unlock()
+        {
 
+            this._locked = false;
+
+            if ( this._imageData )
+            {
+
+                this._context.putImageData( this._imageData, 0, 0); // at coords 0,0
+                this._imageData = null;
+
+            }
+
+        }
+
+        /**
+         *
+         * @param x
+         * @param y
+         * @param r
+         * @param g
+         * @param b
+         * @param a
+         */
+        public setPixel(x, y, r, g, b, a)
+        {
+
+            if ( ! this._locked )
+            {
+
+                this._imageData = this._context.getImageData(0,0,this._rect.width,this._rect.height);
+
+            }
+
+            if ( this._imageData )
+            {
+
+                var index : number = (x + y * this._imageCanvas.width) * 4;
+
+                this._imageData.data[index+0] = r;
+                this._imageData.data[index+1] = g;
+                this._imageData.data[index+2] = b;
+                this._imageData.data[index+3] = a;
+
+            }
+
+            if ( ! this._locked )
+            {
+
+                this._context.putImageData( this._imageData, 0, 0);
+                this._imageData = null;
+
+            }
+
+        }
+
+        /**
+         *
+         * @param img
+         * @param sourceRect
+         * @param destRect
+         */
         public copyImage( img : HTMLImageElement , sourceRect : away.geom.Rectangle , destRect:away.geom.Rectangle ):void
         {
 
@@ -45,21 +133,18 @@ module away.display {
 
         }
 
+        /**
+         *
+         * @param bmpd
+         * @param sourceRect
+         * @param destRect
+         */
         public copyPixels( bmpd : BitmapData, sourceRect : away.geom.Rectangle , destRect:away.geom.Rectangle ):void
         {
 
             this._context.drawImage( bmpd.canvas , sourceRect.x , sourceRect.y , sourceRect.width , sourceRect.height , destRect.x , destRect.y , destRect.width , destRect.height );
 
         }
-
-        /* http://www.w3schools.com/tags/canvas_drawimage.asp
-        public copyPixels( img : HTMLImageElement ,sx : number ,sy : number ,swidth,sheight,x,y,width,height);
-        {
-
-            this._context.drawImage(img,sx,sy,swidth,sheight,x,y,width,height);
-
-        }
-        */
 
         /**
          *
@@ -76,14 +161,18 @@ module away.display {
 
         /**
          *
-         * @returns {HTMLCanvasElement}
+         * @returns {number}
          */
-        public get width()
+        public get width() : number
         {
 
             return <number> this._imageCanvas.width;
 
         }
+        /**
+         *
+         * @param {number}
+         */
         public set width( value : number )
         {
 
@@ -92,12 +181,21 @@ module away.display {
 
         }
 
-        public get height()
+        /**
+         *
+         * @returns {number}
+         */
+        public get height() : number
         {
 
             return <number> this._imageCanvas.height;
 
         }
+
+        /**
+         *
+         * @param {number}
+         */
         public set height( value : number )
         {
 
@@ -106,6 +204,10 @@ module away.display {
 
         }
 
+        /**
+         *
+         * @param {away.geom.Rectangle}
+         */
         public get rect()
         {
 
@@ -130,12 +232,16 @@ module away.display {
         private decimalToHex(d : number , padding : number )
         {
 
-            var hex = d.toString(16).toUpperCase(); // Bit hackey - bitwise replacement would be better;
+            // TODO - bitwise replacement would be better / Extract alpha component of 0xffffffff ( currently no support for alpha )
+
+            var hex = d.toString(16).toUpperCase();
             padding = typeof (padding) === "undefined" || padding === null ? padding = 2 : padding;
 
             while (hex.length < padding)
             {
+
                 hex = "0" + hex;
+
             }
 
             return hex;
