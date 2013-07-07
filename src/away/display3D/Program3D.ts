@@ -50,7 +50,11 @@ module away.display3D
 			{
 				alert("Could not link the program."); //TODO throw errors
 			}
-			
+		}
+		
+		public dispose()
+		{
+			GL.deleteProgram( this._program );
 		}
 		
 		public focusProgram()

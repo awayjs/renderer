@@ -14,6 +14,7 @@
 ///<reference path="away/display3D/IndexBuffer3D.ts" />
 ///<reference path="away/display3D/Texture.ts" />
 ///<reference path="away/display3D/Context3DTextureFormat.ts" />
+///<reference path="away/display3D/Context3DVertexBufferFormat.ts"/>
 
 var GL:WebGLRenderingContext = null;
 
@@ -46,53 +47,50 @@ class Away3D extends away.events.EventDispatcher
 		var stage3D: away.display3D.Stage3D = <away.display3D.Stage3D> e.target;
 		var context3D: away.display3D.Context3D = stage3D.context3D;
 		
-		context3D.createTexture( 512, 512, away.display3D.Context3DTextureFormat.BGRA, true );
+		//context3D.createTexture( 512, 512, away.display3D.Context3DTextureFormat.BGRA, true );
 		
 		context3D.configureBackBuffer( 800, 600, 0, true );
-		
-		context3D.setColorMask( true, false, false, true ); 
-		
-		context3D.clear( 1, 1, 0, 1 );
+		context3D.setColorMask( true, true, true, true ); 
 		
 		var vertices:number[] = [
-							-1.0, -1.0, 
-							 1.0, -1.0, 
-							-1.0,  1.0, 
-							-1.0,  1.0, 
-							 1.0, -1.0, 
-							 1.0,  1.0 ];
-							 
+							 0.0,  1.0,  0.0,
+							-1.0, -1.0,  0.0,
+							 1.0, -1.0,  0.0
+							];
+		
 		var indices:number[] = [
 							0, 1, 2,
 							0, 2, 3
 							]
 		
-		var vBuffer: away.display3D.VertexBuffer3D = context3D.createVertexBuffer( 6, 2 );
-		vBuffer.upload( vertices, 0, 0 );
+		var vBuffer: away.display3D.VertexBuffer3D = context3D.createVertexBuffer( 3, 3 );
+		vBuffer.upload( vertices, 0, 3 );
 		
 		var iBuffer: away.display3D.IndexBuffer3D = context3D.createIndexBuffer( 6 );
 		iBuffer.upload( indices, 0, 6 );
 		
 		var program:away.display3D.Program3D = context3D.createProgram();
 		
-		var vProgram:string = "attribute vec2 a_position;\n" +
+		var vProgram:string = "attribute vec3 aVertexPosition;\n" +
 							  "void main() {\n" +
-							  "	gl_Position = vec4(a_position, 0, 1);\n" +
+							  "		gl_Position = vec4(aVertexPosition,1.0);\n" +
 							  "}\n";
 		
 		var fProgram:string = "void main() {\n" +
-							  "	gl_FragColor = vec4(0.3,0.6,0.9,1);\n" +
+							  "		gl_FragColor = vec4(0.3,0.6,0.9,1);\n" +
 							  "}\n";
 		
 		program.upload( vProgram, fProgram );
-		context3D.setProgram( program ); // will set to VBOs and require indices call drawTriangles()
-		
-		//context3D.setGLSLProgramConstantsFromVector4( "a_position", [ 
-		
-		context3D.present(); // placeholder not require atm
+		context3D.setProgram( program );
 		
 		
+		var matrix:away.geom.Matrix3D = new away.geom.Matrix3D();
+		
+		context3D.setGLSLVertexBufferAt( "aVertexPosition", vBuffer, 0, away.display3D.Context3DVertexBufferFormat.FLOAT_3 );
+		
+		context3D.clear( 0.9, 0.6, 0.3, 1 );
+		context3D.drawTriangles( iBuffer, 0, 1 );
+		context3D.present();
 		
 	}
-	
 }

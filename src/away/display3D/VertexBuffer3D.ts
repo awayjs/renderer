@@ -22,14 +22,12 @@ module away.display3D
 			this._data32PerVertex = data32PerVertex;
 		}
 		
-		public upload( vertices:number[], startVertex:number, numVertices:number)
+		public upload( vertices:number[], startVertex:number, numVertices:number )
 		{
 			GL.bindBuffer( GL.ARRAY_BUFFER, this._buffer );
-			GL.bufferData(
-					GL.ARRAY_BUFFER, 
-					new Float32Array( vertices ), 
-					GL.STATIC_DRAW
-				);
+			
+			// TODO add offsets , startVertex, numVertices * this._data32PerVertex
+			GL.bufferData( GL.ARRAY_BUFFER, new Float32Array( vertices ), GL.STATIC_DRAW );
 		}
 		
 		public get numVertices():number
@@ -40,6 +38,11 @@ module away.display3D
 		public get data32PerVertex():number
 		{
 			return this._data32PerVertex;
+		}
+		
+		public get glBuffer():WebGLBuffer
+		{
+			return this._buffer;
 		}
 		
 		public dispose()

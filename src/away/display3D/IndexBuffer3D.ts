@@ -19,16 +19,15 @@ module away.display3D
 			this._numIndices = numIndices;
 		}
 		
-		public upload( data:number[], startOffset:number, count:number )
+		public upload( data:number[], startOffset:number, count:number ):void
 		{
 			GL.bindBuffer( GL.ELEMENT_ARRAY_BUFFER, this._buffer );
 			
-			// TODO hack Float32Array to shorts implement ByteArray class
 			// TODO add index offsets
-			GL.bufferData( GL.ELEMENT_ARRAY_BUFFER, new Float32Array( data), GL.STATIC_DRAW );
+			GL.bufferData( GL.ELEMENT_ARRAY_BUFFER, new Uint16Array( data ), GL.STATIC_DRAW );
 		}
 		
-		public dispose()
+		public dispose():void
 		{
 			GL.deleteBuffer( this._buffer );
 		}
@@ -36,6 +35,11 @@ module away.display3D
 		public get numIndices():number
 		{
 			return this._numIndices;
+		}
+		
+		public get glBuffer():WebGLBuffer
+		{
+			return this._buffer;
 		}
 	}
 }
