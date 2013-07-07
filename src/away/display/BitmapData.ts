@@ -48,7 +48,7 @@ module away.display {
         /**
          *
          */
-        public dispose()
+        public dispose():void
         {
 
             this._context = null;
@@ -62,7 +62,7 @@ module away.display {
         /**
          *
          */
-        public lock()
+        public lock():void
         {
 
             this._locked    = true;
@@ -73,7 +73,7 @@ module away.display {
         /**
          *
          */
-        public unlock()
+        public unlock():void
         {
 
             this._locked = false;
@@ -97,7 +97,7 @@ module away.display {
          * @param b
          * @param a
          */
-        public setPixel(x, y, r, g, b, a)
+        public setPixel(x, y, r, g, b, a):void
         {
 
             if ( ! this._locked )
@@ -182,7 +182,6 @@ module away.display {
          */
         public copyPixels( bmpd : BitmapData, sourceRect : away.geom.Rectangle , destRect:away.geom.Rectangle ):void
         {
-
 
             if ( this._locked )
             {
@@ -365,7 +364,7 @@ module away.display {
         /**
          * convert decimal value to Hex
          */
-        private decimalToHex(d : number , padding : number )
+        private decimalToHex(d : number , padding : number ) : string
         {
 
             // TODO - bitwise replacement would be better / Extract alpha component of 0xffffffff ( currently no support for alpha )
