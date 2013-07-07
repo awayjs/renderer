@@ -161,6 +161,28 @@ module away.display {
 
         /**
          *
+         * @param {ImageData}
+         */
+        public set imageData( value : ImageData )
+        {
+
+            this._context.putImageData( value , 0 , 0 );
+
+        }
+
+        /**
+         *
+         * @returns {ImageData}
+         */
+        public get imageData() : ImageData
+        {
+
+            return this._context.getImageData(0,0,this._rect.width,this._rect.height)
+
+        }
+
+        /**
+         *
          * @returns {number}
          */
         public get width() : number
