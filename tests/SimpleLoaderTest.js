@@ -564,10 +564,14 @@ var away;
                 this._bytesLoaded = null;
                 this._bytesTotal = null;
 
-                if (this._request) {
-                    this._request.dispose();
+                /*
+                if( this._request )
+                {
+                
+                this._request.dispose();
+                
                 }
-
+                */
                 this._request = null;
             };
 
@@ -594,6 +598,7 @@ var away;
                     if (format === away.net.URLLoaderDataFormat.BLOB || format === away.net.URLLoaderDataFormat.ARRAY_BUFFER || format === away.net.URLLoaderDataFormat.BINARY || format === away.net.URLLoaderDataFormat.TEXT || format === away.net.URLLoaderDataFormat.VARIABLES) {
                         this._dataFormat = format;
                     } else {
+                        throw 'URLLoader error: incompatible dataFormat';
                     }
                 },
                 enumerable: true,
@@ -1775,6 +1780,20 @@ var away;
                 _super.call(this);
                 this._materialMode = materialMode;
             }
+            SingleFileLoader.enableParser = function (parser) {
+                if (SingleFileLoader._parsers.indexOf(parser) < 0) {
+                    SingleFileLoader._parsers.push(parser);
+                }
+            };
+
+            SingleFileLoader.enableParsers = function (parsers) {
+                var pc;
+
+                for (var c = 0; c < parsers.length; c++) {
+                    SingleFileLoader.enableParser(parsers[c]);
+                }
+            };
+
             Object.defineProperty(SingleFileLoader.prototype, "url", {
                 get: function () {
                     return this._req ? this._req.url : '';
@@ -1798,20 +1817,6 @@ var away;
                 enumerable: true,
                 configurable: true
             });
-
-            SingleFileLoader.enableParser = function (parser) {
-                if (this._parsers.indexOf(parser) < 0) {
-                    this._parsers.push(parser);
-                }
-            };
-
-            SingleFileLoader.enableParsers = function (parsers) {
-                var pc;
-
-                for (var c = 0; c < parsers.length; c++) {
-                    this.enableParser(parsers[c]);
-                }
-            };
 
             /**
             * Load a resource from a file.
@@ -1839,11 +1844,14 @@ var away;
                     if (!this._parser)
                         this._parser = this.getParserFromSuffix();
 
+                    console.log('load', 'this._parser: ' + this._parser);
+
                     if (this._parser) {
                         switch (this._parser.dataFormat) {
                             case away.loaders.ParserDataFormat.BINARY:
                                 dataFormat = away.net.URLLoaderDataFormat.BINARY;
                                 break;
+
                             case away.loaders.ParserDataFormat.PLAIN_TEXT:
                                 dataFormat = away.net.URLLoaderDataFormat.TEXT;
                                 break;
@@ -1856,6 +1864,9 @@ var away;
                     }
                 }
 
+                console.log('load', dataFormat);
+
+                // TODO: Implement ParserBase "loaderType" - and switch to ImageLoader || Add a
                 urlLoader = new away.net.URLLoader();
                 urlLoader.dataFormat = dataFormat;
                 urlLoader.addEventListener(away.events.Event.COMPLETE, this.handleUrlLoaderComplete, this);
@@ -1916,6 +1927,8 @@ var away;
                 var i = base.lastIndexOf('.');
                 this._fileExtension = base.substr(i + 1).toLowerCase();
                 this._fileName = base.substr(0, i);
+
+                console.log('decomposeFilename', url, this._fileExtension, this._fileName);
             };
 
             /**
@@ -1926,8 +1939,16 @@ var away;
                 var len = SingleFileLoader._parsers.length;
 
                 for (var i = len - 1; i >= 0; i--) {
-                    if (SingleFileLoader._parsers[i]['supportsType'](this._fileExtension))
+                    var currentParser = SingleFileLoader._parsers[i];
+                    console.log('getParserFromSuffix.currentParser', currentParser);
+
+                    var supportstype = SingleFileLoader._parsers[i]['supportsType'](this._fileExtension);
+
+                    console.log('getParserFromSuffix.supportstype', supportstype);
+
+                    if (SingleFileLoader._parsers[i]['supportsType'](this._fileExtension)) {
                         return new SingleFileLoader._parsers[i]();
+                    }
                 }
 
                 return null;
@@ -1977,6 +1998,8 @@ var away;
 
                 this._data = urlLoader.data;
 
+                console.log('handleUrlLoaderComplete', this._data.length);
+
                 if (this._loadAsRawData) {
                     // No need to parse this data, which should be returned as is
                     this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.DEPENDENCY_COMPLETE));
@@ -2013,8 +2036,10 @@ var away;
                     this._parser.addEventListener(away.events.AssetEvent.SKELETON_COMPLETE, this.onAssetComplete, this);
                     this._parser.addEventListener(away.events.AssetEvent.SKELETON_POSE_COMPLETE, this.onAssetComplete, this);
 
-                    if (this._req && this._req.url)
+                    if (this._req && this._req.url) {
                         this._parser._iFileName = this._req.url;
+                    }
+
                     this._parser.materialMode = this._materialMode;
                     this._parser.parseAsync(data);
                 } else {
@@ -2026,7 +2051,6 @@ var away;
             };
 
             SingleFileLoader.prototype.onParseError = function (event) {
-                //if(this.hasEventListener(away.events.ParserEvent.PARSE_ERROR , this ))
                 this.dispatchEvent(event.clone());
             };
 
@@ -2073,6 +2097,392 @@ var away;
     })(away.loaders || (away.loaders = {}));
     var loaders = away.loaders;
 })(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../events/EventDispatcher.ts" />
+    ///<reference path="../events/Event.ts" />
+    ///<reference path="../events/IOErrorEvent.ts" />
+    ///<reference path="URLRequest.ts" />
+    (function (net) {
+        var IMGLoader = (function (_super) {
+            __extends(IMGLoader, _super);
+            function IMGLoader(imageName) {
+                if (typeof imageName === "undefined") { imageName = ''; }
+                _super.call(this);
+                this._name = '';
+                this._loaded = false;
+                this._name = imageName;
+            }
+            // Public
+            /**
+            * load an image
+            * @param request {away.net.URLRequest}
+            */
+            IMGLoader.prototype.load = function (request) {
+                this._loaded = false;
+                this.initImage();
+                this._request = request;
+                this._image.src = this._request.url;
+            };
+
+            /**
+            *
+            */
+            IMGLoader.prototype.dispose = function () {
+                if (this._image) {
+                    this._image.onabort = null;
+                    this._image.onerror = null;
+                    this._image.onload = null;
+                    this._image = null;
+                }
+
+                if (this._request) {
+                    this._request = null;
+                }
+            };
+
+            Object.defineProperty(IMGLoader.prototype, "image", {
+                get: // Get / Set
+                /**
+                * Get reference to image if it is loaded
+                * @returns {HTMLImageElement}
+                */
+                function () {
+                    return this._image;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(IMGLoader.prototype, "loaded", {
+                get: /**
+                * Get image width. Returns null is image is not loaded
+                * @returns {number}
+                */
+                function () {
+                    return this._loaded;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(IMGLoader.prototype, "width", {
+                get: /**
+                * Get image width. Returns null is image is not loaded
+                * @returns {number}
+                */
+                function () {
+                    if (this._image) {
+                        return this._image.width;
+                    }
+
+                    return null;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(IMGLoader.prototype, "height", {
+                get: /**
+                * Get image height. Returns null is image is not loaded
+                * @returns {number}
+                */
+                function () {
+                    if (this._image) {
+                        return this._image.height;
+                    }
+
+                    return null;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(IMGLoader.prototype, "request", {
+                get: /**
+                * return URL request used to load image
+                * @returns {away.net.URLRequest}
+                */
+                function () {
+                    return this._request;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(IMGLoader.prototype, "name", {
+                get: /**
+                * get name of HTMLImageElement
+                * @returns {string}
+                */
+                function () {
+                    if (this._image) {
+                        return this._image.name;
+                    }
+
+                    return this._name;
+                },
+                set: /**
+                * set name of HTMLImageElement
+                * @returns {string}
+                */
+                function (value) {
+                    if (this._image) {
+                        this._image.name = value;
+                    }
+
+                    this._name = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            // Private
+            /**
+            * intialise the image object
+            */
+            IMGLoader.prototype.initImage = function () {
+                var _this = this;
+                if (!this._image) {
+                    this._image = new Image();
+                    this._image.onabort = function (event) {
+                        return _this.onAbort(event);
+                    };
+                    this._image.onerror = function (event) {
+                        return _this.onError(event);
+                    };
+                    this._image.onload = function (event) {
+                        return _this.onLoadComplete(event);
+                    };
+                    this._image.name = this._name;
+                }
+            };
+
+            // Image - event handlers
+            /**
+            * Loading of an image is interrupted
+            * @param event
+            */
+            IMGLoader.prototype.onAbort = function (event) {
+                this.dispatchEvent(new away.events.Event(away.events.IOErrorEvent.IO_ERROR));
+            };
+
+            /**
+            * An error occured when loading the image
+            * @param event
+            */
+            IMGLoader.prototype.onError = function (event) {
+                this.dispatchEvent(new away.events.Event(away.events.IOErrorEvent.IO_ERROR));
+            };
+
+            /**
+            * image is finished loading
+            * @param event
+            */
+            IMGLoader.prototype.onLoadComplete = function (event) {
+                this._loaded = true;
+                this.dispatchEvent(new away.events.Event(away.events.Event.COMPLETE));
+            };
+            return IMGLoader;
+        })(away.events.EventDispatcher);
+        net.IMGLoader = IMGLoader;
+    })(away.net || (away.net = {}));
+    var net = away.net;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../../net/URLRequest.ts" />
+    ///<reference path="../../net/IMGLoader.ts" />
+    ///<reference path="../../events/EventDispatcher.ts" />
+    ///<reference path="ISingleFileTSLoader.ts" />
+    ///<reference path="../../events/Event.ts" />
+    // TODO: delete unused references.
+    ///<reference path="../../events/Event.ts" />
+    ///<reference path="../../events/IOErrorEvent.ts" />
+    ///<reference path="../../events/HTTPStatusEvent.ts" />
+    ///<reference path="../../events/ProgressEvent.ts" />
+    ///<reference path="../../events/AwayEvent.ts" />
+    ///<reference path="../../events/LoaderEvent.ts" />
+    ///<reference path="../../net/URLRequest.ts" />
+    ///<reference path="../../net/URLLoaderDataFormat.ts" />
+    ///<reference path="../../net/URLRequestMethod.ts" />
+    ///<reference path="../../net/URLLoader.ts" />
+    ///<reference path="../../loaders/parsers/ParserBase.ts" />
+    ///<reference path="../../loaders/parsers/ParserDataFormat.ts" />
+    (function (loaders) {
+        var SingleFileImageLoader = (function (_super) {
+            __extends(SingleFileImageLoader, _super);
+            function SingleFileImageLoader() {
+                _super.call(this);
+            }
+            // Public
+            /**
+            *
+            * @param req
+            */
+            SingleFileImageLoader.prototype.load = function (req) {
+                this.initLoader();
+                this._loader.load(req);
+            };
+
+            /**
+            *
+            */
+            SingleFileImageLoader.prototype.dispose = function () {
+                this.disposeLoader();
+                this._data = null;
+            };
+
+            Object.defineProperty(SingleFileImageLoader.prototype, "data", {
+                get: // Get / Set
+                /**
+                *
+                * @returns {*}
+                */
+                function () {
+                    return this._loader.image;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            // Private
+            /**
+            *
+            */
+            SingleFileImageLoader.prototype.initLoader = function () {
+                if (!this._loader) {
+                    this._loader = new away.net.IMGLoader();
+                    this._loader.addEventListener(away.events.Event.COMPLETE, this.onLoadComplete, this);
+                    this._loader.addEventListener(away.events.IOErrorEvent.IO_ERROR, this.onLoadError, this);
+                }
+            };
+
+            /**
+            *
+            */
+            SingleFileImageLoader.prototype.disposeLoader = function () {
+                if (this._loader) {
+                    this._loader.dispose();
+                    this._loader.removeEventListener(away.events.Event.COMPLETE, this.onLoadComplete, this);
+                    this._loader.removeEventListener(away.events.IOErrorEvent.IO_ERROR, this.onLoadError, this);
+                    this._loader = null;
+                }
+            };
+
+            // Events
+            /**
+            *
+            * @param event
+            */
+            SingleFileImageLoader.prototype.onLoadComplete = function (event) {
+                this.dispatchEvent(event);
+            };
+
+            /**
+            *
+            * @param event
+            */
+            SingleFileImageLoader.prototype.onLoadError = function (event) {
+                this.dispatchEvent(event);
+            };
+            return SingleFileImageLoader;
+        })(away.events.EventDispatcher);
+        loaders.SingleFileImageLoader = SingleFileImageLoader;
+    })(away.loaders || (away.loaders = {}));
+    var loaders = away.loaders;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../../net/URLRequest.ts" />
+    ///<reference path="../../events/EventDispatcher.ts" />
+    ///<reference path="ISingleFileTSLoader.ts" />
+    ///<reference path="../../events/Event.ts" />
+    ///<reference path="../../net/URLLoader.ts" />
+    (function (loaders) {
+        var SingleFileURLLoader = (function (_super) {
+            __extends(SingleFileURLLoader, _super);
+            function SingleFileURLLoader() {
+                _super.call(this);
+            }
+            // Public
+            /**
+            *
+            * @param req
+            */
+            SingleFileURLLoader.prototype.load = function (req) {
+                this.initLoader();
+                this._loader.load(req);
+            };
+
+            /**
+            *
+            */
+            SingleFileURLLoader.prototype.dispose = function () {
+                this.disposeLoader();
+                this._data = null;
+            };
+
+            Object.defineProperty(SingleFileURLLoader.prototype, "data", {
+                get: // Get / Set
+                /**
+                *
+                * @returns {*}
+                */
+                function () {
+                    return this._loader.data;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            // Private
+            /**
+            *
+            */
+            SingleFileURLLoader.prototype.initLoader = function () {
+                if (!this._loader) {
+                    this._loader = new away.net.URLLoader();
+                    this._loader.addEventListener(away.events.Event.COMPLETE, this.onLoadComplete, this);
+                    this._loader.addEventListener(away.events.IOErrorEvent.IO_ERROR, this.onLoadError, this);
+                }
+            };
+
+            /**
+            *
+            */
+            SingleFileURLLoader.prototype.disposeLoader = function () {
+                if (this._loader) {
+                    this._loader.dispose();
+                    this._loader.removeEventListener(away.events.Event.COMPLETE, this.onLoadComplete, this);
+                    this._loader.removeEventListener(away.events.IOErrorEvent.IO_ERROR, this.onLoadError, this);
+                    this._loader = null;
+                }
+            };
+
+            // Events
+            /**
+            *
+            * @param event
+            */
+            SingleFileURLLoader.prototype.onLoadComplete = function (event) {
+                this.dispatchEvent(event);
+            };
+
+            /**
+            *
+            * @param event
+            */
+            SingleFileURLLoader.prototype.onLoadError = function (event) {
+                this.dispatchEvent(event);
+            };
+            return SingleFileURLLoader;
+        })(away.events.EventDispatcher);
+        loaders.SingleFileURLLoader = SingleFileURLLoader;
+    })(away.loaders || (away.loaders = {}));
+    var loaders = away.loaders;
+})(away || (away = {}));
 //<reference path="../src/away/events/Event.ts" />
 //<reference path="../src/away/events/IOErrorEvent.ts" />
 //<reference path="../src/away/events/HTTPStatusEvent.ts" />
@@ -2084,6 +2494,8 @@ var away;
 ///<reference path="../src/away/loaders/misc/SingleFileLoader.ts"/>
 ///<reference path="../src/away/loaders/parsers/ParserBase.ts"/>
 ///<reference path="../src/away/loaders/parsers/ParserDataFormat.ts"/>
+///<reference path="../src/away/loaders/misc/SingleFileImageLoader.ts"/>
+///<reference path="../src/away/loaders/misc/SingleFileURLLoader.ts"/>
 //------------------------------------------------------------------------------------------------
 // Web / PHP Storm arguments string
 //------------------------------------------------------------------------------------------------
@@ -2097,7 +2509,22 @@ var tests;
             //------------------------------------------------------------------------------------------
             // Simple Loader - instantiated to validate against compiler - needs test implementation ( and a parser )
             //------------------------------------------------------------------------------------------
+            var urlRequest = new away.net.URLRequest('URLLoaderTestData/2.png');
+
             this.simpleLoader = new away.loaders.SingleFileLoader(1);
+            this.simpleLoader.load(urlRequest);
+
+            // URL Loader Interface;
+            this.simpleURLLoader = new away.loaders.SingleFileURLLoader();
+            this.simpleURLLoader.load(urlRequest);
+            this.simpleURLLoader.addEventListener(away.events.Event.COMPLETE, this.simpleURLLoaderLoadComplete, this);
+            this.simpleURLLoader.addEventListener(away.events.IOErrorEvent.IO_ERROR, this.simpleURLLoaderLoadError, this);
+
+            // Image Loader Interface;
+            this.simpleImageLoader = new away.loaders.SingleFileImageLoader();
+            this.simpleImageLoader.load(urlRequest);
+            this.simpleImageLoader.addEventListener(away.events.Event.COMPLETE, this.simpleImageLoaderLoadComplete, this);
+            this.simpleImageLoader.addEventListener(away.events.IOErrorEvent.IO_ERROR, this.simpleImageLoaderLoadError, this);
 
             //------------------------------------------------------------------------------------------
             // Parser Base - instantiated to validate against compiler
@@ -2116,6 +2543,21 @@ var tests;
             console.log(iTest.name);
             console.log(iTest.id);
         }
+        SimpleLoaderTest.prototype.simpleImageLoaderLoadComplete = function (e) {
+            console.log('simpleImageLoaderLoadComplete');
+        };
+
+        SimpleLoaderTest.prototype.simpleURLLoaderLoadComplete = function (e) {
+            console.log('simpleURLLoaderLoadComplete');
+        };
+
+        SimpleLoaderTest.prototype.simpleImageLoaderLoadError = function (e) {
+            console.log('simpleImageLoaderLoadError');
+        };
+
+        SimpleLoaderTest.prototype.simpleURLLoaderLoadError = function (e) {
+            console.log('simpleURLLoaderLoadError');
+        };
         return SimpleLoaderTest;
     })();
     tests.SimpleLoaderTest = SimpleLoaderTest;

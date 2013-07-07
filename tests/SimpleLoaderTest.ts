@@ -9,6 +9,8 @@
 ///<reference path="../src/away/loaders/misc/SingleFileLoader.ts"/>
 ///<reference path="../src/away/loaders/parsers/ParserBase.ts"/>
 ///<reference path="../src/away/loaders/parsers/ParserDataFormat.ts"/>
+///<reference path="../src/away/loaders/misc/SingleFileImageLoader.ts"/>
+///<reference path="../src/away/loaders/misc/SingleFileURLLoader.ts"/>
 
 //------------------------------------------------------------------------------------------------
 // Web / PHP Storm arguments string
@@ -27,14 +29,34 @@ module tests {
         private parserBase      : away.loaders.ParserBase;              // Test ( for import only );
         private simpleLoader    : away.loaders.SingleFileLoader;        // Test ( for import only );
 
+        private simpleImageLoader   : away.loaders.SingleFileImageLoader;
+        private simpleURLLoader     : away.loaders.SingleFileURLLoader;
+
         constructor()
         {
+
+
 
             //------------------------------------------------------------------------------------------
             // Simple Loader - instantiated to validate against compiler - needs test implementation ( and a parser )
             //------------------------------------------------------------------------------------------
 
+            var urlRequest : away.net.URLRequest = new away.net.URLRequest( 'URLLoaderTestData/2.png' );
+
             this.simpleLoader = new away.loaders.SingleFileLoader( 1 );
+            this.simpleLoader.load( urlRequest );
+
+            // URL Loader Interface;
+            this.simpleURLLoader = new away.loaders.SingleFileURLLoader();
+            this.simpleURLLoader.load( urlRequest );
+            this.simpleURLLoader.addEventListener( away.events.Event.COMPLETE , this.simpleURLLoaderLoadComplete , this );
+            this.simpleURLLoader.addEventListener( away.events.IOErrorEvent.IO_ERROR, this.simpleURLLoaderLoadError , this );
+
+            // Image Loader Interface;
+            this.simpleImageLoader = new away.loaders.SingleFileImageLoader();
+            this.simpleImageLoader.load( urlRequest );
+            this.simpleImageLoader.addEventListener( away.events.Event.COMPLETE , this.simpleImageLoaderLoadComplete , this );
+            this.simpleImageLoader.addEventListener( away.events.IOErrorEvent.IO_ERROR , this.simpleImageLoaderLoadError , this );
 
             //------------------------------------------------------------------------------------------
             // Parser Base - instantiated to validate against compiler
@@ -57,6 +79,35 @@ module tests {
 
         }
 
+        private simpleImageLoaderLoadComplete( e )
+        {
+
+            console.log( 'simpleImageLoaderLoadComplete');
+
+
+        }
+
+        private simpleURLLoaderLoadComplete( e )
+        {
+
+            console.log( 'simpleURLLoaderLoadComplete');
+
+        }
+
+        private simpleImageLoaderLoadError( e )
+        {
+
+            console.log( 'simpleImageLoaderLoadError');
+
+
+        }
+
+        private simpleURLLoaderLoadError( e )
+        {
+
+            console.log( 'simpleURLLoaderLoadError');
+
+        }
 
     }
 
