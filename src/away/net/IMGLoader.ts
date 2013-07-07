@@ -56,7 +56,6 @@ module away.net
             if ( this._request )
             {
 
-                this._request.dispose();
                 this._request = null;
 
             }
