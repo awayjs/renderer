@@ -85,12 +85,14 @@ module away.net {
             this._bytesLoaded   = null;
             this._bytesTotal    = null;
 
+            /*
             if( this._request )
             {
 
                 this._request.dispose();
 
             }
+            */
 
             this._request   = null;
 
@@ -119,7 +121,7 @@ module away.net {
 
             } else {
 
-                // TODO: Throw error - incompatible data format
+                throw 'URLLoader error: incompatible dataFormat';
 
             }
 
