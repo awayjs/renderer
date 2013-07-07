@@ -7,7 +7,7 @@
 module away.loaders
 {
 
-    export class SingleFileImageLoader extends away.events.EventDispatcher implements away.loaders.ISingleFileTSLoader
+    export class SingleFileURLLoader extends away.events.EventDispatcher implements away.loaders.ISingleFileTSLoader
     {
 
         private _loader : away.net.URLLoader;
