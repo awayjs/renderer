@@ -11,6 +11,7 @@
 ///<reference path="../src/away/loaders/parsers/ParserDataFormat.ts"/>
 ///<reference path="../src/away/loaders/misc/SingleFileImageLoader.ts"/>
 ///<reference path="../src/away/loaders/misc/SingleFileURLLoader.ts"/>
+///<reference path="../src/away/textures/TextureProxyBase.ts"/>
 
 //------------------------------------------------------------------------------------------------
 // Web / PHP Storm arguments string
@@ -34,8 +35,6 @@ module tests {
 
         constructor()
         {
-
-
 
             //------------------------------------------------------------------------------------------
             // Simple Loader - instantiated to validate against compiler - needs test implementation ( and a parser )
