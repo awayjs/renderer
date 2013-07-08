@@ -106,6 +106,10 @@ module away.loaders
             {
 
                 // TODO: Implement Texture2D and add HTMLImageElement
+                var aAssetTest : away.library.IAsset ;
+
+                this._pFinalizeAsset( aAssetTest , this._iFileName);
+
                 return away.loaders.ParserBase.PARSING_DONE;
 
             }
@@ -140,11 +144,13 @@ module away.loaders
 			*/
 		}
 
+        // Not needed - AS3, Loader.loadBytes functionality
+
 		/**
 		 * Called when "loading" is complete.
+         */
 
-         // Not needed - AS3 / Loader / loadBytes - replaced with image loader;
-
+        /*
 		private onLoadComplete(event : Event) : void
 		{
 			var bmp : BitmapData = Bitmap(_loader.content).bitmapData;
@@ -174,6 +180,6 @@ module away.loaders
 			finalizeAsset(asset, _fileName);
 			_doneParsing = true;
 		}
-         */
+        */
 	}
 }
