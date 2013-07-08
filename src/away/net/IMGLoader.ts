@@ -15,6 +15,7 @@ module away.net
         private _request        : away.net.URLRequest;
         private _name           : string ='';
         private _loaded         : boolean = false;
+        private _crossOrigin    : string;
 
         constructor( imageName : string = '' )
         {
@@ -35,6 +36,20 @@ module away.net
 
             this._loaded = false;
             this._request   = request;
+
+            if ( this._crossOrigin )
+            {
+
+                if ( this._image['crossOrigin'] != null )
+                {
+
+                    this._image['crossOrigin'] = this._crossOrigin;
+
+                }
+
+
+            }
+
             this._image.src = this._request.url;
 
         }
@@ -86,6 +101,18 @@ module away.net
 
             return this._loaded
 
+        }
+
+        public get crossOrigin() : string
+        {
+
+            return this.crossOrigin;
+        }
+
+        public set crossOrigin( value : string )
+        {
+
+            this.crossOrigin = value;
         }
 
         /**
