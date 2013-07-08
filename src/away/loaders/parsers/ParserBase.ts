@@ -5,6 +5,7 @@
 ///<reference path="../../library/assets/IAsset.ts" />
 ///<reference path="../../library/assets/AssetType.ts" />
 ///<reference path="../../loaders/misc/ResourceDependency.ts" />
+///<reference path="../../loaders/parsers/ParserLoaderType.ts" />
 ///<reference path="../../utils/Timer.ts" />
 ///<reference path="../../utils/getTimer.ts" />
 
@@ -38,6 +39,7 @@ module away.loaders {
 		private _frameLimit     : number;
 		private _lastFrameTime  : number;
 
+
         //----------------------------------------------------------------------------------------------------------------------------------------------------------------
         // TODO: add error checking for the following ( could cause a problem if this function is not implemented )
         //----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -45,6 +47,7 @@ module away.loaders {
         //<code>public static supportsType(extension : string) : boolean</code>
         //* Indicates whether or not a given file extension is supported by the parser.
         //----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
         public static supportsType(extension:string):boolean
         {
 
@@ -65,10 +68,11 @@ module away.loaders {
 		}
 		*/
 		private _dependencies       : away.loaders.ResourceDependency[];//Vector.<ResourceDependency>;
+        private _loaderType         : string = away.loaders.ParserLoaderType.URL_LOADER; // Default loader is URLLoader
 		private _parsingPaused      : boolean;
 		private _parsingComplete    : boolean;
 		private _parsingFailure     : boolean;
-		private _timer              : away.utils.Timer; // TODO - implement AS3 Style Timer ? !
+		private _timer              : away.utils.Timer;
 		private _materialMode       : number;
 		
 		/**
@@ -94,8 +98,8 @@ module away.loaders {
             super();
 
 			this._materialMode=0;
-			this._dataFormat = format;
-			this._dependencies = new Array<away.loaders.ResourceDependency>();
+			this._dataFormat    = format;
+			this._dependencies  = new Array<away.loaders.ResourceDependency>();
 		}
 		
 		/**
@@ -119,14 +123,12 @@ module away.loaders {
 		{
 			return this._parsingFailure;
 		}
-		
-		
+
 		public get parsingPaused() : boolean
 		{
 			return this._parsingPaused;
 		}
-		
-		
+
 		public get parsingComplete() : boolean
 		{
 			return this._parsingComplete;
@@ -141,7 +143,21 @@ module away.loaders {
 		{
 			return this._materialMode;
 		}
-		
+
+        public get loaderType() : string
+        {
+
+            return this._loaderType;
+
+        }
+
+        public set loaderType( value : string )
+        {
+
+            this._loaderType = value;
+
+        }
+
 		/**
 		 * The data format of the file data to be parsed. Can be either <code>ParserDataFormat.BINARY</code> or <code>ParserDataFormat.PLAIN_TEXT</code>.
 		 */
@@ -339,7 +355,6 @@ module away.loaders {
 			return true;
 		}
 
-
 		public _pDieWithError(message : string = 'Unknown parsing error') : void
 		{
             if(this._timer)
@@ -352,14 +367,12 @@ module away.loaders {
 			this.dispatchEvent(new away.events.ParserEvent(away.events.ParserEvent.PARSE_ERROR, message));
 		}
 
-		
 		public _pAddDependency(id : string, req : away.net.URLRequest, retrieveAsRawData : boolean = false, data : any = null, suppressErrorEvents : boolean = false) : void
 		{
 
 			this._dependencies.push(new away.loaders.ResourceDependency(id, req, data, this, retrieveAsRawData, suppressErrorEvents));
 		}
-		
-		
+
 		public _pPauseAndRetrieveDependencies() : void
 		{
             if(this._timer)
@@ -370,7 +383,6 @@ module away.loaders {
 			this._parsingPaused = true;
 			this.dispatchEvent(new away.events.ParserEvent(away.events.ParserEvent.READY_FOR_DEPENDENCIES));
 		}
-		
 		
 		/**
 		 * Tests whether or not there is still time left for parsing within the maximum allowed time frame per session.
@@ -410,8 +422,7 @@ module away.loaders {
 			this._timer.start();
 
 		}
-		
-		
+
 		/**
 		 * Finish parsing the data.
 		 */
