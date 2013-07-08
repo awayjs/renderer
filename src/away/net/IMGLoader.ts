@@ -106,13 +106,14 @@ module away.net
         public get crossOrigin() : string
         {
 
-            return this.crossOrigin;
+            return this._crossOrigin;
         }
 
         public set crossOrigin( value : string )
         {
 
-            this.crossOrigin = value;
+            this._crossOrigin = value;
+
         }
 
         /**
