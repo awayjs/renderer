@@ -39,7 +39,6 @@ module away.loaders {
 		private _frameLimit     : number;
 		private _lastFrameTime  : number;
 
-
         //----------------------------------------------------------------------------------------------------------------------------------------------------------------
         // TODO: add error checking for the following ( could cause a problem if this function is not implemented )
         //----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -89,13 +88,21 @@ module away.loaders {
 		/**
 		 * Creates a new ParserBase object
 		 * @param format The data format of the file data to be parsed. Can be either <code>ParserDataFormat.BINARY</code> or <code>ParserDataFormat.PLAIN_TEXT</code>, and should be provided by the concrete subtype.
+         * @param loaderType The type of loader required by the parser
 		 *
 		 * @see away3d.loading.parsers.ParserDataFormat
 		 */
-		constructor(format : string)
+		constructor(format : string , loaderType : string = null )
 		{
 
             super();
+
+            if ( loaderType )
+            {
+
+                this._loaderType = loaderType;
+
+            }
 
 			this._materialMode=0;
 			this._dataFormat    = format;
@@ -155,6 +162,13 @@ module away.loaders {
         {
 
             this._loaderType = value;
+
+        }
+
+        public get data() : any
+        {
+
+            return this._data;
 
         }
 
@@ -351,6 +365,8 @@ module away.loaders {
 		 */
 		public _pProceedParsing() : boolean
 		{
+
+            console.log( '_pProceedParsing - AbstractMethodError');
 			//TODO: Throw  - throw new AbstractMethodError();
 			return true;
 		}
