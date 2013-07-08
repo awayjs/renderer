@@ -17,6 +17,7 @@ module away.loaders
         {
 
             super();
+            this.initLoader();
 
         }
 
@@ -29,7 +30,6 @@ module away.loaders
         public load( req : away.net.URLRequest )
         {
 
-            this.initLoader();
             this._loader.load( req );
 
         }
@@ -56,6 +56,22 @@ module away.loaders
         {
 
             return this._loader.data;
+
+        }
+        /**
+         *
+         * @returns {*}
+         */
+        public get dataFormat() : string
+        {
+
+            return this._loader.dataFormat;
+
+        }
+        public set dataFormat( value : string )
+        {
+
+            this._loader.dataFormat = value;
 
         }
 
