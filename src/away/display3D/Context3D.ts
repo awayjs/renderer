@@ -285,7 +285,6 @@ module away.display3D
 			program3D.focusProgram();
 		}
 		
-		
 		private getUniformLocationNameFromAgalRegisterIndex( programType:Context3DProgramType, firstRegister:number ):string
 		{
 			switch( programType)
@@ -308,7 +307,7 @@ module away.display3D
 		public setProgramConstantsFromMatrix( programType:string, firstRegister:number, matrix:away.geom.Matrix3D, transposedMatrix:boolean = false )
 		{
 			var locationName = this.getUniformLocationNameFromAgalRegisterIndex( programType, firstRegister );
-			this.setGLSLProgramConstantsFromMatrix(locationName,matrix,transposedMatrix);
+			this.setGLSLProgramConstantsFromMatrix( locationName, matrix, transposedMatrix );
 		}
 		
 		/*
@@ -350,7 +349,52 @@ module away.display3D
 			GL.scissor( rectangle.x, rectangle.y, rectangle.width, rectangle.height );
 		}
 		
-		public setVertexBufferAt( index:number, buffer:VertexBuffer3D, bufferOffset:number = 0, format:Context3DVertexBufferFormat = null) 
+		public setGLSLTextureAt( locationName:string, texture:TextureBase, textureIndex:number )
+		{
+			var location:WebGLUniformLocation = GL.getUniformLocation( this._currentProgram.glProgram, locationName );
+            switch( textureIndex )
+			{
+                case 0: 
+						GL.activeTexture( GL.TEXTURE0 );
+					break;
+                case 1:
+						GL.activeTexture( GL.TEXTURE1 );
+					break;
+                case 2:
+						GL.activeTexture( GL.TEXTURE2 );
+					break;
+                case 3:
+						GL.activeTexture( GL.TEXTURE3 );
+					break;
+                case 4:
+						GL.activeTexture( GL.TEXTURE4 );
+					break;
+                case 5:
+						GL.activeTexture( GL.TEXTURE5 );
+					break;
+                case 6:
+						GL.activeTexture( GL.TEXTURE6 );
+					break;
+                case 7:
+						GL.activeTexture( GL.TEXTURE7 );
+					break;
+                default:
+					throw "Texture " + textureIndex + " is out of bounds.";
+            }
+			
+			GL.bindTexture( GL.TEXTURE_2D, texture.glTexture );
+			console.log( ">>>>>>>>>> "  + texture.glTexture );
+			
+			GL.uniform1i( location, textureIndex );
+			
+			// TODO create something like setSamplerStateAt(.... 
+			GL.texParameteri( GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE );
+			GL.texParameteri( GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE );
+			GL.texParameteri( GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR );
+			GL.texParameteri( GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR );
+        }
+		
+		public setVertexBufferAt( index:number, buffer:VertexBuffer3D, bufferOffset:number = 0, format:Context3DVertexBufferFormat = null ) 
 		{
 			console.log( "===== setVertexBufferAt =====" );
 			console.log( "\tindex: " + index );
