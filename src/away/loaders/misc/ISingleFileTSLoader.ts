@@ -17,8 +17,10 @@ module away.loaders
     export interface ISingleFileTSLoader extends away.events.EventDispatcher {
 
         data : any;
+        dataFormat : string;
         load( rep : away.net.URLRequest ) : void ;
         dispose() : void ;
+
 
     }
 
