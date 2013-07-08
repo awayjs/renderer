@@ -28,8 +28,9 @@ class Away3D extends away.events.EventDispatcher
 {
 	
 	private _stage3D:away.display3D.Stage3D;
-	
-	private _image:HTMLImageElement;
+
+    private _image:HTMLImageElement;
+
 	
 	constructor(canvas:HTMLCanvasElement = null)
 	{
@@ -47,19 +48,21 @@ class Away3D extends away.events.EventDispatcher
 	
 	private loadResources()
 	{
-		var urlRequest: away.net.URLRequest = new away.net.URLRequest( "http://www.crydev.net/uploads/mediapool/130909_textures2/130909wall_big.png" );
+        console.log( 'loadResources')
+		var urlRequest: away.net.URLRequest = new away.net.URLRequest( "130909wall_big.png" );
 		var imgLoader: away.net.IMGLoader = new away.net.IMGLoader();
 		imgLoader.addEventListener( away.events.Event.COMPLETE, this.imageCompleteHandler, this );
-		
 		imgLoader.load( urlRequest );
 	}
-	
+
 	private imageCompleteHandler(e)
 	{
-		this._image = e.image;
-		console.log( "Image data " + e.image );
+
+        var imageLoader : away.net.IMGLoader = <away.net.IMGLoader> e.target
+		this._image = imageLoader.image;
+		console.log( "Image data " + this._image );
 		this._stage3D.addEventListener( away.events.AwayEvent.CONTEXT3D_CREATE, this.onContext3DCreateHandler, this );
-		this._stage3D.requestContext();
+
 	}
 	
 	private onContext3DCreateHandler( e )
@@ -131,4 +134,5 @@ class Away3D extends away.events.EventDispatcher
 		context3D.present();
 		
 	}
+
 }
