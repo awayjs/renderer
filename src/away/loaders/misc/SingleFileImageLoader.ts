@@ -26,13 +26,15 @@ module away.loaders
     export class SingleFileImageLoader extends away.events.EventDispatcher implements away.loaders.ISingleFileTSLoader
     {
 
-        private _loader : away.net.IMGLoader;
-        private _data   : any;
+        private _loader         : away.net.IMGLoader;
+        private _data           : any;
+        private _dataFormat     : string ; // Not used in this implementation
 
         constructor ()
         {
 
             super();
+            this.initLoader();
 
         }
 
@@ -45,7 +47,6 @@ module away.loaders
         public load( req : away.net.URLRequest )
         {
 
-            this.initLoader();
             this._loader.load( req );
 
         }
@@ -72,6 +73,22 @@ module away.loaders
         {
 
             return this._loader.image;
+
+        }
+        /**
+         *
+         * @returns {*}
+         */
+        public get dataFormat() : string
+        {
+
+            return this._dataFormat;
+
+        }
+        public set dataFormat( value : string )
+        {
+
+            this._dataFormat = value;
 
         }
 
