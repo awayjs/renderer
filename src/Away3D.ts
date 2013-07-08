@@ -48,12 +48,12 @@ class Away3D extends away.events.EventDispatcher
 	
 	private loadResources()
 	{
-		var urlRequest:away.net.URLRequest = new away.net.URLRequest( "http://www.crydev.net/uploads/mediapool/130909_textures2/130909wall_big.png" );
+		var urlRequest:away.net.URLRequest = new away.net.URLRequest( "130909wall_big.png" );
 		var imgLoader:away.net.IMGLoader = new away.net.IMGLoader();
 		imgLoader.addEventListener( away.events.Event.COMPLETE, this.imageCompleteHandler, this );
 		imgLoader.load( urlRequest );
 	}
-
+	
 	private imageCompleteHandler(e)
 	{
         var imageLoader : away.net.IMGLoader = <away.net.IMGLoader> e.target
