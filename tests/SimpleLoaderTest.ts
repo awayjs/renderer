@@ -68,21 +68,20 @@ module tests {
             // IAsset - Interface Test
             //------------------------------------------------------------------------------------------
 
-            this.iAssetTest.name    = 'Karim Beyrouti';
-            this.iAssetTest.id      = '555555+';
+            this.iAssetTest.name        = 'Karim Beyrouti';
+            this.iAssetTest.id          = '555555+';
             this.iAssetTest.dispose();
 
             var iTest : away.library.IAsset = this.iAssetTest;
 
-            console.log( iTest.name );
-            console.log( iTest.id );
+            //console.log( 'SimpleLoaderTest.iTest.name:' , iTest.name , ' id:' , iTest.id );
 
         }
 
         private simpleImageLoaderLoadComplete( e )
         {
 
-            console.log( 'simpleImageLoaderLoadComplete');
+            //console.log( 'SimpleLoaderTest.simpleImageLoaderLoadComplete');
 
 
         }
@@ -90,14 +89,14 @@ module tests {
         private simpleURLLoaderLoadComplete( e )
         {
 
-            console.log( 'simpleURLLoaderLoadComplete');
+            //console.log( 'SimpleLoaderTest.simpleURLLoaderLoadComplete');
 
         }
 
         private simpleImageLoaderLoadError( e )
         {
 
-            console.log( 'simpleImageLoaderLoadError');
+            //console.log( 'SimpleLoaderTest.simpleImageLoaderLoadError');
 
 
         }
@@ -105,7 +104,7 @@ module tests {
         private simpleURLLoaderLoadError( e )
         {
 
-            console.log( 'simpleURLLoaderLoadError');
+            //console.log( 'SimpleLoaderTest.simpleURLLoaderLoadError');
 
         }
 

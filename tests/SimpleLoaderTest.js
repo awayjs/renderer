@@ -1355,6 +1355,30 @@ var away;
     ///<reference path="../../utils/Timer.ts" />
     ///<reference path="../../utils/getTimer.ts" />
     (function (loaders) {
+        var ParserLoaderType = (function () {
+            function ParserLoaderType() {
+            }
+            ParserLoaderType.URL_LOADER = 'ParserLoaderType_URLLoader';
+            ParserLoaderType.IMG_LOADER = 'ParserLoaderType_IMGLoader';
+            return ParserLoaderType;
+        })();
+        loaders.ParserLoaderType = ParserLoaderType;
+    })(away.loaders || (away.loaders = {}));
+    var loaders = away.loaders;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../../events/EventDispatcher.ts" />
+    ///<reference path="../../events/AssetEvent.ts" />
+    ///<reference path="../../events/TimerEvent.ts" />
+    ///<reference path="../../events/ParserEvent.ts" />
+    ///<reference path="../../library/assets/IAsset.ts" />
+    ///<reference path="../../library/assets/AssetType.ts" />
+    ///<reference path="../../loaders/misc/ResourceDependency.ts" />
+    ///<reference path="../../loaders/parsers/ParserLoaderType.ts" />
+    ///<reference path="../../utils/Timer.ts" />
+    ///<reference path="../../utils/getTimer.ts" />
+    (function (loaders) {
         /**
         * <code>ParserBase</code> provides an abstract base class for objects that convert blocks of data to data structures
         * supported by Away3D.
@@ -1380,11 +1404,18 @@ var away;
             /**
             * Creates a new ParserBase object
             * @param format The data format of the file data to be parsed. Can be either <code>ParserDataFormat.BINARY</code> or <code>ParserDataFormat.PLAIN_TEXT</code>, and should be provided by the concrete subtype.
+            * @param loaderType The type of loader required by the parser
             *
             * @see away3d.loading.parsers.ParserDataFormat
             */
-            function ParserBase(format) {
+            function ParserBase(format, loaderType) {
+                if (typeof loaderType === "undefined") { loaderType = null; }
                 _super.call(this);
+                this._loaderType = away.loaders.ParserLoaderType.URL_LOADER;
+
+                if (loaderType) {
+                    this._loaderType = loaderType;
+                }
 
                 this._materialMode = 0;
                 this._dataFormat = format;
@@ -1449,6 +1480,26 @@ var away;
                 },
                 set: function (newMaterialMode) {
                     this._materialMode = newMaterialMode;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(ParserBase.prototype, "loaderType", {
+                get: function () {
+                    return this._loaderType;
+                },
+                set: function (value) {
+                    this._loaderType = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(ParserBase.prototype, "data", {
+                get: function () {
+                    return this._data;
                 },
                 enumerable: true,
                 configurable: true
@@ -1639,6 +1690,8 @@ var away;
             * <code>ParserBase.ParserBase.MORE_TO_PARSE</code>.
             */
             ParserBase.prototype._pProceedParsing = function () {
+                console.log('_pProceedParsing - AbstractMethodError');
+
                 //TODO: Throw  - throw new AbstractMethodError();
                 return true;
             };
@@ -1736,364 +1789,11 @@ var away;
             ParserDataFormat.BINARY = "binary";
 
             ParserDataFormat.PLAIN_TEXT = "plainText";
+
+            ParserDataFormat.IMAGE = "image";
             return ParserDataFormat;
         })();
         loaders.ParserDataFormat = ParserDataFormat;
-    })(away.loaders || (away.loaders = {}));
-    var loaders = away.loaders;
-})(away || (away = {}));
-var away;
-(function (away) {
-    ///<reference path="../../events/EventDispatcher.ts" />
-    ///<reference path="../../events/Event.ts" />
-    ///<reference path="../../events/IOErrorEvent.ts" />
-    ///<reference path="../../events/HTTPStatusEvent.ts" />
-    ///<reference path="../../events/ProgressEvent.ts" />
-    ///<reference path="../../events/AwayEvent.ts" />
-    ///<reference path="../../events/LoaderEvent.ts" />
-    ///<reference path="../../net/URLRequest.ts" />
-    ///<reference path="../../net/URLLoaderDataFormat.ts" />
-    ///<reference path="../../net/URLRequestMethod.ts" />
-    ///<reference path="../../net/URLRequest.ts" />
-    ///<reference path="../../net/URLLoader.ts" />
-    ///<reference path="../../loaders/parsers/ParserBase.ts" />
-    ///<reference path="../../loaders/parsers/ParserDataFormat.ts" />
-    (function (loaders) {
-        /**
-        * The SingleFileLoader is used to load a single file, as part of a resource.
-        *
-        * While SingleFileLoader can be used directly, e.g. to create a third-party asset
-        * management system, it's recommended to use any of the classes Loader3D, AssetLoader
-        * and AssetLibrary instead in most cases.
-        *
-        * @see away3d.loading.Loader3D
-        * @see away3d.loading.AssetLoader
-        * @see away3d.loading.AssetLibrary
-        */
-        var SingleFileLoader = (function (_super) {
-            __extends(SingleFileLoader, _super);
-            /**
-            * Creates a new SingleFileLoader object.
-            */
-            function SingleFileLoader(materialMode) {
-                if (typeof materialMode === "undefined") { materialMode = 0; }
-                _super.call(this);
-                this._materialMode = materialMode;
-            }
-            SingleFileLoader.enableParser = function (parser) {
-                if (SingleFileLoader._parsers.indexOf(parser) < 0) {
-                    SingleFileLoader._parsers.push(parser);
-                }
-            };
-
-            SingleFileLoader.enableParsers = function (parsers) {
-                var pc;
-
-                for (var c = 0; c < parsers.length; c++) {
-                    SingleFileLoader.enableParser(parsers[c]);
-                }
-            };
-
-            Object.defineProperty(SingleFileLoader.prototype, "url", {
-                get: function () {
-                    return this._req ? this._req.url : '';
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SingleFileLoader.prototype, "data", {
-                get: function () {
-                    return this._data;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SingleFileLoader.prototype, "loadAsRawData", {
-                get: function () {
-                    return this._loadAsRawData;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            /**
-            * Load a resource from a file.
-            *
-            * @param urlRequest The URLRequest object containing the URL of the object to be loaded.
-            * @param parser An optional parser object that will translate the loaded data into a usable resource. If not provided, AssetLoader will attempt to auto-detect the file type.
-            */
-            SingleFileLoader.prototype.load = function (urlRequest, parser, loadAsRawData) {
-                if (typeof parser === "undefined") { parser = null; }
-                if (typeof loadAsRawData === "undefined") { loadAsRawData = false; }
-                var urlLoader;
-                var dataFormat;
-
-                this._loadAsRawData = loadAsRawData;
-                this._req = urlRequest;
-                this.decomposeFilename(this._req.url);
-
-                if (this._loadAsRawData) {
-                    // Always use binary for raw data loading
-                    dataFormat = away.net.URLLoaderDataFormat.BINARY;
-                } else {
-                    if (parser)
-                        this._parser = parser;
-
-                    if (!this._parser)
-                        this._parser = this.getParserFromSuffix();
-
-                    console.log('load', 'this._parser: ' + this._parser);
-
-                    if (this._parser) {
-                        switch (this._parser.dataFormat) {
-                            case away.loaders.ParserDataFormat.BINARY:
-                                dataFormat = away.net.URLLoaderDataFormat.BINARY;
-                                break;
-
-                            case away.loaders.ParserDataFormat.PLAIN_TEXT:
-                                dataFormat = away.net.URLLoaderDataFormat.TEXT;
-                                break;
-                        }
-                    } else {
-                        // Always use BINARY for unknown file formats. The thorough
-                        // file type check will determine format after load, and if
-                        // binary, a text load will have broken the file data.
-                        dataFormat = away.net.URLLoaderDataFormat.BINARY;
-                    }
-                }
-
-                console.log('load', dataFormat);
-
-                // TODO: Implement ParserBase "loaderType" - and switch to ImageLoader || Add a
-                urlLoader = new away.net.URLLoader();
-                urlLoader.dataFormat = dataFormat;
-                urlLoader.addEventListener(away.events.Event.COMPLETE, this.handleUrlLoaderComplete, this);
-                urlLoader.addEventListener(away.events.IOErrorEvent.IO_ERROR, this.handleUrlLoaderError, this);
-                urlLoader.load(urlRequest);
-            };
-
-            /**
-            * Loads a resource from already loaded data.
-            * @param data The data to be parsed. Depending on the parser type, this can be a ByteArray, String or XML.
-            * @param uri The identifier (url or id) of the object to be loaded, mainly used for resource management.
-            * @param parser An optional parser object that will translate the data into a usable resource. If not provided, AssetLoader will attempt to auto-detect the file type.
-            */
-            SingleFileLoader.prototype.parseData = function (data, parser, req) {
-                if (typeof parser === "undefined") { parser = null; }
-                if (typeof req === "undefined") { req = null; }
-                if (data.constructor === Function) {
-                    data = new data();
-                }
-
-                if (parser)
-                    this._parser = parser;
-
-                this._req = req;
-
-                this.parse(data);
-            };
-
-            Object.defineProperty(SingleFileLoader.prototype, "parser", {
-                get: /**
-                * A reference to the parser that will translate the loaded data into a usable resource.
-                */
-                function () {
-                    return this._parser;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SingleFileLoader.prototype, "dependencies", {
-                get: /**
-                * A list of dependencies that need to be loaded and resolved for the loaded object.
-                */
-                function () {
-                    return this._parser ? this._parser.dependencies : new Array();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            /**
-            * Splits a url string into base and extension.
-            * @param url The url to be decomposed.
-            */
-            SingleFileLoader.prototype.decomposeFilename = function (url) {
-                // Get rid of query string if any and extract suffix
-                var base = (url.indexOf('?') > 0) ? url.split('?')[0] : url;
-                var i = base.lastIndexOf('.');
-                this._fileExtension = base.substr(i + 1).toLowerCase();
-                this._fileName = base.substr(0, i);
-
-                console.log('decomposeFilename', url, this._fileExtension, this._fileName);
-            };
-
-            /**
-            * Guesses the parser to be used based on the file extension.
-            * @return An instance of the guessed parser.
-            */
-            SingleFileLoader.prototype.getParserFromSuffix = function () {
-                var len = SingleFileLoader._parsers.length;
-
-                for (var i = len - 1; i >= 0; i--) {
-                    var currentParser = SingleFileLoader._parsers[i];
-                    console.log('getParserFromSuffix.currentParser', currentParser);
-
-                    var supportstype = SingleFileLoader._parsers[i]['supportsType'](this._fileExtension);
-
-                    console.log('getParserFromSuffix.supportstype', supportstype);
-
-                    if (SingleFileLoader._parsers[i]['supportsType'](this._fileExtension)) {
-                        return new SingleFileLoader._parsers[i]();
-                    }
-                }
-
-                return null;
-            };
-
-            /**
-            * Guesses the parser to be used based on the file contents.
-            * @param data The data to be parsed.
-            * @param uri The url or id of the object to be parsed.
-            * @return An instance of the guessed parser.
-            */
-            SingleFileLoader.prototype.getParserFromData = function (data) {
-                var len = SingleFileLoader._parsers.length;
-
-                for (var i = len - 1; i >= 0; i--)
-                    if (SingleFileLoader._parsers[i].supportsData(data))
-                        return new SingleFileLoader._parsers[i]();
-
-                return null;
-            };
-
-            /**
-            * Cleanups
-            */
-            SingleFileLoader.prototype.removeListeners = function (urlLoader) {
-                urlLoader.removeEventListener(away.events.Event.COMPLETE, this.handleUrlLoaderComplete, this);
-                urlLoader.removeEventListener(away.events.IOErrorEvent.IO_ERROR, this.handleUrlLoaderError, this);
-            };
-
-            /**
-            * Called when loading of a file has failed
-            */
-            SingleFileLoader.prototype.handleUrlLoaderError = function (event) {
-                var urlLoader = event.target;
-                this.removeListeners(urlLoader);
-
-                //if(this.hasEventListener(away.events.LoaderEvent.LOAD_ERROR , this.handleUrlLoaderError , this ))
-                this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.LOAD_ERROR, this._req.url, true));
-            };
-
-            /**
-            * Called when loading of a file is complete
-            */
-            SingleFileLoader.prototype.handleUrlLoaderComplete = function (event) {
-                var urlLoader = event.target;
-                this.removeListeners(urlLoader);
-
-                this._data = urlLoader.data;
-
-                console.log('handleUrlLoaderComplete', this._data.length);
-
-                if (this._loadAsRawData) {
-                    // No need to parse this data, which should be returned as is
-                    this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.DEPENDENCY_COMPLETE));
-                } else {
-                    this.parse(this._data);
-                }
-            };
-
-            /**
-            * Initiates parsing of the loaded data.
-            * @param data The data to be parsed.
-            */
-            SingleFileLoader.prototype.parse = function (data) {
-                if (!this._parser) {
-                    this._parser = this.getParserFromData(data);
-                }
-
-                if (this._parser) {
-                    this._parser.addEventListener(away.events.ParserEvent.READY_FOR_DEPENDENCIES, this.onReadyForDependencies, this);
-                    this._parser.addEventListener(away.events.ParserEvent.PARSE_ERROR, this.onParseError, this);
-                    this._parser.addEventListener(away.events.ParserEvent.PARSE_COMPLETE, this.onParseComplete, this);
-                    this._parser.addEventListener(away.events.AssetEvent.TEXTURE_SIZE_ERROR, this.onTextureSizeError, this);
-                    this._parser.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
-                    this._parser.addEventListener(away.events.AssetEvent.ANIMATION_SET_COMPLETE, this.onAssetComplete, this);
-                    this._parser.addEventListener(away.events.AssetEvent.ANIMATION_STATE_COMPLETE, this.onAssetComplete, this);
-                    this._parser.addEventListener(away.events.AssetEvent.ANIMATION_NODE_COMPLETE, this.onAssetComplete, this);
-                    this._parser.addEventListener(away.events.AssetEvent.STATE_TRANSITION_COMPLETE, this.onAssetComplete, this);
-                    this._parser.addEventListener(away.events.AssetEvent.TEXTURE_COMPLETE, this.onAssetComplete, this);
-                    this._parser.addEventListener(away.events.AssetEvent.CONTAINER_COMPLETE, this.onAssetComplete, this);
-                    this._parser.addEventListener(away.events.AssetEvent.GEOMETRY_COMPLETE, this.onAssetComplete, this);
-                    this._parser.addEventListener(away.events.AssetEvent.MATERIAL_COMPLETE, this.onAssetComplete, this);
-                    this._parser.addEventListener(away.events.AssetEvent.MESH_COMPLETE, this.onAssetComplete, this);
-                    this._parser.addEventListener(away.events.AssetEvent.ENTITY_COMPLETE, this.onAssetComplete, this);
-                    this._parser.addEventListener(away.events.AssetEvent.SKELETON_COMPLETE, this.onAssetComplete, this);
-                    this._parser.addEventListener(away.events.AssetEvent.SKELETON_POSE_COMPLETE, this.onAssetComplete, this);
-
-                    if (this._req && this._req.url) {
-                        this._parser._iFileName = this._req.url;
-                    }
-
-                    this._parser.materialMode = this._materialMode;
-                    this._parser.parseAsync(data);
-                } else {
-                    var msg = "No parser defined. To enable all parsers for auto-detection, use Parsers.enableAllBundled()";
-
-                    //if(hasEventListener(LoaderEvent.LOAD_ERROR)){
-                    this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.LOAD_ERROR, "", true, msg));
-                }
-            };
-
-            SingleFileLoader.prototype.onParseError = function (event) {
-                this.dispatchEvent(event.clone());
-            };
-
-            SingleFileLoader.prototype.onReadyForDependencies = function (event) {
-                this.dispatchEvent(event.clone());
-            };
-
-            SingleFileLoader.prototype.onAssetComplete = function (event) {
-                this.dispatchEvent(event.clone());
-            };
-
-            SingleFileLoader.prototype.onTextureSizeError = function (event) {
-                this.dispatchEvent(event.clone());
-            };
-
-            /**
-            * Called when parsing is complete.
-            */
-            SingleFileLoader.prototype.onParseComplete = function (event) {
-                this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this.url));
-
-                this._parser.removeEventListener(away.events.ParserEvent.READY_FOR_DEPENDENCIES, this.onReadyForDependencies, this);
-                this._parser.removeEventListener(away.events.ParserEvent.PARSE_COMPLETE, this.onParseComplete, this);
-                this._parser.removeEventListener(away.events.ParserEvent.PARSE_ERROR, this.onParseError, this);
-                this._parser.removeEventListener(away.events.AssetEvent.TEXTURE_SIZE_ERROR, this.onTextureSizeError, this);
-                this._parser.removeEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
-                this._parser.removeEventListener(away.events.AssetEvent.ANIMATION_SET_COMPLETE, this.onAssetComplete, this);
-                this._parser.removeEventListener(away.events.AssetEvent.ANIMATION_STATE_COMPLETE, this.onAssetComplete, this);
-                this._parser.removeEventListener(away.events.AssetEvent.ANIMATION_NODE_COMPLETE, this.onAssetComplete, this);
-                this._parser.removeEventListener(away.events.AssetEvent.STATE_TRANSITION_COMPLETE, this.onAssetComplete, this);
-                this._parser.removeEventListener(away.events.AssetEvent.TEXTURE_COMPLETE, this.onAssetComplete, this);
-                this._parser.removeEventListener(away.events.AssetEvent.CONTAINER_COMPLETE, this.onAssetComplete, this);
-                this._parser.removeEventListener(away.events.AssetEvent.GEOMETRY_COMPLETE, this.onAssetComplete, this);
-                this._parser.removeEventListener(away.events.AssetEvent.MATERIAL_COMPLETE, this.onAssetComplete, this);
-                this._parser.removeEventListener(away.events.AssetEvent.MESH_COMPLETE, this.onAssetComplete, this);
-                this._parser.removeEventListener(away.events.AssetEvent.ENTITY_COMPLETE, this.onAssetComplete, this);
-                this._parser.removeEventListener(away.events.AssetEvent.SKELETON_COMPLETE, this.onAssetComplete, this);
-                this._parser.removeEventListener(away.events.AssetEvent.SKELETON_POSE_COMPLETE, this.onAssetComplete, this);
-            };
-            SingleFileLoader._parsers = new Array();
-            return SingleFileLoader;
-        })(away.events.EventDispatcher);
-        loaders.SingleFileLoader = SingleFileLoader;
     })(away.loaders || (away.loaders = {}));
     var loaders = away.loaders;
 })(away || (away = {}));
@@ -2112,6 +1812,7 @@ var away;
                 this._name = '';
                 this._loaded = false;
                 this._name = imageName;
+                this.initImage();
             }
             // Public
             /**
@@ -2120,7 +1821,6 @@ var away;
             */
             IMGLoader.prototype.load = function (request) {
                 this._loaded = false;
-                this.initImage();
                 this._request = request;
                 this._image.src = this._request.url;
             };
@@ -2292,6 +1992,69 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
+    ///<reference path="ParserBase.ts" />
+    ///<reference path="ParserDataFormat.ts" />
+    ///<reference path="ParserLoaderType.ts" />
+    ///<reference path="../../net/IMGLoader.ts" />
+    (function (loaders) {
+        /**
+        * ImageParser provides a "parser" for natively supported image types (jpg, png). While it simply loads bytes into
+        * a loader object, it wraps it in a BitmapDataResource so resource management can happen consistently without
+        * exception cases.
+        */
+        var ImageParser = (function (_super) {
+            __extends(ImageParser, _super);
+            //private var _loader           : Loader;
+            /**
+            * Creates a new ImageParser object.
+            * @param uri The url or id of the data or file to be parsed.
+            * @param extra The holder for extra contextual data that the parser might need.
+            */
+            function ImageParser() {
+                _super.call(this, away.loaders.ParserDataFormat.IMAGE, away.loaders.ParserLoaderType.IMG_LOADER);
+            }
+            ImageParser.supportsType = /**
+            * Indicates whether or not a given file extension is supported by the parser.
+            * @param extension The file extension of a potential file to be parsed.
+            * @return Whether or not the given file type is supported.
+            */
+            function (extension) {
+                extension = extension.toLowerCase();
+                return extension == "jpg" || extension == "jpeg" || extension == "png" || extension == "gif" || extension == "bmp";
+            };
+
+            ImageParser.supportsData = /**
+            * Tests whether a data block can be parsed by the parser.
+            * @param data The data block to potentially be parsed.
+            * @return Whether or not the given data is supported.
+            */
+            function (data) {
+                if (data instanceof HTMLImageElement) {
+                    return true;
+                }
+
+                return false;
+            };
+
+            /**
+            * @inheritDoc
+            */
+            ImageParser.prototype._pProceedParsing = function () {
+                if (this.data instanceof HTMLImageElement) {
+                    // TODO: Implement Texture2D and add HTMLImageElement
+                    return away.loaders.ParserBase.PARSING_DONE;
+                }
+
+                return away.loaders.ParserBase.PARSING_DONE;
+            };
+            return ImageParser;
+        })(away.loaders.ParserBase);
+        loaders.ImageParser = ImageParser;
+    })(away.loaders || (away.loaders = {}));
+    var loaders = away.loaders;
+})(away || (away = {}));
+var away;
+(function (away) {
     ///<reference path="../../net/URLRequest.ts" />
     ///<reference path="../../net/IMGLoader.ts" />
     ///<reference path="../../events/EventDispatcher.ts" />
@@ -2315,6 +2078,7 @@ var away;
             __extends(SingleFileImageLoader, _super);
             function SingleFileImageLoader() {
                 _super.call(this);
+                this.initLoader();
             }
             // Public
             /**
@@ -2322,7 +2086,6 @@ var away;
             * @param req
             */
             SingleFileImageLoader.prototype.load = function (req) {
-                this.initLoader();
                 this._loader.load(req);
             };
 
@@ -2342,6 +2105,21 @@ var away;
                 */
                 function () {
                     return this._loader.image;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SingleFileImageLoader.prototype, "dataFormat", {
+                get: /**
+                *
+                * @returns {*}
+                */
+                function () {
+                    return this._dataFormat;
+                },
+                set: function (value) {
+                    this._dataFormat = value;
                 },
                 enumerable: true,
                 configurable: true
@@ -2405,6 +2183,7 @@ var away;
             __extends(SingleFileURLLoader, _super);
             function SingleFileURLLoader() {
                 _super.call(this);
+                this.initLoader();
             }
             // Public
             /**
@@ -2412,7 +2191,6 @@ var away;
             * @param req
             */
             SingleFileURLLoader.prototype.load = function (req) {
-                this.initLoader();
                 this._loader.load(req);
             };
 
@@ -2432,6 +2210,21 @@ var away;
                 */
                 function () {
                     return this._loader.data;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SingleFileURLLoader.prototype, "dataFormat", {
+                get: /**
+                *
+                * @returns {*}
+                */
+                function () {
+                    return this._loader.dataFormat;
+                },
+                set: function (value) {
+                    this._loader.dataFormat = value;
                 },
                 enumerable: true,
                 configurable: true
@@ -2480,6 +2273,408 @@ var away;
             return SingleFileURLLoader;
         })(away.events.EventDispatcher);
         loaders.SingleFileURLLoader = SingleFileURLLoader;
+    })(away.loaders || (away.loaders = {}));
+    var loaders = away.loaders;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../../events/EventDispatcher.ts" />
+    ///<reference path="../../events/Event.ts" />
+    ///<reference path="../../events/IOErrorEvent.ts" />
+    ///<reference path="../../events/HTTPStatusEvent.ts" />
+    ///<reference path="../../events/ProgressEvent.ts" />
+    ///<reference path="../../events/AwayEvent.ts" />
+    ///<reference path="../../events/LoaderEvent.ts" />
+    ///<reference path="../../net/URLRequest.ts" />
+    ///<reference path="../../net/URLLoaderDataFormat.ts" />
+    ///<reference path="../../net/URLRequestMethod.ts" />
+    ///<reference path="../../net/URLRequest.ts" />
+    ///<reference path="../../net/URLLoader.ts" />
+    ///<reference path="../../loaders/parsers/ParserBase.ts" />
+    ///<reference path="../../loaders/parsers/ParserDataFormat.ts" />
+    ///<reference path="../../loaders/parsers/ImageParser.ts" />
+    ///<reference path="ISingleFileTSLoader.ts" />
+    ///<reference path="SingleFileImageLoader.ts" />
+    ///<reference path="SingleFileURLLoader.ts" />
+    (function (loaders) {
+        /**
+        * The SingleFileLoader is used to load a single file, as part of a resource.
+        *
+        * While SingleFileLoader can be used directly, e.g. to create a third-party asset
+        * management system, it's recommended to use any of the classes Loader3D, AssetLoader
+        * and AssetLibrary instead in most cases.
+        *
+        * @see away3d.loading.Loader3D
+        * @see away3d.loading.AssetLoader
+        * @see away3d.loading.AssetLibrary
+        */
+        var SingleFileLoader = (function (_super) {
+            __extends(SingleFileLoader, _super);
+            // Constructor
+            /**
+            * Creates a new SingleFileLoader object.
+            */
+            function SingleFileLoader(materialMode) {
+                if (typeof materialMode === "undefined") { materialMode = 0; }
+                _super.call(this);
+                this._materialMode = materialMode;
+            }
+            SingleFileLoader.enableParser = function (parser) {
+                if (SingleFileLoader._parsers.indexOf(parser) < 0) {
+                    SingleFileLoader._parsers.push(parser);
+                }
+            };
+
+            SingleFileLoader.enableParsers = function (parsers) {
+                var pc;
+
+                for (var c = 0; c < parsers.length; c++) {
+                    SingleFileLoader.enableParser(parsers[c]);
+                }
+            };
+
+            Object.defineProperty(SingleFileLoader.prototype, "url", {
+                get: // Get / Set
+                function () {
+                    return this._req ? this._req.url : '';
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SingleFileLoader.prototype, "data", {
+                get: function () {
+                    return this._data;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SingleFileLoader.prototype, "loadAsRawData", {
+                get: function () {
+                    return this._loadAsRawData;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            // Public
+            /**
+            * Load a resource from a file.
+            *
+            * @param urlRequest The URLRequest object containing the URL of the object to be loaded.
+            * @param parser An optional parser object that will translate the loaded data into a usable resource. If not provided, AssetLoader will attempt to auto-detect the file type.
+            */
+            SingleFileLoader.prototype.load = function (urlRequest, parser, loadAsRawData) {
+                if (typeof parser === "undefined") { parser = null; }
+                if (typeof loadAsRawData === "undefined") { loadAsRawData = false; }
+                //var urlLoader   : away.net.URLLoader;
+                var dataFormat;
+                var loaderType = away.loaders.ParserLoaderType.URL_LOADER;
+
+                this._loadAsRawData = loadAsRawData;
+                this._req = urlRequest;
+
+                this.decomposeFilename(this._req.url);
+
+                if (this._loadAsRawData) {
+                    // Always use binary for raw data loading
+                    dataFormat = away.net.URLLoaderDataFormat.BINARY;
+                } else {
+                    if (parser) {
+                        this._parser = parser;
+                    }
+
+                    if (!this._parser) {
+                        this._parser = this.getParserFromSuffix();
+                    }
+
+                    console.log('SingleFileURLLoader.load._parser: ' + this._parser);
+
+                    if (this._parser) {
+                        switch (this._parser.dataFormat) {
+                            case away.loaders.ParserDataFormat.BINARY:
+                                dataFormat = away.net.URLLoaderDataFormat.BINARY;
+
+                                break;
+
+                            case away.loaders.ParserDataFormat.PLAIN_TEXT:
+                                dataFormat = away.net.URLLoaderDataFormat.TEXT;
+
+                                break;
+                        }
+
+                        switch (this._parser.loaderType) {
+                            case away.loaders.ParserLoaderType.IMG_LOADER:
+                                loaderType = away.loaders.ParserLoaderType.IMG_LOADER;
+
+                                break;
+
+                            case away.loaders.ParserLoaderType.URL_LOADER:
+                                loaderType = away.loaders.ParserLoaderType.URL_LOADER;
+
+                                break;
+                        }
+                    } else {
+                        // Always use BINARY for unknown file formats. The thorough
+                        // file type check will determine format after load, and if
+                        // binary, a text load will have broken the file data.
+                        dataFormat = away.net.URLLoaderDataFormat.BINARY;
+                    }
+                }
+
+                console.log('SingleFileURLLoader.load.dataFormat:', dataFormat, 'ParserFormat: ', this._parser.dataFormat);
+                console.log('SingleFileURLLoader.load.loaderType: ', loaderType);
+
+                var loader = this.getLoader(loaderType);
+                loader.dataFormat = dataFormat;
+                loader.addEventListener(away.events.Event.COMPLETE, this.handleUrlLoaderComplete, this);
+                loader.addEventListener(away.events.IOErrorEvent.IO_ERROR, this.handleUrlLoaderError, this);
+                loader.load(urlRequest);
+            };
+
+            /**
+            * Loads a resource from already loaded data.
+            * @param data The data to be parsed. Depending on the parser type, this can be a ByteArray, String or XML.
+            * @param uri The identifier (url or id) of the object to be loaded, mainly used for resource management.
+            * @param parser An optional parser object that will translate the data into a usable resource. If not provided, AssetLoader will attempt to auto-detect the file type.
+            */
+            SingleFileLoader.prototype.parseData = function (data, parser, req) {
+                if (typeof parser === "undefined") { parser = null; }
+                if (typeof req === "undefined") { req = null; }
+                if (data.constructor === Function) {
+                    data = new data();
+                }
+
+                if (parser)
+                    this._parser = parser;
+
+                this._req = req;
+
+                this.parse(data);
+            };
+
+            Object.defineProperty(SingleFileLoader.prototype, "parser", {
+                get: /**
+                * A reference to the parser that will translate the loaded data into a usable resource.
+                */
+                function () {
+                    return this._parser;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SingleFileLoader.prototype, "dependencies", {
+                get: /**
+                * A list of dependencies that need to be loaded and resolved for the loaded object.
+                */
+                function () {
+                    return this._parser ? this._parser.dependencies : new Array();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            // Private
+            /**
+            *
+            * @param loaderType
+            */
+            SingleFileLoader.prototype.getLoader = function (loaderType) {
+                var loader;
+
+                switch (loaderType) {
+                    case away.loaders.ParserLoaderType.IMG_LOADER:
+                        loader = new away.loaders.SingleFileImageLoader();
+
+                        break;
+
+                    case away.loaders.ParserLoaderType.URL_LOADER:
+                        loader = new away.loaders.SingleFileURLLoader();
+
+                        break;
+                }
+
+                return loader;
+            };
+
+            /**
+            * Splits a url string into base and extension.
+            * @param url The url to be decomposed.
+            */
+            SingleFileLoader.prototype.decomposeFilename = function (url) {
+                // Get rid of query string if any and extract suffix
+                var base = (url.indexOf('?') > 0) ? url.split('?')[0] : url;
+                var i = base.lastIndexOf('.');
+                this._fileExtension = base.substr(i + 1).toLowerCase();
+                this._fileName = base.substr(0, i);
+            };
+
+            /**
+            * Guesses the parser to be used based on the file extension.
+            * @return An instance of the guessed parser.
+            */
+            SingleFileLoader.prototype.getParserFromSuffix = function () {
+                var len = SingleFileLoader._parsers.length;
+
+                for (var i = len - 1; i >= 0; i--) {
+                    var currentParser = SingleFileLoader._parsers[i];
+                    var supportstype = SingleFileLoader._parsers[i].supportsType(this._fileExtension);
+
+                    console.log('SingleFileURLLoader.getParserFromSuffix.supportstype', supportstype);
+
+                    if (SingleFileLoader._parsers[i]['supportsType'](this._fileExtension)) {
+                        return new SingleFileLoader._parsers[i]();
+                    }
+                }
+
+                return null;
+            };
+
+            /**
+            * Guesses the parser to be used based on the file contents.
+            * @param data The data to be parsed.
+            * @param uri The url or id of the object to be parsed.
+            * @return An instance of the guessed parser.
+            */
+            SingleFileLoader.prototype.getParserFromData = function (data) {
+                var len = SingleFileLoader._parsers.length;
+
+                for (var i = len - 1; i >= 0; i--)
+                    if (SingleFileLoader._parsers[i].supportsData(data))
+                        return new SingleFileLoader._parsers[i]();
+
+                return null;
+            };
+
+            /**
+            * Cleanups
+            */
+            SingleFileLoader.prototype.removeListeners = function (urlLoader) {
+                urlLoader.removeEventListener(away.events.Event.COMPLETE, this.handleUrlLoaderComplete, this);
+                urlLoader.removeEventListener(away.events.IOErrorEvent.IO_ERROR, this.handleUrlLoaderError, this);
+            };
+
+            // Events
+            /**
+            * Called when loading of a file has failed
+            */
+            SingleFileLoader.prototype.handleUrlLoaderError = function (event) {
+                var urlLoader = event.target;
+                this.removeListeners(urlLoader);
+
+                //if(this.hasEventListener(away.events.LoaderEvent.LOAD_ERROR , this.handleUrlLoaderError , this ))
+                this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.LOAD_ERROR, this._req.url, true));
+            };
+
+            /**
+            * Called when loading of a file is complete
+            */
+            SingleFileLoader.prototype.handleUrlLoaderComplete = function (event) {
+                var urlLoader = event.target;
+                this.removeListeners(urlLoader);
+
+                this._data = urlLoader.data;
+
+                console.log('SingleFileURLLoader.handleUrlLoaderComplete', this._data.length);
+
+                if (this._loadAsRawData) {
+                    // No need to parse this data, which should be returned as is
+                    this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.DEPENDENCY_COMPLETE));
+                } else {
+                    this.parse(this._data);
+                }
+            };
+
+            /**
+            * Initiates parsing of the loaded data.
+            * @param data The data to be parsed.
+            */
+            SingleFileLoader.prototype.parse = function (data) {
+                console.log('SingleFileURLLoader.parse', data);
+
+                if (!this._parser) {
+                    this._parser = this.getParserFromData(data);
+                }
+
+                if (this._parser) {
+                    this._parser.addEventListener(away.events.ParserEvent.READY_FOR_DEPENDENCIES, this.onReadyForDependencies, this);
+                    this._parser.addEventListener(away.events.ParserEvent.PARSE_ERROR, this.onParseError, this);
+                    this._parser.addEventListener(away.events.ParserEvent.PARSE_COMPLETE, this.onParseComplete, this);
+                    this._parser.addEventListener(away.events.AssetEvent.TEXTURE_SIZE_ERROR, this.onTextureSizeError, this);
+                    this._parser.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+                    this._parser.addEventListener(away.events.AssetEvent.ANIMATION_SET_COMPLETE, this.onAssetComplete, this);
+                    this._parser.addEventListener(away.events.AssetEvent.ANIMATION_STATE_COMPLETE, this.onAssetComplete, this);
+                    this._parser.addEventListener(away.events.AssetEvent.ANIMATION_NODE_COMPLETE, this.onAssetComplete, this);
+                    this._parser.addEventListener(away.events.AssetEvent.STATE_TRANSITION_COMPLETE, this.onAssetComplete, this);
+                    this._parser.addEventListener(away.events.AssetEvent.TEXTURE_COMPLETE, this.onAssetComplete, this);
+                    this._parser.addEventListener(away.events.AssetEvent.CONTAINER_COMPLETE, this.onAssetComplete, this);
+                    this._parser.addEventListener(away.events.AssetEvent.GEOMETRY_COMPLETE, this.onAssetComplete, this);
+                    this._parser.addEventListener(away.events.AssetEvent.MATERIAL_COMPLETE, this.onAssetComplete, this);
+                    this._parser.addEventListener(away.events.AssetEvent.MESH_COMPLETE, this.onAssetComplete, this);
+                    this._parser.addEventListener(away.events.AssetEvent.ENTITY_COMPLETE, this.onAssetComplete, this);
+                    this._parser.addEventListener(away.events.AssetEvent.SKELETON_COMPLETE, this.onAssetComplete, this);
+                    this._parser.addEventListener(away.events.AssetEvent.SKELETON_POSE_COMPLETE, this.onAssetComplete, this);
+
+                    if (this._req && this._req.url) {
+                        this._parser._iFileName = this._req.url;
+                    }
+
+                    this._parser.materialMode = this._materialMode;
+                    this._parser.parseAsync(data);
+                } else {
+                    var msg = "No parser defined. To enable all parsers for auto-detection, use Parsers.enableAllBundled()";
+
+                    //if(hasEventListener(LoaderEvent.LOAD_ERROR)){
+                    this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.LOAD_ERROR, "", true, msg));
+                }
+            };
+
+            SingleFileLoader.prototype.onParseError = function (event) {
+                this.dispatchEvent(event.clone());
+            };
+
+            SingleFileLoader.prototype.onReadyForDependencies = function (event) {
+                this.dispatchEvent(event.clone());
+            };
+
+            SingleFileLoader.prototype.onAssetComplete = function (event) {
+                this.dispatchEvent(event.clone());
+            };
+
+            SingleFileLoader.prototype.onTextureSizeError = function (event) {
+                this.dispatchEvent(event.clone());
+            };
+
+            /**
+            * Called when parsing is complete.
+            */
+            SingleFileLoader.prototype.onParseComplete = function (event) {
+                this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this.url));
+
+                this._parser.removeEventListener(away.events.ParserEvent.READY_FOR_DEPENDENCIES, this.onReadyForDependencies, this);
+                this._parser.removeEventListener(away.events.ParserEvent.PARSE_COMPLETE, this.onParseComplete, this);
+                this._parser.removeEventListener(away.events.ParserEvent.PARSE_ERROR, this.onParseError, this);
+                this._parser.removeEventListener(away.events.AssetEvent.TEXTURE_SIZE_ERROR, this.onTextureSizeError, this);
+                this._parser.removeEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+                this._parser.removeEventListener(away.events.AssetEvent.ANIMATION_SET_COMPLETE, this.onAssetComplete, this);
+                this._parser.removeEventListener(away.events.AssetEvent.ANIMATION_STATE_COMPLETE, this.onAssetComplete, this);
+                this._parser.removeEventListener(away.events.AssetEvent.ANIMATION_NODE_COMPLETE, this.onAssetComplete, this);
+                this._parser.removeEventListener(away.events.AssetEvent.STATE_TRANSITION_COMPLETE, this.onAssetComplete, this);
+                this._parser.removeEventListener(away.events.AssetEvent.TEXTURE_COMPLETE, this.onAssetComplete, this);
+                this._parser.removeEventListener(away.events.AssetEvent.CONTAINER_COMPLETE, this.onAssetComplete, this);
+                this._parser.removeEventListener(away.events.AssetEvent.GEOMETRY_COMPLETE, this.onAssetComplete, this);
+                this._parser.removeEventListener(away.events.AssetEvent.MATERIAL_COMPLETE, this.onAssetComplete, this);
+                this._parser.removeEventListener(away.events.AssetEvent.MESH_COMPLETE, this.onAssetComplete, this);
+                this._parser.removeEventListener(away.events.AssetEvent.ENTITY_COMPLETE, this.onAssetComplete, this);
+                this._parser.removeEventListener(away.events.AssetEvent.SKELETON_COMPLETE, this.onAssetComplete, this);
+                this._parser.removeEventListener(away.events.AssetEvent.SKELETON_POSE_COMPLETE, this.onAssetComplete, this);
+            };
+            SingleFileLoader._parsers = new Array(away.loaders.ImageParser);
+            return SingleFileLoader;
+        })(away.events.EventDispatcher);
+        loaders.SingleFileLoader = SingleFileLoader;
     })(away.loaders || (away.loaders = {}));
     var loaders = away.loaders;
 })(away || (away = {}));
@@ -2539,24 +2734,17 @@ var tests;
             this.iAssetTest.dispose();
 
             var iTest = this.iAssetTest;
-
-            console.log(iTest.name);
-            console.log(iTest.id);
         }
         SimpleLoaderTest.prototype.simpleImageLoaderLoadComplete = function (e) {
-            console.log('simpleImageLoaderLoadComplete');
         };
 
         SimpleLoaderTest.prototype.simpleURLLoaderLoadComplete = function (e) {
-            console.log('simpleURLLoaderLoadComplete');
         };
 
         SimpleLoaderTest.prototype.simpleImageLoaderLoadError = function (e) {
-            console.log('simpleImageLoaderLoadError');
         };
 
         SimpleLoaderTest.prototype.simpleURLLoaderLoadError = function (e) {
-            console.log('simpleURLLoaderLoadError');
         };
         return SimpleLoaderTest;
     })();
