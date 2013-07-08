@@ -10,10 +10,15 @@ module away.loaders
 		 */
 		public static BINARY : string = "binary";
 
-		/**
-		 * Describes the format of a plain text file.
-		 */
-		public static PLAIN_TEXT : string = "plainText";
+        /**
+         * Describes the format of a plain text file.
+         */
+        public static PLAIN_TEXT : string = "plainText";
+
+        /**
+         * Describes the format of an image file
+         */
+        public static IMAGE : string = "image";
 
 	}
 }
