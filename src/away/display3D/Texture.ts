@@ -21,7 +21,7 @@ module away.display3D
 			this._height = height;
 			
 			GL.bindTexture( GL.TEXTURE_2D, this.glTexture );
-			GL.texImage2D( GL.TEXTURE_2D, 0, GL.RGBA, width, height, 0, GL.RGBA, GL.UNSIGNED_BYTE, null);
+			GL.texImage2D( GL.TEXTURE_2D, 0, GL.RGBA, width, height, 0, GL.RGBA, GL.UNSIGNED_BYTE, null );
 		}
 		
 		// TODO uploads
