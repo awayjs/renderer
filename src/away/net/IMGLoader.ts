@@ -6,6 +6,8 @@
 module away.net
 {
 
+    // TODO: implement / test cross domain policy
+
     export class IMGLoader extends away.events.EventDispatcher
     {
 

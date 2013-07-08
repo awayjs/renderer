@@ -10,6 +10,7 @@
 
 module away.net {
 
+    // TODO: implement / test cross domain policy
 
     export class URLLoader extends away.events.EventDispatcher
     {
