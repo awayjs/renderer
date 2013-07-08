@@ -21,10 +21,12 @@ module away.textures
 
 		constructor()
 		{
-            this._textures = new Array<away.display3D.TextureBase>( 8 );
-			//_textures = new Vector.<TextureBase>(8);
-            this._dirty = new Array<away.display3D.Context3D>( 8 );
-			//_dirty = new Vector.<Context3D>(8);
+
+            super();
+
+            this._textures = new Array<away.display3D.TextureBase>( 8 );//_textures = new Vector.<TextureBase>(8);
+            this._dirty = new Array<away.display3D.Context3D>( 8 );//_dirty = new Vector.<Context3D>(8);
+
 		}
 
 		public get hasMipMaps() : boolean
