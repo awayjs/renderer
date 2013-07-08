@@ -72,6 +72,7 @@ class Away3D extends away.events.EventDispatcher
 		var context3D: away.display3D.Context3D = stage3D.context3D;
 		
 		var texture:away.display3D.Texture = context3D.createTexture( 512, 512, away.display3D.Context3DTextureFormat.BGRA, true );
+		texture.uploadFromHTMLImageElement( this._image );
 		
 		context3D.configureBackBuffer( 800, 600, 0, true );
 		context3D.setColorMask( true, true, true, true ); 
@@ -142,12 +143,9 @@ class Away3D extends away.events.EventDispatcher
 		
 		context3D.setGLSLTextureAt( "uSampler", texture, 0 );
 		
-		GL.texImage2D( GL.TEXTURE_2D, 0, GL.RGBA, GL.RGBA, GL.UNSIGNED_BYTE, this._image );
-		
-		context3D.clear( 0.9, 0.6, 0.3, 1 );
+		context3D.clear( 0.3, 0.3, 0.3, 1 );
 		context3D.drawTriangles( iBuffer, 0, 2 );
 		context3D.present();
-		
 	}
 
 }

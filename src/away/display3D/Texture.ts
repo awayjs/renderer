@@ -24,8 +24,6 @@ module away.display3D
 			GL.texImage2D( GL.TEXTURE_2D, 0, GL.RGBA, width, height, 0, GL.RGBA, GL.UNSIGNED_BYTE, null );
 		}
 		
-		// TODO uploads
-		
 		public get width():number
 		{
 			return this._width;
@@ -34,6 +32,11 @@ module away.display3D
 		public get height():number
 		{
 			return this._height;
+		}
+		
+		public uploadFromHTMLImageElement( image:HTMLImageElement, miplevel:number = 0 )
+		{
+			GL.texImage2D( GL.TEXTURE_2D, miplevel, GL.RGBA, GL.RGBA, GL.UNSIGNED_BYTE, image );
 		}
 	}
 }
