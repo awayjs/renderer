@@ -217,8 +217,7 @@ var away;
                 var _this = this;
                 this._active = false;
                 this._argsArray = new Array();
-                this._callback = callback;
-                this._callbackContext = callbackContext;
+                this.setCallback(callback, callbackContext);
 
                 this._rafUpdateFunction = function () {
                     if (_this._active) {
@@ -229,6 +228,16 @@ var away;
                 this._argsArray.push(this._dt);
             }
             // Public
+            /**
+            *
+            * @param callback
+            * @param callbackContext
+            */
+            RequestAnimationFrame.prototype.setCallback = function (callback, callbackContext) {
+                this._callback = callback;
+                this._callbackContext = callbackContext;
+            };
+
             /**
             *
             */
@@ -247,6 +256,10 @@ var away;
 
             Object.defineProperty(RequestAnimationFrame.prototype, "active", {
                 get: // Get / Set
+                /**
+                *
+                * @returns {boolean}
+                */
                 function () {
                     return this._active;
                 },
