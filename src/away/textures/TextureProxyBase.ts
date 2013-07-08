@@ -1,51 +1,58 @@
 ///<reference path="../library/assets/IAsset.ts" />
+///<reference path="../library/assets/NamedAssetBase.ts" />
+///<reference path="../display3D/Context3D.ts" />
+///<reference path="../display3D/TextureBase.ts" />
+///<reference path="../display3D/Context3DTextureFormat.ts" />
 
 
-module away3d.textures
+module away.textures
 {
 
-	export class TextureProxyBase extends NamedAssetBase implements IAsset
+	export class TextureProxyBase extends away.library.NamedAssetBase implements away.library.IAsset
 	{
-		private _format : string = Context3DTextureFormat.BGRA;
-		private _hasMipmaps : boolean = true;
+		private _format         : string = away.display3D.Context3DTextureFormat.BGRA;
+		private _hasMipmaps     : boolean = true;
 
-		private _textures : Vector.<TextureBase>;
-		private _dirty : Vector.<Context3D>;
+		private _textures       : away.display3D.TextureBase[];
+		private _dirty          : away.display3D.Context3D[];
 
-		private _width : number;
-		private _height : number;
+		private _width          : number;
+		private _height         : number;
 
 		constructor()
 		{
-			_textures = new Vector.<TextureBase>(8);
-			_dirty = new Vector.<Context3D>(8);
+            this._textures = new Array<away.display3D.TextureBase>( 8 );
+			//_textures = new Vector.<TextureBase>(8);
+            this._dirty = new Array<away.display3D.Context3D>( 8 );
+			//_dirty = new Vector.<Context3D>(8);
 		}
 
 		public get hasMipMaps() : boolean
 		{
-			return _hasMipmaps;
+			return this._hasMipmaps;
 		}
 
 		public get format() : string
 		{
-			return _format;
+			return this._format;
 		}
 		
 		public get assetType() : string
 		{
-			return AssetType.TEXTURE;
+			return away.library.AssetType.TEXTURE;
 		}
 
 		public get width() : number
 		{
-			return _width;
+			return this._width;
 		}
 
 		public get height() : number
 		{
-			return _height;
+			return this._height;
 		}
 
+        /* TODO: implement Stage3DProxy
 		public getTextureForStage3D(stage3DProxy : Stage3DProxy) : TextureBase
 		{
 			var contextIndex : number = stage3DProxy._stage3DIndex;
@@ -60,46 +67,60 @@ module away3d.textures
 
 			return tex;
 		}
-
-		protected function uploadContent(texture : TextureBase) : void
+        */
+		public _pUploadContent(texture : away.display3D.TextureBase) : void
 		{
-			throw new AbstractMethodError();
+			//throw new AbstractMethodError();// TODO throw
 		}
 
-		protected function setSize(width : number, height : number) : void
+		public _pSetSize(width : number, height : number) : void
 		{
-			if (_width != width || _height != height)
-				invalidateSize();
+			if (this._width != width || this._height != height)
+                this._pInvalidateSize();
 
-			_width = width;
-			_height = height;
+            this._width     = width;
+            this._height    = height;
+
 		}
 
 		public invalidateContent() : void
 		{
-			for (var i : number = 0; i < 8; ++i) {
-				_dirty[i] = null;
+
+			for (var i : number = 0; i < 8; ++i)
+            {
+
+				this._dirty[i] = null;
+
 			}
+
 		}
 
-		protected function invalidateSize() : void
+		public _pInvalidateSize() : void
 		{
-			var tex : TextureBase;
-			for (var i : number = 0; i < 8; ++i) {
-				tex = _textures[i];
-				if (tex) {
+			var tex : away.display3D.TextureBase;
+			for (var i : number = 0; i < 8; ++i)
+            {
+
+				tex = this._textures[i];
+
+				if (tex)
+                {
 					tex.dispose();
-					_textures[i] = null;
-					_dirty[i] = null;
+
+					this._textures[i]   = null;
+					this._dirty[i]      = null;
+
 				}
+
 			}
+
 		}
 
 
 
-		protected function createTexture(context : Context3D) : TextureBase
+		public _pCreateTexture(context : Context3D) : TextureBase
 		{
-			throw new AbstractMethodError();
+			//throw new AbstractMethodError(); // TODO: throw
 		}
 
 		/**
