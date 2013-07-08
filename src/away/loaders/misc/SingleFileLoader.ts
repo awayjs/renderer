@@ -12,6 +12,11 @@
 ///<reference path="../../net/URLLoader.ts" />
 ///<reference path="../../loaders/parsers/ParserBase.ts" />
 ///<reference path="../../loaders/parsers/ParserDataFormat.ts" />
+///<reference path="../../loaders/parsers/ImageParser.ts" />
+///<reference path="ISingleFileTSLoader.ts" />
+///<reference path="SingleFileImageLoader.ts" />
+///<reference path="SingleFileURLLoader.ts" />
+
 
 module away.loaders
 {
@@ -36,10 +41,13 @@ module away.loaders
 		private _loadAsRawData  : boolean;
 		private _materialMode   : number;
 		private _data           : any;
-		
+        //private _loader         : ISingleFileTSLoader;
+
+        // Static
+
 		// Image parser only parser that is added by default, to save file size.
         //private static _parsers : Vector.<Class> = Vector.<Class>([ ImageParser ]);
-        private static _parsers : any[] = new Array<any>(/* TODO: Add ImageParser as Default */);
+        private static _parsers : any[] = new Array<any>( away.loaders.ImageParser );/* TODO: Add ImageParser as Default */
 
         public static enableParser(parser : Object ) : void
         {
@@ -64,6 +72,8 @@ module away.loaders
 
         }
 
+        // Constructor
+
 		/**
 		 * Creates a new SingleFileLoader object.
 		 */
@@ -73,6 +83,8 @@ module away.loaders
             super();
 			this._materialMode=materialMode;
 		}
+
+        // Get / Set
 		
 		public get url() : string
 		{
@@ -90,6 +102,8 @@ module away.loaders
 			return this._loadAsRawData;
 		}
 
+        // Public
+
 		/**
 		 * Load a resource from a file.
 		 * 
@@ -98,55 +112,105 @@ module away.loaders
 		 */
 		public load(urlRequest : away.net.URLRequest, parser : ParserBase = null, loadAsRawData : boolean = false) : void
 		{
-			var urlLoader : away.net.URLLoader;
-			var dataFormat : string;
-			
-			this._loadAsRawData = loadAsRawData;
-			this._req = urlRequest;
-			this.decomposeFilename(this._req.url);
-			
-			if (this._loadAsRawData) {
+			//var urlLoader   : away.net.URLLoader;
+			var dataFormat  : string;
+            var loaderType  : string    = away.loaders.ParserLoaderType.URL_LOADER;// Default to URLLoader;
+
+			this._loadAsRawData         = loadAsRawData;
+			this._req                   = urlRequest;
+
+			this.decomposeFilename( this._req.url );
+
+			if ( this._loadAsRawData ) {
+
 				// Always use binary for raw data loading
 				dataFormat = away.net.URLLoaderDataFormat.BINARY;
+
 			}
-			else {
-				if (parser) this._parser = parser;
+			else
+            {
+
+				if (parser)
+                {
+
+                    this._parser = parser;
+
+                }
 				
-				if (!this._parser) this._parser = this.getParserFromSuffix();
+				if ( ! this._parser )
+                {
+
+                    this._parser = this.getParserFromSuffix();
+
+                }
+
+                console.log( 'SingleFileURLLoader.load._parser: ' + this._parser );
+
+				if (this._parser)
+                {
+
+                    //--------------------------------------------
+                    // Data Format
+
+                    switch ( this._parser.dataFormat )
+                    {
+
+                        case away.loaders.ParserDataFormat.BINARY:
+
+                            dataFormat = away.net.URLLoaderDataFormat.BINARY;
+
+                            break;
 
 
-                console.log( 'load' , 'this._parser: ' + this._parser );
+                        case away.loaders.ParserDataFormat.PLAIN_TEXT:
 
-				
-				if (this._parser) {
+                            dataFormat = away.net.URLLoaderDataFormat.TEXT;
 
-					switch (this._parser.dataFormat) {
+                            break;
 
-						case away.loaders.ParserDataFormat.BINARY:
-							dataFormat = away.net.URLLoaderDataFormat.BINARY;
-							break;
+                    }
 
-						case away.loaders.ParserDataFormat.PLAIN_TEXT:
-							dataFormat = away.net.URLLoaderDataFormat.TEXT;
-							break;
-					}
+                    //--------------------------------------------
+                    // Loader Type
+
+                    switch ( this._parser.loaderType )
+                    {
+
+                        case away.loaders.ParserLoaderType.IMG_LOADER:
+
+                            loaderType = away.loaders.ParserLoaderType.IMG_LOADER;
+
+                            break;
+
+
+                        case away.loaders.ParserLoaderType.URL_LOADER:
+
+                            loaderType = away.loaders.ParserLoaderType.URL_LOADER;
+
+                            break;
+
+                    }
 					
-				} else {
+				}
+                else
+                {
+
 					// Always use BINARY for unknown file formats. The thorough
 					// file type check will determine format after load, and if
 					// binary, a text load will have broken the file data.
 					dataFormat = away.net.URLLoaderDataFormat.BINARY;
+
 				}
 			}
 
-            console.log( 'load' , dataFormat );
+            console.log( 'SingleFileURLLoader.load.dataFormat:' , dataFormat , 'ParserFormat: ' , this._parser.dataFormat );
+            console.log( 'SingleFileURLLoader.load.loaderType: ' , loaderType );
 
-            // TODO: Implement ParserBase "loaderType" - and switch to ImageLoader || Add a
-			urlLoader = new away.net.URLLoader();
-			urlLoader.dataFormat = dataFormat;
-			urlLoader.addEventListener(away.events.Event.COMPLETE, this.handleUrlLoaderComplete , this );
-			urlLoader.addEventListener(away.events.IOErrorEvent.IO_ERROR, this.handleUrlLoaderError , this );
-			urlLoader.load(urlRequest);
+            var loader : away.loaders.ISingleFileTSLoader = this.getLoader( loaderType );
+                loader.dataFormat = dataFormat;
+                loader.addEventListener(away.events.Event.COMPLETE, this.handleUrlLoaderComplete , this );
+                loader.addEventListener(away.events.IOErrorEvent.IO_ERROR, this.handleUrlLoaderError , this );
+                loader.load( urlRequest );
 
 		}
 		
@@ -192,7 +256,39 @@ module away.loaders
 		{
 			return this._parser? this._parser.dependencies : new Array<away.loaders.ResourceDependency>();
 		}
-		
+
+        // Private
+
+        /**
+         *
+         * @param loaderType
+         */
+        private getLoader( loaderType : string ) : away.loaders.ISingleFileTSLoader
+        {
+
+            var loader : ISingleFileTSLoader;
+
+            switch ( loaderType )
+            {
+
+                case away.loaders.ParserLoaderType.IMG_LOADER :
+
+                    loader = new away.loaders.SingleFileImageLoader();
+
+                    break;
+
+                case away.loaders.ParserLoaderType.URL_LOADER:
+
+                    loader = new away.loaders.SingleFileURLLoader();
+
+                    break;
+
+            }
+
+            return loader;
+
+        }
+
 		/**
 		 * Splits a url string into base and extension.
 		 * @param url The url to be decomposed.
@@ -201,12 +297,10 @@ module away.loaders
 		{
 			
 			// Get rid of query string if any and extract suffix
-			var base : string = (url.indexOf('?')>0)? url.split('?')[0] : url;
-			var i : number = base.lastIndexOf('.');
-			this._fileExtension = base.substr(i + 1).toLowerCase();
-			this._fileName = base.substr(0, i);
-
-            console.log( 'decomposeFilename' , url , this._fileExtension , this._fileName );
+			var base    : string    = (url.indexOf('?')>0)? url.split('?')[0] : url;
+			var i       : number    = base.lastIndexOf('.');
+			this._fileExtension     = base.substr(i + 1).toLowerCase();
+			this._fileName          = base.substr(0, i);
 
 		}
 		
@@ -222,11 +316,9 @@ module away.loaders
 			for (var i : number = len-1; i >= 0; i--){
 
                 var currentParser : away.loaders.ParserBase = SingleFileLoader._parsers[i];
-                console.log( 'getParserFromSuffix.currentParser' , currentParser );
+                var supportstype : boolean                  = SingleFileLoader._parsers[i].supportsType(this._fileExtension);
 
-                var supportstype = SingleFileLoader._parsers[i]['supportsType'](this._fileExtension);
-
-                console.log( 'getParserFromSuffix.supportstype' , supportstype );
+                console.log( 'SingleFileURLLoader.getParserFromSuffix.supportstype' , supportstype );
 
                 if (SingleFileLoader._parsers[i]['supportsType'](this._fileExtension)){
 
@@ -261,18 +353,20 @@ module away.loaders
 		/**
 		 * Cleanups
 		 */
-		private removeListeners(urlLoader:away.net.URLLoader) : void
+		private removeListeners(urlLoader:away.loaders.ISingleFileTSLoader) : void
 		{
 			urlLoader.removeEventListener(away.events.Event.COMPLETE, this.handleUrlLoaderComplete , this );
 			urlLoader.removeEventListener(away.events.IOErrorEvent.IO_ERROR, this.handleUrlLoaderError , this );
 		}
+
+        // Events
 		
 		/**
 		 * Called when loading of a file has failed
 		 */
 		private handleUrlLoaderError(event:away.events.IOErrorEvent) : void
 		{
-			var urlLoader : away.net.URLLoader = <away.net.URLLoader> event.target;
+			var urlLoader : away.loaders.ISingleFileTSLoader = <away.loaders.ISingleFileTSLoader> event.target;
 			this.removeListeners(urlLoader);
 			
 			//if(this.hasEventListener(away.events.LoaderEvent.LOAD_ERROR , this.handleUrlLoaderError , this ))
@@ -285,19 +379,25 @@ module away.loaders
 		private handleUrlLoaderComplete(event : away.events.Event) : void
 		{
 
-			var urlLoader : away.net.URLLoader = <away.net.URLLoader> event.target;
+			var urlLoader : away.loaders.ISingleFileTSLoader = <away.loaders.ISingleFileTSLoader> event.target;
 			this.removeListeners( urlLoader );
 			
 			this._data = urlLoader.data;
 
-            console.log( 'handleUrlLoaderComplete' , this._data.length );
+            console.log( 'SingleFileURLLoader.handleUrlLoaderComplete' , this._data.length );
 			
-			if (this._loadAsRawData) {
+			if (this._loadAsRawData)
+            {
+
 				// No need to parse this data, which should be returned as is
 				this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.DEPENDENCY_COMPLETE));
+
 			}
-			else {
+			else
+            {
+
 				this.parse(this._data);
+
 			}
 		}
 		
@@ -307,9 +407,12 @@ module away.loaders
 		 */
 		private parse(data : any) : void
 		{
+
+            console.log( 'SingleFileURLLoader.parse' , data );
+
 			// If no parser has been defined, try to find one by letting
 			// all plugged in parsers inspect the actual data.
-			if (! this._parser)
+			if ( ! this._parser )
             {
 
 				this._parser = this.getParserFromData(data);
@@ -347,7 +450,9 @@ module away.loaders
 				this._parser.materialMode=this._materialMode;
                 this._parser.parseAsync(data);
 
-			} else{
+			}
+            else
+            {
 
 				var msg:string = "No parser defined. To enable all parsers for auto-detection, use Parsers.enableAllBundled()";
 
