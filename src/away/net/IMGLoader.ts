@@ -19,6 +19,7 @@ module away.net
 
             super();
             this._name = imageName;
+            this.initImage();
 
         }
 
@@ -31,7 +32,6 @@ module away.net
         {
 
             this._loaded = false;
-            this.initImage();
             this._request   = request;
             this._image.src = this._request.url;
 
