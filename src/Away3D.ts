@@ -4,18 +4,23 @@
  */
  
 ///<reference path="def/webgl.d.ts"/>
+
 ///<reference path="away/events/AwayEvent.ts" />
 ///<reference path="away/events/EventDispatcher.ts" />
 
-///<reference path="away/display3D/Stage3D.ts" />
 ///<reference path="away/display3D/Context3D.ts" />
-///<reference path="away/display3D/Program3D.ts" />
-///<reference path="away/display3D/VertexBuffer3D.ts" />
-///<reference path="away/display3D/IndexBuffer3D.ts" />
-///<reference path="away/display3D/Texture.ts" />
 ///<reference path="away/display3D/Context3DTextureFormat.ts" />
-///<reference path="away/display3D/Context3DVertexBufferFormat.ts"/>
-///<reference path="away/utils/PerspectiveMatrix3D.ts"/>
+///<reference path="away/display3D/Context3DVertexBufferFormat.ts" />
+///<reference path="away/display3D/IndexBuffer3D.ts" />
+///<reference path="away/display3D/Program3D.ts" />
+///<reference path="away/display3D/Stage3D.ts" />
+///<reference path="away/display3D/Texture.ts" />
+///<reference path="away/display3D/VertexBuffer3D.ts" />
+
+///<reference path="away/utils/PerspectiveMatrix3D.ts" />
+
+///<reference path="away/net/IMGLoader.ts" />
+///<reference path="away/net/URLRequest.ts" />
 
 var GL:WebGLRenderingContext = null;
 
@@ -23,6 +28,8 @@ class Away3D extends away.events.EventDispatcher
 {
 	
 	private _stage3D:away.display3D.Stage3D;
+	
+	private _image:HTMLImageElement;
 	
 	constructor(canvas:HTMLCanvasElement = null)
 	{
@@ -33,22 +40,43 @@ class Away3D extends away.events.EventDispatcher
 			canvas = document.createElement( "canvas" );
 			document.body.appendChild( canvas );
 		}
-		
 		this._stage3D = new away.display3D.Stage3D( canvas );
+		
+		this.loadResources();
+	}
+	
+	private loadResources()
+	{
+		var urlRequest: away.net.URLRequest = new away.net.URLRequest( "http://www.crydev.net/uploads/mediapool/130909_textures2/130909wall_big.png" );
+		var imgLoader: away.net.IMGLoader = new away.net.IMGLoader();
+		imgLoader.addEventListener( away.events.Event.COMPLETE, this.imageCompleteHandler, this );
+		
+		imgLoader.load( urlRequest );
+	}
+	
+	private imageCompleteHandler(e)
+	{
+		this._image = e.image;
+		console.log( "Image data " + e.image );
 		this._stage3D.addEventListener( away.events.AwayEvent.CONTEXT3D_CREATE, this.onContext3DCreateHandler, this );
 		this._stage3D.requestContext();
 	}
 	
 	private onContext3DCreateHandler( e )
 	{
-		
 		this._stage3D.removeEventListener( away.events.AwayEvent.CONTEXT3D_CREATE, this.onContext3DCreateHandler, this );
 		
 		// test
 		var stage3D: away.display3D.Stage3D = <away.display3D.Stage3D> e.target;
 		var context3D: away.display3D.Context3D = stage3D.context3D;
 		
-		//context3D.createTexture( 512, 512, away.display3D.Context3DTextureFormat.BGRA, true );
+		var texture:away.display3D.Texture = context3D.createTexture( 512, 512, away.display3D.Context3DTextureFormat.BGRA, true );
+		//GL.bindTexture( GL.TEXTURE_2D, texture.glTexture );
+		GL.texImage2D( GL.TEXTURE_2D, 0, GL.RGBA, GL.RGBA, GL.UNSIGNED_BYTE, this._image );
+		GL.texParameteri( GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR );
+		GL.texParameteri( GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR_MIPMAP_NEAREST );
+		GL.generateMipmap( GL.TEXTURE_2D );
+		//GL.bindTexture( GL.TEXTURE_2D, null );
 		
 		context3D.configureBackBuffer( 800, 600, 0, true );
 		context3D.setColorMask( true, true, true, true ); 
