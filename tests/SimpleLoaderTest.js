@@ -516,6 +516,7 @@ var away;
     ///<reference path="URLRequestMethod.ts" />
     ///<reference path="URLRequest.ts" />
     (function (net) {
+        // TODO: implement / test cross domain policy
         var URLLoader = (function (_super) {
             __extends(URLLoader, _super);
             function URLLoader() {
@@ -1429,7 +1430,7 @@ var away;
             //* Indicates whether or not a given file extension is supported by the parser.
             //----------------------------------------------------------------------------------------------------------------------------------------------------------------
             function (extension) {
-                //TODO: Throw error ?
+                //TODO: Throw error - this should be implemented ( Abstract Static ? )
                 return false;
             };
 
@@ -1804,6 +1805,7 @@ var away;
     ///<reference path="../events/IOErrorEvent.ts" />
     ///<reference path="URLRequest.ts" />
     (function (net) {
+        // TODO: implement / test cross domain policy
         var IMGLoader = (function (_super) {
             __extends(IMGLoader, _super);
             function IMGLoader(imageName) {
@@ -1822,6 +1824,22 @@ var away;
             IMGLoader.prototype.load = function (request) {
                 this._loaded = false;
                 this._request = request;
+
+                /*
+                if ( this._crossOrigin )
+                {
+                
+                if ( this._image['crossOrigin'] != null )
+                {
+                
+                console.log( 'crossOriginSet' , this._crossOrigin );
+                this._image['crossOrigin'] = this._crossOrigin;
+                
+                }
+                
+                
+                }
+                */
                 this._image.src = this._request.url;
             };
 
@@ -1865,6 +1883,18 @@ var away;
                 enumerable: true,
                 configurable: true
             });
+
+            Object.defineProperty(IMGLoader.prototype, "crossOrigin", {
+                get: function () {
+                    return this.crossOrigin;
+                },
+                set: function (value) {
+                    this.crossOrigin = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
 
             Object.defineProperty(IMGLoader.prototype, "width", {
                 get: /**
@@ -2042,6 +2072,10 @@ var away;
             ImageParser.prototype._pProceedParsing = function () {
                 if (this.data instanceof HTMLImageElement) {
                     // TODO: Implement Texture2D and add HTMLImageElement
+                    var aAssetTest;
+
+                    this._pFinalizeAsset(aAssetTest, this._iFileName);
+
                     return away.loaders.ParserBase.PARSING_DONE;
                 }
 
