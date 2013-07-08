@@ -1,5 +1,6 @@
 package away3d.animators.data
 {
+	import away3d.core.base.data.ParticleData;
 	
 	/**
 	 * ...
@@ -13,7 +14,6 @@ package away3d.animators.data
 		public var delay:Number;
 		public var startVertexIndex:uint;
 		public var numVertices:uint;
-		
 		
 		public function ParticleAnimationData(index:uint, startTime:Number, duration:Number, delay:Number, particle:ParticleData)
 		{

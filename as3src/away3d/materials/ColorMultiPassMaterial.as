@@ -1,34 +1,34 @@
 package away3d.materials
 {
 	import away3d.arcane;
-
+	
 	use namespace arcane;
-
+	
 	/**
-	 * ColorMultiPassMaterial is a material that uses a flat colour as the surfaces diffuse.
+	 * ColorMultiPassMaterial is a multi-pass material that uses a flat color as the surface's diffuse reflection value.
 	 */
 	public class ColorMultiPassMaterial extends MultiPassMaterialBase
 	{
 		/**
 		 * Creates a new ColorMultiPassMaterial object.
-		 * 
+		 *
 		 * @param color The material's diffuse surface color.
 		 */
-		public function ColorMultiPassMaterial(color : uint = 0xcccccc)
+		public function ColorMultiPassMaterial(color:uint = 0xcccccc)
 		{
 			super();
 			this.color = color;
 		}
-
+		
 		/**
-		 * The diffuse color of the surface.
+		 * The diffuse reflectivity color of the surface.
 		 */
-		public function get color() : uint
+		public function get color():uint
 		{
 			return diffuseMethod.diffuseColor;
 		}
-
-		public function set color(value : uint) : void
+		
+		public function set color(value:uint):void
 		{
 			diffuseMethod.diffuseColor = value;
 		}
