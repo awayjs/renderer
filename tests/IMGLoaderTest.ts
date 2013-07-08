@@ -40,6 +40,7 @@ class IMGLoaderTest
         var jpgURLrq            = new away.net.URLRequest( 'URLLoaderTestData/1.jpg');
 
         this.jpgLoader          = new away.net.IMGLoader();
+        this.jpgLoader.crossOrigin = 'anonymous';
         this.jpgLoader.addEventListener( away.events.Event.COMPLETE , this.jpgLoaderComplete , this );
         this.jpgLoader.addEventListener( away.events.IOErrorEvent.IO_ERROR , this.ioError , this );
         this.jpgLoader.load( jpgURLrq );
@@ -135,6 +136,6 @@ window.onload = function ()
 
     var test = new IMGLoaderTest();
 
-
 }
+
 

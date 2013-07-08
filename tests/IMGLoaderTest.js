@@ -310,7 +310,7 @@ var away;
             // number milliseconds of 1970/01/01
             // this different to AS3 implementation which gets the number of milliseconds
             // since instance of Flash player was initialised
-            return new Date().getTime();
+            return Date.now();
         }
         utils.getTimer = getTimer;
     })(away.utils || (away.utils = {}));
@@ -500,13 +500,16 @@ var away;
     ///<reference path="../events/IOErrorEvent.ts" />
     ///<reference path="URLRequest.ts" />
     (function (net) {
+        // TODO: implement / test cross domain policy
         var IMGLoader = (function (_super) {
             __extends(IMGLoader, _super);
             function IMGLoader(imageName) {
                 if (typeof imageName === "undefined") { imageName = ''; }
                 _super.call(this);
                 this._name = '';
+                this._loaded = false;
                 this._name = imageName;
+                this.initImage();
             }
             // Public
             /**
@@ -514,8 +517,17 @@ var away;
             * @param request {away.net.URLRequest}
             */
             IMGLoader.prototype.load = function (request) {
-                this.initImage();
+                this._loaded = false;
                 this._request = request;
+
+                if (this._crossOrigin) {
+                    console.log('this._image[crossOrigin]: ' + typeof this._image['crossOrigin']);
+
+                    if (this._image['crossOrigin'] != null) {
+                        this._image['crossOrigin'] = this._crossOrigin;
+                    }
+                }
+
                 this._image.src = this._request.url;
             };
 
@@ -531,7 +543,6 @@ var away;
                 }
 
                 if (this._request) {
-                    this._request.dispose();
                     this._request = null;
                 }
             };
@@ -548,6 +559,30 @@ var away;
                 enumerable: true,
                 configurable: true
             });
+
+            Object.defineProperty(IMGLoader.prototype, "loaded", {
+                get: /**
+                * Get image width. Returns null is image is not loaded
+                * @returns {number}
+                */
+                function () {
+                    return this._loaded;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(IMGLoader.prototype, "crossOrigin", {
+                get: function () {
+                    return this._crossOrigin;
+                },
+                set: function (value) {
+                    this._crossOrigin = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
 
             Object.defineProperty(IMGLoader.prototype, "width", {
                 get: /**
@@ -664,6 +699,7 @@ var away;
             * @param event
             */
             IMGLoader.prototype.onLoadComplete = function (event) {
+                this._loaded = true;
                 this.dispatchEvent(new away.events.Event(away.events.Event.COMPLETE));
             };
             return IMGLoader;
@@ -701,6 +737,7 @@ var IMGLoaderTest = (function () {
         var jpgURLrq = new away.net.URLRequest('URLLoaderTestData/1.jpg');
 
         this.jpgLoader = new away.net.IMGLoader();
+        this.jpgLoader.crossOrigin = 'anonymous';
         this.jpgLoader.addEventListener(away.events.Event.COMPLETE, this.jpgLoaderComplete, this);
         this.jpgLoader.addEventListener(away.events.IOErrorEvent.IO_ERROR, this.ioError, this);
         this.jpgLoader.load(jpgURLrq);
