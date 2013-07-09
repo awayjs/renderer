@@ -1,8 +1,9 @@
 package away3d.core.pick
 {
+	
 	/**
 	 * Options for setting a picking collider for entity objects. Used with the <code>RaycastPicker</code> picking object.
-	 * 
+	 *
 	 * @see away3d.entities.Entity#pickingCollider
 	 * @see away3d.core.pick.RaycastPicker
 	 */
@@ -15,16 +16,16 @@ package away3d.core.pick
 		
 		/**
 		 * Pure AS3 picking collider that returns the first encountered hit on an Entity. Useful for low poly meshes and applying to many mesh instances.
-		 * 
+		 *
 		 * @see away3d.core.pick.AS3PickingCollider
 		 */
-		public static const AS3_FIRST_ENCOUNTERED:IPickingCollider = new AS3PickingCollider( false );
+		public static const AS3_FIRST_ENCOUNTERED:IPickingCollider = new AS3PickingCollider(false);
 		
 		/**
 		 * Pure AS3 picking collider that returns the best (closest) hit on an Entity. Useful for low poly meshes and applying to many mesh instances.
-		 * 
+		 *
 		 * @see away3d.core.pick.AS3PickingCollider
 		 */
-		public static const AS3_BEST_HIT:IPickingCollider = new AS3PickingCollider( true );
+		public static const AS3_BEST_HIT:IPickingCollider = new AS3PickingCollider(true);
 	}
 }
