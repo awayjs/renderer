@@ -60,7 +60,20 @@ module away.utils
 
             this._prevTime = away.utils.getTimer();
             this._active = true;
-            requestAnimationFrame( this._rafUpdateFunction );
+
+            if ( window.requestAnimationFrame )
+            {
+
+                window.requestAnimationFrame( this._rafUpdateFunction );
+
+
+            }
+            else if ( window['mozRequestAnimationFrame'] )
+            {
+
+                window['mozRequestAnimationFrame']( this._rafUpdateFunction );
+
+            }
 
         }
 
@@ -102,7 +115,19 @@ module away.utils
 
             this._callback.apply( this._callbackContext , this._argsArray );
 
-            requestAnimationFrame( this._rafUpdateFunction );
+            if ( window.requestAnimationFrame )
+            {
+
+                window.requestAnimationFrame( this._rafUpdateFunction );
+
+
+            }
+            else if ( window['mozRequestAnimationFrame'] )
+            {
+
+                window['mozRequestAnimationFrame']( this._rafUpdateFunction );
+
+            }
 
             this._prevTime      = this._currentTime;
 
