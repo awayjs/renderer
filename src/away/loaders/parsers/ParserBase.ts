@@ -51,7 +51,7 @@ module away.loaders {
         public static supportsType(extension:string):boolean
         {
 
-            //TODO: Throw error - this should be implemented ( Abstract Static ? )
+            throw new away.errors.AbstractMethodError();
             return false;
 
         }
