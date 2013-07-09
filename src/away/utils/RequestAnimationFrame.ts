@@ -7,18 +7,21 @@ module away.utils
     export class RequestAnimationFrame
     {
 
-        private _callback           : Function;
-        private _callbackContext    : Object;
-        private _active             : boolean = false;
-        private _rafUpdateFunction  : any;
-        private _prevTime           : number;
-        private _dt                 : number;
-        private _currentTime        : number;
-        private _argsArray          : any[] = new Array();
+        private _callback               : Function;
+        private _callbackContext        : Object;
+        private _active                 : boolean = false;
+        private _rafUpdateFunction      : any;
+        private _prevTime               : number;
+        private _dt                     : number;
+        private _currentTime            : number;
+        private _argsArray              : any[] = new Array();
+        private _getTimer               : Function;
 
         constructor ( callback : Function , callbackContext : Object )
         {
 
+
+            this._getTimer = away.utils.getTimer;
 
             this.setCallback( callback , callbackContext );
 
@@ -58,22 +61,35 @@ module away.utils
         public start()
         {
 
-            this._prevTime = away.utils.getTimer();
+            this._prevTime = this._getTimer();
             this._active = true;
+
+            if ( window['mozRequestAnimationFrame'] )
+            {
+
+                window.requestAnimationFrame = window['mozRequestAnimationFrame'];
+
+            }
+            else if ( window['webkitRequestAnimationFrame'] )
+            {
+
+                window.requestAnimationFrame = window['webkitRequestAnimationFrame'];
+
+            }
+            else if ( window['oRequestAnimationFrame'] )
+            {
+
+                window.requestAnimationFrame = window['oRequestAnimationFrame'];
+
+            }
 
             if ( window.requestAnimationFrame )
             {
 
                 window.requestAnimationFrame( this._rafUpdateFunction );
 
-
             }
-            else if ( window['mozRequestAnimationFrame'] )
-            {
 
-                window['mozRequestAnimationFrame']( this._rafUpdateFunction );
-
-            }
 
         }
 
@@ -82,6 +98,7 @@ module away.utils
          */
         public stop()
         {
+
             this._active = false;
 
         }
@@ -108,26 +125,12 @@ module away.utils
         private _tick() : void
         {
 
-            this._currentTime   = away.utils.getTimer();
+            this._currentTime   = this._getTimer();
             this._dt            = this._currentTime - this._prevTime;
-
             this._argsArray[0]  = this._dt;
-
             this._callback.apply( this._callbackContext , this._argsArray );
 
-            if ( window.requestAnimationFrame )
-            {
-
-                window.requestAnimationFrame( this._rafUpdateFunction );
-
-
-            }
-            else if ( window['mozRequestAnimationFrame'] )
-            {
-
-                window['mozRequestAnimationFrame']( this._rafUpdateFunction );
-
-            }
+            window.requestAnimationFrame( this._rafUpdateFunction );
 
             this._prevTime      = this._currentTime;
 
