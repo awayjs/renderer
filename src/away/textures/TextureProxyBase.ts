@@ -3,6 +3,7 @@
 ///<reference path="../display3D/Context3D.ts" />
 ///<reference path="../display3D/TextureBase.ts" />
 ///<reference path="../display3D/Context3DTextureFormat.ts" />
+///<reference path="../errors/AbstractMethodError.ts" />
 
 
 module away.textures
@@ -72,7 +73,9 @@ module away.textures
         */
 		public _pUploadContent(texture : away.display3D.TextureBase) : void
 		{
-			//throw new AbstractMethodError();// TODO throw
+
+            throw new away.errors.AbstractMethodError();
+
 		}
 
 		public _pSetSize(width : number, height : number) : void
@@ -120,9 +123,9 @@ module away.textures
 
 
 
-		public _pCreateTexture(context : Context3D) : TextureBase
+		public _pCreateTexture( context : away.display3D.Context3D) : away.display3D.TextureBase
 		{
-			//throw new AbstractMethodError(); // TODO: throw
+            throw new away.errors.AbstractMethodError();
 		}
 
 		/**
@@ -131,7 +134,17 @@ module away.textures
 		public dispose() : void
 		{
 			for (var i : number = 0; i < 8; ++i)
-				if (_textures[i]) _textures[i].dispose();
+            {
+
+                if (this._textures[i])
+                {
+
+                    this._textures[i].dispose();
+                }
+
+            }
+
 		}
+
 	}
 }
