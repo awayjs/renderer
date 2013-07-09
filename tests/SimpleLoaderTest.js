@@ -506,6 +506,78 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
+    (function (errors) {
+        var Error = (function () {
+            function Error(message, id, _name) {
+                if (typeof message === "undefined") { message = ''; }
+                if (typeof id === "undefined") { id = 0; }
+                if (typeof _name === "undefined") { _name = ''; }
+                this._errorID = 0;
+                this._messsage = '';
+                this._name = '';
+                this._messsage = message;
+                this._name = name;
+                this._errorID = id;
+            }
+            Object.defineProperty(Error.prototype, "message", {
+                get: /**
+                *
+                * @returns {string}
+                */
+                function () {
+                    return this._messsage;
+                },
+                set: /**
+                *
+                * @param value
+                */
+                function (value) {
+                    this._messsage = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Error.prototype, "name", {
+                get: /**
+                *
+                * @returns {string}
+                */
+                function () {
+                    return this._name;
+                },
+                set: /**
+                *
+                * @param value
+                */
+                function (value) {
+                    this._name = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Error.prototype, "errorID", {
+                get: /**
+                *
+                * @returns {number}
+                */
+                function () {
+                    return this._errorID;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return Error;
+        })();
+        errors.Error = Error;
+    })(away.errors || (away.errors = {}));
+    var errors = away.errors;
+})(away || (away = {}));
+var away;
+(function (away) {
     ///<reference path="../events/EventDispatcher.ts" />
     ///<reference path="../events/Event.ts" />
     ///<reference path="../events/IOErrorEvent.ts" />
@@ -515,6 +587,7 @@ var away;
     ///<reference path="URLLoaderDataFormat.ts" />
     ///<reference path="URLRequestMethod.ts" />
     ///<reference path="URLRequest.ts" />
+    ///<reference path="../errors/Error.ts" />
     (function (net) {
         // TODO: implement / test cross domain policy
         var URLLoader = (function (_super) {
@@ -599,7 +672,7 @@ var away;
                     if (format === away.net.URLLoaderDataFormat.BLOB || format === away.net.URLLoaderDataFormat.ARRAY_BUFFER || format === away.net.URLLoaderDataFormat.BINARY || format === away.net.URLLoaderDataFormat.TEXT || format === away.net.URLLoaderDataFormat.VARIABLES) {
                         this._dataFormat = format;
                     } else {
-                        throw 'URLLoader error: incompatible dataFormat';
+                        throw new away.errors.Error('URLLoader error: incompatible dataFormat');
                     }
                 },
                 enumerable: true,
@@ -1222,6 +1295,7 @@ var away;
 (function (away) {
     ///<reference path="../events/EventDispatcher.ts" />
     ///<reference path="../events/TimerEvent.ts" />
+    ///<reference path="../errors/Error.ts" />
     (function (utils) {
         //[native(cls="TimerClass", gc="exact", instance="TimerObject", methods="auto")]
         //[Event(name="timerComplete", type="flash.events.TimerEvent")]
@@ -1239,7 +1313,7 @@ var away;
                 this._repeatCount = repeatCount;
 
                 if (isNaN(delay) || delay < 0) {
-                    throw new Error("Delay is negative or not a number");
+                    throw new away.errors.Error("Delay is negative or not a number");
                 }
             }
             Object.defineProperty(Timer.prototype, "currentCount", {
@@ -1369,6 +1443,32 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
+    ///<reference path="Error.ts" />
+    (function (errors) {
+        /**
+        * AbstractMethodError is thrown when an abstract method is called. The method in question should be overridden
+        * by a concrete subclass.
+        */
+        var AbstractMethodError = (function (_super) {
+            __extends(AbstractMethodError, _super);
+            /**
+            * Create a new AbstractMethodError.
+            * @param message An optional message to override the default error message.
+            * @param id The id of the error.
+            */
+            function AbstractMethodError(message, id) {
+                if (typeof message === "undefined") { message = null; }
+                if (typeof id === "undefined") { id = 0; }
+                _super.call(this, message || "An abstract method was called! Either an instance of an abstract class was created, or an abstract method was not overridden by the subclass.", id);
+            }
+            return AbstractMethodError;
+        })(errors.Error);
+        errors.AbstractMethodError = AbstractMethodError;
+    })(away.errors || (away.errors = {}));
+    var errors = away.errors;
+})(away || (away = {}));
+var away;
+(function (away) {
     ///<reference path="../../events/EventDispatcher.ts" />
     ///<reference path="../../events/AssetEvent.ts" />
     ///<reference path="../../events/TimerEvent.ts" />
@@ -1379,6 +1479,7 @@ var away;
     ///<reference path="../../loaders/parsers/ParserLoaderType.ts" />
     ///<reference path="../../utils/Timer.ts" />
     ///<reference path="../../utils/getTimer.ts" />
+    ///<reference path="../../errors/AbstractMethodError.ts" />
     (function (loaders) {
         /**
         * <code>ParserBase</code> provides an abstract base class for objects that convert blocks of data to data structures
@@ -1430,7 +1531,7 @@ var away;
             //* Indicates whether or not a given file extension is supported by the parser.
             //----------------------------------------------------------------------------------------------------------------------------------------------------------------
             function (extension) {
-                //TODO: Throw error - this should be implemented ( Abstract Static ? )
+                throw new away.errors.AbstractMethodError();
                 return false;
             };
 
@@ -1552,6 +1653,7 @@ var away;
             * @param resourceDependency The dependency to be resolved.
             */
             ParserBase.prototype._iResolveDependency = function (resourceDependency) {
+                throw new away.errors.AbstractMethodError();
             };
 
             /**
@@ -1560,6 +1662,7 @@ var away;
             * @param resourceDependency The dependency to be resolved.
             */
             ParserBase.prototype._iResolveDependencyFailure = function (resourceDependency) {
+                throw new away.errors.AbstractMethodError();
             };
 
             /**
@@ -1674,6 +1777,7 @@ var away;
                         type_event = away.events.AssetEvent.SHADOWMAPMETHOD_COMPLETE;
                         break;
                     default:
+                        throw new away.errors.Error('Unhandled asset type ' + asset.assetType + '. Report as bug!');
                         break;
                 }
                 ;
@@ -1691,9 +1795,7 @@ var away;
             * <code>ParserBase.ParserBase.MORE_TO_PARSE</code>.
             */
             ParserBase.prototype._pProceedParsing = function () {
-                console.log('_pProceedParsing - AbstractMethodError');
-
-                //TODO: Throw  - throw new AbstractMethodError();
+                throw new away.errors.AbstractMethodError();
                 return true;
             };
 
@@ -2065,8 +2167,7 @@ var away;
                     // TODO: Implement Texture2D and add HTMLImageElement
                     var aAssetTest;
 
-                    this._pFinalizeAsset(aAssetTest, this._iFileName);
-
+                    //this._pFinalizeAsset( aAssetTest , this._iFileName);
                     return away.loaders.ParserBase.PARSING_DONE;
                 }
 
@@ -2867,6 +2968,7 @@ var away;
             }
             VertexBuffer3D.prototype.upload = function (vertices, startVertex, numVertices) {
                 GL.bindBuffer(GL.ARRAY_BUFFER, this._buffer);
+                console.log("** WARNING upload not fully implemented, startVertex & numVertices not considered.");
 
                 // TODO add offsets , startVertex, numVertices * this._data32PerVertex
                 GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(vertices), GL.STATIC_DRAW);
@@ -3227,11 +3329,38 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
+    ///<reference path="Error.ts" />
+    (function (errors) {
+        /**
+        * AbstractMethodError is thrown when an abstract method is called. The method in question should be overridden
+        * by a concrete subclass.
+        */
+        var ArgumentError = (function (_super) {
+            __extends(ArgumentError, _super);
+            /**
+            * Create a new AbstractMethodError.
+            * @param message An optional message to override the default error message.
+            * @param id The id of the error.
+            */
+            function ArgumentError(message, id) {
+                if (typeof message === "undefined") { message = null; }
+                if (typeof id === "undefined") { id = 0; }
+                _super.call(this, message || "ArgumentError", id);
+            }
+            return ArgumentError;
+        })(errors.Error);
+        errors.ArgumentError = ArgumentError;
+    })(away.errors || (away.errors = {}));
+    var errors = away.errors;
+})(away || (away = {}));
+var away;
+(function (away) {
     /**
     * ...
     * @author Gary Paluk - http://www.plugin.io
     */
     ///<reference path="Vector3D.ts" />
+    ///<reference path="../errors/ArgumentError.ts" />
     (function (geom) {
         var Matrix3D = (function () {
             /**
@@ -3357,6 +3486,7 @@ var away;
                         vector3D.w = this.rawData[15];
                         break;
                     default:
+                        throw new away.errors.ArgumentError("ArgumentError, Column " + column + " out of bounds [0, ..., 3]");
                 }
             };
 
@@ -3390,6 +3520,7 @@ var away;
                         this.rawData[15] = vector3D.w;
                         break;
                     default:
+                        throw new away.errors.ArgumentError("ArgumentError, Column " + column + " out of bounds [0, ..., 3]");
                 }
             };
 
@@ -3442,6 +3573,7 @@ var away;
                         vector3D.w = this.rawData[15];
                         break;
                     default:
+                        throw new away.errors.ArgumentError("ArgumentError, Row " + row + " out of bounds [0, ..., 3]");
                 }
             };
 
@@ -3475,6 +3607,7 @@ var away;
                         this.rawData[15] = vector3D.w;
                         break;
                     default:
+                        throw new away.errors.ArgumentError("ArgumentError, Row " + row + " out of bounds [0, ..., 3]");
                 }
             };
 
@@ -3973,8 +4106,7 @@ var away;
                 GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGBA, width, height, 0, GL.RGBA, GL.UNSIGNED_BYTE, null);
             }
             Object.defineProperty(Texture.prototype, "width", {
-                get: // TODO uploads
-                function () {
+                get: function () {
                     return this._width;
                 },
                 enumerable: true,
@@ -3988,6 +4120,11 @@ var away;
                 enumerable: true,
                 configurable: true
             });
+
+            Texture.prototype.uploadFromHTMLImageElement = function (image, miplevel) {
+                if (typeof miplevel === "undefined") { miplevel = 0; }
+                GL.texImage2D(GL.TEXTURE_2D, miplevel, GL.RGBA, GL.RGBA, GL.UNSIGNED_BYTE, image);
+            };
             return Texture;
         })(display3D.TextureBase);
         display3D.Texture = Texture;
@@ -4356,6 +4493,49 @@ var away;
                 GL.scissor(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
             };
 
+            Context3D.prototype.setGLSLTextureAt = function (locationName, texture, textureIndex) {
+                var location = GL.getUniformLocation(this._currentProgram.glProgram, locationName);
+                switch (textureIndex) {
+                    case 0:
+                        GL.activeTexture(GL.TEXTURE0);
+                        break;
+                    case 1:
+                        GL.activeTexture(GL.TEXTURE1);
+                        break;
+                    case 2:
+                        GL.activeTexture(GL.TEXTURE2);
+                        break;
+                    case 3:
+                        GL.activeTexture(GL.TEXTURE3);
+                        break;
+                    case 4:
+                        GL.activeTexture(GL.TEXTURE4);
+                        break;
+                    case 5:
+                        GL.activeTexture(GL.TEXTURE5);
+                        break;
+                    case 6:
+                        GL.activeTexture(GL.TEXTURE6);
+                        break;
+                    case 7:
+                        GL.activeTexture(GL.TEXTURE7);
+                        break;
+                    default:
+                        throw "Texture " + textureIndex + " is out of bounds.";
+                }
+
+                GL.bindTexture(GL.TEXTURE_2D, texture.glTexture);
+                console.log(">>>>>>>>>> " + texture.glTexture);
+
+                GL.uniform1i(location, textureIndex);
+
+                // TODO create something like setSamplerStateAt(....
+                GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
+                GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
+                GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR);
+                GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
+            };
+
             Context3D.prototype.setVertexBufferAt = function (index, buffer, bufferOffset, format) {
                 if (typeof bufferOffset === "undefined") { bufferOffset = 0; }
                 if (typeof format === "undefined") { format = null; }
@@ -4432,6 +4612,7 @@ var away;
     ///<reference path="../display3D/Context3D.ts" />
     ///<reference path="../display3D/TextureBase.ts" />
     ///<reference path="../display3D/Context3DTextureFormat.ts" />
+    ///<reference path="../errors/AbstractMethodError.ts" />
     (function (textures) {
         var TextureProxyBase = (function (_super) {
             __extends(TextureProxyBase, _super);
@@ -4500,11 +4681,13 @@ var away;
             }
             */
             TextureProxyBase.prototype._pUploadContent = function (texture) {
+                throw new away.errors.AbstractMethodError();
             };
 
             TextureProxyBase.prototype._pSetSize = function (width, height) {
-                if (this._width != width || this._height != height)
+                if (this._width != width || this._height != height) {
                     this._pInvalidateSize();
+                }
 
                 this._width = width;
                 this._height = height;
@@ -4531,21 +4714,67 @@ var away;
             };
 
             TextureProxyBase.prototype._pCreateTexture = function (context) {
+                throw new away.errors.AbstractMethodError();
             };
 
             /**
             * @inheritDoc
             */
             TextureProxyBase.prototype.dispose = function () {
-                for (var i = 0; i < 8; ++i)
-                    if (_textures[i])
-                        _textures[i].dispose();
+                for (var i = 0; i < 8; ++i) {
+                    if (this._textures[i]) {
+                        this._textures[i].dispose();
+                    }
+                }
             };
             return TextureProxyBase;
         })(away.library.NamedAssetBase);
         textures.TextureProxyBase = TextureProxyBase;
     })(away.textures || (away.textures = {}));
     var textures = away.textures;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../../def/webgl.d.ts"/>
+    ///<reference path="../events/EventDispatcher.ts" />
+    ///<reference path="../events/AwayEvent.ts" />
+    ///<reference path="Context3D.ts" />
+    (function (display3D) {
+        var Stage3D = (function (_super) {
+            __extends(Stage3D, _super);
+            function Stage3D(canvas) {
+                if (typeof canvas === "undefined") { canvas = null; }
+                _super.call(this);
+                this._canvas = canvas;
+            }
+            Stage3D.prototype.requestContext = function () {
+                try  {
+                    this._context3D = new display3D.Context3D(this._canvas);
+                } catch (e) {
+                    this.dispatchEvent(new away.events.AwayEvent(away.events.AwayEvent.ERROR, e));
+                }
+
+                if (this._context3D) {
+                    this.dispatchEvent(new away.events.AwayEvent(away.events.AwayEvent.CONTEXT3D_CREATE));
+                }
+            };
+
+            Object.defineProperty(Stage3D.prototype, "context3D", {
+                get: function () {
+                    return this._context3D;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return Stage3D;
+        })(away.events.EventDispatcher);
+        display3D.Stage3D = Stage3D;
+    })(away.display3D || (away.display3D = {}));
+    var display3D = away.display3D;
 })(away || (away = {}));
 //<reference path="../src/away/events/Event.ts" />
 //<reference path="../src/away/events/IOErrorEvent.ts" />
@@ -4561,6 +4790,8 @@ var away;
 ///<reference path="../src/away/loaders/misc/SingleFileImageLoader.ts"/>
 ///<reference path="../src/away/loaders/misc/SingleFileURLLoader.ts"/>
 ///<reference path="../src/away/textures/TextureProxyBase.ts"/>
+///<reference path="../src/away/display3D/Context3D.ts"/>
+///<reference path="../src/away/display3D/Stage3D.ts"/>
 //------------------------------------------------------------------------------------------------
 // Web / PHP Storm arguments string
 //------------------------------------------------------------------------------------------------
@@ -4571,6 +4802,11 @@ var tests;
     var SimpleLoaderTest = (function () {
         function SimpleLoaderTest() {
             this.iAssetTest = new tests.IAssetTest();
+            this.canvas = document.createElement('canvas');
+            this.stage3D = new away.display3D.Stage3D(this.canvas);
+            this.stage3D.addEventListener(away.events.AwayEvent.CONTEXT3D_CREATE, this.onContext3DCreateHandler, this);
+            this.stage3D.requestContext();
+
             //------------------------------------------------------------------------------------------
             // Simple Loader - instantiated to validate against compiler - needs test implementation ( and a parser )
             //------------------------------------------------------------------------------------------
@@ -4605,6 +4841,11 @@ var tests;
 
             var iTest = this.iAssetTest;
         }
+        SimpleLoaderTest.prototype.onContext3DCreateHandler = function (e) {
+            var stage3D = e.target;
+            this.context3D = stage3D.context3D;
+        };
+
         SimpleLoaderTest.prototype.simpleImageLoaderLoadComplete = function (e) {
         };
 
