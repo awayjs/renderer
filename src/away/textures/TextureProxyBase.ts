@@ -25,31 +25,51 @@ module away.textures
 
             super();
 
-            this._textures = new Array<away.display3D.TextureBase>( 8 );//_textures = new Vector.<TextureBase>(8);
-            this._dirty = new Array<away.display3D.Context3D>( 8 );//_dirty = new Vector.<Context3D>(8);
+            this._textures      = new Array<away.display3D.TextureBase>( 8 );//_textures = new Vector.<TextureBase>(8);
+            this._dirty         = new Array<away.display3D.Context3D>( 8 );//_dirty = new Vector.<Context3D>(8);
 
 		}
 
+        /**
+         *
+         * @returns {boolean}
+         */
 		public get hasMipMaps() : boolean
 		{
 			return this._hasMipmaps;
 		}
 
+        /**
+         *
+         * @returns {string}
+         */
 		public get format() : string
 		{
 			return this._format;
 		}
-		
+
+        /**
+         *
+         * @returns {string}
+         */
 		public get assetType() : string
 		{
 			return away.library.AssetType.TEXTURE;
 		}
 
+        /**
+         *
+         * @returns {number}
+         */
 		public get width() : number
 		{
 			return this._width;
 		}
 
+        /**
+         *
+         * @returns {number}
+         */
 		public get height() : number
 		{
 			return this._height;
@@ -71,6 +91,12 @@ module away.textures
 			return tex;
 		}
         */
+
+        /**
+         *
+         * @param texture
+         * @private
+         */
 		public _pUploadContent(texture : away.display3D.TextureBase) : void
 		{
 
@@ -78,16 +104,30 @@ module away.textures
 
 		}
 
+        /**
+         *
+         * @param width
+         * @param height
+         * @private
+         */
 		public _pSetSize(width : number, height : number) : void
 		{
+
 			if (this._width != width || this._height != height)
+            {
+
                 this._pInvalidateSize();
+
+            }
 
             this._width     = width;
             this._height    = height;
 
 		}
 
+        /**
+         *
+         */
 		public invalidateContent() : void
 		{
 
@@ -100,6 +140,10 @@ module away.textures
 
 		}
 
+        /**
+         *
+         * @private
+         */
 		public _pInvalidateSize() : void
 		{
 			var tex : away.display3D.TextureBase;
@@ -121,8 +165,11 @@ module away.textures
 
 		}
 
-
-
+        /**
+         *
+         * @param context
+         * @private
+         */
 		public _pCreateTexture( context : away.display3D.Context3D) : away.display3D.TextureBase
 		{
             throw new away.errors.AbstractMethodError();
