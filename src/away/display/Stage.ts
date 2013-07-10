@@ -2,9 +2,8 @@
  * ...
  * @author Gary Paluk - http://www.plugin.io
  */
-
-///<reference path="../display/Stage3D.ts" />
-///<reference path="../events/AwayEvent.ts" />
+ 
+ ///<reference path="../display/Stage3D.ts" />
 
 module away.display
 {
@@ -56,26 +55,13 @@ module away.display
 		public initStage3DObjects()
 		{
 			this.stage3Ds = [];
-            var stage3DObj : away.display.Stage3D;
-
 			for( var i: number = 0; i < Stage.MAX_STAGE3D_QUANTITY; ++i )
 			{
 				var canvas: HTMLCanvasElement = this.createHTMLCanvasElement();
-
-                stage3DObj = new away.display.Stage3D( canvas );
-                stage3DObj.addEventListener( away.events.AwayEvent.CONTEXT3D_CREATE , this.onContextCreated , this )
-				this.stage3Ds.push( stage3DObj );
-
+				this.addChildHTMLElement( canvas );
+				this.stage3Ds.push( new away.display.Stage3D( canvas ) );
 			}
 		}
-
-        private onContextCreated( e : away.events.AwayEvent ) : void
-        {
-
-            var stage3DObj : away.display.Stage3D = <away.display.Stage3D> e.target;
-            this.addChildHTMLElement( stage3DObj.canvas );
-
-        }
 		
 		private createHTMLCanvasElement(): HTMLCanvasElement
 		{
