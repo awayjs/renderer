@@ -3,22 +3,8 @@
 ///<reference path="../../events/EventDispatcher.ts" />
 ///<reference path="ISingleFileTSLoader.ts" />
 ///<reference path="../../events/Event.ts" />
-
-// TODO: delete unused references.
-
-///<reference path="../../events/Event.ts" />
 ///<reference path="../../events/IOErrorEvent.ts" />
-///<reference path="../../events/HTTPStatusEvent.ts" />
-///<reference path="../../events/ProgressEvent.ts" />
-///<reference path="../../events/AwayEvent.ts" />
-///<reference path="../../events/LoaderEvent.ts" />
-///<reference path="../../net/URLRequest.ts" />
-///<reference path="../../net/URLLoaderDataFormat.ts" />
-///<reference path="../../net/URLRequestMethod.ts" />
-///<reference path="../../net/URLLoader.ts" />
-///<reference path="../../loaders/parsers/ParserBase.ts" />
-///<reference path="../../loaders/parsers/ParserDataFormat.ts" />
-
+///<reference path="../../events/Event.ts" />
 
 module away.loaders
 {
