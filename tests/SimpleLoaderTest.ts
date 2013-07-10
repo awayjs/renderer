@@ -13,7 +13,7 @@
 ///<reference path="../src/away/loaders/misc/SingleFileURLLoader.ts"/>
 ///<reference path="../src/away/textures/TextureProxyBase.ts"/>
 ///<reference path="../src/away/display3D/Context3D.ts"/>
-///<reference path="../src/away/display3D/Stage3D.ts"/>
+///<reference path="../src/away/display/Stage3D.ts"/>
 
 //------------------------------------------------------------------------------------------------
 // Web / PHP Storm arguments string
@@ -37,14 +37,14 @@ module tests {
 
         private canvas                  : HTMLCanvasElement;
 
-        private stage3D                 : away.display3D.Stage3D;
+        private stage3D                 : away.display.Stage3D;
         private context3D               : away.display3D.Context3D;
 
         constructor()
         {
 
             this.canvas                         = document.createElement( 'canvas');
-            this.stage3D                        = new away.display3D.Stage3D( this.canvas );
+            this.stage3D                        = new away.display.Stage3D( this.canvas );
             this.stage3D.addEventListener( away.events.AwayEvent.CONTEXT3D_CREATE, this.onContext3DCreateHandler, this );
             this.stage3D.requestContext();
 
@@ -92,7 +92,7 @@ module tests {
         private onContext3DCreateHandler( e )
         {
 
-            var stage3D: away.display3D.Stage3D = <away.display3D.Stage3D> e.target;
+            var stage3D: away.display.Stage3D = <away.display.Stage3D> e.target;
             this.context3D = stage3D.context3D;
 
 
