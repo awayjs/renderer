@@ -4,6 +4,7 @@
  */
  
  ///<reference path="../display/Stage3D.ts" />
+ ///<reference path="../utils/CSS.ts" />
 
 module away.display
 {
@@ -11,7 +12,7 @@ module away.display
 	export class Stage
 	{
 		
-		private static MAX_STAGE3D_QUANTITY: number = 8;
+		private static STAGE3D_MAX_QUANTITY: number = 8;
 		public stage3Ds:away.display.Stage3D[];
 		
 		private _stageHeight:number;
@@ -33,19 +34,19 @@ module away.display
 			this._stageHeight = height;
 			this._stageWidth = width;
 			
-			for( var i: number = 0; i <  Stage.MAX_STAGE3D_QUANTITY; ++i )
+			for( var i: number = 0; i <  Stage.STAGE3D_MAX_QUANTITY; ++i )
 			{
-				this.stage3Ds[ i ].canvas.style.width = width + "px";
-				this.stage3Ds[ i ].canvas.style.height = height + "px";
-				this.stage3Ds[ i ].canvas.width = width;
-				this.stage3Ds[ i ].canvas.height = height;
+				away.utils.CSS.setCanvasSize( this.stage3Ds[ i ].canvas, width, height );
+				away.utils.CSS.setCanvasPosition( this.stage3Ds[ i ].canvas, 0, 0, true );
+				// away.utils.CSS.setCanvasAlpha( this.stage3Ds[ i ].canvas, 0 );
+				// away.utils.CSS.setCanvasVisibility( this.stage3Ds[ i ].canvas, false );
 			}
 			// TODO dispatchEvent
 		}
 		
 		public getStage3DAt( index: number ): away.display.Stage3D
 		{
-			if( 0 <= index && index < Stage.MAX_STAGE3D_QUANTITY )
+			if( 0 <= index && index < Stage.STAGE3D_MAX_QUANTITY )
 			{
 				return this.stage3Ds[ index ];
 			}
@@ -55,7 +56,7 @@ module away.display
 		public initStage3DObjects()
 		{
 			this.stage3Ds = [];
-			for( var i: number = 0; i < Stage.MAX_STAGE3D_QUANTITY; ++i )
+			for( var i: number = 0; i < Stage.STAGE3D_MAX_QUANTITY; ++i )
 			{
 				var canvas: HTMLCanvasElement = this.createHTMLCanvasElement();
 				this.addChildHTMLElement( canvas );

@@ -10,7 +10,11 @@ module away.events
 
         public static COMPLETE  : string = 'Event_Complete';
         public static OPEN      : string = 'Event_Open';
-
+		
+		public static RESIZE:string = "resize";
+		public static CONTEXT3D_CREATE: string = "context3DCreate";
+        public static ERROR: string = "error";
+		
         /**
          * Type of event
          * @property type

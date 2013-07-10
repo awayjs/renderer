@@ -5,7 +5,7 @@
 
 ///<reference path="../../def/webgl.d.ts"/>
 ///<reference path="../events/EventDispatcher.ts" />
-///<reference path="../events/AwayEvent.ts" />
+///<reference path="../events/Event.ts" />
 ///<reference path="../display3D/Context3D.ts" />
 
 module away.display
@@ -30,12 +30,12 @@ module away.display
 			}
 			catch( e )
 			{
-                this.dispatchEvent( new away.events.AwayEvent( away.events.AwayEvent.ERROR, e ) );
+                this.dispatchEvent( new away.events.Event( away.events.Event.ERROR ) );
 			}
 			
 			if( this._context3D )
 			{
-				this.dispatchEvent( new away.events.AwayEvent( away.events.AwayEvent.CONTEXT3D_CREATE ) );
+				this.dispatchEvent( new away.events.Event( away.events.Event.CONTEXT3D_CREATE ) );
 			}
 		}
 		
