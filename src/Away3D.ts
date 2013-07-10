@@ -5,7 +5,7 @@
  
 ///<reference path="def/webgl.d.ts"/>
 
-///<reference path="away/events/AwayEvent.ts" />
+///<reference path="away/events/Event.ts" />
 ///<reference path="away/events/EventDispatcher.ts" />
 
 ///<reference path="away/display/Stage.ts" />
@@ -75,13 +75,13 @@ class Away3D extends away.events.EventDispatcher
         var imageLoader:away.net.IMGLoader = <away.net.IMGLoader> e.target
 		this._image = imageLoader.image;
 		
-		this._stage.stage3Ds[0].addEventListener( away.events.AwayEvent.CONTEXT3D_CREATE, this.onContext3DCreateHandler, this );
+		this._stage.stage3Ds[0].addEventListener( away.events.Event.CONTEXT3D_CREATE, this.onContext3DCreateHandler, this );
 		this._stage.stage3Ds[0].requestContext();
 	}
 	
 	private onContext3DCreateHandler( e )
 	{
-		this._stage.stage3Ds[0].removeEventListener( away.events.AwayEvent.CONTEXT3D_CREATE, this.onContext3DCreateHandler, this );
+		this._stage.stage3Ds[0].removeEventListener( away.events.Event.CONTEXT3D_CREATE, this.onContext3DCreateHandler, this );
 		
 		var stage3D: away.display.Stage3D = <away.display.Stage3D> e.target;
 		this._context3D = stage3D.context3D;
