@@ -1,5 +1,6 @@
 ///<reference path="../library/assets/IAsset.ts" />
 ///<reference path="../library/assets/NamedAssetBase.ts" />
+///<reference path="../library/assets/AssetType.ts" />
 ///<reference path="../display3D/Context3D.ts" />
 ///<reference path="../display3D/TextureBase.ts" />
 ///<reference path="../display3D/Context3DTextureFormat.ts" />
@@ -85,7 +86,7 @@ module away.textures
 			if (!tex || _dirty[contextIndex] != context) {
 				_textures[contextIndex] = tex = createTexture(context);
 				_dirty[contextIndex] = context;
-				uploadContent(tex);
+				uploadContent(tex);//_pUploadContent
 			}
 
 			return tex;
