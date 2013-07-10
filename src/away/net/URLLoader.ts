@@ -7,6 +7,7 @@
 ///<reference path="URLLoaderDataFormat.ts" />
 ///<reference path="URLRequestMethod.ts" />
 ///<reference path="URLRequest.ts" />
+///<reference path="../errors/Error.ts" />
 
 module away.net {
 
@@ -122,7 +123,7 @@ module away.net {
 
             } else {
 
-                throw 'URLLoader error: incompatible dataFormat';
+                throw new away.errors.Error( 'URLLoader error: incompatible dataFormat' );
 
             }
 
@@ -396,7 +397,6 @@ module away.net {
 
             while (tokens = re.exec(source))
             {
-
 
                 result[decodeURIComponent(tokens[1])] = decodeURIComponent(tokens[2]);
 

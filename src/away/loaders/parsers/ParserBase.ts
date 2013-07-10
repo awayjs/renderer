@@ -8,6 +8,7 @@
 ///<reference path="../../loaders/parsers/ParserLoaderType.ts" />
 ///<reference path="../../utils/Timer.ts" />
 ///<reference path="../../utils/getTimer.ts" />
+///<reference path="../../errors/AbstractMethodError.ts" />
 
 module away.loaders {
 
@@ -50,7 +51,7 @@ module away.loaders {
         public static supportsType(extension:string):boolean
         {
 
-            //TODO: Throw error - this should be implemented ( Abstract Static ? )
+            throw new away.errors.AbstractMethodError();
             return false;
 
         }
@@ -213,7 +214,8 @@ module away.loaders {
 		 */
 		public _iResolveDependency(resourceDependency : ResourceDependency) : void
 		{
-			//throw new AbstractMethodError(); // TODO: throw
+
+            throw new away.errors.AbstractMethodError();
 
 		}
 		
@@ -224,7 +226,7 @@ module away.loaders {
 		 */
 		public _iResolveDependencyFailure(resourceDependency : ResourceDependency) : void
 		{
-			//throw new AbstractMethodError();// TODO: throw
+            throw new away.errors.AbstractMethodError();
 		}
 
 		/**
@@ -345,7 +347,7 @@ module away.loaders {
 					type_event = away.events.AssetEvent.SHADOWMAPMETHOD_COMPLETE;
 					break;
                 default:
-					//throw new Error('Unhandled asset type '+asset.assetType+'. Report as bug!'); // TODO: throw
+                    throw new away.errors.Error('Unhandled asset type '+asset.assetType+'. Report as bug!');
 					break;
 			};
 				
@@ -366,8 +368,7 @@ module away.loaders {
 		public _pProceedParsing() : boolean
 		{
 
-            console.log( '_pProceedParsing - AbstractMethodError');
-			//TODO: Throw  - throw new AbstractMethodError();
+            throw new away.errors.AbstractMethodError();
 			return true;
 		}
 

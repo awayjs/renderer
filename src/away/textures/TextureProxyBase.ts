@@ -3,6 +3,7 @@
 ///<reference path="../display3D/Context3D.ts" />
 ///<reference path="../display3D/TextureBase.ts" />
 ///<reference path="../display3D/Context3DTextureFormat.ts" />
+///<reference path="../errors/AbstractMethodError.ts" />
 
 
 module away.textures
@@ -24,31 +25,51 @@ module away.textures
 
             super();
 
-            this._textures = new Array<away.display3D.TextureBase>( 8 );//_textures = new Vector.<TextureBase>(8);
-            this._dirty = new Array<away.display3D.Context3D>( 8 );//_dirty = new Vector.<Context3D>(8);
+            this._textures      = new Array<away.display3D.TextureBase>( 8 );//_textures = new Vector.<TextureBase>(8);
+            this._dirty         = new Array<away.display3D.Context3D>( 8 );//_dirty = new Vector.<Context3D>(8);
 
 		}
 
+        /**
+         *
+         * @returns {boolean}
+         */
 		public get hasMipMaps() : boolean
 		{
 			return this._hasMipmaps;
 		}
 
+        /**
+         *
+         * @returns {string}
+         */
 		public get format() : string
 		{
 			return this._format;
 		}
-		
+
+        /**
+         *
+         * @returns {string}
+         */
 		public get assetType() : string
 		{
 			return away.library.AssetType.TEXTURE;
 		}
 
+        /**
+         *
+         * @returns {number}
+         */
 		public get width() : number
 		{
 			return this._width;
 		}
 
+        /**
+         *
+         * @returns {number}
+         */
 		public get height() : number
 		{
 			return this._height;
@@ -70,21 +91,43 @@ module away.textures
 			return tex;
 		}
         */
+
+        /**
+         *
+         * @param texture
+         * @private
+         */
 		public _pUploadContent(texture : away.display3D.TextureBase) : void
 		{
-			//throw new AbstractMethodError();// TODO throw
+
+            throw new away.errors.AbstractMethodError();
+
 		}
 
+        /**
+         *
+         * @param width
+         * @param height
+         * @private
+         */
 		public _pSetSize(width : number, height : number) : void
 		{
+
 			if (this._width != width || this._height != height)
+            {
+
                 this._pInvalidateSize();
+
+            }
 
             this._width     = width;
             this._height    = height;
 
 		}
 
+        /**
+         *
+         */
 		public invalidateContent() : void
 		{
 
@@ -97,6 +140,10 @@ module away.textures
 
 		}
 
+        /**
+         *
+         * @private
+         */
 		public _pInvalidateSize() : void
 		{
 			var tex : away.display3D.TextureBase;
@@ -118,11 +165,14 @@ module away.textures
 
 		}
 
-
-
-		public _pCreateTexture(context : Context3D) : TextureBase
+        /**
+         *
+         * @param context
+         * @private
+         */
+		public _pCreateTexture( context : away.display3D.Context3D) : away.display3D.TextureBase
 		{
-			//throw new AbstractMethodError(); // TODO: throw
+            throw new away.errors.AbstractMethodError();
 		}
 
 		/**
@@ -131,7 +181,17 @@ module away.textures
 		public dispose() : void
 		{
 			for (var i : number = 0; i < 8; ++i)
-				if (_textures[i]) _textures[i].dispose();
+            {
+
+                if (this._textures[i])
+                {
+
+                    this._textures[i].dispose();
+                }
+
+            }
+
 		}
+
 	}
 }

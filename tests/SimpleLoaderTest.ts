@@ -11,6 +11,9 @@
 ///<reference path="../src/away/loaders/parsers/ParserDataFormat.ts"/>
 ///<reference path="../src/away/loaders/misc/SingleFileImageLoader.ts"/>
 ///<reference path="../src/away/loaders/misc/SingleFileURLLoader.ts"/>
+///<reference path="../src/away/textures/TextureProxyBase.ts"/>
+///<reference path="../src/away/display3D/Context3D.ts"/>
+///<reference path="../src/away/display3D/Stage3D.ts"/>
 
 //------------------------------------------------------------------------------------------------
 // Web / PHP Storm arguments string
@@ -24,18 +27,26 @@ module tests {
     export class SimpleLoaderTest //extends away.events.EventDispatcher
     {
 
-        private iAssetTest : tests.IAssetTest = new tests.IAssetTest(); // TEST for interface;
+        private iAssetTest              : tests.IAssetTest = new tests.IAssetTest(); // TEST for interface;
 
-        private parserBase      : away.loaders.ParserBase;              // Test ( for import only );
-        private simpleLoader    : away.loaders.SingleFileLoader;        // Test ( for import only );
+        private parserBase              : away.loaders.ParserBase;              // Test ( for import only );
+        private simpleLoader            : away.loaders.SingleFileLoader;        // Test ( for import only );
 
-        private simpleImageLoader   : away.loaders.SingleFileImageLoader;
-        private simpleURLLoader     : away.loaders.SingleFileURLLoader;
+        private simpleImageLoader       : away.loaders.SingleFileImageLoader;
+        private simpleURLLoader         : away.loaders.SingleFileURLLoader;
+
+        private canvas                  : HTMLCanvasElement;
+
+        private stage3D                 : away.display3D.Stage3D;
+        private context3D               : away.display3D.Context3D;
 
         constructor()
         {
 
-
+            this.canvas                         = document.createElement( 'canvas');
+            this.stage3D                        = new away.display3D.Stage3D( this.canvas );
+            this.stage3D.addEventListener( away.events.AwayEvent.CONTEXT3D_CREATE, this.onContext3DCreateHandler, this );
+            this.stage3D.requestContext();
 
             //------------------------------------------------------------------------------------------
             // Simple Loader - instantiated to validate against compiler - needs test implementation ( and a parser )
@@ -75,6 +86,15 @@ module tests {
             var iTest : away.library.IAsset = this.iAssetTest;
 
             //console.log( 'SimpleLoaderTest.iTest.name:' , iTest.name , ' id:' , iTest.id );
+
+        }
+
+        private onContext3DCreateHandler( e )
+        {
+
+            var stage3D: away.display3D.Stage3D = <away.display3D.Stage3D> e.target;
+            this.context3D = stage3D.context3D;
+
 
         }
 

@@ -108,7 +108,7 @@ module away.loaders
                 // TODO: Implement Texture2D and add HTMLImageElement
                 var aAssetTest : away.library.IAsset ;
 
-                this._pFinalizeAsset( aAssetTest , this._iFileName);
+                //this._pFinalizeAsset( aAssetTest , this._iFileName);
 
                 return away.loaders.ParserBase.PARSING_DONE;
 

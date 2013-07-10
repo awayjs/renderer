@@ -1,5 +1,6 @@
 ///<reference path="../events/EventDispatcher.ts" />
 ///<reference path="../events/TimerEvent.ts" />
+///<reference path="../errors/Error.ts" />
 
 module away.utils
 {
@@ -30,7 +31,7 @@ module away.utils
 
             if (isNaN(delay) || delay < 0)
             {
-                throw new Error("Delay is negative or not a number");
+                throw new away.errors.Error("Delay is negative or not a number");
             }
 
         }

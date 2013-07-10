@@ -4,6 +4,7 @@
  */
 
 ///<reference path="Vector3D.ts" />
+///<reference path="../errors/ArgumentError.ts" />
 
 module away.geom
 {
@@ -146,7 +147,7 @@ module away.geom
 						vector3D.w = this.rawData[ 15 ];
 					break;
 				default:
-					// TODO throw
+					throw new away.errors.ArgumentError( "ArgumentError, Column " + column + " out of bounds [0, ..., 3]");
 			}
 		}
 		
@@ -182,7 +183,7 @@ module away.geom
 						this.rawData[ 15 ] = vector3D.w;
 					break;
 				default:
-					// TODO throw
+                    throw new away.errors.ArgumentError( "ArgumentError, Column " + column + " out of bounds [0, ..., 3]");
 			}
 		}
 		
@@ -238,7 +239,7 @@ module away.geom
 						vector3D.w = this.rawData[ 15 ]
 					break;
 				default:
-					// TODO throw
+                    throw new away.errors.ArgumentError( "ArgumentError, Row " + row + " out of bounds [0, ..., 3]");
 			}
 		}
 		
@@ -274,7 +275,7 @@ module away.geom
 						this.rawData[ 15 ] = vector3D.w;
 					break;
 				default:
-					// TODO throw
+                    throw new away.errors.ArgumentError( "ArgumentError, Row " + row + " out of bounds [0, ..., 3]");
 			}
 		}
 		
