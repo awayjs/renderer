@@ -3531,6 +3531,56 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
+    ///<reference path="../display/BitmapData.ts" />
+    (function (utils) {
+        //import flash.display.BitmapData;
+        var TextureUtils = (function () {
+            function TextureUtils() {
+            }
+            TextureUtils.isBitmapDataValid = function (bitmapData) {
+                if (bitmapData == null) {
+                    return true;
+                }
+
+                return TextureUtils.isDimensionValid(bitmapData.width) && TextureUtils.isDimensionValid(bitmapData.height);
+            };
+
+            TextureUtils.isHTMLImageElementValid = function (image) {
+                if (image == null) {
+                    return true;
+                }
+
+                return TextureUtils.isDimensionValid(image.width) && TextureUtils.isDimensionValid(image.height);
+            };
+
+            TextureUtils.isDimensionValid = function (d) {
+                return d >= 1 && d <= TextureUtils.MAX_SIZE && TextureUtils.isPowerOfTwo(d);
+            };
+
+            TextureUtils.isPowerOfTwo = function (value) {
+                return value ? ((value & -value) == value) : false;
+            };
+
+            TextureUtils.getBestPowerOf2 = function (value) {
+                var p = 1;
+
+                while (p < value)
+                    p <<= 1;
+
+                if (p > TextureUtils.MAX_SIZE)
+                    p = TextureUtils.MAX_SIZE;
+
+                return p;
+            };
+            TextureUtils.MAX_SIZE = 2048;
+            return TextureUtils;
+        })();
+        utils.TextureUtils = TextureUtils;
+    })(away.utils || (away.utils = {}));
+    var utils = away.utils;
+})(away || (away = {}));
+var away;
+(function (away) {
     //<reference path="../library/assets/IAsset.ts" />
     ///<reference path="../display3D/TextureBase.ts" />
     ///<reference path="../display3D/Texture.ts" />
@@ -3538,10 +3588,8 @@ var away;
     ///<reference path="../errors/AbstractMethodError.ts" />
     ///<reference path="../display/BitmapData.ts" />
     ///<reference path="../materials/utils/MipmapGenerator.ts" />
-    //----- Not Used
-    //<reference path="../display3D/Context3DTextureFormat.ts" />
-    //<reference path="../library/assets/NamedAssetBase.ts" />
-    //<reference path="../display3D/Context3D.ts" />
+    ///<reference path="../utils/TextureUtils.ts" />
+    ///<reference path="../errors/Error.ts" />
     (function (textures) {
         var HTMLImageElementTexture = (function (_super) {
             __extends(HTMLImageElementTexture, _super);
@@ -3561,10 +3609,10 @@ var away;
                         return;
                     }
 
-                    /* TODO: TextureUtils
-                    if (!TextureUtils.isBitmapDataValid(value))
-                    throw new Error("Invalid bitmapData: Width and height must be power of 2 and cannot exceed 2048");
-                    */
+                    if (!away.utils.TextureUtils.isHTMLImageElementValid(value)) {
+                        throw new away.errors.Error("Invalid bitmapData: Width and height must be power of 2 and cannot exceed 2048");
+                    }
+
                     this.invalidateContent();
                     this._pSetSize(value.width, value.height);
                     this._htmlImageElement = value;
@@ -3643,6 +3691,7 @@ var away;
 ///<reference path="../src/away/materials/utils/MipmapGenerator.ts" />
 ///<reference path="../src/away/display3D/TextureBase.ts" /
 ///<reference path="../src/away/textures/HTMLImageElementTexture.ts" />
+///<reference path="../src/away/utils/TextureUtils.ts" />
 //------------------------------------------------------------------------------------------------
 // Web / PHP Storm arguments string
 //------------------------------------------------------------------------------------------------
@@ -3703,8 +3752,6 @@ var MipMapTest = (function () {
 
         console['time']('MipMap' + c);
 
-        var regen = mipmap != null;
-
         if ((this.w >= 1) || (this.h >= 1)) {
             if (alpha) {
                 mipmap.fillRect(this._rect, 0);
@@ -3724,9 +3771,7 @@ var MipMapTest = (function () {
             this._rect.height = this.h > 1 ? this.h : 1;
         }
 
-        if (!regen) {
-            mipmap.dispose();
-        }
+        console.log('away.utils.TextureUtils.isBitmapDataValid: ', away.utils.TextureUtils.isBitmapDataValid(mipmap));
 
         console['timeEnd']('MipMap' + c);
     };

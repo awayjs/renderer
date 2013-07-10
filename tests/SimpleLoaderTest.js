@@ -994,7 +994,6 @@ var away;
 var away;
 (function (away) {
     ///<reference path="Event.ts" />
-    ///<reference path="../loaders/parsers/ParserBase.ts" />
     ///<reference path="../library/assets/IAsset.ts" />
     (function (events) {
         //import away3d.library.assets.IAsset;
@@ -2186,19 +2185,8 @@ var away;
     ///<reference path="../../events/EventDispatcher.ts" />
     ///<reference path="ISingleFileTSLoader.ts" />
     ///<reference path="../../events/Event.ts" />
-    // TODO: delete unused references.
-    ///<reference path="../../events/Event.ts" />
     ///<reference path="../../events/IOErrorEvent.ts" />
-    ///<reference path="../../events/HTTPStatusEvent.ts" />
-    ///<reference path="../../events/ProgressEvent.ts" />
-    ///<reference path="../../events/AwayEvent.ts" />
-    ///<reference path="../../events/LoaderEvent.ts" />
-    ///<reference path="../../net/URLRequest.ts" />
-    ///<reference path="../../net/URLLoaderDataFormat.ts" />
-    ///<reference path="../../net/URLRequestMethod.ts" />
-    ///<reference path="../../net/URLLoader.ts" />
-    ///<reference path="../../loaders/parsers/ParserBase.ts" />
-    ///<reference path="../../loaders/parsers/ParserDataFormat.ts" />
+    ///<reference path="../../events/Event.ts" />
     (function (loaders) {
         var SingleFileImageLoader = (function (_super) {
             __extends(SingleFileImageLoader, _super);
@@ -2703,7 +2691,7 @@ var away;
 
                 this._data = urlLoader.data;
 
-                console.log('SingleFileURLLoader.handleUrlLoaderComplete', this._data.length);
+                console.log('SingleFileLoader.handleUrlLoaderComplete', this._data, this._data.length);
 
                 if (this._loadAsRawData) {
                     // No need to parse this data, which should be returned as is
@@ -4525,8 +4513,6 @@ var away;
                 }
 
                 GL.bindTexture(GL.TEXTURE_2D, texture.glTexture);
-                console.log(">>>>>>>>>> " + texture.glTexture);
-
                 GL.uniform1i(location, textureIndex);
 
                 // TODO create something like setSamplerStateAt(....
@@ -4609,6 +4595,7 @@ var away;
 (function (away) {
     ///<reference path="../library/assets/IAsset.ts" />
     ///<reference path="../library/assets/NamedAssetBase.ts" />
+    ///<reference path="../library/assets/AssetType.ts" />
     ///<reference path="../display3D/Context3D.ts" />
     ///<reference path="../display3D/TextureBase.ts" />
     ///<reference path="../display3D/Context3DTextureFormat.ts" />
@@ -4625,7 +4612,11 @@ var away;
                 this._dirty = new Array(8);
             }
             Object.defineProperty(TextureProxyBase.prototype, "hasMipMaps", {
-                get: function () {
+                get: /**
+                *
+                * @returns {boolean}
+                */
+                function () {
                     return this._hasMipmaps;
                 },
                 enumerable: true,
@@ -4633,7 +4624,11 @@ var away;
             });
 
             Object.defineProperty(TextureProxyBase.prototype, "format", {
-                get: function () {
+                get: /**
+                *
+                * @returns {string}
+                */
+                function () {
                     return this._format;
                 },
                 enumerable: true,
@@ -4641,7 +4636,11 @@ var away;
             });
 
             Object.defineProperty(TextureProxyBase.prototype, "assetType", {
-                get: function () {
+                get: /**
+                *
+                * @returns {string}
+                */
+                function () {
                     return away.library.AssetType.TEXTURE;
                 },
                 enumerable: true,
@@ -4649,7 +4648,11 @@ var away;
             });
 
             Object.defineProperty(TextureProxyBase.prototype, "width", {
-                get: function () {
+                get: /**
+                *
+                * @returns {number}
+                */
+                function () {
                     return this._width;
                 },
                 enumerable: true,
@@ -4657,7 +4660,11 @@ var away;
             });
 
             Object.defineProperty(TextureProxyBase.prototype, "height", {
-                get: function () {
+                get: /**
+                *
+                * @returns {number}
+                */
+                function () {
                     return this._height;
                 },
                 enumerable: true,
@@ -4674,16 +4681,27 @@ var away;
             if (!tex || _dirty[contextIndex] != context) {
             _textures[contextIndex] = tex = createTexture(context);
             _dirty[contextIndex] = context;
-            uploadContent(tex);
+            uploadContent(tex);//_pUploadContent
             }
             
             return tex;
             }
             */
+            /**
+            *
+            * @param texture
+            * @private
+            */
             TextureProxyBase.prototype._pUploadContent = function (texture) {
                 throw new away.errors.AbstractMethodError();
             };
 
+            /**
+            *
+            * @param width
+            * @param height
+            * @private
+            */
             TextureProxyBase.prototype._pSetSize = function (width, height) {
                 if (this._width != width || this._height != height) {
                     this._pInvalidateSize();
@@ -4693,12 +4711,19 @@ var away;
                 this._height = height;
             };
 
+            /**
+            *
+            */
             TextureProxyBase.prototype.invalidateContent = function () {
                 for (var i = 0; i < 8; ++i) {
                     this._dirty[i] = null;
                 }
             };
 
+            /**
+            *
+            * @private
+            */
             TextureProxyBase.prototype._pInvalidateSize = function () {
                 var tex;
                 for (var i = 0; i < 8; ++i) {
@@ -4713,6 +4738,11 @@ var away;
                 }
             };
 
+            /**
+            *
+            * @param context
+            * @private
+            */
             TextureProxyBase.prototype._pCreateTexture = function (context) {
                 throw new away.errors.AbstractMethodError();
             };
@@ -4742,18 +4772,17 @@ var away;
     ///<reference path="../../def/webgl.d.ts"/>
     ///<reference path="../events/EventDispatcher.ts" />
     ///<reference path="../events/AwayEvent.ts" />
-    ///<reference path="Context3D.ts" />
-    (function (display3D) {
+    ///<reference path="../display3D/Context3D.ts" />
+    (function (display) {
         var Stage3D = (function (_super) {
             __extends(Stage3D, _super);
             function Stage3D(canvas) {
-                if (typeof canvas === "undefined") { canvas = null; }
                 _super.call(this);
                 this._canvas = canvas;
             }
             Stage3D.prototype.requestContext = function () {
                 try  {
-                    this._context3D = new display3D.Context3D(this._canvas);
+                    this._context3D = new away.display3D.Context3D(this._canvas);
                 } catch (e) {
                     this.dispatchEvent(new away.events.AwayEvent(away.events.AwayEvent.ERROR, e));
                 }
@@ -4762,6 +4791,14 @@ var away;
                     this.dispatchEvent(new away.events.AwayEvent(away.events.AwayEvent.CONTEXT3D_CREATE));
                 }
             };
+
+            Object.defineProperty(Stage3D.prototype, "canvas", {
+                get: function () {
+                    return this._canvas;
+                },
+                enumerable: true,
+                configurable: true
+            });
 
             Object.defineProperty(Stage3D.prototype, "context3D", {
                 get: function () {
@@ -4772,9 +4809,9 @@ var away;
             });
             return Stage3D;
         })(away.events.EventDispatcher);
-        display3D.Stage3D = Stage3D;
-    })(away.display3D || (away.display3D = {}));
-    var display3D = away.display3D;
+        display.Stage3D = Stage3D;
+    })(away.display || (away.display = {}));
+    var display = away.display;
 })(away || (away = {}));
 //<reference path="../src/away/events/Event.ts" />
 //<reference path="../src/away/events/IOErrorEvent.ts" />
@@ -4791,7 +4828,7 @@ var away;
 ///<reference path="../src/away/loaders/misc/SingleFileURLLoader.ts"/>
 ///<reference path="../src/away/textures/TextureProxyBase.ts"/>
 ///<reference path="../src/away/display3D/Context3D.ts"/>
-///<reference path="../src/away/display3D/Stage3D.ts"/>
+///<reference path="../src/away/display/Stage3D.ts"/>
 //------------------------------------------------------------------------------------------------
 // Web / PHP Storm arguments string
 //------------------------------------------------------------------------------------------------
@@ -4803,7 +4840,7 @@ var tests;
         function SimpleLoaderTest() {
             this.iAssetTest = new tests.IAssetTest();
             this.canvas = document.createElement('canvas');
-            this.stage3D = new away.display3D.Stage3D(this.canvas);
+            this.stage3D = new away.display.Stage3D(this.canvas);
             this.stage3D.addEventListener(away.events.AwayEvent.CONTEXT3D_CREATE, this.onContext3DCreateHandler, this);
             this.stage3D.requestContext();
 

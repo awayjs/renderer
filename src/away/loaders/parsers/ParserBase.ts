@@ -1,4 +1,5 @@
 ///<reference path="../../events/EventDispatcher.ts" />
+///<reference path="../../display/BitmapData.ts" />
 ///<reference path="../../events/AssetEvent.ts" />
 ///<reference path="../../events/TimerEvent.ts" />
 ///<reference path="../../events/ParserEvent.ts" />
@@ -8,6 +9,7 @@
 ///<reference path="../../loaders/parsers/ParserLoaderType.ts" />
 ///<reference path="../../utils/Timer.ts" />
 ///<reference path="../../utils/getTimer.ts" />
+///<reference path="../../utils/TextureUtils.ts" />
 ///<reference path="../../errors/AbstractMethodError.ts" />
 
 module away.loaders {
@@ -113,15 +115,20 @@ module away.loaders {
 		/**
 		 * Validates a bitmapData loaded before assigning to a default BitmapMaterial 
 		 */
-        /* TODO: implement
-		public isBitmapDataValid(bitmapData: BitmapData) : boolean
+
+		public isBitmapDataValid(bitmapData: away.display.BitmapData) : boolean
 		{
-			var isValid:boolean = TextureUtils.isBitmapDataValid(bitmapData);
-			if(!isValid) trace(">> Bitmap loaded is not having power of 2 dimensions or is higher than 2048");
+			var isValid : boolean = away.utils.TextureUtils.isBitmapDataValid( bitmapData );
+
+			if( ! isValid )
+            {
+
+                console.log (">> Bitmap loaded is not having power of 2 dimensions or is higher than 2048");
+            }
 			
 			return isValid;
 		}
-		*/
+
 		public set parsingFailure(b:boolean)
 		{
 			this._parsingFailure = b;
