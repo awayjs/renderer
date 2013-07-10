@@ -383,8 +383,6 @@ module away.display3D
             }
 			
 			GL.bindTexture( GL.TEXTURE_2D, texture.glTexture );
-			console.log( ">>>>>>>>>> "  + texture.glTexture );
-			
 			GL.uniform1i( location, textureIndex );
 			
 			// TODO create something like setSamplerStateAt(.... 

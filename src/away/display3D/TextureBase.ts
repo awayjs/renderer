@@ -26,6 +26,5 @@ module away.display3D
 		{
 			return this._glTexture;
 		}
-		
 	}
 }
