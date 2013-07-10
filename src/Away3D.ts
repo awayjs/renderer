@@ -24,6 +24,9 @@
 
 ///<reference path="away/net/IMGLoader.ts" />
 ///<reference path="away/net/URLRequest.ts" />
+///<reference path="away/display/BitmapData.ts" />
+
+///<reference path="def/js.d.ts"/>
 
 var GL:WebGLRenderingContext = null;
 
@@ -87,7 +90,10 @@ class Away3D extends away.events.EventDispatcher
 		this._context3D = stage3D.context3D;
 		
 		this._texture = this._context3D.createTexture( 512, 512, away.display3D.Context3DTextureFormat.BGRA, true );
-		this._texture.uploadFromHTMLImageElement( this._image );
+		// this._texture.uploadFromHTMLImageElement( this._image );
+		
+		var bitmapD: away.display.BitmapData = new away.display.BitmapData( 512 , 512 , true , 0x0000ff );
+		this._texture.uploadFromBitmapData( bitmapD );
 		
 		this._context3D.configureBackBuffer( 800, 600, 0, true );
 		this._context3D.setColorMask( true, true, true, true ); 

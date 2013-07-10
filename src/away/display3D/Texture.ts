@@ -4,7 +4,9 @@
  */
 
 ///<reference path="../../def/webgl.d.ts"/>
+///<reference path="../../def/js.d.ts"/>
 ///<reference path="TextureBase.ts"/>
+///<reference path="../display/BitmapData.ts"/>
 
 module away.display3D
 {
@@ -37,6 +39,11 @@ module away.display3D
 		public uploadFromHTMLImageElement( image:HTMLImageElement, miplevel:number = 0 )
 		{
 			GL.texImage2D( GL.TEXTURE_2D, miplevel, GL.RGBA, GL.RGBA, GL.UNSIGNED_BYTE, image );
+		}
+		
+		public uploadFromBitmapData( data:away.display.BitmapData, miplevel:number = 0 )
+		{
+			GL.texImage2D( GL.TEXTURE_2D, miplevel, GL.RGBA, GL.RGBA, GL.UNSIGNED_BYTE, data.imageData );
 		}
 	}
 }
