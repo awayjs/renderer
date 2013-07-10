@@ -1,13 +1,13 @@
 
-interface Uint8ClampedArray extends ArrayBufferView {
+interface Uint8ClampedArray extends ArrayBuffer {
     BYTES_PER_ELEMENT: number;
     length: number;
     [index: number]: number;
     get(index: number): number;
     set(index: number, value: number): void;
-    set(array: Uint8Array, offset?: number): void;
+    set(array: Uint8ClampedArray, offset?: number): void;
     set(array: number[], offset?: number): void;
-    subarray(begin: number, end?: number): Uint8Array;
+    subarray(begin: number, end?: number): Uint8ClampedArray;
 }
 
 declare var Uint8ClampedArray: {
