@@ -45,7 +45,7 @@ module away.display {
         }
 
         // Public
-
+        /*
         public draw ( source : BitmapData, matrix : away.geom.Matrix = null ) //, colorTransform, blendMode, clipRect, smoothing) {
         {
 
@@ -54,7 +54,6 @@ module away.display {
 
             this._imageCanvas.width     = source.width;
             this._imageCanvas.height    = source.height;
-            //this.drawingCanvas.setAttribute('height', source.height);
 
             this._context.transform(
                 sourceMatrix.a,
@@ -65,14 +64,8 @@ module away.display {
                 sourceMatrix.ty);
 
             this.copyPixels(source , source.rect , source.rect );
-            /*
-            this.drawingContext.drawImage(source,
-                0, 0, source.width, source.height,
-                0, 0, source.width, source.height);
-            */
-            //this.copyCanvas(this.drawingCanvas, sourceRect, new Point(sourceRect.x, sourceRect.y), blendMode);
-
         }
+        */
 
         /**
          *
