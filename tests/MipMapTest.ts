@@ -1,5 +1,8 @@
 ///<reference path="../src/away/display/BitmapData.ts" />
 ///<reference path="../src/away/net/IMGLoader.ts" />
+///<reference path="../src/away/materials/utils/MipmapGenerator.ts" />
+///<reference path="../src/away/display3D/TextureBase.ts" /
+///<reference path="../src/away/textures/HTMLImageElementTexture.ts" />
 
 //------------------------------------------------------------------------------------------------
 // Web / PHP Storm arguments string
@@ -7,15 +10,20 @@
 // --sourcemap $ProjectFileDir$/tests/MipMapTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/MipMapTest.js
 //------------------------------------------------------------------------------------------------
 
-class BitmapDataTest
+class MipMapTest
 {
 
     private mipLoader       : away.net.IMGLoader;
-    private mipBitmapSource : away.display.BitmapData;
-    private mipBitmapTarget : away.display.BitmapData;
+    private sourceBitmap    : away.display.BitmapData;
+    private mipMap          : away.display.BitmapData;
+    private _rect           : away.geom.Rectangle = new away.geom.Rectangle();
+    private _matrix         : away.geom.Matrix = new away.geom.Matrix();
+    private w               : number;
+    private h               : number;
 
     constructor()
     {
+
         //---------------------------------------
         // Load a PNG
 
@@ -26,63 +34,60 @@ class BitmapDataTest
 
         document.onmousedown = ( e ) => this.onMouseDown( e );
 
-
     }
 
     private mipImgLoaded( e )
     {
 
+        alert( 'Each click will generate a level of MipMap');
+
         var loader : away.net.IMGLoader             = <away.net.IMGLoader > e.target;
 
-        this.mipBitmapSource                        = new away.display.BitmapData( 1024 , 1024 , true , 0xff0000 );
-        this.mipBitmapSource.copyImage( loader.image , this.mipBitmapSource.rect , this.mipBitmapSource.rect );
-        this.mipBitmapSource.canvas.style.position  = 'absolute';
-        this.mipBitmapSource.canvas.style.left      = '0px';
-        this.mipBitmapSource.canvas.style.top       = '1030px';
+        this.sourceBitmap                        = new away.display.BitmapData( 1024 , 1024 , true , 0xff0000 );
+        this.sourceBitmap.copyImage( loader.image , this.sourceBitmap.rect , this.sourceBitmap.rect );
+        this.sourceBitmap.canvas.style.position  = 'absolute';
+        this.sourceBitmap.canvas.style.left      = '0px';
+        this.sourceBitmap.canvas.style.top       = '1030px';
 
-        document.body.appendChild( this.mipBitmapSource.canvas );
+        //document.body.appendChild( this.sourceBitmap.canvas );
 
-        this.mipBitmapTarget = new away.display.BitmapData( 1024 , 1024 , true , 0xff0000 );
-        this.mipBitmapTarget.canvas.style.position  = 'absolute';
-        this.mipBitmapTarget.canvas.style.left      = '0px';
-        this.mipBitmapTarget.canvas.style.top       = '0px';
+        this.mipMap = new away.display.BitmapData( 1024 , 1024 , true , 0xff0000 );
+        this.mipMap.canvas.style.position  = 'absolute';
+        this.mipMap.canvas.style.left      = '0px';
+        this.mipMap.canvas.style.top       = '0px';
 
-        document.body.appendChild( this.mipBitmapTarget.canvas );
+        document.body.appendChild( this.mipMap.canvas );
 
-        this._rect.width    = this.mipBitmapSource.width;
-        this._rect.height   = this.mipBitmapSource.height;
+        this._rect.width    = this.sourceBitmap.width;
+        this._rect.height   = this.sourceBitmap.height;
 
-        this.w = this.mipBitmapSource.width;
-        this.h = this.mipBitmapSource.height;
+        this.w = this.sourceBitmap.width;
+        this.h = this.sourceBitmap.height;
 
     }
 
     private onMouseDown( e )
     {
 
-        this.generateMipMap( this.mipBitmapSource ,  this.mipBitmapTarget );
+        this.generateMipMap( this.sourceBitmap ,  this.mipMap );
 
     }
 
 
-    private _rect : away.geom.Rectangle = new away.geom.Rectangle();
-    private _matrix : away.geom.Matrix = new away.geom.Matrix();
-    private w : number;
-    private h : number;
+
 
     public generateMipMap( source : away.display.BitmapData , mipmap : away.display.BitmapData = null, alpha:boolean = false, side:number = -1)
     {
 
+        var c : number = this.w;
         var i:number;
+
+        console['time']('MipMap' + c);
 
         var regen:boolean = mipmap != null;
 
-
-
         if ( (this.w >= 1 ) || (this.h >= 1) )
         {
-
-            console.log ( 'generateMipMap: ' + this.w , this.h );
 
             if (alpha){
 
@@ -95,7 +100,6 @@ class BitmapDataTest
 
             mipmap.width = this.w;
             mipmap.height= this.h;
-
             mipmap.copyPixels( source , source.rect , new away.geom.Rectangle( 0 , 0 , this.w , this.h ) );
 
             this.w >>= 1;
@@ -103,7 +107,9 @@ class BitmapDataTest
 
             this._rect.width = this.w > 1? this.w : 1;
             this._rect.height = this.h > 1? this.h : 1;
+
         }
+
 
         if ( ! regen )
         {
@@ -111,6 +117,9 @@ class BitmapDataTest
             mipmap.dispose();
 
         }
+
+        console['timeEnd']('MipMap' + c);
+
     }
 
 }
@@ -118,7 +127,7 @@ class BitmapDataTest
 window.onload = function ()
 {
 
-    var test = new BitmapDataTest();
+    var test = new MipMapTest();
 
 
 }
