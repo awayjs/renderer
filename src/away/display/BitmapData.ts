@@ -1,6 +1,7 @@
 ///<reference path="../net/IMGLoader.ts" />
 ///<reference path="../geom/Rectangle.ts" />
 ///<reference path="../geom/Point.ts" />
+///<reference path="../geom/Matrix.ts" />
 
 module away.display {
 
@@ -44,6 +45,34 @@ module away.display {
         }
 
         // Public
+
+        public draw ( source : BitmapData, matrix : away.geom.Matrix = null ) //, colorTransform, blendMode, clipRect, smoothing) {
+        {
+
+            var sourceMatrix : away.geom.Matrix     = ( matrix === null ) ? matrix : new  away.geom.Matrix();
+            var sourceRect : away.geom.Rectangle    = new away.geom.Rectangle(0, 0, source.width, source.height);
+
+            this._imageCanvas.width     = source.width;
+            this._imageCanvas.height    = source.height;
+            //this.drawingCanvas.setAttribute('height', source.height);
+
+            this._context.transform(
+                sourceMatrix.a,
+                sourceMatrix.b,
+                sourceMatrix.c,
+                sourceMatrix.d,
+                sourceMatrix.tx,
+                sourceMatrix.ty);
+
+            this.copyPixels(source , source.rect , source.rect );
+            /*
+            this.drawingContext.drawImage(source,
+                0, 0, source.width, source.height,
+                0, 0, source.width, source.height);
+            */
+            //this.copyCanvas(this.drawingCanvas, sourceRect, new Point(sourceRect.x, sourceRect.y), blendMode);
+
+        }
 
         /**
          *
