@@ -1,12 +1,15 @@
-﻿///<reference path="../library/assets/IAsset.ts" />
-///<reference path="../library/assets/NamedAssetBase.ts" />
-///<reference path="../display3D/Context3D.ts" />
+﻿//<reference path="../library/assets/IAsset.ts" />
 ///<reference path="../display3D/TextureBase.ts" />
 ///<reference path="../display3D/Texture.ts" />
 ///<reference path="../textures/Texture2DBase.ts" />
-///<reference path="../display3D/Context3DTextureFormat.ts" />
 ///<reference path="../errors/AbstractMethodError.ts" />
 ///<reference path="../display/BitmapData.ts" />
+///<reference path="../materials/utils/MipmapGenerator.ts" />
+
+//----- Not Used
+//<reference path="../display3D/Context3DTextureFormat.ts" />
+//<reference path="../library/assets/NamedAssetBase.ts" />
+//<reference path="../display3D/Context3D.ts" />
 
 
 module away.textures
@@ -22,7 +25,7 @@ module away.textures
 		private _mipMapHolder       : away.display.BitmapData;
 
 		
-		constructor(htmlImageElement:HTMLImageElement , generateMipmaps:boolean = true)
+		constructor( htmlImageElement:HTMLImageElement , generateMipmaps:boolean = true)
 		{
 			super();
 			
@@ -64,12 +67,12 @@ module away.textures
 		
 		public _pUploadContent(texture:away.display3D.TextureBase)
 		{
+
 			if (this._generateMipmaps)
             {
 
-                /* TODO implement MipmapGenerator
-                MipmapGenerator.generateMipMaps(this._htmlImageElement, texture, this._mipMapHolder, true);
-                */
+                away.materials.MipmapGenerator.generateHTMLImageElementMipMaps( this._htmlImageElement , texture , this._mipMapHolder , true);
+
             }
 			else
             {
@@ -150,5 +153,6 @@ module away.textures
             }
 
 		}
+
 	}
 }
