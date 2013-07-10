@@ -381,6 +381,17 @@ module away.display {
 
         }
 
+        /**
+         *
+         * @returns {HTMLCanvasElement}
+         */
+        public get context() : CanvasRenderingContext2D
+        {
+
+            return this._context;
+
+        }
+
         // Private
 
         /**
