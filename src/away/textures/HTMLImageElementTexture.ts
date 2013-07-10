@@ -5,12 +5,8 @@
 ///<reference path="../errors/AbstractMethodError.ts" />
 ///<reference path="../display/BitmapData.ts" />
 ///<reference path="../materials/utils/MipmapGenerator.ts" />
-
-//----- Not Used
-//<reference path="../display3D/Context3DTextureFormat.ts" />
-//<reference path="../library/assets/NamedAssetBase.ts" />
-//<reference path="../display3D/Context3D.ts" />
-
+///<reference path="../utils/TextureUtils.ts" />
+///<reference path="../errors/Error.ts" />
 
 module away.textures
 {
@@ -40,6 +36,7 @@ module away.textures
 		
 		public set htmlImageElement(value:HTMLImageElement)
 		{
+
 			if (value == this._htmlImageElement)
             {
 
@@ -47,10 +44,12 @@ module away.textures
 
             }
 
-            /* TODO: TextureUtils
-			if (!TextureUtils.isBitmapDataValid(value))
-				throw new Error("Invalid bitmapData: Width and height must be power of 2 and cannot exceed 2048");
-            */
+			if ( ! away.utils.TextureUtils.isHTMLImageElementValid( value ) )
+            {
+
+                throw new away.errors.Error("Invalid bitmapData: Width and height must be power of 2 and cannot exceed 2048");
+
+            }
 
             this.invalidateContent();
 			this._pSetSize( value.width , value.height );
