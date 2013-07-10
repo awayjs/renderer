@@ -92,8 +92,8 @@ class Away3D extends away.events.EventDispatcher
 		this._texture = this._context3D.createTexture( 512, 512, away.display3D.Context3DTextureFormat.BGRA, true );
 		// this._texture.uploadFromHTMLImageElement( this._image );
 		
-		var bitmapD: away.display.BitmapData = new away.display.BitmapData( 512 , 512 , true , 0x0000ff );
-		this._texture.uploadFromBitmapData( bitmapD );
+		var bitmapData: away.display.BitmapData = new away.display.BitmapData( 512, 512, true, 0x02C3D4 );
+		this._texture.uploadFromBitmapData( bitmapData );
 		
 		this._context3D.configureBackBuffer( 800, 600, 0, true );
 		this._context3D.setColorMask( true, true, true, true ); 
@@ -153,7 +153,7 @@ class Away3D extends away.events.EventDispatcher
 		this._pMatrix.perspectiveFieldOfViewLH( 45, 800/600, 0.1, 1000 );
 		
 		this._mvMatrix = new away.geom.Matrix3D();
-		this._mvMatrix.appendTranslation( 0, 0, 4 );
+		this._mvMatrix.appendTranslation( 0, 0, 3 );
 		
 		this._context3D.setGLSLVertexBufferAt( "aVertexPosition", vBuffer, 0, away.display3D.Context3DVertexBufferFormat.FLOAT_3 );
 		this._context3D.setGLSLVertexBufferAt( "aTextureCoord", tCoordBuffer, 0, away.display3D.Context3DVertexBufferFormat.FLOAT_2 );
@@ -171,7 +171,7 @@ class Away3D extends away.events.EventDispatcher
 		
 		this._context3D.setGLSLTextureAt( "uSampler", this._texture, 0 );
 		
-		this._context3D.clear( 0.1, 0.2, 0.3, 1 );
+		this._context3D.clear( 0.16, 0.16, 0.16, 1 );
 		this._context3D.drawTriangles( this._iBuffer, 0, 2 );
 		this._context3D.present();
 	}
