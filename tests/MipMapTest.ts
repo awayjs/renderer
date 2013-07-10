@@ -3,6 +3,7 @@
 ///<reference path="../src/away/materials/utils/MipmapGenerator.ts" />
 ///<reference path="../src/away/display3D/TextureBase.ts" /
 ///<reference path="../src/away/textures/HTMLImageElementTexture.ts" />
+///<reference path="../src/away/utils/TextureUtils.ts" />
 
 //------------------------------------------------------------------------------------------------
 // Web / PHP Storm arguments string
@@ -84,7 +85,6 @@ class MipMapTest
 
         console['time']('MipMap' + c);
 
-        var regen:boolean = mipmap != null;
 
         if ( (this.w >= 1 ) || (this.h >= 1) )
         {
@@ -110,13 +110,7 @@ class MipMapTest
 
         }
 
-
-        if ( ! regen )
-        {
-
-            mipmap.dispose();
-
-        }
+        console.log( 'away.utils.TextureUtils.isBitmapDataValid: ' , away.utils.TextureUtils.isBitmapDataValid( mipmap ));
 
         console['timeEnd']('MipMap' + c);
 
