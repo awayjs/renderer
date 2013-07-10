@@ -1,5 +1,4 @@
 ///<reference path="Event.ts" />
-///<reference path="../loaders/parsers/ParserBase.ts" />
 ///<reference path="../library/assets/IAsset.ts" />
 
 module away.events
