@@ -3,13 +3,16 @@
  * @author Gary Paluk - http://www.plugin.io
  */
  
- ///<reference path="../display/Stage3D.ts" />
- ///<reference path="../utils/CSS.ts" />
+///<reference path="../display/Stage3D.ts" />
+///<reference path="../utils/CSS.ts" />
+///<reference path="../events/Event.ts" />
+///<reference path="../events/EventDispatcher.ts" />
+///<reference path="../errors/DocumentError.ts" />
 
 module away.display
 {
 	
-	export class Stage
+	export class Stage extends away.events.EventDispatcher
 	{
 		
 		private static STAGE3D_MAX_QUANTITY: number = 8;
@@ -20,9 +23,10 @@ module away.display
 		
 		constructor( width: number = 640, height: number = 480 )
 		{
+			super();
 			if( !document )
 			{
-				throw "Error: document does not exist."; // TODO throw Error
+				throw new away.errors.DocumentError( "A root document object does not exist." );
 			}
 			
 			this.initStage3DObjects();
@@ -38,10 +42,8 @@ module away.display
 			{
 				away.utils.CSS.setCanvasSize( this.stage3Ds[ i ].canvas, width, height );
 				away.utils.CSS.setCanvasPosition( this.stage3Ds[ i ].canvas, 0, 0, true );
-				// away.utils.CSS.setCanvasAlpha( this.stage3Ds[ i ].canvas, 0 );
-				// away.utils.CSS.setCanvasVisibility( this.stage3Ds[ i ].canvas, false );
 			}
-			// TODO dispatchEvent
+			this.dispatchEvent( new away.events.Event( away.events.Event.RESIZE ) );
 		}
 		
 		public getStage3DAt( index: number ): away.display.Stage3D
@@ -50,7 +52,7 @@ module away.display
 			{
 				return this.stage3Ds[ index ];
 			}
-			throw "Index is out of bounds"; // TODO throw ArgumentError
+			throw new away.errors.ArgumentError( "Index is out of bounds [0.." + Stage.STAGE3D_MAX_QUANTITY + "]" );
 		}
 		
 		public initStage3DObjects()
