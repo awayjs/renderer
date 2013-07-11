@@ -32,6 +32,10 @@
             };
             Event.COMPLETE = 'Event_Complete';
             Event.OPEN = 'Event_Open';
+
+            Event.RESIZE = "resize";
+            Event.CONTEXT3D_CREATE = "context3DCreate";
+            Event.ERROR = "error";
             return Event;
         })();
         events.Event = Event;
@@ -221,29 +225,6 @@ var away;
             return ProgressEvent;
         })(away.events.Event);
         events.ProgressEvent = ProgressEvent;
-    })(away.events || (away.events = {}));
-    var events = away.events;
-})(away || (away = {}));
-var away;
-(function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="Event.ts" />
-    (function (events) {
-        var AwayEvent = (function (_super) {
-            __extends(AwayEvent, _super);
-            function AwayEvent(type, message) {
-                if (typeof message === "undefined") { message = ""; }
-                _super.call(this, type);
-                this.message = message;
-            }
-            AwayEvent.CONTEXT3D_CREATE = "context3DCreate";
-            AwayEvent.ERROR = "context3DERROR";
-            return AwayEvent;
-        })(away.events.Event);
-        events.AwayEvent = AwayEvent;
     })(away.events || (away.events = {}));
     var events = away.events;
 })(away || (away = {}));
@@ -993,6 +974,1219 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
+    ///<reference path="../events/EventDispatcher.ts" />
+    ///<reference path="../events/Event.ts" />
+    ///<reference path="../events/IOErrorEvent.ts" />
+    ///<reference path="URLRequest.ts" />
+    (function (net) {
+        // TODO: implement / test cross domain policy
+        var IMGLoader = (function (_super) {
+            __extends(IMGLoader, _super);
+            function IMGLoader(imageName) {
+                if (typeof imageName === "undefined") { imageName = ''; }
+                _super.call(this);
+                this._name = '';
+                this._loaded = false;
+                this._name = imageName;
+                this.initImage();
+            }
+            // Public
+            /**
+            * load an image
+            * @param request {away.net.URLRequest}
+            */
+            IMGLoader.prototype.load = function (request) {
+                this._loaded = false;
+                this._request = request;
+
+                if (this._crossOrigin) {
+                    if (this._image['crossOrigin'] != null) {
+                        this._image['crossOrigin'] = this._crossOrigin;
+                    }
+                }
+
+                this._image.src = this._request.url;
+            };
+
+            /**
+            *
+            */
+            IMGLoader.prototype.dispose = function () {
+                if (this._image) {
+                    this._image.onabort = null;
+                    this._image.onerror = null;
+                    this._image.onload = null;
+                    this._image = null;
+                }
+
+                if (this._request) {
+                    this._request = null;
+                }
+            };
+
+            Object.defineProperty(IMGLoader.prototype, "image", {
+                get: // Get / Set
+                /**
+                * Get reference to image if it is loaded
+                * @returns {HTMLImageElement}
+                */
+                function () {
+                    return this._image;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(IMGLoader.prototype, "loaded", {
+                get: /**
+                * Get image width. Returns null is image is not loaded
+                * @returns {number}
+                */
+                function () {
+                    return this._loaded;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(IMGLoader.prototype, "crossOrigin", {
+                get: function () {
+                    return this._crossOrigin;
+                },
+                set: function (value) {
+                    this._crossOrigin = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(IMGLoader.prototype, "width", {
+                get: /**
+                * Get image width. Returns null is image is not loaded
+                * @returns {number}
+                */
+                function () {
+                    if (this._image) {
+                        return this._image.width;
+                    }
+
+                    return null;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(IMGLoader.prototype, "height", {
+                get: /**
+                * Get image height. Returns null is image is not loaded
+                * @returns {number}
+                */
+                function () {
+                    if (this._image) {
+                        return this._image.height;
+                    }
+
+                    return null;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(IMGLoader.prototype, "request", {
+                get: /**
+                * return URL request used to load image
+                * @returns {away.net.URLRequest}
+                */
+                function () {
+                    return this._request;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(IMGLoader.prototype, "name", {
+                get: /**
+                * get name of HTMLImageElement
+                * @returns {string}
+                */
+                function () {
+                    if (this._image) {
+                        return this._image.name;
+                    }
+
+                    return this._name;
+                },
+                set: /**
+                * set name of HTMLImageElement
+                * @returns {string}
+                */
+                function (value) {
+                    if (this._image) {
+                        this._image.name = value;
+                    }
+
+                    this._name = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            // Private
+            /**
+            * intialise the image object
+            */
+            IMGLoader.prototype.initImage = function () {
+                var _this = this;
+                if (!this._image) {
+                    this._image = new Image();
+                    this._image.onabort = function (event) {
+                        return _this.onAbort(event);
+                    };
+                    this._image.onerror = function (event) {
+                        return _this.onError(event);
+                    };
+                    this._image.onload = function (event) {
+                        return _this.onLoadComplete(event);
+                    };
+                    this._image.name = this._name;
+                }
+            };
+
+            // Image - event handlers
+            /**
+            * Loading of an image is interrupted
+            * @param event
+            */
+            IMGLoader.prototype.onAbort = function (event) {
+                this.dispatchEvent(new away.events.Event(away.events.IOErrorEvent.IO_ERROR));
+            };
+
+            /**
+            * An error occured when loading the image
+            * @param event
+            */
+            IMGLoader.prototype.onError = function (event) {
+                this.dispatchEvent(new away.events.Event(away.events.IOErrorEvent.IO_ERROR));
+            };
+
+            /**
+            * image is finished loading
+            * @param event
+            */
+            IMGLoader.prototype.onLoadComplete = function (event) {
+                this._loaded = true;
+                this.dispatchEvent(new away.events.Event(away.events.Event.COMPLETE));
+            };
+            return IMGLoader;
+        })(away.events.EventDispatcher);
+        net.IMGLoader = IMGLoader;
+    })(away.net || (away.net = {}));
+    var net = away.net;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    (function (geom) {
+        var Point = (function () {
+            function Point(x, y) {
+                if (typeof x === "undefined") { x = 0; }
+                if (typeof y === "undefined") { y = 0; }
+                this.x = x;
+                this.y = y;
+            }
+            return Point;
+        })();
+        geom.Point = Point;
+    })(away.geom || (away.geom = {}));
+    var geom = away.geom;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="Point.ts" />
+    (function (geom) {
+        var Rectangle = (function () {
+            function Rectangle(x, y, width, height) {
+                if (typeof x === "undefined") { x = 0; }
+                if (typeof y === "undefined") { y = 0; }
+                if (typeof width === "undefined") { width = 0; }
+                if (typeof height === "undefined") { height = 0; }
+                this.x = x;
+                this.y = y;
+                this.width = width;
+                this.height = height;
+            }
+            Object.defineProperty(Rectangle.prototype, "left", {
+                get: function () {
+                    return this.x;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Rectangle.prototype, "right", {
+                get: function () {
+                    return this.x + this.width;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Rectangle.prototype, "top", {
+                get: function () {
+                    return this.y;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Rectangle.prototype, "bottom", {
+                get: function () {
+                    return this.y + this.height;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Rectangle.prototype, "topLeft", {
+                get: function () {
+                    return new away.geom.Point(this.x, this.y);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Rectangle.prototype, "bottomRight", {
+                get: function () {
+                    return new away.geom.Point(this.x + this.width, this.y + this.height);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Rectangle.prototype.clone = function () {
+                return new Rectangle(this.x, this.y, this.width, this.height);
+            };
+            return Rectangle;
+        })();
+        geom.Rectangle = Rectangle;
+    })(away.geom || (away.geom = {}));
+    var geom = away.geom;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * @author Gary Paluk
+    * @created 6/29/13
+    * @module away.geom
+    */
+    (function (geom) {
+        var Vector3D = (function () {
+            /**
+            * Creates an instance of a Vector3D object.
+            */
+            function Vector3D(x, y, z, w) {
+                if (typeof x === "undefined") { x = 0; }
+                if (typeof y === "undefined") { y = 0; }
+                if (typeof z === "undefined") { z = 0; }
+                if (typeof w === "undefined") { w = 0; }
+                this.x = x;
+                this.y = y;
+                this.z = z;
+                this.w = w;
+            }
+            Object.defineProperty(Vector3D.prototype, "length", {
+                get: /**
+                * [read-only] The length, magnitude, of the current Vector3D object from the origin (0,0,0) to the object's
+                * x, y, and z coordinates.
+                * @returns The length of the Vector3D
+                */
+                function () {
+                    return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Vector3D.prototype, "lengthSquared", {
+                get: /**
+                * [read-only] The square of the length of the current Vector3D object, calculated using the x, y, and z
+                * properties.
+                * @returns The squared length of the vector
+                */
+                function () {
+                    return (this.x * this.x + this.y * this.y + this.z + this.z);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * Adds the value of the x, y, and z elements of the current Vector3D object to the values of the x, y, and z
+            * elements of another Vector3D object.
+            */
+            Vector3D.prototype.add = function (a) {
+                return new Vector3D(this.x + a.x, this.y + a.y, this.z + a.z, this.w + a.w);
+            };
+
+            Vector3D.angleBetween = /**
+            * [static] Returns the angle in radians between two vectors.
+            */
+            function (a, b) {
+                return Math.acos(a.dotProduct(b) / (a.length * b.length));
+            };
+
+            /**
+            * Returns a new Vector3D object that is an exact copy of the current Vector3D object.
+            */
+            Vector3D.prototype.clone = function () {
+                return new Vector3D(this.x, this.y, this.z, this.w);
+            };
+
+            /**
+            * Copies all of vector data from the source Vector3D object into the calling Vector3D object.
+            */
+            Vector3D.prototype.copyFrom = function (src) {
+                return new Vector3D(src.x, src.y, src.z, src.w);
+            };
+
+            /**
+            * Returns a new Vector3D object that is perpendicular (at a right angle) to the current Vector3D and another
+            * Vector3D object.
+            */
+            Vector3D.prototype.crossProduct = function (a) {
+                return new Vector3D(this.y * a.z - this.z * a.y, this.z * a.x - this.x * a.z, this.x * a.y - this.y * a.x);
+            };
+
+            /**
+            * Decrements the value of the x, y, and z elements of the current Vector3D object by the values of the x, y,
+            * and z elements of specified Vector3D object.
+            */
+            Vector3D.prototype.decrementBy = function (a) {
+                this.x -= a.x;
+                this.y -= a.y;
+                this.z -= a.z;
+            };
+
+            Vector3D.distance = /**
+            * [static] Returns the distance between two Vector3D objects.
+            */
+            function (pt1, pt2) {
+                var x = (pt1.x - pt2.x);
+                var y = (pt1.y - pt2.y);
+                var z = (pt1.z - pt2.z);
+                return Math.sqrt(x * x + y * y + z * z);
+            };
+
+            /**
+            * If the current Vector3D object and the one specified as the parameter are unit vertices, this method returns
+            * the cosine of the angle between the two vertices.
+            */
+            Vector3D.prototype.dotProduct = function (a) {
+                return this.x * a.x + this.y * a.y + this.z * a.z;
+            };
+
+            /**
+            * Determines whether two Vector3D objects are equal by comparing the x, y, and z elements of the current
+            * Vector3D object with a specified Vector3D object.
+            */
+            Vector3D.prototype.equals = function (cmp, allFour) {
+                if (typeof allFour === "undefined") { allFour = false; }
+                return (this.x == cmp.x && this.y == cmp.y && this.z == cmp.z && (!allFour || this.w == cmp.w));
+            };
+
+            /**
+            * Increments the value of the x, y, and z elements of the current Vector3D object by the values of the x, y,
+            * and z elements of a specified Vector3D object.
+            */
+            Vector3D.prototype.incrementBy = function (a) {
+                this.x += a.x;
+                this.y += a.y;
+                this.z += a.z;
+            };
+
+            /**
+            * Compares the elements of the current Vector3D object with the elements of a specified Vector3D object to
+            * determine whether they are nearly equal.
+            */
+            Vector3D.prototype.nearEquals = function (cmp, epsilon, allFour) {
+                if (typeof allFour === "undefined") { allFour = true; }
+                return ((Math.abs(this.x - cmp.x) < epsilon) && (Math.abs(this.y - cmp.y) < epsilon) && (Math.abs(this.z - cmp.z) < epsilon) && (!allFour || Math.abs(this.w - cmp.w) < epsilon));
+            };
+
+            /**
+            * Sets the current Vector3D object to its inverse.
+            */
+            Vector3D.prototype.negate = function () {
+                this.x = -this.x;
+                this.y = -this.y;
+                this.z = -this.z;
+            };
+
+            /**
+            * Converts a Vector3D object to a unit vector by dividing the first three elements (x, y, z) by the length of
+            * the vector.
+            */
+            Vector3D.prototype.normalize = function () {
+                var invLength = 1 / this.length;
+                if (invLength != 0) {
+                    this.x *= invLength;
+                    this.y *= invLength;
+                    this.z *= invLength;
+                    return;
+                }
+                throw "Cannot divide by zero.";
+            };
+
+            /**
+            * Divides the value of the x, y, and z properties of the current Vector3D object by the value of its w
+            * property.
+            */
+            Vector3D.prototype.project = function () {
+                this.x /= this.w;
+                this.y /= this.w;
+                this.z /= this.w;
+            };
+
+            /**
+            * Scales the current Vector3D object by a scalar, a magnitude.
+            */
+            Vector3D.prototype.scaleBy = function (s) {
+                this.x *= s;
+                this.y *= s;
+                this.z *= s;
+            };
+
+            /**
+            * Sets the members of Vector3D to the specified values
+            */
+            Vector3D.prototype.setTo = function (xa, ya, za) {
+                this.x = xa;
+                this.y = ya;
+                this.z = za;
+            };
+
+            /**
+            * Subtracts the value of the x, y, and z elements of the current Vector3D object from the values of the x, y,
+            * and z elements of another Vector3D object.
+            */
+            Vector3D.prototype.subtract = function (a) {
+                return new Vector3D(this.x - a.x, this.y - a.y, this.z - a.z);
+            };
+
+            /**
+            * Returns a string representation of the current Vector3D object.
+            */
+            Vector3D.prototype.toString = function () {
+                return "[Vector3D] (x:" + this.x + " ,y:" + this.y + ", z" + this.z + ", w:" + this.w + ")";
+            };
+            return Vector3D;
+        })();
+        geom.Vector3D = Vector3D;
+    })(away.geom || (away.geom = {}));
+    var geom = away.geom;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="Error.ts" />
+    (function (errors) {
+        /**
+        * AbstractMethodError is thrown when an abstract method is called. The method in question should be overridden
+        * by a concrete subclass.
+        */
+        var ArgumentError = (function (_super) {
+            __extends(ArgumentError, _super);
+            /**
+            * Create a new AbstractMethodError.
+            * @param message An optional message to override the default error message.
+            * @param id The id of the error.
+            */
+            function ArgumentError(message, id) {
+                if (typeof message === "undefined") { message = null; }
+                if (typeof id === "undefined") { id = 0; }
+                _super.call(this, message || "ArgumentError", id);
+            }
+            return ArgumentError;
+        })(errors.Error);
+        errors.ArgumentError = ArgumentError;
+    })(away.errors || (away.errors = {}));
+    var errors = away.errors;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="Point.ts" />
+    ///<reference path="Vector3D.ts" />
+    ///<reference path="../errors/ArgumentError.ts" />
+    (function (geom) {
+        var Matrix = (function () {
+            function Matrix(a, b, c, d, tx, ty) {
+                if (typeof a === "undefined") { a = 1; }
+                if (typeof b === "undefined") { b = 0; }
+                if (typeof c === "undefined") { c = 0; }
+                if (typeof d === "undefined") { d = 1; }
+                if (typeof tx === "undefined") { tx = 0; }
+                if (typeof ty === "undefined") { ty = 0; }
+                this.a = a;
+                this.b = b;
+                this.c = c;
+                this.d = d;
+                this.tx = tx;
+                this.ty = ty;
+            }
+            /**
+            *
+            * @returns {away.geom.Matrix}
+            */
+            Matrix.prototype.clone = function () {
+                return new Matrix(this.a, this.b, this.c, this.d, this.tx, this.ty);
+            };
+
+            /**
+            *
+            * @param m
+            */
+            Matrix.prototype.concat = function (m) {
+                var a1 = this.a * m.a + this.b * m.c;
+                this.b = this.a * m.b + this.b * m.d;
+                this.a = a1;
+
+                var c1 = this.c * m.a + this.d * m.c;
+                this.d = this.c * m.b + this.d * m.d;
+
+                this.c = c1;
+
+                var tx1 = this.tx * m.a + this.ty * m.c + m.tx;
+                this.ty = this.tx * m.b + this.ty * m.d + m.ty;
+                this.tx = tx1;
+            };
+
+            /**
+            *
+            * @param column
+            * @param vector3D
+            */
+            Matrix.prototype.copyColumnFrom = function (column, vector3D) {
+                if (column > 2) {
+                    throw "Column " + column + " out of bounds (2)";
+                } else if (column == 0) {
+                    this.a = vector3D.x;
+                    this.c = vector3D.y;
+                } else if (column == 1) {
+                    this.b = vector3D.x;
+                    this.d = vector3D.y;
+                } else {
+                    this.tx = vector3D.x;
+                    this.ty = vector3D.y;
+                }
+            };
+
+            /**
+            *
+            * @param column
+            * @param vector3D
+            */
+            Matrix.prototype.copyColumnTo = function (column, vector3D) {
+                if (column > 2) {
+                    throw new away.errors.ArgumentError("ArgumentError, Column " + column + " out of bounds [0, ..., 2]");
+                } else if (column == 0) {
+                    vector3D.x = this.a;
+                    vector3D.y = this.c;
+                    vector3D.z = 0;
+                } else if (column == 1) {
+                    vector3D.x = this.b;
+                    vector3D.y = this.d;
+                    vector3D.z = 0;
+                } else {
+                    vector3D.x = this.tx;
+                    vector3D.y = this.ty;
+                    vector3D.z = 1;
+                }
+            };
+
+            /**
+            *
+            * @param other
+            */
+            Matrix.prototype.copyFrom = function (other) {
+                this.a = other.a;
+                this.b = other.b;
+                this.c = other.c;
+                this.d = other.d;
+                this.tx = other.tx;
+                this.ty = other.ty;
+            };
+
+            /**
+            *
+            * @param row
+            * @param vector3D
+            */
+            Matrix.prototype.copyRowFrom = function (row, vector3D) {
+                if (row > 2) {
+                    throw new away.errors.ArgumentError("ArgumentError, Row " + row + " out of bounds [0, ..., 2]");
+                } else if (row == 0) {
+                    this.a = vector3D.x;
+                    this.c = vector3D.y;
+                } else if (row == 1) {
+                    this.b = vector3D.x;
+                    this.d = vector3D.y;
+                } else {
+                    this.tx = vector3D.x;
+                    this.ty = vector3D.y;
+                }
+            };
+
+            /**
+            *
+            * @param row
+            * @param vector3D
+            */
+            Matrix.prototype.copyRowTo = function (row, vector3D) {
+                if (row > 2) {
+                    throw new away.errors.ArgumentError("ArgumentError, Row " + row + " out of bounds [0, ..., 2]");
+                } else if (row == 0) {
+                    vector3D.x = this.a;
+                    vector3D.y = this.b;
+                    vector3D.z = this.tx;
+                } else if (row == 1) {
+                    vector3D.x = this.c;
+                    vector3D.y = this.d;
+                    vector3D.z = this.ty;
+                } else {
+                    vector3D.setTo(0, 0, 1);
+                }
+            };
+
+            /**
+            *
+            * @param scaleX
+            * @param scaleY
+            * @param rotation
+            * @param tx
+            * @param ty
+            */
+            Matrix.prototype.createBox = function (scaleX, scaleY, rotation, tx, ty) {
+                if (typeof rotation === "undefined") { rotation = 0; }
+                if (typeof tx === "undefined") { tx = 0; }
+                if (typeof ty === "undefined") { ty = 0; }
+                this.a = scaleX;
+                this.d = scaleY;
+                this.b = rotation;
+                this.tx = tx;
+                this.ty = ty;
+            };
+
+            /**
+            *
+            * @param width
+            * @param height
+            * @param rotation
+            * @param tx
+            * @param ty
+            */
+            Matrix.prototype.createGradientBox = function (width, height, rotation, tx, ty) {
+                if (typeof rotation === "undefined") { rotation = 0; }
+                if (typeof tx === "undefined") { tx = 0; }
+                if (typeof ty === "undefined") { ty = 0; }
+                this.a = width / 1638.4;
+                this.d = height / 1638.4;
+
+                if (rotation != 0.0) {
+                    var cos = Math.cos(rotation);
+                    var sin = Math.sin(rotation);
+
+                    this.b = sin * this.d;
+                    this.c = -sin * this.a;
+                    this.a *= cos;
+                    this.d *= cos;
+                } else {
+                    this.b = this.c = 0;
+                }
+
+                this.tx = tx + width / 2;
+                this.ty = ty + height / 2;
+            };
+
+            /**
+            *
+            * @param point
+            * @returns {away.geom.Point}
+            */
+            Matrix.prototype.deltaTransformPoint = function (point) {
+                return new away.geom.Point(point.x * this.a + point.y * this.c, point.x * this.b + point.y * this.d);
+            };
+
+            /**
+            *
+            */
+            Matrix.prototype.identity = function () {
+                this.a = 1;
+                this.b = 0;
+                this.c = 0;
+                this.d = 1;
+                this.tx = 0;
+                this.ty = 0;
+            };
+
+            /**
+            *
+            * @returns {away.geom.Matrix}
+            */
+            Matrix.prototype.invert = function () {
+                var norm = this.a * this.d - this.b * this.c;
+
+                if (norm == 0) {
+                    this.a = this.b = this.c = this.d = 0;
+                    this.tx = -this.tx;
+                    this.ty = -this.ty;
+                } else {
+                    norm = 1.0 / norm;
+                    var a1 = this.d * norm;
+                    this.d = this.a * norm;
+                    this.a = a1;
+                    this.b *= -norm;
+                    this.c *= -norm;
+
+                    var tx1 = -this.a * this.tx - this.c * this.ty;
+                    this.ty = -this.b * this.tx - this.d * this.ty;
+                    this.tx = tx1;
+                }
+
+                return this;
+            };
+
+            /**
+            *
+            * @param m
+            * @returns {away.geom.Matrix}
+            */
+            Matrix.prototype.mult = function (m) {
+                var result = new Matrix();
+
+                result.a = this.a * m.a + this.b * m.c;
+                result.b = this.a * m.b + this.b * m.d;
+                result.c = this.c * m.a + this.d * m.c;
+                result.d = this.c * m.b + this.d * m.d;
+
+                result.tx = this.tx * m.a + this.ty * m.c + m.tx;
+                result.ty = this.tx * m.b + this.ty * m.d + m.ty;
+
+                return result;
+            };
+
+            /**
+            *
+            * @param angle
+            */
+            Matrix.prototype.rotate = function (angle) {
+                var cos = Math.cos(angle);
+                var sin = Math.sin(angle);
+
+                var a1 = this.a * cos - this.b * sin;
+                this.b = this.a * sin + this.b * cos;
+                this.a = a1;
+
+                var c1 = this.c * cos - this.d * sin;
+                this.d = this.c * sin + this.d * cos;
+                this.c = c1;
+
+                var tx1 = this.tx * cos - this.ty * sin;
+                this.ty = this.tx * sin + this.ty * cos;
+                this.tx = tx1;
+            };
+
+            /**
+            *
+            * @param x
+            * @param y
+            */
+            Matrix.prototype.scale = function (x, y) {
+                this.a *= x;
+                this.b *= y;
+
+                this.c *= x;
+                this.d *= y;
+
+                this.tx *= x;
+                this.ty *= y;
+            };
+
+            /**
+            *
+            * @param angle
+            * @param scale
+            */
+            Matrix.prototype.setRotation = function (angle, scale) {
+                if (typeof scale === "undefined") { scale = 1; }
+                this.a = Math.cos(angle) * scale;
+                this.c = Math.sin(angle) * scale;
+                this.b = -this.c;
+                this.d = this.a;
+            };
+
+            /**
+            *
+            * @param a
+            * @param b
+            * @param c
+            * @param d
+            * @param tx
+            * @param ty
+            */
+            Matrix.prototype.setTo = function (a, b, c, d, tx, ty) {
+                this.a = a;
+                this.b = b;
+                this.c = c;
+                this.d = d;
+                this.tx = tx;
+                this.ty = ty;
+            };
+
+            /**
+            *
+            * @returns {string}
+            */
+            Matrix.prototype.toString = function () {
+                return "[Matrix] (a=" + this.a + ", b=" + this.b + ", c=" + this.c + ", d=" + this.d + ", tx=" + this.tx + ", ty=" + this.ty + ")";
+            };
+
+            /**
+            *
+            * @param point
+            * @returns {away.geom.Point}
+            */
+            Matrix.prototype.transformPoint = function (point) {
+                return new away.geom.Point(point.x * this.a + point.y * this.c + this.tx, point.x * this.b + point.y * this.d + this.ty);
+            };
+
+            /**
+            *
+            * @param x
+            * @param y
+            */
+            Matrix.prototype.translate = function (x, y) {
+                this.tx += x;
+                this.ty += y;
+            };
+            return Matrix;
+        })();
+        geom.Matrix = Matrix;
+    })(away.geom || (away.geom = {}));
+    var geom = away.geom;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../net/IMGLoader.ts" />
+    ///<reference path="../geom/Rectangle.ts" />
+    ///<reference path="../geom/Point.ts" />
+    ///<reference path="../geom/Matrix.ts" />
+    (function (display) {
+        /**
+        *
+        */
+        var BitmapData = (function () {
+            /**
+            *
+            * @param width
+            * @param height
+            * @param transparent
+            * @param fillColor
+            */
+            function BitmapData(width, height, transparent, fillColor) {
+                if (typeof transparent === "undefined") { transparent = true; }
+                if (typeof fillColor === "undefined") { fillColor = null; }
+                this._locked = false;
+                this._transparent = transparent;
+                this._imageCanvas = document.createElement("canvas");
+                this._imageCanvas.width = width;
+                this._imageCanvas.height = height;
+                this._context = this._imageCanvas.getContext("2d");
+                this._rect = new away.geom.Rectangle(0, 0, width, height);
+
+                if (fillColor) {
+                    this.fillRect(this._rect, fillColor);
+                }
+            }
+            // Public
+            /*
+            public draw ( source : BitmapData, matrix : away.geom.Matrix = null ) //, colorTransform, blendMode, clipRect, smoothing) {
+            {
+            
+            var sourceMatrix : away.geom.Matrix     = ( matrix === null ) ? matrix : new  away.geom.Matrix();
+            var sourceRect : away.geom.Rectangle    = new away.geom.Rectangle(0, 0, source.width, source.height);
+            
+            this._imageCanvas.width     = source.width;
+            this._imageCanvas.height    = source.height;
+            
+            this._context.transform(
+            sourceMatrix.a,
+            sourceMatrix.b,
+            sourceMatrix.c,
+            sourceMatrix.d,
+            sourceMatrix.tx,
+            sourceMatrix.ty);
+            
+            this.copyPixels(source , source.rect , source.rect );
+            }
+            */
+            /**
+            *
+            */
+            BitmapData.prototype.dispose = function () {
+                this._context = null;
+                this._imageCanvas = null;
+                this._imageData = null;
+                this._rect = null;
+                this._transparent = null;
+                this._locked = null;
+            };
+
+            /**
+            *
+            */
+            BitmapData.prototype.lock = function () {
+                this._locked = true;
+                this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
+            };
+
+            /**
+            *
+            */
+            BitmapData.prototype.unlock = function () {
+                this._locked = false;
+
+                if (this._imageData) {
+                    this._context.putImageData(this._imageData, 0, 0);
+                    this._imageData = null;
+                }
+            };
+
+            /**
+            *
+            * @param x
+            * @param y
+            * @param r
+            * @param g
+            * @param b
+            * @param a
+            */
+            BitmapData.prototype.setPixel = function (x, y, r, g, b, a) {
+                if (!this._locked) {
+                    this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
+                }
+
+                if (this._imageData) {
+                    var index = (x + y * this._imageCanvas.width) * 4;
+
+                    this._imageData.data[index + 0] = r;
+                    this._imageData.data[index + 1] = g;
+                    this._imageData.data[index + 2] = b;
+                    this._imageData.data[index + 3] = a;
+                }
+
+                if (!this._locked) {
+                    this._context.putImageData(this._imageData, 0, 0);
+                    this._imageData = null;
+                }
+            };
+
+            /**
+            *
+            * @param img
+            * @param sourceRect
+            * @param destRect
+            */
+            BitmapData.prototype.copyImage = function (img, sourceRect, destRect) {
+                if (this._locked) {
+                    if (this._imageData) {
+                        this._context.putImageData(this._imageData, 0, 0);
+                    }
+
+                    this._context.drawImage(img, sourceRect.x, sourceRect.y, sourceRect.width, sourceRect.height, destRect.x, destRect.y, destRect.width, destRect.height);
+
+                    if (this._imageData) {
+                        this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
+                    }
+                } else {
+                    this._context.drawImage(img, sourceRect.x, sourceRect.y, sourceRect.width, sourceRect.height, destRect.x, destRect.y, destRect.width, destRect.height);
+                }
+            };
+
+            /**
+            *
+            * @param bmpd
+            * @param sourceRect
+            * @param destRect
+            */
+            BitmapData.prototype.copyPixels = function (bmpd, sourceRect, destRect) {
+                if (this._locked) {
+                    if (this._imageData) {
+                        this._context.putImageData(this._imageData, 0, 0);
+                    }
+
+                    this._context.drawImage(bmpd.canvas, sourceRect.x, sourceRect.y, sourceRect.width, sourceRect.height, destRect.x, destRect.y, destRect.width, destRect.height);
+
+                    if (this._imageData) {
+                        this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
+                    }
+                } else {
+                    this._context.drawImage(bmpd.canvas, sourceRect.x, sourceRect.y, sourceRect.width, sourceRect.height, destRect.x, destRect.y, destRect.width, destRect.height);
+                }
+            };
+
+            /**
+            *
+            * @param rect
+            * @param color
+            */
+            BitmapData.prototype.fillRect = function (rect, color) {
+                if (this._locked) {
+                    if (this._imageData) {
+                        this._context.putImageData(this._imageData, 0, 0);
+                    }
+
+                    this._context.fillStyle = '#' + this.decimalToHex(color, 6);
+                    this._context.fillRect(rect.x, rect.y, rect.width, rect.height);
+
+                    if (this._imageData) {
+                        this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
+                    }
+                } else {
+                    this._context.fillStyle = '#' + this.decimalToHex(color, 6);
+                    this._context.fillRect(rect.x, rect.y, rect.width, rect.height);
+                }
+            };
+
+
+            Object.defineProperty(BitmapData.prototype, "imageData", {
+                get: /**
+                *
+                * @returns {ImageData}
+                */
+                function () {
+                    return this._context.getImageData(0, 0, this._rect.width, this._rect.height);
+                },
+                set: // Get / Set
+                /**
+                *
+                * @param {ImageData}
+                */
+                function (value) {
+                    this._context.putImageData(value, 0, 0);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(BitmapData.prototype, "width", {
+                get: /**
+                *
+                * @returns {number}
+                */
+                function () {
+                    return this._imageCanvas.width;
+                },
+                set: /**
+                *
+                * @param {number}
+                */
+                function (value) {
+                    this._rect.width = value;
+                    this._imageCanvas.width = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(BitmapData.prototype, "height", {
+                get: /**
+                *
+                * @returns {number}
+                */
+                function () {
+                    return this._imageCanvas.height;
+                },
+                set: /**
+                *
+                * @param {number}
+                */
+                function (value) {
+                    this._rect.height = value;
+                    this._imageCanvas.height = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(BitmapData.prototype, "rect", {
+                get: /**
+                *
+                * @param {away.geom.Rectangle}
+                */
+                function () {
+                    return this._rect;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(BitmapData.prototype, "canvas", {
+                get: /**
+                *
+                * @returns {HTMLCanvasElement}
+                */
+                function () {
+                    return this._imageCanvas;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(BitmapData.prototype, "context", {
+                get: /**
+                *
+                * @returns {HTMLCanvasElement}
+                */
+                function () {
+                    return this._context;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            // Private
+            /**
+            * convert decimal value to Hex
+            */
+            BitmapData.prototype.decimalToHex = function (d, padding) {
+                // TODO - bitwise replacement would be better / Extract alpha component of 0xffffffff ( currently no support for alpha )
+                var hex = d.toString(16).toUpperCase();
+                padding = typeof (padding) === "undefined" || padding === null ? padding = 2 : padding;
+
+                while (hex.length < padding) {
+                    hex = "0" + hex;
+                }
+
+                return hex;
+            };
+            return BitmapData;
+        })();
+        display.BitmapData = BitmapData;
+    })(away.display || (away.display = {}));
+    var display = away.display;
+})(away || (away = {}));
+var away;
+(function (away) {
     ///<reference path="Event.ts" />
     ///<reference path="../library/assets/IAsset.ts" />
     (function (events) {
@@ -1442,6 +2636,56 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
+    ///<reference path="../display/BitmapData.ts" />
+    (function (utils) {
+        //import flash.display.BitmapData;
+        var TextureUtils = (function () {
+            function TextureUtils() {
+            }
+            TextureUtils.isBitmapDataValid = function (bitmapData) {
+                if (bitmapData == null) {
+                    return true;
+                }
+
+                return TextureUtils.isDimensionValid(bitmapData.width) && TextureUtils.isDimensionValid(bitmapData.height);
+            };
+
+            TextureUtils.isHTMLImageElementValid = function (image) {
+                if (image == null) {
+                    return true;
+                }
+
+                return TextureUtils.isDimensionValid(image.width) && TextureUtils.isDimensionValid(image.height);
+            };
+
+            TextureUtils.isDimensionValid = function (d) {
+                return d >= 1 && d <= TextureUtils.MAX_SIZE && TextureUtils.isPowerOfTwo(d);
+            };
+
+            TextureUtils.isPowerOfTwo = function (value) {
+                return value ? ((value & -value) == value) : false;
+            };
+
+            TextureUtils.getBestPowerOf2 = function (value) {
+                var p = 1;
+
+                while (p < value)
+                    p <<= 1;
+
+                if (p > TextureUtils.MAX_SIZE)
+                    p = TextureUtils.MAX_SIZE;
+
+                return p;
+            };
+            TextureUtils.MAX_SIZE = 2048;
+            return TextureUtils;
+        })();
+        utils.TextureUtils = TextureUtils;
+    })(away.utils || (away.utils = {}));
+    var utils = away.utils;
+})(away || (away = {}));
+var away;
+(function (away) {
     ///<reference path="Error.ts" />
     (function (errors) {
         /**
@@ -1469,6 +2713,7 @@ var away;
 var away;
 (function (away) {
     ///<reference path="../../events/EventDispatcher.ts" />
+    ///<reference path="../../display/BitmapData.ts" />
     ///<reference path="../../events/AssetEvent.ts" />
     ///<reference path="../../events/TimerEvent.ts" />
     ///<reference path="../../events/ParserEvent.ts" />
@@ -1478,6 +2723,7 @@ var away;
     ///<reference path="../../loaders/parsers/ParserLoaderType.ts" />
     ///<reference path="../../utils/Timer.ts" />
     ///<reference path="../../utils/getTimer.ts" />
+    ///<reference path="../../utils/TextureUtils.ts" />
     ///<reference path="../../errors/AbstractMethodError.ts" />
     (function (loaders) {
         /**
@@ -1534,24 +2780,25 @@ var away;
                 return false;
             };
 
+            /**
+            * Validates a bitmapData loaded before assigning to a default BitmapMaterial
+            */
+            ParserBase.prototype.isBitmapDataValid = function (bitmapData) {
+                var isValid = away.utils.TextureUtils.isBitmapDataValid(bitmapData);
+
+                if (!isValid) {
+                    console.log(">> Bitmap loaded is not having power of 2 dimensions or is higher than 2048");
+                }
+
+                return isValid;
+            };
+
 
             Object.defineProperty(ParserBase.prototype, "parsingFailure", {
                 get: function () {
                     return this._parsingFailure;
                 },
-                set: /**
-                * Validates a bitmapData loaded before assigning to a default BitmapMaterial
-                */
-                /* TODO: implement
-                public isBitmapDataValid(bitmapData: BitmapData) : boolean
-                {
-                var isValid:boolean = TextureUtils.isBitmapDataValid(bitmapData);
-                if(!isValid) trace(">> Bitmap loaded is not having power of 2 dimensions or is higher than 2048");
-                
-                return isValid;
-                }
-                */
-                function (b) {
+                set: function (b) {
                     this._parsingFailure = b;
                 },
                 enumerable: true,
@@ -1901,219 +3148,6 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../events/EventDispatcher.ts" />
-    ///<reference path="../events/Event.ts" />
-    ///<reference path="../events/IOErrorEvent.ts" />
-    ///<reference path="URLRequest.ts" />
-    (function (net) {
-        // TODO: implement / test cross domain policy
-        var IMGLoader = (function (_super) {
-            __extends(IMGLoader, _super);
-            function IMGLoader(imageName) {
-                if (typeof imageName === "undefined") { imageName = ''; }
-                _super.call(this);
-                this._name = '';
-                this._loaded = false;
-                this._name = imageName;
-                this.initImage();
-            }
-            // Public
-            /**
-            * load an image
-            * @param request {away.net.URLRequest}
-            */
-            IMGLoader.prototype.load = function (request) {
-                this._loaded = false;
-                this._request = request;
-
-                if (this._crossOrigin) {
-                    if (this._image['crossOrigin'] != null) {
-                        this._image['crossOrigin'] = this._crossOrigin;
-                    }
-                }
-
-                this._image.src = this._request.url;
-            };
-
-            /**
-            *
-            */
-            IMGLoader.prototype.dispose = function () {
-                if (this._image) {
-                    this._image.onabort = null;
-                    this._image.onerror = null;
-                    this._image.onload = null;
-                    this._image = null;
-                }
-
-                if (this._request) {
-                    this._request = null;
-                }
-            };
-
-            Object.defineProperty(IMGLoader.prototype, "image", {
-                get: // Get / Set
-                /**
-                * Get reference to image if it is loaded
-                * @returns {HTMLImageElement}
-                */
-                function () {
-                    return this._image;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(IMGLoader.prototype, "loaded", {
-                get: /**
-                * Get image width. Returns null is image is not loaded
-                * @returns {number}
-                */
-                function () {
-                    return this._loaded;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(IMGLoader.prototype, "crossOrigin", {
-                get: function () {
-                    return this._crossOrigin;
-                },
-                set: function (value) {
-                    this._crossOrigin = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(IMGLoader.prototype, "width", {
-                get: /**
-                * Get image width. Returns null is image is not loaded
-                * @returns {number}
-                */
-                function () {
-                    if (this._image) {
-                        return this._image.width;
-                    }
-
-                    return null;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(IMGLoader.prototype, "height", {
-                get: /**
-                * Get image height. Returns null is image is not loaded
-                * @returns {number}
-                */
-                function () {
-                    if (this._image) {
-                        return this._image.height;
-                    }
-
-                    return null;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(IMGLoader.prototype, "request", {
-                get: /**
-                * return URL request used to load image
-                * @returns {away.net.URLRequest}
-                */
-                function () {
-                    return this._request;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(IMGLoader.prototype, "name", {
-                get: /**
-                * get name of HTMLImageElement
-                * @returns {string}
-                */
-                function () {
-                    if (this._image) {
-                        return this._image.name;
-                    }
-
-                    return this._name;
-                },
-                set: /**
-                * set name of HTMLImageElement
-                * @returns {string}
-                */
-                function (value) {
-                    if (this._image) {
-                        this._image.name = value;
-                    }
-
-                    this._name = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            // Private
-            /**
-            * intialise the image object
-            */
-            IMGLoader.prototype.initImage = function () {
-                var _this = this;
-                if (!this._image) {
-                    this._image = new Image();
-                    this._image.onabort = function (event) {
-                        return _this.onAbort(event);
-                    };
-                    this._image.onerror = function (event) {
-                        return _this.onError(event);
-                    };
-                    this._image.onload = function (event) {
-                        return _this.onLoadComplete(event);
-                    };
-                    this._image.name = this._name;
-                }
-            };
-
-            // Image - event handlers
-            /**
-            * Loading of an image is interrupted
-            * @param event
-            */
-            IMGLoader.prototype.onAbort = function (event) {
-                this.dispatchEvent(new away.events.Event(away.events.IOErrorEvent.IO_ERROR));
-            };
-
-            /**
-            * An error occured when loading the image
-            * @param event
-            */
-            IMGLoader.prototype.onError = function (event) {
-                this.dispatchEvent(new away.events.Event(away.events.IOErrorEvent.IO_ERROR));
-            };
-
-            /**
-            * image is finished loading
-            * @param event
-            */
-            IMGLoader.prototype.onLoadComplete = function (event) {
-                this._loaded = true;
-                this.dispatchEvent(new away.events.Event(away.events.Event.COMPLETE));
-            };
-            return IMGLoader;
-        })(away.events.EventDispatcher);
-        net.IMGLoader = IMGLoader;
-    })(away.net || (away.net = {}));
-    var net = away.net;
-})(away || (away = {}));
-var away;
-(function (away) {
     ///<reference path="ParserBase.ts" />
     ///<reference path="ParserDataFormat.ts" />
     ///<reference path="ParserLoaderType.ts" />
@@ -2397,7 +3431,6 @@ var away;
     ///<reference path="../../events/IOErrorEvent.ts" />
     ///<reference path="../../events/HTTPStatusEvent.ts" />
     ///<reference path="../../events/ProgressEvent.ts" />
-    ///<reference path="../../events/AwayEvent.ts" />
     ///<reference path="../../events/LoaderEvent.ts" />
     ///<reference path="../../net/URLRequest.ts" />
     ///<reference path="../../net/URLLoaderDataFormat.ts" />
@@ -2691,7 +3724,7 @@ var away;
 
                 this._data = urlLoader.data;
 
-                console.log('SingleFileLoader.handleUrlLoaderComplete', this._data, this._data.length);
+                console.log('SingleFileURLLoader.handleUrlLoaderComplete', this._data.length);
 
                 if (this._loadAsRawData) {
                     // No need to parse this data, which should be returned as is
@@ -2789,6 +3822,177 @@ var away;
             return SingleFileLoader;
         })(away.events.EventDispatcher);
         loaders.SingleFileLoader = SingleFileLoader;
+    })(away.loaders || (away.loaders = {}));
+    var loaders = away.loaders;
+})(away || (away = {}));
+var away;
+(function (away) {
+    (function (loaders) {
+        var AssetLoaderContext = (function () {
+            /**
+            * AssetLoaderContext provides configuration for the AssetLoader load() and parse() operations.
+            * Use it to configure how (and if) dependencies are loaded, or to map dependency URLs to
+            * embedded data.
+            *
+            * @see away3d.loading.AssetLoader
+            */
+            function AssetLoaderContext(includeDependencies, dependencyBaseUrl) {
+                if (typeof includeDependencies === "undefined") { includeDependencies = true; }
+                if (typeof dependencyBaseUrl === "undefined") { dependencyBaseUrl = null; }
+                this._includeDependencies = includeDependencies;
+                this._dependencyBaseUrl = dependencyBaseUrl || '';
+                this._embeddedDataByUrl = {};
+                this._remappedUrls = {};
+                this._materialMode = AssetLoaderContext.UNDEFINED;
+            }
+            Object.defineProperty(AssetLoaderContext.prototype, "includeDependencies", {
+                get: /**
+                * Defines whether dependencies (all files except the one at the URL given to the load() or
+                * parseData() operations) should be automatically loaded. Defaults to true.
+                */
+                function () {
+                    return this._includeDependencies;
+                },
+                set: function (val) {
+                    this._includeDependencies = val;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(AssetLoaderContext.prototype, "materialMode", {
+                get: /**
+                * MaterialMode defines, if the Parser should create SinglePass or MultiPass Materials
+                * Options:
+                * 0 (Default / undefined) - All Parsers will create SinglePassMaterials, but the AWD2.1parser will create Materials as they are defined in the file
+                * 1 (Force SinglePass) - All Parsers create SinglePassMaterials
+                * 2 (Force MultiPass) - All Parsers will create MultiPassMaterials
+                *
+                */
+                function () {
+                    return this._materialMode;
+                },
+                set: function (materialMode) {
+                    this._materialMode = materialMode;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(AssetLoaderContext.prototype, "dependencyBaseUrl", {
+                get: /**
+                * A base URL that will be prepended to all relative dependency URLs found in a loaded resource.
+                * Absolute paths will not be affected by the value of this property.
+                */
+                function () {
+                    return this._dependencyBaseUrl;
+                },
+                set: function (val) {
+                    this._dependencyBaseUrl = val;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(AssetLoaderContext.prototype, "overrideAbsolutePaths", {
+                get: /**
+                * Defines whether absolute paths (defined as paths that begin with a "/") should be overridden
+                * with the dependencyBaseUrl defined in this context. If this is true, and the base path is
+                * "base", /path/to/asset.jpg will be resolved as base/path/to/asset.jpg.
+                */
+                function () {
+                    return this._overrideAbsPath;
+                },
+                set: function (val) {
+                    this._overrideAbsPath = val;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(AssetLoaderContext.prototype, "overrideFullURLs", {
+                get: /**
+                * Defines whether "full" URLs (defined as a URL that includes a scheme, e.g. http://) should be
+                * overridden with the dependencyBaseUrl defined in this context. If this is true, and the base
+                * path is "base", http://example.com/path/to/asset.jpg will be resolved as base/path/to/asset.jpg.
+                */
+                function () {
+                    return this._overrideFullUrls;
+                },
+                set: function (val) {
+                    this._overrideFullUrls = val;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * Map a URL to another URL, so that files that are referred to by the original URL will instead
+            * be loaded from the new URL. Use this when your file structure does not match the one that is
+            * expected by the loaded file.
+            *
+            * @param originalUrl The original URL which is referenced in the loaded resource.
+            * @param newUrl The URL from which Away3D should load the resource instead.
+            *
+            * @see mapUrlToData()
+            */
+            AssetLoaderContext.prototype.mapUrl = function (originalUrl, newUrl) {
+                this._remappedUrls[originalUrl] = newUrl;
+            };
+
+            /**
+            * Map a URL to embedded data, so that instead of trying to load a dependency from the URL at
+            * which it's referenced, the dependency data will be retrieved straight from the memory instead.
+            *
+            * @param originalUrl The original URL which is referenced in the loaded resource.
+            * @param data The embedded data. Can be ByteArray or a class which can be used to create a bytearray.
+            */
+            AssetLoaderContext.prototype.mapUrlToData = function (originalUrl, data) {
+                this._embeddedDataByUrl[originalUrl] = data;
+            };
+
+            /**
+            * @private
+            * Defines whether embedded data has been mapped to a particular URL.
+            */
+            AssetLoaderContext.prototype._iHasDataForUrl = function (url) {
+                return this._embeddedDataByUrl.hasOwnProperty(url);
+            };
+
+            /**
+            * @private
+            * Returns embedded data for a particular URL.
+            */
+            AssetLoaderContext.prototype._iGetDataForUrl = function (url) {
+                return this._embeddedDataByUrl[url];
+            };
+
+            /**
+            * @private
+            * Defines whether a replacement URL has been mapped to a particular URL.
+            */
+            AssetLoaderContext.prototype._iHasMappingForUrl = function (url) {
+                return this._remappedUrls.hasOwnProperty(url);
+            };
+
+            /**
+            * @private
+            * Returns new (replacement) URL for a particular original URL.
+            */
+            AssetLoaderContext.prototype._iGetRemappedUrl = function (originalUrl) {
+                return this._remappedUrls[originalUrl];
+            };
+            AssetLoaderContext.UNDEFINED = 0;
+            AssetLoaderContext.SINGLEPASS_MATERIALS = 1;
+            AssetLoaderContext.MULTIPASS_MATERIALS = 2;
+            return AssetLoaderContext;
+        })();
+        loaders.AssetLoaderContext = AssetLoaderContext;
     })(away.loaders || (away.loaders = {}));
     var loaders = away.loaders;
 })(away || (away = {}));
@@ -3101,245 +4305,6 @@ var away;
         display3D.Program3D = Program3D;
     })(away.display3D || (away.display3D = {}));
     var display3D = away.display3D;
-})(away || (away = {}));
-var away;
-(function (away) {
-    /**
-    * @author Gary Paluk
-    * @created 6/29/13
-    * @module away.geom
-    */
-    (function (geom) {
-        var Vector3D = (function () {
-            /**
-            * Creates an instance of a Vector3D object.
-            */
-            function Vector3D(x, y, z, w) {
-                if (typeof x === "undefined") { x = 0; }
-                if (typeof y === "undefined") { y = 0; }
-                if (typeof z === "undefined") { z = 0; }
-                if (typeof w === "undefined") { w = 0; }
-                this.x = x;
-                this.y = y;
-                this.z = z;
-                this.w = w;
-            }
-            Object.defineProperty(Vector3D.prototype, "length", {
-                get: /**
-                * [read-only] The length, magnitude, of the current Vector3D object from the origin (0,0,0) to the object's
-                * x, y, and z coordinates.
-                * @returns The length of the Vector3D
-                */
-                function () {
-                    return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(Vector3D.prototype, "lengthSquared", {
-                get: /**
-                * [read-only] The square of the length of the current Vector3D object, calculated using the x, y, and z
-                * properties.
-                * @returns The squared length of the vector
-                */
-                function () {
-                    return (this.x * this.x + this.y * this.y + this.z + this.z);
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            /**
-            * Adds the value of the x, y, and z elements of the current Vector3D object to the values of the x, y, and z
-            * elements of another Vector3D object.
-            */
-            Vector3D.prototype.add = function (a) {
-                return new Vector3D(this.x + a.x, this.y + a.y, this.z + a.z, this.w + a.w);
-            };
-
-            Vector3D.angleBetween = /**
-            * [static] Returns the angle in radians between two vectors.
-            */
-            function (a, b) {
-                return Math.acos(a.dotProduct(b) / (a.length * b.length));
-            };
-
-            /**
-            * Returns a new Vector3D object that is an exact copy of the current Vector3D object.
-            */
-            Vector3D.prototype.clone = function () {
-                return new Vector3D(this.x, this.y, this.z, this.w);
-            };
-
-            /**
-            * Copies all of vector data from the source Vector3D object into the calling Vector3D object.
-            */
-            Vector3D.prototype.copyFrom = function (src) {
-                return new Vector3D(src.x, src.y, src.z, src.w);
-            };
-
-            /**
-            * Returns a new Vector3D object that is perpendicular (at a right angle) to the current Vector3D and another
-            * Vector3D object.
-            */
-            Vector3D.prototype.crossProduct = function (a) {
-                return new Vector3D(this.y * a.z - this.z * a.y, this.z * a.x - this.x * a.z, this.x * a.y - this.y * a.x);
-            };
-
-            /**
-            * Decrements the value of the x, y, and z elements of the current Vector3D object by the values of the x, y,
-            * and z elements of specified Vector3D object.
-            */
-            Vector3D.prototype.decrementBy = function (a) {
-                this.x -= a.x;
-                this.y -= a.y;
-                this.z -= a.z;
-            };
-
-            Vector3D.distance = /**
-            * [static] Returns the distance between two Vector3D objects.
-            */
-            function (pt1, pt2) {
-                var x = (pt1.x - pt2.x);
-                var y = (pt1.y - pt2.y);
-                var z = (pt1.z - pt2.z);
-                return Math.sqrt(x * x + y * y + z * z);
-            };
-
-            /**
-            * If the current Vector3D object and the one specified as the parameter are unit vertices, this method returns
-            * the cosine of the angle between the two vertices.
-            */
-            Vector3D.prototype.dotProduct = function (a) {
-                return this.x * a.x + this.y * a.y + this.z * a.z;
-            };
-
-            /**
-            * Determines whether two Vector3D objects are equal by comparing the x, y, and z elements of the current
-            * Vector3D object with a specified Vector3D object.
-            */
-            Vector3D.prototype.equals = function (cmp, allFour) {
-                if (typeof allFour === "undefined") { allFour = false; }
-                return (this.x == cmp.x && this.y == cmp.y && this.z == cmp.z && (!allFour || this.w == cmp.w));
-            };
-
-            /**
-            * Increments the value of the x, y, and z elements of the current Vector3D object by the values of the x, y,
-            * and z elements of a specified Vector3D object.
-            */
-            Vector3D.prototype.incrementBy = function (a) {
-                this.x += a.x;
-                this.y += a.y;
-                this.z += a.z;
-            };
-
-            /**
-            * Compares the elements of the current Vector3D object with the elements of a specified Vector3D object to
-            * determine whether they are nearly equal.
-            */
-            Vector3D.prototype.nearEquals = function (cmp, epsilon, allFour) {
-                if (typeof allFour === "undefined") { allFour = true; }
-                return ((Math.abs(this.x - cmp.x) < epsilon) && (Math.abs(this.y - cmp.y) < epsilon) && (Math.abs(this.z - cmp.z) < epsilon) && (!allFour || Math.abs(this.w - cmp.w) < epsilon));
-            };
-
-            /**
-            * Sets the current Vector3D object to its inverse.
-            */
-            Vector3D.prototype.negate = function () {
-                this.x = -this.x;
-                this.y = -this.y;
-                this.z = -this.z;
-            };
-
-            /**
-            * Converts a Vector3D object to a unit vector by dividing the first three elements (x, y, z) by the length of
-            * the vector.
-            */
-            Vector3D.prototype.normalize = function () {
-                var invLength = 1 / this.length;
-                if (invLength != 0) {
-                    this.x *= invLength;
-                    this.y *= invLength;
-                    this.z *= invLength;
-                    return;
-                }
-                throw "Cannot divide by zero.";
-            };
-
-            /**
-            * Divides the value of the x, y, and z properties of the current Vector3D object by the value of its w
-            * property.
-            */
-            Vector3D.prototype.project = function () {
-                this.x /= this.w;
-                this.y /= this.w;
-                this.z /= this.w;
-            };
-
-            /**
-            * Scales the current Vector3D object by a scalar, a magnitude.
-            */
-            Vector3D.prototype.scaleBy = function (s) {
-                this.x *= s;
-                this.y *= s;
-                this.z *= s;
-            };
-
-            /**
-            * Sets the members of Vector3D to the specified values
-            */
-            Vector3D.prototype.setTo = function (xa, ya, za) {
-                this.x = xa;
-                this.y = ya;
-                this.z = za;
-            };
-
-            /**
-            * Subtracts the value of the x, y, and z elements of the current Vector3D object from the values of the x, y,
-            * and z elements of another Vector3D object.
-            */
-            Vector3D.prototype.subtract = function (a) {
-                return new Vector3D(this.x - a.x, this.y - a.y, this.z - a.z);
-            };
-
-            /**
-            * Returns a string representation of the current Vector3D object.
-            */
-            Vector3D.prototype.toString = function () {
-                return "[Vector3D] (x:" + this.x + " ,y:" + this.y + ", z" + this.z + ", w:" + this.w + ")";
-            };
-            return Vector3D;
-        })();
-        geom.Vector3D = Vector3D;
-    })(away.geom || (away.geom = {}));
-    var geom = away.geom;
-})(away || (away = {}));
-var away;
-(function (away) {
-    ///<reference path="Error.ts" />
-    (function (errors) {
-        /**
-        * AbstractMethodError is thrown when an abstract method is called. The method in question should be overridden
-        * by a concrete subclass.
-        */
-        var ArgumentError = (function (_super) {
-            __extends(ArgumentError, _super);
-            /**
-            * Create a new AbstractMethodError.
-            * @param message An optional message to override the default error message.
-            * @param id The id of the error.
-            */
-            function ArgumentError(message, id) {
-                if (typeof message === "undefined") { message = null; }
-                if (typeof id === "undefined") { id = 0; }
-                _super.call(this, message || "ArgumentError", id);
-            }
-            return ArgumentError;
-        })(errors.Error);
-        errors.ArgumentError = ArgumentError;
-    })(away.errors || (away.errors = {}));
-    var errors = away.errors;
 })(away || (away = {}));
 var away;
 (function (away) {
@@ -3934,102 +4899,6 @@ var away;
     * ...
     * @author Gary Paluk - http://www.plugin.io
     */
-    (function (geom) {
-        var Point = (function () {
-            function Point(x, y) {
-                if (typeof x === "undefined") { x = 0; }
-                if (typeof y === "undefined") { y = 0; }
-                this.x = x;
-                this.y = y;
-            }
-            return Point;
-        })();
-        geom.Point = Point;
-    })(away.geom || (away.geom = {}));
-    var geom = away.geom;
-})(away || (away = {}));
-var away;
-(function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="Point.ts" />
-    (function (geom) {
-        var Rectangle = (function () {
-            function Rectangle(x, y, width, height) {
-                if (typeof x === "undefined") { x = 0; }
-                if (typeof y === "undefined") { y = 0; }
-                if (typeof width === "undefined") { width = 0; }
-                if (typeof height === "undefined") { height = 0; }
-                this.x = x;
-                this.y = y;
-                this.width = width;
-                this.height = height;
-            }
-            Object.defineProperty(Rectangle.prototype, "left", {
-                get: function () {
-                    return this.x;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(Rectangle.prototype, "right", {
-                get: function () {
-                    return this.x + this.width;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(Rectangle.prototype, "top", {
-                get: function () {
-                    return this.y;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(Rectangle.prototype, "bottom", {
-                get: function () {
-                    return this.y + this.height;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(Rectangle.prototype, "topLeft", {
-                get: function () {
-                    return new away.geom.Point(this.x, this.y);
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(Rectangle.prototype, "bottomRight", {
-                get: function () {
-                    return new away.geom.Point(this.x + this.width, this.y + this.height);
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Rectangle.prototype.clone = function () {
-                return new Rectangle(this.x, this.y, this.width, this.height);
-            };
-            return Rectangle;
-        })();
-        geom.Rectangle = Rectangle;
-    })(away.geom || (away.geom = {}));
-    var geom = away.geom;
-})(away || (away = {}));
-var away;
-(function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
     (function (display3D) {
         var Context3DTextureFormat = (function () {
             function Context3DTextureFormat() {
@@ -4081,7 +4950,9 @@ var away;
     * @author Gary Paluk - http://www.plugin.io
     */
     ///<reference path="../../def/webgl.d.ts"/>
+    ///<reference path="../../def/js.d.ts"/>
     ///<reference path="TextureBase.ts"/>
+    ///<reference path="../display/BitmapData.ts"/>
     (function (display3D) {
         var Texture = (function (_super) {
             __extends(Texture, _super);
@@ -4112,6 +4983,11 @@ var away;
             Texture.prototype.uploadFromHTMLImageElement = function (image, miplevel) {
                 if (typeof miplevel === "undefined") { miplevel = 0; }
                 GL.texImage2D(GL.TEXTURE_2D, miplevel, GL.RGBA, GL.RGBA, GL.UNSIGNED_BYTE, image);
+            };
+
+            Texture.prototype.uploadFromBitmapData = function (data, miplevel) {
+                if (typeof miplevel === "undefined") { miplevel = 0; }
+                GL.texImage2D(GL.TEXTURE_2D, miplevel, GL.RGBA, GL.RGBA, GL.UNSIGNED_BYTE, data.imageData);
             };
             return Texture;
         })(display3D.TextureBase);
@@ -4771,7 +5647,7 @@ var away;
     */
     ///<reference path="../../def/webgl.d.ts"/>
     ///<reference path="../events/EventDispatcher.ts" />
-    ///<reference path="../events/AwayEvent.ts" />
+    ///<reference path="../events/Event.ts" />
     ///<reference path="../display3D/Context3D.ts" />
     (function (display) {
         var Stage3D = (function (_super) {
@@ -4784,11 +5660,11 @@ var away;
                 try  {
                     this._context3D = new away.display3D.Context3D(this._canvas);
                 } catch (e) {
-                    this.dispatchEvent(new away.events.AwayEvent(away.events.AwayEvent.ERROR, e));
+                    this.dispatchEvent(new away.events.Event(away.events.Event.ERROR));
                 }
 
                 if (this._context3D) {
-                    this.dispatchEvent(new away.events.AwayEvent(away.events.AwayEvent.CONTEXT3D_CREATE));
+                    this.dispatchEvent(new away.events.Event(away.events.Event.CONTEXT3D_CREATE));
                 }
             };
 
@@ -4814,6 +5690,7 @@ var away;
     var display = away.display;
 })(away || (away = {}));
 //<reference path="../src/away/events/Event.ts" />
+//<reference path="../src/away/events/EventDispatcher.ts" />
 //<reference path="../src/away/events/IOErrorEvent.ts" />
 //<reference path="../src/away/events/HTTPStatusEvent.ts" />
 //<reference path="../src/away/net/URLLoader.ts" />
@@ -4822,6 +5699,7 @@ var away;
 //<reference path="../src/away/net/URLRequestMethod.ts" />
 ///<reference path="../src/away/library/assets/IAsset.ts"/>
 ///<reference path="../src/away/loaders/misc/SingleFileLoader.ts"/>
+///<reference path="../src/away/loaders/misc/AssetLoaderContext.ts"/>
 ///<reference path="../src/away/loaders/parsers/ParserBase.ts"/>
 ///<reference path="../src/away/loaders/parsers/ParserDataFormat.ts"/>
 ///<reference path="../src/away/loaders/misc/SingleFileImageLoader.ts"/>
@@ -4838,10 +5716,11 @@ var tests;
 (function (tests) {
     var SimpleLoaderTest = (function () {
         function SimpleLoaderTest() {
+            this.assetLoaderContext = new away.loaders.AssetLoaderContext();
             this.iAssetTest = new tests.IAssetTest();
             this.canvas = document.createElement('canvas');
             this.stage3D = new away.display.Stage3D(this.canvas);
-            this.stage3D.addEventListener(away.events.AwayEvent.CONTEXT3D_CREATE, this.onContext3DCreateHandler, this);
+            this.stage3D.addEventListener(away.events.Event.CONTEXT3D_CREATE, this.onContext3DCreateHandler, this);
             this.stage3D.requestContext();
 
             //------------------------------------------------------------------------------------------
@@ -4900,8 +5779,10 @@ var tests;
 
     //*
     // Test implmentatoin for IAsset
-    var IAssetTest = (function () {
+    var IAssetTest = (function (_super) {
+        __extends(IAssetTest, _super);
         function IAssetTest() {
+            _super.apply(this, arguments);
         }
         Object.defineProperty(IAssetTest.prototype, "id", {
             get: function () {
@@ -4952,7 +5833,7 @@ var tests;
         IAssetTest.prototype.dispose = function () {
         };
         return IAssetTest;
-    })();
+    })(away.events.EventDispatcher);
     tests.IAssetTest = IAssetTest;
 })(tests || (tests = {}));
 
