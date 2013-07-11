@@ -3,7 +3,6 @@
 ///<reference path="../../events/IOErrorEvent.ts" />
 ///<reference path="../../events/HTTPStatusEvent.ts" />
 ///<reference path="../../events/ProgressEvent.ts" />
-///<reference path="../../events/AwayEvent.ts" />
 ///<reference path="../../events/LoaderEvent.ts" />
 ///<reference path="../../net/URLRequest.ts" />
 ///<reference path="../../net/URLLoaderDataFormat.ts" />

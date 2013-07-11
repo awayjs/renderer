@@ -1,8 +1,10 @@
+///<reference path="../../events/EventDispatcher.ts" />
+
 module away.library
 {
 	//import flash.events.IEventDispatcher;
 
-	export interface IAsset //extends IEventDispatcher
+	export interface IAsset extends away.events.EventDispatcher
 	{
 
 		name : string;
