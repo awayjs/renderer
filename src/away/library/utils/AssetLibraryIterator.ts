@@ -55,17 +55,18 @@ module away.library
 			if (assetTypeFilter || namespaceFilter) {
 
 				var idx:number;
-				var asset:IAsset;
-				
+				var asset:away.library.IAsset;
+
+
 				idx = 0;
-                this._filtered = new <away.library.IAsset>Array();//new Vector.<IAsset>;
+                this._filtered = new Array<away.library.IAsset>();//new Vector.<IAsset>;
 
                 var l : number = this._assets.length;
 
                 for ( var c : number = 0 ; c < l ; c ++ )
                 {
 
-                    asset = this._assets;
+                    asset = <away.library.IAsset> this._assets[c];
 
                     // Skip this assets if filtering on type and this is wrong type
                     if (assetTypeFilter && asset.assetType != assetTypeFilter)
