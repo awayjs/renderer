@@ -42,7 +42,7 @@ module away.loaders
 		{
 
 			extension = extension.toLowerCase();
-			return extension == "jpg" || extension == "jpeg" || extension == "png" || extension == "gif" || extension == "bmp";//|| extension == "atf";
+			return extension == "jpg" || extension == "jpeg" || extension == "png" || extension == "gif" ;//|| extension == "bmp";//|| extension == "atf";
 
 		}
 
@@ -62,40 +62,6 @@ module away.loaders
 
             return false;
 
-            /*
-			//shortcut if asset is IFlexAsset
-			if (data is Bitmap)
-				return true;
-				
-			if (data is BitmapData)
-				return true;
-
-			if (!(data is ByteArray))
-				return false;
-
-			var ba : ByteArray = data as ByteArray;
-			ba.position = 0;
-			if (ba.readUnsignedShort() == 0xffd8)
-				return true; // JPEG, maybe check for "JFIF" as well?
-
-			ba.position = 0;
-			if (ba.readShort() == 0x424D)
-				return true; // BMP
-
-			ba.position = 1;
-			if (ba.readUTFBytes(3) == 'PNG')
-				return true;
-
-			ba.position = 0;
-			if (ba.readUTFBytes(3) == 'GIF' && ba.readShort() == 0x3839 && ba.readByte() == 0x61)
-				return true;
-			
-			ba.position = 0;
-			if (ba.readUTFBytes(3) == 'ATF')
-				return true;
-				
-			return false;
-			*/
 		}
 
 		/**
@@ -117,76 +83,9 @@ module away.loaders
 
             }
 
-            //this._doneParsing = true;
-
-            //this._pFinalizeAsset()
-
             return away.loaders.ParserBase.PARSING_DONE;
 
-            /*
-			var asset:Texture2DBase;
-			if (_data is Bitmap) {
-				asset = new BitmapTexture(Bitmap(_data).bitmapData);
-				finalizeAsset(asset, _fileName);
-				return PARSING_DONE;
-			}
-			
-			if (_data is BitmapData)
-			{
-				asset = new BitmapTexture(_data as BitmapData);
-				finalizeAsset(asset, _fileName);
-				return PARSING_DONE;
-			}
-
-			_byteData = getByteData();
-			if (!_startedParsing) {
-				_byteData.position = 0;
-				_loader = new Loader();
-				_loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onLoadComplete);
-				_loader.loadBytes(_byteData);
-				_startedParsing = true;
-			}
-
-			return _doneParsing;
-			*/
 		}
 
-        // Not needed - AS3, Loader.loadBytes functionality
-
-		/**
-		 * Called when "loading" is complete.
-         */
-
-        /*
-		private onLoadComplete(event : Event) : void
-		{
-			var bmp : BitmapData = Bitmap(_loader.content).bitmapData;
-			var asset : BitmapTexture;
-			
-			_loader.contentLoaderInfo.removeEventListener(Event.COMPLETE, onLoadComplete);
-
-			if (!TextureUtils.isBitmapDataValid(bmp)) {
-				var bmdAsset:BitmapDataAsset = new BitmapDataAsset(bmp);
-				bmdAsset.name = _fileName;
-				
-				dispatchEvent(new AssetEvent(AssetEvent.TEXTURE_SIZE_ERROR, bmdAsset));
-				
-				bmp = new BitmapData(8, 8, false, 0x0);
-		
-				//create chekerboard for this texture rather than a new Default Material
-				var i:number, j:number;
-				for (i=0; i<8; i++) {
-					for (j=0; j<8; j++) {
-						if ((j & 1) ^ (i & 1))
-							bmp.setPixel(i, j, 0XFFFFFF);
-					}
-				}
-			}
-			
-			asset = new BitmapTexture(bmp);
-			finalizeAsset(asset, _fileName);
-			_doneParsing = true;
-		}
-        */
 	}
 }
