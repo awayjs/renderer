@@ -4,6 +4,7 @@
 ///<reference path="../../net/IMGLoader.ts" />
 ///<reference path="../../textures/HTMLImageElementTexture.ts" />
 ///<reference path="../../textures/Texture2DBase.ts" />
+///<reference path="../../utils/TextureUtils.ts" />
 
 module away.loaders
 {
@@ -77,7 +78,20 @@ module away.loaders
 
                 asset = <away.textures.Texture2DBase> new away.textures.HTMLImageElementTexture( <HTMLImageElement> this.data );
 
-                this._pFinalizeAsset( <away.library.IAsset> asset , this._iFileName );
+                if ( away.utils.TextureUtils.isHTMLImageElementValid( <HTMLImageElement> this.data ) )
+                {
+
+
+                    this._pFinalizeAsset( <away.library.IAsset> asset , this._iFileName );
+
+
+                }
+                else
+                {
+
+                    this.dispatchEvent( new away.events.AssetEvent( away.events.AssetEvent.TEXTURE_SIZE_ERROR , <away.library.IAsset> asset ) );
+
+                }
 
                 return away.loaders.ParserBase.PARSING_DONE;
 
