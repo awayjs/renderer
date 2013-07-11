@@ -14,7 +14,7 @@ module away.library
 		assetFullPath : Array;
 		
 		assetPathEquals(name : string, ns : string) : boolean;
-		resetAssetPath(name : string, ns : string , overrideOriginal : boolean ) : void;
+		resetAssetPath(name : string, ns : string , overrideOriginal ? : boolean ) : void;
 		dispose() : void;
 
 	}
