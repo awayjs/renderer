@@ -2,6 +2,8 @@
 ///<reference path="ParserDataFormat.ts" />
 ///<reference path="ParserLoaderType.ts" />
 ///<reference path="../../net/IMGLoader.ts" />
+///<reference path="../../textures/HTMLImageElementTexture.ts" />
+///<reference path="../../textures/Texture2DBase.ts" />
 
 module away.loaders
 {
@@ -102,17 +104,22 @@ module away.loaders
 		public _pProceedParsing() : boolean
 		{
 
+            var asset : away.textures.Texture2DBase;
+
             if ( this.data  instanceof HTMLImageElement )
             {
 
-                // TODO: Implement Texture2D and add HTMLImageElement
-                var aAssetTest : away.library.IAsset ;
+                asset = <away.textures.Texture2DBase> new away.textures.HTMLImageElementTexture( <HTMLImageElement> this.data );
 
-                //this._pFinalizeAsset( aAssetTest , this._iFileName);
+                this._pFinalizeAsset( <away.library.IAsset> asset , this._iFileName );
 
                 return away.loaders.ParserBase.PARSING_DONE;
 
             }
+
+            //this._doneParsing = true;
+
+            //this._pFinalizeAsset()
 
             return away.loaders.ParserBase.PARSING_DONE;
 
