@@ -90,17 +90,17 @@ module away.containers
 			entity.implicitPartition.removeEntity( entity );
 		}
 		
-		public _iInvalidateEntityBounds( entity:Entity )
+		public _iInvalidateEntityBounds( entity:away.entities.Entity )
 		{
 			entity.implicitPartition.markForUpdate( entity );
 		}
 		
-		public _iRegisterPartition( entity:Entity )
+		public _iRegisterPartition( entity:away.entities.Entity )
 		{
 			this.addPartitionUnique( entity.implicitPartition );
 		}
 		
-		public _iUnregisterPartition( entity:Entity )
+		public _iUnregisterPartition( entity:away.entities.Entity )
 		{
 			entity.implicitPartition.removeEntity( entity );
 		}
