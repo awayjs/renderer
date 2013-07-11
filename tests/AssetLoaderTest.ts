@@ -1,4 +1,5 @@
 ///<reference path="../src/away/loaders/AssetLoader.ts"/>
+///<reference path="ts/JSONTextureParser.ts"/>
 
 //<reference path="../src/away/library/assets/IAsset.ts"/>
 //<reference path="../src/away/loaders/misc/SingleFileLoader.ts"/>
@@ -23,38 +24,70 @@ module tests {
     export class AssetLoaderTest //extends away.events.EventDispatcher
     {
 
-        private urlRq       : away.net.URLRequest;
-        private token       : away.loaders.AssetLoaderToken;
-        private assetLoader : away.loaders.AssetLoader;
-
+        private alJson          : away.loaders.AssetLoader;
+        private alImage         : away.loaders.AssetLoader;
+        private alErrorImage    : away.loaders.AssetLoader;
 
         constructor()
         {
 
-            this.urlRq          = new away.net.URLRequest('URLLoaderTestData/2.png');
-            this.assetLoader    = new away.loaders.AssetLoader();
+            //---------------------------------------------------------------------------------------------------------------------
+            // Enable Custom Parser ( JSON file format with multiple texture dependencies )
+            away.loaders.AssetLoader.enableParser( loaders.JSONTextureParser );
 
-            this.token          = this.assetLoader.load( this.urlRq );
+            var token : away.loaders.AssetLoaderToken;
+            var urlRq : away.net.URLRequest;
 
-            console.log( 'token' , this.token );
+            //---------------------------------------------------------------------------------------------------------------------
+            // LOAD A SINGLE IMAGE
 
-            this.token.addEventListener( away.events.Event.COMPLETE , this.onComplete , this );
-            this.token.addEventListener( away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete , this );
+            this.alImage  = new away.loaders.AssetLoader();
+            urlRq         = new away.net.URLRequest('URLLoaderTestData/1024x1024.png');
+            token         = this.alImage .load( urlRq );
+
+            token.addEventListener( away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete , this );
+            token.addEventListener( away.events.AssetEvent.TEXTURE_SIZE_ERROR, this.onTextureSizeError , this );
+
+            //---------------------------------------------------------------------------------------------------------------------
+            // LOAD A SINGLE IMAGE - With wrong dimensions
+
+            this.alErrorImage    = new away.loaders.AssetLoader();
+            urlRq                = new away.net.URLRequest('URLLoaderTestData/2.png');
+            token                = this.alErrorImage.load( urlRq );
+
+            token.addEventListener( away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete , this );
+            token.addEventListener( away.events.AssetEvent.TEXTURE_SIZE_ERROR, this.onTextureSizeError , this );
+
+            //---------------------------------------------------------------------------------------------------------------------
+            // LOAD WITH A JSON PARSER
+
+            this.alJson    = new away.loaders.AssetLoader();
+            urlRq          = new away.net.URLRequest('URLLoaderTestData/JSNParserTest.json');
+            token          = this.alJson.load( urlRq );
+
+            token.addEventListener( away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete , this );
+            token.addEventListener( away.events.AssetEvent.TEXTURE_SIZE_ERROR, this.onTextureSizeError , this );
+        }
+
+        public onTextureSizeError ( e : away.events.AssetEvent ) : void
+        {
+
+            var assetLoader : away.loaders.AssetLoader = <away.loaders.AssetLoader> e.target;
+
+            console.log( '--------------------------------------------------------------------------------');
+            console.log( 'AssetLoaderTest.onTextureSizeError' , assetLoader.baseDependency._iLoader.url , e );
+            //console.log( '--------------------------------------------------------------------------------');
 
         }
 
-        public onComplete ( e : away.events.Event ) : void
+        public onAssetComplete ( e : away.events.AssetEvent ) : void
         {
 
-            console.log( 'onComplete' );
+            var assetLoader : away.loaders.AssetLoader = <away.loaders.AssetLoader> e.target;
 
-        }
-
-        public onAssetComplete ( e : away.events.Event ) : void
-        {
             console.log( '--------------------------------------------------------------------------------');
-            console.log( 'onAssetComplete' );
-            console.log( '--------------------------------------------------------------------------------');
+            console.log( 'AssetLoaderTest.onAssetComplete', assetLoader.baseDependency._iLoader.url , e );
+            //console.log( '--------------------------------------------------------------------------------');
 
         }
     }
