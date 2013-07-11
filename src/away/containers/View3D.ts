@@ -7,6 +7,7 @@ module away.containers
 {
 	export class View3D
 	{
+		/*
 		private _width:number;
 		private _height:number;
 		private _localPos:away.geom.Point;
@@ -60,18 +61,22 @@ module away.containers
 		private _depthPrepass:boolean;
 		private _profile:string;
 		private _layeredView:boolean = false;
+		*/
 		
-		constructor( scene:Scene3D = null,
+		constructor( scene:Scene3D = null
+					/*,
 					 camera:away.cameras.Camera3D,
 					 renderer:away.render.RendererBase,
 					 forceSoftware:boolean = false,
 					 profile: string = "basline"
+					 */
 					)
 		{
 			// TODO link to displaylist
 			
 			this._profile = profile;
 			this._scene = scene || new Scene3D();
+			/*
 			this._scene.addEventListener( away.events.Scene3DEvent.PARTITION_CHANGED, this.onScenePartitionChanged, this );
 			this._camera = camera || new away.cameras.Camera3D();
 			this._renderer = renderer || new away.render.DefaultRenderer();
@@ -100,8 +105,10 @@ module away.containers
 			this._camera.partition = this._scene.partition;
 			
 			this.initRightClickMenu();
+			*/
 		}
 		
+		/*
 		private onScenePartitionChanged( e:away.events.Scene3DEvent )
 		{
 			if( this._camera )
@@ -411,5 +418,6 @@ module away.containers
 		// TODO private function visitWebsite(e:ContextMenuEvent):void
 		// TODO private function initRightClickMenu():void
 		// TODO private function updateRightClickMenu():void
+		*/
 	}
 }
