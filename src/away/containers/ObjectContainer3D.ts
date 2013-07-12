@@ -173,7 +173,7 @@ module away.containers
 		{
 			if( this._pParent && !this._pParent._iIsRoot ) {
 				// Set implicit mouse enabled if parent its children to be so.
-				this._iAncestorsAllowMouseEnabled = this.parent._iAncestorsAllowMouseEnabled && this._pParent.mouseChildren;
+				this._iAncestorsAllowMouseEnabled = this._pParent._iAncestorsAllowMouseEnabled && this._pParent.mouseChildren;
 			}
 			else
 			{
@@ -390,7 +390,7 @@ module away.containers
 		public set partition( value:away.partitions.Partition3D )
 		{
 			this._explicitPartition = value;
-			this.implicitPartition = value ? value : ( this._parent ? this._parent.implicitPartition : null);
+			this.implicitPartition = value ? value : ( this._pParent ? this._pParent.implicitPartition : null);
 		}
 		*/
 		
@@ -459,7 +459,9 @@ module away.containers
 			
 			return child;
 		}
+		*/
 		
+		/*
 		public addChildren( childarray:away.containers.ObjectContainer3D )
 		{
 			for(var child:away.containers.ObjectContainer3D in childarray )
@@ -469,6 +471,7 @@ module away.containers
 		}
 		
 		*/
+		
 		/*
 		public removeChild( child:away.containers.ObjectContainer3D )
 		{
@@ -487,6 +490,7 @@ module away.containers
 			this.removeChildInternal( childIndex, child );
 		}
 		*/
+		
 		/*
 		public removeChildAt( index:number )
 		{
