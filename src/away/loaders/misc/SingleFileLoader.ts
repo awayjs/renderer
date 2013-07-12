@@ -481,6 +481,7 @@ module away.loaders
 		
 		private onAssetComplete(event : away.events.AssetEvent) : void
 		{
+            console.log( 'SingleFileLoader.onAssetComplete' , event );
 			this.dispatchEvent( event.clone() ) ;
 		}
 
@@ -495,6 +496,7 @@ module away.loaders
 		private onParseComplete(event : away.events.ParserEvent) : void
 		{
 
+            console.log( 'SingleFileLoader.onParseComplete' , event );
 			this.dispatchEvent( new away.events.LoaderEvent( away.events.LoaderEvent.DEPENDENCY_COMPLETE , this.url ) );//dispatch in front of removing listeners to allow any remaining asset events to propagate
 			
 			this._parser.removeEventListener(away.events.ParserEvent.READY_FOR_DEPENDENCIES, this.onReadyForDependencies , this );
