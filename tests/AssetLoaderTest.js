@@ -2862,6 +2862,8 @@ var away;
             * Finish parsing the data.
             */
             ParserBase.prototype._pFinishParsing = function () {
+                console.log('ParserBase._pFinishParsing');
+
                 if (this._timer) {
                     this._timer.removeEventListener(away.events.TimerEvent.TIMER, this._pOnInterval, this);
                     this._timer.stop();
@@ -5901,6 +5903,7 @@ var away;
             };
 
             SingleFileLoader.prototype.onAssetComplete = function (event) {
+                console.log('SingleFileLoader.onAssetComplete', event);
                 this.dispatchEvent(event.clone());
             };
 
@@ -5912,6 +5915,7 @@ var away;
             * Called when parsing is complete.
             */
             SingleFileLoader.prototype.onParseComplete = function (event) {
+                console.log('SingleFileLoader.onParseComplete', event);
                 this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this.url));
 
                 this._parser.removeEventListener(away.events.ParserEvent.READY_FOR_DEPENDENCIES, this.onReadyForDependencies, this);
@@ -6617,6 +6621,8 @@ var away;
                     event.asset.resetAssetPath(event.asset.name, this._namespace);
                 }
 
+                console.log('AssetLoader.onAssetComplete suppresAssetEvents:', this._loadingDependency.suppresAssetEvents, event);
+
                 if (!this._loadingDependency.suppresAssetEvents) {
                     this.dispatchEvent(event.clone());
                 }
@@ -6783,6 +6789,7 @@ var loaders;
             this._state = -1;
             this._dependencyCount = 0;
 
+            this._loadedTextures = new Array();
             this._state = this.STATE_PARSE_DATA;
         }
         JSONTextureParser.supportsType = /**
@@ -6820,8 +6827,12 @@ var loaders;
         * @inheritDoc
         */
         JSONTextureParser.prototype._iResolveDependency = function (resourceDependency) {
-            console.log('-----------------------------------------------------------');
+            var resource = resourceDependency.assets[0];
+
+            this._loadedTextures.push(resource);
+
             console.log('JSONTextureParser._iResolveDependency', resourceDependency);
+            console.log('JSONTextureParser._iResolveDependency resource: ', resource);
 
             this._dependencyCount--;
 
@@ -6841,7 +6852,6 @@ var loaders;
 
             if (this._dependencyCount == 0) {
                 this._state = this.STATE_COMPLETE;
-
                 console.log('JSONTextureParser._iResolveDependencyFailure.complete');
             }
         };
@@ -6867,7 +6877,7 @@ var loaders;
 
                         console.log('JSONTextureParser.parseJson', id, uri);
 
-                        this._pAddDependency('JSON_ID_' + id, rq);
+                        this._pAddDependency('JSON_ID_' + id, rq, false, null, true);
                     }
 
                     this._dependencyCount = data.length;
@@ -6909,6 +6919,7 @@ var loaders;
 })(loaders || (loaders = {}));
 ///<reference path="../src/away/loaders/AssetLoader.ts"/>
 ///<reference path="ts/JSONTextureParser.ts"/>
+//<reference path="../src/away/library/assets/IAsset.ts"/>
 //<reference path="../src/away/library/assets/IAsset.ts"/>
 //<reference path="../src/away/loaders/misc/SingleFileLoader.ts"/>
 //<reference path="../src/away/loaders/misc/AssetLoaderContext.ts"/>
@@ -6961,12 +6972,28 @@ var tests;
 
             token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
             token.addEventListener(away.events.AssetEvent.TEXTURE_SIZE_ERROR, this.onTextureSizeError, this);
+            token.addEventListener(away.events.ParserEvent.PARSE_COMPLETE, this.onParseComplete, this);
+
+            token.addEventListener(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this.onDependencyComplete, this);
         }
+        AssetLoaderTest.prototype.onDependencyComplete = function (e) {
+            console.log('--------------------------------------------------------------------------------');
+            console.log('AssetLoaderTest.onDependencyComplete', e);
+            console.log('--------------------------------------------------------------------------------');
+        };
+
+        AssetLoaderTest.prototype.onParseComplete = function (e) {
+            console.log('--------------------------------------------------------------------------------');
+            console.log('AssetLoaderTest.onParseComplete', e);
+            console.log('--------------------------------------------------------------------------------');
+        };
+
         AssetLoaderTest.prototype.onTextureSizeError = function (e) {
             var assetLoader = e.target;
 
             console.log('--------------------------------------------------------------------------------');
             console.log('AssetLoaderTest.onTextureSizeError', assetLoader.baseDependency._iLoader.url, e);
+            console.log('--------------------------------------------------------------------------------');
         };
 
         AssetLoaderTest.prototype.onAssetComplete = function (e) {
@@ -6974,6 +7001,7 @@ var tests;
 
             console.log('--------------------------------------------------------------------------------');
             console.log('AssetLoaderTest.onAssetComplete', assetLoader.baseDependency._iLoader.url, e);
+            console.log('--------------------------------------------------------------------------------');
         };
         return AssetLoaderTest;
     })();
