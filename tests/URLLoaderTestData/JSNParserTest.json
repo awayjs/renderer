@@ -1,0 +1,32 @@
+{
+  "data":[
+     {
+        "id":"1",
+        "image":"img_1.png"
+     },
+     {
+        "id":"2",
+        "image":"img_2.png"
+     },
+     {
+        "id":"3",
+        "image":"img_3.png"
+     },
+     {
+        "id":"4",
+        "image":"img_4.png"
+     },
+     {
+        "id":"5",
+        "image":"img_5.png"
+     },
+     {
+        "id":"6",
+        "image":"img_6.png"
+     },
+     {
+        "id":"7",
+        "image":"img_7.png"
+     }
+  ]
+}

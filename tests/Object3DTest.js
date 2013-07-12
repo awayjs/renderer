@@ -1,20 +1,377 @@
 var away;
 (function (away) {
-    (function (math) {
-        /**
-        * MathConsts provides some commonly used mathematical constants
-        */
-        var MathConsts = (function () {
-            function MathConsts() {
+    /**
+    * Base event class
+    * @class kurst.events.Event
+    *
+    * @author Karim Beyrouti
+    */
+    (function (events) {
+        var Event = (function () {
+            function Event(type) {
+                /**
+                * Type of event
+                * @property type
+                * @type String
+                */
+                this.type = undefined;
+                /**
+                * Reference to target object
+                * @property target
+                * @type Object
+                */
+                this.target = undefined;
+                this.type = type;
             }
-            MathConsts.RADIANS_TO_DEGREES = 180 / Math.PI;
+            /**
+            * Clones the current event.
+            * @return An exact duplicate of the current event.
+            */
+            Event.prototype.clone = function () {
+                return new Event(this.type);
+            };
+            Event.COMPLETE = 'Event_Complete';
+            Event.OPEN = 'Event_Open';
 
-            MathConsts.DEGREES_TO_RADIANS = Math.PI / 180;
-            return MathConsts;
+            Event.RESIZE = "resize";
+            Event.CONTEXT3D_CREATE = "context3DCreate";
+            Event.ERROR = "error";
+            return Event;
         })();
-        math.MathConsts = MathConsts;
-    })(away.math || (away.math = {}));
-    var math = away.math;
+        events.Event = Event;
+    })(away.events || (away.events = {}));
+    var events = away.events;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /*
+    * Author: mr.doob / https://github.com/mrdoob/eventdispatcher.js/
+    * TypeScript Conversion : Karim Beyrouti ( karim@kurst.co.uk )
+    */
+    ///<reference path="Event.ts" />
+    /**
+    * @module kurst.events
+    */
+    (function (events) {
+        /**
+        * Base class for dispatching events
+        *
+        * @class kurst.events.EventDispatcher
+        *
+        */
+        var EventDispatcher = (function () {
+            function EventDispatcher() {
+                this.listeners = new Array();
+            }
+            /**
+            * Add an event listener
+            * @method addEventListener
+            * @param {String} Name of event to add a listener for
+            * @param {Function} Callback function
+            * @param {Object} Target object listener is added to
+            */
+            EventDispatcher.prototype.addEventListener = function (type, listener, target) {
+                if (this.listeners[type] === undefined) {
+                    this.listeners[type] = new Array();
+                }
+
+                if (this.getEventListenerIndex(type, listener, target) === -1) {
+                    var d = new EventData();
+                    d.listener = listener;
+                    d.type = type;
+                    d.target = target;
+
+                    this.listeners[type].push(d);
+                }
+            };
+
+            /**
+            * Remove an event listener
+            * @method removeEventListener
+            * @param {String} Name of event to remove a listener for
+            * @param {Function} Callback function
+            * @param {Object} Target object listener is added to
+            */
+            EventDispatcher.prototype.removeEventListener = function (type, listener, target) {
+                var index = this.getEventListenerIndex(type, listener, target);
+
+                if (index !== -1) {
+                    this.listeners[type].splice(index, 1);
+                }
+            };
+
+            /**
+            * Dispatch an event
+            * @method dispatchEvent
+            * @param {Event} Event to dispatch
+            */
+            EventDispatcher.prototype.dispatchEvent = function (event) {
+                var listenerArray = this.listeners[event.type];
+
+                if (listenerArray !== undefined) {
+                    this.lFncLength = listenerArray.length;
+                    event.target = this;
+
+                    var eventData;
+
+                    for (var i = 0, l = this.lFncLength; i < l; i++) {
+                        eventData = listenerArray[i];
+                        eventData.listener.call(eventData.target, event);
+                    }
+                }
+            };
+
+            /**
+            * get Event Listener Index in array. Returns -1 if no listener is added
+            * @method getEventListenerIndex
+            * @param {String} Name of event to remove a listener for
+            * @param {Function} Callback function
+            * @param {Object} Target object listener is added to
+            */
+            EventDispatcher.prototype.getEventListenerIndex = function (type, listener, target) {
+                if (this.listeners[type] !== undefined) {
+                    var a = this.listeners[type];
+                    var l = a.length;
+                    var d;
+
+                    for (var c = 0; c < l; c++) {
+                        d = a[c];
+
+                        if (target == d.target && listener == d.listener) {
+                            return c;
+                        }
+                    }
+                }
+
+                return -1;
+            };
+
+            /**
+            * check if an object has an event listener assigned to it
+            * @method hasListener
+            * @param {String} Name of event to remove a listener for
+            * @param {Function} Callback function
+            * @param {Object} Target object listener is added to
+            */
+            EventDispatcher.prototype.hasEventListener = function (type, listener, target) {
+                return (this.getEventListenerIndex(type, listener, target) !== -1);
+            };
+            return EventDispatcher;
+        })();
+        events.EventDispatcher = EventDispatcher;
+
+        /**
+        * Event listener data container
+        */
+        var EventData = (function () {
+            function EventData() {
+            }
+            return EventData;
+        })();
+    })(away.events || (away.events = {}));
+    var events = away.events;
+})(away || (away = {}));
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var away;
+(function (away) {
+    ///<reference path="Event.ts" />
+    ///<reference path="../library/assets/IAsset.ts" />
+    (function (events) {
+        //import away3d.library.assets.IAsset;
+        //import flash.events.Event;
+        var AssetEvent = (function (_super) {
+            __extends(AssetEvent, _super);
+            function AssetEvent(type, asset, prevName) {
+                if (typeof asset === "undefined") { asset = null; }
+                if (typeof prevName === "undefined") { prevName = null; }
+                _super.call(this, type);
+
+                this._asset = asset;
+                this._prevName = prevName || (this._asset ? this._asset.name : null);
+            }
+            Object.defineProperty(AssetEvent.prototype, "asset", {
+                get: function () {
+                    return this._asset;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(AssetEvent.prototype, "assetPrevName", {
+                get: function () {
+                    return this._prevName;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            AssetEvent.prototype.clone = function () {
+                return new away.events.AssetEvent(this.type, this.asset, this.assetPrevName);
+            };
+            AssetEvent.ASSET_COMPLETE = "assetComplete";
+            AssetEvent.ENTITY_COMPLETE = "entityComplete";
+            AssetEvent.SKYBOX_COMPLETE = "skyboxComplete";
+            AssetEvent.CAMERA_COMPLETE = "cameraComplete";
+            AssetEvent.MESH_COMPLETE = "meshComplete";
+            AssetEvent.GEOMETRY_COMPLETE = "geometryComplete";
+            AssetEvent.SKELETON_COMPLETE = "skeletonComplete";
+            AssetEvent.SKELETON_POSE_COMPLETE = "skeletonPoseComplete";
+            AssetEvent.CONTAINER_COMPLETE = "containerComplete";
+            AssetEvent.TEXTURE_COMPLETE = "textureComplete";
+            AssetEvent.TEXTURE_PROJECTOR_COMPLETE = "textureProjectorComplete";
+            AssetEvent.MATERIAL_COMPLETE = "materialComplete";
+            AssetEvent.ANIMATOR_COMPLETE = "animatorComplete";
+            AssetEvent.ANIMATION_SET_COMPLETE = "animationSetComplete";
+            AssetEvent.ANIMATION_STATE_COMPLETE = "animationStateComplete";
+            AssetEvent.ANIMATION_NODE_COMPLETE = "animationNodeComplete";
+            AssetEvent.STATE_TRANSITION_COMPLETE = "stateTransitionComplete";
+            AssetEvent.SEGMENT_SET_COMPLETE = "segmentSetComplete";
+            AssetEvent.LIGHT_COMPLETE = "lightComplete";
+            AssetEvent.LIGHTPICKER_COMPLETE = "lightPickerComplete";
+            AssetEvent.EFFECTMETHOD_COMPLETE = "effectMethodComplete";
+            AssetEvent.SHADOWMAPMETHOD_COMPLETE = "shadowMapMethodComplete";
+
+            AssetEvent.ASSET_RENAME = 'assetRename';
+            AssetEvent.ASSET_CONFLICT_RESOLVED = 'assetConflictResolved';
+
+            AssetEvent.TEXTURE_SIZE_ERROR = 'textureSizeError';
+            return AssetEvent;
+        })(away.events.Event);
+        events.AssetEvent = AssetEvent;
+    })(away.events || (away.events = {}));
+    var events = away.events;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../../events/EventDispatcher.ts" />
+    ///<reference path="../../events/AssetEvent.ts" />
+    ///<reference path="../../library/assets/IAsset.ts" />
+    (function (library) {
+        var NamedAssetBase = (function (_super) {
+            __extends(NamedAssetBase, _super);
+            function NamedAssetBase(name) {
+                if (typeof name === "undefined") { name = null; }
+                _super.call(this);
+
+                if (name == null)
+                    name = 'null';
+
+                this._name = name;
+                this._originalName = name;
+
+                this.updateFullPath();
+            }
+            Object.defineProperty(NamedAssetBase.prototype, "originalName", {
+                get: /**
+                * The original name used for this asset in the resource (e.g. file) in which
+                * it was found. This may not be the same as <code>name</code>, which may
+                * have changed due to of a name conflict.
+                */
+                function () {
+                    return this._originalName;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(NamedAssetBase.prototype, "id", {
+                get: function () {
+                    return this._id;
+                },
+                set: function (newID) {
+                    this._id = newID;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(NamedAssetBase.prototype, "assetType", {
+                get: function () {
+                    return this._assetType;
+                },
+                set: function (type) {
+                    this._assetType = type;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(NamedAssetBase.prototype, "name", {
+                get: function () {
+                    return this._name;
+                },
+                set: function (val) {
+                    var prev;
+
+                    prev = this._name;
+                    this._name = val;
+
+                    if (this._name == null) {
+                        this._name = 'null';
+                    }
+
+                    this.updateFullPath();
+
+                    //if (hasEventListener(AssetEvent.ASSET_RENAME))
+                    this.dispatchEvent(new away.events.AssetEvent(away.events.AssetEvent.ASSET_RENAME, this, prev));
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            NamedAssetBase.prototype.dispose = function () {
+            };
+
+            Object.defineProperty(NamedAssetBase.prototype, "assetNamespace", {
+                get: function () {
+                    return this._namespace;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(NamedAssetBase.prototype, "assetFullPath", {
+                get: function () {
+                    return this._full_path;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            NamedAssetBase.prototype.assetPathEquals = function (name, ns) {
+                return (this._name == name && (!ns || this._namespace == ns));
+            };
+
+            NamedAssetBase.prototype.resetAssetPath = function (name, ns, overrideOriginal) {
+                if (typeof ns === "undefined") { ns = null; }
+                if (typeof overrideOriginal === "undefined") { overrideOriginal = true; }
+                this._name = name ? name : 'null';
+                this._namespace = ns ? ns : NamedAssetBase.DEFAULT_NAMESPACE;
+
+                if (overrideOriginal) {
+                    this._originalName = this._name;
+                }
+
+                this.updateFullPath();
+            };
+
+            NamedAssetBase.prototype.updateFullPath = function () {
+                this._full_path = [this._namespace, this._name];
+            };
+            NamedAssetBase.DEFAULT_NAMESPACE = 'default';
+            return NamedAssetBase;
+        })(away.events.EventDispatcher);
+        library.NamedAssetBase = NamedAssetBase;
+    })(away.library || (away.library = {}));
+    var library = away.library;
 })(away || (away = {}));
 var away;
 (function (away) {
@@ -301,12 +658,6 @@ var away;
     })(away.errors || (away.errors = {}));
     var errors = away.errors;
 })(away || (away = {}));
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
 var away;
 (function (away) {
     ///<reference path="Error.ts" />
@@ -919,6 +1270,24 @@ var away;
         geom.Matrix3D = Matrix3D;
     })(away.geom || (away.geom = {}));
     var geom = away.geom;
+})(away || (away = {}));
+var away;
+(function (away) {
+    (function (math) {
+        /**
+        * MathConsts provides some commonly used mathematical constants
+        */
+        var MathConsts = (function () {
+            function MathConsts() {
+            }
+            MathConsts.RADIANS_TO_DEGREES = 180 / Math.PI;
+
+            MathConsts.DEGREES_TO_RADIANS = Math.PI / 180;
+            return MathConsts;
+        })();
+        math.MathConsts = MathConsts;
+    })(away.math || (away.math = {}));
+    var math = away.math;
 })(away || (away = {}));
 var away;
 (function (away) {
@@ -1666,7 +2035,974 @@ var away;
     })(away.math || (away.math = {}));
     var math = away.math;
 })(away || (away = {}));
-//<reference path="../src/away/base/Object3D.ts" />
+var away;
+(function (away) {
+    ///<reference path="../library/assets/NamedAssetBase.ts" />
+    ///<reference path="../geom/Matrix3D.ts" />
+    ///<reference path="../geom/Vector3D.ts" />
+    ///<reference path="../math/MathConsts.ts" />
+    ///<reference path="../math/Matrix3DUtils.ts" />
+    (function (base) {
+        //import away3d.arcane;
+        //import away3d.controllers.*;
+        //import away3d.core.math.*;
+        //import away3d.events.*;
+        //import away3d.library.assets.*;
+        //import flash.geom.Matrix3D;
+        //import flash.geom.Vector3D;
+        //use namespace arcane;
+        /**
+        * Dispatched when the position of the 3d object changes.
+        *
+        * @eventType away3d.events.Object3DEvent
+        */
+        //[Event(name="positionChanged", type="away3d.events.Object3DEvent")]
+        /**
+        * Dispatched when the scale of the 3d object changes.
+        *
+        * @eventType away3d.events.Object3DEvent
+        */
+        //[Event(name="scaleChanged", type="away3d.events.Object3DEvent")]
+        /**
+        * Dispatched when the rotation of the 3d object changes.
+        *
+        * @eventType away3d.events.Object3DEvent
+        */
+        //[Event(name="rotationChanged", type="away3d.events.Object3DEvent")]
+        /**
+        * Object3D provides a base class for any 3D object that has a (local) transformation.<br/><br/>
+        *
+        * Standard Transform:
+        * <ul>
+        *     <li> The standard order for transformation is [parent transform] * (Translate+Pivot) * (Rotate) * (-Pivot) * (Scale) * [child transform] </li>
+        *     <li> This is the order of matrix multiplications, left-to-right. </li>
+        *     <li> The order of transformation is right-to-left, however!
+        *          (Scale) happens before (-Pivot) happens before (Rotate) happens before (Translate+Pivot)
+        *          with no pivot, the above transform works out to [parent transform] * Translate * Rotate * Scale * [child transform]
+        *          (Scale) happens before (Rotate) happens before (Translate) </li>
+        *     <li> This is based on code in updateTransform and ObjectContainer3D.updateSceneTransform(). </li>
+        *     <li> Matrix3D prepend = operator on rhs - e.g. transform' = transform * rhs; </li>
+        *     <li> Matrix3D append =  operator on lhr - e.g. transform' = lhs * transform; </li>
+        * </ul>
+        *
+        * To affect Scale:
+        * <ul>
+        *     <li> set scaleX/Y/Z directly, or call scale(delta) </li>
+        * </ul>
+        *
+        * To affect Pivot:
+        * <ul>
+        *     <li> set pivotPoint directly, or call movePivot() </li>
+        * </ul>
+        *
+        * To affect Rotate:
+        * <ul>
+        *    <li> set rotationX/Y/Z individually (using degrees), set eulers [all 3 angles] (using radians), or call rotateTo()</li>
+        *    <li> call pitch()/yaw()/roll()/rotate() to add an additional rotation *before* the current transform.
+        *         rotationX/Y/Z will be reset based on these operations. </li>
+        * </ul>
+        *
+        * To affect Translate (post-rotate translate):
+        *
+        * <ul>
+        *    <li> set x/y/z/position or call moveTo(). </li>
+        *    <li> call translate(), which modifies x/y/z based on a delta vector. </li>
+        *    <li> call moveForward()/moveBackward()/moveLeft()/moveRight()/moveUp()/moveDown()/translateLocal() to add an
+        *         additional translate *before* the current transform. x/y/z will be reset based on these operations. </li>
+        * </ul>
+        */
+        var Object3D = (function (_super) {
+            __extends(Object3D, _super);
+            /**
+            *
+            */
+            /* TODO: implement
+            public get forwardVector():away.geom.Vector3D
+            {
+            return away3d.math.Matrix3DUtils.getForward(transform);
+            }
+            */
+            /**
+            *
+            */
+            /* TODO: implement
+            public get rightVector():Vector3D
+            {
+            return away3d.math.Matrix3DUtils.getRight(transform);
+            }
+            */
+            /**
+            *
+            */
+            /*
+            public get upVector():away.geom.Vector3D
+            {
+            return away3d.math.Matrix3DUtils.getUp(transform);
+            }
+            */
+            /**
+            *
+            */
+            /* TODO: implement
+            public get backVector():away.geom.Vector3D
+            {
+            var director:Vector3D = away3d.math.Matrix3DUtils.getForward(transform);
+            director.negate();
+            
+            return director;
+            }
+            */
+            /**
+            *
+            */
+            /* TODO: implement
+            public get leftVector():away.geom.Vector3D
+            {
+            var director:Vector3D = away3d.math.Matrix3DUtils.getRight(transform);
+            director.negate();
+            
+            return director;
+            }
+            */
+            /**
+            *
+            */
+            /* TODO: implement
+            public get downVector():away.geom.Vector3D
+            {
+            var director:Vector3D = away3d.math.Matrix3DUtils.getUp(transform);
+            director.negate();
+            
+            return director;
+            }
+            */
+            /**
+            * Creates an Object3D object.
+            */
+            function Object3D() {
+                _super.call(this);
+                /** @private */
+                // TODO: implement
+                //public _iController:ControllerBase; // Arcane
+                this._smallestNumber = 0.0000000000000000000001;
+                this._transformDirty = true;
+                // TODO: not used
+                // private var _positionValuesDirty:boolean;
+                // private var _rotationValuesDirty:boolean;
+                // private var _scaleValuesDirty:boolean;
+                /* TODO: implement
+                private _positionChanged:Object3DEvent;
+                private _rotationChanged:Object3DEvent;
+                private _scaleChanged:Object3DEvent;
+                */
+                this._rotationX = 0;
+                this._rotationY = 0;
+                this._rotationZ = 0;
+                this._eulers = new away.geom.Vector3D();
+                this._flipY = new away.geom.Matrix3D();
+                this._zOffset = 0;
+                /* TODO implement
+                private notifyScaleChanged()
+                {
+                if (!_scaleChanged)
+                _scaleChanged = new Object3DEvent(Object3DEvent.SCALE_CHANGED, this);
+                
+                dispatchEvent(_scaleChanged);
+                }
+                */
+                this._transform = new away.geom.Matrix3D();
+                this._scaleX = 1;
+                this._scaleY = 1;
+                this._scaleZ = 1;
+                this._x = 0;
+                this._y = 0;
+                this._z = 0;
+                this._pivotPoint = new away.geom.Vector3D();
+                this._pivotZero = true;
+                this._pos = new away.geom.Vector3D();
+                this._rot = new away.geom.Vector3D();
+                this._sca = new away.geom.Vector3D();
+
+                // Cached vector of transformation components used when
+                // recomposing the transform matrix in updateTransform()
+                this._transformComponents = new Array(3);
+
+                this._transformComponents[0] = this._pos;
+                this._transformComponents[1] = this._rot;
+                this._transformComponents[2] = this._sca;
+
+                this._transform.identity();
+
+                this._flipY.appendScale(1, -1, 1);
+            }
+            Object3D.prototype.invalidatePivot = function () {
+                this._pivotZero = (this._pivotPoint.x == 0) && (this._pivotPoint.y == 0) && (this._pivotPoint.z == 0);
+
+                this._iInvalidateTransform();
+            };
+
+            Object3D.prototype.invalidatePosition = function () {
+                if (this._positionDirty)
+                    return;
+
+                this._positionDirty = true;
+
+                this._iInvalidateTransform();
+            };
+
+            /* TODO implement
+            private notifyPositionChanged()
+            {
+            if (!this._positionChanged)
+            {
+            
+            
+            _positionChanged = new Object3DEvent(Object3DEvent.POSITION_CHANGED, this);
+            
+            }
+            dispatchEvent(_positionChanged);
+            }
+            */
+            /* TODO implement
+            public addEventListener(type:string, listener, useCapture:boolean = false, priority:number = 0, useWeakReference:boolean = false)
+            {
+            super.addEventListener(type, listener, useCapture, priority, useWeakReference);
+            switch (type) {
+            case Object3DEvent.POSITION_CHANGED:
+            _listenToPositionChanged = true;
+            break;
+            case Object3DEvent.ROTATION_CHANGED:
+            _listenToRotationChanged = true;
+            break;
+            case Object3DEvent.SCALE_CHANGED:
+            _listenToRotationChanged = true;
+            break;
+            }
+            }
+            */
+            /* TODO implement
+            public removeEventListener(type:string, listener, useCapture:boolean = false)
+            {
+            super.removeEventListener(type, listener, useCapture);
+            
+            if (hasEventListener(type))
+            return;
+            
+            switch (type) {
+            case Object3DEvent.POSITION_CHANGED:
+            _listenToPositionChanged = false;
+            break;
+            case Object3DEvent.ROTATION_CHANGED:
+            _listenToRotationChanged = false;
+            break;
+            case Object3DEvent.SCALE_CHANGED:
+            _listenToScaleChanged = false;
+            break;
+            }
+            }
+            */
+            Object3D.prototype.invalidateRotation = function () {
+                if (this._rotationDirty) {
+                    return;
+                }
+
+                this._rotationDirty = true;
+
+                this._iInvalidateTransform();
+            };
+
+            /* TODO implement
+            private notifyRotationChanged()
+            {
+            if (!_rotationChanged)
+            _rotationChanged = new Object3DEvent(Object3DEvent.ROTATION_CHANGED, this);
+            
+            dispatchEvent(_rotationChanged);
+            }
+            */
+            Object3D.prototype.invalidateScale = function () {
+                if (this._scaleDirty) {
+                    return;
+                }
+
+                this._scaleDirty = true;
+
+                this._iInvalidateTransform();
+            };
+
+            Object.defineProperty(Object3D.prototype, "x", {
+                get: /**
+                * Defines the x coordinate of the 3d object relative to the local coordinates of the parent <code>ObjectContainer3D</code>.
+                */
+                function () {
+                    return this._x;
+                },
+                set: function (val) {
+                    if (this._x == val) {
+                        return;
+                    }
+
+                    this._x = val;
+                    this.invalidatePosition();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Object3D.prototype, "y", {
+                get: /**
+                * Defines the y coordinate of the 3d object relative to the local coordinates of the parent <code>ObjectContainer3D</code>.
+                */
+                function () {
+                    return this._y;
+                },
+                set: function (val) {
+                    if (this._y == val) {
+                        return;
+                    }
+
+                    this._y = val;
+                    this.invalidatePosition();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Object3D.prototype, "z", {
+                get: /**
+                * Defines the z coordinate of the 3d object relative to the local coordinates of the parent <code>ObjectContainer3D</code>.
+                */
+                function () {
+                    return this._z;
+                },
+                set: function (val) {
+                    if (this._z == val) {
+                        return;
+                    }
+
+                    this._z = val;
+                    this.invalidatePosition();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Object3D.prototype, "rotationX", {
+                get: /**
+                * Defines the euler angle of rotation of the 3d object around the x-axis, relative to the local coordinates of the parent <code>ObjectContainer3D</code>.
+                */
+                function () {
+                    return this._rotationX * away.math.MathConsts.RADIANS_TO_DEGREES;
+                },
+                set: function (val) {
+                    if (this.rotationX == val) {
+                        return;
+                    }
+
+                    this._rotationX = val * away.math.MathConsts.DEGREES_TO_RADIANS;
+                    this.invalidateRotation();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Object3D.prototype, "rotationY", {
+                get: /**
+                * Defines the euler angle of rotation of the 3d object around the y-axis, relative to the local coordinates of the parent <code>ObjectContainer3D</code>.
+                */
+                function () {
+                    return this._rotationY * away.math.MathConsts.RADIANS_TO_DEGREES;
+                },
+                set: function (val) {
+                    if (this.rotationY == val) {
+                        return;
+                    }
+
+                    this._rotationY = val * away.math.MathConsts.DEGREES_TO_RADIANS;
+
+                    this.invalidateRotation();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Object3D.prototype, "rotationZ", {
+                get: /**
+                * Defines the euler angle of rotation of the 3d object around the z-axis, relative to the local coordinates of the parent <code>ObjectContainer3D</code>.
+                */
+                function () {
+                    return this._rotationZ * away.math.MathConsts.RADIANS_TO_DEGREES;
+                },
+                set: function (val) {
+                    if (this.rotationZ == val) {
+                        return;
+                    }
+
+                    this._rotationZ = val * away.math.MathConsts.DEGREES_TO_RADIANS;
+
+                    this.invalidateRotation();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Object3D.prototype, "scaleX", {
+                get: /**
+                * Defines the scale of the 3d object along the x-axis, relative to local coordinates.
+                */
+                function () {
+                    return this._scaleX;
+                },
+                set: function (val) {
+                    if (this._scaleX == val) {
+                        return;
+                    }
+
+                    this._scaleX = val;
+
+                    this.invalidateScale();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Object3D.prototype, "scaleY", {
+                get: /**
+                * Defines the scale of the 3d object along the y-axis, relative to local coordinates.
+                */
+                function () {
+                    return this._scaleY;
+                },
+                set: function (val) {
+                    if (this._scaleY == val) {
+                        return;
+                    }
+
+                    this._scaleY = val;
+
+                    this.invalidateScale();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Object3D.prototype, "scaleZ", {
+                get: /**
+                * Defines the scale of the 3d object along the z-axis, relative to local coordinates.
+                */
+                function () {
+                    return this._scaleZ;
+                },
+                set: function (val) {
+                    if (this._scaleZ == val) {
+                        return;
+                    }
+
+                    this._scaleZ = val;
+                    this.invalidateScale();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Object3D.prototype, "eulers", {
+                get: /**
+                * Defines the rotation of the 3d object as a <code>Vector3D</code> object containing euler angles for rotation around x, y and z axis.
+                */
+                function () {
+                    this._eulers.x = this._rotationX * away.math.MathConsts.RADIANS_TO_DEGREES;
+                    this._eulers.y = this._rotationY * away.math.MathConsts.RADIANS_TO_DEGREES;
+                    this._eulers.z = this._rotationZ * away.math.MathConsts.RADIANS_TO_DEGREES;
+
+                    return this._eulers;
+                },
+                set: function (value) {
+                    this._rotationX = value.x * away.math.MathConsts.DEGREES_TO_RADIANS;
+                    this._rotationY = value.y * away.math.MathConsts.DEGREES_TO_RADIANS;
+                    this._rotationZ = value.z * away.math.MathConsts.DEGREES_TO_RADIANS;
+
+                    this.invalidateRotation();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Object3D.prototype, "transform", {
+                get: /**
+                * The transformation of the 3d object, relative to the local coordinates of the parent <code>ObjectContainer3D</code>.
+                */
+                function () {
+                    if (this._transformDirty) {
+                        this._pUpdateTransform();
+                    }
+
+                    return this._transform;
+                },
+                set: function (val) {
+                    //ridiculous matrix error
+                    /*
+                    if (!val.rawData[uint(0)]) {
+                    var raw:number[] = Matrix3DUtils.RAW_DATA_CONTAINER;
+                    val.copyRawDataTo(raw);
+                    raw[uint(0)] = _smallestNumber;
+                    val.copyRawDataFrom(raw);
+                    }
+                    */
+                    //ridiculous matrix error
+                    /*
+                    if (!val.rawData[0]) {
+                    var raw:number[] = away.math.Matrix3DUtils.RAW_DATA_CONTAINER;
+                    //val.copyRawDataTo(raw); // TODO: implement
+                    raw[0] = this._smallestNumber;
+                    val.copyRawDataFrom(raw);
+                    }
+                    */
+                    this.elements = val.decompose();;
+                    this.vec;;
+
+                    vec = elements[0];
+
+                    if (this._x != vec.x || this._y != vec.y || this._z != vec.z) {
+                        this._x = vec.x;
+                        this._y = vec.y;
+                        this._z = vec.z;
+
+                        this.invalidatePosition();
+                    }
+
+                    vec = elements[1];
+
+                    if (this._rotationX != vec.x || this._rotationY != vec.y || this._rotationZ != vec.z) {
+                        this._rotationX = vec.x;
+                        this._rotationY = vec.y;
+                        this._rotationZ = vec.z;
+
+                        this.invalidateRotation();
+                    }
+
+                    vec = elements[2];
+
+                    if (this._scaleX != vec.x || this._scaleY != vec.y || this._scaleZ != vec.z) {
+                        this._scaleX = vec.x;
+                        this._scaleY = vec.y;
+                        this._scaleZ = vec.z;
+
+                        this.invalidateScale();
+                    }
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Object3D.prototype, "position", {
+                get: /**
+                * Defines the local point around which the object rotates.
+                */
+                /* TODO: implement
+                public get pivotPoint():away.geom.Vector3D
+                {
+                return this._pivotPoint;
+                }
+                */
+                /* TODO: implement
+                public set pivotPoint(pivot:away.geom.Vector3D)
+                {
+                _pivotPoint = pivot.clone();
+                
+                invalidatePivot();
+                }
+                */
+                /**
+                * Defines the position of the 3d object, relative to the local coordinates of the parent <code>ObjectContainer3D</code>.
+                */
+                function () {
+                    this._transform.copyColumnTo(3, this._pos);
+
+                    return this._pos.clone();
+                },
+                set: function (value) {
+                    this._x = value.x;
+                    this._y = value.y;
+                    this._z = value.z;
+
+                    this.invalidatePosition();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * Appends a uniform scale to the current transformation.
+            * @param value The amount by which to scale.
+            */
+            /* TODO: implement
+            public scale(value:number)
+            {
+            _scaleX *= value;
+            _scaleY *= value;
+            _scaleZ *= value;
+            
+            invalidateScale();
+            }
+            */
+            /**
+            * Moves the 3d object forwards along it's local z axis
+            *
+            * @param    distance    The length of the movement
+            */
+            /* TODO: implement
+            public moveForward(distance:number)
+            {
+            translateLocal(Vector3D.Z_AXIS, distance);
+            }
+            */
+            /**
+            * Moves the 3d object backwards along it's local z axis
+            *
+            * @param    distance    The length of the movement
+            */
+            /* TODO: implement
+            public moveBackward(distance:number)
+            {
+            translateLocal(Vector3D.Z_AXIS, -distance);
+            }
+            */
+            /**
+            * Moves the 3d object backwards along it's local x axis
+            *
+            * @param    distance    The length of the movement
+            */
+            /* TODO: implement
+            public moveLeft(distance:number)
+            {
+            translateLocal(Vector3D.X_AXIS, -distance);
+            }
+            */
+            /**
+            * Moves the 3d object forwards along it's local x axis
+            *
+            * @param    distance    The length of the movement
+            */
+            /* TODO: implement
+            public moveRight(distance:number)
+            {
+            translateLocal(Vector3D.X_AXIS, distance);
+            }
+            */
+            /**
+            * Moves the 3d object forwards along it's local y axis
+            *
+            * @param    distance    The length of the movement
+            */
+            /* TODO: implement
+            public moveUp(distance:number)
+            {
+            translateLocal(Vector3D.Y_AXIS, distance);
+            }
+            */
+            /**
+            * Moves the 3d object backwards along it's local y axis
+            *
+            * @param    distance    The length of the movement
+            */
+            /* TODO: implement
+            public moveDown(distance:number)
+            {
+            translateLocal(Vector3D.Y_AXIS, -distance);
+            }
+            */
+            /**
+            * Moves the 3d object directly to a point in space
+            *
+            * @param    dx        The amount of movement along the local x axis.
+            * @param    dy        The amount of movement along the local y axis.
+            * @param    dz        The amount of movement along the local z axis.
+            */
+            /* TODO: implement
+            public moveTo(dx:number, dy:number, dz:number)
+            {
+            if (_x == dx && _y == dy && _z == dz)
+            return;
+            _x = dx;
+            _y = dy;
+            _z = dz;
+            
+            invalidatePosition();
+            }
+            */
+            /**
+            * Moves the local point around which the object rotates.
+            *
+            * @param    dx        The amount of movement along the local x axis.
+            * @param    dy        The amount of movement along the local y axis.
+            * @param    dz        The amount of movement along the local z axis.
+            */
+            /* TODO: implement
+            public movePivot(dx:number, dy:number, dz:number)
+            {
+            _pivotPoint ||= new Vector3D();
+            _pivotPoint.x += dx;
+            _pivotPoint.y += dy;
+            _pivotPoint.z += dz;
+            
+            invalidatePivot();
+            }
+            */
+            /**
+            * Moves the 3d object along a vector by a defined length
+            *
+            * @param    axis        The vector defining the axis of movement
+            * @param    distance    The length of the movement
+            */
+            /* TODO: implement
+            public translate(axis:Vector3D, distance:number)
+            {
+            var x:number = axis.x, y:number = axis.y, z:number = axis.z;
+            var len:number = distance/Math.sqrt(x*x + y*y + z*z);
+            
+            _x += x*len;
+            _y += y*len;
+            _z += z*len;
+            
+            invalidatePosition();
+            }
+            */
+            /**
+            * Moves the 3d object along a vector by a defined length
+            *
+            * @param    axis        The vector defining the axis of movement
+            * @param    distance    The length of the movement
+            */
+            /* TODO: implement
+            public translateLocal(axis:Vector3D, distance:number)
+            {
+            var x:number = axis.x, y:number = axis.y, z:number = axis.z;
+            var len:number = distance/Math.sqrt(x*x + y*y + z*z);
+            
+            transform.prependTranslation(x*len, y*len, z*len);
+            
+            _transform.copyColumnTo(3, _pos);
+            
+            _x = _pos.x;
+            _y = _pos.y;
+            _z = _pos.z;
+            
+            invalidatePosition();
+            }
+            */
+            /**
+            * Rotates the 3d object around it's local x-axis
+            *
+            * @param    angle        The amount of rotation in degrees
+            */
+            /* TODO: implement
+            public pitch(angle:number)
+            {
+            rotate(Vector3D.X_AXIS, angle);
+            }
+            */
+            /**
+            * Rotates the 3d object around it's local y-axis
+            *
+            * @param    angle        The amount of rotation in degrees
+            */
+            /* TODO: implement
+            public yaw(angle:number)
+            {
+            rotate(Vector3D.Y_AXIS, angle);
+            }
+            */
+            /**
+            * Rotates the 3d object around it's local z-axis
+            *
+            * @param    angle        The amount of rotation in degrees
+            */
+            /* TODO: implement
+            public roll(angle:number)
+            {
+            rotate(Vector3D.Z_AXIS, angle);
+            }
+            */
+            /* TODO: implement
+            public clone():Object3D
+            {
+            var clone:Object3D = new Object3D();
+            clone.pivotPoint = pivotPoint;
+            clone.transform = transform;
+            clone.name = name;
+            // todo: implement for all subtypes
+            return clone;
+            }
+            */
+            /**
+            * Rotates the 3d object directly to a euler angle
+            *
+            * @param    ax        The angle in degrees of the rotation around the x axis.
+            * @param    ay        The angle in degrees of the rotation around the y axis.
+            * @param    az        The angle in degrees of the rotation around the z axis.
+            */
+            /* TODO: implement
+            public rotateTo(ax:number, ay:number, az:number)
+            {
+            _rotationX = ax*MathConsts.DEGREES_TO_RADIANS;
+            _rotationY = ay*MathConsts.DEGREES_TO_RADIANS;
+            _rotationZ = az*MathConsts.DEGREES_TO_RADIANS;
+            
+            invalidateRotation();
+            }
+            */
+            /**
+            * Rotates the 3d object around an axis by a defined angle
+            *
+            * @param    axis        The vector defining the axis of rotation
+            * @param    angle        The amount of rotation in degrees
+            */
+            /* TODO: implement
+            public rotate(axis:Vector3D, angle:number)
+            {
+            transform.prependRotation(angle, axis);
+            
+            transform = transform;
+            }
+            */
+            /**
+            * Rotates the 3d object around to face a point defined relative to the local coordinates of the parent <code>ObjectContainer3D</code>.
+            *
+            * @param    target        The vector defining the point to be looked at
+            * @param    upAxis        An optional vector used to define the desired up orientation of the 3d object after rotation has occurred
+            */
+            /* TODO: implement
+            public lookAt(target:Vector3D, upAxis:Vector3D = null)
+            {
+            var yAxis:Vector3D, zAxis:Vector3D, xAxis:Vector3D;
+            var raw:number[];
+            
+            upAxis ||= Vector3D.Y_AXIS;
+            
+            zAxis = target.subtract(position);
+            zAxis.normalize();
+            
+            xAxis = upAxis.crossProduct(zAxis);
+            xAxis.normalize();
+            
+            if (xAxis.length < .05)
+            xAxis = upAxis.crossProduct(Vector3D.Z_AXIS);
+            
+            yAxis = zAxis.crossProduct(xAxis);
+            
+            raw = away3d.math.Matrix3DUtils.RAW_DATA_CONTAINER;
+            
+            raw[uint(0)] = _scaleX*xAxis.x;
+            raw[uint(1)] = _scaleX*xAxis.y;
+            raw[uint(2)] = _scaleX*xAxis.z;
+            raw[uint(3)] = 0;
+            
+            raw[uint(4)] = _scaleY*yAxis.x;
+            raw[uint(5)] = _scaleY*yAxis.y;
+            raw[uint(6)] = _scaleY*yAxis.z;
+            raw[uint(7)] = 0;
+            
+            raw[uint(8)] = _scaleZ*zAxis.x;
+            raw[uint(9)] = _scaleZ*zAxis.y;
+            raw[uint(10)] = _scaleZ*zAxis.z;
+            raw[uint(11)] = 0;
+            
+            raw[uint(12)] = _x;
+            raw[uint(13)] = _y;
+            raw[uint(14)] = _z;
+            raw[uint(15)] = 1;
+            
+            _transform.copyRawDataFrom(raw);
+            
+            transform = transform;
+            
+            if (zAxis.z < 0) {
+            rotationY = (180 - rotationY);
+            rotationX -= 180;
+            rotationZ -= 180;
+            }
+            }
+            */
+            /**
+            * Cleans up any resources used by the current object.
+            */
+            /* TODO: implement
+            public dispose()
+            {
+            }
+            */
+            /**
+            * @inheritDoc
+            */
+            /* TODO: implement
+            public disposeAsset()
+            {
+            dispose();
+            }
+            */
+            /**
+            * Invalidates the transformation matrix, causing it to be updated upon the next request
+            */
+            Object3D.prototype._iInvalidateTransform = function () {
+                this._transformDirty = true;
+            };
+
+            Object3D.prototype._pUpdateTransform = function () {
+                this._pos.x = this._x;
+                this._pos.y = this._y;
+                this._pos.z = this._z;
+
+                this._rot.x = this._rotationX;
+                this._rot.y = this._rotationY;
+                this._rot.z = this._rotationZ;
+
+                this._sca.x = this._scaleX;
+                this._sca.y = this._scaleY;
+                this._sca.z = this._scaleZ;
+
+                this._transform.recompose(this._transformComponents);
+
+                if (!this._pivotZero) {
+                    this._transform.prependTranslation(-this._pivotPoint.x, -this._pivotPoint.y, -this._pivotPoint.z);
+                    this._transform.appendTranslation(this._pivotPoint.x, this._pivotPoint.y, this._pivotPoint.z);
+                }
+
+                this._transformDirty = false;
+                this._positionDirty = false;
+                this._rotationDirty = false;
+                this._scaleDirty = false;
+            };
+
+            Object.defineProperty(Object3D.prototype, "zOffset", {
+                get: function () {
+                    return this._zOffset;
+                },
+                set: function (value) {
+                    this._zOffset = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            return Object3D;
+        })(away.library.NamedAssetBase);
+        base.Object3D = Object3D;
+    })(away.base || (away.base = {}));
+    var base = away.base;
+})(away || (away = {}));
+///<reference path="../src/away/base/Object3D.ts" />
 ///<reference path="../src/away/math/MathConsts.ts" />
 ///<reference path="../src/away/math/Quaternion.ts" />
 ///<reference path="../src/away/math/Matrix3DUtils.ts" />
@@ -1680,14 +3016,21 @@ var away;
 var Object3DTest = (function () {
     function Object3DTest() {
         var q = new away.math.Quaternion();
-
         var m = new away.geom.Matrix3D();
-        away.math.Matrix3DUtils;
 
-        //console.log( away.math.MathConsts.DEGREES_TO_RADIANS );
-        //console.log( away.math.MathConsts.RADIANS_TO_DEGREES );
-        var rdc = new Array(16);
-        console.log(rdc.length);
+        this.obj = new away.base.Object3D();
+
+        this.obj.x = 100;
+        this.obj.y = 100;
+        this.obj.z = 100;
+
+        this.obj.scaleX = 1;
+        this.obj.scaleY = 2;
+        this.obj.scaleZ = 3;
+
+        console.log(this.obj.transform);
+
+        away.math.Matrix3DUtils;
     }
     return Object3DTest;
 })();

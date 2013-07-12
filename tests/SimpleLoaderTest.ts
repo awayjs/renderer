@@ -1,4 +1,5 @@
 //<reference path="../src/away/events/Event.ts" />
+//<reference path="../src/away/events/EventDispatcher.ts" />
 //<reference path="../src/away/events/IOErrorEvent.ts" />
 //<reference path="../src/away/events/HTTPStatusEvent.ts" />
 //<reference path="../src/away/net/URLLoader.ts" />
@@ -7,6 +8,7 @@
 //<reference path="../src/away/net/URLRequestMethod.ts" />
 ///<reference path="../src/away/library/assets/IAsset.ts"/>
 ///<reference path="../src/away/loaders/misc/SingleFileLoader.ts"/>
+///<reference path="../src/away/loaders/misc/AssetLoaderContext.ts"/>
 ///<reference path="../src/away/loaders/parsers/ParserBase.ts"/>
 ///<reference path="../src/away/loaders/parsers/ParserDataFormat.ts"/>
 ///<reference path="../src/away/loaders/misc/SingleFileImageLoader.ts"/>
@@ -27,6 +29,7 @@ module tests {
     export class SimpleLoaderTest //extends away.events.EventDispatcher
     {
 
+        private assetLoaderContext      : away.loaders.AssetLoaderContext = new away.loaders.AssetLoaderContext();
         private iAssetTest              : tests.IAssetTest = new tests.IAssetTest(); // TEST for interface;
 
         private parserBase              : away.loaders.ParserBase;              // Test ( for import only );
@@ -45,7 +48,7 @@ module tests {
 
             this.canvas                         = document.createElement( 'canvas');
             this.stage3D                        = new away.display.Stage3D( this.canvas );
-            this.stage3D.addEventListener( away.events.AwayEvent.CONTEXT3D_CREATE, this.onContext3DCreateHandler, this );
+            this.stage3D.addEventListener( away.events.Event.CONTEXT3D_CREATE, this.onContext3DCreateHandler, this );
             this.stage3D.requestContext();
 
             //------------------------------------------------------------------------------------------
@@ -132,7 +135,7 @@ module tests {
 
     //*
     // Test implmentatoin for IAsset
-    export class IAssetTest implements away.library.IAsset{
+    export class IAssetTest extends away.events.EventDispatcher implements away.library.IAsset{
 
         private _name           : string;
         private _id             : string;
@@ -152,7 +155,6 @@ module tests {
         public dispose() : void{}
 
     }
-
 
 }
 

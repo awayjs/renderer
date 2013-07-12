@@ -230,7 +230,12 @@ module away.loaders
             }
 
 			if (parser)
-				this._parser = parser;
+            {
+
+                this._parser = parser;
+
+            }
+
 			
 			this._req = req;
 			
@@ -312,7 +317,8 @@ module away.loaders
 			var len : number = SingleFileLoader._parsers.length;
 
 			// go in reverse order to allow application override of default parser added in Away3D proper
-			for (var i : number = len-1; i >= 0; i--){
+			for (var i : number = len-1; i >= 0; i--)
+            {
 
                 var currentParser : away.loaders.ParserBase = SingleFileLoader._parsers[i];
                 var supportstype : boolean                  = SingleFileLoader._parsers[i].supportsType(this._fileExtension);
@@ -383,7 +389,7 @@ module away.loaders
 			
 			this._data = urlLoader.data;
 
-            console.log( 'SingleFileURLLoader.handleUrlLoaderComplete' , this._data.length );
+            console.log( 'SingleFileURLLoader.handleUrlLoaderComplete url: ', this.url, '   LoadedDataType: ' , typeof this._data );
 			
 			if (this._loadAsRawData)
             {
@@ -407,7 +413,7 @@ module away.loaders
 		private parse(data : any) : void
 		{
 
-            console.log( 'SingleFileURLLoader.parse' , data );
+            //console.log( 'SingleFileURLLoader.parse' , data );
 
 			// If no parser has been defined, try to find one by letting
 			// all plugged in parsers inspect the actual data.

@@ -1,4 +1,4 @@
-//<reference path="../src/away/base/Object3D.ts" />
+///<reference path="../src/away/base/Object3D.ts" />
 ///<reference path="../src/away/math/MathConsts.ts" />
 ///<reference path="../src/away/math/Quaternion.ts" />
 ///<reference path="../src/away/math/Matrix3DUtils.ts" />
@@ -14,21 +14,28 @@
 class Object3DTest
 {
 
+    private obj : away.base.Object3D;
 
     constructor()
     {
 
         var q : away.math.Quaternion = new away.math.Quaternion();
-
         var m : away.geom.Matrix3D = new away.geom.Matrix3D();
+
+        this.obj = new away.base.Object3D();
+
+        this.obj.x = 100;
+        this.obj.y = 100;
+        this.obj.z = 100;
+
+        this.obj.scaleX = 1;
+        this.obj.scaleY = 2;
+        this.obj.scaleZ = 3;
+
+        console.log( this.obj.transform )
+
+
         away.math.Matrix3DUtils;
-
-
-        //console.log( away.math.MathConsts.DEGREES_TO_RADIANS );
-        //console.log( away.math.MathConsts.RADIANS_TO_DEGREES );
-
-        var rdc:number[] = new Array<number>(16);
-        console.log(rdc.length);
 
     }
 

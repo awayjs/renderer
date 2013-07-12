@@ -357,7 +357,9 @@ module away.loaders {
                     throw new away.errors.Error('Unhandled asset type '+asset.assetType+'. Report as bug!');
 					break;
 			};
-				
+
+            console.log( 'ParserBase' , '_pFinalizeAsset.type_event: ' ,  type_event );
+
 			// If the asset has no name, give it
 			// a per-type default name.
 			if (!asset.name)
