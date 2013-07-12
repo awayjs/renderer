@@ -6,6 +6,7 @@
 ///<reference path="../base/Object3D.ts" />
 ///<reference path="../geom/Matrix3D.ts" />
 ///<reference path="../library/assets/AssetType.ts" />
+///<reference path="../events/Object3DEvent.ts" />
 
 module away.containers
 {
@@ -23,8 +24,8 @@ module away.containers
 		//TODO public _pImplicitPartition:away.partitions.Partition3D;
 		public _pMouseEnabled:boolean;
 		
-		//TODO private _sceneTransformChanged:away.events.Object3DEvent;
-		//TODO private _scenechanged:away.events.Object3DEvent;
+		private _sceneTransformChanged:away.events.Object3DEvent;
+		private _scenechanged:away.events.Object3DEvent;
 		private _children:away.containers.ObjectContainer3D[] = [];
 		private _mouseChildren:boolean = true;
 		private _oldScene:away.containers.Scene3D;
@@ -62,12 +63,12 @@ module away.containers
 			}
 		}
 		/*
-		public get _iImplicitPartition():away.partitions.Partition3D
+		public get iImplicitPartition():away.partitions.Partition3D
 		{
 			return this._iImplicitPartition;
 		}
 		
-		public set _iImplicitPartition( value:away.partitions.Partition3D )
+		public set iImplicitPartition( value:away.partitions.Partition3D )
 		{
 			if (value == _iImplicitPartition)
 			{
@@ -98,12 +99,11 @@ module away.containers
 			return this._implicitVisibility && this._explicitVisibility;
 		}
 		
-		/*
-		public _iSetParent( value:away.containers.ObjectContainer3D )
+		public iSetParent( value:away.containers.ObjectContainer3D )
 		{
 			this._pParent = value;
 			
-			this._pUpdateMouseChildren();
+			//this.pUpdateMouseChildren();
 			
 			if( value == null ) {
 				this.scene = null;
@@ -113,9 +113,7 @@ module away.containers
 			this.notifySceneTransformChange();
 			this.notifySceneChange();
 		}
-		*/
 		
-		/*
 		private notifySceneTransformChange()
 		{
 			if ( this._pSceneTransformDirty || this._pIgnoreTransform )
@@ -123,7 +121,7 @@ module away.containers
 				return;
 			}
 			
-			this._pInvalidateSceneTransform();
+			this.pInvalidateSceneTransform();
 			
 			var i:number;
 			var len:number = this._children.length;
@@ -141,35 +139,34 @@ module away.containers
 				{
 					this._sceneTransformChanged = new away.events.Object3DEvent( away.events.Object3DEvent.SCENETRANSFORM_CHANGED, this );
 				}
-				this.dispatchEvent(_sceneTransformChanged);
+				this.dispatchEvent( this._sceneTransformChanged );
 			}
 		}
-		*/
 		
-		/*
 		private notifySceneChange()
 		{
 			this.notifySceneTransformChange();
 			
 			var i:number;
-			var len:number = _children.length;
+			var len:number = this._children.length;
 			
 			while(i < len)
 			{
 				this._children[i++].notifySceneChange();
 			}
 			
-			if( this._listenToSceneChanged ) {
+			if( this._listenToSceneChanged )
+			{
 				if( !this._scenechanged )
-					this._scenechanged = new Object3DEvent( away.events.Object3DEvent.SCENE_CHANGED, this );
-				
+				{
+					this._scenechanged = new away.events.Object3DEvent( away.events.Object3DEvent.SCENE_CHANGED, this );
+				}
 				this.dispatchEvent( this._scenechanged );
 			}
 		}
-		*/
 		
 		/*
-		public _pUpdateMouseChildren():void
+		public pUpdateMouseChildren():void
 		{
 			if( this._pParent && !this._pParent._iIsRoot ) {
 				// Set implicit mouse enabled if parent its children to be so.
@@ -204,14 +201,14 @@ module away.containers
 		
 		// TODO override arcane function invalidateTransform():void
 		
-		public _pInvalidateSceneTransform()
+		public pInvalidateSceneTransform()
 		{
 			this._pSceneTransformDirty = !this._pIgnoreTransform;
 			this._inverseSceneTransformDirty = !this._pIgnoreTransform;
 			this._scenePositionDirty = !this._pIgnoreTransform;
 		}
 		
-		public _pUpdateSceneTransform()
+		public pUpdateSceneTransform()
 		{
 			if ( this._pParent && !this._pParent._iIsRoot )
 			{
@@ -398,7 +395,7 @@ module away.containers
 		{
 			if( this._pSceneTransformDirty )
 			{
-				this._pUpdateSceneTransform();
+				this.pUpdateSceneTransform();
 			}
 			return this._pSceneTransform;
 		}
@@ -431,8 +428,7 @@ module away.containers
 			return this._children.indexOf( child ) >= 0;
 		}
 		
-		/*
-		public addChild( child:away.containers.ObjectContainer3D):away.containers.ObjectContainer3D
+		public addChild( child:away.containers.ObjectContainer3D ):away.containers.ObjectContainer3D
 		{
 			if (child == null)
 			{
@@ -443,23 +439,22 @@ module away.containers
 			{
 				child._pParent.removeChild(child);
 			}
-			
+			/*
 			if (!child._pExplicitPartition)
 			{
 				child.implicitPartition = _implicitPartition;
 			}
-			
-			child.setParent( this );
-			child.scene = this._scene;
+			*/
+			child.iSetParent( this );
+			child.scene = this._pScene;
 			child.notifySceneTransformChange();
-			child.updateMouseChildren();
+			//child.updateMouseChildren();
 			child.updateImplicitVisibility();
 			
 			this._children.push(child);
 			
 			return child;
 		}
-		*/
 		
 		/*
 		public addChildren( childarray:away.containers.ObjectContainer3D )
@@ -472,7 +467,6 @@ module away.containers
 		
 		*/
 		
-		/*
 		public removeChild( child:away.containers.ObjectContainer3D )
 		{
 			if ( child == null )
@@ -480,7 +474,7 @@ module away.containers
 				throw new away.errors.Error("Parameter child cannot be null");
 			}
 			
-			var childIndex:number = _children.indexOf(child);
+			var childIndex:number = this._children.indexOf(child);
 			
 			if ( childIndex == -1 )
 			{
@@ -489,24 +483,22 @@ module away.containers
 			
 			this.removeChildInternal( childIndex, child );
 		}
-		*/
 		
-		/*
 		public removeChildAt( index:number )
 		{
-			var child:ObjectContainer3D = _children[index];
+			var child:ObjectContainer3D = this._children[index];
 			this.removeChildInternal( index, child );
 		}
 		
 		private removeChildInternal( childIndex:number, child:away.containers.ObjectContainer3D )
 		{
 			this._children.splice( childIndex, 1 );
-			child.setParent( null );
-			
+			child.iSetParent( null );
+			/*
 			if ( !child._explicitPartition )
 			{
 				child.implicitPartition = null;
-			}
+			}*/
 		}
 		
 		public getChildAt( index:number ):away.containers.ObjectContainer3D
@@ -518,7 +510,7 @@ module away.containers
 		{
 			return this._children.length;
 		}
-		*/
+		
 		//TODO override public function lookAt(target:Vector3D, upAxis:Vector3D = null):void
 		//TODO override public function translateLocal(axis:Vector3D, distance:Number):void
 		

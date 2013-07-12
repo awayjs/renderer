@@ -525,6 +525,19 @@ module away.geom
 			return true;
 		}
 		
+		public transformVector( v:away.geom.Vector3D ):away.geom.Vector3D
+		{
+			var x:number = v.x;
+			var y:number = v.y;
+			var z:number = v.z;
+			return new away.geom.Vector3D(
+				(x * this.rawData[0] + y * this.rawData[4] + z * this.rawData[8] + this.rawData[12]),
+				(x * this.rawData[1] + y * this.rawData[5] + z * this.rawData[9] + this.rawData[13]),
+				(x * this.rawData[2] + y * this.rawData[6] + z * this.rawData[10] + this.rawData[14]),
+			1);
+			
+		}
+		
 		/**
 		 * Uses the transformation matrix to transform a Vector of Numbers from one coordinate space to another.
 		 */
