@@ -688,7 +688,9 @@ module away.loaders
 				event.asset.resetAssetPath(event.asset.name, this._namespace);
 
 			}
-			
+
+            console.log( 'AssetLoader.onAssetComplete suppresAssetEvents:' , this._loadingDependency.suppresAssetEvents , event );
+
 			if (!this._loadingDependency.suppresAssetEvents)
             {
 

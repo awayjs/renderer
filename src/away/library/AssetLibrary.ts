@@ -1,18 +1,15 @@
-module away3d.library
+///<reference path="AssetLibraryBundle.ts"/>
+///<reference path="../loaders/misc/SingleFileLoader.ts"/>
+///<reference path="../loaders/misc/AssetLoaderContext.ts"/>
+///<reference path="../loaders/misc/AssetLoaderToken.ts"/>
+///<reference path="../loaders/parsers/ParserBase.ts"/>
+///<reference path="naming/ConflictStrategyBase.ts"/>
+///<reference path="utils/AssetLibraryIterator.ts"/>
+///<reference path="assets/IAsset.ts"/>
+
+module away.library
 {
-	//import away3d.arcane;
-	//import away3d.library.assets.IAsset;
-	//import away3d.library.naming.ConflictStrategyBase;
-	//import away3d.library.utils.AssetLibraryIterator;
-	//import away3d.loaders.misc.AssetLoaderContext;
-	//import away3d.loaders.misc.AssetLoaderToken;
-	//import away3d.loaders.misc.SingleFileLoader;
-	//import away3d.loaders.parsers.ParserBase;
-	
-	//import flash.net.URLRequest;
-	
-	//use namespace arcane;
-	
+
 	/**
 	 * AssetLibrary enforces a singleton pattern and is not intended to be instanced.
 	 * It's purpose is to allow access to the default library bundle through a set of static shortcut methods.
@@ -20,18 +17,19 @@ module away3d.library
 	 */
 	export class AssetLibrary
 	{
-		public static var _iInstances:Object = {};
+		public static _iInstances:Object = {};
 		
 		/**
 		 * Creates a new <code>AssetLibrary</code> object.
 		 *
 		 * @param se A singleton enforcer for the AssetLibrary ensuring it cannnot be instanced.
 		 */
+        //*
 		constructor(se:AssetLibrarySingletonEnforcer)
 		{
 			se = se;
 		}
-		
+		//*/
 		/**
 		 * Returns an AssetLibrary bundle instance. If no key is given, returns the default bundle (which is
 		 * similar to using the AssetLibraryBundle as a singleton). To keep several separated library bundles,
@@ -41,9 +39,9 @@ module away3d.library
 		 * @param key Defines which multiton instance should be returned.
 		 * @return An instance of the asset library
 		 */
-		public static getBundle(key:string = 'default'):AssetLibraryBundle
+		public static getBundle(key:string = 'default'):away.library.AssetLibraryBundle
 		{
-			return AssetLibraryBundle.getInstance(key);
+			return away.library.AssetLibraryBundle.getInstance(key);
 		}
 		
 		/**
@@ -51,15 +49,15 @@ module away3d.library
 		 */
 		public static enableParser(parserClass)
 		{
-			SingleFileLoader.enableParser(parserClass);
+			away.loaders.SingleFileLoader.enableParser(parserClass);
 		}
 		
 		/**
 		 *
 		 */
-		public static enableParsers(parserClasses:Vector.<Class>)
+		public static enableParsers( parserClasses: Object[] )
 		{
-			SingleFileLoader.enableParsers(parserClasses);
+            away.loaders.SingleFileLoader.enableParsers(parserClasses);
 		}
 		
 		/**
@@ -67,14 +65,14 @@ module away3d.library
 		 *
 		 * @see away3d.library.AssetLibraryBundle.conflictStrategy
 		 */
-		public static get conflictStrategy():ConflictStrategyBase
+		public static get conflictStrategy():away.library.ConflictStrategyBase
 		{
-			return getBundle().conflictStrategy;
+			return away.library.AssetLibrary.getBundle().conflictStrategy;
 		}
 		
-		public static set conflictStrategy(val:ConflictStrategyBase)
+		public static set conflictStrategy(val:away.library.ConflictStrategyBase)
 		{
-			getBundle().conflictStrategy = val;
+            away.library.AssetLibrary.getBundle().conflictStrategy = val;
 		}
 		
 		/**
@@ -84,12 +82,12 @@ module away3d.library
 		 */
 		public static get conflictPrecedence():string
 		{
-			return getBundle().conflictPrecedence;
+			return away.library.AssetLibrary.getBundle().conflictPrecedence;
 		}
 		
 		public static set conflictPrecedence(val:string)
 		{
-			getBundle().conflictPrecedence = val;
+            away.library.AssetLibrary.getBundle().conflictPrecedence = val;
 		}
 		
 		/**
@@ -97,9 +95,9 @@ module away3d.library
 		 *
 		 * @see away3d.library.AssetLibraryBundle.createIterator()
 		 */
-		public static createIterator(assetTypeFilter:string = null, namespaceFilter:string = null, filterFunc = null):AssetLibraryIterator
+		public static createIterator(assetTypeFilter:string = null, namespaceFilter:string = null, filterFunc = null):away.library.AssetLibraryIterator
 		{
-			return getBundle().createIterator(assetTypeFilter, namespaceFilter, filterFunc);
+			return away.library.AssetLibrary.getBundle().createIterator(assetTypeFilter, namespaceFilter, filterFunc);
 		}
 		
 		/**
@@ -107,9 +105,9 @@ module away3d.library
 		 *
 		 * @see away3d.library.AssetLibraryBundle.load()
 		 */
-		public static load(req:URLRequest, context:AssetLoaderContext = null, ns:string = null, parser:ParserBase = null):AssetLoaderToken
+		public static load(req:away.net.URLRequest, context:away.loaders.AssetLoaderContext = null, ns:string = null, parser:away.loaders.ParserBase = null):away.loaders.AssetLoaderToken
 		{
-			return getBundle().load(req, context, ns, parser);
+			return away.library.AssetLibrary.getBundle().load(req, context, ns, parser);
 		}
 		
 		/**
@@ -117,14 +115,14 @@ module away3d.library
 		 *
 		 * @see away3d.library.AssetLibraryBundle.loadData()
 		 */
-		public static loadData(data:*, context:AssetLoaderContext = null, ns:string = null, parser:ParserBase = null):AssetLoaderToken
+		public static loadData(data: any , context:away.loaders.AssetLoaderContext = null, ns:string = null, parser:away.loaders.ParserBase = null):away.loaders.AssetLoaderToken
 		{
-			return getBundle().loadData(data, context, ns, parser);
+			return away.library.AssetLibrary.getBundle().loadData(data, context, ns, parser);
 		}
 		
 		public static stopLoad()
 		{
-			getBundle().stopAllLoadingSessions();
+            away.library.AssetLibrary.getBundle().stopAllLoadingSessions();
 		}
 		
 		/**
@@ -132,40 +130,41 @@ module away3d.library
 		 *
 		 * @see away3d.library.AssetLibraryBundle.getAsset()
 		 */
-		public static getAsset(name:string, ns:string = null):IAsset
+		public static getAsset(name:string, ns:string = null):away.library.IAsset
 		{
-			return getBundle().getAsset(name, ns);
+			return away.library.AssetLibrary.getBundle().getAsset(name, ns);
 		}
 		
 		/**
 		 * Short-hand for addEventListener() method on default asset library bundle.
 		 */
-		public static addEventListener(type:string, listener, useCapture:boolean = false, priority:number = 0, useWeakReference:boolean = false)
+		public static addEventListener( type : string , listener : Function , target : Object  )
 		{
-			getBundle().addEventListener(type, listener, useCapture, priority, useWeakReference);
+            away.library.AssetLibrary.getBundle().addEventListener(type, listener, target );
 		}
 		
 		/**
 		 * Short-hand for removeEventListener() method on default asset library bundle.
 		 */
-		public static removeEventListener(type:string, listener, useCapture:boolean = false)
+		public static removeEventListener(type : string , listener : Function , target : Object  )
 		{
-			getBundle().removeEventListener(type, listener, useCapture);
+            away.library.AssetLibrary.getBundle().removeEventListener(type , listener , target );
 		}
 		
 		/**
 		 * Short-hand for hasEventListener() method on default asset library bundle.
-		 */
+
 		public static hasEventListener(type:string):boolean
 		{
-			return getBundle().hasEventListener(type);
+			return away.library.AssetLibrary.getBundle().hasEventListener(type);
 		}
-		
+
 		public static willTrigger(type:string):boolean
 		{
 			return getBundle().willTrigger(type);
 		}
-		
+        */
+
 		/**
 		 * Short-hand for addAsset() method on default asset library bundle.
 		 *
@@ -173,7 +172,7 @@ module away3d.library
 		 */
 		public static addAsset(asset:IAsset)
 		{
-			getBundle().addAsset(asset);
+			away.library.AssetLibrary.getBundle().addAsset(asset);
 		}
 		
 		/**
@@ -186,7 +185,7 @@ module away3d.library
 		 */
 		public static removeAsset(asset:IAsset, dispose:boolean = true)
 		{
-			getBundle().removeAsset(asset, dispose);
+            away.library.AssetLibrary.getBundle().removeAsset(asset, dispose);
 		}
 		
 		/**
@@ -200,7 +199,7 @@ module away3d.library
 		 */
 		public static removeAssetByName(name:string, ns:string = null, dispose:boolean = true):IAsset
 		{
-			return getBundle().removeAssetByName(name, ns, dispose);
+			return away.library.AssetLibrary.getBundle().removeAssetByName(name, ns, dispose);
 		}
 		
 		/**
@@ -212,7 +211,7 @@ module away3d.library
 		 */
 		public static removeAllAssets(dispose:boolean = true)
 		{
-			getBundle().removeAllAssets(dispose);
+            away.library.AssetLibrary.getBundle().removeAllAssets(dispose);
 		}
 		
 		/**
@@ -222,7 +221,7 @@ module away3d.library
 		 */
 		public static removeNamespaceAssets(ns:string = null, dispose:boolean = true)
 		{
-			getBundle().removeNamespaceAssets(ns, dispose);
+            away.library.AssetLibrary.getBundle().removeNamespaceAssets(ns, dispose);
 		}
 	}
 }

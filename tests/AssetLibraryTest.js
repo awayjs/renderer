@@ -6757,262 +6757,1287 @@ var away;
     })(away.loaders || (away.loaders = {}));
     var loaders = away.loaders;
 })(away || (away = {}));
-///<reference path="../../src/away/loaders/parsers/ParserBase.ts" />
-///<reference path="../../src/away/loaders/parsers/ParserDataFormat.ts" />
-///<reference path="../../src/away/loaders/parsers/ParserLoaderType.ts" />
-///<reference path="../../src/away/loaders/misc/ResourceDependency.ts" />
-///<reference path="../../src/away/net/IMGLoader.ts" />
-///<reference path="../../src/away/textures/HTMLImageElementTexture.ts" />
-///<reference path="../../src/away/textures/Texture2DBase.ts" />
-///<reference path="../../src/away/utils/TextureUtils.ts" />
-var loaders;
-(function (loaders) {
-    /**
-    * ImageParser provides a "parser" for natively supported image types (jpg, png). While it simply loads bytes into
-    * a loader object, it wraps it in a BitmapDataResource so resource management can happen consistently without
-    * exception cases.
-    */
-    var JSONTextureParser = (function (_super) {
-        __extends(JSONTextureParser, _super);
-        //private var _loader           : Loader;
+var away;
+(function (away) {
+    (function (library) {
         /**
-        * Creates a new ImageParser object.
-        * @param uri The url or id of the data or file to be parsed.
-        * @param extra The holder for extra contextual data that the parser might need.
+        * Enumaration class for precedence when resolving naming conflicts in the library.
+        *
+        * @see away3d.library.AssetLibrary.conflictPrecedence
+        * @see away3d.library.AssetLibrary.conflictStrategy
+        * @see away3d.library.naming.ConflictStrategy
         */
-        function JSONTextureParser() {
-            _super.call(this, away.loaders.ParserDataFormat.PLAIN_TEXT, away.loaders.ParserLoaderType.URL_LOADER);
-            //private var _byteData         : ByteArray;
-            this.STATE_PARSE_DATA = 0;
-            this.STATE_LOAD_IMAGES = 1;
-            this.STATE_COMPLETE = 2;
-            this._state = -1;
-            this._dependencyCount = 0;
+        var ConflictPrecedence = (function () {
+            function ConflictPrecedence() {
+            }
+            ConflictPrecedence.FAVOR_OLD = 'favorOld';
 
-            this._loadedTextures = new Array();
-            this._state = this.STATE_PARSE_DATA;
-        }
-        JSONTextureParser.supportsType = /**
-        * Indicates whether or not a given file extension is supported by the parser.
-        * @param extension The file extension of a potential file to be parsed.
-        * @return Whether or not the given file type is supported.
+            ConflictPrecedence.FAVOR_NEW = 'favorNew';
+            return ConflictPrecedence;
+        })();
+        library.ConflictPrecedence = ConflictPrecedence;
+    })(away.library || (away.library = {}));
+    var library = away.library;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../assets/IAsset.ts" />
+    ///<reference path="../../events/AssetEvent.ts" />
+    ///<reference path="../../errors/AbstractMethodError.ts" />
+    ///<reference path="../../events/AssetEvent.ts" />
+    ///<reference path="ConflictPrecedence.ts" />
+    (function (library) {
+        /**
+        * Abstract base class for naming conflict resolution classes. Extend this to create a
+        * strategy class which the asset library can use to resolve asset naming conflicts, or
+        * use one of the bundled concrete strategy classes:
+        *
+        * <ul>
+        *   <li>IgnoreConflictStrategy (ConflictStrategy.IGNORE)</li>
+        *   <li>ErrorConflictStrategy (ConflictStrategy.THROW_ERROR)</li>
+        *   <li>NumSuffixConflictStrategy (ConflictStrategy.APPEND_NUM_SUFFIX)</li>
+        * </ul>
+        *
+        * @see away3d.library.AssetLibrary.conflictStrategy
+        * @see away3d.library.naming.ConflictStrategy
+        * @see away3d.library.naming.IgnoreConflictStrategy
+        * @see away3d.library.naming.ErrorConflictStrategy
+        * @see away3d.library.naming.NumSuffixConflictStrategy
         */
-        function (extension) {
-            extension = extension.toLowerCase();
-            return extension == "json";
-        };
+        var ConflictStrategyBase = (function () {
+            function ConflictStrategyBase() {
+            }
+            /**
+            * Resolve a naming conflict between two assets. Must be implemented by concrete strategy
+            * classes.
+            */
+            ConflictStrategyBase.prototype.resolveConflict = function (changedAsset, oldAsset, assetsDictionary, precedence) {
+                throw new away.errors.AbstractMethodError();
+            };
 
-        JSONTextureParser.supportsData = /**
-        * Tests whether a data block can be parsed by the parser.
-        * @param data The data block to potentially be parsed.
-        * @return Whether or not the given data is supported.
-        */
-        function (data) {
-            try  {
-                var obj = JSON.parse(data);
+            /**
+            * Create instance of this conflict strategy. Used internally by the AssetLibrary to
+            * make sure the same strategy instance is not used in all AssetLibrary instances, which
+            * would break any state caching that happens inside the strategy class.
+            */
+            ConflictStrategyBase.prototype.create = function () {
+                throw new away.errors.AbstractMethodError();
+            };
 
-                if (obj) {
-                    return true;
+            /**
+            * Provided as a convenience method for all conflict strategy classes, as a way to finalize
+            * the conflict resolution by applying the new names and dispatching the correct events.
+            */
+            ConflictStrategyBase.prototype._pUpdateNames = function (ns, nonConflictingName, oldAsset, newAsset, assetsDictionary, precedence) {
+                var loser_prev_name;
+                var winner;
+                var loser;
+
+                winner = (precedence === away.library.ConflictPrecedence.FAVOR_NEW) ? newAsset : oldAsset;
+                loser = (precedence === away.library.ConflictPrecedence.FAVOR_NEW) ? oldAsset : newAsset;
+
+                loser_prev_name = loser.name;
+
+                assetsDictionary[winner.name] = winner;
+                assetsDictionary[nonConflictingName] = loser;
+                loser.resetAssetPath(nonConflictingName, ns, false);
+
+                loser.dispatchEvent(new away.events.AssetEvent(away.events.AssetEvent.ASSET_CONFLICT_RESOLVED, loser, loser_prev_name));
+            };
+            return ConflictStrategyBase;
+        })();
+        library.ConflictStrategyBase = ConflictStrategyBase;
+    })(away.library || (away.library = {}));
+    var library = away.library;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../assets/IAsset.ts" />
+    ///<reference path="ConflictStrategyBase.ts" />
+    //<reference path="../../events/AssetEvent.ts" />
+    //<reference path="../../errors/AbstractMethodError.ts" />
+    //<reference path="../../events/AssetEvent.ts" />
+    //<reference path="ConflictPrecedence.ts" />
+    (function (library) {
+        var NumSuffixConflictStrategy = (function (_super) {
+            __extends(NumSuffixConflictStrategy, _super);
+            function NumSuffixConflictStrategy(separator) {
+                if (typeof separator === "undefined") { separator = '.'; }
+                _super.call(this);
+
+                this._separator = separator;
+                this._next_suffix = {};
+            }
+            NumSuffixConflictStrategy.prototype.resolveConflict = function (changedAsset, oldAsset, assetsDictionary, precedence) {
+                var orig;
+                var new_name;
+                var base;
+                var suffix;
+
+                orig = changedAsset.name;
+
+                if (orig.indexOf(this._separator) >= 0) {
+                    // Name has an ocurrence of the separator, so get base name and suffix,
+                    // unless suffix is non-numerical, in which case revert to zero and
+                    // use entire name as base
+                    base = orig.substring(0, orig.lastIndexOf(this._separator));
+                    suffix = parseInt(orig.substring(base.length - 1));
+
+                    if (isNaN(suffix)) {
+                        base = orig;
+                        suffix = 0;
+                    }
+                } else {
+                    base = orig;
+                    suffix = 0;
                 }
 
-                return false;
-            } catch (e) {
-                return false;
+                if (suffix == 0 && this._next_suffix.hasOwnProperty(base)) {
+                    suffix = this._next_suffix[base];
+                }
+
+                do {
+                    suffix++;
+
+                    new_name = base.concat(this._separator, suffix.toString());
+                } while(assetsDictionary.hasOwnProperty(new_name));
+
+                this._next_suffix[base] = suffix;
+                this._pUpdateNames(oldAsset.assetNamespace, new_name, oldAsset, changedAsset, assetsDictionary, precedence);
+            };
+
+            NumSuffixConflictStrategy.prototype.create = function () {
+                return new away.library.NumSuffixConflictStrategy(this._separator);
+            };
+            return NumSuffixConflictStrategy;
+        })(away.library.ConflictStrategyBase);
+        library.NumSuffixConflictStrategy = NumSuffixConflictStrategy;
+    })(away.library || (away.library = {}));
+    var library = away.library;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../assets/IAsset.ts" />
+    ///<reference path="ConflictStrategyBase.ts" />
+    (function (library) {
+        //import away3d.library.assets.IAsset;
+        var IgnoreConflictStrategy = (function (_super) {
+            __extends(IgnoreConflictStrategy, _super);
+            function IgnoreConflictStrategy() {
+                _super.call(this);
             }
+            IgnoreConflictStrategy.prototype.resolveConflict = function (changedAsset, oldAsset, assetsDictionary, precedence) {
+                // Do nothing, ignore the fact that there is a conflict.
+                return;
+            };
 
-            return false;
-        };
+            IgnoreConflictStrategy.prototype.create = function () {
+                return new away.library.IgnoreConflictStrategy();
+            };
+            return IgnoreConflictStrategy;
+        })(away.library.ConflictStrategyBase);
+        library.IgnoreConflictStrategy = IgnoreConflictStrategy;
+    })(away.library || (away.library = {}));
+    var library = away.library;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../../errors/Error.ts" />
+    ///<reference path="ConflictStrategyBase.ts" />
+    ///<reference path="../assets/IAsset.ts" />
+    (function (library) {
+        //import away3d.library.assets.IAsset;
+        var ErrorConflictStrategy = (function (_super) {
+            __extends(ErrorConflictStrategy, _super);
+            function ErrorConflictStrategy() {
+                _super.call(this);
+            }
+            ErrorConflictStrategy.prototype.resolveConflict = function (changedAsset, oldAsset, assetsDictionary, precedence) {
+                throw new away.errors.Error('Asset name collision while AssetLibrary.namingStrategy set to AssetLibrary.THROW_ERROR. Asset path: ' + changedAsset.assetFullPath);
+            };
 
+            ErrorConflictStrategy.prototype.create = function () {
+                return new ErrorConflictStrategy();
+            };
+            return ErrorConflictStrategy;
+        })(away.library.ConflictStrategyBase);
+        library.ErrorConflictStrategy = ErrorConflictStrategy;
+    })(away.library || (away.library = {}));
+    var library = away.library;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="NumSuffixConflictStrategy.ts" />
+    ///<reference path="IgnoreConflictStrategy.ts" />
+    ///<reference path="ErrorConflictStrategy.ts" />
+    (function (library) {
         /**
-        * @inheritDoc
+        * Enumeration class for bundled conflict strategies. Set one of these values (or an
+        * instance of a self-defined sub-class of ConflictStrategyBase) to the conflictStrategy
+        * property on an AssetLibrary to define how that library resolves naming conflicts.
+        *
+        * The value of the <code>AssetLibrary.conflictPrecedence</code> property defines which
+        * of the conflicting assets will get to keep it's name, and which is renamed (if any.)
+        *
+        * @see away3d.library.AssetLibrary.conflictStrategy
+        * @see away3d.library.naming.ConflictStrategyBase
         */
-        JSONTextureParser.prototype._iResolveDependency = function (resourceDependency) {
-            var resource = resourceDependency.assets[0];
-
-            this._loadedTextures.push(resource);
-
-            console.log('JSONTextureParser._iResolveDependency', resourceDependency);
-            console.log('JSONTextureParser._iResolveDependency resource: ', resource);
-
-            this._dependencyCount--;
-
-            if (this._dependencyCount == 0) {
-                this._state = this.STATE_COMPLETE;
+        var ConflictStrategy = (function () {
+            function ConflictStrategy() {
             }
-        };
+            ConflictStrategy.APPEND_NUM_SUFFIX = new away.library.NumSuffixConflictStrategy();
 
+            ConflictStrategy.IGNORE = new away.library.IgnoreConflictStrategy();
+
+            ConflictStrategy.THROW_ERROR = new away.library.ErrorConflictStrategy();
+            return ConflictStrategy;
+        })();
+        library.ConflictStrategy = ConflictStrategy;
+    })(away.library || (away.library = {}));
+    var library = away.library;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../assets/IAsset.ts" />
+    (function (library) {
+        //import away3d.library.assets.IAsset;
+        var AssetLibraryIterator = (function () {
+            function AssetLibraryIterator(assets, assetTypeFilter, namespaceFilter, filterFunc) {
+                this._assets = assets;
+                this.filter(assetTypeFilter, namespaceFilter, filterFunc);
+            }
+            Object.defineProperty(AssetLibraryIterator.prototype, "currentAsset", {
+                get: function () {
+                    // Return current, or null if no current
+                    return (this._idx < this._filtered.length) ? this._filtered[this._idx] : null;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(AssetLibraryIterator.prototype, "numAssets", {
+                get: function () {
+                    return this._filtered.length;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            AssetLibraryIterator.prototype.next = function () {
+                var next = null;
+
+                if (this._idx < this._filtered.length)
+                    next = this._filtered[this._idx];
+
+                this._idx++;
+
+                return next;
+            };
+
+            AssetLibraryIterator.prototype.reset = function () {
+                this._idx = 0;
+            };
+
+            AssetLibraryIterator.prototype.setIndex = function (index) {
+                this._idx = index;
+            };
+
+            AssetLibraryIterator.prototype.filter = function (assetTypeFilter, namespaceFilter, filterFunc) {
+                if (assetTypeFilter || namespaceFilter) {
+                    var idx;
+                    var asset;
+
+                    idx = 0;
+                    this._filtered = new Array();
+
+                    var l = this._assets.length;
+
+                    for (var c = 0; c < l; c++) {
+                        asset = this._assets[c];
+
+                        if (assetTypeFilter && asset.assetType != assetTypeFilter)
+                            continue;
+
+                        if (namespaceFilter && asset.assetNamespace != namespaceFilter)
+                            continue;
+
+                        if (filterFunc != null && !filterFunc(asset))
+                            continue;
+
+                        this._filtered[idx++] = asset;
+                    }
+                } else {
+                    this._filtered = this._assets;
+                }
+            };
+            return AssetLibraryIterator;
+        })();
+        library.AssetLibraryIterator = AssetLibraryIterator;
+    })(away.library || (away.library = {}));
+    var library = away.library;
+})(away || (away = {}));
+var away;
+(function (away) {
+    (function (library) {
+        var IDUtil = (function () {
+            function IDUtil() {
+            }
+            IDUtil.createUID = /**
+            *  Generates a UID (unique identifier) based on ActionScript's
+            *  pseudo-random number generator and the current time.
+            *
+            *  <p>The UID has the form
+            *  <code>"XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"</code>
+            *  where X is a hexadecimal digit (0-9, A-F).</p>
+            *
+            *  <p>This UID will not be truly globally unique; but it is the best
+            *  we can do without player support for UID generation.</p>
+            *
+            *  @return The newly-generated UID.
+            *
+            *  @langversion 3.0
+            *  @playerversion Flash 9
+            *  @playerversion AIR 1.1
+            *  @productversion Flex 3
+            */
+            function () {
+                var uid = new Array(36);
+                var index = 0;
+
+                var i;
+                var j;
+
+                for (i = 0; i < 8; i++)
+                    uid[index++] = IDUtil.ALPHA_CHAR_CODES[Math.floor(Math.random() * 16)];
+
+                for (i = 0; i < 3; i++) {
+                    uid[index++] = 45;
+
+                    for (j = 0; j < 4; j++)
+                        uid[index++] = IDUtil.ALPHA_CHAR_CODES[Math.floor(Math.random() * 16)];
+                }
+
+                uid[index++] = 45;
+
+                var time = new Date().getTime();
+
+                // Note: time is the number of milliseconds since 1970,
+                // which is currently more than one trillion.
+                // We use the low 8 hex digits of this number in the UID.
+                // Just in case the system clock has been reset to
+                // Jan 1-4, 1970 (in which case this number could have only
+                // 1-7 hex digits), we pad on the left with 7 zeros
+                // before taking the low digits.
+                var timeString = ("0000000" + time.toString(16).toUpperCase()).substr(-8);
+
+                for (i = 0; i < 8; i++)
+                    uid[index++] = timeString.charCodeAt(i);
+
+                for (i = 0; i < 4; i++)
+                    uid[index++] = IDUtil.ALPHA_CHAR_CODES[Math.floor(Math.random() * 16)];
+
+                return String.fromCharCode.apply(null, uid);
+            };
+            IDUtil.ALPHA_CHAR_CODES = [48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 65, 66, 67, 68, 69, 70];
+            return IDUtil;
+        })();
+        library.IDUtil = IDUtil;
+    })(away.library || (away.library = {}));
+    var library = away.library;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="AssetLibraryBundle.ts"/>
+    ///<reference path="../loaders/misc/SingleFileLoader.ts"/>
+    ///<reference path="../loaders/misc/AssetLoaderContext.ts"/>
+    ///<reference path="../loaders/misc/AssetLoaderToken.ts"/>
+    ///<reference path="../loaders/parsers/ParserBase.ts"/>
+    ///<reference path="naming/ConflictStrategyBase.ts"/>
+    ///<reference path="utils/AssetLibraryIterator.ts"/>
+    ///<reference path="assets/IAsset.ts"/>
+    (function (library) {
         /**
-        * @inheritDoc
+        * AssetLibrary enforces a singleton pattern and is not intended to be instanced.
+        * It's purpose is to allow access to the default library bundle through a set of static shortcut methods.
+        * If you are interested in creating multiple library bundles, please use the <code>getBundle()</code> method.
         */
-        JSONTextureParser.prototype._iResolveDependencyFailure = function (resourceDependency) {
-            //console.log( '-----------------------------------------------------------');
-            console.log('JSONTextureParser._iResolveDependencyFailure', 'x', resourceDependency);
-
-            this._dependencyCount--;
-
-            if (this._dependencyCount == 0) {
-                this._state = this.STATE_COMPLETE;
-                console.log('JSONTextureParser._iResolveDependencyFailure.complete');
+        var AssetLibrary = (function () {
+            /**
+            * Creates a new <code>AssetLibrary</code> object.
+            *
+            * @param se A singleton enforcer for the AssetLibrary ensuring it cannnot be instanced.
+            */
+            //*
+            function AssetLibrary(se) {
+                se = se;
             }
-        };
+            AssetLibrary.getBundle = //*/
+            /**
+            * Returns an AssetLibrary bundle instance. If no key is given, returns the default bundle (which is
+            * similar to using the AssetLibraryBundle as a singleton). To keep several separated library bundles,
+            * pass a string key to this method to define which bundle should be returned. This is
+            * referred to as using the AssetLibraryBundle as a multiton.
+            *
+            * @param key Defines which multiton instance should be returned.
+            * @return An instance of the asset library
+            */
+            function (key) {
+                if (typeof key === "undefined") { key = 'default'; }
+                return away.library.AssetLibraryBundle.getInstance(key);
+            };
 
-        JSONTextureParser.prototype.parseJson = function () {
-            console.log('JSONTextureParser.parseJson', typeof this.data);
+            AssetLibrary.enableParser = /**
+            *
+            */
+            function (parserClass) {
+                away.loaders.SingleFileLoader.enableParser(parserClass);
+            };
 
-            if (JSONTextureParser.supportsData(this.data)) {
-                try  {
-                    var json = JSON.parse(this.data);
-                    var data = json.data;
+            AssetLibrary.enableParsers = /**
+            *
+            */
+            function (parserClasses) {
+                away.loaders.SingleFileLoader.enableParsers(parserClasses);
+            };
 
-                    var rec;
-                    var rq;
+            Object.defineProperty(AssetLibrary, "conflictStrategy", {
+                get: /**
+                * Short-hand for conflictStrategy property on default asset library bundle.
+                *
+                * @see away3d.library.AssetLibraryBundle.conflictStrategy
+                */
+                function () {
+                    return away.library.AssetLibrary.getBundle().conflictStrategy;
+                },
+                set: function (val) {
+                    away.library.AssetLibrary.getBundle().conflictStrategy = val;
+                },
+                enumerable: true,
+                configurable: true
+            });
 
-                    for (var c = 0; c < data.length; c++) {
-                        rec = data[c];
 
-                        var uri = rec.image;
-                        var id = rec.id;
+            Object.defineProperty(AssetLibrary, "conflictPrecedence", {
+                get: /**
+                * Short-hand for conflictPrecedence property on default asset library bundle.
+                *
+                * @see away3d.library.AssetLibraryBundle.conflictPrecedence
+                */
+                function () {
+                    return away.library.AssetLibrary.getBundle().conflictPrecedence;
+                },
+                set: function (val) {
+                    away.library.AssetLibrary.getBundle().conflictPrecedence = val;
+                },
+                enumerable: true,
+                configurable: true
+            });
 
-                        rq = new away.net.URLRequest(uri);
 
-                        console.log('JSONTextureParser.parseJson', id, uri);
+            AssetLibrary.createIterator = /**
+            * Short-hand for createIterator() method on default asset library bundle.
+            *
+            * @see away3d.library.AssetLibraryBundle.createIterator()
+            */
+            function (assetTypeFilter, namespaceFilter, filterFunc) {
+                if (typeof assetTypeFilter === "undefined") { assetTypeFilter = null; }
+                if (typeof namespaceFilter === "undefined") { namespaceFilter = null; }
+                if (typeof filterFunc === "undefined") { filterFunc = null; }
+                return away.library.AssetLibrary.getBundle().createIterator(assetTypeFilter, namespaceFilter, filterFunc);
+            };
 
-                        this._pAddDependency('JSON_ID_' + id, rq, false, null, true);
+            AssetLibrary.load = /**
+            * Short-hand for load() method on default asset library bundle.
+            *
+            * @see away3d.library.AssetLibraryBundle.load()
+            */
+            function (req, context, ns, parser) {
+                if (typeof context === "undefined") { context = null; }
+                if (typeof ns === "undefined") { ns = null; }
+                if (typeof parser === "undefined") { parser = null; }
+                return away.library.AssetLibrary.getBundle().load(req, context, ns, parser);
+            };
+
+            AssetLibrary.loadData = /**
+            * Short-hand for loadData() method on default asset library bundle.
+            *
+            * @see away3d.library.AssetLibraryBundle.loadData()
+            */
+            function (data, context, ns, parser) {
+                if (typeof context === "undefined") { context = null; }
+                if (typeof ns === "undefined") { ns = null; }
+                if (typeof parser === "undefined") { parser = null; }
+                return away.library.AssetLibrary.getBundle().loadData(data, context, ns, parser);
+            };
+
+            AssetLibrary.stopLoad = function () {
+                away.library.AssetLibrary.getBundle().stopAllLoadingSessions();
+            };
+
+            AssetLibrary.getAsset = /**
+            * Short-hand for getAsset() method on default asset library bundle.
+            *
+            * @see away3d.library.AssetLibraryBundle.getAsset()
+            */
+            function (name, ns) {
+                if (typeof ns === "undefined") { ns = null; }
+                return away.library.AssetLibrary.getBundle().getAsset(name, ns);
+            };
+
+            AssetLibrary.addEventListener = /**
+            * Short-hand for addEventListener() method on default asset library bundle.
+            */
+            function (type, listener, target) {
+                away.library.AssetLibrary.getBundle().addEventListener(type, listener, target);
+            };
+
+            AssetLibrary.removeEventListener = /**
+            * Short-hand for removeEventListener() method on default asset library bundle.
+            */
+            function (type, listener, target) {
+                away.library.AssetLibrary.getBundle().removeEventListener(type, listener, target);
+            };
+
+            AssetLibrary.addAsset = /**
+            * Short-hand for hasEventListener() method on default asset library bundle.
+            
+            public static hasEventListener(type:string):boolean
+            {
+            return away.library.AssetLibrary.getBundle().hasEventListener(type);
+            }
+            
+            public static willTrigger(type:string):boolean
+            {
+            return getBundle().willTrigger(type);
+            }
+            */
+            /**
+            * Short-hand for addAsset() method on default asset library bundle.
+            *
+            * @see away3d.library.AssetLibraryBundle.addAsset()
+            */
+            function (asset) {
+                away.library.AssetLibrary.getBundle().addAsset(asset);
+            };
+
+            AssetLibrary.removeAsset = /**
+            * Short-hand for removeAsset() method on default asset library bundle.
+            *
+            * @param asset The asset which should be removed from the library.
+            * @param dispose Defines whether the assets should also be disposed.
+            *
+            * @see away3d.library.AssetLibraryBundle.removeAsset()
+            */
+            function (asset, dispose) {
+                if (typeof dispose === "undefined") { dispose = true; }
+                away.library.AssetLibrary.getBundle().removeAsset(asset, dispose);
+            };
+
+            AssetLibrary.removeAssetByName = /**
+            * Short-hand for removeAssetByName() method on default asset library bundle.
+            *
+            * @param name The name of the asset to be removed.
+            * @param ns The namespace to which the desired asset belongs.
+            * @param dispose Defines whether the assets should also be disposed.
+            *
+            * @see away3d.library.AssetLibraryBundle.removeAssetByName()
+            */
+            function (name, ns, dispose) {
+                if (typeof ns === "undefined") { ns = null; }
+                if (typeof dispose === "undefined") { dispose = true; }
+                return away.library.AssetLibrary.getBundle().removeAssetByName(name, ns, dispose);
+            };
+
+            AssetLibrary.removeAllAssets = /**
+            * Short-hand for removeAllAssets() method on default asset library bundle.
+            *
+            * @param dispose Defines whether the assets should also be disposed.
+            *
+            * @see away3d.library.AssetLibraryBundle.removeAllAssets()
+            */
+            function (dispose) {
+                if (typeof dispose === "undefined") { dispose = true; }
+                away.library.AssetLibrary.getBundle().removeAllAssets(dispose);
+            };
+
+            AssetLibrary.removeNamespaceAssets = /**
+            * Short-hand for removeNamespaceAssets() method on default asset library bundle.
+            *
+            * @see away3d.library.AssetLibraryBundle.removeNamespaceAssets()
+            */
+            function (ns, dispose) {
+                if (typeof ns === "undefined") { ns = null; }
+                if (typeof dispose === "undefined") { dispose = true; }
+                away.library.AssetLibrary.getBundle().removeNamespaceAssets(ns, dispose);
+            };
+            AssetLibrary._iInstances = {};
+            return AssetLibrary;
+        })();
+        library.AssetLibrary = AssetLibrary;
+    })(away.library || (away.library = {}));
+    var library = away.library;
+})(away || (away = {}));
+
+// singleton enforcer
+var AssetLibrarySingletonEnforcer = (function () {
+    function AssetLibrarySingletonEnforcer() {
+    }
+    return AssetLibrarySingletonEnforcer;
+})();
+var away;
+(function (away) {
+    ///<reference path="../loaders/AssetLoader.ts" />
+    ///<reference path="naming/ConflictStrategyBase.ts" />
+    ///<reference path="naming/ConflictStrategy.ts" />
+    ///<reference path="assets/IAsset.ts" />
+    ///<reference path="../errors/Error.ts" />
+    ///<reference path="utils/AssetLibraryIterator.ts" />
+    ///<reference path="../net/URLRequest.ts" />
+    ///<reference path="../loaders/misc/AssetLoaderContext.ts" />
+    ///<reference path="../loaders/misc/AssetLoaderToken.ts" />
+    ///<reference path="../loaders/parsers/ParserBase.ts" />
+    ///<reference path="assets/NamedAssetBase.ts" />
+    ///<reference path="utils/IDUtil.ts" />
+    ///<reference path="../events/AssetEvent.ts" />
+    ///<reference path="../events/LoaderEvent.ts" />
+    ///<reference path="../events/EventDispatcher.ts" />
+    ///<reference path="AssetLibrary.ts" />
+    (function (library) {
+        /**
+        * AssetLibraryBundle enforces a multiton pattern and is not intended to be instanced directly.
+        * Its purpose is to create a container for 3D data management, both before and after parsing.
+        * If you are interested in creating multiple library bundles, please use the <code>getInstance()</code> method.
+        */
+        var AssetLibraryBundle = (function (_super) {
+            __extends(AssetLibraryBundle, _super);
+            /**
+            * Creates a new <code>AssetLibraryBundle</code> object.
+            *
+            * @param me A multiton enforcer for the AssetLibraryBundle ensuring it cannnot be instanced.
+            */
+            function AssetLibraryBundle(me) {
+                _super.call(this);
+
+                me = me;
+
+                this._assets = new Array();
+                this._assetDictionary = new Object();
+                this._loadingSessions = new Array();
+
+                this.conflictStrategy = away.library.ConflictStrategy.IGNORE.create();
+                this.conflictPrecedence = away.library.ConflictPrecedence.FAVOR_NEW;
+            }
+            AssetLibraryBundle.getInstance = /**
+            * Returns an AssetLibraryBundle instance. If no key is given, returns the default bundle instance (which is
+            * similar to using the AssetLibraryBundle as a singleton.) To keep several separated library bundles,
+            * pass a string key to this method to define which bundle should be returned. This is
+            * referred to as using the AssetLibrary as a multiton.
+            *
+            * @param key Defines which multiton instance should be returned.
+            * @return An instance of the asset library
+            */
+            function (key) {
+                if (typeof key === "undefined") { key = 'default'; }
+                if (!key) {
+                    key = 'default';
+                }
+
+                if (!away.library.AssetLibrary._iInstances.hasOwnProperty(key)) {
+                    away.library.AssetLibrary._iInstances[key] = new away.library.AssetLibraryBundle(new AssetLibraryBundleSingletonEnforcer());
+                }
+
+                return away.library.AssetLibrary._iInstances[key];
+            };
+
+            /**
+            *
+            */
+            AssetLibraryBundle.prototype.enableParser = function (parserClass) {
+                away.loaders.SingleFileLoader.enableParser(parserClass);
+            };
+
+            /**
+            *
+            */
+            AssetLibraryBundle.prototype.enableParsers = function (parserClasses) {
+                away.loaders.SingleFileLoader.enableParsers(parserClasses);
+            };
+
+            Object.defineProperty(AssetLibraryBundle.prototype, "conflictStrategy", {
+                get: /**
+                * Defines which strategy should be used for resolving naming conflicts, when two library
+                * assets are given the same name. By default, <code>ConflictStrategy.APPEND_NUM_SUFFIX</code>
+                * is used which means that a numeric suffix is appended to one of the assets. The
+                * <code>conflictPrecedence</code> property defines which of the two conflicting assets will
+                * be renamed.
+                *
+                * @see away3d.library.naming.ConflictStrategy
+                * @see away3d.library.AssetLibrary.conflictPrecedence
+                */
+                function () {
+                    return this._strategy;
+                },
+                set: function (val) {
+                    if (!val) {
+                        throw new away.errors.Error('namingStrategy must not be null. To ignore naming, use AssetLibrary.IGNORE');
                     }
 
-                    this._dependencyCount = data.length;
-                    this._state = this.STATE_LOAD_IMAGES;
+                    this._strategy = val.create();
+                },
+                enumerable: true,
+                configurable: true
+            });
 
-                    this._pPauseAndRetrieveDependencies();
-                } catch (e) {
-                    this._state = this.STATE_COMPLETE;
+
+            Object.defineProperty(AssetLibraryBundle.prototype, "conflictPrecedence", {
+                get: /**
+                * Defines which asset should have precedence when resolving a naming conflict between
+                * two assets of which one has just been renamed by the user or by a parser. By default
+                * <code>ConflictPrecedence.FAVOR_NEW</code> is used, meaning that the newly renamed
+                * asset will keep it's new name while the older asset gets renamed to not conflict.
+                *
+                * This property is ignored for conflict strategies that do not actually rename an
+                * asset automatically, such as ConflictStrategy.IGNORE and ConflictStrategy.THROW_ERROR.
+                *
+                * @see away3d.library.naming.ConflictPrecedence
+                * @see away3d.library.naming.ConflictStrategy
+                */
+                function () {
+                    return this._strategyPreference;
+                },
+                set: function (val) {
+                    this._strategyPreference = val;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * Create an AssetLibraryIterator instance that can be used to iterate over the assets
+            * in this asset library instance. The iterator can filter assets on asset type and/or
+            * namespace. A "null" filter value means no filter of that type is used.
+            *
+            * @param assetTypeFilter Asset type to filter on (from the AssetType enum class.) Use
+            * null to not filter on asset type.
+            * @param namespaceFilter Namespace to filter on. Use null to not filter on namespace.
+            * @param filterFunc Callback function to use when deciding whether an asset should be
+            * included in the iteration or not. This needs to be a function that takes a single
+            * parameter of type IAsset and returns a boolean where true means it should be included.
+            *
+            * @see away3d.library.assets.AssetType
+            */
+            AssetLibraryBundle.prototype.createIterator = function (assetTypeFilter, namespaceFilter, filterFunc) {
+                if (typeof assetTypeFilter === "undefined") { assetTypeFilter = null; }
+                if (typeof namespaceFilter === "undefined") { namespaceFilter = null; }
+                if (typeof filterFunc === "undefined") { filterFunc = null; }
+                return new away.library.AssetLibraryIterator(this._assets, assetTypeFilter, namespaceFilter, filterFunc);
+            };
+
+            /**
+            * Loads a file and (optionally) all of its dependencies.
+            *
+            * @param req The URLRequest object containing the URL of the file to be loaded.
+            * @param context An optional context object providing additional parameters for loading
+            * @param ns An optional namespace string under which the file is to be loaded, allowing the differentiation of two resources with identical assets
+            * @param parser An optional parser object for translating the loaded data into a usable resource. If not provided, AssetLoader will attempt to auto-detect the file type.
+            */
+            AssetLibraryBundle.prototype.load = function (req, context, ns, parser) {
+                if (typeof context === "undefined") { context = null; }
+                if (typeof ns === "undefined") { ns = null; }
+                if (typeof parser === "undefined") { parser = null; }
+                return this.loadResource(req, context, ns, parser);
+            };
+
+            /**
+            * Loads a resource from existing data in memory.
+            *
+            * @param data The data object containing all resource information.
+            * @param context An optional context object providing additional parameters for loading
+            * @param ns An optional namespace string under which the file is to be loaded, allowing the differentiation of two resources with identical assets
+            * @param parser An optional parser object for translating the loaded data into a usable resource. If not provided, AssetLoader will attempt to auto-detect the file type.
+            */
+            AssetLibraryBundle.prototype.loadData = function (data, context, ns, parser) {
+                if (typeof context === "undefined") { context = null; }
+                if (typeof ns === "undefined") { ns = null; }
+                if (typeof parser === "undefined") { parser = null; }
+                return this.parseResource(data, context, ns, parser);
+            };
+
+            /**
+            *
+            */
+            AssetLibraryBundle.prototype.getAsset = function (name, ns) {
+                if (typeof ns === "undefined") { ns = null; }
+                if (this._assetDictDirty) {
+                    this.rehashAssetDict();
                 }
+
+                if (ns == null) {
+                    ns = away.library.NamedAssetBase.DEFAULT_NAMESPACE;
+                }
+
+                if (!this._assetDictionary.hasOwnProperty(ns)) {
+                    return null;
+                }
+
+                return this._assetDictionary[ns][name];
+            };
+
+            /**
+            * Adds an asset to the asset library, first making sure that it's name is unique
+            * using the method defined by the <code>conflictStrategy</code> and
+            * <code>conflictPrecedence</code> properties.
+            */
+            AssetLibraryBundle.prototype.addAsset = function (asset) {
+                var ns;
+                var old;
+
+                if (this._assets.indexOf(asset) >= 0) {
+                    return;
+                }
+
+                old = this.getAsset(asset.name, asset.assetNamespace);
+                ns = asset.assetNamespace || library.NamedAssetBase.DEFAULT_NAMESPACE;
+
+                if (old != null) {
+                    this._strategy.resolveConflict(asset, old, this._assetDictionary[ns], this._strategyPreference);
+                }
+
+                //create unique-id (for now this is used in AwayBuilder only
+                asset.id = away.library.IDUtil.createUID();
+
+                // Add it
+                this._assets.push(asset);
+
+                if (!this._assetDictionary.hasOwnProperty(ns)) {
+                    this._assetDictionary[ns] = new Object();
+                }
+
+                this._assetDictionary[ns][asset.name] = asset;
+
+                asset.addEventListener(away.events.AssetEvent.ASSET_RENAME, this.onAssetRename, this);
+                asset.addEventListener(away.events.AssetEvent.ASSET_CONFLICT_RESOLVED, this.onAssetConflictResolved, this);
+            };
+
+            /**
+            * Removes an asset from the library, and optionally disposes that asset by calling
+            * it's disposeAsset() method (which for most assets is implemented as a default
+            * version of that type's dispose() method.
+            *
+            * @param asset The asset which should be removed from this library.
+            * @param dispose Defines whether the assets should also be disposed.
+            */
+            AssetLibraryBundle.prototype.removeAsset = function (asset, dispose) {
+                if (typeof dispose === "undefined") { dispose = true; }
+                var idx;
+
+                this.removeAssetFromDict(asset);
+
+                asset.removeEventListener(away.events.AssetEvent.ASSET_RENAME, this.onAssetRename, this);
+                asset.removeEventListener(away.events.AssetEvent.ASSET_CONFLICT_RESOLVED, this.onAssetConflictResolved, this);
+
+                idx = this._assets.indexOf(asset);
+                if (idx >= 0) {
+                    this._assets.splice(idx, 1);
+                }
+
+                if (dispose) {
+                    asset.dispose();
+                }
+            };
+
+            /**
+            * Removes an asset which is specified using name and namespace.
+            *
+            * @param name The name of the asset to be removed.
+            * @param ns The namespace to which the desired asset belongs.
+            * @param dispose Defines whether the assets should also be disposed.
+            *
+            * @see away3d.library.AssetLibrary.removeAsset()
+            */
+            AssetLibraryBundle.prototype.removeAssetByName = function (name, ns, dispose) {
+                if (typeof ns === "undefined") { ns = null; }
+                if (typeof dispose === "undefined") { dispose = true; }
+                var asset = this.getAsset(name, ns);
+
+                if (asset) {
+                    this.removeAsset(asset, dispose);
+                }
+
+                return asset;
+            };
+
+            /**
+            * Removes all assets from the asset library, optionally disposing them as they
+            * are removed.
+            *
+            * @param dispose Defines whether the assets should also be disposed.
+            */
+            AssetLibraryBundle.prototype.removeAllAssets = function (dispose) {
+                if (typeof dispose === "undefined") { dispose = true; }
+                if (dispose) {
+                    var asset;
+
+                    for (var c = 0; c < this._assets.length; c++) {
+                        asset = this._assets[c];
+                        asset.dispose();
+                    }
+                }
+
+                this._assets.length = 0;
+                this.rehashAssetDict();
+            };
+
+            /**
+            * Removes all assets belonging to a particular namespace (null for default)
+            * from the asset library, and optionall disposes them by calling their
+            * disposeAsset() method.
+            *
+            * @param ns The namespace from which all assets should be removed.
+            * @param dispose Defines whether the assets should also be disposed.
+            *
+            * @see away3d.library.AssetLibrary.removeAsset()
+            */
+            AssetLibraryBundle.prototype.removeNamespaceAssets = function (ns, dispose) {
+                if (typeof ns === "undefined") { ns = null; }
+                if (typeof dispose === "undefined") { dispose = true; }
+                var idx = 0;
+                var asset;
+                var old_assets;
+
+                // Empty the assets vector after having stored a copy of it.
+                // The copy will be filled with all assets which weren't removed.
+                old_assets = this._assets.concat();
+                this._assets.length = 0;
+
+                if (ns == null) {
+                    ns = away.library.NamedAssetBase.DEFAULT_NAMESPACE;
+                }
+
+                for (var d = 0; d < old_assets.length; d++) {
+                    asset = old_assets[d];
+
+                    if (asset.assetNamespace == ns) {
+                        if (dispose) {
+                            asset.dispose();
+                        }
+
+                        // Remove asset from dictionary, but don't try to auto-remove
+                        // the namespace, which will trigger an unnecessarily expensive
+                        // test that is not needed since we know that the namespace
+                        // will be empty when loop finishes.
+                        this.removeAssetFromDict(asset, false);
+                    } else {
+                        this._assets[idx++] = asset;
+                    }
+                }
+
+                if (this._assetDictionary.hasOwnProperty(ns)) {
+                    delete this._assetDictionary[ns];
+                }
+            };
+
+            AssetLibraryBundle.prototype.removeAssetFromDict = function (asset, autoRemoveEmptyNamespace) {
+                if (typeof autoRemoveEmptyNamespace === "undefined") { autoRemoveEmptyNamespace = true; }
+                if (this._assetDictDirty) {
+                    this.rehashAssetDict();
+                }
+
+                if (this._assetDictionary.hasOwnProperty(asset.assetNamespace)) {
+                    if (this._assetDictionary[asset.assetNamespace].hasOwnProperty(asset.name)) {
+                        delete this._assetDictionary[asset.assetNamespace][asset.name];
+                    }
+
+                    if (autoRemoveEmptyNamespace) {
+                        var key;
+                        var empty = true;
+
+                        for (key in this._assetDictionary[asset.assetNamespace]) {
+                            empty = false;
+                            break;
+                        }
+
+                        if (empty) {
+                            delete this._assetDictionary[asset.assetNamespace];
+                        }
+                    }
+                }
+            };
+
+            /**
+            * Loads a yet unloaded resource file from the given url.
+            */
+            AssetLibraryBundle.prototype.loadResource = function (req, context, ns, parser) {
+                if (typeof context === "undefined") { context = null; }
+                if (typeof ns === "undefined") { ns = null; }
+                if (typeof parser === "undefined") { parser = null; }
+                var loader = new away.loaders.AssetLoader();
+
+                if (!this._loadingSessions) {
+                    this._loadingSessions = new Array();
+                }
+
+                this._loadingSessions.push(loader);
+
+                loader.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceRetrieved, this);
+                loader.addEventListener(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this.onDependencyRetrieved, this);
+                loader.addEventListener(away.events.AssetEvent.TEXTURE_SIZE_ERROR, this.onTextureSizeError, this);
+                loader.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.ANIMATION_SET_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.ANIMATION_STATE_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.ANIMATION_NODE_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.STATE_TRANSITION_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.TEXTURE_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.CONTAINER_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.GEOMETRY_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.MATERIAL_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.MESH_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.ENTITY_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.SKELETON_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.SKELETON_POSE_COMPLETE, this.onAssetComplete, this);
+
+                // Error are handled separately (see documentation for addErrorHandler)
+                loader._iAddErrorHandler(this.onDependencyRetrievingError);
+                loader._iAddParseErrorHandler(this.onDependencyRetrievingParseError);
+
+                return loader.load(req, context, ns, parser);
+            };
+
+            AssetLibraryBundle.prototype.stopAllLoadingSessions = function () {
+                var i;
+
+                if (!this._loadingSessions) {
+                    this._loadingSessions = new Array();
+                }
+
+                var length = this._loadingSessions.length;
+
+                for (i = 0; i < length; i++) {
+                    this.killLoadingSession(this._loadingSessions[i]);
+                }
+
+                this._loadingSessions = null;
+            };
+
+            /**
+            * Retrieves an unloaded resource parsed from the given data.
+            * @param data The data to be parsed.
+            * @param id The id that will be assigned to the resource. This can later also be used by the getResource method.
+            * @param ignoreDependencies Indicates whether or not dependencies should be ignored or loaded.
+            * @param parser An optional parser object that will translate the data into a usable resource.
+            * @return A handle to the retrieved resource.
+            */
+            AssetLibraryBundle.prototype.parseResource = function (data, context, ns, parser) {
+                if (typeof context === "undefined") { context = null; }
+                if (typeof ns === "undefined") { ns = null; }
+                if (typeof parser === "undefined") { parser = null; }
+                var loader = new away.loaders.AssetLoader();
+
+                if (!this._loadingSessions) {
+                    this._loadingSessions = new Array();
+                }
+
+                this._loadingSessions.push(loader);
+
+                loader.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceRetrieved, this);
+                loader.addEventListener(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this.onDependencyRetrieved, this);
+                loader.addEventListener(away.events.AssetEvent.TEXTURE_SIZE_ERROR, this.onTextureSizeError, this);
+                loader.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.ANIMATION_SET_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.ANIMATION_STATE_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.ANIMATION_NODE_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.STATE_TRANSITION_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.TEXTURE_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.CONTAINER_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.GEOMETRY_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.MATERIAL_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.MESH_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.ENTITY_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.SKELETON_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.SKELETON_POSE_COMPLETE, this.onAssetComplete, this);
+
+                // Error are handled separately (see documentation for addErrorHandler)
+                loader._iAddErrorHandler(this.onDependencyRetrievingError);
+                loader._iAddParseErrorHandler(this.onDependencyRetrievingParseError);
+
+                return loader.loadData(data, '', context, ns, parser);
+            };
+
+            AssetLibraryBundle.prototype.rehashAssetDict = function () {
+                var asset;
+
+                this._assetDictionary = {};
+
+                var l = this._assets.length;
+
+                for (var c = 0; c < l; c++) {
+                    asset = this._assets[c];
+
+                    if (!this._assetDictionary.hasOwnProperty(asset.assetNamespace)) {
+                        this._assetDictionary[asset.assetNamespace] = {};
+                    }
+
+                    this._assetDictionary[asset.assetNamespace][asset.name] = asset;
+                }
+
+                this._assetDictDirty = false;
+            };
+
+            /**
+            * Called when a dependency was retrieved.
+            */
+            AssetLibraryBundle.prototype.onDependencyRetrieved = function (event) {
+                //if (hasEventListener(LoaderEvent.DEPENDENCY_COMPLETE))
+                this.dispatchEvent(event);
+            };
+
+            /**
+            * Called when a an error occurs during dependency retrieving.
+            */
+            AssetLibraryBundle.prototype.onDependencyRetrievingError = function (event) {
+                if (this.hasEventListener(away.events.LoaderEvent.LOAD_ERROR, this.onDependencyRetrievingError, this)) {
+                    this.dispatchEvent(event);
+                    return true;
+                } else {
+                    return false;
+                }
+            };
+
+            /**
+            * Called when a an error occurs during parsing.
+            */
+            AssetLibraryBundle.prototype.onDependencyRetrievingParseError = function (event) {
+                if (this.hasEventListener(away.events.ParserEvent.PARSE_ERROR, this.onDependencyRetrievingParseError, this)) {
+                    this.dispatchEvent(event);
+                    return true;
+                } else {
+                    return false;
+                }
+            };
+
+            AssetLibraryBundle.prototype.onAssetComplete = function (event) {
+                if (event.type == away.events.AssetEvent.ASSET_COMPLETE) {
+                    this.addAsset(event.asset);
+                }
+
+                this.dispatchEvent(event.clone());
+            };
+
+            AssetLibraryBundle.prototype.onTextureSizeError = function (event) {
+                this.dispatchEvent(event.clone());
+            };
+
+            /**
+            * Called when the resource and all of its dependencies was retrieved.
+            */
+            AssetLibraryBundle.prototype.onResourceRetrieved = function (event) {
+                var loader = event.target;
+                this.killLoadingSession(loader);
+                var index = this._loadingSessions.indexOf(loader);
+                this._loadingSessions.splice(index, 1);
+
+                /*
+                if(session.handle){
+                dispatchEvent(event);
+                }else{
+                onResourceError((session is IResource)? IResource(session) : null);
+                }
+                */
+                this.dispatchEvent(event.clone());
+            };
+
+            AssetLibraryBundle.prototype.killLoadingSession = function (loader) {
+                loader.removeEventListener(away.events.LoaderEvent.LOAD_ERROR, this.onDependencyRetrievingError, this);
+                loader.removeEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceRetrieved, this);
+                loader.removeEventListener(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this.onDependencyRetrieved, this);
+                loader.removeEventListener(away.events.AssetEvent.TEXTURE_SIZE_ERROR, this.onTextureSizeError, this);
+                loader.removeEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+                loader.removeEventListener(away.events.AssetEvent.ANIMATION_SET_COMPLETE, this.onAssetComplete, this);
+                loader.removeEventListener(away.events.AssetEvent.ANIMATION_STATE_COMPLETE, this.onAssetComplete, this);
+                loader.removeEventListener(away.events.AssetEvent.ANIMATION_NODE_COMPLETE, this.onAssetComplete, this);
+                loader.removeEventListener(away.events.AssetEvent.STATE_TRANSITION_COMPLETE, this.onAssetComplete, this);
+                loader.removeEventListener(away.events.AssetEvent.TEXTURE_COMPLETE, this.onAssetComplete, this);
+                loader.removeEventListener(away.events.AssetEvent.CONTAINER_COMPLETE, this.onAssetComplete, this);
+                loader.removeEventListener(away.events.AssetEvent.GEOMETRY_COMPLETE, this.onAssetComplete, this);
+                loader.removeEventListener(away.events.AssetEvent.MATERIAL_COMPLETE, this.onAssetComplete, this);
+                loader.removeEventListener(away.events.AssetEvent.MESH_COMPLETE, this.onAssetComplete, this);
+                loader.removeEventListener(away.events.AssetEvent.ENTITY_COMPLETE, this.onAssetComplete, this);
+                loader.removeEventListener(away.events.AssetEvent.SKELETON_COMPLETE, this.onAssetComplete, this);
+                loader.removeEventListener(away.events.AssetEvent.SKELETON_POSE_COMPLETE, this.onAssetComplete, this);
+                loader.stop();
+            };
+
+            /**
+            * Called when unespected error occurs
+            */
+            /*
+            private onResourceError() : void
+            {
+            var msg:string = "Unexpected parser error";
+            if(hasEventListener(LoaderEvent.DEPENDENCY_ERROR)){
+            var re:LoaderEvent = new LoaderEvent(LoaderEvent.DEPENDENCY_ERROR, "");
+            dispatchEvent(re);
+            } else{
+            throw new Error(msg);
             }
-        };
-
-        /**
-        * @inheritDoc
-        */
-        JSONTextureParser.prototype._pProceedParsing = function () {
-            console.log('JSONTextureParser._pProceedParsing', this._state);
-
-            switch (this._state) {
-                case this.STATE_PARSE_DATA:
-                    this.parseJson();
-                    return away.loaders.ParserBase.MORE_TO_PARSE;
-
-                    break;
-
-                case this.STATE_LOAD_IMAGES:
-                    break;
-
-                case this.STATE_COMPLETE:
-                    console.log('JSONTextureParser._pProceedParsing: WE ARE DONE');
-                    return away.loaders.ParserBase.PARSING_DONE;
-
-                    break;
             }
-        };
-        return JSONTextureParser;
-    })(away.loaders.ParserBase);
-    loaders.JSONTextureParser = JSONTextureParser;
-})(loaders || (loaders = {}));
-///<reference path="../src/away/loaders/AssetLoader.ts"/>
-///<reference path="ts/JSONTextureParser.ts"/>
-//<reference path="../src/away/library/assets/IAsset.ts"/>
-//<reference path="../src/away/library/assets/IAsset.ts"/>
-//<reference path="../src/away/loaders/misc/SingleFileLoader.ts"/>
-//<reference path="../src/away/loaders/misc/AssetLoaderContext.ts"/>
-//<reference path="../src/away/loaders/parsers/ParserBase.ts"/>
-//<reference path="../src/away/loaders/parsers/ParserDataFormat.ts"/>
-//<reference path="../src/away/loaders/misc/SingleFileImageLoader.ts"/>
-//<reference path="../src/away/loaders/misc/SingleFileURLLoader.ts"/>
-//<reference path="../src/away/textures/TextureProxyBase.ts"/>
-//<reference path="../src/away/display3D/Context3D.ts"/>
-//<reference path="../src/away/display/Stage3D.ts"/>
+            */
+            AssetLibraryBundle.prototype.onAssetRename = function (ev) {
+                var asset = ev.target;
+                var old = this.getAsset(asset.assetNamespace, asset.name);
+
+                if (old != null) {
+                    this._strategy.resolveConflict(asset, old, this._assetDictionary[asset.assetNamespace], this._strategyPreference);
+                } else {
+                    var dict = this._assetDictionary[ev.asset.assetNamespace];
+
+                    if (dict == null) {
+                        return;
+                    }
+
+                    dict[ev.assetPrevName] = null;
+                    dict[ev.asset.name] = ev.asset;
+                }
+            };
+
+            AssetLibraryBundle.prototype.onAssetConflictResolved = function (ev) {
+                this.dispatchEvent(ev.clone());
+            };
+            return AssetLibraryBundle;
+        })(away.events.EventDispatcher);
+        library.AssetLibraryBundle = AssetLibraryBundle;
+    })(away.library || (away.library = {}));
+    var library = away.library;
+})(away || (away = {}));
+
+// singleton enforcer
+var AssetLibraryBundleSingletonEnforcer = (function () {
+    function AssetLibraryBundleSingletonEnforcer() {
+    }
+    return AssetLibraryBundleSingletonEnforcer;
+})();
+///<reference path="../src/away/library/AssetLibraryBundle.ts"/>
 //------------------------------------------------------------------------------------------------
 // Web / PHP Storm arguments string
 //------------------------------------------------------------------------------------------------
-// --sourcemap $ProjectFileDir$/tests/AssetLoaderTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/AssetLoaderTest.js
+// --sourcemap $ProjectFileDir$/tests/AssetLibraryTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/AssetLibraryTest.js
 //------------------------------------------------------------------------------------------------
 var tests;
 (function (tests) {
-    var AssetLoaderTest = (function () {
-        function AssetLoaderTest() {
-            //---------------------------------------------------------------------------------------------------------------------
-            // Enable Custom Parser ( JSON file format with multiple texture dependencies )
-            away.loaders.AssetLoader.enableParser(loaders.JSONTextureParser);
-
-            var token;
-            var urlRq;
-
-            //---------------------------------------------------------------------------------------------------------------------
-            // LOAD A SINGLE IMAGE
-            this.alImage = new away.loaders.AssetLoader();
-            urlRq = new away.net.URLRequest('URLLoaderTestData/1024x1024.png');
-            token = this.alImage.load(urlRq);
-
-            token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
-            token.addEventListener(away.events.AssetEvent.TEXTURE_SIZE_ERROR, this.onTextureSizeError, this);
-
-            //---------------------------------------------------------------------------------------------------------------------
-            // LOAD A SINGLE IMAGE - With wrong dimensions
-            this.alErrorImage = new away.loaders.AssetLoader();
-            urlRq = new away.net.URLRequest('URLLoaderTestData/2.png');
-            token = this.alErrorImage.load(urlRq);
-
-            token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
-            token.addEventListener(away.events.AssetEvent.TEXTURE_SIZE_ERROR, this.onTextureSizeError, this);
-
-            //---------------------------------------------------------------------------------------------------------------------
-            // LOAD WITH A JSON PARSER
-            this.alJson = new away.loaders.AssetLoader();
-            urlRq = new away.net.URLRequest('URLLoaderTestData/JSNParserTest.json');
-            token = this.alJson.load(urlRq);
-
-            token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
-            token.addEventListener(away.events.AssetEvent.TEXTURE_SIZE_ERROR, this.onTextureSizeError, this);
-            token.addEventListener(away.events.ParserEvent.PARSE_COMPLETE, this.onParseComplete, this);
-
-            token.addEventListener(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this.onDependencyComplete, this);
+    var AssetLibraryTest = (function () {
+        function AssetLibraryTest() {
         }
-        AssetLoaderTest.prototype.onDependencyComplete = function (e) {
-            console.log('--------------------------------------------------------------------------------');
-            console.log('AssetLoaderTest.onDependencyComplete', e);
-            console.log('--------------------------------------------------------------------------------');
-        };
-
-        AssetLoaderTest.prototype.onParseComplete = function (e) {
-            console.log('--------------------------------------------------------------------------------');
-            console.log('AssetLoaderTest.onParseComplete', e);
-            console.log('--------------------------------------------------------------------------------');
-        };
-
-        AssetLoaderTest.prototype.onTextureSizeError = function (e) {
-            var assetLoader = e.target;
-
-            console.log('--------------------------------------------------------------------------------');
-            console.log('AssetLoaderTest.onTextureSizeError', assetLoader.baseDependency._iLoader.url, e);
-            console.log('--------------------------------------------------------------------------------');
-        };
-
-        AssetLoaderTest.prototype.onAssetComplete = function (e) {
-            var assetLoader = e.target;
-
-            console.log('--------------------------------------------------------------------------------');
-            console.log('AssetLoaderTest.onAssetComplete', assetLoader.baseDependency._iLoader.url, e);
-            console.log('--------------------------------------------------------------------------------');
-        };
-        return AssetLoaderTest;
+        return AssetLibraryTest;
     })();
-    tests.AssetLoaderTest = AssetLoaderTest;
+    tests.AssetLibraryTest = AssetLibraryTest;
 })(tests || (tests = {}));
 
 var GL = null;
 
 window.onload = function () {
-    var test = new tests.AssetLoaderTest();
+    var test = new tests.AssetLibraryTest();
     var canvas = document.createElement('canvas');
     GL = canvas.getContext("experimental-webgl");
 };
-//@ sourceMappingURL=AssetLoaderTest.js.map
+//@ sourceMappingURL=AssetLibraryTest.js.map

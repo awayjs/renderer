@@ -2,6 +2,8 @@
 ///<reference path="ts/JSONTextureParser.ts"/>
 
 //<reference path="../src/away/library/assets/IAsset.ts"/>
+
+//<reference path="../src/away/library/assets/IAsset.ts"/>
 //<reference path="../src/away/loaders/misc/SingleFileLoader.ts"/>
 //<reference path="../src/away/loaders/misc/AssetLoaderContext.ts"/>
 //<reference path="../src/away/loaders/parsers/ParserBase.ts"/>
@@ -67,6 +69,27 @@ module tests {
 
             token.addEventListener( away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete , this );
             token.addEventListener( away.events.AssetEvent.TEXTURE_SIZE_ERROR, this.onTextureSizeError , this );
+            token.addEventListener( away.events.ParserEvent.PARSE_COMPLETE, this.onParseComplete , this );
+
+            token.addEventListener( away.events.LoaderEvent.DEPENDENCY_COMPLETE, this.onDependencyComplete , this );
+
+        }
+
+        public onDependencyComplete ( e : away.events.LoaderEvent ) : void
+        {
+
+            console.log( '--------------------------------------------------------------------------------');
+            console.log( 'AssetLoaderTest.onDependencyComplete' , e );
+            console.log( '--------------------------------------------------------------------------------');
+
+        }
+
+        public onParseComplete ( e : away.events.ParserEvent ) : void
+        {
+
+            console.log( '--------------------------------------------------------------------------------');
+            console.log( 'AssetLoaderTest.onParseComplete' , e );
+            console.log( '--------------------------------------------------------------------------------');
         }
 
         public onTextureSizeError ( e : away.events.AssetEvent ) : void
@@ -76,7 +99,7 @@ module tests {
 
             console.log( '--------------------------------------------------------------------------------');
             console.log( 'AssetLoaderTest.onTextureSizeError' , assetLoader.baseDependency._iLoader.url , e );
-            //console.log( '--------------------------------------------------------------------------------');
+            console.log( '--------------------------------------------------------------------------------');
 
         }
 
@@ -87,7 +110,7 @@ module tests {
 
             console.log( '--------------------------------------------------------------------------------');
             console.log( 'AssetLoaderTest.onAssetComplete', assetLoader.baseDependency._iLoader.url , e );
-            //console.log( '--------------------------------------------------------------------------------');
+            console.log( '--------------------------------------------------------------------------------');
 
         }
     }
@@ -105,3 +128,4 @@ window.onload = function ()
     GL = canvas.getContext("experimental-webgl");
 
 }
+
