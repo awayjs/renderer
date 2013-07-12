@@ -2,29 +2,33 @@
  * ...
  * @author Gary Paluk - http://www.plugin.io
  */
+ 
+///<reference path="../base/Object3D.ts" />
+///<reference path="../geom/Matrix3D.ts" />
+///<reference path="../library/assets/AssetType.ts" />
 
 module away.containers
 {
-	export class ObjectContainer3D extends away.containers.Object3D
+	export class ObjectContainer3D extends away.base.Object3D
 	{
 		public _iAncestorsAllowMouseEnabled:boolean;
 		public _iIsRoot:boolean;
 		
 		public _pScene:Scene3D;
 		public _pParent:ObjectContainer3D;
-		public _pSceneTransform:Matrix3D = new away.geom.Matrix3D();
+		public _pSceneTransform:away.geom.Matrix3D = new away.geom.Matrix3D();
 		public _pSceneTransformDirty:boolean = true;
 		
-		public _pExplicitPartition:away.partitions.Partition3D;
-		public _pImplicitPartition:away.partitions.Partition3D;
+		//TODO public _pExplicitPartition:away.partitions.Partition3D;
+		//TODO public _pImplicitPartition:away.partitions.Partition3D;
 		public _pMouseEnabled:boolean;
 		
-		private _sceneTransformChanged:away.events.Object3DEvent;
-		private _scenechanged:away.events.Object3DEvent;
-		private _children:away.containers.ObjectContainer3D[] = away.containers.ObjectContainer3D[];
+		//TODO private _sceneTransformChanged:away.events.Object3DEvent;
+		//TODO private _scenechanged:away.events.Object3DEvent;
+		private _children:away.containers.ObjectContainer3D[] = [];
 		private _mouseChildren:boolean = true;
 		private _oldScene:away.containers.Scene3D;
-		private _inverseSceneTransform:Matrix3D = new away.geom.Matrix3D();
+		private _inverseSceneTransform:away.geom.Matrix3D = new away.geom.Matrix3D();
 		private _inverseSceneTransformDirty:boolean = true;
 		private _scenePosition:away.geom.Vector3D = new away.geom.Vector3D();
 		private _scenePositionDirty:boolean = true;
@@ -42,25 +46,25 @@ module away.containers
 		
 		public get ignoreTransform():boolean
 		{
-			return this._ignoreTransform;
+			return this._pIgnoreTransform;
 		}
 		
 		public set ignoreTransform( value:boolean )
 		{
-			this._ignoreTransform = value;
-			this._sceneTransformDirty = !value;
+			this._pIgnoreTransform = value;
+			this._pSceneTransformDirty = !value;
 			this._inverseSceneTransformDirty = !value;
 			this._scenePositionDirty = !value;
 			
 			if( value ) {
-				this._sceneTransform.identity();
+				this._pSceneTransform.identity();
 				this._scenePosition.setTo( 0, 0, 0 );
 			}
 		}
-		
+		/*
 		public get _iImplicitPartition():away.partitions.Partition3D
 		{
-			return this._implicitPartition;
+			return this._iImplicitPartition;
 		}
 		
 		public set _iImplicitPartition( value:away.partitions.Partition3D )
@@ -87,17 +91,19 @@ module away.containers
 				}
 			}
 		}
+		*/
 		
-		public get _iIsVisible():Boolean
+		public get _iIsVisible():boolean
 		{
-			return _implicitVisibility && _explicitVisibility;
+			return this._implicitVisibility && this._explicitVisibility;
 		}
 		
+		/*
 		public _iSetParent( value:away.containers.ObjectContainer3D )
 		{
-			_parent = value;
+			this._pParent = value;
 			
-			this.updateMouseChildren();
+			this._pUpdateMouseChildren();
 			
 			if( value == null ) {
 				this.scene = null;
@@ -107,15 +113,17 @@ module away.containers
 			this.notifySceneTransformChange();
 			this.notifySceneChange();
 		}
+		*/
 		
+		/*
 		private notifySceneTransformChange()
 		{
-			if ( this._sceneTransformDirty || this._ignoreTransform )
+			if ( this._pSceneTransformDirty || this._pIgnoreTransform )
 			{
 				return;
 			}
 			
-			this.invalidateSceneTransform();
+			this._pInvalidateSceneTransform();
 			
 			var i:number;
 			var len:number = this._children.length;
@@ -136,7 +144,9 @@ module away.containers
 				this.dispatchEvent(_sceneTransformChanged);
 			}
 		}
+		*/
 		
+		/*
 		private notifySceneChange()
 		{
 			this.notifySceneTransformChange();
@@ -156,16 +166,18 @@ module away.containers
 				this.dispatchEvent( this._scenechanged );
 			}
 		}
+		*/
 		
-		protected _pUpdateMouseChildren():void
+		/*
+		public _pUpdateMouseChildren():void
 		{
-			if( this._parent && !this._parent._isRoot ) {
+			if( this._pParent && !this._pParent._iIsRoot ) {
 				// Set implicit mouse enabled if parent its children to be so.
-				this._ancestorsAllowMouseEnabled = this.parent._ancestorsAllowMouseEnabled && _parent.mouseChildren;
+				this._iAncestorsAllowMouseEnabled = this.parent._iAncestorsAllowMouseEnabled && this._pParent.mouseChildren;
 			}
 			else
 			{
-				this._ancestorsAllowMouseEnabled = this.mouseChildren;
+				this._iAncestorsAllowMouseEnabled = this.mouseChildren;
 			}
 			
 			// Sweep children.
@@ -175,39 +187,42 @@ module away.containers
 				this._children[i].updateMouseChildren();
 			}
 		}
+		*/
 		
 		public get mouseEnabled():boolean
 		{
-			return this._mouseEnabled;
+			return this._pMouseEnabled;
 		}
 		
+		/*
 		public set mouseEnabled( value:boolean )
 		{
-			this._mouseEnabled = value;
-			this.updateMouseChildren();
+			this._pMouseEnabled = value;
+			this._pUpdateMouseChildren();
 		}
+		*/
 		
 		// TODO override arcane function invalidateTransform():void
 		
-		protected invalidateSceneTransform()
+		public _pInvalidateSceneTransform()
 		{
-			this._sceneTransformDirty = !this._ignoreTransform;
-			this._inverseSceneTransformDirty = !this._ignoreTransform;
-			this._scenePositionDirty = !this._ignoreTransform;
+			this._pSceneTransformDirty = !this._pIgnoreTransform;
+			this._inverseSceneTransformDirty = !this._pIgnoreTransform;
+			this._scenePositionDirty = !this._pIgnoreTransform;
 		}
 		
-		protected function updateSceneTransform():void
+		public _pUpdateSceneTransform()
 		{
-			if ( this._parent && !this._parent._isRoot )
+			if ( this._pParent && !this._pParent._iIsRoot )
 			{
-				this._sceneTransform.copyFrom( this._parent.sceneTransform );
-				this._sceneTransform.prepend( this.transform );
+				this._pSceneTransform.copyFrom( this._pParent.sceneTransform );
+				this._pSceneTransform.prepend( this.transform );
 			}
 			else
 			{
-				this._sceneTransform.copyFrom( this.transform );
+				this._pSceneTransform.copyFrom( this.transform );
 			}
-			this._sceneTransformDirty = false;
+			this._pSceneTransformDirty = false;
 		}
 		
 		public get mouseChildren():boolean
@@ -215,11 +230,13 @@ module away.containers
 			return this._mouseChildren;
 		}
 		
+		/*
 		public set mouseChildren( value:boolean )
 		{
 			this._mouseChildren = value;
-			this.updateMouseChildren();
+			this._pUpdateMouseChildren();
 		}
+		*/
 		
 		public get visible():boolean
 		{
@@ -250,13 +267,13 @@ module away.containers
 				this.sceneTransform.copyColumnTo( 3, this._scenePosition );
 				this._scenePositionDirty = false;
 			}
-			return _scenePosition;
+			return this._scenePosition;
 		}
 		
-		public function get minX():number
+		public get minX():number
 		{
 			var i:number;
-			var len:number = _children.length;
+			var len:number = this._children.length;
 			var min:number = Number.POSITIVE_INFINITY;
 			var m:number;
 			
@@ -274,7 +291,7 @@ module away.containers
 		public get minY():number
 		{
 			var i:number;
-			var len:number = _children.length;
+			var len:number = this._children.length;
 			var min:number = Number.POSITIVE_INFINITY;
 			var m:number;
 			
@@ -293,7 +310,7 @@ module away.containers
 		public get minZ():number
 		{
 			var i:number;
-			var len:number = _children.length;
+			var len:number = this._children.length;
 			var min:number = Number.POSITIVE_INFINITY;
 			var m:number;
 			
@@ -309,15 +326,15 @@ module away.containers
 			return min;
 		}
 		
-		public function get maxX():number
+		public get maxX():number
 		{
 			var i:number;
-			var len:number = _children.length;
+			var len:number = this._children.length;
 			var max:number = Number.NEGATIVE_INFINITY;
 			var m:number;
 			
 			while( i < len ) {
-				var child:away.containers.ObjectContainer3D = this.number_children[i++];
+				var child:away.containers.ObjectContainer3D = this._children[i++];
 				m = child.maxX + child.x;
 				if( m > max )
 				{
@@ -336,7 +353,7 @@ module away.containers
 			
 			while( i < len )
 			{
-				var child:away.containers.ObjectContainer3D = number_children[i++];
+				var child:away.containers.ObjectContainer3D = this._children[i++];
 				m = child.maxY + child.y;
 				if( m > max )
 				{
@@ -364,9 +381,10 @@ module away.containers
 			return max;
 		}
 		
+		/*
 		public get partition():away.partitions.Partition3D
 		{
-			return this._explicitPartition;
+			return this._pExplicitPartition;
 		}
 		
 		public set partition( value:away.partitions.Partition3D )
@@ -374,19 +392,20 @@ module away.containers
 			this._explicitPartition = value;
 			this.implicitPartition = value ? value : ( this._parent ? this._parent.implicitPartition : null);
 		}
+		*/
 		
 		public get sceneTransform():away.geom.Matrix3D
 		{
-			if( this._sceneTransformDirty )
+			if( this._pSceneTransformDirty )
 			{
-				this.updateSceneTransform();
+				this._pUpdateSceneTransform();
 			}
-			return this._sceneTransform;
+			return this._pSceneTransform;
 		}
 		
 		public get scene():away.containers.Scene3D
 		{
-			return this._scene;
+			return this._pScene;
 		}
 		
 		//TODO public function set scene(value:Scene3D):void
@@ -404,7 +423,7 @@ module away.containers
 		
 		public get parent():away.containers.ObjectContainer3D
 		{
-			return this._parent;
+			return this._pParent;
 		}
 		
 		public contains( child:away.containers.ObjectContainer3D ):boolean
@@ -412,6 +431,7 @@ module away.containers
 			return this._children.indexOf( child ) >= 0;
 		}
 		
+		/*
 		public addChild( child:away.containers.ObjectContainer3D):away.containers.ObjectContainer3D
 		{
 			if (child == null)
@@ -419,12 +439,12 @@ module away.containers
 				throw new away.errors.Error("Parameter child cannot be null.");
 			}
 			
-			if (child._parent)
+			if (child._pParent)
 			{
-				child._parent.removeChild(child);
+				child._pParent.removeChild(child);
 			}
 			
-			if (!child._explicitPartition)
+			if (!child._pExplicitPartition)
 			{
 				child.implicitPartition = _implicitPartition;
 			}
@@ -442,12 +462,14 @@ module away.containers
 		
 		public addChildren( childarray:away.containers.ObjectContainer3D )
 		{
-			foreach (var child:away.containers.ObjectContainer3D in childarray )
+			for(var child:away.containers.ObjectContainer3D in childarray )
 			{
 				this.addChild( child );
 			}
 		}
 		
+		*/
+		/*
 		public removeChild( child:away.containers.ObjectContainer3D )
 		{
 			if ( child == null )
@@ -464,7 +486,8 @@ module away.containers
 			
 			this.removeChildInternal( childIndex, child );
 		}
-		
+		*/
+		/*
 		public removeChildAt( index:number )
 		{
 			var child:ObjectContainer3D = _children[index];
@@ -491,21 +514,21 @@ module away.containers
 		{
 			return this._children.length;
 		}
-		
+		*/
 		//TODO override public function lookAt(target:Vector3D, upAxis:Vector3D = null):void
 		//TODO override public function translateLocal(axis:Vector3D, distance:Number):void
 		
 		//TODO override public function dispose():void
-		
+		/*
 		public disposeWithChildren()
 		{
 			this.dispose();
-			while( numChildren > 0 )
+			while( this.numChildren > 0 )
 			{
 				this.getChildAt(0).dispose();
 			}
 		}
-		
+		*/
 		//TODO override public function clone():Object3D
 		//TODO override public function rotate(axis:Vector3D, angle:Number):void
 		//TODO override public function dispatchEvent(event:Event):Boolean
@@ -514,7 +537,7 @@ module away.containers
 		{
 			var len:number = this._children.length;
 			
-			this._implicitVisibility = this._parent._explicitVisibility && this._parent._implicitVisibility;
+			this._implicitVisibility = this._pParent._explicitVisibility && this._pParent._implicitVisibility;
 			
 			for (var i:number = 0; i < len; ++i)
 			{
@@ -524,6 +547,8 @@ module away.containers
 		
 		//TODO override public function addEventListener(type:String, listener:Function, useCapture:Boolean = false, priority:int = 0, useWeakReference:Boolean = false):void
 		//TODO override public function removeEventListener(type:String, listener:Function, useCapture:Boolean = false):void
+		
+		
 		
 	}
 }

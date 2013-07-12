@@ -3,20 +3,24 @@
  * @author Gary Paluk - http://www.plugin.io
  */
 
+///<reference path="../display3D/Texture.ts" />
+///<reference path="../geom/Point.ts" />
+///<reference path="Scene3D.ts" />
+
 module away.containers
 {
 	export class View3D
 	{
-		/*
+		
 		private _width:number;
 		private _height:number;
 		private _localPos:away.geom.Point;
 		private _globalPos:away.geom.Point;
 		private _globalPosDirty:boolean;
 		
-		public  _pScene:away.Scene3D;
-		public _pCamera:away.cameras.Camera3D;
-		public _pEntityCollector:away.travers.EntityCollector;
+		public  _pScene:Scene3D;
+		//public _pCamera:away.cameras.Camera3D;
+		//public _pEntityCollector:away.travers.EntityCollector;
 		public _pAspectRation:number;
 		
 		private _time:number = 0;
@@ -24,35 +28,35 @@ module away.containers
 		private _backgroundColor:number = 0x000000;
 		private _backgroundAlpha:number = 1;
 		
-		public _pMouse3DManager:away.managers.Mouse3DManager;
-		public _pTouch3DManager:away.managers.Touch3DManager;
+		//public _pMouse3DManager:away.managers.Mouse3DManager;
+		//public _pTouch3DManager:away.managers.Touch3DManager;
 		
-		public _pRenderer:away.render.RendererBase;
-		private _depthRenderer:away.render.DepthRenderer;
+		//public _pRenderer:away.render.RendererBase;
+		//private _depthRenderer:away.render.DepthRenderer;
 		private _addedToStage:boolean;
 		
 		private _forceSoftware:boolean;
 		
-		public _pFilter3DRenderer:away.render.Filter3DRenderer;
+		//public _pFilter3DRenderer:away.render.Filter3DRenderer;
 		public _pRequireDepthRender:boolean;
 		public _pDepthRender:away.display3D.Texture;
 		private _depthTextureInvalid:boolean = true;
 		
-		private _hitField:away.display.Sprite;
+		//private _hitField:away.display.Sprite;
 		public _pParentIsStage:boolean;
 		
-		private _background:away.textures.Texture2DBase;
-		public _pStage3DProxy:away.managers.Stage3DProxy;
+		//private _background:away.textures.Texture2DBase;
+		//public _pStage3DProxy:away.managers.Stage3DProxy;
 		public _pBackBufferInvalid:boolean = true;
 		private _antiAlias:number;
 		
-		public _pRttBufferManager:away.managers.RTTBufferManager;
+		//public _pRttBufferManager:away.managers.RTTBufferManager;
 		
 		private _rightClickMenuEnabled:boolean = true;
 		private _sourceURL:string;
-		private _menu0:away.ui.ContextMenuItem;
-		private _menu1:away.ui.ContextMenuItem;
-		private _viewContextMenu:away.ui.ContextMenu;
+		//private _menu0:away.ui.ContextMenuItem;
+		//private _menu1:away.ui.ContextMenuItem;
+		//private _viewContextMenu:away.ui.ContextMenu;
 		public _pShareContext:boolean = false;
 		public _pScissorRect:away.geom.Rectangle;
 		private _scissorRectDirty:boolean = true;
@@ -61,7 +65,6 @@ module away.containers
 		private _depthPrepass:boolean;
 		private _profile:string;
 		private _layeredView:boolean = false;
-		*/
 		
 		constructor( scene:Scene3D = null
 					/*,
@@ -74,8 +77,8 @@ module away.containers
 		{
 			// TODO link to displaylist
 			
-			this._profile = profile;
-			this._scene = scene || new Scene3D();
+			//this._profile = profile;
+			this._pScene = scene || new Scene3D();
 			/*
 			this._scene.addEventListener( away.events.Scene3DEvent.PARTITION_CHANGED, this.onScenePartitionChanged, this );
 			this._camera = camera || new away.cameras.Camera3D();

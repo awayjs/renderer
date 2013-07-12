@@ -1,4 +1,4 @@
-module away.library
+module away.library.assets
 {
 	export class AssetType
 	{

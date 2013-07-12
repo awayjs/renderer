@@ -4,26 +4,28 @@
  */
  
 ///<reference path="../events/EventDispatcher.ts" />
+///<reference path="ObjectContainer3D.ts" />
 
 module away.containers
 {
-	export Scene3D extends away.events.EventDispatcher
+	export class Scene3D extends away.events.EventDispatcher
 	{
 		
 		public _iSceneGraphRoot:away.containers.ObjectContainer3D;
-		private _partitions:away.partition.Partition3D[];
+		//private _partitions:away.partition.Partition3D[];
 		
 		constructor()
 		{
 			super();
-			this._partitions = away.partition.Partition3D[];
+			//this._partitions = new away.partition.Partition3D[];
 			this._iSceneGraphRoot = new away.containers.ObjectContainer3D();
 			
-			this._sceneGraphRoot.scene = this;
-			this._sceneGraphRoot._isRoot = true;
-			this._sceneGraphRoot.partition = new away.partition.Partition3D( new away.partition.NodeBase() );
+			this._iSceneGraphRoot.scene = this;
+			this._iSceneGraphRoot._iIsRoot = true;
+			//this._sceneGraphRoot.partition = new away.partition.Partition3D( new away.partition.NodeBase() );
 		}
 		
+		/*
 		public traversePartitions( traverser:away.partitions.PartitionTraverser )
 		{
 			var i:number;
@@ -36,53 +38,64 @@ module away.containers
 				this._partitions[i++].traverse( traverser );
 			}
 		}
+		*/
 		
+		/*
 		public get partition():away.partitions.Partition3D
 		{
-			return this._sceneGraphRoot.partition;
+			return this._iSceneGraphRoot.partition;
 		}
+		*/
 		
+		/*
 		public set partition( value:away.partitions.Partition3D )
 		{
 			this._sceneGraphRoot.partition = value;
 			dispatchEvent( new away.events.Scene3DEvent( away.events.Scene3DEvent.PARTITION_CHANGED, this._sceneGraphRoot ) );
 		}
+		*/
 		
 		public contains( child:away.containers.ObjectContainer3D ):boolean
 		{
-			return this._sceneGraphRoot.contains( child );
+			return this._iSceneGraphRoot.contains( child );
 		}
 		
+		/*
 		public addChild( child:away.containers.ObjectContainer3D ):away.containers.ObjectContainer3D
 		{
-			return this._sceneGraphRoot.addChild( child );
+			return this._iSceneGraphRoot.addChild( child );
 		}
+		*/
 		
+		/*
 		public removeChild( child:away.containers.ObjectContainer3D )
 		{
-			this._sceneGraphRoot.removeChild( child );
+			this._iSceneGraphRoot.removeChild( child );
 		}
+		*/
 		
+		/*
 		public removeChildAt( index:number )
 		{
-			this._sceneGraphRoot.removeChildAt( index );
+			this._iSceneGraphRoot.removeChildAt( index );
 		}
+		
 		
 		public getChildAt( index:number ):away.containers.ObjectContainer3D
 		{
-			return this._sceneGraphRoot.getChildAt( index );
+			return this._iSceneGraphRoot.getChildAt( index );
 		}
 		
 		public get numChildren():number
 		{
-			return this._sceneGraphRoot.numChildren;
+			return this._iSceneGraphRoot.numChildren;
 		}
 		
 		public _iRegisterEntity( entity:away.enity.Entity )
 		{
 			var partition:away.partition.Partition3D = entity.implicitPartition;
 			this.addPartitionUnique( partition );
-			this.partition.markForUpdate(entity);
+			this.partition.markForUpdate( entity );
 		}
 		
 		public _iUnregisterEntity( entity:away.enity.Entity )
@@ -112,6 +125,6 @@ module away.containers
 				_partitions.push( partition );
 			}
 		}
-		
+		*/
 	}
 }
