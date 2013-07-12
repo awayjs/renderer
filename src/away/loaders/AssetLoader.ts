@@ -385,7 +385,8 @@ module away.loaders
             else
             {
 
-                this.dispatchEvent( new away.events.LoaderEvent(away.events.LoaderEvent.RESOURCE_COMPLETE , this._uri ));
+                //console.log( 'AssetLoader.retrieveNext - away.events.LoaderEvent.RESOURCE_COMPLETE');
+                this.dispatchEvent( new away.events.LoaderEvent( away.events.LoaderEvent.RESOURCE_COMPLETE , this._uri ));
 
             }
 
@@ -689,7 +690,7 @@ module away.loaders
 
 			}
 
-            console.log( 'AssetLoader.onAssetComplete suppresAssetEvents:' , this._loadingDependency.suppresAssetEvents , event );
+            //console.log( 'AssetLoader.onAssetComplete suppresAssetEvents:' , this._loadingDependency.suppresAssetEvents , event );
 
 			if (!this._loadingDependency.suppresAssetEvents)
             {

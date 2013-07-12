@@ -101,10 +101,12 @@ module loaders
 
             var resource : away.textures.Texture2DBase = <away.textures.Texture2DBase> resourceDependency.assets[0] ;//as Texture2DBase;
 
+            this._pFinalizeAsset( <away.library.IAsset> resource , resourceDependency._iLoader.url );
+
             this._loadedTextures.push( resource );
 
-            console.log( 'JSONTextureParser._iResolveDependency' , resourceDependency );
-            console.log( 'JSONTextureParser._iResolveDependency resource: ' , resource );
+            //console.log( 'JSONTextureParser._iResolveDependency' , resourceDependency );
+            //console.log( 'JSONTextureParser._iResolveDependency resource: ' , resource );
 
             this._dependencyCount--;
 
@@ -114,23 +116,6 @@ module loaders
                 this._state = this.STATE_COMPLETE;
 
             }
-
-            /*
-            if (resourceDependency.assets.length != 1)
-                return;
-            var resource:Texture2DBase = resourceDependency.assets[0] as Texture2DBase;
-            _dependencyCount--;
-
-            if (resource && BitmapTexture(resource).bitmapData) {
-                var image:DAEImage = _libImages[ resourceDependency.id ] as DAEImage;
-
-                if (image)
-                    image.resource = BitmapTexture(resource);
-            }
-
-            if (_dependencyCount == 0)
-                _parseState = DAEParserState.PARSE_MATERIALS;
-            */
 
         }
 
@@ -140,7 +125,7 @@ module loaders
         public _iResolveDependencyFailure(resourceDependency:away.loaders.ResourceDependency):void
         {
             //console.log( '-----------------------------------------------------------');
-            console.log( 'JSONTextureParser._iResolveDependencyFailure', 'x' , resourceDependency );
+            //console.log( 'JSONTextureParser._iResolveDependencyFailure', 'x' , resourceDependency );
 
             this._dependencyCount--;
 
@@ -148,7 +133,7 @@ module loaders
             {
 
                 this._state = this.STATE_COMPLETE;
-                console.log( 'JSONTextureParser._iResolveDependencyFailure.complete' );
+                //console.log( 'JSONTextureParser._iResolveDependencyFailure.complete' );
 
             }
             /*
@@ -162,7 +147,7 @@ module loaders
         private parseJson( ) : void
         {
 
-            console.log( 'JSONTextureParser.parseJson' , typeof this.data );
+            //console.log( 'JSONTextureParser.parseJson' , typeof this.data );
 
             if ( JSONTextureParser.supportsData( this.data ) )
             {
@@ -187,7 +172,8 @@ module loaders
 
                         rq                  = new away.net.URLRequest( uri );
 
-                        console.log( 'JSONTextureParser.parseJson' , id , uri  );
+                        //console.log( 'JSONTextureParser.parseJson' , id , uri  );
+                        //console.log( 'JSONTextureParser.parseJson' , id , uri  );
 
                         this._pAddDependency( 'JSON_ID_' + id , rq , false , null , true );
 
@@ -237,7 +223,7 @@ module loaders
 
                 case this.STATE_COMPLETE:
 
-                    console.log( 'JSONTextureParser._pProceedParsing: WE ARE DONE' ); // YAY;
+                    //console.log( 'JSONTextureParser._pProceedParsing: WE ARE DONE' ); // YAY;
                     return away.loaders.ParserBase.PARSING_DONE;
 
                     break;

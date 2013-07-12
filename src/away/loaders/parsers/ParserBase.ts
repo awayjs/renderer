@@ -358,7 +358,7 @@ module away.loaders {
 					break;
 			};
 
-            console.log( 'ParserBase' , '_pFinalizeAsset.type_event: ' ,  type_event );
+            //console.log( 'ParserBase' , '_pFinalizeAsset.type_event: ' ,  type_event );
 
 			// If the asset has no name, give it
 			// a per-type default name.
@@ -454,6 +454,9 @@ module away.loaders {
 		 */
 		public _pFinishParsing() : void
 		{
+
+            //console.log( 'ParserBase._pFinishParsing');
+
             if(this._timer)
             {
 			    this._timer.removeEventListener(away.events.TimerEvent.TIMER, this._pOnInterval , this );

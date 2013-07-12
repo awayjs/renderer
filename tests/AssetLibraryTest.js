@@ -2781,8 +2781,6 @@ var away;
                 }
                 ;
 
-                console.log('ParserBase', '_pFinalizeAsset.type_event: ', type_event);
-
                 if (!asset.name)
                     asset.name = type_name;
 
@@ -2862,8 +2860,6 @@ var away;
             * Finish parsing the data.
             */
             ParserBase.prototype._pFinishParsing = function () {
-                console.log('ParserBase._pFinishParsing');
-
                 if (this._timer) {
                     this._timer.removeEventListener(away.events.TimerEvent.TIMER, this._pOnInterval, this);
                     this._timer.stop();
@@ -4249,6 +4245,13 @@ var away;
                 this.rawData[15] = 1;
 
                 return true;
+            };
+
+            Matrix3D.prototype.transformVector = function (v) {
+                var x = v.x;
+                var y = v.y;
+                var z = v.z;
+                return new away.geom.Vector3D((x * this.rawData[0] + y * this.rawData[4] + z * this.rawData[8] + this.rawData[12]), (x * this.rawData[1] + y * this.rawData[5] + z * this.rawData[9] + this.rawData[13]), (x * this.rawData[2] + y * this.rawData[6] + z * this.rawData[10] + this.rawData[14]), 1);
             };
 
             /**
@@ -5653,8 +5656,6 @@ var away;
                         this._parser = this.getParserFromSuffix();
                     }
 
-                    console.log('SingleFileURLLoader.load._parser: ' + this._parser);
-
                     if (this._parser) {
                         switch (this._parser.dataFormat) {
                             case away.loaders.ParserDataFormat.BINARY:
@@ -5687,9 +5688,8 @@ var away;
                     }
                 }
 
-                console.log('SingleFileURLLoader.load.dataFormat:', dataFormat, 'ParserFormat: ', this._parser.dataFormat);
-                console.log('SingleFileURLLoader.load.loaderType: ', loaderType);
-
+                //console.log( 'SingleFileURLLoader.load.dataFormat:' , dataFormat , 'ParserFormat: ' , this._parser.dataFormat );
+                //console.log( 'SingleFileURLLoader.load.loaderType: ' , loaderType );
                 var loader = this.getLoader(loaderType);
                 loader.dataFormat = dataFormat;
                 loader.addEventListener(away.events.Event.COMPLETE, this.handleUrlLoaderComplete, this);
@@ -5787,8 +5787,6 @@ var away;
                     var currentParser = SingleFileLoader._parsers[i];
                     var supportstype = SingleFileLoader._parsers[i].supportsType(this._fileExtension);
 
-                    console.log('SingleFileURLLoader.getParserFromSuffix.supportstype', supportstype);
-
                     if (SingleFileLoader._parsers[i]['supportsType'](this._fileExtension)) {
                         return new SingleFileLoader._parsers[i]();
                     }
@@ -5841,8 +5839,6 @@ var away;
                 this.removeListeners(urlLoader);
 
                 this._data = urlLoader.data;
-
-                console.log('SingleFileURLLoader.handleUrlLoaderComplete url: ', this.url, '   LoadedDataType: ', typeof this._data);
 
                 if (this._loadAsRawData) {
                     // No need to parse this data, which should be returned as is
@@ -5903,7 +5899,7 @@ var away;
             };
 
             SingleFileLoader.prototype.onAssetComplete = function (event) {
-                console.log('SingleFileLoader.onAssetComplete', event);
+                //console.log( 'SingleFileLoader.onAssetComplete' , event );
                 this.dispatchEvent(event.clone());
             };
 
@@ -5915,7 +5911,7 @@ var away;
             * Called when parsing is complete.
             */
             SingleFileLoader.prototype.onParseComplete = function (event) {
-                console.log('SingleFileLoader.onParseComplete', event);
+                //console.log( 'SingleFileLoader.onParseComplete' , event );
                 this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this.url));
 
                 this._parser.removeEventListener(away.events.ParserEvent.READY_FOR_DEPENDENCIES, this.onReadyForDependencies, this);
@@ -6404,6 +6400,7 @@ var away;
 
                     this.retrieveNext(parser);
                 } else {
+                    //console.log( 'AssetLoader.retrieveNext - away.events.LoaderEvent.RESOURCE_COMPLETE');
                     this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.RESOURCE_COMPLETE, this._uri));
                 }
             };
@@ -6620,8 +6617,6 @@ var away;
 
                     event.asset.resetAssetPath(event.asset.name, this._namespace);
                 }
-
-                console.log('AssetLoader.onAssetComplete suppresAssetEvents:', this._loadingDependency.suppresAssetEvents, event);
 
                 if (!this._loadingDependency.suppresAssetEvents) {
                     this.dispatchEvent(event.clone());
@@ -7417,9 +7412,9 @@ var away;
             */
             function AssetLibraryBundle(me) {
                 _super.call(this);
+                this._loadingSessionsGarbage = new Array();
 
-                me = me;
-
+                //me = me;
                 this._assets = new Array();
                 this._assetDictionary = new Object();
                 this._loadingSessions = new Array();
@@ -7932,19 +7927,31 @@ var away;
             * Called when the resource and all of its dependencies was retrieved.
             */
             AssetLibraryBundle.prototype.onResourceRetrieved = function (event) {
+                var _this = this;
                 var loader = event.target;
-                this.killLoadingSession(loader);
+
+                this.dispatchEvent(event.clone());
+
                 var index = this._loadingSessions.indexOf(loader);
                 this._loadingSessions.splice(index, 1);
 
-                /*
-                if(session.handle){
-                dispatchEvent(event);
-                }else{
-                onResourceError((session is IResource)? IResource(session) : null);
+                // Add loader to a garbage array - for a collection sweep and kill
+                this._loadingSessionsGarbage.push(loader);
+                this._gcTimeoutIID = setTimeout(function () {
+                    _this.loadingSessionGC();
+                }, 100);
+            };
+
+            AssetLibraryBundle.prototype.loadingSessionGC = function () {
+                var loader;
+
+                while (this._loadingSessionsGarbage.length > 0) {
+                    loader = this._loadingSessionsGarbage.pop();
+                    this.killLoadingSession(loader);
                 }
-                */
-                this.dispatchEvent(event.clone());
+
+                clearTimeout(this._gcTimeoutIID);
+                this._gcTimeoutIID = null;
             };
 
             AssetLibraryBundle.prototype.killLoadingSession = function (loader) {
@@ -8017,7 +8024,166 @@ var AssetLibraryBundleSingletonEnforcer = (function () {
     }
     return AssetLibraryBundleSingletonEnforcer;
 })();
+///<reference path="../../src/away/loaders/parsers/ParserBase.ts" />
+///<reference path="../../src/away/loaders/parsers/ParserDataFormat.ts" />
+///<reference path="../../src/away/loaders/parsers/ParserLoaderType.ts" />
+///<reference path="../../src/away/loaders/misc/ResourceDependency.ts" />
+///<reference path="../../src/away/net/IMGLoader.ts" />
+///<reference path="../../src/away/textures/HTMLImageElementTexture.ts" />
+///<reference path="../../src/away/textures/Texture2DBase.ts" />
+///<reference path="../../src/away/utils/TextureUtils.ts" />
+var loaders;
+(function (loaders) {
+    /**
+    * ImageParser provides a "parser" for natively supported image types (jpg, png). While it simply loads bytes into
+    * a loader object, it wraps it in a BitmapDataResource so resource management can happen consistently without
+    * exception cases.
+    */
+    var JSONTextureParser = (function (_super) {
+        __extends(JSONTextureParser, _super);
+        //private var _loader           : Loader;
+        /**
+        * Creates a new ImageParser object.
+        * @param uri The url or id of the data or file to be parsed.
+        * @param extra The holder for extra contextual data that the parser might need.
+        */
+        function JSONTextureParser() {
+            _super.call(this, away.loaders.ParserDataFormat.PLAIN_TEXT, away.loaders.ParserLoaderType.URL_LOADER);
+            //private var _byteData         : ByteArray;
+            this.STATE_PARSE_DATA = 0;
+            this.STATE_LOAD_IMAGES = 1;
+            this.STATE_COMPLETE = 2;
+            this._state = -1;
+            this._dependencyCount = 0;
+
+            this._loadedTextures = new Array();
+            this._state = this.STATE_PARSE_DATA;
+        }
+        JSONTextureParser.supportsType = /**
+        * Indicates whether or not a given file extension is supported by the parser.
+        * @param extension The file extension of a potential file to be parsed.
+        * @return Whether or not the given file type is supported.
+        */
+        function (extension) {
+            extension = extension.toLowerCase();
+            return extension == "json";
+        };
+
+        JSONTextureParser.supportsData = /**
+        * Tests whether a data block can be parsed by the parser.
+        * @param data The data block to potentially be parsed.
+        * @return Whether or not the given data is supported.
+        */
+        function (data) {
+            try  {
+                var obj = JSON.parse(data);
+
+                if (obj) {
+                    return true;
+                }
+
+                return false;
+            } catch (e) {
+                return false;
+            }
+
+            return false;
+        };
+
+        /**
+        * @inheritDoc
+        */
+        JSONTextureParser.prototype._iResolveDependency = function (resourceDependency) {
+            var resource = resourceDependency.assets[0];
+
+            this._pFinalizeAsset(resource, resourceDependency._iLoader.url);
+
+            this._loadedTextures.push(resource);
+
+            //console.log( 'JSONTextureParser._iResolveDependency' , resourceDependency );
+            //console.log( 'JSONTextureParser._iResolveDependency resource: ' , resource );
+            this._dependencyCount--;
+
+            if (this._dependencyCount == 0) {
+                this._state = this.STATE_COMPLETE;
+            }
+        };
+
+        /**
+        * @inheritDoc
+        */
+        JSONTextureParser.prototype._iResolveDependencyFailure = function (resourceDependency) {
+            //console.log( '-----------------------------------------------------------');
+            //console.log( 'JSONTextureParser._iResolveDependencyFailure', 'x' , resourceDependency );
+            this._dependencyCount--;
+
+            if (this._dependencyCount == 0) {
+                this._state = this.STATE_COMPLETE;
+            }
+        };
+
+        JSONTextureParser.prototype.parseJson = function () {
+            if (JSONTextureParser.supportsData(this.data)) {
+                try  {
+                    var json = JSON.parse(this.data);
+                    var data = json.data;
+
+                    var rec;
+                    var rq;
+
+                    for (var c = 0; c < data.length; c++) {
+                        rec = data[c];
+
+                        var uri = rec.image;
+                        var id = rec.id;
+
+                        rq = new away.net.URLRequest(uri);
+
+                        //console.log( 'JSONTextureParser.parseJson' , id , uri  );
+                        //console.log( 'JSONTextureParser.parseJson' , id , uri  );
+                        this._pAddDependency('JSON_ID_' + id, rq, false, null, true);
+                    }
+
+                    this._dependencyCount = data.length;
+                    this._state = this.STATE_LOAD_IMAGES;
+
+                    this._pPauseAndRetrieveDependencies();
+                } catch (e) {
+                    this._state = this.STATE_COMPLETE;
+                }
+            }
+        };
+
+        /**
+        * @inheritDoc
+        */
+        JSONTextureParser.prototype._pProceedParsing = function () {
+            console.log('JSONTextureParser._pProceedParsing', this._state);
+
+            switch (this._state) {
+                case this.STATE_PARSE_DATA:
+                    this.parseJson();
+                    return away.loaders.ParserBase.MORE_TO_PARSE;
+
+                    break;
+
+                case this.STATE_LOAD_IMAGES:
+                    break;
+
+                case this.STATE_COMPLETE:
+                    //console.log( 'JSONTextureParser._pProceedParsing: WE ARE DONE' ); // YAY;
+                    return away.loaders.ParserBase.PARSING_DONE;
+
+                    break;
+            }
+        };
+        return JSONTextureParser;
+    })(away.loaders.ParserBase);
+    loaders.JSONTextureParser = JSONTextureParser;
+})(loaders || (loaders = {}));
 ///<reference path="../src/away/library/AssetLibraryBundle.ts"/>
+///<reference path="../src/away/library/AssetLibrary.ts"/>
+///<reference path="ts/JSONTextureParser.ts"/>
 //------------------------------------------------------------------------------------------------
 // Web / PHP Storm arguments string
 //------------------------------------------------------------------------------------------------
@@ -8027,16 +8193,57 @@ var tests;
 (function (tests) {
     var AssetLibraryTest = (function () {
         function AssetLibraryTest() {
+            this.height = 0;
+            away.library.AssetLibrary.enableParser(loaders.JSONTextureParser);
+
+            //------------------------------------------------------------------------------------------------------------------
+            // AssetLibraryBundle - Debug / Test
+            //this.alb = away.library.AssetLibraryBundle.getInstance();
+            //this.token = this.alb.load( new away.net.URLRequest('URLLoaderTestData/JSNParserTest.json') );
+            //this.token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE , this.onResourceComplete , this );
+            //------------------------------------------------------------------------------------------------------------------
+            // AssetLibrary - Debug / Test
+            // away.library.AssetLibrary.addEventListener(away.events.AssetEvent.ASSET_COMPLETE , this.onAssetComplete, this );
+            this.token = away.library.AssetLibrary.load(new away.net.URLRequest('URLLoaderTestData/JSNParserTest.json'));
+            this.token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete, this);
+            this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+
+            this.token = away.library.AssetLibrary.load(new away.net.URLRequest('URLLoaderTestData/1024x1024.png'));
+            this.token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete, this);
+            this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
         }
+        AssetLibraryTest.prototype.onAssetComplete = function (e) {
+            console.log('------------------------------------------------------------------------------');
+            console.log('away.events.AssetEvent.ASSET_COMPLETE', away.library.AssetLibrary.getAsset(e.asset.name));
+            console.log('------------------------------------------------------------------------------');
+
+            var htmlImageElementTexture = away.library.AssetLibrary.getAsset(e.asset.name);
+
+            document.body.appendChild(htmlImageElementTexture.htmlImageElement);
+
+            htmlImageElementTexture.htmlImageElement.style.position = 'absolute';
+            htmlImageElementTexture.htmlImageElement.style.top = this.height + 'px';
+
+            this.height += (htmlImageElementTexture.htmlImageElement.height + 10);
+        };
+        AssetLibraryTest.prototype.onResourceComplete = function (e) {
+            var loader = e.target;
+
+            console.log('------------------------------------------------------------------------------');
+            console.log('away.events.LoaderEvent.RESOURCE_COMPLETE', e);
+            console.log('------------------------------------------------------------------------------');
+        };
         return AssetLibraryTest;
     })();
     tests.AssetLibraryTest = AssetLibraryTest;
 })(tests || (tests = {}));
 
 var GL = null;
+var test;
 
 window.onload = function () {
-    var test = new tests.AssetLibraryTest();
+    test = new tests.AssetLibraryTest();
+
     var canvas = document.createElement('canvas');
     GL = canvas.getContext("experimental-webgl");
 };

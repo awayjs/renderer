@@ -32,6 +32,8 @@ module away.library
 		private _assets                 : away.library.IAsset[];//Vector.<IAsset>;
 		private _assetDictionary        : Object;
 		private _assetDictDirty         : boolean;
+        private _loadingSessionsGarbage : away.loaders.AssetLoader[] = new Array<away.loaders.AssetLoader>();
+        private _gcTimeoutIID           : number;
 		
 		/**
 		 * Creates a new <code>AssetLibraryBundle</code> object.
@@ -42,7 +44,7 @@ module away.library
 		{
             super();
 
-			me = me;
+			//me = me;
 			
 			this._assets = new Array<away.library.IAsset>();//new Vector.<IAsset>;
 			this._assetDictionary = new Object();
@@ -519,7 +521,7 @@ module away.library
 			loader.addEventListener(away.events.AssetEvent.ENTITY_COMPLETE, this.onAssetComplete, this);
 			loader.addEventListener(away.events.AssetEvent.SKELETON_COMPLETE, this.onAssetComplete, this);
 			loader.addEventListener(away.events.AssetEvent.SKELETON_POSE_COMPLETE, this.onAssetComplete, this);
-			
+
 			// Error are handled separately (see documentation for addErrorHandler)
 			loader._iAddErrorHandler(this.onDependencyRetrievingError);
 			loader._iAddParseErrorHandler(this.onDependencyRetrievingParseError);
@@ -677,6 +679,9 @@ module away.library
 		
 		private onAssetComplete(event:away.events.AssetEvent)
 		{
+
+            //console.log( 'AssetLibraryBundle.onAssetComplete ' , event );
+
 			// Only add asset to library the first time.
 			if (event.type == away.events.AssetEvent.ASSET_COMPLETE)
             {
@@ -699,22 +704,38 @@ module away.library
 		 */
 		private onResourceRetrieved(event:away.events.LoaderEvent)
 		{
+
 			var loader:away.loaders.AssetLoader = <away.loaders.AssetLoader> event.target;
-			this.killLoadingSession(loader);
-			var index:number = this._loadingSessions.indexOf(loader);
-			this._loadingSessions.splice(index, 1);
-			
-			/*
-			 if(session.handle){
-			 dispatchEvent(event);
-			 }else{
-			 onResourceError((session is IResource)? IResource(session) : null);
-			 }
-			 */
-			
+
 			this.dispatchEvent(event.clone());
+
+            var index:number = this._loadingSessions.indexOf(loader);
+            this._loadingSessions.splice(index, 1);
+
+            // Add loader to a garbage array - for a collection sweep and kill
+            this._loadingSessionsGarbage.push( loader );
+            this._gcTimeoutIID = setTimeout( () => { this.loadingSessionGC() }  , 100 );
+
 		}
-		
+
+        private loadingSessionGC() : void
+        {
+
+            var loader  : away.loaders.AssetLoader;
+
+            while( this._loadingSessionsGarbage.length > 0 )
+            {
+
+                loader = this._loadingSessionsGarbage.pop();
+                this.killLoadingSession( loader );
+
+            }
+
+            clearTimeout(this._gcTimeoutIID);
+            this._gcTimeoutIID = null;
+
+        }
+
 		private killLoadingSession(loader:away.loaders.AssetLoader)
 		{
 			

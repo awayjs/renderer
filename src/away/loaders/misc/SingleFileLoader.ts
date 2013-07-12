@@ -143,7 +143,7 @@ module away.loaders
 
                 }
 
-                console.log( 'SingleFileURLLoader.load._parser: ' + this._parser );
+                //console.log( 'SingleFileURLLoader.load._parser: ' + this._parser );
 
 				if (this._parser)
                 {
@@ -202,8 +202,8 @@ module away.loaders
 				}
 			}
 
-            console.log( 'SingleFileURLLoader.load.dataFormat:' , dataFormat , 'ParserFormat: ' , this._parser.dataFormat );
-            console.log( 'SingleFileURLLoader.load.loaderType: ' , loaderType );
+            //console.log( 'SingleFileURLLoader.load.dataFormat:' , dataFormat , 'ParserFormat: ' , this._parser.dataFormat );
+            //console.log( 'SingleFileURLLoader.load.loaderType: ' , loaderType );
 
             var loader : away.loaders.ISingleFileTSLoader = this.getLoader( loaderType );
                 loader.dataFormat = dataFormat;
@@ -323,7 +323,7 @@ module away.loaders
                 var currentParser : away.loaders.ParserBase = SingleFileLoader._parsers[i];
                 var supportstype : boolean                  = SingleFileLoader._parsers[i].supportsType(this._fileExtension);
 
-                console.log( 'SingleFileURLLoader.getParserFromSuffix.supportstype' , supportstype );
+                //console.log( 'SingleFileURLLoader.getParserFromSuffix.supportstype' , supportstype );
 
                 if (SingleFileLoader._parsers[i]['supportsType'](this._fileExtension)){
 
@@ -389,7 +389,7 @@ module away.loaders
 			
 			this._data = urlLoader.data;
 
-            console.log( 'SingleFileURLLoader.handleUrlLoaderComplete url: ', this.url, '   LoadedDataType: ' , typeof this._data );
+            //console.log( 'SingleFileURLLoader.handleUrlLoaderComplete url: ', this.url, '   LoadedDataType: ' , typeof this._data );
 			
 			if (this._loadAsRawData)
             {
@@ -481,7 +481,7 @@ module away.loaders
 		
 		private onAssetComplete(event : away.events.AssetEvent) : void
 		{
-            console.log( 'SingleFileLoader.onAssetComplete' , event );
+            //console.log( 'SingleFileLoader.onAssetComplete' , event );
 			this.dispatchEvent( event.clone() ) ;
 		}
 
@@ -496,7 +496,7 @@ module away.loaders
 		private onParseComplete(event : away.events.ParserEvent) : void
 		{
 
-            console.log( 'SingleFileLoader.onParseComplete' , event );
+            //console.log( 'SingleFileLoader.onParseComplete' , event );
 			this.dispatchEvent( new away.events.LoaderEvent( away.events.LoaderEvent.DEPENDENCY_COMPLETE , this.url ) );//dispatch in front of removing listeners to allow any remaining asset events to propagate
 			
 			this._parser.removeEventListener(away.events.ParserEvent.READY_FOR_DEPENDENCIES, this.onReadyForDependencies , this );
