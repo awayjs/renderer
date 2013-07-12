@@ -27,6 +27,7 @@ module loaders
 		private _startedParsing         : boolean;
 		private _doneParsing            : boolean;
         private _dependencyCount        : number = 0;
+        private _loadedTextures         : away.textures.Texture2DBase[];
 		//private var _loader           : Loader;
 
 		/**
@@ -39,6 +40,7 @@ module loaders
 
 			super( away.loaders.ParserDataFormat.PLAIN_TEXT , away.loaders.ParserLoaderType.URL_LOADER );
 
+            this._loadedTextures = new Array<away.textures.Texture2DBase>();
             this._state = this.STATE_PARSE_DATA;
 
 
@@ -97,8 +99,12 @@ module loaders
         public _iResolveDependency(resourceDependency:away.loaders.ResourceDependency):void
         {
 
-            console.log( '-----------------------------------------------------------');
+            var resource : away.textures.Texture2DBase = <away.textures.Texture2DBase> resourceDependency.assets[0] ;//as Texture2DBase;
+
+            this._loadedTextures.push( resource );
+
             console.log( 'JSONTextureParser._iResolveDependency' , resourceDependency );
+            console.log( 'JSONTextureParser._iResolveDependency resource: ' , resource );
 
             this._dependencyCount--;
 
@@ -128,7 +134,6 @@ module loaders
 
         }
 
-
         /**
          * @inheritDoc
          */
@@ -143,7 +148,6 @@ module loaders
             {
 
                 this._state = this.STATE_COMPLETE;
-
                 console.log( 'JSONTextureParser._iResolveDependencyFailure.complete' );
 
             }
@@ -185,7 +189,7 @@ module loaders
 
                         console.log( 'JSONTextureParser.parseJson' , id , uri  );
 
-                        this._pAddDependency( 'JSON_ID_' + id , rq );
+                        this._pAddDependency( 'JSON_ID_' + id , rq , false , null , true );
 
                     }
 
