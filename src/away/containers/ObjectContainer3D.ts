@@ -257,7 +257,7 @@ module away.containers
 		
 		public get assetType():string
 		{
-			return away.library.assets.AssetType.CONTAINER;
+			return away.library.AssetType.CONTAINER;
 		}
 		
 		public get scenePosition():away.geom.Vector3D
