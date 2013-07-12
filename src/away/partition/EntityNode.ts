@@ -31,7 +31,7 @@ module away.partition
 		{
 			if( this._iParent)
 			{
-				//TODO this._iParent.removeNode( this );
+				this._iParent.iRemoveNode( this );
 			}
 			this._iParent = null;
 		}

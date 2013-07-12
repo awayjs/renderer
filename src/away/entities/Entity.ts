@@ -38,16 +38,15 @@ module away.entities
 		}
 		
 		//@override
-		/*
-		public set ignoreTransform( value:boolean )
+		public setIgnoreTransform( value:boolean )
 		{
-			if(this._pScene)
+			if( this._pScene )
 			{
-				this._pScene.invalidateEntityBounds( this );
+				//this._pScene.invalidateEntityBounds( this );
 			}
-			super.ignoreTransform = value;
+			super.setIgnoreTransform( value );
 		}
-		*/
+		
 		public get shaderPickingDetails():boolean
 		{
 			return this._shaderPickingDetails;

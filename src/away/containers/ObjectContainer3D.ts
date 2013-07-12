@@ -45,12 +45,12 @@ module away.containers
 			super();
 		}
 		
-		public get ignoreTransform():boolean
+		public getIgnoreTransform():boolean
 		{
 			return this._pIgnoreTransform;
 		}
 		
-		public set ignoreTransform( value:boolean )
+		public setIgnoreTransform( value:boolean )
 		{
 			this._pIgnoreTransform = value;
 			this._pSceneTransformDirty = !value;

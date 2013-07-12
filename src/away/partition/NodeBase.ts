@@ -84,7 +84,7 @@ module away.partition
 			while ((node = node._iParent) != null);
 		}
 		
-		public _iRemoveNode( node:NodeBase )
+		public iRemoveNode( node:NodeBase )
 		{
 			var index:number = this._pChildNodes.indexOf(node);
 			this._pChildNodes[index] = this._pChildNodes[--this._pNumChildNodes];

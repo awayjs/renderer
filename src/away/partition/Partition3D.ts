@@ -3,8 +3,11 @@
  * @author Gary Paluk - http://www.plugin.io
  */
 
+///<reference path="../partition/EntityNode.ts" />
 ///<reference path="../partition/NodeBase.ts" />
 ///<reference path="../partition/NullNode.ts" />
+///<reference path="../entities/Entity.ts" />
+
 
 module away.partition
 {
@@ -12,39 +15,42 @@ module away.partition
 	export class Partition3D
 	{
 		
-		public var _rootNode:NodeBase;
-		private var _updatesMade:Boolean;
-		private var _updateQueue:EntityNode;
+		public _rootNode:NodeBase;
+		private _updatesMade:Boolean;
+		private _updateQueue:EntityNode;
 		
 		constructor( rootNode:away.partition.NodeBase )
 		{
-			_rootNode = rootNode || new away.partition.NullNode();
+			this._rootNode = rootNode || <NodeBase> new away.partition.NullNode();
 		}
 		
+		/*
 		public get showDebugBounds():boolean
 		{
 			return this._rootNode.showDebugBounds;
 		}
+		
 		
 		public set showDebugBounds( value:boolean )
 		{
 			this._rootNode.showDebugBounds = value;
 		}
 		
-		public function traverse( traverser:PartitionTraverser  ):void
+		
+		public traverse( traverser:PartitionTraverser  )
 		{
 			if( this._updatesMade )
 			{
-				updateEntities();
+				this.updateEntities();
 			}
 			++PartitionTraverser._collectionMark;
 			_rootNode.acceptTraverser(traverser);
 		}
-		
-		public _iMarkForUpdate( entity:Entity )
+		*/
+		public iMarkForUpdate( entity:away.entities.Entity )
 		{
 			var node:EntityNode = entity.getEntityPartitionNode();
-			var t:EntityNode = _updateQueue;
+			var t:EntityNode = this._updateQueue;
 			
 			while( t )
 			{
@@ -52,37 +58,45 @@ module away.partition
 				{
 					return;
 				}
-				t = t._updateQueueNext;
+				t = t._iUpdateQueueNext;
 			}
 			
-			node._updateQueueNext = _updateQueue;
+			node._iUpdateQueueNext = this._updateQueue;
 			
 			this._updateQueue = node;
 			this._updatesMade = true;
 		}
 		
-		arcane function removeEntity(entity:Entity):void
+		public iRemoveEntity( entity:away.entities.Entity )
 		{
-			var node:EntityNode = entity.getEntityPartitionNode();
+			var node:away.partition.EntityNode = entity.getEntityPartitionNode();
 			var t:EntityNode;
 			
 			node.removeFromParent();
 			
-			if (node == _updateQueue)
-				_updateQueue = node._updateQueueNext;
-			else {
-				t = _updateQueue;
-				while (t && t._updateQueueNext != node)
-					t = t._updateQueueNext;
-				if (t)
-					t._updateQueueNext = node._updateQueueNext;
+			if( node == this._updateQueue )
+			{
+				this._updateQueue = node._iUpdateQueueNext;
+			}
+			else
+			{
+				t = this._updateQueue;
+				while( t && t._iUpdateQueueNext != node )
+				{
+					t = t._iUpdateQueueNext;
+				}
+				if( t )
+				{
+					t._iUpdateQueueNext = node._iUpdateQueueNext;
+				}
 			}
 			
-			node._updateQueueNext = null;
+			node._iUpdateQueueNext = null;
 			
-			// any updates have been made undone
-			if (!_updateQueue)
-				_updatesMade = false;
+			if ( !this._updateQueue )
+			{
+				this._updatesMade = false;
+			}
 		}
 		
 	}
