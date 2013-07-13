@@ -75,7 +75,7 @@ module away.entities
 		}
 		
 		// TODO again ... virtual method??
-		public _iCollidesBefore( shortestCollisionDistance:number, findClosest:boolean ):boolean
+		public iCollidesBefore( shortestCollisionDistance:number, findClosest:boolean ):boolean
 		{
 			shortestCollisionDistance = shortestCollisionDistance;
 			findClosest = findClosest;
