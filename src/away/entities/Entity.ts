@@ -7,6 +7,8 @@
 ///<reference path="../containers/ObjectContainer3D.ts" />
 ///<reference path="../library/assets/AssetType.ts" />
 ///<reference path="../errors/AbstractMethodError.ts" />
+///<reference path="../pick/IPickingCollider.ts" />
+///<reference path="../pick/PickingCollisionVO.ts" />
 
 module away.entities
 {
@@ -19,8 +21,8 @@ module away.entities
 		private _boundsIsShown:boolean;
 		private _shaderPickingDetails:boolean;
 		
-		//public _iPickingCollisionVO:PickingCollisionVO;
-		//public _iPickingCollider:IPickingCollider;
+		public _iPickingCollisionVO:away.pick.PickingCollisionVO;
+		public _iPickingCollider:away.pick.IPickingCollider;
 		public _iStaticNode:boolean;
 		
 		//protected _bounds:BoundingVolumeBase;
@@ -36,7 +38,7 @@ module away.entities
 			this._worldBounds = this.getDefaultBoundingVolume();
 			*/
 		}
-		
+
 		//@override
 		public setIgnoreTransform( value:boolean )
 		{
@@ -62,15 +64,15 @@ module away.entities
 			this._iStaticNode = value;
 		}
 		
-		/*
-		public get pickingCollisionVO():PickingCollisionVO
+
+		public get pickingCollisionVO():away.pick.PickingCollisionVO
 		{
-			if ( !this._pickingCollisionVO )
+			if ( !this._iPickingCollisionVO )
 			{
-				this._pickingCollisionVO = new PickingCollisionVO( this );
+				this._iPickingCollisionVO = new away.pick.PickingCollisionVO( this );
 			}
-			return _pickingCollisionVO;
-		}*/
+			return this._iPickingCollisionVO;
+		}
 		
 		// TODO again ... virtual method??
 		public iCollidesBefore( shortestCollisionDistance:number, findClosest:boolean ):boolean
@@ -239,26 +241,26 @@ module away.entities
 			}
 			super.scene = value;
 		}
-		
+         */
 		//@override 
 		public get assetType():string
 		{
 			return away.library.AssetType.ENTITY;
 		}
-		*/
-		/*
-		public get pickingCollider():IPickingCollider
+
+
+		public get pickingCollider():away.pick.IPickingCollider
 		{
-			return this._pickingCollider;
+			return this._iPickingCollider;
 		}
-		*/
+
 		
-		/*
-		public set pickingCollider(value:IPickingCollider)
+
+		public set pickingCollider(value:away.pick.IPickingCollider)
 		{
-			this._pickingCollider = value;
+			this._iPickingCollider = value;
 		}
-		*/
+
 		
 		public getEntityPartitionNode():away.partition.EntityNode
 		{
@@ -269,33 +271,36 @@ module away.entities
 			return this._partitionNode;
 		}
 		
-		/*
+		/* TODO Implementation dependency : BoundingVolumeBase
 		public isIntersectingRay( rayPosition:away.geom.Vector3D, rayDirection:away.geom.Vector3D ):boolean
 		{
 			var localRayPosition:away.geom.Vector3D = this.inverseSceneTransform.transformVector( rayPosition );
 			var localRayDirection:away.geom.Vector3D = this.inverseSceneTransform.deltaTransformVector( rayDirection );
-			
-			if( !iPickingCollisionVO.localNormal )
+
+
+			if( !this._iPickingCollisionVO.localNormal )
 			{
-				iPickingCollisionVO.localNormal = new away.geom.Vector3D()
+                this._iPickingCollisionVO.localNormal = new away.geom.Vector3D()
 			}
-			var rayEntryDistance:number = bounds.rayIntersection(localRayPosition, localRayDirection, pickingCollisionVO.localNormal );
+
+
+			var rayEntryDistance:number = bounds.rayIntersection(localRayPosition, localRayDirection, this._iPickingCollisionVO.localNormal );
 			
 			if( rayEntryDistance < 0 )
 			{
 				return false;
 			}
-			
-			iPickingCollisionVO.rayEntryDistance = rayEntryDistance;
-			iPickingCollisionVO.localRayPosition = localRayPosition;
-			iPickingCollisionVO.localRayDirection = localRayDirection;
-			iPickingCollisionVO.rayPosition = rayPosition;
-			iPickingCollisionVO.rayDirection = rayDirection;
-			iPickingCollisionVO.rayOriginIsInsideBounds = rayEntryDistance == 0;
+
+            this._iPickingCollisionVO.rayEntryDistance = rayEntryDistance;
+            this._iPickingCollisionVO.localRayPosition = localRayPosition;
+            this._iPickingCollisionVO.localRayDirection = localRayDirection;
+            this._iPickingCollisionVO.rayPosition = rayPosition;
+            this._iPickingCollisionVO.rayDirection = rayDirection;
+            this._iPickingCollisionVO.rayOriginIsInsideBounds = rayEntryDistance == 0;
 			
 			return true;
 		}
-		*/
+		//*/
 		
 		public pCreateEntityPartitionNode():away.partition.EntityNode
 		{
@@ -333,22 +338,34 @@ module away.entities
 			this.notifySceneBoundsInvalid();
 		}
 		
-		/*
-		public function pUpdateMouseChildren():void
+		/* TODO: implement dependency super.updateMouseChildren();
+		public pUpdateMouseChildren():void
 		{
 			// If there is a parent and this child does not have a triangle collider, use its parent's triangle collider.
-			if( this._parent && !this.pickingCollider )
+
+			if( this._pParent && !this.pickingCollider )
 			{
-				if( this._parent is Entity ) {
-					var collider:IPickingCollider = Entity(_parent).pickingCollider;
+
+
+				if ( this.pParent instanceof away.entities.Entity ) //if( this._pParent is Entity ) { // TODO: Test / validate
+                {
+
+                    var parentEntity : away.entities.Entity =  <away.entities.Entity> this._pParent;
+
+					var collider:away.pick.IPickingCollider = parentEntity.pickingCollider;
 					if(collider)
-						pickingCollider = collider;
+                    {
+
+                        this.pickingCollider = collider;
+
+                    }
+
 				}
 			}
 			
 			super.updateMouseChildren();
 		}
-		*/
+		//*/
 		
 		private notifySceneBoundsInvalid()
 		{
