@@ -14,6 +14,7 @@ module away.events
 		public static RESIZE:string = "resize";
 		public static CONTEXT3D_CREATE: string = "context3DCreate";
         public static ERROR: string = "error";
+        public static CHANGE: string = "change";
 		
         /**
          * Type of event
