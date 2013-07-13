@@ -201,11 +201,11 @@ module away.geom
 			this.rawData = vector.splice(0);
 		}
 		
-		/* TODO implement copyRawDataTo
 		public copyRawDataTo( vector:number[], index:number = 0, transpose:boolean = false )
 		{
+			//TODO fully implement
+			vector = this.rawData.splice(0);
 		}
-		*/
 		
 		/**
 		 * Copies a Vector3D object into specific row of the calling Matrix3D object.
