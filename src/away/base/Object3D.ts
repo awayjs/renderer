@@ -518,7 +518,7 @@ module away.base
 
 		public set transform(val:away.geom.Matrix3D)
 		{
-			//ridiculous matrix error
+			//ridiculous matrix error - AS3 Original
             /*
 			if (!val.rawData[uint(0)]) {
 				var raw:number[] = Matrix3DUtils.RAW_DATA_CONTAINER;
@@ -529,14 +529,14 @@ module away.base
 			*/
 
             //ridiculous matrix error
-            /*
+            //*
             if (!val.rawData[0]) {
                 var raw:number[] = away.math.Matrix3DUtils.RAW_DATA_CONTAINER;
-                //val.copyRawDataTo(raw); // TODO: implement
+                val.copyRawDataTo(raw);
                 raw[0] = this._smallestNumber;
                 val.copyRawDataFrom(raw);
             }
-            */
+            //*/
 			var elements:away.geom.Vector3D[]= val.decompose();
 			var vec:away.geom.Vector3D;
 			
