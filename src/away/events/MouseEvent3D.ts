@@ -71,7 +71,7 @@ module away.events
 		/**
 		 * Defines the value of the type property of a doubleClick3d event object.
 		 */
-		public static const DOUBLE_MouseEvent3D.CLICK:string = "doubleClick3d";
+		public static DOUBLE_CLICK:string = "doubleClick3d";
 		
 		/**
 		 * Defines the value of the type property of a mouseWheel3d event object.
