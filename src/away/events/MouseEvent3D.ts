@@ -159,7 +159,7 @@ module away.events
 		 */
 		constructor(type:string)
 		{
-			super(type, true, true);
+			super(type );//, true, true);
 		}
 		
 		/**
@@ -209,7 +209,7 @@ module away.events
 		 */
 		public clone():Event
 		{
-			var result:MouseEvent3D = new MouseEvent3D(type);
+			var result:MouseEvent3D = new away.events.MouseEvent3D( this.type );
 
             /* TODO: Debug / test - look into isDefaultPrevented
 			if (isDefaultPrevented())
@@ -248,13 +248,13 @@ module away.events
             {
 
                 var objContainer : away.containers.ObjectContainer3D = <away.containers.ObjectContainer3D > this.object;
-                return objContainer.sceneTransform.transformVector(localPosition);
+                return objContainer.sceneTransform.transformVector( this.localPosition );
 
             }
 			else
             {
 
-                return localPosition;
+                return this.localPosition;
 
             }
 
@@ -269,7 +269,7 @@ module away.events
             if ( this.object instanceof away.containers.ObjectContainer3D ) //if (this.object is ObjectContainer3D)
             {
                 var objContainer : away.containers.ObjectContainer3D = <away.containers.ObjectContainer3D > this.object;
-                var sceneNormal  : away.geom.Vector3D = objContainer.sceneTransform.deltaTransformVector(localNormal);
+                var sceneNormal  : away.geom.Vector3D = objContainer.sceneTransform.deltaTransformVector( this.localNormal );
 
                     sceneNormal.normalize();
 
