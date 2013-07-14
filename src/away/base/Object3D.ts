@@ -3,6 +3,7 @@
 ///<reference path="../geom/Vector3D.ts" />
 ///<reference path="../math/MathConsts.ts" />
 ///<reference path="../math/Matrix3DUtils.ts" />
+///<reference path="../events/Object3DEvent.ts" />
 
 module away.base
 {
@@ -99,11 +100,11 @@ module away.base
 		// private var _rotationValuesDirty:boolean;
 		// private var _scaleValuesDirty:boolean;
 
-        /* TODO: implement
-		private _positionChanged:Object3DEvent;
-		private _rotationChanged:Object3DEvent;
-		private _scaleChanged:Object3DEvent;
-		*/
+        //* TODO: implement
+		private _positionChanged:away.events.Object3DEvent;
+		private _rotationChanged:away.events.Object3DEvent;
+		private _scaleChanged:away.events.Object3DEvent;
+		//*/
 
 		private _rotationX      : number = 0;
 		private _rotationY      : number = 0;
@@ -133,65 +134,66 @@ module away.base
 			
 			this._iInvalidateTransform();
 
-            /* TODO: implement
 			if (this._listenToPositionChanged)
 				this.notifyPositionChanged();
-			*/
+
 		}
 
-        /* TODO implement
 		private notifyPositionChanged()
 		{
 			if (!this._positionChanged)
             {
 
 
-				_positionChanged = new Object3DEvent(Object3DEvent.POSITION_CHANGED, this);
+				this._positionChanged = new away.events.Object3DEvent(away.events.Object3DEvent.POSITION_CHANGED, this);
 
             }
-			dispatchEvent(_positionChanged);
+			this.dispatchEvent( this._positionChanged );
 		}
-		*/
 
-        /* TODO implement
-		public addEventListener(type:string, listener, useCapture:boolean = false, priority:number = 0, useWeakReference:boolean = false)
+
+		public addEventListener(type : string , listener : Function , target : Object )
 		{
-			super.addEventListener(type, listener, useCapture, priority, useWeakReference);
+			super.addEventListener(type, listener, target ) ;//, priority, useWeakReference);
+
 			switch (type) {
-				case Object3DEvent.POSITION_CHANGED:
-					_listenToPositionChanged = true;
+				case away.events.Object3DEvent.POSITION_CHANGED:
+                    this._listenToPositionChanged = true;
 					break;
-				case Object3DEvent.ROTATION_CHANGED:
-					_listenToRotationChanged = true;
+				case away.events.Object3DEvent.ROTATION_CHANGED:
+                    this._listenToRotationChanged = true;
 					break;
-				case Object3DEvent.SCALE_CHANGED:
-					_listenToRotationChanged = true;
+				case away.events.Object3DEvent.SCALE_CHANGED:
+					this._listenToRotationChanged = true;
 					break;
 			}
 		}
-		*/
+		//*/
 
-        /* TODO implement
-		public removeEventListener(type:string, listener, useCapture:boolean = false)
+        //* TODO implement
+		public removeEventListener(type : string , listener : Function , target : Object )
 		{
-			super.removeEventListener(type, listener, useCapture);
+			super.removeEventListener(type, listener, target);
 			
-			if (hasEventListener(type))
+			if (this.hasEventListener(type , listener , target ))
 				return;
 			
 			switch (type) {
-				case Object3DEvent.POSITION_CHANGED:
-					_listenToPositionChanged = false;
+
+				case away.events.Object3DEvent.POSITION_CHANGED:
+					this._listenToPositionChanged = false;
 					break;
-				case Object3DEvent.ROTATION_CHANGED:
-					_listenToRotationChanged = false;
+
+				case away.events.Object3DEvent.ROTATION_CHANGED:
+                    this._listenToRotationChanged = false;
 					break;
-				case Object3DEvent.SCALE_CHANGED:
-					_listenToScaleChanged = false;
+
+				case away.events.Object3DEvent.SCALE_CHANGED:
+                    this._listenToScaleChanged = false;
 					break;
 			}
 		}
-		*/
+		//*/
 
 		private invalidateRotation()
 		{
@@ -206,24 +208,20 @@ module away.base
 			
 			this._iInvalidateTransform();
 
-            /* TODO implement
-			if (_listenToRotationChanged)
-				notifyRotationChanged();
-            */
+
+			if (this._listenToRotationChanged)
+				this.notifyRotationChanged();
+
 
 		}
 
-
-        /* TODO implement
 		private notifyRotationChanged()
 		{
-			//if (!_rotationChanged)
-				this._rotationChanged = new Object3DEvent(away.events.Object3DEvent.ROTATION_CHANGED, this);
+			if (!this._rotationChanged)
+				this._rotationChanged = new away.events.Object3DEvent(away.events.Object3DEvent.ROTATION_CHANGED, this);
 			
-			this.dispatchEvent(_rotationChanged);
+			this.dispatchEvent(this._rotationChanged);
 		}
-		//*/
-
 
 		private invalidateScale()
 		{
@@ -238,22 +236,18 @@ module away.base
 			
 			this._iInvalidateTransform();
 
-            /* TODO implement
-			if (_listenToScaleChanged)
-				notifyScaleChanged();
-             */
+			if (this._listenToScaleChanged)
+                this.notifyScaleChanged();
+
 		}
 
-
-        /* TODO implement
 		private notifyScaleChanged()
 		{
-			if (!_scaleChanged)
-				_scaleChanged = new Object3DEvent(Object3DEvent.SCALE_CHANGED, this);
+			if (!this._scaleChanged)
+				this._scaleChanged = new away.events.Object3DEvent(away.events.Object3DEvent.SCALE_CHANGED, this);
 			
-			dispatchEvent(_scaleChanged);
+			this.dispatchEvent(this._scaleChanged);
 		}
-		*/
 
 		private _transform  : away.geom.Matrix3D = new away.geom.Matrix3D();
 		private _scaleX     : number = 1;
@@ -769,18 +763,23 @@ module away.base
 		 * @param    dy        The amount of movement along the local y axis.
 		 * @param    dz        The amount of movement along the local z axis.
 		 */
-        /* TODO: implement
+
 		public moveTo(dx:number, dy:number, dz:number)
 		{
-			if (_x == dx && _y == dy && _z == dz)
-				return;
-			_x = dx;
-			_y = dy;
-			_z = dz;
-			
-			invalidatePosition();
+			if (this._x == dx && this._y == dy && this._z == dz)
+            {
+
+                return;
+
+            }
+
+            this._x = dx;
+            this._y = dy;
+            this._z = dz;
+
+            this.invalidatePosition();
 		}
-		*/
+
 		/**
 		 * Moves the local point around which the object rotates.
 		 *
