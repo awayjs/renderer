@@ -9,6 +9,7 @@
 ///<reference path="../errors/AbstractMethodError.ts" />
 ///<reference path="../pick/IPickingCollider.ts" />
 ///<reference path="../pick/PickingCollisionVO.ts" />
+///<reference path="../bounds/BoundingVolumeBase.ts" />
 
 module away.entities
 {
@@ -25,18 +26,16 @@ module away.entities
 		public _iPickingCollider:away.pick.IPickingCollider;
 		public _iStaticNode:boolean;
 		
-		//protected _bounds:BoundingVolumeBase;
+		public _pBounds:away.bounds.BoundingVolumeBase;
 		public _pBoundsInvalid:boolean = true;
-		//private _worldBounds:BoundingVolumeBase;
+		private _worldBounds:away.bounds.BoundingVolumeBase;
 		private _worldBoundsInvalid:boolean = true;
 		
 		constructor()
 		{
 			super();
-			/*
-			this._bounds = this.getDefaultBoundingVolume();
-			this._worldBounds = this.getDefaultBoundingVolume();
-			*/
+			this._pBounds = this.pGetDefaultBoundingVolume();
+			this._worldBounds = this.pGetDefaultBoundingVolume();
 		}
 
 		//@override
@@ -44,7 +43,7 @@ module away.entities
 		{
 			if( this._pScene )
 			{
-				//this._pScene.invalidateEntityBounds( this );
+				//this._pScene.pInvalidateEntityBounds( this );
 			}
 			super.setIgnoreTransform( value );
 		}
@@ -307,14 +306,14 @@ module away.entities
 			throw new away.errors.AbstractMethodError();
 		}
 		
-		/*
-		public function pGetDefaultBoundingVolume():BoundingVolumeBase
+		public pGetDefaultBoundingVolume():away.bounds.BoundingVolumeBase
 		{
 			// point lights should be using sphere bounds
 			// directional lights should be using null bounds
-			return new AxisAlignedBoundingBox();
+			
+			// TODO return new AxisAlignedBoundingBox();
+			return null;
 		}
-		*/
 		
 		public pUpdateBounds()
 		{

@@ -8,7 +8,6 @@
 ///<reference path="../partition/NullNode.ts" />
 ///<reference path="../entities/Entity.ts" />
 
-
 module away.partition
 {
 	

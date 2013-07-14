@@ -11,16 +11,16 @@ module away.bounds
 	export class BoundingVolumeBase
 	{
 		
-		public _pMin:Vector3D;
-		public _pMax:Vector3D;
+		public _pMin:away.geom.Vector3D;
+		public _pMax:away.geom.Vector3D;
 		public _pAabbPoints:number[] = [];
 		public _pAabbPointsDirty:boolean = true;
-		public _pBoundingRenderable:WireframePrimitiveBase;
+		//public _pBoundingRenderable:WireframePrimitiveBase;
 		
 		constructor()
 		{
-			_pMin = new away.geom.Vector3D();
-			_pMax = new away.geom.Vector3D();
+			this._pMin = new away.geom.Vector3D();
+			this._pMax = new away.geom.Vector3D();
 		}
 		
 		public get max():away.geom.Vector3D
@@ -35,13 +35,13 @@ module away.bounds
 		
 		public get aabbPoints():number[]
 		{
-			if( _pAabbPointsDirty )
+			if( this._pAabbPointsDirty )
 			{
-				this.updateAABBPoints();
+				this.pUpdateAABBPoints();
 			}
-			return _pAabbPoints;
+			return this._pAabbPoints;
 		}
-		
+		/*
 		public get boundingRenderable():WireframePrimitiveBase
 		{
 			if( !this._pBoundingRenderable )
@@ -51,35 +51,38 @@ module away.bounds
 			}
 			return this._pBoundingRenderable;
 		}
+		*/
 		
 		public nullify()
 		{
-			this._pMin.x = _pMin.y = _pMin.z = 0;
-			this._pMax.x = _pMax.y = _pMax.z = 0;
+			this._pMin.x = this._pMin.y = this._pMin.z = 0;
+			this._pMax.x = this._pMax.y = this._pMax.z = 0;
 			this._pAabbPointsDirty = true;
+			/*
 			if( this._pBoundingRenderable )
 			{
 				this.updateBoundingRenderable();
-			}
+			}*/
 		}
 		
 		public disposeRenderable()
-		{
+		{/*
 			if( this._pBoundingRenderable )
 			{
 				this._pBoundingRenderable.dispose();
 			}
-			_pBoundingRenderable = null;
+			this._pBoundingRenderable = null;*/
 		}
 		
 		public fromVertices( vertices:number[] )
 		{
-			var i:uint;
-			var len:uint = vertices.length;
+			var i:number;
+			var len:number = vertices.length;
 			var minX:number, minY:number, minZ:number;
 			var maxX:number, maxY:number, maxZ:number;
 			
-			if( len == 0 ) {
+			if( len == 0 )
+			{
 				this.nullify();
 				return;
 			}
@@ -172,10 +175,11 @@ module away.bounds
 			this._pMax.y = maxY;
 			this._pMax.z = maxZ;
 			this._pAabbPointsDirty = true;
-			if( _pBoundingRenderable )
+			/*
+			if( this._pBoundingRenderable )
 			{
 				this.updateBoundingRenderable();
-			}
+			}*/
 		}
 		
 		public isInFrustum( planes:away.math.Plane3D[], numPlanes:number ):boolean
@@ -185,8 +189,8 @@ module away.bounds
 		
 		public overlaps( bounds:away.bounds.BoundingVolumeBase ):boolean
 		{
-			var min:away.geom.Vector3D = bounds._min;
-			var max:away.geom.Vector3D = bounds._max;
+			var min:away.geom.Vector3D = bounds._pMin;
+			var max:away.geom.Vector3D = bounds._pMax;
 			return this._pMax.x > min.x &&
 				this._pMin.x < max.x &&
 				this._pMax.y > min.y &&
@@ -195,7 +199,7 @@ module away.bounds
 				this._pMin.z < max.z;
 		}
 		
-		public clone():away.bound.BoundingVolumeBase
+		public clone():away.bounds.BoundingVolumeBase
 		{
 			throw new away.errors.AbstractMethodError();
 		}
@@ -218,8 +222,13 @@ module away.bounds
 		
 		public pUpdateAABBPoints()
 		{
-			var maxX:number = this._pMax.x, maxY:Number = this._pMax.y, maxZ:Number = this._pMax.z;
-			var minX:number = this._pMin.x, minY:Number = this._pMin.y, minZ:Number = this._pMin.z;
+			var maxX:number = this._pMax.x;
+			var maxY:number = this._pMax.y;
+			var maxZ:number = this._pMax.z;
+			var minX:number = this._pMin.x;
+			var minY:number = this._pMin.y;
+			var minZ:number = this._pMin.z;
+			
 			this._pAabbPoints[0] = minX;
 			this._pAabbPoints[1] = minY;
 			this._pAabbPoints[2] = minZ;
