@@ -523,6 +523,7 @@ module away.managers
 		
 		private onMouseUp(event:MouseEvent)
 		{
+            /*
 			if ( Mouse3DManager._pCollidingObject)
             {
 
@@ -538,10 +539,14 @@ module away.managers
             }
 
 			this._updateDirty = true;
+            */
+            throw new away.errors.PartialImplementationError( 'MouseEvent ( as3 / native ) as3 <> JS Conversion' );
+
 		}
 		
 		private onMouseWheel(event:MouseEvent)
 		{
+            /*
 			if (Mouse3DManager._pCollidingObject)
             {
 
@@ -556,7 +561,11 @@ module away.managers
             }
 
             this._updateDirty = true;
-		}
+
+            */
+            throw new away.errors.PartialImplementationError( 'MouseEvent ( as3 / native ) as3 <> JS Conversion' );
+
+        }
 		
 		// ---------------------------------------------------------------------
 		// Getters & setters.
