@@ -4,7 +4,9 @@
  */
  
 ///<reference path="../events/EventDispatcher.ts" />
+///<reference path="../events/Scene3DEvent.ts" />
 ///<reference path="ObjectContainer3D.ts" />
+///<reference path="../traverse/PartitionTraverser.ts" />
 
 module away.containers
 {
@@ -12,24 +14,23 @@ module away.containers
 	{
 		
 		public _iSceneGraphRoot:away.containers.ObjectContainer3D;
-		//private _partitions:away.partition.Partition3D[];
+		private _partitions:away.partition.Partition3D[];
 		
 		constructor()
 		{
 			super();
-			//this._partitions = new away.partition.Partition3D[];
+			this._partitions = [];
 			this._iSceneGraphRoot = new away.containers.ObjectContainer3D();
 			
 			this._iSceneGraphRoot.scene = this;
 			this._iSceneGraphRoot._iIsRoot = true;
-			//this._sceneGraphRoot.partition = new away.partition.Partition3D( new away.partition.NodeBase() );
+			this._iSceneGraphRoot.partition = new away.partition.Partition3D( new away.partition.NodeBase() );
 		}
 		
-		/*
-		public traversePartitions( traverser:away.partitions.PartitionTraverser )
+		public traversePartitions( traverser:away.traverse.PartitionTraverser )
 		{
 			var i:number;
-			var len:number = _partitions.length;
+			var len:number = this._partitions.length;
 			
 			traverser.scene = this;
 			
@@ -38,34 +39,27 @@ module away.containers
 				this._partitions[i++].traverse( traverser );
 			}
 		}
-		*/
 		
-		/*
-		public get partition():away.partitions.Partition3D
+		public get partition():away.partition.Partition3D
 		{
 			return this._iSceneGraphRoot.partition;
 		}
-		*/
 		
-		/*
-		public set partition( value:away.partitions.Partition3D )
+		public set partition( value:away.partition.Partition3D )
 		{
-			this._sceneGraphRoot.partition = value;
-			dispatchEvent( new away.events.Scene3DEvent( away.events.Scene3DEvent.PARTITION_CHANGED, this._sceneGraphRoot ) );
+			this._iSceneGraphRoot.partition = value;
+			this.dispatchEvent( new away.events.Scene3DEvent( away.events.Scene3DEvent.PARTITION_CHANGED, this._iSceneGraphRoot ) );
 		}
-		*/
 		
 		public contains( child:away.containers.ObjectContainer3D ):boolean
 		{
 			return this._iSceneGraphRoot.contains( child );
 		}
 		
-		/*
 		public addChild( child:away.containers.ObjectContainer3D ):away.containers.ObjectContainer3D
 		{
 			return this._iSceneGraphRoot.addChild( child );
 		}
-		*/
 		
 		/*
 		public removeChild( child:away.containers.ObjectContainer3D )

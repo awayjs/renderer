@@ -37,26 +37,24 @@ module away.partition
 		}
 		
 		//@override
-		/*
 		public isInFrustum( planes:away.math.Plane3D[], numPlanes:number ):boolean
 		{
-			if( !this._entity.isVisible )
+			if( !this._entity._iIsVisible )
 			{
 				return false;
 			}
 			return this._entity.worldBounds.isInFrustum( planes, numPlanes );
 		}
-		*/
-		//@override
+		
+		//@override TODO public isIntersectingRay( rayPosition:away.geom.Vecto...
 		/*
 		public isIntersectingRay( rayPosition:away.geom.Vector3D, rayDirection:away.geom.Vector3D ):boolean
 		{
-			if( !this._entity.isVisible )
+			if( !this._entity._iIsVisible )
 			{
 				return false;
 			}
 			return this._entity.isIntersectingRay(rayPosition, rayDirection);
-		}
-		*/
+		}*/
 	}
 }

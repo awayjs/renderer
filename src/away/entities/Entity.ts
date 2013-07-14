@@ -44,7 +44,7 @@ module away.entities
 		{
 			if( this._pScene )
 			{
-				//this._pScene.pInvalidateEntityBounds( this );
+				//TODO this._pScene.pInvalidateEntityBounds( this );
 			}
 			super.setIgnoreTransform( value );
 		}
@@ -64,7 +64,6 @@ module away.entities
 			this._iStaticNode = value;
 		}
 		
-
 		public get pickingCollisionVO():away.pick.PickingCollisionVO
 		{
 			if ( !this._iPickingCollisionVO )
@@ -74,7 +73,6 @@ module away.entities
 			return this._iPickingCollisionVO;
 		}
 		
-		// TODO again ... virtual method??
 		public iCollidesBefore( shortestCollisionDistance:number, findClosest:boolean ):boolean
 		{
 			shortestCollisionDistance = shortestCollisionDistance;
@@ -104,7 +102,7 @@ module away.entities
 				this.removeBounds();
 			}
 		}
-		/*
+		
 		//@override
 		public get minX():number
 		{
@@ -112,7 +110,7 @@ module away.entities
 			{
 				this.pUpdateBounds();
 			}
-			return this._bounds.min.x;
+			return this._pBounds.min.x;
 		}
 		
 		//@override
@@ -122,7 +120,7 @@ module away.entities
 			{
 				this.pUpdateBounds();
 			}
-			return this._bounds.min.y;
+			return this._pBounds.min.y;
 		}
 		
 		//@override
@@ -132,7 +130,7 @@ module away.entities
 			{
 				this.pUpdateBounds();
 			}
-			return this._bounds.min.z;
+			return this._pBounds.min.z;
 		}
 		
 		//@override
@@ -142,7 +140,7 @@ module away.entities
 			{
 				this.pUpdateBounds();
 			}
-			return this._bounds.max.x;
+			return this._pBounds.max.x;
 		}
 		
 		//@override
@@ -152,7 +150,7 @@ module away.entities
 			{
 				this.pUpdateBounds();
 			}
-			return this._bounds.max.y;
+			return this._pBounds.max.y;
 		}
 		
 		//@override
@@ -162,9 +160,8 @@ module away.entities
 			{
 				this.pUpdateBounds();
 			}
-			return this._bounds.max.z;
+			return this._pBounds.max.z;
 		}
-		*/
 		
 		public getBounds():away.bounds.BoundingVolumeBase
 		{
@@ -202,7 +199,6 @@ module away.entities
 			this._worldBoundsInvalid = false;
 		}
 		
-		
 		//@override
 		public set iImplicitPartition( value:away.partition.Partition3D )
 		{
@@ -239,6 +235,7 @@ module away.entities
 			super.scene = value;
 		}
          */
+		 
 		//@override 
 		public get assetType():string
 		{

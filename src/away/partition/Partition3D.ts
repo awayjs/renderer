@@ -7,6 +7,7 @@
 ///<reference path="../partition/NodeBase.ts" />
 ///<reference path="../partition/NullNode.ts" />
 ///<reference path="../entities/Entity.ts" />
+///<reference path="../traverse/PartitionTraverser.ts" />
 
 module away.partition
 {
@@ -33,17 +34,15 @@ module away.partition
 			this._rootNode.showDebugBounds = value;
 		}
 		
-		/*
-		public traverse( traverser:PartitionTraverser  )
+		public traverse( traverser:away.traverse.PartitionTraverser  )
 		{
 			if( this._updatesMade )
 			{
 				this.updateEntities();
 			}
-			++PartitionTraverser._collectionMark;
-			_rootNode.acceptTraverser(traverser);
+			++away.traverse.PartitionTraverser._iCollectionMark;
+			this._rootNode.acceptTraverser( traverser );
 		}
-		*/
 		
 		public iMarkForUpdate( entity:away.entities.Entity )
 		{
@@ -95,6 +94,32 @@ module away.partition
 			{
 				this._updatesMade = false;
 			}
+		}
+		
+		private updateEntities()
+		{
+			var node:away.partition.EntityNode = this._updateQueue;
+			var targetNode:away.partition.NodeBase;
+			var t:away.partition.EntityNode;
+			this._updateQueue = null;
+			this._updatesMade = false;
+			
+			do {
+				targetNode = this._rootNode.findPartitionForEntity(node.entity);
+				if (node.parent != targetNode)
+				{
+					if (node)
+					{
+						node.removeFromParent();
+					}
+					targetNode.iAddNode(node);
+				}
+				
+				t = node._iUpdateQueueNext;
+				node._iUpdateQueueNext = null;
+				node.entity.internalUpdate();
+				
+			} while ((node = t) != null);
 		}
 		
 	}

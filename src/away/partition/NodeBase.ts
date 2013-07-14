@@ -47,7 +47,7 @@ module away.partition
 			if (value)
 			{
 				throw new away.errors.PartialImplementationError();
-				//TODO this._pDebugPrimitive = this.createDebugBounds();
+				this._pDebugPrimitive = this.pCreateDebugBounds();
 			}
 			else
 			{
@@ -66,12 +66,12 @@ module away.partition
 			return this._iParent;
 		}
 		
-		public _iAddNode( node:NodeBase )
+		public iAddNode( node:NodeBase )
 		{
 			node._iParent = this;
 			this._pNumEntities += node._pNumEntities;
 			this._pChildNodes[ this._pNumChildNodes++ ] = node;
-			//node.showDebugBounds = _debugPrimitive != null;
+			node.showDebugBounds = this._pDebugPrimitive != null;
 			
 			var numEntities:number = node._pNumEntities;
 			node = this;
@@ -99,9 +99,6 @@ module away.partition
 			while ((node = node._iParent) != null);
 		}
 		
-		//TODO ???? What is going on here from the original Away code?
-		// Is this supposed to be a virtual method? If so enforce override
-		// by thowing an error.
 		public isInFrustum(planes:away.math.Plane3D[], numPlanes:number):boolean
 		{
 			planes = planes;
@@ -116,7 +113,6 @@ module away.partition
 			return true;
 		}
 		
-		//TODO again... investigate this? Is it virtual? throw!?
 		public findPartitionForEntity( entity:away.entities.Entity ):NodeBase
 		{
 			entity = entity;
@@ -125,33 +121,29 @@ module away.partition
 		
 		public acceptTraverser( traverser:away.traverse.PartitionTraverser )
 		{
-			/*
-			if( this._pNumEntities == 0 && !this._debugPrimitive)
+			if( this._pNumEntities == 0 && !this._pDebugPrimitive )
 			{
 				return;
-			}*/
-			
+			}
 			if( traverser.enterNode( this ) )
 			{
 				var i:number;
-				while (i < this._pNumChildNodes)
+				while( i < this._pNumChildNodes )
 				{
-					this._pChildNodes[i++].acceptTraverser(traverser);
+					this._pChildNodes[i++].acceptTraverser( traverser );
 				}
-				/*
-				if ( this._debugPrimitive )
+				
+				if ( this._pDebugPrimitive )
 				{
-					traverser.applyRenderable(_debugPrimitive);
-				}*/
+					traverser.applyRenderable( this._pDebugPrimitive );
+				}
 			}
 		}
 		
-		/*
-		public function _pCreateDebugBounds():WireframePrimitiveBase
+		public pCreateDebugBounds():away.primitives.WireframePrimitiveBase
 		{
 			return null;
 		}
-		*/
 		
 		public get _pNumEntities():number
 		{

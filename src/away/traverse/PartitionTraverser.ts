@@ -3,9 +3,11 @@
  * @author Gary Paluk - http://www.plugin.io
  */
 
+///<reference path="../errors/AbstractMethodError.ts" />
 ///<reference path="../containers/Scene3D.ts" />
 ///<reference path="../partition/NodeBase.ts" />
 ///<reference path="../geom/Vector3D.ts" />
+///<reference path="../base/IRenderable.ts" />
 
 module away.traverse
 {
@@ -26,42 +28,41 @@ module away.traverse
 			return true;
 		}
 		
+		public applySkyBox( renderable:away.base.IRenderable )
+		{
+			throw new away.errors.AbstractMethodError();
+		}
+		
+		public applyRenderable( renderable:away.base.IRenderable )
+		{
+			throw new away.errors.AbstractMethodError();
+		}
+		
 		/*
-		public applySkyBox(renderable:IRenderable)
-		{
-			throw new AbstractMethodError();
-		}
-		
-		public applyRenderable(renderable:IRenderable)
-		{
-			throw new AbstractMethodError();
-		}
-		
 		public applyUnknownLight(light:LightBase)
 		{
-			throw new AbstractMethodError();
+			throw new away.errors.AbstractMethodError();
 		}
 		
 		public applyDirectionalLight(light:DirectionalLight)
 		{
-			throw new AbstractMethodError();
+			throw new away.errors.AbstractMethodError();
 		}
 		
 		public applyPointLight(light:PointLight)
 		{
-			throw new AbstractMethodError();
+			throw new away.errors.AbstractMethodError();
 		}
 		
 		public applyLightProbe(light:LightProbe)
 		{
-			throw new AbstractMethodError();
-		}
-		
-		public applyEntity(entity:Entity)
-		{
-			throw new AbstractMethodError();
+			throw new away.errors.AbstractMethodError();
 		}
 		*/
+		public applyEntity(entity:away.entities.Entity)
+		{
+			throw new away.errors.AbstractMethodError();
+		}
 		
 		public get entryPoint():away.geom.Vector3D
 		{

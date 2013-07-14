@@ -14,12 +14,12 @@ module away.base
 	/**
 	 * IRenderable provides an interface for objects that can be rendered in the rendering pipeline.
 	 */
-	export interface IRenderable extends away.base.IMaterialOwner
+	export interface IRenderable /*extends away.base.IMaterialOwner*/
 	{
 		/**
 		 * The transformation matrix that transforms from model to world space.
 		 */
-		sceneTransform():away.geom.Matrix3D; // GET
+		//sceneTransform():away.geom.Matrix3D; // GET
 		
 		/**
 		 * The transformation matrix that transforms from model to world space, adapted with any special operations needed to render.
@@ -32,12 +32,12 @@ module away.base
 		/**
 		 * The inverse scene transform object that transforms from world to model space.
 		 */
-		inverseSceneTransform:away.geom.Matrix3D; //GET
+		//inverseSceneTransform:away.geom.Matrix3D; //GET
 		
 		/**
 		 * Indicates whether the IRenderable should trigger mouse events, and hence should be rendered for hit testing.
 		 */
-		mouseEnabled:boolean; //GET
+		//mouseEnabled:boolean; //GET
 		
 		/**
 		 * The entity that that initially provided the IRenderable to the render pipeline.
@@ -55,7 +55,7 @@ module away.base
 		 */
 		uvTransform:away.geom.Matrix;//GET
 		
-		shaderPickingDetails:boolean;//GET
+		//shaderPickingDetails:boolean;//GET
 		
 		/**
 		 * The total amount of vertices in the SubGeometry.
@@ -71,7 +71,7 @@ module away.base
 		 * The number of data elements in the buffers per vertex.
 		 * This always applies to vertices, normals and tangents.
 		 */
-		vertexStride():number;//GET
+		vertexStride:number;//GET
 		
 		/**
 		 * Assigns the attribute stream for vertex positions.

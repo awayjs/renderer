@@ -12,7 +12,7 @@
 module away.entities
 {
 	
-	export class SegmentSet extends away.entities.Entity /*implements away.base.IRenderable*/
+	export class SegmentSet extends away.entities.Entity implements away.base.IRenderable
 	{
 		private LIMIT:number = 3*0xFFFF;
 		//private _activeSubSet:SubSet;
