@@ -11,6 +11,7 @@
 ///<reference path="../geom/Rectangle.ts" />
 ///<reference path="../math/Matrix3DUtils.ts" />
 ///<reference path="../entities/Entity.ts" />
+///<reference path="../errors/PartialImplementationError.ts" />
 
 
 
@@ -109,9 +110,15 @@ module away.pick
 		/**
 		 * @inheritDoc
 		 */
-        /* TODO implement dependency : EntityCollector
-		public getViewCollision(x:number, y:number, view:View3D):PickingCollisionVO
+        // TODO implement dependency : EntityCollector
+        // TODO: GLSL implementation / conversion
+		public getViewCollision(x:number, y:number, view:away.containers.View3D):away.pick.PickingCollisionVO
 		{
+
+            throw new away.errors.PartialImplementationError( 'EntityCollector, Stage3dProxy');
+            return null;
+
+            /*
 			var collector:EntityCollector = view.entityCollector;
 			
 			_stage3DProxy = view.stage3DProxy;
@@ -171,8 +178,9 @@ module away.pick
 			}
 			
 			return _collisionVO;
+			*/
 		}
-		*/
+		//*/
 		/**
 		 * @inheritDoc
 		 */
@@ -185,6 +193,7 @@ module away.pick
 		 * @inheritDoc
 		 */
         /* TODO: Implement dependency - EntityCollector
+        // TODO: GLSL implementation / conversion
 		protected function draw(entityCollector:EntityCollector, target:TextureBase)
 		{
 			var camera:Camera3D = entityCollector.camera;
