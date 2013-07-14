@@ -23,19 +23,17 @@ module away.partition
 			this._rootNode = rootNode || <NodeBase> new away.partition.NullNode();
 		}
 		
-		/*
 		public get showDebugBounds():boolean
 		{
 			return this._rootNode.showDebugBounds;
 		}
-		
 		
 		public set showDebugBounds( value:boolean )
 		{
 			this._rootNode.showDebugBounds = value;
 		}
 		
-		
+		/*
 		public traverse( traverser:PartitionTraverser  )
 		{
 			if( this._updatesMade )
@@ -46,6 +44,7 @@ module away.partition
 			_rootNode.acceptTraverser(traverser);
 		}
 		*/
+		
 		public iMarkForUpdate( entity:away.entities.Entity )
 		{
 			var node:EntityNode = entity.getEntityPartitionNode();

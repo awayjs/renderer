@@ -10,6 +10,7 @@
 ///<reference path="../pick/IPickingCollider.ts" />
 ///<reference path="../pick/PickingCollisionVO.ts" />
 ///<reference path="../bounds/BoundingVolumeBase.ts" />
+///<reference path="../errors/PartialImplementationError.ts" />
 
 module away.entities
 {
@@ -164,33 +165,29 @@ module away.entities
 			return this._bounds.max.z;
 		}
 		*/
-		/*
-		public get bounds():BoundingVolumeBase
+		
+		public getBounds():away.bounds.BoundingVolumeBase
 		{
-			if ( this._boundsInvalid )
+			if ( this._pBoundsInvalid )
 			{
 				this.pUpdateBounds();
 			}
-			return this._bounds;
+			return this._pBounds;
 		}
-		*/
 		
-		/*
-		public set bounds( value:BoundingVolumeBase)
+		public set bounds( value:away.bounds.BoundingVolumeBase )
 		{
 			this.removeBounds();
-			this._bounds = value;
+			this._pBounds = value;
 			this._worldBounds = value.clone();
-			this.invalidateBounds();
+			this.pInvalidateBounds();
 			if( this._showBounds )
 			{
 				this.addBounds();
 			}
 		}
-		*/
 		
-		/*
-		public get worldBounds():BoundingVolumeBase
+		public get worldBounds():away.bounds.BoundingVolumeBase
 		{
 			if( this._worldBoundsInvalid )
 			{
@@ -198,30 +195,31 @@ module away.entities
 			}
 			return this._worldBounds;
 		}
-		*/
-		/*
+		
 		private updateWorldBounds()
 		{
 			this._worldBounds.transformFrom( this.bounds, this.sceneTransform );
 			this._worldBoundsInvalid = false;
 		}
 		
+		
 		//@override
-		public set iImplicitPartition( value:Partition3D )
+		public set iImplicitPartition( value:away.partition.Partition3D )
 		{
-			if( value == this._iImplicitPartition )
+			if( value == this._pImplicitPartition )
 			{
 				return;
 			}
 			
-			if( this._iImplicitPartition )
+			if( this._pImplicitPartition )
 			{
 				this.notifyPartitionUnassigned();
 			}
-			super.implicitPartition = value;
+			throw new away.errors.PartialImplementationError();
+			//TODO super.implicitPartition = value;
 			this.notifyPartitionAssigned();
 		}
-		
+		/*
 		//@override
 		public set scene( value:Scene3D )
 		{
@@ -246,20 +244,16 @@ module away.entities
 		{
 			return away.library.AssetType.ENTITY;
 		}
-
-
+		
 		public get pickingCollider():away.pick.IPickingCollider
 		{
 			return this._iPickingCollider;
 		}
-
 		
-
 		public set pickingCollider(value:away.pick.IPickingCollider)
 		{
 			this._iPickingCollider = value;
 		}
-
 		
 		public getEntityPartitionNode():away.partition.EntityNode
 		{

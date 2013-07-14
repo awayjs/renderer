@@ -499,11 +499,31 @@ module away.containers
 			return this._children.length;
 		}
 		
-		//TODO override public function lookAt(target:Vector3D, upAxis:Vector3D = null):void
-		//TODO override public function translateLocal(axis:Vector3D, distance:Number):void
+		//@override 
+		public lookAt( target:away.geom.Vector3D, upAxis:away.geom.Vector3D = null )
+		{
+			throw new away.errors.PartialImplementationError();
+			//TODO super.lookAt( target, upAxis );
+			this.notifySceneTransformChange();
+		}
 		
-		//TODO override public function dispose():void
-		/*
+		//@override
+		public translateLocal(axis:away.geom.Vector3D, distance:number )
+		{
+			throw new away.errors.PartialImplementationError();
+			//TODO super.translateLocal( axis, distance );
+			this.notifySceneTransformChange();
+		}
+		
+		//@override
+		public dispose()
+		{
+			if( this.parent )
+			{
+				this.parent.removeChild( this );
+			}
+		}
+		
 		public disposeWithChildren()
 		{
 			this.dispose();
@@ -512,9 +532,36 @@ module away.containers
 				this.getChildAt(0).dispose();
 			}
 		}
+		
+		//override
+		/*
+		public clone():away.base.Object3D
+		{
+			var clone:away.containers.ObjectContainer3D = new away.containers.ObjectContainer3D();
+			clone.pivotPoint = pivotPoint;
+			clone.transform = transform;
+			clone.partition = partition;
+			clone.name = name;
+			
+			var len:number = this._children.length;
+			
+			for(var i:number = 0; i < len; ++i)
+			{
+				clone.addChild(ObjectContainer3D(_children[i].clone()));
+			}
+			// todo: implement for all subtypes
+			return clone;
+		}
 		*/
-		//TODO override public function clone():Object3D
-		//TODO override public function rotate(axis:Vector3D, angle:Number):void
+		
+		//@override
+		public rotate( axis:away.geom.Vector3D, angle:number )
+		{
+			throw new away.errors.PartialImplementationError();
+			//TODO super.rotate(axis, angle);
+			this.notifySceneTransformChange();
+		}
+		
 		//TODO override public function dispatchEvent(event:Event):Boolean
 		
 		public updateImplicitVisibility()
@@ -531,8 +578,6 @@ module away.containers
 		
 		//TODO override public function addEventListener(type:String, listener:Function, useCapture:Boolean = false, priority:int = 0, useWeakReference:Boolean = false):void
 		//TODO override public function removeEventListener(type:String, listener:Function, useCapture:Boolean = false):void
-		
-		
 		
 	}
 }

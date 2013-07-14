@@ -6,6 +6,8 @@
 ///<reference path="../math/Plane3D.ts" />
 ///<reference path="../entities/Entity.ts" />
 ///<reference path="../traverse/PartitionTraverser.ts" />
+///<reference path="../primitives/WireframePrimitiveBase.ts" />
+///<reference path="../errors/PartialImplementationError.ts" />
 
 module away.partition
 {
@@ -15,7 +17,7 @@ module away.partition
 		public _iParent:NodeBase;
 		public _pChildNodes:NodeBase[];
 		public _pNumChildNodes:number;
-		//public _pDebugPrimitive:WireframePrimitiveBase;
+		public _pDebugPrimitive:away.primitives.WireframePrimitiveBase;
 		
 		public _iNumEntities:number;
 		public _iCollectionMark:number;
@@ -25,42 +27,39 @@ module away.partition
 			this._pChildNodes = [];
 		}
 		
-		/*
 		public get showDebugBounds():boolean
 		{
-			return this._debugPrimitive != null;
+			return this._pDebugPrimitive != null;
 		}
-		*/
 		
-		/*
 		public set showDebugBounds( value:boolean )
 		{
-			if( this._debugPrimitive && value == true )
+			if( this._pDebugPrimitive && value == true )
 			{
 				return;
 			}
 			
-			if( !this._debugPrimitive && value == false )
+			if( !this._pDebugPrimitive && value == false )
 			{
 				return;
 			}
 			
 			if (value)
 			{
-				this._debugPrimitive = this.createDebugBounds();
+				throw new away.errors.PartialImplementationError();
+				//TODO this._pDebugPrimitive = this.createDebugBounds();
 			}
 			else
 			{
-				this._debugPrimitive.dispose();
-				this._debugPrimitive = null;
+				this._pDebugPrimitive.dispose();
+				this._pDebugPrimitive = null;
 			}
 			
-			for (var i:uint = 0; i < this._pNumChildNodes; ++i)
+			for (var i:number = 0; i < this._pNumChildNodes; ++i)
 			{
-				this._childNodes[i].showDebugBounds = value;
+				this._pChildNodes[i].showDebugBounds = value;
 			}
 		}
-		*/
 		
 		public get parent():NodeBase
 		{

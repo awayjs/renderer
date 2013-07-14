@@ -5,6 +5,7 @@
  
 ///<reference path="../geom/Vector3D.ts" />
 ///<reference path="../errors/AbstractMethodError.ts" />
+///<reference path="../primitives/WireframePrimitiveBase.ts" />
 
 module away.bounds
 {
@@ -15,7 +16,7 @@ module away.bounds
 		public _pMax:away.geom.Vector3D;
 		public _pAabbPoints:number[] = [];
 		public _pAabbPointsDirty:boolean = true;
-		//public _pBoundingRenderable:WireframePrimitiveBase;
+		public _pBoundingRenderable:away.primitives.WireframePrimitiveBase;
 		
 		constructor()
 		{
@@ -41,37 +42,36 @@ module away.bounds
 			}
 			return this._pAabbPoints;
 		}
-		/*
-		public get boundingRenderable():WireframePrimitiveBase
+		
+		public get boundingRenderable():away.primitives.WireframePrimitiveBase
 		{
 			if( !this._pBoundingRenderable )
 			{
-				this._boundingRenderable = this.createBoundingRenderable();
-				this.updateBoundingRenderable();
+				this._pBoundingRenderable = this.pCreateBoundingRenderable();
+				this.pUpdateBoundingRenderable();
 			}
 			return this._pBoundingRenderable;
 		}
-		*/
 		
 		public nullify()
 		{
 			this._pMin.x = this._pMin.y = this._pMin.z = 0;
 			this._pMax.x = this._pMax.y = this._pMax.z = 0;
 			this._pAabbPointsDirty = true;
-			/*
+			
 			if( this._pBoundingRenderable )
 			{
-				this.updateBoundingRenderable();
-			}*/
+				this.pUpdateBoundingRenderable();
+			}
 		}
 		
 		public disposeRenderable()
-		{/*
+		{
 			if( this._pBoundingRenderable )
 			{
 				this._pBoundingRenderable.dispose();
 			}
-			this._pBoundingRenderable = null;*/
+			this._pBoundingRenderable = null;
 		}
 		
 		public fromVertices( vertices:number[] )
@@ -115,7 +115,7 @@ module away.bounds
 			this.fromExtremes( minX, minY, minZ, maxX, maxY, maxZ );
 		}
 		
-		/*
+		/* TODO
 		public fromGeometry(geometry:Geometry):void
 		{
 			var subGeoms:Vector.<ISubGeometry> = geometry.subGeometries;
@@ -175,11 +175,11 @@ module away.bounds
 			this._pMax.y = maxY;
 			this._pMax.z = maxZ;
 			this._pAabbPointsDirty = true;
-			/*
+			
 			if( this._pBoundingRenderable )
 			{
-				this.updateBoundingRenderable();
-			}*/
+				this.pUpdateBoundingRenderable();
+			}
 		}
 		
 		public isInFrustum( planes:away.math.Plane3D[], numPlanes:number ):boolean
@@ -204,7 +204,6 @@ module away.bounds
 			throw new away.errors.AbstractMethodError();
 		}
 		
-		// TODO virtual method? throw or at least ignor assignment?
 		public rayIntersection( position:away.geom.Vector3D, direction:away.geom.Vector3D, targetNormal:away.geom.Vector3D ):number
 		{
 			position = position;
@@ -213,7 +212,6 @@ module away.bounds
 			return -1;
 		}
 		
-		// TODO virtual method? throw or at least ignor assignment?
 		public containsPoint( position:away.geom.Vector3D ):boolean
 		{
 			position = position;
@@ -254,6 +252,26 @@ module away.bounds
 			this._pAabbPoints[22] = maxY;
 			this._pAabbPoints[23] = maxZ;
 			this._pAabbPointsDirty = false;
+		}
+		
+		public pUpdateBoundingRenderable()
+		{
+			throw new away.errors.AbstractMethodError();
+		}
+		
+		public pCreateBoundingRenderable():away.primitives.WireframePrimitiveBase
+		{
+			throw new away.errors.AbstractMethodError();
+		}
+		
+		public classifyToPlane(plane:away.math.Plane3D):number
+		{
+			throw new away.errors.AbstractMethodError();
+		}
+		
+		public transformFrom( bounds:away.bounds.BoundingVolumeBase, matrix:away.geom.Matrix3D )
+		{
+			throw new away.errors.AbstractMethodError();
 		}
 	}
 }
