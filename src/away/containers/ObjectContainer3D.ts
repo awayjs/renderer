@@ -7,6 +7,8 @@
 ///<reference path="../geom/Matrix3D.ts" />
 ///<reference path="../library/assets/AssetType.ts" />
 ///<reference path="../events/Object3DEvent.ts" />
+///<reference path="../partition/Partition3D.ts" />
+///<reference path="../errors/PartialImplementationError.ts" />
 
 module away.containers
 {
@@ -20,8 +22,8 @@ module away.containers
 		public _pSceneTransform:away.geom.Matrix3D = new away.geom.Matrix3D();
 		public _pSceneTransformDirty:boolean = true;
 		
-		//TODO public _pExplicitPartition:away.partitions.Partition3D;
-		//TODO public _pImplicitPartition:away.partitions.Partition3D;
+		public _pExplicitPartition:away.partition.Partition3D;
+		public _pImplicitPartition:away.partition.Partition3D;
 		public _pMouseEnabled:boolean;
 		
 		private _sceneTransformChanged:away.events.Object3DEvent;
@@ -62,37 +64,34 @@ module away.containers
 				this._scenePosition.setTo( 0, 0, 0 );
 			}
 		}
-		/*
-		public get iImplicitPartition():away.partitions.Partition3D
+		
+		public get iImplicitPartition():away.partition.Partition3D
 		{
-			return this._iImplicitPartition;
+			return this._pImplicitPartition;
 		}
 		
-		public set iImplicitPartition( value:away.partitions.Partition3D )
+		public set iImplicitPartition( value:away.partition.Partition3D )
 		{
-			if (value == _iImplicitPartition)
+			if ( value == this._pImplicitPartition )
 			{
 				return;
 			}
 			
 			var i:number;
-			var len:number = _children.length;
+			var len:number = this._children.length;
 			var child:away.containers.ObjectContainer3D;
 			
-			_iImplicitPartition = value;
+			this._pImplicitPartition = value;
 			
 			while (i < len)
 			{
-				child = _children[i++];
-				
-				// assign implicit partition if no explicit one is given
-				if( !child._explicitPartition )
+				child = this._children[i++];
+				if( !child._pExplicitPartition )
 				{
-					child._iImplicitPartition = value;
+					child._pImplicitPartition = value;
 				}
 			}
 		}
-		*/
 		
 		public get _iIsVisible():boolean
 		{
@@ -103,7 +102,8 @@ module away.containers
 		{
 			this._pParent = value;
 			
-			//this.pUpdateMouseChildren();
+			throw new away.errors.PartialImplementationError();
+			this.pUpdateMouseChildren();
 			
 			if( value == null ) {
 				this.scene = null;
@@ -126,13 +126,11 @@ module away.containers
 			var i:number;
 			var len:number = this._children.length;
 			
-			//act recursively on child objects
 			while( i < len )
 			{
 				this._children[i++].notifySceneTransformChange();
 			}
 			
-			//trigger event if listener exists
 			if( this._listenToSceneTransformChanged )
 			{
 				if( !this._sceneTransformChanged )
@@ -165,11 +163,12 @@ module away.containers
 			}
 		}
 		
-		/*
-		public pUpdateMouseChildren():void
+		public pUpdateMouseChildren()
 		{
-			if( this._pParent && !this._pParent._iIsRoot ) {
-				// Set implicit mouse enabled if parent its children to be so.
+			throw new away.errors.PartialImplementationError();
+			
+			if( this._pParent && !this._pParent._iIsRoot )
+			{
 				this._iAncestorsAllowMouseEnabled = this._pParent._iAncestorsAllowMouseEnabled && this._pParent.mouseChildren;
 			}
 			else
@@ -177,27 +176,23 @@ module away.containers
 				this._iAncestorsAllowMouseEnabled = this.mouseChildren;
 			}
 			
-			// Sweep children.
 			var len:number = this._children.length;
 			for( var i:number = 0; i < len; ++i )
 			{
-				this._children[i].updateMouseChildren();
+				this._children[i].pUpdateMouseChildren();
 			}
 		}
-		*/
 		
 		public get mouseEnabled():boolean
 		{
 			return this._pMouseEnabled;
 		}
 		
-		/*
 		public set mouseEnabled( value:boolean )
 		{
 			this._pMouseEnabled = value;
-			this._pUpdateMouseChildren();
+			this.pUpdateMouseChildren();
 		}
-		*/
 		
 		// TODO override arcane function invalidateTransform():void
 		
@@ -227,13 +222,11 @@ module away.containers
 			return this._mouseChildren;
 		}
 		
-		/*
 		public set mouseChildren( value:boolean )
 		{
 			this._mouseChildren = value;
-			this._pUpdateMouseChildren();
+			this.pUpdateMouseChildren();
 		}
-		*/
 		
 		public get visible():boolean
 		{
@@ -378,18 +371,16 @@ module away.containers
 			return max;
 		}
 		
-		/*
-		public get partition():away.partitions.Partition3D
+		public get partition():away.partition.Partition3D
 		{
 			return this._pExplicitPartition;
 		}
 		
-		public set partition( value:away.partitions.Partition3D )
+		public set partition( value:away.partition.Partition3D )
 		{
-			this._explicitPartition = value;
-			this.implicitPartition = value ? value : ( this._pParent ? this._pParent.implicitPartition : null);
+			this._pExplicitPartition = value;
+			this.iImplicitPartition = value ? value : ( this._pParent ? this._pParent.iImplicitPartition : null);
 		}
-		*/
 		
 		public get sceneTransform():away.geom.Matrix3D
 		{
@@ -439,16 +430,16 @@ module away.containers
 			{
 				child._pParent.removeChild(child);
 			}
-			/*
+			
 			if (!child._pExplicitPartition)
 			{
-				child.implicitPartition = _implicitPartition;
+				child.iImplicitPartition = this._pImplicitPartition;
 			}
-			*/
+			
 			child.iSetParent( this );
 			child.scene = this._pScene;
 			child.notifySceneTransformChange();
-			//child.updateMouseChildren();
+			child.pUpdateMouseChildren();
 			child.updateImplicitVisibility();
 			
 			this._children.push(child);
@@ -456,16 +447,13 @@ module away.containers
 			return child;
 		}
 		
-		/*
 		public addChildren( childarray:away.containers.ObjectContainer3D )
 		{
-			for(var child:away.containers.ObjectContainer3D in childarray )
+			for(var child in childarray )
 			{
 				this.addChild( child );
 			}
 		}
-		
-		*/
 		
 		public removeChild( child:away.containers.ObjectContainer3D )
 		{
@@ -494,11 +482,11 @@ module away.containers
 		{
 			this._children.splice( childIndex, 1 );
 			child.iSetParent( null );
-			/*
-			if ( !child._explicitPartition )
+			
+			if ( !child._pExplicitPartition )
 			{
-				child.implicitPartition = null;
-			}*/
+				child.iImplicitPartition = null;
+			}
 		}
 		
 		public getChildAt( index:number ):away.containers.ObjectContainer3D
