@@ -1,44 +1,36 @@
-///<reference path="../src/away/entities/Entity.ts"/>
+///<reference path="../src/away/events/MouseEvent3D.ts"/>
+
 
 //------------------------------------------------------------------------------------------------
 // Web / PHP Storm arguments string
 //------------------------------------------------------------------------------------------------
-// --sourcemap $ProjectFileDir$/tests/EntityTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/EntityTest.js
+// --sourcemap $ProjectFileDir$/tests/EventsTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/EventsTest.js
 //------------------------------------------------------------------------------------------------
 
 
 module tests {
 
-    export class EntityTest //extends away.events.EventDispatcher
+    export class Events //extends away.events.EventDispatcher
     {
 
-
-        private entity : away.entities.Entity;
+        var e : away.events.MouseEvent3D;
 
         constructor()
         {
 
-            this.entity = new away.entities.Entity();
-            this.entity.x = 10;
-            this.entity.y = 10;
-            this.entity.z = 10;
-
-            this.entity.getIgnoreTransform();
         }
 
     }
+
 
 }
 
 var GL = null;//: WebGLRenderingContext;
 
-var test
-
 window.onload = function ()
 {
 
-    test = new tests.EntityTest();
-
+    var test = new tests.Events();
     var canvas : HTMLCanvasElement = document.createElement('canvas');
     GL = canvas.getContext("experimental-webgl");
 

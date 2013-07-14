@@ -414,6 +414,7 @@ var away;
             Event.RESIZE = "resize";
             Event.CONTEXT3D_CREATE = "context3DCreate";
             Event.ERROR = "error";
+            Event.CHANGE = "change";
             return Event;
         })();
         events.Event = Event;
@@ -1034,11 +1035,13 @@ var away;
                 this.rawData = vector.splice(0);
             };
 
-            /* TODO implement copyRawDataTo
-            public copyRawDataTo( vector:number[], index:number = 0, transpose:boolean = false )
-            {
-            }
-            */
+            Matrix3D.prototype.copyRawDataTo = function (vector, index, transpose) {
+                if (typeof index === "undefined") { index = 0; }
+                if (typeof transpose === "undefined") { transpose = false; }
+                //TODO fully implement
+                vector = this.rawData.splice(0);
+            };
+
             /**
             * Copies a Vector3D object into specific row of the calling Matrix3D object.
             */
@@ -2556,24 +2559,14 @@ var away;
                     return this._transform;
                 },
                 set: function (val) {
-                    //ridiculous matrix error
-                    /*
-                    if (!val.rawData[uint(0)]) {
-                    var raw:number[] = Matrix3DUtils.RAW_DATA_CONTAINER;
-                    val.copyRawDataTo(raw);
-                    raw[uint(0)] = _smallestNumber;
-                    val.copyRawDataFrom(raw);
-                    }
-                    */
-                    //ridiculous matrix error
-                    /*
                     if (!val.rawData[0]) {
-                    var raw:number[] = away.math.Matrix3DUtils.RAW_DATA_CONTAINER;
-                    //val.copyRawDataTo(raw); // TODO: implement
-                    raw[0] = this._smallestNumber;
-                    val.copyRawDataFrom(raw);
+                        this.raw = away.math.Matrix3DUtils.RAW_DATA_CONTAINER;;
+                        val.copyRawDataTo(raw);
+                        raw[0] = this._smallestNumber;
+                        val.copyRawDataFrom(raw);
                     }
-                    */
+
+                    //*/
                     this.elements = val.decompose();;
                     this.vec;;
 
@@ -3096,25 +3089,21 @@ var away;
                 this._implicitVisibility = true;
                 this._pIgnoreTransform = false;
             }
-            Object.defineProperty(ObjectContainer3D.prototype, "ignoreTransform", {
-                get: function () {
-                    return this._pIgnoreTransform;
-                },
-                set: function (value) {
-                    this._pIgnoreTransform = value;
-                    this._pSceneTransformDirty = !value;
-                    this._inverseSceneTransformDirty = !value;
-                    this._scenePositionDirty = !value;
+            ObjectContainer3D.prototype.getIgnoreTransform = function () {
+                return this._pIgnoreTransform;
+            };
 
-                    if (value) {
-                        this._pSceneTransform.identity();
-                        this._scenePosition.setTo(0, 0, 0);
-                    }
-                },
-                enumerable: true,
-                configurable: true
-            });
+            ObjectContainer3D.prototype.setIgnoreTransform = function (value) {
+                this._pIgnoreTransform = value;
+                this._pSceneTransformDirty = !value;
+                this._inverseSceneTransformDirty = !value;
+                this._scenePositionDirty = !value;
 
+                if (value) {
+                    this._pSceneTransform.identity();
+                    this._scenePosition.setTo(0, 0, 0);
+                }
+            };
 
             Object.defineProperty(ObjectContainer3D.prototype, "_iIsVisible", {
                 get: /*
@@ -3789,7 +3778,7 @@ var away;
                 } while((node = node._iParent) != null);
             };
 
-            NodeBase.prototype._iRemoveNode = function (node) {
+            NodeBase.prototype.iRemoveNode = function (node) {
                 var index = this._pChildNodes.indexOf(node);
                 this._pChildNodes[index] = this._pChildNodes[--this._pNumChildNodes];
                 this._pChildNodes.pop();
@@ -3887,6 +3876,7 @@ var away;
 
             EntityNode.prototype.removeFromParent = function () {
                 if (this._iParent) {
+                    this._iParent.iRemoveNode(this);
                 }
                 this._iParent = null;
             };
@@ -3928,10 +3918,2496 @@ var away;
     * ...
     * @author Gary Paluk - http://www.plugin.io
     */
+    (function (geom) {
+        var Point = (function () {
+            function Point(x, y) {
+                if (typeof x === "undefined") { x = 0; }
+                if (typeof y === "undefined") { y = 0; }
+                this.x = x;
+                this.y = y;
+            }
+            return Point;
+        })();
+        geom.Point = Point;
+    })(away.geom || (away.geom = {}));
+    var geom = away.geom;
+})(away || (away = {}));
+var away;
+(function (away) {
+    (function (display) {
+        var BlendMode = (function () {
+            function BlendMode() {
+            }
+            BlendMode.ADD = "add";
+            BlendMode.ALPHA = "alpha";
+            BlendMode.DARKEN = "darken";
+            BlendMode.DIFFERENCE = "difference";
+            BlendMode.ERASE = "erase";
+            BlendMode.HARDLIGHT = "hardlight";
+            BlendMode.INVERT = "invert";
+            BlendMode.LAYER = "layer";
+            BlendMode.LIGHTEN = "lighten";
+            BlendMode.MULTIPLY = "multiply";
+            BlendMode.NORMAL = "normal";
+            BlendMode.OVERLAY = "overlay";
+            BlendMode.SCREEN = "screen";
+            BlendMode.SHADER = "shader";
+            BlendMode.SUBTRACT = "subtract";
+            return BlendMode;
+        })();
+        display.BlendMode = BlendMode;
+    })(away.display || (away.display = {}));
+    var display = away.display;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="Error.ts" />
+    (function (errors) {
+        /**
+        * AbstractMethodError is thrown when an abstract method is called. The method in question should be overridden
+        * by a concrete subclass.
+        */
+        var PartialImplementationError = (function (_super) {
+            __extends(PartialImplementationError, _super);
+            /**
+            * Create a new AbstractMethodError.
+            * @param message An optional message to override the default error message.
+            * @param id The id of the error.
+            */
+            function PartialImplementationError(dependency, id) {
+                if (typeof dependency === "undefined") { dependency = ''; }
+                if (typeof id === "undefined") { id = 0; }
+                _super.call(this, "PartialImplementationError - this function is in development. Required Dependency: " + dependency, id);
+            }
+            return PartialImplementationError;
+        })(errors.Error);
+        errors.PartialImplementationError = PartialImplementationError;
+    })(away.errors || (away.errors = {}));
+    var errors = away.errors;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../../def/webgl.d.ts"/>
+    (function (display3D) {
+        var Context3DClearMask = (function () {
+            function Context3DClearMask() {
+            }
+            Context3DClearMask.COLOR = 8 << 11;
+            Context3DClearMask.DEPTH = 8 << 5;
+            Context3DClearMask.STENCIL = 8 << 7;
+            Context3DClearMask.ALL = Context3DClearMask.COLOR | Context3DClearMask.DEPTH | Context3DClearMask.STENCIL;
+            return Context3DClearMask;
+        })();
+        display3D.Context3DClearMask = Context3DClearMask;
+    })(away.display3D || (away.display3D = {}));
+    var display3D = away.display3D;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../../def/webgl.d.ts"/>
+    (function (display3D) {
+        var VertexBuffer3D = (function () {
+            function VertexBuffer3D(numVertices, data32PerVertex) {
+                this._buffer = GL.createBuffer();
+                this._numVertices = numVertices;
+                this._data32PerVertex = data32PerVertex;
+            }
+            VertexBuffer3D.prototype.upload = function (vertices, startVertex, numVertices) {
+                GL.bindBuffer(GL.ARRAY_BUFFER, this._buffer);
+                console.log("** WARNING upload not fully implemented, startVertex & numVertices not considered.");
+
+                // TODO add offsets , startVertex, numVertices * this._data32PerVertex
+                GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(vertices), GL.STATIC_DRAW);
+            };
+
+            Object.defineProperty(VertexBuffer3D.prototype, "numVertices", {
+                get: function () {
+                    return this._numVertices;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(VertexBuffer3D.prototype, "data32PerVertex", {
+                get: function () {
+                    return this._data32PerVertex;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(VertexBuffer3D.prototype, "glBuffer", {
+                get: function () {
+                    return this._buffer;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            VertexBuffer3D.prototype.dispose = function () {
+                GL.deleteBuffer(this._buffer);
+            };
+            return VertexBuffer3D;
+        })();
+        display3D.VertexBuffer3D = VertexBuffer3D;
+    })(away.display3D || (away.display3D = {}));
+    var display3D = away.display3D;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../../def/webgl.d.ts"/>
+    (function (display3D) {
+        var IndexBuffer3D = (function () {
+            function IndexBuffer3D(numIndices) {
+                this._buffer = GL.createBuffer();
+                this._numIndices = numIndices;
+            }
+            IndexBuffer3D.prototype.upload = function (data, startOffset, count) {
+                GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this._buffer);
+
+                // TODO add index offsets
+                GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(data), GL.STATIC_DRAW);
+            };
+
+            IndexBuffer3D.prototype.dispose = function () {
+                GL.deleteBuffer(this._buffer);
+            };
+
+            Object.defineProperty(IndexBuffer3D.prototype, "numIndices", {
+                get: function () {
+                    return this._numIndices;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(IndexBuffer3D.prototype, "glBuffer", {
+                get: function () {
+                    return this._buffer;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return IndexBuffer3D;
+        })();
+        display3D.IndexBuffer3D = IndexBuffer3D;
+    })(away.display3D || (away.display3D = {}));
+    var display3D = away.display3D;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../../def/webgl.d.ts"/>
+    (function (display3D) {
+        var Program3D = (function () {
+            function Program3D() {
+                this._program = GL.createProgram();
+            }
+            Program3D.prototype.upload = function (vertexProgram, fragmentProgram) {
+                this._vertexShader = GL.createShader(GL.VERTEX_SHADER);
+                this._fragmentShader = GL.createShader(GL.FRAGMENT_SHADER);
+
+                GL.shaderSource(this._vertexShader, vertexProgram);
+                GL.compileShader(this._vertexShader);
+
+                if (!GL.getShaderParameter(this._vertexShader, GL.COMPILE_STATUS)) {
+                    alert(GL.getShaderInfoLog(this._vertexShader));
+                    return null;
+                }
+
+                GL.shaderSource(this._fragmentShader, fragmentProgram);
+                GL.compileShader(this._fragmentShader);
+
+                if (!GL.getShaderParameter(this._fragmentShader, GL.COMPILE_STATUS)) {
+                    alert(GL.getShaderInfoLog(this._fragmentShader));
+                    return null;
+                }
+
+                GL.attachShader(this._program, this._vertexShader);
+                GL.attachShader(this._program, this._fragmentShader);
+                GL.linkProgram(this._program);
+
+                if (!GL.getProgramParameter(this._program, GL.LINK_STATUS)) {
+                    alert("Could not link the program.");
+                }
+            };
+
+            Program3D.prototype.dispose = function () {
+                GL.deleteProgram(this._program);
+            };
+
+            Program3D.prototype.focusProgram = function () {
+                GL.useProgram(this._program);
+            };
+
+            Object.defineProperty(Program3D.prototype, "glProgram", {
+                get: function () {
+                    return this._program;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return Program3D;
+        })();
+        display3D.Program3D = Program3D;
+    })(away.display3D || (away.display3D = {}));
+    var display3D = away.display3D;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="Point.ts" />
+    (function (geom) {
+        var Rectangle = (function () {
+            function Rectangle(x, y, width, height) {
+                if (typeof x === "undefined") { x = 0; }
+                if (typeof y === "undefined") { y = 0; }
+                if (typeof width === "undefined") { width = 0; }
+                if (typeof height === "undefined") { height = 0; }
+                this.x = x;
+                this.y = y;
+                this.width = width;
+                this.height = height;
+            }
+            Object.defineProperty(Rectangle.prototype, "left", {
+                get: function () {
+                    return this.x;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Rectangle.prototype, "right", {
+                get: function () {
+                    return this.x + this.width;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Rectangle.prototype, "top", {
+                get: function () {
+                    return this.y;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Rectangle.prototype, "bottom", {
+                get: function () {
+                    return this.y + this.height;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Rectangle.prototype, "topLeft", {
+                get: function () {
+                    return new away.geom.Point(this.x, this.y);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Rectangle.prototype, "bottomRight", {
+                get: function () {
+                    return new away.geom.Point(this.x + this.width, this.y + this.height);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Rectangle.prototype.clone = function () {
+                return new Rectangle(this.x, this.y, this.width, this.height);
+            };
+            return Rectangle;
+        })();
+        geom.Rectangle = Rectangle;
+    })(away.geom || (away.geom = {}));
+    var geom = away.geom;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    (function (display3D) {
+        var Context3DTextureFormat = (function () {
+            function Context3DTextureFormat() {
+            }
+            Context3DTextureFormat.BGRA = "bgra";
+            Context3DTextureFormat.BGRA_PACKED = "bgraPacked4444";
+            Context3DTextureFormat.BGR_PACKED = "bgrPacked565";
+            Context3DTextureFormat.COMPRESSED = "compressed";
+            Context3DTextureFormat.COMPRESSED_ALPHA = "compressedAlpha";
+            return Context3DTextureFormat;
+        })();
+        display3D.Context3DTextureFormat = Context3DTextureFormat;
+    })(away.display3D || (away.display3D = {}));
+    var display3D = away.display3D;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../../def/webgl.d.ts"/>
+    (function (display3D) {
+        var TextureBase = (function () {
+            function TextureBase() {
+                this._glTexture = GL.createTexture();
+            }
+            TextureBase.prototype.dispose = function () {
+                GL.deleteTexture(this._glTexture);
+            };
+
+            Object.defineProperty(TextureBase.prototype, "glTexture", {
+                get: function () {
+                    return this._glTexture;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return TextureBase;
+        })();
+        display3D.TextureBase = TextureBase;
+    })(away.display3D || (away.display3D = {}));
+    var display3D = away.display3D;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="Event.ts" />
+    (function (events) {
+        var IOErrorEvent = (function (_super) {
+            __extends(IOErrorEvent, _super);
+            function IOErrorEvent(type) {
+                _super.call(this, type);
+            }
+            IOErrorEvent.IO_ERROR = "IOErrorEvent_IO_ERROR";
+            return IOErrorEvent;
+        })(away.events.Event);
+        events.IOErrorEvent = IOErrorEvent;
+    })(away.events || (away.events = {}));
+    var events = away.events;
+})(away || (away = {}));
+var away;
+(function (away) {
+    (function (net) {
+        var URLRequestMethod = (function () {
+            function URLRequestMethod() {
+            }
+            URLRequestMethod.POST = 'POST';
+
+            URLRequestMethod.GET = 'GET';
+            return URLRequestMethod;
+        })();
+        net.URLRequestMethod = URLRequestMethod;
+    })(away.net || (away.net = {}));
+    var net = away.net;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../events/EventDispatcher.ts" />
+    (function (net) {
+        var URLVariables = (function () {
+            /**
+            *
+            * @param source
+            */
+            function URLVariables(source) {
+                if (typeof source === "undefined") { source = null; }
+                this._variables = new Object();
+                if (source !== null) {
+                    this.decode(source);
+                }
+            }
+            /**
+            *
+            * @param source
+            */
+            URLVariables.prototype.decode = function (source) {
+                source = source.split("+").join(" ");
+
+                var tokens, re = /[?&]?([^=]+)=([^&]*)/g;
+
+                while (tokens = re.exec(source)) {
+                    this._variables[decodeURIComponent(tokens[1])] = decodeURIComponent(tokens[2]);
+                }
+            };
+
+            /**
+            *
+            * @returns {string}
+            */
+            URLVariables.prototype.toString = function () {
+                return '';
+            };
+
+            Object.defineProperty(URLVariables.prototype, "variables", {
+                get: /**
+                *
+                * @returns {Object}
+                */
+                function () {
+                    return this._variables;
+                },
+                set: /**
+                *
+                * @returns {Object}
+                */
+                function (obj) {
+                    this._variables = obj;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(URLVariables.prototype, "formData", {
+                get: /**
+                *
+                * @returns {Object}
+                */
+                function () {
+                    var fd = new FormData();
+
+                    for (var s in this._variables) {
+                        fd.append(s, this._variables[s]);
+                    }
+
+                    return fd;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            return URLVariables;
+        })();
+        net.URLVariables = URLVariables;
+    })(away.net || (away.net = {}));
+    var net = away.net;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="URLRequestMethod.ts" />
+    ///<reference path="URLVariables.ts" />
+    (function (net) {
+        /**
+        *
+        */
+        var URLRequest = (function () {
+            /**
+            
+            * @param url
+            */
+            function URLRequest(url) {
+                if (typeof url === "undefined") { url = null; }
+                /**
+                *
+                * away.net.URLRequestMethod.GET
+                * away.net.URLRequestMethod.POST
+                *
+                * @type {string}
+                */
+                this.method = away.net.URLRequestMethod.GET;
+                /**
+                * Use asynchronous XMLHttpRequest
+                * @type {boolean}
+                */
+                this.async = true;
+                this._url = url;
+            }
+            Object.defineProperty(URLRequest.prototype, "url", {
+                get: /**
+                *
+                * @returns {string}
+                */
+                function () {
+                    return this._url;
+                },
+                set: /**
+                *
+                * @param value
+                */
+                function (value) {
+                    this._url = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * dispose
+            */
+            URLRequest.prototype.dispose = function () {
+                this.data = null;
+                this._url = null;
+                this.method = null;
+                this.async = null;
+            };
+            return URLRequest;
+        })();
+        net.URLRequest = URLRequest;
+    })(away.net || (away.net = {}));
+    var net = away.net;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../events/EventDispatcher.ts" />
+    ///<reference path="../events/Event.ts" />
+    ///<reference path="../events/IOErrorEvent.ts" />
+    ///<reference path="URLRequest.ts" />
+    (function (net) {
+        // TODO: implement / test cross domain policy
+        var IMGLoader = (function (_super) {
+            __extends(IMGLoader, _super);
+            function IMGLoader(imageName) {
+                if (typeof imageName === "undefined") { imageName = ''; }
+                _super.call(this);
+                this._name = '';
+                this._loaded = false;
+                this._name = imageName;
+                this.initImage();
+            }
+            // Public
+            /**
+            * load an image
+            * @param request {away.net.URLRequest}
+            */
+            IMGLoader.prototype.load = function (request) {
+                this._loaded = false;
+                this._request = request;
+
+                if (this._crossOrigin) {
+                    if (this._image['crossOrigin'] != null) {
+                        this._image['crossOrigin'] = this._crossOrigin;
+                    }
+                }
+
+                this._image.src = this._request.url;
+            };
+
+            /**
+            *
+            */
+            IMGLoader.prototype.dispose = function () {
+                if (this._image) {
+                    this._image.onabort = null;
+                    this._image.onerror = null;
+                    this._image.onload = null;
+                    this._image = null;
+                }
+
+                if (this._request) {
+                    this._request = null;
+                }
+            };
+
+            Object.defineProperty(IMGLoader.prototype, "image", {
+                get: // Get / Set
+                /**
+                * Get reference to image if it is loaded
+                * @returns {HTMLImageElement}
+                */
+                function () {
+                    return this._image;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(IMGLoader.prototype, "loaded", {
+                get: /**
+                * Get image width. Returns null is image is not loaded
+                * @returns {number}
+                */
+                function () {
+                    return this._loaded;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(IMGLoader.prototype, "crossOrigin", {
+                get: function () {
+                    return this._crossOrigin;
+                },
+                set: function (value) {
+                    this._crossOrigin = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(IMGLoader.prototype, "width", {
+                get: /**
+                * Get image width. Returns null is image is not loaded
+                * @returns {number}
+                */
+                function () {
+                    if (this._image) {
+                        return this._image.width;
+                    }
+
+                    return null;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(IMGLoader.prototype, "height", {
+                get: /**
+                * Get image height. Returns null is image is not loaded
+                * @returns {number}
+                */
+                function () {
+                    if (this._image) {
+                        return this._image.height;
+                    }
+
+                    return null;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(IMGLoader.prototype, "request", {
+                get: /**
+                * return URL request used to load image
+                * @returns {away.net.URLRequest}
+                */
+                function () {
+                    return this._request;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(IMGLoader.prototype, "name", {
+                get: /**
+                * get name of HTMLImageElement
+                * @returns {string}
+                */
+                function () {
+                    if (this._image) {
+                        return this._image.name;
+                    }
+
+                    return this._name;
+                },
+                set: /**
+                * set name of HTMLImageElement
+                * @returns {string}
+                */
+                function (value) {
+                    if (this._image) {
+                        this._image.name = value;
+                    }
+
+                    this._name = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            // Private
+            /**
+            * intialise the image object
+            */
+            IMGLoader.prototype.initImage = function () {
+                var _this = this;
+                if (!this._image) {
+                    this._image = new Image();
+                    this._image.onabort = function (event) {
+                        return _this.onAbort(event);
+                    };
+                    this._image.onerror = function (event) {
+                        return _this.onError(event);
+                    };
+                    this._image.onload = function (event) {
+                        return _this.onLoadComplete(event);
+                    };
+                    this._image.name = this._name;
+                }
+            };
+
+            // Image - event handlers
+            /**
+            * Loading of an image is interrupted
+            * @param event
+            */
+            IMGLoader.prototype.onAbort = function (event) {
+                this.dispatchEvent(new away.events.Event(away.events.IOErrorEvent.IO_ERROR));
+            };
+
+            /**
+            * An error occured when loading the image
+            * @param event
+            */
+            IMGLoader.prototype.onError = function (event) {
+                this.dispatchEvent(new away.events.Event(away.events.IOErrorEvent.IO_ERROR));
+            };
+
+            /**
+            * image is finished loading
+            * @param event
+            */
+            IMGLoader.prototype.onLoadComplete = function (event) {
+                this._loaded = true;
+                this.dispatchEvent(new away.events.Event(away.events.Event.COMPLETE));
+            };
+            return IMGLoader;
+        })(away.events.EventDispatcher);
+        net.IMGLoader = IMGLoader;
+    })(away.net || (away.net = {}));
+    var net = away.net;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="Point.ts" />
+    ///<reference path="Vector3D.ts" />
+    ///<reference path="../errors/ArgumentError.ts" />
+    (function (geom) {
+        var Matrix = (function () {
+            function Matrix(a, b, c, d, tx, ty) {
+                if (typeof a === "undefined") { a = 1; }
+                if (typeof b === "undefined") { b = 0; }
+                if (typeof c === "undefined") { c = 0; }
+                if (typeof d === "undefined") { d = 1; }
+                if (typeof tx === "undefined") { tx = 0; }
+                if (typeof ty === "undefined") { ty = 0; }
+                this.a = a;
+                this.b = b;
+                this.c = c;
+                this.d = d;
+                this.tx = tx;
+                this.ty = ty;
+            }
+            /**
+            *
+            * @returns {away.geom.Matrix}
+            */
+            Matrix.prototype.clone = function () {
+                return new Matrix(this.a, this.b, this.c, this.d, this.tx, this.ty);
+            };
+
+            /**
+            *
+            * @param m
+            */
+            Matrix.prototype.concat = function (m) {
+                var a1 = this.a * m.a + this.b * m.c;
+                this.b = this.a * m.b + this.b * m.d;
+                this.a = a1;
+
+                var c1 = this.c * m.a + this.d * m.c;
+                this.d = this.c * m.b + this.d * m.d;
+
+                this.c = c1;
+
+                var tx1 = this.tx * m.a + this.ty * m.c + m.tx;
+                this.ty = this.tx * m.b + this.ty * m.d + m.ty;
+                this.tx = tx1;
+            };
+
+            /**
+            *
+            * @param column
+            * @param vector3D
+            */
+            Matrix.prototype.copyColumnFrom = function (column, vector3D) {
+                if (column > 2) {
+                    throw "Column " + column + " out of bounds (2)";
+                } else if (column == 0) {
+                    this.a = vector3D.x;
+                    this.c = vector3D.y;
+                } else if (column == 1) {
+                    this.b = vector3D.x;
+                    this.d = vector3D.y;
+                } else {
+                    this.tx = vector3D.x;
+                    this.ty = vector3D.y;
+                }
+            };
+
+            /**
+            *
+            * @param column
+            * @param vector3D
+            */
+            Matrix.prototype.copyColumnTo = function (column, vector3D) {
+                if (column > 2) {
+                    throw new away.errors.ArgumentError("ArgumentError, Column " + column + " out of bounds [0, ..., 2]");
+                } else if (column == 0) {
+                    vector3D.x = this.a;
+                    vector3D.y = this.c;
+                    vector3D.z = 0;
+                } else if (column == 1) {
+                    vector3D.x = this.b;
+                    vector3D.y = this.d;
+                    vector3D.z = 0;
+                } else {
+                    vector3D.x = this.tx;
+                    vector3D.y = this.ty;
+                    vector3D.z = 1;
+                }
+            };
+
+            /**
+            *
+            * @param other
+            */
+            Matrix.prototype.copyFrom = function (other) {
+                this.a = other.a;
+                this.b = other.b;
+                this.c = other.c;
+                this.d = other.d;
+                this.tx = other.tx;
+                this.ty = other.ty;
+            };
+
+            /**
+            *
+            * @param row
+            * @param vector3D
+            */
+            Matrix.prototype.copyRowFrom = function (row, vector3D) {
+                if (row > 2) {
+                    throw new away.errors.ArgumentError("ArgumentError, Row " + row + " out of bounds [0, ..., 2]");
+                } else if (row == 0) {
+                    this.a = vector3D.x;
+                    this.c = vector3D.y;
+                } else if (row == 1) {
+                    this.b = vector3D.x;
+                    this.d = vector3D.y;
+                } else {
+                    this.tx = vector3D.x;
+                    this.ty = vector3D.y;
+                }
+            };
+
+            /**
+            *
+            * @param row
+            * @param vector3D
+            */
+            Matrix.prototype.copyRowTo = function (row, vector3D) {
+                if (row > 2) {
+                    throw new away.errors.ArgumentError("ArgumentError, Row " + row + " out of bounds [0, ..., 2]");
+                } else if (row == 0) {
+                    vector3D.x = this.a;
+                    vector3D.y = this.b;
+                    vector3D.z = this.tx;
+                } else if (row == 1) {
+                    vector3D.x = this.c;
+                    vector3D.y = this.d;
+                    vector3D.z = this.ty;
+                } else {
+                    vector3D.setTo(0, 0, 1);
+                }
+            };
+
+            /**
+            *
+            * @param scaleX
+            * @param scaleY
+            * @param rotation
+            * @param tx
+            * @param ty
+            */
+            Matrix.prototype.createBox = function (scaleX, scaleY, rotation, tx, ty) {
+                if (typeof rotation === "undefined") { rotation = 0; }
+                if (typeof tx === "undefined") { tx = 0; }
+                if (typeof ty === "undefined") { ty = 0; }
+                this.a = scaleX;
+                this.d = scaleY;
+                this.b = rotation;
+                this.tx = tx;
+                this.ty = ty;
+            };
+
+            /**
+            *
+            * @param width
+            * @param height
+            * @param rotation
+            * @param tx
+            * @param ty
+            */
+            Matrix.prototype.createGradientBox = function (width, height, rotation, tx, ty) {
+                if (typeof rotation === "undefined") { rotation = 0; }
+                if (typeof tx === "undefined") { tx = 0; }
+                if (typeof ty === "undefined") { ty = 0; }
+                this.a = width / 1638.4;
+                this.d = height / 1638.4;
+
+                if (rotation != 0.0) {
+                    var cos = Math.cos(rotation);
+                    var sin = Math.sin(rotation);
+
+                    this.b = sin * this.d;
+                    this.c = -sin * this.a;
+                    this.a *= cos;
+                    this.d *= cos;
+                } else {
+                    this.b = this.c = 0;
+                }
+
+                this.tx = tx + width / 2;
+                this.ty = ty + height / 2;
+            };
+
+            /**
+            *
+            * @param point
+            * @returns {away.geom.Point}
+            */
+            Matrix.prototype.deltaTransformPoint = function (point) {
+                return new away.geom.Point(point.x * this.a + point.y * this.c, point.x * this.b + point.y * this.d);
+            };
+
+            /**
+            *
+            */
+            Matrix.prototype.identity = function () {
+                this.a = 1;
+                this.b = 0;
+                this.c = 0;
+                this.d = 1;
+                this.tx = 0;
+                this.ty = 0;
+            };
+
+            /**
+            *
+            * @returns {away.geom.Matrix}
+            */
+            Matrix.prototype.invert = function () {
+                var norm = this.a * this.d - this.b * this.c;
+
+                if (norm == 0) {
+                    this.a = this.b = this.c = this.d = 0;
+                    this.tx = -this.tx;
+                    this.ty = -this.ty;
+                } else {
+                    norm = 1.0 / norm;
+                    var a1 = this.d * norm;
+                    this.d = this.a * norm;
+                    this.a = a1;
+                    this.b *= -norm;
+                    this.c *= -norm;
+
+                    var tx1 = -this.a * this.tx - this.c * this.ty;
+                    this.ty = -this.b * this.tx - this.d * this.ty;
+                    this.tx = tx1;
+                }
+
+                return this;
+            };
+
+            /**
+            *
+            * @param m
+            * @returns {away.geom.Matrix}
+            */
+            Matrix.prototype.mult = function (m) {
+                var result = new Matrix();
+
+                result.a = this.a * m.a + this.b * m.c;
+                result.b = this.a * m.b + this.b * m.d;
+                result.c = this.c * m.a + this.d * m.c;
+                result.d = this.c * m.b + this.d * m.d;
+
+                result.tx = this.tx * m.a + this.ty * m.c + m.tx;
+                result.ty = this.tx * m.b + this.ty * m.d + m.ty;
+
+                return result;
+            };
+
+            /**
+            *
+            * @param angle
+            */
+            Matrix.prototype.rotate = function (angle) {
+                var cos = Math.cos(angle);
+                var sin = Math.sin(angle);
+
+                var a1 = this.a * cos - this.b * sin;
+                this.b = this.a * sin + this.b * cos;
+                this.a = a1;
+
+                var c1 = this.c * cos - this.d * sin;
+                this.d = this.c * sin + this.d * cos;
+                this.c = c1;
+
+                var tx1 = this.tx * cos - this.ty * sin;
+                this.ty = this.tx * sin + this.ty * cos;
+                this.tx = tx1;
+            };
+
+            /**
+            *
+            * @param x
+            * @param y
+            */
+            Matrix.prototype.scale = function (x, y) {
+                this.a *= x;
+                this.b *= y;
+
+                this.c *= x;
+                this.d *= y;
+
+                this.tx *= x;
+                this.ty *= y;
+            };
+
+            /**
+            *
+            * @param angle
+            * @param scale
+            */
+            Matrix.prototype.setRotation = function (angle, scale) {
+                if (typeof scale === "undefined") { scale = 1; }
+                this.a = Math.cos(angle) * scale;
+                this.c = Math.sin(angle) * scale;
+                this.b = -this.c;
+                this.d = this.a;
+            };
+
+            /**
+            *
+            * @param a
+            * @param b
+            * @param c
+            * @param d
+            * @param tx
+            * @param ty
+            */
+            Matrix.prototype.setTo = function (a, b, c, d, tx, ty) {
+                this.a = a;
+                this.b = b;
+                this.c = c;
+                this.d = d;
+                this.tx = tx;
+                this.ty = ty;
+            };
+
+            /**
+            *
+            * @returns {string}
+            */
+            Matrix.prototype.toString = function () {
+                return "[Matrix] (a=" + this.a + ", b=" + this.b + ", c=" + this.c + ", d=" + this.d + ", tx=" + this.tx + ", ty=" + this.ty + ")";
+            };
+
+            /**
+            *
+            * @param point
+            * @returns {away.geom.Point}
+            */
+            Matrix.prototype.transformPoint = function (point) {
+                return new away.geom.Point(point.x * this.a + point.y * this.c + this.tx, point.x * this.b + point.y * this.d + this.ty);
+            };
+
+            /**
+            *
+            * @param x
+            * @param y
+            */
+            Matrix.prototype.translate = function (x, y) {
+                this.tx += x;
+                this.ty += y;
+            };
+            return Matrix;
+        })();
+        geom.Matrix = Matrix;
+    })(away.geom || (away.geom = {}));
+    var geom = away.geom;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../net/IMGLoader.ts" />
+    ///<reference path="../geom/Rectangle.ts" />
+    ///<reference path="../geom/Point.ts" />
+    ///<reference path="../geom/Matrix.ts" />
+    (function (display) {
+        /**
+        *
+        */
+        var BitmapData = (function () {
+            /**
+            *
+            * @param width
+            * @param height
+            * @param transparent
+            * @param fillColor
+            */
+            function BitmapData(width, height, transparent, fillColor) {
+                if (typeof transparent === "undefined") { transparent = true; }
+                if (typeof fillColor === "undefined") { fillColor = null; }
+                this._locked = false;
+                this._transparent = transparent;
+                this._imageCanvas = document.createElement("canvas");
+                this._imageCanvas.width = width;
+                this._imageCanvas.height = height;
+                this._context = this._imageCanvas.getContext("2d");
+                this._rect = new away.geom.Rectangle(0, 0, width, height);
+
+                if (fillColor) {
+                    this.fillRect(this._rect, fillColor);
+                }
+            }
+            // Public
+            /*
+            public draw ( source : BitmapData, matrix : away.geom.Matrix = null ) //, colorTransform, blendMode, clipRect, smoothing) {
+            {
+            
+            var sourceMatrix : away.geom.Matrix     = ( matrix === null ) ? matrix : new  away.geom.Matrix();
+            var sourceRect : away.geom.Rectangle    = new away.geom.Rectangle(0, 0, source.width, source.height);
+            
+            this._imageCanvas.width     = source.width;
+            this._imageCanvas.height    = source.height;
+            
+            this._context.transform(
+            sourceMatrix.a,
+            sourceMatrix.b,
+            sourceMatrix.c,
+            sourceMatrix.d,
+            sourceMatrix.tx,
+            sourceMatrix.ty);
+            
+            this.copyPixels(source , source.rect , source.rect );
+            }
+            */
+            /**
+            *
+            */
+            BitmapData.prototype.dispose = function () {
+                this._context = null;
+                this._imageCanvas = null;
+                this._imageData = null;
+                this._rect = null;
+                this._transparent = null;
+                this._locked = null;
+            };
+
+            /**
+            *
+            */
+            BitmapData.prototype.lock = function () {
+                this._locked = true;
+                this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
+            };
+
+            /**
+            *
+            */
+            BitmapData.prototype.unlock = function () {
+                this._locked = false;
+
+                if (this._imageData) {
+                    this._context.putImageData(this._imageData, 0, 0);
+                    this._imageData = null;
+                }
+            };
+
+            /**
+            *
+            * @param x
+            * @param y
+            * @param r
+            * @param g
+            * @param b
+            * @param a
+            */
+            BitmapData.prototype.setPixel = function (x, y, r, g, b, a) {
+                if (!this._locked) {
+                    this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
+                }
+
+                if (this._imageData) {
+                    var index = (x + y * this._imageCanvas.width) * 4;
+
+                    this._imageData.data[index + 0] = r;
+                    this._imageData.data[index + 1] = g;
+                    this._imageData.data[index + 2] = b;
+                    this._imageData.data[index + 3] = a;
+                }
+
+                if (!this._locked) {
+                    this._context.putImageData(this._imageData, 0, 0);
+                    this._imageData = null;
+                }
+            };
+
+            /**
+            *
+            * @param img
+            * @param sourceRect
+            * @param destRect
+            */
+            BitmapData.prototype.copyImage = function (img, sourceRect, destRect) {
+                if (this._locked) {
+                    if (this._imageData) {
+                        this._context.putImageData(this._imageData, 0, 0);
+                    }
+
+                    this._context.drawImage(img, sourceRect.x, sourceRect.y, sourceRect.width, sourceRect.height, destRect.x, destRect.y, destRect.width, destRect.height);
+
+                    if (this._imageData) {
+                        this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
+                    }
+                } else {
+                    this._context.drawImage(img, sourceRect.x, sourceRect.y, sourceRect.width, sourceRect.height, destRect.x, destRect.y, destRect.width, destRect.height);
+                }
+            };
+
+            /**
+            *
+            * @param bmpd
+            * @param sourceRect
+            * @param destRect
+            */
+            BitmapData.prototype.copyPixels = function (bmpd, sourceRect, destRect) {
+                if (this._locked) {
+                    if (this._imageData) {
+                        this._context.putImageData(this._imageData, 0, 0);
+                    }
+
+                    this._context.drawImage(bmpd.canvas, sourceRect.x, sourceRect.y, sourceRect.width, sourceRect.height, destRect.x, destRect.y, destRect.width, destRect.height);
+
+                    if (this._imageData) {
+                        this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
+                    }
+                } else {
+                    this._context.drawImage(bmpd.canvas, sourceRect.x, sourceRect.y, sourceRect.width, sourceRect.height, destRect.x, destRect.y, destRect.width, destRect.height);
+                }
+            };
+
+            /**
+            *
+            * @param rect
+            * @param color
+            */
+            BitmapData.prototype.fillRect = function (rect, color) {
+                if (this._locked) {
+                    if (this._imageData) {
+                        this._context.putImageData(this._imageData, 0, 0);
+                    }
+
+                    this._context.fillStyle = '#' + this.decimalToHex(color, 6);
+                    this._context.fillRect(rect.x, rect.y, rect.width, rect.height);
+
+                    if (this._imageData) {
+                        this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
+                    }
+                } else {
+                    this._context.fillStyle = '#' + this.decimalToHex(color, 6);
+                    this._context.fillRect(rect.x, rect.y, rect.width, rect.height);
+                }
+            };
+
+
+            Object.defineProperty(BitmapData.prototype, "imageData", {
+                get: /**
+                *
+                * @returns {ImageData}
+                */
+                function () {
+                    return this._context.getImageData(0, 0, this._rect.width, this._rect.height);
+                },
+                set: // Get / Set
+                /**
+                *
+                * @param {ImageData}
+                */
+                function (value) {
+                    this._context.putImageData(value, 0, 0);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(BitmapData.prototype, "width", {
+                get: /**
+                *
+                * @returns {number}
+                */
+                function () {
+                    return this._imageCanvas.width;
+                },
+                set: /**
+                *
+                * @param {number}
+                */
+                function (value) {
+                    this._rect.width = value;
+                    this._imageCanvas.width = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(BitmapData.prototype, "height", {
+                get: /**
+                *
+                * @returns {number}
+                */
+                function () {
+                    return this._imageCanvas.height;
+                },
+                set: /**
+                *
+                * @param {number}
+                */
+                function (value) {
+                    this._rect.height = value;
+                    this._imageCanvas.height = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(BitmapData.prototype, "rect", {
+                get: /**
+                *
+                * @param {away.geom.Rectangle}
+                */
+                function () {
+                    return this._rect;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(BitmapData.prototype, "canvas", {
+                get: /**
+                *
+                * @returns {HTMLCanvasElement}
+                */
+                function () {
+                    return this._imageCanvas;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(BitmapData.prototype, "context", {
+                get: /**
+                *
+                * @returns {HTMLCanvasElement}
+                */
+                function () {
+                    return this._context;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            // Private
+            /**
+            * convert decimal value to Hex
+            */
+            BitmapData.prototype.decimalToHex = function (d, padding) {
+                // TODO - bitwise replacement would be better / Extract alpha component of 0xffffffff ( currently no support for alpha )
+                var hex = d.toString(16).toUpperCase();
+                padding = typeof (padding) === "undefined" || padding === null ? padding = 2 : padding;
+
+                while (hex.length < padding) {
+                    hex = "0" + hex;
+                }
+
+                return hex;
+            };
+            return BitmapData;
+        })();
+        display.BitmapData = BitmapData;
+    })(away.display || (away.display = {}));
+    var display = away.display;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../../def/webgl.d.ts"/>
+    ///<reference path="../../def/js.d.ts"/>
+    ///<reference path="TextureBase.ts"/>
+    ///<reference path="../display/BitmapData.ts"/>
+    (function (display3D) {
+        var Texture = (function (_super) {
+            __extends(Texture, _super);
+            function Texture(width, height) {
+                _super.call(this);
+                this._width = width;
+                this._height = height;
+
+                GL.bindTexture(GL.TEXTURE_2D, this.glTexture);
+                GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGBA, width, height, 0, GL.RGBA, GL.UNSIGNED_BYTE, null);
+            }
+            Object.defineProperty(Texture.prototype, "width", {
+                get: function () {
+                    return this._width;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Texture.prototype, "height", {
+                get: function () {
+                    return this._height;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Texture.prototype.uploadFromHTMLImageElement = function (image, miplevel) {
+                if (typeof miplevel === "undefined") { miplevel = 0; }
+                GL.texImage2D(GL.TEXTURE_2D, miplevel, GL.RGBA, GL.RGBA, GL.UNSIGNED_BYTE, image);
+            };
+
+            Texture.prototype.uploadFromBitmapData = function (data, miplevel) {
+                if (typeof miplevel === "undefined") { miplevel = 0; }
+                GL.texImage2D(GL.TEXTURE_2D, miplevel, GL.RGBA, GL.RGBA, GL.UNSIGNED_BYTE, data.imageData);
+            };
+            return Texture;
+        })(display3D.TextureBase);
+        display3D.Texture = Texture;
+    })(away.display3D || (away.display3D = {}));
+    var display3D = away.display3D;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    (function (display3D) {
+        var Context3DTriangleFace = (function () {
+            function Context3DTriangleFace() {
+            }
+            Context3DTriangleFace.BACK = "back";
+            Context3DTriangleFace.FRONT = "front";
+            Context3DTriangleFace.FRONT_AND_BACK = "frontAndBack";
+            Context3DTriangleFace.NONE = "none";
+            return Context3DTriangleFace;
+        })();
+        display3D.Context3DTriangleFace = Context3DTriangleFace;
+    })(away.display3D || (away.display3D = {}));
+    var display3D = away.display3D;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    (function (display3D) {
+        var Context3DVertexBufferFormat = (function () {
+            function Context3DVertexBufferFormat() {
+            }
+            Context3DVertexBufferFormat.BYTES_4 = "bytes4";
+            Context3DVertexBufferFormat.FLOAT_1 = "float1";
+            Context3DVertexBufferFormat.FLOAT_2 = "float2";
+            Context3DVertexBufferFormat.FLOAT_3 = "float3";
+            Context3DVertexBufferFormat.FLOAT_4 = "float4";
+            return Context3DVertexBufferFormat;
+        })();
+        display3D.Context3DVertexBufferFormat = Context3DVertexBufferFormat;
+    })(away.display3D || (away.display3D = {}));
+    var display3D = away.display3D;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    (function (display3D) {
+        var Context3DProgramType = (function () {
+            function Context3DProgramType() {
+            }
+            Context3DProgramType.FRAGMENT = "fragment";
+            Context3DProgramType.VERTEX = "vertex";
+            return Context3DProgramType;
+        })();
+        display3D.Context3DProgramType = Context3DProgramType;
+    })(away.display3D || (away.display3D = {}));
+    var display3D = away.display3D;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../../def/webgl.d.ts"/>
+    ///<reference path="Context3DClearMask.ts"/>
+    ///<reference path="VertexBuffer3D.ts"/>
+    ///<reference path="IndexBuffer3D.ts"/>
+    ///<reference path="Program3D.ts"/>
+    ///<reference path="../geom/Matrix3D.ts"/>
+    ///<reference path="../geom/Rectangle.ts"/>
+    ///<reference path="Context3DTextureFormat.ts"/>
+    ///<reference path="Texture.ts"/>
+    ///<reference path="Context3DTriangleFace.ts"/>
+    ///<reference path="Context3DVertexBufferFormat.ts"/>
+    ///<reference path="Context3DProgramType.ts"/>
+    (function (display3D) {
+        var Context3D = (function () {
+            function Context3D(canvas) {
+                this._indexBufferList = [];
+                this._vertexBufferList = [];
+                this._textureList = [];
+                this._programList = [];
+                try  {
+                    GL = canvas.getContext("experimental-webgl");
+                    if (!GL) {
+                        GL = canvas.getContext("webgl");
+                    }
+                } catch (e) {
+                }
+
+                if (GL) {
+                } else {
+                    //this.dispatchEvent( new away.events.AwayEvent( away.events.AwayEvent.INITIALIZE_FAILED, e ) );
+                    alert("WebGL is not available.");
+                }
+            }
+            Context3D.prototype.clear = function (red, green, blue, alpha, depth, stencil, mask) {
+                if (typeof red === "undefined") { red = 0; }
+                if (typeof green === "undefined") { green = 0; }
+                if (typeof blue === "undefined") { blue = 0; }
+                if (typeof alpha === "undefined") { alpha = 1; }
+                if (typeof depth === "undefined") { depth = 1; }
+                if (typeof stencil === "undefined") { stencil = 0; }
+                if (typeof mask === "undefined") { mask = display3D.Context3DClearMask.ALL; }
+                console.log("===== clear =====");
+                console.log("\tred: " + red);
+                console.log("\tgreen: " + green);
+                console.log("\tblue: " + blue);
+                console.log("\talpha: " + alpha);
+                console.log("\tdepth: " + depth);
+                console.log("\tstencil: " + stencil);
+                console.log("\tmask: " + mask);
+
+                if (!this._drawing) {
+                    this.updateBlendStatus();
+                    this._drawing = true;
+                }
+                GL.clearColor(red, green, blue, alpha);
+                GL.clearDepth(depth);
+                GL.clearStencil(stencil);
+                GL.clear(mask);
+            };
+
+            Context3D.prototype.configureBackBuffer = function (width, height, antiAlias, enableDepthAndStencil) {
+                if (typeof enableDepthAndStencil === "undefined") { enableDepthAndStencil = true; }
+                console.log("===== configureBackBuffer =====");
+                console.log("\twidth: " + width);
+                console.log("\theight: " + height);
+                console.log("\tantiAlias: " + antiAlias);
+                console.log("\tenableDepthAndStencil: " + enableDepthAndStencil);
+
+                if (enableDepthAndStencil) {
+                    GL.enable(GL.STENCIL_TEST);
+                    GL.enable(GL.DEPTH_TEST);
+                }
+
+                // TODO add antialias (seems to be a webgl bug)
+                // TODO set webgl / canvas dimensions
+                GL.viewport.width = width;
+                GL.viewport.height = height;
+            };
+
+            /*
+            public function createCubeTexture( size:number, format:Context3DTextureFormat, optimizeForRenderToTexture:boolean, streamingLevels:number = 0 ):CubeTexture
+            {
+            var texture = new nme.display3D.textures.CubeTexture (GL.createTexture (), size);     // TODO use format, optimizeForRenderToTexture and  streamingLevels?
+            texturesCreated.push(texture);
+            return texture;
+            }*/
+            Context3D.prototype.createIndexBuffer = function (numIndices) {
+                console.log("===== createIndexBuffer =====");
+                console.log("\tnumIndices: " + numIndices);
+                var indexBuffer = new away.display3D.IndexBuffer3D(numIndices);
+                this._indexBufferList.push(indexBuffer);
+                return indexBuffer;
+            };
+
+            Context3D.prototype.createProgram = function () {
+                console.log("===== createProgram =====");
+                var program = new away.display3D.Program3D();
+                this._programList.push(program);
+                return program;
+            };
+
+            Context3D.prototype.createTexture = function (width, height, format, optimizeForRenderToTexture, streamingLevels) {
+                if (typeof streamingLevels === "undefined") { streamingLevels = 0; }
+                console.log("===== createTexture =====");
+                console.log("\twidth: " + width);
+                console.log("\theight: " + height);
+                console.log("\tformat: " + format);
+                console.log("\toptimizeForRenderToTexture: " + optimizeForRenderToTexture);
+                console.log("\tstreamingLevels: " + streamingLevels);
+
+                var texture = new away.display3D.Texture(width, height);
+                this._textureList.push(texture);
+                return texture;
+            };
+
+            Context3D.prototype.createVertexBuffer = function (numVertices, data32PerVertex) {
+                console.log("===== createVertexBuffer =====");
+                console.log("\tnumVertices: " + numVertices);
+                console.log("\tdata32PerVertex: " + data32PerVertex);
+                var vertexBuffer = new away.display3D.VertexBuffer3D(numVertices, data32PerVertex);
+                this._vertexBufferList.push(vertexBuffer);
+                return vertexBuffer;
+            };
+
+            Context3D.prototype.dispose = function () {
+                console.log("===== dispose =====");
+                var i;
+                for (i = 0; i < this._indexBufferList.length; ++i) {
+                    this._indexBufferList[i].dispose();
+                }
+                this._indexBufferList = null;
+
+                for (i = 0; i < this._vertexBufferList.length; ++i) {
+                    this._vertexBufferList[i].dispose();
+                }
+                this._vertexBufferList = null;
+
+                for (i = 0; i < this._textureList.length; ++i) {
+                    this._textureList[i].dispose();
+                }
+                this._textureList = null;
+
+                for (i = 0; i < this._programList.length; ++i) {
+                    this._programList[i].dispose();
+                }
+                this._programList = null;
+            };
+
+            /*
+            public function drawToBitmapData(destination:BitmapData)
+            {
+            // TODO
+            }
+            */
+            Context3D.prototype.drawTriangles = function (indexBuffer, firstIndex, numTriangles) {
+                if (typeof firstIndex === "undefined") { firstIndex = 0; }
+                if (typeof numTriangles === "undefined") { numTriangles = -1; }
+                console.log("===== drawTriangles =====");
+                console.log("\tfirstIndex: " + firstIndex);
+                console.log("\tnumTriangles: " + numTriangles);
+
+                if (!this._drawing) {
+                    throw "Need to clear before drawing if the buffer has not been cleared since the last present() call.";
+                }
+                var numIndices = 0;
+
+                if (numTriangles == -1) {
+                    numIndices = indexBuffer.numIndices;
+                } else {
+                    numIndices = numTriangles * 3;
+                }
+
+                GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, indexBuffer.glBuffer);
+                GL.drawElements(GL.TRIANGLES, numIndices, GL.UNSIGNED_SHORT, firstIndex);
+            };
+
+            Context3D.prototype.present = function () {
+                console.log("===== present =====");
+                this._drawing = false;
+                GL.useProgram(null);
+            };
+
+            //TODO Context3DBlendFactor
+            Context3D.prototype.setBlendFactors = function (sourceFactor, destinationFactor) {
+                console.log("===== setBlendFactors =====");
+                console.log("\tsourceFactor: " + sourceFactor);
+                console.log("\tdestinationFactor: " + destinationFactor);
+                this._blendEnabled = true;
+                this._blendSourceFactor = sourceFactor;
+                this._blendDestinationFactor = destinationFactor;
+
+                this.updateBlendStatus();
+            };
+
+            Context3D.prototype.setColorMask = function (red, green, blue, alpha) {
+                console.log("===== setColorMask =====");
+                GL.colorMask(red, green, blue, alpha);
+            };
+
+            Context3D.prototype.setCulling = function (triangleFaceToCull) {
+                console.log("===== setCulling =====");
+                console.log("\ttriangleFaceToCull: " + triangleFaceToCull);
+                if (triangleFaceToCull == display3D.Context3DTriangleFace.NONE) {
+                    GL.disable(GL.CULL_FACE);
+                } else {
+                    GL.enable(GL.CULL_FACE);
+                    switch (triangleFaceToCull) {
+                        case display3D.Context3DTriangleFace.FRONT:
+                            GL.cullFace(GL.FRONT);
+                            break;
+                        case display3D.Context3DTriangleFace.BACK:
+                            GL.cullFace(GL.BACK);
+                            break;
+                        case display3D.Context3DTriangleFace.FRONT_AND_BACK:
+                            GL.cullFace(GL.FRONT_AND_BACK);
+                            break;
+                        default:
+                            throw "Unknown Context3DTriangleFace type.";
+                    }
+                }
+            };
+
+            // TODO Context3DCompareMode
+            Context3D.prototype.setDepthTest = function (depthMask, passCompareMode) {
+                console.log("===== setDepthTest =====");
+                console.log("\tdepthMask: " + depthMask);
+                console.log("\tpassCompareMode: " + passCompareMode);
+                GL.depthFunc(passCompareMode);
+                GL.depthMask(depthMask);
+            };
+
+            Context3D.prototype.setProgram = function (program3D) {
+                console.log("===== setProgram =====");
+
+                //TODO decide on construction/reference resposibilities
+                this._currentProgram = program3D;
+                program3D.focusProgram();
+            };
+
+            Context3D.prototype.getUniformLocationNameFromAgalRegisterIndex = function (programType, firstRegister) {
+                switch (programType) {
+                    case display3D.Context3DProgramType.VERTEX:
+                        return "vc";
+                        break;
+                    case display3D.Context3DProgramType.FRAGMENT:
+                        return "fc";
+                        break;
+                    default:
+                        throw "Program Type " + programType + " not supported";
+                }
+            };
+
+            /*
+            public setProgramConstantsFromByteArray
+            */
+            Context3D.prototype.setProgramConstantsFromMatrix = function (programType, firstRegister, matrix, transposedMatrix) {
+                if (typeof transposedMatrix === "undefined") { transposedMatrix = false; }
+                var locationName = this.getUniformLocationNameFromAgalRegisterIndex(programType, firstRegister);
+                this.setGLSLProgramConstantsFromMatrix(locationName, matrix, transposedMatrix);
+            };
+
+            /*
+            public setProgramConstantsFromVector(programType:string, firstRegister:number, matrix:away.geom.Matrix3D, transposedMatrix:boolean = false )
+            {
+            throw "fu";
+            }*/
+            /*
+            public setGLSLProgramConstantsFromByteArray
+            
+            */
+            Context3D.prototype.setGLSLProgramConstantsFromMatrix = function (locationName, matrix, transposedMatrix) {
+                if (typeof transposedMatrix === "undefined") { transposedMatrix = false; }
+                console.log("===== setGLSLProgramConstantsFromMatrix =====");
+                console.log("\tlocationName: " + locationName);
+                console.log("\tmatrix: " + matrix.rawData);
+                console.log("\ttransposedMatrix: " + transposedMatrix);
+
+                var location = GL.getUniformLocation(this._currentProgram.glProgram, locationName);
+                GL.uniformMatrix4fv(location, !transposedMatrix, new Float32Array(matrix.rawData));
+            };
+
+            Context3D.prototype.setGLSLProgramConstantsFromVector4 = function (locationName, data, startIndex) {
+                if (typeof startIndex === "undefined") { startIndex = 0; }
+                console.log("===== setGLSLProgramConstantsFromVector4 =====");
+                console.log("\tlocationName: " + locationName);
+                console.log("\tdata: " + data);
+                console.log("\tstartIndex: " + startIndex);
+                var location = GL.getUniformLocation(this._currentProgram.glProgram, locationName);
+                GL.uniform4f(location, data[startIndex], data[startIndex + 1], data[startIndex + 2], data[startIndex + 3]);
+            };
+
+            Context3D.prototype.setScissorRectangle = function (rectangle) {
+                console.log("===== setScissorRectangle =====");
+                console.log("\trectangle: " + rectangle);
+                GL.scissor(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+            };
+
+            Context3D.prototype.setGLSLTextureAt = function (locationName, texture, textureIndex) {
+                var location = GL.getUniformLocation(this._currentProgram.glProgram, locationName);
+                switch (textureIndex) {
+                    case 0:
+                        GL.activeTexture(GL.TEXTURE0);
+                        break;
+                    case 1:
+                        GL.activeTexture(GL.TEXTURE1);
+                        break;
+                    case 2:
+                        GL.activeTexture(GL.TEXTURE2);
+                        break;
+                    case 3:
+                        GL.activeTexture(GL.TEXTURE3);
+                        break;
+                    case 4:
+                        GL.activeTexture(GL.TEXTURE4);
+                        break;
+                    case 5:
+                        GL.activeTexture(GL.TEXTURE5);
+                        break;
+                    case 6:
+                        GL.activeTexture(GL.TEXTURE6);
+                        break;
+                    case 7:
+                        GL.activeTexture(GL.TEXTURE7);
+                        break;
+                    default:
+                        throw "Texture " + textureIndex + " is out of bounds.";
+                }
+
+                GL.bindTexture(GL.TEXTURE_2D, texture.glTexture);
+                GL.uniform1i(location, textureIndex);
+
+                // TODO create something like setSamplerStateAt(....
+                GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
+                GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
+                GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR);
+                GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
+            };
+
+            Context3D.prototype.setVertexBufferAt = function (index, buffer, bufferOffset, format) {
+                if (typeof bufferOffset === "undefined") { bufferOffset = 0; }
+                if (typeof format === "undefined") { format = null; }
+                console.log("===== setVertexBufferAt =====");
+                console.log("\tindex: " + index);
+                console.log("\tbufferOffset: " + bufferOffset);
+                console.log("\tformat: " + format);
+
+                var locationName = "va" + index;
+                this.setGLSLVertexBufferAt(locationName, buffer, bufferOffset, format);
+            };
+
+            Context3D.prototype.setGLSLVertexBufferAt = function (locationName, buffer, bufferOffset, format) {
+                if (typeof bufferOffset === "undefined") { bufferOffset = 0; }
+                if (typeof format === "undefined") { format = null; }
+                console.log("===== setGLSLVertexBufferAt =====");
+                console.log("\tbuffer.length: " + buffer.numVertices);
+                console.log("\tbuffer.data32PerVertex: " + buffer.data32PerVertex);
+                console.log("\tlocationName: " + locationName);
+                console.log("\tbufferOffset: " + bufferOffset);
+
+                var location = GL.getAttribLocation(this._currentProgram.glProgram, locationName);
+
+                GL.bindBuffer(GL.ARRAY_BUFFER, buffer.glBuffer);
+
+                var dimension;
+                var type = GL.FLOAT;
+                var numBytes = 4;
+
+                switch (format) {
+                    case display3D.Context3DVertexBufferFormat.BYTES_4:
+                        dimension = 4;
+                        break;
+                    case display3D.Context3DVertexBufferFormat.FLOAT_1:
+                        dimension = 1;
+                        break;
+                    case display3D.Context3DVertexBufferFormat.FLOAT_2:
+                        dimension = 2;
+                        break;
+                    case display3D.Context3DVertexBufferFormat.FLOAT_3:
+                        dimension = 3;
+                        break;
+                    case display3D.Context3DVertexBufferFormat.FLOAT_4:
+                        dimension = 4;
+                        break;
+                    default:
+                        throw "Buffer format " + format + " is not supported.";
+                }
+
+                GL.enableVertexAttribArray(location);
+                GL.vertexAttribPointer(location, dimension, type, false, buffer.data32PerVertex * numBytes, bufferOffset * numBytes);
+            };
+
+            Context3D.prototype.updateBlendStatus = function () {
+                console.log("===== updateBlendStatus =====");
+                if (this._blendEnabled) {
+                    GL.enable(GL.BLEND);
+                    GL.blendEquation(GL.FUNC_ADD);
+                    GL.blendFunc(this._blendSourceFactor, this._blendDestinationFactor);
+                } else {
+                    GL.disable(GL.BLEND);
+                }
+            };
+            return Context3D;
+        })();
+        display3D.Context3D = Context3D;
+    })(away.display3D || (away.display3D = {}));
+    var display3D = away.display3D;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../library/assets/NamedAssetBase.ts"/>
+    ///<reference path="../library/assets/IAsset.ts"/>
+    ///<reference path="../library/assets/AssetType.ts"/>
+    ///<reference path="../base/IMaterialOwner.ts"/>
+    ///<reference path="../display/BlendMode.ts"/>
+    ///<reference path="../errors/PartialImplementationError.ts"/>
+    ///<reference path="../errors/AbstractMethodError.ts"/>
+    ///<reference path="../events/Event.ts"/>
+    ///<reference path="../display3D/Context3D.ts"/>
+    (function (materials) {
+        /**
+        * MaterialBase forms an abstract base class for any material.
+        * A material consists of several passes, each of which constitutes at least one render call. Several passes could
+        * be used for special effects (render lighting for many lights in several passes, render an outline in a separate
+        * pass) or to provide additional render-to-texture passes (rendering diffuse light to texture for texture-space
+        * subsurface scattering, or rendering a depth map for specialized self-shadowing).
+        *
+        * Away3D provides default materials trough SinglePassMaterialBase and MultiPassMaterialBase, which use modular
+        * methods to build the shader code. MaterialBase can be extended to build specific and high-performant custom
+        * shaders, or entire new material frameworks.
+        */
+        var MaterialBase = (function (_super) {
+            __extends(MaterialBase, _super);
+            //private var _depthCompareMode:string = Context3DCompareMode.LESS_EQUAL; TODO: Context3DCompareMode - Implement & integrate
+            /**
+            * Creates a new MaterialBase object.
+            */
+            function MaterialBase() {
+                _super.call(this);
+                this._blendMode = away.display.BlendMode.NORMAL;
+                //private _passes:Vector.<MaterialPassBase>; // TODO: MaterialPassBase - Implement & integrate
+                this._mipmap = true;
+                this._smooth = true;
+
+                this._owners = new Array();
+
+                //_passes = new Vector.<MaterialPassBase>(); // TODO: MaterialPassBase - Implement & integrate
+                //_depthPass = new DepthMapPass();// TODO: DepthMapPass - Implement & integrate
+                //_distancePass = new DistanceMapPass();// TODO: DistanceMapPass - Implement & integrate
+                //_depthPass.addEventListener(Event.CHANGE, onDepthPassChange);// TODO: DepthMapPass - Implement & integrate
+                //_distancePass.addEventListener(Event.CHANGE, onDistancePassChange);// TODO: DistanceMapPass - Implement & integrate
+                // Default to considering pre-multiplied textures while blending
+                this.alphaPremultiplied = true;
+
+                this._iUniqueId = away.materials.MaterialBase.MATERIAL_ID_COUNT++;
+            }
+            Object.defineProperty(MaterialBase.prototype, "assetType", {
+                get: /**
+                * @inheritDoc
+                */
+                function () {
+                    return away.library.AssetType.MATERIAL;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(MaterialBase.prototype, "mipmap", {
+                get: /**
+                * The light picker used by the material to provide lights to the material if it supports lighting.
+                *
+                * @see away3d.materials.lightpickers.LightPickerBase
+                * @see away3d.materials.lightpickers.StaticLightPicker
+                */
+                // TODO: LightPickerBase - Implement & integrate
+                /*
+                public get lightPicker():LightPickerBase
+                {
+                return _lightPicker;
+                }
+                */
+                // TODO: LightPickerBase - Implement & integrate
+                /*
+                public set lightPicker(value:LightPickerBase)
+                {
+                if (value != _lightPicker) {
+                _lightPicker = value;
+                var len:number = _passes.length;
+                for (var i:number = 0; i < len; ++i)
+                _passes[i].lightPicker = _lightPicker;
+                }
+                }
+                */
+                /**
+                * Indicates whether or not any used textures should use mipmapping. Defaults to true.
+                */
+                function () {
+                    return this._mipmap;
+                },
+                set: function (value) {
+                    this._mipmap = value;
+
+                    throw new away.errors.PartialImplementationError('MaterialPassBase');
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(MaterialBase.prototype, "smooth", {
+                get: /**
+                * Indicates whether or not any used textures should use smoothing.
+                */
+                function () {
+                    return this._smooth;
+                },
+                set: function (value) {
+                    this._smooth = value;
+
+                    throw new away.errors.PartialImplementationError('MaterialPassBase');
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(MaterialBase.prototype, "repeat", {
+                get: /**
+                * The depth compare mode used to render the renderables using this material.
+                *
+                * @see flash.display3D.Context3DCompareMode
+                */
+                // TODO: Context3DCompareMode - Implement & integrate
+                /*
+                public get depthCompareMode():string
+                {
+                return this._depthCompareMode;
+                }
+                */
+                // TODO: Context3DCompareMode - Implement & integrate
+                /*
+                public set depthCompareMode(value:string)
+                {
+                _depthCompareMode = value;
+                }
+                */
+                /**
+                * Indicates whether or not any used textures should be tiled. If set to false, texture samples are clamped to
+                * the texture's borders when the uv coordinates are outside the [0, 1] interval.
+                */
+                function () {
+                    return this._repeat;
+                },
+                set: function (value) {
+                    this._repeat = value;
+
+                    throw new away.errors.PartialImplementationError('MaterialPassBase');
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * Cleans up resources owned by the material, including passes. Textures are not owned by the material since they
+            * could be used by other materials and will not be disposed.
+            */
+            MaterialBase.prototype.dispose = function () {
+                var i;
+
+                throw new away.errors.PartialImplementationError('DepthMapPass , DistanceMapPass');
+            };
+
+            Object.defineProperty(MaterialBase.prototype, "bothSides", {
+                get: /**
+                * Defines whether or not the material should cull triangles facing away from the camera.
+                */
+                function () {
+                    return this._bothSides;
+                },
+                set: function (value) {
+                    this._bothSides = value;
+
+                    throw new away.errors.PartialImplementationError('DepthMapPass , DistanceMapPass');
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(MaterialBase.prototype, "blendMode", {
+                get: /**
+                * The blend mode to use when drawing this renderable. The following blend modes are supported:
+                * <ul>
+                * <li>BlendMode.NORMAL: No blending, unless the material inherently needs it</li>
+                * <li>BlendMode.LAYER: Force blending. This will draw the object the same as NORMAL, but without writing depth writes.</li>
+                * <li>BlendMode.MULTIPLY</li>
+                * <li>BlendMode.ADD</li>
+                * <li>BlendMode.ALPHA</li>
+                * </ul>
+                */
+                function () {
+                    return this._blendMode;
+                },
+                set: function (value) {
+                    this._blendMode = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(MaterialBase.prototype, "alphaPremultiplied", {
+                get: /**
+                * Indicates whether visible textures (or other pixels) used by this material have
+                * already been premultiplied. Toggle this if you are seeing black halos around your
+                * blended alpha edges.
+                */
+                function () {
+                    return this._alphaPremultiplied;
+                },
+                set: function (value) {
+                    this._alphaPremultiplied = value;
+
+                    throw new away.errors.PartialImplementationError('MaterialPassBase');
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(MaterialBase.prototype, "requiresBlending", {
+                get: /**
+                * Indicates whether or not the material requires alpha blending during rendering.
+                */
+                function () {
+                    return this._blendMode != away.display.BlendMode.NORMAL;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(MaterialBase.prototype, "uniqueId", {
+                get: /**
+                * An id for this material used to sort the renderables by material, which reduces render state changes across
+                * materials using the same Program3D.
+                */
+                function () {
+                    return this._iUniqueId;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(MaterialBase.prototype, "_iNumPasses", {
+                get: /**
+                * The amount of passes used by the material.
+                *
+                * @private
+                */
+                function () {
+                    return this._numPasses;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(MaterialBase.prototype, "_iOwners", {
+                get: /**
+                * Indicates that the depth pass uses transparency testing to discard pixels.
+                *
+                * @private
+                */
+                // TODO: DepthMapPass - Implement & integrate
+                /*
+                public _iHasDepthAlphaThreshold():boolean
+                {
+                
+                return this._depthPass.alphaThreshold > 0;
+                
+                }
+                */
+                /**
+                * Sets the render state for the depth pass that is independent of the rendered object. Used when rendering
+                * depth or distances (fe: shadow maps, depth pre-pass).
+                *
+                * @param stage3DProxy The Stage3DProxy used for rendering.
+                * @param camera The camera from which the scene is viewed.
+                * @param distanceBased Whether or not the depth pass or distance pass should be activated. The distance pass
+                * is required for shadow cube maps.
+                *
+                * @private
+                */
+                // TODO: Stage3DProxy / Camera3D / DepthMapPass / DistanceMapPass - Implement & integrate
+                /*
+                public _iActivateForDepth(stage3DProxy:Stage3DProxy, camera:Camera3D, distanceBased:boolean = false) // ARCANE
+                {
+                this._distanceBasedDepthRender = distanceBased;
+                
+                if (distanceBased)
+                {
+                
+                this._distancePass.activate(stage3DProxy, camera);
+                
+                }
+                else
+                {
+                
+                this._depthPass.activate(stage3DProxy, camera);
+                
+                }
+                
+                }
+                //*/
+                /**
+                * Clears the render state for the depth pass.
+                *
+                * @param stage3DProxy The Stage3DProxy used for rendering.
+                *
+                * @private
+                */
+                //TODO: Stage3DProxy / DepthMapPass / DistanceMapPass - Implement & integrate
+                /*
+                public _iDeactivateForDepth(stage3DProxy:Stage3DProxy)
+                {
+                if (_distanceBasedDepthRender)
+                _distancePass.deactivate(stage3DProxy);
+                else
+                _depthPass.deactivate(stage3DProxy);
+                }
+                */
+                /**
+                * Renders a renderable using the depth pass.
+                *
+                * @param renderable The IRenderable instance that needs to be rendered.
+                * @param stage3DProxy The Stage3DProxy used for rendering.
+                * @param camera The camera from which the scene is viewed.
+                * @param viewProjection The view-projection matrix used to project to the screen. This is not the same as
+                * camera.viewProjection as it includes the scaling factors when rendering to textures.
+                *
+                * @private
+                */
+                //TODO: Stage3DProxy / DepthMapPass / DistanceMapPass / IAnimationSet - Implement & integrate
+                /*
+                public _iRenderDepth(renderable:IRenderable, stage3DProxy:Stage3DProxy, camera:Camera3D, viewProjection:Matrix3D) // ARCANE
+                {
+                if (_distanceBasedDepthRender) {
+                if (renderable.animator)
+                _distancePass.updateAnimationState(renderable, stage3DProxy, camera);
+                _distancePass.render(renderable, stage3DProxy, camera, viewProjection);
+                } else {
+                if (renderable.animator)
+                _depthPass.updateAnimationState(renderable, stage3DProxy, camera);
+                _depthPass.render(renderable, stage3DProxy, camera, viewProjection);
+                }
+                }
+                */
+                /**
+                * Indicates whether or not the pass with the given index renders to texture or not.
+                * @param index The index of the pass.
+                * @return True if the pass renders to texture, false otherwise.
+                *
+                * @private
+                */
+                //TODO: MaterialPassBase - Implement & integrate
+                /*
+                public _iPassRendersToTexture(index:number):boolean
+                {
+                return _passes[index].renderToTexture;
+                }
+                */
+                /**
+                * Sets the render state for a pass that is independent of the rendered object. This needs to be called before
+                * calling renderPass. Before activating a pass, the previously used pass needs to be deactivated.
+                * @param index The index of the pass to activate.
+                * @param stage3DProxy The Stage3DProxy object which is currently used for rendering.
+                * @param camera The camera from which the scene is viewed.
+                * @private
+                */
+                //TODO: MaterialPassBase - Implement & integrate
+                /*
+                public _iActivatePass(index:number, stage3DProxy:Stage3DProxy, camera:Camera3D) // ARCANE
+                {
+                this._passes[index].activate(stage3DProxy, camera);
+                }
+                */
+                /**
+                * Clears the render state for a pass. This needs to be called before activating another pass.
+                * @param index The index of the pass to deactivate.
+                * @param stage3DProxy The Stage3DProxy used for rendering
+                *
+                * @private
+                */
+                //TODO: MaterialPassBase - Implement & integrate
+                /*
+                public _iDeactivatePass(index:number, stage3DProxy:Stage3DProxy) // ARCANE
+                {
+                _passes[index].deactivate(stage3DProxy);
+                }
+                */
+                /**
+                * Renders the current pass. Before calling renderPass, activatePass needs to be called with the same index.
+                * @param index The index of the pass used to render the renderable.
+                * @param renderable The IRenderable object to draw.
+                * @param stage3DProxy The Stage3DProxy object used for rendering.
+                * @param entityCollector The EntityCollector object that contains the visible scene data.
+                * @param viewProjection The view-projection matrix used to project to the screen. This is not the same as
+                * camera.viewProjection as it includes the scaling factors when rendering to textures.
+                */
+                //TODO: MaterialPassBase / Stage3DProxy / EntityCollector / IAnimationSet - Implement & integrate
+                /*
+                arcane function renderPass(index:number, renderable:IRenderable, stage3DProxy:Stage3DProxy, entityCollector:EntityCollector, viewProjection:Matrix3D)
+                {
+                if (_lightPicker)
+                _lightPicker.collectLights(renderable, entityCollector);
+                
+                var pass:MaterialPassBase = _passes[index];
+                
+                if (renderable.animator)
+                pass.updateAnimationState(renderable, stage3DProxy, entityCollector.camera);
+                
+                pass.render(renderable, stage3DProxy, entityCollector.camera, viewProjection);
+                }
+                */
+                //
+                // MATERIAL MANAGEMENT
+                //
+                /**
+                * Mark an IMaterialOwner as owner of this material.
+                * Assures we're not using the same material across renderables with different animations, since the
+                * Program3Ds depend on animation. This method needs to be called when a material is assigned.
+                *
+                * @param owner The IMaterialOwner that had this material assigned
+                *
+                * @private
+                */
+                /* TODO: IAnimationSet - implement and integrate
+                public _iAddOwner(owner:away.base.IMaterialOwner) // ARCANE
+                {
+                _owners.push(owner);
+                
+                if (owner.animator) {
+                if (_animationSet && owner.animator.animationSet != _animationSet)
+                throw new Error("A Material instance cannot be shared across renderables with different animator libraries");
+                else {
+                if (_animationSet != owner.animator.animationSet) {
+                _animationSet = owner.animator.animationSet;
+                for (var i:number = 0; i < _numPasses; ++i)
+                _passes[i].animationSet = _animationSet;
+                _depthPass.animationSet = _animationSet;
+                _distancePass.animationSet = _animationSet;
+                invalidatePasses(null);
+                }
+                }
+                }
+                }
+                */
+                /**
+                * Removes an IMaterialOwner as owner.
+                * @param owner
+                * @private
+                */
+                /* TODO: IAnimationSet - implement and integrate
+                public _iRemoveOwner(owner:away.base.IMaterialOwner) // ARCANE
+                {
+                _owners.splice(_owners.indexOf(owner), 1);
+                if (_owners.length == 0) {
+                _animationSet = null;
+                for (var i:number = 0; i < _numPasses; ++i)
+                _passes[i].animationSet = _animationSet;
+                _depthPass.animationSet = _animationSet;
+                _distancePass.animationSet = _animationSet;
+                invalidatePasses(null);
+                }
+                }
+                */
+                /**
+                * A list of the IMaterialOwners that use this material
+                *
+                * @private
+                */
+                function () {
+                    return this._owners;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * Performs any processing that needs to occur before any of its passes are used.
+            *
+            * @private
+            */
+            MaterialBase.prototype._iUpdateMaterial = function (context) {
+                throw new away.errors.AbstractMethodError();
+            };
+            MaterialBase.MATERIAL_ID_COUNT = 0;
+            return MaterialBase;
+        })(away.library.NamedAssetBase);
+        materials.MaterialBase = MaterialBase;
+    })(away.materials || (away.materials = {}));
+    var materials = away.materials;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../entities/Entity.ts" />
+    ///<reference path="../geom/Vector3D.ts" />
+    ///<reference path="../geom/Point.ts" />
+    ///<reference path="../base/IRenderable.ts" />
+    (function (pick) {
+        /**
+        * Value object for a picking collision returned by a picking collider. Created as unique objects on entities
+        *
+        * @see away3d.entities.Entity#pickingCollisionVO
+        * @see away3d.core.pick.IPickingCollider
+        */
+        var PickingCollisionVO = (function () {
+            /**
+            * Creates a new <code>PickingCollisionVO</code> object.
+            *
+            * @param entity The entity to which this collision object belongs.
+            */
+            function PickingCollisionVO(entity) {
+                this.entity = entity;
+            }
+            return PickingCollisionVO;
+        })();
+        pick.PickingCollisionVO = PickingCollisionVO;
+    })(away.pick || (away.pick = {}));
+    var pick = away.pick;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
     ///<reference path="../partition/EntityNode.ts" />
     ///<reference path="../containers/ObjectContainer3D.ts" />
     ///<reference path="../library/assets/AssetType.ts" />
     ///<reference path="../errors/AbstractMethodError.ts" />
+    ///<reference path="../pick/IPickingCollider.ts" />
+    ///<reference path="../pick/PickingCollisionVO.ts" />
     (function (entities) {
         var Entity = (function (_super) {
             __extends(Entity, _super);
@@ -3942,19 +6418,15 @@ var away;
                 //private _worldBounds:BoundingVolumeBase;
                 this._worldBoundsInvalid = true;
             }
+            //@override
+            Entity.prototype.setIgnoreTransform = function (value) {
+                if (this._pScene) {
+                }
+                _super.prototype.setIgnoreTransform.call(this, value);
+            };
+
             Object.defineProperty(Entity.prototype, "shaderPickingDetails", {
-                get: //@override
-                /*
-                public set ignoreTransform( value:boolean )
-                {
-                if(this._pScene)
-                {
-                this._pScene.invalidateEntityBounds( this );
-                }
-                super.ignoreTransform = value;
-                }
-                */
-                function () {
+                get: function () {
                     return this._shaderPickingDetails;
                 },
                 enumerable: true,
@@ -3973,15 +6445,17 @@ var away;
             });
 
 
-            /*
-            public get pickingCollisionVO():PickingCollisionVO
-            {
-            if ( !this._pickingCollisionVO )
-            {
-            this._pickingCollisionVO = new PickingCollisionVO( this );
-            }
-            return _pickingCollisionVO;
-            }*/
+            Object.defineProperty(Entity.prototype, "pickingCollisionVO", {
+                get: function () {
+                    if (!this._iPickingCollisionVO) {
+                        this._iPickingCollisionVO = new away.pick.PickingCollisionVO(this);
+                    }
+                    return this._iPickingCollisionVO;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
             // TODO again ... virtual method??
             Entity.prototype.iCollidesBefore = function (shortestCollisionDistance, findClosest) {
                 shortestCollisionDistance = shortestCollisionDistance;
@@ -4010,160 +6484,163 @@ var away;
             });
 
 
-            /*
-            //@override
-            public get minX():number
-            {
-            if( this._pBoundsInvalid )
-            {
-            this.pUpdateBounds();
-            }
-            return this._bounds.min.x;
-            }
-            
-            //@override
-            public get minY():number
-            {
-            if( this._pBoundsInvalid )
-            {
-            this.pUpdateBounds();
-            }
-            return this._bounds.min.y;
-            }
-            
-            //@override
-            public get minZ():number
-            {
-            if(this._pBoundsInvalid )
-            {
-            this.pUpdateBounds();
-            }
-            return this._bounds.min.z;
-            }
-            
-            //@override
-            public get maxX():number
-            {
-            if( this._pBoundsInvalid )
-            {
-            this.pUpdateBounds();
-            }
-            return this._bounds.max.x;
-            }
-            
-            //@override
-            public get maxY():number
-            {
-            if( this._pBoundsInvalid )
-            {
-            this.pUpdateBounds();
-            }
-            return this._bounds.max.y;
-            }
-            
-            //@override
-            public get maxZ():number
-            {
-            if( this._pBoundsInvalid )
-            {
-            this.pUpdateBounds();
-            }
-            return this._bounds.max.z;
-            }
-            */
-            /*
-            public get bounds():BoundingVolumeBase
-            {
-            if ( this._boundsInvalid )
-            {
-            this.pUpdateBounds();
-            }
-            return this._bounds;
-            }
-            */
-            /*
-            public set bounds( value:BoundingVolumeBase)
-            {
-            this.removeBounds();
-            this._bounds = value;
-            this._worldBounds = value.clone();
-            this.invalidateBounds();
-            if( this._showBounds )
-            {
-            this.addBounds();
-            }
-            }
-            */
-            /*
-            public get worldBounds():BoundingVolumeBase
-            {
-            if( this._worldBoundsInvalid )
-            {
-            this.updateWorldBounds();
-            }
-            return this._worldBounds;
-            }
-            */
-            /*
-            private updateWorldBounds()
-            {
-            this._worldBounds.transformFrom( this.bounds, this.sceneTransform );
-            this._worldBoundsInvalid = false;
-            }
-            
-            //@override
-            public set iImplicitPartition( value:Partition3D )
-            {
-            if( value == this._iImplicitPartition )
-            {
-            return;
-            }
-            
-            if( this._iImplicitPartition )
-            {
-            this.notifyPartitionUnassigned();
-            }
-            super.implicitPartition = value;
-            this.notifyPartitionAssigned();
-            }
-            
-            //@override
-            public set scene( value:Scene3D )
-            {
-            if(value == _scene)
-            {
-            return;
-            }
-            if( this._scene)
-            {
-            _scene.unregisterEntity( this );
-            }
-            // callback to notify object has been spawned. Casts to please FDT
-            if ( value )
-            {
-            value.registerEntity(this);
-            }
-            super.scene = value;
-            }
-            
-            //@override
-            public get assetType():string
-            {
-            return away.library.AssetType.ENTITY;
-            }
-            */
-            /*
-            public get pickingCollider():IPickingCollider
-            {
-            return this._pickingCollider;
-            }
-            */
-            /*
-            public set pickingCollider(value:IPickingCollider)
-            {
-            this._pickingCollider = value;
-            }
-            */
+            Object.defineProperty(Entity.prototype, "assetType", {
+                get: /*
+                //@override
+                public get minX():number
+                {
+                if( this._pBoundsInvalid )
+                {
+                this.pUpdateBounds();
+                }
+                return this._bounds.min.x;
+                }
+                
+                //@override
+                public get minY():number
+                {
+                if( this._pBoundsInvalid )
+                {
+                this.pUpdateBounds();
+                }
+                return this._bounds.min.y;
+                }
+                
+                //@override
+                public get minZ():number
+                {
+                if(this._pBoundsInvalid )
+                {
+                this.pUpdateBounds();
+                }
+                return this._bounds.min.z;
+                }
+                
+                //@override
+                public get maxX():number
+                {
+                if( this._pBoundsInvalid )
+                {
+                this.pUpdateBounds();
+                }
+                return this._bounds.max.x;
+                }
+                
+                //@override
+                public get maxY():number
+                {
+                if( this._pBoundsInvalid )
+                {
+                this.pUpdateBounds();
+                }
+                return this._bounds.max.y;
+                }
+                
+                //@override
+                public get maxZ():number
+                {
+                if( this._pBoundsInvalid )
+                {
+                this.pUpdateBounds();
+                }
+                return this._bounds.max.z;
+                }
+                */
+                /*
+                public get bounds():BoundingVolumeBase
+                {
+                if ( this._boundsInvalid )
+                {
+                this.pUpdateBounds();
+                }
+                return this._bounds;
+                }
+                */
+                /*
+                public set bounds( value:BoundingVolumeBase)
+                {
+                this.removeBounds();
+                this._bounds = value;
+                this._worldBounds = value.clone();
+                this.invalidateBounds();
+                if( this._showBounds )
+                {
+                this.addBounds();
+                }
+                }
+                */
+                /*
+                public get worldBounds():BoundingVolumeBase
+                {
+                if( this._worldBoundsInvalid )
+                {
+                this.updateWorldBounds();
+                }
+                return this._worldBounds;
+                }
+                */
+                /*
+                private updateWorldBounds()
+                {
+                this._worldBounds.transformFrom( this.bounds, this.sceneTransform );
+                this._worldBoundsInvalid = false;
+                }
+                
+                //@override
+                public set iImplicitPartition( value:Partition3D )
+                {
+                if( value == this._iImplicitPartition )
+                {
+                return;
+                }
+                
+                if( this._iImplicitPartition )
+                {
+                this.notifyPartitionUnassigned();
+                }
+                super.implicitPartition = value;
+                this.notifyPartitionAssigned();
+                }
+                
+                //@override
+                public set scene( value:Scene3D )
+                {
+                if(value == _scene)
+                {
+                return;
+                }
+                if( this._scene)
+                {
+                _scene.unregisterEntity( this );
+                }
+                // callback to notify object has been spawned. Casts to please FDT
+                if ( value )
+                {
+                value.registerEntity(this);
+                }
+                super.scene = value;
+                }
+                */
+                //@override
+                function () {
+                    return away.library.AssetType.ENTITY;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Entity.prototype, "pickingCollider", {
+                get: function () {
+                    return this._iPickingCollider;
+                },
+                set: function (value) {
+                    this._iPickingCollider = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
             Entity.prototype.getEntityPartitionNode = function () {
                 if (!this._partitionNode) {
                     this._partitionNode = this.pCreateEntityPartitionNode();
@@ -4171,33 +6648,36 @@ var away;
                 return this._partitionNode;
             };
 
-            /*
+            /* TODO Implementation dependency : BoundingVolumeBase
             public isIntersectingRay( rayPosition:away.geom.Vector3D, rayDirection:away.geom.Vector3D ):boolean
             {
             var localRayPosition:away.geom.Vector3D = this.inverseSceneTransform.transformVector( rayPosition );
             var localRayDirection:away.geom.Vector3D = this.inverseSceneTransform.deltaTransformVector( rayDirection );
             
-            if( !iPickingCollisionVO.localNormal )
+            
+            if( !this._iPickingCollisionVO.localNormal )
             {
-            iPickingCollisionVO.localNormal = new away.geom.Vector3D()
+            this._iPickingCollisionVO.localNormal = new away.geom.Vector3D()
             }
-            var rayEntryDistance:number = bounds.rayIntersection(localRayPosition, localRayDirection, pickingCollisionVO.localNormal );
+            
+            
+            var rayEntryDistance:number = bounds.rayIntersection(localRayPosition, localRayDirection, this._iPickingCollisionVO.localNormal );
             
             if( rayEntryDistance < 0 )
             {
             return false;
             }
             
-            iPickingCollisionVO.rayEntryDistance = rayEntryDistance;
-            iPickingCollisionVO.localRayPosition = localRayPosition;
-            iPickingCollisionVO.localRayDirection = localRayDirection;
-            iPickingCollisionVO.rayPosition = rayPosition;
-            iPickingCollisionVO.rayDirection = rayDirection;
-            iPickingCollisionVO.rayOriginIsInsideBounds = rayEntryDistance == 0;
+            this._iPickingCollisionVO.rayEntryDistance = rayEntryDistance;
+            this._iPickingCollisionVO.localRayPosition = localRayPosition;
+            this._iPickingCollisionVO.localRayDirection = localRayDirection;
+            this._iPickingCollisionVO.rayPosition = rayPosition;
+            this._iPickingCollisionVO.rayDirection = rayDirection;
+            this._iPickingCollisionVO.rayOriginIsInsideBounds = rayEntryDistance == 0;
             
             return true;
             }
-            */
+            //*/
             Entity.prototype.pCreateEntityPartitionNode = function () {
                 throw new away.errors.AbstractMethodError();
             };
@@ -4228,22 +6708,34 @@ var away;
                 this.notifySceneBoundsInvalid();
             };
 
-            /*
-            public function pUpdateMouseChildren():void
+            /* TODO: implement dependency super.updateMouseChildren();
+            public pUpdateMouseChildren():void
             {
             // If there is a parent and this child does not have a triangle collider, use its parent's triangle collider.
-            if( this._parent && !this.pickingCollider )
+            
+            if( this._pParent && !this.pickingCollider )
             {
-            if( this._parent is Entity ) {
-            var collider:IPickingCollider = Entity(_parent).pickingCollider;
+            
+            
+            if ( this.pParent instanceof away.entities.Entity ) //if( this._pParent is Entity ) { // TODO: Test / validate
+            {
+            
+            var parentEntity : away.entities.Entity =  <away.entities.Entity> this._pParent;
+            
+            var collider:away.pick.IPickingCollider = parentEntity.pickingCollider;
             if(collider)
-            pickingCollider = collider;
+            {
+            
+            this.pickingCollider = collider;
+            
+            }
+            
             }
             }
             
             super.updateMouseChildren();
             }
-            */
+            //*/
             Entity.prototype.notifySceneBoundsInvalid = function () {
                 if (this._pScene) {
                 }
@@ -4290,7 +6782,11 @@ var tests;
     var EntityTest = (function () {
         function EntityTest() {
             this.entity = new away.entities.Entity();
-            this.entity;
+            this.entity.x = 10;
+            this.entity.y = 10;
+            this.entity.z = 10;
+
+            this.entity.getIgnoreTransform();
         }
         return EntityTest;
     })();
