@@ -3,6 +3,7 @@
 ///<reference path="../pick/PickingCollisionVO.ts" />
 ///<reference path="../containers/View3D.ts" />
 ///<reference path="../geom/Vector3D.ts" />
+///<reference path="../errors/PartialImplementationError.ts" />
 
 //<reference path="../display3D/Program3D.ts" />
 //<reference path="../display3D/Context3D.ts" />
@@ -78,10 +79,12 @@ module away.pick
 		 * @inheritDoc
 		 */
 
-        /* //TODO Implement Dependency: EntityListItem, EntityCollector
-
+        //TODO Implement Dependency: EntityListItem, EntityCollector
 		public getViewCollision(x:number, y:number, view:away.containers.View3D):away.pick.PickingCollisionVO
 		{
+            throw new away.errors.PartialImplementationError( 'EntityListItem, EntityCollector');
+            return null;
+            /*
 			//cast ray through the collection of entities on the view
 			var collector:EntityCollector = view.entityCollector;
 			//var i:number;
@@ -118,15 +121,20 @@ module away.pick
 				return null;
 			
 			return getPickingCollisionVO();
+			*/
 		}
 		//*/
 		/**
 		 * @inheritDoc
 		 */
 
-        /* TODO Implement Dependency: EntityListItem, EntityCollector
-		public getSceneCollision(position:away.geom.Vector3D, direction:away.geom.Vector3D, scene:away.geom.Scene3D):PickingCollisionVO
+        //* TODO Implement Dependency: EntityListItem, EntityCollector
+		public getSceneCollision(position:away.geom.Vector3D, direction:away.geom.Vector3D, scene:away.containers.Scene3D):away.pick.PickingCollisionVO
 		{
+            throw new away.errors.PartialImplementationError( 'EntityListItem, EntityCollector');
+            return null;
+
+            /*
 			//clear collector
 			this._raycastCollector.clear();
 			
@@ -158,8 +166,9 @@ module away.pick
 				return null;
 			
 			return getPickingCollisionVO();
+			*/
 		}
-		*/
+		//*/
         /* TODO: Implement Dependency: Entity.isIntersectingRay
 		public getEntityCollision(position:away.geom.Vector3D, direction:away.geom.Vector3D, entities:away.entities.Entity[] ):away.pick.PickingCollisionVO
 		{
