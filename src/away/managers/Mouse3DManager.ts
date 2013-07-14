@@ -5,6 +5,9 @@
 ///<reference path="../pick/IPicker.ts"/>
 ///<reference path="../pick/PickingType.ts"/>
 ///<reference path="../events/MouseEvent3D.ts"/>
+///<reference path="../errors/PartialImplementationError.ts"/>
+
+// Reference note: http://www.w3schools.com/jsref/dom_obj_event.asp
 
 module away.managers
 {
@@ -42,8 +45,9 @@ module away.managers
 		private static _previousCollidingObject:away.pick.PickingCollisionVO;
 		private static _collidingViewObjects:away.pick.PickingCollisionVO[];//Vector.<PickingCollisionVO>;
 		private static _queuedEvents:away.events.MouseEvent3D[] = new Array<away.events.MouseEvent3D>();//Vector.<MouseEvent3D> = new Vector.<MouseEvent3D>();
-		
-		private _mouseMoveEvent:away.events.MouseEvent = new away.events.MouseEvent(away.events.MouseEvent.MOUSE_MOVE);
+
+        // TODO: AS3 <> Conversion
+		//private _mouseMoveEvent:away.events.MouseEvent = new away.events.MouseEvent(away.events.MouseEvent.MOUSE_MOVE);
 		
 		private static _mouseUp:away.events.MouseEvent3D = new away.events.MouseEvent3D(away.events.MouseEvent3D.MOUSE_UP);
 		private static _mouseClick:away.events.MouseEvent3D = new away.events.MouseEvent3D(away.events.MouseEvent3D.CLICK);
@@ -54,13 +58,14 @@ module away.managers
 		private static _mouseWheel:away.events.MouseEvent3D = new away.events.MouseEvent3D(away.events.MouseEvent3D.MOUSE_WHEEL);
 		private static _mouseDoubleClick:away.events.MouseEvent3D = new away.events.MouseEvent3D(away.events.MouseEvent3D.DOUBLE_CLICK);
 		private _forceMouseMove:boolean;
-		private _mousePicker:away.pick.IPicker = away.events.PickingType.RAYCAST_FIRST_ENCOUNTERED;
-		private var _childDepth:number = 0;
-		private static var _previousCollidingView:number = -1;
-		private static var _collidingView:number = -1;
-		private var _collidingDownObject:away.pick.PickingCollisionVO;
-		private var _collidingUpObject:away.pick.PickingCollisionVO;
-		
+		private _mousePicker:away.pick.IPicker = away.pick.PickingType.RAYCAST_FIRST_ENCOUNTERED;
+		private _childDepth:number = 0;
+		private static _previousCollidingView:number = -1;
+		private static _collidingView:number = -1;
+		private _collidingDownObject:away.pick.PickingCollisionVO;
+		private _collidingUpObject:away.pick.PickingCollisionVO;
+
+
 		/**
 		 * Creates a new <code>Mouse3DManager</code> object.
 		 */
@@ -78,9 +83,12 @@ module away.managers
 		// ---------------------------------------------------------------------
 		// Interface.
 		// ---------------------------------------------------------------------
-		
+
+        // TODO: required dependency stage3DProxy
 		public updateCollider( view : away.containers.View3D )
 		{
+            throw new away.errors.PartialImplementationError( 'stage3DProxy');
+            /*
 			this._previousCollidingView = this._collidingView;
 			
 			if (view) {
@@ -100,65 +108,118 @@ module away.managers
 					}
 				}
 			}
+			*/
 		}
-		
+
 		public fireMouseEvents()
 		{
+
+            throw new away.errors.PartialImplementationError( 'View3D().layeredView' )
+
+            /*
+
 			var i:number;
 			var len:number;
-			var event:MouseEvent3D;
-			var dispatcher:ObjectContainer3D;
-			
+			var event:away.events.MouseEvent3D;
+			var dispatcher:away.containers.ObjectContainer3D;
+
+
+
 			// If multiple view are used, determine the best hit based on the depth intersection.
-			if (_collidingViewObjects) {
-				_collidingObject = null;
+			if ( Mouse3DManager._collidingViewObjects )
+            {
+                Mouse3DManager._pCollidingObject = null;//_collidingObject = null;
+
 				// Get the top-most view colliding object
 				var distance:number = Infinity;
-				var view:View3D;
-				for (var v:number = _viewCount - 1; v >= 0; v--) {
+				var view:away.containers.View3D;
+
+				for (var v:number = Mouse3DManager._viewCount - 1; v >= 0; v--)
+                {
 					view = _view3DLookup[v];
-					if (_collidingViewObjects[v] && (view.layeredView || _collidingViewObjects[v].rayEntryDistance < distance)) {
-						distance = _collidingViewObjects[v].rayEntryDistance;
-						_collidingObject = _collidingViewObjects[v];
+
+					if ( Mouse3DManager._collidingViewObjects[v] && (view.layeredView || Mouse3DManager._collidingViewObjects[v].rayEntryDistance < distance))
+                    {
+
+						distance = Mouse3DManager._collidingViewObjects[v].rayEntryDistance;
+
+                        Mouse3DManager._pCollidingObject = Mouse3DManager._collidingViewObjects[v];//_collidingObject = Mouse3DManager._collidingViewObjects[v];
+
 						if (view.layeredView)
-							break;
+                        {
+
+                            break;
+
+                        }
+
 					}
 				}
 			}
 			
 			// If colliding object has changed, queue over/out events.
-			if (_collidingObject != _previousCollidingObject) {
-				if (_previousCollidingObject)
-					queueDispatch(_mouseOut, _mouseMoveEvent, _previousCollidingObject);
-				if (_collidingObject)
-					queueDispatch(_mouseOver, _mouseMoveEvent, _collidingObject);
+			if (Mouse3DManager._pCollidingObject  != Mouse3DManager._previousCollidingObject)
+            {
+
+				if (Mouse3DManager._previousCollidingObject)
+                {
+
+                    this.queueDispatch(Mouse3DManager._mouseOut, this._mouseMoveEvent, Mouse3DManager._previousCollidingObject);
+
+                }
+
+				if (Mouse3DManager._pCollidingObject)
+                {
+                    this.queueDispatch(Mouse3DManager._mouseOver, this._mouseMoveEvent, Mouse3DManager._pCollidingObject );
+                }
+
 			}
 			
 			// Fire mouse move events here if forceMouseMove is on.
-			if (_forceMouseMove && _collidingObject)
-				queueDispatch(_mouseMove, _mouseMoveEvent, _collidingObject);
+			if ( this._forceMouseMove && Mouse3DManager._pCollidingObject)
+            {
+
+                this.queueDispatch( Mouse3DManager._mouseMove, this._mouseMoveEvent, Mouse3DManager._pCollidingObject);
+
+            }
+
 			
 			// Dispatch all queued events.
-			len = _queuedEvents.length;
-			for (i = 0; i < len; ++i) {
+			len = Mouse3DManager._queuedEvents.length;
+
+			for (i = 0; i < len; ++i)
+            {
 				// Only dispatch from first implicitly enabled object ( one that is not a child of a mouseChildren = false hierarchy ).
-				event = _queuedEvents[i];
+				event = Mouse3DManager._queuedEvents[i];
 				dispatcher = event.object;
-				
-				while (dispatcher && !dispatcher._ancestorsAllowMouseEnabled)
-					dispatcher = dispatcher.parent;
+
+				while (dispatcher && ! dispatcher._iAncestorsAllowMouseEnabled )
+                {
+
+                    dispatcher = dispatcher.parent;
+
+                }
+
 				
 				if (dispatcher)
-					dispatcher.dispatchEvent(event);
+                {
+
+                    dispatcher.dispatchEvent(event);
+
+                }
+
 			}
-			_queuedEvents.length = 0;
+            Mouse3DManager._queuedEvents.length = 0;
 			
-			_updateDirty = false;
-			_previousCollidingObject = _collidingObject;
+			this._updateDirty = false;
+            Mouse3DManager._previousCollidingObject = Mouse3DManager._pCollidingObject;//_collidingObject;
+            //*/
 		}
 		
-		public addViewLayer(view:View3D)
+		public addViewLayer(view:away.containers.View3D)
 		{
+            throw new away.errors.PartialImplementationError( 'Stage3DProxy, Stage, DisplayObjectContainer ( as3 / native ) ' );
+
+            /*
 			var stg:Stage = view.stage;
 			
 			// Add instance to mouse3dmanager to fire mouse events for multiple views
@@ -171,10 +232,15 @@ module away.managers
 			_childDepth = 0;
 			traverseDisplayObjects(stg);
 			_viewCount = _childDepth;
+			*/
+
 		}
 		
-		public enableMouseListeners(view:View3D)
+		public enableMouseListeners(view:away.containers.View3D)
 		{
+            throw new away.errors.PartialImplementationError( 'MouseEvent ( as3 / native ) as3 <> JS Conversion' );
+
+            /*
 			view.addEventListener(MouseEvent.CLICK, onClick);
 			view.addEventListener(MouseEvent.DOUBLE_CLICK, onDoubleClick);
 			view.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
@@ -183,10 +249,14 @@ module away.managers
 			view.addEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel);
 			view.addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
 			view.addEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
+			*/
 		}
 		
-		public disableMouseListeners(view:View3D)
+		public disableMouseListeners(view:away.containers.View3D)
 		{
+            throw new away.errors.PartialImplementationError( 'MouseEvent ( as3 / native ) as3 <> JS Conversion' );
+
+            /*
 			view.removeEventListener(MouseEvent.CLICK, onClick);
 			view.removeEventListener(MouseEvent.DOUBLE_CLICK, onDoubleClick);
 			view.removeEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
@@ -195,19 +265,24 @@ module away.managers
 			view.removeEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel);
 			view.removeEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
 			view.removeEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
+			*/
+
 		}
 		
 		public dispose()
 		{
-			_mousePicker.dispose();
+			this._mousePicker.dispose();
 		}
 		
 		// ---------------------------------------------------------------------
 		// Private.
 		// ---------------------------------------------------------------------
 		
-		private queueDispatch(event:MouseEvent3D, sourceEvent:MouseEvent, collider:PickingCollisionVO = null)
+		private queueDispatch(event:away.events.MouseEvent3D, sourceEvent:MouseEvent, collider:away.pick.PickingCollisionVO = null)
 		{
+            throw new away.errors.PartialImplementationError( 'MouseEvent ( as3 / native ) as3 <> JS Conversion' );
+
+            /*
 			// 2D properties.
 			event.ctrlKey = sourceEvent.ctrlKey;
 			event.altKey = sourceEvent.altKey;
@@ -246,30 +321,59 @@ module away.managers
 			
 			// Store event to be dispatched later.
 			_queuedEvents.push(event);
+			*/
 		}
 		
 		private reThrowEvent(event:MouseEvent)
 		{
-			if (!_activeView || (_activeView && !_activeView.shareContext))
+
+            /*
+			if (!this._activeView || (this._activeView && !this._activeView._pShareContext))
+            {
+
+
 				return;
-			
-			for (var v:* in _view3Ds) {
-				if (v != _activeView && _view3Ds[v] < _view3Ds[_activeView])
-					v.dispatchEvent(event);
+
+            }
+
+            // TODO: Debug / keep on eye on this one :
+            for (var v in Mouse3DManager._view3Ds)
+            {
+				if (v != this._activeView && Mouse3DManager._view3Ds[v] < Mouse3DManager._view3Ds[this._activeView])
+                {
+
+                    v.dispatchEvent(event);
+
+                }
+
 			}
+            */
+
+            throw new away.errors.PartialImplementationError( 'MouseEvent - AS3 <> JS Conversion' );
+
 		}
 		
-		private hasKey(view:View3D):boolean
+		private hasKey(view:away.containers.View3D):boolean
 		{
-			for (var v:* in _view3Ds) {
-				if (v === view)
-					return true;
+
+			for (var v in Mouse3DManager._view3Ds) {
+
+				if ( v === view)
+                {
+
+                    return true;
+
+                }
+
 			}
+
 			return false;
 		}
 		
-		private traverseDisplayObjects(container:DisplayObjectContainer)
+		private traverseDisplayObjects( container : any ) //:DisplayObjectContainer)
 		{
+            throw new away.errors.PartialImplementationError( 'DisplayObjectContainer ( as3 / native ) as3 <> JS Conversion' );
+            /*
 			var childCount:number = container.numChildren;
 			var c:number = 0;
 			var child:DisplayObject;
@@ -285,6 +389,7 @@ module away.managers
 				if (child is DisplayObjectContainer)
 					traverseDisplayObjects(child as DisplayObjectContainer);
 			}
+			*/
 		}
 		
 		// ---------------------------------------------------------------------
@@ -293,78 +398,164 @@ module away.managers
 		
 		private onMouseMove(event:MouseEvent)
 		{
-			if (_collidingObject)
-				queueDispatch(_mouseMove, _mouseMoveEvent = event);
+
+            throw new away.errors.PartialImplementationError( 'MouseEvent ( as3 / native ) as3 <> JS Conversion' );
+
+            /*
+			if (Mouse3DManager._pCollidingObject)
+            {
+
+                this.queueDispatch(Mouse3DManager._mouseMove, this._mouseMoveEvent = event);
+
+            }
 			else
-				reThrowEvent(event);
-			_updateDirty = true;
+            {
+
+                this.reThrowEvent(event);
+
+            }
+
+			this._updateDirty = true;
+			*/
 		}
 		
 		private onMouseOut(event:MouseEvent)
 		{
-			_activeView = null;
-			if (_collidingObject)
-				queueDispatch(_mouseOut, event, _collidingObject);
-			_updateDirty = true;
+
+            this._activeView = null;
+
+            if (Mouse3DManager._pCollidingObject)
+            {
+
+                this.queueDispatch(Mouse3DManager._mouseOut, event, Mouse3DManager._pCollidingObject);
+
+            }
+
+			this._updateDirty = true;
+
+            throw new away.errors.PartialImplementationError( 'MouseEvent ( as3 / native ) as3 <> JS Conversion' );
+
 		}
 		
 		private onMouseOver(event:MouseEvent)
 		{
-			_activeView = (event.currentTarget as View3D);
-			if (_collidingObject && _previousCollidingObject != _collidingObject)
-				queueDispatch(_mouseOver, event, _collidingObject);
+
+            /*
+            this._activeView = <away.containers.View3D> event.target ;//as View3D); // TODO: target was changed from currentTarget ( which might cause a bug ) .
+			//_activeView = (event.currentTarget as View3D);
+
+			if ( Mouse3DManager._pCollidingObject && Mouse3DManager._previousCollidingObject !=  Mouse3DManager._pCollidingObject)
+            {
+                this.queueDispatch( Mouse3DManager._mouseOver, event, Mouse3DManager._pCollidingObject);
+            }
 			else
-				reThrowEvent(event);
-			_updateDirty = true;
+            {
+                this.reThrowEvent(event);
+            }
+
+			this._updateDirty = true;
+            */
+
+            throw new away.errors.PartialImplementationError( 'MouseEvent ( as3 / native ) as3 <> JS Conversion' );
+
 		}
 		
 		private onClick(event:MouseEvent)
 		{
-			if (_collidingObject) {
-				queueDispatch(_mouseClick, event);
-			} else
-				reThrowEvent(event);
-			_updateDirty = true;
+            /*
+            if ( Mouse3DManager._pCollidingObject)
+            {
+
+				this.queueDispatch(Mouse3DManager._mouseClick, event);
+
+			}
+            else
+            {
+
+                this.reThrowEvent(event);
+
+            }
+
+			this._updateDirty = true;
+            */
+            throw new away.errors.PartialImplementationError( 'MouseEvent ( as3 / native ) as3 <> JS Conversion' );
+
 		}
 		
 		private onDoubleClick(event:MouseEvent)
 		{
-			if (_collidingObject)
-				queueDispatch(_mouseDoubleClick, event);
+            if ( Mouse3DManager._pCollidingObject)
+            {
+                this.queueDispatch( Mouse3DManager._mouseDoubleClick, event);
+            }
 			else
-				reThrowEvent(event);
-			_updateDirty = true;
+            {
+                this.reThrowEvent(event);
+            }
+
+			this._updateDirty = true;
 		}
 		
 		private onMouseDown(event:MouseEvent)
 		{
-			_activeView = (event.currentTarget as View3D);
-			updateCollider(_activeView); // ensures collision check is done with correct mouse coordinates on mobile
-			if (_collidingObject) {
-				queueDispatch(_mouseDown, event);
-				_previousCollidingObject = _collidingObject;
-			} else
-				reThrowEvent(event);
-			_updateDirty = true;
+            /*
+			this._activeView = <away.containers.View3D> event.target ;//as View3D); // TODO: target was changed from currentTarget ( which might cause a bug ) .
+
+			this.updateCollider(this._activeView); // ensures collision check is done with correct mouse coordinates on mobile
+            if ( Mouse3DManager._pCollidingObject)
+            {
+
+                this.queueDispatch( Mouse3DManager._mouseDown, event);
+                Mouse3DManager._previousCollidingObject = Mouse3DManager._pCollidingObject;//_collidingObject;
+
+			}
+            else
+            {
+
+                this.reThrowEvent(event);
+
+            }
+
+			this._updateDirty = true;
+            */
+            throw new away.errors.PartialImplementationError( 'MouseEvent ( as3 / native ) as3 <> JS Conversion' );
 		}
 		
 		private onMouseUp(event:MouseEvent)
 		{
-			if (_collidingObject) {
-				queueDispatch(_mouseUp, event);
-				_previousCollidingObject = _collidingObject;
-			} else
-				reThrowEvent(event);
-			_updateDirty = true;
+			if ( Mouse3DManager._pCollidingObject)
+            {
+
+				this.queueDispatch( Mouse3DManager._mouseUp , event );
+                Mouse3DManager._previousCollidingObject = Mouse3DManager._pCollidingObject;
+
+			}
+            else
+            {
+
+                this.reThrowEvent(event);
+
+            }
+
+			this._updateDirty = true;
 		}
 		
 		private onMouseWheel(event:MouseEvent)
 		{
-			if (_collidingObject)
-				queueDispatch(_mouseWheel, event);
+			if (Mouse3DManager._pCollidingObject)
+            {
+
+                this.queueDispatch(Mouse3DManager._mouseWheel, event);
+
+            }
 			else
-				reThrowEvent(event);
-			_updateDirty = true;
+            {
+
+                this.reThrowEvent(event);
+
+            }
+
+            this._updateDirty = true;
 		}
 		
 		// ---------------------------------------------------------------------
@@ -373,22 +564,22 @@ module away.managers
 		
 		public get forceMouseMove():boolean
 		{
-			return _forceMouseMove;
+			return this._forceMouseMove;
 		}
 		
 		public set forceMouseMove(value:boolean)
 		{
-			_forceMouseMove = value;
+            this._forceMouseMove = value;
 		}
 		
-		public get mousePicker():IPicker
+		public get mousePicker():away.pick.IPicker
 		{
-			return _mousePicker;
+			return this._mousePicker;
 		}
 		
-		public set mousePicker(value:IPicker)
+		public set mousePicker(value:away.pick.IPicker)
 		{
-			_mousePicker = value;
+			this._mousePicker = value;
 		}
 	}
 }
