@@ -120,8 +120,8 @@ module away.base
 		private invalidatePivot()
 		{
 			this._pivotZero = (this._pivotPoint.x == 0) && (this._pivotPoint.y == 0) && (this._pivotPoint.z == 0);
-			
 			this._iInvalidateTransform();
+
 		}
 		
 		private invalidatePosition()
@@ -193,7 +193,6 @@ module away.base
 		}
 		*/
 
-
 		private invalidateRotation()
 		{
 			if (this._rotationDirty)
@@ -211,18 +210,19 @@ module away.base
 			if (_listenToRotationChanged)
 				notifyRotationChanged();
             */
+
 		}
 
 
         /* TODO implement
 		private notifyRotationChanged()
 		{
-			if (!_rotationChanged)
-				_rotationChanged = new Object3DEvent(Object3DEvent.ROTATION_CHANGED, this);
+			//if (!_rotationChanged)
+				this._rotationChanged = new Object3DEvent(away.events.Object3DEvent.ROTATION_CHANGED, this);
 			
-			dispatchEvent(_rotationChanged);
+			this.dispatchEvent(_rotationChanged);
 		}
-		*/
+		//*/
 
 
 		private invalidateScale()
@@ -577,20 +577,20 @@ module away.base
 		/**
 		 * Defines the local point around which the object rotates.
 		 */
-        /* TODO: implement
+
 		public get pivotPoint():away.geom.Vector3D
 		{
 			return this._pivotPoint;
 		}
-		*/
-        /* TODO: implement
+
+
 		public set pivotPoint(pivot:away.geom.Vector3D)
 		{
-			_pivotPoint = pivot.clone();
-			
-			invalidatePivot();
+			this._pivotPoint = pivot.clone();
+
+            this.invalidatePivot();
 		}
-		*/
+
 		/**
 		 * Defines the position of the 3d object, relative to the local coordinates of the parent <code>ObjectContainer3D</code>.
 		 */
@@ -613,66 +613,54 @@ module away.base
 		/**
 		 *
 		 */
-        /* TODO: implement
 		public get forwardVector():away.geom.Vector3D
 		{
-			return away3d.math.Matrix3DUtils.getForward(transform);
+			return away.math.Matrix3DUtils.getForward( this.transform );
 		}
-		*/
 		/**
 		 *
 		 */
-        /* TODO: implement
-		public get rightVector():Vector3D
+		public get rightVector():away.geom.Vector3D
 		{
-			return away3d.math.Matrix3DUtils.getRight(transform);
+			return away.math.Matrix3DUtils.getRight( this.transform );
 		}
-		*/
 		/**
 		 *
 		 */
-        /*
 		public get upVector():away.geom.Vector3D
 		{
-			return away3d.math.Matrix3DUtils.getUp(transform);
+			return away.math.Matrix3DUtils.getUp( this.transform );
 		}
-		*/
 		/**
 		 *
 		 */
-        /* TODO: implement
 		public get backVector():away.geom.Vector3D
 		{
-			var director:Vector3D = away3d.math.Matrix3DUtils.getForward(transform);
+			var director:away.geom.Vector3D = away.math.Matrix3DUtils.getForward( this.transform);
 			director.negate();
 			
 			return director;
 		}
-		*/
 		/**
 		 *
 		 */
-        /* TODO: implement
 		public get leftVector():away.geom.Vector3D
 		{
-			var director:Vector3D = away3d.math.Matrix3DUtils.getRight(transform);
+			var director:away.geom.Vector3D = away.math.Matrix3DUtils.getRight( this.transform );
 			director.negate();
 			
 			return director;
 		}
-		*/
 		/**
 		 *
 		 */
-        /* TODO: implement
 		public get downVector():away.geom.Vector3D
 		{
-			var director:Vector3D = away3d.math.Matrix3DUtils.getUp(transform);
+			var director:away.geom.Vector3D = away.math.Matrix3DUtils.getUp( this.transform );
 			director.negate();
 			
 			return director;
 		}
-		*/
 		/**
 		 * Creates an Object3D object.
 		 */
@@ -700,16 +688,14 @@ module away.base
 		 * Appends a uniform scale to the current transformation.
 		 * @param value The amount by which to scale.
 		 */
-        /* TODO: implement
 		public scale(value:number)
 		{
-			_scaleX *= value;
-			_scaleY *= value;
-			_scaleZ *= value;
-			
-			invalidateScale();
+			this._scaleX *= value;
+            this._scaleY *= value;
+            this._scaleZ *= value;
+
+            this.invalidateScale();
 		}
-		*/
 		/**
 		 * Moves the 3d object forwards along it's local z axis
 		 *
@@ -802,59 +788,60 @@ module away.base
 		 * @param    dy        The amount of movement along the local y axis.
 		 * @param    dz        The amount of movement along the local z axis.
 		 */
-        /* TODO: implement
 		public movePivot(dx:number, dy:number, dz:number)
 		{
-			_pivotPoint ||= new Vector3D();
-			_pivotPoint.x += dx;
-			_pivotPoint.y += dy;
-			_pivotPoint.z += dz;
-			
-			invalidatePivot();
+
+            if ( this._pivotPoint == null )
+            {
+
+                this._pivotPoint = new away.geom.Vector3D();
+
+            }
+
+			this._pivotPoint.x += dx;
+            this._pivotPoint.y += dy;
+            this._pivotPoint.z += dz;
+
+            this.invalidatePivot();
 		}
-		*/
 		/**
 		 * Moves the 3d object along a vector by a defined length
 		 *
 		 * @param    axis        The vector defining the axis of movement
 		 * @param    distance    The length of the movement
 		 */
-        /* TODO: implement
-		public translate(axis:Vector3D, distance:number)
+		public translate(axis:away.geom.Vector3D, distance:number)
 		{
 			var x:number = axis.x, y:number = axis.y, z:number = axis.z;
 			var len:number = distance/Math.sqrt(x*x + y*y + z*z);
 			
-			_x += x*len;
-			_y += y*len;
-			_z += z*len;
+			this._x += x*len;
+            this._y += y*len;
+            this._z += z*len;
 			
-			invalidatePosition();
+			this.invalidatePosition();
 		}
-		*/
 		/**
 		 * Moves the 3d object along a vector by a defined length
 		 *
 		 * @param    axis        The vector defining the axis of movement
 		 * @param    distance    The length of the movement
 		 */
-        /* TODO: implement
-		public translateLocal(axis:Vector3D, distance:number)
+		public translateLocal(axis:away.geom.Vector3D, distance:number)
 		{
 			var x:number = axis.x, y:number = axis.y, z:number = axis.z;
 			var len:number = distance/Math.sqrt(x*x + y*y + z*z);
 			
-			transform.prependTranslation(x*len, y*len, z*len);
+			this.transform.prependTranslation(x*len, y*len, z*len);
 			
-			_transform.copyColumnTo(3, _pos);
+			this._transform.copyColumnTo(3, this._pos);
 			
-			_x = _pos.x;
-			_y = _pos.y;
-			_z = _pos.z;
-			
-			invalidatePosition();
+			this._x = this._pos.x;
+            this._y = this._pos.y;
+            this._z = this._pos.z;
+
+            this.invalidatePosition();
 		}
-		*/
 		/**
 		 * Rotates the 3d object around it's local x-axis
 		 *
@@ -888,17 +875,17 @@ module away.base
 			rotate(Vector3D.Z_AXIS, angle);
 		}
 		*/
-        /* TODO: implement
+        //* TODO: implement
 		public clone():Object3D
 		{
-			var clone:Object3D = new Object3D();
-			clone.pivotPoint = pivotPoint;
-			clone.transform = transform;
+			var clone:away.base.Object3D = new away.base.Object3D();
+		    	clone.pivotPoint = this.pivotPoint;
+			clone.transform = this.transform;
 			clone.name = name;
 			// todo: implement for all subtypes
 			return clone;
 		}
-		*/
+		//*/
 		/**
 		 * Rotates the 3d object directly to a euler angle
 		 *
@@ -906,30 +893,26 @@ module away.base
 		 * @param    ay        The angle in degrees of the rotation around the y axis.
 		 * @param    az        The angle in degrees of the rotation around the z axis.
 		 */
-        /* TODO: implement
 		public rotateTo(ax:number, ay:number, az:number)
 		{
-			_rotationX = ax*MathConsts.DEGREES_TO_RADIANS;
-			_rotationY = ay*MathConsts.DEGREES_TO_RADIANS;
-			_rotationZ = az*MathConsts.DEGREES_TO_RADIANS;
+			this._rotationX = ax*away.math.MathConsts.DEGREES_TO_RADIANS;
+            this._rotationY = ay*away.math.MathConsts.DEGREES_TO_RADIANS;
+            this._rotationZ = az*away.math.MathConsts.DEGREES_TO_RADIANS;
 			
-			invalidateRotation();
+			this.invalidateRotation();
 		}
-		*/
 		/**
 		 * Rotates the 3d object around an axis by a defined angle
 		 *
 		 * @param    axis        The vector defining the axis of rotation
 		 * @param    angle        The amount of rotation in degrees
 		 */
-        /* TODO: implement
-		public rotate(axis:Vector3D, angle:number)
+		public rotate(axis:away.geom.Vector3D, angle:number)
 		{
-			transform.prependRotation(angle, axis);
-			
-			transform = transform;
+			this.transform.prependRotation(angle, axis);
+			this.transform = this.transform;
+
 		}
-		*/
 		/**
 		 * Rotates the 3d object around to face a point defined relative to the local coordinates of the parent <code>ObjectContainer3D</code>.
 		 *
@@ -937,12 +920,19 @@ module away.base
 		 * @param    upAxis        An optional vector used to define the desired up orientation of the 3d object after rotation has occurred
 		 */
         /* TODO: implement
-		public lookAt(target:Vector3D, upAxis:Vector3D = null)
+		public lookAt(target:away.geom.Vector3D, upAxis:away.geom.Vector3D = null)
 		{
-			var yAxis:Vector3D, zAxis:Vector3D, xAxis:Vector3D;
+			var yAxis:away.geom.Vector3D, zAxis:away.geom.Vector3D, xAxis:away.geom.Vector3D;
 			var raw:number[];
-			
-			upAxis ||= Vector3D.Y_AXIS;
+
+
+            if ( upAxis == null)
+            {
+
+                upAxis = away.geom.Vector3D.Y_AXIS;
+
+            }
+
 			
 			zAxis = target.subtract(position);
 			zAxis.normalize();
@@ -987,24 +977,24 @@ module away.base
 				rotationZ -= 180;
 			}
 		}
-		*/
+		//*/
 		/**
 		 * Cleans up any resources used by the current object.
 		 */
-        /* TODO: implement
+        //* TODO: implement
 		public dispose()
 		{
 		}
-		*/
+		//*/
 		/**
 		 * @inheritDoc
 		 */
-        /* TODO: implement
+        //* TODO: implement
 		public disposeAsset()
 		{
-			dispose();
+			this.dispose();
 		}
-		*/
+		//*/
 		/**
 		 * Invalidates the transformation matrix, causing it to be updated upon the next request
 		 */
