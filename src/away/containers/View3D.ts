@@ -5,6 +5,7 @@
 
 ///<reference path="../display3D/Texture.ts" />
 ///<reference path="../geom/Point.ts" />
+///<reference path="../cameras/Camera3D.ts" />
 ///<reference path="Scene3D.ts" />
 
 module away.containers
@@ -18,9 +19,9 @@ module away.containers
 		private _globalPos:away.geom.Point;
 		private _globalPosDirty:boolean;
 		
-		public  _pScene:Scene3D;
-		//public _pCamera:away.cameras.Camera3D;
-		//public _pEntityCollector:away.travers.EntityCollector;
+		public _pScene:Scene3D;
+		public _pCamera:away.cameras.Camera3D;
+		//public _pEntityCollector:away.traverse.EntityCollector;
 		public _pAspectRation:number;
 		
 		private _time:number = 0;
@@ -66,9 +67,9 @@ module away.containers
 		private _profile:string;
 		private _layeredView:boolean = false;
 		
-		constructor( scene:Scene3D = null
-					/*,
-					 camera:away.cameras.Camera3D,
+		constructor( scene:Scene3D,
+					 camera:away.cameras.Camera3D
+					 /*,
 					 renderer:away.render.RendererBase,
 					 forceSoftware:boolean = false,
 					 profile: string = "basline"
@@ -79,9 +80,10 @@ module away.containers
 			
 			//this._profile = profile;
 			this._pScene = scene || new Scene3D();
+			
+			this._pScene.addEventListener( away.events.Scene3DEvent.PARTITION_CHANGED, this.onScenePartitionChanged, this );
+			this._pCamera = camera || new away.cameras.Camera3D();
 			/*
-			this._scene.addEventListener( away.events.Scene3DEvent.PARTITION_CHANGED, this.onScenePartitionChanged, this );
-			this._camera = camera || new away.cameras.Camera3D();
 			this._renderer = renderer || new away.render.DefaultRenderer();
 			this._depthRenderer = new away.render.DepthRenderer();
 			this._forceSoftware = forceSoftware;
@@ -111,15 +113,15 @@ module away.containers
 			*/
 		}
 		
-		/*
 		private onScenePartitionChanged( e:away.events.Scene3DEvent )
 		{
-			if( this._camera )
+			if( this._pCamera )
 			{
-				this._camera.partition = this.scene.partition;
+				this._pCamera.partition = this.scene.partition;
 			}
 		}
 		
+		/*
 		public get rightClickMenuEnabled():Boolean
 		{
 			return this._rightClickMenuEnabled;
@@ -244,12 +246,12 @@ module away.containers
 		}
 		
 		//TODO public function set camera(camera:Camera3D):void
-		
+		*/
 		public get scene():away.display3D.Scene3D
 		{
-			return this._scene;
+			return this._pScene;
 		}
-		
+		/*
 		// TODO public function set scene(scene:Scene3D):void
 		
 		public get deltaTime():number
