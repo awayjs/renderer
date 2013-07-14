@@ -19,11 +19,14 @@ module tests {
         {
 
             this.entity = new away.entities.Entity();
-            this.entity
+            this.entity.x = 10;
+            this.entity.y = 10;
+            this.entity.z = 10;
+
+            this.entity.getIgnoreTransform();
         }
 
     }
-
 
 }
 
