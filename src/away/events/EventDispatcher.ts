@@ -131,6 +131,9 @@ module away.events {
          * @param {Function} Callback function
          * @param {Object} Target object listener is added to
          */
+
+        //todo: hasEventListener - relax check by not requiring target in param
+
         public hasEventListener( type : string , listener : Function , target : Object ) : boolean {
 
             return ( this.getEventListenerIndex( type, listener , target ) !== -1 ) ;
