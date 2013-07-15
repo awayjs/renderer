@@ -3,8 +3,8 @@
  * @author Gary Paluk - http://www.plugin.io
  */
 
-///<reference path="../math/Plane3D.ts" />
 ///<reference path="../entities/Entity.ts" />
+///<reference path="../math/Plane3D.ts" />
 ///<reference path="../traverse/PartitionTraverser.ts" />
 ///<reference path="../primitives/WireframePrimitiveBase.ts" />
 ///<reference path="../errors/PartialImplementationError.ts" />
@@ -13,7 +13,7 @@ module away.partition
 {
 	export class NodeBase
 	{
-		
+
 		public _iParent:NodeBase;
 		public _pChildNodes:NodeBase[];
 		public _pNumChildNodes:number;
@@ -147,7 +147,7 @@ module away.partition
 		
 		public get _pNumEntities():number
 		{
-			return this._pNumEntities;
+			return this._iNumEntities;
 		}
 		
 		public _pUpdateNumEntities( value:number )
