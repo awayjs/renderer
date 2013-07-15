@@ -11,6 +11,8 @@
 ///<reference path="../events/CameraEvent.ts" />
 ///<reference path="../bounds/NullBounds.ts" />
 ///<reference path="../library/assets/AssetType.ts" />
+///<reference path="../partition/EntityNode.ts" />
+///<reference path="../partition/CameraNode.ts" />
 
 module away.cameras
 {
@@ -178,17 +180,15 @@ module away.cameras
 		//@override
 		public updateBounds()
 		{
-			//this._bounds.nullify();
-			//this._boundsInvalid = false;
+			this._pBounds.nullify();
+			this._pBoundsInvalid = false;
 		}
 		
 		//@override
-		/*
-		public pCreateEntityPartitionNode():EntityNode
+		public pCreateEntityPartitionNode():away.partition.EntityNode
 		{
-			return new CameraNode( this );
+			return new away.partition.CameraNode( this );
 		}
-		*/
 		
 		public get lens():away.cameras.LensBase
 		{
