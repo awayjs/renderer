@@ -22,7 +22,7 @@ module away.partition
 			this._iNumEntities = 1;
 		}
 		
-		public get entity():Entity
+		public get entity():away.entities.Entity
 		{
 			return this._entity;
 		}
