@@ -3,6 +3,7 @@
  * @author Gary Paluk - http://www.plugin.io
  */
 
+///<reference path="../entities/Entity.ts" />
 ///<reference path="../errors/AbstractMethodError.ts" />
 ///<reference path="../containers/Scene3D.ts" />
 ///<reference path="../partition/NodeBase.ts" />
