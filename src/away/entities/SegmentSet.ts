@@ -8,6 +8,7 @@
 ///<reference path="../primitives/data/Segment.ts" />
 ///<reference path="../bounds/BoundingVolumeBase.ts" />
 ///<reference path="../library/assets/AssetType.ts" />
+///<reference path="../cameras/Camera3D.ts" />
 
 module away.entities
 {
