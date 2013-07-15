@@ -3,9 +3,9 @@
  * @author Gary Paluk - http://www.plugin.io
  */
 
-///<reference path="../library/assets/AssetType.ts" />
-///<reference path="../traverse/PartitionTraverser.ts" />
 ///<reference path="EntityNode.ts" />
+///<reference path="../traverse/PartitionTraverser.ts" />
+
 
 module away.partition
 {
