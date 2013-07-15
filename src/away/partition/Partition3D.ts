@@ -3,10 +3,10 @@
  * @author Gary Paluk - http://www.plugin.io
  */
 
+///<reference path="../entities/Entity.ts" />
 ///<reference path="../partition/EntityNode.ts" />
 ///<reference path="../partition/NodeBase.ts" />
 ///<reference path="../partition/NullNode.ts" />
-///<reference path="../entities/Entity.ts" />
 ///<reference path="../traverse/PartitionTraverser.ts" />
 
 module away.partition
@@ -117,7 +117,7 @@ module away.partition
 				
 				t = node._iUpdateQueueNext;
 				node._iUpdateQueueNext = null;
-				node.entity.internalUpdate();
+				node.entity.iInternalUpdate();
 				
 			} while ((node = t) != null);
 		}
