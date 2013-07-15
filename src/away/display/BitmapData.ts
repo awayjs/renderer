@@ -1,4 +1,3 @@
-///<reference path="../net/IMGLoader.ts" />
 ///<reference path="../geom/Rectangle.ts" />
 ///<reference path="../geom/Point.ts" />
 ///<reference path="../geom/Matrix.ts" />
