@@ -2,90 +2,98 @@
 ///<reference path="../def/js.d.ts"/>
 ///<reference path="events/Event.ts" />
 ///<reference path="events/EventDispatcher.ts" />
-
-//------------------Partition
-
-
-///<reference path="entities/Entity.ts" />
-///<reference path="partition/NodeBase.ts" />
-///<reference path="partition/EntityNode.ts" />
-///<reference path="math/Plane3D.ts" />
-///<reference path="traverse/PartitionTraverser.ts" />
-///<reference path="primitives/WireframePrimitiveBase.ts" />
-///<reference path="errors/PartialImplementationError.ts" />
-///<reference path="partition/NullNode.ts" />
-
-//------------------ Bounds
-
-///<reference path="math/PlaneClassification.ts" />
-///<reference path="geom/Vector3D.ts" />
-///<reference path="errors/AbstractMethodError.ts" />
-
-//------------------ Cameras
-
-///<reference path="cameras/lenses/LensBase.ts" />
-///<reference path="cameras/lenses/PerspectiveLens.ts" />
-///<reference path="events/LensEvent.ts" />
-///<reference path="library/assets/AssetType.ts" />
-///<reference path="partition/CameraNode.ts" />
-///<reference path="bounds/NullBounds.ts" />
-///<reference path="events/CameraEvent.ts" />
-///<reference path="geom/Rectangle.ts" />
-///<reference path="geom/Matrix3D.ts" />
-
-//------------------ Base
-
-///<reference path="materials/MaterialBase.ts"/>
-///<reference path="base/IMaterialOwner.ts" />
+///<reference path="events/AssetEvent.ts" />
 ///<reference path="library/assets/NamedAssetBase.ts" />
+///<reference path="geom/Vector3D.ts" />
+///<reference path="errors/Error.ts" />
+///<reference path="errors/ArgumentError.ts" />
+///<reference path="geom/Matrix3D.ts" />
 ///<reference path="math/MathConsts.ts" />
+///<reference path="math/Quaternion.ts" />
+///<reference path="math/PlaneClassification.ts" />
+///<reference path="math/Plane3D.ts" />
 ///<reference path="math/Matrix3DUtils.ts" />
 ///<reference path="events/Object3DEvent.ts" />
-
-//------------------ Containers
-
 ///<reference path="base/Object3D.ts" />
-///<reference path="partition/Partition3D.ts" />
+///<reference path="errors/AbstractMethodError.ts" />
 ///<reference path="events/Scene3DEvent.ts" />
-///<reference path="containers/ObjectContainer3D.ts" />
-///<reference path="display3D/Texture.ts" />
-///<reference path="geom/Point.ts" />
-///<reference path="cameras/Camera3D.ts" />
 ///<reference path="containers/Scene3D.ts" />
-
-//------------------ Display
-
-///<reference path="geom/Matrix.ts" />
-///<reference path="display/Stage3D.ts" />
-///<reference path="utils/CSS.ts" />
-
-///<reference path="errors/DocumentError.ts" />
-///<reference path="display3D/Context3D.ts" />
-
-//------------------ Display3D
-
+///<reference path="display/BlendMode.ts"/>
 ///<reference path="display3D/Context3DClearMask.ts"/>
 ///<reference path="display3D/VertexBuffer3D.ts"/>
 ///<reference path="display3D/IndexBuffer3D.ts"/>
 ///<reference path="display3D/Program3D.ts"/>
+///<reference path="geom/Point.ts" />
+///<reference path="geom/Rectangle.ts" />
 ///<reference path="display3D/Context3DTextureFormat.ts"/>
+///<reference path="display3D/TextureBase.ts"/>
+///<reference path="geom/Matrix.ts" />
+///<reference path="display/BitmapData.ts"/>
+///<reference path="display3D/Texture.ts" />
 ///<reference path="display3D/Context3DTriangleFace.ts"/>
 ///<reference path="display3D/Context3DVertexBufferFormat.ts"/>
 ///<reference path="display3D/Context3DProgramType.ts"/>
-///<reference path="display3D/TextureBase.ts"/>
-///<reference path="display/BitmapData.ts"/>
+///<reference path="display3D/Context3D.ts" />
+///<reference path="materials/MaterialBase.ts"/>
+///<reference path="traverse/PartitionTraverser.ts" />
+///<reference path="primitives/data/Segment.ts" />
+///<reference path="bounds/BoundingVolumeBase.ts" />
+///<reference path="events/LensEvent.ts" />
+///<reference path="cameras/lenses/LensBase.ts" />
+///<reference path="cameras/lenses/PerspectiveLens.ts" />
+///<reference path="events/CameraEvent.ts" />
+///<reference path="bounds/NullBounds.ts" />
+///<reference path="partition/CameraNode.ts" />
+///<reference path="cameras/Camera3D.ts" />
+///<reference path="entities/SegmentSet.ts" />
+///<reference path="primitives/WireframePrimitiveBase.ts" />
+///<reference path="partition/NodeBase.ts" />
+///<reference path="partition/NullNode.ts" />
+///<reference path="partition/Partition3D.ts" />
+///<reference path="containers/ObjectContainer3D.ts" />
+///<reference path="pick/PickingCollisionVO.ts" />
+///<reference path="entities/Entity.ts" />
+///<reference path="partition/EntityNode.ts" />
+
+//------------------Unsorted------------------------------------------------------
+
+///<reference path="errors/PartialImplementationError.ts" />
+///<reference path="library/assets/AssetType.ts" />
+///<reference path="base/IMaterialOwner.ts" />
+
+//------------------ Display
+
+
+///<reference path="display/Stage3D.ts" />
+///<reference path="utils/CSS.ts" />
+
+///<reference path="errors/DocumentError.ts" />
+
+
+//------------------ Display3D
+
+
+
+
+
+
+
+
+
+
+
 
 //------------------ Entities
 
 ///<reference path="pick/IPickingCollider.ts" />
-///<reference path="pick/PickingCollisionVO.ts" />
-///<reference path="bounds/BoundingVolumeBase.ts" />
+
+
 ///<reference path="base/IRenderable.ts" />
-///<reference path="primitives/data/Segment.ts" />
+
 
 //------------------ Errors
 
-///<reference path="errors/Error.ts" />
+
 
 //------------------ Events
 
@@ -94,11 +102,10 @@
 
 //----------------- Geom
 
-///<reference path="errors/ArgumentError.ts" />
 
 //---------------- Library
 
-///<reference path="events/AssetEvent.ts" />
+
 
 ///<reference path="library/naming/NumSuffixConflictStrategy.ts" />
 ///<reference path="library/naming/IgnoreConflictStrategy.ts" />
@@ -159,12 +166,12 @@
 
 //-------------- Materials
 
-///<reference path="display/BlendMode.ts"/>
+
 ///<reference path="materials/utils/MipmapGenerator.ts" />
 
 //-------------- Math
 
-///<reference path="math/Quaternion.ts" />
+
 
 
 //-------------- Net
@@ -180,7 +187,7 @@
 
 //-------------- Primities
 
-///<reference path="entities/SegmentSet.ts" />
+
 
 //-------------- Textures
 
