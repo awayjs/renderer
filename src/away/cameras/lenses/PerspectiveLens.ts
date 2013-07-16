@@ -2,9 +2,8 @@
  * ...
  * @author Gary Paluk - http://www.plugin.io
  */
- 
-///<reference path="../../cameras/lenses/LensBase.ts" />
-///<reference path="../../geom/Vector3D.ts" />
+
+///<reference path="../../_definitions.ts" />
 
 module away.cameras
 {
