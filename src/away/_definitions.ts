@@ -52,47 +52,27 @@
 ///<reference path="partition/NodeBase.ts" />
 ///<reference path="partition/NullNode.ts" />
 ///<reference path="partition/Partition3D.ts" />
-
 ///<reference path="pick/PickingCollisionVO.ts" />
 ///<reference path="partition/EntityNode.ts" />
 ///<reference path="partition/CameraNode.ts" />
-
-//------------------Unsorted------------------------------------------------------
-
 ///<reference path="errors/PartialImplementationError.ts" />
 ///<reference path="library/assets/AssetType.ts" />
 ///<reference path="base/IMaterialOwner.ts" />
-
-//------------------ Display
-
 ///<reference path="display/Stage3D.ts" />
 ///<reference path="utils/CSS.ts" />
-
 ///<reference path="errors/DocumentError.ts" />
-
-//------------------ Entities
-
 ///<reference path="pick/IPickingCollider.ts" />
 ///<reference path="base/IRenderable.ts" />
-
-//------------------ Events
-
 ///<reference path="containers/View3D.ts"/>
-
-//---------------- Library
-
 ///<reference path="library/naming/ConflictStrategyBase.ts" />
 ///<reference path="library/naming/NumSuffixConflictStrategy.ts" />
 ///<reference path="library/naming/IgnoreConflictStrategy.ts" />
 ///<reference path="library/naming/ErrorConflictStrategy.ts" />
 ///<reference path="library/naming/ConflictPrecedence.ts" />
-
-
 ///<reference path="library/AssetLibraryBundle.ts"/>
 ///<reference path="loaders/misc/SingleFileLoader.ts"/>
 ///<reference path="loaders/misc/AssetLoaderContext.ts"/>
 ///<reference path="library/utils/AssetLibraryIterator.ts"/>
-
 ///<reference path="loaders/AssetLoader.ts" />
 ///<reference path="library/naming/ConflictStrategy.ts" />
 ///<reference path="net/URLRequest.ts" />
@@ -101,9 +81,6 @@
 ///<reference path="library/utils/IDUtil.ts" />
 ///<reference path="events/LoaderEvent.ts" />
 ///<reference path="library/AssetLibrary.ts" />
-
-//---------------- Loaders
-
 ///<reference path="net/IMGLoader.ts" />
 ///<reference path="loaders/misc/ISingleFileTSLoader.ts" />
 ///<reference path="events/IOErrorEvent.ts" />
@@ -126,42 +103,19 @@
 ///<reference path="loaders/misc/ResourceDependency.ts" />
 ///<reference path="utils/Timer.ts" />
 ///<reference path="utils/getTimer.ts" />
-
-//--------------- Managers
-
 ///<reference path="pick/IPicker.ts"/>
 ///<reference path="pick/PickingColliderBase.ts" />
 ///<reference path="pick/AS3PickingCollider.ts" />
 ///<reference path="pick/ShaderPicker.ts" />
 ///<reference path="pick/RaycastPicker.ts" />
 ///<reference path="pick/PickingType.ts"/>
-
-
-
 ///<reference path="events/MouseEvent3D.ts"/>
 ///<reference path="managers/Stage3DProxy.ts"/>
 ///<reference path="display/Stage.ts"/>
 ///<reference path="managers/Mouse3DManager.ts"/>
 ///<reference path="events/Stage3DEvent.ts"/>
 ///<reference path="managers/Stage3DManager.ts"/>
-
-//-------------- Materials
-
 ///<reference path="materials/utils/MipmapGenerator.ts" />
-
-//-------------- Net
-
 ///<reference path="net/URLVariables.ts" />
-
-//-------------- Pick
-
-
-
-//-------------- Textures
-
-
-
-//-------------- Utils
-
 ///<reference path="utils/PerspectiveMatrix3D.ts"/>
 ///<reference path="utils/RequestAnimationFrame.ts"/>
