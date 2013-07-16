@@ -1,8 +1,10 @@
 ///<reference path="../def/webgl.d.ts"/>
 ///<reference path="../def/js.d.ts"/>
+///<reference path="events/Event.ts" />
 ///<reference path="events/EventDispatcher.ts" />
 
 //------------------Partition
+
 
 ///<reference path="entities/Entity.ts" />
 ///<reference path="partition/NodeBase.ts" />
@@ -56,7 +58,7 @@
 ///<reference path="geom/Matrix.ts" />
 ///<reference path="display/Stage3D.ts" />
 ///<reference path="utils/CSS.ts" />
-///<reference path="events/Event.ts" />
+
 ///<reference path="errors/DocumentError.ts" />
 ///<reference path="display3D/Context3D.ts" />
 
@@ -158,6 +160,7 @@
 //-------------- Materials
 
 ///<reference path="display/BlendMode.ts"/>
+///<reference path="materials/utils/MipmapGenerator.ts" />
 
 //-------------- Math
 
