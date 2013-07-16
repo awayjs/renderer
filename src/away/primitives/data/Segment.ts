@@ -3,7 +3,7 @@
  * @author Gary Paluk - http://www.plugin.io
  */
 
-///<reference path="../../entities/SegmentSet.ts" />
+///<reference path="../../_definitions.ts"/>
 
 module away.primitives
 {
