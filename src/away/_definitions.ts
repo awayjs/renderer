@@ -45,6 +45,7 @@
 ///<reference path="bounds/NullBounds.ts" />
 ///<reference path="partition/CameraNode.ts" />
 ///<reference path="cameras/Camera3D.ts" />
+///<reference path="entities/Entity.ts" />
 ///<reference path="entities/SegmentSet.ts" />
 ///<reference path="primitives/WireframePrimitiveBase.ts" />
 ///<reference path="partition/NodeBase.ts" />
@@ -52,7 +53,7 @@
 ///<reference path="partition/Partition3D.ts" />
 ///<reference path="containers/ObjectContainer3D.ts" />
 ///<reference path="pick/PickingCollisionVO.ts" />
-///<reference path="entities/Entity.ts" />
+
 ///<reference path="partition/EntityNode.ts" />
 
 //------------------Unsorted------------------------------------------------------
@@ -62,7 +63,6 @@
 ///<reference path="base/IMaterialOwner.ts" />
 
 //------------------ Display
-
 
 ///<reference path="display/Stage3D.ts" />
 ///<reference path="utils/CSS.ts" />
