@@ -1,6 +1,5 @@
 ///<reference path="../def/webgl.d.ts"/>
 ///<reference path="../def/js.d.ts"/>
-
 ///<reference path="events/Event.ts" />
 ///<reference path="events/EventDispatcher.ts" />
 ///<reference path="library/assets/IAsset.ts" />
@@ -45,18 +44,18 @@
 ///<reference path="cameras/lenses/PerspectiveLens.ts" />
 ///<reference path="events/CameraEvent.ts" />
 ///<reference path="bounds/NullBounds.ts" />
-///<reference path="partition/CameraNode.ts" />
-///<reference path="cameras/Camera3D.ts" />
+///<reference path="containers/ObjectContainer3D.ts" />
 ///<reference path="entities/Entity.ts" />
+///<reference path="cameras/Camera3D.ts" />
 ///<reference path="entities/SegmentSet.ts" />
 ///<reference path="primitives/WireframePrimitiveBase.ts" />
 ///<reference path="partition/NodeBase.ts" />
 ///<reference path="partition/NullNode.ts" />
 ///<reference path="partition/Partition3D.ts" />
-///<reference path="containers/ObjectContainer3D.ts" />
-///<reference path="pick/PickingCollisionVO.ts" />
 
+///<reference path="pick/PickingCollisionVO.ts" />
 ///<reference path="partition/EntityNode.ts" />
+///<reference path="partition/CameraNode.ts" />
 
 //------------------Unsorted------------------------------------------------------
 
@@ -71,40 +70,23 @@
 
 ///<reference path="errors/DocumentError.ts" />
 
-
-//------------------ Display3D
-
-
-
 //------------------ Entities
 
 ///<reference path="pick/IPickingCollider.ts" />
-
-
 ///<reference path="base/IRenderable.ts" />
-
-
-//------------------ Errors
-
-
 
 //------------------ Events
 
-
 ///<reference path="containers/View3D.ts"/>
-
-//----------------- Geom
-
 
 //---------------- Library
 
-
-
+///<reference path="library/naming/ConflictStrategyBase.ts" />
 ///<reference path="library/naming/NumSuffixConflictStrategy.ts" />
 ///<reference path="library/naming/IgnoreConflictStrategy.ts" />
 ///<reference path="library/naming/ErrorConflictStrategy.ts" />
 ///<reference path="library/naming/ConflictPrecedence.ts" />
-///<reference path="library/naming/ConflictStrategyBase.ts" />
+
 
 ///<reference path="library/AssetLibraryBundle.ts"/>
 ///<reference path="loaders/misc/SingleFileLoader.ts"/>
@@ -134,12 +116,11 @@
 ///<reference path="loaders/parsers/ImageParser.ts" />
 ///<reference path="loaders/misc/SingleFileImageLoader.ts" />
 ///<reference path="loaders/misc/SingleFileURLLoader.ts" />
-
 ///<reference path="loaders/parsers/ParserLoaderType.ts" />
-///<reference path="textures/HTMLImageElementTexture.ts" />
+///<reference path="textures/TextureProxyBase.ts" />
 ///<reference path="textures/Texture2DBase.ts" />
+///<reference path="textures/HTMLImageElementTexture.ts" />
 ///<reference path="utils/TextureUtils.ts" />
-
 ///<reference path="events/TimerEvent.ts" />
 ///<reference path="events/ParserEvent.ts" />
 ///<reference path="loaders/misc/ResourceDependency.ts" />
@@ -149,7 +130,14 @@
 //--------------- Managers
 
 ///<reference path="pick/IPicker.ts"/>
+///<reference path="pick/PickingColliderBase.ts" />
+///<reference path="pick/AS3PickingCollider.ts" />
+///<reference path="pick/ShaderPicker.ts" />
+///<reference path="pick/RaycastPicker.ts" />
 ///<reference path="pick/PickingType.ts"/>
+
+
+
 ///<reference path="events/MouseEvent3D.ts"/>
 ///<reference path="managers/Stage3DProxy.ts"/>
 ///<reference path="display/Stage.ts"/>
@@ -159,12 +147,7 @@
 
 //-------------- Materials
 
-
 ///<reference path="materials/utils/MipmapGenerator.ts" />
-
-//-------------- Math
-
-
 
 //-------------- Net
 
@@ -172,38 +155,13 @@
 
 //-------------- Pick
 
-///<reference path="pick/PickingColliderBase.ts" />
-///<reference path="pick/AS3PickingCollider.ts" />
-///<reference path="pick/ShaderPicker.ts" />
-///<reference path="pick/RaycastPicker.ts" />
-
-//-------------- Primities
-
 
 
 //-------------- Textures
 
-///<reference path="textures/TextureProxyBase.ts" />
 
-//-------------- Traverse
 
 //-------------- Utils
 
 ///<reference path="utils/PerspectiveMatrix3D.ts"/>
 ///<reference path="utils/RequestAnimationFrame.ts"/>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
