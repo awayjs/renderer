@@ -3,9 +3,7 @@
  * @author Gary Paluk - http://www.plugin.io
  */
 
-///<reference path="../entities/Entity.ts" />
-///<reference path="NodeBase.ts" />
-///<reference path="../math/Plane3D.ts" />
+///<reference path="../_definitions.ts" />
 
 module away.partition
 {

@@ -3,12 +3,7 @@
  * @author Gary Paluk - http://www.plugin.io
  */
 
-///<reference path="../../events/EventDispatcher.ts" />
-///<reference path="../../geom/Rectangle.ts" />
-///<reference path="../../geom/Matrix3D.ts" />
-///<reference path="../../geom/Vector3D.ts" />
-///<reference path="../../events/LensEvent.ts" />
-///<reference path="../../errors/AbstractMethodError.ts" />
+///<reference path="../../_definitions.ts" />
 
 module away.cameras
 {

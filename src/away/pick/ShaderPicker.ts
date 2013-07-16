@@ -1,19 +1,6 @@
-///<reference path="../display3D/Program3D.ts" />
-///<reference path="../display3D/Context3D.ts" />
-///<reference path="../display3D/TextureBase.ts" />
-///<reference path="../display/BitmapData.ts" />
-///<reference path="../pick/IPicker.ts" />
-///<reference path="../pick/PickingCollisionVO.ts" />
-///<reference path="../base/IRenderable.ts" />
-///<reference path="../geom/Vector3D.ts" />
-///<reference path="../geom/Point.ts" />
-///<reference path="../geom/Matrix3D.ts" />
-///<reference path="../geom/Rectangle.ts" />
-///<reference path="../math/Matrix3DUtils.ts" />
-///<reference path="../entities/Entity.ts" />
-///<reference path="../errors/PartialImplementationError.ts" />
 
 
+///<reference path="../_definitions.ts"/>
 
 module away.pick
 {

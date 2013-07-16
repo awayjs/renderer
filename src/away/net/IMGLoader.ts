@@ -1,7 +1,6 @@
-///<reference path="../events/EventDispatcher.ts" />
-///<reference path="../events/Event.ts" />
-///<reference path="../events/IOErrorEvent.ts" />
-///<reference path="URLRequest.ts" />
+
+
+///<reference path="../_definitions.ts"/>
 
 module away.net
 {

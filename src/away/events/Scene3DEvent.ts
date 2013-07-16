@@ -3,8 +3,8 @@
  * @author Gary Paluk - http://www.plugin.io
  */
 
-///<reference path="../events/Event.ts" />
-///<reference path="../containers/ObjectContainer3D.ts" />
+///<reference path="../_definitions.ts"/>
+
 
 module away.events 
 {

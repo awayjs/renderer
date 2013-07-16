@@ -1,6 +1,6 @@
-///<reference path="NumSuffixConflictStrategy.ts" />
-///<reference path="IgnoreConflictStrategy.ts" />
-///<reference path="ErrorConflictStrategy.ts" />
+
+
+///<reference path="../../_definitions.ts"/>
 
 module away.library
 {

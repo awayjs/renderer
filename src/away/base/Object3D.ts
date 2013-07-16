@@ -1,9 +1,4 @@
-///<reference path="../library/assets/NamedAssetBase.ts" />
-///<reference path="../geom/Matrix3D.ts" />
-///<reference path="../geom/Vector3D.ts" />
-///<reference path="../math/MathConsts.ts" />
-///<reference path="../math/Matrix3DUtils.ts" />
-///<reference path="../events/Object3DEvent.ts" />
+///<reference path="../_definitions.ts" />
 
 module away.base
 {
@@ -1041,4 +1036,5 @@ module away.base
 			this._zOffset = value;
 		}
 	}
+
 }

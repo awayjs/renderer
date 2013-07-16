@@ -1,11 +1,6 @@
-///<reference path="../library/assets/IAsset.ts" />
-///<reference path="../library/assets/NamedAssetBase.ts" />
-///<reference path="../library/assets/AssetType.ts" />
-///<reference path="../display3D/Context3D.ts" />
-///<reference path="../display3D/TextureBase.ts" />
-///<reference path="../display3D/Context3DTextureFormat.ts" />
-///<reference path="../errors/AbstractMethodError.ts" />
 
+
+///<reference path="../_definitions.ts"/>
 
 module away.textures
 {

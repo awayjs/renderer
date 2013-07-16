@@ -1,3 +1,5 @@
+///<reference path="../_definitions.ts"/>
+
 module away3d.geom
 {
     /**

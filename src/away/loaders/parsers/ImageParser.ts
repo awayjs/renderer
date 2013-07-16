@@ -1,10 +1,6 @@
-///<reference path="ParserBase.ts" />
-///<reference path="ParserDataFormat.ts" />
-///<reference path="ParserLoaderType.ts" />
-///<reference path="../../net/IMGLoader.ts" />
-///<reference path="../../textures/HTMLImageElementTexture.ts" />
-///<reference path="../../textures/Texture2DBase.ts" />
-///<reference path="../../utils/TextureUtils.ts" />
+
+
+///<reference path="../../_definitions.ts"/>
 
 module away.loaders
 {

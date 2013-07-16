@@ -1,8 +1,5 @@
-///<reference path="../assets/IAsset.ts" />
-///<reference path="../../events/AssetEvent.ts" />
-///<reference path="../../errors/AbstractMethodError.ts" />
-///<reference path="../../events/AssetEvent.ts" />
-///<reference path="ConflictPrecedence.ts" />
+
+///<reference path="../../_definitions.ts"/>
 
 module away.library
 {

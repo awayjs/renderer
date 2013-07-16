@@ -1,19 +1,6 @@
-///<reference path="../loaders/AssetLoader.ts" />
-///<reference path="naming/ConflictStrategyBase.ts" />
-///<reference path="naming/ConflictStrategy.ts" />
-///<reference path="assets/IAsset.ts" />
-///<reference path="../errors/Error.ts" />
-///<reference path="utils/AssetLibraryIterator.ts" />
-///<reference path="../net/URLRequest.ts" />
-///<reference path="../loaders/misc/AssetLoaderContext.ts" />
-///<reference path="../loaders/misc/AssetLoaderToken.ts" />
-///<reference path="../loaders/parsers/ParserBase.ts" />
-///<reference path="assets/NamedAssetBase.ts" />
-///<reference path="utils/IDUtil.ts" />
-///<reference path="../events/AssetEvent.ts" />
-///<reference path="../events/LoaderEvent.ts" />
-///<reference path="../events/EventDispatcher.ts" />
-///<reference path="AssetLibrary.ts" />
+
+
+///<reference path="../_definitions.ts"/>
 
 module away.library
 {

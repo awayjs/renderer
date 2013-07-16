@@ -3,8 +3,7 @@
  * @author Gary Paluk - http://www.plugin.io
  */
 
-///<reference path="Vector3D.ts" />
-///<reference path="../errors/ArgumentError.ts" />
+///<reference path="../_definitions.ts"/>
 
 module away.geom
 {

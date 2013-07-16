@@ -1,10 +1,7 @@
-///<reference path="../../net/URLRequest.ts" />
-///<reference path="../../net/IMGLoader.ts" />
-///<reference path="../../events/EventDispatcher.ts" />
-///<reference path="ISingleFileTSLoader.ts" />
-///<reference path="../../events/Event.ts" />
-///<reference path="../../events/IOErrorEvent.ts" />
-///<reference path="../../events/Event.ts" />
+
+
+
+///<reference path="../../_definitions.ts"/>
 
 module away.loaders
 {

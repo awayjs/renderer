@@ -1,4 +1,4 @@
-///<reference path="Error.ts" />
+///<reference path="../_definitions.ts"/>
 
 module away.errors
 {

@@ -3,18 +3,7 @@
  * @author Gary Paluk - http://www.plugin.io
  */
 
-///<reference path="../../def/webgl.d.ts"/>
-///<reference path="Context3DClearMask.ts"/>
-///<reference path="VertexBuffer3D.ts"/>
-///<reference path="IndexBuffer3D.ts"/>
-///<reference path="Program3D.ts"/>
-///<reference path="../geom/Matrix3D.ts"/>
-///<reference path="../geom/Rectangle.ts"/>
-///<reference path="Context3DTextureFormat.ts"/>
-///<reference path="Texture.ts"/>
-///<reference path="Context3DTriangleFace.ts"/>
-///<reference path="Context3DVertexBufferFormat.ts"/>
-///<reference path="Context3DProgramType.ts"/>
+///<reference path="../_definitions.ts"/>
 
 module away.display3D
 {

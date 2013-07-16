@@ -3,8 +3,8 @@
  * @author Gary Paluk - http://www.plugin.io
  */
 
-///<reference path="../events/Event.ts" />
-///<reference path="../base/Object3D.ts" />
+///<reference path="../_definitions.ts"/>
+
 module away.events
 {
 	export class Object3DEvent extends Event

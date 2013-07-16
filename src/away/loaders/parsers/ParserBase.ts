@@ -1,16 +1,6 @@
-///<reference path="../../events/EventDispatcher.ts" />
-///<reference path="../../display/BitmapData.ts" />
-///<reference path="../../events/AssetEvent.ts" />
-///<reference path="../../events/TimerEvent.ts" />
-///<reference path="../../events/ParserEvent.ts" />
-///<reference path="../../library/assets/IAsset.ts" />
-///<reference path="../../library/assets/AssetType.ts" />
-///<reference path="../../loaders/misc/ResourceDependency.ts" />
-///<reference path="../../loaders/parsers/ParserLoaderType.ts" />
-///<reference path="../../utils/Timer.ts" />
-///<reference path="../../utils/getTimer.ts" />
-///<reference path="../../utils/TextureUtils.ts" />
-///<reference path="../../errors/AbstractMethodError.ts" />
+
+
+///<reference path="../../_definitions.ts"/>
 
 module away.loaders {
 

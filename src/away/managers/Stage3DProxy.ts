@@ -1,16 +1,6 @@
-///<reference path="Mouse3DManager.ts"/>
-///<reference path="../events/EventDispatcher.ts"/>
-///<reference path="../events/Stage3DEvent.ts"/>
-///<reference path="../events/Event.ts"/>
-///<reference path="../errors/PartialImplementationError.ts"/>
-///<reference path="../display/Stage3D.ts"/>
-///<reference path="../display3D/Context3D.ts"/>
-///<reference path="../display3D/Context3DClearMask.ts"/>
-///<reference path="../display3D/Program3D.ts"/>
-///<reference path="../display3D/TextureBase.ts"/>
-///<reference path="../geom/Rectangle.ts"/>
 
-///<reference path="Stage3DManager.ts"/>
+///<reference path="../_definitions.ts"/>
+
 module away.managers
 {
 	//import away3d.arcane;

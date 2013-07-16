@@ -1,5 +1,5 @@
-///<reference path="../assets/IAsset.ts" />
-///<reference path="ConflictStrategyBase.ts" />
+
+///<reference path="../../_definitions.ts"/>
 
 module away.library
 {

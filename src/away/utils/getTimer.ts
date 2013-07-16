@@ -1,5 +1,5 @@
-///<reference path="../events/EventDispatcher.ts" />
-///<reference path="../events/TimerEvent.ts" />
+
+///<reference path="../_definitions.ts"/>
 
 module away.utils
 {

@@ -3,10 +3,9 @@
  * @author Gary Paluk - http://www.plugin.io
  */
 
-///<reference path="../../def/webgl.d.ts"/>
-///<reference path="../../def/js.d.ts"/>
-///<reference path="TextureBase.ts"/>
-///<reference path="../display/BitmapData.ts"/>
+///<reference path="../_definitions.ts"/>
+
+
 
 module away.display3D
 {

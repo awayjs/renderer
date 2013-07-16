@@ -1,11 +1,4 @@
-///<reference path="../containers/View3D.ts"/>
-///<reference path="../containers/ObjectContainer3D.ts"/>
-///<reference path="../geom/Vector3D.ts"/>
-///<reference path="../pick/PickingCollisionVO.ts"/>
-///<reference path="../pick/IPicker.ts"/>
-///<reference path="../pick/PickingType.ts"/>
-///<reference path="../events/MouseEvent3D.ts"/>
-///<reference path="../errors/PartialImplementationError.ts"/>
+///<reference path="../_definitions.ts"/>
 
 // Reference note: http://www.w3schools.com/jsref/dom_obj_event.asp
 

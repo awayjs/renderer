@@ -3,10 +3,7 @@
  * @author Gary Paluk - http://www.plugin.io
  */
 
-///<reference path="../../def/webgl.d.ts"/>
-///<reference path="../events/EventDispatcher.ts" />
-///<reference path="../events/Event.ts" />
-///<reference path="../display3D/Context3D.ts" />
+///<reference path="../_definitions.ts" />
 
 module away.display
 {

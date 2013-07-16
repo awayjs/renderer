@@ -1,6 +1,4 @@
-///<reference path="IMaterialOwner.ts" />
-///<reference path="../geom/Matrix3D.ts" />
-///<reference path="../entities/Entity.ts" />
+///<reference path="../_definitions.ts" />
 module away.base
 {
 	//import away3d.cameras.Camera3D;

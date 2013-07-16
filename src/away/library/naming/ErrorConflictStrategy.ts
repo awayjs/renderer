@@ -1,6 +1,4 @@
-///<reference path="../../errors/Error.ts" />
-///<reference path="ConflictStrategyBase.ts" />
-///<reference path="../assets/IAsset.ts" />
+///<reference path="../../_definitions.ts"/>
 
 module away.library
 {

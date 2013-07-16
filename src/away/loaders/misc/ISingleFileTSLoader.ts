@@ -1,5 +1,6 @@
-///<reference path="../../events/EventDispatcher.ts" />
-///<reference path="../../net/URLRequest.ts" />
+
+///<reference path="../../_definitions.ts"/>
+
 module away.loaders
 {
     /**

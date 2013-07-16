@@ -1,6 +1,5 @@
-///<reference path="../geom/Vector3D.ts" />
-///<reference path="../geom/Matrix3D.ts" />
-///<reference path="../math/MathConsts.ts" />
+
+///<reference path="../_definitions.ts"/>
 
 module away.math
 {

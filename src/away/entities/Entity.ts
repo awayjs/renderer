@@ -3,14 +3,8 @@
  * @author Gary Paluk - http://www.plugin.io
  */
 
-///<reference path="../partition/EntityNode.ts" />
-///<reference path="../containers/ObjectContainer3D.ts" />
-///<reference path="../library/assets/AssetType.ts" />
-///<reference path="../errors/AbstractMethodError.ts" />
-///<reference path="../pick/IPickingCollider.ts" />
-///<reference path="../pick/PickingCollisionVO.ts" />
-///<reference path="../bounds/BoundingVolumeBase.ts" />
-///<reference path="../errors/PartialImplementationError.ts" />
+///<reference path="../_definitions.ts"/>
+
 
 module away.entities
 {

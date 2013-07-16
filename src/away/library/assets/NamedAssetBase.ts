@@ -1,6 +1,6 @@
-///<reference path="../../events/EventDispatcher.ts" />
-///<reference path="../../events/AssetEvent.ts" />
-///<reference path="../../library/assets/IAsset.ts" />
+
+///<reference path="../../_definitions.ts"/>
+
 module away.library
 {
 

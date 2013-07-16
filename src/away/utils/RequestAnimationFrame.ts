@@ -1,4 +1,5 @@
-///<reference path="getTimer.ts" />
+///<reference path="../_definitions.ts"/>
+
 
 
 module away.utils

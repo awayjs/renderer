@@ -1,6 +1,6 @@
-///<reference path="Stage3DProxy.ts"/>
-///<reference path="../display/Stage.ts"/>
-///<reference path="../errors/PartialImplementationError.ts"/>
+
+
+///<reference path="../_definitions.ts"/>
 
 module away.managers
 {

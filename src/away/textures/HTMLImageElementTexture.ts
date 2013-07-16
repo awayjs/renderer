@@ -1,12 +1,6 @@
-﻿//<reference path="../library/assets/IAsset.ts" />
-///<reference path="../display3D/TextureBase.ts" />
-///<reference path="../display3D/Texture.ts" />
-///<reference path="../textures/Texture2DBase.ts" />
-///<reference path="../errors/AbstractMethodError.ts" />
-///<reference path="../display/BitmapData.ts" />
-///<reference path="../materials/utils/MipmapGenerator.ts" />
-///<reference path="../utils/TextureUtils.ts" />
-///<reference path="../errors/Error.ts" />
+﻿
+
+///<reference path="../_definitions.ts"/>
 
 module away.textures
 {

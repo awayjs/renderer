@@ -1,9 +1,6 @@
-///<reference path="../../display/BitmapData.ts" />
-///<reference path="../../geom/Matrix.ts" />
-///<reference path="../../geom/Rectangle.ts" />
-///<reference path="../../display3D/TextureBase.ts" />
-///<reference path="../../display3D/Texture.ts" />
 
+
+///<reference path="../../_definitions.ts"/>
 
 module away.materials
 {
@@ -12,7 +9,7 @@ module away.materials
 	//import flash.display3D.textures.Texture;
 	//import flash.display3D.textures.TextureBase;
 	//import flash.geom.*;
-	
+
 	/**
 	 * MipmapGenerator is a helper class that uploads BitmapData to a Texture including mipmap levels.
 	 */
@@ -81,11 +78,11 @@ module away.materials
 
                 }
 
-                MipmapGenerator._matrix.a = MipmapGenerator._rect.width / source.width;
-                MipmapGenerator._matrix.d = MipmapGenerator._rect.height / source.height;
+                MipmapGenerator._matrix.a   = MipmapGenerator._rect.width / source.width;
+                MipmapGenerator._matrix.d   = MipmapGenerator._rect.height / source.height;
 
-                mipmap.width = MipmapGenerator._rect.width;
-                mipmap.height= MipmapGenerator._rect.height;
+                mipmap.width                = MipmapGenerator._rect.width;
+                mipmap.height               = MipmapGenerator._rect.height;
                 mipmap.copyPixels( source , source.rect , MipmapGenerator._rect );
 
                 //console.log( target instanceof away.display3D.Texture , mipmap.width , mipmap.height );

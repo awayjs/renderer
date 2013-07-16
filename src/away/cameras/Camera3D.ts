@@ -3,16 +3,7 @@
  * @author Gary Paluk - http://www.plugin.io
  */
 
-///<reference path="../cameras/lenses/LensBase.ts" />
-///<reference path="../cameras/lenses/PerspectiveLens.ts" />
-///<reference path="../math/Plane3D.ts" />
-///<reference path="../entities/Entity.ts" />
-///<reference path="../events/LensEvent.ts" />
-///<reference path="../events/CameraEvent.ts" />
-///<reference path="../bounds/NullBounds.ts" />
-///<reference path="../library/assets/AssetType.ts" />
-///<reference path="../partition/EntityNode.ts" />
-///<reference path="../partition/CameraNode.ts" />
+///<reference path="../_definitions.ts" />
 
 module away.cameras
 {

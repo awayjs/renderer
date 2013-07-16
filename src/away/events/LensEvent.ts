@@ -3,8 +3,8 @@
  * @author Gary Paluk - http://www.plugin.io
  */
 
-///<reference path="Event.ts" />
-///<reference path="../cameras/lenses/LensBase.ts" />
+///<reference path="../_definitions.ts"/>
+
 module away.events
 {
 	export class LensEvent extends away.events.Event

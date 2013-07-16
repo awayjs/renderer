@@ -1,7 +1,6 @@
-///<reference path="../geom/Vector3D.ts" />
-///<reference path="../containers/View3D.ts" />
-///<reference path="../containers/Scene3D.ts" />
-///<reference path="PickingCollisionVO.ts" />
+
+
+///<reference path="../_definitions.ts"/>
 
 module away.pick
 {

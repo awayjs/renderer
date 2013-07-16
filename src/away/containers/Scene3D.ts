@@ -2,11 +2,8 @@
  * ...
  * @author Gary Paluk - http://www.plugin.io
  */
- 
-///<reference path="../events/EventDispatcher.ts" />
-///<reference path="../events/Scene3DEvent.ts" />
-///<reference path="ObjectContainer3D.ts" />
-///<reference path="../traverse/PartitionTraverser.ts" />
+
+///<reference path="../_definitions.ts" />
 
 module away.containers
 {

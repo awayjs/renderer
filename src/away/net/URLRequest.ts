@@ -1,5 +1,6 @@
-///<reference path="URLRequestMethod.ts" />
-///<reference path="URLVariables.ts" />
+
+///<reference path="../_definitions.ts"/>
+
 module away.net {
 
     /**

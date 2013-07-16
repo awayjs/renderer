@@ -1,7 +1,6 @@
-///<reference path="../geom/Vector3D.ts" />
-///<reference path="../geom/Point.ts" />
-///<reference path="PickingColliderBase.ts" />
-///<reference path="IPickingCollider.ts" />
+
+///<reference path="../_definitions.ts"/>
+
 module away.pick
 {
 

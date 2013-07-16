@@ -1,5 +1,5 @@
-///<reference path="Event.ts" />
-///<reference path="../library/assets/IAsset.ts" />
+
+///<reference path="../_definitions.ts"/>
 
 module away.events
 {

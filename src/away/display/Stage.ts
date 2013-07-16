@@ -3,11 +3,7 @@
  * @author Gary Paluk - http://www.plugin.io
  */
  
-///<reference path="../display/Stage3D.ts" />
-///<reference path="../utils/CSS.ts" />
-///<reference path="../events/Event.ts" />
-///<reference path="../events/EventDispatcher.ts" />
-///<reference path="../errors/DocumentError.ts" />
+///<reference path="../_definitions.ts" />
 
 module away.display
 {

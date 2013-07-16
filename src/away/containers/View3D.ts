@@ -3,10 +3,7 @@
  * @author Gary Paluk - http://www.plugin.io
  */
 
-///<reference path="../display3D/Texture.ts" />
-///<reference path="../geom/Point.ts" />
-///<reference path="../cameras/Camera3D.ts" />
-///<reference path="Scene3D.ts" />
+///<reference path="../_definitions.ts" />
 
 module away.containers
 {

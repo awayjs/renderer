@@ -1,7 +1,6 @@
-///<reference path="../entities/Entity.ts" />
-///<reference path="../geom/Vector3D.ts" />
-///<reference path="../geom/Point.ts" />
-///<reference path="../base/IRenderable.ts" />
+
+///<reference path="../_definitions.ts"/>
+
 module away.pick
 {
 

@@ -1,6 +1,4 @@
-///<reference path="../geom/Rectangle.ts" />
-///<reference path="../geom/Point.ts" />
-///<reference path="../geom/Matrix.ts" />
+///<reference path="../_definitions.ts" />
 
 module away.display {
 

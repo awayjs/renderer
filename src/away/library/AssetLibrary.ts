@@ -1,11 +1,6 @@
-///<reference path="AssetLibraryBundle.ts"/>
-///<reference path="../loaders/misc/SingleFileLoader.ts"/>
-///<reference path="../loaders/misc/AssetLoaderContext.ts"/>
-///<reference path="../loaders/misc/AssetLoaderToken.ts"/>
-///<reference path="../loaders/parsers/ParserBase.ts"/>
-///<reference path="naming/ConflictStrategyBase.ts"/>
-///<reference path="utils/AssetLibraryIterator.ts"/>
-///<reference path="assets/IAsset.ts"/>
+
+
+///<reference path="../_definitions.ts"/>
 
 module away.library
 {

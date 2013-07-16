@@ -2,10 +2,8 @@
  * ...
  * @author Gary Paluk - http://www.plugin.io
  */
- 
-///<reference path="../geom/Vector3D.ts" />
-///<reference path="../errors/AbstractMethodError.ts" />
-///<reference path="../primitives/WireframePrimitiveBase.ts" />
+
+///<reference path="../_definitions.ts" />
 
 module away.bounds
 {

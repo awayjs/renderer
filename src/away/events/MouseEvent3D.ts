@@ -1,9 +1,4 @@
-///<reference path="../containers/View3D.ts"/>
-///<reference path="../containers/ObjectContainer3D.ts"/>
-///<reference path="../base/IRenderable.ts"/>
-///<reference path="../materials/MaterialBase.ts"/>
-///<reference path="../geom/Point.ts"/>
-///<reference path="../geom/Vector3D.ts"/>
+///<reference path="../_definitions.ts"/>
 module away.events
 {
 	//import away3d.arcane;

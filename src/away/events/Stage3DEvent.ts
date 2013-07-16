@@ -1,6 +1,6 @@
-/**
- *
- */
+
+///<reference path="../_definitions.ts"/>
+
 module away.events
 {
 	//import flash.events.Event;

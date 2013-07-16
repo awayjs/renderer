@@ -3,11 +3,7 @@
  * @author Gary Paluk - http://www.plugin.io
  */
 
-///<reference path="../entities/Entity.ts" />
-///<reference path="../partition/EntityNode.ts" />
-///<reference path="../partition/NodeBase.ts" />
-///<reference path="../partition/NullNode.ts" />
-///<reference path="../traverse/PartitionTraverser.ts" />
+///<reference path="../_definitions.ts" />
 
 module away.partition
 {

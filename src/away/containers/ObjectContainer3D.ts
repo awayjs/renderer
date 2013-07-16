@@ -3,12 +3,7 @@
  * @author Gary Paluk - http://www.plugin.io
  */
  
-///<reference path="../base/Object3D.ts" />
-///<reference path="../geom/Matrix3D.ts" />
-///<reference path="../library/assets/AssetType.ts" />
-///<reference path="../events/Object3DEvent.ts" />
-///<reference path="../partition/Partition3D.ts" />
-///<reference path="../errors/PartialImplementationError.ts" />
+///<reference path="../_definitions.ts" />
 
 module away.containers
 {

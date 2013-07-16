@@ -2,8 +2,8 @@
  * Author: mr.doob / https://github.com/mrdoob/eventdispatcher.js/
  * TypeScript Conversion : Karim Beyrouti ( karim@kurst.co.uk )
  */
- 
- ///<reference path="Event.ts" />
+
+///<reference path="../_definitions.ts"/>
 
 /**
  * @module kurst.events

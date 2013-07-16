@@ -1,13 +1,6 @@
-///<reference path="../library/assets/NamedAssetBase.ts"/>
-///<reference path="../library/assets/IAsset.ts"/>
-///<reference path="../library/assets/AssetType.ts"/>
-///<reference path="../base/IMaterialOwner.ts"/>
-///<reference path="../display/BlendMode.ts"/>
-///<reference path="../errors/PartialImplementationError.ts"/>
-///<reference path="../errors/AbstractMethodError.ts"/>
-///<reference path="../events/Event.ts"/>
-///<reference path="../display3D/Context3D.ts"/>
 
+
+///<reference path="../_definitions.ts"/>
 
 module away.materials
 {

@@ -3,8 +3,7 @@
  * @author Gary Paluk - http://www.plugin.io
  */
 
-///<reference path="../primitives/WireframePrimitiveBase.ts" />
-///<reference path="../math/PlaneClassification.ts" />
+///<reference path="../_definitions.ts" />
 
 module away.bounds
 {

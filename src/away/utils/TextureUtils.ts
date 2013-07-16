@@ -1,5 +1,5 @@
-///<reference path="../display/BitmapData.ts" />
 
+///<reference path="../_definitions.ts"/>
 module away.utils
 {
 	//import flash.display.BitmapData;

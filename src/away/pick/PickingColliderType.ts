@@ -1,6 +1,5 @@
-///<reference path="AS3PickingCollider.ts" />
-///<reference path="IPickingCollider.ts" />
 
+///<reference path="../_definitions.ts"/>
 module away.pick
 {
 	

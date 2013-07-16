@@ -1,4 +1,4 @@
-///<reference path="../geom/Vector3D.ts" />
+///<reference path="../_definitions.ts"/>
 module away.pick
 {
 	//import away3d.core.base.SubMesh;

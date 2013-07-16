@@ -1,8 +1,8 @@
-﻿///<reference path="../../events/EventDispatcher.ts" />
-///<reference path="../../library/assets/IAsset.ts" />
-///<reference path="../../loaders/parsers/ParserBase.ts" />
-///<reference path="SingleFileLoader.ts" />
-///<reference path="../../net/URLRequest.ts" />
+﻿
+
+
+///<reference path="../../_definitions.ts"/>
+
 module away.loaders
 {
 	//import away3d.arcane;

@@ -1,5 +1,6 @@
-///<reference path="../math/PlaneClassification.ts" />
-///<reference path="../geom/Vector3D.ts" />
+
+///<reference path="../_definitions.ts"/>
+
 module away.math
 {
 

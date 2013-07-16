@@ -1,14 +1,6 @@
-///<reference path="../errors/Error.ts" />
-///<reference path="../events/LoaderEvent.ts" />
-///<reference path="../events/EventDispatcher.ts" />
-///<reference path="../events/ParserEvent.ts" />
-///<reference path="misc/AssetLoaderContext.ts" />
-///<reference path="misc/AssetLoaderToken.ts" />
-///<reference path="misc/ResourceDependency.ts" />
-///<reference path="misc/SingleFileLoader.ts" />
-///<reference path="parsers/ParserBase.ts" />
-///<reference path="../net/URLLoader.ts" />
-///<reference path="../net/URLRequest.ts" />
+
+
+///<reference path="../_definitions.ts"/>
 
 module away.loaders
 {

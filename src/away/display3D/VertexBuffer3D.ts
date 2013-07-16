@@ -2,8 +2,8 @@
  * ...
  * @author Gary Paluk - http://www.plugin.io
  */
- 
-///<reference path="../../def/webgl.d.ts"/>
+
+///<reference path="../_definitions.ts"/>
 
 module away.display3D
 {

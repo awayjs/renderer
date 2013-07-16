@@ -3,12 +3,8 @@
  * @author Gary Paluk - http://www.plugin.io
  */
 
-///<reference path="Entity.ts" />
-///<reference path="../base/IRenderable.ts" />
-///<reference path="../primitives/data/Segment.ts" />
-///<reference path="../bounds/BoundingVolumeBase.ts" />
-///<reference path="../library/assets/AssetType.ts" />
-///<reference path="../cameras/Camera3D.ts" />
+///<reference path="../_definitions.ts"/>
+
 
 module away.entities
 {
@@ -30,7 +26,7 @@ module away.entities
 		constructor()
 		{
 			super();
-			
+
 			this._subSetCount = 0;
 			this._subSets = [];
 			this.addSubSet();

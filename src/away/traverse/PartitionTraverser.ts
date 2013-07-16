@@ -3,12 +3,7 @@
  * @author Gary Paluk - http://www.plugin.io
  */
 
-///<reference path="../entities/Entity.ts" />
-///<reference path="../errors/AbstractMethodError.ts" />
-///<reference path="../containers/Scene3D.ts" />
-///<reference path="../partition/NodeBase.ts" />
-///<reference path="../geom/Vector3D.ts" />
-///<reference path="../base/IRenderable.ts" />
+///<reference path="../_definitions.ts"/>
 
 module away.traverse
 {

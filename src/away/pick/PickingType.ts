@@ -1,7 +1,5 @@
 
-///<reference path="ShaderPicker.ts" />
-///<reference path="RaycastPicker.ts" />
-///<reference path="IPicker.ts" />
+///<reference path="../_definitions.ts"/>
 
 module away.pick
 {

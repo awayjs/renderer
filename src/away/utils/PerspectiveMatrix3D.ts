@@ -3,7 +3,7 @@
  * @author Gary Paluk - http://www.plugin.io
  */
 
-///<reference path="../geom/Matrix3D.ts"/>
+    ///<reference path="../_definitions.ts"/>
 
 module away.utils
 {

@@ -2,8 +2,8 @@
  * ...
  * @author Gary Paluk - http://www.plugin.io
  */
- 
-///<reference path="Error.ts" />
+
+///<reference path="../_definitions.ts"/>
 
 module away.errors
 {

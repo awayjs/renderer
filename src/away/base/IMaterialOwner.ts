@@ -1,4 +1,4 @@
-///<reference path="../materials/MaterialBase.ts"/>
+///<reference path="../_definitions.ts"/>
 
 module away.base
 {

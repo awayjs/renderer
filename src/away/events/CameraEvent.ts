@@ -3,6 +3,8 @@
  * @author Gary Paluk - http://www.plugin.io
  */
 
+///<reference path="../_definitions.ts"/>
+
 ///<reference path="Event.ts" />
 ///<reference path="../cameras/Camera3D.ts" />
 
