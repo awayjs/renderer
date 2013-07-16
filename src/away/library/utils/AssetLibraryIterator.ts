@@ -1,4 +1,6 @@
-///<reference path="../assets/IAsset.ts" />
+
+///<reference path="../../_definitions.ts"/>
+
 module away.library
 {
 	//import away3d.library.assets.IAsset;
