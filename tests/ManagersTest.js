@@ -1,3 +1,4 @@
+﻿console.log( 'done');
 var away;
 (function (away) {
     /**
@@ -52,7 +53,7 @@ var away;
     * Author: mr.doob / https://github.com/mrdoob/eventdispatcher.js/
     * TypeScript Conversion : Karim Beyrouti ( karim@kurst.co.uk )
     */
-    ///<reference path="Event.ts" />
+    ///<reference path="../_definitions.ts"/>
     /**
     * @module kurst.events
     */
@@ -177,14 +178,14 @@ var away;
     var events = away.events;
 })(away || (away = {}));
 var __extends = this.__extends || function (d, b) {
-
-    // add to list extend d,b
-
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
 };
 var away;
 (function (away) {
-    ///<reference path="Event.ts" />
-    ///<reference path="../library/assets/IAsset.ts" />
+    ///<reference path="../_definitions.ts"/>
     (function (events) {
         //import away3d.library.assets.IAsset;
         //import flash.events.Event;
@@ -252,9 +253,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../../events/EventDispatcher.ts" />
-    ///<reference path="../../events/AssetEvent.ts" />
-    ///<reference path="../../library/assets/IAsset.ts" />
+    ///<reference path="../../_definitions.ts"/>
     (function (library) {
         var NamedAssetBase = (function (_super) {
             __extends(NamedAssetBase, _super);
@@ -664,7 +663,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="Error.ts" />
+    ///<reference path="../_definitions.ts"/>
     (function (errors) {
         /**
         * AbstractMethodError is thrown when an abstract method is called. The method in question should be overridden
@@ -694,8 +693,7 @@ var away;
     * ...
     * @author Gary Paluk - http://www.plugin.io
     */
-    ///<reference path="Vector3D.ts" />
-    ///<reference path="../errors/ArgumentError.ts" />
+    ///<reference path="../_definitions.ts"/>
     (function (geom) {
         var Matrix3D = (function () {
             /**
@@ -1304,9 +1302,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../geom/Vector3D.ts" />
-    ///<reference path="../geom/Matrix3D.ts" />
-    ///<reference path="../math/MathConsts.ts" />
+    ///<reference path="../_definitions.ts"/>
     (function (math) {
         //import flash.geom.Matrix3D;
         //import flash.geom.Orientation3D;
@@ -1694,8 +1690,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../math/PlaneClassification.ts" />
-    ///<reference path="../geom/Vector3D.ts" />
+    ///<reference path="../_definitions.ts"/>
     (function (math) {
         var Plane3D = (function () {
             /**
@@ -1841,10 +1836,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../geom/Vector3D.ts" />
-    ///<reference path="../geom/Matrix3D.ts" />
-    ///<reference path="../math/Quaternion.ts" />
-    ///<reference path="../math/Plane3D.ts" />
+    ///<reference path="../_definitions.ts"/>
     (function (math) {
         //import flash.geom.*;
         /**
@@ -2054,8 +2046,7 @@ var away;
     * ...
     * @author Gary Paluk - http://www.plugin.io
     */
-    ///<reference path="../events/Event.ts" />
-    ///<reference path="../base/Object3D.ts" />
+    ///<reference path="../_definitions.ts"/>
     (function (events) {
         var Object3DEvent = (function (_super) {
             __extends(Object3DEvent, _super);
@@ -2077,12 +2068,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../library/assets/NamedAssetBase.ts" />
-    ///<reference path="../geom/Matrix3D.ts" />
-    ///<reference path="../geom/Vector3D.ts" />
-    ///<reference path="../math/MathConsts.ts" />
-    ///<reference path="../math/Matrix3DUtils.ts" />
-    ///<reference path="../events/Object3DEvent.ts" />
+    ///<reference path="../_definitions.ts" />
     (function (base) {
         //import away3d.arcane;
         //import away3d.controllers.*;
@@ -3037,40 +3023,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    (function (library) {
-        var AssetType = (function () {
-            function AssetType() {
-            }
-            AssetType.ENTITY = 'entity';
-            AssetType.SKYBOX = 'skybox';
-            AssetType.CAMERA = 'camera';
-            AssetType.SEGMENT_SET = 'segmentSet';
-            AssetType.MESH = 'mesh';
-            AssetType.GEOMETRY = 'geometry';
-            AssetType.SKELETON = 'skeleton';
-            AssetType.SKELETON_POSE = 'skeletonPose';
-            AssetType.CONTAINER = 'container';
-            AssetType.TEXTURE = 'texture';
-            AssetType.TEXTURE_PROJECTOR = 'textureProjector';
-            AssetType.MATERIAL = 'material';
-            AssetType.ANIMATION_SET = 'animationSet';
-            AssetType.ANIMATION_STATE = 'animationState';
-            AssetType.ANIMATION_NODE = 'animationNode';
-            AssetType.ANIMATOR = 'animator';
-            AssetType.STATE_TRANSITION = 'stateTransition';
-            AssetType.LIGHT = 'light';
-            AssetType.LIGHT_PICKER = 'lightPicker';
-            AssetType.SHADOW_MAP_METHOD = 'shadowMapMethod';
-            AssetType.EFFECTS_METHOD = 'effectsMethod';
-            return AssetType;
-        })();
-        library.AssetType = AssetType;
-    })(away.library || (away.library = {}));
-    var library = away.library;
-})(away || (away = {}));
-var away;
-(function (away) {
-    ///<reference path="Error.ts" />
+    ///<reference path="../_definitions.ts"/>
     (function (errors) {
         /**
         * AbstractMethodError is thrown when an abstract method is called. The method in question should be overridden
@@ -3100,8 +3053,7 @@ var away;
     * ...
     * @author Gary Paluk - http://www.plugin.io
     */
-    ///<reference path="../events/Event.ts" />
-    ///<reference path="../containers/ObjectContainer3D.ts" />
+    ///<reference path="../_definitions.ts"/>
     (function (events) {
         var Scene3DEvent = (function (_super) {
             __extends(Scene3DEvent, _super);
@@ -3132,10 +3084,7 @@ var away;
     * ...
     * @author Gary Paluk - http://www.plugin.io
     */
-    ///<reference path="../events/EventDispatcher.ts" />
-    ///<reference path="../events/Scene3DEvent.ts" />
-    ///<reference path="ObjectContainer3D.ts" />
-    ///<reference path="../traverse/PartitionTraverser.ts" />
+    ///<reference path="../_definitions.ts" />
     (function (containers) {
         var Scene3D = (function (_super) {
             __extends(Scene3D, _super);
@@ -3214,37 +3163,11 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="Error.ts" />
-    (function (errors) {
-        /**
-        * AbstractMethodError is thrown when an abstract method is called. The method in question should be overridden
-        * by a concrete subclass.
-        */
-        var PartialImplementationError = (function (_super) {
-            __extends(PartialImplementationError, _super);
-            /**
-            * Create a new AbstractMethodError.
-            * @param message An optional message to override the default error message.
-            * @param id The id of the error.
-            */
-            function PartialImplementationError(dependency, id) {
-                if (typeof dependency === "undefined") { dependency = ''; }
-                if (typeof id === "undefined") { id = 0; }
-                _super.call(this, "PartialImplementationError - this function is in development. Required Dependency: " + dependency, id);
-            }
-            return PartialImplementationError;
-        })(errors.Error);
-        errors.PartialImplementationError = PartialImplementationError;
-    })(away.errors || (away.errors = {}));
-    var errors = away.errors;
-})(away || (away = {}));
-var away;
-(function (away) {
     /**
     * ...
     * @author Gary Paluk - http://www.plugin.io
     */
-    ///<reference path="../../def/webgl.d.ts"/>
+    ///<reference path="../_definitions.ts"/>
     (function (display3D) {
         var Context3DClearMask = (function () {
             function Context3DClearMask() {
@@ -3265,7 +3188,7 @@ var away;
     * ...
     * @author Gary Paluk - http://www.plugin.io
     */
-    ///<reference path="../../def/webgl.d.ts"/>
+    ///<reference path="../_definitions.ts"/>
     (function (display3D) {
         var VertexBuffer3D = (function () {
             function VertexBuffer3D(numVertices, data32PerVertex) {
@@ -3320,7 +3243,7 @@ var away;
     * ...
     * @author Gary Paluk - http://www.plugin.io
     */
-    ///<reference path="../../def/webgl.d.ts"/>
+    ///<reference path="../_definitions.ts"/>
     (function (display3D) {
         var IndexBuffer3D = (function () {
             function IndexBuffer3D(numIndices) {
@@ -3365,7 +3288,7 @@ var away;
     * ...
     * @author Gary Paluk - http://www.plugin.io
     */
-    ///<reference path="../../def/webgl.d.ts"/>
+    ///<reference path="../_definitions.ts"/>
     (function (display3D) {
         var Program3D = (function () {
             function Program3D() {
@@ -3447,7 +3370,7 @@ var away;
     * ...
     * @author Gary Paluk - http://www.plugin.io
     */
-    ///<reference path="Point.ts" />
+    ///<reference path="../_definitions.ts"/>
     (function (geom) {
         var Rectangle = (function () {
             function Rectangle(x, y, width, height) {
@@ -3544,7 +3467,7 @@ var away;
     * ...
     * @author Gary Paluk - http://www.plugin.io
     */
-    ///<reference path="../../def/webgl.d.ts"/>
+    ///<reference path="../_definitions.ts"/>
     (function (display3D) {
         var TextureBase = (function () {
             function TextureBase() {
@@ -3569,9 +3492,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="Point.ts" />
-    ///<reference path="Vector3D.ts" />
-    ///<reference path="../errors/ArgumentError.ts" />
+    ///<reference path="../_definitions.ts"/>
     (function (geom) {
         var Matrix = (function () {
             function Matrix(a, b, c, d, tx, ty) {
@@ -3931,9 +3852,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../geom/Rectangle.ts" />
-    ///<reference path="../geom/Point.ts" />
-    ///<reference path="../geom/Matrix.ts" />
+    ///<reference path="../_definitions.ts" />
     (function (display) {
         /**
         *
@@ -4237,10 +4156,7 @@ var away;
     * ...
     * @author Gary Paluk - http://www.plugin.io
     */
-    ///<reference path="../../def/webgl.d.ts"/>
-    ///<reference path="../../def/js.d.ts"/>
-    ///<reference path="TextureBase.ts"/>
-    ///<reference path="../display/BitmapData.ts"/>
+    ///<reference path="../_definitions.ts"/>
     (function (display3D) {
         var Texture = (function (_super) {
             __extends(Texture, _super);
@@ -4348,18 +4264,7 @@ var away;
     * ...
     * @author Gary Paluk - http://www.plugin.io
     */
-    ///<reference path="../../def/webgl.d.ts"/>
-    ///<reference path="Context3DClearMask.ts"/>
-    ///<reference path="VertexBuffer3D.ts"/>
-    ///<reference path="IndexBuffer3D.ts"/>
-    ///<reference path="Program3D.ts"/>
-    ///<reference path="../geom/Matrix3D.ts"/>
-    ///<reference path="../geom/Rectangle.ts"/>
-    ///<reference path="Context3DTextureFormat.ts"/>
-    ///<reference path="Texture.ts"/>
-    ///<reference path="Context3DTriangleFace.ts"/>
-    ///<reference path="Context3DVertexBufferFormat.ts"/>
-    ///<reference path="Context3DProgramType.ts"/>
+    ///<reference path="../_definitions.ts"/>
     (function (display3D) {
         var Context3D = (function () {
             function Context3D(canvas) {
@@ -4757,15 +4662,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../library/assets/NamedAssetBase.ts"/>
-    ///<reference path="../library/assets/IAsset.ts"/>
-    ///<reference path="../library/assets/AssetType.ts"/>
-    ///<reference path="../base/IMaterialOwner.ts"/>
-    ///<reference path="../display/BlendMode.ts"/>
-    ///<reference path="../errors/PartialImplementationError.ts"/>
-    ///<reference path="../errors/AbstractMethodError.ts"/>
-    ///<reference path="../events/Event.ts"/>
-    ///<reference path="../display3D/Context3D.ts"/>
+    ///<reference path="../_definitions.ts"/>
     (function (materials) {
         /**
         * MaterialBase forms an abstract base class for any material.
@@ -5256,12 +5153,7 @@ var away;
     * ...
     * @author Gary Paluk - http://www.plugin.io
     */
-    ///<reference path="../entities/Entity.ts" />
-    ///<reference path="../errors/AbstractMethodError.ts" />
-    ///<reference path="../containers/Scene3D.ts" />
-    ///<reference path="../partition/NodeBase.ts" />
-    ///<reference path="../geom/Vector3D.ts" />
-    ///<reference path="../base/IRenderable.ts" />
+    ///<reference path="../_definitions.ts"/>
     (function (traverse) {
         var PartitionTraverser = (function () {
             function PartitionTraverser() {
@@ -5324,1126 +5216,7 @@ var away;
     * ...
     * @author Gary Paluk - http://www.plugin.io
     */
-    ///<reference path="../../entities/SegmentSet.ts" />
-    (function (primitives) {
-        var Segment = (function () {
-            function Segment(start, end, anchor, colorStart, colorEnd, thickness) {
-                if (typeof colorStart === "undefined") { colorStart = 0x333333; }
-                if (typeof colorEnd === "undefined") { colorEnd = 0x333333; }
-                if (typeof thickness === "undefined") { thickness = 1; }
-                this._index = -1;
-                this._subSetIndex = -1;
-                // TODO: not yet used: for CurveSegment support
-                anchor = null;
-
-                this._pThickness = thickness * 0.5;
-
-                // TODO: add support for curve using anchor v1
-                // Prefer removing v1 from this, and make Curve a separate class extending Segment? (- David)
-                this._pStart = start;
-                this._pEnd = end;
-                this.startColor = colorStart;
-                this.endColor = colorEnd;
-            }
-            Segment.prototype.updateSegment = function (start, end, anchor, colorStart, colorEnd, thickness) {
-                if (typeof colorStart === "undefined") { colorStart = 0x333333; }
-                if (typeof colorEnd === "undefined") { colorEnd = 0x333333; }
-                if (typeof thickness === "undefined") { thickness = 1; }
-                // TODO: not yet used: for CurveSegment support
-                anchor = null;
-                this._pStart = start;
-                this._pEnd = end;
-
-                if (this._startColor != colorStart) {
-                    this.startColor = colorStart;
-                }
-                if (this._endColor != colorEnd) {
-                    this.endColor = colorEnd;
-                }
-                this._pThickness = thickness * 0.5;
-                this.update();
-            };
-
-            Object.defineProperty(Segment.prototype, "start", {
-                get: function () {
-                    return this._pStart;
-                },
-                set: function (value) {
-                    this._pStart = value;
-                    this.update();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(Segment.prototype, "end", {
-                get: function () {
-                    return this._pEnd;
-                },
-                set: function (value) {
-                    this._pEnd = value;
-                    this.update();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(Segment.prototype, "thickness", {
-                get: function () {
-                    return this._pThickness * 2;
-                },
-                set: function (value) {
-                    this._pThickness = value * 0.5;
-                    this.update();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(Segment.prototype, "startColor", {
-                get: function () {
-                    return this._startColor;
-                },
-                set: function (color) {
-                    this._pStartR = ((color >> 16) & 0xff) / 255;
-                    this._pStartG = ((color >> 8) & 0xff) / 255;
-                    this._pStartB = (color & 0xff) / 255;
-
-                    this._startColor = color;
-
-                    this.update();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(Segment.prototype, "endColor", {
-                get: function () {
-                    return this._endColor;
-                },
-                set: function (color) {
-                    this._pEndR = ((color >> 16) & 0xff) / 255;
-                    this._pEndG = ((color >> 8) & 0xff) / 255;
-                    this._pEndB = (color & 0xff) / 255;
-
-                    this._endColor = color;
-
-                    this.update();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Segment.prototype.dispose = function () {
-                this._pStart = null;
-                this._pEnd = null;
-            };
-
-            Object.defineProperty(Segment.prototype, "iIndex", {
-                get: function () {
-                    return this._index;
-                },
-                set: function (ind) {
-                    this._index = ind;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(Segment.prototype, "iSubSetIndex", {
-                get: function () {
-                    return this._subSetIndex;
-                },
-                set: function (ind) {
-                    this._subSetIndex = ind;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(Segment.prototype, "iSegmentsBase", {
-                set: function (segBase) {
-                    this._pSegmentsBase = segBase;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Segment.prototype.update = function () {
-                if (!this._pSegmentsBase) {
-                    return;
-                }
-                this._pSegmentsBase.iUpdateSegment(this);
-            };
-            return Segment;
-        })();
-        primitives.Segment = Segment;
-    })(away.primitives || (away.primitives = {}));
-    var primitives = away.primitives;
-})(away || (away = {}));
-var away;
-(function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="../geom/Vector3D.ts" />
-    ///<reference path="../errors/AbstractMethodError.ts" />
-    ///<reference path="../primitives/WireframePrimitiveBase.ts" />
-    (function (bounds) {
-        var BoundingVolumeBase = (function () {
-            function BoundingVolumeBase() {
-                this._pAabbPoints = [];
-                this._pAabbPointsDirty = true;
-                this._pMin = new away.geom.Vector3D();
-                this._pMax = new away.geom.Vector3D();
-            }
-            Object.defineProperty(BoundingVolumeBase.prototype, "max", {
-                get: function () {
-                    return this._pMax;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(BoundingVolumeBase.prototype, "min", {
-                get: function () {
-                    return this._pMin;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(BoundingVolumeBase.prototype, "aabbPoints", {
-                get: function () {
-                    if (this._pAabbPointsDirty) {
-                        this.pUpdateAABBPoints();
-                    }
-                    return this._pAabbPoints;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(BoundingVolumeBase.prototype, "boundingRenderable", {
-                get: function () {
-                    if (!this._pBoundingRenderable) {
-                        this._pBoundingRenderable = this.pCreateBoundingRenderable();
-                        this.pUpdateBoundingRenderable();
-                    }
-                    return this._pBoundingRenderable;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            BoundingVolumeBase.prototype.nullify = function () {
-                this._pMin.x = this._pMin.y = this._pMin.z = 0;
-                this._pMax.x = this._pMax.y = this._pMax.z = 0;
-                this._pAabbPointsDirty = true;
-
-                if (this._pBoundingRenderable) {
-                    this.pUpdateBoundingRenderable();
-                }
-            };
-
-            BoundingVolumeBase.prototype.disposeRenderable = function () {
-                if (this._pBoundingRenderable) {
-                    this._pBoundingRenderable.dispose();
-                }
-                this._pBoundingRenderable = null;
-            };
-
-            BoundingVolumeBase.prototype.fromVertices = function (vertices) {
-                var i;
-                var len = vertices.length;
-                var minX, minY, minZ;
-                var maxX, maxY, maxZ;
-
-                if (len == 0) {
-                    this.nullify();
-                    return;
-                }
-
-                var v;
-
-                minX = maxX = vertices[i++];
-                minY = maxY = vertices[i++];
-                minZ = maxZ = vertices[i++];
-
-                while (i < len) {
-                    v = vertices[i++];
-                    if (v < minX)
-                        minX = v; else if (v > maxX)
-                        maxX = v;
-                    v = vertices[i++];
-                    if (v < minY)
-                        minY = v; else if (v > maxY)
-                        maxY = v;
-                    v = vertices[i++];
-                    if (v < minZ)
-                        minZ = v; else if (v > maxZ)
-                        maxZ = v;
-                }
-
-                this.fromExtremes(minX, minY, minZ, maxX, maxY, maxZ);
-            };
-
-            /* TODO
-            public fromGeometry(geometry:Geometry):void
-            {
-            var subGeoms:Vector.<ISubGeometry> = geometry.subGeometries;
-            var numSubGeoms:uint = subGeoms.length;
-            var minX:Number, minY:Number, minZ:Number;
-            var maxX:Number, maxY:Number, maxZ:Number;
-            
-            if (numSubGeoms > 0) {
-            var j:uint = 0;
-            minX = minY = minZ = Number.POSITIVE_INFINITY;
-            maxX = maxY = maxZ = Number.NEGATIVE_INFINITY;
-            
-            while (j < numSubGeoms) {
-            var subGeom:ISubGeometry = subGeoms[j++];
-            var vertices:Vector.<Number> = subGeom.vertexData;
-            var vertexDataLen:uint = vertices.length;
-            var i:uint = subGeom.vertexOffset;
-            var stride:uint = subGeom.vertexStride;
-            
-            while (i < vertexDataLen) {
-            var v:Number = vertices[i];
-            if (v < minX)
-            minX = v;
-            else if (v > maxX)
-            maxX = v;
-            v = vertices[i + 1];
-            if (v < minY)
-            minY = v;
-            else if (v > maxY)
-            maxY = v;
-            v = vertices[i + 2];
-            if (v < minZ)
-            minZ = v;
-            else if (v > maxZ)
-            maxZ = v;
-            i += stride;
-            }
-            }
-            
-            fromExtremes(minX, minY, minZ, maxX, maxY, maxZ);
-            } else
-            fromExtremes(0, 0, 0, 0, 0, 0);
-            }
-            */
-            BoundingVolumeBase.prototype.fromSphere = function (center, radius) {
-                this.fromExtremes(center.x - radius, center.y - radius, center.z - radius, center.x + radius, center.y + radius, center.z + radius);
-            };
-
-            BoundingVolumeBase.prototype.fromExtremes = function (minX, minY, minZ, maxX, maxY, maxZ) {
-                this._pMin.x = minX;
-                this._pMin.y = minY;
-                this._pMin.z = minZ;
-                this._pMax.x = maxX;
-                this._pMax.y = maxY;
-                this._pMax.z = maxZ;
-                this._pAabbPointsDirty = true;
-
-                if (this._pBoundingRenderable) {
-                    this.pUpdateBoundingRenderable();
-                }
-            };
-
-            BoundingVolumeBase.prototype.isInFrustum = function (planes, numPlanes) {
-                throw new away.errors.AbstractMethodError();
-            };
-
-            BoundingVolumeBase.prototype.overlaps = function (bounds) {
-                var min = bounds._pMin;
-                var max = bounds._pMax;
-                return this._pMax.x > min.x && this._pMin.x < max.x && this._pMax.y > min.y && this._pMin.y < max.y && this._pMax.z > min.z && this._pMin.z < max.z;
-            };
-
-            BoundingVolumeBase.prototype.clone = function () {
-                throw new away.errors.AbstractMethodError();
-            };
-
-            BoundingVolumeBase.prototype.rayIntersection = function (position, direction, targetNormal) {
-                position = position;
-                direction = direction;
-                targetNormal = targetNormal;
-                return -1;
-            };
-
-            BoundingVolumeBase.prototype.containsPoint = function (position) {
-                position = position;
-                return false;
-            };
-
-            BoundingVolumeBase.prototype.pUpdateAABBPoints = function () {
-                var maxX = this._pMax.x;
-                var maxY = this._pMax.y;
-                var maxZ = this._pMax.z;
-                var minX = this._pMin.x;
-                var minY = this._pMin.y;
-                var minZ = this._pMin.z;
-
-                this._pAabbPoints[0] = minX;
-                this._pAabbPoints[1] = minY;
-                this._pAabbPoints[2] = minZ;
-                this._pAabbPoints[3] = maxX;
-                this._pAabbPoints[4] = minY;
-                this._pAabbPoints[5] = minZ;
-                this._pAabbPoints[6] = minX;
-                this._pAabbPoints[7] = maxY;
-                this._pAabbPoints[8] = minZ;
-                this._pAabbPoints[9] = maxX;
-                this._pAabbPoints[10] = maxY;
-                this._pAabbPoints[11] = minZ;
-                this._pAabbPoints[12] = minX;
-                this._pAabbPoints[13] = minY;
-                this._pAabbPoints[14] = maxZ;
-                this._pAabbPoints[15] = maxX;
-                this._pAabbPoints[16] = minY;
-                this._pAabbPoints[17] = maxZ;
-                this._pAabbPoints[18] = minX;
-                this._pAabbPoints[19] = maxY;
-                this._pAabbPoints[20] = maxZ;
-                this._pAabbPoints[21] = maxX;
-                this._pAabbPoints[22] = maxY;
-                this._pAabbPoints[23] = maxZ;
-                this._pAabbPointsDirty = false;
-            };
-
-            BoundingVolumeBase.prototype.pUpdateBoundingRenderable = function () {
-                throw new away.errors.AbstractMethodError();
-            };
-
-            BoundingVolumeBase.prototype.pCreateBoundingRenderable = function () {
-                throw new away.errors.AbstractMethodError();
-            };
-
-            BoundingVolumeBase.prototype.classifyToPlane = function (plane) {
-                throw new away.errors.AbstractMethodError();
-            };
-
-            BoundingVolumeBase.prototype.transformFrom = function (bounds, matrix) {
-                throw new away.errors.AbstractMethodError();
-            };
-            return BoundingVolumeBase;
-        })();
-        bounds.BoundingVolumeBase = BoundingVolumeBase;
-    })(away.bounds || (away.bounds = {}));
-    var bounds = away.bounds;
-})(away || (away = {}));
-var away;
-(function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="Event.ts" />
-    ///<reference path="../cameras/lenses/LensBase.ts" />
-    (function (events) {
-        var LensEvent = (function (_super) {
-            __extends(LensEvent, _super);
-            function LensEvent(type, lens) {
-                _super.call(this, type);
-                this._lens = lens;
-            }
-            Object.defineProperty(LensEvent.prototype, "lens", {
-                get: function () {
-                    return this._lens;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            LensEvent.MATRIX_CHANGED = "matrixChanged";
-            return LensEvent;
-        })(away.events.Event);
-        events.LensEvent = LensEvent;
-    })(away.events || (away.events = {}));
-    var events = away.events;
-})(away || (away = {}));
-var away;
-(function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="../../events/EventDispatcher.ts" />
-    ///<reference path="../../geom/Rectangle.ts" />
-    ///<reference path="../../geom/Matrix3D.ts" />
-    ///<reference path="../../geom/Vector3D.ts" />
-    ///<reference path="../../events/LensEvent.ts" />
-    ///<reference path="../../errors/AbstractMethodError.ts" />
-    (function (cameras) {
-        var LensBase = (function (_super) {
-            __extends(LensBase, _super);
-            function LensBase() {
-                _super.call(this);
-                this._pScissorRect = new away.geom.Rectangle();
-                this._pViewPort = new away.geom.Rectangle();
-                this._pNear = 20;
-                this._pFar = 3000;
-                this._pAspectRatio = 1;
-                this._pMatrixInvalid = true;
-                this._pFrustumCorners = [];
-                this._unprojectionInvalid = true;
-                this._pMatrix = new away.geom.Matrix3D();
-            }
-            Object.defineProperty(LensBase.prototype, "frustumCorners", {
-                get: function () {
-                    return this._pFrustumCorners;
-                },
-                set: function (frustumCorners) {
-                    this._pFrustumCorners = frustumCorners;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(LensBase.prototype, "matrix", {
-                get: function () {
-                    if (this._pMatrixInvalid) {
-                        this.pUpdateMatrix();
-                        this._pMatrixInvalid = false;
-                    }
-                    return this._pMatrix;
-                },
-                set: function (value) {
-                    this._pMatrix = value;
-                    this.pInvalidateMatrix();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(LensBase.prototype, "near", {
-                get: function () {
-                    return this._pNear;
-                },
-                set: function (value) {
-                    if (value == this._pNear) {
-                        return;
-                    }
-                    this._pNear = value;
-                    this.pInvalidateMatrix();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(LensBase.prototype, "far", {
-                get: function () {
-                    return this._pFar;
-                },
-                set: function (value) {
-                    if (value == this._pFar) {
-                        return;
-                    }
-                    this._pFar = value;
-                    this.pInvalidateMatrix();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            LensBase.prototype.project = function (point3d) {
-                var v = this.matrix.transformVector(point3d);
-                v.x = v.x / v.w;
-                v.y = -v.y / v.w;
-
-                //z is unaffected by transform
-                v.z = point3d.z;
-
-                return v;
-            };
-
-            Object.defineProperty(LensBase.prototype, "unprojectionMatrix", {
-                get: function () {
-                    if (this._unprojectionInvalid) {
-                        if (!this._unprojection) {
-                            this._unprojection = new away.geom.Matrix3D();
-                        }
-                        this._unprojection.copyFrom(this.matrix);
-                        this._unprojection.invert();
-                        this._unprojectionInvalid = false;
-                    }
-                    return this._unprojection;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            LensBase.prototype.unproject = function (nX, nY, sZ) {
-                throw new away.errors.AbstractMethodError();
-            };
-
-            LensBase.prototype.clone = function () {
-                throw new away.errors.AbstractMethodError();
-            };
-
-            Object.defineProperty(LensBase.prototype, "iAspectRatio", {
-                get: function () {
-                    return this._pAspectRatio;
-                },
-                set: function (value) {
-                    if (this._pAspectRatio == value) {
-                        return;
-                    }
-                    this._pAspectRatio = value;
-                    this.pInvalidateMatrix();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            LensBase.prototype.pInvalidateMatrix = function () {
-                this._pMatrixInvalid = true;
-                this._unprojectionInvalid = true;
-                this.dispatchEvent(new away.events.LensEvent(away.events.LensEvent.MATRIX_CHANGED, this));
-            };
-
-            LensBase.prototype.pUpdateMatrix = function () {
-                throw new away.errors.AbstractMethodError();
-            };
-
-            LensBase.prototype.iUpdateScissorRect = function (x, y, width, height) {
-                this._pScissorRect.x = x;
-                this._pScissorRect.y = y;
-                this._pScissorRect.width = width;
-                this._pScissorRect.height = height;
-                this.pInvalidateMatrix();
-            };
-
-            LensBase.prototype.iUpdateViewport = function (x, y, width, height) {
-                this._pViewPort.x = x;
-                this._pViewPort.y = y;
-                this._pViewPort.width = width;
-                this._pViewPort.height = height;
-                this.pInvalidateMatrix();
-            };
-            return LensBase;
-        })(away.events.EventDispatcher);
-        cameras.LensBase = LensBase;
-    })(away.cameras || (away.cameras = {}));
-    var cameras = away.cameras;
-})(away || (away = {}));
-var away;
-(function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="../../cameras/lenses/LensBase.ts" />
-    ///<reference path="../../geom/Vector3D.ts" />
-    (function (cameras) {
-        var PerspectiveLens = (function (_super) {
-            __extends(PerspectiveLens, _super);
-            function PerspectiveLens(fieldOfView) {
-                if (typeof fieldOfView === "undefined") { fieldOfView = 60; }
-                _super.call(this);
-                this.fieldOfView = fieldOfView;
-            }
-            Object.defineProperty(PerspectiveLens.prototype, "fieldOfView", {
-                get: function () {
-                    return this._fieldOfView;
-                },
-                set: function (value) {
-                    if (value == this._fieldOfView) {
-                        return;
-                    }
-                    this._fieldOfView = value;
-
-                    this._focalLengthInv = Math.tan(this._fieldOfView * Math.PI / 360);
-                    this._focalLength = 1 / this._focalLengthInv;
-
-                    this.pInvalidateMatrix();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(PerspectiveLens.prototype, "focalLength", {
-                get: function () {
-                    return this._focalLength;
-                },
-                set: function (value) {
-                    if (value == this._focalLength) {
-                        return;
-                    }
-                    this._focalLength = value;
-
-                    this._focalLengthInv = 1 / this._focalLength;
-                    this._fieldOfView = Math.atan(this._focalLengthInv) * 360 / Math.PI;
-
-                    this.pInvalidateMatrix();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            //@override
-            PerspectiveLens.prototype.unproject = function (nX, nY, sZ) {
-                var v = new away.geom.Vector3D(nX, -nY, sZ, 1.0);
-
-                v.x *= sZ;
-                v.y *= sZ;
-                v.z = sZ;
-                v = this.unprojectionMatrix.transformVector(v);
-
-                return v;
-            };
-
-            //@override
-            PerspectiveLens.prototype.clone = function () {
-                var clone = new PerspectiveLens(this._fieldOfView);
-                clone._pNear = this._pNear;
-                clone._pFar = this._pFar;
-                clone._pAspectRatio = this._pAspectRatio;
-                return clone;
-            };
-
-            //@override
-            PerspectiveLens.prototype.pUpdateMatrix = function () {
-                var raw = [];
-
-                this._yMax = this._pNear * this._focalLengthInv;
-                this._xMax = this._yMax * this._pAspectRatio;
-
-                var left, right, top, bottom;
-
-                if (this._pScissorRect.x == 0 && this._pScissorRect.y == 0 && this._pScissorRect.width == this._pViewPort.width && this._pScissorRect.height == this._pViewPort.height) {
-                    // assume unscissored frustum
-                    left = -this._xMax;
-                    right = this._xMax;
-                    top = -this._yMax;
-                    bottom = this._yMax;
-
-                    // assume unscissored frustum
-                    raw[0] = this._pNear / this._xMax;
-                    raw[5] = this._pNear / this._yMax;
-                    raw[10] = this._pFar / (this._pFar - this._pNear);
-                    raw[11] = 1;
-                    raw[1] = raw[2] = raw[3] = raw[4] = raw[6] = raw[7] = raw[8] = raw[9] = raw[12] = raw[13] = raw[15] = 0;
-                    raw[14] = -this._pNear * raw[10];
-                } else {
-                    // assume scissored frustum
-                    var xWidth = this._xMax * (this._pViewPort.width / this._pScissorRect.width);
-                    var yHgt = this._yMax * (this._pViewPort.height / this._pScissorRect.height);
-                    var center = this._xMax * (this._pScissorRect.x * 2 - this._pViewPort.width) / this._pScissorRect.width + this._xMax;
-                    var middle = -this._yMax * (this._pScissorRect.y * 2 - this._pViewPort.height) / this._pScissorRect.height - this._yMax;
-
-                    left = center - xWidth;
-                    right = center + xWidth;
-                    top = middle - yHgt;
-                    bottom = middle + yHgt;
-
-                    raw[0] = 2 * this._pNear / (right - left);
-                    raw[5] = 2 * this._pNear / (bottom - top);
-                    raw[8] = (right + left) / (right - left);
-                    raw[9] = (bottom + top) / (bottom - top);
-                    raw[10] = (this._pFar + this._pNear) / (this._pFar - this._pNear);
-                    raw[11] = 1;
-                    raw[1] = raw[2] = raw[3] = raw[4] = raw[6] = raw[7] = raw[12] = raw[13] = raw[15] = 0;
-                    raw[14] = -2 * this._pFar * this._pNear / (this._pFar - this._pNear);
-                }
-
-                this._pMatrix.copyRawDataFrom(raw);
-
-                var yMaxFar = this._pFar * this._focalLengthInv;
-                var xMaxFar = yMaxFar * this._pAspectRatio;
-
-                this._pFrustumCorners[0] = this._pFrustumCorners[9] = left;
-                this._pFrustumCorners[3] = this._pFrustumCorners[6] = right;
-                this._pFrustumCorners[1] = this._pFrustumCorners[4] = top;
-                this._pFrustumCorners[7] = this._pFrustumCorners[10] = bottom;
-
-                this._pFrustumCorners[12] = this._pFrustumCorners[21] = -xMaxFar;
-                this._pFrustumCorners[15] = this._pFrustumCorners[18] = xMaxFar;
-                this._pFrustumCorners[13] = this._pFrustumCorners[16] = -yMaxFar;
-                this._pFrustumCorners[19] = this._pFrustumCorners[22] = yMaxFar;
-
-                this._pFrustumCorners[2] = this._pFrustumCorners[5] = this._pFrustumCorners[8] = this._pFrustumCorners[11] = this._pNear;
-                this._pFrustumCorners[14] = this._pFrustumCorners[17] = this._pFrustumCorners[20] = this._pFrustumCorners[23] = this._pFar;
-
-                this._pMatrixInvalid = false;
-            };
-            return PerspectiveLens;
-        })(away.cameras.LensBase);
-        cameras.PerspectiveLens = PerspectiveLens;
-    })(away.cameras || (away.cameras = {}));
-    var cameras = away.cameras;
-})(away || (away = {}));
-var away;
-(function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="Event.ts" />
-    ///<reference path="../cameras/Camera3D.ts" />
-    (function (events) {
-        var CameraEvent = (function (_super) {
-            __extends(CameraEvent, _super);
-            function CameraEvent(type, camera) {
-                _super.call(this, type);
-                this._camera = camera;
-            }
-            Object.defineProperty(CameraEvent.prototype, "camera", {
-                get: function () {
-                    return this._camera;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            CameraEvent.LENS_CHANGED = "lensChanged";
-            return CameraEvent;
-        })(away.events.Event);
-        events.CameraEvent = CameraEvent;
-    })(away.events || (away.events = {}));
-    var events = away.events;
-})(away || (away = {}));
-var away;
-(function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="../primitives/WireframePrimitiveBase.ts" />
-    ///<reference path="../math/PlaneClassification.ts" />
-    (function (bounds) {
-        var NullBounds = (function (_super) {
-            __extends(NullBounds, _super);
-            function NullBounds(alwaysIn, renderable) {
-                if (typeof alwaysIn === "undefined") { alwaysIn = true; }
-                if (typeof renderable === "undefined") { renderable = null; }
-                _super.call(this);
-                this._alwaysIn = alwaysIn;
-                this._renderable = renderable;
-                this._pMax.x = this._pMax.y = this._pMax.z = Number.POSITIVE_INFINITY;
-                this._pMin.x = this._pMin.y = this._pMin.z = this._alwaysIn ? Number.NEGATIVE_INFINITY : Number.POSITIVE_INFINITY;
-            }
-            //@override
-            NullBounds.prototype.clone = function () {
-                return new away.bounds.NullBounds(this._alwaysIn);
-            };
-
-            //@override
-            NullBounds.prototype.pCreateBoundingRenderable = function () {
-                //return this._renderable || new away.primitives.WireframeSphere( 100, 16, 12, 0xffffff, 0.5 );
-                return null;
-            };
-
-            //@override
-            NullBounds.prototype.isInFrustum = function (planes, numPlanes) {
-                planes = planes;
-                numPlanes = numPlanes;
-                return this._alwaysIn;
-            };
-
-            //@override
-            /*
-            public fromGeometry( geometry:away.base.Geometry )
-            {
-            }
-            */
-            //@override
-            NullBounds.prototype.fromSphere = function (center, radius) {
-            };
-
-            //@override
-            NullBounds.prototype.fromExtremes = function (minX, minY, minZ, maxX, maxY, maxZ) {
-            };
-
-            NullBounds.prototype.classifyToPlane = function (plane) {
-                plane = plane;
-                return away.math.PlaneClassification.INTERSECT;
-            };
-
-            //@override
-            NullBounds.prototype.transformFrom = function (bounds, matrix) {
-                matrix = matrix;
-                var nullBounds = bounds;
-                this._alwaysIn = nullBounds._alwaysIn;
-            };
-            return NullBounds;
-        })(away.bounds.BoundingVolumeBase);
-        bounds.NullBounds = NullBounds;
-    })(away.bounds || (away.bounds = {}));
-    var bounds = away.bounds;
-})(away || (away = {}));
-var away;
-(function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="EntityNode.ts" />
-    ///<reference path="../library/assets/AssetType.ts" />
-    ///<reference path="../traverse/PartitionTraverser.ts" />
-    (function (partition) {
-        var CameraNode = (function (_super) {
-            __extends(CameraNode, _super);
-            function CameraNode(camera) {
-                _super.call(this, camera);
-            }
-            //@override
-            CameraNode.prototype.acceptTraverser = function (traverser) {
-            };
-            return CameraNode;
-        })(away.partition.EntityNode);
-        partition.CameraNode = CameraNode;
-    })(away.partition || (away.partition = {}));
-    var partition = away.partition;
-})(away || (away = {}));
-var away;
-(function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="../cameras/lenses/LensBase.ts" />
-    ///<reference path="../cameras/lenses/PerspectiveLens.ts" />
-    ///<reference path="../math/Plane3D.ts" />
-    ///<reference path="../entities/Entity.ts" />
-    ///<reference path="../events/LensEvent.ts" />
-    ///<reference path="../events/CameraEvent.ts" />
-    ///<reference path="../bounds/NullBounds.ts" />
-    ///<reference path="../library/assets/AssetType.ts" />
-    ///<reference path="../partition/EntityNode.ts" />
-    ///<reference path="../partition/CameraNode.ts" />
-    (function (cameras) {
-        var Camera3D = (function (_super) {
-            __extends(Camera3D, _super);
-            function Camera3D(lens) {
-                if (typeof lens === "undefined") { lens = null; }
-                _super.call(this);
-                this._viewProjection = new away.geom.Matrix3D();
-                this._viewProjectionDirty = true;
-                this._frustumPlanesDirty = true;
-
-                this._lens = lens || new away.cameras.PerspectiveLens();
-                this._lens.addEventListener(away.events.LensEvent.MATRIX_CHANGED, this.onLensMatrixChanged, this);
-
-                this._frustumPlanes = [];
-
-                for (var i = 0; i < 6; ++i) {
-                    this._frustumPlanes[i] = new away.math.Plane3D();
-                }
-            }
-            Camera3D.prototype.pGetDefaultBoundingVolume = function () {
-                return new away.bounds.NullBounds();
-            };
-
-            Object.defineProperty(Camera3D.prototype, "assetType", {
-                get: //@override
-                function () {
-                    return away.library.AssetType.CAMERA;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Camera3D.prototype.onLensMatrixChanged = function (event) {
-                this._viewProjectionDirty = true;
-                this._frustumPlanesDirty = true;
-                this.dispatchEvent(event);
-            };
-
-            Object.defineProperty(Camera3D.prototype, "frustumPlanes", {
-                get: function () {
-                    if (this._frustumPlanesDirty) {
-                        this.updateFrustum();
-                    }
-                    return this._frustumPlanes;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Camera3D.prototype.updateFrustum = function () {
-                var a, b, c;
-
-                //var d : Number;
-                var c11, c12, c13, c14;
-                var c21, c22, c23, c24;
-                var c31, c32, c33, c34;
-                var c41, c42, c43, c44;
-                var p;
-                var raw = [];
-                var invLen;
-                this.viewProjection.copyRawDataTo(raw);
-
-                c11 = raw[0];
-                c12 = raw[4];
-                c13 = raw[8];
-                c14 = raw[12];
-                c21 = raw[1];
-                c22 = raw[5];
-                c23 = raw[9];
-                c24 = raw[13];
-                c31 = raw[2];
-                c32 = raw[6];
-                c33 = raw[10];
-                c34 = raw[14];
-                c41 = raw[3];
-                c42 = raw[7];
-                c43 = raw[11];
-                c44 = raw[15];
-
-                // left plane
-                p = this._frustumPlanes[0];
-                a = c41 + c11;
-                b = c42 + c12;
-                c = c43 + c13;
-                invLen = 1 / Math.sqrt(a * a + b * b + c * c);
-                p.a = a * invLen;
-                p.b = b * invLen;
-                p.c = c * invLen;
-                p.d = -(c44 + c14) * invLen;
-
-                // right plane
-                p = this._frustumPlanes[1];
-                a = c41 - c11;
-                b = c42 - c12;
-                c = c43 - c13;
-                invLen = 1 / Math.sqrt(a * a + b * b + c * c);
-                p.a = a * invLen;
-                p.b = b * invLen;
-                p.c = c * invLen;
-                p.d = (c14 - c44) * invLen;
-
-                // bottom
-                p = this._frustumPlanes[2];
-                a = c41 + c21;
-                b = c42 + c22;
-                c = c43 + c23;
-                invLen = 1 / Math.sqrt(a * a + b * b + c * c);
-                p.a = a * invLen;
-                p.b = b * invLen;
-                p.c = c * invLen;
-                p.d = -(c44 + c24) * invLen;
-
-                // top
-                p = this._frustumPlanes[3];
-                a = c41 - c21;
-                b = c42 - c22;
-                c = c43 - c23;
-                invLen = 1 / Math.sqrt(a * a + b * b + c * c);
-                p.a = a * invLen;
-                p.b = b * invLen;
-                p.c = c * invLen;
-                p.d = (c24 - c44) * invLen;
-
-                // near
-                p = this._frustumPlanes[4];
-                a = c31;
-                b = c32;
-                c = c33;
-                invLen = 1 / Math.sqrt(a * a + b * b + c * c);
-                p.a = a * invLen;
-                p.b = b * invLen;
-                p.c = c * invLen;
-                p.d = -c34 * invLen;
-
-                // far
-                p = this._frustumPlanes[5];
-                a = c41 - c31;
-                b = c42 - c32;
-                c = c43 - c33;
-                invLen = 1 / Math.sqrt(a * a + b * b + c * c);
-                p.a = a * invLen;
-                p.b = b * invLen;
-                p.c = c * invLen;
-                p.d = (c34 - c44) * invLen;
-
-                this._frustumPlanesDirty = false;
-            };
-
-            //@override
-            Camera3D.prototype.pInvalidateSceneTransform = function () {
-                _super.prototype.pInvalidateSceneTransform.call(this);
-
-                this._viewProjectionDirty = true;
-                this._frustumPlanesDirty = true;
-            };
-
-            //@override
-            Camera3D.prototype.updateBounds = function () {
-                this._pBounds.nullify();
-                this._pBoundsInvalid = false;
-            };
-
-            //@override
-            Camera3D.prototype.pCreateEntityPartitionNode = function () {
-                return new away.partition.CameraNode(this);
-            };
-
-            Object.defineProperty(Camera3D.prototype, "lens", {
-                get: function () {
-                    return this._lens;
-                },
-                set: function (value) {
-                    if (this._lens == value) {
-                        return;
-                    }
-                    if (!value) {
-                        throw new Error("Lens cannot be null!");
-                    }
-                    this._lens.removeEventListener(away.events.LensEvent.MATRIX_CHANGED, this.onLensMatrixChanged, this);
-                    this._lens = value;
-                    this._lens.addEventListener(away.events.LensEvent.MATRIX_CHANGED, this.onLensMatrixChanged, this);
-                    this.dispatchEvent(new away.events.CameraEvent(away.events.CameraEvent.LENS_CHANGED, this));
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(Camera3D.prototype, "viewProjection", {
-                get: function () {
-                    if (this._viewProjectionDirty) {
-                        this._viewProjection.copyFrom(this.inverseSceneTransform);
-                        this._viewProjection.append(this._lens.matrix);
-                        this._viewProjectionDirty = false;
-                    }
-                    return this._viewProjection;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            return Camera3D;
-        })(away.entities.Entity);
-        cameras.Camera3D = Camera3D;
-    })(away.cameras || (away.cameras = {}));
-    var cameras = away.cameras;
-})(away || (away = {}));
-var away;
-(function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="Entity.ts" />
-    ///<reference path="../base/IRenderable.ts" />
-    ///<reference path="../primitives/data/Segment.ts" />
-    ///<reference path="../bounds/BoundingVolumeBase.ts" />
-    ///<reference path="../library/assets/AssetType.ts" />
-    ///<reference path="../cameras/Camera3D.ts" />
+    ///<reference path="../_definitions.ts"/>
     (function (entities) {
         var SegmentSet = (function (_super) {
             __extends(SegmentSet, _super);
@@ -7048,8 +5821,1482 @@ var away;
     * ...
     * @author Gary Paluk - http://www.plugin.io
     */
-    ///<reference path="../entities/SegmentSet.ts" />
-    ///<reference path="../bounds/BoundingVolumeBase.ts" />
+    ///<reference path="../../entities/SegmentSet.ts" />
+    (function (primitives) {
+        var Segment = (function () {
+            function Segment(start, end, anchor, colorStart, colorEnd, thickness) {
+                if (typeof colorStart === "undefined") { colorStart = 0x333333; }
+                if (typeof colorEnd === "undefined") { colorEnd = 0x333333; }
+                if (typeof thickness === "undefined") { thickness = 1; }
+                this._index = -1;
+                this._subSetIndex = -1;
+                // TODO: not yet used: for CurveSegment support
+                anchor = null;
+
+                this._pThickness = thickness * 0.5;
+
+                // TODO: add support for curve using anchor v1
+                // Prefer removing v1 from this, and make Curve a separate class extending Segment? (- David)
+                this._pStart = start;
+                this._pEnd = end;
+                this.startColor = colorStart;
+                this.endColor = colorEnd;
+            }
+            Segment.prototype.updateSegment = function (start, end, anchor, colorStart, colorEnd, thickness) {
+                if (typeof colorStart === "undefined") { colorStart = 0x333333; }
+                if (typeof colorEnd === "undefined") { colorEnd = 0x333333; }
+                if (typeof thickness === "undefined") { thickness = 1; }
+                // TODO: not yet used: for CurveSegment support
+                anchor = null;
+                this._pStart = start;
+                this._pEnd = end;
+
+                if (this._startColor != colorStart) {
+                    this.startColor = colorStart;
+                }
+                if (this._endColor != colorEnd) {
+                    this.endColor = colorEnd;
+                }
+                this._pThickness = thickness * 0.5;
+                this.update();
+            };
+
+            Object.defineProperty(Segment.prototype, "start", {
+                get: function () {
+                    return this._pStart;
+                },
+                set: function (value) {
+                    this._pStart = value;
+                    this.update();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Segment.prototype, "end", {
+                get: function () {
+                    return this._pEnd;
+                },
+                set: function (value) {
+                    this._pEnd = value;
+                    this.update();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Segment.prototype, "thickness", {
+                get: function () {
+                    return this._pThickness * 2;
+                },
+                set: function (value) {
+                    this._pThickness = value * 0.5;
+                    this.update();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Segment.prototype, "startColor", {
+                get: function () {
+                    return this._startColor;
+                },
+                set: function (color) {
+                    this._pStartR = ((color >> 16) & 0xff) / 255;
+                    this._pStartG = ((color >> 8) & 0xff) / 255;
+                    this._pStartB = (color & 0xff) / 255;
+
+                    this._startColor = color;
+
+                    this.update();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Segment.prototype, "endColor", {
+                get: function () {
+                    return this._endColor;
+                },
+                set: function (color) {
+                    this._pEndR = ((color >> 16) & 0xff) / 255;
+                    this._pEndG = ((color >> 8) & 0xff) / 255;
+                    this._pEndB = (color & 0xff) / 255;
+
+                    this._endColor = color;
+
+                    this.update();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Segment.prototype.dispose = function () {
+                this._pStart = null;
+                this._pEnd = null;
+            };
+
+            Object.defineProperty(Segment.prototype, "iIndex", {
+                get: function () {
+                    return this._index;
+                },
+                set: function (ind) {
+                    this._index = ind;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Segment.prototype, "iSubSetIndex", {
+                get: function () {
+                    return this._subSetIndex;
+                },
+                set: function (ind) {
+                    this._subSetIndex = ind;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Segment.prototype, "iSegmentsBase", {
+                set: function (segBase) {
+                    this._pSegmentsBase = segBase;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Segment.prototype.update = function () {
+                if (!this._pSegmentsBase) {
+                    return;
+                }
+                this._pSegmentsBase.iUpdateSegment(this);
+            };
+            return Segment;
+        })();
+        primitives.Segment = Segment;
+    })(away.primitives || (away.primitives = {}));
+    var primitives = away.primitives;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../_definitions.ts" />
+    (function (bounds) {
+        var BoundingVolumeBase = (function () {
+            function BoundingVolumeBase() {
+                this._pAabbPoints = [];
+                this._pAabbPointsDirty = true;
+                this._pMin = new away.geom.Vector3D();
+                this._pMax = new away.geom.Vector3D();
+            }
+            Object.defineProperty(BoundingVolumeBase.prototype, "max", {
+                get: function () {
+                    return this._pMax;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(BoundingVolumeBase.prototype, "min", {
+                get: function () {
+                    return this._pMin;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(BoundingVolumeBase.prototype, "aabbPoints", {
+                get: function () {
+                    if (this._pAabbPointsDirty) {
+                        this.pUpdateAABBPoints();
+                    }
+                    return this._pAabbPoints;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(BoundingVolumeBase.prototype, "boundingRenderable", {
+                get: function () {
+                    if (!this._pBoundingRenderable) {
+                        this._pBoundingRenderable = this.pCreateBoundingRenderable();
+                        this.pUpdateBoundingRenderable();
+                    }
+                    return this._pBoundingRenderable;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            BoundingVolumeBase.prototype.nullify = function () {
+                this._pMin.x = this._pMin.y = this._pMin.z = 0;
+                this._pMax.x = this._pMax.y = this._pMax.z = 0;
+                this._pAabbPointsDirty = true;
+
+                if (this._pBoundingRenderable) {
+                    this.pUpdateBoundingRenderable();
+                }
+            };
+
+            BoundingVolumeBase.prototype.disposeRenderable = function () {
+                if (this._pBoundingRenderable) {
+                    this._pBoundingRenderable.dispose();
+                }
+                this._pBoundingRenderable = null;
+            };
+
+            BoundingVolumeBase.prototype.fromVertices = function (vertices) {
+                var i;
+                var len = vertices.length;
+                var minX, minY, minZ;
+                var maxX, maxY, maxZ;
+
+                if (len == 0) {
+                    this.nullify();
+                    return;
+                }
+
+                var v;
+
+                minX = maxX = vertices[i++];
+                minY = maxY = vertices[i++];
+                minZ = maxZ = vertices[i++];
+
+                while (i < len) {
+                    v = vertices[i++];
+                    if (v < minX)
+                        minX = v; else if (v > maxX)
+                        maxX = v;
+                    v = vertices[i++];
+                    if (v < minY)
+                        minY = v; else if (v > maxY)
+                        maxY = v;
+                    v = vertices[i++];
+                    if (v < minZ)
+                        minZ = v; else if (v > maxZ)
+                        maxZ = v;
+                }
+
+                this.fromExtremes(minX, minY, minZ, maxX, maxY, maxZ);
+            };
+
+            /* TODO
+            public fromGeometry(geometry:Geometry):void
+            {
+            var subGeoms:Vector.<ISubGeometry> = geometry.subGeometries;
+            var numSubGeoms:uint = subGeoms.length;
+            var minX:Number, minY:Number, minZ:Number;
+            var maxX:Number, maxY:Number, maxZ:Number;
+            
+            if (numSubGeoms > 0) {
+            var j:uint = 0;
+            minX = minY = minZ = Number.POSITIVE_INFINITY;
+            maxX = maxY = maxZ = Number.NEGATIVE_INFINITY;
+            
+            while (j < numSubGeoms) {
+            var subGeom:ISubGeometry = subGeoms[j++];
+            var vertices:Vector.<Number> = subGeom.vertexData;
+            var vertexDataLen:uint = vertices.length;
+            var i:uint = subGeom.vertexOffset;
+            var stride:uint = subGeom.vertexStride;
+            
+            while (i < vertexDataLen) {
+            var v:Number = vertices[i];
+            if (v < minX)
+            minX = v;
+            else if (v > maxX)
+            maxX = v;
+            v = vertices[i + 1];
+            if (v < minY)
+            minY = v;
+            else if (v > maxY)
+            maxY = v;
+            v = vertices[i + 2];
+            if (v < minZ)
+            minZ = v;
+            else if (v > maxZ)
+            maxZ = v;
+            i += stride;
+            }
+            }
+            
+            fromExtremes(minX, minY, minZ, maxX, maxY, maxZ);
+            } else
+            fromExtremes(0, 0, 0, 0, 0, 0);
+            }
+            */
+            BoundingVolumeBase.prototype.fromSphere = function (center, radius) {
+                this.fromExtremes(center.x - radius, center.y - radius, center.z - radius, center.x + radius, center.y + radius, center.z + radius);
+            };
+
+            BoundingVolumeBase.prototype.fromExtremes = function (minX, minY, minZ, maxX, maxY, maxZ) {
+                this._pMin.x = minX;
+                this._pMin.y = minY;
+                this._pMin.z = minZ;
+                this._pMax.x = maxX;
+                this._pMax.y = maxY;
+                this._pMax.z = maxZ;
+                this._pAabbPointsDirty = true;
+
+                if (this._pBoundingRenderable) {
+                    this.pUpdateBoundingRenderable();
+                }
+            };
+
+            BoundingVolumeBase.prototype.isInFrustum = function (planes, numPlanes) {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            BoundingVolumeBase.prototype.overlaps = function (bounds) {
+                var min = bounds._pMin;
+                var max = bounds._pMax;
+                return this._pMax.x > min.x && this._pMin.x < max.x && this._pMax.y > min.y && this._pMin.y < max.y && this._pMax.z > min.z && this._pMin.z < max.z;
+            };
+
+            BoundingVolumeBase.prototype.clone = function () {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            BoundingVolumeBase.prototype.rayIntersection = function (position, direction, targetNormal) {
+                position = position;
+                direction = direction;
+                targetNormal = targetNormal;
+                return -1;
+            };
+
+            BoundingVolumeBase.prototype.containsPoint = function (position) {
+                position = position;
+                return false;
+            };
+
+            BoundingVolumeBase.prototype.pUpdateAABBPoints = function () {
+                var maxX = this._pMax.x;
+                var maxY = this._pMax.y;
+                var maxZ = this._pMax.z;
+                var minX = this._pMin.x;
+                var minY = this._pMin.y;
+                var minZ = this._pMin.z;
+
+                this._pAabbPoints[0] = minX;
+                this._pAabbPoints[1] = minY;
+                this._pAabbPoints[2] = minZ;
+                this._pAabbPoints[3] = maxX;
+                this._pAabbPoints[4] = minY;
+                this._pAabbPoints[5] = minZ;
+                this._pAabbPoints[6] = minX;
+                this._pAabbPoints[7] = maxY;
+                this._pAabbPoints[8] = minZ;
+                this._pAabbPoints[9] = maxX;
+                this._pAabbPoints[10] = maxY;
+                this._pAabbPoints[11] = minZ;
+                this._pAabbPoints[12] = minX;
+                this._pAabbPoints[13] = minY;
+                this._pAabbPoints[14] = maxZ;
+                this._pAabbPoints[15] = maxX;
+                this._pAabbPoints[16] = minY;
+                this._pAabbPoints[17] = maxZ;
+                this._pAabbPoints[18] = minX;
+                this._pAabbPoints[19] = maxY;
+                this._pAabbPoints[20] = maxZ;
+                this._pAabbPoints[21] = maxX;
+                this._pAabbPoints[22] = maxY;
+                this._pAabbPoints[23] = maxZ;
+                this._pAabbPointsDirty = false;
+            };
+
+            BoundingVolumeBase.prototype.pUpdateBoundingRenderable = function () {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            BoundingVolumeBase.prototype.pCreateBoundingRenderable = function () {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            BoundingVolumeBase.prototype.classifyToPlane = function (plane) {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            BoundingVolumeBase.prototype.transformFrom = function (bounds, matrix) {
+                throw new away.errors.AbstractMethodError();
+            };
+            return BoundingVolumeBase;
+        })();
+        bounds.BoundingVolumeBase = BoundingVolumeBase;
+    })(away.bounds || (away.bounds = {}));
+    var bounds = away.bounds;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../_definitions.ts"/>
+    (function (events) {
+        var LensEvent = (function (_super) {
+            __extends(LensEvent, _super);
+            function LensEvent(type, lens) {
+                _super.call(this, type);
+                this._lens = lens;
+            }
+            Object.defineProperty(LensEvent.prototype, "lens", {
+                get: function () {
+                    return this._lens;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            LensEvent.MATRIX_CHANGED = "matrixChanged";
+            return LensEvent;
+        })(away.events.Event);
+        events.LensEvent = LensEvent;
+    })(away.events || (away.events = {}));
+    var events = away.events;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../../_definitions.ts" />
+    (function (cameras) {
+        var LensBase = (function (_super) {
+            __extends(LensBase, _super);
+            function LensBase() {
+                _super.call(this);
+                this._pScissorRect = new away.geom.Rectangle();
+                this._pViewPort = new away.geom.Rectangle();
+                this._pNear = 20;
+                this._pFar = 3000;
+                this._pAspectRatio = 1;
+                this._pMatrixInvalid = true;
+                this._pFrustumCorners = [];
+                this._unprojectionInvalid = true;
+                this._pMatrix = new away.geom.Matrix3D();
+            }
+            Object.defineProperty(LensBase.prototype, "frustumCorners", {
+                get: function () {
+                    return this._pFrustumCorners;
+                },
+                set: function (frustumCorners) {
+                    this._pFrustumCorners = frustumCorners;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(LensBase.prototype, "matrix", {
+                get: function () {
+                    if (this._pMatrixInvalid) {
+                        this.pUpdateMatrix();
+                        this._pMatrixInvalid = false;
+                    }
+                    return this._pMatrix;
+                },
+                set: function (value) {
+                    this._pMatrix = value;
+                    this.pInvalidateMatrix();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(LensBase.prototype, "near", {
+                get: function () {
+                    return this._pNear;
+                },
+                set: function (value) {
+                    if (value == this._pNear) {
+                        return;
+                    }
+                    this._pNear = value;
+                    this.pInvalidateMatrix();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(LensBase.prototype, "far", {
+                get: function () {
+                    return this._pFar;
+                },
+                set: function (value) {
+                    if (value == this._pFar) {
+                        return;
+                    }
+                    this._pFar = value;
+                    this.pInvalidateMatrix();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            LensBase.prototype.project = function (point3d) {
+                var v = this.matrix.transformVector(point3d);
+                v.x = v.x / v.w;
+                v.y = -v.y / v.w;
+
+                //z is unaffected by transform
+                v.z = point3d.z;
+
+                return v;
+            };
+
+            Object.defineProperty(LensBase.prototype, "unprojectionMatrix", {
+                get: function () {
+                    if (this._unprojectionInvalid) {
+                        if (!this._unprojection) {
+                            this._unprojection = new away.geom.Matrix3D();
+                        }
+                        this._unprojection.copyFrom(this.matrix);
+                        this._unprojection.invert();
+                        this._unprojectionInvalid = false;
+                    }
+                    return this._unprojection;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            LensBase.prototype.unproject = function (nX, nY, sZ) {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            LensBase.prototype.clone = function () {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            Object.defineProperty(LensBase.prototype, "iAspectRatio", {
+                get: function () {
+                    return this._pAspectRatio;
+                },
+                set: function (value) {
+                    if (this._pAspectRatio == value) {
+                        return;
+                    }
+                    this._pAspectRatio = value;
+                    this.pInvalidateMatrix();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            LensBase.prototype.pInvalidateMatrix = function () {
+                this._pMatrixInvalid = true;
+                this._unprojectionInvalid = true;
+                this.dispatchEvent(new away.events.LensEvent(away.events.LensEvent.MATRIX_CHANGED, this));
+            };
+
+            LensBase.prototype.pUpdateMatrix = function () {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            LensBase.prototype.iUpdateScissorRect = function (x, y, width, height) {
+                this._pScissorRect.x = x;
+                this._pScissorRect.y = y;
+                this._pScissorRect.width = width;
+                this._pScissorRect.height = height;
+                this.pInvalidateMatrix();
+            };
+
+            LensBase.prototype.iUpdateViewport = function (x, y, width, height) {
+                this._pViewPort.x = x;
+                this._pViewPort.y = y;
+                this._pViewPort.width = width;
+                this._pViewPort.height = height;
+                this.pInvalidateMatrix();
+            };
+            return LensBase;
+        })(away.events.EventDispatcher);
+        cameras.LensBase = LensBase;
+    })(away.cameras || (away.cameras = {}));
+    var cameras = away.cameras;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../../cameras/lenses/LensBase.ts" />
+    ///<reference path="../../geom/Vector3D.ts" />
+    (function (cameras) {
+        var PerspectiveLens = (function (_super) {
+            __extends(PerspectiveLens, _super);
+            function PerspectiveLens(fieldOfView) {
+                if (typeof fieldOfView === "undefined") { fieldOfView = 60; }
+                _super.call(this);
+                this.fieldOfView = fieldOfView;
+            }
+            Object.defineProperty(PerspectiveLens.prototype, "fieldOfView", {
+                get: function () {
+                    return this._fieldOfView;
+                },
+                set: function (value) {
+                    if (value == this._fieldOfView) {
+                        return;
+                    }
+                    this._fieldOfView = value;
+
+                    this._focalLengthInv = Math.tan(this._fieldOfView * Math.PI / 360);
+                    this._focalLength = 1 / this._focalLengthInv;
+
+                    this.pInvalidateMatrix();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PerspectiveLens.prototype, "focalLength", {
+                get: function () {
+                    return this._focalLength;
+                },
+                set: function (value) {
+                    if (value == this._focalLength) {
+                        return;
+                    }
+                    this._focalLength = value;
+
+                    this._focalLengthInv = 1 / this._focalLength;
+                    this._fieldOfView = Math.atan(this._focalLengthInv) * 360 / Math.PI;
+
+                    this.pInvalidateMatrix();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            //@override
+            PerspectiveLens.prototype.unproject = function (nX, nY, sZ) {
+                var v = new away.geom.Vector3D(nX, -nY, sZ, 1.0);
+
+                v.x *= sZ;
+                v.y *= sZ;
+                v.z = sZ;
+                v = this.unprojectionMatrix.transformVector(v);
+
+                return v;
+            };
+
+            //@override
+            PerspectiveLens.prototype.clone = function () {
+                var clone = new PerspectiveLens(this._fieldOfView);
+                clone._pNear = this._pNear;
+                clone._pFar = this._pFar;
+                clone._pAspectRatio = this._pAspectRatio;
+                return clone;
+            };
+
+            //@override
+            PerspectiveLens.prototype.pUpdateMatrix = function () {
+                var raw = [];
+
+                this._yMax = this._pNear * this._focalLengthInv;
+                this._xMax = this._yMax * this._pAspectRatio;
+
+                var left, right, top, bottom;
+
+                if (this._pScissorRect.x == 0 && this._pScissorRect.y == 0 && this._pScissorRect.width == this._pViewPort.width && this._pScissorRect.height == this._pViewPort.height) {
+                    // assume unscissored frustum
+                    left = -this._xMax;
+                    right = this._xMax;
+                    top = -this._yMax;
+                    bottom = this._yMax;
+
+                    // assume unscissored frustum
+                    raw[0] = this._pNear / this._xMax;
+                    raw[5] = this._pNear / this._yMax;
+                    raw[10] = this._pFar / (this._pFar - this._pNear);
+                    raw[11] = 1;
+                    raw[1] = raw[2] = raw[3] = raw[4] = raw[6] = raw[7] = raw[8] = raw[9] = raw[12] = raw[13] = raw[15] = 0;
+                    raw[14] = -this._pNear * raw[10];
+                } else {
+                    // assume scissored frustum
+                    var xWidth = this._xMax * (this._pViewPort.width / this._pScissorRect.width);
+                    var yHgt = this._yMax * (this._pViewPort.height / this._pScissorRect.height);
+                    var center = this._xMax * (this._pScissorRect.x * 2 - this._pViewPort.width) / this._pScissorRect.width + this._xMax;
+                    var middle = -this._yMax * (this._pScissorRect.y * 2 - this._pViewPort.height) / this._pScissorRect.height - this._yMax;
+
+                    left = center - xWidth;
+                    right = center + xWidth;
+                    top = middle - yHgt;
+                    bottom = middle + yHgt;
+
+                    raw[0] = 2 * this._pNear / (right - left);
+                    raw[5] = 2 * this._pNear / (bottom - top);
+                    raw[8] = (right + left) / (right - left);
+                    raw[9] = (bottom + top) / (bottom - top);
+                    raw[10] = (this._pFar + this._pNear) / (this._pFar - this._pNear);
+                    raw[11] = 1;
+                    raw[1] = raw[2] = raw[3] = raw[4] = raw[6] = raw[7] = raw[12] = raw[13] = raw[15] = 0;
+                    raw[14] = -2 * this._pFar * this._pNear / (this._pFar - this._pNear);
+                }
+
+                this._pMatrix.copyRawDataFrom(raw);
+
+                var yMaxFar = this._pFar * this._focalLengthInv;
+                var xMaxFar = yMaxFar * this._pAspectRatio;
+
+                this._pFrustumCorners[0] = this._pFrustumCorners[9] = left;
+                this._pFrustumCorners[3] = this._pFrustumCorners[6] = right;
+                this._pFrustumCorners[1] = this._pFrustumCorners[4] = top;
+                this._pFrustumCorners[7] = this._pFrustumCorners[10] = bottom;
+
+                this._pFrustumCorners[12] = this._pFrustumCorners[21] = -xMaxFar;
+                this._pFrustumCorners[15] = this._pFrustumCorners[18] = xMaxFar;
+                this._pFrustumCorners[13] = this._pFrustumCorners[16] = -yMaxFar;
+                this._pFrustumCorners[19] = this._pFrustumCorners[22] = yMaxFar;
+
+                this._pFrustumCorners[2] = this._pFrustumCorners[5] = this._pFrustumCorners[8] = this._pFrustumCorners[11] = this._pNear;
+                this._pFrustumCorners[14] = this._pFrustumCorners[17] = this._pFrustumCorners[20] = this._pFrustumCorners[23] = this._pFar;
+
+                this._pMatrixInvalid = false;
+            };
+            return PerspectiveLens;
+        })(away.cameras.LensBase);
+        cameras.PerspectiveLens = PerspectiveLens;
+    })(away.cameras || (away.cameras = {}));
+    var cameras = away.cameras;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../_definitions.ts" />
+    (function (cameras) {
+        var Camera3D = (function (_super) {
+            __extends(Camera3D, _super);
+            function Camera3D(lens) {
+                if (typeof lens === "undefined") { lens = null; }
+                _super.call(this);
+                this._viewProjection = new away.geom.Matrix3D();
+                this._viewProjectionDirty = true;
+                this._frustumPlanesDirty = true;
+
+                this._lens = lens || new away.cameras.PerspectiveLens();
+                this._lens.addEventListener(away.events.LensEvent.MATRIX_CHANGED, this.onLensMatrixChanged, this);
+
+                this._frustumPlanes = [];
+
+                for (var i = 0; i < 6; ++i) {
+                    this._frustumPlanes[i] = new away.math.Plane3D();
+                }
+            }
+            Camera3D.prototype.pGetDefaultBoundingVolume = function () {
+                return new away.bounds.NullBounds();
+            };
+
+            Object.defineProperty(Camera3D.prototype, "assetType", {
+                get: //@override
+                function () {
+                    return away.library.AssetType.CAMERA;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Camera3D.prototype.onLensMatrixChanged = function (event) {
+                this._viewProjectionDirty = true;
+                this._frustumPlanesDirty = true;
+                this.dispatchEvent(event);
+            };
+
+            Object.defineProperty(Camera3D.prototype, "frustumPlanes", {
+                get: function () {
+                    if (this._frustumPlanesDirty) {
+                        this.updateFrustum();
+                    }
+                    return this._frustumPlanes;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Camera3D.prototype.updateFrustum = function () {
+                var a, b, c;
+
+                //var d : Number;
+                var c11, c12, c13, c14;
+                var c21, c22, c23, c24;
+                var c31, c32, c33, c34;
+                var c41, c42, c43, c44;
+                var p;
+                var raw = [];
+                var invLen;
+                this.viewProjection.copyRawDataTo(raw);
+
+                c11 = raw[0];
+                c12 = raw[4];
+                c13 = raw[8];
+                c14 = raw[12];
+                c21 = raw[1];
+                c22 = raw[5];
+                c23 = raw[9];
+                c24 = raw[13];
+                c31 = raw[2];
+                c32 = raw[6];
+                c33 = raw[10];
+                c34 = raw[14];
+                c41 = raw[3];
+                c42 = raw[7];
+                c43 = raw[11];
+                c44 = raw[15];
+
+                // left plane
+                p = this._frustumPlanes[0];
+                a = c41 + c11;
+                b = c42 + c12;
+                c = c43 + c13;
+                invLen = 1 / Math.sqrt(a * a + b * b + c * c);
+                p.a = a * invLen;
+                p.b = b * invLen;
+                p.c = c * invLen;
+                p.d = -(c44 + c14) * invLen;
+
+                // right plane
+                p = this._frustumPlanes[1];
+                a = c41 - c11;
+                b = c42 - c12;
+                c = c43 - c13;
+                invLen = 1 / Math.sqrt(a * a + b * b + c * c);
+                p.a = a * invLen;
+                p.b = b * invLen;
+                p.c = c * invLen;
+                p.d = (c14 - c44) * invLen;
+
+                // bottom
+                p = this._frustumPlanes[2];
+                a = c41 + c21;
+                b = c42 + c22;
+                c = c43 + c23;
+                invLen = 1 / Math.sqrt(a * a + b * b + c * c);
+                p.a = a * invLen;
+                p.b = b * invLen;
+                p.c = c * invLen;
+                p.d = -(c44 + c24) * invLen;
+
+                // top
+                p = this._frustumPlanes[3];
+                a = c41 - c21;
+                b = c42 - c22;
+                c = c43 - c23;
+                invLen = 1 / Math.sqrt(a * a + b * b + c * c);
+                p.a = a * invLen;
+                p.b = b * invLen;
+                p.c = c * invLen;
+                p.d = (c24 - c44) * invLen;
+
+                // near
+                p = this._frustumPlanes[4];
+                a = c31;
+                b = c32;
+                c = c33;
+                invLen = 1 / Math.sqrt(a * a + b * b + c * c);
+                p.a = a * invLen;
+                p.b = b * invLen;
+                p.c = c * invLen;
+                p.d = -c34 * invLen;
+
+                // far
+                p = this._frustumPlanes[5];
+                a = c41 - c31;
+                b = c42 - c32;
+                c = c43 - c33;
+                invLen = 1 / Math.sqrt(a * a + b * b + c * c);
+                p.a = a * invLen;
+                p.b = b * invLen;
+                p.c = c * invLen;
+                p.d = (c34 - c44) * invLen;
+
+                this._frustumPlanesDirty = false;
+            };
+
+            //@override
+            Camera3D.prototype.pInvalidateSceneTransform = function () {
+                _super.prototype.pInvalidateSceneTransform.call(this);
+
+                this._viewProjectionDirty = true;
+                this._frustumPlanesDirty = true;
+            };
+
+            //@override
+            Camera3D.prototype.updateBounds = function () {
+                this._pBounds.nullify();
+                this._pBoundsInvalid = false;
+            };
+
+            //@override
+            Camera3D.prototype.pCreateEntityPartitionNode = function () {
+                return new away.partition.CameraNode(this);
+            };
+
+            Object.defineProperty(Camera3D.prototype, "lens", {
+                get: function () {
+                    return this._lens;
+                },
+                set: function (value) {
+                    if (this._lens == value) {
+                        return;
+                    }
+                    if (!value) {
+                        throw new Error("Lens cannot be null!");
+                    }
+                    this._lens.removeEventListener(away.events.LensEvent.MATRIX_CHANGED, this.onLensMatrixChanged, this);
+                    this._lens = value;
+                    this._lens.addEventListener(away.events.LensEvent.MATRIX_CHANGED, this.onLensMatrixChanged, this);
+                    this.dispatchEvent(new away.events.CameraEvent(away.events.CameraEvent.LENS_CHANGED, this));
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Camera3D.prototype, "viewProjection", {
+                get: function () {
+                    if (this._viewProjectionDirty) {
+                        this._viewProjection.copyFrom(this.inverseSceneTransform);
+                        this._viewProjection.append(this._lens.matrix);
+                        this._viewProjectionDirty = false;
+                    }
+                    return this._viewProjection;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return Camera3D;
+        })(away.entities.Entity);
+        cameras.Camera3D = Camera3D;
+    })(away.cameras || (away.cameras = {}));
+    var cameras = away.cameras;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../_definitions.ts"/>
+    ///<reference path="Event.ts" />
+    ///<reference path="../cameras/Camera3D.ts" />
+    (function (events) {
+        var CameraEvent = (function (_super) {
+            __extends(CameraEvent, _super);
+            function CameraEvent(type, camera) {
+                _super.call(this, type);
+                this._camera = camera;
+            }
+            Object.defineProperty(CameraEvent.prototype, "camera", {
+                get: function () {
+                    return this._camera;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            CameraEvent.LENS_CHANGED = "lensChanged";
+            return CameraEvent;
+        })(away.events.Event);
+        events.CameraEvent = CameraEvent;
+    })(away.events || (away.events = {}));
+    var events = away.events;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../_definitions.ts" />
+    (function (bounds) {
+        var NullBounds = (function (_super) {
+            __extends(NullBounds, _super);
+            function NullBounds(alwaysIn, renderable) {
+                if (typeof alwaysIn === "undefined") { alwaysIn = true; }
+                if (typeof renderable === "undefined") { renderable = null; }
+                _super.call(this);
+                this._alwaysIn = alwaysIn;
+                this._renderable = renderable;
+                this._pMax.x = this._pMax.y = this._pMax.z = Number.POSITIVE_INFINITY;
+                this._pMin.x = this._pMin.y = this._pMin.z = this._alwaysIn ? Number.NEGATIVE_INFINITY : Number.POSITIVE_INFINITY;
+            }
+            //@override
+            NullBounds.prototype.clone = function () {
+                return new away.bounds.NullBounds(this._alwaysIn);
+            };
+
+            //@override
+            NullBounds.prototype.pCreateBoundingRenderable = function () {
+                //return this._renderable || new away.primitives.WireframeSphere( 100, 16, 12, 0xffffff, 0.5 );
+                return null;
+            };
+
+            //@override
+            NullBounds.prototype.isInFrustum = function (planes, numPlanes) {
+                planes = planes;
+                numPlanes = numPlanes;
+                return this._alwaysIn;
+            };
+
+            //@override
+            /*
+            public fromGeometry( geometry:away.base.Geometry )
+            {
+            }
+            */
+            //@override
+            NullBounds.prototype.fromSphere = function (center, radius) {
+            };
+
+            //@override
+            NullBounds.prototype.fromExtremes = function (minX, minY, minZ, maxX, maxY, maxZ) {
+            };
+
+            NullBounds.prototype.classifyToPlane = function (plane) {
+                plane = plane;
+                return away.math.PlaneClassification.INTERSECT;
+            };
+
+            //@override
+            NullBounds.prototype.transformFrom = function (bounds, matrix) {
+                matrix = matrix;
+                var nullBounds = bounds;
+                this._alwaysIn = nullBounds._alwaysIn;
+            };
+            return NullBounds;
+        })(away.bounds.BoundingVolumeBase);
+        bounds.NullBounds = NullBounds;
+    })(away.bounds || (away.bounds = {}));
+    var bounds = away.bounds;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../_definitions.ts" />
+    (function (partition) {
+        var CameraNode = (function (_super) {
+            __extends(CameraNode, _super);
+            function CameraNode(camera) {
+                _super.call(this, camera);
+            }
+            //@override
+            CameraNode.prototype.acceptTraverser = function (traverser) {
+            };
+            return CameraNode;
+        })(away.partition.EntityNode);
+        partition.CameraNode = CameraNode;
+    })(away.partition || (away.partition = {}));
+    var partition = away.partition;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../_definitions.ts"/>
+    (function (entities) {
+        var Entity = (function (_super) {
+            __extends(Entity, _super);
+            function Entity() {
+                _super.call(this);
+                this._pBoundsInvalid = true;
+                this._worldBoundsInvalid = true;
+                this._pBounds = this.pGetDefaultBoundingVolume();
+                this._worldBounds = this.pGetDefaultBoundingVolume();
+            }
+            //@override
+            Entity.prototype.setIgnoreTransform = function (value) {
+                if (this._pScene) {
+                }
+                _super.prototype.setIgnoreTransform.call(this, value);
+            };
+
+            Object.defineProperty(Entity.prototype, "shaderPickingDetails", {
+                get: function () {
+                    return this._shaderPickingDetails;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Entity.prototype, "staticNode", {
+                get: function () {
+                    return this._iStaticNode;
+                },
+                set: function (value) {
+                    this._iStaticNode = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Entity.prototype, "pickingCollisionVO", {
+                get: function () {
+                    if (!this._iPickingCollisionVO) {
+                        this._iPickingCollisionVO = new away.pick.PickingCollisionVO(this);
+                    }
+                    return this._iPickingCollisionVO;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Entity.prototype.iCollidesBefore = function (shortestCollisionDistance, findClosest) {
+                shortestCollisionDistance = shortestCollisionDistance;
+                findClosest = findClosest;
+                return true;
+            };
+
+            Object.defineProperty(Entity.prototype, "showBounds", {
+                get: function () {
+                    return this._showBounds;
+                },
+                set: function (value) {
+                    if (value == this._showBounds) {
+                        return;
+                    }
+                    this._showBounds = value;
+
+                    if (this._showBounds) {
+                        this.addBounds();
+                    } else {
+                        this.removeBounds();
+                    }
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Entity.prototype, "minX", {
+                get: //@override
+                function () {
+                    if (this._pBoundsInvalid) {
+                        this.pUpdateBounds();
+                    }
+                    return this._pBounds.min.x;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Entity.prototype, "minY", {
+                get: //@override
+                function () {
+                    if (this._pBoundsInvalid) {
+                        this.pUpdateBounds();
+                    }
+                    return this._pBounds.min.y;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Entity.prototype, "minZ", {
+                get: //@override
+                function () {
+                    if (this._pBoundsInvalid) {
+                        this.pUpdateBounds();
+                    }
+                    return this._pBounds.min.z;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Entity.prototype, "maxX", {
+                get: //@override
+                function () {
+                    if (this._pBoundsInvalid) {
+                        this.pUpdateBounds();
+                    }
+                    return this._pBounds.max.x;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Entity.prototype, "maxY", {
+                get: //@override
+                function () {
+                    if (this._pBoundsInvalid) {
+                        this.pUpdateBounds();
+                    }
+                    return this._pBounds.max.y;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Entity.prototype, "maxZ", {
+                get: //@override
+                function () {
+                    if (this._pBoundsInvalid) {
+                        this.pUpdateBounds();
+                    }
+                    return this._pBounds.max.z;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Entity.prototype.getBounds = function () {
+                if (this._pBoundsInvalid) {
+                    this.pUpdateBounds();
+                }
+                return this._pBounds;
+            };
+
+            Object.defineProperty(Entity.prototype, "bounds", {
+                set: function (value) {
+                    this.removeBounds();
+                    this._pBounds = value;
+                    this._worldBounds = value.clone();
+                    this.pInvalidateBounds();
+                    if (this._showBounds) {
+                        this.addBounds();
+                    }
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Entity.prototype, "worldBounds", {
+                get: function () {
+                    if (this._worldBoundsInvalid) {
+                        this.updateWorldBounds();
+                    }
+                    return this._worldBounds;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Entity.prototype.updateWorldBounds = function () {
+                this._worldBounds.transformFrom(this.bounds, this.sceneTransform);
+                this._worldBoundsInvalid = false;
+            };
+
+            Object.defineProperty(Entity.prototype, "iImplicitPartition", {
+                set: //@override
+                function (value) {
+                    if (value == this._pImplicitPartition) {
+                        return;
+                    }
+
+                    if (this._pImplicitPartition) {
+                        this.notifyPartitionUnassigned();
+                    }
+                    throw new away.errors.PartialImplementationError();
+
+                    //TODO super.implicitPartition = value;
+                    this.notifyPartitionAssigned();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Entity.prototype, "assetType", {
+                get: /*
+                //@override
+                public set scene( value:Scene3D )
+                {
+                if(value == _scene)
+                {
+                return;
+                }
+                if( this._scene)
+                {
+                _scene.unregisterEntity( this );
+                }
+                // callback to notify object has been spawned. Casts to please FDT
+                if ( value )
+                {
+                value.registerEntity(this);
+                }
+                super.scene = value;
+                }
+                */
+                //@override
+                function () {
+                    return away.library.AssetType.ENTITY;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Entity.prototype, "pickingCollider", {
+                get: function () {
+                    return this._iPickingCollider;
+                },
+                set: function (value) {
+                    this._iPickingCollider = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Entity.prototype.getEntityPartitionNode = function () {
+                if (!this._partitionNode) {
+                    this._partitionNode = this.pCreateEntityPartitionNode();
+                }
+                return this._partitionNode;
+            };
+
+            /* TODO Implementation dependency : BoundingVolumeBase
+            public isIntersectingRay( rayPosition:away.geom.Vector3D, rayDirection:away.geom.Vector3D ):boolean
+            {
+            var localRayPosition:away.geom.Vector3D = this.inverseSceneTransform.transformVector( rayPosition );
+            var localRayDirection:away.geom.Vector3D = this.inverseSceneTransform.deltaTransformVector( rayDirection );
+            
+            
+            if( !this._iPickingCollisionVO.localNormal )
+            {
+            this._iPickingCollisionVO.localNormal = new away.geom.Vector3D()
+            }
+            
+            
+            var rayEntryDistance:number = bounds.rayIntersection(localRayPosition, localRayDirection, this._iPickingCollisionVO.localNormal );
+            
+            if( rayEntryDistance < 0 )
+            {
+            return false;
+            }
+            
+            this._iPickingCollisionVO.rayEntryDistance = rayEntryDistance;
+            this._iPickingCollisionVO.localRayPosition = localRayPosition;
+            this._iPickingCollisionVO.localRayDirection = localRayDirection;
+            this._iPickingCollisionVO.rayPosition = rayPosition;
+            this._iPickingCollisionVO.rayDirection = rayDirection;
+            this._iPickingCollisionVO.rayOriginIsInsideBounds = rayEntryDistance == 0;
+            
+            return true;
+            }
+            //*/
+            Entity.prototype.pCreateEntityPartitionNode = function () {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            Entity.prototype.pGetDefaultBoundingVolume = function () {
+                // point lights should be using sphere bounds
+                // directional lights should be using null bounds
+                // TODO return new AxisAlignedBoundingBox();
+                return null;
+            };
+
+            Entity.prototype.pUpdateBounds = function () {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            Entity.prototype.pInvalidateSceneTransform = function () {
+                if (!this._pIgnoreTransform) {
+                    _super.prototype.pInvalidateSceneTransform.call(this);
+                    this._worldBoundsInvalid = true;
+                    this.notifySceneBoundsInvalid();
+                }
+            };
+
+            Entity.prototype.pInvalidateBounds = function () {
+                this._pBoundsInvalid = true;
+                this._worldBoundsInvalid = true;
+                this.notifySceneBoundsInvalid();
+            };
+
+            /* TODO: implement dependency super.updateMouseChildren();
+            public pUpdateMouseChildren():void
+            {
+            // If there is a parent and this child does not have a triangle collider, use its parent's triangle collider.
+            
+            if( this._pParent && !this.pickingCollider )
+            {
+            
+            
+            if ( this.pParent instanceof away.entities.Entity ) //if( this._pParent is Entity ) { // TODO: Test / validate
+            {
+            
+            var parentEntity : away.entities.Entity =  <away.entities.Entity> this._pParent;
+            
+            var collider:away.pick.IPickingCollider = parentEntity.pickingCollider;
+            if(collider)
+            {
+            
+            this.pickingCollider = collider;
+            
+            }
+            
+            }
+            }
+            
+            super.updateMouseChildren();
+            }
+            //*/
+            Entity.prototype.notifySceneBoundsInvalid = function () {
+                if (this._pScene) {
+                }
+            };
+
+            Entity.prototype.notifyPartitionAssigned = function () {
+                if (this._pScene) {
+                }
+            };
+
+            Entity.prototype.notifyPartitionUnassigned = function () {
+                if (this._pScene) {
+                }
+            };
+
+            Entity.prototype.addBounds = function () {
+                if (!this._boundsIsShown) {
+                    this._boundsIsShown = true;
+                }
+            };
+
+            Entity.prototype.removeBounds = function () {
+                if (!this._boundsIsShown) {
+                    this._boundsIsShown = false;
+                }
+            };
+
+            Entity.prototype.iInternalUpdate = function () {
+            };
+            return Entity;
+        })(away.containers.ObjectContainer3D);
+        entities.Entity = Entity;
+    })(away.entities || (away.entities = {}));
+    var entities = away.entities;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../_definitions.ts"/>
     (function (primitives) {
         var WireframePrimitiveBase = (function (_super) {
             __extends(WireframePrimitiveBase, _super);
@@ -7159,11 +7406,7 @@ var away;
     * ...
     * @author Gary Paluk - http://www.plugin.io
     */
-    ///<reference path="../entities/Entity.ts" />
-    ///<reference path="../math/Plane3D.ts" />
-    ///<reference path="../traverse/PartitionTraverser.ts" />
-    ///<reference path="../primitives/WireframePrimitiveBase.ts" />
-    ///<reference path="../errors/PartialImplementationError.ts" />
+    ///<reference path="../_definitions.ts" />
     (function (partition) {
         var NodeBase = (function () {
             function NodeBase() {
@@ -7315,11 +7558,7 @@ var away;
     * ...
     * @author Gary Paluk - http://www.plugin.io
     */
-    ///<reference path="../entities/Entity.ts" />
-    ///<reference path="../partition/EntityNode.ts" />
-    ///<reference path="../partition/NodeBase.ts" />
-    ///<reference path="../partition/NullNode.ts" />
-    ///<reference path="../traverse/PartitionTraverser.ts" />
+    ///<reference path="../_definitions.ts" />
     (function (partition) {
         var Partition3D = (function () {
             function Partition3D(rootNode) {
@@ -7420,12 +7659,7 @@ var away;
     * ...
     * @author Gary Paluk - http://www.plugin.io
     */
-    ///<reference path="../base/Object3D.ts" />
-    ///<reference path="../geom/Matrix3D.ts" />
-    ///<reference path="../library/assets/AssetType.ts" />
-    ///<reference path="../events/Object3DEvent.ts" />
-    ///<reference path="../partition/Partition3D.ts" />
-    ///<reference path="../errors/PartialImplementationError.ts" />
+    ///<reference path="../_definitions.ts" />
     (function (containers) {
         var ObjectContainer3D = (function (_super) {
             __extends(ObjectContainer3D, _super);
@@ -7970,10 +8204,7 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../entities/Entity.ts" />
-    ///<reference path="../geom/Vector3D.ts" />
-    ///<reference path="../geom/Point.ts" />
-    ///<reference path="../base/IRenderable.ts" />
+    ///<reference path="../_definitions.ts"/>
     (function (pick) {
         /**
         * Value object for a picking collision returned by a picking collider. Created as unique objects on entities
@@ -8002,396 +8233,7 @@ var away;
     * ...
     * @author Gary Paluk - http://www.plugin.io
     */
-    ///<reference path="../partition/EntityNode.ts" />
-    ///<reference path="../containers/ObjectContainer3D.ts" />
-    ///<reference path="../library/assets/AssetType.ts" />
-    ///<reference path="../errors/AbstractMethodError.ts" />
-    ///<reference path="../pick/IPickingCollider.ts" />
-    ///<reference path="../pick/PickingCollisionVO.ts" />
-    ///<reference path="../bounds/BoundingVolumeBase.ts" />
-    ///<reference path="../errors/PartialImplementationError.ts" />
-    (function (entities) {
-        var Entity = (function (_super) {
-            __extends(Entity, _super);
-            function Entity() {
-                _super.call(this);
-                this._pBoundsInvalid = true;
-                this._worldBoundsInvalid = true;
-                this._pBounds = this.pGetDefaultBoundingVolume();
-                this._worldBounds = this.pGetDefaultBoundingVolume();
-            }
-            //@override
-            Entity.prototype.setIgnoreTransform = function (value) {
-                if (this._pScene) {
-                }
-                _super.prototype.setIgnoreTransform.call(this, value);
-            };
-
-            Object.defineProperty(Entity.prototype, "shaderPickingDetails", {
-                get: function () {
-                    return this._shaderPickingDetails;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(Entity.prototype, "staticNode", {
-                get: function () {
-                    return this._iStaticNode;
-                },
-                set: function (value) {
-                    this._iStaticNode = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(Entity.prototype, "pickingCollisionVO", {
-                get: function () {
-                    if (!this._iPickingCollisionVO) {
-                        this._iPickingCollisionVO = new away.pick.PickingCollisionVO(this);
-                    }
-                    return this._iPickingCollisionVO;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Entity.prototype.iCollidesBefore = function (shortestCollisionDistance, findClosest) {
-                shortestCollisionDistance = shortestCollisionDistance;
-                findClosest = findClosest;
-                return true;
-            };
-
-            Object.defineProperty(Entity.prototype, "showBounds", {
-                get: function () {
-                    return this._showBounds;
-                },
-                set: function (value) {
-                    if (value == this._showBounds) {
-                        return;
-                    }
-                    this._showBounds = value;
-
-                    if (this._showBounds) {
-                        this.addBounds();
-                    } else {
-                        this.removeBounds();
-                    }
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(Entity.prototype, "minX", {
-                get: //@override
-                function () {
-                    if (this._pBoundsInvalid) {
-                        this.pUpdateBounds();
-                    }
-                    return this._pBounds.min.x;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(Entity.prototype, "minY", {
-                get: //@override
-                function () {
-                    if (this._pBoundsInvalid) {
-                        this.pUpdateBounds();
-                    }
-                    return this._pBounds.min.y;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(Entity.prototype, "minZ", {
-                get: //@override
-                function () {
-                    if (this._pBoundsInvalid) {
-                        this.pUpdateBounds();
-                    }
-                    return this._pBounds.min.z;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(Entity.prototype, "maxX", {
-                get: //@override
-                function () {
-                    if (this._pBoundsInvalid) {
-                        this.pUpdateBounds();
-                    }
-                    return this._pBounds.max.x;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(Entity.prototype, "maxY", {
-                get: //@override
-                function () {
-                    if (this._pBoundsInvalid) {
-                        this.pUpdateBounds();
-                    }
-                    return this._pBounds.max.y;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(Entity.prototype, "maxZ", {
-                get: //@override
-                function () {
-                    if (this._pBoundsInvalid) {
-                        this.pUpdateBounds();
-                    }
-                    return this._pBounds.max.z;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Entity.prototype.getBounds = function () {
-                if (this._pBoundsInvalid) {
-                    this.pUpdateBounds();
-                }
-                return this._pBounds;
-            };
-
-            Object.defineProperty(Entity.prototype, "bounds", {
-                set: function (value) {
-                    this.removeBounds();
-                    this._pBounds = value;
-                    this._worldBounds = value.clone();
-                    this.pInvalidateBounds();
-                    if (this._showBounds) {
-                        this.addBounds();
-                    }
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(Entity.prototype, "worldBounds", {
-                get: function () {
-                    if (this._worldBoundsInvalid) {
-                        this.updateWorldBounds();
-                    }
-                    return this._worldBounds;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Entity.prototype.updateWorldBounds = function () {
-                this._worldBounds.transformFrom(this.bounds, this.sceneTransform);
-                this._worldBoundsInvalid = false;
-            };
-
-            Object.defineProperty(Entity.prototype, "iImplicitPartition", {
-                set: //@override
-                function (value) {
-                    if (value == this._pImplicitPartition) {
-                        return;
-                    }
-
-                    if (this._pImplicitPartition) {
-                        this.notifyPartitionUnassigned();
-                    }
-                    throw new away.errors.PartialImplementationError();
-
-                    //TODO super.implicitPartition = value;
-                    this.notifyPartitionAssigned();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(Entity.prototype, "assetType", {
-                get: /*
-                //@override
-                public set scene( value:Scene3D )
-                {
-                if(value == _scene)
-                {
-                return;
-                }
-                if( this._scene)
-                {
-                _scene.unregisterEntity( this );
-                }
-                // callback to notify object has been spawned. Casts to please FDT
-                if ( value )
-                {
-                value.registerEntity(this);
-                }
-                super.scene = value;
-                }
-                */
-                //@override
-                function () {
-                    return away.library.AssetType.ENTITY;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(Entity.prototype, "pickingCollider", {
-                get: function () {
-                    return this._iPickingCollider;
-                },
-                set: function (value) {
-                    this._iPickingCollider = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Entity.prototype.getEntityPartitionNode = function () {
-                if (!this._partitionNode) {
-                    this._partitionNode = this.pCreateEntityPartitionNode();
-                }
-                return this._partitionNode;
-            };
-
-            /* TODO Implementation dependency : BoundingVolumeBase
-            public isIntersectingRay( rayPosition:away.geom.Vector3D, rayDirection:away.geom.Vector3D ):boolean
-            {
-            var localRayPosition:away.geom.Vector3D = this.inverseSceneTransform.transformVector( rayPosition );
-            var localRayDirection:away.geom.Vector3D = this.inverseSceneTransform.deltaTransformVector( rayDirection );
-            
-            
-            if( !this._iPickingCollisionVO.localNormal )
-            {
-            this._iPickingCollisionVO.localNormal = new away.geom.Vector3D()
-            }
-            
-            
-            var rayEntryDistance:number = bounds.rayIntersection(localRayPosition, localRayDirection, this._iPickingCollisionVO.localNormal );
-            
-            if( rayEntryDistance < 0 )
-            {
-            return false;
-            }
-            
-            this._iPickingCollisionVO.rayEntryDistance = rayEntryDistance;
-            this._iPickingCollisionVO.localRayPosition = localRayPosition;
-            this._iPickingCollisionVO.localRayDirection = localRayDirection;
-            this._iPickingCollisionVO.rayPosition = rayPosition;
-            this._iPickingCollisionVO.rayDirection = rayDirection;
-            this._iPickingCollisionVO.rayOriginIsInsideBounds = rayEntryDistance == 0;
-            
-            return true;
-            }
-            //*/
-            Entity.prototype.pCreateEntityPartitionNode = function () {
-                throw new away.errors.AbstractMethodError();
-            };
-
-            Entity.prototype.pGetDefaultBoundingVolume = function () {
-                // point lights should be using sphere bounds
-                // directional lights should be using null bounds
-                // TODO return new AxisAlignedBoundingBox();
-                return null;
-            };
-
-            Entity.prototype.pUpdateBounds = function () {
-                throw new away.errors.AbstractMethodError();
-            };
-
-            Entity.prototype.pInvalidateSceneTransform = function () {
-                if (!this._pIgnoreTransform) {
-                    _super.prototype.pInvalidateSceneTransform.call(this);
-                    this._worldBoundsInvalid = true;
-                    this.notifySceneBoundsInvalid();
-                }
-            };
-
-            Entity.prototype.pInvalidateBounds = function () {
-                this._pBoundsInvalid = true;
-                this._worldBoundsInvalid = true;
-                this.notifySceneBoundsInvalid();
-            };
-
-            /* TODO: implement dependency super.updateMouseChildren();
-            public pUpdateMouseChildren():void
-            {
-            // If there is a parent and this child does not have a triangle collider, use its parent's triangle collider.
-            
-            if( this._pParent && !this.pickingCollider )
-            {
-            
-            
-            if ( this.pParent instanceof away.entities.Entity ) //if( this._pParent is Entity ) { // TODO: Test / validate
-            {
-            
-            var parentEntity : away.entities.Entity =  <away.entities.Entity> this._pParent;
-            
-            var collider:away.pick.IPickingCollider = parentEntity.pickingCollider;
-            if(collider)
-            {
-            
-            this.pickingCollider = collider;
-            
-            }
-            
-            }
-            }
-            
-            super.updateMouseChildren();
-            }
-            //*/
-            Entity.prototype.notifySceneBoundsInvalid = function () {
-                if (this._pScene) {
-                }
-            };
-
-            Entity.prototype.notifyPartitionAssigned = function () {
-                if (this._pScene) {
-                }
-            };
-
-            Entity.prototype.notifyPartitionUnassigned = function () {
-                if (this._pScene) {
-                }
-            };
-
-            Entity.prototype.addBounds = function () {
-                if (!this._boundsIsShown) {
-                    this._boundsIsShown = true;
-                }
-            };
-
-            Entity.prototype.removeBounds = function () {
-                if (!this._boundsIsShown) {
-                    this._boundsIsShown = false;
-                }
-            };
-
-            Entity.prototype.iInternalUpdate = function () {
-            };
-            return Entity;
-        })(away.containers.ObjectContainer3D);
-        entities.Entity = Entity;
-    })(away.entities || (away.entities = {}));
-    var entities = away.entities;
-})(away || (away = {}));
-var away;
-(function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="../entities/Entity.ts" />
-    ///<reference path="NodeBase.ts" />
-    ///<reference path="../math/Plane3D.ts" />
+    ///<reference path="../_definitions.ts" />
     (function (partition) {
         var EntityNode = (function (_super) {
             __extends(EntityNode, _super);
@@ -8428,14 +8270,7511 @@ var away;
     })(away.partition || (away.partition = {}));
     var partition = away.partition;
 })(away || (away = {}));
-///<reference path="../src/away/partition/EntityNode.ts" />
-///<reference path="../src/away/entities/Entity.ts" />
-//<reference path="../errors/AbstractMethodError.ts" />
-//<reference path="../src/away/containers/Scene3D.ts" />
-//<reference path="../partition/NodeBase.ts" />
-///<reference path="../src/away/partition/EntityNode.ts" />
-//<reference path="../geom/Vector3D.ts" />
-//<reference path="../base/IRenderable.ts" />
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (errors) {
+        /**
+        * AbstractMethodError is thrown when an abstract method is called. The method in question should be overridden
+        * by a concrete subclass.
+        */
+        var PartialImplementationError = (function (_super) {
+            __extends(PartialImplementationError, _super);
+            /**
+            * Create a new AbstractMethodError.
+            * @param message An optional message to override the default error message.
+            * @param id The id of the error.
+            */
+            function PartialImplementationError(dependency, id) {
+                if (typeof dependency === "undefined") { dependency = ''; }
+                if (typeof id === "undefined") { id = 0; }
+                _super.call(this, "PartialImplementationError - this function is in development. Required Dependency: " + dependency, id);
+            }
+            return PartialImplementationError;
+        })(errors.Error);
+        errors.PartialImplementationError = PartialImplementationError;
+    })(away.errors || (away.errors = {}));
+    var errors = away.errors;
+})(away || (away = {}));
+var away;
+(function (away) {
+    (function (library) {
+        var AssetType = (function () {
+            function AssetType() {
+            }
+            AssetType.ENTITY = 'entity';
+            AssetType.SKYBOX = 'skybox';
+            AssetType.CAMERA = 'camera';
+            AssetType.SEGMENT_SET = 'segmentSet';
+            AssetType.MESH = 'mesh';
+            AssetType.GEOMETRY = 'geometry';
+            AssetType.SKELETON = 'skeleton';
+            AssetType.SKELETON_POSE = 'skeletonPose';
+            AssetType.CONTAINER = 'container';
+            AssetType.TEXTURE = 'texture';
+            AssetType.TEXTURE_PROJECTOR = 'textureProjector';
+            AssetType.MATERIAL = 'material';
+            AssetType.ANIMATION_SET = 'animationSet';
+            AssetType.ANIMATION_STATE = 'animationState';
+            AssetType.ANIMATION_NODE = 'animationNode';
+            AssetType.ANIMATOR = 'animator';
+            AssetType.STATE_TRANSITION = 'stateTransition';
+            AssetType.LIGHT = 'light';
+            AssetType.LIGHT_PICKER = 'lightPicker';
+            AssetType.SHADOW_MAP_METHOD = 'shadowMapMethod';
+            AssetType.EFFECTS_METHOD = 'effectsMethod';
+            return AssetType;
+        })();
+        library.AssetType = AssetType;
+    })(away.library || (away.library = {}));
+    var library = away.library;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../_definitions.ts" />
+    (function (display) {
+        var Stage3D = (function (_super) {
+            __extends(Stage3D, _super);
+            function Stage3D(canvas) {
+                _super.call(this);
+                this._canvas = canvas;
+            }
+            Stage3D.prototype.requestContext = function () {
+                try  {
+                    this._context3D = new away.display3D.Context3D(this._canvas);
+                } catch (e) {
+                    this.dispatchEvent(new away.events.Event(away.events.Event.ERROR));
+                }
+
+                if (this._context3D) {
+                    this.dispatchEvent(new away.events.Event(away.events.Event.CONTEXT3D_CREATE));
+                }
+            };
+
+            Object.defineProperty(Stage3D.prototype, "canvas", {
+                get: function () {
+                    return this._canvas;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Stage3D.prototype, "context3D", {
+                get: function () {
+                    return this._context3D;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return Stage3D;
+        })(away.events.EventDispatcher);
+        display.Stage3D = Stage3D;
+    })(away.display || (away.display = {}));
+    var display = away.display;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    (function (utils) {
+        var CSS = (function () {
+            function CSS() {
+            }
+            CSS.setCanvasSize = function (canvas, width, height) {
+                canvas.style.width = width + "px";
+                canvas.style.height = height + "px";
+                canvas.width = width;
+                canvas.height = height;
+            };
+
+            CSS.setCanvasVisibility = function (canvas, visible) {
+                if (visible) {
+                    canvas.style.visibility = 'visible';
+                } else {
+                    canvas.style.visibility = 'hidden';
+                }
+            };
+
+            CSS.setCanvasAlpha = function (canvas, alpha) {
+                var context = canvas.getContext("2d");
+                context.globalAlpha = alpha;
+            };
+
+            CSS.setCanvasPosition = function (canvas, x, y, absolute) {
+                if (typeof absolute === "undefined") { absolute = false; }
+                if (absolute) {
+                    canvas.style.position = "absolute";
+                } else {
+                    canvas.style.position = "relative";
+                }
+
+                canvas.style.left = x + "px";
+                canvas.style.top = y + "px";
+            };
+            return CSS;
+        })();
+        utils.CSS = CSS;
+    })(away.utils || (away.utils = {}));
+    var utils = away.utils;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../_definitions.ts"/>
+    (function (errors) {
+        var DocumentError = (function (_super) {
+            __extends(DocumentError, _super);
+            function DocumentError(message, id) {
+                if (typeof message === "undefined") { message = "DocumentError"; }
+                if (typeof id === "undefined") { id = 0; }
+                _super.call(this, message, id);
+            }
+            DocumentError.DOCUMENT_DOES_NOT_EXIST = "documentDoesNotExist";
+            return DocumentError;
+        })(errors.Error);
+        errors.DocumentError = DocumentError;
+    })(away.errors || (away.errors = {}));
+    var errors = away.errors;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../_definitions.ts" />
+    (function (containers) {
+        var View3D = (function () {
+            function View3D(scene, camera) {
+                this._time = 0;
+                this._deltaTime = 0;
+                this._backgroundColor = 0x000000;
+                this._backgroundAlpha = 1;
+                this._depthTextureInvalid = true;
+                //private _background:away.textures.Texture2DBase;
+                //public _pStage3DProxy:away.managers.Stage3DProxy;
+                this._pBackBufferInvalid = true;
+                //public _pRttBufferManager:away.managers.RTTBufferManager;
+                this._rightClickMenuEnabled = true;
+                //private _menu0:away.ui.ContextMenuItem;
+                //private _menu1:away.ui.ContextMenuItem;
+                //private _viewContextMenu:away.ui.ContextMenu;
+                this._pShareContext = false;
+                this._scissorRectDirty = true;
+                this._viewportDirty = true;
+                this._layeredView = false;
+                // TODO link to displaylist
+                //this._profile = profile;
+                this._pScene = scene || new containers.Scene3D();
+
+                this._pScene.addEventListener(away.events.Scene3DEvent.PARTITION_CHANGED, this.onScenePartitionChanged, this);
+                this._pCamera = camera || new away.cameras.Camera3D();
+            }
+            View3D.prototype.onScenePartitionChanged = function (e) {
+                if (this._pCamera) {
+                    this._pCamera.partition = this.scene.partition;
+                }
+            };
+
+            Object.defineProperty(View3D.prototype, "scene", {
+                get: /*
+                public get rightClickMenuEnabled():Boolean
+                {
+                return this._rightClickMenuEnabled;
+                }
+                
+                public set rightClickMenuEnabled( val:boolean )
+                {
+                this._rightClickMenuEnabled = val;
+                this.updateRightClickMenu();
+                }
+                
+                public get stage3DProxy():away.managers.Stage3DProxy
+                {
+                return this._stage3DProxy;
+                }
+                
+                public set stage3DProxy( stage3DProxy:away.managers.Stage3DProxy )
+                {
+                if (this._stage3DProxy)
+                {
+                this._stage3DProxy.removeEventListener(away.events.Stage3DEvent.VIEWPORT_UPDATED, this.onViewportUpdated, this );
+                }
+                
+                this._stage3DProxy = stage3DProxy;
+                this._stage3DProxy.addEventListener( away.events.Stage3DEvent.VIEWPORT_UPDATED, this.onViewportUpdated, this );
+                this._renderer.stage3DProxy = this._depthRenderer.stage3DProxy = _stage3DProxy;
+                this._globalPosDirty = true;
+                this._backBufferInvalid = true;
+                }
+                
+                public get forceMouseMove():boolean
+                {
+                return this._mouse3DManager.forceMouseMove;
+                }
+                
+                public set forceMouseMove( value:boolean )
+                {
+                this._mouse3DManager.forceMouseMove = value;
+                this._touch3DManager.forceTouchMove = value;
+                }
+                
+                public get background():away.textures.Texture2DBase
+                {
+                return this._background;
+                }
+                
+                public set background( value:away.textures.Texture2DBase )
+                {
+                this._background = value;
+                this._renderer.background = _background;
+                }
+                
+                public get layeredView():boolean
+                {
+                return this._layeredView;
+                }
+                
+                public set layeredView( value:boolean )
+                {
+                this._layeredView = value;
+                }
+                
+                private initHitField()
+                {
+                this._hitField = new away.display.Sprite();
+                this._hitField.alpha = 0;
+                this._hitField.doubleClickEnabled = true;
+                this._hitField.graphics.beginFill( 0x000000 );
+                this._hitField.graphics.drawRect( 0, 0, 100, 100 );
+                this.addChild( this._hitField );
+                }
+                
+                
+                //TODO override public function get filters():Array
+                //TODO override public function set filters(value:Array):void
+                
+                
+                public get filters3d():Array
+                {
+                return this._filter3DRenderer ? this._filter3DRenderer.filters : null;
+                }
+                
+                //TODO public set filters3d( value:Array )
+                
+                public get renderer():away.render.RendererBase
+                {
+                return this._renderer;
+                }
+                
+                //TODO public function set renderer(value:RendererBase):void
+                
+                public get backgroundColor():number
+                {
+                return this._backgroundColor;
+                }
+                
+                //TODO public function set backgroundColor(value:uint):void
+                
+                public get backgroundAlpha():number
+                {
+                return this._backgroundAlpha;
+                }
+                
+                public function set backgroundAlpha(value:Number):void
+                {
+                if (value > 1)
+                {
+                value = 1;
+                }
+                else if (value < 0)
+                {
+                value = 0;
+                }
+                
+                this._renderer.backgroundAlpha = value;
+                this._backgroundAlpha = value;
+                }
+                
+                public get camera():away.cameras.Camera3D
+                {
+                return this._camera;
+                }
+                
+                //TODO public function set camera(camera:Camera3D):void
+                */
+                function () {
+                    return this._pScene;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return View3D;
+        })();
+        containers.View3D = View3D;
+    })(away.containers || (away.containers = {}));
+    var containers = away.containers;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (library) {
+        var NumSuffixConflictStrategy = (function (_super) {
+            __extends(NumSuffixConflictStrategy, _super);
+            function NumSuffixConflictStrategy(separator) {
+                if (typeof separator === "undefined") { separator = '.'; }
+                _super.call(this);
+
+                this._separator = separator;
+                this._next_suffix = {};
+            }
+            NumSuffixConflictStrategy.prototype.resolveConflict = function (changedAsset, oldAsset, assetsDictionary, precedence) {
+                var orig;
+                var new_name;
+                var base;
+                var suffix;
+
+                orig = changedAsset.name;
+
+                if (orig.indexOf(this._separator) >= 0) {
+                    // Name has an ocurrence of the separator, so get base name and suffix,
+                    // unless suffix is non-numerical, in which case revert to zero and
+                    // use entire name as base
+                    base = orig.substring(0, orig.lastIndexOf(this._separator));
+                    suffix = parseInt(orig.substring(base.length - 1));
+
+                    if (isNaN(suffix)) {
+                        base = orig;
+                        suffix = 0;
+                    }
+                } else {
+                    base = orig;
+                    suffix = 0;
+                }
+
+                if (suffix == 0 && this._next_suffix.hasOwnProperty(base)) {
+                    suffix = this._next_suffix[base];
+                }
+
+                do {
+                    suffix++;
+
+                    new_name = base.concat(this._separator, suffix.toString());
+                } while(assetsDictionary.hasOwnProperty(new_name));
+
+                this._next_suffix[base] = suffix;
+                this._pUpdateNames(oldAsset.assetNamespace, new_name, oldAsset, changedAsset, assetsDictionary, precedence);
+            };
+
+            NumSuffixConflictStrategy.prototype.create = function () {
+                return new away.library.NumSuffixConflictStrategy(this._separator);
+            };
+            return NumSuffixConflictStrategy;
+        })(away.library.ConflictStrategyBase);
+        library.NumSuffixConflictStrategy = NumSuffixConflictStrategy;
+    })(away.library || (away.library = {}));
+    var library = away.library;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (library) {
+        //import away3d.library.assets.IAsset;
+        var IgnoreConflictStrategy = (function (_super) {
+            __extends(IgnoreConflictStrategy, _super);
+            function IgnoreConflictStrategy() {
+                _super.call(this);
+            }
+            IgnoreConflictStrategy.prototype.resolveConflict = function (changedAsset, oldAsset, assetsDictionary, precedence) {
+                // Do nothing, ignore the fact that there is a conflict.
+                return;
+            };
+
+            IgnoreConflictStrategy.prototype.create = function () {
+                return new away.library.IgnoreConflictStrategy();
+            };
+            return IgnoreConflictStrategy;
+        })(away.library.ConflictStrategyBase);
+        library.IgnoreConflictStrategy = IgnoreConflictStrategy;
+    })(away.library || (away.library = {}));
+    var library = away.library;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (library) {
+        //import away3d.library.assets.IAsset;
+        var ErrorConflictStrategy = (function (_super) {
+            __extends(ErrorConflictStrategy, _super);
+            function ErrorConflictStrategy() {
+                _super.call(this);
+            }
+            ErrorConflictStrategy.prototype.resolveConflict = function (changedAsset, oldAsset, assetsDictionary, precedence) {
+                throw new away.errors.Error('Asset name collision while AssetLibrary.namingStrategy set to AssetLibrary.THROW_ERROR. Asset path: ' + changedAsset.assetFullPath);
+            };
+
+            ErrorConflictStrategy.prototype.create = function () {
+                return new ErrorConflictStrategy();
+            };
+            return ErrorConflictStrategy;
+        })(away.library.ConflictStrategyBase);
+        library.ErrorConflictStrategy = ErrorConflictStrategy;
+    })(away.library || (away.library = {}));
+    var library = away.library;
+})(away || (away = {}));
+var away;
+(function (away) {
+    (function (library) {
+        /**
+        * Enumaration class for precedence when resolving naming conflicts in the library.
+        *
+        * @see away3d.library.AssetLibrary.conflictPrecedence
+        * @see away3d.library.AssetLibrary.conflictStrategy
+        * @see away3d.library.naming.ConflictStrategy
+        */
+        var ConflictPrecedence = (function () {
+            function ConflictPrecedence() {
+            }
+            ConflictPrecedence.FAVOR_OLD = 'favorOld';
+
+            ConflictPrecedence.FAVOR_NEW = 'favorNew';
+            return ConflictPrecedence;
+        })();
+        library.ConflictPrecedence = ConflictPrecedence;
+    })(away.library || (away.library = {}));
+    var library = away.library;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (library) {
+        /**
+        * Abstract base class for naming conflict resolution classes. Extend this to create a
+        * strategy class which the asset library can use to resolve asset naming conflicts, or
+        * use one of the bundled concrete strategy classes:
+        *
+        * <ul>
+        *   <li>IgnoreConflictStrategy (ConflictStrategy.IGNORE)</li>
+        *   <li>ErrorConflictStrategy (ConflictStrategy.THROW_ERROR)</li>
+        *   <li>NumSuffixConflictStrategy (ConflictStrategy.APPEND_NUM_SUFFIX)</li>
+        * </ul>
+        *
+        * @see away3d.library.AssetLibrary.conflictStrategy
+        * @see away3d.library.naming.ConflictStrategy
+        * @see away3d.library.naming.IgnoreConflictStrategy
+        * @see away3d.library.naming.ErrorConflictStrategy
+        * @see away3d.library.naming.NumSuffixConflictStrategy
+        */
+        var ConflictStrategyBase = (function () {
+            function ConflictStrategyBase() {
+            }
+            /**
+            * Resolve a naming conflict between two assets. Must be implemented by concrete strategy
+            * classes.
+            */
+            ConflictStrategyBase.prototype.resolveConflict = function (changedAsset, oldAsset, assetsDictionary, precedence) {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            /**
+            * Create instance of this conflict strategy. Used internally by the AssetLibrary to
+            * make sure the same strategy instance is not used in all AssetLibrary instances, which
+            * would break any state caching that happens inside the strategy class.
+            */
+            ConflictStrategyBase.prototype.create = function () {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            /**
+            * Provided as a convenience method for all conflict strategy classes, as a way to finalize
+            * the conflict resolution by applying the new names and dispatching the correct events.
+            */
+            ConflictStrategyBase.prototype._pUpdateNames = function (ns, nonConflictingName, oldAsset, newAsset, assetsDictionary, precedence) {
+                var loser_prev_name;
+                var winner;
+                var loser;
+
+                winner = (precedence === away.library.ConflictPrecedence.FAVOR_NEW) ? newAsset : oldAsset;
+                loser = (precedence === away.library.ConflictPrecedence.FAVOR_NEW) ? oldAsset : newAsset;
+
+                loser_prev_name = loser.name;
+
+                assetsDictionary[winner.name] = winner;
+                assetsDictionary[nonConflictingName] = loser;
+                loser.resetAssetPath(nonConflictingName, ns, false);
+
+                loser.dispatchEvent(new away.events.AssetEvent(away.events.AssetEvent.ASSET_CONFLICT_RESOLVED, loser, loser_prev_name));
+            };
+            return ConflictStrategyBase;
+        })();
+        library.ConflictStrategyBase = ConflictStrategyBase;
+    })(away.library || (away.library = {}));
+    var library = away.library;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (library) {
+        /**
+        * AssetLibraryBundle enforces a multiton pattern and is not intended to be instanced directly.
+        * Its purpose is to create a container for 3D data management, both before and after parsing.
+        * If you are interested in creating multiple library bundles, please use the <code>getInstance()</code> method.
+        */
+        var AssetLibraryBundle = (function (_super) {
+            __extends(AssetLibraryBundle, _super);
+            /**
+            * Creates a new <code>AssetLibraryBundle</code> object.
+            *
+            * @param me A multiton enforcer for the AssetLibraryBundle ensuring it cannnot be instanced.
+            */
+            function AssetLibraryBundle(me) {
+                _super.call(this);
+                this._loadingSessionsGarbage = new Array();
+
+                //me = me;
+                this._assets = new Array();
+                this._assetDictionary = new Object();
+                this._loadingSessions = new Array();
+
+                this.conflictStrategy = away.library.ConflictStrategy.IGNORE.create();
+                this.conflictPrecedence = away.library.ConflictPrecedence.FAVOR_NEW;
+            }
+            AssetLibraryBundle.getInstance = /**
+            * Returns an AssetLibraryBundle instance. If no key is given, returns the default bundle instance (which is
+            * similar to using the AssetLibraryBundle as a singleton.) To keep several separated library bundles,
+            * pass a string key to this method to define which bundle should be returned. This is
+            * referred to as using the AssetLibrary as a multiton.
+            *
+            * @param key Defines which multiton instance should be returned.
+            * @return An instance of the asset library
+            */
+            function (key) {
+                if (typeof key === "undefined") { key = 'default'; }
+                if (!key) {
+                    key = 'default';
+                }
+
+                if (!away.library.AssetLibrary._iInstances.hasOwnProperty(key)) {
+                    away.library.AssetLibrary._iInstances[key] = new away.library.AssetLibraryBundle(new AssetLibraryBundleSingletonEnforcer());
+                }
+
+                return away.library.AssetLibrary._iInstances[key];
+            };
+
+            /**
+            *
+            */
+            AssetLibraryBundle.prototype.enableParser = function (parserClass) {
+                away.loaders.SingleFileLoader.enableParser(parserClass);
+            };
+
+            /**
+            *
+            */
+            AssetLibraryBundle.prototype.enableParsers = function (parserClasses) {
+                away.loaders.SingleFileLoader.enableParsers(parserClasses);
+            };
+
+            Object.defineProperty(AssetLibraryBundle.prototype, "conflictStrategy", {
+                get: /**
+                * Defines which strategy should be used for resolving naming conflicts, when two library
+                * assets are given the same name. By default, <code>ConflictStrategy.APPEND_NUM_SUFFIX</code>
+                * is used which means that a numeric suffix is appended to one of the assets. The
+                * <code>conflictPrecedence</code> property defines which of the two conflicting assets will
+                * be renamed.
+                *
+                * @see away3d.library.naming.ConflictStrategy
+                * @see away3d.library.AssetLibrary.conflictPrecedence
+                */
+                function () {
+                    return this._strategy;
+                },
+                set: function (val) {
+                    if (!val) {
+                        throw new away.errors.Error('namingStrategy must not be null. To ignore naming, use AssetLibrary.IGNORE');
+                    }
+
+                    this._strategy = val.create();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(AssetLibraryBundle.prototype, "conflictPrecedence", {
+                get: /**
+                * Defines which asset should have precedence when resolving a naming conflict between
+                * two assets of which one has just been renamed by the user or by a parser. By default
+                * <code>ConflictPrecedence.FAVOR_NEW</code> is used, meaning that the newly renamed
+                * asset will keep it's new name while the older asset gets renamed to not conflict.
+                *
+                * This property is ignored for conflict strategies that do not actually rename an
+                * asset automatically, such as ConflictStrategy.IGNORE and ConflictStrategy.THROW_ERROR.
+                *
+                * @see away3d.library.naming.ConflictPrecedence
+                * @see away3d.library.naming.ConflictStrategy
+                */
+                function () {
+                    return this._strategyPreference;
+                },
+                set: function (val) {
+                    this._strategyPreference = val;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * Create an AssetLibraryIterator instance that can be used to iterate over the assets
+            * in this asset library instance. The iterator can filter assets on asset type and/or
+            * namespace. A "null" filter value means no filter of that type is used.
+            *
+            * @param assetTypeFilter Asset type to filter on (from the AssetType enum class.) Use
+            * null to not filter on asset type.
+            * @param namespaceFilter Namespace to filter on. Use null to not filter on namespace.
+            * @param filterFunc Callback function to use when deciding whether an asset should be
+            * included in the iteration or not. This needs to be a function that takes a single
+            * parameter of type IAsset and returns a boolean where true means it should be included.
+            *
+            * @see away3d.library.assets.AssetType
+            */
+            AssetLibraryBundle.prototype.createIterator = function (assetTypeFilter, namespaceFilter, filterFunc) {
+                if (typeof assetTypeFilter === "undefined") { assetTypeFilter = null; }
+                if (typeof namespaceFilter === "undefined") { namespaceFilter = null; }
+                if (typeof filterFunc === "undefined") { filterFunc = null; }
+                return new away.library.AssetLibraryIterator(this._assets, assetTypeFilter, namespaceFilter, filterFunc);
+            };
+
+            /**
+            * Loads a file and (optionally) all of its dependencies.
+            *
+            * @param req The URLRequest object containing the URL of the file to be loaded.
+            * @param context An optional context object providing additional parameters for loading
+            * @param ns An optional namespace string under which the file is to be loaded, allowing the differentiation of two resources with identical assets
+            * @param parser An optional parser object for translating the loaded data into a usable resource. If not provided, AssetLoader will attempt to auto-detect the file type.
+            */
+            AssetLibraryBundle.prototype.load = function (req, context, ns, parser) {
+                if (typeof context === "undefined") { context = null; }
+                if (typeof ns === "undefined") { ns = null; }
+                if (typeof parser === "undefined") { parser = null; }
+                return this.loadResource(req, context, ns, parser);
+            };
+
+            /**
+            * Loads a resource from existing data in memory.
+            *
+            * @param data The data object containing all resource information.
+            * @param context An optional context object providing additional parameters for loading
+            * @param ns An optional namespace string under which the file is to be loaded, allowing the differentiation of two resources with identical assets
+            * @param parser An optional parser object for translating the loaded data into a usable resource. If not provided, AssetLoader will attempt to auto-detect the file type.
+            */
+            AssetLibraryBundle.prototype.loadData = function (data, context, ns, parser) {
+                if (typeof context === "undefined") { context = null; }
+                if (typeof ns === "undefined") { ns = null; }
+                if (typeof parser === "undefined") { parser = null; }
+                return this.parseResource(data, context, ns, parser);
+            };
+
+            /**
+            *
+            */
+            AssetLibraryBundle.prototype.getAsset = function (name, ns) {
+                if (typeof ns === "undefined") { ns = null; }
+                if (this._assetDictDirty) {
+                    this.rehashAssetDict();
+                }
+
+                if (ns == null) {
+                    ns = away.library.NamedAssetBase.DEFAULT_NAMESPACE;
+                }
+
+                if (!this._assetDictionary.hasOwnProperty(ns)) {
+                    return null;
+                }
+
+                return this._assetDictionary[ns][name];
+            };
+
+            /**
+            * Adds an asset to the asset library, first making sure that it's name is unique
+            * using the method defined by the <code>conflictStrategy</code> and
+            * <code>conflictPrecedence</code> properties.
+            */
+            AssetLibraryBundle.prototype.addAsset = function (asset) {
+                var ns;
+                var old;
+
+                if (this._assets.indexOf(asset) >= 0) {
+                    return;
+                }
+
+                old = this.getAsset(asset.name, asset.assetNamespace);
+                ns = asset.assetNamespace || library.NamedAssetBase.DEFAULT_NAMESPACE;
+
+                if (old != null) {
+                    this._strategy.resolveConflict(asset, old, this._assetDictionary[ns], this._strategyPreference);
+                }
+
+                //create unique-id (for now this is used in AwayBuilder only
+                asset.id = away.library.IDUtil.createUID();
+
+                // Add it
+                this._assets.push(asset);
+
+                if (!this._assetDictionary.hasOwnProperty(ns)) {
+                    this._assetDictionary[ns] = new Object();
+                }
+
+                this._assetDictionary[ns][asset.name] = asset;
+
+                asset.addEventListener(away.events.AssetEvent.ASSET_RENAME, this.onAssetRename, this);
+                asset.addEventListener(away.events.AssetEvent.ASSET_CONFLICT_RESOLVED, this.onAssetConflictResolved, this);
+            };
+
+            /**
+            * Removes an asset from the library, and optionally disposes that asset by calling
+            * it's disposeAsset() method (which for most assets is implemented as a default
+            * version of that type's dispose() method.
+            *
+            * @param asset The asset which should be removed from this library.
+            * @param dispose Defines whether the assets should also be disposed.
+            */
+            AssetLibraryBundle.prototype.removeAsset = function (asset, dispose) {
+                if (typeof dispose === "undefined") { dispose = true; }
+                var idx;
+
+                this.removeAssetFromDict(asset);
+
+                asset.removeEventListener(away.events.AssetEvent.ASSET_RENAME, this.onAssetRename, this);
+                asset.removeEventListener(away.events.AssetEvent.ASSET_CONFLICT_RESOLVED, this.onAssetConflictResolved, this);
+
+                idx = this._assets.indexOf(asset);
+                if (idx >= 0) {
+                    this._assets.splice(idx, 1);
+                }
+
+                if (dispose) {
+                    asset.dispose();
+                }
+            };
+
+            /**
+            * Removes an asset which is specified using name and namespace.
+            *
+            * @param name The name of the asset to be removed.
+            * @param ns The namespace to which the desired asset belongs.
+            * @param dispose Defines whether the assets should also be disposed.
+            *
+            * @see away3d.library.AssetLibrary.removeAsset()
+            */
+            AssetLibraryBundle.prototype.removeAssetByName = function (name, ns, dispose) {
+                if (typeof ns === "undefined") { ns = null; }
+                if (typeof dispose === "undefined") { dispose = true; }
+                var asset = this.getAsset(name, ns);
+
+                if (asset) {
+                    this.removeAsset(asset, dispose);
+                }
+
+                return asset;
+            };
+
+            /**
+            * Removes all assets from the asset library, optionally disposing them as they
+            * are removed.
+            *
+            * @param dispose Defines whether the assets should also be disposed.
+            */
+            AssetLibraryBundle.prototype.removeAllAssets = function (dispose) {
+                if (typeof dispose === "undefined") { dispose = true; }
+                if (dispose) {
+                    var asset;
+
+                    for (var c = 0; c < this._assets.length; c++) {
+                        asset = this._assets[c];
+                        asset.dispose();
+                    }
+                }
+
+                this._assets.length = 0;
+                this.rehashAssetDict();
+            };
+
+            /**
+            * Removes all assets belonging to a particular namespace (null for default)
+            * from the asset library, and optionall disposes them by calling their
+            * disposeAsset() method.
+            *
+            * @param ns The namespace from which all assets should be removed.
+            * @param dispose Defines whether the assets should also be disposed.
+            *
+            * @see away3d.library.AssetLibrary.removeAsset()
+            */
+            AssetLibraryBundle.prototype.removeNamespaceAssets = function (ns, dispose) {
+                if (typeof ns === "undefined") { ns = null; }
+                if (typeof dispose === "undefined") { dispose = true; }
+                var idx = 0;
+                var asset;
+                var old_assets;
+
+                // Empty the assets vector after having stored a copy of it.
+                // The copy will be filled with all assets which weren't removed.
+                old_assets = this._assets.concat();
+                this._assets.length = 0;
+
+                if (ns == null) {
+                    ns = away.library.NamedAssetBase.DEFAULT_NAMESPACE;
+                }
+
+                for (var d = 0; d < old_assets.length; d++) {
+                    asset = old_assets[d];
+
+                    if (asset.assetNamespace == ns) {
+                        if (dispose) {
+                            asset.dispose();
+                        }
+
+                        // Remove asset from dictionary, but don't try to auto-remove
+                        // the namespace, which will trigger an unnecessarily expensive
+                        // test that is not needed since we know that the namespace
+                        // will be empty when loop finishes.
+                        this.removeAssetFromDict(asset, false);
+                    } else {
+                        this._assets[idx++] = asset;
+                    }
+                }
+
+                if (this._assetDictionary.hasOwnProperty(ns)) {
+                    delete this._assetDictionary[ns];
+                }
+            };
+
+            AssetLibraryBundle.prototype.removeAssetFromDict = function (asset, autoRemoveEmptyNamespace) {
+                if (typeof autoRemoveEmptyNamespace === "undefined") { autoRemoveEmptyNamespace = true; }
+                if (this._assetDictDirty) {
+                    this.rehashAssetDict();
+                }
+
+                if (this._assetDictionary.hasOwnProperty(asset.assetNamespace)) {
+                    if (this._assetDictionary[asset.assetNamespace].hasOwnProperty(asset.name)) {
+                        delete this._assetDictionary[asset.assetNamespace][asset.name];
+                    }
+
+                    if (autoRemoveEmptyNamespace) {
+                        var key;
+                        var empty = true;
+
+                        for (key in this._assetDictionary[asset.assetNamespace]) {
+                            empty = false;
+                            break;
+                        }
+
+                        if (empty) {
+                            delete this._assetDictionary[asset.assetNamespace];
+                        }
+                    }
+                }
+            };
+
+            /**
+            * Loads a yet unloaded resource file from the given url.
+            */
+            AssetLibraryBundle.prototype.loadResource = function (req, context, ns, parser) {
+                if (typeof context === "undefined") { context = null; }
+                if (typeof ns === "undefined") { ns = null; }
+                if (typeof parser === "undefined") { parser = null; }
+                var loader = new away.loaders.AssetLoader();
+
+                if (!this._loadingSessions) {
+                    this._loadingSessions = new Array();
+                }
+
+                this._loadingSessions.push(loader);
+
+                loader.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceRetrieved, this);
+                loader.addEventListener(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this.onDependencyRetrieved, this);
+                loader.addEventListener(away.events.AssetEvent.TEXTURE_SIZE_ERROR, this.onTextureSizeError, this);
+                loader.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.ANIMATION_SET_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.ANIMATION_STATE_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.ANIMATION_NODE_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.STATE_TRANSITION_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.TEXTURE_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.CONTAINER_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.GEOMETRY_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.MATERIAL_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.MESH_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.ENTITY_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.SKELETON_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.SKELETON_POSE_COMPLETE, this.onAssetComplete, this);
+
+                // Error are handled separately (see documentation for addErrorHandler)
+                loader._iAddErrorHandler(this.onDependencyRetrievingError);
+                loader._iAddParseErrorHandler(this.onDependencyRetrievingParseError);
+
+                return loader.load(req, context, ns, parser);
+            };
+
+            AssetLibraryBundle.prototype.stopAllLoadingSessions = function () {
+                var i;
+
+                if (!this._loadingSessions) {
+                    this._loadingSessions = new Array();
+                }
+
+                var length = this._loadingSessions.length;
+
+                for (i = 0; i < length; i++) {
+                    this.killLoadingSession(this._loadingSessions[i]);
+                }
+
+                this._loadingSessions = null;
+            };
+
+            /**
+            * Retrieves an unloaded resource parsed from the given data.
+            * @param data The data to be parsed.
+            * @param id The id that will be assigned to the resource. This can later also be used by the getResource method.
+            * @param ignoreDependencies Indicates whether or not dependencies should be ignored or loaded.
+            * @param parser An optional parser object that will translate the data into a usable resource.
+            * @return A handle to the retrieved resource.
+            */
+            AssetLibraryBundle.prototype.parseResource = function (data, context, ns, parser) {
+                if (typeof context === "undefined") { context = null; }
+                if (typeof ns === "undefined") { ns = null; }
+                if (typeof parser === "undefined") { parser = null; }
+                var loader = new away.loaders.AssetLoader();
+
+                if (!this._loadingSessions) {
+                    this._loadingSessions = new Array();
+                }
+
+                this._loadingSessions.push(loader);
+
+                loader.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceRetrieved, this);
+                loader.addEventListener(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this.onDependencyRetrieved, this);
+                loader.addEventListener(away.events.AssetEvent.TEXTURE_SIZE_ERROR, this.onTextureSizeError, this);
+                loader.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.ANIMATION_SET_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.ANIMATION_STATE_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.ANIMATION_NODE_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.STATE_TRANSITION_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.TEXTURE_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.CONTAINER_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.GEOMETRY_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.MATERIAL_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.MESH_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.ENTITY_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.SKELETON_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.SKELETON_POSE_COMPLETE, this.onAssetComplete, this);
+
+                // Error are handled separately (see documentation for addErrorHandler)
+                loader._iAddErrorHandler(this.onDependencyRetrievingError);
+                loader._iAddParseErrorHandler(this.onDependencyRetrievingParseError);
+
+                return loader.loadData(data, '', context, ns, parser);
+            };
+
+            AssetLibraryBundle.prototype.rehashAssetDict = function () {
+                var asset;
+
+                this._assetDictionary = {};
+
+                var l = this._assets.length;
+
+                for (var c = 0; c < l; c++) {
+                    asset = this._assets[c];
+
+                    if (!this._assetDictionary.hasOwnProperty(asset.assetNamespace)) {
+                        this._assetDictionary[asset.assetNamespace] = {};
+                    }
+
+                    this._assetDictionary[asset.assetNamespace][asset.name] = asset;
+                }
+
+                this._assetDictDirty = false;
+            };
+
+            /**
+            * Called when a dependency was retrieved.
+            */
+            AssetLibraryBundle.prototype.onDependencyRetrieved = function (event) {
+                //if (hasEventListener(LoaderEvent.DEPENDENCY_COMPLETE))
+                this.dispatchEvent(event);
+            };
+
+            /**
+            * Called when a an error occurs during dependency retrieving.
+            */
+            AssetLibraryBundle.prototype.onDependencyRetrievingError = function (event) {
+                if (this.hasEventListener(away.events.LoaderEvent.LOAD_ERROR, this.onDependencyRetrievingError, this)) {
+                    this.dispatchEvent(event);
+                    return true;
+                } else {
+                    return false;
+                }
+            };
+
+            /**
+            * Called when a an error occurs during parsing.
+            */
+            AssetLibraryBundle.prototype.onDependencyRetrievingParseError = function (event) {
+                if (this.hasEventListener(away.events.ParserEvent.PARSE_ERROR, this.onDependencyRetrievingParseError, this)) {
+                    this.dispatchEvent(event);
+                    return true;
+                } else {
+                    return false;
+                }
+            };
+
+            AssetLibraryBundle.prototype.onAssetComplete = function (event) {
+                if (event.type == away.events.AssetEvent.ASSET_COMPLETE) {
+                    this.addAsset(event.asset);
+                }
+
+                this.dispatchEvent(event.clone());
+            };
+
+            AssetLibraryBundle.prototype.onTextureSizeError = function (event) {
+                this.dispatchEvent(event.clone());
+            };
+
+            /**
+            * Called when the resource and all of its dependencies was retrieved.
+            */
+            AssetLibraryBundle.prototype.onResourceRetrieved = function (event) {
+                var _this = this;
+                var loader = event.target;
+
+                this.dispatchEvent(event.clone());
+
+                var index = this._loadingSessions.indexOf(loader);
+                this._loadingSessions.splice(index, 1);
+
+                // Add loader to a garbage array - for a collection sweep and kill
+                this._loadingSessionsGarbage.push(loader);
+                this._gcTimeoutIID = setTimeout(function () {
+                    _this.loadingSessionGC();
+                }, 100);
+            };
+
+            AssetLibraryBundle.prototype.loadingSessionGC = function () {
+                var loader;
+
+                while (this._loadingSessionsGarbage.length > 0) {
+                    loader = this._loadingSessionsGarbage.pop();
+                    this.killLoadingSession(loader);
+                }
+
+                clearTimeout(this._gcTimeoutIID);
+                this._gcTimeoutIID = null;
+            };
+
+            AssetLibraryBundle.prototype.killLoadingSession = function (loader) {
+                loader.removeEventListener(away.events.LoaderEvent.LOAD_ERROR, this.onDependencyRetrievingError, this);
+                loader.removeEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceRetrieved, this);
+                loader.removeEventListener(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this.onDependencyRetrieved, this);
+                loader.removeEventListener(away.events.AssetEvent.TEXTURE_SIZE_ERROR, this.onTextureSizeError, this);
+                loader.removeEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+                loader.removeEventListener(away.events.AssetEvent.ANIMATION_SET_COMPLETE, this.onAssetComplete, this);
+                loader.removeEventListener(away.events.AssetEvent.ANIMATION_STATE_COMPLETE, this.onAssetComplete, this);
+                loader.removeEventListener(away.events.AssetEvent.ANIMATION_NODE_COMPLETE, this.onAssetComplete, this);
+                loader.removeEventListener(away.events.AssetEvent.STATE_TRANSITION_COMPLETE, this.onAssetComplete, this);
+                loader.removeEventListener(away.events.AssetEvent.TEXTURE_COMPLETE, this.onAssetComplete, this);
+                loader.removeEventListener(away.events.AssetEvent.CONTAINER_COMPLETE, this.onAssetComplete, this);
+                loader.removeEventListener(away.events.AssetEvent.GEOMETRY_COMPLETE, this.onAssetComplete, this);
+                loader.removeEventListener(away.events.AssetEvent.MATERIAL_COMPLETE, this.onAssetComplete, this);
+                loader.removeEventListener(away.events.AssetEvent.MESH_COMPLETE, this.onAssetComplete, this);
+                loader.removeEventListener(away.events.AssetEvent.ENTITY_COMPLETE, this.onAssetComplete, this);
+                loader.removeEventListener(away.events.AssetEvent.SKELETON_COMPLETE, this.onAssetComplete, this);
+                loader.removeEventListener(away.events.AssetEvent.SKELETON_POSE_COMPLETE, this.onAssetComplete, this);
+                loader.stop();
+            };
+
+            /**
+            * Called when unespected error occurs
+            */
+            /*
+            private onResourceError() : void
+            {
+            var msg:string = "Unexpected parser error";
+            if(hasEventListener(LoaderEvent.DEPENDENCY_ERROR)){
+            var re:LoaderEvent = new LoaderEvent(LoaderEvent.DEPENDENCY_ERROR, "");
+            dispatchEvent(re);
+            } else{
+            throw new Error(msg);
+            }
+            }
+            */
+            AssetLibraryBundle.prototype.onAssetRename = function (ev) {
+                var asset = ev.target;
+                var old = this.getAsset(asset.assetNamespace, asset.name);
+
+                if (old != null) {
+                    this._strategy.resolveConflict(asset, old, this._assetDictionary[asset.assetNamespace], this._strategyPreference);
+                } else {
+                    var dict = this._assetDictionary[ev.asset.assetNamespace];
+
+                    if (dict == null) {
+                        return;
+                    }
+
+                    dict[ev.assetPrevName] = null;
+                    dict[ev.asset.name] = ev.asset;
+                }
+            };
+
+            AssetLibraryBundle.prototype.onAssetConflictResolved = function (ev) {
+                this.dispatchEvent(ev.clone());
+            };
+            return AssetLibraryBundle;
+        })(away.events.EventDispatcher);
+        library.AssetLibraryBundle = AssetLibraryBundle;
+    })(away.library || (away.library = {}));
+    var library = away.library;
+})(away || (away = {}));
+
+// singleton enforcer
+var AssetLibraryBundleSingletonEnforcer = (function () {
+    function AssetLibraryBundleSingletonEnforcer() {
+    }
+    return AssetLibraryBundleSingletonEnforcer;
+})();
+var away;
+(function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (loaders) {
+        /**
+        * The SingleFileLoader is used to load a single file, as part of a resource.
+        *
+        * While SingleFileLoader can be used directly, e.g. to create a third-party asset
+        * management system, it's recommended to use any of the classes Loader3D, AssetLoader
+        * and AssetLibrary instead in most cases.
+        *
+        * @see away3d.loading.Loader3D
+        * @see away3d.loading.AssetLoader
+        * @see away3d.loading.AssetLibrary
+        */
+        var SingleFileLoader = (function (_super) {
+            __extends(SingleFileLoader, _super);
+            // Constructor
+            /**
+            * Creates a new SingleFileLoader object.
+            */
+            function SingleFileLoader(materialMode) {
+                if (typeof materialMode === "undefined") { materialMode = 0; }
+                _super.call(this);
+                this._materialMode = materialMode;
+            }
+            SingleFileLoader.enableParser = function (parser) {
+                if (SingleFileLoader._parsers.indexOf(parser) < 0) {
+                    SingleFileLoader._parsers.push(parser);
+                }
+            };
+
+            SingleFileLoader.enableParsers = function (parsers) {
+                var pc;
+
+                for (var c = 0; c < parsers.length; c++) {
+                    SingleFileLoader.enableParser(parsers[c]);
+                }
+            };
+
+            Object.defineProperty(SingleFileLoader.prototype, "url", {
+                get: // Get / Set
+                function () {
+                    return this._req ? this._req.url : '';
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SingleFileLoader.prototype, "data", {
+                get: function () {
+                    return this._data;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SingleFileLoader.prototype, "loadAsRawData", {
+                get: function () {
+                    return this._loadAsRawData;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            // Public
+            /**
+            * Load a resource from a file.
+            *
+            * @param urlRequest The URLRequest object containing the URL of the object to be loaded.
+            * @param parser An optional parser object that will translate the loaded data into a usable resource. If not provided, AssetLoader will attempt to auto-detect the file type.
+            */
+            SingleFileLoader.prototype.load = function (urlRequest, parser, loadAsRawData) {
+                if (typeof parser === "undefined") { parser = null; }
+                if (typeof loadAsRawData === "undefined") { loadAsRawData = false; }
+                //var urlLoader   : away.net.URLLoader;
+                var dataFormat;
+                var loaderType = away.loaders.ParserLoaderType.URL_LOADER;
+
+                this._loadAsRawData = loadAsRawData;
+                this._req = urlRequest;
+
+                this.decomposeFilename(this._req.url);
+
+                if (this._loadAsRawData) {
+                    // Always use binary for raw data loading
+                    dataFormat = away.net.URLLoaderDataFormat.BINARY;
+                } else {
+                    if (parser) {
+                        this._parser = parser;
+                    }
+
+                    if (!this._parser) {
+                        this._parser = this.getParserFromSuffix();
+                    }
+
+                    if (this._parser) {
+                        switch (this._parser.dataFormat) {
+                            case away.loaders.ParserDataFormat.BINARY:
+                                dataFormat = away.net.URLLoaderDataFormat.BINARY;
+
+                                break;
+
+                            case away.loaders.ParserDataFormat.PLAIN_TEXT:
+                                dataFormat = away.net.URLLoaderDataFormat.TEXT;
+
+                                break;
+                        }
+
+                        switch (this._parser.loaderType) {
+                            case away.loaders.ParserLoaderType.IMG_LOADER:
+                                loaderType = away.loaders.ParserLoaderType.IMG_LOADER;
+
+                                break;
+
+                            case away.loaders.ParserLoaderType.URL_LOADER:
+                                loaderType = away.loaders.ParserLoaderType.URL_LOADER;
+
+                                break;
+                        }
+                    } else {
+                        // Always use BINARY for unknown file formats. The thorough
+                        // file type check will determine format after load, and if
+                        // binary, a text load will have broken the file data.
+                        dataFormat = away.net.URLLoaderDataFormat.BINARY;
+                    }
+                }
+
+                //console.log( 'SingleFileURLLoader.load.dataFormat:' , dataFormat , 'ParserFormat: ' , this._parser.dataFormat );
+                //console.log( 'SingleFileURLLoader.load.loaderType: ' , loaderType );
+                var loader = this.getLoader(loaderType);
+                loader.dataFormat = dataFormat;
+                loader.addEventListener(away.events.Event.COMPLETE, this.handleUrlLoaderComplete, this);
+                loader.addEventListener(away.events.IOErrorEvent.IO_ERROR, this.handleUrlLoaderError, this);
+                loader.load(urlRequest);
+            };
+
+            /**
+            * Loads a resource from already loaded data.
+            * @param data The data to be parsed. Depending on the parser type, this can be a ByteArray, String or XML.
+            * @param uri The identifier (url or id) of the object to be loaded, mainly used for resource management.
+            * @param parser An optional parser object that will translate the data into a usable resource. If not provided, AssetLoader will attempt to auto-detect the file type.
+            */
+            SingleFileLoader.prototype.parseData = function (data, parser, req) {
+                if (typeof parser === "undefined") { parser = null; }
+                if (typeof req === "undefined") { req = null; }
+                if (data.constructor === Function) {
+                    data = new data();
+                }
+
+                if (parser) {
+                    this._parser = parser;
+                }
+
+                this._req = req;
+
+                this.parse(data);
+            };
+
+            Object.defineProperty(SingleFileLoader.prototype, "parser", {
+                get: /**
+                * A reference to the parser that will translate the loaded data into a usable resource.
+                */
+                function () {
+                    return this._parser;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SingleFileLoader.prototype, "dependencies", {
+                get: /**
+                * A list of dependencies that need to be loaded and resolved for the loaded object.
+                */
+                function () {
+                    return this._parser ? this._parser.dependencies : new Array();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            // Private
+            /**
+            *
+            * @param loaderType
+            */
+            SingleFileLoader.prototype.getLoader = function (loaderType) {
+                var loader;
+
+                switch (loaderType) {
+                    case away.loaders.ParserLoaderType.IMG_LOADER:
+                        loader = new away.loaders.SingleFileImageLoader();
+
+                        break;
+
+                    case away.loaders.ParserLoaderType.URL_LOADER:
+                        loader = new away.loaders.SingleFileURLLoader();
+
+                        break;
+                }
+
+                return loader;
+            };
+
+            /**
+            * Splits a url string into base and extension.
+            * @param url The url to be decomposed.
+            */
+            SingleFileLoader.prototype.decomposeFilename = function (url) {
+                // Get rid of query string if any and extract suffix
+                var base = (url.indexOf('?') > 0) ? url.split('?')[0] : url;
+                var i = base.lastIndexOf('.');
+                this._fileExtension = base.substr(i + 1).toLowerCase();
+                this._fileName = base.substr(0, i);
+            };
+
+            /**
+            * Guesses the parser to be used based on the file extension.
+            * @return An instance of the guessed parser.
+            */
+            SingleFileLoader.prototype.getParserFromSuffix = function () {
+                var len = SingleFileLoader._parsers.length;
+
+                for (var i = len - 1; i >= 0; i--) {
+                    var currentParser = SingleFileLoader._parsers[i];
+                    var supportstype = SingleFileLoader._parsers[i].supportsType(this._fileExtension);
+
+                    if (SingleFileLoader._parsers[i]['supportsType'](this._fileExtension)) {
+                        return new SingleFileLoader._parsers[i]();
+                    }
+                }
+
+                return null;
+            };
+
+            /**
+            * Guesses the parser to be used based on the file contents.
+            * @param data The data to be parsed.
+            * @param uri The url or id of the object to be parsed.
+            * @return An instance of the guessed parser.
+            */
+            SingleFileLoader.prototype.getParserFromData = function (data) {
+                var len = SingleFileLoader._parsers.length;
+
+                for (var i = len - 1; i >= 0; i--)
+                    if (SingleFileLoader._parsers[i].supportsData(data))
+                        return new SingleFileLoader._parsers[i]();
+
+                return null;
+            };
+
+            /**
+            * Cleanups
+            */
+            SingleFileLoader.prototype.removeListeners = function (urlLoader) {
+                urlLoader.removeEventListener(away.events.Event.COMPLETE, this.handleUrlLoaderComplete, this);
+                urlLoader.removeEventListener(away.events.IOErrorEvent.IO_ERROR, this.handleUrlLoaderError, this);
+            };
+
+            // Events
+            /**
+            * Called when loading of a file has failed
+            */
+            SingleFileLoader.prototype.handleUrlLoaderError = function (event) {
+                var urlLoader = event.target;
+                this.removeListeners(urlLoader);
+
+                //if(this.hasEventListener(away.events.LoaderEvent.LOAD_ERROR , this.handleUrlLoaderError , this ))
+                this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.LOAD_ERROR, this._req.url, true));
+            };
+
+            /**
+            * Called when loading of a file is complete
+            */
+            SingleFileLoader.prototype.handleUrlLoaderComplete = function (event) {
+                var urlLoader = event.target;
+                this.removeListeners(urlLoader);
+
+                this._data = urlLoader.data;
+
+                if (this._loadAsRawData) {
+                    // No need to parse this data, which should be returned as is
+                    this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.DEPENDENCY_COMPLETE));
+                } else {
+                    this.parse(this._data);
+                }
+            };
+
+            /**
+            * Initiates parsing of the loaded data.
+            * @param data The data to be parsed.
+            */
+            SingleFileLoader.prototype.parse = function (data) {
+                if (!this._parser) {
+                    this._parser = this.getParserFromData(data);
+                }
+
+                if (this._parser) {
+                    this._parser.addEventListener(away.events.ParserEvent.READY_FOR_DEPENDENCIES, this.onReadyForDependencies, this);
+                    this._parser.addEventListener(away.events.ParserEvent.PARSE_ERROR, this.onParseError, this);
+                    this._parser.addEventListener(away.events.ParserEvent.PARSE_COMPLETE, this.onParseComplete, this);
+                    this._parser.addEventListener(away.events.AssetEvent.TEXTURE_SIZE_ERROR, this.onTextureSizeError, this);
+                    this._parser.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+                    this._parser.addEventListener(away.events.AssetEvent.ANIMATION_SET_COMPLETE, this.onAssetComplete, this);
+                    this._parser.addEventListener(away.events.AssetEvent.ANIMATION_STATE_COMPLETE, this.onAssetComplete, this);
+                    this._parser.addEventListener(away.events.AssetEvent.ANIMATION_NODE_COMPLETE, this.onAssetComplete, this);
+                    this._parser.addEventListener(away.events.AssetEvent.STATE_TRANSITION_COMPLETE, this.onAssetComplete, this);
+                    this._parser.addEventListener(away.events.AssetEvent.TEXTURE_COMPLETE, this.onAssetComplete, this);
+                    this._parser.addEventListener(away.events.AssetEvent.CONTAINER_COMPLETE, this.onAssetComplete, this);
+                    this._parser.addEventListener(away.events.AssetEvent.GEOMETRY_COMPLETE, this.onAssetComplete, this);
+                    this._parser.addEventListener(away.events.AssetEvent.MATERIAL_COMPLETE, this.onAssetComplete, this);
+                    this._parser.addEventListener(away.events.AssetEvent.MESH_COMPLETE, this.onAssetComplete, this);
+                    this._parser.addEventListener(away.events.AssetEvent.ENTITY_COMPLETE, this.onAssetComplete, this);
+                    this._parser.addEventListener(away.events.AssetEvent.SKELETON_COMPLETE, this.onAssetComplete, this);
+                    this._parser.addEventListener(away.events.AssetEvent.SKELETON_POSE_COMPLETE, this.onAssetComplete, this);
+
+                    if (this._req && this._req.url) {
+                        this._parser._iFileName = this._req.url;
+                    }
+
+                    this._parser.materialMode = this._materialMode;
+                    this._parser.parseAsync(data);
+                } else {
+                    var msg = "No parser defined. To enable all parsers for auto-detection, use Parsers.enableAllBundled()";
+
+                    //if(hasEventListener(LoaderEvent.LOAD_ERROR)){
+                    this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.LOAD_ERROR, "", true, msg));
+                }
+            };
+
+            SingleFileLoader.prototype.onParseError = function (event) {
+                this.dispatchEvent(event.clone());
+            };
+
+            SingleFileLoader.prototype.onReadyForDependencies = function (event) {
+                this.dispatchEvent(event.clone());
+            };
+
+            SingleFileLoader.prototype.onAssetComplete = function (event) {
+                //console.log( 'SingleFileLoader.onAssetComplete' , event );
+                this.dispatchEvent(event.clone());
+            };
+
+            SingleFileLoader.prototype.onTextureSizeError = function (event) {
+                this.dispatchEvent(event.clone());
+            };
+
+            /**
+            * Called when parsing is complete.
+            */
+            SingleFileLoader.prototype.onParseComplete = function (event) {
+                //console.log( 'SingleFileLoader.onParseComplete' , event );
+                this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this.url));
+
+                this._parser.removeEventListener(away.events.ParserEvent.READY_FOR_DEPENDENCIES, this.onReadyForDependencies, this);
+                this._parser.removeEventListener(away.events.ParserEvent.PARSE_COMPLETE, this.onParseComplete, this);
+                this._parser.removeEventListener(away.events.ParserEvent.PARSE_ERROR, this.onParseError, this);
+                this._parser.removeEventListener(away.events.AssetEvent.TEXTURE_SIZE_ERROR, this.onTextureSizeError, this);
+                this._parser.removeEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+                this._parser.removeEventListener(away.events.AssetEvent.ANIMATION_SET_COMPLETE, this.onAssetComplete, this);
+                this._parser.removeEventListener(away.events.AssetEvent.ANIMATION_STATE_COMPLETE, this.onAssetComplete, this);
+                this._parser.removeEventListener(away.events.AssetEvent.ANIMATION_NODE_COMPLETE, this.onAssetComplete, this);
+                this._parser.removeEventListener(away.events.AssetEvent.STATE_TRANSITION_COMPLETE, this.onAssetComplete, this);
+                this._parser.removeEventListener(away.events.AssetEvent.TEXTURE_COMPLETE, this.onAssetComplete, this);
+                this._parser.removeEventListener(away.events.AssetEvent.CONTAINER_COMPLETE, this.onAssetComplete, this);
+                this._parser.removeEventListener(away.events.AssetEvent.GEOMETRY_COMPLETE, this.onAssetComplete, this);
+                this._parser.removeEventListener(away.events.AssetEvent.MATERIAL_COMPLETE, this.onAssetComplete, this);
+                this._parser.removeEventListener(away.events.AssetEvent.MESH_COMPLETE, this.onAssetComplete, this);
+                this._parser.removeEventListener(away.events.AssetEvent.ENTITY_COMPLETE, this.onAssetComplete, this);
+                this._parser.removeEventListener(away.events.AssetEvent.SKELETON_COMPLETE, this.onAssetComplete, this);
+                this._parser.removeEventListener(away.events.AssetEvent.SKELETON_POSE_COMPLETE, this.onAssetComplete, this);
+            };
+            SingleFileLoader._parsers = new Array(away.loaders.ImageParser);
+            return SingleFileLoader;
+        })(away.events.EventDispatcher);
+        loaders.SingleFileLoader = SingleFileLoader;
+    })(away.loaders || (away.loaders = {}));
+    var loaders = away.loaders;
+})(away || (away = {}));
+var away;
+(function (away) {
+    (function (loaders) {
+        var AssetLoaderContext = (function () {
+            /**
+            * AssetLoaderContext provides configuration for the AssetLoader load() and parse() operations.
+            * Use it to configure how (and if) dependencies are loaded, or to map dependency URLs to
+            * embedded data.
+            *
+            * @see away3d.loading.AssetLoader
+            */
+            function AssetLoaderContext(includeDependencies, dependencyBaseUrl) {
+                if (typeof includeDependencies === "undefined") { includeDependencies = true; }
+                if (typeof dependencyBaseUrl === "undefined") { dependencyBaseUrl = null; }
+                this._includeDependencies = includeDependencies;
+                this._dependencyBaseUrl = dependencyBaseUrl || '';
+                this._embeddedDataByUrl = {};
+                this._remappedUrls = {};
+                this._materialMode = AssetLoaderContext.UNDEFINED;
+            }
+            Object.defineProperty(AssetLoaderContext.prototype, "includeDependencies", {
+                get: /**
+                * Defines whether dependencies (all files except the one at the URL given to the load() or
+                * parseData() operations) should be automatically loaded. Defaults to true.
+                */
+                function () {
+                    return this._includeDependencies;
+                },
+                set: function (val) {
+                    this._includeDependencies = val;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(AssetLoaderContext.prototype, "materialMode", {
+                get: /**
+                * MaterialMode defines, if the Parser should create SinglePass or MultiPass Materials
+                * Options:
+                * 0 (Default / undefined) - All Parsers will create SinglePassMaterials, but the AWD2.1parser will create Materials as they are defined in the file
+                * 1 (Force SinglePass) - All Parsers create SinglePassMaterials
+                * 2 (Force MultiPass) - All Parsers will create MultiPassMaterials
+                *
+                */
+                function () {
+                    return this._materialMode;
+                },
+                set: function (materialMode) {
+                    this._materialMode = materialMode;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(AssetLoaderContext.prototype, "dependencyBaseUrl", {
+                get: /**
+                * A base URL that will be prepended to all relative dependency URLs found in a loaded resource.
+                * Absolute paths will not be affected by the value of this property.
+                */
+                function () {
+                    return this._dependencyBaseUrl;
+                },
+                set: function (val) {
+                    this._dependencyBaseUrl = val;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(AssetLoaderContext.prototype, "overrideAbsolutePaths", {
+                get: /**
+                * Defines whether absolute paths (defined as paths that begin with a "/") should be overridden
+                * with the dependencyBaseUrl defined in this context. If this is true, and the base path is
+                * "base", /path/to/asset.jpg will be resolved as base/path/to/asset.jpg.
+                */
+                function () {
+                    return this._overrideAbsPath;
+                },
+                set: function (val) {
+                    this._overrideAbsPath = val;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(AssetLoaderContext.prototype, "overrideFullURLs", {
+                get: /**
+                * Defines whether "full" URLs (defined as a URL that includes a scheme, e.g. http://) should be
+                * overridden with the dependencyBaseUrl defined in this context. If this is true, and the base
+                * path is "base", http://example.com/path/to/asset.jpg will be resolved as base/path/to/asset.jpg.
+                */
+                function () {
+                    return this._overrideFullUrls;
+                },
+                set: function (val) {
+                    this._overrideFullUrls = val;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * Map a URL to another URL, so that files that are referred to by the original URL will instead
+            * be loaded from the new URL. Use this when your file structure does not match the one that is
+            * expected by the loaded file.
+            *
+            * @param originalUrl The original URL which is referenced in the loaded resource.
+            * @param newUrl The URL from which Away3D should load the resource instead.
+            *
+            * @see mapUrlToData()
+            */
+            AssetLoaderContext.prototype.mapUrl = function (originalUrl, newUrl) {
+                this._remappedUrls[originalUrl] = newUrl;
+            };
+
+            /**
+            * Map a URL to embedded data, so that instead of trying to load a dependency from the URL at
+            * which it's referenced, the dependency data will be retrieved straight from the memory instead.
+            *
+            * @param originalUrl The original URL which is referenced in the loaded resource.
+            * @param data The embedded data. Can be ByteArray or a class which can be used to create a bytearray.
+            */
+            AssetLoaderContext.prototype.mapUrlToData = function (originalUrl, data) {
+                this._embeddedDataByUrl[originalUrl] = data;
+            };
+
+            /**
+            * @private
+            * Defines whether embedded data has been mapped to a particular URL.
+            */
+            AssetLoaderContext.prototype._iHasDataForUrl = function (url) {
+                return this._embeddedDataByUrl.hasOwnProperty(url);
+            };
+
+            /**
+            * @private
+            * Returns embedded data for a particular URL.
+            */
+            AssetLoaderContext.prototype._iGetDataForUrl = function (url) {
+                return this._embeddedDataByUrl[url];
+            };
+
+            /**
+            * @private
+            * Defines whether a replacement URL has been mapped to a particular URL.
+            */
+            AssetLoaderContext.prototype._iHasMappingForUrl = function (url) {
+                return this._remappedUrls.hasOwnProperty(url);
+            };
+
+            /**
+            * @private
+            * Returns new (replacement) URL for a particular original URL.
+            */
+            AssetLoaderContext.prototype._iGetRemappedUrl = function (originalUrl) {
+                return this._remappedUrls[originalUrl];
+            };
+            AssetLoaderContext.UNDEFINED = 0;
+            AssetLoaderContext.SINGLEPASS_MATERIALS = 1;
+            AssetLoaderContext.MULTIPASS_MATERIALS = 2;
+            return AssetLoaderContext;
+        })();
+        loaders.AssetLoaderContext = AssetLoaderContext;
+    })(away.loaders || (away.loaders = {}));
+    var loaders = away.loaders;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../assets/IAsset.ts" />
+    (function (library) {
+        //import away3d.library.assets.IAsset;
+        var AssetLibraryIterator = (function () {
+            function AssetLibraryIterator(assets, assetTypeFilter, namespaceFilter, filterFunc) {
+                this._assets = assets;
+                this.filter(assetTypeFilter, namespaceFilter, filterFunc);
+            }
+            Object.defineProperty(AssetLibraryIterator.prototype, "currentAsset", {
+                get: function () {
+                    // Return current, or null if no current
+                    return (this._idx < this._filtered.length) ? this._filtered[this._idx] : null;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(AssetLibraryIterator.prototype, "numAssets", {
+                get: function () {
+                    return this._filtered.length;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            AssetLibraryIterator.prototype.next = function () {
+                var next = null;
+
+                if (this._idx < this._filtered.length)
+                    next = this._filtered[this._idx];
+
+                this._idx++;
+
+                return next;
+            };
+
+            AssetLibraryIterator.prototype.reset = function () {
+                this._idx = 0;
+            };
+
+            AssetLibraryIterator.prototype.setIndex = function (index) {
+                this._idx = index;
+            };
+
+            AssetLibraryIterator.prototype.filter = function (assetTypeFilter, namespaceFilter, filterFunc) {
+                if (assetTypeFilter || namespaceFilter) {
+                    var idx;
+                    var asset;
+
+                    idx = 0;
+                    this._filtered = new Array();
+
+                    var l = this._assets.length;
+
+                    for (var c = 0; c < l; c++) {
+                        asset = this._assets[c];
+
+                        if (assetTypeFilter && asset.assetType != assetTypeFilter)
+                            continue;
+
+                        if (namespaceFilter && asset.assetNamespace != namespaceFilter)
+                            continue;
+
+                        if (filterFunc != null && !filterFunc(asset))
+                            continue;
+
+                        this._filtered[idx++] = asset;
+                    }
+                } else {
+                    this._filtered = this._assets;
+                }
+            };
+            return AssetLibraryIterator;
+        })();
+        library.AssetLibraryIterator = AssetLibraryIterator;
+    })(away.library || (away.library = {}));
+    var library = away.library;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (loaders) {
+        //import away3d.*;
+        //import away3d.events.*;
+        //import away3d.loaders.misc.*;
+        //import away3d.loaders.parsers.*;
+        //import flash.events.*;
+        //import flash.net.*;
+        //use namespace arcane;
+        /**
+        * Dispatched when any asset finishes parsing. Also see specific events for each
+        * individual asset type (meshes, materials et c.)
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="assetComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when a full resource (including dependencies) finishes loading.
+        *
+        * @eventType away3d.events.LoaderEvent
+        */
+        //[Event(name="resourceComplete", type="away3d.events.LoaderEvent")]
+        /**
+        * Dispatched when a single dependency (which may be the main file of a resource)
+        * finishes loading.
+        *
+        * @eventType away3d.events.LoaderEvent
+        */
+        //[Event(name="dependencyComplete", type="away3d.events.LoaderEvent")]
+        /**
+        * Dispatched when an error occurs during loading. I
+        *
+        * @eventType away3d.events.LoaderEvent
+        */
+        //[Event(name="loadError", type="away3d.events.LoaderEvent")]
+        /**
+        * Dispatched when an error occurs during parsing.
+        *
+        * @eventType away3d.events.ParserEvent
+        */
+        //[Event(name="parseError", type="away3d.events.ParserEvent")]
+        /**
+        * Dispatched when a skybox asset has been costructed from a ressource.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="skyboxComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when a camera3d asset has been costructed from a ressource.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="cameraComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when a mesh asset has been costructed from a ressource.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="meshComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when a geometry asset has been constructed from a resource.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="geometryComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when a skeleton asset has been constructed from a resource.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="skeletonComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when a skeleton pose asset has been constructed from a resource.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="skeletonPoseComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when a container asset has been constructed from a resource.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="containerComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when a texture asset has been constructed from a resource.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="textureComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when a texture projector asset has been constructed from a resource.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="textureProjectorComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when a material asset has been constructed from a resource.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="materialComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when a animator asset has been constructed from a resource.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="animatorComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when an animation set has been constructed from a group of animation state resources.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="animationSetComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when an animation state has been constructed from a group of animation node resources.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="animationStateComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when an animation node has been constructed from a resource.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="animationNodeComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when an animation state transition has been constructed from a group of animation node resources.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="stateTransitionComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when an light asset has been constructed from a resources.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="lightComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when an light picker asset has been constructed from a resources.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="lightPickerComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when an effect method asset has been constructed from a resources.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="effectMethodComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when an shadow map method asset has been constructed from a resources.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="shadowMapMethodComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when an image asset dimensions are not a power of 2
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="textureSizeError", type="away3d.events.AssetEvent")]
+        /**
+        * AssetLoader can load any file format that Away3D supports (or for which a third-party parser
+        * has been plugged in) and it's dependencies. Events are dispatched when assets are encountered
+        * and for when the resource (or it's dependencies) have been loaded.
+        *
+        * The AssetLoader will not make assets available in any other way than through the dispatched
+        * events. To store assets and make them available at any point from any module in an application,
+        * use the AssetLibrary to load and manage assets.
+        *
+        * @see away3d.loading.Loader3D
+        * @see away3d.loading.AssetLibrary
+        */
+        var AssetLoader = (function (_super) {
+            __extends(AssetLoader, _super);
+            /**
+            * Create a new ResourceLoadSession object.
+            */
+            function AssetLoader() {
+                _super.call(this);
+
+                this._stack = new Array();
+                this._errorHandlers = new Array();
+                this._parseErrorHandlers = new Array();
+            }
+            Object.defineProperty(AssetLoader.prototype, "baseDependency", {
+                get: /**
+                * Returns the base dependency of the loader
+                */
+                function () {
+                    return this._baseDependency;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            AssetLoader.enableParser = /**
+            * Enables a specific parser.
+            * When no specific parser is set for a loading/parsing opperation,
+            * loader3d can autoselect the correct parser to use.
+            * A parser must have been enabled, to be considered when autoselecting the parser.
+            *
+            * @param parserClass The parser class to enable.
+            *
+            * @see away3d.loaders.parsers.Parsers
+            */
+            function (parserClass) {
+                away.loaders.SingleFileLoader.enableParser(parserClass);
+            };
+
+            AssetLoader.enableParsers = /**
+            * Enables a list of parsers.
+            * When no specific parser is set for a loading/parsing opperation,
+            * AssetLoader can autoselect the correct parser to use.
+            * A parser must have been enabled, to be considered when autoselecting the parser.
+            *
+            * @param parserClasses A Vector of parser classes to enable.
+            * @see away3d.loaders.parsers.Parsers
+            */
+            function (parserClasses) {
+                away.loaders.SingleFileLoader.enableParsers(parserClasses);
+            };
+
+            /**
+            * Loads a file and (optionally) all of its dependencies.
+            *
+            * @param req The URLRequest object containing the URL of the file to be loaded.
+            * @param context An optional context object providing additional parameters for loading
+            * @param ns An optional namespace string under which the file is to be loaded, allowing the differentiation of two resources with identical assets
+            * @param parser An optional parser object for translating the loaded data into a usable resource. If not provided, AssetLoader will attempt to auto-detect the file type.
+            */
+            AssetLoader.prototype.load = function (req, context, ns, parser) {
+                if (typeof context === "undefined") { context = null; }
+                if (typeof ns === "undefined") { ns = null; }
+                if (typeof parser === "undefined") { parser = null; }
+                if (!this._token) {
+                    this._token = new away.loaders.AssetLoaderToken(this);
+
+                    this._uri = req.url = req.url.replace(/\\/g, "/");
+                    this._context = context;
+                    this._namespace = ns;
+
+                    this._baseDependency = new away.loaders.ResourceDependency('', req, null, null);
+                    this.retrieveDependency(this._baseDependency, parser);
+
+                    return this._token;
+                }
+
+                // TODO: Throw error (already loading)
+                return null;
+            };
+
+            /**
+            * Loads a resource from already loaded data.
+            *
+            * @param data The data object containing all resource information.
+            * @param context An optional context object providing additional parameters for loading
+            * @param ns An optional namespace string under which the file is to be loaded, allowing the differentiation of two resources with identical assets
+            * @param parser An optional parser object for translating the loaded data into a usable resource. If not provided, AssetLoader will attempt to auto-detect the file type.
+            */
+            AssetLoader.prototype.loadData = function (data, id, context, ns, parser) {
+                if (typeof context === "undefined") { context = null; }
+                if (typeof ns === "undefined") { ns = null; }
+                if (typeof parser === "undefined") { parser = null; }
+                if (!this._token) {
+                    this._token = new away.loaders.AssetLoaderToken(this);
+
+                    this._uri = id;
+                    this._context = context;
+                    this._namespace = ns;
+
+                    this._baseDependency = new loaders.ResourceDependency(id, null, data, null);
+                    this.retrieveDependency(this._baseDependency, parser);
+
+                    return this._token;
+                }
+
+                // TODO: Throw error (already loading)
+                return null;
+            };
+
+            /**
+            * Recursively retrieves the next to-be-loaded and parsed dependency on the stack, or pops the list off the
+            * stack when complete and continues on the top set.
+            * @param parser The parser that will translate the data into a usable resource.
+            */
+            AssetLoader.prototype.retrieveNext = function (parser) {
+                if (typeof parser === "undefined") { parser = null; }
+                if (this._loadingDependency.dependencies.length) {
+                    var dep = this._loadingDependency.dependencies.pop();
+
+                    this._stack.push(this._loadingDependency);
+                    this.retrieveDependency(dep);
+                } else if (this._loadingDependency._iLoader.parser && this._loadingDependency._iLoader.parser.parsingPaused) {
+                    this._loadingDependency._iLoader.parser._iResumeParsingAfterDependencies();
+                    this._stack.pop();
+                } else if (this._stack.length) {
+                    var prev = this._loadingDependency;
+
+                    this._loadingDependency = this._stack.pop();
+
+                    if (prev._iSuccess) {
+                        prev.resolve();
+                    }
+
+                    this.retrieveNext(parser);
+                } else {
+                    //console.log( 'AssetLoader.retrieveNext - away.events.LoaderEvent.RESOURCE_COMPLETE');
+                    this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.RESOURCE_COMPLETE, this._uri));
+                }
+            };
+
+            /**
+            * Retrieves a single dependency.
+            * @param parser The parser that will translate the data into a usable resource.
+            */
+            AssetLoader.prototype.retrieveDependency = function (dependency, parser) {
+                if (typeof parser === "undefined") { parser = null; }
+                var data;
+                var matMode = 0;
+
+                if (this._context && this._context.materialMode != 0) {
+                    matMode = this._context.materialMode;
+                }
+
+                this._loadingDependency = dependency;
+                this._loadingDependency._iLoader = new away.loaders.SingleFileLoader(matMode);
+
+                this.addEventListeners(this._loadingDependency._iLoader);
+
+                // Get already loaded (or mapped) data if available
+                data = this._loadingDependency.data;
+
+                if (this._context && this._loadingDependency.request && this._context._iHasDataForUrl(this._loadingDependency.request.url)) {
+                    data = this._context._iGetDataForUrl(this._loadingDependency.request.url);
+                }
+
+                if (data) {
+                    if (this._loadingDependency.retrieveAsRawData) {
+                        // No need to parse. The parent parser is expecting this
+                        // to be raw data so it can be passed directly.
+                        this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this._loadingDependency.request.url, true));
+                        this._loadingDependency._iSetData(data);
+                        this._loadingDependency.resolve();
+
+                        // Move on to next dependency
+                        this.retrieveNext();
+                    } else {
+                        this._loadingDependency._iLoader.parseData(data, parser, this._loadingDependency.request);
+                    }
+                } else {
+                    // Resolve URL and start loading
+                    dependency.request.url = this.resolveDependencyUrl(dependency);
+                    this._loadingDependency._iLoader.load(dependency.request, parser, this._loadingDependency.retrieveAsRawData);
+                }
+            };
+
+            AssetLoader.prototype.joinUrl = function (base, end) {
+                if (end.charAt(0) == '/') {
+                    end = end.substr(1);
+                }
+
+                if (base.length == 0) {
+                    return end;
+                }
+
+                if (base.charAt(base.length - 1) == '/') {
+                    base = base.substr(0, base.length - 1);
+                }
+
+                return base.concat('/', end);
+            };
+
+            AssetLoader.prototype.resolveDependencyUrl = function (dependency) {
+                var scheme_re;
+                var base;
+                var url = dependency.request.url;
+
+                if (this._context && this._context._iHasMappingForUrl(url))
+                    return this._context._iGetRemappedUrl(url);
+
+                if (url == this._uri) {
+                    return url;
+                }
+
+                // Absolute URL? Check if starts with slash or a URL
+                // scheme definition (e.g. ftp://, http://, file://)
+                scheme_re = new RegExp('/^[a-zA-Z]{3,4}:\/\//');
+
+                if (url.charAt(0) == '/') {
+                    if (this._context && this._context.overrideAbsolutePaths)
+                        return this.joinUrl(this._context.dependencyBaseUrl, url); else
+                        return url;
+                } else if (scheme_re.test(url)) {
+                    if (this._context && this._context.overrideFullURLs) {
+                        var noscheme_url;
+
+                        noscheme_url = url['replace'](scheme_re);
+
+                        return this.joinUrl(this._context.dependencyBaseUrl, noscheme_url);
+                    }
+                }
+
+                if (this._context && this._context.dependencyBaseUrl) {
+                    base = this._context.dependencyBaseUrl;
+                    return this.joinUrl(base, url);
+                } else {
+                    base = this._uri.substring(0, this._uri.lastIndexOf('/') + 1);
+                    return this.joinUrl(base, url);
+                }
+            };
+
+            AssetLoader.prototype.retrieveLoaderDependencies = function (loader) {
+                if (!this._loadingDependency) {
+                    //loader.parser = null;
+                    //loader = null;
+                    return;
+                }
+                var i, len = loader.dependencies.length;
+
+                for (i = 0; i < len; i++) {
+                    this._loadingDependency.dependencies[i] = loader.dependencies[i];
+                }
+
+                // Since more dependencies might be added eventually, empty this
+                // list so that the same dependency isn't retrieved more than once.
+                loader.dependencies.length = 0;
+
+                this._stack.push(this._loadingDependency);
+
+                this.retrieveNext();
+            };
+
+            /**
+            * Called when a single dependency loading failed, and pushes further dependencies onto the stack.
+            * @param event
+            */
+            AssetLoader.prototype.onRetrievalFailed = function (event) {
+                var handled;
+                var isDependency = (this._loadingDependency != this._baseDependency);
+                var loader = event.target;
+
+                this.removeEventListeners(loader);
+
+                event = new away.events.LoaderEvent(away.events.LoaderEvent.LOAD_ERROR, this._uri, isDependency, event.message);
+
+                // TODO: JS / AS3 Change - debug this code with a fine tooth combe
+                //if (this.hasEventListener( away.events.LoaderEvent.LOAD_ERROR , this )) {
+                this.dispatchEvent(event);
+                handled = true;
+
+                //} else {
+                // TO - Away - Consider not doing this even when AssetLoader does
+                // have it's own LOAD_ERROR listener
+                var i, len = this._errorHandlers.length;
+                for (i = 0; i < len; i++) {
+                    var handlerFunction = this._errorHandlers[i];
+
+                    handled = handled || handlerFunction(event);
+                }
+
+                if (handled) {
+                    if (isDependency) {
+                        this._loadingDependency.resolveFailure();
+                        this.retrieveNext();
+                    } else {
+                        // Either this was the base file (last left in the stack) or
+                        // default behavior was prevented by the handlers, and hence
+                        // there is nothing more to do than clean up and bail.
+                        this.dispose();
+                        return;
+                    }
+                } else {
+                    throw new away.errors.Error(event.message);
+                }
+            };
+
+            /**
+            * Called when a dependency parsing failed, and dispatches a <code>ParserEvent.PARSE_ERROR</code>
+            * @param event
+            */
+            AssetLoader.prototype.onParserError = function (event) {
+                var handled;
+
+                var isDependency = (this._loadingDependency != this._baseDependency);
+
+                var loader = event.target;
+
+                this.removeEventListeners(loader);
+
+                event = new away.events.ParserEvent(away.events.ParserEvent.PARSE_ERROR, event.message);
+
+                // TODO: keep on eye on this / debug - JS / AS3 Change
+                //if (this.hasEventListener(away.events.ParserEvent.PARSE_ERROR)) {
+                this.dispatchEvent(event);
+                handled = true;
+
+                //} else {
+                // TODO: Consider not doing this even when AssetLoader does
+                // have it's own LOAD_ERROR listener
+                var i, len = this._parseErrorHandlers.length;
+
+                for (i = 0; i < len; i++) {
+                    var handlerFunction = this._parseErrorHandlers[i];
+
+                    handled = handled || handlerFunction(event);
+                }
+
+                if (handled) {
+                    this.dispose();
+                    return;
+                } else {
+                    throw new Error(event.message);
+                }
+            };
+
+            AssetLoader.prototype.onAssetComplete = function (event) {
+                if (event.type == away.events.AssetEvent.ASSET_COMPLETE) {
+                    if (this._loadingDependency) {
+                        this._loadingDependency.assets.push(event.asset);
+                    }
+
+                    event.asset.resetAssetPath(event.asset.name, this._namespace);
+                }
+
+                if (!this._loadingDependency.suppresAssetEvents) {
+                    this.dispatchEvent(event.clone());
+                }
+            };
+
+            AssetLoader.prototype.onReadyForDependencies = function (event) {
+                var loader = event.target;
+
+                if (this._context && !this._context.includeDependencies) {
+                    loader.parser._iResumeParsingAfterDependencies();
+                } else {
+                    this.retrieveLoaderDependencies(loader);
+                }
+            };
+
+            /**
+            * Called when a single dependency was parsed, and pushes further dependencies onto the stack.
+            * @param event
+            */
+            AssetLoader.prototype.onRetrievalComplete = function (event) {
+                var loader = event.target;
+
+                //var loader:SingleFileLoader = SingleFileLoader(event.target);
+                // Resolve this dependency
+                this._loadingDependency._iSetData(loader.data);
+                this._loadingDependency._iSuccess = true;
+
+                this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.DEPENDENCY_COMPLETE, event.url));
+                this.removeEventListeners(loader);
+
+                if (loader.dependencies.length && (!this._context || this._context.includeDependencies)) {
+                    this.retrieveLoaderDependencies(loader);
+                } else {
+                    this.retrieveNext();
+                }
+            };
+
+            /**
+            * Called when an image is too large or it's dimensions are not a power of 2
+            * @param event
+            */
+            AssetLoader.prototype.onTextureSizeError = function (event) {
+                event.asset.name = this._loadingDependency.resolveName(event.asset);
+                this.dispatchEvent(event);
+            };
+
+            AssetLoader.prototype.addEventListeners = function (loader) {
+                loader.addEventListener(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this.onRetrievalComplete, this);
+                loader.addEventListener(away.events.LoaderEvent.LOAD_ERROR, this.onRetrievalFailed, this);
+                loader.addEventListener(away.events.AssetEvent.TEXTURE_SIZE_ERROR, this.onTextureSizeError, this);
+                loader.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.ANIMATION_SET_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.ANIMATION_STATE_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.ANIMATION_NODE_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.STATE_TRANSITION_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.TEXTURE_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.CONTAINER_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.GEOMETRY_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.MATERIAL_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.MESH_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.ENTITY_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.SKELETON_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.AssetEvent.SKELETON_POSE_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.ParserEvent.READY_FOR_DEPENDENCIES, this.onReadyForDependencies, this);
+                loader.addEventListener(away.events.ParserEvent.PARSE_ERROR, this.onParserError, this);
+            };
+
+            AssetLoader.prototype.removeEventListeners = function (loader) {
+                loader.removeEventListener(away.events.ParserEvent.READY_FOR_DEPENDENCIES, this.onReadyForDependencies, this);
+                loader.removeEventListener(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this.onRetrievalComplete, this);
+                loader.removeEventListener(away.events.LoaderEvent.LOAD_ERROR, this.onRetrievalFailed, this);
+                loader.removeEventListener(away.events.AssetEvent.TEXTURE_SIZE_ERROR, this.onTextureSizeError, this);
+                loader.removeEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+                loader.removeEventListener(away.events.AssetEvent.ANIMATION_SET_COMPLETE, this.onAssetComplete, this);
+                loader.removeEventListener(away.events.AssetEvent.ANIMATION_STATE_COMPLETE, this.onAssetComplete, this);
+                loader.removeEventListener(away.events.AssetEvent.ANIMATION_NODE_COMPLETE, this.onAssetComplete, this);
+                loader.removeEventListener(away.events.AssetEvent.STATE_TRANSITION_COMPLETE, this.onAssetComplete, this);
+                loader.removeEventListener(away.events.AssetEvent.TEXTURE_COMPLETE, this.onAssetComplete, this);
+                loader.removeEventListener(away.events.AssetEvent.CONTAINER_COMPLETE, this.onAssetComplete, this);
+                loader.removeEventListener(away.events.AssetEvent.GEOMETRY_COMPLETE, this.onAssetComplete, this);
+                loader.removeEventListener(away.events.AssetEvent.MATERIAL_COMPLETE, this.onAssetComplete, this);
+                loader.removeEventListener(away.events.AssetEvent.MESH_COMPLETE, this.onAssetComplete, this);
+                loader.removeEventListener(away.events.AssetEvent.ENTITY_COMPLETE, this.onAssetComplete, this);
+                loader.removeEventListener(away.events.AssetEvent.SKELETON_COMPLETE, this.onAssetComplete, this);
+                loader.removeEventListener(away.events.AssetEvent.SKELETON_POSE_COMPLETE, this.onAssetComplete, this);
+                loader.removeEventListener(away.events.ParserEvent.PARSE_ERROR, this.onParserError, this);
+            };
+
+            AssetLoader.prototype.stop = function () {
+                this.dispose();
+            };
+
+            AssetLoader.prototype.dispose = function () {
+                this._errorHandlers = null;
+                this._parseErrorHandlers = null;
+                this._context = null;
+                this._token = null;
+                this._stack = null;
+
+                if (this._loadingDependency && this._loadingDependency._iLoader) {
+                    this.removeEventListeners(this._loadingDependency._iLoader);
+                }
+
+                this._loadingDependency = null;
+            };
+
+            /**
+            * @private
+            * This method is used by other loader classes (e.g. Loader3D and AssetLibraryBundle) to
+            * add error event listeners to the AssetLoader instance. This system is used instead of
+            * the regular EventDispatcher system so that the AssetLibrary error handler can be sure
+            * that if hasEventListener() returns true, it's client code that's listening for the
+            * event. Secondly, functions added as error handler through this custom method are
+            * expected to return a boolean value indicating whether the event was handled (i.e.
+            * whether they in turn had any client code listening for the event.) If no handlers
+            * return true, the AssetLoader knows that the event wasn't handled and will throw an RTE.
+            */
+            AssetLoader.prototype._iAddParseErrorHandler = function (handler) {
+                if (this._parseErrorHandlers.indexOf(handler) < 0) {
+                    this._parseErrorHandlers.push(handler);
+                }
+            };
+
+            AssetLoader.prototype._iAddErrorHandler = function (handler) {
+                if (this._errorHandlers.indexOf(handler) < 0) {
+                    this._errorHandlers.push(handler);
+                }
+            };
+            return AssetLoader;
+        })(away.events.EventDispatcher);
+        loaders.AssetLoader = AssetLoader;
+    })(away.loaders || (away.loaders = {}));
+    var loaders = away.loaders;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (library) {
+        /**
+        * Enumeration class for bundled conflict strategies. Set one of these values (or an
+        * instance of a self-defined sub-class of ConflictStrategyBase) to the conflictStrategy
+        * property on an AssetLibrary to define how that library resolves naming conflicts.
+        *
+        * The value of the <code>AssetLibrary.conflictPrecedence</code> property defines which
+        * of the conflicting assets will get to keep it's name, and which is renamed (if any.)
+        *
+        * @see away3d.library.AssetLibrary.conflictStrategy
+        * @see away3d.library.naming.ConflictStrategyBase
+        */
+        var ConflictStrategy = (function () {
+            function ConflictStrategy() {
+            }
+            ConflictStrategy.APPEND_NUM_SUFFIX = new away.library.NumSuffixConflictStrategy();
+
+            ConflictStrategy.IGNORE = new away.library.IgnoreConflictStrategy();
+
+            ConflictStrategy.THROW_ERROR = new away.library.ErrorConflictStrategy();
+            return ConflictStrategy;
+        })();
+        library.ConflictStrategy = ConflictStrategy;
+    })(away.library || (away.library = {}));
+    var library = away.library;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (net) {
+        /**
+        *
+        */
+        var URLRequest = (function () {
+            /**
+            
+            * @param url
+            */
+            function URLRequest(url) {
+                if (typeof url === "undefined") { url = null; }
+                /**
+                *
+                * away.net.URLRequestMethod.GET
+                * away.net.URLRequestMethod.POST
+                *
+                * @type {string}
+                */
+                this.method = away.net.URLRequestMethod.GET;
+                /**
+                * Use asynchronous XMLHttpRequest
+                * @type {boolean}
+                */
+                this.async = true;
+                this._url = url;
+            }
+            Object.defineProperty(URLRequest.prototype, "url", {
+                get: /**
+                *
+                * @returns {string}
+                */
+                function () {
+                    return this._url;
+                },
+                set: /**
+                *
+                * @param value
+                */
+                function (value) {
+                    this._url = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * dispose
+            */
+            URLRequest.prototype.dispose = function () {
+                this.data = null;
+                this._url = null;
+                this.method = null;
+                this.async = null;
+            };
+            return URLRequest;
+        })();
+        net.URLRequest = URLRequest;
+    })(away.net || (away.net = {}));
+    var net = away.net;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (loaders) {
+        //import away3d.arcane;
+        //import away3d.events.AssetEvent;
+        //import away3d.events.LoaderEvent;
+        //import away3d.loaders.AssetLoader;
+        //import flash.events.Event;
+        //import flash.events.EventDispatcher;
+        //use namespace arcane;
+        /**
+        * Dispatched when any asset finishes parsing. Also see specific events for each
+        * individual asset type (meshes, materials et c.)
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="assetComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when a full resource (including dependencies) finishes loading.
+        *
+        * @eventType away3d.events.LoaderEvent
+        */
+        //[Event(name="resourceComplete", type="away3d.events.LoaderEvent")]
+        /**
+        * Dispatched when a single dependency (which may be the main file of a resource)
+        * finishes loading.
+        *
+        * @eventType away3d.events.LoaderEvent
+        */
+        //[Event(name="dependencyComplete", type="away3d.events.LoaderEvent")]
+        /**
+        * Dispatched when an error occurs during loading. I
+        *
+        * @eventType away3d.events.LoaderEvent
+        */
+        //[Event(name="loadError", type="away3d.events.LoaderEvent")]
+        /**
+        * Dispatched when an error occurs during parsing.
+        *
+        * @eventType away3d.events.ParserEvent
+        */
+        //[Event(name="parseError", type="away3d.events.ParserEvent")]
+        /**
+        * Dispatched when a skybox asset has been costructed from a ressource.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="skyboxComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when a camera3d asset has been costructed from a ressource.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="cameraComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when a mesh asset has been costructed from a ressource.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="meshComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when a geometry asset has been constructed from a resource.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="geometryComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when a skeleton asset has been constructed from a resource.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="skeletonComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when a skeleton pose asset has been constructed from a resource.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="skeletonPoseComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when a container asset has been constructed from a resource.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="containerComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when a texture asset has been constructed from a resource.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="textureComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when a texture projector asset has been constructed from a resource.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="textureProjectorComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when a material asset has been constructed from a resource.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="materialComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when a animator asset has been constructed from a resource.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="animatorComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when an animation set has been constructed from a group of animation state resources.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="animationSetComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when an animation state has been constructed from a group of animation node resources.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="animationStateComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when an animation node has been constructed from a resource.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="animationNodeComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when an animation state transition has been constructed from a group of animation node resources.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="stateTransitionComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when an light asset has been constructed from a resources.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="lightComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when an light picker asset has been constructed from a resources.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="lightPickerComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when an effect method asset has been constructed from a resources.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="effectMethodComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when an shadow map method asset has been constructed from a resources.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="shadowMapMethodComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Instances of this class are returned as tokens by loading operations
+        * to provide an object on which events can be listened for in cases where
+        * the actual asset loader is not directly available (e.g. when using the
+        * AssetLibrary to perform the load.)
+        *
+        * By listening for events on this class instead of directly on the
+        * AssetLibrary, one can distinguish different loads from each other.
+        *
+        * The token will dispatch all events that the original AssetLoader dispatches,
+        * while not providing an interface to obstruct the load and is as such a
+        * safer return value for loader wrappers than the loader itself.
+        */
+        var AssetLoaderToken = (function (_super) {
+            __extends(AssetLoaderToken, _super);
+            function AssetLoaderToken(loader) {
+                _super.call(this);
+
+                this._iLoader = loader;
+            }
+            AssetLoaderToken.prototype.addEventListener = function (type, listener, target) {
+                this._iLoader.addEventListener(type, listener, target);
+            };
+
+            AssetLoaderToken.prototype.removeEventListener = function (type, listener, target) {
+                this._iLoader.removeEventListener(type, listener, target);
+            };
+
+            AssetLoaderToken.prototype.hasEventListener = function (type, listener, target) {
+                return this._iLoader.hasEventListener(type, listener, target);
+            };
+            return AssetLoaderToken;
+        })(away.events.EventDispatcher);
+        loaders.AssetLoaderToken = AssetLoaderToken;
+    })(away.loaders || (away.loaders = {}));
+    var loaders = away.loaders;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (loaders) {
+        /**
+        * <code>ParserBase</code> provides an abstract base class for objects that convert blocks of data to data structures
+        * supported by Away3D.
+        *
+        * If used by <code>AssetLoader</code> to automatically determine the parser type, two public static methods should
+        * be implemented, with the following signatures:
+        *
+        * <code>public static supportsType(extension : string) : boolean</code>
+        * Indicates whether or not a given file extension is supported by the parser.
+        *
+        * <code>public static supportsData(data : *) : boolean</code>
+        * Tests whether a data block can be parsed by the parser.
+        *
+        * Furthermore, for any concrete subtype, the method <code>initHandle</code> should be overridden to immediately
+        * create the object that will contain the parsed data. This allows <code>ResourceManager</code> to return an object
+        * handle regardless of whether the object was loaded or not.
+        *
+        * @see away3d.loading.parsers.AssetLoader
+        * @see away3d.loading.ResourceManager
+        */
+        var ParserBase = (function (_super) {
+            __extends(ParserBase, _super);
+            /**
+            * Creates a new ParserBase object
+            * @param format The data format of the file data to be parsed. Can be either <code>ParserDataFormat.BINARY</code> or <code>ParserDataFormat.PLAIN_TEXT</code>, and should be provided by the concrete subtype.
+            * @param loaderType The type of loader required by the parser
+            *
+            * @see away3d.loading.parsers.ParserDataFormat
+            */
+            function ParserBase(format, loaderType) {
+                if (typeof loaderType === "undefined") { loaderType = null; }
+                _super.call(this);
+                this._loaderType = away.loaders.ParserLoaderType.URL_LOADER;
+
+                if (loaderType) {
+                    this._loaderType = loaderType;
+                }
+
+                this._materialMode = 0;
+                this._dataFormat = format;
+                this._dependencies = new Array();
+            }
+            ParserBase.supportsType = //----------------------------------------------------------------------------------------------------------------------------------------------------------------
+            // TODO: add error checking for the following ( could cause a problem if this function is not implemented )
+            //----------------------------------------------------------------------------------------------------------------------------------------------------------------
+            // Needs to be implemented in all Parsers (
+            //<code>public static supportsType(extension : string) : boolean</code>
+            //* Indicates whether or not a given file extension is supported by the parser.
+            //----------------------------------------------------------------------------------------------------------------------------------------------------------------
+            function (extension) {
+                throw new away.errors.AbstractMethodError();
+                return false;
+            };
+
+            /**
+            * Validates a bitmapData loaded before assigning to a default BitmapMaterial
+            */
+            ParserBase.prototype.isBitmapDataValid = function (bitmapData) {
+                var isValid = away.utils.TextureUtils.isBitmapDataValid(bitmapData);
+
+                if (!isValid) {
+                    console.log(">> Bitmap loaded is not having power of 2 dimensions or is higher than 2048");
+                }
+
+                return isValid;
+            };
+
+
+            Object.defineProperty(ParserBase.prototype, "parsingFailure", {
+                get: function () {
+                    return this._parsingFailure;
+                },
+                set: function (b) {
+                    this._parsingFailure = b;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(ParserBase.prototype, "parsingPaused", {
+                get: function () {
+                    return this._parsingPaused;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(ParserBase.prototype, "parsingComplete", {
+                get: function () {
+                    return this._parsingComplete;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(ParserBase.prototype, "materialMode", {
+                get: function () {
+                    return this._materialMode;
+                },
+                set: function (newMaterialMode) {
+                    this._materialMode = newMaterialMode;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(ParserBase.prototype, "loaderType", {
+                get: function () {
+                    return this._loaderType;
+                },
+                set: function (value) {
+                    this._loaderType = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(ParserBase.prototype, "data", {
+                get: function () {
+                    return this._data;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(ParserBase.prototype, "dataFormat", {
+                get: /**
+                * The data format of the file data to be parsed. Can be either <code>ParserDataFormat.BINARY</code> or <code>ParserDataFormat.PLAIN_TEXT</code>.
+                */
+                function () {
+                    return this._dataFormat;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * Parse data (possibly containing bytearry, plain text or BitmapAsset) asynchronously, meaning that
+            * the parser will periodically stop parsing so that the AVM may proceed to the
+            * next frame.
+            *
+            * @param data The untyped data object in which the loaded data resides.
+            * @param frameLimit number of milliseconds of parsing allowed per frame. The
+            * actual time spent on a frame can exceed this number since time-checks can
+            * only be performed between logical sections of the parsing procedure.
+            */
+            ParserBase.prototype.parseAsync = function (data, frameLimit) {
+                if (typeof frameLimit === "undefined") { frameLimit = 30; }
+                this._data = data;
+                this.startParsing(frameLimit);
+            };
+
+            Object.defineProperty(ParserBase.prototype, "dependencies", {
+                get: /**
+                * A list of dependencies that need to be loaded and resolved for the object being parsed.
+                */
+                function () {
+                    return this._dependencies;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * Resolve a dependency when it's loaded. For example, a dependency containing an ImageResource would be assigned
+            * to a Mesh instance as a BitmapMaterial, a scene graph object would be added to its intended parent. The
+            * dependency should be a member of the dependencies property.
+            *
+            * @param resourceDependency The dependency to be resolved.
+            */
+            ParserBase.prototype._iResolveDependency = function (resourceDependency) {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            /**
+            * Resolve a dependency loading failure. Used by parser to eventually provide a default map
+            *
+            * @param resourceDependency The dependency to be resolved.
+            */
+            ParserBase.prototype._iResolveDependencyFailure = function (resourceDependency) {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            /**
+            * Resolve a dependency name
+            *
+            * @param resourceDependency The dependency to be resolved.
+            */
+            ParserBase.prototype._iResolveDependencyName = function (resourceDependency, asset) {
+                return asset.name;
+            };
+
+            ParserBase.prototype._iResumeParsingAfterDependencies = function () {
+                this._parsingPaused = false;
+
+                if (this._timer) {
+                    this._timer.start();
+                }
+            };
+
+            ParserBase.prototype._pFinalizeAsset = function (asset, name) {
+                if (typeof name === "undefined") { name = null; }
+                var type_event;
+                var type_name;
+
+                if (name != null) {
+                    asset.name = name;
+                }
+
+                switch (asset.assetType) {
+                    case away.library.AssetType.LIGHT_PICKER:
+                        type_name = 'lightPicker';
+                        type_event = away.events.AssetEvent.LIGHTPICKER_COMPLETE;
+                        break;
+                    case away.library.AssetType.LIGHT:
+                        type_name = 'light';
+                        type_event = away.events.AssetEvent.LIGHT_COMPLETE;
+                        break;
+                    case away.library.AssetType.ANIMATOR:
+                        type_name = 'animator';
+                        type_event = away.events.AssetEvent.ANIMATOR_COMPLETE;
+                        break;
+                    case away.library.AssetType.ANIMATION_SET:
+                        type_name = 'animationSet';
+                        type_event = away.events.AssetEvent.ANIMATION_SET_COMPLETE;
+                        break;
+                    case away.library.AssetType.ANIMATION_STATE:
+                        type_name = 'animationState';
+                        type_event = away.events.AssetEvent.ANIMATION_STATE_COMPLETE;
+                        break;
+                    case away.library.AssetType.ANIMATION_NODE:
+                        type_name = 'animationNode';
+                        type_event = away.events.AssetEvent.ANIMATION_NODE_COMPLETE;
+                        break;
+                    case away.library.AssetType.STATE_TRANSITION:
+                        type_name = 'stateTransition';
+                        type_event = away.events.AssetEvent.STATE_TRANSITION_COMPLETE;
+                        break;
+                    case away.library.AssetType.TEXTURE:
+                        type_name = 'texture';
+                        type_event = away.events.AssetEvent.TEXTURE_COMPLETE;
+                        break;
+                    case away.library.AssetType.TEXTURE_PROJECTOR:
+                        type_name = 'textureProjector';
+                        type_event = away.events.AssetEvent.TEXTURE_PROJECTOR_COMPLETE;
+                        break;
+                    case away.library.AssetType.CONTAINER:
+                        type_name = 'container';
+                        type_event = away.events.AssetEvent.CONTAINER_COMPLETE;
+                        break;
+                    case away.library.AssetType.GEOMETRY:
+                        type_name = 'geometry';
+                        type_event = away.events.AssetEvent.GEOMETRY_COMPLETE;
+                        break;
+                    case away.library.AssetType.MATERIAL:
+                        type_name = 'material';
+                        type_event = away.events.AssetEvent.MATERIAL_COMPLETE;
+                        break;
+                    case away.library.AssetType.MESH:
+                        type_name = 'mesh';
+                        type_event = away.events.AssetEvent.MESH_COMPLETE;
+                        break;
+                    case away.library.AssetType.SKELETON:
+                        type_name = 'skeleton';
+                        type_event = away.events.AssetEvent.SKELETON_COMPLETE;
+                        break;
+                    case away.library.AssetType.SKELETON_POSE:
+                        type_name = 'skelpose';
+                        type_event = away.events.AssetEvent.SKELETON_POSE_COMPLETE;
+                        break;
+                    case away.library.AssetType.ENTITY:
+                        type_name = 'entity';
+                        type_event = away.events.AssetEvent.ENTITY_COMPLETE;
+                        break;
+                    case away.library.AssetType.SKYBOX:
+                        type_name = 'skybox';
+                        type_event = away.events.AssetEvent.SKYBOX_COMPLETE;
+                        break;
+                    case away.library.AssetType.CAMERA:
+                        type_name = 'camera';
+                        type_event = away.events.AssetEvent.CAMERA_COMPLETE;
+                        break;
+                    case away.library.AssetType.SEGMENT_SET:
+                        type_name = 'segmentSet';
+                        type_event = away.events.AssetEvent.SEGMENT_SET_COMPLETE;
+                        break;
+                    case away.library.AssetType.EFFECTS_METHOD:
+                        type_name = 'effectsMethod';
+                        type_event = away.events.AssetEvent.EFFECTMETHOD_COMPLETE;
+                        break;
+                    case away.library.AssetType.SHADOW_MAP_METHOD:
+                        type_name = 'effectsMethod';
+                        type_event = away.events.AssetEvent.SHADOWMAPMETHOD_COMPLETE;
+                        break;
+                    default:
+                        throw new away.errors.Error('Unhandled asset type ' + asset.assetType + '. Report as bug!');
+                        break;
+                }
+                ;
+
+                if (!asset.name)
+                    asset.name = type_name;
+
+                this.dispatchEvent(new away.events.AssetEvent(away.events.AssetEvent.ASSET_COMPLETE, asset));
+                this.dispatchEvent(new away.events.AssetEvent(type_event, asset));
+            };
+
+            /**
+            * Parse the next block of data.
+            * @return Whether or not more data needs to be parsed. Can be <code>ParserBase.ParserBase.PARSING_DONE</code> or
+            * <code>ParserBase.ParserBase.MORE_TO_PARSE</code>.
+            */
+            ParserBase.prototype._pProceedParsing = function () {
+                throw new away.errors.AbstractMethodError();
+                return true;
+            };
+
+            ParserBase.prototype._pDieWithError = function (message) {
+                if (typeof message === "undefined") { message = 'Unknown parsing error'; }
+                if (this._timer) {
+                    this._timer.removeEventListener(away.events.TimerEvent.TIMER, this._pOnInterval, this);
+                    this._timer.stop();
+                    this._timer = null;
+                }
+
+                this.dispatchEvent(new away.events.ParserEvent(away.events.ParserEvent.PARSE_ERROR, message));
+            };
+
+            ParserBase.prototype._pAddDependency = function (id, req, retrieveAsRawData, data, suppressErrorEvents) {
+                if (typeof retrieveAsRawData === "undefined") { retrieveAsRawData = false; }
+                if (typeof data === "undefined") { data = null; }
+                if (typeof suppressErrorEvents === "undefined") { suppressErrorEvents = false; }
+                this._dependencies.push(new away.loaders.ResourceDependency(id, req, data, this, retrieveAsRawData, suppressErrorEvents));
+            };
+
+            ParserBase.prototype._pPauseAndRetrieveDependencies = function () {
+                if (this._timer) {
+                    this._timer.stop();
+                }
+
+                this._parsingPaused = true;
+                this.dispatchEvent(new away.events.ParserEvent(away.events.ParserEvent.READY_FOR_DEPENDENCIES));
+            };
+
+            /**
+            * Tests whether or not there is still time left for parsing within the maximum allowed time frame per session.
+            * @return True if there is still time left, false if the maximum allotted time was exceeded and parsing should be interrupted.
+            */
+            ParserBase.prototype._pHasTime = function () {
+                return ((away.utils.getTimer() - this._lastFrameTime) < this._frameLimit);
+            };
+
+            /**
+            * Called when the parsing pause interval has passed and parsing can proceed.
+            */
+            ParserBase.prototype._pOnInterval = function (event) {
+                if (typeof event === "undefined") { event = null; }
+                this._lastFrameTime = away.utils.getTimer();
+
+                if (this._pProceedParsing() && !this._parsingFailure) {
+                    this._pFinishParsing();
+                }
+            };
+
+            /**
+            * Initializes the parsing of data.
+            * @param frameLimit The maximum duration of a parsing session.
+            */
+            ParserBase.prototype.startParsing = function (frameLimit) {
+                this._frameLimit = frameLimit;
+                this._timer = new away.utils.Timer(this._frameLimit, 0);
+                this._timer.addEventListener(away.events.TimerEvent.TIMER, this._pOnInterval, this);
+                this._timer.start();
+            };
+
+            /**
+            * Finish parsing the data.
+            */
+            ParserBase.prototype._pFinishParsing = function () {
+                if (this._timer) {
+                    this._timer.removeEventListener(away.events.TimerEvent.TIMER, this._pOnInterval, this);
+                    this._timer.stop();
+                }
+
+                this._timer = null;
+                this._parsingComplete = true;
+
+                this.dispatchEvent(new away.events.ParserEvent(away.events.ParserEvent.PARSE_COMPLETE));
+            };
+            ParserBase.PARSING_DONE = true;
+
+            ParserBase.MORE_TO_PARSE = false;
+            return ParserBase;
+        })(away.events.EventDispatcher);
+        loaders.ParserBase = ParserBase;
+    })(away.loaders || (away.loaders = {}));
+    var loaders = away.loaders;
+})(away || (away = {}));
+var away;
+(function (away) {
+    (function (library) {
+        var IDUtil = (function () {
+            function IDUtil() {
+            }
+            IDUtil.createUID = /**
+            *  Generates a UID (unique identifier) based on ActionScript's
+            *  pseudo-random number generator and the current time.
+            *
+            *  <p>The UID has the form
+            *  <code>"XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"</code>
+            *  where X is a hexadecimal digit (0-9, A-F).</p>
+            *
+            *  <p>This UID will not be truly globally unique; but it is the best
+            *  we can do without player support for UID generation.</p>
+            *
+            *  @return The newly-generated UID.
+            *
+            *  @langversion 3.0
+            *  @playerversion Flash 9
+            *  @playerversion AIR 1.1
+            *  @productversion Flex 3
+            */
+            function () {
+                var uid = new Array(36);
+                var index = 0;
+
+                var i;
+                var j;
+
+                for (i = 0; i < 8; i++)
+                    uid[index++] = IDUtil.ALPHA_CHAR_CODES[Math.floor(Math.random() * 16)];
+
+                for (i = 0; i < 3; i++) {
+                    uid[index++] = 45;
+
+                    for (j = 0; j < 4; j++)
+                        uid[index++] = IDUtil.ALPHA_CHAR_CODES[Math.floor(Math.random() * 16)];
+                }
+
+                uid[index++] = 45;
+
+                var time = new Date().getTime();
+
+                // Note: time is the number of milliseconds since 1970,
+                // which is currently more than one trillion.
+                // We use the low 8 hex digits of this number in the UID.
+                // Just in case the system clock has been reset to
+                // Jan 1-4, 1970 (in which case this number could have only
+                // 1-7 hex digits), we pad on the left with 7 zeros
+                // before taking the low digits.
+                var timeString = ("0000000" + time.toString(16).toUpperCase()).substr(-8);
+
+                for (i = 0; i < 8; i++)
+                    uid[index++] = timeString.charCodeAt(i);
+
+                for (i = 0; i < 4; i++)
+                    uid[index++] = IDUtil.ALPHA_CHAR_CODES[Math.floor(Math.random() * 16)];
+
+                return String.fromCharCode.apply(null, uid);
+            };
+            IDUtil.ALPHA_CHAR_CODES = [48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 65, 66, 67, 68, 69, 70];
+            return IDUtil;
+        })();
+        library.IDUtil = IDUtil;
+    })(away.library || (away.library = {}));
+    var library = away.library;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (events) {
+        var LoaderEvent = (function (_super) {
+            __extends(LoaderEvent, _super);
+            /**
+            * Create a new LoaderEvent object.
+            * @param type The event type.
+            * @param resource The loaded or parsed resource.
+            * @param url The url of the loaded resource.
+            */
+            function LoaderEvent(type, url, isDependency, errmsg) {
+                if (typeof url === "undefined") { url = null; }
+                if (typeof isDependency === "undefined") { isDependency = false; }
+                if (typeof errmsg === "undefined") { errmsg = null; }
+                _super.call(this, type);
+
+                this._url = url;
+                this._message = errmsg;
+                this._isDependency = isDependency;
+            }
+            Object.defineProperty(LoaderEvent.prototype, "url", {
+                get: /**
+                * The url of the loaded resource.
+                */
+                function () {
+                    return this._url;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(LoaderEvent.prototype, "message", {
+                get: /**
+                * The error string on loadError.
+                */
+                function () {
+                    return this._message;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(LoaderEvent.prototype, "isDependency", {
+                get: /**
+                * Indicates whether the event occurred while loading a dependency, as opposed
+                * to the base file. Dependencies can be textures or other files that are
+                * referenced by the base file.
+                */
+                function () {
+                    return this._isDependency;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * Clones the current event.
+            * @return An exact duplicate of the current event.
+            */
+            LoaderEvent.prototype.clone = function () {
+                return new LoaderEvent(this.type, this._url, this._isDependency, this._message);
+            };
+            LoaderEvent.LOAD_ERROR = "loadError";
+
+            LoaderEvent.RESOURCE_COMPLETE = "resourceComplete";
+
+            LoaderEvent.DEPENDENCY_COMPLETE = "dependencyComplete";
+            return LoaderEvent;
+        })(away.events.Event);
+        events.LoaderEvent = LoaderEvent;
+    })(away.events || (away.events = {}));
+    var events = away.events;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (library) {
+        /**
+        * AssetLibrary enforces a singleton pattern and is not intended to be instanced.
+        * It's purpose is to allow access to the default library bundle through a set of static shortcut methods.
+        * If you are interested in creating multiple library bundles, please use the <code>getBundle()</code> method.
+        */
+        var AssetLibrary = (function () {
+            /**
+            * Creates a new <code>AssetLibrary</code> object.
+            *
+            * @param se A singleton enforcer for the AssetLibrary ensuring it cannnot be instanced.
+            */
+            //*
+            function AssetLibrary(se) {
+                se = se;
+            }
+            AssetLibrary.getBundle = //*/
+            /**
+            * Returns an AssetLibrary bundle instance. If no key is given, returns the default bundle (which is
+            * similar to using the AssetLibraryBundle as a singleton). To keep several separated library bundles,
+            * pass a string key to this method to define which bundle should be returned. This is
+            * referred to as using the AssetLibraryBundle as a multiton.
+            *
+            * @param key Defines which multiton instance should be returned.
+            * @return An instance of the asset library
+            */
+            function (key) {
+                if (typeof key === "undefined") { key = 'default'; }
+                return away.library.AssetLibraryBundle.getInstance(key);
+            };
+
+            AssetLibrary.enableParser = /**
+            *
+            */
+            function (parserClass) {
+                away.loaders.SingleFileLoader.enableParser(parserClass);
+            };
+
+            AssetLibrary.enableParsers = /**
+            *
+            */
+            function (parserClasses) {
+                away.loaders.SingleFileLoader.enableParsers(parserClasses);
+            };
+
+            Object.defineProperty(AssetLibrary, "conflictStrategy", {
+                get: /**
+                * Short-hand for conflictStrategy property on default asset library bundle.
+                *
+                * @see away3d.library.AssetLibraryBundle.conflictStrategy
+                */
+                function () {
+                    return away.library.AssetLibrary.getBundle().conflictStrategy;
+                },
+                set: function (val) {
+                    away.library.AssetLibrary.getBundle().conflictStrategy = val;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(AssetLibrary, "conflictPrecedence", {
+                get: /**
+                * Short-hand for conflictPrecedence property on default asset library bundle.
+                *
+                * @see away3d.library.AssetLibraryBundle.conflictPrecedence
+                */
+                function () {
+                    return away.library.AssetLibrary.getBundle().conflictPrecedence;
+                },
+                set: function (val) {
+                    away.library.AssetLibrary.getBundle().conflictPrecedence = val;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            AssetLibrary.createIterator = /**
+            * Short-hand for createIterator() method on default asset library bundle.
+            *
+            * @see away3d.library.AssetLibraryBundle.createIterator()
+            */
+            function (assetTypeFilter, namespaceFilter, filterFunc) {
+                if (typeof assetTypeFilter === "undefined") { assetTypeFilter = null; }
+                if (typeof namespaceFilter === "undefined") { namespaceFilter = null; }
+                if (typeof filterFunc === "undefined") { filterFunc = null; }
+                return away.library.AssetLibrary.getBundle().createIterator(assetTypeFilter, namespaceFilter, filterFunc);
+            };
+
+            AssetLibrary.load = /**
+            * Short-hand for load() method on default asset library bundle.
+            *
+            * @see away3d.library.AssetLibraryBundle.load()
+            */
+            function (req, context, ns, parser) {
+                if (typeof context === "undefined") { context = null; }
+                if (typeof ns === "undefined") { ns = null; }
+                if (typeof parser === "undefined") { parser = null; }
+                return away.library.AssetLibrary.getBundle().load(req, context, ns, parser);
+            };
+
+            AssetLibrary.loadData = /**
+            * Short-hand for loadData() method on default asset library bundle.
+            *
+            * @see away3d.library.AssetLibraryBundle.loadData()
+            */
+            function (data, context, ns, parser) {
+                if (typeof context === "undefined") { context = null; }
+                if (typeof ns === "undefined") { ns = null; }
+                if (typeof parser === "undefined") { parser = null; }
+                return away.library.AssetLibrary.getBundle().loadData(data, context, ns, parser);
+            };
+
+            AssetLibrary.stopLoad = function () {
+                away.library.AssetLibrary.getBundle().stopAllLoadingSessions();
+            };
+
+            AssetLibrary.getAsset = /**
+            * Short-hand for getAsset() method on default asset library bundle.
+            *
+            * @see away3d.library.AssetLibraryBundle.getAsset()
+            */
+            function (name, ns) {
+                if (typeof ns === "undefined") { ns = null; }
+                return away.library.AssetLibrary.getBundle().getAsset(name, ns);
+            };
+
+            AssetLibrary.addEventListener = /**
+            * Short-hand for addEventListener() method on default asset library bundle.
+            */
+            function (type, listener, target) {
+                away.library.AssetLibrary.getBundle().addEventListener(type, listener, target);
+            };
+
+            AssetLibrary.removeEventListener = /**
+            * Short-hand for removeEventListener() method on default asset library bundle.
+            */
+            function (type, listener, target) {
+                away.library.AssetLibrary.getBundle().removeEventListener(type, listener, target);
+            };
+
+            AssetLibrary.addAsset = /**
+            * Short-hand for hasEventListener() method on default asset library bundle.
+            
+            public static hasEventListener(type:string):boolean
+            {
+            return away.library.AssetLibrary.getBundle().hasEventListener(type);
+            }
+            
+            public static willTrigger(type:string):boolean
+            {
+            return getBundle().willTrigger(type);
+            }
+            */
+            /**
+            * Short-hand for addAsset() method on default asset library bundle.
+            *
+            * @see away3d.library.AssetLibraryBundle.addAsset()
+            */
+            function (asset) {
+                away.library.AssetLibrary.getBundle().addAsset(asset);
+            };
+
+            AssetLibrary.removeAsset = /**
+            * Short-hand for removeAsset() method on default asset library bundle.
+            *
+            * @param asset The asset which should be removed from the library.
+            * @param dispose Defines whether the assets should also be disposed.
+            *
+            * @see away3d.library.AssetLibraryBundle.removeAsset()
+            */
+            function (asset, dispose) {
+                if (typeof dispose === "undefined") { dispose = true; }
+                away.library.AssetLibrary.getBundle().removeAsset(asset, dispose);
+            };
+
+            AssetLibrary.removeAssetByName = /**
+            * Short-hand for removeAssetByName() method on default asset library bundle.
+            *
+            * @param name The name of the asset to be removed.
+            * @param ns The namespace to which the desired asset belongs.
+            * @param dispose Defines whether the assets should also be disposed.
+            *
+            * @see away3d.library.AssetLibraryBundle.removeAssetByName()
+            */
+            function (name, ns, dispose) {
+                if (typeof ns === "undefined") { ns = null; }
+                if (typeof dispose === "undefined") { dispose = true; }
+                return away.library.AssetLibrary.getBundle().removeAssetByName(name, ns, dispose);
+            };
+
+            AssetLibrary.removeAllAssets = /**
+            * Short-hand for removeAllAssets() method on default asset library bundle.
+            *
+            * @param dispose Defines whether the assets should also be disposed.
+            *
+            * @see away3d.library.AssetLibraryBundle.removeAllAssets()
+            */
+            function (dispose) {
+                if (typeof dispose === "undefined") { dispose = true; }
+                away.library.AssetLibrary.getBundle().removeAllAssets(dispose);
+            };
+
+            AssetLibrary.removeNamespaceAssets = /**
+            * Short-hand for removeNamespaceAssets() method on default asset library bundle.
+            *
+            * @see away3d.library.AssetLibraryBundle.removeNamespaceAssets()
+            */
+            function (ns, dispose) {
+                if (typeof ns === "undefined") { ns = null; }
+                if (typeof dispose === "undefined") { dispose = true; }
+                away.library.AssetLibrary.getBundle().removeNamespaceAssets(ns, dispose);
+            };
+            AssetLibrary._iInstances = {};
+            return AssetLibrary;
+        })();
+        library.AssetLibrary = AssetLibrary;
+    })(away.library || (away.library = {}));
+    var library = away.library;
+})(away || (away = {}));
+
+// singleton enforcer
+var AssetLibrarySingletonEnforcer = (function () {
+    function AssetLibrarySingletonEnforcer() {
+    }
+    return AssetLibrarySingletonEnforcer;
+})();
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (net) {
+        // TODO: implement / test cross domain policy
+        var IMGLoader = (function (_super) {
+            __extends(IMGLoader, _super);
+            function IMGLoader(imageName) {
+                if (typeof imageName === "undefined") { imageName = ''; }
+                _super.call(this);
+                this._name = '';
+                this._loaded = false;
+                this._name = imageName;
+                this.initImage();
+            }
+            // Public
+            /**
+            * load an image
+            * @param request {away.net.URLRequest}
+            */
+            IMGLoader.prototype.load = function (request) {
+                this._loaded = false;
+                this._request = request;
+
+                if (this._crossOrigin) {
+                    if (this._image['crossOrigin'] != null) {
+                        this._image['crossOrigin'] = this._crossOrigin;
+                    }
+                }
+
+                this._image.src = this._request.url;
+            };
+
+            /**
+            *
+            */
+            IMGLoader.prototype.dispose = function () {
+                if (this._image) {
+                    this._image.onabort = null;
+                    this._image.onerror = null;
+                    this._image.onload = null;
+                    this._image = null;
+                }
+
+                if (this._request) {
+                    this._request = null;
+                }
+            };
+
+            Object.defineProperty(IMGLoader.prototype, "image", {
+                get: // Get / Set
+                /**
+                * Get reference to image if it is loaded
+                * @returns {HTMLImageElement}
+                */
+                function () {
+                    return this._image;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(IMGLoader.prototype, "loaded", {
+                get: /**
+                * Get image width. Returns null is image is not loaded
+                * @returns {number}
+                */
+                function () {
+                    return this._loaded;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(IMGLoader.prototype, "crossOrigin", {
+                get: function () {
+                    return this._crossOrigin;
+                },
+                set: function (value) {
+                    this._crossOrigin = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(IMGLoader.prototype, "width", {
+                get: /**
+                * Get image width. Returns null is image is not loaded
+                * @returns {number}
+                */
+                function () {
+                    if (this._image) {
+                        return this._image.width;
+                    }
+
+                    return null;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(IMGLoader.prototype, "height", {
+                get: /**
+                * Get image height. Returns null is image is not loaded
+                * @returns {number}
+                */
+                function () {
+                    if (this._image) {
+                        return this._image.height;
+                    }
+
+                    return null;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(IMGLoader.prototype, "request", {
+                get: /**
+                * return URL request used to load image
+                * @returns {away.net.URLRequest}
+                */
+                function () {
+                    return this._request;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(IMGLoader.prototype, "name", {
+                get: /**
+                * get name of HTMLImageElement
+                * @returns {string}
+                */
+                function () {
+                    if (this._image) {
+                        return this._image.name;
+                    }
+
+                    return this._name;
+                },
+                set: /**
+                * set name of HTMLImageElement
+                * @returns {string}
+                */
+                function (value) {
+                    if (this._image) {
+                        this._image.name = value;
+                    }
+
+                    this._name = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            // Private
+            /**
+            * intialise the image object
+            */
+            IMGLoader.prototype.initImage = function () {
+                var _this = this;
+                if (!this._image) {
+                    this._image = new Image();
+                    this._image.onabort = function (event) {
+                        return _this.onAbort(event);
+                    };
+                    this._image.onerror = function (event) {
+                        return _this.onError(event);
+                    };
+                    this._image.onload = function (event) {
+                        return _this.onLoadComplete(event);
+                    };
+                    this._image.name = this._name;
+                }
+            };
+
+            // Image - event handlers
+            /**
+            * Loading of an image is interrupted
+            * @param event
+            */
+            IMGLoader.prototype.onAbort = function (event) {
+                this.dispatchEvent(new away.events.Event(away.events.IOErrorEvent.IO_ERROR));
+            };
+
+            /**
+            * An error occured when loading the image
+            * @param event
+            */
+            IMGLoader.prototype.onError = function (event) {
+                this.dispatchEvent(new away.events.Event(away.events.IOErrorEvent.IO_ERROR));
+            };
+
+            /**
+            * image is finished loading
+            * @param event
+            */
+            IMGLoader.prototype.onLoadComplete = function (event) {
+                this._loaded = true;
+                this.dispatchEvent(new away.events.Event(away.events.Event.COMPLETE));
+            };
+            return IMGLoader;
+        })(away.events.EventDispatcher);
+        net.IMGLoader = IMGLoader;
+    })(away.net || (away.net = {}));
+    var net = away.net;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (events) {
+        var IOErrorEvent = (function (_super) {
+            __extends(IOErrorEvent, _super);
+            function IOErrorEvent(type) {
+                _super.call(this, type);
+            }
+            IOErrorEvent.IO_ERROR = "IOErrorEvent_IO_ERROR";
+            return IOErrorEvent;
+        })(away.events.Event);
+        events.IOErrorEvent = IOErrorEvent;
+    })(away.events || (away.events = {}));
+    var events = away.events;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (events) {
+        var HTTPStatusEvent = (function (_super) {
+            __extends(HTTPStatusEvent, _super);
+            function HTTPStatusEvent(type, status) {
+                if (typeof status === "undefined") { status = null; }
+                _super.call(this, type);
+
+                this.status = status;
+            }
+            HTTPStatusEvent.HTTP_STATUS = "HTTPStatusEvent_HTTP_STATUS";
+            return HTTPStatusEvent;
+        })(away.events.Event);
+        events.HTTPStatusEvent = HTTPStatusEvent;
+    })(away.events || (away.events = {}));
+    var events = away.events;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (events) {
+        var ProgressEvent = (function (_super) {
+            __extends(ProgressEvent, _super);
+            function ProgressEvent(type) {
+                _super.call(this, type);
+            }
+            ProgressEvent.PROGRESS = "ProgressEvent_progress";
+            return ProgressEvent;
+        })(away.events.Event);
+        events.ProgressEvent = ProgressEvent;
+    })(away.events || (away.events = {}));
+    var events = away.events;
+})(away || (away = {}));
+var away;
+(function (away) {
+    (function (net) {
+        var URLLoaderDataFormat = (function () {
+            function URLLoaderDataFormat() {
+            }
+            URLLoaderDataFormat.TEXT = 'text';
+
+            URLLoaderDataFormat.VARIABLES = 'variables';
+
+            URLLoaderDataFormat.BLOB = 'blob';
+
+            URLLoaderDataFormat.ARRAY_BUFFER = 'arraybuffer';
+
+            URLLoaderDataFormat.BINARY = 'binary';
+            return URLLoaderDataFormat;
+        })();
+        net.URLLoaderDataFormat = URLLoaderDataFormat;
+    })(away.net || (away.net = {}));
+    var net = away.net;
+})(away || (away = {}));
+var away;
+(function (away) {
+    (function (net) {
+        var URLRequestMethod = (function () {
+            function URLRequestMethod() {
+            }
+            URLRequestMethod.POST = 'POST';
+
+            URLRequestMethod.GET = 'GET';
+            return URLRequestMethod;
+        })();
+        net.URLRequestMethod = URLRequestMethod;
+    })(away.net || (away.net = {}));
+    var net = away.net;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (net) {
+        // TODO: implement / test cross domain policy
+        var URLLoader = (function (_super) {
+            __extends(URLLoader, _super);
+            function URLLoader() {
+                _super.call(this);
+                this._bytesLoaded = 0;
+                this._bytesTotal = 0;
+                this._dataFormat = away.net.URLLoaderDataFormat.TEXT;
+                this._loadError = false;
+            }
+            // Public
+            /**
+            *
+            * @param request {away.net.URLRequest}
+            */
+            URLLoader.prototype.load = function (request) {
+                this.initXHR();
+                this._request = request;
+
+                if (request.method === away.net.URLRequestMethod.POST) {
+                    this.postRequest(request);
+                } else {
+                    this.getRequest(request);
+                }
+            };
+
+            /**
+            *
+            */
+            URLLoader.prototype.close = function () {
+                this._XHR.abort();
+                this.disposeXHR();
+            };
+
+            /**
+            *
+            */
+            URLLoader.prototype.dispose = function () {
+                if (this._XHR) {
+                    this._XHR.abort();
+                }
+
+                this.disposeXHR();
+
+                this._data = null;
+                this._dataFormat = null;
+                this._bytesLoaded = null;
+                this._bytesTotal = null;
+
+                /*
+                if( this._request )
+                {
+                
+                this._request.dispose();
+                
+                }
+                */
+                this._request = null;
+            };
+
+
+            Object.defineProperty(URLLoader.prototype, "dataFormat", {
+                get: /**
+                *
+                * @returns {string}
+                *      away.net.URLLoaderDataFormat
+                */
+                function () {
+                    return this._dataFormat;
+                },
+                set: // Get / Set
+                /**
+                *
+                * away.net.URLLoaderDataFormat.BINARY
+                * away.net.URLLoaderDataFormat.TEXT
+                * away.net.URLLoaderDataFormat.VARIABLES
+                *
+                * @param format
+                */
+                function (format) {
+                    if (format === away.net.URLLoaderDataFormat.BLOB || format === away.net.URLLoaderDataFormat.ARRAY_BUFFER || format === away.net.URLLoaderDataFormat.BINARY || format === away.net.URLLoaderDataFormat.TEXT || format === away.net.URLLoaderDataFormat.VARIABLES) {
+                        this._dataFormat = format;
+                    } else {
+                        throw new away.errors.Error('URLLoader error: incompatible dataFormat');
+                    }
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(URLLoader.prototype, "data", {
+                get: /**
+                *
+                * @returns {*}
+                */
+                function () {
+                    return this._data;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(URLLoader.prototype, "bytesLoaded", {
+                get: /**
+                *
+                * @returns {number}
+                */
+                function () {
+                    return this._bytesLoaded;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(URLLoader.prototype, "bytesTotal", {
+                get: /**
+                *
+                * @returns {number}
+                */
+                function () {
+                    return this._bytesTotal;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(URLLoader.prototype, "request", {
+                get: /**
+                *
+                * @returns {away.net.URLRequest}
+                */
+                function () {
+                    return this._request;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            // Private
+            /**
+            *
+            * @param xhr
+            * @param responseType
+            */
+            URLLoader.prototype.setResponseType = function (xhr, responseType) {
+                switch (responseType) {
+                    case away.net.URLLoaderDataFormat.ARRAY_BUFFER:
+                    case away.net.URLLoaderDataFormat.BLOB:
+                    case away.net.URLLoaderDataFormat.TEXT:
+                        xhr.responseType = responseType;
+
+                        break;
+
+                    case away.net.URLLoaderDataFormat.VARIABLES:
+                        xhr.responseType = away.net.URLLoaderDataFormat.TEXT;
+
+                        break;
+
+                    case away.net.URLLoaderDataFormat.BINARY:
+                        xhr.responseType = '';
+
+                        break;
+                }
+            };
+
+            /**
+            *
+            * @param request {away.net.URLRequest}
+            */
+            URLLoader.prototype.getRequest = function (request) {
+                try  {
+                    this._XHR.open(request.method, request.url, request.async);
+                    this.setResponseType(this._XHR, this._dataFormat);
+                    this._XHR.send();
+                } catch (e) {
+                    this.handleXmlHttpRequestException(e);
+                }
+            };
+
+            /**
+            *
+            * @param request {away.net.URLRequest}
+            */
+            URLLoader.prototype.postRequest = function (request) {
+                this._loadError = false;
+
+                this._XHR.open(request.method, request.url, request.async);
+
+                if (request.data != null) {
+                    if (request.data instanceof away.net.URLVariables) {
+                        var urlVars = request.data;
+
+                        try  {
+                            this._XHR.responseType = 'text';
+                            this._XHR.send(urlVars.formData);
+                        } catch (e) {
+                            this.handleXmlHttpRequestException(e);
+                        }
+                    } else {
+                        this.setResponseType(this._XHR, this._dataFormat);
+
+                        if (request.data) {
+                            this._XHR.send(request.data);
+                        } else {
+                            this._XHR.send();
+                        }
+                    }
+                } else {
+                    this._XHR.send();
+                }
+            };
+
+            /**
+            *
+            * @param error {XMLHttpRequestException}
+            */
+            URLLoader.prototype.handleXmlHttpRequestException = function (error/* <XMLHttpRequestException> */ ) {
+                switch (error.code) {
+                    case 101:
+                        break;
+                }
+            };
+
+            /**
+            *
+            */
+            URLLoader.prototype.initXHR = function () {
+                var _this = this;
+                if (!this._XHR) {
+                    this._XHR = new XMLHttpRequest();
+
+                    this._XHR.onloadstart = function (event) {
+                        return _this.onLoadStart(event);
+                    };
+                    this._XHR.onprogress = function (event) {
+                        return _this.onProgress(event);
+                    };
+                    this._XHR.onabort = function (event) {
+                        return _this.onAbort(event);
+                    };
+                    this._XHR.onerror = function (event) {
+                        return _this.onLoadError(event);
+                    };
+                    this._XHR.onload = function (event) {
+                        return _this.onLoadComplete(event);
+                    };
+                    this._XHR.ontimeout = function (event) {
+                        return _this.onTimeOut(event);
+                    };
+                    this._XHR.onloadend = function (event) {
+                        return _this.onLoadEnd(event);
+                    };
+                    this._XHR.onreadystatechange = function (event) {
+                        return _this.onReadyStateChange(event);
+                    };
+                }
+            };
+
+            /**
+            *
+            */
+            URLLoader.prototype.disposeXHR = function () {
+                if (this._XHR !== null) {
+                    this._XHR.onloadstart = null;
+                    this._XHR.onprogress = null;
+                    this._XHR.onabort = null;
+                    this._XHR.onerror = null;
+                    this._XHR.onload = null;
+                    this._XHR.ontimeout = null;
+                    this._XHR.onloadend = null;
+                    this._XHR = null;
+                }
+            };
+
+            /**
+            *
+            * @param source
+            */
+            URLLoader.prototype.decodeURLVariables = function (source) {
+                var result = new Object();
+
+                source = source.split("+").join(" ");
+
+                var tokens, re = /[?&]?([^=]+)=([^&]*)/g;
+
+                while (tokens = re.exec(source)) {
+                    result[decodeURIComponent(tokens[1])] = decodeURIComponent(tokens[2]);
+                }
+
+                return result;
+            };
+
+            // XMLHttpRequest - Event Handlers
+            /**
+            * When XHR state changes
+            * @param event
+            */
+            URLLoader.prototype.onReadyStateChange = function (event) {
+                if (this._XHR.readyState == 4) {
+                    if (this._XHR.status == 404) {
+                        this._loadError = true;
+                        this.dispatchEvent(new away.events.IOErrorEvent(away.events.IOErrorEvent.IO_ERROR));
+                    }
+
+                    this.dispatchEvent(new away.events.HTTPStatusEvent(away.events.HTTPStatusEvent.HTTP_STATUS, this._XHR.status));
+                }
+            };
+
+            /**
+            * When the request has completed, regardless of whether or not it was successful.
+            * @param event
+            */
+            URLLoader.prototype.onLoadEnd = function (event) {
+                if (this._loadError === true)
+                    return;
+            };
+
+            /**
+            * When the author specified timeout has passed before the request could complete.
+            * @param event
+            */
+            URLLoader.prototype.onTimeOut = function (event) {
+            };
+
+            /**
+            * When the request has been aborted, either by invoking the abort() method or navigating away from the page.
+            * @param event
+            */
+            URLLoader.prototype.onAbort = function (event) {
+            };
+
+            /**
+            * While loading and sending data.
+            * @param event
+            */
+            URLLoader.prototype.onProgress = function (event) {
+                this._bytesTotal = event.total;
+                this._bytesLoaded = event.loaded;
+
+                var progressEvent = new away.events.ProgressEvent(away.events.ProgressEvent.PROGRESS);
+                progressEvent.bytesLoaded = this._bytesLoaded;
+                progressEvent.bytesTotal = this._bytesTotal;
+                this.dispatchEvent(progressEvent);
+            };
+
+            /**
+            * When the request starts.
+            * @param event
+            */
+            URLLoader.prototype.onLoadStart = function (event) {
+                this.dispatchEvent(new away.events.Event(away.events.Event.OPEN));
+            };
+
+            /**
+            * When the request has successfully completed.
+            * @param event
+            */
+            URLLoader.prototype.onLoadComplete = function (event) {
+                if (this._loadError === true)
+                    return;
+
+                switch (this._dataFormat) {
+                    case away.net.URLLoaderDataFormat.TEXT:
+                        this._data = this._XHR.responseText;
+
+                        break;
+
+                    case away.net.URLLoaderDataFormat.VARIABLES:
+                        this._data = this.decodeURLVariables(this._XHR.responseText);
+
+                        break;
+
+                    case away.net.URLLoaderDataFormat.BLOB:
+                    case away.net.URLLoaderDataFormat.ARRAY_BUFFER:
+                    case away.net.URLLoaderDataFormat.BINARY:
+                        this._data = this._XHR.response;
+
+                        break;
+
+                    default:
+                        this._data = this._XHR.responseText;
+
+                        break;
+                }
+
+                this.dispatchEvent(new away.events.Event(away.events.Event.COMPLETE));
+            };
+
+            /**
+            * When the request has failed. ( due to network issues ).
+            * @param event
+            */
+            URLLoader.prototype.onLoadError = function (event) {
+                this._loadError = true;
+                this.dispatchEvent(new away.events.IOErrorEvent(away.events.IOErrorEvent.IO_ERROR));
+            };
+            return URLLoader;
+        })(away.events.EventDispatcher);
+        net.URLLoader = URLLoader;
+    })(away.net || (away.net = {}));
+    var net = away.net;
+})(away || (away = {}));
+var away;
+(function (away) {
+    (function (loaders) {
+        /**
+        * An enumeration providing values to describe the data format of parsed data.
+        */
+        var ParserDataFormat = (function () {
+            function ParserDataFormat() {
+            }
+            ParserDataFormat.BINARY = "binary";
+
+            ParserDataFormat.PLAIN_TEXT = "plainText";
+
+            ParserDataFormat.IMAGE = "image";
+            return ParserDataFormat;
+        })();
+        loaders.ParserDataFormat = ParserDataFormat;
+    })(away.loaders || (away.loaders = {}));
+    var loaders = away.loaders;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (loaders) {
+        /**
+        * ImageParser provides a "parser" for natively supported image types (jpg, png). While it simply loads bytes into
+        * a loader object, it wraps it in a BitmapDataResource so resource management can happen consistently without
+        * exception cases.
+        */
+        var ImageParser = (function (_super) {
+            __extends(ImageParser, _super);
+            //private var _loader           : Loader;
+            /**
+            * Creates a new ImageParser object.
+            * @param uri The url or id of the data or file to be parsed.
+            * @param extra The holder for extra contextual data that the parser might need.
+            */
+            function ImageParser() {
+                _super.call(this, away.loaders.ParserDataFormat.IMAGE, away.loaders.ParserLoaderType.IMG_LOADER);
+            }
+            ImageParser.supportsType = /**
+            * Indicates whether or not a given file extension is supported by the parser.
+            * @param extension The file extension of a potential file to be parsed.
+            * @return Whether or not the given file type is supported.
+            */
+            function (extension) {
+                extension = extension.toLowerCase();
+                return extension == "jpg" || extension == "jpeg" || extension == "png" || extension == "gif";
+            };
+
+            ImageParser.supportsData = /**
+            * Tests whether a data block can be parsed by the parser.
+            * @param data The data block to potentially be parsed.
+            * @return Whether or not the given data is supported.
+            */
+            function (data) {
+                if (data instanceof HTMLImageElement) {
+                    return true;
+                }
+
+                return false;
+            };
+
+            /**
+            * @inheritDoc
+            */
+            ImageParser.prototype._pProceedParsing = function () {
+                var asset;
+
+                if (this.data instanceof HTMLImageElement) {
+                    asset = new away.textures.HTMLImageElementTexture(this.data);
+
+                    if (away.utils.TextureUtils.isHTMLImageElementValid(this.data)) {
+                        this._pFinalizeAsset(asset, this._iFileName);
+                    } else {
+                        this.dispatchEvent(new away.events.AssetEvent(away.events.AssetEvent.TEXTURE_SIZE_ERROR, asset));
+                    }
+
+                    return away.loaders.ParserBase.PARSING_DONE;
+                }
+
+                return away.loaders.ParserBase.PARSING_DONE;
+            };
+            return ImageParser;
+        })(away.loaders.ParserBase);
+        loaders.ImageParser = ImageParser;
+    })(away.loaders || (away.loaders = {}));
+    var loaders = away.loaders;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (loaders) {
+        var SingleFileImageLoader = (function (_super) {
+            __extends(SingleFileImageLoader, _super);
+            function SingleFileImageLoader() {
+                _super.call(this);
+                this.initLoader();
+            }
+            // Public
+            /**
+            *
+            * @param req
+            */
+            SingleFileImageLoader.prototype.load = function (req) {
+                this._loader.load(req);
+            };
+
+            /**
+            *
+            */
+            SingleFileImageLoader.prototype.dispose = function () {
+                this.disposeLoader();
+                this._data = null;
+            };
+
+            Object.defineProperty(SingleFileImageLoader.prototype, "data", {
+                get: // Get / Set
+                /**
+                *
+                * @returns {*}
+                */
+                function () {
+                    return this._loader.image;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SingleFileImageLoader.prototype, "dataFormat", {
+                get: /**
+                *
+                * @returns {*}
+                */
+                function () {
+                    return this._dataFormat;
+                },
+                set: function (value) {
+                    this._dataFormat = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            // Private
+            /**
+            *
+            */
+            SingleFileImageLoader.prototype.initLoader = function () {
+                if (!this._loader) {
+                    this._loader = new away.net.IMGLoader();
+                    this._loader.addEventListener(away.events.Event.COMPLETE, this.onLoadComplete, this);
+                    this._loader.addEventListener(away.events.IOErrorEvent.IO_ERROR, this.onLoadError, this);
+                }
+            };
+
+            /**
+            *
+            */
+            SingleFileImageLoader.prototype.disposeLoader = function () {
+                if (this._loader) {
+                    this._loader.dispose();
+                    this._loader.removeEventListener(away.events.Event.COMPLETE, this.onLoadComplete, this);
+                    this._loader.removeEventListener(away.events.IOErrorEvent.IO_ERROR, this.onLoadError, this);
+                    this._loader = null;
+                }
+            };
+
+            // Events
+            /**
+            *
+            * @param event
+            */
+            SingleFileImageLoader.prototype.onLoadComplete = function (event) {
+                this.dispatchEvent(event);
+            };
+
+            /**
+            *
+            * @param event
+            */
+            SingleFileImageLoader.prototype.onLoadError = function (event) {
+                this.dispatchEvent(event);
+            };
+            return SingleFileImageLoader;
+        })(away.events.EventDispatcher);
+        loaders.SingleFileImageLoader = SingleFileImageLoader;
+    })(away.loaders || (away.loaders = {}));
+    var loaders = away.loaders;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (loaders) {
+        var SingleFileURLLoader = (function (_super) {
+            __extends(SingleFileURLLoader, _super);
+            function SingleFileURLLoader() {
+                _super.call(this);
+                this.initLoader();
+            }
+            // Public
+            /**
+            *
+            * @param req
+            */
+            SingleFileURLLoader.prototype.load = function (req) {
+                this._loader.load(req);
+            };
+
+            /**
+            *
+            */
+            SingleFileURLLoader.prototype.dispose = function () {
+                this.disposeLoader();
+                this._data = null;
+            };
+
+            Object.defineProperty(SingleFileURLLoader.prototype, "data", {
+                get: // Get / Set
+                /**
+                *
+                * @returns {*}
+                */
+                function () {
+                    return this._loader.data;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SingleFileURLLoader.prototype, "dataFormat", {
+                get: /**
+                *
+                * @returns {*}
+                */
+                function () {
+                    return this._loader.dataFormat;
+                },
+                set: function (value) {
+                    this._loader.dataFormat = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            // Private
+            /**
+            *
+            */
+            SingleFileURLLoader.prototype.initLoader = function () {
+                if (!this._loader) {
+                    this._loader = new away.net.URLLoader();
+                    this._loader.addEventListener(away.events.Event.COMPLETE, this.onLoadComplete, this);
+                    this._loader.addEventListener(away.events.IOErrorEvent.IO_ERROR, this.onLoadError, this);
+                }
+            };
+
+            /**
+            *
+            */
+            SingleFileURLLoader.prototype.disposeLoader = function () {
+                if (this._loader) {
+                    this._loader.dispose();
+                    this._loader.removeEventListener(away.events.Event.COMPLETE, this.onLoadComplete, this);
+                    this._loader.removeEventListener(away.events.IOErrorEvent.IO_ERROR, this.onLoadError, this);
+                    this._loader = null;
+                }
+            };
+
+            // Events
+            /**
+            *
+            * @param event
+            */
+            SingleFileURLLoader.prototype.onLoadComplete = function (event) {
+                this.dispatchEvent(event);
+            };
+
+            /**
+            *
+            * @param event
+            */
+            SingleFileURLLoader.prototype.onLoadError = function (event) {
+                this.dispatchEvent(event);
+            };
+            return SingleFileURLLoader;
+        })(away.events.EventDispatcher);
+        loaders.SingleFileURLLoader = SingleFileURLLoader;
+    })(away.loaders || (away.loaders = {}));
+    var loaders = away.loaders;
+})(away || (away = {}));
+var away;
+(function (away) {
+    (function (loaders) {
+        var ParserLoaderType = (function () {
+            function ParserLoaderType() {
+            }
+            ParserLoaderType.URL_LOADER = 'ParserLoaderType_URLLoader';
+            ParserLoaderType.IMG_LOADER = 'ParserLoaderType_IMGLoader';
+            return ParserLoaderType;
+        })();
+        loaders.ParserLoaderType = ParserLoaderType;
+    })(away.loaders || (away.loaders = {}));
+    var loaders = away.loaders;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (textures) {
+        var HTMLImageElementTexture = (function (_super) {
+            __extends(HTMLImageElementTexture, _super);
+            function HTMLImageElementTexture(htmlImageElement, generateMipmaps) {
+                if (typeof generateMipmaps === "undefined") { generateMipmaps = true; }
+                _super.call(this);
+
+                this._htmlImageElement = htmlImageElement;
+                this._generateMipmaps = generateMipmaps;
+            }
+            Object.defineProperty(HTMLImageElementTexture.prototype, "htmlImageElement", {
+                get: function () {
+                    return this._htmlImageElement;
+                },
+                set: function (value) {
+                    if (value == this._htmlImageElement) {
+                        return;
+                    }
+
+                    if (!away.utils.TextureUtils.isHTMLImageElementValid(value)) {
+                        throw new away.errors.Error("Invalid bitmapData: Width and height must be power of 2 and cannot exceed 2048");
+                    }
+
+                    this.invalidateContent();
+                    this._pSetSize(value.width, value.height);
+                    this._htmlImageElement = value;
+
+                    if (this._generateMipmaps) {
+                        this.getMipMapHolder();
+                    }
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            HTMLImageElementTexture.prototype._pUploadContent = function (texture) {
+                if (this._generateMipmaps) {
+                    away.materials.MipmapGenerator.generateHTMLImageElementMipMaps(this._htmlImageElement, texture, this._mipMapHolder, true);
+                } else {
+                    var tx = texture;
+                    tx.uploadFromHTMLImageElement(this._htmlImageElement, 0);
+                }
+            };
+
+            HTMLImageElementTexture.prototype.getMipMapHolder = function () {
+                var newW = this._htmlImageElement.width;
+                var newH = this._htmlImageElement.height;
+
+                if (this._mipMapHolder) {
+                    if (this._mipMapHolder.width == newW && this._htmlImageElement.height == newH) {
+                        return;
+                    }
+
+                    this.freeMipMapHolder();
+                }
+
+                if (!HTMLImageElementTexture._mipMaps[newW]) {
+                    HTMLImageElementTexture._mipMaps[newW] = [];
+                    HTMLImageElementTexture._mipMapUses[newW] = [];
+                }
+
+                if (!HTMLImageElementTexture._mipMaps[newW][newH]) {
+                    this._mipMapHolder = HTMLImageElementTexture._mipMaps[newW][newH] = new away.display.BitmapData(newW, newH, true);
+                    HTMLImageElementTexture._mipMapUses[newW][newH] = 1;
+                } else {
+                    HTMLImageElementTexture._mipMapUses[newW][newH] = HTMLImageElementTexture._mipMapUses[newW][newH] + 1;
+                    this._mipMapHolder = HTMLImageElementTexture._mipMaps[newW][newH];
+                }
+            };
+
+            HTMLImageElementTexture.prototype.freeMipMapHolder = function () {
+                var holderWidth = this._mipMapHolder.width;
+                var holderHeight = this._mipMapHolder.height;
+
+                if (--HTMLImageElementTexture._mipMapUses[holderWidth][holderHeight] == 0) {
+                    HTMLImageElementTexture._mipMaps[holderWidth][holderHeight].dispose();
+                    HTMLImageElementTexture._mipMaps[holderWidth][holderHeight] = null;
+                }
+            };
+
+            HTMLImageElementTexture.prototype.dispose = function () {
+                _super.prototype.dispose.call(this);
+
+                if (this._mipMapHolder) {
+                    this.freeMipMapHolder();
+                }
+            };
+            HTMLImageElementTexture._mipMaps = [];
+            HTMLImageElementTexture._mipMapUses = [];
+            return HTMLImageElementTexture;
+        })(away.textures.Texture2DBase);
+        textures.HTMLImageElementTexture = HTMLImageElementTexture;
+    })(away.textures || (away.textures = {}));
+    var textures = away.textures;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (textures) {
+        //use namespace arcane;
+        var Texture2DBase = (function (_super) {
+            __extends(Texture2DBase, _super);
+            function Texture2DBase() {
+                _super.call(this);
+            }
+            Texture2DBase.prototype._pCreateTexture = function (context) {
+                return context.createTexture(this.width, this.height, away.display3D.Context3DTextureFormat.BGRA, false);
+            };
+            return Texture2DBase;
+        })(away.textures.TextureProxyBase);
+        textures.Texture2DBase = Texture2DBase;
+    })(away.textures || (away.textures = {}));
+    var textures = away.textures;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (utils) {
+        //import flash.display.BitmapData;
+        var TextureUtils = (function () {
+            function TextureUtils() {
+            }
+            TextureUtils.isBitmapDataValid = function (bitmapData) {
+                if (bitmapData == null) {
+                    return true;
+                }
+
+                return TextureUtils.isDimensionValid(bitmapData.width) && TextureUtils.isDimensionValid(bitmapData.height);
+            };
+
+            TextureUtils.isHTMLImageElementValid = function (image) {
+                if (image == null) {
+                    return true;
+                }
+
+                return TextureUtils.isDimensionValid(image.width) && TextureUtils.isDimensionValid(image.height);
+            };
+
+            TextureUtils.isDimensionValid = function (d) {
+                return d >= 1 && d <= TextureUtils.MAX_SIZE && TextureUtils.isPowerOfTwo(d);
+            };
+
+            TextureUtils.isPowerOfTwo = function (value) {
+                return value ? ((value & -value) == value) : false;
+            };
+
+            TextureUtils.getBestPowerOf2 = function (value) {
+                var p = 1;
+
+                while (p < value)
+                    p <<= 1;
+
+                if (p > TextureUtils.MAX_SIZE)
+                    p = TextureUtils.MAX_SIZE;
+
+                return p;
+            };
+            TextureUtils.MAX_SIZE = 2048;
+            return TextureUtils;
+        })();
+        utils.TextureUtils = TextureUtils;
+    })(away.utils || (away.utils = {}));
+    var utils = away.utils;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (events) {
+        var TimerEvent = (function (_super) {
+            __extends(TimerEvent, _super);
+            function TimerEvent(type) {
+                _super.call(this, type);
+            }
+            TimerEvent.TIMER = "timer";
+            TimerEvent.TIMER_COMPLETE = "timerComplete";
+            return TimerEvent;
+        })(away.events.Event);
+        events.TimerEvent = TimerEvent;
+    })(away.events || (away.events = {}));
+    var events = away.events;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (events) {
+        //import flash.events.Event;
+        var ParserEvent = (function (_super) {
+            __extends(ParserEvent, _super);
+            function ParserEvent(type, message) {
+                if (typeof message === "undefined") { message = ''; }
+                _super.call(this, type);
+
+                this._message = message;
+            }
+            Object.defineProperty(ParserEvent.prototype, "message", {
+                get: /**
+                * Additional human-readable message. Usually supplied for ParserEvent.PARSE_ERROR events.
+                */
+                function () {
+                    return this._message;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            ParserEvent.prototype.clone = function () {
+                return new away.events.ParserEvent(this.type, this.message);
+            };
+            ParserEvent.PARSE_COMPLETE = 'parseComplete';
+
+            ParserEvent.PARSE_ERROR = 'parseError';
+
+            ParserEvent.READY_FOR_DEPENDENCIES = 'readyForDependencies';
+            return ParserEvent;
+        })(away.events.Event);
+        events.ParserEvent = ParserEvent;
+    })(away.events || (away.events = {}));
+    var events = away.events;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (loaders) {
+        //import away3d.arcane;
+        //import away3d.library.assets.IAsset;
+        //import away3d.loaders.parsers.ParserBase;
+        //import flash.net.URLRequest;
+        //use namespace arcane;
+        /**
+        * ResourceDependency represents the data required to load, parse and resolve additional files ("dependencies")
+        * required by a parser, used by ResourceLoadSession.
+        *
+        */
+        var ResourceDependency = (function () {
+            function ResourceDependency(id, req, data, parentParser, retrieveAsRawData, suppressAssetEvents) {
+                if (typeof retrieveAsRawData === "undefined") { retrieveAsRawData = false; }
+                if (typeof suppressAssetEvents === "undefined") { suppressAssetEvents = false; }
+                this._id = id;
+                this._req = req;
+                this._parentParser = parentParser;
+                this._data = data;
+                this._retrieveAsRawData = retrieveAsRawData;
+                this._suppressAssetEvents = suppressAssetEvents;
+
+                this._assets = new Array();
+                this._dependencies = new Array();
+            }
+            Object.defineProperty(ResourceDependency.prototype, "id", {
+                get: function () {
+                    return this._id;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(ResourceDependency.prototype, "assets", {
+                get: function () {
+                    return this._assets;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(ResourceDependency.prototype, "dependencies", {
+                get: function () {
+                    return this._dependencies;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(ResourceDependency.prototype, "request", {
+                get: function () {
+                    return this._req;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(ResourceDependency.prototype, "retrieveAsRawData", {
+                get: function () {
+                    return this._retrieveAsRawData;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(ResourceDependency.prototype, "suppresAssetEvents", {
+                get: function () {
+                    return this._suppressAssetEvents;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(ResourceDependency.prototype, "data", {
+                get: /**
+                * The data containing the dependency to be parsed, if the resource was already loaded.
+                */
+                function () {
+                    return this._data;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * @private
+            * Method to set data after having already created the dependency object, e.g. after load.
+            */
+            ResourceDependency.prototype._iSetData = function (data) {
+                this._data = data;
+            };
+
+            Object.defineProperty(ResourceDependency.prototype, "parentParser", {
+                get: /**
+                * The parser which is dependent on this ResourceDependency object.
+                */
+                function () {
+                    return this._parentParser;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * Resolve the dependency when it's loaded with the parent parser. For example, a dependency containing an
+            * ImageResource would be assigned to a Mesh instance as a BitmapMaterial, a scene graph object would be added
+            * to its intended parent. The dependency should be a member of the dependencies property.
+            */
+            ResourceDependency.prototype.resolve = function () {
+                if (this._parentParser)
+                    this._parentParser._iResolveDependency(this);
+            };
+
+            /**
+            * Resolve a dependency failure. For example, map loading failure from a 3d file
+            */
+            ResourceDependency.prototype.resolveFailure = function () {
+                if (this._parentParser)
+                    this._parentParser._iResolveDependencyFailure(this);
+            };
+
+            /**
+            * Resolve the dependencies name
+            */
+            ResourceDependency.prototype.resolveName = function (asset) {
+                if (this._parentParser)
+                    return this._parentParser._iResolveDependencyName(this, asset);
+                return asset.name;
+            };
+            return ResourceDependency;
+        })();
+        loaders.ResourceDependency = ResourceDependency;
+    })(away.loaders || (away.loaders = {}));
+    var loaders = away.loaders;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (utils) {
+        //[native(cls="TimerClass", gc="exact", instance="TimerObject", methods="auto")]
+        //[Event(name="timerComplete", type="flash.events.TimerEvent")]
+        //[Event(name="timer", type="flash.events.TimerEvent")]
+        var Timer = (function (_super) {
+            __extends(Timer, _super);
+            function Timer(delay, repeatCount) {
+                if (typeof repeatCount === "undefined") { repeatCount = 0; }
+                _super.call(this);
+                this._repeatCount = 0;
+                this._currentCount = 0;
+                this._running = false;
+
+                this._delay = delay;
+                this._repeatCount = repeatCount;
+
+                if (isNaN(delay) || delay < 0) {
+                    throw new away.errors.Error("Delay is negative or not a number");
+                }
+            }
+            Object.defineProperty(Timer.prototype, "currentCount", {
+                get: function () {
+                    return this._currentCount;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Timer.prototype, "delay", {
+                get: function () {
+                    return this._delay;
+                },
+                set: function (value) {
+                    this._delay = value;
+
+                    if (this._running) {
+                        this.stop();
+                        this.start();
+                    }
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Timer.prototype, "repeatCount", {
+                get: function () {
+                    return this._repeatCount;
+                },
+                set: function (value) {
+                    this._repeatCount = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Timer.prototype.reset = function () {
+                if (this._running) {
+                    this.stop();
+                }
+
+                this._currentCount = 0;
+            };
+
+            Object.defineProperty(Timer.prototype, "running", {
+                get: function () {
+                    return this._running;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Timer.prototype.start = function () {
+                var _this = this;
+                this._running = true;
+                clearInterval(this._iid);
+                this._iid = setInterval(function () {
+                    return _this.tick();
+                }, this._delay);
+            };
+
+            Timer.prototype.stop = function () {
+                this._running = false;
+                clearInterval(this._iid);
+            };
+
+            Timer.prototype.tick = function () {
+                this._currentCount++;
+
+                if ((this._repeatCount > 0) && this._currentCount >= this._repeatCount) {
+                    this.stop();
+                    this.dispatchEvent(new away.events.TimerEvent(away.events.TimerEvent.TIMER));
+                    this.dispatchEvent(new away.events.TimerEvent(away.events.TimerEvent.TIMER_COMPLETE));
+                } else {
+                    this.dispatchEvent(new away.events.TimerEvent(away.events.TimerEvent.TIMER));
+                }
+            };
+            return Timer;
+        })(away.events.EventDispatcher);
+        utils.Timer = Timer;
+    })(away.utils || (away.utils = {}));
+    var utils = away.utils;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (utils) {
+        //[native(cls="TimerClass", gc="exact", instance="TimerObject", methods="auto")]
+        //[Event(name="timerComplete", type="flash.events.TimerEvent")]
+        //[Event(name="timer", type="flash.events.TimerEvent")]
+        function getTimer() {
+            // number milliseconds of 1970/01/01
+            // this different to AS3 implementation which gets the number of milliseconds
+            // since instance of Flash player was initialised
+            return Date.now();
+        }
+        utils.getTimer = getTimer;
+    })(away.utils || (away.utils = {}));
+    var utils = away.utils;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (pick) {
+        /**
+        * Options for the different 3D object picking approaches available in Away3D. Can be used for automatic mouse picking on the view.
+        *
+        * @see away3d.containers.View3D#mousePicker
+        */
+        var PickingType = (function () {
+            function PickingType() {
+            }
+            PickingType.SHADER = new away.pick.ShaderPicker();
+
+            PickingType.RAYCAST_FIRST_ENCOUNTERED = new away.pick.RaycastPicker(false);
+
+            PickingType.RAYCAST_BEST_HIT = new away.pick.RaycastPicker(true);
+            return PickingType;
+        })();
+        pick.PickingType = PickingType;
+    })(away.pick || (away.pick = {}));
+    var pick = away.pick;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (events) {
+        //import away3d.arcane;
+        //import away3d.containers.ObjectContainer3D;
+        //import away3d.containers.View3D;
+        //import away3d.core.base.IRenderable;
+        //import away3d.materials.MaterialBase;
+        //import flash.events.Event;
+        //import flash.geom.Point;
+        //import flash.geom.Vector3D;
+        //use namespace arcane;
+        /**
+        * A MouseEvent3D is dispatched when a mouse event occurs over a mouseEnabled object in View3D.
+        * todo: we don't have screenZ data, tho this should be easy to implement
+        */
+        var MouseEvent3D = (function (_super) {
+            __extends(MouseEvent3D, _super);
+            /**
+            * Create a new MouseEvent3D object.
+            * @param type The type of the MouseEvent3D.
+            */
+            function MouseEvent3D(type) {
+                _super.call(this, type);
+                // Private.
+                this._iAllowedToPropagate = true;
+            }
+            Object.defineProperty(MouseEvent3D.prototype, "bubbles", {
+                get: /**
+                * @inheritDoc
+                */
+                function () {
+                    var doesBubble = this._iAllowedToPropagate;
+                    this._iAllowedToPropagate = true;
+
+                    // Don't bubble if propagation has been stopped.
+                    return doesBubble;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * @inheritDoc
+            */
+            MouseEvent3D.prototype.stopPropagation = function () {
+                this._iAllowedToPropagate = false;
+
+                if (this._iParentEvent) {
+                    this._iParentEvent.stopPropagation();
+                }
+            };
+
+            /**
+            * @inheritDoc
+            */
+            MouseEvent3D.prototype.stopImmediatePropagation = function () {
+                this._iAllowedToPropagate = false;
+
+                if (this._iParentEvent) {
+                    this._iParentEvent.stopImmediatePropagation();
+                }
+            };
+
+            /**
+            * Creates a copy of the MouseEvent3D object and sets the value of each property to match that of the original.
+            */
+            MouseEvent3D.prototype.clone = function () {
+                var result = new away.events.MouseEvent3D(this.type);
+
+                /* TODO: Debug / test - look into isDefaultPrevented
+                if (isDefaultPrevented())
+                result.preventDefault();
+                */
+                result.screenX = this.screenX;
+                result.screenY = this.screenY;
+
+                result.view = this.view;
+                result.object = this.object;
+                result.renderable = this.renderable;
+                result.material = this.material;
+                result.uv = this.uv;
+                result.localPosition = this.localPosition;
+                result.localNormal = this.localNormal;
+                result.index = this.index;
+                result.subGeometryIndex = this.subGeometryIndex;
+                result.delta = this.delta;
+
+                result.ctrlKey = this.ctrlKey;
+                result.shiftKey = this.shiftKey;
+
+                result._iParentEvent = this;
+                result._iAllowedToPropagate = this._iAllowedToPropagate;
+
+                return result;
+            };
+
+            Object.defineProperty(MouseEvent3D.prototype, "scenePosition", {
+                get: /**
+                * The position in scene space where the event took place
+                */
+                function () {
+                    if (this.object instanceof away.containers.ObjectContainer3D) {
+                        this.objContainer = this.object;;
+                        return objContainer.sceneTransform.transformVector(this.localPosition);
+                    } else {
+                        return this.localPosition;
+                    }
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(MouseEvent3D.prototype, "sceneNormal", {
+                get: /**
+                * The normal in scene space where the event took place
+                */
+                function () {
+                    if (this.object instanceof away.containers.ObjectContainer3D) {
+                        this.objContainer = this.object;;
+                        this.sceneNormal = objContainer.sceneTransform.deltaTransformVector(this.localNormal);;
+
+                        sceneNormal.normalize();
+
+                        return sceneNormal;
+                    } else {
+                        return this.localNormal;
+                    }
+                },
+                enumerable: true,
+                configurable: true
+            });
+            MouseEvent3D.MOUSE_OVER = "mouseOver3d";
+
+            MouseEvent3D.MOUSE_OUT = "mouseOut3d";
+
+            MouseEvent3D.MOUSE_UP = "mouseUp3d";
+
+            MouseEvent3D.MOUSE_DOWN = "mouseDown3d";
+
+            MouseEvent3D.MOUSE_MOVE = "mouseMove3d";
+
+            MouseEvent3D.CLICK = "click3d";
+
+            MouseEvent3D.DOUBLE_CLICK = "doubleClick3d";
+
+            MouseEvent3D.MOUSE_WHEEL = "mouseWheel3d";
+            return MouseEvent3D;
+        })(events.Event);
+        events.MouseEvent3D = MouseEvent3D;
+    })(away.events || (away.events = {}));
+    var events = away.events;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (managers) {
+        //import away3d.arcane;
+        //import away3d.debug.Debug;
+        //import away3d.events.Stage3DEvent;
+        //import flash.display.Shape;
+        //import flash.display.Stage3D;
+        //import flash.display3D.Context3D;
+        //import flash.display3D.Context3DClearMask;
+        //import flash.display3D.Context3DRenderMode;
+        //import flash.display3D.Program3D;
+        //import flash.display3D.textures.TextureBase;
+        //import flash.events.Event;
+        //import flash.events.EventDispatcher;
+        //import flash.geom.Rectangle;
+        //use namespace arcane;
+        //[Event(name="enterFrame", type="flash.events.Event")]
+        //[Event(name="exitFrame", type="flash.events.Event")]
+        /**
+        * Stage3DProxy provides a proxy class to manage a single Stage3D instance as well as handling the creation and
+        * attachment of the Context3D (and in turn the back buffer) is uses. Stage3DProxy should never be created directly,
+        * but requested through Stage3DManager.
+        *
+        * @see away3d.core.managers.Stage3DProxy
+        *
+        * todo: consider moving all creation methods (createVertexBuffer etc) in here, so that disposal can occur here
+        * along with the context, instead of scattered throughout the framework
+        */
+        var Stage3DProxy = (function (_super) {
+            __extends(Stage3DProxy, _super);
+            /**
+            * Creates a Stage3DProxy object. This method should not be called directly. Creation of Stage3DProxy objects should
+            * be handled by Stage3DManager.
+            * @param stage3DIndex The index of the Stage3D to be proxied.
+            * @param stage3D The Stage3D to be proxied.
+            * @param stage3DManager
+            * @param forceSoftware Whether to force software mode even if hardware acceleration is available.
+            */
+            function Stage3DProxy(stage3DIndex, stage3D, stage3DManager, forceSoftware, profile) {
+                if (typeof forceSoftware === "undefined") { forceSoftware = false; }
+                if (typeof profile === "undefined") { profile = "baseline"; }
+                _super.call(this);
+                this._iStage3DIndex = -1;
+
+                this._iStage3DIndex = stage3DIndex;
+                this._stage3D = stage3D;
+
+                // TODO: dependency required ( stage3d.x , stage3d.y, stage3d.visible );
+                //this._stage3D.x = 0;
+                //this._stage3D.y = 0;
+                //this._stage3D.visible = true;
+                this._stage3DManager = stage3DManager;
+                this._viewPort = new away.geom.Rectangle();
+                this._enableDepthAndStencil = true;
+
+                // whatever happens, be sure this has highest priority
+                this._stage3D.addEventListener(away.events.Event.CONTEXT3D_CREATE, this.onContext3DUpdate, this);
+                this.requestContext(forceSoftware, this.profile);
+            }
+            //private _touch3DManager:Touch3DManager; //TODO: imeplement dependency Touch3DManager
+            Stage3DProxy.prototype.notifyViewportUpdated = function () {
+                if (this._viewportDirty) {
+                    return;
+                }
+
+                this._viewportDirty = true;
+
+                // TODO - reinstate optimisation after testing
+                //if (!this.hasEventListener(away.events.Stage3DEvent.VIEWPORT_UPDATED))
+                //return;
+                //TODO: investigate bug causing coercion error
+                //if (!_viewportUpdated)
+                this._viewportUpdated = new away.events.Stage3DEvent(away.events.Stage3DEvent.VIEWPORT_UPDATED);
+                this.dispatchEvent(this._viewportUpdated);
+            };
+
+            Stage3DProxy.prototype.notifyEnterFrame = function () {
+                if (!this._enterFrame) {
+                    this._enterFrame = new away.events.Event(away.events.Event.ENTER_FRAME);
+                }
+
+                this.dispatchEvent(this._enterFrame);
+            };
+
+            Stage3DProxy.prototype.notifyExitFrame = function () {
+                if (!this._exitFrame)
+                    this._exitFrame = new away.events.Event(away.events.Event.EXIT_FRAME);
+
+                this.dispatchEvent(this._exitFrame);
+            };
+
+            Object.defineProperty(Stage3DProxy.prototype, "profile", {
+                get: function () {
+                    return this._profile;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * Disposes the Stage3DProxy object, freeing the Context3D attached to the Stage3D.
+            */
+            Stage3DProxy.prototype.dispose = function () {
+                this._stage3DManager.iRemoveStage3DProxy(this);
+                this._stage3D.removeEventListener(away.events.Event.CONTEXT3D_CREATE, this.onContext3DUpdate, this);
+                this.freeContext3D();
+                this._stage3D = null;
+                this._stage3DManager = null;
+                this._iStage3DIndex = -1;
+            };
+
+            /**
+            * Configures the back buffer associated with the Stage3D object.
+            * @param backBufferWidth The width of the backbuffer.
+            * @param backBufferHeight The height of the backbuffer.
+            * @param antiAlias The amount of anti-aliasing to use.
+            * @param enableDepthAndStencil Indicates whether the back buffer contains a depth and stencil buffer.
+            */
+            Stage3DProxy.prototype.configureBackBuffer = function (backBufferWidth, backBufferHeight, antiAlias, enableDepthAndStencil) {
+                var oldWidth = this._backBufferWidth;
+                var oldHeight = this._backBufferHeight;
+
+                this._backBufferWidth = this._viewPort.width = backBufferWidth;
+                this._backBufferHeight = this._viewPort.height = backBufferHeight;
+
+                if (oldWidth != this._backBufferWidth || oldHeight != this._backBufferHeight)
+                    this.notifyViewportUpdated();
+
+                this._antiAlias = antiAlias;
+                this._enableDepthAndStencil = enableDepthAndStencil;
+
+                if (this._iContext3D)
+                    this._iContext3D.configureBackBuffer(backBufferWidth, backBufferHeight, antiAlias, enableDepthAndStencil);
+            };
+
+            Object.defineProperty(Stage3DProxy.prototype, "enableDepthAndStencil", {
+                get: /*
+                * Indicates whether the depth and stencil buffer is used
+                */
+                function () {
+                    return this._enableDepthAndStencil;
+                },
+                set: function (enableDepthAndStencil) {
+                    this._enableDepthAndStencil = enableDepthAndStencil;
+                    this._backBufferDirty = true;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Stage3DProxy.prototype, "renderTarget", {
+                get: function () {
+                    return this._renderTarget;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Stage3DProxy.prototype, "renderSurfaceSelector", {
+                get: function () {
+                    return this._renderSurfaceSelector;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Stage3DProxy.prototype.setRenderTarget = function (target, enableDepthAndStencil, surfaceSelector) {
+                if (typeof enableDepthAndStencil === "undefined") { enableDepthAndStencil = false; }
+                if (typeof surfaceSelector === "undefined") { surfaceSelector = 0; }
+                if (this._renderTarget == target && surfaceSelector == this._renderSurfaceSelector && this._enableDepthAndStencil == enableDepthAndStencil) {
+                    return;
+                }
+
+                this._renderTarget = target;
+                this._renderSurfaceSelector = surfaceSelector;
+                this._enableDepthAndStencil = enableDepthAndStencil;
+
+                throw new away.errors.PartialImplementationError('away.display3D.Context3D: setRenderToTexture , setRenderToBackBuffer');
+            };
+
+            /*
+            * Clear and reset the back buffer when using a shared context
+            */
+            Stage3DProxy.prototype.clear = function () {
+                if (!this._iContext3D)
+                    return;
+
+                if (this._backBufferDirty) {
+                    this.configureBackBuffer(this._backBufferWidth, this._backBufferHeight, this._antiAlias, this._enableDepthAndStencil);
+                    this._backBufferDirty = false;
+                }
+
+                this._iContext3D.clear((this._color & 0xff000000) >>> 24, (this._color & 0xff0000) >>> 16, (this._color & 0xff00) >>> 8, this._color & 0xff);
+
+                /*
+                this._iContext3D.clear(
+                ((this._color >> 16) & 0xff)/255.0,
+                ((this._color >> 8) & 0xff)/255.0,
+                (this._color & 0xff)/255.0,
+                ((this._color >> 24) & 0xff)/255.0);
+                */
+                this._bufferClear = true;
+            };
+
+            /*
+            * Display the back rendering buffer
+            */
+            Stage3DProxy.prototype.present = function () {
+                if (!this._iContext3D)
+                    return;
+
+                this._iContext3D.present();
+
+                this._activeProgram3D = null;
+
+                if (this._mouse3DManager)
+                    this._mouse3DManager.fireMouseEvents();
+            };
+
+            /**
+            * Registers an event listener object with an EventDispatcher object so that the listener receives notification of an event. Special case for enterframe and exitframe events - will switch Stage3DProxy into automatic render mode.
+            * You can register event listeners on all nodes in the display list for a specific type of event, phase, and priority.
+            *
+            * @param type The type of event.
+            * @param listener The listener function that processes the event.
+            * @param useCapture Determines whether the listener works in the capture phase or the target and bubbling phases. If useCapture is set to true, the listener processes the event only during the capture phase and not in the target or bubbling phase. If useCapture is false, the listener processes the event only during the target or bubbling phase. To listen for the event in all three phases, call addEventListener twice, once with useCapture set to true, then again with useCapture set to false.
+            * @param priority The priority level of the event listener. The priority is designated by a signed 32-bit integer. The higher the number, the higher the priority. All listeners with priority n are processed before listeners of priority n-1. If two or more listeners share the same priority, they are processed in the order in which they were added. The default priority is 0.
+            * @param useWeakReference Determines whether the reference to the listener is strong or weak. A strong reference (the default) prevents your listener from being garbage-collected. A weak reference does not.
+            */
+            //public override function addEventListener(type:string, listener, useCapture:boolean = false, priority:number = 0, useWeakReference:boolean = false)
+            Stage3DProxy.prototype.addEventListener = function (type, listener, target) {
+                _super.prototype.addEventListener.call(this, type, listener, target);
+
+                throw new away.errors.PartialImplementationError('EnterFrame, ExitFrame');
+
+                if ((type == away.events.Event.ENTER_FRAME || type == away.events.Event.EXIT_FRAME)) {
+                }
+            };
+
+            /**
+            * Removes a listener from the EventDispatcher object. Special case for enterframe and exitframe events - will switch Stage3DProxy out of automatic render mode.
+            * If there is no matching listener registered with the EventDispatcher object, a call to this method has no effect.
+            *
+            * @param type The type of event.
+            * @param listener The listener object to remove.
+            * @param useCapture Specifies whether the listener was registered for the capture phase or the target and bubbling phases. If the listener was registered for both the capture phase and the target and bubbling phases, two calls to removeEventListener() are required to remove both, one call with useCapture() set to true, and another call with useCapture() set to false.
+            */
+            Stage3DProxy.prototype.removeEventListener = function (type, listener, target) {
+                _super.prototype.removeEventListener.call(this, type, listener, target);
+
+                throw new away.errors.PartialImplementationError('EnterFrame, ExitFrame');
+
+                if (!this.hasEventListener(away.events.Event.ENTER_FRAME, this.onEnterFrame, this) && !this.hasEventListener(away.events.Event.EXIT_FRAME, this.onEnterFrame, this)) {
+                }
+            };
+
+            Object.defineProperty(Stage3DProxy.prototype, "scissorRect", {
+                get: function () {
+                    return this._scissorRect;
+                },
+                set: function (value) {
+                    this._scissorRect = value;
+                    this._iContext3D.setScissorRectangle(this._scissorRect);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Stage3DProxy.prototype, "stage3DIndex", {
+                get: /**
+                * The index of the Stage3D which is managed by this instance of Stage3DProxy.
+                */
+                function () {
+                    return this._iStage3DIndex;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Stage3DProxy.prototype, "stage3D", {
+                get: /**
+                * The base Stage3D object associated with this proxy.
+                */
+                function () {
+                    return this._stage3D;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Stage3DProxy.prototype, "context3D", {
+                get: /**
+                * The Context3D object associated with the given Stage3D object.
+                */
+                function () {
+                    return this._iContext3D;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Stage3DProxy.prototype, "driverInfo", {
+                get: /**
+                * The driver information as reported by the Context3D object (if any)
+                */
+                function () {
+                    throw new away.errors.PartialImplementationError('Context3D.driverInfo()');
+                    return null;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Stage3DProxy.prototype, "usesSoftwareRendering", {
+                get: /**
+                * Indicates whether the Stage3D managed by this proxy is running in software mode.
+                * Remember to wait for the CONTEXT3D_CREATED event before checking this property,
+                * as only then will it be guaranteed to be accurate.
+                */
+                function () {
+                    return this._usesSoftwareRendering;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Stage3DProxy.prototype, "x", {
+                get: /**
+                * The x position of the Stage3D.
+                */
+                function () {
+                    throw new away.errors.PartialImplementationError('Stage3D.x');
+                    return 0;
+                },
+                set: function (value) {
+                    throw new away.errors.PartialImplementationError('Stage3D.x');
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Stage3DProxy.prototype, "y", {
+                get: /**
+                * The y position of the Stage3D.
+                */
+                function () {
+                    throw new away.errors.PartialImplementationError('Stage3D.y');
+                    return 0;
+                },
+                set: function (value) {
+                    throw new away.errors.PartialImplementationError('Stage3D.y');
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Stage3DProxy.prototype, "width", {
+                get: /**
+                * The width of the Stage3D.
+                */
+                function () {
+                    return this._backBufferWidth;
+                },
+                set: function (width) {
+                    if (this._viewPort.width == width)
+                        return;
+
+                    this._backBufferWidth = this._viewPort.width = width;
+                    this._backBufferDirty = true;
+
+                    this.notifyViewportUpdated();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Stage3DProxy.prototype, "height", {
+                get: /**
+                * The height of the Stage3D.
+                */
+                function () {
+                    return this._backBufferHeight;
+                },
+                set: function (height) {
+                    if (this._viewPort.height == height)
+                        return;
+
+                    this._backBufferHeight = this._viewPort.height = height;
+                    this._backBufferDirty = true;
+
+                    this.notifyViewportUpdated();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Stage3DProxy.prototype, "antiAlias", {
+                get: /**
+                * The antiAliasing of the Stage3D.
+                */
+                function () {
+                    return this._antiAlias;
+                },
+                set: function (antiAlias) {
+                    this._antiAlias = antiAlias;
+                    this._backBufferDirty = true;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Stage3DProxy.prototype, "viewPort", {
+                get: /**
+                * A viewPort rectangle equivalent of the Stage3D size and position.
+                */
+                function () {
+                    this._viewportDirty = false;
+
+                    return this._viewPort;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Stage3DProxy.prototype, "color", {
+                get: /**
+                * The background color of the Stage3D.
+                */
+                function () {
+                    return this._color;
+                },
+                set: function (color) {
+                    this._color = color;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Stage3DProxy.prototype, "visible", {
+                get: /**
+                * The visibility of the Stage3D.
+                */
+                function () {
+                    throw new away.errors.PartialImplementationError('Stage3D.visible');
+                    return null;
+                },
+                set: function (value) {
+                    throw new away.errors.PartialImplementationError('Stage3D.visible');
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Stage3DProxy.prototype, "bufferClear", {
+                get: /**
+                * The freshly cleared state of the backbuffer before any rendering
+                */
+                function () {
+                    return this._bufferClear;
+                },
+                set: function (newBufferClear) {
+                    this._bufferClear = newBufferClear;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Stage3DProxy.prototype, "mouse3DManager", {
+                get: /*
+                * Access to fire mouseevents across multiple layered view3D instances
+                */
+                function () {
+                    return this._mouse3DManager;
+                },
+                set: function (value) {
+                    this._mouse3DManager = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /* TODO: implement dependency Touch3DManager
+            public get touch3DManager():Touch3DManager
+            {
+            return _touch3DManager;
+            }
+            
+            public set touch3DManager(value:Touch3DManager)
+            {
+            _touch3DManager = value;
+            }
+            */
+            /**
+            * Frees the Context3D associated with this Stage3DProxy.
+            */
+            Stage3DProxy.prototype.freeContext3D = function () {
+                if (this._iContext3D) {
+                    throw new away.errors.PartialImplementationError('Context3D.dispose()');
+
+                    //this._context3D.dispose();
+                    this.dispatchEvent(new away.events.Stage3DEvent(away.events.Stage3DEvent.CONTEXT3D_DISPOSED));
+                }
+
+                this._iContext3D = null;
+            };
+
+            /*
+            * Called whenever the Context3D is retrieved or lost.
+            * @param event The event dispatched.
+            */
+            Stage3DProxy.prototype.onContext3DUpdate = function (event) {
+                if (this._stage3D.context3D) {
+                    var hadContext = (this._iContext3D != null);
+                    this._iContext3D = this._stage3D.context3D;
+
+                    throw new away.errors.PartialImplementationError('Context3D.enableErrorChecking, Context3D.driverInfo');
+
+                    if (this._backBufferWidth && this._backBufferHeight)
+                        this._iContext3D.configureBackBuffer(this._backBufferWidth, this._backBufferHeight, this._antiAlias, this._enableDepthAndStencil);
+
+                    // Dispatch the appropriate event depending on whether context was
+                    // created for the first time or recreated after a device loss.
+                    this.dispatchEvent(new away.events.Stage3DEvent(hadContext ? away.events.Stage3DEvent.CONTEXT3D_RECREATED : away.events.Stage3DEvent.CONTEXT3D_CREATED));
+                } else {
+                    throw new Error("Rendering context lost!");
+                }
+            };
+
+            /**
+            * Requests a Context3D object to attach to the managed Stage3D.
+            */
+            Stage3DProxy.prototype.requestContext = function (forceSoftware, profile) {
+                if (typeof forceSoftware === "undefined") { forceSoftware = false; }
+                if (typeof profile === "undefined") { profile = "baseline"; }
+                if (this._usesSoftwareRendering != null) {
+                    this._usesSoftwareRendering = forceSoftware;
+                }
+
+                this._profile = profile;
+
+                // Updated to work with current JS <> AS3 Display3D System
+                this._stage3D.requestContext();
+
+                throw new away.errors.PartialImplementationError('Context3DRenderMode');
+            };
+
+            /**
+            * The Enter_Frame handler for processing the proxy.ENTER_FRAME and proxy.EXIT_FRAME event handlers.
+            * Typically the proxy.ENTER_FRAME listener would render the layers for this Stage3D instance.
+            */
+            Stage3DProxy.prototype.onEnterFrame = function (event) {
+                if (!this._iContext3D) {
+                    return;
+                }
+
+                // Clear the stage3D instance
+                this.clear();
+
+                //notify the enterframe listeners
+                this.notifyEnterFrame();
+
+                // Call the present() to render the frame
+                this.present();
+
+                //notify the exitframe listeners
+                this.notifyExitFrame();
+            };
+
+            Stage3DProxy.prototype.recoverFromDisposal = function () {
+                if (!this._iContext3D) {
+                    return false;
+                }
+
+                throw new away.errors.PartialImplementationError('Context3D.driverInfo');
+
+                /*
+                if (this._iContext3D.driverInfo == "Disposed")
+                {
+                this._iContext3D = null;
+                this.dispatchEvent(new away.events.Stage3DEvent(away.events.Stage3DEvent.CONTEXT3D_DISPOSED));
+                return false;
+                
+                }
+                */
+                return true;
+            };
+
+            Stage3DProxy.prototype.clearDepthBuffer = function () {
+                if (!this._iContext3D) {
+                    return;
+                }
+
+                this._iContext3D.clear(0, 0, 0, 1, 1, 0, away.display3D.Context3DClearMask.DEPTH);
+            };
+            return Stage3DProxy;
+        })(away.events.EventDispatcher);
+        managers.Stage3DProxy = Stage3DProxy;
+    })(away.managers || (away.managers = {}));
+    var managers = away.managers;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../_definitions.ts" />
+    (function (display) {
+        var Stage = (function (_super) {
+            __extends(Stage, _super);
+            function Stage(width, height) {
+                if (typeof width === "undefined") { width = 640; }
+                if (typeof height === "undefined") { height = 480; }
+                _super.call(this);
+                if (!document) {
+                    throw new away.errors.DocumentError("A root document object does not exist.");
+                }
+
+                this.initStage3DObjects();
+                this.resize(width, height);
+            }
+            Stage.prototype.resize = function (width, height) {
+                this._stageHeight = height;
+                this._stageWidth = width;
+
+                for (var i = 0; i < Stage.STAGE3D_MAX_QUANTITY; ++i) {
+                    away.utils.CSS.setCanvasSize(this.stage3Ds[i].canvas, width, height);
+                    away.utils.CSS.setCanvasPosition(this.stage3Ds[i].canvas, 0, 0, true);
+                }
+                this.dispatchEvent(new away.events.Event(away.events.Event.RESIZE));
+            };
+
+            Stage.prototype.getStage3DAt = function (index) {
+                if (0 <= index && index < Stage.STAGE3D_MAX_QUANTITY) {
+                    return this.stage3Ds[index];
+                }
+                throw new away.errors.ArgumentError("Index is out of bounds [0.." + Stage.STAGE3D_MAX_QUANTITY + "]");
+            };
+
+            Stage.prototype.initStage3DObjects = function () {
+                this.stage3Ds = [];
+                for (var i = 0; i < Stage.STAGE3D_MAX_QUANTITY; ++i) {
+                    var canvas = this.createHTMLCanvasElement();
+                    this.addChildHTMLElement(canvas);
+                    this.stage3Ds.push(new away.display.Stage3D(canvas));
+                }
+            };
+
+            Stage.prototype.createHTMLCanvasElement = function () {
+                return document.createElement("canvas");
+            };
+
+            Stage.prototype.addChildHTMLElement = function (canvas) {
+                document.body.appendChild(canvas);
+            };
+            Stage.STAGE3D_MAX_QUANTITY = 8;
+            return Stage;
+        })(away.events.EventDispatcher);
+        display.Stage = Stage;
+    })(away.display || (away.display = {}));
+    var display = away.display;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    // Reference note: http://www.w3schools.com/jsref/dom_obj_event.asp
+    (function (managers) {
+        //import away3d.arcane;
+        //import away3d.containers.ObjectContainer3D;
+        //import away3d.containers.View3D;
+        //import away3d.core.pick.IPicker;
+        //import away3d.core.pick.PickingCollisionVO;
+        //import away3d.core.pick.PickingType;
+        //import away3d.events.MouseEvent3D;
+        //import flash.display.DisplayObject;
+        //import flash.display.DisplayObjectContainer;
+        //import flash.display.Stage;
+        //import flash.events.MouseEvent;
+        //import flash.geom.Vector3D;
+        //import flash.utils.Dictionary;
+        //use namespace arcane;
+        /**
+        * Mouse3DManager enforces a singleton pattern and is not intended to be instanced.
+        * it provides a manager class for detecting 3D mouse hits on View3D objects and sending out 3D mouse events.
+        */
+        var Mouse3DManager = (function () {
+            /**
+            * Creates a new <code>Mouse3DManager</code> object.
+            */
+            function Mouse3DManager() {
+                this._updateDirty = true;
+                this._nullVector = new away.geom.Vector3D();
+                this._mousePicker = away.pick.PickingType.RAYCAST_FIRST_ENCOUNTERED;
+                this._childDepth = 0;
+                if (!Mouse3DManager._view3Ds) {
+                    Mouse3DManager._view3Ds = new Object();
+                    Mouse3DManager._view3DLookup = new Array();
+                }
+            }
+            // ---------------------------------------------------------------------
+            // Interface.
+            // ---------------------------------------------------------------------
+            // TODO: required dependency stage3DProxy
+            Mouse3DManager.prototype.updateCollider = function (view) {
+                throw new away.errors.PartialImplementationError('stage3DProxy');
+            };
+
+            Mouse3DManager.prototype.fireMouseEvents = function () {
+                throw new away.errors.PartialImplementationError('View3D().layeredView');
+            };
+
+            Mouse3DManager.prototype.addViewLayer = function (view) {
+                throw new away.errors.PartialImplementationError('Stage3DProxy, Stage, DisplayObjectContainer ( as3 / native ) ');
+            };
+
+            Mouse3DManager.prototype.enableMouseListeners = function (view) {
+                throw new away.errors.PartialImplementationError('MouseEvent ( as3 / native ) as3 <> JS Conversion');
+            };
+
+            Mouse3DManager.prototype.disableMouseListeners = function (view) {
+                throw new away.errors.PartialImplementationError('MouseEvent ( as3 / native ) as3 <> JS Conversion');
+            };
+
+            Mouse3DManager.prototype.dispose = function () {
+                this._mousePicker.dispose();
+            };
+
+            // ---------------------------------------------------------------------
+            // Private.
+            // ---------------------------------------------------------------------
+            Mouse3DManager.prototype.queueDispatch = function (event, sourceEvent, collider) {
+                if (typeof collider === "undefined") { collider = null; }
+                throw new away.errors.PartialImplementationError('MouseEvent ( as3 / native ) as3 <> JS Conversion');
+            };
+
+            Mouse3DManager.prototype.reThrowEvent = function (event) {
+                throw new away.errors.PartialImplementationError('MouseEvent - AS3 <> JS Conversion');
+            };
+
+            Mouse3DManager.prototype.hasKey = function (view) {
+                for (var v in Mouse3DManager._view3Ds) {
+                    if (v === view) {
+                        return true;
+                    }
+                }
+
+                return false;
+            };
+
+            Mouse3DManager.prototype.traverseDisplayObjects = function (container) {
+                throw new away.errors.PartialImplementationError('DisplayObjectContainer ( as3 / native ) as3 <> JS Conversion');
+            };
+
+            // ---------------------------------------------------------------------
+            // Listeners.
+            // ---------------------------------------------------------------------
+            Mouse3DManager.prototype.onMouseMove = function (event) {
+                throw new away.errors.PartialImplementationError('MouseEvent ( as3 / native ) as3 <> JS Conversion');
+            };
+
+            Mouse3DManager.prototype.onMouseOut = function (event) {
+                this._activeView = null;
+
+                if (Mouse3DManager._pCollidingObject) {
+                    this.queueDispatch(Mouse3DManager._mouseOut, event, Mouse3DManager._pCollidingObject);
+                }
+
+                this._updateDirty = true;
+
+                throw new away.errors.PartialImplementationError('MouseEvent ( as3 / native ) as3 <> JS Conversion');
+            };
+
+            Mouse3DManager.prototype.onMouseOver = function (event) {
+                throw new away.errors.PartialImplementationError('MouseEvent ( as3 / native ) as3 <> JS Conversion');
+            };
+
+            Mouse3DManager.prototype.onClick = function (event) {
+                throw new away.errors.PartialImplementationError('MouseEvent ( as3 / native ) as3 <> JS Conversion');
+            };
+
+            Mouse3DManager.prototype.onDoubleClick = function (event) {
+                if (Mouse3DManager._pCollidingObject) {
+                    this.queueDispatch(Mouse3DManager._mouseDoubleClick, event);
+                } else {
+                    this.reThrowEvent(event);
+                }
+
+                this._updateDirty = true;
+            };
+
+            Mouse3DManager.prototype.onMouseDown = function (event) {
+                throw new away.errors.PartialImplementationError('MouseEvent ( as3 / native ) as3 <> JS Conversion');
+            };
+
+            Mouse3DManager.prototype.onMouseUp = function (event) {
+                throw new away.errors.PartialImplementationError('MouseEvent ( as3 / native ) as3 <> JS Conversion');
+            };
+
+            Mouse3DManager.prototype.onMouseWheel = function (event) {
+                throw new away.errors.PartialImplementationError('MouseEvent ( as3 / native ) as3 <> JS Conversion');
+            };
+
+            Object.defineProperty(Mouse3DManager.prototype, "forceMouseMove", {
+                get: // ---------------------------------------------------------------------
+                // Getters & setters.
+                // ---------------------------------------------------------------------
+                function () {
+                    return this._forceMouseMove;
+                },
+                set: function (value) {
+                    this._forceMouseMove = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Mouse3DManager.prototype, "mousePicker", {
+                get: function () {
+                    return this._mousePicker;
+                },
+                set: function (value) {
+                    this._mousePicker = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Mouse3DManager._viewCount = 0;
+
+            Mouse3DManager._queuedEvents = new Array();
+
+            Mouse3DManager._mouseUp = new away.events.MouseEvent3D(away.events.MouseEvent3D.MOUSE_UP);
+            Mouse3DManager._mouseClick = new away.events.MouseEvent3D(away.events.MouseEvent3D.CLICK);
+            Mouse3DManager._mouseOut = new away.events.MouseEvent3D(away.events.MouseEvent3D.MOUSE_OUT);
+            Mouse3DManager._mouseDown = new away.events.MouseEvent3D(away.events.MouseEvent3D.MOUSE_DOWN);
+            Mouse3DManager._mouseMove = new away.events.MouseEvent3D(away.events.MouseEvent3D.MOUSE_MOVE);
+            Mouse3DManager._mouseOver = new away.events.MouseEvent3D(away.events.MouseEvent3D.MOUSE_OVER);
+            Mouse3DManager._mouseWheel = new away.events.MouseEvent3D(away.events.MouseEvent3D.MOUSE_WHEEL);
+            Mouse3DManager._mouseDoubleClick = new away.events.MouseEvent3D(away.events.MouseEvent3D.DOUBLE_CLICK);
+
+            Mouse3DManager._previousCollidingView = -1;
+            Mouse3DManager._collidingView = -1;
+            return Mouse3DManager;
+        })();
+        managers.Mouse3DManager = Mouse3DManager;
+    })(away.managers || (away.managers = {}));
+    var managers = away.managers;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (events) {
+        //import flash.events.Event;
+        var Stage3DEvent = (function (_super) {
+            __extends(Stage3DEvent, _super);
+            function Stage3DEvent(type) {
+                _super.call(this, type);
+            }
+            Stage3DEvent.CONTEXT3D_CREATED = "Context3DCreated";
+            Stage3DEvent.CONTEXT3D_DISPOSED = "Context3DDisposed";
+            Stage3DEvent.CONTEXT3D_RECREATED = "Context3DRecreated";
+            Stage3DEvent.VIEWPORT_UPDATED = "ViewportUpdated";
+            return Stage3DEvent;
+        })(events.Event);
+        events.Stage3DEvent = Stage3DEvent;
+    })(away.events || (away.events = {}));
+    var events = away.events;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (managers) {
+        //import away3d.arcane;
+        //import flash.display.Stage;
+        //import flash.utils.Dictionary;
+        //use namespace arcane;
+        /**
+        * The Stage3DManager class provides a multiton object that handles management for Stage3D objects. Stage3D objects
+        * should not be requested directly, but are exposed by a Stage3DProxy.
+        *
+        * @see away3d.core.managers.Stage3DProxy
+        */
+        var Stage3DManager = (function () {
+            /**
+            * Creates a new Stage3DManager class.
+            * @param stage The Stage object that contains the Stage3D objects to be managed.
+            * @private
+            */
+            function Stage3DManager(stage, Stage3DManagerSingletonEnforcer) {
+                if (!Stage3DManagerSingletonEnforcer) {
+                    throw new Error("This class is a multiton and cannot be instantiated manually. Use Stage3DManager.getInstance instead.");
+                }
+
+                if (Stage3DManager._instances == null) {
+                    Stage3DManager._instances = new Array();
+                }
+
+                this._stage = stage;
+
+                if (!Stage3DManager._stageProxies) {
+                    Stage3DManager._stageProxies = new Array(this._stage.stage3Ds.length);
+                }
+            }
+            Stage3DManager.getInstance = /**
+            * Gets a Stage3DManager instance for the given Stage object.
+            * @param stage The Stage object that contains the Stage3D objects to be managed.
+            * @return The Stage3DManager instance for the given Stage object.
+            */
+            function (stage) {
+                var stage3dManager = this.Stage3DManagerByStageRef(stage);
+
+                if (stage3dManager == null) {
+                    stage3dManager = new away.managers.Stage3DManager(stage, new Stage3DManagerSingletonEnforcer());
+
+                    var stageInstanceData = new Stage3DManagerInstanceData();
+                    stageInstanceData.stage = stage;
+                    stageInstanceData.stage3DManager = stage3dManager;
+
+                    Stage3DManager._instances.push(stageInstanceData);
+                }
+
+                return stage3dManager;
+            };
+
+            /**
+            *
+            * @param stage
+            * @returns {  away.managers.Stage3DManager }
+            * @constructor
+            */
+            Stage3DManager.prototype.Stage3DManagerByStageRef = function (stage) {
+                var l = Stage3DManager._instances.length;
+                var s;
+
+                for (var c = 0; c < l; c++) {
+                    s = Stage3DManager._instances[c];
+
+                    if (s.stage == stage) {
+                        return s.stage3DManager;
+                    }
+                }
+
+                return null;
+            };
+
+            /**
+            * Requests the Stage3DProxy for the given index.
+            * @param index The index of the requested Stage3D.
+            * @param forceSoftware Whether to force software mode even if hardware acceleration is available.
+            * @param profile The compatibility profile, an enumeration of Context3DProfile
+            * @return The Stage3DProxy for the given index.
+            */
+            Stage3DManager.prototype.getStage3DProxy = function (index, forceSoftware, profile) {
+                if (typeof forceSoftware === "undefined") { forceSoftware = false; }
+                if (typeof profile === "undefined") { profile = "baseline"; }
+                if (!Stage3DManager._stageProxies[index]) {
+                    Stage3DManager._numStageProxies++;
+                    Stage3DManager._stageProxies[index] = new away.managers.Stage3DProxy(index, this._stage.stage3Ds[index], this, forceSoftware, profile);
+                }
+
+                return Stage3DManager._stageProxies[index];
+            };
+
+            /**
+            * Removes a Stage3DProxy from the manager.
+            * @param stage3DProxy
+            * @private
+            */
+            Stage3DManager.prototype.iRemoveStage3DProxy = function (stage3DProxy) {
+                Stage3DManager._numStageProxies--;
+                Stage3DManager._stageProxies[stage3DProxy._iStage3DIndex] = null;
+            };
+
+            /**
+            * Get the next available stage3DProxy. An error is thrown if there are no Stage3DProxies available
+            * @param forceSoftware Whether to force software mode even if hardware acceleration is available.
+            * @param profile The compatibility profile, an enumeration of Context3DProfile
+            * @return The allocated stage3DProxy
+            */
+            Stage3DManager.prototype.getFreeStage3DProxy = function (forceSoftware, profile) {
+                if (typeof forceSoftware === "undefined") { forceSoftware = false; }
+                if (typeof profile === "undefined") { profile = "baseline"; }
+                var i;
+                var len = Stage3DManager._stageProxies.length;
+
+                while (i < len) {
+                    if (!Stage3DManager._stageProxies[i]) {
+                        this.getStage3DProxy(i, forceSoftware, profile);
+
+                        throw new away.errors.PartialImplementationError('Stage.stageWidth , Stage.stageHeight ');
+
+                        //Stage3DManager._stageProxies[i].width = this._stage.stageWidth;
+                        //Stage3DManager._stageProxies[i].height = this._stage.stageHeight;
+                        return Stage3DManager._stageProxies[i];
+                    }
+
+                    ++i;
+                }
+
+                throw new Error("Too many Stage3D instances used!");
+                return null;
+            };
+
+            Object.defineProperty(Stage3DManager.prototype, "hasFreeStage3DProxy", {
+                get: /**
+                * Checks if a new stage3DProxy can be created and managed by the class.
+                * @return true if there is one slot free for a new stage3DProxy
+                */
+                function () {
+                    return Stage3DManager._numStageProxies < Stage3DManager._stageProxies.length ? true : false;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Stage3DManager.prototype, "numProxySlotsFree", {
+                get: /**
+                * Returns the amount of stage3DProxy objects that can be created and managed by the class
+                * @return the amount of free slots
+                */
+                function () {
+                    return Stage3DManager._stageProxies.length - Stage3DManager._numStageProxies;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Stage3DManager.prototype, "numProxySlotsUsed", {
+                get: /**
+                * Returns the amount of Stage3DProxy objects currently managed by the class.
+                * @return the amount of slots used
+                */
+                function () {
+                    return Stage3DManager._numStageProxies;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Stage3DManager.prototype, "numProxySlotsTotal", {
+                get: /**
+                * Returns the maximum amount of Stage3DProxy objects that can be managed by the class
+                * @return the maximum amount of Stage3DProxy objects that can be managed by the class
+                */
+                function () {
+                    return Stage3DManager._stageProxies.length;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Stage3DManager._numStageProxies = 0;
+            return Stage3DManager;
+        })();
+        managers.Stage3DManager = Stage3DManager;
+    })(away.managers || (away.managers = {}));
+    var managers = away.managers;
+})(away || (away = {}));
+
+var Stage3DManagerInstanceData = (function () {
+    function Stage3DManagerInstanceData() {
+    }
+    return Stage3DManagerInstanceData;
+})();
+
+var Stage3DManagerSingletonEnforcer = (function () {
+    function Stage3DManagerSingletonEnforcer() {
+    }
+    return Stage3DManagerSingletonEnforcer;
+})();
+var away;
+(function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (materials) {
+        //import flash.display.*;
+        //import flash.display3D.textures.CubeTexture;
+        //import flash.display3D.textures.Texture;
+        //import flash.display3D.textures.TextureBase;
+        //import flash.geom.*;
+        /**
+        * MipmapGenerator is a helper class that uploads BitmapData to a Texture including mipmap levels.
+        */
+        var MipmapGenerator = (function () {
+            function MipmapGenerator() {
+            }
+            MipmapGenerator.generateHTMLImageElementMipMaps = /**
+            * Uploads a BitmapData with mip maps to a target Texture object.
+            * @param source
+            * @param target The target Texture to upload to.
+            * @param mipmap An optional mip map holder to avoids creating new instances for fe animated materials.
+            * @param alpha Indicate whether or not the uploaded bitmapData is transparent.
+            */
+            function (source, target, mipmap, alpha, side) {
+                if (typeof mipmap === "undefined") { mipmap = null; }
+                if (typeof alpha === "undefined") { alpha = false; }
+                if (typeof side === "undefined") { side = -1; }
+                MipmapGenerator._rect.width = source.width;
+                MipmapGenerator._rect.height = source.height;
+
+                MipmapGenerator._source = new away.display.BitmapData(source.width, source.height, alpha);
+                MipmapGenerator._source.copyImage(source, MipmapGenerator._rect, MipmapGenerator._rect);
+
+                MipmapGenerator.generateMipMaps(MipmapGenerator._source, target, mipmap);
+
+                MipmapGenerator._source.dispose();
+                MipmapGenerator._source = null;
+            };
+
+            MipmapGenerator.generateMipMaps = /**
+            * Uploads a BitmapData with mip maps to a target Texture object.
+            * @param source The source BitmapData to upload.
+            * @param target The target Texture to upload to.
+            * @param mipmap An optional mip map holder to avoids creating new instances for fe animated materials.
+            * @param alpha Indicate whether or not the uploaded bitmapData is transparent.
+            */
+            function (source, target, mipmap, alpha, side) {
+                if (typeof mipmap === "undefined") { mipmap = null; }
+                if (typeof alpha === "undefined") { alpha = false; }
+                if (typeof side === "undefined") { side = -1; }
+                var w = source.width;
+                var h = source.height;
+                var regen = mipmap != null;
+                var i;
+
+                if (!mipmap) {
+                    mipmap = new away.display.BitmapData(w, h, alpha);
+                }
+
+                MipmapGenerator._rect.width = w;
+                MipmapGenerator._rect.height = h;
+
+                var tx;
+
+                while (w >= 1 || h >= 1) {
+                    if (alpha) {
+                        mipmap.fillRect(MipmapGenerator._rect, 0);
+                    }
+
+                    MipmapGenerator._matrix.a = MipmapGenerator._rect.width / source.width;
+                    MipmapGenerator._matrix.d = MipmapGenerator._rect.height / source.height;
+
+                    mipmap.width = MipmapGenerator._rect.width;
+                    mipmap.height = MipmapGenerator._rect.height;
+                    mipmap.copyPixels(source, source.rect, MipmapGenerator._rect);
+
+                    if (target instanceof away.display3D.Texture) {
+                        tx = target;
+
+                        mipmap.imageData;
+                    } else {
+                    }
+
+                    w >>= 1;
+                    h >>= 1;
+
+                    MipmapGenerator._rect.width = w > 1 ? w : 1;
+                    MipmapGenerator._rect.height = h > 1 ? h : 1;
+                }
+
+                if (!regen) {
+                    mipmap.dispose();
+                }
+            };
+            MipmapGenerator._matrix = new away.geom.Matrix();
+            MipmapGenerator._rect = new away.geom.Rectangle();
+            return MipmapGenerator;
+        })();
+        materials.MipmapGenerator = MipmapGenerator;
+    })(away.materials || (away.materials = {}));
+    var materials = away.materials;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (net) {
+        var URLVariables = (function () {
+            /**
+            *
+            * @param source
+            */
+            function URLVariables(source) {
+                if (typeof source === "undefined") { source = null; }
+                this._variables = new Object();
+                if (source !== null) {
+                    this.decode(source);
+                }
+            }
+            /**
+            *
+            * @param source
+            */
+            URLVariables.prototype.decode = function (source) {
+                source = source.split("+").join(" ");
+
+                var tokens, re = /[?&]?([^=]+)=([^&]*)/g;
+
+                while (tokens = re.exec(source)) {
+                    this._variables[decodeURIComponent(tokens[1])] = decodeURIComponent(tokens[2]);
+                }
+            };
+
+            /**
+            *
+            * @returns {string}
+            */
+            URLVariables.prototype.toString = function () {
+                return '';
+            };
+
+            Object.defineProperty(URLVariables.prototype, "variables", {
+                get: /**
+                *
+                * @returns {Object}
+                */
+                function () {
+                    return this._variables;
+                },
+                set: /**
+                *
+                * @returns {Object}
+                */
+                function (obj) {
+                    this._variables = obj;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(URLVariables.prototype, "formData", {
+                get: /**
+                *
+                * @returns {Object}
+                */
+                function () {
+                    var fd = new FormData();
+
+                    for (var s in this._variables) {
+                        fd.append(s, this._variables[s]);
+                    }
+
+                    return fd;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            return URLVariables;
+        })();
+        net.URLVariables = URLVariables;
+    })(away.net || (away.net = {}));
+    var net = away.net;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (pick) {
+        /**
+        * An abstract base class for all picking collider classes. It should not be instantiated directly.
+        */
+        var PickingColliderBase = (function () {
+            function PickingColliderBase() {
+            }
+            PickingColliderBase.prototype._pPetCollisionNormal = function (indexData/*uint*/ , vertexData, triangleIndex) {
+                var normal = new away.geom.Vector3D();
+                var i0 = indexData[triangleIndex] * 3;
+                var i1 = indexData[triangleIndex + 1] * 3;
+                var i2 = indexData[triangleIndex + 2] * 3;
+                var p0 = new away.geom.Vector3D(vertexData[i0], vertexData[i0 + 1], vertexData[i0 + 2]);
+                var p1 = new away.geom.Vector3D(vertexData[i1], vertexData[i1 + 1], vertexData[i1 + 2]);
+                var p2 = new away.geom.Vector3D(vertexData[i2], vertexData[i2 + 1], vertexData[i2 + 2]);
+                var side0 = p1.subtract(p0);
+                var side1 = p2.subtract(p0);
+                normal = side0.crossProduct(side1);
+                normal.normalize();
+                return normal;
+            };
+
+            PickingColliderBase.prototype._pGetCollisionUV = function (indexData/*uint*/ , uvData, triangleIndex, v, w, u, uvOffset, uvStride) {
+                var uv = new away.geom.Point();
+                var uIndex = indexData[triangleIndex] * uvStride + uvOffset;
+                var uv0 = new away.geom.Vector3D(uvData[uIndex], uvData[uIndex + 1]);
+                uIndex = indexData[triangleIndex + 1] * uvStride + uvOffset;
+                var uv1 = new away.geom.Vector3D(uvData[uIndex], uvData[uIndex + 1]);
+                uIndex = indexData[triangleIndex + 2] * uvStride + uvOffset;
+                var uv2 = new away.geom.Vector3D(uvData[uIndex], uvData[uIndex + 1]);
+                uv.x = u * uv0.x + v * uv1.x + w * uv2.x;
+                uv.y = u * uv0.y + v * uv1.y + w * uv2.y;
+                return uv;
+            };
+
+            /* TODO: implement & integrate GeometryUtils, SubGeometry, SubMesh
+            protected function getMeshSubgeometryIndex(subGeometry:SubGeometry):number
+            {
+            return GeometryUtils.getMeshSubgeometryIndex(subGeometry);
+            }
+            */
+            /* TODO: implement & integrate
+            protected function getMeshSubMeshIndex(subMesh:SubMesh):number
+            {
+            return GeometryUtils.getMeshSubMeshIndex(subMesh);
+            }
+            */
+            /**
+            * @inheritDoc
+            */
+            PickingColliderBase.prototype.setLocalRay = function (localPosition, localDirection) {
+                this.rayPosition = localPosition;
+                this.rayDirection = localDirection;
+            };
+            return PickingColliderBase;
+        })();
+        pick.PickingColliderBase = PickingColliderBase;
+    })(away.pick || (away.pick = {}));
+    var pick = away.pick;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (pick) {
+        /**
+        * Pure AS3 picking collider for entity objects. Used with the <code>RaycastPicker</code> picking object.
+        *
+        * @see away3d.entities.Entity#pickingCollider
+        * @see away3d.core.pick.RaycastPicker
+        */
+        var AS3PickingCollider = (function (_super) {
+            __extends(AS3PickingCollider, _super);
+            /**
+            * Creates a new <code>AS3PickingCollider</code> object.
+            *
+            * @param findClosestCollision Determines whether the picking collider searches for the closest collision along the ray. Defaults to false.
+            */
+            function AS3PickingCollider(findClosestCollision) {
+                if (typeof findClosestCollision === "undefined") { findClosestCollision = false; }
+                _super.call(this);
+                this._findClosestCollision = findClosestCollision;
+            }
+            return AS3PickingCollider;
+        })(away.pick.PickingColliderBase);
+        pick.AS3PickingCollider = AS3PickingCollider;
+    })(away.pick || (away.pick = {}));
+    var pick = away.pick;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (pick) {
+        //import away3d.arcane;
+        //import away3d.cameras.*;
+        //import away3d.containers.*;
+        //import away3d.core.base.*;
+        //import away3d.core.data.*;
+        //import away3d.managers.*;
+        //import away3d.core.math.*;
+        //import away3d.core.traverse.*;
+        //import away3d.entities.*;
+        //import away3d.utils.GeometryUtils;
+        //import flash.display.*;
+        //import flash.display3D.*;
+        //import flash.display3D.textures.*;
+        //import flash.geom.*;
+        //import com.adobe.utils.*;
+        //use namespace arcane;
+        /**
+        * Picks a 3d object from a view or scene by performing a separate render pass on the scene around the area being picked using key color values,
+        * then reading back the color value of the pixel in the render representing the picking ray. Requires multiple passes and readbacks for retriving details
+        * on an entity that has its shaderPickingDetails property set to true.
+        *
+        * A read-back operation from any GPU is not a very efficient process, and the amount of processing used can vary significantly between different hardware.
+        *
+        * @see away3d.entities.Entity#shaderPickingDetails
+        */
+        // TODO: Dependencies needed to before implementing IPicker - EntityCollector
+        var ShaderPicker = (function () {
+            /**
+            * Creates a new <code>ShaderPicker</code> object.
+            */
+            function ShaderPicker() {
+                this._onlyMouseEnabled = true;
+                this._interactives = new Array();
+                this._localHitPosition = new away.geom.Vector3D();
+                this._hitUV = new away.geom.Point();
+                this._localHitNormal = new away.geom.Vector3D();
+                this._rayPos = new away.geom.Vector3D();
+                this._rayDir = new away.geom.Vector3D();
+                this._id = new Array(4);
+                this._viewportData = new Array(4);
+                this._boundOffsetScale = new Array(8);
+                this._boundOffsetScale[3] = 0;
+                this._boundOffsetScale[7] = 1;
+            }
+            Object.defineProperty(ShaderPicker.prototype, "onlyMouseEnabled", {
+                get: /**
+                * @inheritDoc
+                */
+                function () {
+                    return this._onlyMouseEnabled;
+                },
+                set: function (value) {
+                    this._onlyMouseEnabled = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * @inheritDoc
+            */
+            // TODO implement dependency : EntityCollector
+            // TODO: GLSL implementation / conversion
+            ShaderPicker.prototype.getViewCollision = function (x, y, view) {
+                throw new away.errors.PartialImplementationError('EntityCollector, Stage3dProxy');
+                return null;
+            };
+
+            //*/
+            /**
+            * @inheritDoc
+            */
+            ShaderPicker.prototype.getSceneCollision = function (position, direction, scene) {
+                return null;
+            };
+
+            /**
+            * @inheritDoc
+            */
+            /* TODO: Implement dependency - EntityCollector
+            // TODO: GLSL implementation / conversion
+            protected function draw(entityCollector:EntityCollector, target:TextureBase)
+            {
+            var camera:Camera3D = entityCollector.camera;
+            
+            _context.clear(0, 0, 0, 1);
+            _stage3DProxy.scissorRect = ShaderPicker.MOUSE_SCISSOR_RECT;
+            
+            _interactives.length = _interactiveId = 0;
+            
+            if (!_objectProgram3D)
+            initObjectProgram3D();
+            _context.setBlendFactors(Context3DBlendFactor.ONE, Context3DBlendFactor.ZERO);
+            _context.setDepthTest(true, Context3DCompareMode.LESS);
+            _context.setProgram(_objectProgram3D);
+            _context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 4, _viewportData, 1);
+            drawRenderables(entityCollector.opaqueRenderableHead, camera);
+            drawRenderables(entityCollector.blendedRenderableHead, camera);
+            }
+            */
+            /**
+            * Draw a list of renderables.
+            * @param renderables The renderables to draw.
+            * @param camera The camera for which to render.
+            */
+            /* TODO implement dependencies: RenderableListItem , Camera3D
+            private drawRenderables(item:RenderableListItem, camera:Camera3D)
+            {
+            var matrix:Matrix3D = away3d.math.Matrix3DUtils.CALCULATION_MATRIX;
+            var renderable:IRenderable;
+            var viewProjection:Matrix3D = camera.viewProjection;
+            
+            while (item) {
+            renderable = item.renderable;
+            
+            // it's possible that the renderable was already removed from the scene
+            if (!renderable.sourceEntity.scene || (!renderable.mouseEnabled && _onlyMouseEnabled)) {
+            item = item.next;
+            continue;
+            }
+            
+            _potentialFound = true;
+            
+            _context.setCulling(renderable.material.bothSides? Context3DTriangleFace.NONE : Context3DTriangleFace.BACK);
+            
+            _interactives[_interactiveId++] = renderable;
+            // color code so that reading from bitmapdata will contain the correct value
+            _id[1] = (_interactiveId >> 8)/255; // on green channel
+            _id[2] = (_interactiveId & 0xff)/255; // on blue channel
+            
+            matrix.copyFrom(renderable.getRenderSceneTransform(camera));
+            matrix.append(viewProjection);
+            _context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, matrix, true);
+            _context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, _id, 1);
+            renderable.activateVertexBuffer(0, _stage3DProxy);
+            _context.drawTriangles(renderable.getIndexBuffer(_stage3DProxy), 0, renderable.numTriangles);
+            
+            item = item.next;
+            }
+            }
+            */
+            /* TODO implement dependencies: Camera3D
+            private updateRay(camera:Camera3D)
+            {
+            _rayPos = camera.scenePosition;
+            _rayDir = camera.getRay(_projX, _projY, 1);
+            _rayDir.normalize();
+            }
+            */
+            /**
+            * Creates the Program3D that color-codes objects.
+            */
+            /* TODO AGAL <> GLSL conversion.
+            private initObjectProgram3D()
+            {
+            var vertexCode:string;
+            var fragmentCode:string;
+            
+            _objectProgram3D = _context.createProgram();
+            
+            vertexCode = "m44 vt0, va0, vc0			\n" +
+            "mul vt1.xy, vt0.w, vc4.zw	\n" +
+            "add vt0.xy, vt0.xy, vt1.xy	\n" +
+            "mul vt0.xy, vt0.xy, vc4.xy	\n" +
+            "mov op, vt0	\n";
+            fragmentCode = "mov oc, fc0"; // write identifier
+            
+            _objectProgram3D.upload(new AGALMiniAssembler().assemble(Context3DProgramType.VERTEX, vertexCode),
+            new AGALMiniAssembler().assemble(Context3DProgramType.FRAGMENT, fragmentCode));
+            }
+            */
+            /**
+            * Creates the Program3D that renders positions.
+            */
+            /* TODO AGAL <> GLSL conversion.
+            private initTriangleProgram3D()
+            {
+            var vertexCode:string;
+            var fragmentCode:string;
+            
+            this._triangleProgram3D = this._context.createProgram();
+            
+            // todo: add animation code
+            vertexCode = "add vt0, va0, vc5 			\n" +
+            "mul vt0, vt0, vc6 			\n" +
+            "mov v0, vt0				\n" +
+            "m44 vt0, va0, vc0			\n" +
+            "mul vt1.xy, vt0.w, vc4.zw	\n" +
+            "add vt0.xy, vt0.xy, vt1.xy	\n" +
+            "mul vt0.xy, vt0.xy, vc4.xy	\n" +
+            "mov op, vt0	\n";
+            fragmentCode = "mov oc, v0"; // write identifier
+            
+            _triangleProgram3D.upload(new AGALMiniAssembler().assemble(Context3DProgramType.VERTEX, vertexCode),
+            new AGALMiniAssembler().assemble(Context3DProgramType.FRAGMENT, fragmentCode));
+            }
+            */
+            /**
+            * Gets more detailed information about the hir position, if required.
+            * @param camera The camera used to view the hit object.
+            */
+            /* TODO implement dependencies: Camera3D
+            private getHitDetails(camera:Camera3D)
+            {
+            getApproximatePosition(camera);
+            getPreciseDetails(camera);
+            }
+            */
+            /**
+            * Finds a first-guess approximate position about the hit position.
+            * @param camera The camera used to view the hit object.
+            */
+            /* TODO implement dependencies: Camera3D
+            private getApproximatePosition(camera:Camera3D)
+            {
+            var entity:Entity = _hitRenderable.sourceEntity;
+            var col:number;
+            var scX:number, scY:number, scZ:number;
+            var offsX:number, offsY:number, offsZ:number;
+            var localViewProjection:Matrix3D = away3d.math.Matrix3DUtils.CALCULATION_MATRIX;
+            localViewProjection.copyFrom(_hitRenderable.getRenderSceneTransform(camera));
+            localViewProjection.append(camera.viewProjection);
+            if (!_triangleProgram3D)
+            initTriangleProgram3D();
+            
+            _boundOffsetScale[4] = 1/(scX = entity.maxX - entity.minX);
+            _boundOffsetScale[5] = 1/(scY = entity.maxY - entity.minY);
+            _boundOffsetScale[6] = 1/(scZ = entity.maxZ - entity.minZ);
+            _boundOffsetScale[0] = offsX = -entity.minX;
+            _boundOffsetScale[1] = offsY = -entity.minY;
+            _boundOffsetScale[2] = offsZ = -entity.minZ;
+            
+            _context.setProgram(_triangleProgram3D);
+            _context.clear(0, 0, 0, 0, 1, 0, Context3DClearMask.DEPTH);
+            _context.setScissorRectangle(ShaderPicker.MOUSE_SCISSOR_RECT);
+            _context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, localViewProjection, true);
+            _context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 5, _boundOffsetScale, 2);
+            _hitRenderable.activateVertexBuffer(0, _stage3DProxy);
+            _context.drawTriangles(_hitRenderable.getIndexBuffer(_stage3DProxy), 0, _hitRenderable.numTriangles);
+            _context.drawToBitmapData(_bitmapData);
+            
+            col = _bitmapData.getPixel(0, 0);
+            
+            _localHitPosition.x = ((col >> 16) & 0xff)*scX/255 - offsX;
+            _localHitPosition.y = ((col >> 8) & 0xff)*scY/255 - offsY;
+            _localHitPosition.z = (col & 0xff)*scZ/255 - offsZ;
+            }
+            */
+            /**
+            * Use the approximate position info to find the face under the mouse position from which we can derive the precise
+            * ray-face intersection point, then use barycentric coordinates to figure out the uv coordinates, etc.
+            * @param camera The camera used to view the hit object.
+            */
+            /* TODO implement dependencies: Camera3D
+            private getPreciseDetails(camera:Camera3D)
+            {
+            
+            var subGeom:ISubGeometry = SubMesh(_hitRenderable).subGeometry;
+            var indices:number[] = subGeom.indexData;
+            var vertices:number[] = subGeom.vertexData;
+            var len:number = indices.length;
+            var x1:number, y1:number, z1:number;
+            var x2:number, y2:number, z2:number;
+            var x3:number, y3:number, z3:number;
+            var i:number = 0, j:number = 1, k:number = 2;
+            var t1:number, t2:number, t3:number;
+            var v0x:number, v0y:number, v0z:number;
+            var v1x:number, v1y:number, v1z:number;
+            var v2x:number, v2y:number, v2z:number;
+            var dot00:number, dot01:number, dot02:number, dot11:number, dot12:number;
+            var s:number, t:number, invDenom:number;
+            var uvs:number[] = subGeom.UVData;
+            var normals:number[] = subGeom.faceNormals;
+            var x:number = _localHitPosition.x, y:number = _localHitPosition.y, z:number = _localHitPosition.z;
+            var u:number, v:number;
+            var ui1:number, ui2:number, ui3:number;
+            var s0x:number, s0y:number, s0z:number;
+            var s1x:number, s1y:number, s1z:number;
+            var nl:number;
+            var stride:number = subGeom.vertexStride;
+            var vertexOffset:number = subGeom.vertexOffset;
+            
+            updateRay(camera);
+            
+            while (i < len) {
+            t1 = vertexOffset + indices[i]*stride;
+            t2 = vertexOffset + indices[j]*stride;
+            t3 = vertexOffset + indices[k]*stride;
+            x1 = vertices[t1];
+            y1 = vertices[t1 + 1];
+            z1 = vertices[t1 + 2];
+            x2 = vertices[t2];
+            y2 = vertices[t2 + 1];
+            z2 = vertices[t2 + 2];
+            x3 = vertices[t3];
+            y3 = vertices[t3 + 1];
+            z3 = vertices[t3 + 2];
+            
+            // if within bounds
+            if (!(    (x < x1 && x < x2 && x < x3) ||
+            (y < y1 && y < y2 && y < y3) ||
+            (z < z1 && z < z2 && z < z3) ||
+            (x > x1 && x > x2 && x > x3) ||
+            (y > y1 && y > y2 && y > y3) ||
+            (z > z1 && z > z2 && z > z3))) {
+            
+            // calculate barycentric coords for approximated position
+            v0x = x3 - x1;
+            v0y = y3 - y1;
+            v0z = z3 - z1;
+            v1x = x2 - x1;
+            v1y = y2 - y1;
+            v1z = z2 - z1;
+            v2x = x - x1;
+            v2y = y - y1;
+            v2z = z - z1;
+            dot00 = v0x*v0x + v0y*v0y + v0z*v0z;
+            dot01 = v0x*v1x + v0y*v1y + v0z*v1z;
+            dot02 = v0x*v2x + v0y*v2y + v0z*v2z;
+            dot11 = v1x*v1x + v1y*v1y + v1z*v1z;
+            dot12 = v1x*v2x + v1y*v2y + v1z*v2z;
+            invDenom = 1/(dot00*dot11 - dot01*dot01);
+            s = (dot11*dot02 - dot01*dot12)*invDenom;
+            t = (dot00*dot12 - dot01*dot02)*invDenom;
+            
+            // if inside the current triangle, fetch details hit information
+            if (s >= 0 && t >= 0 && (s + t) <= 1) {
+            
+            // this is def the triangle, now calculate precise coords
+            getPrecisePosition(_hitRenderable.inverseSceneTransform, normals[i], normals[i + 1], normals[i + 2], x1, y1, z1);
+            
+            v2x = _localHitPosition.x - x1;
+            v2y = _localHitPosition.y - y1;
+            v2z = _localHitPosition.z - z1;
+            
+            s0x = x2 - x1; // s0 = p1 - p0
+            s0y = y2 - y1;
+            s0z = z2 - z1;
+            s1x = x3 - x1; // s1 = p2 - p0
+            s1y = y3 - y1;
+            s1z = z3 - z1;
+            _localHitNormal.x = s0y*s1z - s0z*s1y; // n = s0 x s1
+            _localHitNormal.y = s0z*s1x - s0x*s1z;
+            _localHitNormal.z = s0x*s1y - s0y*s1x;
+            nl = 1/Math.sqrt(
+            _localHitNormal.x*_localHitNormal.x +
+            _localHitNormal.y*_localHitNormal.y +
+            _localHitNormal.z*_localHitNormal.z
+            ); // normalize n
+            _localHitNormal.x *= nl;
+            _localHitNormal.y *= nl;
+            _localHitNormal.z *= nl;
+            
+            dot02 = v0x*v2x + v0y*v2y + v0z*v2z;
+            dot12 = v1x*v2x + v1y*v2y + v1z*v2z;
+            s = (dot11*dot02 - dot01*dot12)*invDenom;
+            t = (dot00*dot12 - dot01*dot02)*invDenom;
+            
+            ui1 = indices[i] << 1;
+            ui2 = indices[j] << 1;
+            ui3 = indices[k] << 1;
+            
+            u = uvs[ui1];
+            v = uvs[ui1 + 1];
+            _hitUV.x = u + t*(uvs[ui2] - u) + s*(uvs[ui3] - u);
+            _hitUV.y = v + t*(uvs[ui2 + 1] - v) + s*(uvs[ui3 + 1] - v);
+            
+            _faceIndex = i;
+            _subGeometryIndex = GeometryUtils.getMeshSubMeshIndex(SubMesh(_hitRenderable));
+            
+            return;
+            }
+            }
+            
+            i += 3;
+            j += 3;
+            k += 3;
+            }
+            }
+            */
+            /**
+            * Finds the precise hit position by unprojecting the screen coordinate back unto the hit face's plane and
+            * calculating the intersection point.
+            * @param camera The camera used to render the object.
+            * @param invSceneTransform The inverse scene transformation of the hit object.
+            * @param nx The x-coordinate of the face's plane normal.
+            * @param ny The y-coordinate of the face plane normal.
+            * @param nz The z-coordinate of the face plane normal.
+            * @param px The x-coordinate of a point on the face's plane (ie a face vertex)
+            * @param py The y-coordinate of a point on the face's plane (ie a face vertex)
+            * @param pz The z-coordinate of a point on the face's plane (ie a face vertex)
+            */
+            ShaderPicker.prototype.getPrecisePosition = function (invSceneTransform, nx, ny, nz, px, py, pz) {
+                // calculate screen ray and find exact intersection position with triangle
+                var rx, ry, rz;
+                var ox, oy, oz;
+                var t;
+                var raw = away.math.Matrix3DUtils.RAW_DATA_CONTAINER;
+                var cx = this._rayPos.x, cy = this._rayPos.y, cz = this._rayPos.z;
+
+                // unprojected projection point, gives ray dir in cam space
+                ox = this._rayDir.x;
+                oy = this._rayDir.y;
+                oz = this._rayDir.z;
+
+                // transform ray dir and origin (cam pos) to object space
+                invSceneTransform.copyRawDataTo(raw);
+                rx = raw[0] * ox + raw[4] * oy + raw[8] * oz;
+                ry = raw[1] * ox + raw[5] * oy + raw[9] * oz;
+                rz = raw[2] * ox + raw[6] * oy + raw[10] * oz;
+
+                ox = raw[0] * cx + raw[4] * cy + raw[8] * cz + raw[12];
+                oy = raw[1] * cx + raw[5] * cy + raw[9] * cz + raw[13];
+                oz = raw[2] * cx + raw[6] * cy + raw[10] * cz + raw[14];
+
+                t = ((px - ox) * nx + (py - oy) * ny + (pz - oz) * nz) / (rx * nx + ry * ny + rz * nz);
+
+                this._localHitPosition.x = ox + rx * t;
+                this._localHitPosition.y = oy + ry * t;
+                this._localHitPosition.z = oz + rz * t;
+            };
+
+            ShaderPicker.prototype.dispose = function () {
+                this._bitmapData.dispose();
+                if (this._triangleProgram3D) {
+                    this._triangleProgram3D.dispose();
+                }
+
+                if (this._objectProgram3D) {
+                    this._objectProgram3D.dispose();
+                }
+
+                this._triangleProgram3D = null;
+                this._objectProgram3D = null;
+                this._bitmapData = null;
+                this._hitRenderable = null;
+                this._hitEntity = null;
+            };
+            ShaderPicker.MOUSE_SCISSOR_RECT = new away.geom.Rectangle(0, 0, 1, 1);
+            return ShaderPicker;
+        })();
+        pick.ShaderPicker = ShaderPicker;
+    })(away.pick || (away.pick = {}));
+    var pick = away.pick;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (pick) {
+        //import flash.geom.Vector3D;
+        //import away3d.arcane;
+        //import away3d.containers.Scene3D;
+        //import away3d.containers.View3D;
+        //import away3d.core.data.EntityListItem;
+        //import away3d.core.traverse.EntityCollector;
+        //import away3d.core.traverse.RaycastCollector;
+        //import away3d.entities.Entity;
+        //use namespace arcane;
+        /**
+        * Picks a 3d object from a view or scene by 3D raycast calculations.
+        * Performs an initial coarse boundary calculation to return a subset of entities whose bounding volumes intersect with the specified ray,
+        * then triggers an optional picking collider on individual entity objects to further determine the precise values of the picking ray collision.
+        */
+        // TODO: Dependencies needed to before implementing IPicker - EntityListItem, EntityCollector
+        var RaycastPicker = (function () {
+            /**
+            * Creates a new <code>RaycastPicker</code> object.
+            *
+            * @param findClosestCollision Determines whether the picker searches for the closest bounds collision along the ray,
+            * or simply returns the first collision encountered Defaults to false.
+            */
+            function RaycastPicker(findClosestCollision) {
+                //private var _raycastCollector:RaycastCollector = new RaycastCollector(); // TODO Implement Dependency: RaycastCollector
+                this._ignoredEntities = [];
+                this._onlyMouseEnabled = true;
+                this._findClosestCollision = findClosestCollision;
+                this._entities = new Array();
+            }
+            Object.defineProperty(RaycastPicker.prototype, "onlyMouseEnabled", {
+                get: /**
+                * @inheritDoc
+                */
+                function () {
+                    return this._onlyMouseEnabled;
+                },
+                set: function (value) {
+                    this._onlyMouseEnabled = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * @inheritDoc
+            */
+            //TODO Implement Dependency: EntityListItem, EntityCollector
+            RaycastPicker.prototype.getViewCollision = function (x, y, view) {
+                throw new away.errors.PartialImplementationError('EntityListItem, EntityCollector');
+                return null;
+            };
+
+            //*/
+            /**
+            * @inheritDoc
+            */
+            //* TODO Implement Dependency: EntityListItem, EntityCollector
+            RaycastPicker.prototype.getSceneCollision = function (position, direction, scene) {
+                throw new away.errors.PartialImplementationError('EntityListItem, EntityCollector');
+                return null;
+            };
+
+            //*/
+            /* TODO: Implement Dependency: Entity.isIntersectingRay
+            public getEntityCollision(position:away.geom.Vector3D, direction:away.geom.Vector3D, entities:away.entities.Entity[] ):away.pick.PickingCollisionVO
+            {
+            
+            
+            position = position; // TODO: remove ?
+            direction = direction;
+            
+            this._numEntities = 0;
+            
+            var entity:away.entities.Entity;
+            var l : number = entities.length;
+            
+            
+            for ( var c : number = 0 ; c < l ; c ++ )
+            {
+            
+            entity = entities[c];
+            
+            if (entity.isIntersectingRay(position, direction))
+            {
+            
+            this._entities[this._numEntities++] = entity;
+            
+            }
+            
+            
+            }
+            
+            return this.getPickingCollisionVO();
+            
+            }
+            //*/
+            RaycastPicker.prototype.setIgnoreList = function (entities) {
+                this._ignoredEntities = entities;
+            };
+
+            RaycastPicker.prototype.isIgnored = function (entity) {
+                if (this._onlyMouseEnabled && (!entity._iAncestorsAllowMouseEnabled || !entity.mouseEnabled)) {
+                    return true;
+                }
+
+                var ignoredEntity;
+
+                var l = this._ignoredEntities.length;
+
+                for (var c = 0; c < l; c++) {
+                    ignoredEntity = this._ignoredEntities[c];
+
+                    if (ignoredEntity == entity) {
+                        return true;
+                    }
+                }
+
+                return false;
+            };
+
+            RaycastPicker.prototype.sortOnNearT = function (entity1, entity2) {
+                return entity1.pickingCollisionVO.rayEntryDistance > entity2.pickingCollisionVO.rayEntryDistance ? 1 : -1;
+            };
+
+            RaycastPicker.prototype.getPickingCollisionVO = function () {
+                // trim before sorting
+                this._entities.length = this._numEntities;
+
+                // Sort entities from closest to furthest.
+                this._entities = this._entities.sort(this.sortOnNearT);
+
+                // ---------------------------------------------------------------------
+                // Evaluate triangle collisions when needed.
+                // Replaces collision data provided by bounds collider with more precise data.
+                // ---------------------------------------------------------------------
+                var shortestCollisionDistance = Number.MAX_VALUE;
+                var bestCollisionVO;
+                var pickingCollisionVO;
+                var entity;
+                var i;
+
+                for (i = 0; i < this._numEntities; ++i) {
+                    entity = this._entities[i];
+                    pickingCollisionVO = entity._iPickingCollisionVO;
+                    if (entity.pickingCollider) {
+                        if ((bestCollisionVO == null || pickingCollisionVO.rayEntryDistance < bestCollisionVO.rayEntryDistance) && entity.iCollidesBefore(shortestCollisionDistance, this._findClosestCollision)) {
+                            shortestCollisionDistance = pickingCollisionVO.rayEntryDistance;
+                            bestCollisionVO = pickingCollisionVO;
+                            if (!this._findClosestCollision) {
+                                this.updateLocalPosition(pickingCollisionVO);
+                                return pickingCollisionVO;
+                            }
+                        }
+                    } else if (bestCollisionVO == null || pickingCollisionVO.rayEntryDistance < bestCollisionVO.rayEntryDistance) {
+                        if (!pickingCollisionVO.rayOriginIsInsideBounds) {
+                            this.updateLocalPosition(pickingCollisionVO);
+                            return pickingCollisionVO;
+                        }
+                    }
+                }
+
+                return bestCollisionVO;
+            };
+
+            RaycastPicker.prototype.updateLocalPosition = function (pickingCollisionVO) {
+                var collisionPos = (pickingCollisionVO.localPosition == null) ? new away.geom.Vector3D() : pickingCollisionVO.localPosition;
+
+                //var collisionPos:away.geom.Vector3D = pickingCollisionVO.localPosition ||= new away.geom.Vector3D();
+                var rayDir = pickingCollisionVO.localRayDirection;
+                var rayPos = pickingCollisionVO.localRayPosition;
+                var t = pickingCollisionVO.rayEntryDistance;
+                collisionPos.x = rayPos.x + t * rayDir.x;
+                collisionPos.y = rayPos.y + t * rayDir.y;
+                collisionPos.z = rayPos.z + t * rayDir.z;
+            };
+
+            RaycastPicker.prototype.dispose = function () {
+            };
+            return RaycastPicker;
+        })();
+        pick.RaycastPicker = RaycastPicker;
+    })(away.pick || (away.pick = {}));
+    var pick = away.pick;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (textures) {
+        var TextureProxyBase = (function (_super) {
+            __extends(TextureProxyBase, _super);
+            function TextureProxyBase() {
+                _super.call(this);
+                this._format = away.display3D.Context3DTextureFormat.BGRA;
+                this._hasMipmaps = true;
+
+                this._textures = new Array(8);
+                this._dirty = new Array(8);
+            }
+            Object.defineProperty(TextureProxyBase.prototype, "hasMipMaps", {
+                get: /**
+                *
+                * @returns {boolean}
+                */
+                function () {
+                    return this._hasMipmaps;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(TextureProxyBase.prototype, "format", {
+                get: /**
+                *
+                * @returns {string}
+                */
+                function () {
+                    return this._format;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(TextureProxyBase.prototype, "assetType", {
+                get: /**
+                *
+                * @returns {string}
+                */
+                function () {
+                    return away.library.AssetType.TEXTURE;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(TextureProxyBase.prototype, "width", {
+                get: /**
+                *
+                * @returns {number}
+                */
+                function () {
+                    return this._width;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(TextureProxyBase.prototype, "height", {
+                get: /**
+                *
+                * @returns {number}
+                */
+                function () {
+                    return this._height;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /* TODO: implement Stage3DProxy
+            public getTextureForStage3D(stage3DProxy : Stage3DProxy) : TextureBase
+            {
+            var contextIndex : number = stage3DProxy._stage3DIndex;
+            var tex : TextureBase = _textures[contextIndex];
+            var context : Context3D = stage3DProxy._context3D;
+            
+            if (!tex || _dirty[contextIndex] != context) {
+            _textures[contextIndex] = tex = createTexture(context);
+            _dirty[contextIndex] = context;
+            uploadContent(tex);//_pUploadContent
+            }
+            
+            return tex;
+            }
+            */
+            /**
+            *
+            * @param texture
+            * @private
+            */
+            TextureProxyBase.prototype._pUploadContent = function (texture) {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            /**
+            *
+            * @param width
+            * @param height
+            * @private
+            */
+            TextureProxyBase.prototype._pSetSize = function (width, height) {
+                if (this._width != width || this._height != height) {
+                    this._pInvalidateSize();
+                }
+
+                this._width = width;
+                this._height = height;
+            };
+
+            /**
+            *
+            */
+            TextureProxyBase.prototype.invalidateContent = function () {
+                for (var i = 0; i < 8; ++i) {
+                    this._dirty[i] = null;
+                }
+            };
+
+            /**
+            *
+            * @private
+            */
+            TextureProxyBase.prototype._pInvalidateSize = function () {
+                var tex;
+                for (var i = 0; i < 8; ++i) {
+                    tex = this._textures[i];
+
+                    if (tex) {
+                        tex.dispose();
+
+                        this._textures[i] = null;
+                        this._dirty[i] = null;
+                    }
+                }
+            };
+
+            /**
+            *
+            * @param context
+            * @private
+            */
+            TextureProxyBase.prototype._pCreateTexture = function (context) {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            /**
+            * @inheritDoc
+            */
+            TextureProxyBase.prototype.dispose = function () {
+                for (var i = 0; i < 8; ++i) {
+                    if (this._textures[i]) {
+                        this._textures[i].dispose();
+                    }
+                }
+            };
+            return TextureProxyBase;
+        })(away.library.NamedAssetBase);
+        textures.TextureProxyBase = TextureProxyBase;
+    })(away.textures || (away.textures = {}));
+    var textures = away.textures;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../_definitions.ts"/>
+    (function (utils) {
+        var PerspectiveMatrix3D = (function (_super) {
+            __extends(PerspectiveMatrix3D, _super);
+            function PerspectiveMatrix3D(v) {
+                if (typeof v === "undefined") { v = null; }
+                _super.call(this, v);
+            }
+            PerspectiveMatrix3D.prototype.perspectiveFieldOfViewLH = function (fieldOfViewY, aspectRatio, zNear, zFar) {
+                var yScale = 1 / Math.tan(fieldOfViewY / 2);
+                var xScale = yScale / aspectRatio;
+                this.copyRawDataFrom([
+                    xScale,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    yScale,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    zFar / (zFar - zNear),
+                    1.0,
+                    0.0,
+                    0.0,
+                    (zNear * zFar) / (zNear - zFar),
+                    0.0
+                ]);
+            };
+            return PerspectiveMatrix3D;
+        })(away.geom.Matrix3D);
+        utils.PerspectiveMatrix3D = PerspectiveMatrix3D;
+    })(away.utils || (away.utils = {}));
+    var utils = away.utils;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (utils) {
+        var RequestAnimationFrame = (function () {
+            function RequestAnimationFrame(callback, callbackContext) {
+                var _this = this;
+                this._active = false;
+                this._argsArray = new Array();
+                this._getTimer = away.utils.getTimer;
+
+                this.setCallback(callback, callbackContext);
+
+                this._rafUpdateFunction = function () {
+                    if (_this._active) {
+                        _this._tick();
+                    }
+                };
+
+                this._argsArray.push(this._dt);
+            }
+            // Public
+            /**
+            *
+            * @param callback
+            * @param callbackContext
+            */
+            RequestAnimationFrame.prototype.setCallback = function (callback, callbackContext) {
+                this._callback = callback;
+                this._callbackContext = callbackContext;
+            };
+
+            /**
+            *
+            */
+            RequestAnimationFrame.prototype.start = function () {
+                this._prevTime = this._getTimer();
+                this._active = true;
+
+                if (window['mozRequestAnimationFrame']) {
+                    window.requestAnimationFrame = window['mozRequestAnimationFrame'];
+                } else if (window['webkitRequestAnimationFrame']) {
+                    window.requestAnimationFrame = window['webkitRequestAnimationFrame'];
+                } else if (window['oRequestAnimationFrame']) {
+                    window.requestAnimationFrame = window['oRequestAnimationFrame'];
+                }
+
+                if (window.requestAnimationFrame) {
+                    window.requestAnimationFrame(this._rafUpdateFunction);
+                }
+            };
+
+            /**
+            *
+            */
+            RequestAnimationFrame.prototype.stop = function () {
+                this._active = false;
+            };
+
+            Object.defineProperty(RequestAnimationFrame.prototype, "active", {
+                get: // Get / Set
+                /**
+                *
+                * @returns {boolean}
+                */
+                function () {
+                    return this._active;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            // Private
+            /**
+            *
+            * @private
+            */
+            RequestAnimationFrame.prototype._tick = function () {
+                this._currentTime = this._getTimer();
+                this._dt = this._currentTime - this._prevTime;
+                this._argsArray[0] = this._dt;
+                this._callback.apply(this._callbackContext, this._argsArray);
+
+                window.requestAnimationFrame(this._rafUpdateFunction);
+
+                this._prevTime = this._currentTime;
+            };
+            return RequestAnimationFrame;
+        })();
+        utils.RequestAnimationFrame = RequestAnimationFrame;
+    })(away.utils || (away.utils = {}));
+    var utils = away.utils;
+})(away || (away = {}));
+///<reference path="../src/away/_definitions.ts" />
 //------------------------------------------------------------------------------------------------
 // Web / PHP Storm arguments string
 //------------------------------------------------------------------------------------------------
@@ -8446,8 +15785,12 @@ var ManagersTest = (function () {
     //private sManager    : away.managers.Stage3DManager;
     //private sProxy      : away.managers.Stage3DProxy;
     function ManagersTest() {
-        var e = new away.entities.Entity();
     }
+    ManagersTest.prototype.init = function () {
+        var camN = new away.entities.Entity();
+
+        console.log('fuckme we have an entity');
+    };
     return ManagersTest;
 })();
 
@@ -8458,7 +15801,6 @@ window.onload = function () {
     GL = canvas.getContext("experimental-webgl");
 
     test = new ManagersTest();
+    test.init();
 };
 //@ sourceMappingURL=ManagersTest.js.map
-
-//run through list and set all exteds

@@ -1,7 +1,4 @@
-///<reference path="../src/away/partition/CameraNode.ts" />
-
-
-
+///<reference path="../src/away/_definitions.ts" />
 
 //------------------------------------------------------------------------------------------------
 // Web / PHP Storm arguments string
@@ -19,23 +16,15 @@ class ManagersTest
     constructor()
     {
 
-        var camN : away.partition.CameraNode = new away.partition.CameraNode();
 
-        //var nb : away.partition.NodeBase = new away.partition.NodeBase();
-        //var e : away.entities.Entity= new away.entities.Entity(); // ERROR
+    }
 
-        //var sc3d : away.containers.Scene3D = new away.containers.Scene3D();
-        //var pt : away.traverse.PartitionTraverser = new away.traverse.PartitionTraverser();// notOK
-        //var p3d : away.math.Plane3D = new away.math.Plane3D(); //OK
-        //var s : away.entities.SegmentSet = new away.entities.SegmentSet();// ERROR
-        //var wp : away.primitives.WireframePrimitiveBase = new away.primitives.WireframePrimitiveBase();// OK
+    public init() : void
+    {
 
-        //var n : away.partition.EntityNode = new away.partition.EntityNode(); // ERROR
-        //var nb : away.partition.NodeBase = new away.partition.NodeBase(); // ERROR
+        var camN : away.entities.Entity = new away.entities.Entity();
 
-        //var c :away.partition.CameraNode = new away.partition.CameraNode();
-        //this.stage = new away.display.Stage();
-        //this.sManager = away.managers.Stage3DManager.getInstance( this.stage );
+        console.log( 'fuckme we have an entity');
 
     }
 
@@ -50,7 +39,10 @@ window.onload = function ()
     GL = canvas.getContext("experimental-webgl");
 
     test = new ManagersTest();
+    test.init();
 
 }
+
+
 
 
