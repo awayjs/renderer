@@ -24,8 +24,6 @@ class ManagersTest
 
         var camN : away.entities.Entity = new away.entities.Entity();
 
-        console.log( 'fuckme we have an entity');
-
     }
 
 }
@@ -42,7 +40,4 @@ window.onload = function ()
     test.init();
 
 }
-
-
-
 
