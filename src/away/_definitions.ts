@@ -1,7 +1,9 @@
 ///<reference path="../def/webgl.d.ts"/>
 ///<reference path="../def/js.d.ts"/>
+
 ///<reference path="events/Event.ts" />
 ///<reference path="events/EventDispatcher.ts" />
+///<reference path="library/assets/IAsset.ts" />
 ///<reference path="events/AssetEvent.ts" />
 ///<reference path="library/assets/NamedAssetBase.ts" />
 ///<reference path="geom/Vector3D.ts" />
@@ -74,15 +76,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
 //------------------ Entities
 
 ///<reference path="pick/IPickingCollider.ts" />
@@ -97,7 +90,7 @@
 
 //------------------ Events
 
-///<reference path="library/assets/IAsset.ts" />
+
 ///<reference path="containers/View3D.ts"/>
 
 //----------------- Geom
@@ -170,7 +163,6 @@
 ///<reference path="materials/utils/MipmapGenerator.ts" />
 
 //-------------- Math
-
 
 
 
