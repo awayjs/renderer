@@ -167,10 +167,14 @@ class BitmapDataTest
 
 }
 
+var GL = null;//: WebGLRenderingContext;
 window.onload = function ()
 {
 
+    var canvas : HTMLCanvasElement = document.createElement('canvas');
+    GL = canvas.getContext("experimental-webgl");
     var test = new BitmapDataTest();
 
 }
+
 
