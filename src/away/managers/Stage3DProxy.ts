@@ -227,7 +227,7 @@ module away.managers
             this._enableDepthAndStencil = enableDepthAndStencil;
 
 
-            away.utils.Dev.throwPIR( 'Stage3DProxy' , 'setRenderTarget' , 'away.display3D.Context3D: setRenderToTexture , setRenderToBackBuffer');
+            away.utils.Debug.throwPIR( 'Stage3DProxy' , 'setRenderTarget' , 'away.display3D.Context3D: setRenderToTexture , setRenderToBackBuffer');
 
             /*
 
@@ -307,7 +307,7 @@ module away.managers
 		{
 			super.addEventListener(type, listener, target ) ;//useCapture, priority, useWeakReference);
 
-            away.utils.Dev.throwPIR( 'Stage3DProxy' , 'addEventListener' ,  'EnterFrame, ExitFrame');
+            away.utils.Debug.throwPIR( 'Stage3DProxy' , 'addEventListener' ,  'EnterFrame, ExitFrame');
 
             if ((type == away.events.Event.ENTER_FRAME || type == away.events.Event.EXIT_FRAME) ){//&& ! this._frameEventDriver.hasEventListener(Event.ENTER_FRAME)){
 
@@ -340,7 +340,7 @@ module away.managers
 		{
 			super.removeEventListener(type, listener, target);
 
-            away.utils.Dev.throwPIR( 'Stage3DProxy' , 'removeEventListener' ,  'EnterFrame, ExitFrame');
+            away.utils.Debug.throwPIR( 'Stage3DProxy' , 'removeEventListener' ,  'EnterFrame, ExitFrame');
 
 			// Remove the main rendering listener if no EnterFrame listeners remain
 			if (    ! this.hasEventListener(away.events.Event.ENTER_FRAME , this.onEnterFrame , this )
@@ -395,7 +395,7 @@ module away.managers
 		public get driverInfo():string
 		{
 
-            away.utils.Dev.throwPIR( 'Stage3DProxy' , 'driverInfo' ,  'Context3D.driverInfo()');
+            away.utils.Debug.throwPIR( 'Stage3DProxy' , 'driverInfo' ,  'Context3D.driverInfo()');
 
             return null;
 
@@ -418,7 +418,7 @@ module away.managers
 		public get x():number
 		{
 
-            away.utils.Dev.throwPIR( 'Stage3DProxy' , 'get x' ,  'Stage3D.x');
+            away.utils.Debug.throwPIR( 'Stage3DProxy' , 'get x' ,  'Stage3D.x');
 
             return 0;
 			//return this._stage3D.x;
@@ -445,14 +445,14 @@ module away.managers
 		public get y():number
 		{
 
-            away.utils.Dev.throwPIR( 'Stage3DProxy' , 'get x' ,  'Stage3D.y');
+            away.utils.Debug.throwPIR( 'Stage3DProxy' , 'get x' ,  'Stage3D.y');
             return 0;
 			//return _stage3D.y;
 		}
 		
 		public set y(value:number)
 		{
-            away.utils.Dev.throwPIR( 'Stage3DProxy' , 'set x' ,  'Stage3D.y');
+            away.utils.Debug.throwPIR( 'Stage3DProxy' , 'set x' ,  'Stage3D.y');
             /*
 			if (_viewPort.y == value)
 				return;
@@ -553,7 +553,7 @@ module away.managers
 		public set visible(value:boolean)
 		{
 
-            away.utils.Dev.throwPIR( 'Stage3DProxy' , 'set visible' ,  'Stage3D.visible');
+            away.utils.Debug.throwPIR( 'Stage3DProxy' , 'set visible' ,  'Stage3D.visible');
 			//this._stage3D.visible = value;
 		}
 		
@@ -602,7 +602,7 @@ module away.managers
 		{
 			if (this._iContext3D) {
 
-                away.utils.Dev.throwPIR( 'Stage3DProxy' , 'freeContext3D' ,  'Context3D.dispose()');
+                away.utils.Debug.throwPIR( 'Stage3DProxy' , 'freeContext3D' ,  'Context3D.dispose()');
 				//this._context3D.dispose();
 				this.dispatchEvent(new away.events.Stage3DEvent(away.events.Stage3DEvent.CONTEXT3D_DISPOSED));
 			}
@@ -636,7 +636,7 @@ module away.managers
 				
 				// Dispatch the appropriate event depending on whether context was
 				// created for the first time or recreated after a device loss.
-				this.dispatchEvent(new away.events.Stage3DEvent(hadContext ? away.events.Stage3DEvent.CONTEXT3D_RECREATED : away.events.Stage3DEvent.CONTEXT3D_CREATED));
+				this.dispatchEvent(new away.events.Stage3DEvent( hadContext ? away.events.Stage3DEvent.CONTEXT3D_RECREATED : away.events.Stage3DEvent.CONTEXT3D_CREATED));
 				
 			}
             else
@@ -672,7 +672,7 @@ module away.managers
 
             // Throw PartialImplementationError to flag this function as changed
 
-            away.utils.Dev.throwPIR( 'Stage3DProxy' , 'requestContext' , 'Context3DRenderMode' );
+            away.utils.Debug.throwPIR( 'Stage3DProxy' , 'requestContext' , 'Context3DRenderMode' );
 
            // throw new away.errors.PartialImplementationError( 'Context3DRenderMode');
 
@@ -732,7 +732,7 @@ module away.managers
 
             }
 
-            away.utils.Dev.throwPIR( 'Stage3DProxy' , 'recoverFromDisposal' , 'Context3D.driverInfo');
+            away.utils.Debug.throwPIR( 'Stage3DProxy' , 'recoverFromDisposal' , 'Context3D.driverInfo');
 
 
             /*

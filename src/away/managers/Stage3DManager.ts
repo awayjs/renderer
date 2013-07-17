@@ -165,7 +165,7 @@ module away.managers
 
                     this.getStage3DProxy(i, forceSoftware, profile);
 
-                    away.utils.Dev.throwPIR( 'Stage3DManager' , 'getFreeStage3DProxy' , 'Stage.stageWidth , Stage.stageHeight ' );
+                    away.utils.Debug.throwPIR( 'Stage3DManager' , 'getFreeStage3DProxy' , 'Stage.stageWidth , Stage.stageHeight ' );
                     //throw new away.errors.PartialImplementationError( 'Stage.stageWidth , Stage.stageHeight ');
 
                     //Stage3DManager._stageProxies[i].width = this._stage.stageWidth;
