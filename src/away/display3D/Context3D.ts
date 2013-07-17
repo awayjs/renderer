@@ -4,6 +4,7 @@
  */
 
 ///<reference path="../_definitions.ts"/>
+///<reference path="../Debug.ts"/>
 
 module away.display3D
 {
@@ -52,15 +53,15 @@ module away.display3D
 		public clear( red:number = 0, green:number = 0, blue:number = 0, alpha:number = 1,
 					  depth:number = 1, stencil:number = 0, mask:number = Context3DClearMask.ALL )
 		{
-			console.log( "===== clear =====" );
-			console.log( "\tred: " + red );
-			console.log( "\tgreen: " + green );
-			console.log( "\tblue: " + blue );
-			console.log( "\talpha: " + alpha );
-			console.log( "\tdepth: " + depth );
-			console.log( "\tstencil: " + stencil );
-			console.log( "\tmask: " + mask );
-			
+			Debug.log( "===== clear =====" );
+            Debug.log( "\tred: " + red );
+            Debug.log( "\tgreen: " + green );
+            Debug.log( "\tblue: " + blue );
+            Debug.log( "\talpha: " + alpha );
+            Debug.log( "\tdepth: " + depth );
+            Debug.log( "\tstencil: " + stencil );
+            Debug.log( "\tmask: " + mask );
+
 			if (!this._drawing) 
 			{
 				this.updateBlendStatus();
@@ -74,11 +75,11 @@ module away.display3D
 		
 		public configureBackBuffer( width:number, height:number, antiAlias:number, enableDepthAndStencil:boolean = true )
 		{
-			console.log( "===== configureBackBuffer =====" );
-			console.log( "\twidth: " + width );
-			console.log( "\theight: " + height );
-			console.log( "\tantiAlias: " + antiAlias );
-			console.log( "\tenableDepthAndStencil: " + enableDepthAndStencil );
+			Debug.log( "===== configureBackBuffer =====" );
+            Debug.log( "\twidth: " + width );
+            Debug.log( "\theight: " + height );
+            Debug.log( "\tantiAlias: " + antiAlias );
+            Debug.log( "\tenableDepthAndStencil: " + enableDepthAndStencil );
 			
 			if( enableDepthAndStencil )
 			{
@@ -94,15 +95,15 @@ module away.display3D
 		/*
 		public function createCubeTexture( size:number, format:Context3DTextureFormat, optimizeForRenderToTexture:boolean, streamingLevels:number = 0 ):CubeTexture 
 		{
-			var texture = new nme.display3D.textures.CubeTexture (GL.createTexture (), size);     // TODO use format, optimizeForRenderToTexture and  streamingLevels?
-			texturesCreated.push(texture);
-			return texture;
+             var texture: Texture = new away.display3D.CubeTexture( );
+             this._textureList.push( texture );
+             return texture;
 		}*/
 		
 		public createIndexBuffer( numIndices:number ): away.display3D.IndexBuffer3D
 		{
-			console.log( "===== createIndexBuffer =====" );
-			console.log( "\tnumIndices: " + numIndices );
+            Debug.log( "===== createIndexBuffer =====" );
+            Debug.log( "\tnumIndices: " + numIndices );
 			var indexBuffer:IndexBuffer3D = new away.display3D.IndexBuffer3D( numIndices );
 			this._indexBufferList.push( indexBuffer );
 			return indexBuffer;
@@ -110,7 +111,7 @@ module away.display3D
 		
 		public createProgram(): Program3D
 		{
-			console.log( "===== createProgram =====" );
+            Debug.log( "===== createProgram =====" );
 			var program:Program3D = new away.display3D.Program3D();
 			this._programList.push( program );
 			return program;
@@ -118,12 +119,12 @@ module away.display3D
 		
 		public createTexture( width:number, height:number, format:string, optimizeForRenderToTexture:boolean, streamingLevels:number = 0 ): Texture
 		{
-			console.log( "===== createTexture =====" );
-			console.log( "\twidth: " + width );
-			console.log( "\theight: " + height );
-			console.log( "\tformat: " + format );
-			console.log( "\toptimizeForRenderToTexture: " + optimizeForRenderToTexture );
-			console.log( "\tstreamingLevels: " + streamingLevels );
+            Debug.log( "===== createTexture =====" );
+            Debug.log( "\twidth: " + width );
+            Debug.log( "\theight: " + height );
+            Debug.log( "\tformat: " + format );
+            Debug.log( "\toptimizeForRenderToTexture: " + optimizeForRenderToTexture );
+            Debug.log( "\tstreamingLevels: " + streamingLevels );
 			
 			var texture: Texture = new away.display3D.Texture( width, height );
 			this._textureList.push( texture );
@@ -132,9 +133,9 @@ module away.display3D
 		
 		public createVertexBuffer( numVertices:number, data32PerVertex:number ): away.display3D.VertexBuffer3D
 		{
-			console.log( "===== createVertexBuffer =====" );
-			console.log( "\tnumVertices: " + numVertices );
-			console.log( "\tdata32PerVertex: " + data32PerVertex );
+            Debug.log( "===== createVertexBuffer =====" );
+            Debug.log( "\tnumVertices: " + numVertices );
+            Debug.log( "\tdata32PerVertex: " + data32PerVertex );
 			var vertexBuffer:VertexBuffer3D = new away.display3D.VertexBuffer3D( numVertices, data32PerVertex );
 			this._vertexBufferList.push( vertexBuffer );
 			return vertexBuffer;
@@ -142,7 +143,7 @@ module away.display3D
 		
 		public dispose()
 		{
-			console.log( "===== dispose =====" );
+            Debug.log( "===== dispose =====" );
 			var i:number;
 			for( i = 0; i < this._indexBufferList.length; ++i )
 			{
@@ -178,9 +179,9 @@ module away.display3D
 		
 		public drawTriangles( indexBuffer:IndexBuffer3D, firstIndex:number = 0, numTriangles:number = -1 )
 		{
-			console.log( "===== drawTriangles =====" );
-			console.log( "\tfirstIndex: " + firstIndex );
-			console.log( "\tnumTriangles: " + numTriangles );
+            Debug.log( "===== drawTriangles =====" );
+            Debug.log( "\tfirstIndex: " + firstIndex );
+            Debug.log( "\tnumTriangles: " + numTriangles );
 			
 			if ( !this._drawing ) 
 			{
@@ -203,7 +204,7 @@ module away.display3D
 		
 		public present()
 		{
-			console.log( "===== present =====" );
+            Debug.log( "===== present =====" );
 			this._drawing = false;
 			GL.useProgram( null );
 		}
@@ -212,9 +213,9 @@ module away.display3D
 		//TODO Context3DBlendFactor
 		public setBlendFactors( sourceFactor:number, destinationFactor:number ) 
 		{
-			console.log( "===== setBlendFactors =====" );
-			console.log( "\tsourceFactor: " + sourceFactor );
-			console.log( "\tdestinationFactor: " + destinationFactor );
+            Debug.log( "===== setBlendFactors =====" );
+            Debug.log( "\tsourceFactor: " + sourceFactor );
+            Debug.log( "\tdestinationFactor: " + destinationFactor );
 			this._blendEnabled = true;
 			this._blendSourceFactor = sourceFactor;
 			this._blendDestinationFactor = destinationFactor;
@@ -224,14 +225,14 @@ module away.display3D
 		
 		public setColorMask( red:boolean, green:boolean, blue:boolean, alpha:boolean ) 
 		{
-			console.log( "===== setColorMask =====" );
+            Debug.log( "===== setColorMask =====" );
 			GL.colorMask( red, green, blue, alpha );
 		}
 		
 		public setCulling( triangleFaceToCull:string ) 
 		{
-			console.log( "===== setCulling =====" );
-			console.log( "\ttriangleFaceToCull: " + triangleFaceToCull );
+            Debug.log( "===== setCulling =====" );
+            Debug.log( "\ttriangleFaceToCull: " + triangleFaceToCull );
 			if( triangleFaceToCull == Context3DTriangleFace.NONE )
 			{
 				GL.disable( GL.CULL_FACE );
@@ -259,16 +260,16 @@ module away.display3D
 		// TODO Context3DCompareMode
 		public setDepthTest( depthMask:boolean, passCompareMode:number ) 
 		{
-			console.log( "===== setDepthTest =====" );
-			console.log( "\tdepthMask: " + depthMask );
-			console.log( "\tpassCompareMode: " + passCompareMode );
+            Debug.log( "===== setDepthTest =====" );
+            Debug.log( "\tdepthMask: " + depthMask );
+            Debug.log( "\tpassCompareMode: " + passCompareMode );
 			GL.depthFunc( passCompareMode );
 			GL.depthMask( depthMask );
 		}
 		
 		public setProgram( program3D:away.display3D.Program3D )
 		{
-			console.log( "===== setProgram =====" );
+            Debug.log( "===== setProgram =====" );
 			//TODO decide on construction/reference resposibilities
 			this._currentProgram = program3D;
 			program3D.focusProgram();
@@ -302,7 +303,7 @@ module away.display3D
 		/*
 		public setProgramConstantsFromVector(programType:string, firstRegister:number, matrix:away.geom.Matrix3D, transposedMatrix:boolean = false )
 		{
-			throw "fu";
+
 		}*/
 		
 		/*
@@ -312,10 +313,10 @@ module away.display3D
 		
 		public setGLSLProgramConstantsFromMatrix( locationName:string, matrix:away.geom.Matrix3D, transposedMatrix:boolean = false) 
 		{
-			console.log( "===== setGLSLProgramConstantsFromMatrix =====" );
-			console.log( "\tlocationName: " + locationName );
-			console.log( "\tmatrix: " + matrix.rawData );
-			console.log( "\ttransposedMatrix: " + transposedMatrix );
+            Debug.log( "===== setGLSLProgramConstantsFromMatrix =====" );
+            Debug.log( "\tlocationName: " + locationName );
+            Debug.log( "\tmatrix: " + matrix.rawData );
+            Debug.log( "\ttransposedMatrix: " + transposedMatrix );
 			
 			var location:WebGLUniformLocation = GL.getUniformLocation( this._currentProgram.glProgram, locationName );
 			GL.uniformMatrix4fv( location, !transposedMatrix, new Float32Array( matrix.rawData ) );
@@ -323,18 +324,18 @@ module away.display3D
 		
 		public setGLSLProgramConstantsFromVector4( locationName:string, data:number[], startIndex:number = 0 ) 
 		{
-			console.log( "===== setGLSLProgramConstantsFromVector4 =====" );
-			console.log( "\tlocationName: " + locationName );
-			console.log( "\tdata: " + data );
-			console.log( "\tstartIndex: " + startIndex );
+            Debug.log( "===== setGLSLProgramConstantsFromVector4 =====" );
+            Debug.log( "\tlocationName: " + locationName );
+            Debug.log( "\tdata: " + data );
+            Debug.log( "\tstartIndex: " + startIndex );
 			var location:WebGLUniformLocation = GL.getUniformLocation( this._currentProgram.glProgram, locationName );
 			GL.uniform4f( location, data[startIndex], data[startIndex+1], data[startIndex+2], data[startIndex+3] );
 		}
 		
 		public setScissorRectangle( rectangle:away.geom.Rectangle ) 
 		{
-			console.log( "===== setScissorRectangle =====" );
-			console.log( "\trectangle: " + rectangle );
+            Debug.log( "===== setScissorRectangle =====" );
+            Debug.log( "\trectangle: " + rectangle );
 			GL.scissor( rectangle.x, rectangle.y, rectangle.width, rectangle.height );
 		}
 		
@@ -383,10 +384,10 @@ module away.display3D
 		
 		public setVertexBufferAt( index:number, buffer:VertexBuffer3D, bufferOffset:number = 0, format:Context3DVertexBufferFormat = null ) 
 		{
-			console.log( "===== setVertexBufferAt =====" );
-			console.log( "\tindex: " + index );
-			console.log( "\tbufferOffset: " + bufferOffset );
-			console.log( "\tformat: " + format );
+            Debug.log( "===== setVertexBufferAt =====" );
+            Debug.log( "\tindex: " + index );
+            Debug.log( "\tbufferOffset: " + bufferOffset );
+            Debug.log( "\tformat: " + format );
 			
 			var locationName = "va" + index;
 			this.setGLSLVertexBufferAt( locationName, buffer, bufferOffset, format );
@@ -394,11 +395,11 @@ module away.display3D
 		
 		public setGLSLVertexBufferAt( locationName, buffer:VertexBuffer3D, bufferOffset:number = 0, format:Context3DVertexBufferFormat = null ) 
 		{
-			console.log( "===== setGLSLVertexBufferAt =====" );
-			console.log( "\tbuffer.length: " + buffer.numVertices );
-			console.log( "\tbuffer.data32PerVertex: " + buffer.data32PerVertex );
-			console.log( "\tlocationName: " + locationName );
-			console.log( "\tbufferOffset: " + bufferOffset );
+            Debug.log( "===== setGLSLVertexBufferAt =====" );
+            Debug.log( "\tbuffer.length: " + buffer.numVertices );
+            Debug.log( "\tbuffer.data32PerVertex: " + buffer.data32PerVertex );
+            Debug.log( "\tlocationName: " + locationName );
+            Debug.log( "\tbufferOffset: " + bufferOffset );
 			
 			var location:number = GL.getAttribLocation( this._currentProgram.glProgram, locationName );
 			
@@ -435,7 +436,7 @@ module away.display3D
 		
 		private updateBlendStatus() 
 		{
-			console.log( "===== updateBlendStatus =====" );
+            Debug.log( "===== updateBlendStatus =====" );
 			if ( this._blendEnabled ) 
 			{
 				GL.enable( GL.BLEND );
