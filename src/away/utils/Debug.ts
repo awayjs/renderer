@@ -7,16 +7,16 @@ module away.utils
     export class Debug
     {
 
-        public static THROW_ERROR   : boolean = true;
-        public static DEBUG         : boolean = true;
-        public static LOG           : boolean = true;
+        public static THROW_ERRORS  : boolean = true;
+        public static ENABLE_LOG    : boolean = true;
+        public static LOG_PI_ERRORS : boolean = true;
 
         public static throwPIR( clss : string , fnc : string , msg : string )
         {
 
-            Debug.log( 'PartialImplementationError '  + clss , fnc , msg );
+            Debug.logPIR( 'PartialImplementationError '  + clss , fnc , msg );
 
-            if ( Debug.THROW_ERROR )
+            if ( Debug.THROW_ERRORS )
             {
 
                 throw new away.errors.PartialImplementationError( clss + '.' + fnc + ': ' +  msg );
@@ -25,13 +25,25 @@ module away.utils
 
         }
 
-        public static log ( clss : string , fnc : string , msg : string = '' )
+        private static logPIR ( clss : string , fnc : string , msg : string = '' )
         {
 
-            if ( Debug.LOG )
+            if ( Debug.LOG_PI_ERRORS )
             {
 
                 console.log( clss + '.' + fnc + ': ' +  msg );
+
+            }
+
+        }
+
+        public static log ( ...args : any[] )
+        {
+
+            if ( Debug.ENABLE_LOG )
+            {
+
+                console.log.apply(console, arguments);
 
             }
 
