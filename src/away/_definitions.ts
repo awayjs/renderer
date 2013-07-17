@@ -119,3 +119,4 @@
 ///<reference path="net/URLVariables.ts" />
 ///<reference path="utils/PerspectiveMatrix3D.ts"/>
 ///<reference path="utils/RequestAnimationFrame.ts"/>
+///<reference path="utils/DevUtils.ts"/>
