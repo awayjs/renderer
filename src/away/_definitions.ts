@@ -132,3 +132,4 @@
 ///<reference path="base/Geometry.ts"/>
 ///<reference path="base/SubGeometry.ts"/>
 ///<reference path="controllers/ControllerBase.ts"/>
+///<reference path="controllers/LookAtController.ts"/>
