@@ -35,11 +35,15 @@ class Object3DTest
 
 }
 
+var GL = null;//: WebGLRenderingContext;
 var test: Object3DTest;
 window.onload = function ()
 {
 
+    var canvas : HTMLCanvasElement = document.createElement('canvas');
+    GL = canvas.getContext("experimental-webgl");
     test = new Object3DTest();
 
 
 }
+
