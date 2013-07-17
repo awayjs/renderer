@@ -622,6 +622,7 @@ module away.managers
 				var hadContext:boolean = (this._iContext3D != null);
 				this._iContext3D = this._stage3D.context3D;
 
+                away.utils.Debug.log( 'Stage3DProxy' , 'onContext3DUpdate this._stage3D.context3D: ' , this._stage3D.context3D);
                 // todo: implement dependency Context3D.enableErrorChecking, Context3D.driverInfo
                 away.utils.Debug.throwPIR( 'Stage3DProxy' , 'onContext3DUpdate' ,  'Context3D.enableErrorChecking, Context3D.driverInfo');
 
@@ -632,7 +633,12 @@ module away.managers
 				// which they may not have been if View3D.render() has yet to be
 				// invoked for the first time.
 				if (this._backBufferWidth && this._backBufferHeight)
-					this._iContext3D.configureBackBuffer(this._backBufferWidth, this._backBufferHeight, this._antiAlias, this._enableDepthAndStencil);
+                {
+
+                    this._iContext3D.configureBackBuffer(this._backBufferWidth, this._backBufferHeight, this._antiAlias, this._enableDepthAndStencil);
+
+                }
+
 				
 				// Dispatch the appropriate event depending on whether context was
 				// created for the first time or recreated after a device loss.
