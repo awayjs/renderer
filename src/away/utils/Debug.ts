@@ -4,7 +4,7 @@
 module away.utils
 {
 
-    export class Dev
+    export class Debug
     {
 
         public static THROW_ERROR   : boolean = true;
@@ -14,9 +14,9 @@ module away.utils
         public static throwPIR( clss : string , fnc : string , msg : string )
         {
 
-            Dev.log( 'PartialImplementationError '  + clss , fnc , msg );
+            Debug.log( 'PartialImplementationError '  + clss , fnc , msg );
 
-            if ( Dev.THROW_ERROR )
+            if ( Debug.THROW_ERROR )
             {
 
                 throw new away.errors.PartialImplementationError( clss + '.' + fnc + ': ' +  msg );
@@ -28,7 +28,7 @@ module away.utils
         public static log ( clss : string , fnc : string , msg : string = '' )
         {
 
-            if ( Dev.LOG )
+            if ( Debug.LOG )
             {
 
                 console.log( clss + '.' + fnc + ': ' +  msg );
