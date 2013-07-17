@@ -42,6 +42,8 @@
 ///<reference path="events/LensEvent.ts" />
 ///<reference path="cameras/lenses/LensBase.ts" />
 ///<reference path="cameras/lenses/PerspectiveLens.ts" />
+///<reference path="cameras/lenses/FreeMatrixLens.ts" />
+///<reference path="cameras/lenses/OrthographicLens.ts" />
 ///<reference path="events/CameraEvent.ts" />
 ///<reference path="bounds/NullBounds.ts" />
 ///<reference path="containers/ObjectContainer3D.ts" />
