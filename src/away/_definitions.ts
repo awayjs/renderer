@@ -131,3 +131,4 @@
 ///<reference path="base/CompactSubGeometry.ts"/>
 ///<reference path="base/Geometry.ts"/>
 ///<reference path="base/SubGeometry.ts"/>
+///<reference path="controllers/ControllerBase.ts"/>

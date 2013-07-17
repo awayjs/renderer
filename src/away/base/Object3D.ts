@@ -80,8 +80,7 @@ module away.base
 	export class Object3D extends away.library.NamedAssetBase
 	{
 		/** @private */
-        // TODO: implement
-		//public _iController:ControllerBase; // Arcane
+		public _iController:away.controllers.ControllerBase; // Arcane
 		
 		private _smallestNumber : number = 0.0000000000000000000001;
 		private _transformDirty : boolean = true;
