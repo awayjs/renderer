@@ -298,11 +298,17 @@ module away.loaders
 		{
 			var len : number = SingleFileLoader._parsers.length;
 
+            //console.log( SingleFileLoader._parsers );
+
 			// go in reverse order to allow application override of default parser added in Away3D proper
 			for (var i : number = len-1; i >= 0; i--)
             {
 
                 var currentParser : away.loaders.ParserBase = SingleFileLoader._parsers[i];
+
+                //console.log( '------------------------------------------');
+                //console.log( i , currentParser );
+
                 var supportstype : boolean                  = SingleFileLoader._parsers[i].supportsType(this._fileExtension);
 
                 //console.log( 'SingleFileURLLoader.getParserFromSuffix.supportstype' , supportstype );
