@@ -124,3 +124,9 @@
 ///<reference path="utils/PerspectiveMatrix3D.ts"/>
 ///<reference path="utils/RequestAnimationFrame.ts"/>
 ///<reference path="utils/Debug.ts"/>
+///<reference path="base/SubGeometryBase.ts"/>
+///<reference path="base/ISubGeometry.ts"/>
+///<reference path="events/GeometryEvent.ts"/>
+///<reference path="base/CompactSubGeometry.ts"/>
+///<reference path="base/Geometry.ts"/>
+///<reference path="base/SubGeometry.ts"/>
