@@ -69,6 +69,9 @@
 ///<reference path="utils/CSS.ts" />
 ///<reference path="errors/DocumentError.ts" />
 ///<reference path="pick/IPickingCollider.ts" />
+///<reference path="pick/PickingColliderBase.ts" />
+///<reference path="pick/AS3PickingCollider.ts" />
+///<reference path="pick/PickingColliderType.ts" />
 ///<reference path="base/IRenderable.ts" />
 ///<reference path="containers/View3D.ts"/>
 ///<reference path="library/naming/ConflictStrategyBase.ts" />
@@ -77,7 +80,6 @@
 ///<reference path="library/naming/ErrorConflictStrategy.ts" />
 ///<reference path="library/naming/ConflictPrecedence.ts" />
 ///<reference path="library/AssetLibraryBundle.ts"/>
-///<reference path="loaders/misc/SingleFileLoader.ts"/>
 ///<reference path="loaders/misc/AssetLoaderContext.ts"/>
 ///<reference path="library/utils/AssetLibraryIterator.ts"/>
 ///<reference path="loaders/AssetLoader.ts" />
@@ -98,6 +100,7 @@
 ///<reference path="net/URLLoader.ts" />
 ///<reference path="loaders/parsers/ParserDataFormat.ts" />
 ///<reference path="loaders/parsers/ImageParser.ts" />
+///<reference path="loaders/misc/SingleFileLoader.ts"/>
 ///<reference path="loaders/misc/SingleFileImageLoader.ts" />
 ///<reference path="loaders/misc/SingleFileURLLoader.ts" />
 ///<reference path="loaders/parsers/ParserLoaderType.ts" />
