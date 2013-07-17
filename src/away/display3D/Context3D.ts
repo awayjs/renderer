@@ -4,7 +4,6 @@
  */
 
 ///<reference path="../_definitions.ts"/>
-///<reference path="../Debug.ts"/>
 
 module away.display3D
 {
