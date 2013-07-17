@@ -107,6 +107,7 @@
 ///<reference path="textures/TextureProxyBase.ts" />
 ///<reference path="textures/Texture2DBase.ts" />
 ///<reference path="textures/HTMLImageElementTexture.ts" />
+///<reference path="textures/BitmapTexture.ts" />
 ///<reference path="utils/TextureUtils.ts" />
 ///<reference path="events/TimerEvent.ts" />
 ///<reference path="events/ParserEvent.ts" />
