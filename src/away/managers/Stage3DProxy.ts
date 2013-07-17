@@ -427,7 +427,7 @@ module away.managers
 		public set x(value:number)
 		{
 
-            away.utils.Dev.throwPIR( 'Stage3DProxy' , 'set x' ,  'Stage3D.x');
+            away.utils.Debug.throwPIR( 'Stage3DProxy' , 'set x' ,  'Stage3D.x');
 
             /*
 			if (_viewPort.x == value)
@@ -544,7 +544,7 @@ module away.managers
 		public get visible():boolean
 		{
 
-            away.utils.Dev.throwPIR( 'Stage3DProxy' , 'get visible' ,  'Stage3D.visible');
+            away.utils.Debug.throwPIR( 'Stage3DProxy' , 'get visible' ,  'Stage3D.visible');
             return null;
 
 			//return this._stage3D.visible;
@@ -623,7 +623,7 @@ module away.managers
 				this._iContext3D = this._stage3D.context3D;
 
                 // todo: implement dependency Context3D.enableErrorChecking, Context3D.driverInfo
-                away.utils.Dev.throwPIR( 'Stage3DProxy' , 'onContext3DUpdate' ,  'Context3D.enableErrorChecking, Context3D.driverInfo');
+                away.utils.Debug.throwPIR( 'Stage3DProxy' , 'onContext3DUpdate' ,  'Context3D.enableErrorChecking, Context3D.driverInfo');
 
 				//this._iContext3D.enableErrorChecking = Debug.active;
 				//this._usesSoftwareRendering = (this._iContext3D.driverInfo.indexOf('Software') == 0);
