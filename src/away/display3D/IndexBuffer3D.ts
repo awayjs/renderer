@@ -19,7 +19,7 @@ module away.display3D
 			this._numIndices = numIndices;
 		}
 		
-		public upload( data:number[], startOffset:number, count:number ):void
+		public uploadFromArray( data:number[], startOffset:number, count:number ):void
 		{
 			GL.bindBuffer( GL.ELEMENT_ARRAY_BUFFER, this._buffer );
 			
