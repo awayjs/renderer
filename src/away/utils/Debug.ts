@@ -1,7 +1,7 @@
 
 ///<reference path="../_definitions.ts"/>
 
-module away.utils
+module away
 {
 
     export class Debug
