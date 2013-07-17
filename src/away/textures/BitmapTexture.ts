@@ -3,26 +3,17 @@
 
 module away.textures
 {
-	//import away3d.arcane;
-	//import away3d.materials.utils.MipmapGenerator;
-	//import away3d.utils.TextureUtils;
-	
-	//import flash.display.BitmapData;
-	//import flash.display3D.textures.Texture;
-	//import flash.display3D.textures.TextureBase;
-	
-	//use namespace arcane;
-	
+
 	export class BitmapTexture extends away.textures.Texture2DBase
 	{
 		private static _mipMaps     = [];
 		private static _mipMapUses  = [];
 		
-		private var _bitmapData: away.display.BitmapData;
-		private var _mipMapHolder:away.display.BitmapData;
-		private var _generateMipmaps:boolean;
+		private _bitmapData: away.display.BitmapData;
+		private _mipMapHolder:away.display.BitmapData;
+		private _generateMipmaps:boolean;
 		
-		constructor(bitmapData:BitmapData, generateMipmaps:boolean = true)
+		constructor(bitmapData:away.display.BitmapData, generateMipmaps:boolean = true)
 		{
 			super();
 			
@@ -30,41 +21,60 @@ module away.textures
 			this._generateMipmaps   = generateMipmaps;
 		}
 		
-		public get bitmapData():BitmapData
+		public get bitmapData():away.display.BitmapData
 		{
+
 			return this._bitmapData;
+
 		}
 		
-		public set bitmapData(value:BitmapData)
+		public set bitmapData(value:away.display.BitmapData)
 		{
+
 			if (value == this._bitmapData)
-				return;
-			
-			if (!TextureUtils.isBitmapDataValid(value))
-				throw new Error("Invalid bitmapData: Width and height must be power of 2 and cannot exceed 2048");
+            {
+
+                return;
+
+            }
+
+			if (!away.utils.TextureUtils.isBitmapDataValid(value))
+            {
+
+                throw new Error("Invalid bitmapData: Width and height must be power of 2 and cannot exceed 2048");
+
+            }
+
 
             this.invalidateContent();
-			setSize(value.width, value.height);
+
+			this._pSetSize( value.width, value.height);
 
             this._bitmapData = value;
 			
 			if (this._generateMipmaps)
+            {
+
                 this.getMipMapHolder();
+
+            }
+
 		}
 		
 		public _pUploadContent(texture:away.display3D.TextureBase)
 		{
+
 			if (this._generateMipmaps)
             {
 
-                MipmapGenerator.generateMipMaps(this._bitmapData, texture, this._mipMapHolder, true);
+                away.materials.MipmapGenerator.generateMipMaps(this._bitmapData, texture, this._mipMapHolder, true);
 
             }
 			else
             {
 
-                var tx : away.display3D.Texture = texture;
-                    tx.uploadFromBitmapData(this._bitmapData, 0);
+                var tx : away.display3D.Texture = <any> texture;
+                    tx.uploadFromBitmapData( this._bitmapData , 0 );
 
             }
 
@@ -77,34 +87,56 @@ module away.textures
 			newW = this._bitmapData.width;
 			newH = this._bitmapData.height;
 			
-			if (this._mipMapHolder) {
+			if (this._mipMapHolder)
+            {
+
 				if (this._mipMapHolder.width == newW && this._bitmapData.height == newH)
-					return;
+                {
+
+                    return;
+
+                }
+
 
                 this.freeMipMapHolder();
+
 			}
 			
-			if (!this._mipMaps[newW]) {
-                this._mipMaps[newW] = [];
-                this._mipMapUses[newW] = [];
+			if (!BitmapTexture._mipMaps[newW])
+            {
+
+                BitmapTexture._mipMaps[newW] = [];
+                BitmapTexture._mipMapUses[newW] = [];
+
 			}
-			if (!this._mipMaps[newW][newH]) {
-                this._mipMapHolder = this._mipMaps[newW][newH] = new BitmapData(newW, newH, true);
-                this._mipMapUses[newW][newH] = 1;
-			} else {
-                this._mipMapUses[newW][newH] = this._mipMapUses[newW][newH] + 1;
-                this._mipMapHolder = this._mipMaps[newW][newH];
+
+			if (!BitmapTexture._mipMaps[newW][newH])
+            {
+
+                this._mipMapHolder = BitmapTexture._mipMaps[newW][newH] = new away.display.BitmapData(newW, newH, true);
+                BitmapTexture._mipMapUses[newW][newH] = 1;
+
+			}
+            else
+            {
+
+                BitmapTexture._mipMapUses[newW][newH] = BitmapTexture._mipMapUses[newW][newH] + 1;
+                this._mipMapHolder = BitmapTexture._mipMaps[newW][newH];
+
 			}
 		}
 		
 		private freeMipMapHolder()
 		{
-			var holderWidth:number = _mipMapHolder.width;
-			var holderHeight:number = _mipMapHolder.height;
+			var holderWidth:number = this._mipMapHolder.width;
+			var holderHeight:number = this._mipMapHolder.height;
 			
-			if (--_mipMapUses[holderWidth][holderHeight] == 0) {
-				_mipMaps[holderWidth][holderHeight].dispose();
-				_mipMaps[holderWidth][holderHeight] = null;
+			if (--BitmapTexture._mipMapUses[holderWidth][holderHeight] == 0)
+            {
+
+                BitmapTexture._mipMaps[holderWidth][holderHeight].dispose();
+                BitmapTexture._mipMaps[holderWidth][holderHeight] = null;
+
 			}
 		}
 		
@@ -112,8 +144,14 @@ module away.textures
 		{
 			super.dispose();
 			
-			if (_mipMapHolder)
-				freeMipMapHolder();
+			if (this._mipMapHolder)
+            {
+
+                this.freeMipMapHolder();
+            }
+
 		}
+
 	}
+
 }
