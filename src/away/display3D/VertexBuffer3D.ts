@@ -22,7 +22,7 @@ module away.display3D
 			this._data32PerVertex = data32PerVertex;
 		}
 		
-		public upload( vertices:number[], startVertex:number, numVertices:number )
+		public uploadFromArray( vertices:number[], startVertex:number, numVertices:number )
 		{
 			GL.bindBuffer( GL.ARRAY_BUFFER, this._buffer );
 			console.log( "** WARNING upload not fully implemented, startVertex & numVertices not considered." );
