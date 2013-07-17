@@ -40,14 +40,6 @@ module away.managers
 
             }
 
-            if ( Stage3DManager._instances == null )
-            {
-
-                Stage3DManager._instances = new Array<Stage3DManagerInstanceData>();
-
-            }
-
-
 			this._stage = stage;
 			
 			if (!Stage3DManager._stageProxies)
@@ -67,7 +59,7 @@ module away.managers
 		public static getInstance(stage:away.display.Stage):away.managers.Stage3DManager
 		{
 
-            var stage3dManager : away.managers.Stage3DManager = this.Stage3DManagerByStageRef( stage );
+            var stage3dManager : away.managers.Stage3DManager = Stage3DManager.getStage3DManagerByStageRef( stage );
 
             if ( stage3dManager == null)
             {
@@ -92,8 +84,15 @@ module away.managers
          * @returns {  away.managers.Stage3DManager }
          * @constructor
          */
-        private Stage3DManagerByStageRef( stage:away.display.Stage ) : away.managers.Stage3DManager
+        private static getStage3DManagerByStageRef( stage:away.display.Stage ) : away.managers.Stage3DManager
         {
+
+            if ( Stage3DManager._instances == null )
+            {
+
+                Stage3DManager._instances = new Array<Stage3DManagerInstanceData>();
+
+            }
 
             var l : number = Stage3DManager._instances.length;
             var s : Stage3DManagerInstanceData;
@@ -125,9 +124,12 @@ module away.managers
 		 */
 		public getStage3DProxy(index:number, forceSoftware:boolean = false, profile:string = "baseline"):away.managers.Stage3DProxy
 		{
-			if (!Stage3DManager._stageProxies[index]) {
+			if (!Stage3DManager._stageProxies[index])
+            {
+
                 Stage3DManager._numStageProxies++;
                 Stage3DManager._stageProxies[index] = new away.managers.Stage3DProxy(index, this._stage.stage3Ds[index], this, forceSoftware, profile);
+
 			}
 			
 			return Stage3DManager._stageProxies[index];
@@ -164,6 +166,7 @@ module away.managers
                     this.getStage3DProxy(i, forceSoftware, profile);
 
                     throw new away.errors.PartialImplementationError( 'Stage.stageWidth , Stage.stageHeight ');
+
                     //Stage3DManager._stageProxies[i].width = this._stage.stageWidth;
                     //Stage3DManager._stageProxies[i].height = this._stage.stageHeight;
 
