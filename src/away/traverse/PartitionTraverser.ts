@@ -34,12 +34,12 @@ module away.traverse
 			throw new away.errors.AbstractMethodError();
 		}
 		
-		/*
-		public applyUnknownLight(light:LightBase)
+		public applyUnknownLight( light:away.lights.LightBase )
 		{
 			throw new away.errors.AbstractMethodError();
 		}
 		
+		/*
 		public applyDirectionalLight(light:DirectionalLight)
 		{
 			throw new away.errors.AbstractMethodError();

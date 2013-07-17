@@ -2,6 +2,7 @@
 ///<reference path="../def/js.d.ts"/>
 ///<reference path="events/Event.ts" />
 ///<reference path="events/EventDispatcher.ts" />
+///<reference path="events/LightEvent.ts" />
 ///<reference path="library/assets/IAsset.ts" />
 ///<reference path="events/AssetEvent.ts" />
 ///<reference path="library/assets/NamedAssetBase.ts" />
@@ -60,6 +61,7 @@
 ///<reference path="pick/PickingCollisionVO.ts" />
 ///<reference path="partition/EntityNode.ts" />
 ///<reference path="partition/CameraNode.ts" />
+///<reference path="partition/LightNode.ts" />
 ///<reference path="errors/PartialImplementationError.ts" />
 ///<reference path="library/assets/AssetType.ts" />
 ///<reference path="base/IMaterialOwner.ts" />
@@ -133,3 +135,4 @@
 ///<reference path="base/SubGeometry.ts"/>
 ///<reference path="controllers/ControllerBase.ts"/>
 ///<reference path="controllers/LookAtController.ts"/>
+///<reference path="lights/LightBase.ts"/>
