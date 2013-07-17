@@ -14,7 +14,7 @@ module away.utils
         public static throwPIR( clss : string , fnc : string , msg : string )
         {
 
-            Dev.log( clss , fnc , msg );
+            Dev.log( 'PartialImplementationError '  + clss , fnc , msg );
 
             if ( Dev.THROW_ERROR )
             {
