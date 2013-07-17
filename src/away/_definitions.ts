@@ -46,6 +46,7 @@
 ///<reference path="cameras/lenses/OrthographicLens.ts" />
 ///<reference path="cameras/lenses/OrthographicOffCenterLens.ts" />
 ///<reference path="cameras/lenses/PerspectiveOffCenterLens.ts" />
+///<reference path="cameras/lenses/ObliqueNearPlaneLens.ts" />
 ///<reference path="events/CameraEvent.ts" />
 ///<reference path="bounds/NullBounds.ts" />
 ///<reference path="containers/ObjectContainer3D.ts" />
