@@ -1,28 +1,9 @@
-//<reference path="../src/away/events/Event.ts" />
-//<reference path="../src/away/events/EventDispatcher.ts" />
-//<reference path="../src/away/events/IOErrorEvent.ts" />
-//<reference path="../src/away/events/HTTPStatusEvent.ts" />
-//<reference path="../src/away/net/URLLoader.ts" />
-//<reference path="../src/away/net/URLRequest.ts" />
-//<reference path="../src/away/net/URLVariables.ts" />
-//<reference path="../src/away/net/URLRequestMethod.ts" />
-///<reference path="../../../src/away/library/assets/IAsset.ts"/>
-///<reference path="../src/away/loaders/misc/SingleFileLoader.ts"/>
-///<reference path="../src/away/loaders/misc/AssetLoaderContext.ts"/>
-///<reference path="../src/away/loaders/parsers/ParserBase.ts"/>
-///<reference path="../src/away/loaders/parsers/ParserDataFormat.ts"/>
-///<reference path="../src/away/loaders/misc/SingleFileImageLoader.ts"/>
-///<reference path="../src/away/loaders/misc/SingleFileURLLoader.ts"/>
-///<reference path="../src/away/textures/TextureProxyBase.ts"/>
-///<reference path="../src/away/display3D/Context3D.ts"/>
-///<reference path="../src/away/display/Stage3D.ts"/>
-
+///<reference path="../../../src/away/_definitions.ts" />
 //------------------------------------------------------------------------------------------------
 // Web / PHP Storm arguments string
 //------------------------------------------------------------------------------------------------
-// --sourcemap $ProjectFileDir$/tests/SimpleLoaderTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/SimpleLoaderTest.js
+// --sourcemap $ProjectFileDir$/tests/away/loaders/SimpleLoaderTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/away/loaders/SimpleLoaderTest.js
 //------------------------------------------------------------------------------------------------
-
 
 module tests {
 
@@ -55,7 +36,7 @@ module tests {
             // Simple Loader - instantiated to validate against compiler - needs test implementation ( and a parser )
             //------------------------------------------------------------------------------------------
 
-            var urlRequest : away.net.URLRequest = new away.net.URLRequest( 'URLLoaderTestData/2.png' );
+            var urlRequest : away.net.URLRequest = new away.net.URLRequest( '../../assets/2.png' );
 
             this.simpleLoader = new away.loaders.SingleFileLoader( 1 );
             this.simpleLoader.load( urlRequest );
@@ -151,16 +132,18 @@ module tests {
         public get assetType( ) : string { return this._assetType;}
         public get assetFullPath( ) : Array { return this._assetFullPath;}
         public assetPathEquals(name : string, ns : string) : boolean{ return true; }
-        public resetAssetPath(name : string, ns : string , overrideOriginal : boolean ) : void{}
+        public resetAssetPath(name : string, ns : string , overrideOriginal ? : boolean ) : void{}
         public dispose() : void{}
 
     }
 
 }
-
+var GL = null;//: WebGLRenderingContext;
 window.onload = function ()
 {
 
+    var canvas : HTMLCanvasElement = document.createElement('canvas');
+    GL = canvas.getContext("experimental-webgl");
     var test = new tests.SimpleLoaderTest();
 
 }

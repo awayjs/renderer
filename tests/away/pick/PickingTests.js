@@ -18929,20 +18929,43 @@ var away;
 //------------------------------------------------------------------------------------------------
 // Web / PHP Storm arguments string
 //------------------------------------------------------------------------------------------------
-// --sourcemap $ProjectFileDir$/tests/away/utils/IDUtilTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/away/utils/IDUtilTest.js
+// --sourcemap $ProjectFileDir$/tests/away/pick/PickingTests.ts --target ES5 --comments --out $ProjectFileDir$/tests/away/pick/PickingTests.js
 //------------------------------------------------------------------------------------------------
-var IDUtilTest = (function () {
-    function IDUtilTest() {
-        console.log(away.library.IDUtil.createUID());
-    }
-    return IDUtilTest;
-})();
+var tests;
+(function (tests) {
+    var PickingTests = (function () {
+        function PickingTests() {
+            away.pick.PickingColliderType.AS3_BEST_HIT;
+
+            this.entity = new away.entities.Entity();
+            this.entity.x = 10;
+            this.entity.y = 10;
+            this.entity.z = 10;
+
+            this.entity.getIgnoreTransform();
+
+            this.pickCOllVo = new away.pick.PickingCollisionVO(this.entity);
+            this.pickCBase = new away.pick.PickingColliderBase();
+            this.as3PickCollider = new away.pick.AS3PickingCollider();
+
+            var arr = new Array(10);
+            arr.length = 5;
+
+            console.log(arr);
+        }
+        return PickingTests;
+    })();
+    tests.PickingTests = PickingTests;
+})(tests || (tests = {}));
 
 var GL = null;
+
 var test;
+
 window.onload = function () {
+    test = new tests.PickingTests();
+
     var canvas = document.createElement('canvas');
     GL = canvas.getContext("experimental-webgl");
-    test = new IDUtilTest();
 };
-//@ sourceMappingURL=IDUtilTest.js.map
+//@ sourceMappingURL=PickingTests.js.map

@@ -1,12 +1,9 @@
-//<reference path="../src/away/utils/Timer.ts" />
-//<reference path="../src/away/utils/getTimer.ts" />
-///<reference path="../../../src/away/utils/RequestAnimationFrame.ts" />
-//<reference path="../src/away/events/TimerEvent.ts" />
+///<reference path="../../../src/away/_definitions.ts" />
 
 //------------------------------------------------------------------------------------------------
 // Web / PHP Storm arguments string
 //------------------------------------------------------------------------------------------------
-// --sourcemap $ProjectFileDir$/tests/RequestAnimationFrameTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/RequestAnimationFrameTest.js
+// --sourcemap $ProjectFileDir$/tests/away/utils/RequestAnimationFrameTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/away/utils/RequestAnimationFrameTest.js
 //------------------------------------------------------------------------------------------------
 
 class RequestAnimationFrameTest
@@ -55,9 +52,15 @@ class RequestAnimationFrameTest
 
 }
 
+
+
+var GL = null;//: WebGLRenderingContext;
+
 window.onload = function ()
 {
 
+    var canvas : HTMLCanvasElement = document.createElement('canvas');
+    GL = canvas.getContext("experimental-webgl");
     var test = new RequestAnimationFrameTest();
 
 

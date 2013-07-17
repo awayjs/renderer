@@ -1,17 +1,15 @@
-///<reference path="../../../src/away/entities/Entity.ts"/>
+///<reference path="../../../src/away/_definitions.ts" />
 
 //------------------------------------------------------------------------------------------------
 // Web / PHP Storm arguments string
 //------------------------------------------------------------------------------------------------
-// --sourcemap $ProjectFileDir$/tests/EntityTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/EntityTest.js
+// --sourcemap $ProjectFileDir$/tests/away/entities/EntityTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/away/entities/EntityTest.js
 //------------------------------------------------------------------------------------------------
-
 
 module tests {
 
     export class EntityTest //extends away.events.EventDispatcher
     {
-
 
         private entity : away.entities.Entity;
 

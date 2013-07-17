@@ -1,13 +1,9 @@
-///<reference path="../../../src/away/textures/HTMLImageElementTexture.ts" />
-///<reference path="../src/away/net/IMGLoader.ts" />
-///<reference path="../src/away/materials/utils/MipmapGenerator.ts" />
-///<reference path="../src/away/display3D/Texture.ts" />
-///<reference path="../src/away/display3D/TextureBase.ts" />
+///<reference path="../../../src/away/_definitions.ts" />
 
 //------------------------------------------------------------------------------------------------
 // Web / PHP Storm arguments string
 //------------------------------------------------------------------------------------------------
-// --sourcemap $ProjectFileDir$/tests/HTMLImageElementTextureTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/HTMLImageElementTextureTest.js
+// --sourcemap $ProjectFileDir$/tests/away/textures/HTMLImageElementTextureTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/away/textures/HTMLImageElementTextureTest.js
 //------------------------------------------------------------------------------------------------
 
 class HTMLImageElementTextureTest
@@ -23,7 +19,7 @@ class HTMLImageElementTextureTest
         //---------------------------------------
         // Load a PNG
 
-        var mipUrlRequest = new away.net.URLRequest( 'URLLoaderTestData/1024x1024.png');
+        var mipUrlRequest = new away.net.URLRequest( '../../assets/1024x1024.png');
         this.mipLoader  = new away.net.IMGLoader();
         this.mipLoader.load( mipUrlRequest );
         this.mipLoader.addEventListener( away.events.Event.COMPLETE , this.mipImgLoaded , this );
@@ -44,10 +40,13 @@ class HTMLImageElementTextureTest
 
 }
 
+var GL = null;//: WebGLRenderingContext;
 var test: HTMLImageElementTextureTest;
 window.onload = function ()
 {
 
+    var canvas : HTMLCanvasElement = document.createElement('canvas');
+    GL = canvas.getContext("experimental-webgl");
      test = new HTMLImageElementTextureTest();
 
 

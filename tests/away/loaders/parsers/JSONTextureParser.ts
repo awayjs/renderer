@@ -1,11 +1,4 @@
-///<reference path="../../../../src/away/loaders/parsers/ParserBase.ts" />
-///<reference path="../../src/away/loaders/parsers/ParserDataFormat.ts" />
-///<reference path="../../src/away/loaders/parsers/ParserLoaderType.ts" />
-///<reference path="../../src/away/loaders/misc/ResourceDependency.ts" />
-///<reference path="../../src/away/net/IMGLoader.ts" />
-///<reference path="../../src/away/textures/HTMLImageElementTexture.ts" />
-///<reference path="../../src/away/textures/Texture2DBase.ts" />
-///<reference path="../../src/away/utils/TextureUtils.ts" />
+///<reference path="../../../../src/away/_definitions.ts" />
 
 module loaders
 {

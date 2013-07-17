@@ -1,14 +1,9 @@
-///<reference path="../../../src/away/utils/Timer.ts" />
-///<reference path="../src/away/utils/getTimer.ts" />
-///<reference path="../src/away/events/TimerEvent.ts" />
-///<reference path="../src/away/events/Event.ts" />
-///<reference path="../src/away/events/IOErrorEvent.ts" />
-///<reference path="../src/away/net/IMGLoader.ts" />
+///<reference path="../../../src/away/_definitions.ts" />
 
 //------------------------------------------------------------------------------------------------
 // Web / PHP Storm arguments string
 //------------------------------------------------------------------------------------------------
-// --sourcemap $ProjectFileDir$/tests/IMGLoaderTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/IMGLoaderTest.js
+// --sourcemap $ProjectFileDir$/tests/away/loaders/IMGLoaderTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/away/loaders/IMGLoaderTest.js
 //------------------------------------------------------------------------------------------------
 
 class IMGLoaderTest
@@ -26,7 +21,7 @@ class IMGLoaderTest
         // load a png
         //-----------------------------------------------------------------------------------------------
 
-        var pngURLrq            = new away.net.URLRequest( 'URLLoaderTestData/2.png');
+        var pngURLrq            = new away.net.URLRequest( '../../assets/2.png');
 
         this.pngLoader          = new away.net.IMGLoader();
         this.pngLoader.addEventListener( away.events.Event.COMPLETE , this.pngLoaderComplete , this );
@@ -37,7 +32,7 @@ class IMGLoaderTest
         // Load a jpg
         //-----------------------------------------------------------------------------------------------
 
-        var jpgURLrq            = new away.net.URLRequest( 'URLLoaderTestData/1.jpg');
+        var jpgURLrq            = new away.net.URLRequest( '../../assets/1.jpg');
 
         this.jpgLoader          = new away.net.IMGLoader();
         this.jpgLoader.crossOrigin = 'anonymous';
@@ -49,7 +44,7 @@ class IMGLoaderTest
         // Load file of wrong format
         //-----------------------------------------------------------------------------------------------
 
-        var notURLrq            = new away.net.URLRequest( 'URLLoaderTestData/data.txt');
+        var notURLrq            = new away.net.URLRequest( '../../assets/data.txt');
 
         this.noAnImageLoader    = new away.net.IMGLoader();
         this.noAnImageLoader.addEventListener( away.events.Event.COMPLETE , this.noAnImageLoaderComplete , this );
@@ -60,7 +55,7 @@ class IMGLoaderTest
         // Load image that does not exist
         //-----------------------------------------------------------------------------------------------
 
-        var wrongURLrq            = new away.net.URLRequest( 'URLLoaderTestData/iDontExist.png');
+        var wrongURLrq            = new away.net.URLRequest( '../../assets/iDontExist.png');
 
         this.wrongURLLoader     = new away.net.IMGLoader();
         this.wrongURLLoader.addEventListener( away.events.Event.COMPLETE , this.wrongURLLoaderComplete , this );
@@ -130,10 +125,12 @@ class IMGLoaderTest
 
 
 }
-
+var GL = null;//: WebGLRenderingContext;
 window.onload = function ()
 {
 
+    var canvas : HTMLCanvasElement = document.createElement('canvas');
+    GL = canvas.getContext("experimental-webgl");
     var test = new IMGLoaderTest();
 
 }

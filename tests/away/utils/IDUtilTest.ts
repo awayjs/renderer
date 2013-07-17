@@ -1,9 +1,9 @@
-///<reference path="../../../src/away/library/utils/IDUtil.ts" />
+///<reference path="../../../src/away/_definitions.ts" />
 
 //------------------------------------------------------------------------------------------------
 // Web / PHP Storm arguments string
 //------------------------------------------------------------------------------------------------
-// --sourcemap $ProjectFileDir$/tests/IDUtilTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/IDUtilTest.js
+// --sourcemap $ProjectFileDir$/tests/away/utils/IDUtilTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/away/utils/IDUtilTest.js
 //------------------------------------------------------------------------------------------------
 
 class IDUtilTest
@@ -18,10 +18,16 @@ class IDUtilTest
 
 }
 
+var GL = null;//: WebGLRenderingContext;
 var test: IDUtilTest;
 window.onload = function ()
 {
 
+    var canvas : HTMLCanvasElement = document.createElement('canvas');
+    GL = canvas.getContext("experimental-webgl");
     test = new IDUtilTest();
 
 }
+
+
+

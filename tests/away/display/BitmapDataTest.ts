@@ -1,10 +1,9 @@
-///<reference path="../../../src/away/display/BitmapData.ts" />
-///<reference path="../src/away/net/IMGLoader.ts" />
+///<reference path="../../../src/away/_definitions.ts" />
 
 //------------------------------------------------------------------------------------------------
 // Web / PHP Storm arguments string
 //------------------------------------------------------------------------------------------------
-// --sourcemap $ProjectFileDir$/tests/BitmapDataTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/BitmapDataTest.js
+// --sourcemap $ProjectFileDir$/tests/away/display/BitmapDataTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/away/display/BitmapDataTest.js
 //------------------------------------------------------------------------------------------------
 
 class BitmapDataTest
@@ -21,7 +20,7 @@ class BitmapDataTest
         //---------------------------------------
         // Load a PNG
 
-        this.urlRequest = new away.net.URLRequest( 'URLLoaderTestData/256x256.png');
+        this.urlRequest = new away.net.URLRequest( '../../assets/256x256.png');
         this.imgLoader  = new away.net.IMGLoader();
         this.imgLoader.load( this.urlRequest );
         this.imgLoader.addEventListener( away.events.Event.COMPLETE , this.imgLoaded , this );
@@ -172,7 +171,6 @@ window.onload = function ()
 {
 
     var test = new BitmapDataTest();
-
 
 }
 

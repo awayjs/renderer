@@ -1,14 +1,9 @@
-///<reference path="../../../src/away/library/naming/ConflictStrategyBase.ts" />
-///<reference path="../src/away/library/naming/ConflictStrategy.ts" />
-///<reference path="../src/away/library/naming/ErrorConflictStrategy.ts" />
-///<reference path="../src/away/library/naming/NumSuffixConflictStrategy.ts" />
-///<reference path="../src/away/library/naming/IgnoreConflictStrategy.ts" />
-///<reference path="../src/away/library/naming/ConflictPrecedence.ts" />
+///<reference path="../../../src/away/_definitions.ts" />
 
 //------------------------------------------------------------------------------------------------
 // Web / PHP Storm arguments string
 //------------------------------------------------------------------------------------------------
-// --sourcemap $ProjectFileDir$/tests/NamingTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/NamingTest.js
+// --sourcemap $ProjectFileDir$/tests/away/library/NamingTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/away/library/NamingTest.js
 //------------------------------------------------------------------------------------------------
 
 class NamingTest
@@ -32,9 +27,13 @@ class NamingTest
 
 }
 
+var GL = null;//: WebGLRenderingContext;
 var test: NamingTest;
 window.onload = function ()
 {
+
+    var canvas : HTMLCanvasElement = document.createElement('canvas');
+    GL = canvas.getContext("experimental-webgl");
 
     test = new NamingTest();
 

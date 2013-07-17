@@ -3,24 +3,22 @@
 //------------------------------------------------------------------------------------------------
 // Web / PHP Storm arguments string
 //------------------------------------------------------------------------------------------------
-// --sourcemap $ProjectFileDir$/tests/GeomTests.ts --target ES5 --comments --out $ProjectFileDir$/tests/GeomTests.js
+// --sourcemap $ProjectFileDir$/tests/away/base/GeomTests.ts --target ES5 --comments --out $ProjectFileDir$/tests/away/base/GeomTests.js
 //------------------------------------------------------------------------------------------------
 
 class GeomTests
 {
 
-    private geomBase    : away.base.SubGeometryBase = new away.base.SubGeometryBase();
-    private geom        : away.base.Geometry = new away.base.Geometry();
-    private sgeom       : away.base.SubGeometry= new away.base.SubGeometry();
-    private cgeom       : away.base.CompactSubGeometry= new away.base.CompactSubGeometry();
+    private geomBase    : away.base.SubGeometryBase     = new away.base.SubGeometryBase();
+    private geom        : away.base.Geometry            = new away.base.Geometry();
+    private sgeom       : away.base.SubGeometry         = new away.base.SubGeometry();
+    private cgeom       : away.base.CompactSubGeometry  = new away.base.CompactSubGeometry();
 
     constructor()
     {
 
         console.log( 'geomBase'     , this.geomBase);
         console.log( 'geom'         , this.geom);
-
-
         console.log( 'sgeom'        , this.sgeom);
         console.log( 'cgeom'        , this.cgeom);
 

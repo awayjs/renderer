@@ -1,20 +1,9 @@
-/**
- * ...
- * @author Gary Paluk - http://www.plugin.io / Karim Beyrouti - http://kurst.co.uk
- */
-
-///<reference path="../../../src/away/events/Event.ts" />
-///<reference path="../src/away/events/IOErrorEvent.ts" />
-///<reference path="../src/away/events/HTTPStatusEvent.ts" />
-///<reference path="../src/away/net/URLLoader.ts" />
-///<reference path="../src/away/net/URLRequest.ts" />
-///<reference path="../src/away/net/URLVariables.ts" />
-///<reference path="../src/away/net/URLRequestMethod.ts" />
+///<reference path="../../../src/away/_definitions.ts" />
 
 //------------------------------------------------------------------------------------------------
 // Web / PHP Storm arguments string
 //------------------------------------------------------------------------------------------------
-// --sourcemap $ProjectFileDir$/tests/URLLoaderTests.ts --target ES5 --comments --out $ProjectFileDir$/tests/URLLoaderTests.js
+// --sourcemap $ProjectFileDir$/tests/away/net/URLLoaderTests.ts --target ES5 --comments --out $ProjectFileDir$/tests/away/net/URLLoaderTests.js
 //------------------------------------------------------------------------------------------------
 
 class LoaderTest //extends away.events.EventDispatcher
@@ -41,7 +30,7 @@ class LoaderTest //extends away.events.EventDispatcher
         var urlStr : string     = 'fname=karim&lname=' + Math.floor( Math.random() * 100 );
         var urlVars             = new away.net.URLVariables( urlStr );
 
-        var req                 = new away.net.URLRequest( 'URLLoaderTestData/saveData.php' );
+        var req                 = new away.net.URLRequest( '../../assets/saveData.php' );
             req.method          = away.net.URLRequestMethod.POST;
             req.data            = urlVars;
 
@@ -53,7 +42,7 @@ class LoaderTest //extends away.events.EventDispatcher
         // GET CSV File
         //---------------------------------------------------------------------------------------------------------------------------------------------------------
 
-        var csrReq = new away.net.URLRequest( 'URLLoaderTestData/airports.csv' );
+        var csrReq = new away.net.URLRequest( '../../assets/airports.csv' );
 
         this.urlLoaderGetCSV                    = new away.net.URLLoader();
         this.urlLoaderGetCSV.dataFormat         = away.net.URLLoaderDataFormat.TEXT;
@@ -66,7 +55,7 @@ class LoaderTest //extends away.events.EventDispatcher
         // ERROR test - load a non-existing object
         //---------------------------------------------------------------------------------------------------------------------------------------------------------
 
-        var errorReq = new away.net.URLRequest( 'URLLoaderTestData/generatingError' );
+        var errorReq = new away.net.URLRequest( '../../assets/generatingError' );
 
         this.urlLoaderErrorTest                    = new away.net.URLLoader();
         this.urlLoaderErrorTest.dataFormat         = away.net.URLLoaderDataFormat.TEXT;
@@ -79,7 +68,7 @@ class LoaderTest //extends away.events.EventDispatcher
         // GET URL Vars - get URL variables
         //---------------------------------------------------------------------------------------------------------------------------------------------------------
 
-        var csrReq = new away.net.URLRequest( 'URLLoaderTestData/getUrlVars.php' );
+        var csrReq = new away.net.URLRequest( '../../assets/getUrlVars.php' );
 
         this.urlLoaderGetURLVars                    = new away.net.URLLoader();
         this.urlLoaderGetURLVars.dataFormat         = away.net.URLLoaderDataFormat.VARIABLES;
@@ -91,7 +80,7 @@ class LoaderTest //extends away.events.EventDispatcher
         // LOAD Binary file
         //---------------------------------------------------------------------------------------------------------------------------------------------------------
 
-        var binReq = new away.net.URLRequest( 'URLLoaderTestData/suzanne.awd' );
+        var binReq = new away.net.URLRequest( '../../assets/suzanne.awd' );
 
         this.urlLoaderBinary                    = new away.net.URLLoader(  );
         this.urlLoaderBinary.dataFormat         = away.net.URLLoaderDataFormat.BINARY;
@@ -103,7 +92,7 @@ class LoaderTest //extends away.events.EventDispatcher
         // LOAD Blob file
         //---------------------------------------------------------------------------------------------------------------------------------------------------------
 
-        var blobReq = new away.net.URLRequest( 'URLLoaderTestData/2.png' );
+        var blobReq = new away.net.URLRequest( '../../assets/2.png' );
 
         this.urlLoaderBlob                    = new away.net.URLLoader(  );
         this.urlLoaderBlob.dataFormat         = away.net.URLLoaderDataFormat.BLOB;
@@ -114,7 +103,7 @@ class LoaderTest //extends away.events.EventDispatcher
         // ARRAY_BUFFER Test
         //---------------------------------------------------------------------------------------------------------------------------------------------------------
 
-        var arrBReq = new away.net.URLRequest( 'URLLoaderTestData/1.jpg' );
+        var arrBReq = new away.net.URLRequest( '../../assets/1.jpg' );
 
         this.urlLoaderArrb                    = new away.net.URLLoader(  );
         this.urlLoaderArrb.dataFormat         = away.net.URLLoaderDataFormat.ARRAY_BUFFER;
@@ -251,9 +240,12 @@ class LoaderTest //extends away.events.EventDispatcher
 
 }
 
+var GL = null;//: WebGLRenderingContext;
 window.onload = function ()
 {
 
+    var canvas : HTMLCanvasElement = document.createElement('canvas');
+    GL = canvas.getContext("experimental-webgl");
     var test = new LoaderTest();
 
 }

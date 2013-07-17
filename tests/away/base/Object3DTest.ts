@@ -1,14 +1,9 @@
-///<reference path="../../../src/away/base/Object3D.ts" />
-///<reference path="../src/away/math/MathConsts.ts" />
-///<reference path="../src/away/math/Quaternion.ts" />
-///<reference path="../src/away/math/Matrix3DUtils.ts" />
-///<reference path="../src/away/math/Plane3D.ts" />
-///<reference path="../src/away/geom/Matrix3D.ts" />
+///<reference path="../../../src/away/_definitions.ts" />
 
 //------------------------------------------------------------------------------------------------
 // Web / PHP Storm arguments string
 //------------------------------------------------------------------------------------------------
-// --sourcemap $ProjectFileDir$/tests/Object3DTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/Object3DTest.js
+// --sourcemap $ProjectFileDir$/tests/away/base/Object3DTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/away/base/Object3DTest.js
 //------------------------------------------------------------------------------------------------
 
 class Object3DTest
@@ -37,7 +32,6 @@ class Object3DTest
         away.math.Matrix3DUtils;
 
     }
-
 
 }
 

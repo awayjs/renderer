@@ -1,14 +1,9 @@
 ///<reference path="../../../src/away/_definitions.ts" />
 
-///<reference path="../src/away/base/SubGeometryBase.ts"/>
-///<reference path="../src/away/base/Geometry.ts"/>
-///<reference path="../src/away/base/ISubGeometry.ts"/>
-///<reference path="../src/away/events/GeometryEvent.ts"/>
-
 //------------------------------------------------------------------------------------------------
 // Web / PHP Storm arguments string
 //------------------------------------------------------------------------------------------------
-// --sourcemap $ProjectFileDir$/tests/ManagersTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/ManagersTest.js
+// --sourcemap $ProjectFileDir$/tests/away/managers/ManagersTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/away/managers/ManagersTest.js
 //------------------------------------------------------------------------------------------------
 
 class ManagersTest
@@ -72,5 +67,3 @@ window.onload = function ()
     test = new ManagersTest();
 
 }
-
-

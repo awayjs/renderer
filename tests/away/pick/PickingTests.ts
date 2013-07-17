@@ -1,22 +1,9 @@
-///<reference path="../../../src/away/materials/MaterialBase.ts"/>
-///<reference path="../src/away/entities/Entity.ts"/>
-///<reference path="../src/away/pick/PickingCollisionVO.ts"/>
-///<reference path="../src/away/pick/PickingColliderBase.ts"/>
-///<reference path="../src/away/pick/IPicker.ts"/>
-///<reference path="../src/away/pick/PickingType.ts"/>
-///<reference path="../src/away/pick/AS3PickingCollider.ts"/>
-///<reference path="../src/away/pick/PickingColliderType.ts"/>
-///<reference path="../src/away/pick/RaycastPicker.ts"/>
-///<reference path="../src/away/pick/ShaderPicker.ts"/>
-///<reference path="../src/away/base/IRenderable.ts"/>
-///<reference path="../src/away/base/IMaterialOwner.ts"/>
-///<reference path="../src/away/managers/Mouse3DManager.ts"/>
-
+///<reference path="../../../src/away/_definitions.ts" />
 
 //------------------------------------------------------------------------------------------------
 // Web / PHP Storm arguments string
 //------------------------------------------------------------------------------------------------
-// --sourcemap $ProjectFileDir$/tests/PickingTests.ts --target ES5 --comments --out $ProjectFileDir$/tests/PickingTests.js
+// --sourcemap $ProjectFileDir$/tests/away/pick/PickingTests.ts --target ES5 --comments --out $ProjectFileDir$/tests/away/pick/PickingTests.js
 //------------------------------------------------------------------------------------------------
 
 
@@ -75,4 +62,5 @@ window.onload = function ()
     GL = canvas.getContext("experimental-webgl");
 
 }
+
 

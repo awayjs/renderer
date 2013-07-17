@@ -1,14 +1,9 @@
-///<reference path="../../../src/away/display/BitmapData.ts" />
-///<reference path="../src/away/net/IMGLoader.ts" />
-///<reference path="../src/away/materials/utils/MipmapGenerator.ts" />
-///<reference path="../src/away/display3D/TextureBase.ts" /
-///<reference path="../src/away/textures/HTMLImageElementTexture.ts" />
-///<reference path="../src/away/utils/TextureUtils.ts" />
+///<reference path="../../../src/away/_definitions.ts" />
 
 //------------------------------------------------------------------------------------------------
 // Web / PHP Storm arguments string
 //------------------------------------------------------------------------------------------------
-// --sourcemap $ProjectFileDir$/tests/MipMapTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/MipMapTest.js
+// --sourcemap $ProjectFileDir$/tests/away/utils/MipMapTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/away/utils/MipMapTest.js
 //------------------------------------------------------------------------------------------------
 
 class MipMapTest
@@ -28,7 +23,7 @@ class MipMapTest
         //---------------------------------------
         // Load a PNG
 
-        var mipUrlRequest = new away.net.URLRequest( 'URLLoaderTestData/1024x1024.png');
+        var mipUrlRequest = new away.net.URLRequest( '../../assets/1024x1024.png');
         this.mipLoader  = new away.net.IMGLoader();
         this.mipLoader.load( mipUrlRequest );
         this.mipLoader.addEventListener( away.events.Event.COMPLETE , this.mipImgLoaded , this );
@@ -118,9 +113,12 @@ class MipMapTest
 
 }
 
+var GL = null;//: WebGLRenderingContext;
 window.onload = function ()
 {
 
+    var canvas : HTMLCanvasElement = document.createElement('canvas');
+    GL = canvas.getContext("experimental-webgl");
     var test = new MipMapTest();
 
 

@@ -184,6 +184,30 @@ var __extends = this.__extends || function (d, b) {
 };
 var away;
 (function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../_definitions.ts" />
+    (function (events) {
+        var LightEvent = (function (_super) {
+            __extends(LightEvent, _super);
+            function LightEvent(type) {
+                _super.call(this, type);
+            }
+            //@override
+            LightEvent.prototype.clone = function () {
+                return new away.events.LightEvent(this.type);
+            };
+            LightEvent.CASTS_SHADOW_CHANGE = "castsShadowChange";
+            return LightEvent;
+        })(away.events.Event);
+        events.LightEvent = LightEvent;
+    })(away.events || (away.events = {}));
+    var events = away.events;
+})(away || (away = {}));
+var away;
+(function (away) {
     ///<reference path="../_definitions.ts"/>
     (function (events) {
         //import away3d.library.assets.IAsset;
@@ -2144,9 +2168,6 @@ var away;
             */
             function Object3D() {
                 _super.call(this);
-                /** @private */
-                // TODO: implement
-                //public _iController:ControllerBase; // Arcane
                 this._smallestNumber = 0.0000000000000000000001;
                 this._transformDirty = true;
                 //*/
@@ -5170,12 +5191,11 @@ var away;
                 throw new away.errors.AbstractMethodError();
             };
 
+            PartitionTraverser.prototype.applyUnknownLight = function (light) {
+                throw new away.errors.AbstractMethodError();
+            };
+
             /*
-            public applyUnknownLight(light:LightBase)
-            {
-            throw new away.errors.AbstractMethodError();
-            }
-            
             public applyDirectionalLight(light:DirectionalLight)
             {
             throw new away.errors.AbstractMethodError();
@@ -5967,6 +5987,592 @@ var away;
             return PerspectiveLens;
         })(away.cameras.LensBase);
         cameras.PerspectiveLens = PerspectiveLens;
+    })(away.cameras || (away.cameras = {}));
+    var cameras = away.cameras;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../../_definitions.ts"/>
+    (function (cameras) {
+        var FreeMatrixLens = (function (_super) {
+            __extends(FreeMatrixLens, _super);
+            function FreeMatrixLens() {
+                _super.call(this);
+                this._pMatrix.copyFrom(new away.cameras.PerspectiveLens().matrix);
+            }
+            Object.defineProperty(FreeMatrixLens.prototype, "near", {
+                set: //@override
+                function (value) {
+                    this._pNear = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(FreeMatrixLens.prototype, "far", {
+                set: //@override
+                function (value) {
+                    this._pFar = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(FreeMatrixLens.prototype, "iAspectRatio", {
+                set: //@override
+                function (value) {
+                    this._pAspectRatio = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            //@override
+            FreeMatrixLens.prototype.clone = function () {
+                var clone = new away.cameras.FreeMatrixLens();
+                clone._pMatrix.copyFrom(this._pMatrix);
+                clone._pNear = this._pNear;
+                clone._pFar = this._pFar;
+                clone._pAspectRatio = this._pAspectRatio;
+                clone.pInvalidateMatrix();
+                return clone;
+            };
+
+            //@override
+            FreeMatrixLens.prototype.pUpdateMatrix = function () {
+                this._pMatrixInvalid = false;
+            };
+            return FreeMatrixLens;
+        })(away.cameras.LensBase);
+        cameras.FreeMatrixLens = FreeMatrixLens;
+    })(away.cameras || (away.cameras = {}));
+    var cameras = away.cameras;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../../_definitions.ts" />
+    (function (cameras) {
+        var OrthographicLens = (function (_super) {
+            __extends(OrthographicLens, _super);
+            function OrthographicLens(projectionHeight) {
+                if (typeof projectionHeight === "undefined") { projectionHeight = 500; }
+                _super.call(this);
+                this._projectionHeight = projectionHeight;
+            }
+            Object.defineProperty(OrthographicLens.prototype, "projectionHeight", {
+                get: function () {
+                    return this._projectionHeight;
+                },
+                set: function (value) {
+                    if (value == this._projectionHeight) {
+                        return;
+                    }
+                    this._projectionHeight = value;
+                    this.pInvalidateMatrix();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            //@override
+            OrthographicLens.prototype.unproject = function (nX, nY, sZ) {
+                var v = new away.geom.Vector3D(nX + this.matrix.rawData[12], -nY + this.matrix.rawData[13], sZ, 1.0);
+                v = this.unprojectionMatrix.transformVector(v);
+
+                //z is unaffected by transform
+                v.z = sZ;
+
+                return v;
+            };
+
+            //@override
+            OrthographicLens.prototype.clone = function () {
+                var clone = new away.cameras.OrthographicLens();
+                clone._pNear = this._pNear;
+                clone._pFar = this._pFar;
+                clone._pAspectRatio = this._pAspectRatio;
+                clone.projectionHeight = this._projectionHeight;
+                return clone;
+            };
+
+            //@override
+            OrthographicLens.prototype.pUpdateMatrix = function () {
+                var raw = [];
+                this._yMax = this._projectionHeight * .5;
+                this._xMax = this._yMax * this._pAspectRatio;
+
+                var left;
+                var right;
+                var top;
+                var bottom;
+
+                if (this._pScissorRect.x == 0 && this._pScissorRect.y == 0 && this._pScissorRect.width == this._pViewPort.width && this._pScissorRect.height == this._pViewPort.height) {
+                    // assume symmetric frustum
+                    left = -this._xMax;
+                    right = this._xMax;
+                    top = -this._yMax;
+                    bottom = this._yMax;
+
+                    raw[0] = 2 / (this._projectionHeight * this._pAspectRatio);
+                    raw[5] = 2 / this._projectionHeight;
+                    raw[10] = 1 / (this._pFar - this._pNear);
+                    raw[14] = this._pNear / (this._pNear - this._pFar);
+                    raw[1] = raw[2] = raw[3] = raw[4] = raw[6] = raw[7] = raw[8] = raw[9] = raw[11] = raw[12] = raw[13] = 0;
+                    raw[15] = 1;
+                } else {
+                    var xWidth = this._xMax * (this._pViewPort.width / this._pScissorRect.width);
+                    var yHgt = this._yMax * (this._pViewPort.height / this._pScissorRect.height);
+                    var center = this._xMax * (this._pScissorRect.x * 2 - this._pViewPort.width) / this._pScissorRect.width + this._xMax;
+                    var middle = -this._yMax * (this._pScissorRect.y * 2 - this._pViewPort.height) / this._pScissorRect.height - this._yMax;
+
+                    left = center - xWidth;
+                    right = center + xWidth;
+                    top = middle - yHgt;
+                    bottom = middle + yHgt;
+
+                    raw[0] = 2 * 1 / (right - left);
+                    raw[5] = -2 * 1 / (top - bottom);
+                    raw[10] = 1 / (this._pFar - this._pNear);
+
+                    raw[12] = (right + left) / (right - left);
+                    raw[13] = (bottom + top) / (bottom - top);
+                    raw[14] = this._pNear / (this.near - this.far);
+
+                    raw[1] = raw[2] = raw[3] = raw[4] = raw[6] = raw[7] = raw[8] = raw[9] = raw[11] = 0;
+                    raw[15] = 1;
+                }
+
+                this._pFrustumCorners[0] = this._pFrustumCorners[9] = this._pFrustumCorners[12] = this._pFrustumCorners[21] = left;
+                this._pFrustumCorners[3] = this._pFrustumCorners[6] = this._pFrustumCorners[15] = this._pFrustumCorners[18] = right;
+                this._pFrustumCorners[1] = this._pFrustumCorners[4] = this._pFrustumCorners[13] = this._pFrustumCorners[16] = top;
+                this._pFrustumCorners[7] = this._pFrustumCorners[10] = this._pFrustumCorners[19] = this._pFrustumCorners[22] = bottom;
+                this._pFrustumCorners[2] = this._pFrustumCorners[5] = this._pFrustumCorners[8] = this._pFrustumCorners[11] = this._pNear;
+                this._pFrustumCorners[14] = this._pFrustumCorners[17] = this._pFrustumCorners[20] = this._pFrustumCorners[23] = this._pFar;
+
+                this._pMatrix.copyRawDataFrom(raw);
+
+                this._pMatrixInvalid = false;
+            };
+            return OrthographicLens;
+        })(away.cameras.LensBase);
+        cameras.OrthographicLens = OrthographicLens;
+    })(away.cameras || (away.cameras = {}));
+    var cameras = away.cameras;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../../_definitions.ts" />
+    (function (cameras) {
+        var OrthographicOffCenterLens = (function (_super) {
+            __extends(OrthographicOffCenterLens, _super);
+            function OrthographicOffCenterLens(minX, maxX, minY, maxY) {
+                _super.call(this);
+                this._minX = minX;
+                this._maxX = maxX;
+                this._minY = minY;
+                this._maxY = maxY;
+            }
+            Object.defineProperty(OrthographicOffCenterLens.prototype, "minX", {
+                get: function () {
+                    return this._minX;
+                },
+                set: function (value) {
+                    this._minX = value;
+                    this.pInvalidateMatrix();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(OrthographicOffCenterLens.prototype, "maxX", {
+                get: function () {
+                    return this._maxX;
+                },
+                set: function (value) {
+                    this._maxX = value;
+                    this.pInvalidateMatrix();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(OrthographicOffCenterLens.prototype, "minY", {
+                get: function () {
+                    return this._minY;
+                },
+                set: function (value) {
+                    this._minY = value;
+                    this.pInvalidateMatrix();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(OrthographicOffCenterLens.prototype, "maxY", {
+                get: function () {
+                    return this._maxY;
+                },
+                set: function (value) {
+                    this._maxY = value;
+                    this.pInvalidateMatrix();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            //@override
+            OrthographicOffCenterLens.prototype.unproject = function (nX, nY, sZ) {
+                var v = new away.geom.Vector3D(nX, -nY, sZ, 1.0);
+                v = this.unprojectionMatrix.transformVector(v);
+
+                //z is unaffected by transform
+                v.z = sZ;
+
+                return v;
+            };
+
+            //@override
+            OrthographicOffCenterLens.prototype.clone = function () {
+                var clone = new away.cameras.OrthographicOffCenterLens(this._minX, this._maxX, this._minY, this._maxY);
+                clone._pNear = this._pNear;
+                clone._pFar = this._pFar;
+                clone._pAspectRatio = this._pAspectRatio;
+                return clone;
+            };
+
+            //@override
+            OrthographicOffCenterLens.prototype.pUpdateMatrix = function () {
+                var raw = [];
+                var w = 1 / (this._maxX - this._minX);
+                var h = 1 / (this._maxY - this._minY);
+                var d = 1 / (this._pFar - this._pNear);
+
+                raw[0] = 2 * w;
+                raw[5] = 2 * h;
+                raw[10] = d;
+                raw[12] = -(this._maxX + this._minX) * w;
+                raw[13] = -(this._maxY + this._minY) * h;
+                raw[14] = -this._pNear * d;
+                raw[15] = 1;
+                raw[1] = raw[2] = raw[3] = raw[4] = raw[6] = raw[7] = raw[8] = raw[9] = raw[11] = 0;
+                this._pMatrix.copyRawDataFrom(raw);
+
+                this._pFrustumCorners[0] = this._pFrustumCorners[9] = this._pFrustumCorners[12] = this._pFrustumCorners[21] = this._minX;
+                this._pFrustumCorners[3] = this._pFrustumCorners[6] = this._pFrustumCorners[15] = this._pFrustumCorners[18] = this._maxX;
+                this._pFrustumCorners[1] = this._pFrustumCorners[4] = this._pFrustumCorners[13] = this._pFrustumCorners[16] = this._minY;
+                this._pFrustumCorners[7] = this._pFrustumCorners[10] = this._pFrustumCorners[19] = this._pFrustumCorners[22] = this._maxY;
+                this._pFrustumCorners[2] = this._pFrustumCorners[5] = this._pFrustumCorners[8] = this._pFrustumCorners[11] = this._pNear;
+                this._pFrustumCorners[14] = this._pFrustumCorners[17] = this._pFrustumCorners[20] = this._pFrustumCorners[23] = this._pFar;
+
+                this._pMatrixInvalid = false;
+            };
+            return OrthographicOffCenterLens;
+        })(away.cameras.LensBase);
+        cameras.OrthographicOffCenterLens = OrthographicOffCenterLens;
+    })(away.cameras || (away.cameras = {}));
+    var cameras = away.cameras;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../../_definitions.ts" />
+    (function (cameras) {
+        var PerspectiveOffCenterLens = (function (_super) {
+            __extends(PerspectiveOffCenterLens, _super);
+            function PerspectiveOffCenterLens(minAngleX, maxAngleX, minAngleY, maxAngleY) {
+                if (typeof minAngleX === "undefined") { minAngleX = -40; }
+                if (typeof maxAngleX === "undefined") { maxAngleX = 40; }
+                if (typeof minAngleY === "undefined") { minAngleY = -40; }
+                if (typeof maxAngleY === "undefined") { maxAngleY = 40; }
+                _super.call(this);
+
+                this.minAngleX = minAngleX;
+                this.maxAngleX = maxAngleX;
+                this.minAngleY = minAngleY;
+                this.maxAngleY = maxAngleY;
+            }
+            Object.defineProperty(PerspectiveOffCenterLens.prototype, "minAngleX", {
+                get: function () {
+                    return this._minAngleX;
+                },
+                set: function (value) {
+                    this._minAngleX = value;
+                    this._tanMinX = Math.tan(this._minAngleX * Math.PI / 180);
+                    this.pInvalidateMatrix();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PerspectiveOffCenterLens.prototype, "maxAngleX", {
+                get: function () {
+                    return this._maxAngleX;
+                },
+                set: function (value) {
+                    this._maxAngleX = value;
+                    this._tanMaxX = Math.tan(this._maxAngleX * Math.PI / 180);
+                    this.pInvalidateMatrix();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PerspectiveOffCenterLens.prototype, "minAngleY", {
+                get: function () {
+                    return this._minAngleY;
+                },
+                set: function (value) {
+                    this._minAngleY = value;
+                    this._tanMinY = Math.tan(this._minAngleY * Math.PI / 180);
+                    this.pInvalidateMatrix();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PerspectiveOffCenterLens.prototype, "maxAngleY", {
+                get: function () {
+                    return this._maxAngleY;
+                },
+                set: function (value) {
+                    this._maxAngleY = value;
+                    this._tanMaxY = Math.tan(this._maxAngleY * Math.PI / 180);
+                    this.pInvalidateMatrix();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            //@override
+            PerspectiveOffCenterLens.prototype.unproject = function (nX, nY, sZ) {
+                var v = new away.geom.Vector3D(nX, -nY, sZ, 1.0);
+
+                v.x *= sZ;
+                v.y *= sZ;
+                v = this.unprojectionMatrix.transformVector(v);
+
+                //z is unaffected by transform
+                v.z = sZ;
+
+                return v;
+            };
+
+            //@override
+            PerspectiveOffCenterLens.prototype.clone = function () {
+                var clone = new away.cameras.PerspectiveOffCenterLens(this._minAngleX, this._maxAngleX, this._minAngleY, this._maxAngleY);
+                clone._pNear = this._pNear;
+                clone._pFar = this._pFar;
+                clone._pAspectRatio = this._pAspectRatio;
+                return clone;
+            };
+
+            //@override
+            PerspectiveOffCenterLens.prototype.pUpdateMatrix = function () {
+                var raw = [];
+
+                this._minLengthX = this._pNear * this._tanMinX;
+                this._maxLengthX = this._pNear * this._tanMaxX;
+                this._minLengthY = this._pNear * this._tanMinY;
+                this._maxLengthY = this._pNear * this._tanMaxY;
+
+                var minLengthFracX = -this._minLengthX / (this._maxLengthX - this._minLengthX);
+                var minLengthFracY = -this._minLengthY / (this._maxLengthY - this._minLengthY);
+
+                var left;
+                var right;
+                var top;
+                var bottom;
+
+                // assume scissored frustum
+                var center = -this._minLengthX * (this._pScissorRect.x + this._pScissorRect.width * minLengthFracX) / (this._pScissorRect.width * minLengthFracX);
+                var middle = this._minLengthY * (this._pScissorRect.y + this._pScissorRect.height * minLengthFracY) / (this._pScissorRect.height * minLengthFracY);
+
+                left = center - (this._maxLengthX - this._minLengthX) * (this._pViewPort.width / this._pScissorRect.width);
+                right = center;
+                top = middle;
+                bottom = middle + (this._maxLengthY - this._minLengthY) * (this._pViewPort.height / this._pScissorRect.height);
+
+                raw[0] = 2 * this._pNear / (right - left);
+                raw[5] = 2 * this._pNear / (bottom - top);
+                raw[8] = (right + left) / (right - left);
+                raw[9] = (bottom + top) / (bottom - top);
+                raw[10] = (this._pFar + this._pNear) / (this._pFar - this._pNear);
+                raw[11] = 1;
+                raw[1] = raw[2] = raw[3] = raw[4] = raw[6] = raw[7] = raw[12] = raw[13] = raw[15] = 0;
+                raw[14] = -2 * this._pFar * this._pNear / (this._pFar - this._pNear);
+
+                this._pMatrix.copyRawDataFrom(raw);
+
+                this._minLengthX = this._pFar * this._tanMinX;
+                this._maxLengthX = this._pFar * this._tanMaxX;
+                this._minLengthY = this._pFar * this._tanMinY;
+                this._maxLengthY = this._pFar * this._tanMaxY;
+
+                this._pFrustumCorners[0] = this._pFrustumCorners[9] = left;
+                this._pFrustumCorners[3] = this._pFrustumCorners[6] = right;
+                this._pFrustumCorners[1] = this._pFrustumCorners[4] = top;
+                this._pFrustumCorners[7] = this._pFrustumCorners[10] = bottom;
+
+                this._pFrustumCorners[12] = this._pFrustumCorners[21] = this._minLengthX;
+                this._pFrustumCorners[15] = this._pFrustumCorners[18] = this._maxLengthX;
+                this._pFrustumCorners[13] = this._pFrustumCorners[16] = this._minLengthY;
+                this._pFrustumCorners[19] = this._pFrustumCorners[22] = this._maxLengthY;
+
+                this._pFrustumCorners[2] = this._pFrustumCorners[5] = this._pFrustumCorners[8] = this._pFrustumCorners[11] = this._pNear;
+                this._pFrustumCorners[14] = this._pFrustumCorners[17] = this._pFrustumCorners[20] = this._pFrustumCorners[23] = this._pFar;
+
+                this._pMatrixInvalid = false;
+            };
+            return PerspectiveOffCenterLens;
+        })(away.cameras.LensBase);
+        cameras.PerspectiveOffCenterLens = PerspectiveOffCenterLens;
+    })(away.cameras || (away.cameras = {}));
+    var cameras = away.cameras;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../../_definitions.ts" />
+    (function (cameras) {
+        var ObliqueNearPlaneLens = (function (_super) {
+            __extends(ObliqueNearPlaneLens, _super);
+            function ObliqueNearPlaneLens(baseLens, plane) {
+                _super.call(this);
+                this.baseLens = baseLens;
+                this.plane = plane;
+            }
+            Object.defineProperty(ObliqueNearPlaneLens.prototype, "frustumCorners", {
+                get: //@override
+                function () {
+                    return this._baseLens.frustumCorners;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(ObliqueNearPlaneLens.prototype, "near", {
+                get: //@override
+                function () {
+                    return this._baseLens.near;
+                },
+                set: //@override
+                function (value) {
+                    this._baseLens.near = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(ObliqueNearPlaneLens.prototype, "far", {
+                get: //@override
+                function () {
+                    return this._baseLens.far;
+                },
+                set: //@override
+                function (value) {
+                    this._baseLens.far = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(ObliqueNearPlaneLens.prototype, "iAspectRatio", {
+                get: //@override
+                function () {
+                    return this._baseLens.iAspectRatio;
+                },
+                set: //@override
+                function (value) {
+                    this._baseLens.iAspectRatio = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(ObliqueNearPlaneLens.prototype, "plane", {
+                get: function () {
+                    return this._plane;
+                },
+                set: function (value) {
+                    this._plane = value;
+                    this.pInvalidateMatrix();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(ObliqueNearPlaneLens.prototype, "baseLens", {
+                set: function (value) {
+                    if (this._baseLens) {
+                        this._baseLens.removeEventListener(away.events.LensEvent.MATRIX_CHANGED, this.onLensMatrixChanged, this);
+                    }
+                    this._baseLens = value;
+
+                    if (this._baseLens) {
+                        this._baseLens.addEventListener(away.events.LensEvent.MATRIX_CHANGED, this.onLensMatrixChanged, this);
+                    }
+                    this.pInvalidateMatrix();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            ObliqueNearPlaneLens.prototype.onLensMatrixChanged = function (event) {
+                this.pInvalidateMatrix();
+            };
+
+            //@override
+            ObliqueNearPlaneLens.prototype.pUpdateMatrix = function () {
+                this._pMatrix.copyFrom(this._baseLens.matrix);
+
+                var cx = this._plane.a;
+                var cy = this._plane.b;
+                var cz = this._plane.c;
+                var cw = -this._plane.d + .05;
+                var signX = cx >= 0 ? 1 : -1;
+                var signY = cy >= 0 ? 1 : -1;
+                var p = new away.geom.Vector3D(signX, signY, 1, 1);
+                var inverse = this._pMatrix.clone();
+                inverse.invert();
+                var q = inverse.transformVector(p);
+                this._pMatrix.copyRowTo(3, p);
+                var a = (q.x * p.x + q.y * p.y + q.z * p.z + q.w * p.w) / (cx * q.x + cy * q.y + cz * q.z + cw * q.w);
+                this._pMatrix.copyRowFrom(2, new away.geom.Vector3D(cx * a, cy * a, cz * a, cw * a));
+            };
+            return ObliqueNearPlaneLens;
+        })(away.cameras.LensBase);
+        cameras.ObliqueNearPlaneLens = ObliqueNearPlaneLens;
     })(away.cameras || (away.cameras = {}));
     var cameras = away.cameras;
 })(away || (away = {}));
@@ -8268,6 +8874,40 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    (function (partition) {
+        var LightNode = (function (_super) {
+            __extends(LightNode, _super);
+            function LightNode(light) {
+                _super.call(this, light);
+                this._light = light;
+            }
+            Object.defineProperty(LightNode.prototype, "light", {
+                get: function () {
+                    return this._light;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            //@override
+            LightNode.prototype.acceptTraverser = function (traverser) {
+                if (traverser.enterNode(this)) {
+                    _super.prototype.acceptTraverser.call(this, traverser);
+                    traverser.applyUnknownLight(this._light);
+                }
+            };
+            return LightNode;
+        })(away.partition.EntityNode);
+        partition.LightNode = LightNode;
+    })(away.partition || (away.partition = {}));
+    var partition = away.partition;
+})(away || (away = {}));
+var away;
+(function (away) {
     ///<reference path="../_definitions.ts"/>
     (function (errors) {
         /**
@@ -9446,385 +10086,6 @@ var AssetLibraryBundleSingletonEnforcer = (function () {
     }
     return AssetLibraryBundleSingletonEnforcer;
 })();
-var away;
-(function (away) {
-    ///<reference path="../../_definitions.ts"/>
-    (function (loaders) {
-        /**
-        * The SingleFileLoader is used to load a single file, as part of a resource.
-        *
-        * While SingleFileLoader can be used directly, e.g. to create a third-party asset
-        * management system, it's recommended to use any of the classes Loader3D, AssetLoader
-        * and AssetLibrary instead in most cases.
-        *
-        * @see away3d.loading.Loader3D
-        * @see away3d.loading.AssetLoader
-        * @see away3d.loading.AssetLibrary
-        */
-        var SingleFileLoader = (function (_super) {
-            __extends(SingleFileLoader, _super);
-            // Constructor
-            /**
-            * Creates a new SingleFileLoader object.
-            */
-            function SingleFileLoader(materialMode) {
-                if (typeof materialMode === "undefined") { materialMode = 0; }
-                _super.call(this);
-                this._materialMode = materialMode;
-            }
-            SingleFileLoader.enableParser = function (parser) {
-                if (SingleFileLoader._parsers.indexOf(parser) < 0) {
-                    SingleFileLoader._parsers.push(parser);
-                }
-            };
-
-            SingleFileLoader.enableParsers = function (parsers) {
-                var pc;
-
-                for (var c = 0; c < parsers.length; c++) {
-                    SingleFileLoader.enableParser(parsers[c]);
-                }
-            };
-
-            Object.defineProperty(SingleFileLoader.prototype, "url", {
-                get: // Get / Set
-                function () {
-                    return this._req ? this._req.url : '';
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SingleFileLoader.prototype, "data", {
-                get: function () {
-                    return this._data;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SingleFileLoader.prototype, "loadAsRawData", {
-                get: function () {
-                    return this._loadAsRawData;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            // Public
-            /**
-            * Load a resource from a file.
-            *
-            * @param urlRequest The URLRequest object containing the URL of the object to be loaded.
-            * @param parser An optional parser object that will translate the loaded data into a usable resource. If not provided, AssetLoader will attempt to auto-detect the file type.
-            */
-            SingleFileLoader.prototype.load = function (urlRequest, parser, loadAsRawData) {
-                if (typeof parser === "undefined") { parser = null; }
-                if (typeof loadAsRawData === "undefined") { loadAsRawData = false; }
-                //var urlLoader   : away.net.URLLoader;
-                var dataFormat;
-                var loaderType = away.loaders.ParserLoaderType.URL_LOADER;
-
-                this._loadAsRawData = loadAsRawData;
-                this._req = urlRequest;
-
-                this.decomposeFilename(this._req.url);
-
-                if (this._loadAsRawData) {
-                    // Always use binary for raw data loading
-                    dataFormat = away.net.URLLoaderDataFormat.BINARY;
-                } else {
-                    if (parser) {
-                        this._parser = parser;
-                    }
-
-                    if (!this._parser) {
-                        this._parser = this.getParserFromSuffix();
-                    }
-
-                    if (this._parser) {
-                        switch (this._parser.dataFormat) {
-                            case away.loaders.ParserDataFormat.BINARY:
-                                dataFormat = away.net.URLLoaderDataFormat.BINARY;
-
-                                break;
-
-                            case away.loaders.ParserDataFormat.PLAIN_TEXT:
-                                dataFormat = away.net.URLLoaderDataFormat.TEXT;
-
-                                break;
-                        }
-
-                        switch (this._parser.loaderType) {
-                            case away.loaders.ParserLoaderType.IMG_LOADER:
-                                loaderType = away.loaders.ParserLoaderType.IMG_LOADER;
-
-                                break;
-
-                            case away.loaders.ParserLoaderType.URL_LOADER:
-                                loaderType = away.loaders.ParserLoaderType.URL_LOADER;
-
-                                break;
-                        }
-                    } else {
-                        // Always use BINARY for unknown file formats. The thorough
-                        // file type check will determine format after load, and if
-                        // binary, a text load will have broken the file data.
-                        dataFormat = away.net.URLLoaderDataFormat.BINARY;
-                    }
-                }
-
-                //console.log( 'SingleFileURLLoader.load.dataFormat:' , dataFormat , 'ParserFormat: ' , this._parser.dataFormat );
-                //console.log( 'SingleFileURLLoader.load.loaderType: ' , loaderType );
-                var loader = this.getLoader(loaderType);
-                loader.dataFormat = dataFormat;
-                loader.addEventListener(away.events.Event.COMPLETE, this.handleUrlLoaderComplete, this);
-                loader.addEventListener(away.events.IOErrorEvent.IO_ERROR, this.handleUrlLoaderError, this);
-                loader.load(urlRequest);
-            };
-
-            /**
-            * Loads a resource from already loaded data.
-            * @param data The data to be parsed. Depending on the parser type, this can be a ByteArray, String or XML.
-            * @param uri The identifier (url or id) of the object to be loaded, mainly used for resource management.
-            * @param parser An optional parser object that will translate the data into a usable resource. If not provided, AssetLoader will attempt to auto-detect the file type.
-            */
-            SingleFileLoader.prototype.parseData = function (data, parser, req) {
-                if (typeof parser === "undefined") { parser = null; }
-                if (typeof req === "undefined") { req = null; }
-                if (data.constructor === Function) {
-                    data = new data();
-                }
-
-                if (parser) {
-                    this._parser = parser;
-                }
-
-                this._req = req;
-
-                this.parse(data);
-            };
-
-            Object.defineProperty(SingleFileLoader.prototype, "parser", {
-                get: /**
-                * A reference to the parser that will translate the loaded data into a usable resource.
-                */
-                function () {
-                    return this._parser;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(SingleFileLoader.prototype, "dependencies", {
-                get: /**
-                * A list of dependencies that need to be loaded and resolved for the loaded object.
-                */
-                function () {
-                    return this._parser ? this._parser.dependencies : new Array();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            // Private
-            /**
-            *
-            * @param loaderType
-            */
-            SingleFileLoader.prototype.getLoader = function (loaderType) {
-                var loader;
-
-                switch (loaderType) {
-                    case away.loaders.ParserLoaderType.IMG_LOADER:
-                        loader = new away.loaders.SingleFileImageLoader();
-
-                        break;
-
-                    case away.loaders.ParserLoaderType.URL_LOADER:
-                        loader = new away.loaders.SingleFileURLLoader();
-
-                        break;
-                }
-
-                return loader;
-            };
-
-            /**
-            * Splits a url string into base and extension.
-            * @param url The url to be decomposed.
-            */
-            SingleFileLoader.prototype.decomposeFilename = function (url) {
-                // Get rid of query string if any and extract suffix
-                var base = (url.indexOf('?') > 0) ? url.split('?')[0] : url;
-                var i = base.lastIndexOf('.');
-                this._fileExtension = base.substr(i + 1).toLowerCase();
-                this._fileName = base.substr(0, i);
-            };
-
-            /**
-            * Guesses the parser to be used based on the file extension.
-            * @return An instance of the guessed parser.
-            */
-            SingleFileLoader.prototype.getParserFromSuffix = function () {
-                var len = SingleFileLoader._parsers.length;
-
-                for (var i = len - 1; i >= 0; i--) {
-                    var currentParser = SingleFileLoader._parsers[i];
-                    var supportstype = SingleFileLoader._parsers[i].supportsType(this._fileExtension);
-
-                    if (SingleFileLoader._parsers[i]['supportsType'](this._fileExtension)) {
-                        return new SingleFileLoader._parsers[i]();
-                    }
-                }
-
-                return null;
-            };
-
-            /**
-            * Guesses the parser to be used based on the file contents.
-            * @param data The data to be parsed.
-            * @param uri The url or id of the object to be parsed.
-            * @return An instance of the guessed parser.
-            */
-            SingleFileLoader.prototype.getParserFromData = function (data) {
-                var len = SingleFileLoader._parsers.length;
-
-                for (var i = len - 1; i >= 0; i--)
-                    if (SingleFileLoader._parsers[i].supportsData(data))
-                        return new SingleFileLoader._parsers[i]();
-
-                return null;
-            };
-
-            /**
-            * Cleanups
-            */
-            SingleFileLoader.prototype.removeListeners = function (urlLoader) {
-                urlLoader.removeEventListener(away.events.Event.COMPLETE, this.handleUrlLoaderComplete, this);
-                urlLoader.removeEventListener(away.events.IOErrorEvent.IO_ERROR, this.handleUrlLoaderError, this);
-            };
-
-            // Events
-            /**
-            * Called when loading of a file has failed
-            */
-            SingleFileLoader.prototype.handleUrlLoaderError = function (event) {
-                var urlLoader = event.target;
-                this.removeListeners(urlLoader);
-
-                //if(this.hasEventListener(away.events.LoaderEvent.LOAD_ERROR , this.handleUrlLoaderError , this ))
-                this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.LOAD_ERROR, this._req.url, true));
-            };
-
-            /**
-            * Called when loading of a file is complete
-            */
-            SingleFileLoader.prototype.handleUrlLoaderComplete = function (event) {
-                var urlLoader = event.target;
-                this.removeListeners(urlLoader);
-
-                this._data = urlLoader.data;
-
-                if (this._loadAsRawData) {
-                    // No need to parse this data, which should be returned as is
-                    this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.DEPENDENCY_COMPLETE));
-                } else {
-                    this.parse(this._data);
-                }
-            };
-
-            /**
-            * Initiates parsing of the loaded data.
-            * @param data The data to be parsed.
-            */
-            SingleFileLoader.prototype.parse = function (data) {
-                if (!this._parser) {
-                    this._parser = this.getParserFromData(data);
-                }
-
-                if (this._parser) {
-                    this._parser.addEventListener(away.events.ParserEvent.READY_FOR_DEPENDENCIES, this.onReadyForDependencies, this);
-                    this._parser.addEventListener(away.events.ParserEvent.PARSE_ERROR, this.onParseError, this);
-                    this._parser.addEventListener(away.events.ParserEvent.PARSE_COMPLETE, this.onParseComplete, this);
-                    this._parser.addEventListener(away.events.AssetEvent.TEXTURE_SIZE_ERROR, this.onTextureSizeError, this);
-                    this._parser.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
-                    this._parser.addEventListener(away.events.AssetEvent.ANIMATION_SET_COMPLETE, this.onAssetComplete, this);
-                    this._parser.addEventListener(away.events.AssetEvent.ANIMATION_STATE_COMPLETE, this.onAssetComplete, this);
-                    this._parser.addEventListener(away.events.AssetEvent.ANIMATION_NODE_COMPLETE, this.onAssetComplete, this);
-                    this._parser.addEventListener(away.events.AssetEvent.STATE_TRANSITION_COMPLETE, this.onAssetComplete, this);
-                    this._parser.addEventListener(away.events.AssetEvent.TEXTURE_COMPLETE, this.onAssetComplete, this);
-                    this._parser.addEventListener(away.events.AssetEvent.CONTAINER_COMPLETE, this.onAssetComplete, this);
-                    this._parser.addEventListener(away.events.AssetEvent.GEOMETRY_COMPLETE, this.onAssetComplete, this);
-                    this._parser.addEventListener(away.events.AssetEvent.MATERIAL_COMPLETE, this.onAssetComplete, this);
-                    this._parser.addEventListener(away.events.AssetEvent.MESH_COMPLETE, this.onAssetComplete, this);
-                    this._parser.addEventListener(away.events.AssetEvent.ENTITY_COMPLETE, this.onAssetComplete, this);
-                    this._parser.addEventListener(away.events.AssetEvent.SKELETON_COMPLETE, this.onAssetComplete, this);
-                    this._parser.addEventListener(away.events.AssetEvent.SKELETON_POSE_COMPLETE, this.onAssetComplete, this);
-
-                    if (this._req && this._req.url) {
-                        this._parser._iFileName = this._req.url;
-                    }
-
-                    this._parser.materialMode = this._materialMode;
-                    this._parser.parseAsync(data);
-                } else {
-                    var msg = "No parser defined. To enable all parsers for auto-detection, use Parsers.enableAllBundled()";
-
-                    //if(hasEventListener(LoaderEvent.LOAD_ERROR)){
-                    this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.LOAD_ERROR, "", true, msg));
-                }
-            };
-
-            SingleFileLoader.prototype.onParseError = function (event) {
-                this.dispatchEvent(event.clone());
-            };
-
-            SingleFileLoader.prototype.onReadyForDependencies = function (event) {
-                this.dispatchEvent(event.clone());
-            };
-
-            SingleFileLoader.prototype.onAssetComplete = function (event) {
-                //console.log( 'SingleFileLoader.onAssetComplete' , event );
-                this.dispatchEvent(event.clone());
-            };
-
-            SingleFileLoader.prototype.onTextureSizeError = function (event) {
-                this.dispatchEvent(event.clone());
-            };
-
-            /**
-            * Called when parsing is complete.
-            */
-            SingleFileLoader.prototype.onParseComplete = function (event) {
-                //console.log( 'SingleFileLoader.onParseComplete' , event );
-                this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this.url));
-
-                this._parser.removeEventListener(away.events.ParserEvent.READY_FOR_DEPENDENCIES, this.onReadyForDependencies, this);
-                this._parser.removeEventListener(away.events.ParserEvent.PARSE_COMPLETE, this.onParseComplete, this);
-                this._parser.removeEventListener(away.events.ParserEvent.PARSE_ERROR, this.onParseError, this);
-                this._parser.removeEventListener(away.events.AssetEvent.TEXTURE_SIZE_ERROR, this.onTextureSizeError, this);
-                this._parser.removeEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
-                this._parser.removeEventListener(away.events.AssetEvent.ANIMATION_SET_COMPLETE, this.onAssetComplete, this);
-                this._parser.removeEventListener(away.events.AssetEvent.ANIMATION_STATE_COMPLETE, this.onAssetComplete, this);
-                this._parser.removeEventListener(away.events.AssetEvent.ANIMATION_NODE_COMPLETE, this.onAssetComplete, this);
-                this._parser.removeEventListener(away.events.AssetEvent.STATE_TRANSITION_COMPLETE, this.onAssetComplete, this);
-                this._parser.removeEventListener(away.events.AssetEvent.TEXTURE_COMPLETE, this.onAssetComplete, this);
-                this._parser.removeEventListener(away.events.AssetEvent.CONTAINER_COMPLETE, this.onAssetComplete, this);
-                this._parser.removeEventListener(away.events.AssetEvent.GEOMETRY_COMPLETE, this.onAssetComplete, this);
-                this._parser.removeEventListener(away.events.AssetEvent.MATERIAL_COMPLETE, this.onAssetComplete, this);
-                this._parser.removeEventListener(away.events.AssetEvent.MESH_COMPLETE, this.onAssetComplete, this);
-                this._parser.removeEventListener(away.events.AssetEvent.ENTITY_COMPLETE, this.onAssetComplete, this);
-                this._parser.removeEventListener(away.events.AssetEvent.SKELETON_COMPLETE, this.onAssetComplete, this);
-                this._parser.removeEventListener(away.events.AssetEvent.SKELETON_POSE_COMPLETE, this.onAssetComplete, this);
-            };
-            SingleFileLoader._parsers = new Array(away.loaders.ImageParser);
-            return SingleFileLoader;
-        })(away.events.EventDispatcher);
-        loaders.SingleFileLoader = SingleFileLoader;
-    })(away.loaders || (away.loaders = {}));
-    var loaders = away.loaders;
-})(away || (away = {}));
 var away;
 (function (away) {
     (function (loaders) {
@@ -12593,6 +12854,388 @@ var away;
             return ImageParser;
         })(away.loaders.ParserBase);
         loaders.ImageParser = ImageParser;
+    })(away.loaders || (away.loaders = {}));
+    var loaders = away.loaders;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (loaders) {
+        /**
+        * The SingleFileLoader is used to load a single file, as part of a resource.
+        *
+        * While SingleFileLoader can be used directly, e.g. to create a third-party asset
+        * management system, it's recommended to use any of the classes Loader3D, AssetLoader
+        * and AssetLibrary instead in most cases.
+        *
+        * @see away3d.loading.Loader3D
+        * @see away3d.loading.AssetLoader
+        * @see away3d.loading.AssetLibrary
+        */
+        var SingleFileLoader = (function (_super) {
+            __extends(SingleFileLoader, _super);
+            // Constructor
+            /**
+            * Creates a new SingleFileLoader object.
+            */
+            function SingleFileLoader(materialMode) {
+                if (typeof materialMode === "undefined") { materialMode = 0; }
+                _super.call(this);
+                this._materialMode = materialMode;
+            }
+            SingleFileLoader.enableParser = function (parser) {
+                if (SingleFileLoader._parsers.indexOf(parser) < 0) {
+                    SingleFileLoader._parsers.push(parser);
+                }
+            };
+
+            SingleFileLoader.enableParsers = function (parsers) {
+                var pc;
+
+                for (var c = 0; c < parsers.length; c++) {
+                    SingleFileLoader.enableParser(parsers[c]);
+                }
+            };
+
+            Object.defineProperty(SingleFileLoader.prototype, "url", {
+                get: // Get / Set
+                function () {
+                    return this._req ? this._req.url : '';
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SingleFileLoader.prototype, "data", {
+                get: function () {
+                    return this._data;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SingleFileLoader.prototype, "loadAsRawData", {
+                get: function () {
+                    return this._loadAsRawData;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            // Public
+            /**
+            * Load a resource from a file.
+            *
+            * @param urlRequest The URLRequest object containing the URL of the object to be loaded.
+            * @param parser An optional parser object that will translate the loaded data into a usable resource. If not provided, AssetLoader will attempt to auto-detect the file type.
+            */
+            SingleFileLoader.prototype.load = function (urlRequest, parser, loadAsRawData) {
+                if (typeof parser === "undefined") { parser = null; }
+                if (typeof loadAsRawData === "undefined") { loadAsRawData = false; }
+                //var urlLoader   : away.net.URLLoader;
+                var dataFormat;
+                var loaderType = away.loaders.ParserLoaderType.URL_LOADER;
+
+                this._loadAsRawData = loadAsRawData;
+                this._req = urlRequest;
+
+                this.decomposeFilename(this._req.url);
+
+                if (this._loadAsRawData) {
+                    // Always use binary for raw data loading
+                    dataFormat = away.net.URLLoaderDataFormat.BINARY;
+                } else {
+                    if (parser) {
+                        this._parser = parser;
+                    }
+
+                    if (!this._parser) {
+                        this._parser = this.getParserFromSuffix();
+                    }
+
+                    if (this._parser) {
+                        switch (this._parser.dataFormat) {
+                            case away.loaders.ParserDataFormat.BINARY:
+                                dataFormat = away.net.URLLoaderDataFormat.BINARY;
+
+                                break;
+
+                            case away.loaders.ParserDataFormat.PLAIN_TEXT:
+                                dataFormat = away.net.URLLoaderDataFormat.TEXT;
+
+                                break;
+                        }
+
+                        switch (this._parser.loaderType) {
+                            case away.loaders.ParserLoaderType.IMG_LOADER:
+                                loaderType = away.loaders.ParserLoaderType.IMG_LOADER;
+
+                                break;
+
+                            case away.loaders.ParserLoaderType.URL_LOADER:
+                                loaderType = away.loaders.ParserLoaderType.URL_LOADER;
+
+                                break;
+                        }
+                    } else {
+                        // Always use BINARY for unknown file formats. The thorough
+                        // file type check will determine format after load, and if
+                        // binary, a text load will have broken the file data.
+                        dataFormat = away.net.URLLoaderDataFormat.BINARY;
+                    }
+                }
+
+                //console.log( 'SingleFileURLLoader.load.dataFormat:' , dataFormat , 'ParserFormat: ' , this._parser.dataFormat );
+                //console.log( 'SingleFileURLLoader.load.loaderType: ' , loaderType );
+                var loader = this.getLoader(loaderType);
+                loader.dataFormat = dataFormat;
+                loader.addEventListener(away.events.Event.COMPLETE, this.handleUrlLoaderComplete, this);
+                loader.addEventListener(away.events.IOErrorEvent.IO_ERROR, this.handleUrlLoaderError, this);
+                loader.load(urlRequest);
+            };
+
+            /**
+            * Loads a resource from already loaded data.
+            * @param data The data to be parsed. Depending on the parser type, this can be a ByteArray, String or XML.
+            * @param uri The identifier (url or id) of the object to be loaded, mainly used for resource management.
+            * @param parser An optional parser object that will translate the data into a usable resource. If not provided, AssetLoader will attempt to auto-detect the file type.
+            */
+            SingleFileLoader.prototype.parseData = function (data, parser, req) {
+                if (typeof parser === "undefined") { parser = null; }
+                if (typeof req === "undefined") { req = null; }
+                if (data.constructor === Function) {
+                    data = new data();
+                }
+
+                if (parser) {
+                    this._parser = parser;
+                }
+
+                this._req = req;
+
+                this.parse(data);
+            };
+
+            Object.defineProperty(SingleFileLoader.prototype, "parser", {
+                get: /**
+                * A reference to the parser that will translate the loaded data into a usable resource.
+                */
+                function () {
+                    return this._parser;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SingleFileLoader.prototype, "dependencies", {
+                get: /**
+                * A list of dependencies that need to be loaded and resolved for the loaded object.
+                */
+                function () {
+                    return this._parser ? this._parser.dependencies : new Array();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            // Private
+            /**
+            *
+            * @param loaderType
+            */
+            SingleFileLoader.prototype.getLoader = function (loaderType) {
+                var loader;
+
+                switch (loaderType) {
+                    case away.loaders.ParserLoaderType.IMG_LOADER:
+                        loader = new away.loaders.SingleFileImageLoader();
+
+                        break;
+
+                    case away.loaders.ParserLoaderType.URL_LOADER:
+                        loader = new away.loaders.SingleFileURLLoader();
+
+                        break;
+                }
+
+                return loader;
+            };
+
+            /**
+            * Splits a url string into base and extension.
+            * @param url The url to be decomposed.
+            */
+            SingleFileLoader.prototype.decomposeFilename = function (url) {
+                // Get rid of query string if any and extract suffix
+                var base = (url.indexOf('?') > 0) ? url.split('?')[0] : url;
+                var i = base.lastIndexOf('.');
+                this._fileExtension = base.substr(i + 1).toLowerCase();
+                this._fileName = base.substr(0, i);
+            };
+
+            /**
+            * Guesses the parser to be used based on the file extension.
+            * @return An instance of the guessed parser.
+            */
+            SingleFileLoader.prototype.getParserFromSuffix = function () {
+                var len = SingleFileLoader._parsers.length;
+
+                for (var i = len - 1; i >= 0; i--) {
+                    var currentParser = SingleFileLoader._parsers[i];
+
+                    //console.log( '------------------------------------------');
+                    //console.log( i , currentParser );
+                    var supportstype = SingleFileLoader._parsers[i].supportsType(this._fileExtension);
+
+                    if (SingleFileLoader._parsers[i]['supportsType'](this._fileExtension)) {
+                        return new SingleFileLoader._parsers[i]();
+                    }
+                }
+
+                return null;
+            };
+
+            /**
+            * Guesses the parser to be used based on the file contents.
+            * @param data The data to be parsed.
+            * @param uri The url or id of the object to be parsed.
+            * @return An instance of the guessed parser.
+            */
+            SingleFileLoader.prototype.getParserFromData = function (data) {
+                var len = SingleFileLoader._parsers.length;
+
+                for (var i = len - 1; i >= 0; i--)
+                    if (SingleFileLoader._parsers[i].supportsData(data))
+                        return new SingleFileLoader._parsers[i]();
+
+                return null;
+            };
+
+            /**
+            * Cleanups
+            */
+            SingleFileLoader.prototype.removeListeners = function (urlLoader) {
+                urlLoader.removeEventListener(away.events.Event.COMPLETE, this.handleUrlLoaderComplete, this);
+                urlLoader.removeEventListener(away.events.IOErrorEvent.IO_ERROR, this.handleUrlLoaderError, this);
+            };
+
+            // Events
+            /**
+            * Called when loading of a file has failed
+            */
+            SingleFileLoader.prototype.handleUrlLoaderError = function (event) {
+                var urlLoader = event.target;
+                this.removeListeners(urlLoader);
+
+                //if(this.hasEventListener(away.events.LoaderEvent.LOAD_ERROR , this.handleUrlLoaderError , this ))
+                this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.LOAD_ERROR, this._req.url, true));
+            };
+
+            /**
+            * Called when loading of a file is complete
+            */
+            SingleFileLoader.prototype.handleUrlLoaderComplete = function (event) {
+                var urlLoader = event.target;
+                this.removeListeners(urlLoader);
+
+                this._data = urlLoader.data;
+
+                if (this._loadAsRawData) {
+                    // No need to parse this data, which should be returned as is
+                    this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.DEPENDENCY_COMPLETE));
+                } else {
+                    this.parse(this._data);
+                }
+            };
+
+            /**
+            * Initiates parsing of the loaded data.
+            * @param data The data to be parsed.
+            */
+            SingleFileLoader.prototype.parse = function (data) {
+                if (!this._parser) {
+                    this._parser = this.getParserFromData(data);
+                }
+
+                if (this._parser) {
+                    this._parser.addEventListener(away.events.ParserEvent.READY_FOR_DEPENDENCIES, this.onReadyForDependencies, this);
+                    this._parser.addEventListener(away.events.ParserEvent.PARSE_ERROR, this.onParseError, this);
+                    this._parser.addEventListener(away.events.ParserEvent.PARSE_COMPLETE, this.onParseComplete, this);
+                    this._parser.addEventListener(away.events.AssetEvent.TEXTURE_SIZE_ERROR, this.onTextureSizeError, this);
+                    this._parser.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+                    this._parser.addEventListener(away.events.AssetEvent.ANIMATION_SET_COMPLETE, this.onAssetComplete, this);
+                    this._parser.addEventListener(away.events.AssetEvent.ANIMATION_STATE_COMPLETE, this.onAssetComplete, this);
+                    this._parser.addEventListener(away.events.AssetEvent.ANIMATION_NODE_COMPLETE, this.onAssetComplete, this);
+                    this._parser.addEventListener(away.events.AssetEvent.STATE_TRANSITION_COMPLETE, this.onAssetComplete, this);
+                    this._parser.addEventListener(away.events.AssetEvent.TEXTURE_COMPLETE, this.onAssetComplete, this);
+                    this._parser.addEventListener(away.events.AssetEvent.CONTAINER_COMPLETE, this.onAssetComplete, this);
+                    this._parser.addEventListener(away.events.AssetEvent.GEOMETRY_COMPLETE, this.onAssetComplete, this);
+                    this._parser.addEventListener(away.events.AssetEvent.MATERIAL_COMPLETE, this.onAssetComplete, this);
+                    this._parser.addEventListener(away.events.AssetEvent.MESH_COMPLETE, this.onAssetComplete, this);
+                    this._parser.addEventListener(away.events.AssetEvent.ENTITY_COMPLETE, this.onAssetComplete, this);
+                    this._parser.addEventListener(away.events.AssetEvent.SKELETON_COMPLETE, this.onAssetComplete, this);
+                    this._parser.addEventListener(away.events.AssetEvent.SKELETON_POSE_COMPLETE, this.onAssetComplete, this);
+
+                    if (this._req && this._req.url) {
+                        this._parser._iFileName = this._req.url;
+                    }
+
+                    this._parser.materialMode = this._materialMode;
+                    this._parser.parseAsync(data);
+                } else {
+                    var msg = "No parser defined. To enable all parsers for auto-detection, use Parsers.enableAllBundled()";
+
+                    //if(hasEventListener(LoaderEvent.LOAD_ERROR)){
+                    this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.LOAD_ERROR, "", true, msg));
+                }
+            };
+
+            SingleFileLoader.prototype.onParseError = function (event) {
+                this.dispatchEvent(event.clone());
+            };
+
+            SingleFileLoader.prototype.onReadyForDependencies = function (event) {
+                this.dispatchEvent(event.clone());
+            };
+
+            SingleFileLoader.prototype.onAssetComplete = function (event) {
+                //console.log( 'SingleFileLoader.onAssetComplete' , event );
+                this.dispatchEvent(event.clone());
+            };
+
+            SingleFileLoader.prototype.onTextureSizeError = function (event) {
+                this.dispatchEvent(event.clone());
+            };
+
+            /**
+            * Called when parsing is complete.
+            */
+            SingleFileLoader.prototype.onParseComplete = function (event) {
+                //console.log( 'SingleFileLoader.onParseComplete' , event );
+                this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this.url));
+
+                this._parser.removeEventListener(away.events.ParserEvent.READY_FOR_DEPENDENCIES, this.onReadyForDependencies, this);
+                this._parser.removeEventListener(away.events.ParserEvent.PARSE_COMPLETE, this.onParseComplete, this);
+                this._parser.removeEventListener(away.events.ParserEvent.PARSE_ERROR, this.onParseError, this);
+                this._parser.removeEventListener(away.events.AssetEvent.TEXTURE_SIZE_ERROR, this.onTextureSizeError, this);
+                this._parser.removeEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+                this._parser.removeEventListener(away.events.AssetEvent.ANIMATION_SET_COMPLETE, this.onAssetComplete, this);
+                this._parser.removeEventListener(away.events.AssetEvent.ANIMATION_STATE_COMPLETE, this.onAssetComplete, this);
+                this._parser.removeEventListener(away.events.AssetEvent.ANIMATION_NODE_COMPLETE, this.onAssetComplete, this);
+                this._parser.removeEventListener(away.events.AssetEvent.STATE_TRANSITION_COMPLETE, this.onAssetComplete, this);
+                this._parser.removeEventListener(away.events.AssetEvent.TEXTURE_COMPLETE, this.onAssetComplete, this);
+                this._parser.removeEventListener(away.events.AssetEvent.CONTAINER_COMPLETE, this.onAssetComplete, this);
+                this._parser.removeEventListener(away.events.AssetEvent.GEOMETRY_COMPLETE, this.onAssetComplete, this);
+                this._parser.removeEventListener(away.events.AssetEvent.MATERIAL_COMPLETE, this.onAssetComplete, this);
+                this._parser.removeEventListener(away.events.AssetEvent.MESH_COMPLETE, this.onAssetComplete, this);
+                this._parser.removeEventListener(away.events.AssetEvent.ENTITY_COMPLETE, this.onAssetComplete, this);
+                this._parser.removeEventListener(away.events.AssetEvent.SKELETON_COMPLETE, this.onAssetComplete, this);
+                this._parser.removeEventListener(away.events.AssetEvent.SKELETON_POSE_COMPLETE, this.onAssetComplete, this);
+            };
+            SingleFileLoader._parsers = new Array(away.loaders.ImageParser);
+            return SingleFileLoader;
+        })(away.events.EventDispatcher);
+        loaders.SingleFileLoader = SingleFileLoader;
     })(away.loaders || (away.loaders = {}));
     var loaders = away.loaders;
 })(away || (away = {}));
@@ -15819,16 +16462,6 @@ var away;
 (function (away) {
     ///<reference path="../_definitions.ts" />
     (function (base) {
-        //import away3d.arcane;
-        //import away3d.core.base.ISubGeometry;
-        //import away3d.managers.Stage3DProxy;
-        //import away3d.errors.AbstractMethodError;
-        //import flash.display3D.Context3D;
-        //import flash.display3D.IndexBuffer3D;
-        //import flash.display3D.VertexBuffer3D;
-        //import flash.geom.Matrix3D;
-        //import flash.geom.Vector3D;
-        //use namespace  arcane;
         var SubGeometryBase = (function () {
             function SubGeometryBase() {
                 this._faceNormalsDirty = true;
@@ -16215,7 +16848,7 @@ var away;
             };
 
             SubGeometryBase.prototype.dispose = function () {
-                this.disposeIndexBuffers(this._indexBuffer);
+                this.pDisposeIndexBuffers(this._indexBuffer);
                 this._indices = null;
                 this._indexBufferContext = null;
                 this._faceNormals = null;
@@ -16248,18 +16881,22 @@ var away;
                 var numTriangles = this._numIndices / 3;
 
                 if (this._numTriangles != numTriangles) {
-                    this.disposeIndexBuffers(this._indexBuffer);
+                    this.pDisposeIndexBuffers(this._indexBuffer);
                 }
 
                 this._numTriangles = numTriangles;
 
-                this.invalidateBuffers(this._indicesInvalid);
+                this.pInvalidateBuffers(this._indicesInvalid);
+
                 this._faceNormalsDirty = true;
 
-                if (_autoDeriveVertexNormals)
-                    _vertexNormalsDirty = true;
-                if (_autoDeriveVertexTangents)
-                    _vertexTangentsDirty = true;
+                if (this._autoDeriveVertexNormals) {
+                    this._vertexNormalsDirty = true;
+                }
+
+                if (this._autoDeriveVertexTangents) {
+                    this._vertexTangentsDirty = true;
+                }
             };
 
             /**
@@ -16439,7 +17076,8 @@ var away;
 
             SubGeometryBase.prototype.pInvalidateBounds = function () {
                 if (this._parentGeometry) {
-                    this._parentGeometry.pInvalidateBounds(this);
+                    var me = this;
+                    this._parentGeometry.iInvalidateBounds(me);
                 }
             };
 
@@ -16484,9 +17122,9 @@ var away;
             SubGeometryBase.prototype.scaleUV = function (scaleU, scaleV) {
                 if (typeof scaleU === "undefined") { scaleU = 1; }
                 if (typeof scaleV === "undefined") { scaleV = 1; }
-                var offset = UVOffset;
-                var stride = UVStride;
-                var uvs = UVData;
+                var offset = this.UVOffset;
+                var stride = this.UVStride;
+                var uvs = this.UVData;
                 var len = uvs.length;
                 var ratioU = scaleU / this._scaleU;
                 var ratioV = scaleV / this._scaleV;
@@ -16505,10 +17143,10 @@ var away;
             * @param scale The amount by which to scale.
             */
             SubGeometryBase.prototype.scale = function (scale) {
-                var vertices = UVData;
+                var vertices = this.UVData;
                 var len = vertices.length;
-                var offset = vertexOffset;
-                var stride = vertexStride;
+                var offset = this.vertexOffset;
+                var stride = this.vertexStride;
 
                 for (var i = offset; i < len; i += stride) {
                     vertices[i] *= scale;
@@ -16519,14 +17157,14 @@ var away;
 
             SubGeometryBase.prototype.applyTransformation = function (transform) {
                 var vertices = this._vertexData;
-                var normals = vertexNormalData;
-                var tangents = vertexTangentData;
-                var posStride = vertexStride;
-                var normalStride = vertexNormalStride;
-                var tangentStride = vertexTangentStride;
-                var posOffset = vertexOffset;
-                var normalOffset = vertexNormalOffset;
-                var tangentOffset = vertexTangentOffset;
+                var normals = this.vertexNormalData;
+                var tangents = this.vertexTangentData;
+                var posStride = this.vertexStride;
+                var normalStride = this.vertexNormalStride;
+                var tangentStride = this.vertexTangentStride;
+                var posOffset = this.vertexOffset;
+                var normalOffset = this.vertexNormalOffset;
+                var tangentOffset = this.vertexTangentOffset;
                 var len = vertices.length / posStride;
                 var i, i1, i2;
                 var vector = new away.geom.Vector3D();
@@ -16593,19 +17231,19 @@ var away;
                 this._uvsDirty = false;
 
                 var idx, uvIdx;
-                var stride = UVStride;
+                var stride = this.UVStride;
                 var skip = stride - 2;
-                var len = this._vertexData.length / vertexStride * stride;
+                var len = this._vertexData.length / this.vertexStride * stride;
 
                 if (!target) {
                     target = new Array();
                 }
 
-                target.fixed = false;
+                //target.fixed = false;
                 target.length = len;
-                target.fixed = true;
 
-                idx = UVOffset;
+                //target.fixed = true;
+                idx = this.UVOffset;
                 uvIdx = 0;
 
                 while (idx < len) {
@@ -16628,14 +17266,557 @@ var away;
 var away;
 (function (away) {
     ///<reference path="../_definitions.ts"/>
+    (function (events) {
+        /**
+        * Dispatched to notify changes in a geometry object's state.
+        *
+        * @see away3d.core.base.Geometry
+        */
+        var GeometryEvent = (function (_super) {
+            __extends(GeometryEvent, _super);
+            /**
+            * Create a new GeometryEvent
+            * @param type The event type.
+            * @param subGeometry An optional SubGeometry object that is the subject of this event.
+            */
+            function GeometryEvent(type, subGeometry) {
+                if (typeof subGeometry === "undefined") { subGeometry = null; }
+                _super.call(this, type);
+                this._subGeometry = subGeometry;
+            }
+            Object.defineProperty(GeometryEvent.prototype, "subGeometry", {
+                get: /**
+                * The SubGeometry object that is the subject of this event, if appropriate.
+                */
+                function () {
+                    return this._subGeometry;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * Clones the event.
+            * @return An exact duplicate of the current object.
+            */
+            GeometryEvent.prototype.clone = function () {
+                return new GeometryEvent(this.type, this._subGeometry);
+            };
+            GeometryEvent.SUB_GEOMETRY_ADDED = "SubGeometryAdded";
+
+            GeometryEvent.SUB_GEOMETRY_REMOVED = "SubGeometryRemoved";
+
+            GeometryEvent.BOUNDS_INVALID = "BoundsInvalid";
+            return GeometryEvent;
+        })(away.events.Event);
+        events.GeometryEvent = GeometryEvent;
+    })(away.events || (away.events = {}));
+    var events = away.events;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
     (function (base) {
-        //import away3d.arcane;
-        //import away3d.events.GeometryEvent;
-        //import away3d.library.assets.AssetType;
-        //import away3d.library.assets.IAsset;
-        //import away3d.library.assets.NamedAssetBase;
-        //import flash.geom.Matrix3D;
-        //use namespace arcane;
+        var CompactSubGeometry = (function (_super) {
+            __extends(CompactSubGeometry, _super);
+            function CompactSubGeometry() {
+                _super.call(this);
+                this._vertexDataInvalid = Array(8);
+                this._vertexBuffer = new Array(8);
+                this._bufferContext = new Array(8);
+
+                this._autoDeriveVertexNormals = false;
+                this._autoDeriveVertexTangents = false;
+            }
+            Object.defineProperty(CompactSubGeometry.prototype, "numVertices", {
+                get: function () {
+                    return this._numVertices;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * Updates the vertex data. All vertex properties are contained in a single Vector, and the order is as follows:
+            * 0 - 2: vertex position X, Y, Z
+            * 3 - 5: normal X, Y, Z
+            * 6 - 8: tangent X, Y, Z
+            * 9 - 10: U V
+            * 11 - 12: Secondary U V
+            */
+            CompactSubGeometry.prototype.updateData = function (data) {
+                if (this._autoDeriveVertexNormals) {
+                    this._vertexNormalsDirty = true;
+                }
+
+                if (this._autoDeriveVertexTangents) {
+                    this._vertexTangentsDirty = true;
+                }
+
+                this._faceNormalsDirty = true;
+                this._faceTangentsDirty = true;
+                this._isolatedVertexPositionDataDirty = true;
+
+                this._vertexData = data;
+                var numVertices = this._vertexData.length / 13;
+
+                if (numVertices != this._numVertices) {
+                    this.pDisposeVertexBuffers(this._vertexBuffer);
+                }
+
+                this._numVertices = numVertices;
+
+                if (this._numVertices == 0) {
+                    throw new Error("Bad data: geometry can't have zero triangles");
+                }
+
+                this.pInvalidateBuffers(this._vertexDataInvalid);
+                this.pInvalidateBounds();
+            };
+
+            CompactSubGeometry.prototype.activateVertexBuffer = function (index, stage3DProxy) {
+                var contextIndex = stage3DProxy._iStage3DIndex;
+                var context = stage3DProxy._iContext3D;
+
+                if (contextIndex != this._contextIndex) {
+                    this.pUpdateActiveBuffer(contextIndex);
+                }
+
+                if (!this._activeBuffer || this._activeContext != context) {
+                    this.pCreateBuffer(contextIndex, context);
+                }
+
+                if (this._activeDataInvalid) {
+                    this.pUploadData(contextIndex);
+                }
+
+                context.setVertexBufferAt(index, this._activeBuffer, 0, away.display3D.Context3DVertexBufferFormat.FLOAT_3);
+            };
+
+            CompactSubGeometry.prototype.activateUVBuffer = function (index, stage3DProxy) {
+                var contextIndex = stage3DProxy._iStage3DIndex;
+                var context = stage3DProxy._iContext3D;
+
+                if (this._uvsDirty && this._autoGenerateUVs) {
+                    this._vertexData = this.pUpdateDummyUVs(this._vertexData);
+
+                    this.pInvalidateBuffers(this._vertexDataInvalid);
+                }
+
+                if (contextIndex != this._contextIndex) {
+                    this.pUpdateActiveBuffer(contextIndex);
+                }
+
+                if (!this._activeBuffer || this._activeContext != context) {
+                    this.pCreateBuffer(contextIndex, context);
+                }
+
+                if (this._activeDataInvalid) {
+                    this.pUploadData(contextIndex);
+                }
+
+                context.setVertexBufferAt(index, this._activeBuffer, 9, away.display3D.Context3DVertexBufferFormat.FLOAT_2);
+            };
+
+            CompactSubGeometry.prototype.activateSecondaryUVBuffer = function (index, stage3DProxy) {
+                var contextIndex = stage3DProxy._iStage3DIndex;
+                var context = stage3DProxy._iContext3D;
+
+                if (contextIndex != this._contextIndex) {
+                    this.pUpdateActiveBuffer(contextIndex);
+                }
+
+                if (!this._activeBuffer || this._activeContext != context) {
+                    this.pCreateBuffer(contextIndex, context);
+                }
+
+                if (this._activeDataInvalid) {
+                    this.pUploadData(contextIndex);
+                }
+
+                context.setVertexBufferAt(index, this._activeBuffer, 11, away.display3D.Context3DVertexBufferFormat.FLOAT_2);
+            };
+
+            CompactSubGeometry.prototype.pUploadData = function (contextIndex) {
+                this._activeBuffer.uploadFromArray(this._vertexData, 0, this._numVertices);
+                this._vertexDataInvalid[contextIndex] = this._activeDataInvalid = false;
+            };
+
+            CompactSubGeometry.prototype.activateVertexNormalBuffer = function (index, stage3DProxy) {
+                var contextIndex = stage3DProxy._iStage3DIndex;
+                var context = stage3DProxy._iContext3D;
+
+                if (contextIndex != this._contextIndex) {
+                    this.pUpdateActiveBuffer(contextIndex);
+                }
+
+                if (!this._activeBuffer || this._activeContext != context) {
+                    this.pCreateBuffer(contextIndex, context);
+                }
+
+                if (this._activeDataInvalid) {
+                    this.pUploadData(contextIndex);
+                }
+
+                context.setVertexBufferAt(index, this._activeBuffer, 3, away.display3D.Context3DVertexBufferFormat.FLOAT_3);
+            };
+
+            CompactSubGeometry.prototype.activateVertexTangentBuffer = function (index, stage3DProxy) {
+                var contextIndex = stage3DProxy._iStage3DIndex;
+                var context = stage3DProxy._iContext3D;
+
+                if (contextIndex != this._contextIndex) {
+                    this.pUpdateActiveBuffer(contextIndex);
+                }
+
+                if (!this._activeBuffer || this._activeContext != context) {
+                    this.pCreateBuffer(contextIndex, context);
+                }
+
+                if (this._activeDataInvalid) {
+                    this.pUploadData(contextIndex);
+                }
+
+                context.setVertexBufferAt(index, this._activeBuffer, 6, away.display3D.Context3DVertexBufferFormat.FLOAT_3);
+            };
+
+            CompactSubGeometry.prototype.pCreateBuffer = function (contextIndex, context) {
+                this._vertexBuffer[contextIndex] = this._activeBuffer = context.createVertexBuffer(this._numVertices, 13);
+                this._bufferContext[contextIndex] = this._activeContext = context;
+                this._vertexDataInvalid[contextIndex] = this._activeDataInvalid = true;
+            };
+
+            CompactSubGeometry.prototype.pUpdateActiveBuffer = function (contextIndex) {
+                this._contextIndex = contextIndex;
+                this._activeDataInvalid = this._vertexDataInvalid[contextIndex];
+                this._activeBuffer = this._vertexBuffer[contextIndex];
+                this._activeContext = this._bufferContext[contextIndex];
+            };
+
+            Object.defineProperty(CompactSubGeometry.prototype, "vertexData", {
+                get: function () {
+                    if (this._autoDeriveVertexNormals && this._vertexNormalsDirty) {
+                        this._vertexData = this.pUpdateVertexNormals(this._vertexData);
+                    }
+
+                    if (this._autoDeriveVertexTangents && this._vertexTangentsDirty) {
+                        this._vertexData = this.pUpdateVertexTangents(this._vertexData);
+                    }
+
+                    if (this._uvsDirty && this._autoGenerateUVs) {
+                        this._vertexData = this.pUpdateDummyUVs(this._vertexData);
+                    }
+
+                    return this._vertexData;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            CompactSubGeometry.prototype.pUpdateVertexNormals = function (target) {
+                this.pInvalidateBuffers(this._vertexDataInvalid);
+                return _super.prototype.pUpdateVertexNormals.call(this, target);
+            };
+
+            CompactSubGeometry.prototype.pUpdateVertexTangents = function (target) {
+                if (this._vertexNormalsDirty) {
+                    this._vertexData = this.pUpdateVertexNormals(this._vertexData);
+                }
+
+                this.pInvalidateBuffers(this._vertexDataInvalid);
+
+                return _super.prototype.pUpdateVertexTangents.call(this, target);
+            };
+
+            Object.defineProperty(CompactSubGeometry.prototype, "vertexNormalData", {
+                get: function () {
+                    if (this._autoDeriveVertexNormals && this._vertexNormalsDirty) {
+                        this._vertexData = this.pUpdateVertexNormals(this._vertexData);
+                    }
+
+                    return this._vertexData;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(CompactSubGeometry.prototype, "vertexTangentData", {
+                get: function () {
+                    if (this._autoDeriveVertexTangents && this._vertexTangentsDirty) {
+                        this._vertexData = this.pUpdateVertexTangents(this._vertexData);
+                    }
+
+                    return this._vertexData;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(CompactSubGeometry.prototype, "UVData", {
+                get: function () {
+                    if (this._uvsDirty && this._autoGenerateUVs) {
+                        this._vertexData = this.pUpdateDummyUVs(this._vertexData);
+                        this.pInvalidateBuffers(this._vertexDataInvalid);
+                    }
+
+                    return this._vertexData;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            CompactSubGeometry.prototype.applyTransformation = function (transform) {
+                _super.prototype.applyTransformation.call(this, transform);
+                this.pInvalidateBuffers(this._vertexDataInvalid);
+            };
+
+            CompactSubGeometry.prototype.scale = function (scale) {
+                _super.prototype.scale.call(this, scale);
+                this.pInvalidateBuffers(this._vertexDataInvalid);
+            };
+
+            CompactSubGeometry.prototype.clone = function () {
+                var clone = new away.base.CompactSubGeometry();
+
+                clone._autoDeriveVertexNormals = this._autoDeriveVertexNormals;
+                clone._autoDeriveVertexTangents = this._autoDeriveVertexTangents;
+
+                clone.updateData(this._vertexData.concat());
+                clone.updateIndexData(this._indices.concat());
+
+                return clone;
+            };
+
+            CompactSubGeometry.prototype.scaleUV = function (scaleU, scaleV) {
+                if (typeof scaleU === "undefined") { scaleU = 1; }
+                if (typeof scaleV === "undefined") { scaleV = 1; }
+                _super.prototype.scaleUV.call(this, scaleU, scaleV);
+
+                this.pInvalidateBuffers(this._vertexDataInvalid);
+            };
+
+            Object.defineProperty(CompactSubGeometry.prototype, "vertexStride", {
+                get: function () {
+                    return 13;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(CompactSubGeometry.prototype, "vertexNormalStride", {
+                get: function () {
+                    return 13;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(CompactSubGeometry.prototype, "vertexTangentStride", {
+                get: function () {
+                    return 13;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(CompactSubGeometry.prototype, "UVStride", {
+                get: function () {
+                    return 13;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(CompactSubGeometry.prototype, "secondaryUVStride", {
+                get: function () {
+                    return 13;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(CompactSubGeometry.prototype, "vertexOffset", {
+                get: function () {
+                    return 0;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(CompactSubGeometry.prototype, "vertexNormalOffset", {
+                get: function () {
+                    return 3;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(CompactSubGeometry.prototype, "vertexTangentOffset", {
+                get: function () {
+                    return 6;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(CompactSubGeometry.prototype, "UVOffset", {
+                get: function () {
+                    return 9;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(CompactSubGeometry.prototype, "secondaryUVOffset", {
+                get: function () {
+                    return 11;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            CompactSubGeometry.prototype.dispose = function () {
+                _super.prototype.dispose.call(this);
+                this.pDisposeVertexBuffers(this._vertexBuffer);
+                this._vertexBuffer = null;
+            };
+
+            CompactSubGeometry.prototype.pDisposeVertexBuffers = function (buffers) {
+                _super.prototype.pDisposeVertexBuffers.call(this, buffers);
+                this._activeBuffer = null;
+            };
+
+            CompactSubGeometry.prototype.pInvalidateBuffers = function (invalid) {
+                _super.prototype.pInvalidateBuffers.call(this, invalid);
+                this._activeDataInvalid = true;
+            };
+
+            CompactSubGeometry.prototype.cloneWithSeperateBuffers = function () {
+                var clone = new away.base.SubGeometry();
+
+                clone.updateVertexData(this._isolatedVertexPositionData ? this._isolatedVertexPositionData : this._isolatedVertexPositionData = this.stripBuffer(0, 3));
+                clone.autoDeriveVertexNormals = this._autoDeriveVertexNormals;
+                clone.autoDeriveVertexTangents = this._autoDeriveVertexTangents;
+
+                if (!this._autoDeriveVertexNormals) {
+                    clone.updateVertexNormalData(this.stripBuffer(3, 3));
+                }
+
+                if (!this._autoDeriveVertexTangents) {
+                    clone.updateVertexTangentData(this.stripBuffer(6, 3));
+                }
+
+                clone.updateUVData(this.stripBuffer(9, 2));
+                clone.updateSecondaryUVData(this.stripBuffer(11, 2));
+                clone.updateIndexData(this.indexData.concat());
+
+                return clone;
+            };
+
+            Object.defineProperty(CompactSubGeometry.prototype, "vertexPositionData", {
+                get: function () {
+                    if (this._isolatedVertexPositionDataDirty || !this._isolatedVertexPositionData) {
+                        this._isolatedVertexPositionData = this.stripBuffer(0, 3);
+                        this._isolatedVertexPositionDataDirty = false;
+                    }
+
+                    return this._isolatedVertexPositionData;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * Isolate and returns a Vector.Number of a specific buffer type
+            *
+            * - stripBuffer(0, 3), return only the vertices
+            * - stripBuffer(3, 3): return only the normals
+            * - stripBuffer(6, 3): return only the tangents
+            * - stripBuffer(9, 2): return only the uv's
+            * - stripBuffer(11, 2): return only the secondary uv's
+            */
+            CompactSubGeometry.prototype.stripBuffer = function (offset, numEntries) {
+                var data = new Array(this._numVertices * numEntries);
+                var i = 0, j = offset;
+                var skip = 13 - numEntries;
+
+                for (var v = 0; v < this._numVertices; ++v) {
+                    for (var k = 0; k < numEntries; ++k) {
+                        data[i++] = this._vertexData[j++];
+                    }
+
+                    j += skip;
+                }
+
+                return data;
+            };
+
+            CompactSubGeometry.prototype.fromVectors = function (verts, uvs, normals, tangents) {
+                var vertLen = verts.length / 3 * 13;
+
+                var index = 0;
+                var v = 0;
+                var n = 0;
+                var t = 0;
+                var u = 0;
+
+                var data = new Array(vertLen);
+
+                while (index < vertLen) {
+                    data[index++] = verts[v++];
+                    data[index++] = verts[v++];
+                    data[index++] = verts[v++];
+
+                    if (normals && normals.length) {
+                        data[index++] = normals[n++];
+                        data[index++] = normals[n++];
+                        data[index++] = normals[n++];
+                    } else {
+                        data[index++] = 0;
+                        data[index++] = 0;
+                        data[index++] = 0;
+                    }
+
+                    if (tangents && tangents.length) {
+                        data[index++] = tangents[t++];
+                        data[index++] = tangents[t++];
+                        data[index++] = tangents[t++];
+                    } else {
+                        data[index++] = 0;
+                        data[index++] = 0;
+                        data[index++] = 0;
+                    }
+
+                    if (uvs && uvs.length) {
+                        data[index++] = uvs[u];
+                        data[index++] = uvs[u + 1];
+
+                        // use same secondary uvs as primary
+                        data[index++] = uvs[u++];
+                        data[index++] = uvs[u++];
+                    } else {
+                        data[index++] = 0;
+                        data[index++] = 0;
+                        data[index++] = 0;
+                        data[index++] = 0;
+                    }
+                }
+
+                this.autoDeriveVertexNormals = !(normals && normals.length);
+                this.autoDeriveVertexTangents = !(tangents && tangents.length);
+                this.autoGenerateDummyUVs = !(uvs && uvs.length);
+                this.updateData(data);
+            };
+            return CompactSubGeometry;
+        })(away.base.SubGeometryBase);
+        base.CompactSubGeometry = CompactSubGeometry;
+    })(away.base || (away.base = {}));
+    var base = away.base;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (base) {
         /**
         * Geometry is a collection of SubGeometries, each of which contain the actual geometrical data such as vertices,
         * normals, uvs, etc. It also contains a reference to an animation class, which defines how the geometry moves.
@@ -16659,7 +17840,7 @@ var away;
             }
             Object.defineProperty(Geometry.prototype, "assetType", {
                 get: function () {
-                    return away.assets.assetType.AssetType.GEOMETRY;
+                    return away.library.AssetType.GEOMETRY;
                 },
                 enumerable: true,
                 configurable: true
@@ -16712,7 +17893,7 @@ var away;
                 //if (hasEventListener(GeometryEvent.SUB_GEOMETRY_REMOVED))
                 this.dispatchEvent(new away.events.GeometryEvent(away.events.GeometryEvent.SUB_GEOMETRY_REMOVED, subGeometry));
 
-                this.invalidateBounds(subGeometry);
+                this.iInvalidateBounds(subGeometry);
             };
 
             /**
@@ -16781,7 +17962,7 @@ var away;
                 for (var i = 0; i < numSubGeoms; ++i) {
                     subGeom = this._subGeometries[i];
 
-                    if (subGeom instanceof away.geom.SubGeometry) {
+                    if (subGeom instanceof away.base.SubGeometry) {
                         continue;
                     }
 
@@ -16816,62 +17997,920 @@ var away;
 var away;
 (function (away) {
     ///<reference path="../_definitions.ts"/>
-    (function (events) {
+    (function (base) {
+        //import away3d.arcane;
+        //import away3d.managers.Stage3DProxy;
+        //import flash.display3D.Context3D;
+        //import flash.display3D.Context3DVertexBufferFormat;
+        //import flash.display3D.VertexBuffer3D;
+        //import flash.geom.Matrix3D;
+        //use namespace arcane;
         /**
-        * Dispatched to notify changes in a geometry object's state.
+        * The SubGeometry class is a collections of geometric data that describes a triangle mesh. It is owned by a
+        * Geometry instance, and wrapped by a SubMesh in the scene graph.
+        * Several SubGeometries are grouped so they can be rendered with different materials, but still represent a single
+        * object.
         *
         * @see away3d.core.base.Geometry
+        * @see away3d.core.base.SubMesh
         */
-        var GeometryEvent = (function (_super) {
-            __extends(GeometryEvent, _super);
+        var SubGeometry = (function (_super) {
+            __extends(SubGeometry, _super);
             /**
-            * Create a new GeometryEvent
-            * @param type The event type.
-            * @param subGeometry An optional SubGeometry object that is the subject of this event.
+            * Creates a new SubGeometry object.
             */
-            function GeometryEvent(type, subGeometry) {
-                if (typeof subGeometry === "undefined") { subGeometry = null; }
-                _super.call(this, type, false, false);
-                this._subGeometry = subGeometry;
+            function SubGeometry() {
+                _super.call(this);
+                this._verticesInvalid = new Array(8);
+                this._uvsInvalid = new Array(8);
+                this._secondaryUvsInvalid = new Array(8);
+                this._normalsInvalid = new Array(8);
+                this._tangentsInvalid = new Array(8);
+                // buffers:
+                this._vertexBuffer = new Array(8);
+                this._uvBuffer = new Array(8);
+                this._secondaryUvBuffer = new Array(8);
+                this._vertexNormalBuffer = new Array(8);
+                this._vertexTangentBuffer = new Array(8);
+                // buffer dirty flags, per context:
+                this._vertexBufferContext = new Array(8);
+                this._uvBufferContext = new Array(8);
+                this._secondaryUvBufferContext = new Array(8);
+                this._vertexNormalBufferContext = new Array(8);
+                this._vertexTangentBufferContext = new Array(8);
             }
-            Object.defineProperty(GeometryEvent.prototype, "subGeometry", {
+            Object.defineProperty(SubGeometry.prototype, "numVertices", {
                 get: /**
-                * The SubGeometry object that is the subject of this event, if appropriate.
+                * The total amount of vertices in the SubGeometry.
                 */
                 function () {
-                    return this._subGeometry;
+                    return this._numVertices;
                 },
                 enumerable: true,
                 configurable: true
             });
 
             /**
-            * Clones the event.
+            * @inheritDoc
+            */
+            SubGeometry.prototype.activateVertexBuffer = function (index, stage3DProxy) {
+                var contextIndex = stage3DProxy._iStage3DIndex;
+                var context = stage3DProxy._iContext3D;
+
+                if (!this._vertexBuffer[contextIndex] || this._vertexBufferContext[contextIndex] != context) {
+                    this._vertexBuffer[contextIndex] = context.createVertexBuffer(this._numVertices, 3);
+                    this._vertexBufferContext[contextIndex] = context;
+                    this._verticesInvalid[contextIndex] = true;
+                }
+                if (this._verticesInvalid[contextIndex]) {
+                    this._vertexBuffer[contextIndex].uploadFromArray(this._vertexData, 0, this._numVertices);
+                    this._verticesInvalid[contextIndex] = false;
+                }
+
+                context.setVertexBufferAt(index, this._vertexBuffer[contextIndex], 0, away.display3D.Context3DVertexBufferFormat.FLOAT_3);
+            };
+
+            /**
+            * @inheritDoc
+            */
+            SubGeometry.prototype.activateUVBuffer = function (index, stage3DProxy) {
+                var contextIndex = stage3DProxy._iStage3DIndex;
+                var context = stage3DProxy._iContext3D;
+
+                if (this._autoGenerateUVs && this._uvsDirty) {
+                    this._uvs = this.pUpdateDummyUVs(this._uvs);
+                }
+
+                if (!this._uvBuffer[contextIndex] || this._uvBufferContext[contextIndex] != context) {
+                    this._uvBuffer[contextIndex] = context.createVertexBuffer(this._numVertices, 2);
+                    this._uvBufferContext[contextIndex] = context;
+                    this._uvsInvalid[contextIndex] = true;
+                }
+
+                if (this._uvsInvalid[contextIndex]) {
+                    this._uvBuffer[contextIndex].uploadFromArray(this._uvs, 0, this._numVertices);
+                    this._uvsInvalid[contextIndex] = false;
+                }
+
+                context.setVertexBufferAt(index, this._uvBuffer[contextIndex], 0, away.display3D.Context3DVertexBufferFormat.FLOAT_2);
+            };
+
+            /**
+            * @inheritDoc
+            */
+            SubGeometry.prototype.activateSecondaryUVBuffer = function (index, stage3DProxy) {
+                var contextIndex = stage3DProxy._iStage3DIndex;
+                var context = stage3DProxy._iContext3D;
+
+                if (!this._secondaryUvBuffer[contextIndex] || this._secondaryUvBufferContext[contextIndex] != context) {
+                    this._secondaryUvBuffer[contextIndex] = context.createVertexBuffer(this._numVertices, 2);
+                    this._secondaryUvBufferContext[contextIndex] = context;
+                    this._secondaryUvsInvalid[contextIndex] = true;
+                }
+
+                if (this._secondaryUvsInvalid[contextIndex]) {
+                    this._secondaryUvBuffer[contextIndex].uploadFromArray(this._secondaryUvs, 0, this._numVertices);
+                    this._secondaryUvsInvalid[contextIndex] = false;
+                }
+
+                context.setVertexBufferAt(index, this._secondaryUvBuffer[contextIndex], 0, away.display3D.Context3DVertexBufferFormat.FLOAT_2);
+            };
+
+            /**
+            * Retrieves the VertexBuffer3D object that contains vertex normals.
+            * @param context The Context3D for which we request the buffer
+            * @return The VertexBuffer3D object that contains vertex normals.
+            */
+            SubGeometry.prototype.activateVertexNormalBuffer = function (index, stage3DProxy) {
+                var contextIndex = stage3DProxy._iStage3DIndex;
+                var context = stage3DProxy._iContext3D;
+
+                if (this._autoDeriveVertexNormals && this._vertexNormalsDirty) {
+                    this._vertexNormals = this.pUpdateVertexNormals(this._vertexNormals);
+                }
+
+                if (!this._vertexNormalBuffer[contextIndex] || this._vertexNormalBufferContext[contextIndex] != context) {
+                    this._vertexNormalBuffer[contextIndex] = context.createVertexBuffer(this._numVertices, 3);
+                    this._vertexNormalBufferContext[contextIndex] = context;
+                    this._normalsInvalid[contextIndex] = true;
+                }
+                if (this._normalsInvalid[contextIndex]) {
+                    this._vertexNormalBuffer[contextIndex].uploadFromArray(this._vertexNormals, 0, this._numVertices);
+                    this._normalsInvalid[contextIndex] = false;
+                }
+
+                context.setVertexBufferAt(index, this._vertexNormalBuffer[contextIndex], 0, away.display3D.Context3DVertexBufferFormat.FLOAT_3);
+            };
+
+            /**
+            * Retrieves the VertexBuffer3D object that contains vertex tangents.
+            * @param context The Context3D for which we request the buffer
+            * @return The VertexBuffer3D object that contains vertex tangents.
+            */
+            SubGeometry.prototype.activateVertexTangentBuffer = function (index, stage3DProxy) {
+                var contextIndex = stage3DProxy._iStage3DIndex;
+                var context = stage3DProxy._iContext3D;
+
+                if (this._vertexTangentsDirty) {
+                    this._vertexTangents = this.pUpdateVertexTangents(this._vertexTangents);
+                }
+
+                if (!this._vertexTangentBuffer[contextIndex] || this._vertexTangentBufferContext[contextIndex] != context) {
+                    this._vertexTangentBuffer[contextIndex] = context.createVertexBuffer(this._numVertices, 3);
+                    this._vertexTangentBufferContext[contextIndex] = context;
+                    this._tangentsInvalid[contextIndex] = true;
+                }
+
+                if (this._tangentsInvalid[contextIndex]) {
+                    this._vertexTangentBuffer[contextIndex].uploadFromArray(this._vertexTangents, 0, this._numVertices);
+                    this._tangentsInvalid[contextIndex] = false;
+                }
+
+                context.setVertexBufferAt(index, this._vertexTangentBuffer[contextIndex], 0, away.display3D.Context3DVertexBufferFormat.FLOAT_3);
+            };
+
+            SubGeometry.prototype.applyTransformation = function (transform) {
+                _super.prototype.applyTransformation.call(this, transform);
+                this.pInvalidateBuffers(this._verticesInvalid);
+                this.pInvalidateBuffers(this._normalsInvalid);
+                this.pInvalidateBuffers(this._tangentsInvalid);
+            };
+
+            /**
+            * Clones the current object
             * @return An exact duplicate of the current object.
             */
-            GeometryEvent.prototype.clone = function () {
-                return new GeometryEvent(type, this._subGeometry);
+            SubGeometry.prototype.clone = function () {
+                var clone = new away.base.SubGeometry();
+
+                clone.updateVertexData(this._vertexData.concat());
+                clone.updateUVData(this._uvs.concat());
+                clone.updateIndexData(this._indices.concat());
+
+                if (this._secondaryUvs) {
+                    clone.updateSecondaryUVData(this._secondaryUvs.concat());
+                }
+
+                if (!this._autoDeriveVertexNormals) {
+                    clone.updateVertexNormalData(this._vertexNormals.concat());
+                }
+
+                if (!this._autoDeriveVertexTangents) {
+                    clone.updateVertexTangentData(this._vertexTangents.concat());
+                }
+
+                return clone;
             };
-            GeometryEvent.SUB_GEOMETRY_ADDED = "SubGeometryAdded";
 
-            GeometryEvent.SUB_GEOMETRY_REMOVED = "SubGeometryRemoved";
+            /**
+            * @inheritDoc
+            */
+            SubGeometry.prototype.scale = function (scale) {
+                _super.prototype.scale.call(this, scale);
+                this.pInvalidateBuffers(this._verticesInvalid);
+            };
 
-            GeometryEvent.BOUNDS_INVALID = "BoundsInvalid";
-            return GeometryEvent;
-        })(away.events.Event);
-        events.GeometryEvent = GeometryEvent;
-    })(away.events || (away.events = {}));
-    var events = away.events;
+            /**
+            * @inheritDoc
+            */
+            SubGeometry.prototype.scaleUV = function (scaleU, scaleV) {
+                if (typeof scaleU === "undefined") { scaleU = 1; }
+                if (typeof scaleV === "undefined") { scaleV = 1; }
+                _super.prototype.scaleUV.call(this, scaleU, scaleV);
+                this.pInvalidateBuffers(this._uvsInvalid);
+            };
+
+            /**
+            * Clears all resources used by the SubGeometry object.
+            */
+            SubGeometry.prototype.dispose = function () {
+                _super.prototype.dispose.call(this);
+                this.pDisposeAllVertexBuffers();
+                this._vertexBuffer = null;
+                this._vertexNormalBuffer = null;
+                this._uvBuffer = null;
+                this._secondaryUvBuffer = null;
+                this._vertexTangentBuffer = null;
+                this._indexBuffer = null;
+                this._uvs = null;
+                this._secondaryUvs = null;
+                this._vertexNormals = null;
+                this._vertexTangents = null;
+                this._vertexBufferContext = null;
+                this._uvBufferContext = null;
+                this._secondaryUvBufferContext = null;
+                this._vertexNormalBufferContext = null;
+                this._vertexTangentBufferContext = null;
+            };
+
+            SubGeometry.prototype.pDisposeAllVertexBuffers = function () {
+                this.pDisposeVertexBuffers(this._vertexBuffer);
+                this.pDisposeVertexBuffers(this._vertexNormalBuffer);
+                this.pDisposeVertexBuffers(this._uvBuffer);
+                this.pDisposeVertexBuffers(this._secondaryUvBuffer);
+                this.pDisposeVertexBuffers(this._vertexTangentBuffer);
+            };
+
+            Object.defineProperty(SubGeometry.prototype, "vertexData", {
+                get: /**
+                * The raw vertex position data.
+                */
+                function () {
+                    return this._vertexData;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SubGeometry.prototype, "vertexPositionData", {
+                get: function () {
+                    return this._vertexData;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * Updates the vertex data of the SubGeometry.
+            * @param vertices The new vertex data to upload.
+            */
+            SubGeometry.prototype.updateVertexData = function (vertices) {
+                if (this._autoDeriveVertexNormals) {
+                    this._vertexNormalsDirty = true;
+                }
+
+                if (this._autoDeriveVertexTangents) {
+                    this._vertexTangentsDirty = true;
+                }
+
+                this._faceNormalsDirty = true;
+
+                this._vertexData = vertices;
+
+                var numVertices = vertices.length / 3;
+
+                if (numVertices != this._numVertices) {
+                    this.pDisposeAllVertexBuffers();
+                }
+
+                this._numVertices = numVertices;
+
+                this.pInvalidateBuffers(this._verticesInvalid);
+
+                this.pInvalidateBounds();
+            };
+
+            Object.defineProperty(SubGeometry.prototype, "UVData", {
+                get: /**
+                * The raw texture coordinate data.
+                */
+                function () {
+                    if (this._uvsDirty && this._autoGenerateUVs) {
+                        this._uvs = this.pUpdateDummyUVs(this._uvs);
+                    }
+
+                    return this._uvs;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SubGeometry.prototype, "secondaryUVData", {
+                get: function () {
+                    return this._secondaryUvs;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * Updates the uv coordinates of the SubGeometry.
+            * @param uvs The uv coordinates to upload.
+            */
+            SubGeometry.prototype.updateUVData = function (uvs) {
+                if (this._autoDeriveVertexTangents) {
+                    this._vertexTangentsDirty = true;
+                }
+
+                this._faceTangentsDirty = true;
+                this._uvs = uvs;
+                this.pInvalidateBuffers(this._uvsInvalid);
+            };
+
+            SubGeometry.prototype.updateSecondaryUVData = function (uvs) {
+                this._secondaryUvs = uvs;
+                this.pInvalidateBuffers(this._secondaryUvsInvalid);
+            };
+
+            Object.defineProperty(SubGeometry.prototype, "vertexNormalData", {
+                get: /**
+                * The raw vertex normal data.
+                */
+                function () {
+                    if (this._autoDeriveVertexNormals && this._vertexNormalsDirty) {
+                        this._vertexNormals = this.pUpdateVertexNormals(this._vertexNormals);
+                    }
+
+                    return this._vertexNormals;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * Updates the vertex normals of the SubGeometry. When updating the vertex normals like this,
+            * autoDeriveVertexNormals will be set to false and vertex normals will no longer be calculated automatically.
+            * @param vertexNormals The vertex normals to upload.
+            */
+            SubGeometry.prototype.updateVertexNormalData = function (vertexNormals) {
+                this._vertexNormalsDirty = false;
+                this._autoDeriveVertexNormals = (vertexNormals == null);
+                this._vertexNormals = vertexNormals;
+                this.pInvalidateBuffers(this._normalsInvalid);
+            };
+
+            Object.defineProperty(SubGeometry.prototype, "vertexTangentData", {
+                get: /**
+                * The raw vertex tangent data.
+                *
+                * @private
+                */
+                function () {
+                    if (this._autoDeriveVertexTangents && this._vertexTangentsDirty) {
+                        this._vertexTangents = this.pUpdateVertexTangents(this._vertexTangents);
+                    }
+
+                    return this._vertexTangents;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * Updates the vertex tangents of the SubGeometry. When updating the vertex tangents like this,
+            * autoDeriveVertexTangents will be set to false and vertex tangents will no longer be calculated automatically.
+            * @param vertexTangents The vertex tangents to upload.
+            */
+            SubGeometry.prototype.updateVertexTangentData = function (vertexTangents) {
+                this._vertexTangentsDirty = false;
+                this._autoDeriveVertexTangents = (vertexTangents == null);
+                this._vertexTangents = vertexTangents;
+                this.pInvalidateBuffers(this._tangentsInvalid);
+            };
+
+            SubGeometry.prototype.fromVectors = function (vertices, uvs, normals, tangents) {
+                this.updateVertexData(vertices);
+                this.updateUVData(uvs);
+                this.updateVertexNormalData(normals);
+                this.updateVertexTangentData(tangents);
+            };
+
+            SubGeometry.prototype.pUpdateVertexNormals = function (target) {
+                this.pInvalidateBuffers(this._normalsInvalid);
+                return _super.prototype.pUpdateVertexNormals.call(this, target);
+            };
+
+            SubGeometry.prototype.pUpdateVertexTangents = function (target) {
+                if (this._vertexNormalsDirty) {
+                    this._vertexNormals = this.pUpdateVertexNormals(this._vertexNormals);
+                }
+
+                this.pInvalidateBuffers(this._tangentsInvalid);
+
+                return _super.prototype.pUpdateVertexTangents.call(this, target);
+            };
+
+            SubGeometry.prototype.pUpdateDummyUVs = function (target) {
+                this.pInvalidateBuffers(this._uvsInvalid);
+                return _super.prototype.pUpdateDummyUVs.call(this, target);
+            };
+
+            SubGeometry.prototype.pDisposeForStage3D = function (stage3DProxy) {
+                var index = stage3DProxy._iStage3DIndex;
+                if (this._vertexBuffer[index]) {
+                    this._vertexBuffer[index].dispose();
+                    this._vertexBuffer[index] = null;
+                }
+                if (this._uvBuffer[index]) {
+                    this._uvBuffer[index].dispose();
+                    this._uvBuffer[index] = null;
+                }
+                if (this._secondaryUvBuffer[index]) {
+                    this._secondaryUvBuffer[index].dispose();
+                    this._secondaryUvBuffer[index] = null;
+                }
+                if (this._vertexNormalBuffer[index]) {
+                    this._vertexNormalBuffer[index].dispose();
+                    this._vertexNormalBuffer[index] = null;
+                }
+                if (this._vertexTangentBuffer[index]) {
+                    this._vertexTangentBuffer[index].dispose();
+                    this._vertexTangentBuffer[index] = null;
+                }
+                if (this._indexBuffer[index]) {
+                    this._indexBuffer[index].dispose();
+                    this._indexBuffer[index] = null;
+                }
+            };
+
+            Object.defineProperty(SubGeometry.prototype, "vertexStride", {
+                get: function () {
+                    return 3;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SubGeometry.prototype, "vertexTangentStride", {
+                get: function () {
+                    return 3;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SubGeometry.prototype, "vertexNormalStride", {
+                get: function () {
+                    return 3;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SubGeometry.prototype, "UVStride", {
+                get: function () {
+                    return 2;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SubGeometry.prototype, "secondaryUVStride", {
+                get: function () {
+                    return 2;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SubGeometry.prototype, "vertexOffset", {
+                get: function () {
+                    return 0;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SubGeometry.prototype, "vertexNormalOffset", {
+                get: function () {
+                    return 0;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SubGeometry.prototype, "vertexTangentOffset", {
+                get: function () {
+                    return 0;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SubGeometry.prototype, "UVOffset", {
+                get: function () {
+                    return 0;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SubGeometry.prototype, "secondaryUVOffset", {
+                get: function () {
+                    return 0;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            SubGeometry.prototype.cloneWithSeperateBuffers = function () {
+                var obj = this.clone();
+                return obj;
+            };
+            return SubGeometry;
+        })(away.base.SubGeometryBase);
+        base.SubGeometry = SubGeometry;
+    })(away.base || (away.base = {}));
+    var base = away.base;
 })(away || (away = {}));
-///<reference path="../src/away/_definitions.ts" />
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../_definitions.ts" />
+    (function (controllers) {
+        var ControllerBase = (function () {
+            function ControllerBase(targetObject) {
+                if (typeof targetObject === "undefined") { targetObject = null; }
+                this._pAutoUpdate = true;
+                this.targetObject = targetObject;
+            }
+            ControllerBase.prototype.pNotifyUpdate = function () {
+                if (this._pTargetObject && this._pTargetObject.iImplicitPartition && this._pAutoUpdate) {
+                    this._pTargetObject.iImplicitPartition.iMarkForUpdate(this._pTargetObject);
+                }
+            };
+
+            Object.defineProperty(ControllerBase.prototype, "targetObject", {
+                get: function () {
+                    return this._pTargetObject;
+                },
+                set: function (val) {
+                    if (this._pTargetObject == val) {
+                        return;
+                    }
+
+                    if (this._pTargetObject && this._pAutoUpdate) {
+                        this._pTargetObject._iController = null;
+                    }
+                    this._pTargetObject = val;
+
+                    if (this._pTargetObject && this._pAutoUpdate) {
+                        this._pTargetObject._iController = this;
+                    }
+                    this.pNotifyUpdate();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(ControllerBase.prototype, "autoUpdate", {
+                get: function () {
+                    return this._pAutoUpdate;
+                },
+                set: function (val) {
+                    if (this._pAutoUpdate == val) {
+                        return;
+                    }
+                    this._pAutoUpdate = val;
+
+                    if (this._pTargetObject) {
+                        if (this._pTargetObject) {
+                            this._pTargetObject._iController = this;
+                        } else {
+                            this._pTargetObject._iController = null;
+                        }
+                    }
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            ControllerBase.prototype.update = function (interpolate) {
+                if (typeof interpolate === "undefined") { interpolate = true; }
+                throw new away.errors.AbstractMethodError();
+            };
+            return ControllerBase;
+        })();
+        controllers.ControllerBase = ControllerBase;
+    })(away.controllers || (away.controllers = {}));
+    var controllers = away.controllers;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../_definitions.ts" />
+    (function (controllers) {
+        var LookAtController = (function (_super) {
+            __extends(LookAtController, _super);
+            function LookAtController(targetObject, lookAtObject) {
+                if (typeof targetObject === "undefined") { targetObject = null; }
+                if (typeof lookAtObject === "undefined") { lookAtObject = null; }
+                _super.call(this, targetObject);
+                this._pOrigin = new away.geom.Vector3D(0.0, 0.0, 0.0);
+                if (lookAtObject) {
+                    this.lookAtObject = lookAtObject;
+                } else {
+                    this.lookAtPosition = new away.geom.Vector3D();
+                }
+            }
+            Object.defineProperty(LookAtController.prototype, "lookAtPosition", {
+                get: function () {
+                    return this._pLookAtPosition;
+                },
+                set: function (val) {
+                    if (this._pLookAtObject) {
+                        this._pLookAtObject.removeEventListener(away.events.Object3DEvent.SCENETRANSFORM_CHANGED, this.onLookAtObjectChanged, this);
+                        this._pLookAtObject = null;
+                    }
+
+                    this._pLookAtPosition = val;
+                    this.pNotifyUpdate();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(LookAtController.prototype, "lookAtObject", {
+                get: function () {
+                    return this._pLookAtObject;
+                },
+                set: function (val) {
+                    if (this._pLookAtPosition) {
+                        this._pLookAtPosition = null;
+                    }
+
+                    if (this._pLookAtObject == val) {
+                        return;
+                    }
+
+                    if (this._pLookAtObject) {
+                        this._pLookAtObject.removeEventListener(away.events.Object3DEvent.SCENETRANSFORM_CHANGED, this.onLookAtObjectChanged, this);
+                    }
+                    this._pLookAtObject = val;
+
+                    if (this._pLookAtObject) {
+                        this._pLookAtObject.addEventListener(away.events.Object3DEvent.SCENETRANSFORM_CHANGED, this.onLookAtObjectChanged, this);
+                    }
+
+                    this.pNotifyUpdate();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            //@override
+            LookAtController.prototype.update = function (interpolate) {
+                if (typeof interpolate === "undefined") { interpolate = true; }
+                interpolate = interpolate;
+
+                if (this._pTargetObject) {
+                    if (this._pLookAtPosition) {
+                        this._pTargetObject.lookAt(this._pLookAtPosition);
+                    } else if (this._pLookAtObject) {
+                        this._pTargetObject.lookAt(this._pLookAtObject.scene ? this._pLookAtObject.scenePosition : this._pLookAtObject.position);
+                    }
+                }
+            };
+
+            LookAtController.prototype.onLookAtObjectChanged = function (event) {
+                this.pNotifyUpdate();
+            };
+            return LookAtController;
+        })(away.controllers.ControllerBase);
+        controllers.LookAtController = LookAtController;
+    })(away.controllers || (away.controllers = {}));
+    var controllers = away.controllers;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../_definitions.ts" />
+    (function (lights) {
+        var LightBase = (function (_super) {
+            __extends(LightBase, _super);
+            // TODO private _shadowMapper:ShadowMapperBase;
+            function LightBase() {
+                _super.call(this);
+                this._color = 0xffffff;
+                this._colorR = 1;
+                this._colorG = 1;
+                this._colorB = 1;
+                this._ambientColor = 0xffffff;
+                this._ambient = 0;
+                this._iAmbientR = 0;
+                this._iAmbientG = 0;
+                this._iAmbientB = 0;
+                this._specular = 1;
+                this._iSpecularR = 1;
+                this._iSpecularG = 1;
+                this._iSpecularB = 1;
+                this._diffuse = 1;
+                this._iDiffuseR = 1;
+                this._iDiffuseG = 1;
+                this._iDiffuseB = 1;
+            }
+            Object.defineProperty(LightBase.prototype, "castsShadows", {
+                get: function () {
+                    return this._castsShadows;
+                },
+                set: function (value) {
+                    if (this._castsShadows == value) {
+                        return;
+                    }
+
+                    this._castsShadows = value;
+
+                    throw new away.errors.PartialImplementationError();
+
+                    /*
+                    if( value )
+                    {
+                    _shadowMapper ||= createShadowMapper();
+                    _shadowMapper.light = this;
+                    } else {
+                    _shadowMapper.dispose();
+                    _shadowMapper = null;
+                    }
+                    */
+                    this.dispatchEvent(new away.events.LightEvent(away.events.LightEvent.CASTS_SHADOW_CHANGE));
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(LightBase.prototype, "specular", {
+                get: //TODO implement pCreateShadowMapper
+                /*
+                protected pCreateShadowMapper():ShadowMapperBase
+                {
+                throw new AbstractMethodError();
+                }
+                */
+                function () {
+                    return this._specular;
+                },
+                set: function (value) {
+                    if (value < 0) {
+                        value = 0;
+                    }
+                    this._specular = value;
+                    this.updateSpecular();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(LightBase.prototype, "diffuse", {
+                get: function () {
+                    return this._diffuse;
+                },
+                set: function (value) {
+                    if (value < 0) {
+                        value = 0;
+                    }
+                    this._diffuse = value;
+                    this.updateDiffuse();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(LightBase.prototype, "color", {
+                get: function () {
+                    return this._color;
+                },
+                set: function (value) {
+                    this._color = value;
+                    this._colorR = ((this._color >> 16) & 0xff) / 0xff;
+                    this._colorG = ((this._color >> 8) & 0xff) / 0xff;
+                    this._colorB = (this._color & 0xff) / 0xff;
+                    this.updateDiffuse();
+                    this.updateSpecular();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(LightBase.prototype, "ambient", {
+                get: function () {
+                    return this._ambient;
+                },
+                set: function (value) {
+                    if (value < 0) {
+                        value = 0;
+                    } else if (value > 1) {
+                        value = 1;
+                    }
+                    this._ambient = value;
+                    this.updateAmbient();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(LightBase.prototype, "ambientColor", {
+                get: function () {
+                    return this._ambientColor;
+                },
+                set: function (value) {
+                    this._ambientColor = value;
+                    this.updateAmbient();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            LightBase.prototype.updateAmbient = function () {
+                this._iAmbientR = ((this._ambientColor >> 16) & 0xff) / 0xff * this._ambient;
+                this._iAmbientG = ((this._ambientColor >> 8) & 0xff) / 0xff * this._ambient;
+                this._iAmbientB = (this._ambientColor & 0xff) / 0xff * this._ambient;
+            };
+
+            LightBase.prototype.iGetObjectProjectionMatrix = function (renderable, target) {
+                if (typeof target === "undefined") { target = null; }
+                throw new away.errors.AbstractMethodError();
+            };
+
+            //@override
+            LightBase.prototype.pCreateEntityPartitionNode = function () {
+                return new away.partition.LightNode(this);
+            };
+
+            Object.defineProperty(LightBase.prototype, "assetType", {
+                get: //@override
+                function () {
+                    return away.library.AssetType.LIGHT;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            LightBase.prototype.updateSpecular = function () {
+                this._iSpecularR = this._colorR * this._specular;
+                this._iSpecularG = this._colorG * this._specular;
+                this._iSpecularB = this._colorB * this._specular;
+            };
+
+            LightBase.prototype.updateDiffuse = function () {
+                this._iDiffuseR = this._colorR * this._diffuse;
+                this._iDiffuseG = this._colorG * this._diffuse;
+                this._iDiffuseB = this._colorB * this._diffuse;
+            };
+            return LightBase;
+        })(away.entities.Entity);
+        lights.LightBase = LightBase;
+    })(away.lights || (away.lights = {}));
+    var lights = away.lights;
+})(away || (away = {}));
+///<reference path="../../../src/away/_definitions.ts" />
 //------------------------------------------------------------------------------------------------
 // Web / PHP Storm arguments string
 //------------------------------------------------------------------------------------------------
-// --sourcemap $ProjectFileDir$/tests/ManagersTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/ManagersTest.js
+// --sourcemap $ProjectFileDir$/tests/away/managers/ManagersTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/away/managers/ManagersTest.js
 //------------------------------------------------------------------------------------------------
 var ManagersTest = (function () {
     function ManagersTest() {
-        away.Debug.log('Hello Karim');
+        this.geomBase = new away.base.SubGeometryBase();
+        this.geom = new away.base.Geometry();
         away.Debug.THROW_ERRORS = false;
 
         this.stage = new away.display.Stage();

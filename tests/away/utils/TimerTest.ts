@@ -1,11 +1,9 @@
-///<reference path="../../../src/away/utils/Timer.ts" />
-///<reference path="../src/away/utils/getTimer.ts" />
-///<reference path="../src/away/events/TimerEvent.ts" />
+///<reference path="../../../src/away/_definitions.ts" />
 
 //------------------------------------------------------------------------------------------------
 // Web / PHP Storm arguments string
 //------------------------------------------------------------------------------------------------
-// --sourcemap $ProjectFileDir$/tests/TimerTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/TimerTest.js
+// --sourcemap $ProjectFileDir$/tests/away/utils/TimerTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/away/utils/TimerTest.js
 //------------------------------------------------------------------------------------------------
 
 class TimerTest
@@ -25,9 +23,6 @@ class TimerTest
         this.repeatTenTimes.addEventListener(away.events.TimerEvent.TIMER , this.repeatTenTimesEvent , this );
         this.repeatTenTimes.addEventListener(away.events.TimerEvent.TIMER_COMPLETE, this.repeatTenTimesComplete, this );
         this.repeatTenTimes.start();
-
-
-
 
     }
 
@@ -58,11 +53,19 @@ class TimerTest
 
 }
 
+
+
+var GL = null;//: WebGLRenderingContext;
+
+
 window.onload = function ()
 {
+    var canvas : HTMLCanvasElement = document.createElement('canvas');
+    GL = canvas.getContext("experimental-webgl");
 
     var test = new TimerTest();
 
 
 }
+
 
