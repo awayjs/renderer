@@ -118,13 +118,13 @@ class Away3D extends away.events.EventDispatcher
 							]
 		
 		var vBuffer: away.display3D.VertexBuffer3D = this._context3D.createVertexBuffer( 4, 3 );
-		vBuffer.upload( vertices, 0, 4 );
+		vBuffer.uploadFromArray( vertices, 0, 4 );
 		
 		var tCoordBuffer: away.display3D.VertexBuffer3D = this._context3D.createVertexBuffer( 4, 2 );
-		tCoordBuffer.upload( uvCoords, 0, 4 );
+		tCoordBuffer.uploadFromArray( uvCoords, 0, 4 );
 		
 		this._iBuffer = this._context3D.createIndexBuffer( 6 );
-		this._iBuffer.upload( indices, 0, 6 );
+		this._iBuffer.uploadFromArray( indices, 0, 6 );
 		
 		this._program = this._context3D.createProgram();
 		
@@ -145,7 +145,8 @@ class Away3D extends away.events.EventDispatcher
 							  "void main() {\n" +
 							  "		gl_FragColor = texture2D(uSampler, vTextureCoord);\n" +
 							  "}\n";
-		
+
+
 		this._program.upload( vProgram, fProgram );
 		this._context3D.setProgram( this._program );
 		
