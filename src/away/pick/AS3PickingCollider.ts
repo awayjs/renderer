@@ -28,8 +28,8 @@ module away.pick
 		/**
 		 * @inheritDoc
 		 */
-        /* TODO: Implement & Integrate Dependencies: SubMesh
-		public testSubMeshCollision(subMesh:SubMesh, pickingCollisionVO:PickingCollisionVO, shortestCollisionDistance:number):boolean
+        //* TODO: Implement & Integrate Dependencies: SubMesh
+		public testSubMeshCollision(subMesh:away.base.SubMesh, pickingCollisionVO:away.pick.PickingCollisionVO, shortestCollisionDistance:number):boolean
 		{
 			var t:number;
 			var i0:number, i1:number, i2:number;
@@ -59,19 +59,19 @@ module away.pick
 			for (var index:number = 0; index < numIndices; index += 3) { // sweep all triangles
 				// evaluate triangle indices
 				i0 = vertexOffset + indexData[ index ]*vertexStride;
-				i1 = vertexOffset + indexData[ uint(index + 1) ]*vertexStride;
-				i2 = vertexOffset + indexData[ uint(index + 2) ]*vertexStride;
+				i1 = vertexOffset + indexData[ (index + 1) ]*vertexStride;
+				i2 = vertexOffset + indexData[ (index + 2) ]*vertexStride;
 				
 				// evaluate triangle vertices
 				p0x = vertexData[ i0 ];
-				p0y = vertexData[ uint(i0 + 1) ];
-				p0z = vertexData[ uint(i0 + 2) ];
+				p0y = vertexData[ (i0 + 1) ];
+				p0z = vertexData[ (i0 + 2) ];
 				p1x = vertexData[ i1 ];
-				p1y = vertexData[ uint(i1 + 1) ];
-				p1z = vertexData[ uint(i1 + 2) ];
+				p1y = vertexData[ (i1 + 1) ];
+				p1z = vertexData[ (i1 + 2) ];
 				p2x = vertexData[ i2 ];
-				p2y = vertexData[ uint(i2 + 1) ];
-				p2z = vertexData[ uint(i2 + 2) ];
+				p2y = vertexData[ (i2 + 1) ];
+				p2z = vertexData[ (i2 + 2) ];
 				
 				// evaluate sides and triangle normal
 				s0x = p1x - p0x; // s0 = p1 - p0
@@ -89,16 +89,16 @@ module away.pick
 				nz *= nl;
 				
 				// -- plane intersection test --
-				nDotV = nx*rayDirection.x + ny* +rayDirection.y + nz*rayDirection.z; // rayDirection . normal
+				nDotV = nx*this.rayDirection.x + ny* +this.rayDirection.y + nz*this.rayDirection.z; // rayDirection . normal
 				if (( !bothSides && nDotV < 0.0 ) || ( bothSides && nDotV != 0.0 )) { // an intersection must exist
 					// find collision t
 					D = -( nx*p0x + ny*p0y + nz*p0z );
-					disToPlane = -( nx*rayPosition.x + ny*rayPosition.y + nz*rayPosition.z + D );
+					disToPlane = -( nx*this.rayPosition.x + ny*this.rayPosition.y + nz*this.rayPosition.z + D );
 					t = disToPlane/nDotV;
 					// find collision point
-					cx = rayPosition.x + t*rayDirection.x;
-					cy = rayPosition.y + t*rayDirection.y;
-					cz = rayPosition.z + t*rayDirection.z;
+					cx = this.rayPosition.x + t*this.rayDirection.x;
+					cy = this.rayPosition.y + t*this.rayDirection.y;
+					cz = this.rayPosition.z + t*this.rayDirection.z;
 					// collision point inside triangle? ( using barycentric coordinates )
 					Q1Q2 = s0x*s1x + s0y*s1y + s0z*s1z;
 					Q1Q1 = s0x*s0x + s0y*s0y + s0z*s0z;
@@ -120,24 +120,26 @@ module away.pick
 						shortestCollisionDistance = t;
 						collisionTriangleIndex = index/3;
 						pickingCollisionVO.rayEntryDistance = t;
-						pickingCollisionVO.localPosition = new Vector3D(cx, cy, cz);
-						pickingCollisionVO.localNormal = new Vector3D(nx, ny, nz);
-						pickingCollisionVO.uv = getCollisionUV(indexData, uvData, index, v, w, u, uvOffset, uvStride);
+						pickingCollisionVO.localPosition = new away.geom.Vector3D(cx, cy, cz);
+						pickingCollisionVO.localNormal = new away.geom.Vector3D(nx, ny, nz);
+						pickingCollisionVO.uv = this._pGetCollisionUV(indexData, uvData, index, v, w, u, uvOffset, uvStride);
 						pickingCollisionVO.index = index;
-						pickingCollisionVO.subGeometryIndex = getMeshSubMeshIndex(subMesh);
+						pickingCollisionVO.subGeometryIndex = this.pGetMeshSubMeshIndex(subMesh);
 						
 						// if not looking for best hit, first found will do...
-						if (!_findClosestCollision)
+						if (!this._findClosestCollision)
 							return true;
 					}
 				}
 			}
-			
+
+
+
 			if (collisionTriangleIndex >= 0)
 				return true;
 			
 			return false;
 		}
-        */
+        //*/
 	}
 }
