@@ -10,26 +10,28 @@ module away.display3D
 	export class IndexBuffer3D
 	{
 		
+		private _gl:WebGLRenderingContext;
 		private _numIndices:number;
 		private _buffer: WebGLBuffer;
 		
-		constructor( numIndices:number )
+		constructor( gl:WebGLRenderingContext, numIndices:number )
 		{
-			this._buffer = GL.createBuffer();
+			this._gl = gl;
+			this._buffer = this._gl.createBuffer();
 			this._numIndices = numIndices;
 		}
 		
 		public uploadFromArray( data:number[], startOffset:number, count:number ):void
 		{
-			GL.bindBuffer( GL.ELEMENT_ARRAY_BUFFER, this._buffer );
+			this._gl.bindBuffer( this._gl.ELEMENT_ARRAY_BUFFER, this._buffer );
 			
 			// TODO add index offsets
-			GL.bufferData( GL.ELEMENT_ARRAY_BUFFER, new Uint16Array( data ), GL.STATIC_DRAW );
+			this._gl.bufferData( this._gl.ELEMENT_ARRAY_BUFFER, new Uint16Array( data ), this._gl.STATIC_DRAW );
 		}
 		
 		public dispose():void
 		{
-			GL.deleteBuffer( this._buffer );
+			this._gl.deleteBuffer( this._buffer );
 		}
 		
 		public get numIndices():number

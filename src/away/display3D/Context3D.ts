@@ -29,7 +29,7 @@ module away.display3D
 			try
 			{
 				this._gl = <WebGLRenderingContext> canvas.getContext("experimental-webgl");
-				if( !GL )
+				if( !this._gl )
 				{
 					this._gl = <WebGLRenderingContext> canvas.getContext("webgl");
 				}
@@ -39,7 +39,7 @@ module away.display3D
 				//this.dispatchEvent( new away.events.AwayEvent( away.events.AwayEvent.INITIALIZE_FAILED, e ) );
 			}
 			
-			if( GL )
+			if( this._gl )
 			{
 				//this.dispatchEvent( new away.events.AwayEvent( away.events.AwayEvent.INITIALIZE_SUCCESS ) );
 			}
@@ -73,10 +73,10 @@ module away.display3D
 				this.updateBlendStatus();
 				this._drawing = true;
 			}
-			GL.clearColor( red, green, blue, alpha );
-			GL.clearDepth( depth );
-			GL.clearStencil( stencil );
-			GL.clear( mask );
+			this._gl.clearColor( red, green, blue, alpha );
+			this._gl.clearDepth( depth );
+			this._gl.clearStencil( stencil );
+			this._gl.clear( mask );
 		}
 		
 		public configureBackBuffer( width:number, height:number, antiAlias:number, enableDepthAndStencil:boolean = true )
@@ -89,13 +89,13 @@ module away.display3D
 			
 			if( enableDepthAndStencil )
 			{
-				GL.enable( GL.STENCIL_TEST );
-				GL.enable( GL.DEPTH_TEST );
+				this._gl.enable( this._gl.STENCIL_TEST );
+				this._gl.enable( this._gl.DEPTH_TEST );
 			}
 			// TODO add antialias (seems to be a webgl bug)
 			// TODO set webgl / canvas dimensions
-			GL.viewport.width = width;
-			GL.viewport.height = height;
+			this._gl.viewport.width = width;
+			this._gl.viewport.height = height;
 		}
 		
 		/*
@@ -110,7 +110,7 @@ module away.display3D
 		{
             away.Debug.log( "===== createIndexBuffer =====" );
             away.Debug.log( "\tnumIndices: " + numIndices );
-			var indexBuffer:IndexBuffer3D = new away.display3D.IndexBuffer3D( numIndices );
+			var indexBuffer:IndexBuffer3D = new away.display3D.IndexBuffer3D( this._gl, numIndices );
 			this._indexBufferList.push( indexBuffer );
 			return indexBuffer;
 		}
@@ -118,7 +118,7 @@ module away.display3D
 		public createProgram(): Program3D
 		{
             away.Debug.log( "===== createProgram =====" );
-			var program:Program3D = new away.display3D.Program3D();
+			var program:Program3D = new away.display3D.Program3D( this._gl );
 			this._programList.push( program );
 			return program;
 		}
@@ -132,7 +132,7 @@ module away.display3D
             away.Debug.log( "\toptimizeForRenderToTexture: " + optimizeForRenderToTexture );
             away.Debug.log( "\tstreamingLevels: " + streamingLevels );
 			
-			var texture: Texture = new away.display3D.Texture( width, height );
+			var texture: Texture = new away.display3D.Texture( this._gl, width, height );
 			this._textureList.push( texture );
 			return texture;
 		}
@@ -142,7 +142,7 @@ module away.display3D
             away.Debug.log( "===== createVertexBuffer =====" );
             away.Debug.log( "\tnumVertices: " + numVertices );
             away.Debug.log( "\tdata32PerVertex: " + data32PerVertex );
-			var vertexBuffer:VertexBuffer3D = new away.display3D.VertexBuffer3D( numVertices, data32PerVertex );
+			var vertexBuffer:VertexBuffer3D = new away.display3D.VertexBuffer3D( this._gl, numVertices, data32PerVertex );
 			this._vertexBufferList.push( vertexBuffer );
 			return vertexBuffer;
 		}
@@ -204,15 +204,15 @@ module away.display3D
 				numIndices = numTriangles * 3;
 			}
 			
-			GL.bindBuffer( GL.ELEMENT_ARRAY_BUFFER, indexBuffer.glBuffer );
-			GL.drawElements( GL.TRIANGLES, numIndices, GL.UNSIGNED_SHORT, firstIndex );
+			this._gl.bindBuffer( this._gl.ELEMENT_ARRAY_BUFFER, indexBuffer.glBuffer );
+			this._gl.drawElements( this._gl.TRIANGLES, numIndices, this._gl.UNSIGNED_SHORT, firstIndex );
 		}
 		
 		public present()
 		{
             away.Debug.log( "===== present =====" );
 			this._drawing = false;
-			GL.useProgram( null );
+			this._gl.useProgram( null );
 		}
 		
 		
@@ -232,7 +232,7 @@ module away.display3D
 		public setColorMask( red:boolean, green:boolean, blue:boolean, alpha:boolean ) 
 		{
             away.Debug.log( "===== setColorMask =====" );
-			GL.colorMask( red, green, blue, alpha );
+			this._gl.colorMask( red, green, blue, alpha );
 		}
 		
 		public setCulling( triangleFaceToCull:string ) 
@@ -241,21 +241,21 @@ module away.display3D
             away.Debug.log( "\ttriangleFaceToCull: " + triangleFaceToCull );
 			if( triangleFaceToCull == Context3DTriangleFace.NONE )
 			{
-				GL.disable( GL.CULL_FACE );
+				this._gl.disable( this._gl.CULL_FACE );
 			}
 			else
 			{
-				GL.enable( GL.CULL_FACE );
+				this._gl.enable( this._gl.CULL_FACE );
 				switch( triangleFaceToCull )
 				{
 					case Context3DTriangleFace.FRONT:
-							GL.cullFace( GL.FRONT );
+							this._gl.cullFace( this._gl.FRONT );
 						break
 					case Context3DTriangleFace.BACK:
-							GL.cullFace( GL.BACK );
+							this._gl.cullFace( this._gl.BACK );
 						break;
 					case Context3DTriangleFace.FRONT_AND_BACK:
-							GL.cullFace( GL.FRONT_AND_BACK );
+							this._gl.cullFace( this._gl.FRONT_AND_BACK );
 						break;
 					default:
 						throw "Unknown Context3DTriangleFace type."; // TODO error
@@ -269,8 +269,8 @@ module away.display3D
             away.Debug.log( "===== setDepthTest =====" );
             away.Debug.log( "\tdepthMask: " + depthMask );
             away.Debug.log( "\tpassCompareMode: " + passCompareMode );
-			GL.depthFunc( passCompareMode );
-			GL.depthMask( depthMask );
+			this._gl.depthFunc( passCompareMode );
+			this._gl.depthMask( depthMask );
 		}
 		
 		public setProgram( program3D:away.display3D.Program3D )
@@ -324,8 +324,8 @@ module away.display3D
             away.Debug.log( "\tmatrix: " + matrix.rawData );
             away.Debug.log( "\ttransposedMatrix: " + transposedMatrix );
 			
-			var location:WebGLUniformLocation = GL.getUniformLocation( this._currentProgram.glProgram, locationName );
-			GL.uniformMatrix4fv( location, !transposedMatrix, new Float32Array( matrix.rawData ) );
+			var location:WebGLUniformLocation = this._gl.getUniformLocation( this._currentProgram.glProgram, locationName );
+			this._gl.uniformMatrix4fv( location, !transposedMatrix, new Float32Array( matrix.rawData ) );
 		}
 		
 		public setGLSLProgramConstantsFromVector4( locationName:string, data:number[], startIndex:number = 0 ) 
@@ -334,58 +334,58 @@ module away.display3D
             away.Debug.log( "\tlocationName: " + locationName );
             away.Debug.log( "\tdata: " + data );
             away.Debug.log( "\tstartIndex: " + startIndex );
-			var location:WebGLUniformLocation = GL.getUniformLocation( this._currentProgram.glProgram, locationName );
-			GL.uniform4f( location, data[startIndex], data[startIndex+1], data[startIndex+2], data[startIndex+3] );
+			var location:WebGLUniformLocation = this._gl.getUniformLocation( this._currentProgram.glProgram, locationName );
+			this._gl.uniform4f( location, data[startIndex], data[startIndex+1], data[startIndex+2], data[startIndex+3] );
 		}
 		
 		public setScissorRectangle( rectangle:away.geom.Rectangle ) 
 		{
             away.Debug.log( "===== setScissorRectangle =====" );
             away.Debug.log( "\trectangle: " + rectangle );
-			GL.scissor( rectangle.x, rectangle.y, rectangle.width, rectangle.height );
+			this._gl.scissor( rectangle.x, rectangle.y, rectangle.width, rectangle.height );
 		}
 		
 		public setGLSLTextureAt( locationName:string, texture:TextureBase, textureIndex:number )
 		{
-			var location:WebGLUniformLocation = GL.getUniformLocation( this._currentProgram.glProgram, locationName );
+			var location:WebGLUniformLocation = this._gl.getUniformLocation( this._currentProgram.glProgram, locationName );
             switch( textureIndex )
 			{
                 case 0: 
-						GL.activeTexture( GL.TEXTURE0 );
+						this._gl.activeTexture( this._gl.TEXTURE0 );
 					break;
                 case 1:
-						GL.activeTexture( GL.TEXTURE1 );
+						this._gl.activeTexture( this._gl.TEXTURE1 );
 					break;
                 case 2:
-						GL.activeTexture( GL.TEXTURE2 );
+						this._gl.activeTexture( this._gl.TEXTURE2 );
 					break;
                 case 3:
-						GL.activeTexture( GL.TEXTURE3 );
+						this._gl.activeTexture( this._gl.TEXTURE3 );
 					break;
                 case 4:
-						GL.activeTexture( GL.TEXTURE4 );
+						this._gl.activeTexture( this._gl.TEXTURE4 );
 					break;
                 case 5:
-						GL.activeTexture( GL.TEXTURE5 );
+						this._gl.activeTexture( this._gl.TEXTURE5 );
 					break;
                 case 6:
-						GL.activeTexture( GL.TEXTURE6 );
+						this._gl.activeTexture( this._gl.TEXTURE6 );
 					break;
                 case 7:
-						GL.activeTexture( GL.TEXTURE7 );
+						this._gl.activeTexture( this._gl.TEXTURE7 );
 					break;
                 default:
 					throw "Texture " + textureIndex + " is out of bounds.";
             }
 			
-			GL.bindTexture( GL.TEXTURE_2D, texture.glTexture );
-			GL.uniform1i( location, textureIndex );
+			this._gl.bindTexture( this._gl.TEXTURE_2D, texture.glTexture );
+			this._gl.uniform1i( location, textureIndex );
 			
 			// TODO create something like setSamplerStateAt(.... 
-			GL.texParameteri( GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE );
-			GL.texParameteri( GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE );
-			GL.texParameteri( GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR );
-			GL.texParameteri( GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR );
+			this._gl.texParameteri( this._gl.TEXTURE_2D, this._gl.TEXTURE_WRAP_S, this._gl.CLAMP_TO_EDGE );
+			this._gl.texParameteri( this._gl.TEXTURE_2D, this._gl.TEXTURE_WRAP_T, this._gl.CLAMP_TO_EDGE );
+			this._gl.texParameteri( this._gl.TEXTURE_2D, this._gl.TEXTURE_MIN_FILTER, this._gl.LINEAR );
+			this._gl.texParameteri( this._gl.TEXTURE_2D, this._gl.TEXTURE_MAG_FILTER, this._gl.LINEAR );
         }
 		
 		public setVertexBufferAt( index:number, buffer:VertexBuffer3D, bufferOffset:number = 0, format:string = null )
@@ -407,12 +407,12 @@ module away.display3D
             away.Debug.log( "\tlocationName: " + locationName );
             away.Debug.log( "\tbufferOffset: " + bufferOffset );
 			
-			var location:number = GL.getAttribLocation( this._currentProgram.glProgram, locationName );
+			var location:number = this._gl.getAttribLocation( this._currentProgram.glProgram, locationName );
 			
-			GL.bindBuffer( GL.ARRAY_BUFFER, buffer.glBuffer );
+			this._gl.bindBuffer( this._gl.ARRAY_BUFFER, buffer.glBuffer );
 			
 			var dimension:number;
-			var type:number = GL.FLOAT;
+			var type:number = this._gl.FLOAT;
 			var numBytes:number = 4;
 			
 			switch( format )
@@ -436,8 +436,8 @@ module away.display3D
 					throw "Buffer format " + format + " is not supported.";
 			}
 			
-			GL.enableVertexAttribArray( location );
-			GL.vertexAttribPointer( location, dimension, type, false, buffer.data32PerVertex * numBytes, bufferOffset * numBytes );
+			this._gl.enableVertexAttribArray( location );
+			this._gl.vertexAttribPointer( location, dimension, type, false, buffer.data32PerVertex * numBytes, bufferOffset * numBytes );
 		}
 		
 		private updateBlendStatus() 
@@ -445,13 +445,13 @@ module away.display3D
             away.Debug.log( "===== updateBlendStatus =====" );
 			if ( this._blendEnabled ) 
 			{
-				GL.enable( GL.BLEND );
-				GL.blendEquation( GL.FUNC_ADD );
-				GL.blendFunc( this._blendSourceFactor, this._blendDestinationFactor );
+				this._gl.enable( this._gl.BLEND );
+				this._gl.blendEquation( this._gl.FUNC_ADD );
+				this._gl.blendFunc( this._blendSourceFactor, this._blendDestinationFactor );
 			}
 			else
 			{
-				GL.disable( GL.BLEND );
+				this._gl.disable( this._gl.BLEND );
 			}
 		}
 	}

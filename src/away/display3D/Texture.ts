@@ -15,14 +15,14 @@ module away.display3D
 		private _width:number;
 		private _height:number;
 		
-		constructor( width:number, height:number )
+		constructor( gl:WebGLRenderingContext, width:number, height:number )
 		{
-			super( );
+			super( gl );
 			this._width = width;
 			this._height = height;
 			
-			GL.bindTexture( GL.TEXTURE_2D, this.glTexture );
-			GL.texImage2D( GL.TEXTURE_2D, 0, GL.RGBA, width, height, 0, GL.RGBA, GL.UNSIGNED_BYTE, null );
+			this._gl.bindTexture( this._gl.TEXTURE_2D, this.glTexture );
+			this._gl.texImage2D( this._gl.TEXTURE_2D, 0, this._gl.RGBA, width, height, 0, this._gl.RGBA, this._gl.UNSIGNED_BYTE, null );
 		}
 		
 		public get width():number
@@ -37,12 +37,12 @@ module away.display3D
 		
 		public uploadFromHTMLImageElement( image:HTMLImageElement, miplevel:number = 0 )
 		{
-			GL.texImage2D( GL.TEXTURE_2D, miplevel, GL.RGBA, GL.RGBA, GL.UNSIGNED_BYTE, image );
+			this._gl.texImage2D( this._gl.TEXTURE_2D, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, image );
 		}
 		
 		public uploadFromBitmapData( data:away.display.BitmapData, miplevel:number = 0 )
 		{
-			GL.texImage2D( GL.TEXTURE_2D, miplevel, GL.RGBA, GL.RGBA, GL.UNSIGNED_BYTE, data.imageData );
+			this._gl.texImage2D( this._gl.TEXTURE_2D, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data.imageData );
 		}
 	}
 }
