@@ -142,3 +142,4 @@
 ///<reference path="lights/LightBase.ts"/>
 ///<reference path="data/RenderableListItem.ts"/>
 ///<reference path="data/EntityListItem.ts"/>
+///<reference path="data/EntityListItemPool.ts"/>

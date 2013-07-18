@@ -19,8 +19,11 @@ package away3d.core.data
 				_pool[_index++] = item;
 				++_poolSize;
 				return item;
-			} else
+			}
+			else
+			{
 				return _pool[_index++];
+			}
 		}
 		
 		public function freeAll():void
