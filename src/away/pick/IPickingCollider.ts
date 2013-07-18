@@ -30,6 +30,6 @@ module away.pick
 		 * @param shortestCollisionDistance The current value of the shortest distance to a detected collision along the ray.
 		 */
         // TODO: SubMesh - Implement & Integrate
-		//testSubMeshCollision(subMesh:SubMesh, pickingCollisionVO:PickingCollisionVO, shortestCollisionDistance:number):boolean
+		testSubMeshCollision(subMesh:away.base.SubMesh, pickingCollisionVO:away.pick.PickingCollisionVO, shortestCollisionDistance:number):boolean
 	}
 }
