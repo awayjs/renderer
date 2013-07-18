@@ -7,7 +7,7 @@
 
 module away.data
 {
-	export class EnitiyListItem
+	export class EntityListItem
 	{
 		
 		public entity:away.entities.Entity;
