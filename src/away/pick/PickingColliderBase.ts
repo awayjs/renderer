@@ -8,8 +8,8 @@ module away.pick
 	 */
 	export class PickingColliderBase
 	{
-		private rayPosition:away.geom.Vector3D;
-		private rayDirection:away.geom.Vector3D;
+		public rayPosition:away.geom.Vector3D;
+        public rayDirection:away.geom.Vector3D;
 		
 		constructor()
 		{
@@ -46,19 +46,26 @@ module away.pick
 			return uv;
 		}
 
-		/* TODO: implement & integrate GeometryUtils, SubGeometry, SubMesh
-		protected function getMeshSubgeometryIndex(subGeometry:SubGeometry):number
+		//* TODO: implement & integrate GeometryUtils, SubGeometry, SubMesh
+		public pGetMeshSubgeometryIndex(subGeometry:away.base.SubGeometry):number
 		{
-			return GeometryUtils.getMeshSubgeometryIndex(subGeometry);
-		}
-		*/
 
-        /* TODO: implement & integrate
-		protected function getMeshSubMeshIndex(subMesh:SubMesh):number
-		{
-			return GeometryUtils.getMeshSubMeshIndex(subMesh);
+            away.Debug.throwPIR( 'away.pick.PickingColliderBase' , 'pGetMeshSubMeshIndex' , 'GeometryUtils.getMeshSubMeshIndex'  );
+            return 0;
+			//return GeometryUtils.getMeshSubgeometryIndex(subGeometry);
 		}
-		*/
+		//*/
+
+        //* TODO: implement & integrate
+		public pGetMeshSubMeshIndex(subMesh:away.base.SubMesh):number
+		{
+
+            away.Debug.throwPIR( 'away.pick.PickingColliderBase' , 'pGetMeshSubMeshIndex' , 'GeometryUtils.getMeshSubMeshIndex'  );
+
+            return 0;
+			//return GeometryUtils.getMeshSubMeshIndex(subMesh);
+		}
+		//*/
 
 		/**
 		 * @inheritDoc
