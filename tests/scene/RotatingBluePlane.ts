@@ -3,7 +3,7 @@
  * @author Gary Paluk - http://www.plugin.io
  */
  
-///<reference path="../../../src/away/_definitions.ts" />
+///<reference path="../../src/away/_definitions.ts" />
 
 class Away3D extends away.events.EventDispatcher
 {
