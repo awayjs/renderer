@@ -155,7 +155,8 @@ module away.materials
 		{
 			this._mipmap = value;
 
-            throw new away.errors.PartialImplementationError( 'MaterialPassBase' );
+            away.Debug.throwPIR( "away.materials.MaterialBase" , 'set mipmap' , 'MaterialPassBase' );
+            //throw new away.errors.PartialImplementationError( 'MaterialPassBase' );
             // TODO: MaterialPassBase - Implement & integrate
             /*
 			for (var i:number = 0; i < this._numPasses; ++i)
@@ -179,7 +180,8 @@ module away.materials
 		{
 			this._smooth = value;
 
-            throw new away.errors.PartialImplementationError( 'MaterialPassBase' );
+            away.Debug.throwPIR( "away.materials.MaterialBase" , 'set smooth' , 'MaterialPassBase' );
+            //throw new away.errors.PartialImplementationError( 'MaterialPassBase' );
             // TODO: MaterialPassBase - Implement & integrate
             /*
 			for (var i:number = 0; i < _numPasses; ++i)
@@ -224,7 +226,8 @@ module away.materials
 		{
             this._repeat = value;
 
-            throw new away.errors.PartialImplementationError( 'MaterialPassBase' );
+            away.Debug.throwPIR( "away.materials.MaterialBase" , 'repeat' , 'MaterialPassBase' );
+            //throw new away.errors.PartialImplementationError( 'MaterialPassBase' );
             // TODO: MaterialPassBase - Implement & integrate
             /*
 			for (var i:number = 0; i < _numPasses; ++i)
@@ -244,7 +247,7 @@ module away.materials
 		{
 			var i:number;
 
-            throw new away.errors.PartialImplementationError( 'DepthMapPass , DistanceMapPass' );
+            away.Debug.throwPIR( "away.materials.MaterialBase" , 'dispose' , 'DepthMapPass , DistanceMapPass' );
 
             // TODO: MaterialPassBase - Implement & integrate
             /*
@@ -280,7 +283,7 @@ module away.materials
             // TODO: DepthMapPass - Implement & integrate
             // TODO: DistanceMapPass - Implement & integrate
 
-            throw new away.errors.PartialImplementationError( 'DepthMapPass , DistanceMapPass' );
+            away.Debug.throwPIR( "away.materials.MaterialBase" , 'bothSides' , 'DepthMapPass , DistanceMapPass' );
 
             /*
 			for (var i:number = 0; i < _numPasses; ++i)
@@ -330,7 +333,9 @@ module away.materials
 		{
             this._alphaPremultiplied = value;
 
-            throw new away.errors.PartialImplementationError( 'MaterialPassBase' );
+            away.Debug.throwPIR( "away.materials.MaterialBase" , 'bothSides' , 'MaterialPassBase' );
+
+            //throw new away.errors.PartialImplementationError( 'MaterialPassBase' );
 
             // TODO: MaterialPassBase - Implement & integrate
 

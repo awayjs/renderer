@@ -43,7 +43,14 @@ module away.partition
 			}
 			return this._entity.worldBounds.isInFrustum( planes, numPlanes );
 		}
-		
+
+        /*
+        public acceptTraverser(traverser:away.traverse.PartitionTraverser)
+        {
+
+            super.acceptTraverser( traverser );
+
+        }*/
 		//@override TODO public isIntersectingRay( rayPosition:away.geom.Vecto...
 		/*
 		public isIntersectingRay( rayPosition:away.geom.Vector3D, rayDirection:away.geom.Vector3D ):boolean

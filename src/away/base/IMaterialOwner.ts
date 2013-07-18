@@ -13,7 +13,7 @@ module away.base
 		/**
 		 * The material with which to render the object.
 		 */
-		material():away.materials.MaterialBase; // GET / SET
+		material:away.materials.MaterialBase; // GET / SET
 
 		/**
 		 * The animation used by the material to assemble the vertex code.
