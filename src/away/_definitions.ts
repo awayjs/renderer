@@ -54,6 +54,8 @@
 ///<reference path="entities/Entity.ts" />
 ///<reference path="cameras/Camera3D.ts" />
 ///<reference path="entities/SegmentSet.ts" />
+///<reference path="entities/Mesh.ts"/>
+///<reference path="base/SubMesh.ts"/>
 ///<reference path="primitives/WireframePrimitiveBase.ts" />
 ///<reference path="partition/NodeBase.ts" />
 ///<reference path="partition/NullNode.ts" />
@@ -62,6 +64,7 @@
 ///<reference path="partition/EntityNode.ts" />
 ///<reference path="partition/CameraNode.ts" />
 ///<reference path="partition/LightNode.ts" />
+///<reference path="partition/MeshNode.ts" />
 ///<reference path="errors/PartialImplementationError.ts" />
 ///<reference path="library/assets/AssetType.ts" />
 ///<reference path="base/IMaterialOwner.ts" />
