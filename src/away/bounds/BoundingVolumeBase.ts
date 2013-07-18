@@ -113,7 +113,6 @@ module away.bounds
 			this.fromExtremes( minX, minY, minZ, maxX, maxY, maxZ );
 		}
 		
-		//* TODO
 		public fromGeometry(geometry:away.base.Geometry):void
 		{
 
@@ -198,8 +197,7 @@ module away.bounds
             }
 
 		}
-		//*/
-		
+
 		public fromSphere( center:away.geom.Vector3D, radius:number)
 		{
 			this.fromExtremes( center.x - radius, center.y - radius, center.z - radius, center.x + radius, center.y + radius, center.z + radius );
