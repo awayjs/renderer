@@ -147,3 +147,4 @@
 ///<reference path="data/EntityListItem.ts"/>
 ///<reference path="data/EntityListItemPool.ts"/>
 ///<reference path="primitives/PrimitiveBase.ts"/>
+///<reference path="primitives/TorusGeometry.ts"/>
