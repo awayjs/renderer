@@ -22,14 +22,16 @@ module away.display3D
 		private _textureList: Texture[] = [];
 		private _programList: Program3D[] = [];
 		
+		private _gl: WebGLRenderingContext;
+		
 		constructor( canvas: HTMLCanvasElement )
 		{
 			try
 			{
-				GL = <WebGLRenderingContext> canvas.getContext("experimental-webgl");
+				this._gl = <WebGLRenderingContext> canvas.getContext("experimental-webgl");
 				if( !GL )
 				{
-					GL = <WebGLRenderingContext> canvas.getContext("webgl");
+					this._gl = <WebGLRenderingContext> canvas.getContext("webgl");
 				}
 			}
 			catch(e)
@@ -47,6 +49,11 @@ module away.display3D
 				alert("WebGL is not available.");
 			}
 			
+		}
+		
+		public gl(): WebGLRenderingContext
+		{
+			return this._gl;
 		}
 		
 		public clear( red:number = 0, green:number = 0, blue:number = 0, alpha:number = 1,
