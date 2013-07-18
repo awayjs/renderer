@@ -27,14 +27,20 @@ module away.base
 		/**
 		 * A collection of SubGeometry objects, each of which contain geometrical data such as vertices, normals, etc.
 		 */
-		public get subGeometries():away.base.ISubGeometry[]//Vector.<ISubGeometry>
-		{
+        public get subGeometries():away.base.ISubGeometry[]//Vector.<ISubGeometry>
+        {
 
-			return this._subGeometries;
+            return this._subGeometries;
 
-		}
-		
-		/**
+        }
+        public getSubGeometries():away.base.ISubGeometry[]//Vector.<ISubGeometry>
+        {
+
+            return this._subGeometries;
+
+        }
+
+        /**
 		 * Creates a new Geometry object.
 		 */
 		constructor()
