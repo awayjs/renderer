@@ -3,13 +3,15 @@
  * @author Gary Paluk - http://www.plugin.io
  */
 
+///<reference path="../_definitions.ts"/>
+
 module away.data
 {
 	export class EnitiyListItem
 	{
 		
-		public var entity:away.entities.Entity;
-		public var next:EntityListItem;
+		public entity:away.entities.Entity;
+		public next:away.data.EntityListItem;
 		
 		constructor()
 		{

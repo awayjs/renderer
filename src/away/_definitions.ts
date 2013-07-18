@@ -141,3 +141,4 @@
 ///<reference path="controllers/LookAtController.ts"/>
 ///<reference path="lights/LightBase.ts"/>
 ///<reference path="data/RenderableListItem.ts"/>
+///<reference path="data/EntityListItem.ts"/>
