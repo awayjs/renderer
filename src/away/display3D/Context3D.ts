@@ -381,7 +381,7 @@ module away.display3D
 			GL.texParameteri( GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR );
         }
 		
-		public setVertexBufferAt( index:number, buffer:VertexBuffer3D, bufferOffset:number = 0, format:Context3DVertexBufferFormat = null ) 
+		public setVertexBufferAt( index:number, buffer:VertexBuffer3D, bufferOffset:number = 0, format:string = null )
 		{
             away.Debug.log( "===== setVertexBufferAt =====" );
             away.Debug.log( "\tindex: " + index );
@@ -392,7 +392,7 @@ module away.display3D
 			this.setGLSLVertexBufferAt( locationName, buffer, bufferOffset, format );
 		}
 		
-		public setGLSLVertexBufferAt( locationName, buffer:VertexBuffer3D, bufferOffset:number = 0, format:Context3DVertexBufferFormat = null ) 
+		public setGLSLVertexBufferAt( locationName, buffer:VertexBuffer3D, bufferOffset:number = 0, format:string = null )
 		{
             away.Debug.log( "===== setGLSLVertexBufferAt =====" );
             away.Debug.log( "\tbuffer.length: " + buffer.numVertices );
