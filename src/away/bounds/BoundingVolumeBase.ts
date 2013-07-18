@@ -113,51 +113,92 @@ module away.bounds
 			this.fromExtremes( minX, minY, minZ, maxX, maxY, maxZ );
 		}
 		
-		/* TODO
-		public fromGeometry(geometry:Geometry):void
+		//* TODO
+		public fromGeometry(geometry:away.base.Geometry):void
 		{
-			var subGeoms:Vector.<ISubGeometry> = geometry.subGeometries;
-			var numSubGeoms:uint = subGeoms.length;
-			var minX:Number, minY:Number, minZ:Number;
-			var maxX:Number, maxY:Number, maxZ:Number;
+
+            var subGeoms:away.base.ISubGeometry[] = geometry.subGeometries; //var subGeoms:Vector.<away.base.ISubGeometry> = geometry.subGeometries;
+			var numSubGeoms:number = subGeoms.length;
+			var minX:number, minY:number, minZ:number;
+			var maxX:number, maxY:number, maxZ:number;
 			
-			if (numSubGeoms > 0) {
-				var j:uint = 0;
+			if (numSubGeoms > 0)
+            {
+
+				var j:number = 0;
+
 				minX = minY = minZ = Number.POSITIVE_INFINITY;
 				maxX = maxY = maxZ = Number.NEGATIVE_INFINITY;
 				
-				while (j < numSubGeoms) {
-					var subGeom:ISubGeometry = subGeoms[j++];
-					var vertices:Vector.<Number> = subGeom.vertexData;
-					var vertexDataLen:uint = vertices.length;
-					var i:uint = subGeom.vertexOffset;
-					var stride:uint = subGeom.vertexStride;
+				while (j < numSubGeoms)
+                {
+
+					var subGeom:away.base.ISubGeometry = subGeoms[j++];
+                    var vertices:number[] = subGeom.vertexData;//var vertices:Vector.<Number> = subGeom.vertexData;
+					var vertexDataLen:number = vertices.length;
+					var i:number = subGeom.vertexOffset;
+					var stride:number = subGeom.vertexStride;
 					
-					while (i < vertexDataLen) {
-						var v:Number = vertices[i];
+					while (i < vertexDataLen)
+                    {
+						var v:number = vertices[i];
 						if (v < minX)
-							minX = v;
+                        {
+                            minX = v;
+                        }
 						else if (v > maxX)
-							maxX = v;
+                        {
+
+                            maxX = v;
+
+                        }
+
+
 						v = vertices[i + 1];
+
 						if (v < minY)
-							minY = v;
+                        {
+
+                            minY = v;
+
+                        }
 						else if (v > maxY)
-							maxY = v;
+                        {
+
+                            maxY = v;
+
+                        }
+
 						v = vertices[i + 2];
+
 						if (v < minZ)
-							minZ = v;
+                        {
+
+                            minZ = v;
+
+                        }
 						else if (v > maxZ)
-							maxZ = v;
+                        {
+
+                            maxZ = v;
+
+                        }
+
 						i += stride;
 					}
 				}
 				
-				fromExtremes(minX, minY, minZ, maxX, maxY, maxZ);
-			} else
-				fromExtremes(0, 0, 0, 0, 0, 0);
+				this.fromExtremes(minX, minY, minZ, maxX, maxY, maxZ);
+			}
+            else
+            {
+
+                this.fromExtremes(0, 0, 0, 0, 0, 0);
+
+            }
+
 		}
-		*/
+		//*/
 		
 		public fromSphere( center:away.geom.Vector3D, radius:number)
 		{
