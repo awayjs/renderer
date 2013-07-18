@@ -139,7 +139,7 @@ class Away3D extends away.events.EventDispatcher
 		this._context3D.setGLSLTextureAt( "uSampler", this._texture, 0 );
 		
 		this._context3D.clear( 0.16, 0.16, 0.16, 1 );
-		this._context3D.drawTriangles( this._iBuffer, 0, 2 );
+		this._context3D.drawTriangles( this._iBuffer, 0, this._iBuffer.numIndices/3 );
 		this._context3D.present();
 	}
 }
