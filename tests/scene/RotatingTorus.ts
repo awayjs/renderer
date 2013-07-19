@@ -9,7 +9,6 @@ class RotatingTorus extends away.events.EventDispatcher
 {
 	
 	private _requestAnimationFrameTimer:away.utils.RequestAnimationFrame;
-	private _stage3D:away.display.Stage3D;
     private _image:HTMLImageElement;
 	private _context3D:away.display3D.Context3D;
 	
@@ -29,7 +28,7 @@ class RotatingTorus extends away.events.EventDispatcher
 		{
 			throw "The document root object must be avaiable";
 		}
-		
+		this._stage = new away.display.Stage( 800, 600 );
 		this.loadResources();
 	}
 	
@@ -143,9 +142,4 @@ class RotatingTorus extends away.events.EventDispatcher
 		this._context3D.drawTriangles( this._iBuffer, 0, this._iBuffer.numIndices/3 );
 		this._context3D.present();
 	}
-}
-
-window.onload = function ()
-{
-    var test = new RotatingTorus();
 }

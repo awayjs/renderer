@@ -5,7 +5,7 @@
  
 ///<reference path="../../src/away/_definitions.ts" />
 
-class Away3D extends away.events.EventDispatcher
+class RotatingBluePlane extends away.events.EventDispatcher
 {
 	
 	private _requestAnimationFrameTimer:away.utils.RequestAnimationFrame;
@@ -31,9 +31,7 @@ class Away3D extends away.events.EventDispatcher
 		{
 			throw "The document root object must be avaiable";
 		}
-		
-		this._stage = new away.display.Stage( 640, 480 );
-		
+		this._stage = new away.display.Stage( 800, 600 );
 		this.loadResources();
 	}
 	
