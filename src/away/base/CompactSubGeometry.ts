@@ -491,19 +491,24 @@ module away.base
 
 		}
 
-		public get vertexPositionData():number[]
-		{
-			if (this._isolatedVertexPositionDataDirty || !this._isolatedVertexPositionData)
+        public get vertexPositionData():number[]
+        {
+            if (this._isolatedVertexPositionDataDirty || !this._isolatedVertexPositionData)
             {
 
                 this._isolatedVertexPositionData = this.stripBuffer(0, 3);
                 this._isolatedVertexPositionDataDirty = false;
 
-			}
+            }
 
-			return this._isolatedVertexPositionData;
+            return this._isolatedVertexPositionData;
 
-		}
+        }
+
+        public get strippedUVData():number[]
+        {
+            return this.stripBuffer(9, 2);
+        }
 		
 		/**
 		 * Isolate and returns a Vector.Number of a specific buffer type

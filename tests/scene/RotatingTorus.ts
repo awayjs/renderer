@@ -5,7 +5,7 @@
  
 ///<reference path="../../src/away/_definitions.ts" />
 
-class Away3D extends away.events.EventDispatcher
+class RotatingTorus extends away.events.EventDispatcher
 {
 	
 	private _requestAnimationFrameTimer:away.utils.RequestAnimationFrame;
@@ -21,7 +21,7 @@ class Away3D extends away.events.EventDispatcher
 	
 	private _stage:away.display.Stage;
 	
-	constructor( stage:away.display.Stage )
+	constructor( )
 	{
 		super();
 		
@@ -29,8 +29,6 @@ class Away3D extends away.events.EventDispatcher
 		{
 			throw "The document root object must be avaiable";
 		}
-		
-		this._stage = new away.display.Stage( 640, 480 );
 		
 		this.loadResources();
 	}
@@ -145,4 +143,9 @@ class Away3D extends away.events.EventDispatcher
 		this._context3D.drawTriangles( this._iBuffer, 0, this._iBuffer.numIndices/3 );
 		this._context3D.present();
 	}
+}
+
+window.onload = function ()
+{
+    var test = new RotatingTorus();
 }
