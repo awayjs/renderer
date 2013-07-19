@@ -73,20 +73,24 @@ class Away3D extends away.events.EventDispatcher
 		this._context3D.configureBackBuffer( 800, 600, 0, true );
 		this._context3D.setColorMask( true, true, true, true ); 
 		
-		var torus: away.primitives.TorusGeometry = new away.primitives.TorusGeometry( );
+		var torus: away.primitives.TorusGeometry = new away.primitives.TorusGeometry( 1, 0.5, 16, 8, false );
 		torus.iValidate();
 		
 		var vertices:number[] = torus.getSubGeometries()[0].vertexData;
-		var uvCoords:number[]  = torus.getSubGeometries()[0].UVData;
 		var indices:number[] = torus.getSubGeometries()[0].indexData;
 		
-		var numVertices: number = vertices.length / 3;
-		var vBuffer: away.display3D.VertexBuffer3D = this._context3D.createVertexBuffer( numVertices, 3 );
+		/**
+		  * Updates the vertex data. All vertex properties are contained in a single Vector, and the order is as follows:
+		  * 0 - 2: vertex position X, Y, Z
+		  * 3 - 5: normal X, Y, Z
+		  * 6 - 8: tangent X, Y, Z
+		  * 9 - 10: U V
+		  * 11 - 12: Secondary U V
+		  */
+		var stride:number = 13;
+		var numVertices: number = vertices.length / stride;
+		var vBuffer: away.display3D.VertexBuffer3D = this._context3D.createVertexBuffer( numVertices, stride );
 		vBuffer.uploadFromArray( vertices, 0, numVertices );
-		
-		var numTCoords:number = uvCoords.length / 2;
-		var tCoordBuffer: away.display3D.VertexBuffer3D = this._context3D.createVertexBuffer( numTCoords, 2 );
-		tCoordBuffer.uploadFromArray( uvCoords, 0, numTCoords );
 		
 		var numIndices:number = indices.length;
 		this._iBuffer = this._context3D.createIndexBuffer( numIndices );
@@ -111,8 +115,7 @@ class Away3D extends away.events.EventDispatcher
 							  "void main() {\n" +
 							  "		gl_FragColor = texture2D(uSampler, vTextureCoord);\n" +
 							  "}\n";
-
-
+		
 		this._program.upload( vProgram, fProgram );
 		this._context3D.setProgram( this._program );
 		
@@ -120,10 +123,10 @@ class Away3D extends away.events.EventDispatcher
 		this._pMatrix.perspectiveFieldOfViewLH( 45, 800/600, 0.1, 1000 );
 		
 		this._mvMatrix = new away.geom.Matrix3D();
-		this._mvMatrix.appendTranslation( 0, 0, 3 );
+		this._mvMatrix.appendTranslation( 0, 0, 5 );
 		
 		this._context3D.setGLSLVertexBufferAt( "aVertexPosition", vBuffer, 0, away.display3D.Context3DVertexBufferFormat.FLOAT_3 );
-		this._context3D.setGLSLVertexBufferAt( "aTextureCoord", tCoordBuffer, 0, away.display3D.Context3DVertexBufferFormat.FLOAT_2 );
+		this._context3D.setGLSLVertexBufferAt( "aTextureCoord", vBuffer, 9, away.display3D.Context3DVertexBufferFormat.FLOAT_2 );
 		
 		this._requestAnimationFrameTimer = new away.utils.RequestAnimationFrame( this.tick , this );
         this._requestAnimationFrameTimer.start();
