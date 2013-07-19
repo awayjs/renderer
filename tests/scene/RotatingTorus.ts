@@ -5,7 +5,7 @@
  
 ///<reference path="../../src/away/_definitions.ts" />
 
-class Away3D extends away.events.EventDispatcher
+class RotatingTorus extends away.events.EventDispatcher
 {
 	
 	private _requestAnimationFrameTimer:away.utils.RequestAnimationFrame;
@@ -21,7 +21,7 @@ class Away3D extends away.events.EventDispatcher
 	
 	private _stage:away.display.Stage;
 	
-	constructor( stage:away.display.Stage )
+	constructor( )
 	{
 		super();
 		
@@ -31,8 +31,12 @@ class Away3D extends away.events.EventDispatcher
 		}
 		
 		this._stage = new away.display.Stage( 640, 480 );
-		
-		this.loadResources();
+
+
+        this._stage.stage3Ds[0].addEventListener( away.events.Event.CONTEXT3D_CREATE, this.onContext3DCreateHandler, this );
+        this._stage.stage3Ds[0].requestContext();
+
+		//this.loadResources();
 	}
 	
 	public get stage():away.display.Stage
@@ -73,12 +77,15 @@ class Away3D extends away.events.EventDispatcher
 		this._context3D.configureBackBuffer( 800, 600, 0, true );
 		this._context3D.setColorMask( true, true, true, true ); 
 		
-		var torus: away.primitives.TorusGeometry = new away.primitives.TorusGeometry( );
+		var torus: away.primitives.TorusGeometry = new away.primitives.TorusGeometry( 1 , 0.5 , 16 , 8 , false );
 		torus.iValidate();
-		
-		var vertices:number[] = torus.getSubGeometries()[0].vertexData;
-		var uvCoords:number[]  = torus.getSubGeometries()[0].UVData;
-		var indices:number[] = torus.getSubGeometries()[0].indexData;
+
+        var iSub : away.base.ISubGeometry =torus.getSubGeometries()[0];//[0];
+        var compactSubGeom: away.base.CompactSubGeometry = <away.base.CompactSubGeometry > iSub;
+
+        var vertices:number[] = compactSubGeom.vertexPositionData;//torus.getSubGeometries()[0].vertexPositionData//vertexData;
+		var uvCoords:number[]  = compactSubGeom.strippedUVData;//torus.getSubGeometries()[0].strippedUVData;
+		var indices:number[] = compactSubGeom.indexData;//torus.getSubGeometries()[0].indexData;
 		
 		var numVertices: number = vertices.length / 3;
 		var vBuffer: away.display3D.VertexBuffer3D = this._context3D.createVertexBuffer( numVertices, 3 );
@@ -143,3 +150,16 @@ class Away3D extends away.events.EventDispatcher
 		this._context3D.present();
 	}
 }
+
+
+
+window.onload = function ()
+{
+
+    var test = new RotatingTorus();
+
+
+}
+
+
+
