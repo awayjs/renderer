@@ -149,3 +149,4 @@
 ///<reference path="primitives/PrimitiveBase.ts"/>
 ///<reference path="primitives/TorusGeometry.ts"/>
 ///<reference path="primitives/PlaneGeometry.ts"/>
+///<reference path="utils/ColorUtils.ts"/>
