@@ -5,8 +5,12 @@
 
 ///<reference path="away/_definitions.ts"/>
 
-module away
+///<reference path="../tests/scene/LightTorus.ts"/>
+
+class Away3D
 {
-
-
+	constructor()
+	{
+		var app = new LightTorus();
+	}
 }
