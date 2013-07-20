@@ -36,8 +36,20 @@ module away.display {
             if ( fillColor )
             {
 
-                this._alpha = away.utils.ColorUtils.float32ColorToARGB( fillColor )[0] / 255;
-                this._context.globalAlpha = this._alpha;
+                if( this._transparent)
+                {
+
+                    this._alpha = away.utils.ColorUtils.float32ColorToARGB( fillColor )[0] / 255;
+                    //this._context.globalAlpha = this._alpha;
+
+                }
+                else
+                {
+
+                    this._alpha = 1;
+
+                }
+
 
                 this.fillRect( this._rect , fillColor );
 
@@ -145,7 +157,7 @@ module away.display {
             {
 
                 this._context.putImageData( this._imageData, 0, 0);
-                this._context.globalAlpha = this._alpha;
+                //this._context.globalAlpha = this._alpha;
                 this._imageData = null;
 
             }
@@ -186,7 +198,7 @@ module away.display {
             {
 
                 this._context.putImageData( this._imageData, 0, 0);
-                this._context.globalAlpha = this._alpha;
+                //this._context.globalAlpha = this._alpha;
                 this._imageData = null;
 
             }
@@ -202,6 +214,8 @@ module away.display {
         public copyImage( img : HTMLImageElement , sourceRect : away.geom.Rectangle , destRect:away.geom.Rectangle ):void
         {
 
+            //this._context.globalAlpha = this._alpha;
+
             if ( this._locked )
             {
 
@@ -210,6 +224,8 @@ module away.display {
                 //      1) copy image data back to canvas
                 //      2) draw object
                 //      3) read _imageData back out
+
+
 
                 if (  this._imageData )
                 {
@@ -246,6 +262,8 @@ module away.display {
          */
         public copyPixels( bmpd : BitmapData, sourceRect : away.geom.Rectangle , destRect:away.geom.Rectangle ):void
         {
+
+            //this._context.globalAlpha = this._alpha;
 
             if ( this._locked )
             {
@@ -307,7 +325,7 @@ module away.display {
 
                 }
 
-                this._context.fillStyle = this.decimalToHex( color , 6 );
+                this._context.fillStyle = this.decimalToHex( color );
                 this._context.fillRect( rect.x , rect.y , rect.width , rect.height );
 
                 if ( this._imageData )
@@ -322,7 +340,7 @@ module away.display {
             else
             {
 
-                this._context.fillStyle = this.decimalToHex( color , 6 );
+                this._context.fillStyle = this.decimalToHex( color );
                 this._context.fillRect( rect.x , rect.y , rect.width , rect.height );
 
 
@@ -439,7 +457,7 @@ module away.display {
         /**
          * convert decimal value to Hex
          */
-        private decimalToHex(d : number , padding : number ) : string
+        private decimalToHex(d : number ) : string
         {
 
             var argb : Array = away.utils.ColorUtils.float32ColorToARGB( d );
@@ -449,9 +467,11 @@ module away.display {
 
                 argb[0] = 255;
 
+                return 'rgb(' + argb[1] + ',' + argb[2]+ ',' + argb[3] + ')';
+
             }
 
-            return away.utils.ColorUtils.ARGBToHexString( argb ) //[1] , argb[2] , argb[3] );
+            return 'rgba(' + argb[1] + ',' + argb[2]+ ',' + argb[3]+ ',' + argb[0] /255 + ')';
 
         }
     }
