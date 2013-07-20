@@ -5,12 +5,19 @@
 
 ///<reference path="away/_definitions.ts"/>
 
-///<reference path="../tests/scene/LightTorus.ts"/>
-
-class Away3D
+module away
 {
-	constructor()
-	{
-		var app = new LightTorus();
-	}
+
+    export class Away3D extends away.events.EventDispatcher
+    {
+
+        constructor()
+        {
+
+            super();
+
+        }
+    }
+
 }
+
