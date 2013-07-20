@@ -13,6 +13,7 @@ module away.display {
         private _imageData          : ImageData;
         private _rect               : away.geom.Rectangle;
         private _transparent        : boolean;
+        private _alpha              : number = 1;
         private _locked             : boolean = false;
 
         /**
@@ -34,6 +35,9 @@ module away.display {
 
             if ( fillColor )
             {
+
+                this._alpha = away.utils.ColorUtils.float32ColorToARGB( fillColor )[0] / 255;
+                this._context.globalAlpha = this._alpha;
 
                 this.fillRect( this._rect , fillColor );
 
@@ -111,13 +115,12 @@ module away.display {
          *
          * @param x
          * @param y
-         * @param r
-         * @param g
-         * @param b
-         * @param a
+         * @param color
          */
-        public setPixel(x, y, r, g, b, a):void
+        public setPixel(x, y, color : number ):void
         {
+
+            var argb : Array = away.utils.ColorUtils.float32ColorToARGB( color );
 
             if ( ! this._locked )
             {
@@ -131,10 +134,10 @@ module away.display {
 
                 var index : number = (x + y * this._imageCanvas.width) * 4;
 
-                this._imageData.data[index+0] = r;
-                this._imageData.data[index+1] = g;
-                this._imageData.data[index+2] = b;
-                this._imageData.data[index+3] = a;
+                this._imageData.data[index+0] = argb[1];
+                this._imageData.data[index+1] = argb[2];
+                this._imageData.data[index+2] = argb[3];
+                this._imageData.data[index+3] = 255;
 
             }
 
@@ -142,6 +145,48 @@ module away.display {
             {
 
                 this._context.putImageData( this._imageData, 0, 0);
+                this._context.globalAlpha = this._alpha;
+                this._imageData = null;
+
+            }
+
+        }
+
+        /**
+         *
+         * @param x
+         * @param y
+         * @param color
+         */
+        public setPixel32(x, y, color : number ):void
+        {
+
+            var argb : Array = away.utils.ColorUtils.float32ColorToARGB( color );
+
+            if ( ! this._locked )
+            {
+
+                this._imageData = this._context.getImageData(0,0,this._rect.width,this._rect.height);
+
+            }
+
+            if ( this._imageData )
+            {
+
+                var index : number = (x + y * this._imageCanvas.width) * 4;
+
+                this._imageData.data[index+0] = argb[1];
+                this._imageData.data[index+1] = argb[2];
+                this._imageData.data[index+2] = argb[3];
+                this._imageData.data[index+3] = argb[0];
+
+            }
+
+            if ( ! this._locked )
+            {
+
+                this._context.putImageData( this._imageData, 0, 0);
+                this._context.globalAlpha = this._alpha;
                 this._imageData = null;
 
             }
@@ -262,7 +307,7 @@ module away.display {
 
                 }
 
-                this._context.fillStyle = '#' + this.decimalToHex( color , 6 );
+                this._context.fillStyle = this.decimalToHex( color , 6 );
                 this._context.fillRect( rect.x , rect.y , rect.width , rect.height );
 
                 if ( this._imageData )
@@ -277,7 +322,7 @@ module away.display {
             else
             {
 
-                this._context.fillStyle = '#' + this.decimalToHex( color , 6 );
+                this._context.fillStyle = this.decimalToHex( color , 6 );
                 this._context.fillRect( rect.x , rect.y , rect.width , rect.height );
 
 
@@ -397,19 +442,16 @@ module away.display {
         private decimalToHex(d : number , padding : number ) : string
         {
 
-            // TODO - bitwise replacement would be better / Extract alpha component of 0xffffffff ( currently no support for alpha )
+            var argb : Array = away.utils.ColorUtils.float32ColorToARGB( d );
 
-            var hex = d.toString(16).toUpperCase();
-            padding = typeof (padding) === "undefined" || padding === null ? padding = 2 : padding;
-
-            while (hex.length < padding)
+            if ( ! this._transparent )
             {
 
-                hex = "0" + hex;
+                argb[0] = 255;
 
             }
 
-            return hex;
+            return away.utils.ColorUtils.ARGBToHexString( argb ) //[1] , argb[2] , argb[3] );
 
         }
     }
