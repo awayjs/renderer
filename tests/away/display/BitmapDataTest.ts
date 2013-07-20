@@ -17,6 +17,9 @@ class BitmapDataTest
     constructor()
     {
 
+        var transparent : boolean = false;
+        var initcolour  : number = 0x88ffffff;
+
         //---------------------------------------
         // Load a PNG
 
@@ -28,12 +31,12 @@ class BitmapDataTest
 
         //---------------------------------------
         // BitmapData Object - 1
-        this.bitmapData = new away.display.BitmapData( 256 ,  256 , true );
+        this.bitmapData = new away.display.BitmapData( 256 ,  256 , transparent , initcolour );
         document.body.appendChild( this.bitmapData.canvas );
 
         //---------------------------------------
         // BitmapData Object - 2
-        this.bitmapDataB = new away.display.BitmapData( 256 ,  256 , true , 0x0000ff );
+        this.bitmapDataB = new away.display.BitmapData( 256 ,  256 , transparent , initcolour );
         this.bitmapDataB.canvas.style.position = 'absolute';
         this.bitmapDataB.canvas.style.left = '540px';
         document.body.appendChild( this.bitmapDataB.canvas );
@@ -44,13 +47,13 @@ class BitmapDataTest
 
         this.bitmapDataB.lock();
 
-        for (var i = 0; i < 10000; i++) {
+        for (var i = 0; i < 10000; i++)
+        {
+
             var x = Math.random() * this.bitmapDataB.width | 0; // |0 to truncate to Int32
             var y = Math.random() * this.bitmapDataB.height | 0;
-            var r = Math.random() * 256 | 0;
-            var g = Math.random() * 256 | 0;
-            var b = Math.random() * 256 | 0;
-            this.bitmapDataB.setPixel(x, y, r, g, b, 255); // 255 opaque
+            this.bitmapDataB.setPixel(x, y, Math.random() * 0xffFFFFFF ); // 255 opaque
+
         }
 
         this.bitmapDataB.unlock();
@@ -92,13 +95,13 @@ class BitmapDataTest
                 //---------------------------------------
                 // draw random pixels
 
-                for (var d = 0; d < 1000; d++) {
+                for (var d = 0; d < 1000; d++)
+                {
+
                     var x = Math.random() * this.bitmapDataB.width | 0; // |0 to truncate to Int32
                     var y = Math.random() * this.bitmapDataB.height | 0;
-                    var r = Math.random() * 256 | 0;
-                    var g = Math.random() * 256 | 0;
-                    var b = Math.random() * 256 | 0;
-                    this.bitmapDataB.setPixel(x, y, r, g, b, 255); // 255 opaque
+                    this.bitmapDataB.setPixel(x, y, Math.random() * 0xFFFFFFFF ); // 255 opaque
+
                 }
 
                 this.bitmapDataB.unlock(); // Unlock bitmapdata
@@ -111,7 +114,7 @@ class BitmapDataTest
                 // image is not loaded - fill bitmapdata with red
                 this.bitmapData.width  = 256;
                 this.bitmapData.height = 256;
-                this.bitmapData.fillRect( this.bitmapData.rect , 0xff0000 );
+                this.bitmapData.fillRect( this.bitmapData.rect , 0xffff0000 );
             }
 
         }
@@ -125,15 +128,15 @@ class BitmapDataTest
 
             this.bitmapData.width  = 512;
             this.bitmapData.height = 512;
-            this.bitmapData.fillRect( this.bitmapData.rect , 0x00ff00 ); // fill it green
+            this.bitmapData.fillRect( this.bitmapData.rect , 0x88ff0000 ); // fill it RED
 
-            for (var d = 0; d < 1000; d++) {
+            for (var d = 0; d < 1000; d++)
+            {
+
                 var x = Math.random() * this.bitmapData.width | 0; // |0 to truncate to Int32
                 var y = Math.random() * this.bitmapData.height | 0;
-                var r = Math.random() * 256 | 0;
-                var g = Math.random() * 256 | 0;
-                var b = Math.random() * 256 | 0;
-                this.bitmapData.setPixel(x, y, r, g, b, 255); // 255 opaque
+                this.bitmapData.setPixel(x, y, Math.random() * 0xFFFFFFFF );
+
             }
 
             this.bitmapData.unlock();
