@@ -151,3 +151,5 @@
 ///<reference path="primitives/PlaneGeometry.ts"/>
 ///<reference path="utils/ColorUtils.ts"/>
 ///<reference path="geom/ColorTransform.ts"/>
+///<reference path="animators/nodes/AnimationNodeBase.ts"/>
+///<reference path="animators/states/IAnimationState.ts"/>
