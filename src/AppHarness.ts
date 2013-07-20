@@ -6,21 +6,31 @@
 ///<reference path="Away3D.ts"/>
 ///<reference path="../tests/scene/LightTorus.ts"/>
 
-export class AppHarness extends away.Away3D
+module away
 {
-	constructor()
-	{
 
-        super();
-		var app = new LightTorus();
+    export class AppHarness extends away.Away3D
+    {
 
-	}
+        private lt : scene.LightTorus;
+        constructor()
+        {
+
+            super();
+
+            this.lt = new scene.LightTorus();
+
+        }
+    }
+
 }
+
+
 
 window.onload = function ()
 {
 
-    var app = new AppHarness();
+    var app = new away.AppHarness();
 
 }
 
