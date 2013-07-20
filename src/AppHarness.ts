@@ -10,7 +10,7 @@ module away
 {
     export class AppHarness
     {
-        constructor()
+        constructor() 
         {
 			new scene.PhongTorus();
         }
