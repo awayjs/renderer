@@ -24,10 +24,17 @@ module away.utils
 
         }
 
-        public static ARGBToHexString( argb : Array ) : string
+        public static RGBToHexString( argb : Array ) : string
         {
 
             return "#" + ColorUtils.componentToHex( argb[1] ) + ColorUtils.componentToHex( argb[2] ) + ColorUtils.componentToHex( argb[3] );
+
+        }
+
+        public static ARGBToHexString( argb : Array ) : string
+        {
+
+            return "#" + ColorUtils.componentToHex( argb[0] ) + ColorUtils.componentToHex( argb[1] ) + ColorUtils.componentToHex( argb[2] ) + ColorUtils.componentToHex( argb[3] );
 
         }
 
