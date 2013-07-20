@@ -150,3 +150,4 @@
 ///<reference path="primitives/TorusGeometry.ts"/>
 ///<reference path="primitives/PlaneGeometry.ts"/>
 ///<reference path="utils/ColorUtils.ts"/>
+///<reference path="geom/ColorTransform.ts"/>
