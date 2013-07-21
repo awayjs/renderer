@@ -134,11 +134,35 @@ module away.events {
 
         //todo: hasEventListener - relax check by not requiring target in param
 
-        public hasEventListener( type : string , listener : Function , target : Object ) : boolean {
+        public hasEventListener( type : string , listener : Function = null , target : Object = null ) : boolean {
 
-            return ( this.getEventListenerIndex( type, listener , target ) !== -1 ) ;
+            if ( this.listeners != null && target != null )
+            {
+
+                return ( this.getEventListenerIndex( type, listener , target ) !== -1 ) ;
+
+            }
+            else
+            {
+
+                if ( this.listeners[ type ] !== undefined )
+                {
+
+                    var a : Array<EventData> = this.listeners[ type ];
+                    return ( a.length > 0 );
+
+                }
+
+                return false;
+
+
+            }
+
+           return false;
 
         }
+
+
 
     }
     /**
