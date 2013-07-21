@@ -234,7 +234,7 @@ module away.loaders
             this._iLoader.removeEventListener(type, listener, target);
 		}
 		
-		public hasEventListener( type : string , listener : Function , target : Object ) : boolean
+		public hasEventListener( type : string , listener : Function = null , target : Object = null ) : boolean
 		{
 			return this._iLoader.hasEventListener(type , listener , target );
 		}
