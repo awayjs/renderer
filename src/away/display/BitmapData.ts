@@ -16,6 +16,7 @@ module away.display {
         private _alpha              : number = 1;
         private _locked             : boolean = false;
 
+
         /**
          *
          * @param width
