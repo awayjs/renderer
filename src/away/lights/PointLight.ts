@@ -20,12 +20,12 @@ module away.lights
 			this._pFallOffFactor = 1/(this._pFallOff*this._pFallOff - this._pRadius*this._pRadius);
 		}
 		
-		//TODO public function pCreateShadowMapper():ShadowMapperBase
-		/*
-		public function pCreateShadowMapper():ShadowMapperBase
+		public pCreateShadowMapper():away.lights.ShadowMapperBase
 		{
-			return new CubeMapShadowMapper();
-		}*/
+			//TODO new away.lights.CubeMapShadowMapper();
+			//return new away.lights.CubeMapShadowMapper();
+			return null;
+		}
 		
 		public pCreateEntityPartitionNode():away.partition.EntityNode
 		{

@@ -155,6 +155,7 @@
 ///<reference path="controllers/LookAtController.ts"/>
 ///<reference path="lights/LightBase.ts"/>
 ///<reference path="lights/PointLight.ts"/>
+///<reference path="lights/shadowmaps/ShadowMapperBase.ts"/>
 ///<reference path="data/RenderableListItem.ts"/>
 ///<reference path="data/EntityListItem.ts"/>
 ///<reference path="data/EntityListItemPool.ts"/>

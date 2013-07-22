@@ -543,7 +543,8 @@ module away.materials
 		 *
 		 * @private
 		 */
-       
+		/* TODO: IAnimationSet - implement and integrate
+		*/
 		public iAddOwner(owner:away.base.IMaterialOwner) // ARCANE
 		{
 			throw new away.errors.PartialImplementationError();
@@ -566,13 +567,14 @@ module away.materials
 			}
 			*/
 		}
-		/* TODO: IAnimationSet - implement and integrate
-		*/
+		
 		/**
 		 * Removes an IMaterialOwner as owner.
 		 * @param owner
 		 * @private
 		 */
+		 /* TODO: IAnimationSet - implement and integrate
+		*/
 		public iRemoveOwner(owner:away.base.IMaterialOwner) // ARCANE
 		{
 			throw new away.errors.PartialImplementationError();
@@ -587,8 +589,7 @@ module away.materials
 				invalidatePasses(null);
 			}*/
 		}
-		/* TODO: IAnimationSet - implement and integrate
-		*/
+		
 		/**
 		 * A list of the IMaterialOwners that use this material
 		 *
