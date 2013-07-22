@@ -35,6 +35,13 @@
 ///<reference path="display3D/Context3DTriangleFace.ts"/>
 ///<reference path="display3D/Context3DVertexBufferFormat.ts"/>
 ///<reference path="display3D/Context3DProgramType.ts"/>
+///<reference path="display3D/Context3DBlendFactor.ts"/>
+///<reference path="display3D/Context3DCompareMode.ts"/>
+///<reference path="display3D/Context3DMipFilter.ts"/>
+///<reference path="display3D/Context3DProfile.ts"/>
+///<reference path="display3D/Context3DStencilAction.ts"/>
+///<reference path="display3D/Context3DTextureFilter.ts"/>
+///<reference path="display3D/Context3DWrapMode.ts"/>
 ///<reference path="display3D/Context3D.ts" />
 ///<reference path="materials/MaterialBase.ts"/>
 ///<reference path="traverse/PartitionTraverser.ts" />
