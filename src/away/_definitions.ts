@@ -74,8 +74,9 @@
 ///<reference path="partition/EntityNode.ts" />
 ///<reference path="partition/CameraNode.ts" />
 ///<reference path="partition/LightNode.ts" />
-///<reference path="partition/MeshNode.ts" />
+///<reference path="partition/DirectionalLightNode.ts" />
 ///<reference path="partition/PointLightNode.ts"/>
+///<reference path="partition/MeshNode.ts" />
 ///<reference path="errors/PartialImplementationError.ts" />
 ///<reference path="library/assets/AssetType.ts" />
 ///<reference path="base/IMaterialOwner.ts" />
@@ -155,8 +156,10 @@
 ///<reference path="controllers/LookAtController.ts"/>
 ///<reference path="lights/LightBase.ts"/>
 ///<reference path="lights/PointLight.ts"/>
+///<reference path="lights/DirectionalLight.ts"/>
 ///<reference path="lights/shadowmaps/ShadowMapperBase.ts"/>
 ///<reference path="lights/shadowmaps/CubeMapShadowMapper.ts"/>
+///<reference path="lights/shadowmaps/DirectionalShadowMapper.ts"/>
 ///<reference path="data/RenderableListItem.ts"/>
 ///<reference path="data/EntityListItem.ts"/>
 ///<reference path="data/EntityListItemPool.ts"/>
