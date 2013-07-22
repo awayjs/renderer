@@ -143,8 +143,9 @@ module away.lights
 			throw new away.errors.AbstractMethodError();
 		}
 		
+		//TODO public pDrawDepthMap( target:away.display3D.TextureBase, scene:away.containers.Scene3D, renderer:away.render.DepthRenderer )
 		/*
-		public pDrawDepthMap( target:away.display3D.TextureBase, scene:away.containers.Scene3D, renderer:away.render.DepthRenderer ):void
+		public pDrawDepthMap( target:away.display3D.TextureBase, scene:away.containers.Scene3D, renderer:away.render.DepthRenderer )
 		{
 			throw new away.errors.AbstractMethodError();
 		}*/

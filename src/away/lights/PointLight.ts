@@ -22,9 +22,7 @@ module away.lights
 		
 		public pCreateShadowMapper():away.lights.ShadowMapperBase
 		{
-			//TODO new away.lights.CubeMapShadowMapper();
-			//return new away.lights.CubeMapShadowMapper();
-			return null;
+			return new away.lights.CubeMapShadowMapper();
 		}
 		
 		public pCreateEntityPartitionNode():away.partition.EntityNode
