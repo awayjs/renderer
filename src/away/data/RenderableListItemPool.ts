@@ -30,5 +30,15 @@ module away.data
 				return this._pool[this._index++];
 			}
 		}
+		
+		public freeAll()
+		{
+			this._index = 0;
+		}
+		
+		public dispose()
+		{
+			this._pool.length = 0;
+		}
 	}
 }

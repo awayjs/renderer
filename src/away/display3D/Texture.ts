@@ -5,8 +5,6 @@
 
 ///<reference path="../_definitions.ts"/>
 
-
-
 module away.display3D
 {
 	export class Texture extends TextureBase
