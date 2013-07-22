@@ -17,7 +17,7 @@ module away.base
 		/**
 		 * The transformation matrix that transforms from model to world space.
 		 */
-		//sceneTransform():away.geom.Matrix3D; // GET
+		sceneTransform:away.geom.Matrix3D; // GET
 		
 		/**
 		 * The transformation matrix that transforms from model to world space, adapted with any special operations needed to render.
@@ -30,7 +30,7 @@ module away.base
 		/**
 		 * The inverse scene transform object that transforms from world to model space.
 		 */
-		//inverseSceneTransform:away.geom.Matrix3D; //GET
+		inverseSceneTransform:away.geom.Matrix3D; //GET
 		
 		/**
 		 * Indicates whether the IRenderable should trigger mouse events, and hence should be rendered for hit testing.

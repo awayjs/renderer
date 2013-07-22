@@ -252,7 +252,7 @@ module away.base
 		private _z          : number = 0;
 		private _pivotPoint : away.geom.Vector3D = new away.geom.Vector3D();
 		private _pivotZero  : boolean = true;
-		private _pos        : away.geom.Vector3D = new away.geom.Vector3D();
+		public _pPos        : away.geom.Vector3D = new away.geom.Vector3D();
 		private _rot        : away.geom.Vector3D = new away.geom.Vector3D();
 		private _sca        : away.geom.Vector3D = new away.geom.Vector3D();
 
@@ -584,9 +584,9 @@ module away.base
 		 */
 		public get position():away.geom.Vector3D
 		{
-			this._transform.copyColumnTo(3, this._pos);
+			this._transform.copyColumnTo(3, this._pPos);
 			
-			return this._pos.clone();
+			return this._pPos.clone();
 		}
 		
 		public set position(value:away.geom.Vector3D)
@@ -663,7 +663,7 @@ module away.base
 
             this._transformComponents = new Array<away.geom.Vector3D>(3);//_transformComponents = new Vector.<Vector3D>(3, true);
 
-			this._transformComponents[0] = this._pos;
+			this._transformComponents[0] = this._pPos;
             this._transformComponents[1] = this._rot;
             this._transformComponents[2] = this._sca;
 
@@ -827,11 +827,11 @@ module away.base
 			
 			this.transform.prependTranslation(x*len, y*len, z*len);
 			
-			this._transform.copyColumnTo(3, this._pos);
+			this._transform.copyColumnTo(3, this._pPos);
 			
-			this._x = this._pos.x;
-            this._y = this._pos.y;
-            this._z = this._pos.z;
+			this._x = this._pPos.x;
+            this._y = this._pPos.y;
+            this._z = this._pPos.z;
 
             this.invalidatePosition();
 		}
@@ -1000,9 +1000,9 @@ module away.base
 
 		public _pUpdateTransform()
 		{
-			this._pos.x = this._x;
-            this._pos.y = this._y;
-            this._pos.z = this._z;
+			this._pPos.x = this._x;
+            this._pPos.y = this._y;
+            this._pPos.z = this._z;
 
             this._rot.x = this._rotationX;
             this._rot.y = this._rotationY;

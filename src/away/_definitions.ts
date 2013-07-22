@@ -57,6 +57,7 @@
 ///<reference path="cameras/lenses/ObliqueNearPlaneLens.ts" />
 ///<reference path="events/CameraEvent.ts" />
 ///<reference path="bounds/NullBounds.ts" />
+///<reference path="bounds/BoundingSphere.ts" />
 ///<reference path="containers/ObjectContainer3D.ts" />
 ///<reference path="entities/Entity.ts" />
 ///<reference path="cameras/Camera3D.ts" />
@@ -72,6 +73,7 @@
 ///<reference path="partition/CameraNode.ts" />
 ///<reference path="partition/LightNode.ts" />
 ///<reference path="partition/MeshNode.ts" />
+///<reference path="partition/PointLightNode.ts"/>
 ///<reference path="errors/PartialImplementationError.ts" />
 ///<reference path="library/assets/AssetType.ts" />
 ///<reference path="base/IMaterialOwner.ts" />
@@ -150,6 +152,7 @@
 ///<reference path="controllers/ControllerBase.ts"/>
 ///<reference path="controllers/LookAtController.ts"/>
 ///<reference path="lights/LightBase.ts"/>
+///<reference path="lights/PointLight.ts"/>
 ///<reference path="data/RenderableListItem.ts"/>
 ///<reference path="data/EntityListItem.ts"/>
 ///<reference path="data/EntityListItemPool.ts"/>

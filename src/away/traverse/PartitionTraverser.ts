@@ -44,12 +44,14 @@ module away.traverse
 		{
 			throw new away.errors.AbstractMethodError();
 		}
+		*/
 		
-		public applyPointLight(light:PointLight)
+		public applyPointLight( light:away.lights.PointLight )
 		{
 			throw new away.errors.AbstractMethodError();
 		}
 		
+		/*
 		public applyLightProbe(light:LightProbe)
 		{
 			throw new away.errors.AbstractMethodError();
