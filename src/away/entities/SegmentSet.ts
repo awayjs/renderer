@@ -16,7 +16,7 @@ module away.entities
 		private _subSets:SubSet[];
 		private _subSetCount:number;
 		private _numIndices:number;
-		//private _material:MaterialBase;
+		private _material:away.materials.MaterialBase;
 		//private _animator:IAnimator;
 		private _hasData:boolean;
 		
@@ -26,7 +26,7 @@ module away.entities
 		constructor()
 		{
 			super();
-
+			
 			this._subSetCount = 0;
 			this._subSets = [];
 			this.addSubSet();
@@ -376,7 +376,7 @@ module away.entities
 			super.dispose();
 			this.removeAllSegments();
 			this._pSegments = null
-			//this._material = null;
+			this._material = null;
 			var subSet:SubSet = this._subSets[0];
 			subSet.vertices = null;
 			subSet.indices = null;
@@ -481,18 +481,18 @@ module away.entities
 		{
 			return false;
 		}
-		/*
-		public get material():MaterialBase
+		
+		public get material():away.materials.MaterialBase
 		{
 			return this._material;
 		}
-		
+		/*
 		public get animator():IAnimator
 		{
 			return this._animator;
 		}
-		
-		public set material( value:MaterialBase )
+		*/
+		public set material( value:away.materials.MaterialBase )
 		{
 			if( value == this._material)
 			{
@@ -500,15 +500,15 @@ module away.entities
 			}
 			if( this._material )
 			{
-				this._material.removeOwner(this);
+				this._material.iRemoveOwner( this );
 			}
 			this._material = value;
 			if( this._material )
 			{
-				this._material.addOwner(this);
+				this._material.iAddOwner( this );
 			}
 		}
-		*/
+		
 		public get uvTransform():away.geom.Matrix
 		{
 			return null;

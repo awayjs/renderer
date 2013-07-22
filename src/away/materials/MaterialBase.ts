@@ -543,9 +543,11 @@ module away.materials
 		 *
 		 * @private
 		 */
-        /* TODO: IAnimationSet - implement and integrate
-		public _iAddOwner(owner:away.base.IMaterialOwner) // ARCANE
+       
+		public iAddOwner(owner:away.base.IMaterialOwner) // ARCANE
 		{
+			throw new away.errors.PartialImplementationError();
+			/*
 			_owners.push(owner);
 			
 			if (owner.animator) {
@@ -562,16 +564,19 @@ module away.materials
 					}
 				}
 			}
+			*/
 		}
+		/* TODO: IAnimationSet - implement and integrate
 		*/
 		/**
 		 * Removes an IMaterialOwner as owner.
 		 * @param owner
 		 * @private
 		 */
-        /* TODO: IAnimationSet - implement and integrate
-		public _iRemoveOwner(owner:away.base.IMaterialOwner) // ARCANE
+		public iRemoveOwner(owner:away.base.IMaterialOwner) // ARCANE
 		{
+			throw new away.errors.PartialImplementationError();
+			/*
 			_owners.splice(_owners.indexOf(owner), 1);
 			if (_owners.length == 0) {
 				_animationSet = null;
@@ -580,8 +585,9 @@ module away.materials
 				_depthPass.animationSet = _animationSet;
 				_distancePass.animationSet = _animationSet;
 				invalidatePasses(null);
-			}
+			}*/
 		}
+		/* TODO: IAnimationSet - implement and integrate
 		*/
 		/**
 		 * A list of the IMaterialOwners that use this material

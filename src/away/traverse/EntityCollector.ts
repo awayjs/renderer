@@ -7,35 +7,35 @@
 
 module away.traverse
 {
-	export class EntityCollector extends PartitionTraverser
+	export class EntityCollector extends away.traverse.PartitionTraverser
 	{
 		
-		protected var _skyBox:away.base.IRenderable;
-		protected var _opaqueRenderableHead:away.data.RenderableListItem;
-		protected var _blendedRenderableHead:away.data.RenderableListItem;
-		private var _entityHead:EntityListItem;
-		//protected var _renderableListItemPool:RenderableListItemPool;
-		protected var _entityListItemPool:EntityListItemPool;
-		protected var _lights:Vector.<LightBase>;
-		private var _directionalLights:Vector.<DirectionalLight>;
-		private var _pointLights:Vector.<PointLight>;
-		private var _lightProbes:Vector.<LightProbe>;
-		protected var _numEntities:number;
-		protected var _numLights:number;
-		protected var _numTriangles:number;
-		protected var _numMouseEnableds:number;
-		protected var _camera:away.cameras.Camera3D;
-		private var _numDirectionalLights:number;
-		private var _numPointLights:number;
-		private var _numLightProbes:number;
-		protected var _cameraForward:away.geom.Vector3D;
-		private var _customCullPlanes:away.math.Plane3D[];
-		private var _cullPlanes:away.math.Plane3D[];
-		private var _numCullPlanes:uint;
+		public _pSkyBox:away.base.IRenderable;
+		public _pOpaqueRenderableHead:away.data.RenderableListItem;
+		public _pBlendedRenderableHead:away.data.RenderableListItem;
+		private _entityHead:away.data.EntityListItem;
+		public _pRenderableListItemPool:away.data.RenderableListItemPool;
+		public _pEntityListItemPool:away.data.EntityListItemPool;
+		public _pLights:away.lights.LightBase[];
+		//private _directionalLights:away.lights.DirectionalLight[];
+		private _pointLights:away.lights.PointLight[];
+		//private _lightProbes:Vector.<LightProbe>;
+		public _pNumEntities:number;
+		public _pNumLights:number;
+		public _pNumTriangles:number;
+		public _pNumMouseEnableds:number;
+		public _pCamera:away.cameras.Camera3D;
+		private _numDirectionalLights:number;
+		private _numPointLights:number;
+		private _numLightProbes:number;
+		public _pCameraForward:away.geom.Vector3D;
+		private _customCullPlanes:away.math.Plane3D[];
+		private _cullPlanes:away.math.Plane3D[];
+		private _numCullPlanes:number;
 		
 		constructor()
 		{
-			
+			super();
 		}
 	}
 }

@@ -38,21 +38,18 @@ module away.traverse
 		{
 			throw new away.errors.AbstractMethodError();
 		}
-		
 		/*
-		public applyDirectionalLight(light:DirectionalLight)
+		public applyDirectionalLight(light:away.lights.DirectionalLight)
 		{
 			throw new away.errors.AbstractMethodError();
 		}
 		*/
-		
 		public applyPointLight( light:away.lights.PointLight )
 		{
 			throw new away.errors.AbstractMethodError();
 		}
-		
 		/*
-		public applyLightProbe(light:LightProbe)
+		public applyLightProbe(light:away.lights.LightProbe)
 		{
 			throw new away.errors.AbstractMethodError();
 		}

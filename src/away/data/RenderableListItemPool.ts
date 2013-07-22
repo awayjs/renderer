@@ -27,7 +27,7 @@ module away.data
 				return item;
 			} else
 			{
-				return this._pool[_index++];
+				return this._pool[this._index++];
 			}
 		}
 	}

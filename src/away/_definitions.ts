@@ -45,6 +45,8 @@
 ///<reference path="display3D/Context3D.ts" />
 ///<reference path="materials/MaterialBase.ts"/>
 ///<reference path="traverse/PartitionTraverser.ts" />
+///<reference path="traverse/EntityCollector.ts" />
+///<reference path="traverse/ShadowCasterCollector.ts" />
 ///<reference path="primitives/data/Segment.ts" />
 ///<reference path="bounds/BoundingVolumeBase.ts" />
 ///<reference path="events/LensEvent.ts" />
@@ -156,6 +158,7 @@
 ///<reference path="data/RenderableListItem.ts"/>
 ///<reference path="data/EntityListItem.ts"/>
 ///<reference path="data/EntityListItemPool.ts"/>
+///<reference path="data/RenderableListItemPool.ts"/>
 ///<reference path="primitives/PrimitiveBase.ts"/>
 ///<reference path="primitives/TorusGeometry.ts"/>
 ///<reference path="primitives/PlaneGeometry.ts"/>

@@ -12,7 +12,7 @@ module away.base
 	/**
 	 * IRenderable provides an interface for objects that can be rendered in the rendering pipeline.
 	 */
-	export interface IRenderable /*extends away.base.IMaterialOwner*/
+	export interface IRenderable extends away.base.IMaterialOwner
 	{
 		/**
 		 * The transformation matrix that transforms from model to world space.
@@ -25,7 +25,7 @@ module away.base
 		 * return the scene transform.
 		 */
         // TODO: Camera3D - imeplement & integrate
-		//function getRenderSceneTransform(camera:Camera3D):away.geom.Matrix3D;
+		getRenderSceneTransform(camera:away.cameras.Camera3D):away.geom.Matrix3D;
 		
 		/**
 		 * The inverse scene transform object that transforms from world to model space.
