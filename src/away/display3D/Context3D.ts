@@ -19,7 +19,7 @@ module away.display3D
 		
 		private _indexBufferList: IndexBuffer3D[] = [];
 		private _vertexBufferList: VertexBuffer3D[] = [];
-		private _textureList: Texture[] = [];
+		private _textureList: TextureBase[] = [];
 		private _programList: Program3D[] = [];
 		
 		private _gl: WebGLRenderingContext;
@@ -83,13 +83,12 @@ module away.display3D
 			this._gl.viewport.height = height;
 		}
 		
-		/*
-		public function createCubeTexture( size:number, format:Context3DTextureFormat, optimizeForRenderToTexture:boolean, streamingLevels:number = 0 ):CubeTexture 
+		public createCubeTexture( size:number, format:away.display3D.Context3DTextureFormat, optimizeForRenderToTexture:boolean, streamingLevels:number = 0 ):away.display3D.CubeTexture 
 		{
-             var texture: Texture = new away.display3D.CubeTexture( );
-             this._textureList.push( texture );
-             return texture;
-		}*/
+            var texture: away.display3D.CubeTexture = new away.display3D.CubeTexture( this._gl, size );
+            this._textureList.push( texture );
+            return texture;
+		}
 		
 		public createIndexBuffer( numIndices:number ): away.display3D.IndexBuffer3D
 		{
@@ -107,6 +106,7 @@ module away.display3D
 		
 		public createTexture( width:number, height:number, format:string, optimizeForRenderToTexture:boolean, streamingLevels:number = 0 ): Texture
 		{
+			//TODO 
 			var texture: Texture = new away.display3D.Texture( this._gl, width, height );
 			this._textureList.push( texture );
 			return texture;

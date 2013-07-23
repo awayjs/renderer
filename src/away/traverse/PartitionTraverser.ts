@@ -48,12 +48,12 @@ module away.traverse
 		{
 			throw new away.errors.AbstractMethodError();
 		}
-		/*
+		
 		public applyLightProbe(light:away.lights.LightProbe)
 		{
 			throw new away.errors.AbstractMethodError();
 		}
-		*/
+		
 		public applyEntity(entity:away.entities.Entity)
 		{
 			throw new away.errors.AbstractMethodError();

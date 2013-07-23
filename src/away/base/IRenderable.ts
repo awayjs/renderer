@@ -35,7 +35,7 @@ module away.base
 		/**
 		 * Indicates whether the IRenderable should trigger mouse events, and hence should be rendered for hit testing.
 		 */
-		//mouseEnabled:boolean; //GET
+		mouseEnabled:boolean; //GET
 		
 		/**
 		 * The entity that that initially provided the IRenderable to the render pipeline.
