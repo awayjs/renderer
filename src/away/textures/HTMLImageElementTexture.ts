@@ -46,7 +46,7 @@ module away.textures
             }
 
             this.invalidateContent();
-			this._pSetSize( value.width , value.height );
+			this.pSetSize( value.width , value.height );
             this._htmlImageElement = value;
 			
 			if ( this._generateMipmaps )
@@ -58,7 +58,7 @@ module away.textures
 
 		}
 		
-		public _pUploadContent(texture:away.display3D.TextureBase)
+		public pUploadContent(texture:away.display3D.TextureBase)
 		{
 
 			if (this._generateMipmaps)
