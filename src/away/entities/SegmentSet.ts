@@ -32,7 +32,7 @@ module away.entities
 			this.addSubSet();
 			
 			this._pSegments = new Object();
-			//this.material = new SegmentMaterial();
+			//TODO this.material = new SegmentMaterial();
 		}
 		
 		public addSegment( segment:away.primitives.Segment )
@@ -318,7 +318,7 @@ module away.entities
 			context3d.setVertexBufferAt(2, vertexBuffer, 6, Context3DVertexBufferFormat.FLOAT_1);
 			context3d.setVertexBufferAt(3, vertexBuffer, 7, Context3DVertexBufferFormat.FLOAT_4);
 		}
-		
+		*/
 		public activateUVBuffer(index:number, stage3DProxy:away.managers.Stage3DProxy)
 		{
 		}
@@ -334,7 +334,6 @@ module away.entities
 		public activateSecondaryUVBuffer( index:number, stage3DProxy:away.managers.Stage3DProxy)
 		{
 		}
-		*/
 		
 		private reOrderIndices( subSetIndex:number, index:number )
 		{
@@ -392,8 +391,7 @@ module away.entities
 		//@override
 		public pGetDefaultBoundingVolume():away.bounds.BoundingVolumeBase
 		{
-			//return new away.bounds.BoundingSphere();
-			return null;
+			return new away.bounds.BoundingSphere();
 		}
 		
 		//@override

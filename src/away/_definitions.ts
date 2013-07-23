@@ -169,6 +169,7 @@
 ///<reference path="data/EntityListItemPool.ts"/>
 ///<reference path="data/RenderableListItemPool.ts"/>
 ///<reference path="primitives/PrimitiveBase.ts"/>
+///<reference path="primitives/LineSegment.ts"/>
 ///<reference path="primitives/TorusGeometry.ts"/>
 ///<reference path="primitives/PlaneGeometry.ts"/>
 ///<reference path="utils/ColorUtils.ts"/>
