@@ -23,7 +23,7 @@ module away.entities
 		private _subMeshes : away.base.SubMesh[];//:Vector.<SubMesh>;
 		private _geometry:away.base.Geometry;//Geometry;
 		private _material:away.materials.MaterialBase;
-		//private var _animator:IAnimator; // TODO: implement IAnimator
+		private _animator:away.animators.IAnimator;
 		private _castsShadows:boolean = true;
 		private _shareAnimationGeometry:boolean = true;
 		
@@ -106,16 +106,18 @@ module away.entities
 		 * Defines the animator of the mesh. Act on the mesh's geometry.  Default value is <code>null</code>.
 		 */
 
-        /* TODO: Implement Dependency : IAnimator
-		public get animator():IAnimator
-		{
-			return _animator;
-		}
-		*/
 
-        /* TODO: Implement Dependency : IAnimator
-		public set animator(value:IAnimator)
+		public get animator():away.animators.IAnimator
 		{
+			return this._animator;
+		}
+
+
+		public set animator(value:away.animators.IAnimator)
+		{
+
+            away.Debug.throwPIR('Mesh' , 'set animator' , 'Partial Implementation')
+            /*
 			if (_animator)
 				_animator.removeOwner(this);
 			
@@ -141,9 +143,10 @@ module away.entities
 			
 			if (_animator)
 				_animator.addOwner(this);
+
+			*/
 		}
-		*/
-		
+
 		/**
 		 * The geometry used by the mesh that provides it with its shape.
 		 */
