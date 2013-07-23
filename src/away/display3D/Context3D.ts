@@ -292,7 +292,7 @@ module away.display3D
 			program3D.focusProgram();
 		}
 		
-		private getUniformLocationNameFromAgalRegisterIndex( programType:Context3DProgramType, firstRegister:number ):string
+		private getUniformLocationNameFromAgalRegisterIndex( programType:string, firstRegister:number ):string
 		{
 			switch( programType)
 			{
@@ -317,11 +317,16 @@ module away.display3D
 			this.setGLSLProgramConstantsFromMatrix( locationName, matrix, transposedMatrix );
 		}
 		
-		/*
-		public setProgramConstantsFromVector(programType:string, firstRegister:number, matrix:away.geom.Matrix3D, transposedMatrix:boolean = false )
+		public setProgramConstantsFromArray( programType:string, firstRegister:number, data:number[], numRegisters:number = -1 )
 		{
-
-		}*/
+			for( var i: number = 0; i < numRegisters; ++i )
+			{
+				var currentIndex:number = i * 4;
+				var locationName:string = this.getUniformLocationNameFromAgalRegisterIndex( programType, firstRegister + i );;
+				
+				this.setGLSLProgramConstantsFromArray( locationName, data, currentIndex );
+			}
+		}
 		
 		/*
 		public setGLSLProgramConstantsFromByteArray
@@ -334,7 +339,7 @@ module away.display3D
 			this._gl.uniformMatrix4fv( location, !transposedMatrix, new Float32Array( matrix.rawData ) );
 		}
 		
-		public setGLSLProgramConstantsFromVector4( locationName:string, data:number[], startIndex:number = 0 ) 
+		public setGLSLProgramConstantsFromArray( locationName:string, data:number[], startIndex:number = 0 ) 
 		{
 			var location:WebGLUniformLocation = this._gl.getUniformLocation( this._currentProgram.glProgram, locationName );
 			this._gl.uniform4f( location, data[startIndex], data[startIndex+1], data[startIndex+2], data[startIndex+3] );

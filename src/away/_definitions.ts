@@ -176,3 +176,6 @@
 ///<reference path="geom/ColorTransform.ts"/>
 ///<reference path="animators/nodes/AnimationNodeBase.ts"/>
 ///<reference path="animators/states/IAnimationState.ts"/>
+///<reference path="render/RenderBase.ts"/>
+///<reference path="sort/IEntitySorter.ts"/>
+///<reference path="sort/RenderableMergeSort.ts"/>
