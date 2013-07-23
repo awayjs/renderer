@@ -93,7 +93,7 @@ module away.textures
          * @param texture
          * @private
          */
-		public _pUploadContent(texture : away.display3D.TextureBase) : void
+		public pUploadContent(texture : away.display3D.TextureBase) : void
 		{
 
             throw new away.errors.AbstractMethodError();
@@ -106,13 +106,13 @@ module away.textures
          * @param height
          * @private
          */
-		public _pSetSize(width : number, height : number) : void
+		public pSetSize(width : number, height : number) : void
 		{
 
 			if (this._width != width || this._height != height)
             {
 
-                this._pInvalidateSize();
+                this.pInvalidateSize();
 
             }
 
@@ -140,7 +140,7 @@ module away.textures
          *
          * @private
          */
-		public _pInvalidateSize() : void
+		public pInvalidateSize() : void
 		{
 			var tex : away.display3D.TextureBase;
 			for (var i : number = 0; i < 8; ++i)
@@ -166,7 +166,7 @@ module away.textures
          * @param context
          * @private
          */
-		public _pCreateTexture( context : away.display3D.Context3D) : away.display3D.TextureBase
+		public pCreateTexture( context : away.display3D.Context3D) : away.display3D.TextureBase
 		{
             throw new away.errors.AbstractMethodError();
 		}
