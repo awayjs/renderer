@@ -290,6 +290,12 @@ module away.display3D
 			this._gl.scissor( rectangle.x, rectangle.y, rectangle.width, rectangle.height );
 		}
 		
+		public setTextureAt( sampler:number, texture:away.display3D.TextureBase )
+		{
+			var locationName:string = "fs" + sampler;
+			this.setGLSLTextureAt( locationName, texture, sampler );
+		}
+		
 		public setGLSLTextureAt( locationName:string, texture:TextureBase, textureIndex:number )
 		{
 			var location:WebGLUniformLocation = this._gl.getUniformLocation( this._currentProgram.glProgram, locationName );
