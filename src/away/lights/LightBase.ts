@@ -33,7 +33,7 @@ module away.lights
 		
 		private _castsShadows:boolean;
 		
-		// TODO private _shadowMapper:ShadowMapperBase;
+		private _shadowMapper:away.lights.ShadowMapperBase;
 		
 		constructor()
 		{
@@ -190,19 +190,19 @@ module away.lights
 		}
 		
 		// TODO shadowMapper():ShadowMapperBase
-		/*
-		public get shadowMapper():ShadowMapperBase
+
+		public get shadowMapper():away.lights.ShadowMapperBase
 		{
 			return this._shadowMapper;
 		}
-		*/
+
 		
 		// TODO shadowMapper(value:ShadowMapperBase)
-		/*
-		public set shadowMapper(value:ShadowMapperBase)
+
+		public set shadowMapper(value:away.lights.ShadowMapperBase)
 		{
 			this._shadowMapper = value;
 			this._shadowMapper.light = this;
-		}*/
+		}
 	}
 }
