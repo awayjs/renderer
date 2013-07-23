@@ -147,12 +147,38 @@ module away.display3D
 			this._programList = null;
 		}
 		
-		/*
-		public function drawToBitmapData(destination:BitmapData) 
+		
+		public drawToBitmapData( destination:away.display.BitmapData ) 
 		{
-		  // TODO
+			// TODO drawToBitmapData( destination:away.display.BitmapData )
+			
+			/*
+			rttFramebuffer = gl.createFramebuffer();
+			gl.bindFramebuffer(gl.FRAMEBUFFER, rttFramebuffer);
+			rttFramebuffer.width = 512;
+			rttFramebuffer.height = 512;
+			
+			rttTexture = gl.createTexture();
+			gl.bindTexture(gl.TEXTURE_2D, rttTexture);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
+			gl.generateMipmap(gl.TEXTURE_2D);
+			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, rttFramebuffer.width, rttFramebuffer.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+			
+			var renderbuffer = gl.createRenderbuffer();
+			gl.bindRenderbuffer(gl.RENDERBUFFER, renderbuffer);
+			gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, rttFramebuffer.width, rttFramebuffer.height);
+
+			gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, rttTexture, 0);
+			gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, renderbuffer);
+			
+			gl.bindTexture(gl.TEXTURE_2D, null);
+			gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+			gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+			*/
+			
+			throw new away.errors.PartialImplementationError();
 		}
-		*/
 		
 		public drawTriangles( indexBuffer:IndexBuffer3D, firstIndex:number = 0, numTriangles:number = -1 )
 		{
@@ -224,9 +250,38 @@ module away.display3D
 		}
 		
 		// TODO Context3DCompareMode
-		public setDepthTest( depthMask:boolean, passCompareMode:number ) 
+		public setDepthTest( depthMask:boolean, passCompareMode:string ) 
 		{
-			this._gl.depthFunc( passCompareMode );
+			switch( passCompareMode )
+			{
+				case Context3DCompareMode.ALWAYS:
+						this._gl.depthFunc( 7 );
+					break;
+				case Context3DCompareMode.EQUAL:
+						this._gl.depthFunc( 2 );
+					break;
+				case Context3DCompareMode.GREATER:
+						this._gl.depthFunc( 4 );
+					break;
+				case Context3DCompareMode.GREATER_EQUAL:
+						this._gl.depthFunc( 6 );
+					break;
+				case Context3DCompareMode.LESS:
+						this._gl.depthFunc( 1 );
+					break;
+				case Context3DCompareMode.LESS_EQUAL:
+						this._gl.depthFunc( 3 );
+					break;
+				case Context3DCompareMode.NEVER:
+						this._gl.depthFunc( 0 );
+					break;
+				case Context3DCompareMode.NOT_EQUAL:
+						this._gl.depthFunc( 5 );
+					break;
+				default:
+						throw "Unknown Context3DCompareMode type."; // TODO error
+					break;
+			}
 			this._gl.depthMask( depthMask );
 		}
 		
