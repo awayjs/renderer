@@ -143,12 +143,10 @@ module away.materials
 			vo.texturesIndex = this._normalTextureRegister.index;
 
             // TODO: AGAL <> GLSL
-            /*
+
 			return this.pGetTex2DSampleCode(vo, targetReg, this._normalTextureRegister, this._texture) +
-				"sub " + targetReg + ".xyz, " + targetReg + ".xyz, " + this._sharedRegisters.commons + ".xxx	\n" +
-				"nrm " + targetReg + ".xyz, " + targetReg + ".xyz							\n";
-            */
-            return '';
+				"sub " + targetReg.toString() + ".xyz, " + targetReg.toString() + ".xyz, " + this._sharedRegisters.commons.toString() + ".xxx	\n" +
+				"nrm " + targetReg.toString() + ".xyz, " + targetReg.toString() + ".xyz							\n";
 
 		}
 	}
