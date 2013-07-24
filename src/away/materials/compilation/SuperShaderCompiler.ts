@@ -29,8 +29,8 @@ module away.materials
 		{
 			super.pInitLightData();
 			
-			this._pointLightRegisters = new Array<away.materials.ShaderRegisterElement>(this._numPointLights*3);//Vector.<ShaderRegisterElement>(_numPointLights*3, true);
-            this._dirLightRegisters = new Array<away.materials.ShaderRegisterElement>(this._numDirectionalLights*3);//Vector.<ShaderRegisterElement>(_numDirectionalLights*3, true);
+			this._pointLightRegisters = new Array<away.materials.ShaderRegisterElement>(this._pNumPointLights*3);//Vector.<ShaderRegisterElement>(_numPointLights*3, true);
+            this._dirLightRegisters = new Array<away.materials.ShaderRegisterElement>(this._pNumDirectionalLights*3);//Vector.<ShaderRegisterElement>(_numDirectionalLights*3, true);
 
 
 		}
@@ -42,7 +42,7 @@ module away.materials
 		{
 
 			super.pCalculateDependencies();
-			this._dependencyCounter.addWorldSpaceDependencies(true);
+			this._pDependencyCounter.addWorldSpaceDependencies(true);
 
 		}
 
@@ -53,29 +53,29 @@ module away.materials
 		{
 			var normalMatrix:away.materials.ShaderRegisterElement[] = new Array<away.materials.ShaderRegisterElement>(3);//Vector.<ShaderRegisterElement> = new Vector.<ShaderRegisterElement>(3, true);
 			
-			this._sharedRegisters.normalFragment = this._registerCache.getFreeFragmentVectorTemp();
-            this._registerCache.addFragmentTempUsages(this._sharedRegisters.normalFragment, this._dependencyCounter.normalDependencies);
+			this._pSharedRegisters.normalFragment = this._pRegisterCache.getFreeFragmentVectorTemp();
+            this._pRegisterCache.addFragmentTempUsages(this._pSharedRegisters.normalFragment, this._pDependencyCounter.normalDependencies);
 
-			if (this._methodSetup._iNormalMethod.iHasOutput && !this._methodSetup._iNormalMethod.iTangentSpace)
+			if (this._pMethodSetup._iNormalMethod.iHasOutput && !this._pMethodSetup._iNormalMethod.iTangentSpace)
             {
 
-                this._vertexCode += this._methodSetup._iNormalMethod.iGetVertexCode(this._methodSetup._iNormalMethodVO, this._registerCache);
-                this._fragmentCode += this._methodSetup._iNormalMethod.iGetFragmentCode(this._methodSetup._iNormalMethodVO, this._registerCache, this._sharedRegisters.normalFragment);
+                this._pVertexCode += this._pMethodSetup._iNormalMethod.iGetVertexCode(this._pMethodSetup._iNormalMethodVO, this._pRegisterCache);
+                this._pFragmentCode += this._pMethodSetup._iNormalMethod.iGetFragmentCode(this._pMethodSetup._iNormalMethodVO, this._pRegisterCache, this._pSharedRegisters.normalFragment);
 
 				return;
 
 			}
 			
-			this._sharedRegisters.normalVarying = this._registerCache.getFreeVarying();
+			this._pSharedRegisters.normalVarying = this._pRegisterCache.getFreeVarying();
 			
-			normalMatrix[0] = this._registerCache.getFreeVertexConstant();
-			normalMatrix[1] = this._registerCache.getFreeVertexConstant();
-			normalMatrix[2] = this._registerCache.getFreeVertexConstant();
+			normalMatrix[0] = this._pRegisterCache.getFreeVertexConstant();
+			normalMatrix[1] = this._pRegisterCache.getFreeVertexConstant();
+			normalMatrix[2] = this._pRegisterCache.getFreeVertexConstant();
 
-			this._registerCache.getFreeVertexConstant();
-			this._sceneNormalMatrixIndex = normalMatrix[0].index*4;
+			this._pRegisterCache.getFreeVertexConstant();
+			this._pSceneNormalMatrixIndex = normalMatrix[0].index*4;
 			
-			if (this._methodSetup._iNormalMethod.iHasOutput)
+			if (this._pMethodSetup._iNormalMethod.iHasOutput)
             {
 
 				// tangent stream required
@@ -87,23 +87,23 @@ module away.materials
             {
                 // TODO: AGAL <> GLSL
 
-                /*
-				this._vertexCode += "m33 " + this._sharedRegisters.normalVarying + ".xyz, " + this._sharedRegisters.animatedNormal + ", " + normalMatrix[0] + "\n" +
-					"mov " + this._sharedRegisters.normalVarying + ".w, " + this._sharedRegisters.animatedNormal + ".w	\n";
+                //*
+				this._pVertexCode += "m33 " + this._pSharedRegisters.normalVarying + ".xyz, " + this._pSharedRegisters.animatedNormal + ", " + normalMatrix[0] + "\n" +
+					"mov " + this._pSharedRegisters.normalVarying + ".w, " + this._pSharedRegisters.animatedNormal + ".w	\n";
 
-                this._fragmentCode += "nrm " + this._sharedRegisters.normalFragment + ".xyz, " + this._sharedRegisters.normalVarying + "\n" +
-					"mov " + this._sharedRegisters.normalFragment + ".w, " + this._sharedRegisters.normalVarying + ".w		\n";
+                this._pFragmentCode += "nrm " + this._pSharedRegisters.normalFragment + ".xyz, " + this._pSharedRegisters.normalVarying + "\n" +
+					"mov " + this._pSharedRegisters.normalFragment + ".w, " + this._pSharedRegisters.normalVarying + ".w		\n";
 				
-				if (this._dependencyCounter.tangentDependencies > 0) {
-                    this._sharedRegisters.tangentInput = this._registerCache.getFreeVertexAttribute();
-                    this._tangentBufferIndex = this._sharedRegisters.tangentInput.index;
-                    this._sharedRegisters.tangentVarying = this._registerCache.getFreeVarying();
-                    this._vertexCode += "mov " + this._sharedRegisters.tangentVarying + ", " + this._sharedRegisters.tangentInput + "\n";
+				if (this._pDependencyCounter.tangentDependencies > 0) {
+                    this._pSharedRegisters.tangentInput = this._pRegisterCache.getFreeVertexAttribute();
+                    this._pTangentBufferIndex = this._pSharedRegisters.tangentInput.index;
+                    this._pSharedRegisters.tangentVarying = this._pRegisterCache.getFreeVarying();
+                    this._pVertexCode += "mov " + this._pSharedRegisters.tangentVarying + ", " + this._pSharedRegisters.tangentInput + "\n";
 				}
-				*/
+				//*/
 			}
 			
-			this._registerCache.removeVertexTempUsage(this._sharedRegisters.animatedNormal);
+			this._pRegisterCache.removeVertexTempUsage(this._pSharedRegisters.animatedNormal);
 		}
 
 		/**
@@ -111,29 +111,29 @@ module away.materials
 		 */
 		public pCreateNormalRegisters()
 		{
-			if (this._dependencyCounter.normalDependencies > 0)
+			if (this._pDependencyCounter.normalDependencies > 0)
             {
 
-                this._sharedRegisters.normalInput = this._registerCache.getFreeVertexAttribute();
-                this._normalBufferIndex = this._sharedRegisters.normalInput.index;
-                this._sharedRegisters.animatedNormal = this._registerCache.getFreeVertexVectorTemp();
-                this._registerCache.addVertexTempUsages(this._sharedRegisters.animatedNormal, 1);
-                this._animatableAttributes.push(this._sharedRegisters.normalInput.toString());
-                this._animationTargetRegisters.push(this._sharedRegisters.animatedNormal.toString());
+                this._pSharedRegisters.normalInput = this._pRegisterCache.getFreeVertexAttribute();
+                this._pNormalBufferIndex = this._pSharedRegisters.normalInput.index;
+                this._pSharedRegisters.animatedNormal = this._pRegisterCache.getFreeVertexVectorTemp();
+                this._pRegisterCache.addVertexTempUsages(this._pSharedRegisters.animatedNormal, 1);
+                this._pAnimatableAttributes.push(this._pSharedRegisters.normalInput.toString());
+                this._pAnimationTargetRegisters.push(this._pSharedRegisters.animatedNormal.toString());
 
 			}
 			
-			if (this._methodSetup._iNormalMethod.iHasOutput)
+			if (this._pMethodSetup._iNormalMethod.iHasOutput)
             {
 
-                this._sharedRegisters.tangentInput = this._registerCache.getFreeVertexAttribute();
-                this._tangentBufferIndex = this._sharedRegisters.tangentInput.index;
+                this._pSharedRegisters.tangentInput = this._pRegisterCache.getFreeVertexAttribute();
+                this._pTangentBufferIndex = this._pSharedRegisters.tangentInput.index;
 
-                this._sharedRegisters.animatedTangent = this._registerCache.getFreeVertexVectorTemp();
-                this._registerCache.addVertexTempUsages(this._sharedRegisters.animatedTangent, 1);
+                this._pSharedRegisters.animatedTangent = this._pRegisterCache.getFreeVertexVectorTemp();
+                this._pRegisterCache.addVertexTempUsages(this._pSharedRegisters.animatedTangent, 1);
 
-                this._animatableAttributes.push(this._sharedRegisters.tangentInput.toString());
-                this._animationTargetRegisters.push(this._sharedRegisters.animatedTangent.toString());
+                this._pAnimatableAttributes.push(this._pSharedRegisters.tangentInput.toString());
+                this._pAnimationTargetRegisters.push(this._pSharedRegisters.animatedTangent.toString());
 
 			}
 		}
@@ -144,33 +144,33 @@ module away.materials
 		 */
 		private compileTangentVertexCode(matrix:away.materials.ShaderRegisterElement[])//Vector.<ShaderRegisterElement>)
 		{
-			this._sharedRegisters.tangentVarying = this._registerCache.getFreeVarying();
-            this._sharedRegisters.bitangentVarying = this._registerCache.getFreeVarying();
+			this._pSharedRegisters.tangentVarying = this._pRegisterCache.getFreeVarying();
+            this._pSharedRegisters.bitangentVarying = this._pRegisterCache.getFreeVarying();
 
             //TODO: AGAL <> GLSL
-            /*
-			this._vertexCode += "m33 " + this._sharedRegisters.animatedNormal + ".xyz, " + this._sharedRegisters.animatedNormal + ", " + matrix[0] + "\n" +
-				"nrm " + this._sharedRegisters.animatedNormal + ".xyz, " + this._sharedRegisters.animatedNormal + "\n";
+            //*
+			this._pVertexCode += "m33 " + this._pSharedRegisters.animatedNormal + ".xyz, " + this._pSharedRegisters.animatedNormal + ", " + matrix[0] + "\n" +
+				"nrm " + this._pSharedRegisters.animatedNormal + ".xyz, " + this._pSharedRegisters.animatedNormal + "\n";
 			
-			this._vertexCode += "m33 " + this._sharedRegisters.animatedTangent + ".xyz, " + this._sharedRegisters.animatedTangent + ", " + matrix[0] + "\n" +
-				"nrm " + this._sharedRegisters.animatedTangent + ".xyz, " + this._sharedRegisters.animatedTangent + "\n";
+			this._pVertexCode += "m33 " + this._pSharedRegisters.animatedTangent + ".xyz, " + this._pSharedRegisters.animatedTangent + ", " + matrix[0] + "\n" +
+				"nrm " + this._pSharedRegisters.animatedTangent + ".xyz, " + this._pSharedRegisters.animatedTangent + "\n";
 			
-			var bitanTemp:away.materials.ShaderRegisterElement = this._registerCache.getFreeVertexVectorTemp();
-			this._vertexCode += "mov " + this._sharedRegisters.tangentVarying + ".x, " + this._sharedRegisters.animatedTangent + ".x  \n" +
-				"mov " + this._sharedRegisters.tangentVarying + ".z, " + this._sharedRegisters.animatedNormal + ".x  \n" +
-				"mov " + this._sharedRegisters.tangentVarying + ".w, " + this._sharedRegisters.normalInput + ".w  \n" +
-				"mov " + this._sharedRegisters.bitangentVarying + ".x, " + this._sharedRegisters.animatedTangent + ".y  \n" +
-				"mov " + this._sharedRegisters.bitangentVarying + ".z, " + this._sharedRegisters.animatedNormal + ".y  \n" +
-				"mov " + this._sharedRegisters.bitangentVarying + ".w, " + this._sharedRegisters.normalInput + ".w  \n" +
-				"mov " + this._sharedRegisters.normalVarying + ".x, " + this._sharedRegisters.animatedTangent + ".z  \n" +
-				"mov " + this._sharedRegisters.normalVarying + ".z, " + this._sharedRegisters.animatedNormal + ".z  \n" +
-				"mov " + this._sharedRegisters.normalVarying + ".w, " + this._sharedRegisters.normalInput + ".w  \n" +
-				"crs " + bitanTemp + ".xyz, " + this._sharedRegisters.animatedNormal + ", " + this._sharedRegisters.animatedTangent + "\n" +
-				"mov " +this. _sharedRegisters.tangentVarying + ".y, " + bitanTemp + ".x    \n" +
-				"mov " + this._sharedRegisters.bitangentVarying + ".y, " + bitanTemp + ".y  \n" +
-				"mov " + this._sharedRegisters.normalVarying + ".y, " + bitanTemp + ".z    \n";
-            */
-            this._registerCache.removeVertexTempUsage(this._sharedRegisters.animatedTangent);
+			var bitanTemp:away.materials.ShaderRegisterElement = this._pRegisterCache.getFreeVertexVectorTemp();
+			this._pVertexCode += "mov " + this._pSharedRegisters.tangentVarying + ".x, " + this._pSharedRegisters.animatedTangent + ".x  \n" +
+				"mov " + this._pSharedRegisters.tangentVarying + ".z, " + this._pSharedRegisters.animatedNormal + ".x  \n" +
+				"mov " + this._pSharedRegisters.tangentVarying + ".w, " + this._pSharedRegisters.normalInput + ".w  \n" +
+				"mov " + this._pSharedRegisters.bitangentVarying + ".x, " + this._pSharedRegisters.animatedTangent + ".y  \n" +
+				"mov " + this._pSharedRegisters.bitangentVarying + ".z, " + this._pSharedRegisters.animatedNormal + ".y  \n" +
+				"mov " + this._pSharedRegisters.bitangentVarying + ".w, " + this._pSharedRegisters.normalInput + ".w  \n" +
+				"mov " + this._pSharedRegisters.normalVarying + ".x, " + this._pSharedRegisters.animatedTangent + ".z  \n" +
+				"mov " + this._pSharedRegisters.normalVarying + ".z, " + this._pSharedRegisters.animatedNormal + ".z  \n" +
+				"mov " + this._pSharedRegisters.normalVarying + ".w, " + this._pSharedRegisters.normalInput + ".w  \n" +
+				"crs " + bitanTemp + ".xyz, " + this._pSharedRegisters.animatedNormal + ", " + this._pSharedRegisters.animatedTangent + "\n" +
+				"mov " +this. _pSharedRegisters.tangentVarying + ".y, " + bitanTemp + ".x    \n" +
+				"mov " + this._pSharedRegisters.bitangentVarying + ".y, " + bitanTemp + ".y  \n" +
+				"mov " + this._pSharedRegisters.normalVarying + ".y, " + bitanTemp + ".z    \n";
+            //*/
+            this._pRegisterCache.removeVertexTempUsage(this._pSharedRegisters.animatedTangent);
 
 		}
 
@@ -183,54 +183,54 @@ module away.materials
 			var b:away.materials.ShaderRegisterElement;
 			var n:away.materials.ShaderRegisterElement;
 			
-			t = this._registerCache.getFreeFragmentVectorTemp();
-            this._registerCache.addFragmentTempUsages(t, 1);
-			b = this._registerCache.getFreeFragmentVectorTemp();
-            this._registerCache.addFragmentTempUsages(b, 1);
-			n = this._registerCache.getFreeFragmentVectorTemp();
-            this._registerCache.addFragmentTempUsages(n, 1);
+			t = this._pRegisterCache.getFreeFragmentVectorTemp();
+            this._pRegisterCache.addFragmentTempUsages(t, 1);
+			b = this._pRegisterCache.getFreeFragmentVectorTemp();
+            this._pRegisterCache.addFragmentTempUsages(b, 1);
+			n = this._pRegisterCache.getFreeFragmentVectorTemp();
+            this._pRegisterCache.addFragmentTempUsages(n, 1);
 
 
             //TODO: AGAL <> GLSL
 
             /*
-            this._fragmentCode += "nrm " + t + ".xyz, " + this._sharedRegisters.tangentVarying + "\n" +
-				"mov " + t + ".w, " + this._sharedRegisters.tangentVarying + ".w	\n" +
-				"nrm " + b + ".xyz, " + this._sharedRegisters.bitangentVarying + "\n" +
-				"nrm " + n + ".xyz, " + this._sharedRegisters.normalVarying + "\n";
+            this._fragmentCode += "nrm " + t + ".xyz, " + this._pSharedRegisters.tangentVarying + "\n" +
+				"mov " + t + ".w, " + this._pSharedRegisters.tangentVarying + ".w	\n" +
+				"nrm " + b + ".xyz, " + this._pSharedRegisters.bitangentVarying + "\n" +
+				"nrm " + n + ".xyz, " + this._pSharedRegisters.normalVarying + "\n";
 			*/
-			var temp:ShaderRegisterElement = this._registerCache.getFreeFragmentVectorTemp();
+			var temp:ShaderRegisterElement = this._pRegisterCache.getFreeFragmentVectorTemp();
 
 
 
-            this._registerCache.addFragmentTempUsages(temp, 1);
+            this._pRegisterCache.addFragmentTempUsages(temp, 1);
 
             //TODO: AGAL <> GLSL
             /*
-            this._fragmentCode += this._methodSetup._iNormalMethod.iGetFragmentCode(this._methodSetup._iNormalMethodVO, this._registerCache, temp) +
-				"m33 " + this._sharedRegisters.normalFragment + ".xyz, " + temp + ", " + t + "	\n" +
-				"mov " + this._sharedRegisters.normalFragment + ".w,   " + this._sharedRegisters.normalVarying + ".w			\n";
+            this._fragmentCode += this._methodSetup._iNormalMethod.iGetFragmentCode(this._methodSetup._iNormalMethodVO, this._pRegisterCache, temp) +
+				"m33 " + this._pSharedRegisters.normalFragment + ".xyz, " + temp + ", " + t + "	\n" +
+				"mov " + this._pSharedRegisters.normalFragment + ".w,   " + this._pSharedRegisters.normalVarying + ".w			\n";
             */
 
-            this._registerCache.removeFragmentTempUsage(temp);
+            this._pRegisterCache.removeFragmentTempUsage(temp);
 			
-			if (this._methodSetup._iNormalMethodVO.needsView)
+			if (this._pMethodSetup._iNormalMethodVO.needsView)
             {
 
-                this._registerCache.removeFragmentTempUsage(this._sharedRegisters.viewDirFragment);
+                this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.viewDirFragment);
 
             }
 
-			if (this._methodSetup._iNormalMethodVO.needsGlobalVertexPos || this._methodSetup._iNormalMethodVO.needsGlobalFragmentPos)
+			if (this._pMethodSetup._iNormalMethodVO.needsGlobalVertexPos || this._pMethodSetup._iNormalMethodVO.needsGlobalFragmentPos)
             {
 
-                this._registerCache.removeVertexTempUsage(this._sharedRegisters.globalPositionVertex);
+                this._pRegisterCache.removeVertexTempUsage(this._pSharedRegisters.globalPositionVertex);
 
             }
 
-            this._registerCache.removeFragmentTempUsage(b);
-            this._registerCache.removeFragmentTempUsage(t);
-            this._registerCache.removeFragmentTempUsage(n);
+            this._pRegisterCache.removeFragmentTempUsage(b);
+            this._pRegisterCache.removeFragmentTempUsage(t);
+            this._pRegisterCache.removeFragmentTempUsage(n);
 
 		}
 
@@ -239,21 +239,21 @@ module away.materials
 		 */
 		public pCompileViewDirCode()
 		{
-			var cameraPositionReg:away.materials.ShaderRegisterElement = this._registerCache.getFreeVertexConstant();
+			var cameraPositionReg:away.materials.ShaderRegisterElement = this._pRegisterCache.getFreeVertexConstant();
 
-			this._sharedRegisters.viewDirVarying = this._registerCache.getFreeVarying();
-            this._sharedRegisters.viewDirFragment = this._registerCache.getFreeFragmentVectorTemp();
-            this._registerCache.addFragmentTempUsages(this._sharedRegisters.viewDirFragment, this._dependencyCounter.viewDirDependencies);
+			this._pSharedRegisters.viewDirVarying = this._pRegisterCache.getFreeVarying();
+            this._pSharedRegisters.viewDirFragment = this._pRegisterCache.getFreeFragmentVectorTemp();
+            this._pRegisterCache.addFragmentTempUsages(this._pSharedRegisters.viewDirFragment, this._pDependencyCounter.viewDirDependencies);
 
-            this._cameraPositionIndex = cameraPositionReg.index*4;
+            this._pCameraPositionIndex = cameraPositionReg.index*4;
 
             //TODO: AGAL <> GLSL
             /*
-            this._vertexCode += "sub " + this._sharedRegisters.viewDirVarying + ", " + cameraPositionReg + ", " + this._sharedRegisters.globalPositionVertex + "\n";
-            this._fragmentCode += "nrm " + this._sharedRegisters.viewDirFragment + ".xyz, " + this._sharedRegisters.viewDirVarying + "\n" +
-				"mov " + this._sharedRegisters.viewDirFragment + ".w,   " + this._sharedRegisters.viewDirVarying + ".w 		\n";
+            this._pVertexCode += "sub " + this._pSharedRegisters.viewDirVarying + ", " + cameraPositionReg + ", " + this._pSharedRegisters.globalPositionVertex + "\n";
+            this._fragmentCode += "nrm " + this._pSharedRegisters.viewDirFragment + ".xyz, " + this._pSharedRegisters.viewDirVarying + "\n" +
+				"mov " + this._pSharedRegisters.viewDirFragment + ".w,   " + this._pSharedRegisters.viewDirVarying + ".w 		\n";
             */
-            this._registerCache.removeVertexTempUsage(this._sharedRegisters.globalPositionVertex);
+            this._pRegisterCache.removeVertexTempUsage(this._pSharedRegisters.globalPositionVertex);
 		}
 
 		/**
@@ -263,19 +263,19 @@ module away.materials
 		{
 			var shadowReg:away.materials.ShaderRegisterElement;
 			
-			this._sharedRegisters.shadedTarget = this._registerCache.getFreeFragmentVectorTemp();
-            this._registerCache.addFragmentTempUsages(this._sharedRegisters.shadedTarget, 1);
+			this._pSharedRegisters.shadedTarget = this._pRegisterCache.getFreeFragmentVectorTemp();
+            this._pRegisterCache.addFragmentTempUsages(this._pSharedRegisters.shadedTarget, 1);
 
 
-            this._vertexCode += this._methodSetup._iDiffuseMethod.iGetVertexCode(this._methodSetup._iDiffuseMethodVO, this._registerCache);
-            this._fragmentCode += this._methodSetup._iDiffuseMethod.iGetFragmentPreLightingCode(this._methodSetup._iDiffuseMethodVO, this._registerCache);
+            this._pVertexCode += this._pMethodSetup._iDiffuseMethod.iGetVertexCode(this._pMethodSetup._iDiffuseMethodVO, this._pRegisterCache);
+            this._pFragmentCode += this._pMethodSetup._iDiffuseMethod.iGetFragmentPreLightingCode(this._pMethodSetup._iDiffuseMethodVO, this._pRegisterCache);
 
 			
 			if (this._usingSpecularMethod)
             {
 
-                this._vertexCode += this._methodSetup._iSpecularMethod.iGetVertexCode(this._methodSetup._iSpecularMethodVO, this._registerCache);
-                this._fragmentCode += this._methodSetup._iSpecularMethod.iGetFragmentPreLightingCode(this._methodSetup._iSpecularMethodVO, this._registerCache);
+                this._pVertexCode += this._pMethodSetup._iSpecularMethod.iGetVertexCode(this._pMethodSetup._iSpecularMethodVO, this._pRegisterCache);
+                this._pFragmentCode += this._pMethodSetup._iSpecularMethod.iGetFragmentPreLightingCode(this._pMethodSetup._iSpecularMethodVO, this._pRegisterCache);
 
 			}
 
@@ -297,78 +297,78 @@ module away.materials
 
 			
 			// only need to create and reserve _shadedTargetReg here, no earlier?
-			this._vertexCode += this._methodSetup._iAmbientMethod.iGetVertexCode(this._methodSetup._iAmbientMethodVO, this._registerCache);
-            this._fragmentCode += this._methodSetup._iAmbientMethod.iGetFragmentCode(this._methodSetup._iAmbientMethodVO, this._registerCache, this._sharedRegisters.shadedTarget);
+			this._pVertexCode += this._pMethodSetup._iAmbientMethod.iGetVertexCode(this._pMethodSetup._iAmbientMethodVO, this._pRegisterCache);
+            this._pFragmentCode += this._pMethodSetup._iAmbientMethod.iGetFragmentCode(this._pMethodSetup._iAmbientMethodVO, this._pRegisterCache, this._pSharedRegisters.shadedTarget);
 
-			if (this._methodSetup._iAmbientMethodVO.needsNormals)
+			if (this._pMethodSetup._iAmbientMethodVO.needsNormals)
             {
 
-                this._registerCache.removeFragmentTempUsage(this._sharedRegisters.normalFragment);
+                this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.normalFragment);
 
             }
 
-			if (this._methodSetup._iAmbientMethodVO.needsView)
+			if (this._pMethodSetup._iAmbientMethodVO.needsView)
             {
 
-                this._registerCache.removeFragmentTempUsage(this._sharedRegisters.viewDirFragment);
+                this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.viewDirFragment);
 
             }
 
 			
-			if (this._methodSetup._iShadowMethod)
+			if (this._pMethodSetup._iShadowMethod)
             {
 
-				this._vertexCode += this._methodSetup._iShadowMethod.iGetVertexCode(this._methodSetup._iShadowMethodVO, this._registerCache);
+				this._pVertexCode += this._pMethodSetup._iShadowMethod.iGetVertexCode(this._pMethodSetup._iShadowMethodVO, this._pRegisterCache);
 
 				// using normal to contain shadow data if available is perhaps risky :s
 				// todo: improve compilation with lifetime analysis so this isn't necessary?
 
-				if (this._dependencyCounter.normalDependencies == 0)
+				if (this._pDependencyCounter.normalDependencies == 0)
                 {
 
-					shadowReg = this._registerCache.getFreeFragmentVectorTemp();
-					this._registerCache.addFragmentTempUsages(shadowReg, 1);
+					shadowReg = this._pRegisterCache.getFreeFragmentVectorTemp();
+					this._pRegisterCache.addFragmentTempUsages(shadowReg, 1);
 
 				}
                 else
                 {
 
-                    shadowReg = this._sharedRegisters.normalFragment;
+                    shadowReg = this._pSharedRegisters.normalFragment;
 
                 }
 
 				
-				this._methodSetup._iDiffuseMethod.iShadowRegister = shadowReg;
-				this._fragmentCode += this._methodSetup._iShadowMethod.iGetFragmentCode(this._methodSetup._iShadowMethodVO, this._registerCache, shadowReg);
+				this._pMethodSetup._iDiffuseMethod.iShadowRegister = shadowReg;
+				this._pFragmentCode += this._pMethodSetup._iShadowMethod.iGetFragmentCode(this._pMethodSetup._iShadowMethodVO, this._pRegisterCache, shadowReg);
 
 			}
 
-			this._fragmentCode += this._methodSetup._iDiffuseMethod.iGetFragmentPostLightingCode(this._methodSetup._iDiffuseMethodVO, this._registerCache, this._sharedRegisters.shadedTarget);
+			this._pFragmentCode += this._pMethodSetup._iDiffuseMethod.iGetFragmentPostLightingCode(this._pMethodSetup._iDiffuseMethodVO, this._pRegisterCache, this._pSharedRegisters.shadedTarget);
 
-			if (this._alphaPremultiplied)
+			if (this._pAlphaPremultiplied)
             {
 
                 //TODO: AGAL <> GLSL
                 /*
-				this._fragmentCode += "add " + this._sharedRegisters.shadedTarget + ".w, " + this._sharedRegisters.shadedTarget + ".w, " + this._sharedRegisters.commons + ".z\n" +
-					"div " + this._sharedRegisters.shadedTarget + ".xyz, " + this._sharedRegisters.shadedTarget + ", " + this._sharedRegisters.shadedTarget + ".w\n" +
-					"sub " + this._sharedRegisters.shadedTarget + ".w, " + this._sharedRegisters.shadedTarget + ".w, " + this._sharedRegisters.commons + ".z\n" +
-					"sat " + this._sharedRegisters.shadedTarget + ".xyz, " + this._sharedRegisters.shadedTarget + "\n";
+				this._pFragmentCode += "add " + this._pSharedRegisters.shadedTarget + ".w, " + this._pSharedRegisters.shadedTarget + ".w, " + this._pSharedRegisters.commons + ".z\n" +
+					"div " + this._pSharedRegisters.shadedTarget + ".xyz, " + this._pSharedRegisters.shadedTarget + ", " + this._pSharedRegisters.shadedTarget + ".w\n" +
+					"sub " + this._pSharedRegisters.shadedTarget + ".w, " + this._pSharedRegisters.shadedTarget + ".w, " + this._pSharedRegisters.commons + ".z\n" +
+					"sat " + this._pSharedRegisters.shadedTarget + ".xyz, " + this._pSharedRegisters.shadedTarget + "\n";
                 */
 			}
 			
 			// resolve other dependencies as well?
-			if (this._methodSetup._iDiffuseMethodVO.needsNormals)
+			if (this._pMethodSetup._iDiffuseMethodVO.needsNormals)
             {
 
-                this._registerCache.removeFragmentTempUsage(this._sharedRegisters.normalFragment);
+                this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.normalFragment);
 
             }
 
-			if (this._methodSetup._iDiffuseMethodVO.needsView)
+			if (this._pMethodSetup._iDiffuseMethodVO.needsView)
             {
 
-                this._registerCache.removeFragmentTempUsage(this._sharedRegisters.viewDirFragment);
+                this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.viewDirFragment);
 
             }
 
@@ -376,20 +376,20 @@ module away.materials
 			if (this._usingSpecularMethod)
             {
 
-                this._methodSetup._iSpecularMethod.iShadowRegister = shadowReg;
-                this._fragmentCode += this._methodSetup._iSpecularMethod.iGetFragmentPostLightingCode(this._methodSetup._iSpecularMethodVO, this._registerCache, this._sharedRegisters.shadedTarget);
+                this._pMethodSetup._iSpecularMethod.iShadowRegister = shadowReg;
+                this._pFragmentCode += this._pMethodSetup._iSpecularMethod.iGetFragmentPostLightingCode(this._pMethodSetup._iSpecularMethodVO, this._pRegisterCache, this._pSharedRegisters.shadedTarget);
 
-				if (this._methodSetup._iSpecularMethodVO.needsNormals)
+				if (this._pMethodSetup._iSpecularMethodVO.needsNormals)
                 {
 
-                    this._registerCache.removeFragmentTempUsage(this._sharedRegisters.normalFragment);
+                    this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.normalFragment);
 
                 }
 
-				if (this._methodSetup._iSpecularMethodVO.needsView)
+				if (this._pMethodSetup._iSpecularMethodVO.needsView)
                 {
 
-                    this._registerCache.removeFragmentTempUsage(this._sharedRegisters.viewDirFragment);
+                    this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.viewDirFragment);
 
                 }
 
@@ -409,12 +409,12 @@ module away.materials
 			for (i = 0; i < len; ++i)
             {
 
-				this._dirLightRegisters[i] = this._registerCache.getFreeFragmentConstant();
+				this._dirLightRegisters[i] = this._pRegisterCache.getFreeFragmentConstant();
 
-				if (this._lightFragmentConstantIndex == -1)
+				if (this._pLightFragmentConstantIndex == -1)
                 {
 
-                    this._lightFragmentConstantIndex = this._dirLightRegisters[i].index*4;
+                    this._pLightFragmentConstantIndex = this._dirLightRegisters[i].index*4;
 
                 }
 
@@ -425,12 +425,12 @@ module away.materials
 			for (i = 0; i < len; ++i)
             {
 
-				this._pointLightRegisters[i] = this._registerCache.getFreeFragmentConstant();
+				this._pointLightRegisters[i] = this._pRegisterCache.getFreeFragmentConstant();
 
-				if (this._lightFragmentConstantIndex == -1)
+				if (this._pLightFragmentConstantIndex == -1)
                 {
 
-                    this._lightFragmentConstantIndex = this._pointLightRegisters[i].index*4;
+                    this._pLightFragmentConstantIndex = this._pointLightRegisters[i].index*4;
 
                 }
 
@@ -454,7 +454,7 @@ module away.materials
             }
 
 			
-			for (var i:number = 0; i < this._numDirectionalLights; ++i)
+			for (var i:number = 0; i < this._pNumDirectionalLights; ++i)
             {
 
 				lightDirReg = this._dirLightRegisters[regIndex++];
@@ -466,14 +466,14 @@ module away.materials
 				if (addDiff)
                 {
 
-                    this._fragmentCode += this._methodSetup._iDiffuseMethod.iGetFragmentCodePerLight(this._methodSetup._iDiffuseMethodVO, lightDirReg, diffuseColorReg, this._registerCache);
+                    this._pFragmentCode += this._pMethodSetup._iDiffuseMethod.iGetFragmentCodePerLight(this._pMethodSetup._iDiffuseMethodVO, lightDirReg, diffuseColorReg, this._pRegisterCache);
 
                 }
 
 				if (addSpec)
                 {
 
-                    this._fragmentCode += this._methodSetup._iSpecularMethod.iGetFragmentCodePerLight(this._methodSetup._iSpecularMethodVO, lightDirReg, specularColorReg, this._registerCache);
+                    this._pFragmentCode += this._pMethodSetup._iSpecularMethod.iGetFragmentCodePerLight(this._pMethodSetup._iSpecularMethodVO, lightDirReg, specularColorReg, this._pRegisterCache);
 
                 }
 
@@ -500,16 +500,16 @@ module away.materials
             }
 
 			
-			for (var i:number = 0; i < this._numPointLights; ++i)
+			for (var i:number = 0; i < this._pNumPointLights; ++i)
             {
 				lightPosReg = this._pointLightRegisters[regIndex++];
 				diffuseColorReg = this._pointLightRegisters[regIndex++];
 				specularColorReg = this._pointLightRegisters[regIndex++];
-				lightDirReg = this._registerCache.getFreeFragmentVectorTemp();
-                this._registerCache.addFragmentTempUsages(lightDirReg, 1);
+				lightDirReg = this._pRegisterCache.getFreeFragmentVectorTemp();
+                this._pRegisterCache.addFragmentTempUsages(lightDirReg, 1);
 				
 				// calculate attenuation
-                this._fragmentCode += "sub " + lightDirReg + ", " + lightPosReg + ", " + this._sharedRegisters.globalPositionVarying + "\n" +
+                this._pFragmentCode += "sub " + lightDirReg + ", " + lightPosReg + ", " + this._pSharedRegisters.globalPositionVarying + "\n" +
 					// attenuate
 					"dp3 " + lightDirReg + ".w, " + lightDirReg + ", " + lightDirReg + "\n" +
 					// w = d - radis
@@ -523,10 +523,10 @@ module away.materials
 					// normalize
 					"nrm " + lightDirReg + ".xyz, " + lightDirReg + "\n";
 				
-				if (this._lightFragmentConstantIndex == -1)
+				if (this._pLightFragmentConstantIndex == -1)
                 {
 
-                    this._lightFragmentConstantIndex = lightPosReg.index*4;
+                    this._pLightFragmentConstantIndex = lightPosReg.index*4;
 
                 }
 
@@ -534,7 +534,7 @@ module away.materials
 				if (addDiff)
                 {
 
-                    this._fragmentCode += this._methodSetup._iDiffuseMethod.iGetFragmentCodePerLight(this._methodSetup._iDiffuseMethodVO, lightDirReg, diffuseColorReg, this._registerCache);
+                    this._pFragmentCode += this._pMethodSetup._iDiffuseMethod.iGetFragmentCodePerLight(this._pMethodSetup._iDiffuseMethodVO, lightDirReg, diffuseColorReg, this._pRegisterCache);
 
                 }
 
@@ -542,12 +542,12 @@ module away.materials
 				if (addSpec)
                 {
 
-                    this._fragmentCode += this._methodSetup._iSpecularMethod.iGetFragmentCodePerLight(this._methodSetup._iSpecularMethodVO, lightDirReg, specularColorReg, this._registerCache);
+                    this._pFragmentCode += this._pMethodSetup._iSpecularMethod.iGetFragmentCodePerLight(this._pMethodSetup._iSpecularMethodVO, lightDirReg, specularColorReg, this._pRegisterCache);
 
                 }
 
 				
-				this._registerCache.removeFragmentTempUsage(lightDirReg);
+				this._pRegisterCache.removeFragmentTempUsage(lightDirReg);
 
 			}
 		}
@@ -573,32 +573,32 @@ module away.materials
 			if (addDiff)
             {
 
-                this._lightProbeDiffuseIndices = new Array<number>();//Vector.<uint>();
+                this._pLightProbeDiffuseIndices = new Array<number>();//Vector.<uint>();
 
             }
 
 			if (addSpec)
             {
 
-                this._lightProbeSpecularIndices = new Array<number>();//Vector.<uint>();
+                this._pLightProbeSpecularIndices = new Array<number>();//Vector.<uint>();
 
             }
 
 			
-			for (i = 0; i < this._numProbeRegisters; ++i)
+			for (i = 0; i < this._pNumProbeRegisters; ++i)
             {
 
-				weightRegisters[i] = this._registerCache.getFreeFragmentConstant();
+				weightRegisters[i] = this._pRegisterCache.getFreeFragmentConstant();
 				if (i == 0)
                 {
 
-                    this._probeWeightsIndex = weightRegisters[i].index*4;
+                    this._pProbeWeightsIndex = weightRegisters[i].index*4;
 
                 }
 
 			}
 			
-			for (i = 0; i < this._numLightProbes; ++i)
+			for (i = 0; i < this._pNumLightProbes; ++i)
             {
 
 				weightReg = weightRegisters[Math.floor(i/4)].toString() + weightComponents[i%4];
@@ -606,18 +606,18 @@ module away.materials
 				if (addDiff)
                 {
 
-					texReg = this._registerCache.getFreeTextureReg();
-                    this._lightProbeDiffuseIndices[i] = texReg.index;
-                    this._fragmentCode += this._methodSetup._iDiffuseMethod.iGetFragmentCodePerProbe(this._methodSetup._iDiffuseMethodVO, texReg, weightReg, this._registerCache);
+					texReg = this._pRegisterCache.getFreeTextureReg();
+                    this._pLightProbeDiffuseIndices[i] = texReg.index;
+                    this._pFragmentCode += this._pMethodSetup._iDiffuseMethod.iGetFragmentCodePerProbe(this._pMethodSetup._iDiffuseMethodVO, texReg, weightReg, this._pRegisterCache);
 
 				}
 				
 				if (addSpec)
                 {
 
-					texReg = this._registerCache.getFreeTextureReg();
-                    this._lightProbeSpecularIndices[i] = texReg.index;
-                    this._fragmentCode += this._methodSetup._iSpecularMethod.iGetFragmentCodePerProbe(this._methodSetup._iSpecularMethodVO, texReg, weightReg, this._registerCache);
+					texReg = this._pRegisterCache.getFreeTextureReg();
+                    this._pLightProbeSpecularIndices[i] = texReg.index;
+                    this._pFragmentCode += this._pMethodSetup._iSpecularMethod.iGetFragmentCodePerProbe(this._pMethodSetup._iSpecularMethodVO, texReg, weightReg, this._pRegisterCache);
 
 				}
 			}
