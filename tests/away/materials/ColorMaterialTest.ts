@@ -34,10 +34,13 @@ class MaterialsTest
         var stage3D: away.display.Stage3D = <away.display.Stage3D> e.target;
         this._context3D = stage3D.context3D;
 
-        this.cm.specularMethod = new away.materials.BasicSpecularMethod();
+        //this.cm.specularMethod = new away.materials.BasicSpecularMethod();
         this.cm.iUpdateMaterial( this._context3D );
-        this.cm.iRenderPass()
+
+        //
         this.cm.iInvalidatePasses( null );
+
+        //this.cm.iRenderPass( 0 , )
 
         console.log( this.cm );
         console.log( this.cm._pScreenPass );
