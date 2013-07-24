@@ -17,7 +17,7 @@ class MaterialsTest
     private imgLoader   : away.net.IMGLoader;
     private imgTx       : away.textures.HTMLImageElementTexture;
     private matTx       : away.materials.TextureMaterial;
-
+    private specM       : away.materials.BasicSpecularMethod
     constructor()
     {
 
@@ -50,8 +50,19 @@ class MaterialsTest
     private imgLoaded( e : away.events.Event )
     {
 
-        this.imgTx = new away.textures.HTMLImageElementTexture( this.imgLoader.image )
-        this.matTx = new away.materials.TextureMaterial( this.imgTx  );
+        this.imgTx                  = new away.textures.HTMLImageElementTexture( this.imgLoader.image )
+        this.matTx                  = new away.materials.TextureMaterial( this.imgTx  );
+        this.matTx.colorTransform   = new away.geom.ColorTransform( 1 , 1 , 1 , 1 );
+
+        this.specM                  = new away.materials.BasicSpecularMethod();
+        this.specM.texture          = this.imgTx;
+        this.specM.gloss            = 3;
+        this.specM.specularColor    = 0xff0000;
+
+        this.matTx.specularMethod   =  this.specM;
+        this.matTx.ambientTexture   =  this.imgTx;
+        //this.matTx.alpha            = .5;
+        //this.matTx.blendMode        = away.display.BlendMode.MULTIPLY;
 
         console.log( '-----------------------------------------------------------------------------' );
         console.log( '- TextureMaterial' );
@@ -61,6 +72,30 @@ class MaterialsTest
         console.log( 'iGetVertexCode' , this.matTx._pScreenPass.iGetVertexCode() );
         console.log( 'iGetFragmentCode' , this.matTx._pScreenPass.iGetFragmentCode(''));
 
+        /*
+         ----------------------------------------------------
+         Without Specular / colorTransform
+         ----------------------------------------------------
+
+             iGetVertexCode m44 op, vt0, vc0
+
+             iGetFragmentCode   mov ft0, fc0
+                                tex ft0, v0, fs0 <2d,linear,miplinear,clamp>
+                                mov oc, ft0
+
+         ----------------------------------------------------
+         With Specular / colorTransform
+         ----------------------------------------------------
+
+         iGetVertexCode m44 op, vt0, vc0
+
+         iGetFragmentCode   mov ft0, fc0
+                            tex ft0, v0, fs0 <2d,linear,miplinear,clamp>
+                            mul ft0, ft0, fc0
+                            add ft0, ft0, fc0
+                            mov oc, ft0
+
+         */
     }
 
 
