@@ -71,22 +71,25 @@ module away.textures
 			return this._height;
 		}
 
-        /* TODO: implement Stage3DProxy
-		public getTextureForStage3D(stage3DProxy : Stage3DProxy) : TextureBase
+		public getTextureForStage3D(stage3DProxy : away.managers.Stage3DProxy) : away.display3D.TextureBase
 		{
-			var contextIndex : number = stage3DProxy._stage3DIndex;
-			var tex : TextureBase = _textures[contextIndex];
-			var context : Context3D = stage3DProxy._context3D;
+			var contextIndex : number = stage3DProxy._iStage3DIndex;
 
-			if (!tex || _dirty[contextIndex] != context) {
-				_textures[contextIndex] = tex = createTexture(context);
-				_dirty[contextIndex] = context;
-				uploadContent(tex);//_pUploadContent
+			var tex : away.display3D.TextureBase = this._textures[contextIndex];
+
+			var context : away.display3D.Context3D = stage3DProxy._iContext3D;//_context3D;
+
+			if (!tex || this._dirty[contextIndex] != context)
+            {
+
+				this._textures[contextIndex] = tex = this.pCreateTexture(context);
+				this._dirty[contextIndex] = context;
+				this.pUploadContent(tex);//_pUploadContent
+
 			}
 
 			return tex;
 		}
-        */
 
         /**
          *
