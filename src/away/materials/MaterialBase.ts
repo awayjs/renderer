@@ -74,7 +74,7 @@ module away.materials
 
         public _pBlendMode:string = away.display.BlendMode.NORMAL;
 
-        private _numPasses:number;
+        private _numPasses:number = 0;
         private _passes:away.materials.MaterialPassBase[];//Vector.<MaterialPassBase>;
 
         public _pMipmap:boolean = true;
