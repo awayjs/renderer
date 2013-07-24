@@ -52,10 +52,9 @@ module away.materials
 
             //TODO: AGAL <> GLSL
 
-            /*
-			code += "mul " + targetReg + ", " + targetReg.toString() + ", " + colorMultReg + "\n" +
-				"add " + targetReg + ", " + targetReg.toString() + ", " + colorOffsReg + "\n";
-            */
+			code += "mul " + targetReg.toString() + ", " + targetReg.toString() + ", " + colorMultReg.toString() + "\n" +
+				"add " + targetReg.toString() + ", " + targetReg.toString() + ", " + colorOffsReg.toString() + "\n";
+
 			return code;
 		}
 		
