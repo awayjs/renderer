@@ -263,12 +263,12 @@ module away.base
 		/**
 		 * The animator object that provides the state for the SubMesh's animation.
 		 */
-        /* TODO: implement dependency away.animators.IAnimator
-		public get animator():IAnimator
+		public get animator():away.animators.IAnimator
 		{
-			return _parentMesh.animator;
+
+			return this._parentMesh.animator;
+
 		}
-		*/
 		/**
 		 * Indicates whether the SubMesh should trigger mouse events, and hence should be rendered for hit testing.
 		 */
