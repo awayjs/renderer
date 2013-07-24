@@ -448,7 +448,7 @@ module away.materials
 			var context:away.display3D.Context3D = stage3DProxy._iContext3D;
 
             away.Debug.throwPIR( 'MaterialPassBase' , 'iActivate' , 'context.setDepthTest - not matching params' );
-			//context.setDepthTest( ( this._writeDepth && ! this._pEnableBlending ) , this._depthCompareMode);//<--------  TODO : implement
+			context.setDepthTest( ( this._writeDepth && ! this._pEnableBlending ) , this._depthCompareMode);//<--------  TODO : implement
 
 			if (this._pEnableBlending)
             {
@@ -485,7 +485,7 @@ module away.materials
             {
 
                 away.Debug.throwPIR( 'away.materials.MaterialPassBase' , 'iActivate' , 'required dependency: Context3D.setTextureAt');
-                //context.setTextureAt(i, null);
+                context.setTextureAt(i, null);
 
             }
 

@@ -219,20 +219,14 @@ module away.materials
 			if ( this._alphaThreshold > 0)
             {
 
-
-                away.Debug.throwPIR( 'DepthMapPass' , 'iActivate' , 'Dependency: context.setProgramConstantsFromVector');
-
-                //TODO: implement:
-                //context.setGLSLTextureAt(0, this._alphaMask.getTextureForStage3D(stage3DProxy));
-                //context.setProgramConstantsFromVector(away.display3D.Context3DProgramType.FRAGMENT, 0, this._data, 3);
+                context.setTextureAt(0, this._alphaMask.getTextureForStage3D(stage3DProxy));
+                context.setProgramConstantsFromArray(away.display3D.Context3DProgramType.FRAGMENT, 0, this._data, 3);
 
 			}
             else
             {
 
-                away.Debug.throwPIR( 'DepthMapPass' , 'iActivate' , 'Dependency: context.setProgramConstantsFromVector');
-                //TODO: implement:
-                //context.setProgramConstantsFromVector(away.display3D.Context3DProgramType.FRAGMENT, 0, this._data, 2);
+                context.setProgramConstantsFromArray(away.display3D.Context3DProgramType.FRAGMENT, 0, this._data, 2);
             }
 
 		}

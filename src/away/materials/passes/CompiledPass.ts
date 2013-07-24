@@ -803,13 +803,9 @@ module away.materials
 
 			}
 
+			context.setProgramConstantsFromArray(away.display3D.Context3DProgramType.VERTEX, 0, this._pVertexConstantData, this._pNumUsedVertexConstants);
+			context.setProgramConstantsFromArray(away.display3D.Context3DProgramType.FRAGMENT, 0, this._pFragmentConstantData, this._pNumUsedFragmentConstants);
 
-            away.Debug.throwPIR( 'away.materials.CompiledPass' , 'Context3D' , 'implement dependency: Context3DsetProgramConstantsFromVector( ... ) ');
-
-            /*
-			context.setProgramConstantsFromVector(away.display3D.Context3DProgramType.VERTEX, 0, this._pVertexConstantData, this._numUsedVertexConstants);
-			context.setProgramConstantsFromVector(away.display3D.Context3DProgramType.FRAGMENT, 0, this._pFragmentConstantData, this._numUsedFragmentConstants);
-			*/
 			renderable.activateVertexBuffer(0, stage3DProxy);
 			context.drawTriangles(renderable.getIndexBuffer(stage3DProxy), 0, renderable.numTriangles);
 		}
