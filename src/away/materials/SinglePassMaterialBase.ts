@@ -141,8 +141,14 @@ module away.materials
 		 */
 		public get requiresBlending():boolean
 		{
-			return super.getRequiresBlending() || this._alphaBlending || ( this._pScreenPass.colorTransform && this._pScreenPass.colorTransform.alphaMultiplier < 1);
+			return this.getRequiresBlending();
 		}
+
+        public getRequiresBlending() : boolean
+        {
+            return super.getRequiresBlending() || this._alphaBlending || ( this._pScreenPass.colorTransform && this._pScreenPass.colorTransform.alphaMultiplier < 1);
+
+        }
 
 		/**
 		 * The ColorTransform object to transform the colour of the material with. Defaults to null.
