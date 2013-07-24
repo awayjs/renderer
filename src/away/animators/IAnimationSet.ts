@@ -2,16 +2,13 @@
 
 module away.animators
 {
-	//import away3d.animators.nodes.*;
-	//import away3d.managers.*;
-	//import away3d.materials.passes.*;
-	
+
 	/**
 	 * Provides an interface for data set classes that hold animation data for use in animator classes.
 	 *
 	 * @see away3d.animators.IAnimator
 	 */
-	interface IAnimationSet
+	export interface IAnimationSet
 	{
 		/**
 		 * Check to determine whether a state is registered in the animation set under the given name.
