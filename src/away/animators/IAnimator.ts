@@ -14,7 +14,7 @@ module away.animators
 	 *
 	 * @see away3d.animators.IAnimationSet
 	 */
-	public interface IAnimator
+	export interface IAnimator
 	{
 		/**
 		 * Returns the animation data set in use by the animator.
