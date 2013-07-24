@@ -22,7 +22,7 @@ module away.primitives
 			}
 			this._color = color;
 			this._thickness = thickness;
-			//mouseEnabled = mouseChildren = false;
+			this.mouseEnabled = this.mouseChildren = false;
 		}
 		
 		public get color():number
@@ -108,16 +108,14 @@ module away.primitives
 			}
 			else
 			{
-				throw new away.errors.PartialImplementationError();
-				//TODO this.addSegment(new LineSegment( v0.clone(), v1.clone(), this._color, this._color, this._thickness) );
+				this.addSegment( new away.primitives.LineSegment( v0.clone(), v1.clone(), this._color, this._color, this._thickness) );
 			}
 		}
 		
 		//@override
 		public pUpdateMouseChildren():void
 		{
-			throw new away.errors.PartialImplementationError();
-			//TODO this._ancestorsAllowMouseEnabled = false;
+			this._iAncestorsAllowMouseEnabled = false;
 		}
 		
 	}

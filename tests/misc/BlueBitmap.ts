@@ -9,6 +9,8 @@
 // --sourcemap $ProjectFileDir$/tests/HTMLImageElementTextureTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/HTMLImageElementTextureTest.js
 //------------------------------------------------------------------------------------------------
 
+// $ProjectFileDir$/away/AppHarness.ts --target ES5 --comments --out $ProjectFileDir$/bin/AppHarness.js
+
 class BlueTest
 {
 

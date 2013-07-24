@@ -36,11 +36,11 @@ class BitmapTextureTest
         this.bitmapData                     = new away.display.BitmapData( loader.width , loader.height );
         this.bitmapData.copyImage( this.mipLoader.image , rect ,  rect );
 
-        this.texture        = new away.display3D.Texture( loader.width , loader.height );
+        //this.texture        = new away.display3D.Texture( loader.width , loader.height );
         this.target         = new away.textures.BitmapTexture( this.bitmapData , true );//new away.textures.HTMLImageElementTexture( loader.image , false );
 
         away.Debug.log( 'bitmapData' , this.bitmapData );
-        away.Debug.log( 'texture'    , this.texture );
+        //away.Debug.log( 'texture'    , this.texture );
         away.Debug.log( 'target'     , this.target );
 
     }

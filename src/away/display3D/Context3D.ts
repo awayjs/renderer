@@ -147,12 +147,38 @@ module away.display3D
 			this._programList = null;
 		}
 		
-		/*
-		public function drawToBitmapData(destination:BitmapData) 
+		
+		public drawToBitmapData( destination:away.display.BitmapData ) 
 		{
-		  // TODO
+			// TODO drawToBitmapData( destination:away.display.BitmapData )
+			
+			/*
+			rttFramebuffer = gl.createFramebuffer();
+			gl.bindFramebuffer(gl.FRAMEBUFFER, rttFramebuffer);
+			rttFramebuffer.width = 512;
+			rttFramebuffer.height = 512;
+			
+			rttTexture = gl.createTexture();
+			gl.bindTexture(gl.TEXTURE_2D, rttTexture);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
+			gl.generateMipmap(gl.TEXTURE_2D);
+			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, rttFramebuffer.width, rttFramebuffer.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+			
+			var renderbuffer = gl.createRenderbuffer();
+			gl.bindRenderbuffer(gl.RENDERBUFFER, renderbuffer);
+			gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, rttFramebuffer.width, rttFramebuffer.height);
+
+			gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, rttTexture, 0);
+			gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, renderbuffer);
+			
+			gl.bindTexture(gl.TEXTURE_2D, null);
+			gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+			gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+			*/
+			
+			throw new away.errors.PartialImplementationError();
 		}
-		*/
 		
 		public drawTriangles( indexBuffer:IndexBuffer3D, firstIndex:number = 0, numTriangles:number = -1 )
 		{
@@ -224,9 +250,38 @@ module away.display3D
 		}
 		
 		// TODO Context3DCompareMode
-		public setDepthTest( depthMask:boolean, passCompareMode:number ) 
+		public setDepthTest( depthMask:boolean, passCompareMode:string ) 
 		{
-			this._gl.depthFunc( passCompareMode );
+			switch( passCompareMode )
+			{
+				case Context3DCompareMode.ALWAYS:
+						this._gl.depthFunc( 7 );
+					break;
+				case Context3DCompareMode.EQUAL:
+						this._gl.depthFunc( 2 );
+					break;
+				case Context3DCompareMode.GREATER:
+						this._gl.depthFunc( 4 );
+					break;
+				case Context3DCompareMode.GREATER_EQUAL:
+						this._gl.depthFunc( 6 );
+					break;
+				case Context3DCompareMode.LESS:
+						this._gl.depthFunc( 1 );
+					break;
+				case Context3DCompareMode.LESS_EQUAL:
+						this._gl.depthFunc( 3 );
+					break;
+				case Context3DCompareMode.NEVER:
+						this._gl.depthFunc( 0 );
+					break;
+				case Context3DCompareMode.NOT_EQUAL:
+						this._gl.depthFunc( 5 );
+					break;
+				default:
+						throw "Unknown Context3DCompareMode type."; // TODO error
+					break;
+			}
 			this._gl.depthMask( depthMask );
 		}
 		
@@ -237,7 +292,7 @@ module away.display3D
 			program3D.focusProgram();
 		}
 		
-		private getUniformLocationNameFromAgalRegisterIndex( programType:Context3DProgramType, firstRegister:number ):string
+		private getUniformLocationNameFromAgalRegisterIndex( programType:string, firstRegister:number ):string
 		{
 			switch( programType)
 			{
@@ -262,11 +317,16 @@ module away.display3D
 			this.setGLSLProgramConstantsFromMatrix( locationName, matrix, transposedMatrix );
 		}
 		
-		/*
-		public setProgramConstantsFromVector(programType:string, firstRegister:number, matrix:away.geom.Matrix3D, transposedMatrix:boolean = false )
+		public setProgramConstantsFromArray( programType:string, firstRegister:number, data:number[], numRegisters:number = -1 )
 		{
-
-		}*/
+			for( var i: number = 0; i < numRegisters; ++i )
+			{
+				var currentIndex:number = i * 4;
+				var locationName:string = this.getUniformLocationNameFromAgalRegisterIndex( programType, firstRegister + i );;
+				
+				this.setGLSLProgramConstantsFromArray( locationName, data, currentIndex );
+			}
+		}
 		
 		/*
 		public setGLSLProgramConstantsFromByteArray
@@ -279,7 +339,7 @@ module away.display3D
 			this._gl.uniformMatrix4fv( location, !transposedMatrix, new Float32Array( matrix.rawData ) );
 		}
 		
-		public setGLSLProgramConstantsFromVector4( locationName:string, data:number[], startIndex:number = 0 ) 
+		public setGLSLProgramConstantsFromArray( locationName:string, data:number[], startIndex:number = 0 ) 
 		{
 			var location:WebGLUniformLocation = this._gl.getUniformLocation( this._currentProgram.glProgram, locationName );
 			this._gl.uniform4f( location, data[startIndex], data[startIndex+1], data[startIndex+2], data[startIndex+3] );
@@ -288,6 +348,12 @@ module away.display3D
 		public setScissorRectangle( rectangle:away.geom.Rectangle ) 
 		{
 			this._gl.scissor( rectangle.x, rectangle.y, rectangle.width, rectangle.height );
+		}
+		
+		public setTextureAt( sampler:number, texture:away.display3D.TextureBase )
+		{
+			var locationName:string = "fs" + sampler;
+			this.setGLSLTextureAt( locationName, texture, sampler );
 		}
 		
 		public setGLSLTextureAt( locationName:string, texture:TextureBase, textureIndex:number )

@@ -32,7 +32,7 @@ module away.entities
 			this.addSubSet();
 			
 			this._pSegments = new Object();
-			//this.material = new SegmentMaterial();
+			//TODO this.material = new SegmentMaterial();
 		}
 		
 		public addSegment( segment:away.primitives.Segment )
@@ -409,8 +409,7 @@ module away.entities
 		//@override
 		public pGetDefaultBoundingVolume():away.bounds.BoundingVolumeBase
 		{
-			//return new away.bounds.BoundingSphere();
-			return null;
+			return new away.bounds.BoundingSphere();
 		}
 		
 		//@override
