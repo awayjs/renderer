@@ -447,7 +447,7 @@ module away.materials
 			var contextIndex:number = stage3DProxy._iStage3DIndex;//_stage3DIndex;
 			var context:away.display3D.Context3D = stage3DProxy._iContext3D;
 
-            away.Debug.throwPIR( 'MaterialPassBase' , 'iActivate' , 'context.setDepthTest - not matching params' );
+            //away.Debug.throwPIR( 'MaterialPassBase' , 'iActivate' , 'context.setDepthTest - not matching params' );
 			context.setDepthTest( ( this._writeDepth && ! this._pEnableBlending ) , this._depthCompareMode);//<--------  TODO : implement
 
 			if (this._pEnableBlending)
@@ -563,8 +563,7 @@ module away.materials
 			if (this._pMaterial && updateMaterial)
             {
 
-                away.Debug.throwPIR( 'away.materials.MaterialPassBase' , 'iInvalidateShaderProgram' , 'required dependency: MaterialBase.invalidatePasses');
-                //this._pMaterial.invalidatePasses(this);
+                this._pMaterial.iInvalidatePasses(this);
 
             }
 
@@ -612,17 +611,17 @@ module away.materials
 				for (var i:number = 0; i < len; ++i)
                 {
                     // TODO: AGAL <> GLSL conversion:
-                    away.Debug.throwPIR( 'away.materials.MaterialPassBase' , 'iUpdateProgram' , 'AGAL <> GLSL Conversion');
-                    //animatorCode += "mov " + _animationTargetRegisters[i] + ", " + _animatableAttributes[i] + "\n";
+                    //away.Debug.throwPIR( 'away.materials.MaterialPassBase' , 'iUpdateProgram' , 'AGAL <> GLSL Conversion');
+                    animatorCode += "mov " + this._pAnimationTargetRegisters[i] + ", " + this._pAnimatableAttributes[i] + "\n";
 
                 }
 
 				if (this._pNeedUVAnimation)
                 {
 
-                    away.Debug.throwPIR( 'away.materials.MaterialPassBase' , 'iUpdateProgram' , 'AGAL <> GLSL Conversion');
+                    //away.Debug.throwPIR( 'away.materials.MaterialPassBase' , 'iUpdateProgram' , 'AGAL <> GLSL Conversion');
                     // TODO: AGAL <> GLSL conversion
-                    //UVAnimatorCode = "mov " + _UVTarget + "," + _UVSource + "\n";
+                    UVAnimatorCode = "mov " + this._pUVTarget+ "," + this._pUVSource + "\n";
 
                 }
 
