@@ -175,3 +175,57 @@
 ///<reference path="geom/ColorTransform.ts"/>
 ///<reference path="animators/nodes/AnimationNodeBase.ts"/>
 ///<reference path="animators/states/IAnimationState.ts"/>
+
+
+///<reference path="lights/LightBase.ts"/>
+///<reference path="lights/LightProbe.ts"/>
+///<reference path="lights/PointLight.ts"/>
+///<reference path="lights/DirectionalLight.ts"/>
+
+///<reference path="lights/shadowmaps/ShadowMapperBase.ts"/>
+///<reference path="lights/shadowmaps/CubeMapShadowMapper.ts"/>
+///<reference path="lights/shadowmaps/DirectionalShadowMapper.ts"/>
+
+
+///<reference path="animators/IAnimationSet.ts"/>
+///<reference path="animators/states/AnimationStateBase.ts"/>
+///<reference path="animators/IAnimator.ts"/>
+
+
+
+///<reference path="events/ShadingMethodEvent.ts"/>
+///<reference path="materials/passes/MaterialPassBase.ts"/>
+///<reference path="materials/passes/CompiledPass.ts"/>
+///<reference path="materials/passes/SuperShaderPass.ts"/>
+
+///<reference path="materials/passes/DepthMapPass.ts"/>
+///<reference path="materials/passes/DistanceMapPass.ts"/>
+
+///<reference path="materials/SinglePassMaterialBase.ts"/>
+///<reference path="materials/methods/MethodVO.ts"/>
+///<reference path="materials/methods/ShadingMethodBase.ts"/>
+///<reference path="materials/methods/EffectMethodBase.ts"/>
+///<reference path="materials/methods/MethodVOSet.ts"/>
+
+///<reference path="materials/methods/ShaderMethodSetup.ts"/>
+///<reference path="materials/methods/LightingMethodBase.ts"/>
+///<reference path="materials/methods/ShadowMapMethodBase.ts"/>
+///<reference path="materials/TextureMaterial.ts"/>
+///<reference path="materials/lightpickers/LightPickerBase.ts"/>
+///<reference path="materials/compilation/ShaderRegisterCache.ts"/>
+///<reference path="materials/compilation/ShaderRegisterElement.ts"/>
+///<reference path="materials/compilation/ShaderRegisterData.ts"/>
+///<reference path="materials/compilation/MethodDependencyCounter.ts"/>
+///<reference path="materials/compilation/RegisterPool.ts"/>
+///<reference path="materials/compilation/ShaderRegisterCache.ts"/>
+///<reference path="materials/compilation/ShaderCompiler.ts"/>
+///<reference path="materials/compilation/SuperShaderCompiler.ts"/>
+///<reference path="materials/LightSources.ts"/>
+
+///<reference path="materials/methods/BasicAmbientMethod.ts"/>
+///<reference path="materials/methods/BasicDiffuseMethod.ts"/>
+///<reference path="materials/methods/BasicNormalMethod.ts"/>
+///<reference path="materials/methods/BasicSpecularMethod.ts"/>
+///<reference path="materials/methods/ColorTransformMethod.ts"/>
+
+
