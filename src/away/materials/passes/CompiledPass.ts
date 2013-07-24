@@ -866,5 +866,7 @@ module away.materials
         {
             this._pDiffuseLightSources = value;
         }
+
     }
+
 }
