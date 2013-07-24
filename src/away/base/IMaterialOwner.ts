@@ -19,6 +19,6 @@ module away.base
 		 * The animation used by the material to assemble the vertex code.
 		 */
         // TODO: IAnimator - implement and integrate
-		//function get animator():IAnimator; // in most cases, this will in fact be null
+		animator:away.animators.IAnimator; // in most cases, this will in fact be null
 	}
 }
