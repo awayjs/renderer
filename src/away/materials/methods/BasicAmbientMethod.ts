@@ -141,8 +141,6 @@ module away.materials
 		public iGetFragmentCode(vo:away.materials.MethodVO, regCache:away.materials.ShaderRegisterCache, targetReg:away.materials.ShaderRegisterElement):string
 		{
 
-
-
 			var code:string = "";
 			
 			if (this._useTexture)
@@ -153,11 +151,8 @@ module away.materials
 				vo.texturesIndex = this._ambientInputRegister.index;
 
                 // TODO: AGAL <> GLSL
+				code += this.pGetTex2DSampleCode(vo, targetReg, this._ambientInputRegister, this._texture) + "div " + targetReg.toString() + ".xyz, " + targetReg.toString() + ".xyz, " + targetReg.toString() + ".w\n"; // apparently, still needs to un-premultiply :s
 
-                /*
-				code += this.pGetTex2DSampleCode(vo, targetReg, this._ambientInputRegister, this._texture) +
-					"div " + targetReg + ".xyz, " + targetReg + ".xyz, " + targetReg + ".w\n";					// apparently, still needs to un-premultiply :s
-				*/
 			}
             else
             {
@@ -165,8 +160,7 @@ module away.materials
 				this._ambientInputRegister = regCache.getFreeFragmentConstant();
 				vo.fragmentConstantsIndex = this._ambientInputRegister.index*4;
 
-                // TODO: AGAL <> GLSL
-				//code += "mov " + targetReg + ", " + this._ambientInputRegister + "\n";
+				code += "mov " + targetReg.toString() + ", " + this._ambientInputRegister.toString() + "\n";
 
 			}
 			
