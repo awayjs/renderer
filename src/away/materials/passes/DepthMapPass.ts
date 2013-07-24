@@ -97,7 +97,7 @@ module away.materials
 			var code:string = "";
 			// project
 
-            /* TODO: AGAL <> GLSL conversion
+            //TODO: AGAL <> GLSL conversion
 
 			code = "m44 vt1, vt0, vc0		\n" +
 				"mov op, vt1	\n";
@@ -118,7 +118,7 @@ module away.materials
 				code += "mov v0, vt1\n";
 
 			}
-			*/
+
 			return code;
 		}
 		
