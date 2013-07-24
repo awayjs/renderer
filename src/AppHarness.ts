@@ -5,6 +5,7 @@
 
 ///<reference path="Away3D.ts"/>
 ///<reference path="../tests/scene/PhongTorus.ts"/>
+///<reference path="../tests/scene/MaterialTorus.ts"/>
 
 module away
 {
@@ -12,7 +13,7 @@ module away
     {
         constructor() 
         {
-			new scene.PhongTorus();
+			new scene.MaterialTorus();
         }
     }
 }
@@ -21,5 +22,3 @@ window.onload = function ()
 {
     var app = new away.AppHarness();
 }
-
-
