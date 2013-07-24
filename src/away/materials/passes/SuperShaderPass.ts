@@ -199,22 +199,19 @@ module away.materials
 		{
 			super.iActivate(stage3DProxy, camera);
 
-
-
 			if (this._pMethodSetup._iColorTransformMethod)
                 this._pMethodSetup._iColorTransformMethod.iActivate(this._pMethodSetup._iColorTransformMethodVO, stage3DProxy);
 
-            away.Debug.throwPIR( 'away.materials.SuperShaderPass' , 'iActivate' , 'implement dependency: MethodVOSet');
-
-            /*
-			var methods:Vector.<MethodVOSet> = _methodSetup._methods;
+			var methods:away.materials.MethodVOSet[] = this._pMethodSetup._iMethods;
 			var len:number = methods.length;
+
 			for (var i:number = 0; i < len; ++i)
             {
-				var aset:MethodVOSet = methods[i];
-                aset.method.activate(aset.data, stage3DProxy);
+
+				var aset:away.materials.MethodVOSet = methods[i];
+                aset.method.iActivate( aset.data, stage3DProxy );
+
 			}
-			*/
 
 
 			if (this._pCameraPositionIndex >= 0)
@@ -243,18 +240,16 @@ module away.materials
 
             }
 
-
-            away.Debug.throwPIR( 'away.materials.SuperShaderPass' , 'iDeactivate' , 'implement dependency: MethodVOSet');
-
-            /*
-			var set:MethodVOSet;
-			var methods:Vector.<MethodVOSet> = _methodSetup._methods;
+			var aset:away.materials.MethodVOSet;
+			var methods:away.materials.MethodVOSet[] =  this._pMethodSetup._iMethods;
 			var len:number = methods.length;
-			for (var i:number = 0; i < len; ++i) {
-				set = methods[i];
-				set.method.deactivate(set.data, stage3DProxy);
+
+			for (var i:number = 0; i < len; ++i)
+            {
+                aset = methods[i];
+                aset.method.iDeactivate(aset.data, stage3DProxy);
 			}
-			*/
+
 		}
 
 		/**
@@ -270,11 +265,6 @@ module away.materials
                 this.pAddPasses( this._pMethodSetup._iColorTransformMethod.passes );
 
             }
-
-
-            away.Debug.throwPIR( 'away.materials.SuperShaderPass' , 'pAddPassesFromMethods' , 'implement dependency: MethodVOSet');
-
-
 			var methods:away.materials.MethodVOSet[] = this._pMethodSetup._iMethods;
 
 			for (var i:number = 0; i < methods.length; ++i)
