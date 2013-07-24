@@ -5,7 +5,7 @@ module away.animators
 	/**
 	 *
 	 */
-	export class AnimationStateBase implements away.animators.IAnimationState
+	export class AnimationStateBase //implements away.animators.IAnimationState // TODO: imeplement
 	{
 		private _animationNode:away.animators.AnimationNodeBase;
 		private _rootDelta:away.geom.Vector3D = new away.geom.Vector3D();
@@ -23,7 +23,7 @@ module away.animators
 			if (this._positionDeltaDirty)
             {
 
-                this.updatePositionDelta();
+                this.pUpdatePositionDelta();
             }
 
 			return this._rootDelta;
