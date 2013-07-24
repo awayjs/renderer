@@ -204,7 +204,7 @@ module away.materials
 			if (this._pMethodSetup._iColorTransformMethod)
                 this._pMethodSetup._iColorTransformMethod.iActivate(this._pMethodSetup._iColorTransformMethodVO, stage3DProxy);
 
-            away.Debug.throwPIR( 'away.materials.SuperShaderPAss' , 'iActivate' , 'implement dependency: MethodVOSet');
+            away.Debug.throwPIR( 'away.materials.SuperShaderPass' , 'iActivate' , 'implement dependency: MethodVOSet');
 
             /*
 			var methods:Vector.<MethodVOSet> = _methodSetup._methods;
@@ -244,7 +244,7 @@ module away.materials
             }
 
 
-            away.Debug.throwPIR( 'away.materials.SuperShaderPAss' , 'iDeactivate' , 'implement dependency: MethodVOSet');
+            away.Debug.throwPIR( 'away.materials.SuperShaderPass' , 'iDeactivate' , 'implement dependency: MethodVOSet');
 
             /*
 			var set:MethodVOSet;
@@ -272,7 +272,7 @@ module away.materials
             }
 
 
-            away.Debug.throwPIR( 'away.materials.SuperShaderPAss' , 'pAddPassesFromMethods' , 'implement dependency: MethodVOSet');
+            away.Debug.throwPIR( 'away.materials.SuperShaderPass' , 'pAddPassesFromMethods' , 'implement dependency: MethodVOSet');
 
 
 			var methods:away.materials.MethodVOSet[] = this._pMethodSetup._iMethods;
