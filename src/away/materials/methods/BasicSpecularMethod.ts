@@ -221,23 +221,22 @@ module away.materials
 			// blinn-phong half vector model
 
             //TODO: AGAL <> GLSL
-            /*
-			code += "add " + t + ", " + lightDirReg + ", " + viewDirReg + "\n" +
-				"nrm " + t + ".xyz, " + t + "\n" +
-				"dp3 " + t + ".w, " + normalReg + ", " + t + "\n" +
-				"sat " + t + ".w, " + t + ".w\n";
-			*/
+
+			code += "add " + t.toString() + ", " + lightDirReg.toString() + ", " + viewDirReg.toString() + "\n" +
+				"nrm " + t.toString() + ".xyz, " + t.toString() + "\n" +
+				"dp3 " + t.toString() + ".w, " + normalReg.toString() + ", " + t.toString() + "\n" +
+				"sat " + t.toString() + ".w, " + t.toString() + ".w\n";
+
 
 			if (this._useTexture)
             {
 
                 //TODO: AGAL <> GLSL
 
-                /*
 				// apply gloss modulation from texture
-				code += "mul " + this._specularTexData + ".w, " + this._specularTexData + ".y, " + this._specularDataRegister + ".w\n" +
-					"pow " + t + ".w, " + t + ".w, " + this._specularTexData + ".w\n";
-                */
+				code += "mul " + this._specularTexData.toString() + ".w, " + this._specularTexData.toString() + ".y, " + this._specularDataRegister.toString() + ".w\n" +
+					"pow " + t + ".w, " + t + ".w, " + this._specularTexData.toString() + ".w\n";
+
 
 			}
             else
@@ -245,7 +244,7 @@ module away.materials
 
                 //TODO: AGAL <> GLSL
 
-                //code += "pow " + t + ".w, " + t + ".w, " + this._specularDataRegister + ".w\n";
+                code += "pow " + t.toString() + ".w, " + t.toString() + ".w, " + this._specularDataRegister.toString() + ".w\n";
 
 
             }
@@ -256,7 +255,7 @@ module away.materials
             {
 
                 //TODO: AGAL <> GLSL
-                //code += "mul " + t + ".w, " + t + ".w, " + lightDirReg + ".w\n";
+                code += "mul " + t.toString() + ".w, " + t.toString() + ".w, " + lightDirReg.toString() + ".w\n";
 
 
             }
@@ -266,18 +265,18 @@ module away.materials
             {
 
                 //TODO: AGAL <> GLSL
-                //code += this._iModulateMethod (vo, t, regCache, this._sharedRegisters);
+                code += this._iModulateMethod (vo, t, regCache, this._sharedRegisters);
 
             }
 
 
             //TODO: AGAL <> GLSL
-			//code += "mul " + t + ".xyz, " + lightColReg + ", " + t + ".w\n";
+			code += "mul " + t.toString() + ".xyz, " + lightColReg.toString() + ", " + t.toString() + ".w\n";
 			
 			if (! this._isFirstLight)
             {
                 //TODO: AGAL <> GLSL
-				//code += "add " + this._totalLightColorReg + ".xyz, " + this._totalLightColorReg + ", " + t + "\n";
+				code += "add " + this._totalLightColorReg.toString() + ".xyz, " + this._totalLightColorReg.toString() + ", " + t.toString() + "\n";
 
 				regCache.removeFragmentTempUsage(t);
 
@@ -316,20 +315,19 @@ module away.materials
 
             //TODO: AGAL <> GLSL
 
-            /*
-			code += "dp3 " + t + ".w, " + normalReg + ", " + viewDirReg + "\n" +
-				"add " + t + ".w, " + t + ".w, " + t + ".w\n" +
-				"mul " + t + ", " + t + ".w, " + normalReg + "\n" +
-				"sub " + t + ", " + t + ", " + viewDirReg + "\n" +
-				"tex " + t + ", " + t + ", " + cubeMapReg + " <cube," + (vo.useSmoothTextures? "linear" : "nearest") + ",miplinear>\n" +
-				"mul " + t + ".xyz, " + t + ", " + weightRegister + "\n";
-			*/
+			code += "dp3 " + t.toString() + ".w, " + normalReg.toString() + ", " + viewDirReg.toString() + "\n" +
+				"add " + t.toString() + ".w, " + t.toString() + ".w, " + t.toString() + ".w\n" +
+				"mul " + t.toString() + ", " + t.toString() + ".w, " + normalReg.toString() + "\n" +
+				"sub " + t.toString() + ", " + t.toString() + ", " + viewDirReg.toString() + "\n" +
+				"tex " + t.toString() + ", " + t.toString() + ", " + cubeMapReg.toString() + " <cube," + (vo.useSmoothTextures? "linear" : "nearest") + ",miplinear>\n" +
+				"mul " + t.toString() + ".xyz, " + t.toString() + ", " + weightRegister.toString() + "\n";
+
 
 			if (this._iModulateMethod!= null)
             {
 
                 //TODO: AGAL <> GLSL
-                //code += this._iModulateMethod(vo, t, regCache, this._sharedRegisters);
+                code += this._iModulateMethod(vo, t, regCache, this._sharedRegisters);
 
             }
 
@@ -338,7 +336,7 @@ module away.materials
             {
 
                 //TODO: AGAL <> GLSL
-				//code += "add " + this._totalLightColorReg + ".xyz, " + this._totalLightColorReg + ", " + t + "\n";
+				code += "add " + this._totalLightColorReg.toString() + ".xyz, " + this._totalLightColorReg.toString() + ", " + t.toString() + "\n";
 
 				regCache.removeFragmentTempUsage(t);
 
@@ -363,7 +361,7 @@ module away.materials
             {
 
                 //TODO: AGAL <> GLSL
-                //code += "mul " + this._totalLightColorReg + ".xyz, " + this._totalLightColorReg + ", " + this._shadowRegister + ".w\n";
+                code += "mul " + this._totalLightColorReg.toString() + ".xyz, " + this._totalLightColorReg.toString() + ", " + this._shadowRegister.toString() + ".w\n";
 
             }
 
@@ -374,7 +372,7 @@ module away.materials
 				// apply strength modulation from texture
 
                 //TODO: AGAL <> GLSL
-				//code += "mul " + this._totalLightColorReg + ".xyz, " + this._totalLightColorReg + ", " + this._specularTexData + ".x\n";
+				code += "mul " + this._totalLightColorReg.toString() + ".xyz, " + this._totalLightColorReg.toString() + ", " + this._specularTexData.toString() + ".x\n";
 
 				regCache.removeFragmentTempUsage(this._specularTexData);
 
@@ -385,10 +383,9 @@ module away.materials
 
             //TODO: AGAL <> GLSL
 
-            /*
-			code += "mul " + this._totalLightColorReg + ".xyz, " + this._totalLightColorReg + ", " + this._specularDataRegister + "\n" +
-				"add " + targetReg + ".xyz, " + targetReg + ", " + this._totalLightColorReg + "\n";
-            */
+			code += "mul " + this._totalLightColorReg.toString() + ".xyz, " + this._totalLightColorReg.toString() + ", " + this._specularDataRegister.toString() + "\n" +
+				"add " + targetReg.toString() + ".xyz, " + targetReg.toString() + ", " + this._totalLightColorReg.toString() + "\n";
+
 			regCache.removeFragmentTempUsage( this._totalLightColorReg );
 			
 			return code;
