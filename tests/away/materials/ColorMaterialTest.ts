@@ -37,6 +37,26 @@ class MaterialsTest
         //stage3DProxy.addEventListener( away.events.Stage3DEvent.CONTEXT3D_RECREATED, this.onContextReCreated , this );
         //stage3DProxy.addEventListener( away.events.Stage3DEvent.CONTEXT3D_DISPOSED, this.onContextDisposed , this );
 
+        console.log( 'onContextCreated' );
+        //this._stage.stage3Ds[0].removeEventListener( away.events.Event.CONTEXT3D_CREATE, this.onContext3DCreateHandler, this );
+
+        //var stage3D: away.display.Stage3D = <away.display.Stage3D> e.target;
+        //this._context3D = stage3D.context3D;
+
+        //this.cm.specularMethod = new away.materials.BasicSpecularMethod();
+        //this.cm.iUpdateMaterial( this._context3D );
+
+        //
+
+        this.cm.iInvalidatePasses( null );
+
+        //this.cm.iRenderPass( 0 , )
+
+        console.log( this.cm );
+        console.log( this.cm._pScreenPass.iUpdateProgram( this.sProxy ) );
+        console.log( this.cm._pScreenPass.iGetVertexCode() );
+        console.log( this.cm._pScreenPass.iGetFragmentCode(''));
+
     }
 
     private onContextCreated( e )
@@ -49,7 +69,7 @@ class MaterialsTest
         //this._context3D = stage3D.context3D;
 
         //this.cm.specularMethod = new away.materials.BasicSpecularMethod();
-        this.cm.iUpdateMaterial( this._context3D );
+        //this.cm.iUpdateMaterial( this._context3D );
 
         //
 
