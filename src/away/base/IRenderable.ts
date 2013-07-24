@@ -76,48 +76,47 @@ module away.base
 		 * @param index The attribute stream index for the vertex shader
 		 * @param stage3DProxy The Stage3DProxy to assign the stream to
 		 */
-        // TODO: Stage3DProxy - imeplement & integrate
-		//function activateVertexBuffer(index:number, stage3DProxy:Stage3DProxy);
+
+		activateVertexBuffer(index:number, stage3DProxy:away.managers.Stage3DProxy);
 		
 		/**
 		 * Assigns the attribute stream for UV coordinates
 		 * @param index The attribute stream index for the vertex shader
 		 * @param stage3DProxy The Stage3DProxy to assign the stream to
 		 */
-        // TODO: Stage3DProxy - imeplement & integrate
-		//function activateUVBuffer(index:number, stage3DProxy:Stage3DProxy);
+
+		activateUVBuffer(index:number, stage3DProxy:away.managers.Stage3DProxy);
 		
 		/**
 		 * Assigns the attribute stream for a secondary set of UV coordinates
 		 * @param index The attribute stream index for the vertex shader
 		 * @param stage3DProxy The Stage3DProxy to assign the stream to
 		 */
-        // TODO: Stage3DProxy - imeplement & integrate
-		//function activateSecondaryUVBuffer(index:number, stage3DProxy:Stage3DProxy);
+
+		activateSecondaryUVBuffer(index:number, stage3DProxy:away.managers.Stage3DProxy);
 		
 		/**
 		 * Assigns the attribute stream for vertex normals
 		 * @param index The attribute stream index for the vertex shader
 		 * @param stage3DProxy The Stage3DProxy to assign the stream to
 		 */
-        // TODO: Stage3DProxy - imeplement & integrate
-		//function activateVertexNormalBuffer(index:number, stage3DProxy:Stage3DProxy);
+
+		activateVertexNormalBuffer(index:number, stage3DProxy:away.managers.Stage3DProxy);
 		
 		/**
 		 * Assigns the attribute stream for vertex tangents
 		 * @param index The attribute stream index for the vertex shader
 		 * @param stage3DProxy The Stage3DProxy to assign the stream to
 		 */
-        // TODO: Stage3DProxy - imeplement & integrate
-		//function activateVertexTangentBuffer(index:number, stage3DProxy:Stage3DProxy);
+
+		activateVertexTangentBuffer(index:number, stage3DProxy:away.managers.Stage3DProxy);
 		
 		/**
 		 * Retrieves the IndexBuffer3D object that contains triangle indices.
 		 * @param context The Context3D for which we request the buffer
 		 * @return The VertexBuffer3D object that contains triangle indices.
 		 */
-        // TODO: Stage3DProxy - imeplement & integrate
-		//function getIndexBuffer(stage3DProxy:Stage3DProxy):IndexBuffer3D;
+		getIndexBuffer(stage3DProxy:away.managers.Stage3DProxy):away.display3D.IndexBuffer3D;
 		
 		/**
 		 * Retrieves the object's vertices as a Number array.
