@@ -449,8 +449,8 @@ module away.materials
 			if (this._useTexture)
             {
 
-                away.Debug.throwPIR( 'BasicDiffuseMethod' , 'iActivate' , 'Context3D.setGLSLTextureAt - params not matching');
-				//stage3DProxy._iContext3D.setGLSLTextureAt(vo.texturesIndex, this._texture.getTextureForStage3D(stage3DProxy));
+                //away.Debug.throwPIR( 'BasicDiffuseMethod' , 'iActivate' , 'Context3D.setGLSLTextureAt - params not matching');
+				stage3DProxy._iContext3D.setTextureAt(vo.texturesIndex, this._texture.getTextureForStage3D(stage3DProxy));
 
 				if (this._alphaThreshold > 0)
 					vo.fragmentData[vo.fragmentConstantsIndex] = this._alphaThreshold;

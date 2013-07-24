@@ -125,8 +125,8 @@ module away.materials
 			if (vo.texturesIndex >= 0)
             {
 
-                away.Debug.throwPIR( 'BasicNormalMethod' , 'iActivate' , 'Context3D.setGLSLTextureAt - params not matching');
-                //stage3DProxy._iContext3D.setGLSLTextureAt( vo.texturesIndex, this._texture.getTextureForStage3D(stage3DProxy));
+                //away.Debug.throwPIR( 'BasicNormalMethod' , 'iActivate' , 'Context3D.setGLSLTextureAt - params not matching');
+                stage3DProxy._iContext3D.setTextureAt( vo.texturesIndex, this._texture.getTextureForStage3D(stage3DProxy));
 
             }
 

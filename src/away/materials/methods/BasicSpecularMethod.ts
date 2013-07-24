@@ -407,9 +407,7 @@ module away.materials
 			if (this._useTexture)
             {
 
-
-                away.Debug.throwPIR( 'BasicSpecularMethod' , 'iActivate' , 'Context3D.setGLSLTextureAt');
-                //stage3DProxy._iContext3D.setGLSLTextureAt(vo.texturesIndex, this._texture.getTextureForStage3D(stage3DProxy));
+               stage3DProxy._iContext3D.setTextureAt(vo.texturesIndex, this._texture.getTextureForStage3D(stage3DProxy));
 
             }
 

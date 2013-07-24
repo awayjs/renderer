@@ -181,8 +181,8 @@ module away.materials
 			if ( this._useTexture)
             {
 
-                away.Debug.throwPIR( 'BasicAmbientMethod' , 'iActivate' , 'Context3D.setGLSLTextureAt - params not matching');
-                //stage3DProxy._iContext3D.setGLSLTextureAt(vo.texturesIndex, this._texture.getTextureForStage3D(stage3DProxy));//<---- TODO: imeplement
+                //away.Debug.throwPIR( 'BasicAmbientMethod' , 'iActivate' , 'Context3D.setGLSLTextureAt - params not matching');
+                stage3DProxy._iContext3D.setTextureAt(vo.texturesIndex, this._texture.getTextureForStage3D(stage3DProxy));
 
             }
 
