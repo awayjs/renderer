@@ -101,7 +101,7 @@ module away.materials
 		
 		public set colorTransformMethod(value:away.materials.ColorTransformMethod)
 		{
-			this._pMethodSetup._iColorTransformMethod = value;
+			this._pMethodSetup.iColorTransformMethod = value;
 		}
 
 		/**
