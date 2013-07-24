@@ -185,7 +185,7 @@ module away.materials
 
             }
 
-			return "tex " + targetReg + ", " + uvReg + ", " + inputReg + " <2d," + filter + "," + format + wrap + ">\n";
+			return "tex " + targetReg.toString() + ", " + uvReg.toString() + ", " + inputReg.toString() + " <2d," + filter + "," + format + wrap + ">\n";
 
 		}
 
@@ -208,7 +208,7 @@ module away.materials
 			else
 				filter = enableMipMaps? "nearest,mipnearest" : "nearest";
 			
-			return "tex " + targetReg + ", " + uvReg + ", " + inputReg + " <cube," + format + filter + ">\n";
+			return "tex " + targetReg.toString() + ", " + uvReg.toString() + ", " + inputReg.toString() + " <cube," + format + filter + ">\n";
 		}
 
 		/**
