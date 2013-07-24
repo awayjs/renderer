@@ -535,7 +535,7 @@ module away.materials
          * @private
          */
 
-        public iRenderPass(index:number, stage3DProxy:away.managers.Stage3DProxy) // ARCANE
+        public iDeactivatePass(index:number, stage3DProxy:away.managers.Stage3DProxy) // ARCANE
         {
             this._passes[index].iDeactivate(stage3DProxy);
         }
