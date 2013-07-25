@@ -38,7 +38,7 @@ module away.pick
 	export class ShaderPicker implements away.pick.IPicker
 	{
         // TODO: Stage3DProxy - Implement and Integrate
-		//private var _stage3DProxy:Stage3DProxy;
+		private _stage3DProxy:away.managers.Stage3DProxy;
 		private _context:away.display3D.Context3D;
 		private _onlyMouseEnabled:boolean = true;
 		
@@ -102,7 +102,8 @@ module away.pick
 		public getViewCollision(x:number, y:number, view:away.containers.View3D):away.pick.PickingCollisionVO
 		{
 
-            throw new away.errors.PartialImplementationError( 'EntityCollector, Stage3dProxy');
+            away.Debug.throwPIR( 'ShaderPicker' , 'getViewCollision' , 'implement' );
+
             return null;
 
             /*
@@ -179,35 +180,46 @@ module away.pick
 		/**
 		 * @inheritDoc
 		 */
-        /* TODO: Implement dependency - EntityCollector
         // TODO: GLSL implementation / conversion
-		protected function draw(entityCollector:EntityCollector, target:TextureBase)
+		public pDraw(entityCollector:away.traverse.EntityCollector, target:away.display3D.TextureBase)
 		{
-			var camera:Camera3D = entityCollector.camera;
+
+            away.Debug.throwPIR( 'ShaderPicker' , 'pDraw' , 'implement' );
+            /*
+			var camera:away.cameras.Camera3D = entityCollector.camera;
 			
-			_context.clear(0, 0, 0, 1);
-			_stage3DProxy.scissorRect = ShaderPicker.MOUSE_SCISSOR_RECT;
+			this._context.clear(0, 0, 0, 1);
+			this._stage3DProxy.scissorRect = ShaderPicker.MOUSE_SCISSOR_RECT;
 			
-			_interactives.length = _interactiveId = 0;
+			this._interactives.length = this._interactiveId = 0;
 			
-			if (!_objectProgram3D)
-				initObjectProgram3D();
-			_context.setBlendFactors(Context3DBlendFactor.ONE, Context3DBlendFactor.ZERO);
-			_context.setDepthTest(true, Context3DCompareMode.LESS);
-			_context.setProgram(_objectProgram3D);
-			_context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 4, _viewportData, 1);
-			drawRenderables(entityCollector.opaqueRenderableHead, camera);
-			drawRenderables(entityCollector.blendedRenderableHead, camera);
+			if (!this._objectProgram3D)
+            {
+
+                this.initObjectProgram3D();
+
+            }
+
+			this._context.setBlendFactors(away.display3D.Context3DBlendFactor.ONE, away.display3D.Context3DBlendFactor.ZERO);
+			this._context.setDepthTest(true, away.display3D.Context3DCompareMode.LESS);
+			this._context.setProgram(this._objectProgram3D);
+			this._context.setProgramConstantsFromArray(away.display3D.Context3DProgramType.VERTEX, 4, this._viewportData, 1);
+			this.drawRenderables(entityCollector.opaqueRenderableHead, camera);
+			this.drawRenderables(entityCollector.blendedRenderableHead, camera);
+			*/
 		}
-		*/
+
 		/**
 		 * Draw a list of renderables.
 		 * @param renderables The renderables to draw.
 		 * @param camera The camera for which to render.
 		 */
-        /* TODO implement dependencies: RenderableListItem , Camera3D
-		private drawRenderables(item:RenderableListItem, camera:Camera3D)
+		private drawRenderables(item:away.data.RenderableListItem, camera:away.cameras.Camera3D)
 		{
+
+            away.Debug.throwPIR( 'ShaderPicker' , 'drawRenderables' , 'implement' );
+
+            /*
 			var matrix:Matrix3D = away3d.math.Matrix3DUtils.CALCULATION_MATRIX;
 			var renderable:IRenderable;
 			var viewProjection:Matrix3D = camera.viewProjection;
@@ -239,17 +251,18 @@ module away.pick
 				
 				item = item.next;
 			}
+			*/
 		}
-		*/
 
-        /* TODO implement dependencies: Camera3D
-		private updateRay(camera:Camera3D)
+		private updateRay(camera:away.cameras.Camera3D)
 		{
+            /*
 			_rayPos = camera.scenePosition;
 			_rayDir = camera.getRay(_projX, _projY, 1);
 			_rayDir.normalize();
+			*/
 		}
-		*/
+
 		/**
 		 * Creates the Program3D that color-codes objects.
 		 */
