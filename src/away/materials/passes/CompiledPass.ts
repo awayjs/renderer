@@ -870,3 +870,5 @@ module away.materials
     }
 
 }
+
+// Fix for BOM issue
