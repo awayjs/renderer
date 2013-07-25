@@ -207,13 +207,89 @@ module away.display3D
 			this._gl.useProgram( null );
 		}
 		
-		
-		//TODO Context3DBlendFactor
-		public setBlendFactors( sourceFactor:number, destinationFactor:number ) 
+		public setBlendFactors( sourceFactor:string, destinationFactor:string ) 
 		{
 			this._blendEnabled = true;
-			this._blendSourceFactor = sourceFactor;
-			this._blendDestinationFactor = destinationFactor;
+			
+			switch( sourceFactor )
+			{
+				case away.display3D.Context3DBlendFactor.ONE:
+						this._blendSourceFactor = this._gl.ONE;
+					break;
+				case away.display3D.Context3DBlendFactor.DESTINATION_ALPHA:
+						this._blendSourceFactor = this._gl.DST_ALPHA;
+					break;
+				case away.display3D.Context3DBlendFactor.DESTINATION_COLOR:
+						this._blendSourceFactor = this._gl.DST_COLOR;
+					break;
+				case away.display3D.Context3DBlendFactor.ONE:
+						this._blendSourceFactor = this._gl.ONE;
+					break;
+				case away.display3D.Context3DBlendFactor.ONE_MINUS_DESTINATION_ALPHA:
+						this._blendSourceFactor = this._gl.ONE_MINUS_DST_ALPHA;
+					break;
+				case away.display3D.Context3DBlendFactor.ONE_MINUS_DESTINATION_COLOR:
+						this._blendSourceFactor = this._gl.ONE_MINUS_DST_COLOR;
+					break;
+				case away.display3D.Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA:
+						this._blendSourceFactor = this._gl.ONE_MINUS_SRC_ALPHA;
+					break;
+				case away.display3D.Context3DBlendFactor.ONE_MINUS_SOURCE_COLOR:
+						this._blendSourceFactor = this._gl.ONE_MINUS_SRC_COLOR;
+					break;
+				case away.display3D.Context3DBlendFactor.SOURCE_ALPHA:
+						this._blendSourceFactor = this._gl.SRC_ALPHA;
+					break;
+				case away.display3D.Context3DBlendFactor.SOURCE_COLOR:
+						this._blendSourceFactor = this._gl.SRC_COLOR;
+					break;
+				case away.display3D.Context3DBlendFactor.ZERO:
+						this._blendSourceFactor = this._gl.ZERO;
+					break;
+				default:
+						throw "Unknown blend source factor"; // TODO error
+					break;
+			}
+			
+			switch( destinationFactor )
+			{
+				case away.display3D.Context3DBlendFactor.ONE:
+						this._blendDestinationFactor = this._gl.ONE;
+					break;
+				case away.display3D.Context3DBlendFactor.DESTINATION_ALPHA:
+						this._blendDestinationFactor = this._gl.DST_ALPHA;
+					break;
+				case away.display3D.Context3DBlendFactor.DESTINATION_COLOR:
+						this._blendDestinationFactor = this._gl.DST_COLOR;
+					break;
+				case away.display3D.Context3DBlendFactor.ONE:
+						this._blendDestinationFactor = this._gl.ONE;
+					break;
+				case away.display3D.Context3DBlendFactor.ONE_MINUS_DESTINATION_ALPHA:
+						this._blendDestinationFactor = this._gl.ONE_MINUS_DST_ALPHA;
+					break;
+				case away.display3D.Context3DBlendFactor.ONE_MINUS_DESTINATION_COLOR:
+						this._blendDestinationFactor = this._gl.ONE_MINUS_DST_COLOR;
+					break;
+				case away.display3D.Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA:
+						this._blendDestinationFactor = this._gl.ONE_MINUS_SRC_ALPHA;
+					break;
+				case away.display3D.Context3DBlendFactor.ONE_MINUS_SOURCE_COLOR:
+						this._blendDestinationFactor = this._gl.ONE_MINUS_SRC_COLOR;
+					break;
+				case away.display3D.Context3DBlendFactor.SOURCE_ALPHA:
+						this._blendDestinationFactor = this._gl.SRC_ALPHA;
+					break;
+				case away.display3D.Context3DBlendFactor.SOURCE_COLOR:
+						this._blendDestinationFactor = this._gl.SRC_COLOR;
+					break;
+				case away.display3D.Context3DBlendFactor.ZERO:
+						this._blendDestinationFactor = this._gl.ZERO;
+					break;
+				default:
+						throw "Unknown blend destination factor"; // TODO error
+					break;
+			}
 			
 			this.updateBlendStatus();
 		}
@@ -255,28 +331,28 @@ module away.display3D
 			switch( passCompareMode )
 			{
 				case Context3DCompareMode.ALWAYS:
-						this._gl.depthFunc( 7 );
+						this._gl.depthFunc( this._gl.ALWAYS );
 					break;
 				case Context3DCompareMode.EQUAL:
-						this._gl.depthFunc( 2 );
+						this._gl.depthFunc( this._gl.EQUAL );
 					break;
 				case Context3DCompareMode.GREATER:
-						this._gl.depthFunc( 4 );
+						this._gl.depthFunc( this._gl.GREATER );
 					break;
 				case Context3DCompareMode.GREATER_EQUAL:
-						this._gl.depthFunc( 6 );
+						this._gl.depthFunc( this._gl.GEQUAL );
 					break;
 				case Context3DCompareMode.LESS:
-						this._gl.depthFunc( 1 );
+						this._gl.depthFunc( this._gl.LESS );
 					break;
 				case Context3DCompareMode.LESS_EQUAL:
-						this._gl.depthFunc( 3 );
+						this._gl.depthFunc( this._gl.LEQUAL );
 					break;
 				case Context3DCompareMode.NEVER:
-						this._gl.depthFunc( 0 );
+						this._gl.depthFunc( this._gl.NEVER );
 					break;
 				case Context3DCompareMode.NOT_EQUAL:
-						this._gl.depthFunc( 5 );
+						this._gl.depthFunc( this._gl.NOTEQUAL );
 					break;
 				default:
 						throw "Unknown Context3DCompareMode type."; // TODO error
