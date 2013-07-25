@@ -238,3 +238,6 @@
 ///<reference path="render/RendererBase.ts"/>
 ///<reference path="render/DepthRenderer.ts"/>
 ///<reference path="render/DefaultRenderer.ts"/>
+
+///<reference path="filters/tasks/Filter3DTaskBase.ts"/>
+///<reference path="managers/RTTBufferManager.ts"/>
