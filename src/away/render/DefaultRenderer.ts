@@ -129,9 +129,7 @@ module away.render
 		public pDraw(entityCollector:away.traverse.EntityCollector, target:away.display3D.TextureBase)
 		{
 
-            away.Debug.throwPIR( 'DefaultRenderer' , 'pDraw' , 'Context.setBlendFactors' );
-			//this._pContext.setBlendFactors(away.display3D.Context3DBlendFactor.ONE, away.display3D.Context3DBlendFactor.ZERO);// TODO: imeplement;
-
+			this._pContext.setBlendFactors(away.display3D.Context3DBlendFactor.ONE, away.display3D.Context3DBlendFactor.ZERO);
 
 			if (entityCollector.skyBox)
             {
