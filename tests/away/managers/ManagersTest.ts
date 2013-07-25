@@ -15,21 +15,35 @@ class ManagersTest
 
     private geomBase    : away.base.SubGeometryBase = new away.base.SubGeometryBase();
     private geom        : away.base.Geometry = new away.base.Geometry();
+    private rttBfrA     : away.managers.RTTBufferManager;
+    private rttBfrB     : away.managers.RTTBufferManager;
 
     constructor()
     {
 
-        away.Debug.THROW_ERRORS                           = false;
+        away.Debug.THROW_ERRORS = false;
 
-        this.stage                                              = new away.display.Stage();
+        this.stage = new away.display.Stage();
 
-        var manager         : away.managers.Stage3DManager      = away.managers.Stage3DManager.getInstance( this.stage );
+        var manager : away.managers.Stage3DManager = away.managers.Stage3DManager.getInstance( this.stage );
 
-        var stage3DProxy    : away.managers.Stage3DProxy        = manager.getStage3DProxy( 0 );
+        this.sProxy = manager.getStage3DProxy( 0 );
+        this.sProxy.addEventListener( away.events.Stage3DEvent.CONTEXT3D_CREATED , this.onContextCreated , this );
+        this.sProxy.addEventListener( away.events.Stage3DEvent.CONTEXT3D_RECREATED, this.onContextReCreated , this );
+        this.sProxy.addEventListener( away.events.Stage3DEvent.CONTEXT3D_DISPOSED, this.onContextDisposed , this );
 
-            stage3DProxy.addEventListener( away.events.Stage3DEvent.CONTEXT3D_CREATED , this.onContextCreated , this );
-            stage3DProxy.addEventListener( away.events.Stage3DEvent.CONTEXT3D_RECREATED, this.onContextReCreated , this );
-            stage3DProxy.addEventListener( away.events.Stage3DEvent.CONTEXT3D_DISPOSED, this.onContextDisposed , this );
+        this.rttBfrA = away.managers.RTTBufferManager.getInstance( this.sProxy )
+        this.rttBfrB = away.managers.RTTBufferManager.getInstance( this.sProxy )
+
+        console.log( 'this.rttBfrA' , this.rttBfrA );
+        console.log( 'this.rttBfrB' , this.rttBfrB );
+
+        this.rttBfrB.dispose();
+
+        console.log( 'this.rttBfrA' , this.rttBfrA );
+        console.log( 'this.rttBfrB' , this.rttBfrB );
+
+
 
     }
 
