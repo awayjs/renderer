@@ -246,5 +246,13 @@ module away.traverse
 			this._pLights[ this._pNumLights++ ] = light;
 			this._lightProbes[ this._numLightProbes++ ] = light;
 		}
+
+        /**
+         * Cleans up any data at the end of a frame.
+         */
+        public cleanUp()
+        {
+        }
+
 	}
 }
