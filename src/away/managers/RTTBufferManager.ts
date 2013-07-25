@@ -11,7 +11,7 @@ module away.managers
 		private _renderToScreenVertexBuffer:away.display3D.VertexBuffer3D;
 		
 		private _indexBuffer:away.display3D.IndexBuffer3D;
-		private _stage3DProxy:Stage3DProxy;
+		private _stage3DProxy:away.managers.Stage3DProxy;
 		private _viewWidth:number = -1;
 		private _viewHeight:number = -1;
 		private _textureWidth:number = -1;
@@ -22,7 +22,7 @@ module away.managers
 		private _textureRatioX:number;
 		private _textureRatioY:number;
 		
-		constructor(se:SingletonEnforcer, stage3DProxy:Stage3DProxy)
+		constructor(se:SingletonEnforcer, stage3DProxy:away.managers.Stage3DProxy)
 		{
 
             super();
@@ -41,7 +41,7 @@ module away.managers
 
 		}
 		
-		public static getInstance(stage3DProxy:Stage3DProxy):RTTBufferManager
+		public static getInstance(stage3DProxy:away.managers.Stage3DProxy):RTTBufferManager
 		{
 			if (!stage3DProxy)
 				throw new Error("stage3DProxy key cannot be null!");
@@ -61,6 +61,7 @@ module away.managers
                 rttBufferManager                = new away.managers.RTTBufferManager( new SingletonEnforcer() , stage3DProxy );
 
                 var vo : RTTBufferManagerVO     = new RTTBufferManagerVO();
+
                     vo.stage3dProxy             = stage3DProxy;
                     vo.rttbfm                   = rttBufferManager;
 
@@ -72,7 +73,7 @@ module away.managers
 
 		}
 
-        private static getRTTBufferManagerFromStage3DProxy( stage3DProxy:Stage3DProxy ) : RTTBufferManager
+        private static getRTTBufferManagerFromStage3DProxy( stage3DProxy:away.managers.Stage3DProxy ) : RTTBufferManager
         {
 
             var l : number = RTTBufferManager._instances.length;
