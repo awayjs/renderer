@@ -63,9 +63,7 @@ module away.render
 			this._pStage3DProxy.setRenderTarget(target, true, 0);
 			this._pContext.clear(1, 1, 1, 1, 1, 0);
 
-            away.Debug.throwPIR( 'DepthRenderer' , 'iRenderCascades' , 'Context.setBlendFactors' );
-			//this._pContext.setBlendFactors(away.display3D.Context3DBlendFactor.ONE, away.display3D.Context3DBlendFactor.ZERO); //TODO: imeplement
-
+			this._pContext.setBlendFactors(away.display3D.Context3DBlendFactor.ONE, away.display3D.Context3DBlendFactor.ZERO);
 			this._pContext.setDepthTest(true, away.display3D.Context3DCompareMode.LESS);
 			
 			var head:away.data.RenderableListItem = entityCollector.opaqueRenderableHead;
@@ -158,8 +156,7 @@ module away.render
 		public pDraw(entityCollector:away.traverse.EntityCollector, target:away.display3D.TextureBase)
 		{
 
-            away.Debug.throwPIR( 'DepthRenderer' , 'pDraw' , 'Context.setBlendFactors' );
-			//this._pContext.setBlendFactors(away.display3D.Context3DBlendFactor.ONE, away.display3D.Context3DBlendFactor.ZERO);//TODO: imeplement
+			this._pContext.setBlendFactors(away.display3D.Context3DBlendFactor.ONE, away.display3D.Context3DBlendFactor.ZERO);
 
             this._pContext.setDepthTest(true, away.display3D.Context3DCompareMode.LESS);
 
