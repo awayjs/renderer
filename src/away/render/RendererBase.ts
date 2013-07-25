@@ -28,8 +28,8 @@ module away.render
 	 */
 	export class RendererBase
 	{
-		private _context:away.display3D.Context3D;
-		private _stage3DProxy:away.managers.Stage3DProxy;
+		public _pContext:away.display3D.Context3D;
+		public _pStage3DProxy:away.managers.Stage3DProxy;
 		
 		private _backgroundR:number = 0;
 		private _backgroundG:number = 0;
@@ -37,14 +37,14 @@ module away.render
 		private _backgroundAlpha:number = 1;
 		private _shareContext:boolean = false;
 		
-		private _renderTarget:away.display3D.TextureBase;
-		private _renderTargetSurface:number;
+		public _pRenderTarget:away.display3D.TextureBase;
+		public _pRenderTargetSurface:number;
 		
 		// only used by renderers that need to render geometry to textures
 		private _viewWidth:number;
 		private _viewHeight:number;
 		
-		private _renderableSorter:away.sort.IEntitySorter;
+		public _pRenderableSorter:away.sort.IEntitySorter;
 
 		//private _backgroundImageRenderer:BackgroundImageRenderer;
 		//private _background:Texture2DBase;
@@ -58,7 +58,7 @@ module away.render
 		private _snapshotRequired:boolean;
 		
 		private _clearOnRender:boolean = true;
-		private _rttViewProjectionMatrix:away.geom.Matrix3D = new away.geom.Matrix3D();
+		public _pRttViewProjectionMatrix:away.geom.Matrix3D = new away.geom.Matrix3D();
 
 		
 		/**
@@ -66,7 +66,7 @@ module away.render
 		 */
 		constructor(renderToTexture:boolean = false)
 		{
-			this._renderableSorter = new away.sort.RenderableMergeSort();
+			this._pRenderableSorter = new away.sort.RenderableMergeSort();
 			this._renderToTexture = renderToTexture;
 		}
 		
@@ -102,12 +102,12 @@ module away.render
 		
 		public get renderableSorter():away.sort.IEntitySorter
 		{
-			return this._renderableSorter;
+			return this._pRenderableSorter;
 		}
 		
 		public set renderableSorter(value:away.sort.IEntitySorter)
 		{
-			this._renderableSorter = value;
+			this._pRenderableSorter = value;
 		}
 		
 		public get iClearOnRender():boolean
@@ -172,12 +172,12 @@ module away.render
 		 */
 		public get iStage3DProxy():away.managers.Stage3DProxy
 		{
-			return this._stage3DProxy;
+			return this._pStage3DProxy;
 		}
 		
 		public set iStage3DProxy(value:away.managers.Stage3DProxy)
 		{
-			if (value == this._stage3DProxy)
+			if (value == this._pStage3DProxy)
             {
 
                 return;
@@ -188,32 +188,32 @@ module away.render
 			if (!value)
             {
 
-				if (this._stage3DProxy)
+				if (this._pStage3DProxy)
                 {
 
-                    this._stage3DProxy.removeEventListener(away.events.Stage3DEvent.CONTEXT3D_CREATED, this.onContextUpdate , this );
-					this._stage3DProxy.removeEventListener(away.events.Stage3DEvent.CONTEXT3D_RECREATED, this.onContextUpdate , this );
+                    this._pStage3DProxy.removeEventListener(away.events.Stage3DEvent.CONTEXT3D_CREATED, this.onContextUpdate , this );
+					this._pStage3DProxy.removeEventListener(away.events.Stage3DEvent.CONTEXT3D_RECREATED, this.onContextUpdate , this );
 
 				}
 
-				this._stage3DProxy = null;
-                this._context = null;
+				this._pStage3DProxy = null;
+                this._pContext = null;
 
 				return;
 			}
 
-			//else if (_stage3DProxy) throw new Error("A Stage3D instance was already assigned!");
+			//else if (_pStage3DProxy) throw new Error("A Stage3D instance was already assigned!");
 			
-			this._stage3DProxy = value;
-            this._stage3DProxy.addEventListener(away.events.Stage3DEvent.CONTEXT3D_CREATED, this.onContextUpdate , this );
-            this._stage3DProxy.addEventListener(away.events.Stage3DEvent.CONTEXT3D_RECREATED, this.onContextUpdate , this );
+			this._pStage3DProxy = value;
+            this._pStage3DProxy.addEventListener(away.events.Stage3DEvent.CONTEXT3D_CREATED, this.onContextUpdate , this );
+            this._pStage3DProxy.addEventListener(away.events.Stage3DEvent.CONTEXT3D_RECREATED, this.onContextUpdate , this );
 
             /*
 			if (_backgroundImageRenderer)
 				_backgroundImageRenderer.stage3DProxy = value;
 			*/
 			if (value.context3D)
-				this._context = value.context3D;
+				this._pContext = value.context3D;
 		}
 		
 		/**
@@ -239,7 +239,7 @@ module away.render
 		 */
 		public iDispose()
 		{
-			this._stage3DProxy = null;
+			this._pStage3DProxy = null;
 
             /*
 			if (_backgroundImageRenderer) {
@@ -258,7 +258,7 @@ module away.render
 		 */
 		public iRender(entityCollector:away.traverse.EntityCollector, target:away.display3D.TextureBase = null, scissorRect:away.geom.Rectangle = null, surfaceSelector:number = 0)
 		{
-			if (!this._stage3DProxy || !this._context)
+			if (!this._pStage3DProxy || !this._pContext)
             {
 
                 return;
@@ -267,8 +267,8 @@ module away.render
             }
 
 			
-			this._rttViewProjectionMatrix.copyFrom(entityCollector.camera.viewProjection);
-            this._rttViewProjectionMatrix.appendScale(this._textureRatioX, this._textureRatioY, 1);
+			this._pRttViewProjectionMatrix.copyFrom(entityCollector.camera.viewProjection);
+            this._pRttViewProjectionMatrix.appendScale(this._textureRatioX, this._textureRatioY, 1);
 
             this.pExecuteRender(entityCollector, target, scissorRect, surfaceSelector);
 			
@@ -276,8 +276,8 @@ module away.render
 			for (var i:number = 0; i < 8; ++i)
             {
 
-				this._context.setVertexBufferAt(i, null);
-                this._context.setTextureAt(i, null);
+				this._pContext.setVertexBufferAt(i, null);
+                this._pContext.setTextureAt(i, null);
 
 			}
 		}
@@ -291,13 +291,13 @@ module away.render
 		 */
 		public pExecuteRender(entityCollector:away.traverse.EntityCollector, target:away.display3D.TextureBase = null, scissorRect:away.geom.Rectangle = null, surfaceSelector:number = 0)
 		{
-			this._renderTarget = target;
-			this._renderTargetSurface = surfaceSelector;
+			this._pRenderTarget = target;
+			this._pRenderTargetSurface = surfaceSelector;
 			
-			if (this._renderableSorter)
+			if (this._pRenderableSorter)
             {
 
-                this._renderableSorter.sort(entityCollector);
+                this._pRenderableSorter.sort(entityCollector);
 
             }
 
@@ -308,18 +308,18 @@ module away.render
 
             }
 
-			this._stage3DProxy.setRenderTarget(target, true, surfaceSelector);
+			this._pStage3DProxy.setRenderTarget(target, true, surfaceSelector);
 			
 			if ((target || !this._shareContext) && this._clearOnRender)
             {
 
-               this. _context.clear(this._backgroundR, this._backgroundG, this._backgroundB, this._backgroundAlpha, 1, 0);
+               this. _pContext.clear(this._backgroundR, this._backgroundG, this._backgroundB, this._backgroundAlpha, 1, 0);
 
             }
 
-			this._context.setDepthTest(false, away.display3D.Context3DCompareMode.ALWAYS);
+			this._pContext.setDepthTest(false, away.display3D.Context3DCompareMode.ALWAYS);
 
-			this._stage3DProxy.scissorRect = scissorRect;
+			this._pStage3DProxy.scissorRect = scissorRect;
 
             /*
 			if (_backgroundImageRenderer)
@@ -329,7 +329,7 @@ module away.render
 			this.pDraw(entityCollector, target);
 			
 			//line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
-			this._context.setDepthTest(false, away.display3D.Context3DCompareMode.LESS_EQUAL);
+			this._pContext.setDepthTest(false, away.display3D.Context3DCompareMode.LESS_EQUAL);
 			
 			if (!this._shareContext)
             {
@@ -337,13 +337,13 @@ module away.render
 				if (this._snapshotRequired && this._snapshotBitmapData)
                 {
 
-                    this._context.drawToBitmapData(this._snapshotBitmapData);
+                    this._pContext.drawToBitmapData(this._snapshotBitmapData);
                     this._snapshotRequired = false;
 
 				}
 
 			}
-            this._stage3DProxy.scissorRect = null;
+            this._pStage3DProxy.scissorRect = null;
 		}
 		
 		/*
@@ -374,7 +374,7 @@ module away.render
 		 */
 		private onContextUpdate(event:Event)
 		{
-			this._context = this._stage3DProxy.context3D;
+			this._pContext = this._pStage3DProxy.context3D;
 		}
 		
 		public get iBackgroundAlpha():number
@@ -405,7 +405,7 @@ module away.render
 			if (!this._backgroundImageRenderer && value)
             {
 
-                this._backgroundImageRenderer = new BackgroundImageRenderer(this._stage3DProxy);
+                this._backgroundImageRenderer = new BackgroundImageRenderer(this._pStage3DProxy);
 
             }
 
