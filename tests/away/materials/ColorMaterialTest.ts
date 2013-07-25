@@ -73,29 +73,45 @@ class MaterialsTest
         console.log( 'iGetFragmentCode' , this.matTx._pScreenPass.iGetFragmentCode(''));
 
         /*
-         ----------------------------------------------------
-         Without Specular / colorTransform
-         ----------------------------------------------------
 
-         iGetVertexCode m44 op, vt0, vc0
+         -----------------------------------------------------------------------------
+         - cm:
+         -----------------------------------------------------------------------------
 
-         iGetFragmentCode   mov ft0, fc0
-         tex ft0, v0, fs0 <2d,linear,miplinear,clamp>
-         mov oc, ft0
+             iGetVertexCode
 
-         ----------------------------------------------------
-         With Specular / colorTransform
-         ----------------------------------------------------
+                m44 op, vt0, vc0
 
-         iGetVertexCode m44 op, vt0, vc0
+             iGetFragmentCode mov ft0, fc1
 
-         iGetFragmentCode   mov ft0, fc0
-         tex ft0, v0, fs0 <2d,linear,miplinear,clamp>
-         mul ft0, ft0, fc0
-         add ft0, ft0, fc0
-         mov oc, ft0
+                 mov ft0, fc2
+                 mov oc, ft0
+
+         -----------------------------------------------------------------------------
+         - matTx:
+         -----------------------------------------------------------------------------
+
+             iGetVertexCode
+
+                 m44 op, vt0, vc0
+
+             iGetFragmentCode
+
+                 tex ft0, v0, fs0 <2d,linear,miplinear,clamp>
+                 div ft0.xyz, ft0.xyz, ft0.w
+                 tex ft0, v0, fs1 <2d,linear,miplinear,clamp>
+                 add ft0.w, ft0.w, fc0.z
+                 div ft0.xyz, ft0, ft0.w
+                 sub ft0.w, ft0.w, fc0.z
+                 sat ft0.xyz, ft0
+                 mov ft1.x, ft0.w
+                 mov ft0.w, ft1.x
+                 mul ft0, ft0, fc1
+                 add ft0, ft0, fc2
+                 mov oc, ft0
 
          */
+
     }
 
 
