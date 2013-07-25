@@ -68,12 +68,12 @@ module away.materials
 		public requestFreeRegComponent():away.materials.ShaderRegisterElement
 		{
 
-            away.Debug.log( 'RegisterPool' , 'requestFreeRegComponent' , this._regCount);
+            //away.Debug.log( 'RegisterPool' , 'requestFreeRegComponent' , this._regCount);
 
 			for (var i:number = 0; i < this._regCount; ++i)
             {
 
-                away.Debug.log( 'RegisterPool' , 'requestFreeRegComponent' , this._regCount , 'this._usedVectorCount:' + this._usedVectorCount[i] );
+                //away.Debug.log( 'RegisterPool' , 'requestFreeRegComponent' , this._regCount , 'this._usedVectorCount:' + this._usedVectorCount[i] );
 
 				if (this._usedVectorCount[i] > 0)
 					continue;
