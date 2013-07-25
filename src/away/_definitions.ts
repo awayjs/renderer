@@ -236,3 +236,4 @@
 ///<reference path="sort/RenderableMergeSort.ts"/>
 
 ///<reference path="render/RendererBase.ts"/>
+///<reference path="render/DepthRenderer.ts"/>
