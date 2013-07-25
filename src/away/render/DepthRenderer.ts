@@ -64,7 +64,7 @@ module away.render
 			this._pContext.clear(1, 1, 1, 1, 1, 0);
 
             away.Debug.throwPIR( 'DepthRenderer' , 'iRenderCascades' , 'Context.setBlendFactors' );
-			//this._pContext.setBlendFactors(away.display3D.Context3DBlendFactor.ONE, away.display3D.Context3DBlendFactor.ZERO);
+			//this._pContext.setBlendFactors(away.display3D.Context3DBlendFactor.ONE, away.display3D.Context3DBlendFactor.ZERO); //TODO: imeplement
 
 			this._pContext.setDepthTest(true, away.display3D.Context3DCompareMode.LESS);
 			
@@ -159,7 +159,7 @@ module away.render
 		{
 
             away.Debug.throwPIR( 'DepthRenderer' , 'pDraw' , 'Context.setBlendFactors' );
-			//this._pContext.setBlendFactors(away.display3D.Context3DBlendFactor.ONE, away.display3D.Context3DBlendFactor.ZERO);
+			//this._pContext.setBlendFactors(away.display3D.Context3DBlendFactor.ONE, away.display3D.Context3DBlendFactor.ZERO);//TODO: imeplement
 
             this._pContext.setDepthTest(true, away.display3D.Context3DCompareMode.LESS);
 
