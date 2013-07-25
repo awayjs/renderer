@@ -237,3 +237,4 @@
 
 ///<reference path="render/RendererBase.ts"/>
 ///<reference path="render/DepthRenderer.ts"/>
+///<reference path="render/DefaultRenderer.ts"/>

@@ -125,29 +125,27 @@ module away.lights
 			//TODO return new away.textures.RenderTexture( this._depthMapSize, this._depthMapSize );
 		}
 		
-		// TODO iRenderDepthMap(stage3DProxy:away.managers.Stage3DProxy, entityCollector:away.traverse.EntityCollector, renderer:away.render.DepthRenderer )
-		/*
 		public iRenderDepthMap(stage3DProxy:away.managers.Stage3DProxy, entityCollector:away.traverse.EntityCollector, renderer:away.render.DepthRenderer )
 		{
 			this._iShadowsInvalid = false;
-			updateDepthProjection( entityCollector.camera );
+
+			this.pUpdateDepthProjection( entityCollector.camera );
+
 			if( !this._depthMap )
 			{
-				this._depthMap = createDepthTexture();
+				this._depthMap = this.pCreateDepthTexture();
 			}
-			this.drawDepthMap( this._depthMap.getTextureForStage3D(stage3DProxy), entityCollector.scene, renderer);
-		}*/
+			this.pDrawDepthMap( this._depthMap.getTextureForStage3D(stage3DProxy), entityCollector.scene, renderer);
+		}
 		
 		public pUpdateDepthProjection( viewCamera:away.cameras.Camera3D )
 		{
 			throw new away.errors.AbstractMethodError();
 		}
 		
-		//TODO public pDrawDepthMap( target:away.display3D.TextureBase, scene:away.containers.Scene3D, renderer:away.render.DepthRenderer )
-		/*
 		public pDrawDepthMap( target:away.display3D.TextureBase, scene:away.containers.Scene3D, renderer:away.render.DepthRenderer )
 		{
 			throw new away.errors.AbstractMethodError();
-		}*/
+		}
 	}
 }

@@ -177,44 +177,53 @@ module away.render
 		
 		public set iStage3DProxy(value:away.managers.Stage3DProxy)
 		{
-			if (value == this._pStage3DProxy)
+
+            this.iSetStage3DProxy( value );
+
+		}
+
+        public iSetStage3DProxy( value:away.managers.Stage3DProxy)
+        {
+
+            if (value == this._pStage3DProxy)
             {
 
                 return;
 
             }
 
-			
-			if (!value)
+
+            if (!value)
             {
 
-				if (this._pStage3DProxy)
+                if (this._pStage3DProxy)
                 {
 
                     this._pStage3DProxy.removeEventListener(away.events.Stage3DEvent.CONTEXT3D_CREATED, this.onContextUpdate , this );
-					this._pStage3DProxy.removeEventListener(away.events.Stage3DEvent.CONTEXT3D_RECREATED, this.onContextUpdate , this );
+                    this._pStage3DProxy.removeEventListener(away.events.Stage3DEvent.CONTEXT3D_RECREATED, this.onContextUpdate , this );
 
-				}
+                }
 
-				this._pStage3DProxy = null;
+                this._pStage3DProxy = null;
                 this._pContext = null;
 
-				return;
-			}
+                return;
+            }
 
-			//else if (_pStage3DProxy) throw new Error("A Stage3D instance was already assigned!");
-			
-			this._pStage3DProxy = value;
+            //else if (_pStage3DProxy) throw new Error("A Stage3D instance was already assigned!");
+
+            this._pStage3DProxy = value;
             this._pStage3DProxy.addEventListener(away.events.Stage3DEvent.CONTEXT3D_CREATED, this.onContextUpdate , this );
             this._pStage3DProxy.addEventListener(away.events.Stage3DEvent.CONTEXT3D_RECREATED, this.onContextUpdate , this );
 
             /*
-			if (_backgroundImageRenderer)
-				_backgroundImageRenderer.stage3DProxy = value;
-			*/
-			if (value.context3D)
-				this._pContext = value.context3D;
-		}
+             if (_backgroundImageRenderer)
+             _backgroundImageRenderer.stage3DProxy = value;
+             */
+            if (value.context3D)
+                this._pContext = value.context3D;
+
+        }
 		
 		/**
 		 * Defers control of Context3D clear() and present() calls to Stage3DProxy, enabling multiple Stage3D frameworks
