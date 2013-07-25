@@ -62,7 +62,7 @@ class MaterialsTest
         this.matTx.specularMethod   =  this.specM;
         this.matTx.ambientTexture   =  this.imgTx;
         this.matTx.alpha            = .5;
-        //this.matTx.blendMode        = away.display.BlendMode.MULTIPLY;
+        this.matTx.blendMode        = away.display.BlendMode.MULTIPLY;
 
         console.log( '-----------------------------------------------------------------------------' );
         console.log( '- TextureMaterial' );
