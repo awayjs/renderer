@@ -447,14 +447,12 @@ module away.materials
 			var contextIndex:number = stage3DProxy._iStage3DIndex;//_stage3DIndex;
 			var context:away.display3D.Context3D = stage3DProxy._iContext3D;
 
-            //away.Debug.throwPIR( 'MaterialPassBase' , 'iActivate' , 'context.setDepthTest - not matching params' );
-			context.setDepthTest( ( this._writeDepth && ! this._pEnableBlending ) , this._depthCompareMode);//<--------  TODO : implement
+			context.setDepthTest( ( this._writeDepth && ! this._pEnableBlending ) , this._depthCompareMode);
 
 			if (this._pEnableBlending)
             {
 
-                away.Debug.throwPIR( 'MaterialPassBase' , 'iActivate' , 'context.setBlendFactors - not matching params' );
-                //context.setBlendFactors( this._blendFactorSource, this._blendFactorDest);//<--------  TODO : implement
+                context.setBlendFactors( this._blendFactorSource, this._blendFactorDest);
 
             }
 
