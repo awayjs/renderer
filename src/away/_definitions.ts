@@ -241,3 +241,4 @@
 
 ///<reference path="filters/tasks/Filter3DTaskBase.ts"/>
 ///<reference path="managers/RTTBufferManager.ts"/>
+///<reference path="filters/Filter3DBase.ts"/>
