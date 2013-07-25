@@ -866,5 +866,9 @@ module away.materials
         {
             this._pDiffuseLightSources = value;
         }
+
     }
+
 }
+
+// Fix for BOM issue

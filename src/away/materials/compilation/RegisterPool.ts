@@ -67,8 +67,13 @@ module away.materials
 		 */
 		public requestFreeRegComponent():away.materials.ShaderRegisterElement
 		{
+
+            //away.Debug.log( 'RegisterPool' , 'requestFreeRegComponent' , this._regCount);
+
 			for (var i:number = 0; i < this._regCount; ++i)
             {
+
+                //away.Debug.log( 'RegisterPool' , 'requestFreeRegComponent' , this._regCount , 'this._usedVectorCount:' + this._usedVectorCount[i] );
 
 				if (this._usedVectorCount[i] > 0)
 					continue;
@@ -80,7 +85,12 @@ module away.materials
                     {
 
 						if (this._persistent)
+                        {
+
                             this._usedSingleCount[j][i]++;
+
+                        }
+
 						return this._registerComponents[j][i];
 
 					}
@@ -181,13 +191,16 @@ module away.materials
 			this._vectorRegisters = RegisterPool._regPool[hash];
 			this._registerComponents = RegisterPool._regCompsPool[hash];
 			
-			this._usedVectorCount = Array<number>(regCount);//new Vector.<uint>(regCount, true);
+			this._usedVectorCount = this._initArray( Array<number>(regCount) , 0 ) ;//new Vector.<uint>(regCount, true);
 
             this._usedSingleCount = new Array<Array<number>>( 4 ); //this._usedSingleCount = new Vector.<Vector.<uint>>(4, true);
-			this._usedSingleCount[0] = new Array<number>(regCount ) ;//, true);
-            this._usedSingleCount[1] = new Array<number>(regCount ) ;//new Vector.<uint>(regCount, true);
-            this._usedSingleCount[2] = new Array<number>(regCount ) ;//new Vector.<uint>(regCount, true);
-            this._usedSingleCount[3] = new Array<number>(regCount ) ;//new Vector.<uint>(regCount, true);
+			this._usedSingleCount[0] = this._initArray( new Array<number>(regCount ) , 0 );//new Array<number>(regCount ) ;//, true);
+            this._usedSingleCount[1] = this._initArray( new Array<number>(regCount ) , 0 );//new Array<number>(regCount ) ;//new Vector.<uint>(regCount, true);
+            this._usedSingleCount[2] = this._initArray( new Array<number>(regCount ) , 0 );//new Array<number>(regCount ) ;//new Vector.<uint>(regCount, true);
+            this._usedSingleCount[3] = this._initArray( new Array<number>(regCount ) , 0 );//new Array<number>(regCount ) ;//new Vector.<uint>(regCount, true);
+
+            //console.log( 'this._usedVectorCount: ' , this._usedVectorCount );
+            //console.log( 'this._usedSingleCount: ' , this._usedSingleCount );
 
 		}
 		
@@ -202,7 +215,6 @@ module away.materials
 
             }
 
-			
 			var vectorRegisters:away.materials.ShaderRegisterElement[] = new Array<away.materials.ShaderRegisterElement>(regCount);///Vector.<ShaderRegisterElement> = new Vector.<ShaderRegisterElement>(regCount, true);
             RegisterPool._regPool[hash] = vectorRegisters;
 			
@@ -228,9 +240,13 @@ module away.materials
 
 			}
 
+            //console.log ( 'RegisterPool._regCompsPool[hash] : ' , RegisterPool._regCompsPool[hash]  );
+            //console.log ( 'RegisterPool._regPool[hash] : ' , RegisterPool._regPool[hash]  );
+
 			return hash;
 		}
-		
+
+
 		/**
 		 * Check if the temp register is either used for single or vector use
 		 */
@@ -257,5 +273,24 @@ module away.materials
 			
 			return false;
 		}
+
+
+        private _initArray( a : Array<any> , val : any ) : Array<any>
+        {
+
+            var l : number = a.length;
+
+            for ( var c : number = 0 ; c < l ; c ++ )
+            {
+
+                a[c] = val;
+
+            }
+
+            return a;
+
+        }
+
 	}
+
 }

@@ -10,79 +10,110 @@ class MaterialsTest
 {
 
     private cm          : away.materials.ColorMaterial;
-
-    private _stage      : away.display.Stage;
-    private _context3D  : away.display3D.Context3D;
+    private stage       : away.display.Stage;
     private sProxy      : away.managers.Stage3DProxy;
+    private sManager    : away.managers.Stage3DManager;
+    private imgLoader   : away.net.IMGLoader;
+    private imgTx       : away.textures.HTMLImageElementTexture;
+    private matTx       : away.materials.TextureMaterial;
+    private specM       : away.materials.BasicSpecularMethod;
 
     constructor()
     {
 
-        //this._stageProxy = new away.managers.Stage3DProxy();
-
         away.Debug.THROW_ERRORS = false;
 
-        this.cm = new away.materials.ColorMaterial();
+        var mipUrlRequest   = new away.net.URLRequest( '../../assets/1024x1024.png');
 
-        this._stage = new away.display.Stage( 800, 600 );
-        //this._stage.stage3Ds[0].addEventListener( away.events.Event.CONTEXT3D_CREATE, this.onContext3DCreateHandler, this );
-        //this._stage.stage3Ds[0].requestContext();
+        this.imgLoader      = new away.net.IMGLoader();
+        this.imgLoader.load( mipUrlRequest );
+        this.imgLoader.addEventListener( away.events.Event.COMPLETE , this.imgLoaded , this );
 
-
-        var manager : away.managers.Stage3DManager = away.managers.Stage3DManager.getInstance( this._stage );
-
-        this.sProxy = manager.getStage3DProxy( 0 );
-
-        this.sProxy.addEventListener( away.events.Stage3DEvent.CONTEXT3D_CREATED , this.onContextCreated , this );
-        //stage3DProxy.addEventListener( away.events.Stage3DEvent.CONTEXT3D_RECREATED, this.onContextReCreated , this );
-        //stage3DProxy.addEventListener( away.events.Stage3DEvent.CONTEXT3D_DISPOSED, this.onContextDisposed , this );
-
-        console.log( 'onContextCreated' );
-        //this._stage.stage3Ds[0].removeEventListener( away.events.Event.CONTEXT3D_CREATE, this.onContext3DCreateHandler, this );
-
-        //var stage3D: away.display.Stage3D = <away.display.Stage3D> e.target;
-        //this._context3D = stage3D.context3D;
-
-        //this.cm.specularMethod = new away.materials.BasicSpecularMethod();
-        //this.cm.iUpdateMaterial( this._context3D );
-
-        //
+        this.cm             = new away.materials.ColorMaterial();
+        this.stage          = new away.display.Stage( 800, 600 );
+        this.sManager       = away.managers.Stage3DManager.getInstance( this.stage );
+        this.sProxy         = this.sManager.getStage3DProxy( 0 );
 
         this.cm.iInvalidatePasses( null );
 
-        //this.cm.iRenderPass( 0 , )
+        console.log( '-----------------------------------------------------------------------------' );
+        console.log( '- ColorMaterial' );
+        console.log( '-----------------------------------------------------------------------------' );
+        console.log( 'this.cm ' , this.cm );
+        console.log( 'iUpdateProgram' , this.cm._pScreenPass.iUpdateProgram( this.sProxy ) );
+        console.log( 'iGetVertexCode' , this.cm._pScreenPass.iGetVertexCode() );
+        console.log( 'iGetFragmentCode' , this.cm._pScreenPass.iGetFragmentCode(''));
 
-        console.log( this.cm );
-        console.log( this.cm._pScreenPass.iUpdateProgram( this.sProxy ) );
-        console.log( this.cm._pScreenPass.iGetVertexCode() );
-        console.log( this.cm._pScreenPass.iGetFragmentCode(''));
 
     }
 
-    private onContextCreated( e )
+    private imgLoaded( e : away.events.Event )
     {
 
-        console.log( 'onContextCreated' );
-        //this._stage.stage3Ds[0].removeEventListener( away.events.Event.CONTEXT3D_CREATE, this.onContext3DCreateHandler, this );
+        this.imgTx                  = new away.textures.HTMLImageElementTexture( this.imgLoader.image )
+        this.matTx                  = new away.materials.TextureMaterial( this.imgTx  );
+        this.matTx.colorTransform   = new away.geom.ColorTransform( 1 , 1 , 1 , 1 );
 
-        //var stage3D: away.display.Stage3D = <away.display.Stage3D> e.target;
-        //this._context3D = stage3D.context3D;
+        this.specM                  = new away.materials.BasicSpecularMethod();
+        this.specM.texture          = this.imgTx;
+        this.specM.gloss            = 3;
+        this.specM.specularColor    = 0xff0000;
 
-        //this.cm.specularMethod = new away.materials.BasicSpecularMethod();
-        //this.cm.iUpdateMaterial( this._context3D );
+        this.matTx.specularMethod   =  this.specM;
+        this.matTx.ambientTexture   =  this.imgTx;
+        this.matTx.alpha            = .5;
+        this.matTx.blendMode        = away.display.BlendMode.MULTIPLY;
 
-        //
+        console.log( '-----------------------------------------------------------------------------' );
+        console.log( '- TextureMaterial' );
+        console.log( '-----------------------------------------------------------------------------' );
+        console.log( 'this.matTx ' , this.matTx );
+        console.log( 'iUpdateProgram' , this.matTx._pScreenPass.iUpdateProgram( this.sProxy ) );
+        console.log( 'iGetVertexCode' , this.matTx._pScreenPass.iGetVertexCode() );
+        console.log( 'iGetFragmentCode' , this.matTx._pScreenPass.iGetFragmentCode(''));
 
-        this.cm.iInvalidatePasses( null );
+        /*
 
-        //this.cm.iRenderPass( 0 , )
+         -----------------------------------------------------------------------------
+         - cm:
+         -----------------------------------------------------------------------------
 
-        console.log( this.cm );
-        console.log( this.cm._pScreenPass.iUpdateProgram( this.sProxy ) );
-        console.log( this.cm._pScreenPass.iGetVertexCode() );
-        console.log( this.cm._pScreenPass.iGetFragmentCode(''));
+             iGetVertexCode
+
+                m44 op, vt0, vc0
+
+             iGetFragmentCode mov ft0, fc1
+
+                 mov ft0, fc2
+                 mov oc, ft0
+
+         -----------------------------------------------------------------------------
+         - matTx:
+         -----------------------------------------------------------------------------
+
+             iGetVertexCode
+
+                 m44 op, vt0, vc0
+
+             iGetFragmentCode
+
+                 tex ft0, v0, fs0 <2d,linear,miplinear,clamp>
+                 div ft0.xyz, ft0.xyz, ft0.w
+                 tex ft0, v0, fs1 <2d,linear,miplinear,clamp>
+                 add ft0.w, ft0.w, fc0.z
+                 div ft0.xyz, ft0, ft0.w
+                 sub ft0.w, ft0.w, fc0.z
+                 sat ft0.xyz, ft0
+                 mov ft1.x, ft0.w
+                 mov ft0.w, ft1.x
+                 mul ft0, ft0, fc1
+                 add ft0, ft0, fc2
+                 mov oc, ft0
+
+         */
 
     }
+
 
 }
 

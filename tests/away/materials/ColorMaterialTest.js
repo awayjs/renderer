@@ -29059,12 +29059,6 @@ var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
     (function (materials) {
-        //import away3d.arcane;
-        //import away3d.managers.Stage3DProxy;
-        //import away3d.materials.compilation.ShaderRegisterCache;
-        //import away3d.materials.compilation.ShaderRegisterElement;
-        //import away3d.textures.Texture2DBase;
-        //use namespace arcane;
         /**
         * BasicDiffuseMethod provides the default shading method for Lambert (dot3) diffuse lighting.
         */
@@ -30568,24 +30562,38 @@ var MaterialsTest = (function () {
     function MaterialsTest() {
         away.Debug.THROW_ERRORS = false;
 
+        var mipUrlRequest = new away.net.URLRequest('../../assets/1024x1024.png');
+
+        this.imgLoader = new away.net.IMGLoader();
+        this.imgLoader.load(mipUrlRequest);
+        this.imgLoader.addEventListener(away.events.Event.COMPLETE, this.imgLoaded, this);
+
         this.cm = new away.materials.ColorMaterial();
+        this.stage = new away.display.Stage(800, 600);
+        this.sManager = away.managers.Stage3DManager.getInstance(this.stage);
+        this.sProxy = this.sManager.getStage3DProxy(0);
 
-        this._stage = new away.display.Stage(800, 600);
-        this._stage.stage3Ds[0].addEventListener(away.events.Event.CONTEXT3D_CREATE, this.onContext3DCreateHandler, this);
-        this._stage.stage3Ds[0].requestContext();
-    }
-    MaterialsTest.prototype.onContext3DCreateHandler = function (e) {
-        this._stage.stage3Ds[0].removeEventListener(away.events.Event.CONTEXT3D_CREATE, this.onContext3DCreateHandler, this);
-
-        var stage3D = e.target;
-        this._context3D = stage3D.context3D;
-
-        this.cm.specularMethod = new away.materials.BasicSpecularMethod();
-        this.cm.iUpdateMaterial(this._context3D);
         this.cm.iInvalidatePasses(null);
 
-        console.log(this.cm);
-        console.log(this.cm._pScreenPass);
+        console.log('-----------------------------------------------------------------------------');
+        console.log('- ColorMaterial');
+        console.log('-----------------------------------------------------------------------------');
+        console.log('this.cm ', this.cm);
+        console.log('iUpdateProgram', this.cm._pScreenPass.iUpdateProgram(this.sProxy));
+        console.log('iGetVertexCode', this.cm._pScreenPass.iGetVertexCode());
+        console.log('iGetFragmentCode', this.cm._pScreenPass.iGetFragmentCode(''));
+    }
+    MaterialsTest.prototype.imgLoaded = function (e) {
+        this.imgTx = new away.textures.HTMLImageElementTexture(this.imgLoader.image);
+        this.matTx = new away.materials.TextureMaterial(this.imgTx);
+
+        console.log('-----------------------------------------------------------------------------');
+        console.log('- TextureMaterial');
+        console.log('-----------------------------------------------------------------------------');
+        console.log('this.matTx ', this.matTx);
+        console.log('iUpdateProgram', this.matTx._pScreenPass.iUpdateProgram(this.sProxy));
+        console.log('iGetVertexCode', this.matTx._pScreenPass.iGetVertexCode());
+        console.log('iGetFragmentCode', this.matTx._pScreenPass.iGetFragmentCode(''));
     };
     return MaterialsTest;
 })();
