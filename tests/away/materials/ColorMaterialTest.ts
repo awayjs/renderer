@@ -10,14 +10,14 @@ class MaterialsTest
 {
 
     private cm          : away.materials.ColorMaterial;
-
     private stage       : away.display.Stage;
     private sProxy      : away.managers.Stage3DProxy;
     private sManager    : away.managers.Stage3DManager;
     private imgLoader   : away.net.IMGLoader;
     private imgTx       : away.textures.HTMLImageElementTexture;
     private matTx       : away.materials.TextureMaterial;
-    private specM       : away.materials.BasicSpecularMethod
+    private specM       : away.materials.BasicSpecularMethod;
+
     constructor()
     {
 
@@ -61,7 +61,7 @@ class MaterialsTest
 
         this.matTx.specularMethod   =  this.specM;
         this.matTx.ambientTexture   =  this.imgTx;
-        //this.matTx.alpha            = .5;
+        this.matTx.alpha            = .5;
         //this.matTx.blendMode        = away.display.BlendMode.MULTIPLY;
 
         console.log( '-----------------------------------------------------------------------------' );
@@ -77,11 +77,11 @@ class MaterialsTest
          Without Specular / colorTransform
          ----------------------------------------------------
 
-             iGetVertexCode m44 op, vt0, vc0
+         iGetVertexCode m44 op, vt0, vc0
 
-             iGetFragmentCode   mov ft0, fc0
-                                tex ft0, v0, fs0 <2d,linear,miplinear,clamp>
-                                mov oc, ft0
+         iGetFragmentCode   mov ft0, fc0
+         tex ft0, v0, fs0 <2d,linear,miplinear,clamp>
+         mov oc, ft0
 
          ----------------------------------------------------
          With Specular / colorTransform
@@ -90,10 +90,10 @@ class MaterialsTest
          iGetVertexCode m44 op, vt0, vc0
 
          iGetFragmentCode   mov ft0, fc0
-                            tex ft0, v0, fs0 <2d,linear,miplinear,clamp>
-                            mul ft0, ft0, fc0
-                            add ft0, ft0, fc0
-                            mov oc, ft0
+         tex ft0, v0, fs0 <2d,linear,miplinear,clamp>
+         mul ft0, ft0, fc0
+         add ft0, ft0, fc0
+         mov oc, ft0
 
          */
     }
