@@ -12,7 +12,7 @@ module away.containers
 		public _iAncestorsAllowMouseEnabled:boolean;
 		public _iIsRoot:boolean;
 		
-		public _pScene:Scene3D;
+		public _pScene:away.containers.Scene3D;
 		public _pParent:ObjectContainer3D;
 		public _pSceneTransform:away.geom.Matrix3D = new away.geom.Matrix3D();
 		public _pSceneTransformDirty:boolean = true;
