@@ -12,7 +12,7 @@ module away.entities
 	export class SegmentSet extends away.entities.Entity implements away.base.IRenderable
 	{
 		private LIMIT:number = 3*0xFFFF;
-		//private _activeSubSet:SubSet;
+		private _activeSubSet:SubSet;
 		private _subSets:SubSet[];
 		private _subSetCount:number;
 		private _numIndices:number;
@@ -285,22 +285,17 @@ module away.entities
 		public getIndexBuffer( stage3DProxy:away.managers.Stage3DProxy ):away.display3D.IndexBuffer3D
 		{
 
-            away.Debug.throwPIR( 'SegmentSet' , 'getIndexBuffer' , 'PartialImplementation' );
+            //away.Debug.throwPIR( 'SegmentSet' , 'getIndexBuffer' , 'PartialImplementation' );
 
-            /* TODO: implement
 			if( this._activeSubSet.indexContext3D != stage3DProxy.context3D || this._activeSubSet.indexBufferDirty )
 			{
-				this._activeSubSet.indexBuffer = stage3DProxy._context3D.createIndexBuffer( this._activeSubSet.numIndices );
-				this._activeSubSet.indexBuffer.uploadFromVector( this._activeSubSet.indices, 0, this._activeSubSet.numIndices );
+				this._activeSubSet.indexBuffer = stage3DProxy._iContext3D.createIndexBuffer( this._activeSubSet.numIndices );
+				this._activeSubSet.indexBuffer.uploadFromArray( this._activeSubSet.indices, 0, this._activeSubSet.numIndices );
 				this._activeSubSet.indexBufferDirty = false;
 				this._activeSubSet.indexContext3D = stage3DProxy.context3D;
 			}
 			
 			return this._activeSubSet.indexBuffer;
-			*/
-
-            var c : any = new Object();//<-------- TODO: REMOVE TEST / COMPILE CODE
-            return <away.display3D.IndexBuffer3D> c;//<-------- TODO: REMOVE TEST / COMPILE CODE
 
 		}
 
@@ -308,8 +303,8 @@ module away.entities
 		public activateVertexBuffer( index:number, stage3DProxy:away.managers.Stage3DProxy )
 		{
 
-            away.Debug.throwPIR( 'SegmentSet' , 'activateVertexBuffer' , 'PartialImplementation' );
-            /*
+            //away.Debug.throwPIR( 'SegmentSet' , 'activateVertexBuffer' , 'PartialImplementation' );
+            //*
 			var subSet:SubSet = this._subSets[index];
 			
 			this._activeSubSet = subSet;
@@ -318,18 +313,18 @@ module away.entities
 			var vertexBuffer:away.display3D.VertexBuffer3D = subSet.vertexBuffer;
 			
 			if (subSet.vertexContext3D != stage3DProxy.context3D || subSet.vertexBufferDirty) {
-				subSet.vertexBuffer = stage3DProxy._context3D.createVertexBuffer(subSet.numVertices, 11);
-				subSet.vertexBuffer.uploadFromVector(subSet.vertices, 0, subSet.numVertices);
+				subSet.vertexBuffer = stage3DProxy._iContext3D.createVertexBuffer(subSet.numVertices, 11);
+				subSet.vertexBuffer.uploadFromArray(subSet.vertices, 0, subSet.numVertices);
 				subSet.vertexBufferDirty = false;
 				subSet.vertexContext3D = stage3DProxy.context3D;
 			}
 			
-			var context3d:Context3D = stage3DProxy._context3D;
-			context3d.setVertexBufferAt(0, vertexBuffer, 0, Context3DVertexBufferFormat.FLOAT_3);
-			context3d.setVertexBufferAt(1, vertexBuffer, 3, Context3DVertexBufferFormat.FLOAT_3);
-			context3d.setVertexBufferAt(2, vertexBuffer, 6, Context3DVertexBufferFormat.FLOAT_1);
-			context3d.setVertexBufferAt(3, vertexBuffer, 7, Context3DVertexBufferFormat.FLOAT_4);
-			*/
+			var context3d:away.display3D.Context3D = stage3DProxy._iContext3D;
+			context3d.setVertexBufferAt(0, vertexBuffer, 0, away.display3D.Context3DVertexBufferFormat.FLOAT_3);
+			context3d.setVertexBufferAt(1, vertexBuffer, 3, away.display3D.Context3DVertexBufferFormat.FLOAT_3);
+			context3d.setVertexBufferAt(2, vertexBuffer, 6, away.display3D.Context3DVertexBufferFormat.FLOAT_1);
+			context3d.setVertexBufferAt(3, vertexBuffer, 7, away.display3D.Context3DVertexBufferFormat.FLOAT_4);
+			//*/
 		}
 		
 		public activateUVBuffer(index:number, stage3DProxy:away.managers.Stage3DProxy)
@@ -478,10 +473,11 @@ module away.entities
 		
 		//@override
 		/*
-		public iCreateEntityPartitionNode():EntityNode
+		public iCreateEntityPartitionNode():away.entities.EntityNode
 		{
 			return new RenderableNode(this);
-		}*/
+		}
+        //*/
 		
 		public get numTriangles():number
 		{
@@ -507,8 +503,8 @@ module away.entities
 		{
 
             away.Debug.throwPIR( 'SegmentSet' , 'get animator' , 'PartialImplementation' );
-            return null;//TODO <------ IMPLEMENT
-			//return this._animator;
+            return null;
+			//return this._animator;//TODO <------ IMPLEMENT
 		}
 		//*/
 		public set material( value:away.materials.MaterialBase )
