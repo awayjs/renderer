@@ -216,8 +216,6 @@ module away.entities
 		public set material(value:away.materials.MaterialBase)
 		{
 
-            away.Debug.throwPIR( "away.entities.Mesh" , "material" , "Missing Dependency: away.materials.MaterialBase _iRemoveOwner() , _iAddOwner()" );
-            /*
 			if (value == this._material)
             {
 
@@ -225,22 +223,22 @@ module away.entities
 
             }
 
-			if (_material)
+			if (this._material)
             {
 
-                this._material.removeOwner(this);
+                this._material.iRemoveOwner(this);
 
             }
 
             this._material = value;
 
-			if (_material)
+			if (this._material)
             {
 
-                this._material.addOwner(this);
+                this._material.iAddOwner(this);
 
             }
-            */
+
 		}
 		
 		/**
