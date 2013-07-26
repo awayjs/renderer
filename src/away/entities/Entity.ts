@@ -38,7 +38,7 @@ module away.entities
 		{
 			if( this._pScene )
 			{
-				//TODO this._pScene.pInvalidateEntityBounds( this );
+				this._pScene.iInvalidateEntityBounds( this );
 			}
 			super.setIgnoreTransform( value );
 		}
@@ -189,7 +189,7 @@ module away.entities
 		
 		private updateWorldBounds()
 		{
-			this._worldBounds.transformFrom( this.bounds, this.sceneTransform );
+			this._worldBounds.transformFrom( this.getBounds() , this.sceneTransform );
 			this._worldBoundsInvalid = false;
 		}
 		
