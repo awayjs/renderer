@@ -12082,6 +12082,8 @@ var away;
             function BasicView3D(scene, camera, renderer, forceSoftware, profile) {
                 if (typeof forceSoftware === "undefined") { forceSoftware = false; }
                 if (typeof profile === "undefined") { profile = "basline"; }
+                this._width = 0;
+                this._height = 0;
                 this._localPos = new away.geom.Point();
                 this._globalPos = new away.geom.Point();
                 this._time = 0;
@@ -12098,6 +12100,10 @@ var away;
                 this._scissorRectDirty = true;
                 this._viewportDirty = true;
                 this._layeredView = false;
+                if (BasicView3D.sStage === null) {
+                    BasicView3D.sStage = new away.display.Stage();
+                }
+
                 // TODO link to displaylist
                 this._profile = profile;
                 this._pScene = scene || new containers.Scene3D();
@@ -12114,18 +12120,11 @@ var away;
 
                 this._pScissorRect = new away.geom.Rectangle();
 
-                //this.initHitField();// TODO: imeplement / AS3 <> JS issue
-                // TODO: imeplement & integrate
-                //this._pMouse3DManager = new away.managers.Mouse3DManager();// TODO: imeplement / AS3 <> JS issue
-                //this._pMouse3DManager.enableMouseListeners( this );// TODO: imeplement / AS3 <> JS issue
-                // TODO: imeplement & integrate
-                //this._pTouch3DManager = new away.managers.Touch3DManager();// TODO: imeplement / AS3 <> JS issue
-                //this._pTouch3DManager.view = this;// TODO: imeplement / AS3 <> JS issue
-                //this._pTouch3DManager.enableTouchListeners( this );// TODO: imeplement / AS3 <> JS issue
-                //this.addEventListener( away.events.Event.ADDED_TO_STAGE, this.onAddedToStage, this );// TODO: imeplement / AS3 <> JS issue
-                //this.addEventListener( away.events.Event.ADDED, this.onAdded, this );// TODO: imeplement / AS3 <> JS issue
                 this._pCamera.addEventListener(away.events.CameraEvent.LENS_CHANGED, this.onLensChanged, this);
                 this._pCamera.partition = this._pScene.partition;
+
+                this.stage = BasicView3D.sStage;
+                this.onAddedToStage();
             }
             BasicView3D.prototype.onScenePartitionChanged = function (e) {
                 if (this._pCamera) {
@@ -12803,6 +12802,35 @@ var away;
                 configurable: true
             });
 
+
+            BasicView3D.prototype.onAddedToStage = function () {
+                this._addedToStage = true;
+
+                if (this._pStage3DProxy == null) {
+                    console.log('Get my StageProxy !');
+                    this._pStage3DProxy = away.managers.Stage3DManager.getInstance(this.stage).getFreeStage3DProxy(this._forceSoftware, this._profile);
+                    this._pStage3DProxy.addEventListener(away.events.Stage3DEvent.VIEWPORT_UPDATED, this.onViewportUpdated, this);
+                    console.log('this._pStage3DProxy : ', this._pStage3DProxy);
+                }
+
+                this._globalPosDirty = true;
+
+                this._pRttBufferManager = away.managers.RTTBufferManager.getInstance(this._pStage3DProxy);
+
+                this._pRenderer.iStage3DProxy = this._depthRenderer.iStage3DProxy = this._pStage3DProxy;
+
+                if (this._width == 0) {
+                    this.width = this.stage.stageWidth;
+                } else {
+                    this._pRttBufferManager.viewWidth = this._width;
+                }
+
+                if (this._height == 0) {
+                    this.height = this.stage.stageHeight;
+                } else {
+                    this._pRttBufferManager.viewHeight = this._height;
+                }
+            };
             return BasicView3D;
         })();
         containers.BasicView3D = BasicView3D;
@@ -19190,6 +19218,7 @@ var away;
                 if (typeof width === "undefined") { width = 640; }
                 if (typeof height === "undefined") { height = 480; }
                 _super.call(this);
+
                 if (!document) {
                     throw new away.errors.DocumentError("A root document object does not exist.");
                 }
@@ -19231,6 +19260,30 @@ var away;
             Stage.prototype.addChildHTMLElement = function (canvas) {
                 document.body.appendChild(canvas);
             };
+
+            Object.defineProperty(Stage.prototype, "stageWidth", {
+                get: function () {
+                    return this._stageWidth;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Stage.prototype, "stageHeight", {
+                get: function () {
+                    return this._stageHeight;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Stage.prototype, "rect", {
+                get: function () {
+                    return new away.geom.Rectangle(0, 0, this._stageWidth, this._stageHeight);
+                },
+                enumerable: true,
+                configurable: true
+            });
             Stage.STAGE3D_MAX_QUANTITY = 8;
             return Stage;
         })(away.events.EventDispatcher);
@@ -19474,6 +19527,10 @@ var away;
 
                 if (!Stage3DManager._stageProxies) {
                     Stage3DManager._stageProxies = new Array(this._stage.stage3Ds.length);
+
+                    for (var c = 0; c < Stage3DManager._stageProxies.length; c++) {
+                        Stage3DManager._stageProxies[c] = null;
+                    }
                 }
             }
             Stage3DManager.getInstance = /**
@@ -19562,8 +19619,11 @@ var away;
                 var i;
                 var len = Stage3DManager._stageProxies.length;
 
+                console.log(Stage3DManager._stageProxies);
+
                 while (i < len) {
                     if (!Stage3DManager._stageProxies[i]) {
+                        console.log('hello ');
                         this.getStage3DProxy(i, forceSoftware, profile);
 
                         away.Debug.throwPIR('Stage3DManager', 'getFreeStage3DProxy', 'Stage.stageWidth , Stage.stageHeight ');
@@ -33589,6 +33649,7 @@ var View3DTest = (function () {
 
         this.stage = new away.display.Stage();
 
+        //this.stage.addChild( this.view3D );
         this.cam = new away.cameras.Camera3D();
         this.renderer = new away.render.DefaultRenderer();
         this.scene = new away.containers.Scene3D();
@@ -33606,6 +33667,8 @@ var View3DTest = (function () {
 
         this.mesh = new away.entities.Mesh(this.torus);
 
+        console.log('console:', !null);
+
         this.scene.addChild(this.mesh);
 
         console.log('cam ', this.cam);
@@ -33616,8 +33679,6 @@ var View3DTest = (function () {
         console.log('mesh ', this.mesh);
         console.log('torus ', this.torus);
         console.log('objCont ', this.objCont);
-
-        this.view.render();
     }
     return View3DTest;
 })();

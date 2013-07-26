@@ -46,6 +46,7 @@ class View3DTest
 
         this.mesh = new away.entities.Mesh( this.torus );
 
+        console.log( 'console:' , ! null );
 
         this.scene.addChild( this.mesh );
 
