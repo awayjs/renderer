@@ -79,7 +79,7 @@ module away.containers
 		{
 
 
-            if ( BasicView3D.sStage === null )
+            if ( BasicView3D.sStage == null )
             {
 
                 BasicView3D.sStage = new away.display.Stage();
