@@ -47,13 +47,14 @@ module away.managers
 
                 Stage3DManager._stageProxies = new Array<away.managers.Stage3DProxy>( this._stage.stage3Ds.length ) ;//, true);
 
+                /*
                 for ( var c : number = 0 ; c < Stage3DManager._stageProxies.length ; c ++ )
                 {
 
                     Stage3DManager._stageProxies[c] = null;
 
                 }
-
+                */
             }
 
 		}
@@ -169,11 +170,11 @@ module away.managers
 			while (i < len)
             {
 
-                console.log( '! Stage3DManager._stageProxies[i]: ' , ! Stage3DManager._stageProxies[i] );
+               // console.log( '! Stage3DManager._stageProxies[i]: ' , ! Stage3DManager._stageProxies[i] );
 				if ( ! Stage3DManager._stageProxies[i] )
                 {
 
-                    console.log( 'hello ');
+                    //console.log( 'hello ');
                     this.getStage3DProxy(i, forceSoftware, profile);
 
                     away.Debug.throwPIR( 'Stage3DManager' , 'getFreeStage3DProxy' , 'Stage.stageWidth , Stage.stageHeight ' );
