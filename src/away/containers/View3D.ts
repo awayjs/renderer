@@ -455,6 +455,9 @@ module away.containers
 
             this._localPos.x = value;
 
+            // TODO:
+            //rectObject = canvas.getBoundingClientRect();
+
             //this._globalPos.x = parent? parent.localToGlobal(_localPos).x : value;// TODO: imeplement AS3 / JS
             this._globalPosDirty = true;
         }
@@ -467,7 +470,7 @@ module away.containers
             this._localPos.y = value;
 
             //this._globalPos.y = parent? parent.localToGlobal(_localPos).y : value;// TODO: imeplement AS3 / JS
-            //this._globalPosDirty = true;
+            this._globalPosDirty = true;
         }
 
         public get x () : number
