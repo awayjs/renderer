@@ -423,15 +423,14 @@ module away.display3D
 		
 		public setScissorRectangle( rectangle:away.geom.Rectangle ) 
 		{
-			if( rectangle )
-			{
-				this._gl.enable( this._gl.SCISSOR_TEST );
-				this._gl.scissor( rectangle.x, rectangle.y, rectangle.width, rectangle.height );
-			}
-			else
+			if( !rectangle )
 			{
 				this._gl.disable( this._gl.SCISSOR_TEST );
+				return;
 			}
+			
+			this._gl.enable( this._gl.SCISSOR_TEST );
+			this._gl.scissor( rectangle.x, rectangle.y, rectangle.width, rectangle.height );
 		}
 		
 		public setTextureAt( sampler:number, texture:away.display3D.TextureBase )
@@ -442,6 +441,13 @@ module away.display3D
 		
 		public setGLSLTextureAt( locationName:string, texture:TextureBase, textureIndex:number )
 		{
+			if( !texture )
+			{
+				this._gl.activeTexture( this._gl.TEXTURE0 + (textureIndex));
+				this._gl.bindTexture( this._gl.TEXTURE_2D, null );
+				return;
+			}
+			
 			var location:WebGLUniformLocation = this._gl.getUniformLocation( this._currentProgram.glProgram, locationName );
             switch( textureIndex )
 			{
@@ -492,6 +498,12 @@ module away.display3D
 		public setGLSLVertexBufferAt( locationName, buffer:VertexBuffer3D, bufferOffset:number = 0, format:string = null )
 		{
 			var location:number = this._gl.getAttribLocation( this._currentProgram.glProgram, locationName );
+			
+			if( !buffer )
+			{
+				this._gl.disableVertexAttribArray( location );
+				return;
+			}
 			
 			this._gl.bindBuffer( this._gl.ARRAY_BUFFER, buffer.glBuffer );
 			
