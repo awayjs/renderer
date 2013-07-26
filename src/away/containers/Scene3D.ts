@@ -82,34 +82,34 @@ module away.containers
 			return this._iSceneGraphRoot.numChildren;
 		}
 		
-		public _iRegisterEntity( entity:away.enity.Entity )
+		public iRegisterEntity( entity:away.enity.Entity )
 		{
 			var partition:away.partition.Partition3D = entity.implicitPartition;
 			this.addPartitionUnique( partition );
 			this.partition.markForUpdate( entity );
 		}
 		
-		public _iUnregisterEntity( entity:away.enity.Entity )
+		public iUnregisterEntity( entity:away.enity.Entity )
 		{
 			entity.implicitPartition.removeEntity( entity );
 		}
-		
-		public _iInvalidateEntityBounds( entity:away.entities.Entity )
+		*/
+		public iInvalidateEntityBounds( entity:away.entities.Entity )
 		{
-			entity.implicitPartition.markForUpdate( entity );
+            entity.iImplicitPartition.iMarkForUpdate( entity );
 		}
-		
-		public _iRegisterPartition( entity:away.entities.Entity )
+		/*
+		public iRegisterPartition( entity:away.entities.Entity )
 		{
 			this.addPartitionUnique( entity.implicitPartition );
 		}
 		
-		public _iUnregisterPartition( entity:away.entities.Entity )
+		public iUnregisterPartition( entity:away.entities.Entity )
 		{
 			entity.implicitPartition.removeEntity( entity );
 		}
 		
-		public _iAddPartitionUnique( partition:away.partitions.Partition3D )
+		public iAddPartitionUnique( partition:away.partitions.Partition3D )
 		{
 			if (this._partitions.indexOf(partition) == -1)
 			{
