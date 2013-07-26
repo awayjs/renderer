@@ -205,9 +205,10 @@ module away.entities
 			{
 				this.notifyPartitionUnassigned();
 			}
-			throw new away.errors.PartialImplementationError();
-			//TODO super.implicitPartition = value;
+
+			super.iSetImplicitPartition( value );
 			this.notifyPartitionAssigned();
+
 		}
 		/*
 		//@override
