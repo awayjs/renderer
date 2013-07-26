@@ -161,7 +161,7 @@ module away.managers
 		 */
 		public getFreeStage3DProxy(forceSoftware:boolean = false, profile:string = "baseline"):Stage3DProxy
 		{
-			var i:number;
+			var i:number = 0;
 			var len:number = Stage3DManager._stageProxies.length;
 
             console.log( Stage3DManager._stageProxies );
@@ -169,6 +169,7 @@ module away.managers
 			while (i < len)
             {
 
+                console.log( '! Stage3DManager._stageProxies[i]: ' , ! Stage3DManager._stageProxies[i] );
 				if ( ! Stage3DManager._stageProxies[i] )
                 {
 
