@@ -12150,6 +12150,8 @@ var away;
                     return this._pStage3DProxy;
                 },
                 set: function (stage3DProxy) {
+                    console.log('>>>>>>>>>>', 'BasicView3D stage3DProxy', stage3DProxy);
+
                     if (this._pStage3DProxy) {
                         this._pStage3DProxy.removeEventListener(away.events.Stage3DEvent.VIEWPORT_UPDATED, this.onViewportUpdated, this);
                     }
@@ -33585,11 +33587,19 @@ var View3DTest = (function () {
     function View3DTest() {
         away.Debug.THROW_ERRORS = false;
 
+        this.stage = new away.display.Stage();
+
         this.cam = new away.cameras.Camera3D();
         this.renderer = new away.render.DefaultRenderer();
         this.scene = new away.containers.Scene3D();
 
+        this.sManager = away.managers.Stage3DManager.getInstance(this.stage);
+        this.sProxy = this.sManager.getStage3DProxy(0);
+
+        this.renderer.iStage3DProxy = this.sProxy;
+
         this.view = new away.containers.BasicView3D(this.scene, this.cam, this.renderer);
+        this.view.stage3DProxy = this.sProxy;
 
         this.objCont = new away.containers.ObjectContainer3D();
         this.torus = new away.primitives.TorusGeometry();
@@ -33606,6 +33616,8 @@ var View3DTest = (function () {
         console.log('mesh ', this.mesh);
         console.log('torus ', this.torus);
         console.log('objCont ', this.objCont);
+
+        this.view.render();
     }
     return View3DTest;
 })();

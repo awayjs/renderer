@@ -16,18 +16,29 @@ class View3DTest
 
     private objCont     : away.containers.ObjectContainer3D;
     private mesh        : away.entities.Mesh;
+    private sProxy      : away.managers.Stage3DProxy;
+    private sManager    : away.managers.Stage3DManager;
+    private stage       : away.display.Stage;
 
     constructor()
     {
 
         away.Debug.THROW_ERRORS = false;
 
+        this.stage = new away.display.Stage();
+        //this.stage.addChild( this.view3D );
+
         this.cam = new away.cameras.Camera3D();
         this.renderer = new away.render.DefaultRenderer();
         this.scene = new away.containers.Scene3D();
 
-        this.view = new away.containers.BasicView3D( this.scene , this.cam , this.renderer );
+        this.sManager = away.managers.Stage3DManager.getInstance( this.stage );
+        this.sProxy = this.sManager.getStage3DProxy( 0 );
 
+        this.renderer.iStage3DProxy = this.sProxy;
+
+        this.view = new away.containers.BasicView3D( this.scene , this.cam , this.renderer );
+        this.view.stage3DProxy = this.sProxy;
 
 
         this.objCont = new away.containers.ObjectContainer3D();
@@ -48,6 +59,8 @@ class View3DTest
         console.log( 'objCont ' , this.objCont );
 
 
+        //this.view.render();
+
         /*
          constructor( scene:Scene3D,
          camera:away.cameras.Camera3D,
@@ -55,6 +68,7 @@ class View3DTest
          forceSoftware:boolean = false,
          profile: string = "basline" )
          */
+
     }
 
 }
