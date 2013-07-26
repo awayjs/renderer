@@ -199,14 +199,8 @@ module away.entities
 			if (this._material)
             {
 
-                away.Debug.throwPIR( "away.entities.Mesh" , "material" , "Missing Dependency: away.materials.MaterialBase _iRemoveOwner() , _iAddOwner()" );
-
-
-                /* todo: implement away.materials.MaterialBase _iRemoveOwner() , _iAddOwner()
-				// reregister material in case geometry has a different animation
-                this._material.removeOwner(this);
-                this._material.addOwner(this);
-                */
+                this._material.iRemoveOwner(this);
+                this._material.iAddOwner(this);
 
 			}
 		}
