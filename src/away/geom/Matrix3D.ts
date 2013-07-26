@@ -197,13 +197,15 @@ module away.geom
 		public copyRawDataFrom( vector:number[], index:number = 0, transpose:boolean = false )
 		{
 			//TODO fully implement
-			this.rawData = vector.splice(0);
+			this.rawData = vector.slice(0);
 		}
-		
-		public copyRawDataTo( vector:number[], index:number = 0, transpose:boolean = false )
+
+        //public copyRawDataTo( vector:number[], index:number = 0, transpose:boolean = false )
+		public copyRawDataTo( index:number = 0, transpose:boolean = false )
 		{
 			//TODO fully implement
-			vector = this.rawData.splice(0);
+			return this.rawData.slice(0);
+            //return vector = this.rawData.slice(0);
 		}
 		
 		/**
