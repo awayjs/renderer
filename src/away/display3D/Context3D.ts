@@ -423,7 +423,15 @@ module away.display3D
 		
 		public setScissorRectangle( rectangle:away.geom.Rectangle ) 
 		{
-			this._gl.scissor( rectangle.x, rectangle.y, rectangle.width, rectangle.height );
+			if( rectangle )
+			{
+				this._gl.enable( this._gl.SCISSOR_TEST );
+				this._gl.scissor( rectangle.x, rectangle.y, rectangle.width, rectangle.height );
+			}
+			else
+			{
+				this._gl.disable( this._gl.SCISSOR_TEST );
+			}
 		}
 		
 		public setTextureAt( sampler:number, texture:away.display3D.TextureBase )
