@@ -67,26 +67,35 @@ module away.containers
 		
 		public set iImplicitPartition( value:away.partition.Partition3D )
 		{
-			if ( value == this._pImplicitPartition )
-			{
-				return;
-			}
-			
-			var i:number;
-			var len:number = this._children.length;
-			var child:away.containers.ObjectContainer3D;
-			
-			this._pImplicitPartition = value;
-			
-			while (i < len)
-			{
-				child = this._children[i++];
-				if( !child._pExplicitPartition )
-				{
-					child._pImplicitPartition = value;
-				}
-			}
+
+            this.iSetImplicitPartition( value );
 		}
+
+        public iSetImplicitPartition( value:away.partition.Partition3D )
+        {
+
+            if ( value == this._pImplicitPartition )
+            {
+                return;
+            }
+
+            var i:number;
+            var len:number = this._children.length;
+            var child:away.containers.ObjectContainer3D;
+
+            this._pImplicitPartition = value;
+
+            while (i < len)
+            {
+                child = this._children[i++];
+                if( !child._pExplicitPartition )
+                {
+                    child._pImplicitPartition = value;
+                }
+            }
+
+
+        }
 		
 		public get _iIsVisible():boolean
 		{
