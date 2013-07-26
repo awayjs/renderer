@@ -522,7 +522,8 @@ module away.pick
 			oz = this._rayDir.z;
 			
 			// transform ray dir and origin (cam pos) to object space
-			invSceneTransform.copyRawDataTo(raw);
+            //invSceneTransform.copyRawDataTo( raw  );
+            raw = invSceneTransform.copyRawDataTo();
 			rx = raw[0]*ox + raw[4]*oy + raw[8]*oz;
 			ry = raw[1]*ox + raw[5]*oy + raw[9]*oz;
 			rz = raw[2]*ox + raw[6]*oy + raw[10]*oz;
