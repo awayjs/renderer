@@ -10,9 +10,13 @@ module away.containers
 	export class BasicView3D
 	{
 
+        private static sStage : away.display.Stage;
+
+        public stage : away.display.Stage;
+
         private _aspectRatio:number;
-		private _width:number;
-		private _height:number;
+		private _width:number = 0 ;
+		private _height:number = 0;
 		private _localPos:away.geom.Point = new away.geom.Point();
 		private _globalPos:away.geom.Point = new away.geom.Point();
 		private _globalPosDirty:boolean;
@@ -74,6 +78,14 @@ module away.containers
 					 profile: string = "basline" )
 		{
 
+
+            if ( BasicView3D.sStage === null )
+            {
+
+                BasicView3D.sStage = new away.display.Stage();
+
+            }
+
 			// TODO link to displaylist
 			
 			this._profile = profile;
@@ -91,24 +103,12 @@ module away.containers
 			
 			this._pScissorRect = new away.geom.Rectangle();
 			
-			//this.initHitField();// TODO: imeplement / AS3 <> JS issue
 
-            // TODO: imeplement & integrate
-			//this._pMouse3DManager = new away.managers.Mouse3DManager();// TODO: imeplement / AS3 <> JS issue
-			//this._pMouse3DManager.enableMouseListeners( this );// TODO: imeplement / AS3 <> JS issue
-
-            // TODO: imeplement & integrate
-			//this._pTouch3DManager = new away.managers.Touch3DManager();// TODO: imeplement / AS3 <> JS issue
-			//this._pTouch3DManager.view = this;// TODO: imeplement / AS3 <> JS issue
-			//this._pTouch3DManager.enableTouchListeners( this );// TODO: imeplement / AS3 <> JS issue
-			
-			//this.addEventListener( away.events.Event.ADDED_TO_STAGE, this.onAddedToStage, this );// TODO: imeplement / AS3 <> JS issue
-			//this.addEventListener( away.events.Event.ADDED, this.onAdded, this );// TODO: imeplement / AS3 <> JS issue
-			
 			this._pCamera.addEventListener( away.events.CameraEvent.LENS_CHANGED, this.onLensChanged, this );
 			this._pCamera.partition = this._pScene.partition;
-			
-			//this.initRightClickMenu();// TODO: imeplement / AS3 <> JS issue
+
+            this.stage = BasicView3D.sStage;
+            this.onAddedToStage();
 
 		}
 		
@@ -140,6 +140,9 @@ module away.containers
 		
 		public set stage3DProxy( stage3DProxy:away.managers.Stage3DProxy )
 		{
+
+            console.log( '>>>>>>>>>>' , 'BasicView3D stage3DProxy' , stage3DProxy );
+
 			if (this._pStage3DProxy)
 			{
 				this._pStage3DProxy.removeEventListener(away.events.Stage3DEvent.VIEWPORT_UPDATED, this.onViewportUpdated, this );
@@ -916,7 +919,58 @@ module away.containers
 		{
 			this._depthPrepass = value;
 		}
-		
+
+        private onAddedToStage()
+        {
+
+            this._addedToStage = true;
+
+            if (this._pStage3DProxy == null )
+            {
+
+                console.log( 'Get my StageProxy !')
+                this._pStage3DProxy= away.managers.Stage3DManager.getInstance( this.stage ).getFreeStage3DProxy(this._forceSoftware, this._profile);
+                this._pStage3DProxy.addEventListener(away.events.Stage3DEvent.VIEWPORT_UPDATED, this.onViewportUpdated , this );
+                console.log( 'this._pStage3DProxy : ' , this._pStage3DProxy );
+
+            }
+
+            this._globalPosDirty = true;
+
+            this._pRttBufferManager = away.managers.RTTBufferManager.getInstance(this._pStage3DProxy);
+
+            this._pRenderer.iStage3DProxy = this._depthRenderer.iStage3DProxy = this._pStage3DProxy;
+
+            //default wiidth/height to stageWidth/stageHeight
+            if (this._width == 0)
+            {
+
+                this.width = this.stage.stageWidth;
+
+            }
+            else
+            {
+
+                this._pRttBufferManager.viewWidth = this._width;
+
+            }
+
+            if (this._height == 0)
+            {
+
+                this.height = this.stage.stageHeight;
+
+            }
+            else
+            {
+
+                this._pRttBufferManager.viewHeight = this._height;
+
+            }
+
+
+        }
+
 		// TODO private function visitWebsite(e:ContextMenuEvent):void
 		// TODO private function initRightClickMenu():void
 		// TODO private function updateRightClickMenu():void
