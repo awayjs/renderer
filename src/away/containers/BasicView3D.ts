@@ -7,7 +7,7 @@
 
 module away.containers
 {
-	export class BasixView3D
+	export class BasicView3D
 	{
 
         private _aspectRatio:number;
