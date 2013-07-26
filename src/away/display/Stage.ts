@@ -20,6 +20,8 @@ module away.display
 		constructor( width: number = 640, height: number = 480 )
 		{
 			super();
+
+            // Move ( to Sprite ) / possibly remove:
 			if( !document )
 			{
 				throw new away.errors.DocumentError( "A root document object does not exist." );
@@ -71,5 +73,26 @@ module away.display
 		{
 			document.body.appendChild( canvas );
 		}
+
+        public get stageWidth(): number
+        {
+
+            return this._stageWidth;
+
+        }
+
+        public get stageHeight(): number
+        {
+
+            return this._stageHeight;
+
+        }
+
+        public get rect() : away.geom.Rectangle
+        {
+
+            return new away.geom.Rectangle( 0 ,0 , this._stageWidth , this._stageHeight );
+
+        }
 	}
 }
