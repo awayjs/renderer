@@ -105,8 +105,9 @@ module away.containers
 		public iSetParent( value:away.containers.ObjectContainer3D )
 		{
 			this._pParent = value;
-			
-			throw new away.errors.PartialImplementationError();
+
+            away.Debug.throwPIR( 'ObjectContainer3D' , 'iSetParent' , 'PartialImplementationError - Mouse3DManager' );
+
 			this.pUpdateMouseChildren();
 			
 			if( value == null ) {
@@ -169,8 +170,8 @@ module away.containers
 		
 		public pUpdateMouseChildren()
 		{
-			throw new away.errors.PartialImplementationError();
-			
+            away.Debug.throwPIR( 'ObjectContainer3D' , 'pUpdateMouseChildren' , 'PartialImplementationError - Mouse3DManager' );
+
 			if( this._pParent && !this._pParent._iIsRoot )
 			{
 				this._iAncestorsAllowMouseEnabled = this._pParent._iAncestorsAllowMouseEnabled && this._pParent.mouseChildren;
