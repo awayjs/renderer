@@ -71,7 +71,7 @@ module away.cameras
 			var p:away.math.Plane3D;
 			var raw:number[] = [];
 			var invLen:number;
-			this.viewProjection.copyRawDataTo( raw );
+            raw = this.viewProjection.copyRawDataTo( );
 			
 			c11 = raw[0];
 			c12 = raw[4];
