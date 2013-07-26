@@ -81,41 +81,41 @@ module away.containers
 		{
 			return this._iSceneGraphRoot.numChildren;
 		}
-		
-		public iRegisterEntity( entity:away.enity.Entity )
+         */
+		public iRegisterEntity( entity:away.entities.Entity )
 		{
-			var partition:away.partition.Partition3D = entity.implicitPartition;
-			this.addPartitionUnique( partition );
-			this.partition.markForUpdate( entity );
+			var partition:away.partition.Partition3D = entity.iImplicitPartition;
+			this.iAddPartitionUnique( partition );
+			this.partition.iMarkForUpdate( entity );
 		}
-		
-		public iUnregisterEntity( entity:away.enity.Entity )
+
+		public iUnregisterEntity( entity:away.entities.Entity )
 		{
-			entity.implicitPartition.removeEntity( entity );
+			entity.iImplicitPartition.iRemoveEntity( entity );
 		}
-		*/
+
 		public iInvalidateEntityBounds( entity:away.entities.Entity )
 		{
             entity.iImplicitPartition.iMarkForUpdate( entity );
 		}
-		/*
+
 		public iRegisterPartition( entity:away.entities.Entity )
 		{
-			this.addPartitionUnique( entity.implicitPartition );
+			this.iAddPartitionUnique( entity.iImplicitPartition );
 		}
-		
+
 		public iUnregisterPartition( entity:away.entities.Entity )
 		{
-			entity.implicitPartition.removeEntity( entity );
+			entity.iImplicitPartition.iRemoveEntity( entity );
 		}
-		
-		public iAddPartitionUnique( partition:away.partitions.Partition3D )
+
+		public iAddPartitionUnique( partition:away.partition.Partition3D )
 		{
 			if (this._partitions.indexOf(partition) == -1)
 			{
-				_partitions.push( partition );
+				this._partitions.push( partition );
 			}
 		}
-		*/
+
 	}
 }
