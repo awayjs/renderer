@@ -32,13 +32,13 @@ class View3DTest
         this.renderer = new away.render.DefaultRenderer();
         this.scene = new away.containers.Scene3D();
 
-        this.sManager = away.managers.Stage3DManager.getInstance( this.stage );
-        this.sProxy = this.sManager.getStage3DProxy( 0 );
+        //this.sManager = away.managers.Stage3DManager.getInstance( this.stage );
+        //this.sProxy = this.sManager.getStage3DProxy( 0 );
 
-        this.renderer.iStage3DProxy = this.sProxy;
+        //this.renderer.iStage3DProxy = this.sProxy;
 
         this.view = new away.containers.BasicView3D( this.scene , this.cam , this.renderer );
-        this.view.stage3DProxy = this.sProxy;
+        //this.view.stage3DProxy = this.sProxy;
 
 
         this.objCont = new away.containers.ObjectContainer3D();
@@ -60,7 +60,7 @@ class View3DTest
         console.log( 'objCont ' , this.objCont );
 
 
-        //this.view.render();
+        this.view.render();
 
         /*
          constructor( scene:Scene3D,
