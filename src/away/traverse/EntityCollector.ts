@@ -20,18 +20,18 @@ module away.traverse
 		private _directionalLights:away.lights.DirectionalLight[];
 		private _pointLights:away.lights.PointLight[];
 		private _lightProbes:away.lights.LightProbe[];
-		public _pNumEntities:number;
-		public _pNumLights:number;
-		public _pNumTriangles:number;
-		public _pNumMouseEnableds:number;
+		public _pNumEntities:number = 0;
+		public _pNumLights:number = 0;
+		public _pNumTriangles:number = 0;
+		public _pNumMouseEnableds:number =0;
 		public _pCamera:away.cameras.Camera3D;
-		private _numDirectionalLights:number;
-		private _numPointLights:number;
-		private _numLightProbes:number;
+		private _numDirectionalLights:number =0;
+		private _numPointLights:number = 0;
+		private _numLightProbes:number = 0;
 		public _pCameraForward:away.geom.Vector3D;
 		private _customCullPlanes:away.math.Plane3D[];
 		private _cullPlanes:away.math.Plane3D[];
-		private _numCullPlanes:number;
+		private _numCullPlanes:number = 0;
 		
 		constructor()
 		{
