@@ -395,13 +395,49 @@ module away.containers
 			}
 			return this._pSceneTransform;
 		}
-		
-		public get scene():away.containers.Scene3D
-		{
-			return this._pScene;
-		}
-		
-		//TODO public function set scene(value:Scene3D):void
+
+        public get scene():away.containers.Scene3D
+        {
+            return this._pScene;
+        }
+
+        public set scene(value:away.containers.Scene3D):void
+        {
+            var i:number = 0;
+            var len:number = this._children.length;
+
+            while (i < len)
+            {
+                this._children[i++].scene = value;
+            }
+
+            if (this._pScene == value)
+                return;
+
+            // test to see if we're switching roots while we're already using a scene partition
+            if (value == null)
+                this._oldScene = this._pScene;
+
+            if (this._pExplicitPartition && this._oldScene && this._oldScene != this._pScene)
+                this.partition = null;
+
+            if (value)
+            {
+                this._oldScene = null;
+            }
+            // end of stupid partition test code
+
+            this._pScene = value;
+
+            if (this._pScene)
+            {
+                this._pScene.dispatchEvent(new away.events.Scene3DEvent(away.events.Scene3DEvent.ADDED_TO_SCENE, this));
+            }
+            else if (this._oldScene)
+            {
+                this._oldScene.dispatchEvent(new away.events.Scene3DEvent(away.events.Scene3DEvent.REMOVED_FROM_SCENE, this));
+            }
+        }
 		
 		public get inverseSceneTransform():away.geom.Matrix3D
 		{
