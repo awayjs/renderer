@@ -44,22 +44,25 @@ module away.partition
 			return this._entity.worldBounds.isInFrustum( planes, numPlanes );
 		}
 
-        /*
-        public acceptTraverser(traverser:away.traverse.PartitionTraverser)
+        /**
+         * @inheritDoc
+         */
+        public acceptTraverser(traverser:away.traverse.PartitionTraverser):void
         {
+            traverser.applyEntity(this._entity);
+        }
 
-            super.acceptTraverser( traverser );
+        /**
+         * @inheritDoc
+         */
+        public isIntersectingRay(rayPosition:away.geom.Vector3D, rayDirection:away.geom.Vector3D):boolean
+        {
+            if (!this._entity._iIsVisible )
+                return false;
 
-        }*/
-		//@override TODO public isIntersectingRay( rayPosition:away.geom.Vecto...
-		/*
-		public isIntersectingRay( rayPosition:away.geom.Vector3D, rayDirection:away.geom.Vector3D ):boolean
-		{
-			if( !this._entity._iIsVisible )
-			{
-				return false;
-			}
-			return this._entity.isIntersectingRay(rayPosition, rayDirection);
-		}*/
+            return this._entity.isIntersectingRay(rayPosition, rayDirection);
+        }
+
+
 	}
 }
