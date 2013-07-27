@@ -392,6 +392,7 @@ module away.managers
 		/**
 		 * The driver information as reported by the Context3D object (if any)
 		 */
+        /*
 		public get driverInfo():string
 		{
 
@@ -401,7 +402,7 @@ module away.managers
 
 			//return this._iContext3D? this._iContext3D.driverInfo : null;
 		}
-
+        */
 		/**
 		 * Indicates whether the Stage3D managed by this proxy is running in software mode.
 		 * Remember to wait for the CONTEXT3D_CREATED event before checking this property,
@@ -624,7 +625,7 @@ module away.managers
 
                 away.Debug.log( 'Stage3DProxy' , 'onContext3DUpdate this._stage3D.context3D: ' , this._stage3D.context3D);
                 // todo: implement dependency Context3D.enableErrorChecking, Context3D.driverInfo
-                away.Debug.throwPIR( 'Stage3DProxy' , 'onContext3DUpdate' ,  'Context3D.enableErrorChecking, Context3D.driverInfo');
+                away.Debug.throwPIR( 'Stage3DProxy' , 'onContext3DUpdate' ,  'Context3D.enableErrorChecking');
 
 				//this._iContext3D.enableErrorChecking = Debug.active;
 				//this._usesSoftwareRendering = (this._iContext3D.driverInfo.indexOf('Software') == 0);
@@ -738,7 +739,7 @@ module away.managers
 
             }
 
-            away.Debug.throwPIR( 'Stage3DProxy' , 'recoverFromDisposal' , 'Context3D.driverInfo');
+            away.Debug.throwPIR( 'Stage3DProxy' , 'recoverFromDisposal' , '' );
 
 
             /*
