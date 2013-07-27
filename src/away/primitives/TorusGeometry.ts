@@ -211,7 +211,7 @@ module away.primitives
             {
 
 				data = new Array<number>( numUvs );
-				this.pIvalidateGeometry();//invalidateGeometry();
+				this.pInvalidateGeometry();//invalidateGeometry();
 
 			}
 			
@@ -247,7 +247,7 @@ module away.primitives
 		public set radius(value:number)
 		{
             this._radius = value;
-            this.pIvalidateGeometry();
+            this.pInvalidateGeometry();
 		}
 		
 		/**
@@ -261,7 +261,7 @@ module away.primitives
 		public set tubeRadius(value:number)
 		{
             this._tubeRadius = value;
-            this.pIvalidateGeometry();
+            this.pInvalidateGeometry();
 		}
 		
 		/**
@@ -275,7 +275,7 @@ module away.primitives
 		public set segmentsR(value:number)
 		{
             this._segmentsR = value;
-            this.pIvalidateGeometry();
+            this.pInvalidateGeometry();
             this.pInvalidateUVs();
 		}
 		
@@ -290,7 +290,7 @@ module away.primitives
 		public set segmentsT(value:number)
 		{
             this._segmentsT = value;
-            this.pIvalidateGeometry();
+            this.pInvalidateGeometry();
 			this.pInvalidateUVs();
 		}
 		
@@ -305,7 +305,7 @@ module away.primitives
 		public set yUp(value:boolean)
 		{
             this._yUp = value;
-            this.pIvalidateGeometry();
+            this.pInvalidateGeometry();
 		}
 		
 		/**
