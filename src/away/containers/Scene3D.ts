@@ -94,7 +94,7 @@ module away.containers
 
             //console.log( 'Scene3D' , 'iRegisterEntity' , entity._pImplicitPartition );
 
-			var partition:away.partition.Partition3D = entity.getiImplicitPartition();
+			var partition:away.partition.Partition3D = entity.iGetImplicitPartition();
 
             //console.log( 'scene3D.iRegisterEntity' , entity , entity.iImplicitPartition , partition );
 

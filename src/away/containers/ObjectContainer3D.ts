@@ -65,7 +65,7 @@ module away.containers
             return this._pImplicitPartition;
         }
 
-        public getiImplicitPartition():away.partition.Partition3D
+        public iGetImplicitPartition():away.partition.Partition3D
         {
             return this._pImplicitPartition;
         }
