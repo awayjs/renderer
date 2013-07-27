@@ -124,7 +124,7 @@ module away.partition
 			}
 			if( traverser.enterNode( this ) )
 			{
-				var i:number;
+				var i:number = 0;
 				while( i < this._pNumChildNodes )
 				{
 					this._pChildNodes[i++].acceptTraverser( traverser );
