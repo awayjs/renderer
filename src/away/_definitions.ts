@@ -172,6 +172,7 @@
 ///<reference path="primitives/PrimitiveBase.ts"/>
 ///<reference path="primitives/LineSegment.ts"/>
 ///<reference path="primitives/TorusGeometry.ts"/>
+///<reference path="primitives/CubeGeometry.ts"/>
 ///<reference path="primitives/PlaneGeometry.ts"/>
 ///<reference path="utils/ColorUtils.ts"/>
 ///<reference path="geom/ColorTransform.ts"/>
@@ -192,8 +193,6 @@
 ///<reference path="animators/IAnimationSet.ts"/>
 ///<reference path="animators/states/AnimationStateBase.ts"/>
 ///<reference path="animators/IAnimator.ts"/>
-
-
 
 ///<reference path="events/ShadingMethodEvent.ts"/>
 ///<reference path="materials/passes/MaterialPassBase.ts"/>
