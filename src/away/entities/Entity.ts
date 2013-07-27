@@ -396,11 +396,12 @@ module away.entities
 		
 		public iInternalUpdate()
 		{
-			/*
-			if( this._controller )
+
+			if( this._iController )
 			{
-				this._controller.update();
-			}*/
+				this._iController.update();
+			}
+
 		}
 	}
 }
