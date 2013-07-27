@@ -91,11 +91,18 @@ module away.containers
 		public iRegisterEntity( entity:away.entities.Entity )
 		{
 
-            //console.log( 'scene3D.iRegisterEntity' , entity );
 
-			var partition:away.partition.Partition3D = entity.iImplicitPartition;
+            //console.log( 'Scene3D' , 'iRegisterEntity' , entity._pImplicitPartition );
+
+			var partition:away.partition.Partition3D = entity.getiImplicitPartition();
+
+            //console.log( 'scene3D.iRegisterEntity' , entity , entity.iImplicitPartition , partition );
+
 			this.iAddPartitionUnique( partition );
 			this.partition.iMarkForUpdate( entity );
+
+
+
 		}
 
 		public iUnregisterEntity( entity:away.entities.Entity )
@@ -120,10 +127,14 @@ module away.containers
 
 		public iAddPartitionUnique( partition:away.partition.Partition3D )
 		{
+
+            //console.log( 'scene3D.iAddPartitionUnique' , partition );
+
 			if (this._partitions.indexOf(partition) == -1)
 			{
 				this._partitions.push( partition );
 			}
+
 		}
 
 	}
