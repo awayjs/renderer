@@ -401,7 +401,7 @@ module away.containers
             return this._pScene;
         }
 
-        public set scene(value:away.containers.Scene3D):void
+        public set scene(value:away.containers.Scene3D)
         {
             var i:number = 0;
             var len:number = this._children.length;
