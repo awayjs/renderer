@@ -257,7 +257,6 @@ module away.entities
 			return this._partitionNode;
 		}
 		
-		/* TODO Implementation dependency : BoundingVolumeBase
 		public isIntersectingRay( rayPosition:away.geom.Vector3D, rayDirection:away.geom.Vector3D ):boolean
 		{
 			var localRayPosition:away.geom.Vector3D = this.inverseSceneTransform.transformVector( rayPosition );
@@ -270,7 +269,7 @@ module away.entities
 			}
 
 
-			var rayEntryDistance:number = bounds.rayIntersection(localRayPosition, localRayDirection, this._iPickingCollisionVO.localNormal );
+			var rayEntryDistance:number = this._pBounds.rayIntersection(localRayPosition, localRayDirection, this._iPickingCollisionVO.localNormal );
 			
 			if( rayEntryDistance < 0 )
 			{
@@ -286,8 +285,7 @@ module away.entities
 			
 			return true;
 		}
-		//*/
-		
+
 		public pCreateEntityPartitionNode():away.partition.EntityNode
 		{
 			throw new away.errors.AbstractMethodError();
