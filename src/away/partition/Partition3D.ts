@@ -12,7 +12,7 @@ module away.partition
 	{
 		
 		public _rootNode:NodeBase;
-		private _updatesMade:Boolean;
+		private _updatesMade:Boolean = false;
 		private _updateQueue:EntityNode;
 		
 		constructor( rootNode:away.partition.NodeBase )
@@ -32,6 +32,9 @@ module away.partition
 		
 		public traverse( traverser:away.traverse.PartitionTraverser  )
 		{
+
+            console.log( 'Partition3D' , 'traverse' , traverser );
+
 			if( this._updatesMade )
 			{
 				this.updateEntities();
@@ -94,14 +97,23 @@ module away.partition
 		
 		private updateEntities()
 		{
+
+
+
 			var node:away.partition.EntityNode = this._updateQueue;
 			var targetNode:away.partition.NodeBase;
 			var t:away.partition.EntityNode;
 			this._updateQueue = null;
 			this._updatesMade = false;
-			
+
+            //console.log( 'Partition3D' , 'updateEntities')
+
 			do {
+
 				targetNode = this._rootNode.findPartitionForEntity(node.entity);
+
+                //console.log( 'Partition3D' , 'updateEntities' , 'targetNode: ' , targetNode );
+
 				if (node.parent != targetNode)
 				{
 					if (node)
