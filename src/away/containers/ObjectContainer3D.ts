@@ -403,6 +403,16 @@ module away.containers
 
         public set scene(value:away.containers.Scene3D)
         {
+
+            this.setScene( value );
+
+        }
+
+        public setScene( value:away.containers.Scene3D)
+        {
+
+            console.log( 'ObjectContainer3D' , 'setScene' , value );
+
             var i:number = 0;
             var len:number = this._children.length;
 
@@ -437,6 +447,7 @@ module away.containers
             {
                 this._oldScene.dispatchEvent(new away.events.Scene3DEvent(away.events.Scene3DEvent.REMOVED_FROM_SCENE, this));
             }
+
         }
 		
 		public get inverseSceneTransform():away.geom.Matrix3D
