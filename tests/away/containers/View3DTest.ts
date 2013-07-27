@@ -19,6 +19,8 @@ class View3DTest
     private sProxy      : away.managers.Stage3DProxy;
     private sManager    : away.managers.Stage3DManager;
     private stage       : away.display.Stage;
+    private light       : away.lights.PointLight;
+    private raf         : away.utils.RequestAnimationFrame
 
     constructor()
     {
@@ -26,49 +28,66 @@ class View3DTest
         away.Debug.THROW_ERRORS = false;
 
         this.stage = new away.display.Stage();
-        //this.stage.addChild( this.view3D );
 
         this.cam = new away.cameras.Camera3D();
+        this.cam.z = -1000;
+        this.cam.lookAt( new away.geom.Vector3D( 0 , 0 ,0 ));
+
         this.renderer = new away.render.DefaultRenderer();
         this.scene = new away.containers.Scene3D();
 
-        //this.sManager = away.managers.Stage3DManager.getInstance( this.stage );
-        //this.sProxy = this.sManager.getStage3DProxy( 0 );
-
-        //this.renderer.iStage3DProxy = this.sProxy;
+        this.light = new away.lights.PointLight();
 
         this.view = new away.containers.BasicView3D( this.scene , this.cam , this.renderer );
-        //this.view.stage3DProxy = this.sProxy;
+        this.view.backgroundColor = 0xff0000;
 
-
-        this.objCont = new away.containers.ObjectContainer3D();
         this.torus = new away.primitives.TorusGeometry();
 
-        this.mesh = new away.entities.Mesh( this.torus );
+        var l       : number = 20;
+        var radius  : number = 500;
 
-        console.log( 'console:' , ! null );
+        for (var c : number = 0; c < l ; c++)
+        {
 
-        this.scene.addChild( this.mesh );
+            var t   : number=Math.PI * 2 * c / l;
 
-        console.log( 'cam ' , this.cam );
+            var m : away.entities.Mesh = new away.entities.Mesh( this.torus );
+                m.x = Math.cos(t)*radius;
+                m.y = 0;
+                m.z = Math.sin(t)*radius;
+            console.log( 'mesh' , m.transform, m.position , m.x , m.y , m.z );
+
+            this.scene.addChild( m );
+
+        }
+
+        this.scene.addChild( this.light );
+
+        console.log('------------------------------------------------------------------------------------------');
+        console.log('-Log');
+
         console.log( 'renderer ' , this.renderer );
         console.log( 'scene ' , this.scene );
         console.log( 'view ' , this.view );
         console.log( 'scene ' , this.scene );
-        console.log( 'mesh ' , this.mesh );
-        console.log( 'torus ' , this.torus );
-        console.log( 'objCont ' , this.objCont );
 
-
+        console.log('------------------------------------------------------------------------------------------');
+        console.log('-Render');
         this.view.render();
 
-        /*
-         constructor( scene:Scene3D,
-         camera:away.cameras.Camera3D,
-         renderer:away.render.RendererBase,
-         forceSoftware:boolean = false,
-         profile: string = "basline" )
-         */
+        this.raf = new away.utils.RequestAnimationFrame( this.tick , this );
+        //this.raf.start();
+
+
+        document.onmousedown = ( e ) => this.tick( e );
+
+
+    }
+
+    private tick( e )
+    {
+
+        this.view.render();
 
     }
 
