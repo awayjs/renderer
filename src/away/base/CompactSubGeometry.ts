@@ -522,7 +522,8 @@ module away.base
 		public stripBuffer(offset:number, numEntries:number):number[]
 		{
 			var data:number[] = new Array<number>( this._numVertices*numEntries );// Vector.<Number>(_numVertices*numEntries);
-			var i:number = 0, j:number = offset;
+			var i:number = 0;
+            var j:number = offset;
 			var skip:number = 13 - numEntries;
 			
 			for (var v:number = 0; v < this._numVertices; ++v)
