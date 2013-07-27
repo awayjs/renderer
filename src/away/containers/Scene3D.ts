@@ -26,9 +26,12 @@ module away.containers
 		
 		public traversePartitions( traverser:away.traverse.PartitionTraverser )
 		{
-			var i:number;
+			var i:number = 0;
 			var len:number = this._partitions.length;
-			
+
+
+            //console.log( 'Scene3D.traversePartitions' , len );
+
 			traverser.scene = this;
 			
 			while (i < len)
@@ -44,6 +47,9 @@ module away.containers
 		
 		public set partition( value:away.partition.Partition3D )
 		{
+
+            //console.log( 'scene3D.setPartition' , value );
+
 			this._iSceneGraphRoot.partition = value;
 			this.dispatchEvent( new away.events.Scene3DEvent( away.events.Scene3DEvent.PARTITION_CHANGED, this._iSceneGraphRoot ) );
 		}
@@ -84,6 +90,9 @@ module away.containers
          */
 		public iRegisterEntity( entity:away.entities.Entity )
 		{
+
+            //console.log( 'scene3D.iRegisterEntity' , entity );
+
 			var partition:away.partition.Partition3D = entity.iImplicitPartition;
 			this.iAddPartitionUnique( partition );
 			this.partition.iMarkForUpdate( entity );
