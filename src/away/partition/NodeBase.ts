@@ -13,7 +13,7 @@ module away.partition
 
 		public _iParent:NodeBase;
 		public _pChildNodes:NodeBase[];
-		public _pNumChildNodes:number;
+		public _pNumChildNodes:number = 0;
 		public _pDebugPrimitive:away.primitives.WireframePrimitiveBase;
 		
 		public _iNumEntities:number;
