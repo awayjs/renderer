@@ -59,11 +59,16 @@ module away.containers
 				this._scenePosition.setTo( 0, 0, 0 );
 			}
 		}
-		
-		public get iImplicitPartition():away.partition.Partition3D
-		{
-			return this._pImplicitPartition;
-		}
+
+        public get iImplicitPartition():away.partition.Partition3D
+        {
+            return this._pImplicitPartition;
+        }
+
+        public getiImplicitPartition():away.partition.Partition3D
+        {
+            return this._pImplicitPartition;
+        }
 		
 		public set iImplicitPartition( value:away.partition.Partition3D )
 		{
@@ -74,12 +79,33 @@ module away.containers
         public iSetImplicitPartition( value:away.partition.Partition3D )
         {
 
+            if (value == this._pImplicitPartition)
+                return;
+
+            var i:number = 0;
+            var len:number = this._children.length;
+            var child:away.containers.ObjectContainer3D;
+
+            this._pImplicitPartition = value;
+
+            while (i < len)
+            {
+                child = this._children[i++];
+
+                // assign implicit partition if no explicit one is given
+                if (!child._pExplicitPartition)
+                    child._pImplicitPartition = value;
+            }
+
+            /*
             if ( value == this._pImplicitPartition )
             {
                 return;
             }
 
-            var i:number;
+            console.log( 'ObjectContainer3D','iSetImplicitPartition' , value );
+
+            var i:number = 0;
             var len:number = this._children.length;
             var child:away.containers.ObjectContainer3D;
 
@@ -93,7 +119,7 @@ module away.containers
                     child._pImplicitPartition = value;
                 }
             }
-
+            */
 
         }
 		
@@ -411,7 +437,7 @@ module away.containers
         public setScene( value:away.containers.Scene3D)
         {
 
-            console.log( 'ObjectContainer3D' , 'setScene' , value );
+            //console.log( 'ObjectContainer3D' , 'setScene' , value );
 
             var i:number = 0;
             var len:number = this._children.length;
@@ -482,10 +508,16 @@ module away.containers
 			{
 				child._pParent.removeChild(child);
 			}
-			
+
+            //console.log( 'ObjectContainer3D' , 'addChild' , 'child._pExplicitPartition' ,  child._pExplicitPartition );
+
 			if (!child._pExplicitPartition)
 			{
-				child.iImplicitPartition = this._pImplicitPartition;
+
+                //console.log( 'ObjectContainer3D' , 'addChild' , 'set iImplicitPartition' ,  this._pImplicitPartition);
+
+                child.iSetImplicitPartition( this._pImplicitPartition );
+				//child.iImplicitPartition = this._pImplicitPartition;
 			}
 			
 			child.iSetParent( this );
