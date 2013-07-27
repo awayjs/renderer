@@ -145,7 +145,7 @@ module away.primitives
 		/**
 		 * Invalidates the primitive's geometry, causing it to be updated when requested.
 		 */
-		public pIvalidateGeometry()
+		public pInvalidateGeometry()
 		{
 			this._geomDirty = true;
 		}
