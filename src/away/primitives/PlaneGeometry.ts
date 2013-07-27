@@ -50,7 +50,7 @@ module away.primitives
 
             this._segmentsW = value;
 
-            this.pIvalidateGeometry();
+            this.pInvalidateGeometry();
             this.pInvalidateUVs();
 
 		}
@@ -69,7 +69,7 @@ module away.primitives
 
             this._segmentsH = value;
 
-            this.pIvalidateGeometry();
+            this.pInvalidateGeometry();
             this.pInvalidateUVs();
 
 		}
@@ -85,7 +85,7 @@ module away.primitives
 		public set yUp(value:boolean)
 		{
             this._yUp = value;
-            this.pIvalidateGeometry();
+            this.pInvalidateGeometry();
 		}
 		
 		/**
@@ -99,7 +99,7 @@ module away.primitives
 		public set doubleSided(value:boolean)
 		{
             this._doubleSided = value;
-            this.pIvalidateGeometry();
+            this.pInvalidateGeometry();
 		}
 		
 		/**
@@ -113,7 +113,7 @@ module away.primitives
 		public set width(value:number)
 		{
 			this._width = value;
-            this.pIvalidateGeometry();
+            this.pInvalidateGeometry();
 		}
 		
 		/**
@@ -127,7 +127,7 @@ module away.primitives
 		public set height(value:number)
 		{
 			this._height = value;
-            this.pIvalidateGeometry();//invalidateGeometry();
+            this.pInvalidateGeometry();//invalidateGeometry();
 		}
 		
 		/**
@@ -333,7 +333,7 @@ module away.primitives
             {
 
 				data = new Array<number>( numUvs );//Vector.<Number>(numUvs, true);
-                this.pIvalidateGeometry()
+                this.pInvalidateGeometry()
 
 			}
 			
