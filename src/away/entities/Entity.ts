@@ -210,26 +210,27 @@ module away.entities
 			this.notifyPartitionAssigned();
 
 		}
-		/*
+
 		//@override
-		public set scene( value:Scene3D )
+		public set scene( value:away.containers.Scene3D )
 		{
-			if(value == _scene)
+			if(value == this._pScene)
 			{
 				return;
 			}
-			if( this._scene)
+			if( this._pScene)
 			{
-				_scene.unregisterEntity( this );
+				this._pScene.iUnregisterEntity( this );
 			}
 			// callback to notify object has been spawned. Casts to please FDT
 			if ( value )
 			{
-				value.registerEntity(this);
+				value.iRegisterEntity(this);
 			}
-			super.scene = value;
+
+			super.setScene ( value ) ;
 		}
-         */
+
 		 
 		//@override 
 		public get assetType():string
