@@ -11,8 +11,8 @@ module away.data
 	{
 		
 		private _pool:away.data.EntityListItem[];
-		private _index:number;
-		private _poolSize:number;
+		private _index:number = 0;
+		private _poolSize:number = 0;
 		
 		constructor()
 		{
