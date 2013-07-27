@@ -507,7 +507,9 @@ module away.containers
 		//@override 
 		public lookAt( target:away.geom.Vector3D, upAxis:away.geom.Vector3D = null )
 		{
-			throw new away.errors.PartialImplementationError();
+
+            away.Debug.throwPIR( 'ObjectContainer3D' , 'lookAt' , 'PartialImplementationError' );
+			//throw new away.errors.PartialImplementationError();
 			//TODO super.lookAt( target, upAxis );
 			this.notifySceneTransformChange();
 		}
@@ -515,7 +517,10 @@ module away.containers
 		//@override
 		public translateLocal(axis:away.geom.Vector3D, distance:number )
 		{
-			throw new away.errors.PartialImplementationError();
+
+            away.Debug.throwPIR( 'ObjectContainer3D' , 'translateLocal' , 'PartialImplementationError' );
+
+			//throw new away.errors.PartialImplementationError();
 			//TODO super.translateLocal( axis, distance );
 			this.notifySceneTransformChange();
 		}
