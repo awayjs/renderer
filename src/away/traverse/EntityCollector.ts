@@ -159,8 +159,11 @@ module away.traverse
 		//@override
 		public enterNode( node:away.partition.NodeBase ):boolean
 		{
-			var enter:boolean = away.traverse.PartitionTraverser._iCollectionMark != away.traverse.PartitionTraverser._iCollectionMark && node.isInFrustum( this._cullPlanes, this._numCullPlanes );
-			away.traverse.PartitionTraverser._iCollectionMark = away.traverse.PartitionTraverser._iCollectionMark;
+
+            var enter : boolean = away.traverse.PartitionTraverser._iCollectionMark != node._iCollectionMark && node.isInFrustum( this._cullPlanes, this._numCullPlanes );
+
+            node._iCollectionMark = away.traverse.PartitionTraverser._iCollectionMark;
+
 			return enter;
 		}
 		
@@ -211,6 +214,9 @@ module away.traverse
 		//@override
 		public applyEntity(entity:away.entities.Entity )
 		{
+
+
+
 			++this._pNumEntities;
 			
 			var item:away.data.EntityListItem = this._pEntityListItemPool.getItem();
@@ -218,6 +224,10 @@ module away.traverse
 			
 			item.next = this._entityHead;
 			this._entityHead = item;
+
+
+            //console.log ( 'EntityCollector' , 'applyEntity: ' , entity , ' item: ' , item , 'item.next' , item.next , ' head: ' , this._entityHead );
+
 		}
 		
 		//@override
