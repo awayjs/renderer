@@ -904,14 +904,15 @@ var away;
                 if (typeof index === "undefined") { index = 0; }
                 if (typeof transpose === "undefined") { transpose = false; }
                 //TODO fully implement
-                this.rawData = vector.splice(0);
+                this.rawData = vector.slice(0);
             };
 
-            Matrix3D.prototype.copyRawDataTo = function (vector, index, transpose) {
+            //public copyRawDataTo( vector:number[], index:number = 0, transpose:boolean = false )
+            Matrix3D.prototype.copyRawDataTo = function (index, transpose) {
                 if (typeof index === "undefined") { index = 0; }
                 if (typeof transpose === "undefined") { transpose = false; }
                 //TODO fully implement
-                vector = this.rawData.splice(0);
+                return this.rawData.slice(0);
             };
 
             /**
@@ -1084,6 +1085,8 @@ var away;
             Matrix3D.prototype.invert = function () {
                 var d = this.determinant;
                 var invertable = Math.abs(d) > 0.00000000001;
+
+                console.log(invertable);
 
                 if (invertable) {
                     d = -1 / d;
@@ -1289,7 +1292,7 @@ var away;
                 * [read-only] A Number that determines whether a matrix is invertible.
                 */
                 function () {
-                    return -1 * ((this.rawData[0] * this.rawData[5] - this.rawData[4] * this.rawData[1]) * (this.rawData[10] * this.rawData[15] - this.rawData[14] * this.rawData[11]) - (this.rawData[0] * this.rawData[9] - this.rawData[8] * this.rawData[1]) * (this.rawData[6] * this.rawData[15] - this.rawData[14] * this.rawData[7]) + (this.rawData[0] * this.rawData[13] - this.rawData[12] * this.rawData[1]) * (this.rawData[6] * this.rawData[11] - this.rawData[10] * this.rawData[7]) + (this.rawData[4] * this.rawData[9] - this.rawData[8] * this.rawData[5]) * (this.rawData[2] * this.rawData[15] - this.rawData[14] * this.rawData[3]) - (this.rawData[4] * this.rawData[13] - this.rawData[12] * this.rawData[5]) * (this.rawData[2] * this.rawData[11] - this.rawData[10] * this.rawData[3]) + (this.rawData[8] * this.rawData[13] - this.rawData[12] * this.rawData[9]) * (this.rawData[2] * this.rawData[7] - this.rawData[6] * this.rawData[3]));
+                    return ((this.rawData[0] * this.rawData[5] - this.rawData[4] * this.rawData[1]) * (this.rawData[10] * this.rawData[15] - this.rawData[14] * this.rawData[11]) - (this.rawData[0] * this.rawData[9] - this.rawData[8] * this.rawData[1]) * (this.rawData[6] * this.rawData[15] - this.rawData[14] * this.rawData[7]) + (this.rawData[0] * this.rawData[13] - this.rawData[12] * this.rawData[1]) * (this.rawData[6] * this.rawData[11] - this.rawData[10] * this.rawData[7]) + (this.rawData[4] * this.rawData[9] - this.rawData[8] * this.rawData[5]) * (this.rawData[2] * this.rawData[15] - this.rawData[14] * this.rawData[3]) - (this.rawData[4] * this.rawData[13] - this.rawData[12] * this.rawData[5]) * (this.rawData[2] * this.rawData[11] - this.rawData[10] * this.rawData[3]) + (this.rawData[8] * this.rawData[13] - this.rawData[12] * this.rawData[9]) * (this.rawData[2] * this.rawData[7] - this.rawData[6] * this.rawData[3]));
                 },
                 enumerable: true,
                 configurable: true
@@ -2540,7 +2543,7 @@ var away;
                 set: function (val) {
                     if (!val.rawData[0]) {
                         var raw = away.math.Matrix3DUtils.RAW_DATA_CONTAINER;
-                        val.copyRawDataTo(raw);
+                        raw = val.copyRawDataTo();
                         raw[0] = this._smallestNumber;
                         val.copyRawDataFrom(raw);
                     }
@@ -3131,12 +3134,13 @@ var away;
                 this._iSceneGraphRoot.partition = new away.partition.Partition3D(new away.partition.NodeBase());
             }
             Scene3D.prototype.traversePartitions = function (traverser) {
-                var i;
+                var i = 0;
                 var len = this._partitions.length;
 
                 traverser.scene = this;
 
                 while (i < len) {
+                    console.log('Scene3D.traversePartition: ', i);
                     this._partitions[i++].traverse(traverser);
                 }
             };
@@ -3146,6 +3150,7 @@ var away;
                     return this._iSceneGraphRoot.partition;
                 },
                 set: function (value) {
+                    //console.log( 'scene3D.setPartition' , value );
                     this._iSceneGraphRoot.partition = value;
                     this.dispatchEvent(new away.events.Scene3DEvent(away.events.Scene3DEvent.PARTITION_CHANGED, this._iSceneGraphRoot));
                 },
@@ -3186,7 +3191,12 @@ var away;
             }
             */
             Scene3D.prototype.iRegisterEntity = function (entity) {
-                var partition = entity.iImplicitPartition;
+                //console.log( 'Scene3D' , 'iRegisterEntity' , entity._pImplicitPartition );
+                var partition = entity.iGetImplicitPartition();
+
+                //console.log( 'entity.iGetImplicitPartition() : ' , entity.iGetImplicitPartition() , 'entity.iImplicitPartition : ' , entity.iImplicitPartition )
+                //entity.iImplicitPartition._rootNode;
+                //console.log( 'scene3D.iRegisterEntity' , entity , entity.iImplicitPartition , partition );
                 this.iAddPartitionUnique(partition);
                 this.partition.iMarkForUpdate(entity);
             };
@@ -4906,6 +4916,12 @@ var away;
             };
 
             Context3D.prototype.setScissorRectangle = function (rectangle) {
+                if (!rectangle) {
+                    this._gl.disable(this._gl.SCISSOR_TEST);
+                    return;
+                }
+
+                this._gl.enable(this._gl.SCISSOR_TEST);
                 this._gl.scissor(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
             };
 
@@ -4915,6 +4931,12 @@ var away;
             };
 
             Context3D.prototype.setGLSLTextureAt = function (locationName, texture, textureIndex) {
+                if (!texture) {
+                    this._gl.activeTexture(this._gl.TEXTURE0 + (textureIndex));
+                    this._gl.bindTexture(this._gl.TEXTURE_2D, null);
+                    return;
+                }
+
                 var location = this._gl.getUniformLocation(this._currentProgram.glProgram, locationName);
                 switch (textureIndex) {
                     case 0:
@@ -4965,7 +4987,15 @@ var away;
             Context3D.prototype.setGLSLVertexBufferAt = function (locationName, buffer, bufferOffset, format) {
                 if (typeof bufferOffset === "undefined") { bufferOffset = 0; }
                 if (typeof format === "undefined") { format = null; }
+                if (!buffer)
+                    return;
+
                 var location = this._gl.getAttribLocation(this._currentProgram.glProgram, locationName);
+
+                if (!buffer) {
+                    this._gl.disableVertexAttribArray(location);
+                    return;
+                }
 
                 this._gl.bindBuffer(this._gl.ARRAY_BUFFER, buffer.glBuffer);
 
@@ -5745,6 +5775,14 @@ var away;
             __extends(EntityCollector, _super);
             function EntityCollector() {
                 _super.call(this);
+                this._pNumEntities = 0;
+                this._pNumLights = 0;
+                this._pNumTriangles = 0;
+                this._pNumMouseEnableds = 0;
+                this._numDirectionalLights = 0;
+                this._numPointLights = 0;
+                this._numLightProbes = 0;
+                this._numCullPlanes = 0;
                 this.init();
             }
             EntityCollector.prototype.init = function () {
@@ -5889,8 +5927,10 @@ var away;
 
             //@override
             EntityCollector.prototype.enterNode = function (node) {
-                var enter = away.traverse.PartitionTraverser._iCollectionMark != away.traverse.PartitionTraverser._iCollectionMark && node.isInFrustum(this._cullPlanes, this._numCullPlanes);
-                away.traverse.PartitionTraverser._iCollectionMark = away.traverse.PartitionTraverser._iCollectionMark;
+                var enter = away.traverse.PartitionTraverser._iCollectionMark != node._iCollectionMark && node.isInFrustum(this._cullPlanes, this._numCullPlanes);
+
+                node._iCollectionMark = away.traverse.PartitionTraverser._iCollectionMark;
+
                 return enter;
             };
 
@@ -5941,6 +5981,8 @@ var away;
 
                 item.next = this._entityHead;
                 this._entityHead = item;
+
+                console.log('EntityCollector', 'applyEntity: ', entity, ' item: ', item, 'item.next', item.next, ' head: ', this._entityHead);
             };
 
             //@override
@@ -7658,7 +7700,7 @@ var away;
                 var cy = sphere._centerY;
                 var cz = sphere._centerZ;
                 var raw = [];
-                matrix.copyRawDataTo(raw);
+                raw = matrix.copyRawDataTo();
                 var m11 = raw[0], m12 = raw[4], m13 = raw[8], m14 = raw[12];
                 var m21 = raw[1], m22 = raw[5], m23 = raw[9], m24 = raw[13];
                 var m31 = raw[2], m32 = raw[6], m33 = raw[10], m34 = raw[14];
@@ -7702,6 +7744,356 @@ var away;
             return BoundingSphere;
         })(away.bounds.BoundingVolumeBase);
         bounds.BoundingSphere = BoundingSphere;
+    })(away.bounds || (away.bounds = {}));
+    var bounds = away.bounds;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts" />
+    (function (bounds) {
+        //import away3d.arcane;
+        //import away3d.core.math.*;
+        //import away3d.primitives.*;
+        //import flash.geom.*;
+        //use namespace arcane;
+        /**
+        * AxisAlignedBoundingBox represents a bounding box volume that has its planes aligned to the local coordinate axes of the bounded object.
+        * This is useful for most meshes.
+        */
+        var AxisAlignedBoundingBox = (function (_super) {
+            __extends(AxisAlignedBoundingBox, _super);
+            /**
+            * Creates a new <code>AxisAlignedBoundingBox</code> object.
+            */
+            function AxisAlignedBoundingBox() {
+                _super.call(this);
+                this._centerX = 0;
+                this._centerY = 0;
+                this._centerZ = 0;
+                this._halfExtentsX = 0;
+                this._halfExtentsY = 0;
+                this._halfExtentsZ = 0;
+            }
+            /**
+            * @inheritDoc
+            */
+            AxisAlignedBoundingBox.prototype.nullify = function () {
+                _super.prototype.nullify.call(this);
+
+                this._centerX = this._centerY = this._centerZ = 0;
+                this._halfExtentsX = this._halfExtentsY = this._halfExtentsZ = 0;
+            };
+
+            /**
+            * @inheritDoc
+            */
+            AxisAlignedBoundingBox.prototype.isInFrustum = function (planes, numPlanes) {
+                console.log('AxisAlignedBoundingBox', 'isInFrustum', planes);
+
+                for (var i = 0; i < numPlanes; ++i) {
+                    var plane = planes[i];
+                    var a = plane.a;
+                    var b = plane.b;
+                    var c = plane.c;
+
+                    var flippedExtentX = a < 0 ? -this._halfExtentsX : this._halfExtentsX;
+                    var flippedExtentY = b < 0 ? -this._halfExtentsY : this._halfExtentsY;
+                    var flippedExtentZ = c < 0 ? -this._halfExtentsZ : this._halfExtentsZ;
+                    var projDist = a * (this._centerX + flippedExtentX) + b * (this._centerY + flippedExtentY) + c * (this._centerZ + flippedExtentZ) - plane.d;
+
+                    console.log(a, b, c, plane.d, ' : ', flippedExtentX, flippedExtentY, flippedExtentZ, ' : ', projDist);
+
+                    if (projDist < 0) {
+                        console.log('AxisAlignedBoundingBox', 'isInFrustum', 'false');
+
+                        return false;
+                    }
+                }
+
+                console.log('AxisAlignedBoundingBox', 'isInFrustum', 'true');
+                return true;
+            };
+
+            AxisAlignedBoundingBox.prototype.rayIntersection = function (position, direction, targetNormal) {
+                if (this.containsPoint(position))
+                    return 0;
+
+                var px = position.x - this._centerX;
+                var py = position.y - this._centerY;
+                var pz = position.z - this._centerZ;
+
+                var vx = direction.x;
+                var vy = direction.y;
+                var vz = direction.z;
+
+                var ix;
+                var iy;
+                var iz;
+                var rayEntryDistance;
+
+                // ray-plane tests
+                var intersects;
+                if (vx < 0) {
+                    rayEntryDistance = (this._halfExtentsX - px) / vx;
+                    if (rayEntryDistance > 0) {
+                        iy = py + rayEntryDistance * vy;
+                        iz = pz + rayEntryDistance * vz;
+                        if (iy > -this._halfExtentsY && iy < this._halfExtentsY && iz > -this._halfExtentsZ && iz < this._halfExtentsZ) {
+                            targetNormal.x = 1;
+                            targetNormal.y = 0;
+                            targetNormal.z = 0;
+
+                            intersects = true;
+                        }
+                    }
+                }
+                if (!intersects && vx > 0) {
+                    rayEntryDistance = (-this._halfExtentsX - px) / vx;
+                    if (rayEntryDistance > 0) {
+                        iy = py + rayEntryDistance * vy;
+                        iz = pz + rayEntryDistance * vz;
+                        if (iy > -this._halfExtentsY && iy < this._halfExtentsY && iz > -this._halfExtentsZ && iz < this._halfExtentsZ) {
+                            targetNormal.x = -1;
+                            targetNormal.y = 0;
+                            targetNormal.z = 0;
+                            intersects = true;
+                        }
+                    }
+                }
+                if (!intersects && vy < 0) {
+                    rayEntryDistance = (this._halfExtentsY - py) / vy;
+                    if (rayEntryDistance > 0) {
+                        ix = px + rayEntryDistance * vx;
+                        iz = pz + rayEntryDistance * vz;
+                        if (ix > -this._halfExtentsX && ix < this._halfExtentsX && iz > -this._halfExtentsZ && iz < this._halfExtentsZ) {
+                            targetNormal.x = 0;
+                            targetNormal.y = 1;
+                            targetNormal.z = 0;
+                            intersects = true;
+                        }
+                    }
+                }
+                if (!intersects && vy > 0) {
+                    rayEntryDistance = (-this._halfExtentsY - py) / vy;
+                    if (rayEntryDistance > 0) {
+                        ix = px + rayEntryDistance * vx;
+                        iz = pz + rayEntryDistance * vz;
+                        if (ix > -this._halfExtentsX && ix < this._halfExtentsX && iz > -this._halfExtentsZ && iz < this._halfExtentsZ) {
+                            targetNormal.x = 0;
+                            targetNormal.y = -1;
+                            targetNormal.z = 0;
+                            intersects = true;
+                        }
+                    }
+                }
+                if (!intersects && vz < 0) {
+                    rayEntryDistance = (this._halfExtentsZ - pz) / vz;
+                    if (rayEntryDistance > 0) {
+                        ix = px + rayEntryDistance * vx;
+                        iy = py + rayEntryDistance * vy;
+                        if (iy > -this._halfExtentsY && iy < this._halfExtentsY && ix > -this._halfExtentsX && ix < this._halfExtentsX) {
+                            targetNormal.x = 0;
+                            targetNormal.y = 0;
+                            targetNormal.z = 1;
+                            intersects = true;
+                        }
+                    }
+                }
+                if (!intersects && vz > 0) {
+                    rayEntryDistance = (-this._halfExtentsZ - pz) / vz;
+                    if (rayEntryDistance > 0) {
+                        ix = px + rayEntryDistance * vx;
+                        iy = py + rayEntryDistance * vy;
+                        if (iy > -this._halfExtentsY && iy < this._halfExtentsY && ix > -this._halfExtentsX && ix < this._halfExtentsX) {
+                            targetNormal.x = 0;
+                            targetNormal.y = 0;
+                            targetNormal.z = -1;
+                            intersects = true;
+                        }
+                    }
+                }
+
+                return intersects ? rayEntryDistance : -1;
+            };
+
+            /**
+            * @inheritDoc
+            */
+            AxisAlignedBoundingBox.prototype.containsPoint = function (position) {
+                var px = position.x - this._centerX, py = position.y - this._centerY, pz = position.z - this._centerZ;
+                return px <= this._halfExtentsX && px >= -this._halfExtentsX && py <= this._halfExtentsY && py >= -this._halfExtentsY && pz <= this._halfExtentsZ && pz >= -this._halfExtentsZ;
+            };
+
+            /**
+            * @inheritDoc
+            */
+            AxisAlignedBoundingBox.prototype.fromExtremes = function (minX, minY, minZ, maxX, maxY, maxZ) {
+                this._centerX = (maxX + minX) * .5;
+                this._centerY = (maxY + minY) * .5;
+                this._centerZ = (maxZ + minZ) * .5;
+                this._halfExtentsX = (maxX - minX) * .5;
+                this._halfExtentsY = (maxY - minY) * .5;
+                this._halfExtentsZ = (maxZ - minZ) * .5;
+
+                _super.prototype.fromExtremes.call(this, minX, minY, minZ, maxX, maxY, maxZ);
+            };
+
+            /**
+            * @inheritDoc
+            */
+            AxisAlignedBoundingBox.prototype.clone = function () {
+                var clone = new AxisAlignedBoundingBox();
+                clone.fromExtremes(this._pMin.x, this._pMin.y, this._pMin.z, this._pMax.x, this._pMax.y, this._pMax.z);
+                return clone;
+            };
+
+            Object.defineProperty(AxisAlignedBoundingBox.prototype, "halfExtentsX", {
+                get: function () {
+                    return this._halfExtentsX;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(AxisAlignedBoundingBox.prototype, "halfExtentsY", {
+                get: function () {
+                    return this._halfExtentsY;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(AxisAlignedBoundingBox.prototype, "halfExtentsZ", {
+                get: function () {
+                    return this._halfExtentsZ;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * Finds the closest point on the bounding volume to another given point. This can be used for maximum error calculations for content within a given bound.
+            * @param point The point for which to find the closest point on the bounding volume
+            * @param target An optional Vector3D to store the result to prevent creating a new object.
+            * @return
+            */
+            AxisAlignedBoundingBox.prototype.closestPointToPoint = function (point, target) {
+                if (typeof target === "undefined") { target = null; }
+                var p;
+
+                if (target == null) {
+                    target = new away.geom.Vector3D();
+                }
+
+                p = point.x;
+                if (p < this._pMin.x)
+                    p = this._pMin.x;
+                if (p > this._pMax.x)
+                    p = this._pMax.x;
+                target.x = p;
+
+                p = point.y;
+                if (p < this._pMin.y)
+                    p = this._pMin.y;
+                if (p > this._pMax.y)
+                    p = this._pMax.y;
+                target.y = p;
+
+                p = point.z;
+                if (p < this._pMin.z)
+                    p = this._pMin.z;
+                if (p > this._pMax.z)
+                    p = this._pMax.z;
+                target.z = p;
+
+                return target;
+            };
+
+            AxisAlignedBoundingBox.prototype.pUpdateBoundingRenderable = function () {
+                this._pBoundingRenderable.scaleX = Math.max(this._halfExtentsX * 2, 0.001);
+                this._pBoundingRenderable.scaleY = Math.max(this._halfExtentsY * 2, 0.001);
+                this._pBoundingRenderable.scaleZ = Math.max(this._halfExtentsZ * 2, 0.001);
+                this._pBoundingRenderable.x = this._centerX;
+                this._pBoundingRenderable.y = this._centerY;
+                this._pBoundingRenderable.z = this._centerZ;
+            };
+
+            AxisAlignedBoundingBox.prototype.pCreateBoundingRenderable = function () {
+                return new away.primitives.WireframeCube(1, 1, 1, 0xffffff, 0.5);
+            };
+
+            AxisAlignedBoundingBox.prototype.classifyToPlane = function (plane) {
+                var a = plane.a;
+                var b = plane.b;
+                var c = plane.c;
+                var centerDistance = a * this._centerX + b * this._centerY + c * this._centerZ - plane.d;
+
+                if (a < 0)
+                    a = -a;
+
+                if (b < 0)
+                    b = -b;
+
+                if (c < 0)
+                    c = -c;
+
+                var boundOffset = a * this._halfExtentsX + b * this._halfExtentsY + c * this._halfExtentsZ;
+
+                return centerDistance > boundOffset ? away.math.PlaneClassification.FRONT : centerDistance < -boundOffset ? away.math.PlaneClassification.BACK : away.math.PlaneClassification.INTERSECT;
+            };
+
+            AxisAlignedBoundingBox.prototype.transformFrom = function (bounds, matrix) {
+                var aabb = bounds;
+                var cx = aabb._centerX;
+                var cy = aabb._centerY;
+                var cz = aabb._centerZ;
+                var raw = away.math.Matrix3DUtils.RAW_DATA_CONTAINER;
+
+                raw = matrix.copyRawDataTo();
+
+                var m11 = raw[0], m12 = raw[4], m13 = raw[8], m14 = raw[12];
+                var m21 = raw[1], m22 = raw[5], m23 = raw[9], m24 = raw[13];
+                var m31 = raw[2], m32 = raw[6], m33 = raw[10], m34 = raw[14];
+
+                this._centerX = cx * m11 + cy * m12 + cz * m13 + m14;
+                this._centerY = cx * m21 + cy * m22 + cz * m23 + m24;
+                this._centerZ = cx * m31 + cy * m32 + cz * m33 + m34;
+
+                if (m11 < 0)
+                    m11 = -m11;
+                if (m12 < 0)
+                    m12 = -m12;
+                if (m13 < 0)
+                    m13 = -m13;
+                if (m21 < 0)
+                    m21 = -m21;
+                if (m22 < 0)
+                    m22 = -m22;
+                if (m23 < 0)
+                    m23 = -m23;
+                if (m31 < 0)
+                    m31 = -m31;
+                if (m32 < 0)
+                    m32 = -m32;
+                if (m33 < 0)
+                    m33 = -m33;
+                var hx = aabb._halfExtentsX;
+                var hy = aabb._halfExtentsY;
+                var hz = aabb._halfExtentsZ;
+                this._halfExtentsX = hx * m11 + hy * m12 + hz * m13;
+                this._halfExtentsY = hx * m21 + hy * m22 + hz * m23;
+                this._halfExtentsZ = hx * m31 + hy * m32 + hz * m33;
+
+                this._pMin.x = this._centerX - this._halfExtentsX;
+                this._pMin.y = this._centerY - this._halfExtentsY;
+                this._pMin.z = this._centerZ - this._halfExtentsZ;
+                this._pMax.x = this._centerX + this._halfExtentsX;
+                this._pMax.y = this._centerY + this._halfExtentsY;
+                this._pMax.z = this._centerZ + this._halfExtentsZ;
+            };
+            return AxisAlignedBoundingBox;
+        })(away.bounds.BoundingVolumeBase);
+        bounds.AxisAlignedBoundingBox = AxisAlignedBoundingBox;
     })(away.bounds || (away.bounds = {}));
     var bounds = away.bounds;
 })(away || (away = {}));
@@ -7756,13 +8148,16 @@ var away;
                 configurable: true
             });
 
+            ObjectContainer3D.prototype.iGetImplicitPartition = function () {
+                return this._pImplicitPartition;
+            };
+
 
             ObjectContainer3D.prototype.iSetImplicitPartition = function (value) {
-                if (value == this._pImplicitPartition) {
+                if (value == this._pImplicitPartition)
                     return;
-                }
 
-                var i;
+                var i = 0;
                 var len = this._children.length;
                 var child;
 
@@ -7770,9 +8165,9 @@ var away;
 
                 while (i < len) {
                     child = this._children[i++];
-                    if (!child._pExplicitPartition) {
+
+                    if (!child._pExplicitPartition)
                         child._pImplicitPartition = value;
-                    }
                 }
             };
 
@@ -8084,13 +8479,48 @@ var away;
                 get: function () {
                     return this._pScene;
                 },
+                set: function (value) {
+                    this.setScene(value);
+                },
                 enumerable: true,
                 configurable: true
             });
 
+
+            ObjectContainer3D.prototype.setScene = function (value) {
+                //console.log( 'ObjectContainer3D' , 'setScene' , value );
+                var i = 0;
+                var len = this._children.length;
+
+                while (i < len) {
+                    this._children[i++].scene = value;
+                }
+
+                if (this._pScene == value)
+                    return;
+
+                if (value == null)
+                    this._oldScene = this._pScene;
+
+                if (this._pExplicitPartition && this._oldScene && this._oldScene != this._pScene)
+                    this.partition = null;
+
+                if (value) {
+                    this._oldScene = null;
+                }
+
+                // end of stupid partition test code
+                this._pScene = value;
+
+                if (this._pScene) {
+                    this._pScene.dispatchEvent(new away.events.Scene3DEvent(away.events.Scene3DEvent.ADDED_TO_SCENE, this));
+                } else if (this._oldScene) {
+                    this._oldScene.dispatchEvent(new away.events.Scene3DEvent(away.events.Scene3DEvent.REMOVED_FROM_SCENE, this));
+                }
+            };
+
             Object.defineProperty(ObjectContainer3D.prototype, "inverseSceneTransform", {
-                get: //TODO public function set scene(value:Scene3D):void
-                function () {
+                get: function () {
                     if (this._inverseSceneTransformDirty) {
                         this._inverseSceneTransform.copyFrom(this.sceneTransform);
                         this._inverseSceneTransform.invert();
@@ -8124,7 +8554,8 @@ var away;
                 }
 
                 if (!child._pExplicitPartition) {
-                    child.iImplicitPartition = this._pImplicitPartition;
+                    //console.log( 'ObjectContainer3D' , 'addChild' , 'set iImplicitPartition' ,  this._pImplicitPartition);
+                    child.iSetImplicitPartition(this._pImplicitPartition);
                 }
 
                 child.iSetParent(this);
@@ -8187,16 +8618,18 @@ var away;
             //@override
             ObjectContainer3D.prototype.lookAt = function (target, upAxis) {
                 if (typeof upAxis === "undefined") { upAxis = null; }
-                throw new away.errors.PartialImplementationError();
+                away.Debug.throwPIR('ObjectContainer3D', 'lookAt', 'PartialImplementationError');
 
+                //throw new away.errors.PartialImplementationError();
                 //TODO super.lookAt( target, upAxis );
                 this.notifySceneTransformChange();
             };
 
             //@override
             ObjectContainer3D.prototype.translateLocal = function (axis, distance) {
-                throw new away.errors.PartialImplementationError();
+                away.Debug.throwPIR('ObjectContainer3D', 'translateLocal', 'PartialImplementationError');
 
+                //throw new away.errors.PartialImplementationError();
                 //TODO super.translateLocal( axis, distance );
                 this.notifySceneTransformChange();
             };
@@ -8274,6 +8707,9 @@ var away;
                 this._pBoundsInvalid = true;
                 this._worldBoundsInvalid = true;
                 this._pBounds = this.pGetDefaultBoundingVolume();
+
+                console.log("Entity() - Bounds:", this._pBounds);
+
                 this._worldBounds = this.pGetDefaultBoundingVolume();
             }
             //@override
@@ -8469,28 +8905,28 @@ var away;
                 configurable: true
             });
 
+            Object.defineProperty(Entity.prototype, "scene", {
+                set: //@override
+                function (value) {
+                    if (value == this._pScene) {
+                        return;
+                    }
+                    if (this._pScene) {
+                        this._pScene.iUnregisterEntity(this);
+                    }
+
+                    if (value) {
+                        value.iRegisterEntity(this);
+                    }
+
+                    _super.prototype.setScene.call(this, value);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
             Object.defineProperty(Entity.prototype, "assetType", {
-                get: /*
-                //@override
-                public set scene( value:Scene3D )
-                {
-                if(value == _scene)
-                {
-                return;
-                }
-                if( this._scene)
-                {
-                _scene.unregisterEntity( this );
-                }
-                // callback to notify object has been spawned. Casts to please FDT
-                if ( value )
-                {
-                value.registerEntity(this);
-                }
-                super.scene = value;
-                }
-                */
-                //@override
+                get: //@override
                 function () {
                     return away.library.AssetType.ENTITY;
                 },
@@ -8517,36 +8953,30 @@ var away;
                 return this._partitionNode;
             };
 
-            /* TODO Implementation dependency : BoundingVolumeBase
-            public isIntersectingRay( rayPosition:away.geom.Vector3D, rayDirection:away.geom.Vector3D ):boolean
-            {
-            var localRayPosition:away.geom.Vector3D = this.inverseSceneTransform.transformVector( rayPosition );
-            var localRayDirection:away.geom.Vector3D = this.inverseSceneTransform.deltaTransformVector( rayDirection );
-            
-            
-            if( !this._iPickingCollisionVO.localNormal )
-            {
-            this._iPickingCollisionVO.localNormal = new away.geom.Vector3D()
-            }
-            
-            
-            var rayEntryDistance:number = bounds.rayIntersection(localRayPosition, localRayDirection, this._iPickingCollisionVO.localNormal );
-            
-            if( rayEntryDistance < 0 )
-            {
-            return false;
-            }
-            
-            this._iPickingCollisionVO.rayEntryDistance = rayEntryDistance;
-            this._iPickingCollisionVO.localRayPosition = localRayPosition;
-            this._iPickingCollisionVO.localRayDirection = localRayDirection;
-            this._iPickingCollisionVO.rayPosition = rayPosition;
-            this._iPickingCollisionVO.rayDirection = rayDirection;
-            this._iPickingCollisionVO.rayOriginIsInsideBounds = rayEntryDistance == 0;
-            
-            return true;
-            }
-            //*/
+            Entity.prototype.isIntersectingRay = function (rayPosition, rayDirection) {
+                var localRayPosition = this.inverseSceneTransform.transformVector(rayPosition);
+                var localRayDirection = this.inverseSceneTransform.deltaTransformVector(rayDirection);
+
+                if (!this._iPickingCollisionVO.localNormal) {
+                    this._iPickingCollisionVO.localNormal = new away.geom.Vector3D();
+                }
+
+                var rayEntryDistance = this._pBounds.rayIntersection(localRayPosition, localRayDirection, this._iPickingCollisionVO.localNormal);
+
+                if (rayEntryDistance < 0) {
+                    return false;
+                }
+
+                this._iPickingCollisionVO.rayEntryDistance = rayEntryDistance;
+                this._iPickingCollisionVO.localRayPosition = localRayPosition;
+                this._iPickingCollisionVO.localRayDirection = localRayDirection;
+                this._iPickingCollisionVO.rayPosition = rayPosition;
+                this._iPickingCollisionVO.rayDirection = rayDirection;
+                this._iPickingCollisionVO.rayOriginIsInsideBounds = rayEntryDistance == 0;
+
+                return true;
+            };
+
             Entity.prototype.pCreateEntityPartitionNode = function () {
                 throw new away.errors.AbstractMethodError();
             };
@@ -8554,8 +8984,7 @@ var away;
             Entity.prototype.pGetDefaultBoundingVolume = function () {
                 // point lights should be using sphere bounds
                 // directional lights should be using null bounds
-                // TODO return new AxisAlignedBoundingBox();
-                return null;
+                return new away.bounds.AxisAlignedBoundingBox();
             };
 
             Entity.prototype.pUpdateBounds = function () {
@@ -8606,32 +9035,41 @@ var away;
             //*/
             Entity.prototype.notifySceneBoundsInvalid = function () {
                 if (this._pScene) {
+                    this._pScene.iInvalidateEntityBounds(this);
                 }
             };
 
             Entity.prototype.notifyPartitionAssigned = function () {
                 if (this._pScene) {
+                    this._pScene.iRegisterPartition(this);
                 }
             };
 
             Entity.prototype.notifyPartitionUnassigned = function () {
                 if (this._pScene) {
+                    this._pScene.iUnregisterPartition(this);
                 }
             };
 
             Entity.prototype.addBounds = function () {
                 if (!this._boundsIsShown) {
                     this._boundsIsShown = true;
+                    this.addChild(this._pBounds.boundingRenderable);
                 }
             };
 
             Entity.prototype.removeBounds = function () {
                 if (!this._boundsIsShown) {
                     this._boundsIsShown = false;
+                    this.removeChild(this._pBounds.boundingRenderable);
+                    this._pBounds.disposeRenderable();
                 }
             };
 
             Entity.prototype.iInternalUpdate = function () {
+                if (this._iController) {
+                    this._iController.update();
+                }
             };
             return Entity;
         })(away.containers.ObjectContainer3D);
@@ -8664,6 +9102,9 @@ var away;
                 for (var i = 0; i < 6; ++i) {
                     this._frustumPlanes[i] = new away.math.Plane3D();
                 }
+
+                console.log('Camera.z = -1000;');
+                this.z = -1000;
             }
             Camera3D.prototype.pGetDefaultBoundingVolume = function () {
                 return new away.bounds.NullBounds();
@@ -8704,9 +9145,12 @@ var away;
                 var c31, c32, c33, c34;
                 var c41, c42, c43, c44;
                 var p;
-                var raw = [];
+                var raw = new Array(16);
+                ;
                 var invLen;
-                this.viewProjection.copyRawDataTo(raw);
+                raw = this.viewProjection.copyRawDataTo();
+
+                console.log('raw', raw);
 
                 c11 = raw[0];
                 c12 = raw[4];
@@ -8792,6 +9236,10 @@ var away;
                 p.d = (c34 - c44) * invLen;
 
                 this._frustumPlanesDirty = false;
+
+                for (var cntr = 0; cntr < this._frustumPlanes.length; cntr++) {
+                    console.log('Camera3D this._frustumPlanes[cntr].d ', this._frustumPlanes[cntr].d);
+                }
             };
 
             //@override
@@ -8837,9 +9285,14 @@ var away;
             Object.defineProperty(Camera3D.prototype, "viewProjection", {
                 get: function () {
                     if (this._viewProjectionDirty) {
+                        console.log('this.inverseSceneTransform', this.inverseSceneTransform.copyRawDataTo());
+                        console.log('this.sceneTransform ', this.sceneTransform.copyRawDataTo());
+
                         this._viewProjection.copyFrom(this.inverseSceneTransform);
                         this._viewProjection.append(this._lens.matrix);
                         this._viewProjectionDirty = false;
+
+                        console.log('this.viewProjection ', this._viewProjection.copyRawDataTo());
                     }
                     return this._viewProjection;
                 },
@@ -10397,6 +10850,154 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (primitives) {
+        //import flash.geom.Vector3D;
+        /**
+        * A WirefameCube primitive mesh.
+        */
+        var WireframeCube = (function (_super) {
+            __extends(WireframeCube, _super);
+            /**
+            * Creates a new WireframeCube object.
+            * @param width The size of the cube along its X-axis.
+            * @param height The size of the cube along its Y-axis.
+            * @param depth The size of the cube along its Z-axis.
+            * @param color The colour of the wireframe lines
+            * @param thickness The thickness of the wireframe lines
+            */
+            function WireframeCube(width, height, depth, color, thickness) {
+                if (typeof width === "undefined") { width = 100; }
+                if (typeof height === "undefined") { height = 100; }
+                if (typeof depth === "undefined") { depth = 100; }
+                if (typeof color === "undefined") { color = 0xFFFFFF; }
+                if (typeof thickness === "undefined") { thickness = 1; }
+                _super.call(this, color, thickness);
+
+                this._width = width;
+                this._height = height;
+                this._depth = depth;
+            }
+            Object.defineProperty(WireframeCube.prototype, "width", {
+                get: /**
+                * The size of the cube along its X-axis.
+                */
+                function () {
+                    return this._width;
+                },
+                set: function (value) {
+                    this._width = value;
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframeCube.prototype, "height", {
+                get: /**
+                * The size of the cube along its Y-axis.
+                */
+                function () {
+                    return this._height;
+                },
+                set: function (value) {
+                    if (value <= 0)
+                        throw new Error("Value needs to be greater than 0");
+                    this._height = value;
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframeCube.prototype, "depth", {
+                get: /**
+                * The size of the cube along its Z-axis.
+                */
+                function () {
+                    return this._depth;
+                },
+                set: function (value) {
+                    this._depth = value;
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * @inheritDoc
+            */
+            WireframeCube.prototype.pBuildGeometry = function () {
+                var v0 = new away.geom.Vector3D();
+                var v1 = new away.geom.Vector3D();
+                var hw = this._width * .5;
+                var hh = this._height * .5;
+                var hd = this._depth * .5;
+
+                v0.x = -hw;
+                v0.y = hh;
+                v0.z = -hd;
+                v1.x = -hw;
+                v1.y = -hh;
+                v1.z = -hd;
+
+                this.pUpdateOrAddSegment(0, v0, v1);
+                v0.z = hd;
+                v1.z = hd;
+                this.pUpdateOrAddSegment(1, v0, v1);
+                v0.x = hw;
+                v1.x = hw;
+                this.pUpdateOrAddSegment(2, v0, v1);
+                v0.z = -hd;
+                v1.z = -hd;
+                this.pUpdateOrAddSegment(3, v0, v1);
+
+                v0.x = -hw;
+                v0.y = -hh;
+                v0.z = -hd;
+                v1.x = hw;
+                v1.y = -hh;
+                v1.z = -hd;
+                this.pUpdateOrAddSegment(4, v0, v1);
+                v0.y = hh;
+                v1.y = hh;
+                this.pUpdateOrAddSegment(5, v0, v1);
+                v0.z = hd;
+                v1.z = hd;
+                this.pUpdateOrAddSegment(6, v0, v1);
+                v0.y = -hh;
+                v1.y = -hh;
+                this.pUpdateOrAddSegment(7, v0, v1);
+
+                v0.x = -hw;
+                v0.y = -hh;
+                v0.z = -hd;
+                v1.x = -hw;
+                v1.y = -hh;
+                v1.z = hd;
+                this.pUpdateOrAddSegment(8, v0, v1);
+                v0.y = hh;
+                v1.y = hh;
+                this.pUpdateOrAddSegment(9, v0, v1);
+                v0.x = hw;
+                v1.x = hw;
+                this.pUpdateOrAddSegment(10, v0, v1);
+                v0.y = -hh;
+                v1.y = -hh;
+                this.pUpdateOrAddSegment(11, v0, v1);
+            };
+            return WireframeCube;
+        })(away.primitives.WireframePrimitiveBase);
+        primitives.WireframeCube = WireframeCube;
+    })(away.primitives || (away.primitives = {}));
+    var primitives = away.primitives;
+})(away || (away = {}));
+var away;
+(function (away) {
     /**
     * ...
     * @author Gary Paluk - http://www.plugin.io
@@ -10405,6 +11006,8 @@ var away;
     (function (partition) {
         var NodeBase = (function () {
             function NodeBase() {
+                this._pNumChildNodes = 0;
+                this._iNumEntities = 0;
                 this._pChildNodes = [];
             }
             Object.defineProperty(NodeBase.prototype, "showDebugBounds", {
@@ -10447,7 +11050,7 @@ var away;
 
             NodeBase.prototype.iAddNode = function (node) {
                 node._iParent = this;
-                this._pNumEntities += node._pNumEntities;
+                this._iNumEntities += node._pNumEntities;
                 this._pChildNodes[this._pNumChildNodes++] = node;
                 node.showDebugBounds = this._pDebugPrimitive != null;
 
@@ -10455,7 +11058,7 @@ var away;
                 node = this;
 
                 do {
-                    node._pNumEntities += numEntities;
+                    node._iNumEntities += numEntities;
                 } while((node = node._iParent) != null);
             };
 
@@ -10473,6 +11076,8 @@ var away;
             };
 
             NodeBase.prototype.isInFrustum = function (planes, numPlanes) {
+                console.log('NodeBase', 'isInFrustum - should be true');
+
                 planes = planes;
                 numPlanes = numPlanes;
                 return true;
@@ -10493,9 +11098,15 @@ var away;
                 if (this._pNumEntities == 0 && !this._pDebugPrimitive) {
                     return;
                 }
+
                 if (traverser.enterNode(this)) {
-                    var i;
+                    console.log('NodeBase', 'acceptTraverser (node entered) : ', this);
+
+                    var i = 0;
+
                     while (i < this._pNumChildNodes) {
+                        console.log('NodeBase', 'loop through childNodes : ', i);
+
                         this._pChildNodes[i++].acceptTraverser(traverser);
                     }
 
@@ -10524,6 +11135,8 @@ var away;
                 do {
                     node._pNumEntities += diff;
                 } while((node = node._iParent) != null);
+
+                console.log('NodeBase', '_pUpdateNumEntities', this._pUpdateNumEntities);
             };
             return NodeBase;
         })();
@@ -10557,6 +11170,7 @@ var away;
     (function (partition) {
         var Partition3D = (function () {
             function Partition3D(rootNode) {
+                this._updatesMade = false;
                 this._rootNode = rootNode || new away.partition.NullNode();
             }
             Object.defineProperty(Partition3D.prototype, "showDebugBounds", {
@@ -10572,10 +11186,13 @@ var away;
 
 
             Partition3D.prototype.traverse = function (traverser) {
+                console.log('Partition3D', 'traverse', traverser);
+
                 if (this._updatesMade) {
                     this.updateEntities();
                 }
                 ++away.traverse.PartitionTraverser._iCollectionMark;
+
                 this._rootNode.acceptTraverser(traverser);
             };
 
@@ -10622,6 +11239,10 @@ var away;
             };
 
             Partition3D.prototype.updateEntities = function () {
+                console.log('--------------------------------------------------------------------------------------------');
+                console.log('-- Partition3D.updateEntities');
+                console.log('Partition3D', 'updateEntities this._updateQueue', this._updateQueue);
+
                 var node = this._updateQueue;
                 var targetNode;
                 var t;
@@ -10630,6 +11251,9 @@ var away;
 
                 do {
                     targetNode = this._rootNode.findPartitionForEntity(node.entity);
+
+                    console.log('Partition3D', 'updateEntities', 'targetNode: ', targetNode, 'entity: ', node.entity);
+
                     if (node.parent != targetNode) {
                         if (node) {
                             node.removeFromParent();
@@ -10641,6 +11265,10 @@ var away;
                     node._iUpdateQueueNext = null;
                     node.entity.iInternalUpdate();
                 } while((node = t) != null);
+
+                console.log('Partition3D', 'updateEntities complete', '_updateQueue', this._updateQueue, node);
+                console.log('-- Partition3D.updateEntities -- END ');
+                console.log('--------------------------------------------------------------------------------------------');
             };
             return Partition3D;
         })();
@@ -10690,6 +11318,7 @@ var away;
             }
             Object.defineProperty(EntityNode.prototype, "entity", {
                 get: function () {
+                    console.log('EntityNode', 'get entity', this._entity);
                     return this._entity;
                 },
                 enumerable: true,
@@ -10708,7 +11337,32 @@ var away;
                 if (!this._entity._iIsVisible) {
                     return false;
                 }
+
+                //console.log ( 'EntityNode' , 'isInFrustum' , 'worldBounds: ' , this._entity.worldBounds )
+                console.log('EntityNode', 'Entity: ', this._entity);
+
                 return this._entity.worldBounds.isInFrustum(planes, numPlanes);
+            };
+
+            /**
+            * @inheritDoc
+            */
+            EntityNode.prototype.acceptTraverser = function (traverser) {
+                console.log('EntityNode', 'acceptTraverser', traverser);
+
+                traverser.applyEntity(this._entity);
+            };
+
+            /**
+            * @inheritDoc
+            */
+            EntityNode.prototype.isIntersectingRay = function (rayPosition, rayDirection) {
+                console.log('EntityNode', 'isIntersectingRay _iIsVisible', this._entity._iIsVisible);
+
+                if (!this._entity._iIsVisible)
+                    return false;
+
+                return this._entity.isIntersectingRay(rayPosition, rayDirection);
             };
             return EntityNode;
         })(partition.NodeBase);
@@ -12100,7 +12754,7 @@ var away;
                 this._scissorRectDirty = true;
                 this._viewportDirty = true;
                 this._layeredView = false;
-                if (BasicView3D.sStage === null) {
+                if (BasicView3D.sStage == null) {
                     BasicView3D.sStage = new away.display.Stage();
                 }
 
@@ -12567,6 +13221,8 @@ var away;
                 this.pUpdateViewSizeData();
                 this._pEntityCollector.clear();
                 this._pScene.traversePartitions(this._pEntityCollector);
+
+                console.log('this._pEntityCollector._pEntityListItemPool: ', this._pEntityCollector._pEntityListItemPool, this._pEntityCollector._pEntityListItemPool);
 
                 if (this._pRequireDepthRender) {
                     this.pRenderSceneDepthToTexture(this._pEntityCollector);
@@ -18179,7 +18835,8 @@ var away;
                 oz = this._rayDir.z;
 
                 // transform ray dir and origin (cam pos) to object space
-                invSceneTransform.copyRawDataTo(raw);
+                //invSceneTransform.copyRawDataTo( raw  );
+                raw = invSceneTransform.copyRawDataTo();
                 rx = raw[0] * ox + raw[4] * oy + raw[8] * oz;
                 ry = raw[1] * ox + raw[5] * oy + raw[9] * oz;
                 rz = raw[2] * ox + raw[6] * oy + raw[10] * oz;
@@ -18889,21 +19546,22 @@ var away;
                 configurable: true
             });
 
-            Object.defineProperty(Stage3DProxy.prototype, "driverInfo", {
+            Object.defineProperty(Stage3DProxy.prototype, "usesSoftwareRendering", {
                 get: /**
                 * The driver information as reported by the Context3D object (if any)
                 */
-                function () {
-                    away.Debug.throwPIR('Stage3DProxy', 'driverInfo', 'Context3D.driverInfo()');
-
-                    return null;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(Stage3DProxy.prototype, "usesSoftwareRendering", {
-                get: /**
+                /*
+                public get driverInfo():string
+                {
+                
+                away.Debug.throwPIR( 'Stage3DProxy' , 'driverInfo' ,  'Context3D.driverInfo()');
+                
+                return null;
+                
+                //return this._iContext3D? this._iContext3D.driverInfo : null;
+                }
+                */
+                /**
                 * Indicates whether the Stage3D managed by this proxy is running in software mode.
                 * Remember to wait for the CONTEXT3D_CREATED event before checking this property,
                 * as only then will it be guaranteed to be accurate.
@@ -19117,7 +19775,7 @@ var away;
                     away.Debug.log('Stage3DProxy', 'onContext3DUpdate this._stage3D.context3D: ', this._stage3D.context3D);
 
                     // todo: implement dependency Context3D.enableErrorChecking, Context3D.driverInfo
-                    away.Debug.throwPIR('Stage3DProxy', 'onContext3DUpdate', 'Context3D.enableErrorChecking, Context3D.driverInfo');
+                    away.Debug.throwPIR('Stage3DProxy', 'onContext3DUpdate', 'Context3D.enableErrorChecking');
 
                     if (this._backBufferWidth && this._backBufferHeight) {
                         this._iContext3D.configureBackBuffer(this._backBufferWidth, this._backBufferHeight, this._antiAlias, this._enableDepthAndStencil);
@@ -19177,7 +19835,7 @@ var away;
                     return false;
                 }
 
-                away.Debug.throwPIR('Stage3DProxy', 'recoverFromDisposal', 'Context3D.driverInfo');
+                away.Debug.throwPIR('Stage3DProxy', 'recoverFromDisposal', '');
 
                 /*
                 if (this._iContext3D.driverInfo == "Disposed")
@@ -19527,10 +20185,6 @@ var away;
 
                 if (!Stage3DManager._stageProxies) {
                     Stage3DManager._stageProxies = new Array(this._stage.stage3Ds.length);
-
-                    for (var c = 0; c < Stage3DManager._stageProxies.length; c++) {
-                        Stage3DManager._stageProxies[c] = null;
-                    }
                 }
             }
             Stage3DManager.getInstance = /**
@@ -19616,14 +20270,14 @@ var away;
             Stage3DManager.prototype.getFreeStage3DProxy = function (forceSoftware, profile) {
                 if (typeof forceSoftware === "undefined") { forceSoftware = false; }
                 if (typeof profile === "undefined") { profile = "baseline"; }
-                var i;
+                var i = 0;
                 var len = Stage3DManager._stageProxies.length;
 
                 console.log(Stage3DManager._stageProxies);
 
                 while (i < len) {
                     if (!Stage3DManager._stageProxies[i]) {
-                        console.log('hello ');
+                        //console.log( 'hello ');
                         this.getStage3DProxy(i, forceSoftware, profile);
 
                         away.Debug.throwPIR('Stage3DManager', 'getFreeStage3DProxy', 'Stage.stageWidth , Stage.stageHeight ');
@@ -21348,7 +22002,8 @@ var away;
             */
             CompactSubGeometry.prototype.stripBuffer = function (offset, numEntries) {
                 var data = new Array(this._numVertices * numEntries);
-                var i = 0, j = offset;
+                var i = 0;
+                var j = offset;
                 var skip = 13 - numEntries;
 
                 for (var v = 0; v < this._numVertices; ++v) {
@@ -23296,6 +23951,8 @@ var away;
     (function (data) {
         var EntityListItemPool = (function () {
             function EntityListItemPool() {
+                this._index = 0;
+                this._poolSize = 0;
                 this._pool = [];
             }
             EntityListItemPool.prototype.getItem = function () {
@@ -23475,7 +24132,7 @@ var away;
             /**
             * Invalidates the primitive's geometry, causing it to be updated when requested.
             */
-            PrimitiveBase.prototype.pIvalidateGeometry = function () {
+            PrimitiveBase.prototype.pInvalidateGeometry = function () {
                 this._geomDirty = true;
             };
 
@@ -23714,7 +24371,7 @@ var away;
                     data = target.UVData;
                 } else {
                     data = new Array(numUvs);
-                    this.pIvalidateGeometry();
+                    this.pInvalidateGeometry();
                 }
 
                 // current uv component index
@@ -23742,7 +24399,7 @@ var away;
                 },
                 set: function (value) {
                     this._radius = value;
-                    this.pIvalidateGeometry();
+                    this.pInvalidateGeometry();
                 },
                 enumerable: true,
                 configurable: true
@@ -23758,7 +24415,7 @@ var away;
                 },
                 set: function (value) {
                     this._tubeRadius = value;
-                    this.pIvalidateGeometry();
+                    this.pInvalidateGeometry();
                 },
                 enumerable: true,
                 configurable: true
@@ -23774,7 +24431,7 @@ var away;
                 },
                 set: function (value) {
                     this._segmentsR = value;
-                    this.pIvalidateGeometry();
+                    this.pInvalidateGeometry();
                     this.pInvalidateUVs();
                 },
                 enumerable: true,
@@ -23791,7 +24448,7 @@ var away;
                 },
                 set: function (value) {
                     this._segmentsT = value;
-                    this.pIvalidateGeometry();
+                    this.pInvalidateGeometry();
                     this.pInvalidateUVs();
                 },
                 enumerable: true,
@@ -23808,7 +24465,7 @@ var away;
                 },
                 set: function (value) {
                     this._yUp = value;
-                    this.pIvalidateGeometry();
+                    this.pInvalidateGeometry();
                 },
                 enumerable: true,
                 configurable: true
@@ -23817,6 +24474,474 @@ var away;
             return TorusGeometry;
         })(away.primitives.PrimitiveBase);
         primitives.TorusGeometry = TorusGeometry;
+    })(away.primitives || (away.primitives = {}));
+    var primitives = away.primitives;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (primitives) {
+        //import away3d.arcane;
+        //import away3d.core.base.CompactSubGeometry;
+        //use namespace arcane;
+        /**
+        * A Cube primitive mesh.
+        */
+        var CubeGeometry = (function (_super) {
+            __extends(CubeGeometry, _super);
+            /**
+            * Creates a new Cube object.
+            * @param width The size of the cube along its X-axis.
+            * @param height The size of the cube along its Y-axis.
+            * @param depth The size of the cube along its Z-axis.
+            * @param segmentsW The number of segments that make up the cube along the X-axis.
+            * @param segmentsH The number of segments that make up the cube along the Y-axis.
+            * @param segmentsD The number of segments that make up the cube along the Z-axis.
+            * @param tile6 The type of uv mapping to use. When true, a texture will be subdivided in a 2x3 grid, each used for a single face. When false, the entire image is mapped on each face.
+            */
+            function CubeGeometry(width, height, depth, segmentsW, segmentsH, segmentsD, tile6) {
+                if (typeof width === "undefined") { width = 100; }
+                if (typeof height === "undefined") { height = 100; }
+                if (typeof depth === "undefined") { depth = 100; }
+                if (typeof segmentsW === "undefined") { segmentsW = 1; }
+                if (typeof segmentsH === "undefined") { segmentsH = 1; }
+                if (typeof segmentsD === "undefined") { segmentsD = 1; }
+                if (typeof tile6 === "undefined") { tile6 = true; }
+                _super.call(this);
+
+                this._width = width;
+                this._height = height;
+                this._depth = depth;
+                this._segmentsW = segmentsW;
+                this._segmentsH = segmentsH;
+                this._segmentsD = segmentsD;
+                this._tile6 = tile6;
+            }
+            Object.defineProperty(CubeGeometry.prototype, "width", {
+                get: /**
+                * The size of the cube along its X-axis.
+                */
+                function () {
+                    return this._width;
+                },
+                set: function (value) {
+                    this._width = value;
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(CubeGeometry.prototype, "height", {
+                get: /**
+                * The size of the cube along its Y-axis.
+                */
+                function () {
+                    return this._height;
+                },
+                set: function (value) {
+                    this._height = value;
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(CubeGeometry.prototype, "depth", {
+                get: /**
+                * The size of the cube along its Z-axis.
+                */
+                function () {
+                    return this._depth;
+                },
+                set: function (value) {
+                    this._depth = value;
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(CubeGeometry.prototype, "tile6", {
+                get: /**
+                * The type of uv mapping to use. When false, the entire image is mapped on each face.
+                * When true, a texture will be subdivided in a 3x2 grid, each used for a single face.
+                * Reading the tiles from left to right, top to bottom they represent the faces of the
+                * cube in the following order: bottom, top, back, left, front, right. This creates
+                * several shared edges (between the top, front, left and right faces) which simplifies
+                * texture painting.
+                */
+                function () {
+                    return this._tile6;
+                },
+                set: function (value) {
+                    this._tile6 = value;
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(CubeGeometry.prototype, "segmentsW", {
+                get: /**
+                * The number of segments that make up the cube along the X-axis. Defaults to 1.
+                */
+                function () {
+                    return this._segmentsW;
+                },
+                set: function (value) {
+                    this._segmentsW = value;
+                    this.pInvalidateGeometry();
+                    this.pInvalidateUVs();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(CubeGeometry.prototype, "segmentsH", {
+                get: /**
+                * The number of segments that make up the cube along the Y-axis. Defaults to 1.
+                */
+                function () {
+                    return this._segmentsH;
+                },
+                set: function (value) {
+                    this._segmentsH = value;
+                    this.pInvalidateGeometry();
+                    this.pInvalidateUVs();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(CubeGeometry.prototype, "segmentsD", {
+                get: /**
+                * The number of segments that make up the cube along the Z-axis. Defaults to 1.
+                */
+                function () {
+                    return this._segmentsD;
+                },
+                set: function (value) {
+                    this._segmentsD = value;
+                    this.pInvalidateGeometry();
+                    this.pInvalidateUVs();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * @inheritDoc
+            */
+            CubeGeometry.prototype.pBuildGeometry = function (target) {
+                var data;
+                var indices/*uint*/ ;
+
+                var tl, tr, bl, br;
+                var i, j, inc = 0;
+
+                var vidx, fidx;
+                var hw, hh, hd;
+                var dw, dh, dd;
+
+                var outer_pos;
+
+                var numVerts = ((this._segmentsW + 1) * (this._segmentsH + 1) + (this._segmentsW + 1) * (this._segmentsD + 1) + (this._segmentsH + 1) * (this._segmentsD + 1)) * 2;
+
+                var stride = target.vertexStride;
+                var skip = stride - 9;
+
+                if (numVerts == target.numVertices) {
+                    data = target.vertexData;
+
+                    indices = (target.indexData) ? target.indexData : new Array((this._segmentsW * this._segmentsH + this._segmentsW * this._segmentsD + this._segmentsH * this._segmentsD) * 12);
+                } else {
+                    data = new Array(numVerts * stride);
+                    indices = new Array((this._segmentsW * this._segmentsH + this._segmentsW * this._segmentsD + this._segmentsH * this._segmentsD) * 12);
+                    this.pInvalidateUVs();
+                }
+
+                // Indices
+                vidx = target.vertexOffset;
+                fidx = 0;
+
+                // half cube dimensions
+                hw = this._width / 2;
+                hh = this._height / 2;
+                hd = this._depth / 2;
+
+                // Segment dimensions
+                dw = this._width / this._segmentsW;
+                dh = this._height / this._segmentsH;
+                dd = this._depth / this._segmentsD;
+
+                for (i = 0; i <= this._segmentsW; i++) {
+                    outer_pos = -hw + i * dw;
+
+                    for (j = 0; j <= this._segmentsH; j++) {
+                        // front
+                        data[vidx++] = outer_pos;
+                        data[vidx++] = -hh + j * dh;
+                        data[vidx++] = -hd;
+                        data[vidx++] = 0;
+                        data[vidx++] = 0;
+                        data[vidx++] = -1;
+                        data[vidx++] = 1;
+                        data[vidx++] = 0;
+                        data[vidx++] = 0;
+                        vidx += skip;
+
+                        // back
+                        data[vidx++] = outer_pos;
+                        data[vidx++] = -hh + j * dh;
+                        data[vidx++] = hd;
+                        data[vidx++] = 0;
+                        data[vidx++] = 0;
+                        data[vidx++] = 1;
+                        data[vidx++] = -1;
+                        data[vidx++] = 0;
+                        data[vidx++] = 0;
+                        vidx += skip;
+
+                        if (i && j) {
+                            tl = 2 * ((i - 1) * (this._segmentsH + 1) + (j - 1));
+                            tr = 2 * (i * (this._segmentsH + 1) + (j - 1));
+                            bl = tl + 2;
+                            br = tr + 2;
+
+                            indices[fidx++] = tl;
+                            indices[fidx++] = bl;
+                            indices[fidx++] = br;
+                            indices[fidx++] = tl;
+                            indices[fidx++] = br;
+                            indices[fidx++] = tr;
+                            indices[fidx++] = tr + 1;
+                            indices[fidx++] = br + 1;
+                            indices[fidx++] = bl + 1;
+                            indices[fidx++] = tr + 1;
+                            indices[fidx++] = bl + 1;
+                            indices[fidx++] = tl + 1;
+                        }
+                    }
+                }
+
+                inc += 2 * (this._segmentsW + 1) * (this._segmentsH + 1);
+
+                for (i = 0; i <= this._segmentsW; i++) {
+                    outer_pos = -hw + i * dw;
+
+                    for (j = 0; j <= this._segmentsD; j++) {
+                        // top
+                        data[vidx++] = outer_pos;
+                        data[vidx++] = hh;
+                        data[vidx++] = -hd + j * dd;
+                        data[vidx++] = 0;
+                        data[vidx++] = 1;
+                        data[vidx++] = 0;
+                        data[vidx++] = 1;
+                        data[vidx++] = 0;
+                        data[vidx++] = 0;
+                        vidx += skip;
+
+                        // bottom
+                        data[vidx++] = outer_pos;
+                        data[vidx++] = -hh;
+                        data[vidx++] = -hd + j * dd;
+                        data[vidx++] = 0;
+                        data[vidx++] = -1;
+                        data[vidx++] = 0;
+                        data[vidx++] = 1;
+                        data[vidx++] = 0;
+                        data[vidx++] = 0;
+                        vidx += skip;
+
+                        if (i && j) {
+                            tl = inc + 2 * ((i - 1) * (this._segmentsD + 1) + (j - 1));
+                            tr = inc + 2 * (i * (this._segmentsD + 1) + (j - 1));
+                            bl = tl + 2;
+                            br = tr + 2;
+
+                            indices[fidx++] = tl;
+                            indices[fidx++] = bl;
+                            indices[fidx++] = br;
+                            indices[fidx++] = tl;
+                            indices[fidx++] = br;
+                            indices[fidx++] = tr;
+                            indices[fidx++] = tr + 1;
+                            indices[fidx++] = br + 1;
+                            indices[fidx++] = bl + 1;
+                            indices[fidx++] = tr + 1;
+                            indices[fidx++] = bl + 1;
+                            indices[fidx++] = tl + 1;
+                        }
+                    }
+                }
+
+                inc += 2 * (this._segmentsW + 1) * (this._segmentsD + 1);
+
+                for (i = 0; i <= this._segmentsD; i++) {
+                    outer_pos = hd - i * dd;
+
+                    for (j = 0; j <= this._segmentsH; j++) {
+                        // left
+                        data[vidx++] = -hw;
+                        data[vidx++] = -hh + j * dh;
+                        data[vidx++] = outer_pos;
+                        data[vidx++] = -1;
+                        data[vidx++] = 0;
+                        data[vidx++] = 0;
+                        data[vidx++] = 0;
+                        data[vidx++] = 0;
+                        data[vidx++] = -1;
+                        vidx += skip;
+
+                        // right
+                        data[vidx++] = hw;
+                        data[vidx++] = -hh + j * dh;
+                        data[vidx++] = outer_pos;
+                        data[vidx++] = 1;
+                        data[vidx++] = 0;
+                        data[vidx++] = 0;
+                        data[vidx++] = 0;
+                        data[vidx++] = 0;
+                        data[vidx++] = 1;
+                        vidx += skip;
+
+                        if (i && j) {
+                            tl = inc + 2 * ((i - 1) * (this._segmentsH + 1) + (j - 1));
+                            tr = inc + 2 * (i * (this._segmentsH + 1) + (j - 1));
+                            bl = tl + 2;
+                            br = tr + 2;
+
+                            indices[fidx++] = tl;
+                            indices[fidx++] = bl;
+                            indices[fidx++] = br;
+                            indices[fidx++] = tl;
+                            indices[fidx++] = br;
+                            indices[fidx++] = tr;
+                            indices[fidx++] = tr + 1;
+                            indices[fidx++] = br + 1;
+                            indices[fidx++] = bl + 1;
+                            indices[fidx++] = tr + 1;
+                            indices[fidx++] = bl + 1;
+                            indices[fidx++] = tl + 1;
+                        }
+                    }
+                }
+
+                target.updateData(data);
+                target.updateIndexData(indices);
+            };
+
+            /**
+            * @inheritDoc
+            */
+            CubeGeometry.prototype.pBuildUVs = function (target) {
+                var i, j, uidx;
+                var data;
+
+                var u_tile_dim, v_tile_dim;
+                var u_tile_step, v_tile_step;
+                var tl0u, tl0v;
+                var tl1u, tl1v;
+                var du, dv;
+                var stride = target.UVStride;
+                var numUvs = ((this._segmentsW + 1) * (this._segmentsH + 1) + (this._segmentsW + 1) * (this._segmentsD + 1) + (this._segmentsH + 1) * (this._segmentsD + 1)) * 2 * stride;
+                var skip = stride - 2;
+
+                if (target.UVData && numUvs == target.UVData.length)
+                    data = target.UVData; else {
+                    data = new Array(numUvs);
+                    this.pInvalidateGeometry();
+                }
+
+                if (this._tile6) {
+                    u_tile_dim = u_tile_step = 1 / 3;
+                    v_tile_dim = v_tile_step = 1 / 2;
+                } else {
+                    u_tile_dim = v_tile_dim = 1;
+                    u_tile_step = v_tile_step = 0;
+                }
+
+                // Create planes two and two, the same way that they were
+                // constructed in the buildGeometry() function. First calculate
+                // the top-left UV coordinate for both planes, and then loop
+                // over the points, calculating the UVs from these numbers.
+                // When tile6 is true, the layout is as follows:
+                //       .-----.-----.-----. (1,1)
+                //       | Bot |  T  | Bak |
+                //       |-----+-----+-----|
+                //       |  L  |  F  |  R  |
+                // (0,0)'-----'-----'-----'
+                uidx = target.UVOffset;
+
+                // FRONT / BACK
+                tl0u = 1 * u_tile_step;
+                tl0v = 1 * v_tile_step;
+                tl1u = 2 * u_tile_step;
+                tl1v = 0 * v_tile_step;
+                du = u_tile_dim / this._segmentsW;
+                dv = v_tile_dim / this._segmentsH;
+                for (i = 0; i <= this._segmentsW; i++) {
+                    for (j = 0; j <= this._segmentsH; j++) {
+                        data[uidx++] = (tl0u + i * du) * target.scaleU;
+                        data[uidx++] = (tl0v + (v_tile_dim - j * dv)) * target.scaleV;
+                        uidx += skip;
+                        data[uidx++] = (tl1u + (u_tile_dim - i * du)) * target.scaleU;
+                        data[uidx++] = (tl1v + (v_tile_dim - j * dv)) * target.scaleV;
+                        uidx += skip;
+                    }
+                }
+
+                // TOP / BOTTOM
+                tl0u = 1 * u_tile_step;
+                tl0v = 0 * v_tile_step;
+                tl1u = 0 * u_tile_step;
+                tl1v = 0 * v_tile_step;
+                du = u_tile_dim / this._segmentsW;
+                dv = v_tile_dim / this._segmentsD;
+                for (i = 0; i <= this._segmentsW; i++) {
+                    for (j = 0; j <= this._segmentsD; j++) {
+                        data[uidx++] = (tl0u + i * du) * target.scaleU;
+                        data[uidx++] = (tl0v + (v_tile_dim - j * dv)) * target.scaleV;
+                        uidx += skip;
+                        data[uidx++] = (tl1u + i * du) * target.scaleU;
+                        data[uidx++] = (tl1v + j * dv) * target.scaleV;
+                        uidx += skip;
+                    }
+                }
+
+                // LEFT / RIGHT
+                tl0u = 0 * u_tile_step;
+                tl0v = 1 * v_tile_step;
+                tl1u = 2 * u_tile_step;
+                tl1v = 1 * v_tile_step;
+                du = u_tile_dim / this._segmentsD;
+                dv = v_tile_dim / this._segmentsH;
+                for (i = 0; i <= this._segmentsD; i++) {
+                    for (j = 0; j <= this._segmentsH; j++) {
+                        data[uidx++] = (tl0u + i * du) * target.scaleU;
+                        ;
+                        data[uidx++] = (tl0v + (v_tile_dim - j * dv)) * target.scaleV;
+                        uidx += skip;
+                        data[uidx++] = (tl1u + (u_tile_dim - i * du)) * target.scaleU;
+                        data[uidx++] = (tl1v + (v_tile_dim - j * dv)) * target.scaleV;
+                        uidx += skip;
+                    }
+                }
+
+                target.updateData(data);
+            };
+            return CubeGeometry;
+        })(away.primitives.PrimitiveBase);
+        primitives.CubeGeometry = CubeGeometry;
     })(away.primitives || (away.primitives = {}));
     var primitives = away.primitives;
 })(away || (away = {}));
@@ -23864,7 +24989,7 @@ var away;
                 set: function (value) {
                     this._segmentsW = value;
 
-                    this.pIvalidateGeometry();
+                    this.pInvalidateGeometry();
                     this.pInvalidateUVs();
                 },
                 enumerable: true,
@@ -23883,7 +25008,7 @@ var away;
                 set: function (value) {
                     this._segmentsH = value;
 
-                    this.pIvalidateGeometry();
+                    this.pInvalidateGeometry();
                     this.pInvalidateUVs();
                 },
                 enumerable: true,
@@ -23900,7 +25025,7 @@ var away;
                 },
                 set: function (value) {
                     this._yUp = value;
-                    this.pIvalidateGeometry();
+                    this.pInvalidateGeometry();
                 },
                 enumerable: true,
                 configurable: true
@@ -23916,7 +25041,7 @@ var away;
                 },
                 set: function (value) {
                     this._doubleSided = value;
-                    this.pIvalidateGeometry();
+                    this.pInvalidateGeometry();
                 },
                 enumerable: true,
                 configurable: true
@@ -23932,7 +25057,7 @@ var away;
                 },
                 set: function (value) {
                     this._width = value;
-                    this.pIvalidateGeometry();
+                    this.pInvalidateGeometry();
                 },
                 enumerable: true,
                 configurable: true
@@ -23948,7 +25073,7 @@ var away;
                 },
                 set: function (value) {
                     this._height = value;
-                    this.pIvalidateGeometry();
+                    this.pInvalidateGeometry();
                 },
                 enumerable: true,
                 configurable: true
@@ -24089,7 +25214,7 @@ var away;
                     data = target.UVData;
                 } else {
                     data = new Array(numUvs);
-                    this.pIvalidateGeometry();
+                    this.pInvalidateGeometry();
                 }
 
                 var index = target.UVOffset;
@@ -25560,18 +26685,24 @@ var away;
                 }
 
                 if (this._sceneMatrixIndex >= 0) {
-                    renderable.getRenderSceneTransform(camera).copyRawDataTo(this._pVertexConstantData, this._sceneMatrixIndex, true);
-                    viewProjection.copyRawDataTo(this._pVertexConstantData, 0, true);
+                    //renderable.getRenderSceneTransform(camera).copyRawDataTo( this._pVertexConstantData, this._sceneMatrixIndex, true);
+                    this._pVertexConstantData = renderable.getRenderSceneTransform(camera).copyRawDataTo(this._sceneMatrixIndex, true);
+
+                    //viewProjection.copyRawDataTo( this._pVertexConstantData, 0, true);
+                    this._pVertexConstantData = viewProjection.copyRawDataTo(0, true);
                 } else {
                     var matrix3D = away.math.Matrix3DUtils.CALCULATION_MATRIX;
 
                     matrix3D.copyFrom(renderable.getRenderSceneTransform(camera));
                     matrix3D.append(viewProjection);
-                    matrix3D.copyRawDataTo(this._pVertexConstantData, 0, true);
+
+                    //matrix3D.copyRawDataTo( this._pVertexConstantData, 0, true);
+                    this._pVertexConstantData = matrix3D.copyRawDataTo(0, true);
                 }
 
                 if (this._sceneNormalMatrixIndex >= 0) {
-                    renderable.inverseSceneTransform.copyRawDataTo(this._pVertexConstantData, this._sceneNormalMatrixIndex, false);
+                    //renderable.inverseSceneTransform.copyRawDataTo(this._pVertexConstantData, this._sceneNormalMatrixIndex, false);
+                    this._pVertexConstantData = renderable.inverseSceneTransform.copyRawDataTo(this._sceneNormalMatrixIndex, false);
                 }
 
                 if (this._usesNormals) {
@@ -32323,6 +33454,9 @@ var away;
                         this._snapshotRequired = false;
                     }
                 }
+
+                console.log(entityCollector);
+
                 this._pStage3DProxy.scissorRect = null;
             };
 
@@ -33645,41 +34779,63 @@ var away;
 //------------------------------------------------------------------------------------------------
 var View3DTest = (function () {
     function View3DTest() {
+        var _this = this;
         away.Debug.THROW_ERRORS = false;
+        away.Debug.LOG_PI_ERRORS = false;
 
         this.stage = new away.display.Stage();
 
-        //this.stage.addChild( this.view3D );
         this.cam = new away.cameras.Camera3D();
+        this.cam.z = -1000;
+        this.cam.lookAt(new away.geom.Vector3D(0, 0, 0));
+
         this.renderer = new away.render.DefaultRenderer();
         this.scene = new away.containers.Scene3D();
 
-        this.sManager = away.managers.Stage3DManager.getInstance(this.stage);
-        this.sProxy = this.sManager.getStage3DProxy(0);
-
-        this.renderer.iStage3DProxy = this.sProxy;
+        this.light = new away.lights.PointLight();
 
         this.view = new away.containers.BasicView3D(this.scene, this.cam, this.renderer);
-        this.view.stage3DProxy = this.sProxy;
+        this.view.backgroundColor = 0xff0000;
 
-        this.objCont = new away.containers.ObjectContainer3D();
         this.torus = new away.primitives.TorusGeometry();
 
-        this.mesh = new away.entities.Mesh(this.torus);
+        var l = 20;
+        var radius = 500;
 
-        console.log('console:', !null);
+        for (var c = 0; c < l; c++) {
+            var t = Math.PI * 2 * c / l;
 
-        this.scene.addChild(this.mesh);
+            var m = new away.entities.Mesh(this.torus);
+            m.x = Math.cos(t) * radius;
+            m.y = 0;
+            m.z = Math.sin(t) * radius;
+            console.log('mesh', m.transform, m.position, m.x, m.y, m.z);
 
-        console.log('cam ', this.cam);
+            this.scene.addChild(m);
+        }
+
+        this.scene.addChild(this.light);
+
+        console.log('------------------------------------------------------------------------------------------');
+        console.log('-Log');
+
         console.log('renderer ', this.renderer);
         console.log('scene ', this.scene);
         console.log('view ', this.view);
         console.log('scene ', this.scene);
-        console.log('mesh ', this.mesh);
-        console.log('torus ', this.torus);
-        console.log('objCont ', this.objCont);
+
+        //this.raf = new away.utils.RequestAnimationFrame( this.tick , this );
+        //this.raf.start();
+        document.onmousedown = function (e) {
+            return _this.tick(e);
+        };
     }
+    View3DTest.prototype.tick = function (e) {
+        console.log('------------------------------------------------------------------------------------------');
+        console.log('-Render');
+
+        this.view.render();
+    };
     return View3DTest;
 })();
 
@@ -33687,3 +34843,4 @@ var test;
 window.onload = function () {
     test = new View3DTest();
 };
+//@ sourceMappingURL=View3DTest.js.map

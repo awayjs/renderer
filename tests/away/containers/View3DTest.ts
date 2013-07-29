@@ -25,7 +25,10 @@ class View3DTest
     constructor()
     {
 
+
+
         away.Debug.THROW_ERRORS = false;
+        away.Debug.LOG_PI_ERRORS = false;
 
         this.stage = new away.display.Stage();
 
@@ -71,21 +74,19 @@ class View3DTest
         console.log( 'view ' , this.view );
         console.log( 'scene ' , this.scene );
 
-        console.log('------------------------------------------------------------------------------------------');
-        console.log('-Render');
-        this.view.render();
-
-        this.raf = new away.utils.RequestAnimationFrame( this.tick , this );
+        //this.raf = new away.utils.RequestAnimationFrame( this.tick , this );
         //this.raf.start();
 
 
         document.onmousedown = ( e ) => this.tick( e );
 
-
     }
 
     private tick( e )
     {
+
+        console.log('------------------------------------------------------------------------------------------');
+        console.log('-Render');
 
         this.view.render();
 
