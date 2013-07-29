@@ -61,6 +61,8 @@
 ///<reference path="events/CameraEvent.ts" />
 ///<reference path="bounds/NullBounds.ts" />
 ///<reference path="bounds/BoundingSphere.ts" />
+///<reference path="bounds/AxisAlignedBoundingBox.ts" />
+
 ///<reference path="containers/ObjectContainer3D.ts" />
 ///<reference path="entities/Entity.ts" />
 ///<reference path="cameras/Camera3D.ts" />
@@ -68,6 +70,7 @@
 ///<reference path="entities/Mesh.ts"/>
 ///<reference path="base/SubMesh.ts"/>
 ///<reference path="primitives/WireframePrimitiveBase.ts" />
+///<reference path="primitives/WireframeCube.ts" />
 ///<reference path="partition/NodeBase.ts" />
 ///<reference path="partition/NullNode.ts" />
 ///<reference path="partition/Partition3D.ts" />
