@@ -30,6 +30,9 @@ module away.entities
 		{
 			super();
 			this._pBounds = this.pGetDefaultBoundingVolume();
+
+            //console.log( "Entity() - Bounds:" , this._pBounds );
+
 			this._worldBounds = this.pGetDefaultBoundingVolume();
 		}
 
@@ -295,9 +298,8 @@ module away.entities
 		{
 			// point lights should be using sphere bounds
 			// directional lights should be using null bounds
-			
-			// TODO return new AxisAlignedBoundingBox();
-			return null;
+			return new away.bounds.AxisAlignedBoundingBox();
+
 		}
 		
 		public pUpdateBounds()
@@ -355,7 +357,7 @@ module away.entities
 		{
 			if( this._pScene )
 			{
-				//this._pScene.invalidateEntityBounds( this );
+				this._pScene.iInvalidateEntityBounds( this );
 			}
 		}
 		
@@ -363,7 +365,7 @@ module away.entities
 		{
 			if( this._pScene)
 			{
-				//this._pScene.registerPartition( this ); //_onAssignPartitionCallback(this);
+				this._pScene.iRegisterPartition( this ); //_onAssignPartitionCallback(this);
 			}
 		}
 		
@@ -371,7 +373,7 @@ module away.entities
 		{
 			if( this._pScene )
 			{
-				//this._pScene.unregisterPartition( this );
+				this._pScene.iUnregisterPartition( this );
 			}
 		}
 		
@@ -380,7 +382,7 @@ module away.entities
 			if ( !this._boundsIsShown )
 			{
 				this._boundsIsShown = true;
-				//this.addChild( this._bounds.boundingRenderable );
+				this.addChild( this._pBounds.boundingRenderable );
 			}
 		}
 		
@@ -389,8 +391,8 @@ module away.entities
 			if( !this._boundsIsShown )
 			{
 				this._boundsIsShown = false;
-				//this.removeChild( this._bounds.boundingRenderable );
-				//this._bounds.disposeRenderable();
+				this.removeChild( this._pBounds.boundingRenderable );
+				this._pBounds.disposeRenderable();
 			}
 		}
 		
