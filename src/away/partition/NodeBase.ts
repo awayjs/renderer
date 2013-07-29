@@ -16,8 +16,8 @@ module away.partition
 		public _pNumChildNodes:number = 0;
 		public _pDebugPrimitive:away.primitives.WireframePrimitiveBase;
 		
-		public _iNumEntities:number;
-		public _iCollectionMark:number;
+		public _iNumEntities:number = 0;
+		public _iCollectionMark:number;// = 0;
 		
 		constructor()
 		{
@@ -66,7 +66,7 @@ module away.partition
 		public iAddNode( node:NodeBase )
 		{
 			node._iParent = this;
-			this._pNumEntities += node._pNumEntities;
+			this._iNumEntities += node._pNumEntities;
 			this._pChildNodes[ this._pNumChildNodes++ ] = node;
 			node.showDebugBounds = this._pDebugPrimitive != null;
 			
@@ -75,7 +75,7 @@ module away.partition
 			
 			do
 			{
-				node._pNumEntities += numEntities;
+				node._iNumEntities += numEntities;
 			}
 			while ((node = node._iParent) != null);
 		}
@@ -98,6 +98,8 @@ module away.partition
 		
 		public isInFrustum(planes:away.math.Plane3D[], numPlanes:number):boolean
 		{
+            //console.log( 'NodeBase' , 'isInFrustum - should be true');
+
 			planes = planes;
 			numPlanes = numPlanes;
 			return true;
@@ -118,15 +120,31 @@ module away.partition
 		
 		public acceptTraverser( traverser:away.traverse.PartitionTraverser )
 		{
+
+            //console.log( 'NodeBase' , '1 - acceptTraverser' , ( this._pNumEntities == 0 && !this._pDebugPrimitive ));
+
 			if( this._pNumEntities == 0 && !this._pDebugPrimitive )
 			{
 				return;
 			}
+
+            //console.log( 'NodeBase' , '2 - acceptTraverser' , traverser , '_pNumEntities: ' + this._pNumEntities , '_pNumChildNodes: ' + this._pNumChildNodes);
+            //console.log( 'NodeBase' , '2b- acceptTraverser' , ' traverser.enterNode( this ): ' ,  traverser.enterNode( this ) );
+
+            //console.log( 'NodeBase' , this , ' traverser.enterNode( this )  : ', traverser.enterNode( this )  )
+
 			if( traverser.enterNode( this ) )
 			{
+
+               // console.log ( 'NodeBase' , 'acceptTraverser (node entered) : ' , this )
+
 				var i:number = 0;
+
 				while( i < this._pNumChildNodes )
 				{
+
+                    //console.log ( 'NodeBase' , 'loop through childNodes : ' , i );
+
 					this._pChildNodes[i++].acceptTraverser( traverser );
 				}
 				
@@ -149,6 +167,7 @@ module away.partition
 		
 		public _pUpdateNumEntities( value:number )
 		{
+
 			var diff:number = value - this._pNumEntities;
 			var node:NodeBase = this;
 			
@@ -157,6 +176,9 @@ module away.partition
 				node._pNumEntities += diff;
 			}
 			while ( (node = node._iParent) != null );
+
+            //console.log( 'NodeBase' , '_pUpdateNumEntities' , this._pUpdateNumEntities)
+
 		}
 	}
 }
