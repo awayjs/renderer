@@ -29,8 +29,9 @@ module away.cameras
 			{
 				this._frustumPlanes[i] = new away.math.Plane3D();
 			}
-			
-			//TODO z = -1000;
+
+            this.z = -1000;
+
 		}
 		
 		public pGetDefaultBoundingVolume():away.bounds.BoundingVolumeBase
@@ -69,9 +70,11 @@ module away.cameras
 			var c31:number, c32:number, c33:number, c34:number;
 			var c41:number, c42:number, c43:number, c44:number;
 			var p:away.math.Plane3D;
-			var raw:number[] = [];
+			var raw:number[] = new Array<number>(16);;//new Array(16 );away.utils.Matrix3DUtils.RAW_DATA_CONTAINER;//[];
 			var invLen:number;
             raw = this.viewProjection.copyRawDataTo( );
+
+            //console.log( 'raw' , raw );
 			
 			c11 = raw[0];
 			c12 = raw[4];
@@ -157,6 +160,16 @@ module away.cameras
 			p.d = (c34 - c44)*invLen;
 			
 			this._frustumPlanesDirty = false;
+
+
+            /*
+            for ( var cntr : number = 0 ; cntr < this._frustumPlanes.length ; cntr ++ )
+            {
+
+                console.log( 'Camera3D this._frustumPlanes[cntr].d ' , this._frustumPlanes[cntr].d );
+
+            }
+            */
 		}
 		
 		//@override
@@ -206,9 +219,17 @@ module away.cameras
 		{
 			if( this._viewProjectionDirty)
 			{
+
+                //console.log( 'this.inverseSceneTransform' , this.inverseSceneTransform.copyRawDataTo() );
+                //console.log( 'this.sceneTransform ' , this.sceneTransform.copyRawDataTo() );
+
 				this._viewProjection.copyFrom( this.inverseSceneTransform );
 				this._viewProjection.append( this._lens.matrix );
 				this._viewProjectionDirty = false;
+
+                //console.log( 'this.viewProjection ' , this._viewProjection.copyRawDataTo() );
+
+
 			}
 			return this._viewProjection;
 		}
