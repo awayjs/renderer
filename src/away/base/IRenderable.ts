@@ -24,7 +24,6 @@ module away.base
 		 * For example, assuring certain alignedness which is not inherent in the scene transform. By default, this would
 		 * return the scene transform.
 		 */
-        // TODO: Camera3D - imeplement & integrate
 		getRenderSceneTransform(camera:away.cameras.Camera3D):away.geom.Matrix3D;
 		
 		/**
