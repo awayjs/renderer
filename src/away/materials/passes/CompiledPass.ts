@@ -713,10 +713,11 @@ module away.materials
             if (this._sceneMatrixIndex >= 0)
             {
 
-                //renderable.getRenderSceneTransform(camera).copyRawDataTo( this._pVertexConstantData, this._sceneMatrixIndex, true);
-                this._pVertexConstantData = renderable.getRenderSceneTransform(camera).copyRawDataTo( this._sceneMatrixIndex, true);
-                //viewProjection.copyRawDataTo( this._pVertexConstantData, 0, true);
-                this._pVertexConstantData = viewProjection.copyRawDataTo( 0, true);
+                renderable.getRenderSceneTransform(camera).copyRawDataTo( this._pVertexConstantData, this._sceneMatrixIndex, true);
+                viewProjection.copyRawDataTo( this._pVertexConstantData, 0, true);
+
+                //this._pVertexConstantData = renderable.getRenderSceneTransform(camera).copyRawDataTo( this._sceneMatrixIndex, true);
+                //this._pVertexConstantData = viewProjection.copyRawDataTo( 0, true);
 
 
             }
@@ -727,15 +728,15 @@ module away.materials
                 matrix3D.copyFrom(renderable.getRenderSceneTransform(camera));
                 matrix3D.append(viewProjection);
 
-                //matrix3D.copyRawDataTo( this._pVertexConstantData, 0, true);
-                this._pVertexConstantData = matrix3D.copyRawDataTo( 0, true);
+                matrix3D.copyRawDataTo( this._pVertexConstantData, 0, true);
+                //this._pVertexConstantData = matrix3D.copyRawDataTo( 0, true);
 
             }
 
             if ( this._sceneNormalMatrixIndex >= 0){
 
-                //renderable.inverseSceneTransform.copyRawDataTo(this._pVertexConstantData, this._sceneNormalMatrixIndex, false);
-                this._pVertexConstantData = renderable.inverseSceneTransform.copyRawDataTo(this._sceneNormalMatrixIndex, false);
+                renderable.inverseSceneTransform.copyRawDataTo(this._pVertexConstantData, this._sceneNormalMatrixIndex, false);
+                //this._pVertexConstantData = renderable.inverseSceneTransform.copyRawDataTo(this._sceneNormalMatrixIndex, false);
 
             }
 
