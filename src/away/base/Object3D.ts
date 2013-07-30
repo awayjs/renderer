@@ -520,7 +520,7 @@ module away.base
             //*
             if (!val.rawData[0]) {
                 var raw:number[] = away.math.Matrix3DUtils.RAW_DATA_CONTAINER;
-                raw = val.copyRawDataTo();
+                val.copyRawDataTo( raw );
                 raw[0] = this._smallestNumber;
                 val.copyRawDataFrom(raw);
             }
