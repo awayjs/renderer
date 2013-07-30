@@ -113,7 +113,7 @@ module away.base
 		private invalidatePivot()
 		{
 			this._pivotZero = (this._pivotPoint.x == 0) && (this._pivotPoint.y == 0) && (this._pivotPoint.z == 0);
-			this._iInvalidateTransform();
+			this.iInvalidateTransform();
 
 		}
 		
@@ -124,7 +124,7 @@ module away.base
 			
 			this._positionDirty = true;
 			
-			this._iInvalidateTransform();
+			this.iInvalidateTransform();
 
 			if (this._listenToPositionChanged)
 				this.notifyPositionChanged();
@@ -198,7 +198,7 @@ module away.base
 
 			this._rotationDirty = true;
 			
-			this._iInvalidateTransform();
+			this.iInvalidateTransform();
 
 
 			if (this._listenToRotationChanged)
@@ -226,7 +226,7 @@ module away.base
 
 			this._scaleDirty = true;
 			
-			this._iInvalidateTransform();
+			this.iInvalidateTransform();
 
 			if (this._listenToScaleChanged)
                 this.notifyScaleChanged();
@@ -494,7 +494,7 @@ module away.base
 			if (this._transformDirty)
             {
 
-                this._pUpdateTransform()
+                this.pUpdateTransform()
 
             }
 
@@ -984,13 +984,13 @@ module away.base
 		 * Invalidates the transformation matrix, causing it to be updated upon the next request
 		 */
 
-		public _iInvalidateTransform()
+		public iInvalidateTransform()
 		{
 			this._transformDirty = true;
 		}
 
 
-		public _pUpdateTransform()
+		public pUpdateTransform()
 		{
 			this._pPos.x = this._x;
             this._pPos.y = this._y;
