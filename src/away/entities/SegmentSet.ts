@@ -408,7 +408,7 @@ module away.entities
 		}
 		
 		//@override
-		public updateBounds()
+		public pUpdateBounds()
 		{
 			var subSet:SubSet;
 			var len:number;
