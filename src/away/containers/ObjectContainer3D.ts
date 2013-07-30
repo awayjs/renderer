@@ -228,9 +228,9 @@ module away.containers
         /**
          * @inheritDoc
          */
-        public _iInvalidateTransform():void
+        public iInvalidateTransform():void
         {
-            super._iInvalidateTransform();
+            super.iInvalidateTransform();
 
             this.notifySceneTransformChange();
         }
