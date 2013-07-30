@@ -133,7 +133,6 @@ module away.math
 		/**
 		 * Returns a boolean value representing whether there is any significant difference between the two given 3d matrices.
 		 */
-        /* TODO: implement - dependent on Matrix3D.copyRawDataTo
 		public static compare(m1:away.geom.Matrix3D, m2:away.geom.Matrix3D):boolean
 		{
 			var r1:number[] = away.math.Matrix3DUtils.Matrix3DUtils.RAW_DATA_CONTAINER;
@@ -147,7 +146,7 @@ module away.math
 			
 			return true;
 		}
-		*/
+
 		public static lookAt(matrix:away.geom.Matrix3D, pos:away.geom.Vector3D, dir:away.geom.Vector3D, up:away.geom.Vector3D)
 		{
 			var dirN:away.geom.Vector3D;
