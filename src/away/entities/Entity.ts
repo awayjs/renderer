@@ -159,15 +159,21 @@ module away.entities
 			}
 			return this._pBounds.max.z;
 		}
-		
-		public getBounds():away.bounds.BoundingVolumeBase
-		{
-			if ( this._pBoundsInvalid )
-			{
-				this.pUpdateBounds();
-			}
-			return this._pBounds;
-		}
+
+        public getBounds():away.bounds.BoundingVolumeBase
+        {
+            if ( this._pBoundsInvalid )
+            {
+                this.pUpdateBounds();
+            }
+            return this._pBounds;
+        }
+
+        public get bounds():away.bounds.BoundingVolumeBase
+        {
+
+            return this.getBounds();
+        }
 		
 		public set bounds( value:away.bounds.BoundingVolumeBase )
 		{
