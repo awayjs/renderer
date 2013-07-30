@@ -193,7 +193,7 @@ module away.bounds
 			var cy:number = sphere._centerY;
 			var cz:number = sphere._centerZ;
 			var raw:number[] = [];
-            raw = matrix.copyRawDataTo();
+            matrix.copyRawDataTo( raw );
 			var m11:number = raw[0], m12:number = raw[4], m13:number = raw[8], m14:number = raw[12];
 			var m21:number = raw[1], m22:number = raw[5], m23:number = raw[9], m24:number = raw[13];
 			var m31:number = raw[2], m32:number = raw[6], m33:number = raw[10], m34:number = raw[14];
