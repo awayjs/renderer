@@ -220,35 +220,37 @@ module away.geom
 		 */
 		public copyRowFrom( row:number, vector3D:Vector3D )
 		{
-			switch( row )
-			{
-				case 0:
-						vector3D.x = this.rawData[ 0 ];
-						vector3D.y = this.rawData[ 1 ];
-						vector3D.z = this.rawData[ 2 ];
-						vector3D.w = this.rawData[ 3 ];
-					break;
-				case 1:
-						vector3D.x = this.rawData[ 4 ];
-						vector3D.y = this.rawData[ 5 ];
-						vector3D.z = this.rawData[ 6 ];
-						vector3D.w = this.rawData[ 7 ];
-					break;
-				case 2:
-						vector3D.x = this.rawData[ 8 ];
-						vector3D.y = this.rawData[ 9 ];
-						vector3D.z = this.rawData[ 10 ];
-						vector3D.w = this.rawData[ 11 ];
-					break;
-				case 3:
-						vector3D.x = this.rawData[ 12 ];
-						vector3D.y = this.rawData[ 13 ];
-						vector3D.z = this.rawData[ 14 ];
-						vector3D.w = this.rawData[ 15 ]
-					break;
-				default:
+
+            switch( row )
+            {
+                case 0:
+                    this.rawData[ 0 ] = vector3D.x;
+                    this.rawData[ 4 ] = vector3D.y;
+                    this.rawData[ 8 ] = vector3D.z;
+                    this.rawData[ 12 ] = vector3D.w;
+                    break;
+                case 1:
+                    this.rawData[ 1 ] = vector3D.x;
+                    this.rawData[ 5 ] = vector3D.y;
+                    this.rawData[ 9 ] = vector3D.z;
+                    this.rawData[ 13 ] = vector3D.w;
+                    break;
+                case 2:
+                    this.rawData[ 2 ] = vector3D.x;
+                    this.rawData[ 6 ] = vector3D.y;
+                    this.rawData[ 10 ] = vector3D.z;
+                    this.rawData[ 14 ] = vector3D.w;
+                    break;
+                case 3:
+                    this.rawData[ 3 ] = vector3D.x;
+                    this.rawData[ 7 ] = vector3D.y;
+                    this.rawData[ 11 ] = vector3D.z;
+                    this.rawData[ 15 ] = vector3D.w;
+                    break;
+                default:
                     throw new away.errors.ArgumentError( "ArgumentError, Row " + row + " out of bounds [0, ..., 3]");
-			}
+            }
+
 		}
 		
 		/**
@@ -256,35 +258,37 @@ module away.geom
 		 */
 		public copyRowTo( row:number, vector3D:Vector3D )
 		{
-			switch( row )
-			{
-				case 0:
-						this.rawData[ 0 ] = vector3D.x;
-						this.rawData[ 1 ] = vector3D.y;
-						this.rawData[ 2 ] = vector3D.z;
-						this.rawData[ 3 ] = vector3D.w;
-					break;
-				case 1:
-						this.rawData[ 4 ] = vector3D.x;
-						this.rawData[ 5 ] = vector3D.y;
-						this.rawData[ 6 ] = vector3D.z;
-						this.rawData[ 7 ] = vector3D.w;
-					break;
-				case 2:
-						this.rawData[ 8 ] = vector3D.x;
-						this.rawData[ 9 ] = vector3D.y;
-						this.rawData[ 10 ] = vector3D.z;
-						this.rawData[ 11 ] = vector3D.w;
-					break;
-				case 3:
-						this.rawData[ 12 ] = vector3D.x;
-						this.rawData[ 13 ] = vector3D.y;
-						this.rawData[ 14 ] = vector3D.z;
-						this.rawData[ 15 ] = vector3D.w;
-					break;
-				default:
+
+            switch( row )
+            {
+                case 0:
+                    vector3D.x = this.rawData[ 0 ];
+                    vector3D.y = this.rawData[ 4 ];
+                    vector3D.z = this.rawData[ 8 ];
+                    vector3D.w = this.rawData[ 12 ];
+                    break;
+                case 1:
+                    vector3D.x = this.rawData[ 1 ];
+                    vector3D.y = this.rawData[ 5 ];
+                    vector3D.z = this.rawData[ 9 ];
+                    vector3D.w = this.rawData[ 13 ];
+                    break;
+                case 2:
+                    vector3D.x = this.rawData[ 2 ];
+                    vector3D.y = this.rawData[ 6 ];
+                    vector3D.z = this.rawData[ 10 ];
+                    vector3D.w = this.rawData[ 14 ];
+
+                    break;
+                case 3:
+                    vector3D.x = this.rawData[ 3 ];
+                    vector3D.y = this.rawData[ 7 ];
+                    vector3D.z = this.rawData[ 11 ];
+                    vector3D.w = this.rawData[ 15 ];
+                    break;
+                default:
                     throw new away.errors.ArgumentError( "ArgumentError, Row " + row + " out of bounds [0, ..., 3]");
-			}
+            }
 		}
 		
 		/**
