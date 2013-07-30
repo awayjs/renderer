@@ -200,11 +200,18 @@ module away.geom
 			this.rawData = vector.slice(0);
 		}
 
-        //public copyRawDataTo( vector:number[], index:number = 0, transpose:boolean = false )
-		public copyRawDataTo( index:number = 0, transpose:boolean = false )
+        public copyRawDataTo( vector:number[], index:number = 0, transpose:boolean = false )
 		{
 			//TODO fully implement
-			return this.rawData.slice(0);
+
+            for (var c : number = 0 ; c < this.rawData.length ; c ++ )
+            {
+
+                vector[c] = this.rawData[c];
+
+            }
+
+			//return this.rawData.slice(0);
             //return vector = this.rawData.slice(0);
 		}
 		
@@ -615,12 +622,23 @@ module away.geom
 		 */
 		public get determinant(): number
 		{
+            //*
 			return	-1 * ((this.rawData[0] * this.rawData[5] - this.rawData[4] * this.rawData[1]) * (this.rawData[10] * this.rawData[15] - this.rawData[14] * this.rawData[11])
 				- (this.rawData[0] * this.rawData[9] - this.rawData[8] * this.rawData[1]) * (this.rawData[6] * this.rawData[15] - this.rawData[14] * this.rawData[7])
 				+ (this.rawData[0] * this.rawData[13] - this.rawData[12] * this.rawData[1]) * (this.rawData[6] * this.rawData[11] - this.rawData[10] * this.rawData[7])
 				+ (this.rawData[4] * this.rawData[9] - this.rawData[8] * this.rawData[5]) * (this.rawData[2] * this.rawData[15] - this.rawData[14] * this.rawData[3])
 				- (this.rawData[4] * this.rawData[13] - this.rawData[12] * this.rawData[5]) * (this.rawData[2] * this.rawData[11] - this.rawData[10] * this.rawData[3])
 				+ (this.rawData[8] * this.rawData[13] - this.rawData[12] * this.rawData[9]) * (this.rawData[2] * this.rawData[7] - this.rawData[6] * this.rawData[3]));
+            //*/
+
+            /*
+            return -1 *(( this.rawData[0] * this.rawData[5] - this.rawData[1] * this.rawData[4] ) * ( this.rawData[10] * this.rawData[15] - this.rawData[11] * this.rawData[14] )
+                -( this.rawData[0] * this.rawData[6] - this.rawData[2] * this.rawData[4] ) * ( this.rawData[9] * this.rawData[15] - this.rawData[11] * this.rawData[13] )
+                +( this.rawData[0] * this.rawData[7] - this.rawData[3] * this.rawData[4] ) * ( this.rawData[9] * this.rawData[14] - this.rawData[10] * this.rawData[13] )
+                +( this.rawData[1] * this.rawData[6] - this.rawData[2] * this.rawData[5] ) * ( this.rawData[8] * this.rawData[15] - this.rawData[11] * this.rawData[12] )
+                -( this.rawData[1] * this.rawData[7] - this.rawData[3] * this.rawData[5] ) * ( this.rawData[8] * this.rawData[14] - this.rawData[10] * this.rawData[12] )
+                +( this.rawData[2] * this.rawData[7] - this.rawData[3] * this.rawData[6] ) * ( this.rawData[8] * this.rawData[13] - this.rawData[9] * this.rawData[12] ));
+            */
 		}
 		
 		/**
