@@ -11,7 +11,7 @@ module away.base
 	export class SubMesh implements away.base.IRenderable
 	{
 		public _iMaterial:away.materials.MaterialBase;
-		private _parentMesh:away.entities.Mesh;// TODO: implement dependency Mesh
+		private _parentMesh:away.entities.Mesh;
 		private _subGeometry:away.base.ISubGeometry;
 		public _iIndex:number;
 		private _uvTransform:away.geom.Matrix;
@@ -363,7 +363,7 @@ module away.base
 		
 		public get bounds():away.bounds.BoundingVolumeBase
 		{
-			return this._parentMesh.bounds; // TODO: return smaller, sub mesh bounds instead
+			return this._parentMesh.getBounds(); // TODO: return smaller, sub mesh bounds instead
 		}
 		
 		public get visible():boolean
