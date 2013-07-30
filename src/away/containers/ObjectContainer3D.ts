@@ -651,8 +651,7 @@ module away.containers
 		//@override
 		public rotate( axis:away.geom.Vector3D, angle:number )
 		{
-			throw new away.errors.PartialImplementationError();
-			//TODO super.rotate(axis, angle);
+			super.rotate(axis, angle);
 			this.notifySceneTransformChange();
 		}
 		
