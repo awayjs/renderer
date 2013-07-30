@@ -180,7 +180,7 @@ module away.cameras
 		}
 		
 		//@override
-		public updateBounds()
+		public pUpdateBounds()
 		{
 			this._pBounds.nullify();
 			this._pBoundsInvalid = false;
