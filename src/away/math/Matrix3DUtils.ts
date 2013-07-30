@@ -135,7 +135,7 @@ module away.math
 		 */
 		public static compare(m1:away.geom.Matrix3D, m2:away.geom.Matrix3D):boolean
 		{
-			var r1:number[] = away.math.Matrix3DUtils.Matrix3DUtils.RAW_DATA_CONTAINER;
+			var r1:number[] = away.math.Matrix3DUtils.RAW_DATA_CONTAINER;
 			var r2:number[] = m2.rawData;
 			m1.copyRawDataTo(r1);
 			
