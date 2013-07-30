@@ -605,11 +605,7 @@ module away.containers
 		//@override
 		public translateLocal(axis:away.geom.Vector3D, distance:number )
 		{
-
-            away.Debug.throwPIR( 'ObjectContainer3D' , 'translateLocal' , 'PartialImplementationError' );
-
-			//throw new away.errors.PartialImplementationError();
-			//TODO super.translateLocal( axis, distance );
+    		super.translateLocal( axis, distance );
 			this.notifySceneTransformChange();
 		}
 		
