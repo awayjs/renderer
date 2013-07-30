@@ -158,7 +158,7 @@ module away.base
 
 		faceNormals:number[];//GET
 		
-		cloneWithSeperateBuffers():away.base.SubGeometry;//TODO:implement subGeometry
+		cloneWithSeperateBuffers():away.base.SubGeometry;
 		
 		autoDeriveVertexNormals:boolean;//GET / SET
 
