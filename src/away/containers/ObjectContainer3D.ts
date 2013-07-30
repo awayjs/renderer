@@ -224,10 +224,19 @@ module away.containers
 			this._pMouseEnabled = value;
 			this.pUpdateMouseChildren();
 		}
-		
-		// TODO override arcane function invalidateTransform():void
-		
-		public pInvalidateSceneTransform()
+
+        /**
+         * @inheritDoc
+         */
+        public _iInvalidateTransform():void
+        {
+            super._iInvalidateTransform();
+
+            this.notifySceneTransformChange();
+        }
+
+
+        public pInvalidateSceneTransform()
 		{
 			this._pSceneTransformDirty = !this._pIgnoreTransform;
 			this._inverseSceneTransformDirty = !this._pIgnoreTransform;
