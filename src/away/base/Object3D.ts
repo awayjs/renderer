@@ -94,11 +94,9 @@ module away.base
 		// private var _rotationValuesDirty:boolean;
 		// private var _scaleValuesDirty:boolean;
 
-        //* TODO: implement
 		private _positionChanged:away.events.Object3DEvent;
 		private _rotationChanged:away.events.Object3DEvent;
 		private _scaleChanged:away.events.Object3DEvent;
-		//*/
 
 		private _rotationX      : number = 0;
 		private _rotationY      : number = 0;
@@ -868,7 +866,6 @@ module away.base
 			rotate(Vector3D.Z_AXIS, angle);
 		}
 		*/
-        //* TODO: implement
 		public clone():Object3D
 		{
 			var clone:away.base.Object3D = new away.base.Object3D();
@@ -878,7 +875,6 @@ module away.base
 			// todo: implement for all subtypes
 			return clone;
 		}
-		//*/
 		/**
 		 * Rotates the 3d object directly to a euler angle
 		 *
@@ -974,20 +970,16 @@ module away.base
 		/**
 		 * Cleans up any resources used by the current object.
 		 */
-        //* TODO: implement
 		public dispose()
 		{
 		}
-		//*/
 		/**
 		 * @inheritDoc
 		 */
-        //* TODO: implement
 		public disposeAsset()
 		{
 			this.dispose();
 		}
-		//*/
 		/**
 		 * Invalidates the transformation matrix, causing it to be updated upon the next request
 		 */
