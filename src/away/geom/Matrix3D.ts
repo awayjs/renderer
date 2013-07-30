@@ -617,29 +617,44 @@ module away.geom
 			return m;
 		}
 		
-		/**
-		 * [read-only] A Number that determines whether a matrix is invertible.
-		 */
-		public get determinant(): number
-		{
-            //*
-			return	-1 * ((this.rawData[0] * this.rawData[5] - this.rawData[4] * this.rawData[1]) * (this.rawData[10] * this.rawData[15] - this.rawData[14] * this.rawData[11])
-				- (this.rawData[0] * this.rawData[9] - this.rawData[8] * this.rawData[1]) * (this.rawData[6] * this.rawData[15] - this.rawData[14] * this.rawData[7])
-				+ (this.rawData[0] * this.rawData[13] - this.rawData[12] * this.rawData[1]) * (this.rawData[6] * this.rawData[11] - this.rawData[10] * this.rawData[7])
-				+ (this.rawData[4] * this.rawData[9] - this.rawData[8] * this.rawData[5]) * (this.rawData[2] * this.rawData[15] - this.rawData[14] * this.rawData[3])
-				- (this.rawData[4] * this.rawData[13] - this.rawData[12] * this.rawData[5]) * (this.rawData[2] * this.rawData[11] - this.rawData[10] * this.rawData[3])
-				+ (this.rawData[8] * this.rawData[13] - this.rawData[12] * this.rawData[9]) * (this.rawData[2] * this.rawData[7] - this.rawData[6] * this.rawData[3]));
-            //*/
+        /**
+         * [read-only] A Number that determines whether a matrix is invertible.
+         */
+        public get determinant() : number
+        {
 
-            /*
-            return -1 *(( this.rawData[0] * this.rawData[5] - this.rawData[1] * this.rawData[4] ) * ( this.rawData[10] * this.rawData[15] - this.rawData[11] * this.rawData[14] )
-                -( this.rawData[0] * this.rawData[6] - this.rawData[2] * this.rawData[4] ) * ( this.rawData[9] * this.rawData[15] - this.rawData[11] * this.rawData[13] )
-                +( this.rawData[0] * this.rawData[7] - this.rawData[3] * this.rawData[4] ) * ( this.rawData[9] * this.rawData[14] - this.rawData[10] * this.rawData[13] )
-                +( this.rawData[1] * this.rawData[6] - this.rawData[2] * this.rawData[5] ) * ( this.rawData[8] * this.rawData[15] - this.rawData[11] * this.rawData[12] )
-                -( this.rawData[1] * this.rawData[7] - this.rawData[3] * this.rawData[5] ) * ( this.rawData[8] * this.rawData[14] - this.rawData[10] * this.rawData[12] )
-                +( this.rawData[2] * this.rawData[7] - this.rawData[3] * this.rawData[6] ) * ( this.rawData[8] * this.rawData[13] - this.rawData[9] * this.rawData[12] ));
-            */
-		}
+            // test if matrix has no shearing, which is often true
+            if ( this.rawData[0*4+3] == 0 && this.rawData[1*4+3] == 0 && this.rawData[2*4+3] == 0 )
+            {
+
+                var a = this.rawData[2*4+2] * this.rawData[3*4+3];
+                var b = this.rawData[1*4+2] * this.rawData[3*4+3];
+                var d = this.rawData[0*4+2] * this.rawData[3*4+3];
+
+                return this.rawData[0*4+0] * ( this.rawData[1*4+1] * a - this.rawData[2*4+1] * b )
+                    - this.rawData[1*4+0] * ( this.rawData[0*4+1] * a - this.rawData[2*4+1] * d )
+                    + this.rawData[2*4+0] * ( this.rawData[0*4+1] * b - this.rawData[1*4+1] * d );
+
+            }
+            else
+            {
+
+                var a = this.rawData[2*4+2] * this.rawData[3*4+3] - this.rawData[3*4+2] * this.rawData[2*4+3];
+                var b = this.rawData[1*4+2] * this.rawData[3*4+3] - this.rawData[3*4+2] * this.rawData[1*4+3];
+                var c = this.rawData[1*4+2] * this.rawData[2*4+3] - this.rawData[2*4+2] * this.rawData[1*4+3];
+                var d = this.rawData[0*4+2] * this.rawData[3*4+3] - this.rawData[3*4+2] * this.rawData[0*4+3];
+                var e = this.rawData[0*4+2] * this.rawData[2*4+3] - this.rawData[2*4+2] * this.rawData[0*4+3];
+                var f = this.rawData[0*4+2] * this.rawData[1*4+3] - this.rawData[1*4+2] * this.rawData[0*4+3];
+
+                return this.rawData[0*4+0] * ( this.rawData[1*4+1] * a - this.rawData[2*4+1] * b + this.rawData[3*4+1] * c )
+                    - this.rawData[1*4+0] * ( this.rawData[0*4+1] * a - this.rawData[2*4+1] * d + this.rawData[3*4+1] * e )
+                    + this.rawData[2*4+0] * ( this.rawData[0*4+1] * b - this.rawData[1*4+1] * d + this.rawData[3*4+1] * f )
+                    - this.rawData[3*4+0] * ( this.rawData[0*4+1] * c - this.rawData[1*4+1] * e + this.rawData[2*4+1] * f );
+
+            }
+
+        }
+
 		
 		/**
 		 * A Vector3D object that holds the position, the 3D coordinate (x,y,z) of a display object within the
