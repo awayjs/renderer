@@ -10,6 +10,20 @@ module away.containers
 	export class BasicView3D
 	{
 
+        /*
+         *************************************************************************************************************************
+         * Development Notes
+         *************************************************************************************************************************
+         *
+         * ShareContext     - this is not being used at the moment integration with other frameworks is not yet implemented or tested
+         *                    and ( _localPos / _globalPos ) position of viewport are the same for the moment
+         *
+         * Background
+         *                  - this is currently not being included in our tests and is currently disabled
+         *
+         **************************************************************************************************************************
+         */
+
         // Static
         private static sStage : away.display.Stage; // View3D's share the same stage
 
@@ -20,13 +34,13 @@ module away.containers
 		public _pScene:away.containers.Scene3D;
 		public _pCamera:away.cameras.Camera3D;
 		public _pEntityCollector:away.traverse.EntityCollector;
-		public _pAspectRation:number;
         public _pFilter3DRenderer:away.render.Filter3DRenderer;
         public _pRequireDepthRender:boolean;
         public _pDepthRender:away.display3D.Texture;
         public _pStage3DProxy:away.managers.Stage3DProxy;
         public _pBackBufferInvalid:boolean = true;
         public _pRttBufferManager:away.managers.RTTBufferManager;
+
         public _pShareContext:boolean = false;
         public _pScissorRect:away.geom.Rectangle;
         public _pRenderer:away.render.RendererBase;
@@ -35,6 +49,7 @@ module away.containers
         private _aspectRatio:number;
         private _width:number = 0 ;
         private _height:number = 0;
+
         private _localPos:away.geom.Point = new away.geom.Point();
         private _globalPos:away.geom.Point = new away.geom.Point();
         private _globalPosDirty:boolean;
@@ -46,18 +61,25 @@ module away.containers
         private _addedToStage:boolean;
         private _forceSoftware:boolean;
         private _depthTextureInvalid:boolean = true;
-        private _background:away.textures.Texture2DBase;
+
         private _antiAlias:number;
-        private _rightClickMenuEnabled:boolean = true;
-        private _sourceURL:string;
         private _scissorRectDirty:boolean = true;
         private _viewportDirty:boolean = true;
         private _depthPrepass:boolean;
         private _profile:string;
         private _layeredView:boolean = false;
-		//public _pMouse3DManager:away.managers.Mouse3DManager;
-		//public _pTouch3DManager:away.managers.Touch3DManager;
 
+        /*
+         ***********************************************************************
+         * Disabled / Not yet implemented
+         ***********************************************************************
+         *
+         * private _background:away.textures.Texture2DBase;
+         *
+		 * public _pMouse3DManager:away.managers.Mouse3DManager;
+		 * public _pTouch3DManager:away.managers.Touch3DManager;
+		 *
+         */
 		constructor( scene:Scene3D = null,
 					 camera:away.cameras.Camera3D = null,
 					 renderer:away.render.RendererBase = null,
@@ -548,11 +570,10 @@ module away.containers
                 this.pUpdateGlobalPos();
             }
 
-
             this.pUpdateTime();
             this.pUpdateViewSizeData();
             this._pEntityCollector.clear();
-            this._pScene.traversePartitions( this._pEntityCollector);// collect stuff to render
+            this._pScene.traversePartitions( this._pEntityCollector );// collect stuff to render
 
             // TODO: implement & integrate mouse3DManager
             // update picking
