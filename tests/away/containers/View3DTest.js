@@ -831,28 +831,28 @@ var away;
             Matrix3D.prototype.copyColumnFrom = function (column, vector3D) {
                 switch (column) {
                     case 0:
-                        vector3D.x = this.rawData[0];
-                        vector3D.y = this.rawData[4];
-                        vector3D.z = this.rawData[8];
-                        vector3D.w = this.rawData[12];
+                        this.rawData[0] = vector3D.x;
+                        this.rawData[1] = vector3D.y;
+                        this.rawData[2] = vector3D.z;
+                        this.rawData[3] = vector3D.w;
                         break;
                     case 1:
-                        vector3D.x = this.rawData[1];
-                        vector3D.y = this.rawData[5];
-                        vector3D.z = this.rawData[9];
-                        vector3D.w = this.rawData[13];
+                        this.rawData[4] = vector3D.x;
+                        this.rawData[5] = vector3D.y;
+                        this.rawData[6] = vector3D.z;
+                        this.rawData[7] = vector3D.w;
                         break;
                     case 2:
-                        vector3D.x = this.rawData[2];
-                        vector3D.y = this.rawData[6];
-                        vector3D.z = this.rawData[10];
-                        vector3D.w = this.rawData[14];
+                        this.rawData[8] = vector3D.x;
+                        this.rawData[9] = vector3D.y;
+                        this.rawData[10] = vector3D.z;
+                        this.rawData[11] = vector3D.w;
                         break;
                     case 3:
-                        vector3D.x = this.rawData[3];
-                        vector3D.y = this.rawData[7];
-                        vector3D.z = this.rawData[11];
-                        vector3D.w = this.rawData[15];
+                        this.rawData[12] = vector3D.x;
+                        this.rawData[13] = vector3D.y;
+                        this.rawData[14] = vector3D.z;
+                        this.rawData[15] = vector3D.w;
                         break;
                     default:
                         throw new away.errors.ArgumentError("ArgumentError, Column " + column + " out of bounds [0, ..., 3]");
@@ -864,62 +864,6 @@ var away;
             */
             Matrix3D.prototype.copyColumnTo = function (column, vector3D) {
                 switch (column) {
-                    case 0:
-                        this.rawData[0] = vector3D.x;
-                        this.rawData[4] = vector3D.y;
-                        this.rawData[8] = vector3D.z;
-                        this.rawData[12] = vector3D.w;
-                        break;
-                    case 1:
-                        this.rawData[1] = vector3D.x;
-                        this.rawData[5] = vector3D.y;
-                        this.rawData[9] = vector3D.z;
-                        this.rawData[13] = vector3D.w;
-                        break;
-                    case 2:
-                        this.rawData[2] = vector3D.x;
-                        this.rawData[6] = vector3D.y;
-                        this.rawData[10] = vector3D.z;
-                        this.rawData[14] = vector3D.w;
-                        break;
-                    case 3:
-                        this.rawData[3] = vector3D.x;
-                        this.rawData[7] = vector3D.y;
-                        this.rawData[11] = vector3D.z;
-                        this.rawData[15] = vector3D.w;
-                        break;
-                    default:
-                        throw new away.errors.ArgumentError("ArgumentError, Column " + column + " out of bounds [0, ..., 3]");
-                }
-            };
-
-            /**
-            * Copies all of the matrix data from the source Matrix3D object into the calling Matrix3D object.
-            */
-            Matrix3D.prototype.copyFrom = function (sourceMatrix3D) {
-                this.rawData = sourceMatrix3D.rawData.slice(0);
-            };
-
-            Matrix3D.prototype.copyRawDataFrom = function (vector, index, transpose) {
-                if (typeof index === "undefined") { index = 0; }
-                if (typeof transpose === "undefined") { transpose = false; }
-                //TODO fully implement
-                this.rawData = vector.slice(0);
-            };
-
-            //public copyRawDataTo( vector:number[], index:number = 0, transpose:boolean = false )
-            Matrix3D.prototype.copyRawDataTo = function (index, transpose) {
-                if (typeof index === "undefined") { index = 0; }
-                if (typeof transpose === "undefined") { transpose = false; }
-                //TODO fully implement
-                return this.rawData.slice(0);
-            };
-
-            /**
-            * Copies a Vector3D object into specific row of the calling Matrix3D object.
-            */
-            Matrix3D.prototype.copyRowFrom = function (row, vector3D) {
-                switch (row) {
                     case 0:
                         vector3D.x = this.rawData[0];
                         vector3D.y = this.rawData[1];
@@ -945,6 +889,62 @@ var away;
                         vector3D.w = this.rawData[15];
                         break;
                     default:
+                        throw new away.errors.ArgumentError("ArgumentError, Column " + column + " out of bounds [0, ..., 3]");
+                }
+            };
+
+            /**
+            * Copies all of the matrix data from the source Matrix3D object into the calling Matrix3D object.
+            */
+            Matrix3D.prototype.copyFrom = function (sourceMatrix3D) {
+                this.rawData = sourceMatrix3D.rawData.slice(0);
+            };
+
+            Matrix3D.prototype.copyRawDataFrom = function (vector, index, transpose) {
+                if (typeof index === "undefined") { index = 0; }
+                if (typeof transpose === "undefined") { transpose = false; }
+                //TODO fully implement
+                this.rawData = vector.slice(0);
+            };
+
+            Matrix3D.prototype.copyRawDataTo = function (vector, index, transpose) {
+                if (typeof index === "undefined") { index = 0; }
+                if (typeof transpose === "undefined") { transpose = false; }
+                for (var c = 0; c < this.rawData.length; c++) {
+                    vector[c] = this.rawData[c];
+                }
+            };
+
+            /**
+            * Copies a Vector3D object into specific row of the calling Matrix3D object.
+            */
+            Matrix3D.prototype.copyRowFrom = function (row, vector3D) {
+                switch (row) {
+                    case 0:
+                        this.rawData[0] = vector3D.x;
+                        this.rawData[4] = vector3D.y;
+                        this.rawData[8] = vector3D.z;
+                        this.rawData[12] = vector3D.w;
+                        break;
+                    case 1:
+                        this.rawData[1] = vector3D.x;
+                        this.rawData[5] = vector3D.y;
+                        this.rawData[9] = vector3D.z;
+                        this.rawData[13] = vector3D.w;
+                        break;
+                    case 2:
+                        this.rawData[2] = vector3D.x;
+                        this.rawData[6] = vector3D.y;
+                        this.rawData[10] = vector3D.z;
+                        this.rawData[14] = vector3D.w;
+                        break;
+                    case 3:
+                        this.rawData[3] = vector3D.x;
+                        this.rawData[7] = vector3D.y;
+                        this.rawData[11] = vector3D.z;
+                        this.rawData[15] = vector3D.w;
+                        break;
+                    default:
                         throw new away.errors.ArgumentError("ArgumentError, Row " + row + " out of bounds [0, ..., 3]");
                 }
             };
@@ -955,28 +955,29 @@ var away;
             Matrix3D.prototype.copyRowTo = function (row, vector3D) {
                 switch (row) {
                     case 0:
-                        this.rawData[0] = vector3D.x;
-                        this.rawData[1] = vector3D.y;
-                        this.rawData[2] = vector3D.z;
-                        this.rawData[3] = vector3D.w;
+                        vector3D.x = this.rawData[0];
+                        vector3D.y = this.rawData[4];
+                        vector3D.z = this.rawData[8];
+                        vector3D.w = this.rawData[12];
                         break;
                     case 1:
-                        this.rawData[4] = vector3D.x;
-                        this.rawData[5] = vector3D.y;
-                        this.rawData[6] = vector3D.z;
-                        this.rawData[7] = vector3D.w;
+                        vector3D.x = this.rawData[1];
+                        vector3D.y = this.rawData[5];
+                        vector3D.z = this.rawData[9];
+                        vector3D.w = this.rawData[13];
                         break;
                     case 2:
-                        this.rawData[8] = vector3D.x;
-                        this.rawData[9] = vector3D.y;
-                        this.rawData[10] = vector3D.z;
-                        this.rawData[11] = vector3D.w;
+                        vector3D.x = this.rawData[2];
+                        vector3D.y = this.rawData[6];
+                        vector3D.z = this.rawData[10];
+                        vector3D.w = this.rawData[14];
+
                         break;
                     case 3:
-                        this.rawData[12] = vector3D.x;
-                        this.rawData[13] = vector3D.y;
-                        this.rawData[14] = vector3D.z;
-                        this.rawData[15] = vector3D.w;
+                        vector3D.x = this.rawData[3];
+                        vector3D.y = this.rawData[7];
+                        vector3D.z = this.rawData[11];
+                        vector3D.w = this.rawData[15];
                         break;
                     default:
                         throw new away.errors.ArgumentError("ArgumentError, Row " + row + " out of bounds [0, ..., 3]");
@@ -1079,52 +1080,203 @@ var away;
                 }
             };
 
+            /*
+            public invert():boolean
+            {
+            var d = this.determinant;
+            var invertable = Math.abs (d) > 0.00000000001;
+            
+            if (invertable)
+            {
+            d = -1 / d;
+            var m11:number = this.rawData[0]; var m21:number = this.rawData[4]; var m31:number = this.rawData[8]; var m41:number = this.rawData[12];
+            var m12:number = this.rawData[1]; var m22:number = this.rawData[5]; var m32:number = this.rawData[9]; var m42:number = this.rawData[13];
+            var m13:number = this.rawData[2]; var m23:number = this.rawData[6]; var m33:number = this.rawData[10]; var m43:number = this.rawData[14];
+            var m14:number = this.rawData[3]; var m24:number = this.rawData[7]; var m34:number = this.rawData[11]; var m44:number = this.rawData[15];
+            
+            this.rawData[0] = d * (m22 * (m33 * m44 - m43 * m34) - m32 * (m23 * m44 - m43 * m24) + m42 * (m23 * m34 - m33 * m24));
+            this.rawData[1] = -d * (m12 * (m33 * m44 - m43 * m34) - m32 * (m13 * m44 - m43 * m14) + m42 * (m13 * m34 - m33 * m14));
+            this.rawData[2] = d * (m12 * (m23 * m44 - m43 * m24) - m22 * (m13 * m44 - m43 * m14) + m42 * (m13 * m24 - m23 * m14));
+            this.rawData[3] = -d * (m12 * (m23 * m34 - m33 * m24) - m22 * (m13 * m34 - m33 * m14) + m32 * (m13 * m24 - m23 * m14));
+            this.rawData[4] = -d * (m21 * (m33 * m44 - m43 * m34) - m31 * (m23 * m44 - m43 * m24) + m41 * (m23 * m34 - m33 * m24));
+            this.rawData[5] = d * (m11 * (m33 * m44 - m43 * m34) - m31 * (m13 * m44 - m43 * m14) + m41 * (m13 * m34 - m33 * m14));
+            this.rawData[6] = -d * (m11 * (m23 * m44 - m43 * m24) - m21 * (m13 * m44 - m43 * m14) + m41 * (m13 * m24 - m23 * m14));
+            this.rawData[7] = d * (m11 * (m23 * m34 - m33 * m24) - m21 * (m13 * m34 - m33 * m14) + m31 * (m13 * m24 - m23 * m14));
+            this.rawData[8] = d * (m21 * (m32 * m44 - m42 * m34) - m31 * (m22 * m44 - m42 * m24) + m41 * (m22 * m34 - m32 * m24));
+            this.rawData[9] = -d * (m11 * (m32 * m44 - m42 * m34) - m31 * (m12 * m44 - m42 * m14) + m41 * (m12 * m34 - m32 * m14));
+            this.rawData[10] = d * (m11 * (m22 * m44 - m42 * m24) - m21 * (m12 * m44 - m42 * m14) + m41 * (m12 * m24 - m22 * m14));
+            this.rawData[11] = -d * (m11 * (m22 * m34 - m32 * m24) - m21 * (m12 * m34 - m32 * m14) + m31 * (m12 * m24 - m22 * m14));
+            this.rawData[12] = -d * (m21 * (m32 * m43 - m42 * m33) - m31 * (m22 * m43 - m42 * m23) + m41 * (m22 * m33 - m32 * m23));
+            this.rawData[13] = d * (m11 * (m32 * m43 - m42 * m33) - m31 * (m12 * m43 - m42 * m13) + m41 * (m12 * m33 - m32 * m13));
+            this.rawData[14] = -d * (m11 * (m22 * m43 - m42 * m23) - m21 * (m12 * m43 - m42 * m13) + m41 * (m12 * m23 - m22 * m13));
+            this.rawData[15] = d * (m11 * (m22 * m33 - m32 * m23) - m21 * (m12 * m33 - m32 * m13) + m31 * (m12 * m23 - m22 * m13));
+            }
+            return invertable;
+            }
+            */
             /**
             * Inverts the current matrix.
             */
             Matrix3D.prototype.invert = function () {
-                var d = this.determinant;
-                var invertable = Math.abs(d) > 0.00000000001;
+                var t;
+                var m0, m1, m2, m3, s;
 
-                console.log(invertable);
+                var r0 = [], r1 = [], r2 = [], r3 = [];
 
-                if (invertable) {
-                    d = -1 / d;
-                    var m11 = this.rawData[0];
-                    var m21 = this.rawData[4];
-                    var m31 = this.rawData[8];
-                    var m41 = this.rawData[12];
-                    var m12 = this.rawData[1];
-                    var m22 = this.rawData[5];
-                    var m32 = this.rawData[9];
-                    var m42 = this.rawData[13];
-                    var m13 = this.rawData[2];
-                    var m23 = this.rawData[6];
-                    var m33 = this.rawData[10];
-                    var m43 = this.rawData[14];
-                    var m14 = this.rawData[3];
-                    var m24 = this.rawData[7];
-                    var m34 = this.rawData[11];
-                    var m44 = this.rawData[15];
+                r0[0] = this.rawData[0 * 4 + 0], r0[1] = this.rawData[1 * 4 + 0], r0[2] = this.rawData[2 * 4 + 0], r0[3] = this.rawData[3 * 4 + 0], r0[4] = 1.0, r0[5] = r0[6] = r0[7] = 0.0, r1[0] = this.rawData[0 * 4 + 1], r1[1] = this.rawData[1 * 4 + 1], r1[2] = this.rawData[2 * 4 + 1], r1[3] = this.rawData[3 * 4 + 1], r1[5] = 1.0, r1[4] = r1[6] = r1[7] = 0.0, r2[0] = this.rawData[0 * 4 + 2], r2[1] = this.rawData[1 * 4 + 2], r2[2] = this.rawData[2 * 4 + 2], r2[3] = this.rawData[3 * 4 + 2], r2[6] = 1.0, r2[4] = r2[5] = r2[7] = 0.0, r3[0] = this.rawData[0 * 4 + 3], r3[1] = this.rawData[1 * 4 + 3], r3[2] = this.rawData[2 * 4 + 3], r3[3] = this.rawData[3 * 4 + 3], r3[7] = 1.0, r3[4] = r3[5] = r3[6] = 0.0;
 
-                    this.rawData[0] = d * (m22 * (m33 * m44 - m43 * m34) - m32 * (m23 * m44 - m43 * m24) + m42 * (m23 * m34 - m33 * m24));
-                    this.rawData[1] = -d * (m12 * (m33 * m44 - m43 * m34) - m32 * (m13 * m44 - m43 * m14) + m42 * (m13 * m34 - m33 * m14));
-                    this.rawData[2] = d * (m12 * (m23 * m44 - m43 * m24) - m22 * (m13 * m44 - m43 * m14) + m42 * (m13 * m24 - m23 * m14));
-                    this.rawData[3] = -d * (m12 * (m23 * m34 - m33 * m24) - m22 * (m13 * m34 - m33 * m14) + m32 * (m13 * m24 - m23 * m14));
-                    this.rawData[4] = -d * (m21 * (m33 * m44 - m43 * m34) - m31 * (m23 * m44 - m43 * m24) + m41 * (m23 * m34 - m33 * m24));
-                    this.rawData[5] = d * (m11 * (m33 * m44 - m43 * m34) - m31 * (m13 * m44 - m43 * m14) + m41 * (m13 * m34 - m33 * m14));
-                    this.rawData[6] = -d * (m11 * (m23 * m44 - m43 * m24) - m21 * (m13 * m44 - m43 * m14) + m41 * (m13 * m24 - m23 * m14));
-                    this.rawData[7] = d * (m11 * (m23 * m34 - m33 * m24) - m21 * (m13 * m34 - m33 * m14) + m31 * (m13 * m24 - m23 * m14));
-                    this.rawData[8] = d * (m21 * (m32 * m44 - m42 * m34) - m31 * (m22 * m44 - m42 * m24) + m41 * (m22 * m34 - m32 * m24));
-                    this.rawData[9] = -d * (m11 * (m32 * m44 - m42 * m34) - m31 * (m12 * m44 - m42 * m14) + m41 * (m12 * m34 - m32 * m14));
-                    this.rawData[10] = d * (m11 * (m22 * m44 - m42 * m24) - m21 * (m12 * m44 - m42 * m14) + m41 * (m12 * m24 - m22 * m14));
-                    this.rawData[11] = -d * (m11 * (m22 * m34 - m32 * m24) - m21 * (m12 * m34 - m32 * m14) + m31 * (m12 * m24 - m22 * m14));
-                    this.rawData[12] = -d * (m21 * (m32 * m43 - m42 * m33) - m31 * (m22 * m43 - m42 * m23) + m41 * (m22 * m33 - m32 * m23));
-                    this.rawData[13] = d * (m11 * (m32 * m43 - m42 * m33) - m31 * (m12 * m43 - m42 * m13) + m41 * (m12 * m33 - m32 * m13));
-                    this.rawData[14] = -d * (m11 * (m22 * m43 - m42 * m23) - m21 * (m12 * m43 - m42 * m13) + m41 * (m12 * m23 - m22 * m13));
-                    this.rawData[15] = d * (m11 * (m22 * m33 - m32 * m23) - m21 * (m12 * m33 - m32 * m13) + m31 * (m12 * m23 - m22 * m13));
+                if (Math.abs(r3[0]) > Math.abs(r2[0])) {
+                    t = r3;
+                    r3 = r2;
+                    r2 = t;
                 }
-                return invertable;
+                if (Math.abs(r2[0]) > Math.abs(r1[0])) {
+                    t = r2;
+                    r2 = r1;
+                    r1 = t;
+                }
+                if (Math.abs(r1[0]) > Math.abs(r0[0])) {
+                    t = r1;
+                    r1 = r0;
+                    r0 = t;
+                }
+                if (0.0 == r0[0])
+                    return false;
+
+                // eliminate first variable
+                m1 = r1[0] / r0[0];
+                m2 = r2[0] / r0[0];
+                m3 = r3[0] / r0[0];
+                s = r0[1];
+                r1[1] -= m1 * s;
+                r2[1] -= m2 * s;
+                r3[1] -= m3 * s;
+                s = r0[2];
+                r1[2] -= m1 * s;
+                r2[2] -= m2 * s;
+                r3[2] -= m3 * s;
+                s = r0[3];
+                r1[3] -= m1 * s;
+                r2[3] -= m2 * s;
+                r3[3] -= m3 * s;
+
+                s = r0[4];
+
+                if (s != 0.0) {
+                    r1[4] -= m1 * s;
+                    r2[4] -= m2 * s;
+                    r3[4] -= m3 * s;
+                }
+                s = r0[5];
+                if (s != 0.0) {
+                    r1[5] -= m1 * s;
+                    r2[5] -= m2 * s;
+                    r3[5] -= m3 * s;
+                }
+                s = r0[6];
+                if (s != 0.0) {
+                    r1[6] -= m1 * s;
+                    r2[6] -= m2 * s;
+                    r3[6] -= m3 * s;
+                }
+                s = r0[7];
+                if (s != 0.0) {
+                    r1[7] -= m1 * s;
+                    r2[7] -= m2 * s;
+                    r3[7] -= m3 * s;
+                }
+
+                if (Math.abs(r3[1]) > Math.abs(r2[1])) {
+                    t = r3;
+                    r3 = r2;
+                    r2 = t;
+                }
+                if (Math.abs(r2[1]) > Math.abs(r1[1])) {
+                    t = r2;
+                    r2 = r1;
+                    r1 = t;
+                }
+                if (0.0 == r1[1])
+                    return false;
+
+                // eliminate second variable
+                m2 = r2[1] / r1[1];
+                m3 = r3[1] / r1[1];
+                r2[2] -= m2 * r1[2];
+                r3[2] -= m3 * r1[2];
+                r2[3] -= m2 * r1[3];
+                r3[3] -= m3 * r1[3];
+                s = r1[4];
+                if (0.0 != s) {
+                    r2[4] -= m2 * s;
+                    r3[4] -= m3 * s;
+                }
+                s = r1[5];
+                if (0.0 != s) {
+                    r2[5] -= m2 * s;
+                    r3[5] -= m3 * s;
+                }
+                s = r1[6];
+                if (0.0 != s) {
+                    r2[6] -= m2 * s;
+                    r3[6] -= m3 * s;
+                }
+                s = r1[7];
+                if (0.0 != s) {
+                    r2[7] -= m2 * s;
+                    r3[7] -= m3 * s;
+                }
+
+                if (Math.abs(r3[2]) > Math.abs(r2[2])) {
+                    t = r3;
+                    r3 = r2;
+                    r2 = t;
+                }
+                if (0.0 == r2[2])
+                    return false;
+
+                // eliminate third variable
+                m3 = r3[2] / r2[2];
+                r3[3] -= m3 * r2[3], r3[4] -= m3 * r2[4], r3[5] -= m3 * r2[5], r3[6] -= m3 * r2[6], r3[7] -= m3 * r2[7];
+
+                if (0.0 == r3[3])
+                    return false;
+                s = 1.0 / r3[3];
+                r3[4] *= s;
+                r3[5] *= s;
+                r3[6] *= s;
+                r3[7] *= s;
+                m2 = r2[3];
+                s = 1.0 / r2[2];
+                r2[4] = s * (r2[4] - r3[4] * m2), r2[5] = s * (r2[5] - r3[5] * m2), r2[6] = s * (r2[6] - r3[6] * m2), r2[7] = s * (r2[7] - r3[7] * m2);
+
+                m1 = r1[3];
+                r1[4] -= r3[4] * m1, r1[5] -= r3[5] * m1, r1[6] -= r3[6] * m1, r1[7] -= r3[7] * m1;
+
+                m0 = r0[3];
+                r0[4] -= r3[4] * m0, r0[5] -= r3[5] * m0, r0[6] -= r3[6] * m0, r0[7] -= r3[7] * m0;
+
+                m1 = r1[2];
+                s = 1.0 / r1[1];
+                r1[4] = s * (r1[4] - r2[4] * m1), r1[5] = s * (r1[5] - r2[5] * m1), r1[6] = s * (r1[6] - r2[6] * m1), r1[7] = s * (r1[7] - r2[7] * m1);
+                m0 = r0[2];
+                r0[4] -= r2[4] * m0, r0[5] -= r2[5] * m0, r0[6] -= r2[6] * m0, r0[7] -= r2[7] * m0;
+
+                m0 = r0[1];
+                s = 1.0 / r0[0];
+                r0[4] = s * (r0[4] - r1[4] * m0), r0[5] = s * (r0[5] - r1[5] * m0), r0[6] = s * (r0[6] - r1[6] * m0), r0[7] = s * (r0[7] - r1[7] * m0);
+
+                this.rawData[0 * 4 + 0] = r0[4];
+                this.rawData[1 * 4 + 0] = r0[5], this.rawData[2 * 4 + 0] = r0[6];
+                this.rawData[3 * 4 + 0] = r0[7], this.rawData[0 * 4 + 1] = r1[4];
+                this.rawData[1 * 4 + 1] = r1[5], this.rawData[2 * 4 + 1] = r1[6];
+                this.rawData[3 * 4 + 1] = r1[7], this.rawData[0 * 4 + 2] = r2[4];
+                this.rawData[1 * 4 + 2] = r2[5], this.rawData[2 * 4 + 2] = r2[6];
+                this.rawData[3 * 4 + 2] = r2[7], this.rawData[0 * 4 + 3] = r3[4];
+                this.rawData[1 * 4 + 3] = r3[5], this.rawData[2 * 4 + 3] = r3[6];
+                this.rawData[3 * 4 + 3] = r3[7];
+
+                return true;
             };
 
             /* TODO implement pointAt
@@ -1292,7 +1444,22 @@ var away;
                 * [read-only] A Number that determines whether a matrix is invertible.
                 */
                 function () {
-                    return ((this.rawData[0] * this.rawData[5] - this.rawData[4] * this.rawData[1]) * (this.rawData[10] * this.rawData[15] - this.rawData[14] * this.rawData[11]) - (this.rawData[0] * this.rawData[9] - this.rawData[8] * this.rawData[1]) * (this.rawData[6] * this.rawData[15] - this.rawData[14] * this.rawData[7]) + (this.rawData[0] * this.rawData[13] - this.rawData[12] * this.rawData[1]) * (this.rawData[6] * this.rawData[11] - this.rawData[10] * this.rawData[7]) + (this.rawData[4] * this.rawData[9] - this.rawData[8] * this.rawData[5]) * (this.rawData[2] * this.rawData[15] - this.rawData[14] * this.rawData[3]) - (this.rawData[4] * this.rawData[13] - this.rawData[12] * this.rawData[5]) * (this.rawData[2] * this.rawData[11] - this.rawData[10] * this.rawData[3]) + (this.rawData[8] * this.rawData[13] - this.rawData[12] * this.rawData[9]) * (this.rawData[2] * this.rawData[7] - this.rawData[6] * this.rawData[3]));
+                    if (this.rawData[0 * 4 + 3] == 0 && this.rawData[1 * 4 + 3] == 0 && this.rawData[2 * 4 + 3] == 0) {
+                        var a = this.rawData[2 * 4 + 2] * this.rawData[3 * 4 + 3];
+                        var b = this.rawData[1 * 4 + 2] * this.rawData[3 * 4 + 3];
+                        var d = this.rawData[0 * 4 + 2] * this.rawData[3 * 4 + 3];
+
+                        return this.rawData[0 * 4 + 0] * (this.rawData[1 * 4 + 1] * a - this.rawData[2 * 4 + 1] * b) - this.rawData[1 * 4 + 0] * (this.rawData[0 * 4 + 1] * a - this.rawData[2 * 4 + 1] * d) + this.rawData[2 * 4 + 0] * (this.rawData[0 * 4 + 1] * b - this.rawData[1 * 4 + 1] * d);
+                    } else {
+                        var a = this.rawData[2 * 4 + 2] * this.rawData[3 * 4 + 3] - this.rawData[3 * 4 + 2] * this.rawData[2 * 4 + 3];
+                        var b = this.rawData[1 * 4 + 2] * this.rawData[3 * 4 + 3] - this.rawData[3 * 4 + 2] * this.rawData[1 * 4 + 3];
+                        var c = this.rawData[1 * 4 + 2] * this.rawData[2 * 4 + 3] - this.rawData[2 * 4 + 2] * this.rawData[1 * 4 + 3];
+                        var d = this.rawData[0 * 4 + 2] * this.rawData[3 * 4 + 3] - this.rawData[3 * 4 + 2] * this.rawData[0 * 4 + 3];
+                        var e = this.rawData[0 * 4 + 2] * this.rawData[2 * 4 + 3] - this.rawData[2 * 4 + 2] * this.rawData[0 * 4 + 3];
+                        var f = this.rawData[0 * 4 + 2] * this.rawData[1 * 4 + 3] - this.rawData[1 * 4 + 2] * this.rawData[0 * 4 + 3];
+
+                        return this.rawData[0 * 4 + 0] * (this.rawData[1 * 4 + 1] * a - this.rawData[2 * 4 + 1] * b + this.rawData[3 * 4 + 1] * c) - this.rawData[1 * 4 + 0] * (this.rawData[0 * 4 + 1] * a - this.rawData[2 * 4 + 1] * d + this.rawData[3 * 4 + 1] * e) + this.rawData[2 * 4 + 0] * (this.rawData[0 * 4 + 1] * b - this.rawData[1 * 4 + 1] * d + this.rawData[3 * 4 + 1] * f) - this.rawData[3 * 4 + 0] * (this.rawData[0 * 4 + 1] * c - this.rawData[1 * 4 + 1] * e + this.rawData[2 * 4 + 1] * f);
+                    }
                 },
                 enumerable: true,
                 configurable: true
@@ -1982,25 +2149,23 @@ var away;
                 return v;
             };
 
-            Matrix3DUtils.lookAt = /**
+            Matrix3DUtils.compare = /**
             * Returns a boolean value representing whether there is any significant difference between the two given 3d matrices.
             */
-            /* TODO: implement - dependent on Matrix3D.copyRawDataTo
-            public static compare(m1:away.geom.Matrix3D, m2:away.geom.Matrix3D):boolean
-            {
-            var r1:number[] = away.math.Matrix3DUtils.Matrix3DUtils.RAW_DATA_CONTAINER;
-            var r2:number[] = m2.rawData;
-            m1.copyRawDataTo(r1);
-            
-            for (var i:number = 0; i < 16; ++i) {
-            if (r1[i] != r2[i])
-            return false;
-            }
-            
-            return true;
-            }
-            */
-            function (matrix, pos, dir, up) {
+            function (m1, m2) {
+                var r1 = away.math.Matrix3DUtils.RAW_DATA_CONTAINER;
+                var r2 = m2.rawData;
+                m1.copyRawDataTo(r1);
+
+                for (var i = 0; i < 16; ++i) {
+                    if (r1[i] != r2[i])
+                        return false;
+                }
+
+                return true;
+            };
+
+            Matrix3DUtils.lookAt = function (matrix, pos, dir, up) {
                 var dirN;
                 var upN;
                 var lftN;
@@ -2186,7 +2351,9 @@ var away;
                 _super.call(this);
                 this._smallestNumber = 0.0000000000000000000001;
                 this._transformDirty = true;
-                //*/
+                this._positionDirty = true;
+                this._rotationDirty = true;
+                this._scaleDirty = true;
                 this._rotationX = 0;
                 this._rotationY = 0;
                 this._rotationZ = 0;
@@ -2220,7 +2387,7 @@ var away;
             }
             Object3D.prototype.invalidatePivot = function () {
                 this._pivotZero = (this._pivotPoint.x == 0) && (this._pivotPoint.y == 0) && (this._pivotPoint.z == 0);
-                this._iInvalidateTransform();
+                this.iInvalidateTransform();
             };
 
             Object3D.prototype.invalidatePosition = function () {
@@ -2229,7 +2396,7 @@ var away;
 
                 this._positionDirty = true;
 
-                this._iInvalidateTransform();
+                this.iInvalidateTransform();
 
                 if (this._listenToPositionChanged)
                     this.notifyPositionChanged();
@@ -2289,7 +2456,7 @@ var away;
 
                 this._rotationDirty = true;
 
-                this._iInvalidateTransform();
+                this.iInvalidateTransform();
 
                 if (this._listenToRotationChanged)
                     this.notifyRotationChanged();
@@ -2309,7 +2476,7 @@ var away;
 
                 this._scaleDirty = true;
 
-                this._iInvalidateTransform();
+                this.iInvalidateTransform();
 
                 if (this._listenToScaleChanged)
                     this.notifyScaleChanged();
@@ -2535,7 +2702,7 @@ var away;
                 */
                 function () {
                     if (this._transformDirty) {
-                        this._pUpdateTransform();
+                        this.pUpdateTransform();
                     }
 
                     return this._transform;
@@ -2543,7 +2710,7 @@ var away;
                 set: function (val) {
                     if (!val.rawData[0]) {
                         var raw = away.math.Matrix3DUtils.RAW_DATA_CONTAINER;
-                        raw = val.copyRawDataTo();
+                        val.copyRawDataTo(raw);
                         raw[0] = this._smallestNumber;
                         val.copyRawDataFrom(raw);
                     }
@@ -2887,7 +3054,6 @@ var away;
             rotate(Vector3D.Z_AXIS, angle);
             }
             */
-            //* TODO: implement
             Object3D.prototype.clone = function () {
                 var clone = new away.base.Object3D();
                 clone.pivotPoint = this.pivotPoint;
@@ -2898,7 +3064,6 @@ var away;
                 return clone;
             };
 
-            //*/
             /**
             * Rotates the 3d object directly to a euler angle
             *
@@ -2931,90 +3096,34 @@ var away;
             * @param    target        The vector defining the point to be looked at
             * @param    upAxis        An optional vector used to define the desired up orientation of the 3d object after rotation has occurred
             */
-            /* TODO: implement
-            public lookAt(target:away.geom.Vector3D, upAxis:away.geom.Vector3D = null)
-            {
-            var yAxis:away.geom.Vector3D, zAxis:away.geom.Vector3D, xAxis:away.geom.Vector3D;
-            var raw:number[];
-            
-            
-            if ( upAxis == null)
-            {
-            
-            upAxis = away.geom.Vector3D.Y_AXIS;
-            
-            }
-            
-            
-            zAxis = target.subtract(position);
-            zAxis.normalize();
-            
-            xAxis = upAxis.crossProduct(zAxis);
-            xAxis.normalize();
-            
-            if (xAxis.length < .05)
-            xAxis = upAxis.crossProduct(Vector3D.Z_AXIS);
-            
-            yAxis = zAxis.crossProduct(xAxis);
-            
-            raw = away3d.math.Matrix3DUtils.RAW_DATA_CONTAINER;
-            
-            raw[uint(0)] = _scaleX*xAxis.x;
-            raw[uint(1)] = _scaleX*xAxis.y;
-            raw[uint(2)] = _scaleX*xAxis.z;
-            raw[uint(3)] = 0;
-            
-            raw[uint(4)] = _scaleY*yAxis.x;
-            raw[uint(5)] = _scaleY*yAxis.y;
-            raw[uint(6)] = _scaleY*yAxis.z;
-            raw[uint(7)] = 0;
-            
-            raw[uint(8)] = _scaleZ*zAxis.x;
-            raw[uint(9)] = _scaleZ*zAxis.y;
-            raw[uint(10)] = _scaleZ*zAxis.z;
-            raw[uint(11)] = 0;
-            
-            raw[uint(12)] = _x;
-            raw[uint(13)] = _y;
-            raw[uint(14)] = _z;
-            raw[uint(15)] = 1;
-            
-            _transform.copyRawDataFrom(raw);
-            
-            transform = transform;
-            
-            if (zAxis.z < 0) {
-            rotationY = (180 - rotationY);
-            rotationX -= 180;
-            rotationZ -= 180;
-            }
-            }
+            //* TODO: implement
+            Object3D.prototype.lookAt = function (target, upAxis) {
+                if (typeof upAxis === "undefined") { upAxis = null; }
+                away.Debug.throwPIR('Object3D', 'lookAt', 'PartialImplementationError');
+            };
+
             //*/
             /**
             * Cleans up any resources used by the current object.
             */
-            //* TODO: implement
             Object3D.prototype.dispose = function () {
             };
 
-            //*/
             /**
             * @inheritDoc
             */
-            //* TODO: implement
             Object3D.prototype.disposeAsset = function () {
                 this.dispose();
             };
 
-            //*/
             /**
             * Invalidates the transformation matrix, causing it to be updated upon the next request
             */
-            Object3D.prototype._iInvalidateTransform = function () {
+            Object3D.prototype.iInvalidateTransform = function () {
                 this._transformDirty = true;
             };
 
-            Object3D.prototype._pUpdateTransform = function () {
+            Object3D.prototype.pUpdateTransform = function () {
                 this._pPos.x = this._x;
                 this._pPos.y = this._y;
                 this._pPos.z = this._z;
@@ -3137,10 +3246,10 @@ var away;
                 var i = 0;
                 var len = this._partitions.length;
 
+                //console.log( 'Scene3D.traversePartitions' , len );
                 traverser.scene = this;
 
                 while (i < len) {
-                    console.log('Scene3D.traversePartition: ', i);
                     this._partitions[i++].traverse(traverser);
                 }
             };
@@ -3194,8 +3303,6 @@ var away;
                 //console.log( 'Scene3D' , 'iRegisterEntity' , entity._pImplicitPartition );
                 var partition = entity.iGetImplicitPartition();
 
-                //console.log( 'entity.iGetImplicitPartition() : ' , entity.iGetImplicitPartition() , 'entity.iImplicitPartition : ' , entity.iImplicitPartition )
-                //entity.iImplicitPartition._rootNode;
                 //console.log( 'scene3D.iRegisterEntity' , entity , entity.iImplicitPartition , partition );
                 this.iAddPartitionUnique(partition);
                 this.partition.iMarkForUpdate(entity);
@@ -4987,7 +5094,7 @@ var away;
             Context3D.prototype.setGLSLVertexBufferAt = function (locationName, buffer, bufferOffset, format) {
                 if (typeof bufferOffset === "undefined") { bufferOffset = 0; }
                 if (typeof format === "undefined") { format = null; }
-                if (!buffer)
+                if (buffer == null)
                     return;
 
                 var location = this._gl.getAttribLocation(this._currentProgram.glProgram, locationName);
@@ -5981,8 +6088,6 @@ var away;
 
                 item.next = this._entityHead;
                 this._entityHead = item;
-
-                console.log('EntityCollector', 'applyEntity: ', entity, ' item: ', item, 'item.next', item.next, ' head: ', this._entityHead);
             };
 
             //@override
@@ -7700,7 +7805,7 @@ var away;
                 var cy = sphere._centerY;
                 var cz = sphere._centerZ;
                 var raw = [];
-                raw = matrix.copyRawDataTo();
+                matrix.copyRawDataTo(raw);
                 var m11 = raw[0], m12 = raw[4], m13 = raw[8], m14 = raw[12];
                 var m21 = raw[1], m22 = raw[5], m23 = raw[9], m24 = raw[13];
                 var m31 = raw[2], m32 = raw[6], m33 = raw[10], m34 = raw[14];
@@ -7788,29 +7893,20 @@ var away;
             * @inheritDoc
             */
             AxisAlignedBoundingBox.prototype.isInFrustum = function (planes, numPlanes) {
-                console.log('AxisAlignedBoundingBox', 'isInFrustum', planes);
-
                 for (var i = 0; i < numPlanes; ++i) {
                     var plane = planes[i];
                     var a = plane.a;
                     var b = plane.b;
                     var c = plane.c;
-
                     var flippedExtentX = a < 0 ? -this._halfExtentsX : this._halfExtentsX;
                     var flippedExtentY = b < 0 ? -this._halfExtentsY : this._halfExtentsY;
                     var flippedExtentZ = c < 0 ? -this._halfExtentsZ : this._halfExtentsZ;
                     var projDist = a * (this._centerX + flippedExtentX) + b * (this._centerY + flippedExtentY) + c * (this._centerZ + flippedExtentZ) - plane.d;
 
-                    console.log(a, b, c, plane.d, ' : ', flippedExtentX, flippedExtentY, flippedExtentZ, ' : ', projDist);
-
-                    if (projDist < 0) {
-                        console.log('AxisAlignedBoundingBox', 'isInFrustum', 'false');
-
+                    if (projDist < 0)
                         return false;
-                    }
                 }
 
-                console.log('AxisAlignedBoundingBox', 'isInFrustum', 'true');
                 return true;
             };
 
@@ -8049,7 +8145,7 @@ var away;
                 var cz = aabb._centerZ;
                 var raw = away.math.Matrix3DUtils.RAW_DATA_CONTAINER;
 
-                raw = matrix.copyRawDataTo();
+                matrix.copyRawDataTo(raw);
 
                 var m11 = raw[0], m12 = raw[4], m13 = raw[8], m14 = raw[12];
                 var m21 = raw[1], m22 = raw[5], m23 = raw[9], m24 = raw[13];
@@ -8182,8 +8278,6 @@ var away;
             ObjectContainer3D.prototype.iSetParent = function (value) {
                 this._pParent = value;
 
-                away.Debug.throwPIR('ObjectContainer3D', 'iSetParent', 'PartialImplementationError - Mouse3DManager');
-
                 this.pUpdateMouseChildren();
 
                 if (value == null) {
@@ -8263,7 +8357,15 @@ var away;
             });
 
 
-            // TODO override arcane function invalidateTransform():void
+            /**
+            * @inheritDoc
+            */
+            ObjectContainer3D.prototype.iInvalidateTransform = function () {
+                _super.prototype.iInvalidateTransform.call(this);
+
+                this.notifySceneTransformChange();
+            };
+
             ObjectContainer3D.prototype.pInvalidateSceneTransform = function () {
                 this._pSceneTransformDirty = !this._pIgnoreTransform;
                 this._inverseSceneTransformDirty = !this._pIgnoreTransform;
@@ -8618,19 +8720,13 @@ var away;
             //@override
             ObjectContainer3D.prototype.lookAt = function (target, upAxis) {
                 if (typeof upAxis === "undefined") { upAxis = null; }
-                away.Debug.throwPIR('ObjectContainer3D', 'lookAt', 'PartialImplementationError');
-
-                //throw new away.errors.PartialImplementationError();
-                //TODO super.lookAt( target, upAxis );
+                _super.prototype.lookAt.call(this, target, upAxis);
                 this.notifySceneTransformChange();
             };
 
             //@override
             ObjectContainer3D.prototype.translateLocal = function (axis, distance) {
-                away.Debug.throwPIR('ObjectContainer3D', 'translateLocal', 'PartialImplementationError');
-
-                //throw new away.errors.PartialImplementationError();
-                //TODO super.translateLocal( axis, distance );
+                _super.prototype.translateLocal.call(this, axis, distance);
                 this.notifySceneTransformChange();
             };
 
@@ -8670,9 +8766,7 @@ var away;
             */
             //@override
             ObjectContainer3D.prototype.rotate = function (axis, angle) {
-                throw new away.errors.PartialImplementationError();
-
-                //TODO super.rotate(axis, angle);
+                _super.prototype.rotate.call(this, axis, angle);
                 this.notifySceneTransformChange();
             };
 
@@ -8708,8 +8802,7 @@ var away;
                 this._worldBoundsInvalid = true;
                 this._pBounds = this.pGetDefaultBoundingVolume();
 
-                console.log("Entity() - Bounds:", this._pBounds);
-
+                //console.log( "Entity() - Bounds:" , this._pBounds );
                 this._worldBounds = this.pGetDefaultBoundingVolume();
             }
             //@override
@@ -8858,6 +8951,9 @@ var away;
             };
 
             Object.defineProperty(Entity.prototype, "bounds", {
+                get: function () {
+                    return this.getBounds();
+                },
                 set: function (value) {
                     this.removeBounds();
                     this._pBounds = value;
@@ -8870,6 +8966,7 @@ var away;
                 enumerable: true,
                 configurable: true
             });
+
 
             Object.defineProperty(Entity.prototype, "worldBounds", {
                 get: function () {
@@ -9103,7 +9200,6 @@ var away;
                     this._frustumPlanes[i] = new away.math.Plane3D();
                 }
 
-                console.log('Camera.z = -1000;');
                 this.z = -1000;
             }
             Camera3D.prototype.pGetDefaultBoundingVolume = function () {
@@ -9148,9 +9244,7 @@ var away;
                 var raw = new Array(16);
                 ;
                 var invLen;
-                raw = this.viewProjection.copyRawDataTo();
-
-                console.log('raw', raw);
+                this.viewProjection.copyRawDataTo(raw);
 
                 c11 = raw[0];
                 c12 = raw[4];
@@ -9236,10 +9330,6 @@ var away;
                 p.d = (c34 - c44) * invLen;
 
                 this._frustumPlanesDirty = false;
-
-                for (var cntr = 0; cntr < this._frustumPlanes.length; cntr++) {
-                    console.log('Camera3D this._frustumPlanes[cntr].d ', this._frustumPlanes[cntr].d);
-                }
             };
 
             //@override
@@ -9251,7 +9341,7 @@ var away;
             };
 
             //@override
-            Camera3D.prototype.updateBounds = function () {
+            Camera3D.prototype.pUpdateBounds = function () {
                 this._pBounds.nullify();
                 this._pBoundsInvalid = false;
             };
@@ -9285,14 +9375,9 @@ var away;
             Object.defineProperty(Camera3D.prototype, "viewProjection", {
                 get: function () {
                     if (this._viewProjectionDirty) {
-                        console.log('this.inverseSceneTransform', this.inverseSceneTransform.copyRawDataTo());
-                        console.log('this.sceneTransform ', this.sceneTransform.copyRawDataTo());
-
                         this._viewProjection.copyFrom(this.inverseSceneTransform);
                         this._viewProjection.append(this._lens.matrix);
                         this._viewProjectionDirty = false;
-
-                        console.log('this.viewProjection ', this._viewProjection.copyRawDataTo());
                     }
                     return this._viewProjection;
                 },
@@ -9568,8 +9653,6 @@ var away;
             };
 
             SegmentSet.prototype.activateVertexBuffer = function (index, stage3DProxy) {
-                //away.Debug.throwPIR( 'SegmentSet' , 'activateVertexBuffer' , 'PartialImplementation' );
-                //*
                 var subSet = this._subSets[index];
 
                 this._activeSubSet = subSet;
@@ -9664,7 +9747,7 @@ var away;
             };
 
             //@override
-            SegmentSet.prototype.updateBounds = function () {
+            SegmentSet.prototype.pUpdateBounds = function () {
                 var subSet;
                 var len;
                 var v;
@@ -10211,9 +10294,6 @@ var away;
             * @inheritDoc
             */
             Mesh.prototype.pCreateEntityPartitionNode = function () {
-                away.Debug.throwPIR("away.entities.Mesh", "away.partition.MeshNode", "Missing Dependency: away.partition.MeshNode");
-
-                //return null;
                 return new away.partition.MeshNode(this);
             };
 
@@ -10452,7 +10532,15 @@ var away;
                     return this._iMaterial || this._parentMesh.material;
                 },
                 set: function (value) {
-                    away.Debug.throwPIR('away.base.Submesh', 'set material', 'away.base.MaterialBase _iRemoveOwner , _iAddOwner');
+                    if (this._iMaterial) {
+                        this._iMaterial.iRemoveOwner(this);
+                    }
+
+                    this._iMaterial = value;
+
+                    if (this._iMaterial) {
+                        this._iMaterial.iAddOwner(this);
+                    }
                 },
                 enumerable: true,
                 configurable: true
@@ -10642,7 +10730,7 @@ var away;
 
             Object.defineProperty(SubMesh.prototype, "bounds", {
                 get: function () {
-                    return this._parentMesh.bounds;
+                    return this._parentMesh.getBounds();
                 },
                 enumerable: true,
                 configurable: true
@@ -11076,8 +11164,7 @@ var away;
             };
 
             NodeBase.prototype.isInFrustum = function (planes, numPlanes) {
-                console.log('NodeBase', 'isInFrustum - should be true');
-
+                //console.log( 'NodeBase' , 'isInFrustum - should be true');
                 planes = planes;
                 numPlanes = numPlanes;
                 return true;
@@ -11100,13 +11187,11 @@ var away;
                 }
 
                 if (traverser.enterNode(this)) {
-                    console.log('NodeBase', 'acceptTraverser (node entered) : ', this);
-
+                    // console.log ( 'NodeBase' , 'acceptTraverser (node entered) : ' , this )
                     var i = 0;
 
                     while (i < this._pNumChildNodes) {
-                        console.log('NodeBase', 'loop through childNodes : ', i);
-
+                        //console.log ( 'NodeBase' , 'loop through childNodes : ' , i );
                         this._pChildNodes[i++].acceptTraverser(traverser);
                     }
 
@@ -11135,8 +11220,6 @@ var away;
                 do {
                     node._pNumEntities += diff;
                 } while((node = node._iParent) != null);
-
-                console.log('NodeBase', '_pUpdateNumEntities', this._pUpdateNumEntities);
             };
             return NodeBase;
         })();
@@ -11186,13 +11269,10 @@ var away;
 
 
             Partition3D.prototype.traverse = function (traverser) {
-                console.log('Partition3D', 'traverse', traverser);
-
                 if (this._updatesMade) {
                     this.updateEntities();
                 }
                 ++away.traverse.PartitionTraverser._iCollectionMark;
-
                 this._rootNode.acceptTraverser(traverser);
             };
 
@@ -11239,10 +11319,6 @@ var away;
             };
 
             Partition3D.prototype.updateEntities = function () {
-                console.log('--------------------------------------------------------------------------------------------');
-                console.log('-- Partition3D.updateEntities');
-                console.log('Partition3D', 'updateEntities this._updateQueue', this._updateQueue);
-
                 var node = this._updateQueue;
                 var targetNode;
                 var t;
@@ -11251,8 +11327,6 @@ var away;
 
                 do {
                     targetNode = this._rootNode.findPartitionForEntity(node.entity);
-
-                    console.log('Partition3D', 'updateEntities', 'targetNode: ', targetNode, 'entity: ', node.entity);
 
                     if (node.parent != targetNode) {
                         if (node) {
@@ -11265,10 +11339,6 @@ var away;
                     node._iUpdateQueueNext = null;
                     node.entity.iInternalUpdate();
                 } while((node = t) != null);
-
-                console.log('Partition3D', 'updateEntities complete', '_updateQueue', this._updateQueue, node);
-                console.log('-- Partition3D.updateEntities -- END ');
-                console.log('--------------------------------------------------------------------------------------------');
             };
             return Partition3D;
         })();
@@ -11318,7 +11388,6 @@ var away;
             }
             Object.defineProperty(EntityNode.prototype, "entity", {
                 get: function () {
-                    console.log('EntityNode', 'get entity', this._entity);
                     return this._entity;
                 },
                 enumerable: true,
@@ -11337,10 +11406,6 @@ var away;
                 if (!this._entity._iIsVisible) {
                     return false;
                 }
-
-                //console.log ( 'EntityNode' , 'isInFrustum' , 'worldBounds: ' , this._entity.worldBounds )
-                console.log('EntityNode', 'Entity: ', this._entity);
-
                 return this._entity.worldBounds.isInFrustum(planes, numPlanes);
             };
 
@@ -11348,8 +11413,6 @@ var away;
             * @inheritDoc
             */
             EntityNode.prototype.acceptTraverser = function (traverser) {
-                console.log('EntityNode', 'acceptTraverser', traverser);
-
                 traverser.applyEntity(this._entity);
             };
 
@@ -11357,8 +11420,6 @@ var away;
             * @inheritDoc
             */
             EntityNode.prototype.isIntersectingRay = function (rayPosition, rayDirection) {
-                console.log('EntityNode', 'isIntersectingRay _iIsVisible', this._entity._iIsVisible);
-
                 if (!this._entity._iIsVisible)
                     return false;
 
@@ -11666,6 +11727,58 @@ var away;
                 }
             };
 
+
+            Object.defineProperty(Stage3D.prototype, "width", {
+                get: function () {
+                    return this._width;
+                },
+                set: function (v) {
+                    this._width = v;
+                    away.utils.CSS.setCanvasWidth(this._canvas, v);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Stage3D.prototype, "height", {
+                get: function () {
+                    return this._height;
+                },
+                set: function (v) {
+                    this._height = v;
+                    away.utils.CSS.setCanvasHeight(this._canvas, v);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Stage3D.prototype, "x", {
+                get: function () {
+                    return this._x;
+                },
+                set: function (v) {
+                    this._x = v;
+                    away.utils.CSS.setCanvasX(this._canvas, v);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Stage3D.prototype, "y", {
+                get: function () {
+                    return this._y;
+                },
+                set: function (v) {
+                    this._y = v;
+                    away.utils.CSS.setCanvasY(this._canvas, v);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
             Object.defineProperty(Stage3D.prototype, "canvas", {
                 get: function () {
                     return this._canvas;
@@ -11702,6 +11815,26 @@ var away;
                 canvas.style.height = height + "px";
                 canvas.width = width;
                 canvas.height = height;
+            };
+
+            CSS.setCanvasWidth = function (canvas, width) {
+                canvas.style.width = width + "px";
+                canvas.width = width;
+            };
+
+            CSS.setCanvasHeight = function (canvas, height) {
+                canvas.style.height = height + "px";
+                canvas.height = height;
+            };
+
+            CSS.setCanvasX = function (canvas, x) {
+                canvas.style.position = 'absolute';
+                canvas.style.left = x + "px";
+            };
+
+            CSS.setCanvasY = function (canvas, y) {
+                canvas.style.position = 'absolute';
+                canvas.style.top = y + "px";
             };
 
             CSS.setCanvasVisibility = function (canvas, visible) {
@@ -12733,9 +12866,13 @@ var away;
     ///<reference path="../_definitions.ts" />
     (function (containers) {
         var BasicView3D = (function () {
+            //public _pMouse3DManager:away.managers.Mouse3DManager;
+            //public _pTouch3DManager:away.managers.Touch3DManager;
             function BasicView3D(scene, camera, renderer, forceSoftware, profile) {
                 if (typeof forceSoftware === "undefined") { forceSoftware = false; }
                 if (typeof profile === "undefined") { profile = "basline"; }
+                this._pBackBufferInvalid = true;
+                this._pShareContext = false;
                 this._width = 0;
                 this._height = 0;
                 this._localPos = new away.geom.Point();
@@ -12745,12 +12882,7 @@ var away;
                 this._backgroundColor = 0x000000;
                 this._backgroundAlpha = 1;
                 this._depthTextureInvalid = true;
-                this._pBackBufferInvalid = true;
                 this._rightClickMenuEnabled = true;
-                //private _menu0:away.ui.ContextMenuItem;
-                //private _menu1:away.ui.ContextMenuItem;
-                //private _viewContextMenu:away.ui.ContextMenu;
-                this._pShareContext = false;
                 this._scissorRectDirty = true;
                 this._viewportDirty = true;
                 this._layeredView = false;
@@ -12758,28 +12890,26 @@ var away;
                     BasicView3D.sStage = new away.display.Stage();
                 }
 
-                // TODO link to displaylist
                 this._profile = profile;
                 this._pScene = scene || new containers.Scene3D();
-
                 this._pScene.addEventListener(away.events.Scene3DEvent.PARTITION_CHANGED, this.onScenePartitionChanged, this);
                 this._pCamera = camera || new away.cameras.Camera3D();
-
                 this._pRenderer = renderer || new away.render.DefaultRenderer();
                 this._depthRenderer = new away.render.DepthRenderer();
                 this._forceSoftware = forceSoftware;
-
                 this._pEntityCollector = this._pRenderer.iCreateEntityCollector();
                 this._pEntityCollector.camera = this._pCamera;
-
                 this._pScissorRect = new away.geom.Rectangle();
-
                 this._pCamera.addEventListener(away.events.CameraEvent.LENS_CHANGED, this.onLensChanged, this);
                 this._pCamera.partition = this._pScene.partition;
-
                 this.stage = BasicView3D.sStage;
+
                 this.onAddedToStage();
             }
+            /**
+            *
+            * @param e
+            */
             BasicView3D.prototype.onScenePartitionChanged = function (e) {
                 if (this._pCamera) {
                     this._pCamera.partition = this.scene.partition;
@@ -12787,24 +12917,18 @@ var away;
             };
 
             Object.defineProperty(BasicView3D.prototype, "stage3DProxy", {
-                get: /*
-                public get rightClickMenuEnabled():Boolean
-                {
-                return this._rightClickMenuEnabled;
-                }
-                
-                public set rightClickMenuEnabled( val:boolean )
-                {
-                this._rightClickMenuEnabled = val;
-                this.updateRightClickMenu();
-                }
+                get: /**
+                *
+                * @returns {away.managers.Stage3DProxy}
                 */
                 function () {
                     return this._pStage3DProxy;
                 },
-                set: function (stage3DProxy) {
-                    console.log('>>>>>>>>>>', 'BasicView3D stage3DProxy', stage3DProxy);
-
+                set: /**
+                *
+                * @param stage3DProxy
+                */
+                function (stage3DProxy) {
                     if (this._pStage3DProxy) {
                         this._pStage3DProxy.removeEventListener(away.events.Stage3DEvent.VIEWPORT_UPDATED, this.onViewportUpdated, this);
                     }
@@ -12821,34 +12945,18 @@ var away;
 
 
             Object.defineProperty(BasicView3D.prototype, "layeredView", {
-                get: /*
-                public get forceMouseMove():boolean
-                {
-                return this._mouse3DManager.forceMouseMove;
-                }
-                
-                public set forceMouseMove( value:boolean )
-                {
-                this._mouse3DManager.forceMouseMove = value;
-                this._touch3DManager.forceTouchMove = value;
-                }
-                */
-                /*
-                public get background():away.textures.Texture2DBase
-                {
-                return this._background;
-                }
-                
-                public set background( value:away.textures.Texture2DBase )
-                {
-                this._background = value;
-                this._renderer.background = _background;
-                }
+                get: /**
+                *
+                * @returns {boolean}
                 */
                 function () {
                     return this._layeredView;
                 },
-                set: function (value) {
+                set: /**
+                *
+                * @param value
+                */
+                function (value) {
                     this._layeredView = value;
                 },
                 enumerable: true,
@@ -12857,23 +12965,18 @@ var away;
 
 
             Object.defineProperty(BasicView3D.prototype, "filters3d", {
-                get: /*
-                private initHitField()
-                {
-                this._hitField = new away.display.Sprite();
-                this._hitField.alpha = 0;
-                this._hitField.doubleClickEnabled = true;
-                this._hitField.graphics.beginFill( 0x000000 );
-                this._hitField.graphics.drawRect( 0, 0, 100, 100 );
-                this.addChild( this._hitField );
-                }
+                get: /**
+                *
+                * @returns {*}
                 */
-                //TODO remove? override public function get filters():Array
-                //TODO remove? override public function set filters(value:Array):void
                 function () {
                     return this._pFilter3DRenderer ? this._pFilter3DRenderer.filters : null;
                 },
-                set: function (value) {
+                set: /**
+                *
+                * @param value
+                */
+                function (value) {
                     if (value && value.length == 0)
                         value = null;
 
@@ -12903,10 +13006,18 @@ var away;
 
 
             Object.defineProperty(BasicView3D.prototype, "renderer", {
-                get: function () {
+                get: /**
+                *
+                * @returns {away.render.RendererBase}
+                */
+                function () {
                     return this._pRenderer;
                 },
-                set: function (value) {
+                set: /**
+                *
+                * @param value
+                */
+                function (value) {
                     this._pRenderer.iDispose();
                     this._pRenderer = value;
 
@@ -12929,10 +13040,18 @@ var away;
 
 
             Object.defineProperty(BasicView3D.prototype, "backgroundColor", {
-                get: function () {
+                get: /**
+                *
+                * @returns {number}
+                */
+                function () {
                     return this._backgroundColor;
                 },
-                set: function (value) {
+                set: /**
+                *
+                * @param value
+                */
+                function (value) {
                     this._backgroundColor = value;
                     this._pRenderer.iBackgroundR = ((value >> 16) & 0xff) / 0xff;
                     this._pRenderer.iBackgroundG = ((value >> 8) & 0xff) / 0xff;
@@ -12944,10 +13063,18 @@ var away;
 
 
             Object.defineProperty(BasicView3D.prototype, "backgroundAlpha", {
-                get: function () {
+                get: /**
+                *
+                * @returns {number}
+                */
+                function () {
                     return this._backgroundAlpha;
                 },
-                set: function (value) {
+                set: /**
+                *
+                * @param value
+                */
+                function (value) {
                     if (value > 1) {
                         value = 1;
                     } else if (value < 0) {
@@ -12963,7 +13090,11 @@ var away;
 
 
             Object.defineProperty(BasicView3D.prototype, "camera", {
-                get: function () {
+                get: /**
+                *
+                * @returns {away.cameras.Camera3D}
+                */
+                function () {
                     return this._pCamera;
                 },
                 set: /**
@@ -12980,7 +13111,6 @@ var away;
                     }
 
                     this._pCamera.addEventListener(away.events.CameraEvent.LENS_CHANGED, this.onLensChanged, this);
-
                     this._scissorRectDirty = true;
                     this._viewportDirty = true;
                 },
@@ -12990,7 +13120,11 @@ var away;
 
 
             Object.defineProperty(BasicView3D.prototype, "scene", {
-                get: function () {
+                get: /**
+                *
+                * @returns {away.containers.Scene3D}
+                */
+                function () {
                     return this._pScene;
                 },
                 set: /**
@@ -13011,7 +13145,11 @@ var away;
 
 
             Object.defineProperty(BasicView3D.prototype, "deltaTime", {
-                get: function () {
+                get: /**
+                *
+                * @returns {number}
+                */
+                function () {
                     return this._deltaTime;
                 },
                 enumerable: true,
@@ -13019,14 +13157,18 @@ var away;
             });
 
             Object.defineProperty(BasicView3D.prototype, "width", {
-                get: function () {
+                get: /**
+                *
+                * @returns {number}
+                */
+                function () {
                     return this._width;
                 },
-                set: function (value) {
-                    if (this._pStage3DProxy && this._pStage3DProxy.usesSoftwareRendering && value > 2048) {
-                        value = 2048;
-                    }
-
+                set: /**
+                *
+                * @param value
+                */
+                function (value) {
                     if (this._width == value) {
                         return;
                     }
@@ -13035,7 +13177,6 @@ var away;
                         this._pRttBufferManager.viewWidth = value;
                     }
 
-                    //this._pHitField.width = value; // TODO: AS3 <> JS conversion / implementation
                     this._width = value;
                     this._aspectRatio = this._width / this._height;
                     this._pCamera.lens.iAspectRatio = this._aspectRatio;
@@ -13051,14 +13192,18 @@ var away;
 
 
             Object.defineProperty(BasicView3D.prototype, "height", {
-                get: function () {
+                get: /**
+                *
+                * @returns {number}
+                */
+                function () {
                     return this._height;
                 },
-                set: function (value) {
-                    if (this._pStage3DProxy && this._pStage3DProxy.usesSoftwareRendering && value > 2048) {
-                        value = 2048;
-                    }
-
+                set: /**
+                *
+                * @param value
+                */
+                function (value) {
                     if (this._height == value) {
                         return;
                     }
@@ -13067,7 +13212,6 @@ var away;
                         this._pRttBufferManager.viewHeight = value;
                     }
 
-                    //this._hitField.height = value;// TODO: AS3 <> JS conversion / implementation
                     this._height = value;
                     this._aspectRatio = this._width / this._height;
                     this._pCamera.lens.iAspectRatio = this._aspectRatio;
@@ -13085,18 +13229,22 @@ var away;
 
 
             Object.defineProperty(BasicView3D.prototype, "x", {
-                get: function () {
+                get: /**
+                *
+                * @returns {number}
+                */
+                function () {
                     return this._localPos.x;
                 },
-                set: function (value) {
+                set: /**
+                *
+                * @param value
+                */
+                function (value) {
                     if (this.x == value)
                         return;
 
-                    this._localPos.x = value;
-
-                    // TODO:
-                    //rectObject = canvas.getBoundingClientRect();
-                    //this._globalPos.x = parent? parent.localToGlobal(_localPos).x : value;// TODO: imeplement AS3 / JS
+                    this._globalPos.x = this._localPos.x = value;
                     this._globalPosDirty = true;
                 },
                 enumerable: true,
@@ -13104,28 +13252,67 @@ var away;
             });
 
             Object.defineProperty(BasicView3D.prototype, "y", {
-                get: function () {
+                get: /**
+                *
+                * @returns {number}
+                */
+                function () {
                     return this._localPos.y;
                 },
-                set: function (value) {
+                set: /**
+                *
+                * @param value
+                */
+                function (value) {
                     if (this.y == value)
                         return;
 
-                    this._localPos.y = value;
-
-                    //this._globalPos.y = parent? parent.localToGlobal(_localPos).y : value;// TODO: imeplement AS3 / JS
+                    this._globalPos.y = this._localPos.y = value;
                     this._globalPosDirty = true;
                 },
                 enumerable: true,
                 configurable: true
             });
 
+            Object.defineProperty(BasicView3D.prototype, "visible", {
+                get: /**
+                *
+                * @returns {boolean}
+                */
+                function () {
+                    return true;
+                },
+                set: /**
+                *
+                * @param v
+                */
+                function (v) {
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(BasicView3D.prototype, "canvas", {
+                get: function () {
+                    return this._pStage3DProxy.canvas;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
             Object.defineProperty(BasicView3D.prototype, "antiAlias", {
-                get: //TODO override public function set visible(value:Boolean):void
+                get: /**
+                *
+                * @returns {number}
+                */
                 function () {
                     return this._antiAlias;
                 },
-                set: function (value) {
+                set: /**
+                *
+                * @param value
+                */
+                function (value) {
                     this._antiAlias = value;
                     this._pRenderer.antiAlias = value;
                     this._pBackBufferInvalid = true;
@@ -13136,7 +13323,11 @@ var away;
 
 
             Object.defineProperty(BasicView3D.prototype, "renderedFacesCount", {
-                get: function () {
+                get: /**
+                *
+                * @returns {number}
+                */
+                function () {
                     return this._pEntityCollector._pNumTriangles;
                 },
                 enumerable: true,
@@ -13144,10 +13335,18 @@ var away;
             });
 
             Object.defineProperty(BasicView3D.prototype, "shareContext", {
-                get: function () {
+                get: /**
+                *
+                * @returns {boolean}
+                */
+                function () {
                     return this._pShareContext;
                 },
-                set: function (value) {
+                set: /**
+                *
+                * @param value
+                */
+                function (value) {
                     if (this._pShareContext == value) {
                         return;
                     }
@@ -13165,27 +13364,10 @@ var away;
             BasicView3D.prototype.pUpdateBackBuffer = function () {
                 if (this._pStage3DProxy._iContext3D && !this._pShareContext) {
                     if (this._width && this._height) {
-                        if (this._pStage3DProxy.usesSoftwareRendering) {
-                            if (this._width > 2048) {
-                                this._width = 2048;
-                            }
-
-                            if (this._height > 2048) {
-                                this._height = 2048;
-                            }
-                        }
-
                         this._pStage3DProxy.configureBackBuffer(this._width, this._height, this._antiAlias, true);
                         this._pBackBufferInvalid = false;
-                    } else {
-                        this._width = window.innerWidth;
-                        this._height = window.innerWidth;
                     }
                 }
-            };
-
-            BasicView3D.prototype.addSourceURL = function (url) {
-                this._sourceURL = url;
             };
 
             /**
@@ -13205,24 +13387,14 @@ var away;
                     this._pStage3DProxy.clearDepthBuffer();
                 }
 
-                /* TODO: JS <> AS3 conversion - if functionality is needed
-                if (!_parentIsStage) {
-                var globalPos:Point = parent.localToGlobal(_localPos);
-                if (_globalPos.x != globalPos.x || _globalPos.y != globalPos.y) {
-                _globalPos = globalPos;
-                _globalPosDirty = true;
+                if (this._globalPosDirty) {
+                    this.pUpdateGlobalPos();
                 }
-                }
-                
-                if (_globalPosDirty)
-                updateGlobalPos();
-                */
+
                 this.pUpdateTime();
                 this.pUpdateViewSizeData();
                 this._pEntityCollector.clear();
                 this._pScene.traversePartitions(this._pEntityCollector);
-
-                console.log('this._pEntityCollector._pEntityListItemPool: ', this._pEntityCollector._pEntityListItemPool, this._pEntityCollector._pEntityListItemPool);
 
                 if (this._pRequireDepthRender) {
                     this.pRenderSceneDepthToTexture(this._pEntityCollector);
@@ -13258,7 +13430,9 @@ var away;
                 this._pStage3DProxy.bufferClear = false;
             };
 
-            // TODO: JS <> AS3 imeplementation differences - should global pos be canvas ? ... or do we need to set it to 0,0,canvas.width , canvas.height?
+            /**
+            *
+            */
             BasicView3D.prototype.pUpdateGlobalPos = function () {
                 this._globalPosDirty = false;
 
@@ -13279,20 +13453,27 @@ var away;
                 this._scissorRectDirty = true;
             };
 
+            /**
+            *
+            */
             BasicView3D.prototype.pUpdateTime = function () {
                 var time = away.utils.getTimer();
+
                 if (this._time == 0) {
                     this._time = time;
                 }
+
                 this._deltaTime = time - this._time;
                 this._time = time;
             };
 
+            /**
+            *
+            */
             BasicView3D.prototype.pUpdateViewSizeData = function () {
                 this._pCamera.lens.iAspectRatio = this._aspectRatio;
 
                 if (this._scissorRectDirty) {
-                    // TODO: should scissor rect be same as viewport ?
                     this._scissorRectDirty = false;
                     this._pCamera.lens.iUpdateScissorRect(this._pScissorRect.x, this._pScissorRect.y, this._pScissorRect.width, this._pScissorRect.height);
                 }
@@ -13311,6 +13492,10 @@ var away;
                 }
             };
 
+            /**
+            *
+            * @param entityCollector
+            */
             BasicView3D.prototype.pRenderDepthPrepass = function (entityCollector) {
                 this._depthRenderer.disableColor = true;
 
@@ -13327,6 +13512,10 @@ var away;
                 this._depthRenderer.disableColor = false;
             };
 
+            /**
+            *
+            * @param entityCollector
+            */
             BasicView3D.prototype.pRenderSceneDepthToTexture = function (entityCollector) {
                 if (this._depthTextureInvalid || !this._pDepthRender) {
                     this.initDepthTexture(this._pStage3DProxy._iContext3D);
@@ -13336,6 +13525,10 @@ var away;
                 this._depthRenderer.iRender(entityCollector, this._pDepthRender);
             };
 
+            /**
+            *
+            * @param context
+            */
             BasicView3D.prototype.initDepthTexture = function (context) {
                 this._depthTextureInvalid = false;
 
@@ -13345,6 +13538,9 @@ var away;
                 this._pDepthRender = context.createTexture(this._pRttBufferManager.textureWidth, this._pRttBufferManager.textureHeight, away.display3D.Context3DTextureFormat.BGRA, true);
             };
 
+            /**
+            *
+            */
             BasicView3D.prototype.dispose = function () {
                 this._pStage3DProxy.removeEventListener(away.events.Stage3DEvent.VIEWPORT_UPDATED, this.onViewportUpdated, this);
 
@@ -13378,50 +13574,9 @@ var away;
             };
 
             Object.defineProperty(BasicView3D.prototype, "iEntityCollector", {
-                get: /* TODO: imeplement Camera3D.project
-                public project( point3d:away.geom.Vector3D ):away.geom.Vector3D
-                {
-                var v:away.geom.Vector3D = this._pCamera.project( point3d );
-                v.x = (v.x + 1.0) * this._width/2.0;
-                v.y = (v.y + 1.0) * this._height/2.0;
-                return v;
-                }
-                */
-                /* TODO: imeplement Camera3D.unproject
-                public unproject( sX:Number, sY:Number, sZ:Number ):away.geom.Vector3D
-                {
-                return this._pCamera.unproject( (sX*2 - this._width)/this._pStage3DProxy.width, (sY*2 - this._height)/this._pStage3DProxy.height, sZ );
-                }
-                */
-                /* TODO: imeplement Camera3D.unproject
-                public getRay( sX:Number, sY:Number, sZ:Number ):away.geom.Vector3D
-                {
-                return this._pCamera.getRay( (sX*2 - this._width)/this._width, (sY*2 - this._height)/this._height, sZ );
-                }
-                */
-                /* TODO: imeplement Mouse3DManager
-                public get mousePicker():away.pick.IPicker
-                {
-                return this._mouse3DManager.mousePicker;
-                }
-                */
-                /* TODO: imeplement Mouse3DManager
-                public set mousePicker( value:away.pick.IPicker )
-                {
-                this._mouse3DManager.mousePicker = value;
-                }
-                */
-                /* TODO: imeplement Touch3DManager
-                public get touchPicker():away.pick.IPicker
-                {
-                return this._touch3DManager.touchPicker;
-                }
-                */
-                /* TODO: imeplement Touch3DManager
-                public set touchPicker( value:away.pick.IPicker)
-                {
-                this._touch3DManager.touchPicker = value;
-                }
+                get: /**
+                *
+                * @returns {away.traverse.EntityCollector}
                 */
                 function () {
                     return this._pEntityCollector;
@@ -13430,13 +13585,19 @@ var away;
                 configurable: true
             });
 
+            /**
+            *
+            * @param event
+            */
             BasicView3D.prototype.onLensChanged = function (event) {
                 this._scissorRectDirty = true;
                 this._viewportDirty = true;
             };
 
-            // TODO private function onAddedToStage(event:Event):void
-            // TODO private function onAdded(event:Event):void
+            /**
+            *
+            * @param event
+            */
             BasicView3D.prototype.onViewportUpdated = function (event) {
                 if (this._pShareContext) {
                     this._pScissorRect.x = this._globalPos.x - this._pStage3DProxy.x;
@@ -13447,11 +13608,18 @@ var away;
             };
 
             Object.defineProperty(BasicView3D.prototype, "depthPrepass", {
-                get: // TODO private function viewSource(e:ContextMenuEvent):void
+                get: /**
+                *
+                * @returns {boolean}
+                */
                 function () {
                     return this._depthPrepass;
                 },
-                set: function (value) {
+                set: /**
+                *
+                * @param value
+                */
+                function (value) {
                     this._depthPrepass = value;
                 },
                 enumerable: true,
@@ -13459,20 +13627,19 @@ var away;
             });
 
 
+            /**
+            *
+            */
             BasicView3D.prototype.onAddedToStage = function () {
                 this._addedToStage = true;
 
                 if (this._pStage3DProxy == null) {
-                    console.log('Get my StageProxy !');
                     this._pStage3DProxy = away.managers.Stage3DManager.getInstance(this.stage).getFreeStage3DProxy(this._forceSoftware, this._profile);
                     this._pStage3DProxy.addEventListener(away.events.Stage3DEvent.VIEWPORT_UPDATED, this.onViewportUpdated, this);
-                    console.log('this._pStage3DProxy : ', this._pStage3DProxy);
                 }
 
                 this._globalPosDirty = true;
-
                 this._pRttBufferManager = away.managers.RTTBufferManager.getInstance(this._pStage3DProxy);
-
                 this._pRenderer.iStage3DProxy = this._depthRenderer.iStage3DProxy = this._pStage3DProxy;
 
                 if (this._width == 0) {
@@ -18836,7 +19003,7 @@ var away;
 
                 // transform ray dir and origin (cam pos) to object space
                 //invSceneTransform.copyRawDataTo( raw  );
-                raw = invSceneTransform.copyRawDataTo();
+                invSceneTransform.copyRawDataTo(raw);
                 rx = raw[0] * ox + raw[4] * oy + raw[8] * oz;
                 ry = raw[1] * ox + raw[5] * oy + raw[9] * oz;
                 rz = raw[2] * ox + raw[6] * oy + raw[10] * oz;
@@ -19376,6 +19543,9 @@ var away;
 
                 if (this._iContext3D)
                     this._iContext3D.configureBackBuffer(backBufferWidth, backBufferHeight, antiAlias, enableDepthAndStencil);
+
+                this._stage3D.width = backBufferWidth;
+                this._stage3D.height = backBufferHeight;
             };
 
             Object.defineProperty(Stage3DProxy.prototype, "enableDepthAndStencil", {
@@ -19578,12 +19748,19 @@ var away;
                 * The x position of the Stage3D.
                 */
                 function () {
-                    away.Debug.throwPIR('Stage3DProxy', 'get x', 'Stage3D.x');
-
-                    return 0;
+                    //away.Debug.throwPIR( 'Stage3DProxy' , 'get x' ,  'Stage3D.x');
+                    //return 0;
+                    return this._stage3D.x;
                 },
                 set: function (value) {
                     away.Debug.throwPIR('Stage3DProxy', 'set x', 'Stage3D.x');
+
+                    if (this._viewPort.x == value)
+                        return;
+
+                    this._stage3D.x = this._viewPort.x = value;
+
+                    this.notifyViewportUpdated();
                 },
                 enumerable: true,
                 configurable: true
@@ -19595,16 +19772,34 @@ var away;
                 * The y position of the Stage3D.
                 */
                 function () {
-                    away.Debug.throwPIR('Stage3DProxy', 'get x', 'Stage3D.y');
-                    return 0;
+                    return this._stage3D.y;
                 },
                 set: function (value) {
                     away.Debug.throwPIR('Stage3DProxy', 'set x', 'Stage3D.y');
+
+                    if (this._viewPort.y == value)
+                        return;
+
+                    this._stage3D.y = this._viewPort.y = value;
+
+                    this.notifyViewportUpdated();
                 },
                 enumerable: true,
                 configurable: true
             });
 
+
+            Object.defineProperty(Stage3DProxy.prototype, "canvas", {
+                get: /**
+                *
+                * @returns {HTMLCanvasElement}
+                */
+                function () {
+                    return this._stage3D.canvas;
+                },
+                enumerable: true,
+                configurable: true
+            });
 
             Object.defineProperty(Stage3DProxy.prototype, "width", {
                 get: /**
@@ -19617,7 +19812,7 @@ var away;
                     if (this._viewPort.width == width)
                         return;
 
-                    this._backBufferWidth = this._viewPort.width = width;
+                    this._stage3D.width = this._backBufferWidth = this._viewPort.width = width;
                     this._backBufferDirty = true;
 
                     this.notifyViewportUpdated();
@@ -19638,7 +19833,7 @@ var away;
                     if (this._viewPort.height == height)
                         return;
 
-                    this._backBufferHeight = this._viewPort.height = height;
+                    this._stage3D.height = this._backBufferHeight = this._viewPort.height = height;
                     this._backBufferDirty = true;
 
                     this.notifyViewportUpdated();
@@ -19888,9 +20083,14 @@ var away;
                 this._stageHeight = height;
                 this._stageWidth = width;
 
+                var s3d;
+
                 for (var i = 0; i < Stage.STAGE3D_MAX_QUANTITY; ++i) {
-                    away.utils.CSS.setCanvasSize(this.stage3Ds[i].canvas, width, height);
-                    away.utils.CSS.setCanvasPosition(this.stage3Ds[i].canvas, 0, 0, true);
+                    s3d = this.stage3Ds[i];
+                    s3d.width = width;
+                    s3d.height = height;
+                    s3d.x = 0;
+                    s3d.y = 0;
                 }
                 this.dispatchEvent(new away.events.Event(away.events.Event.RESIZE));
             };
@@ -19904,11 +20104,19 @@ var away;
 
             Stage.prototype.initStage3DObjects = function () {
                 this.stage3Ds = [];
+
                 for (var i = 0; i < Stage.STAGE3D_MAX_QUANTITY; ++i) {
                     var canvas = this.createHTMLCanvasElement();
-                    this.addChildHTMLElement(canvas);
-                    this.stage3Ds.push(new away.display.Stage3D(canvas));
+                    var stage3D = new away.display.Stage3D(canvas);
+                    stage3D.addEventListener(away.events.Event.CONTEXT3D_CREATE, this.onContextCreated, this);
+
+                    this.stage3Ds.push(stage3D);
                 }
+            };
+
+            Stage.prototype.onContextCreated = function (e) {
+                var stage3D = e.target;
+                this.addChildHTMLElement(stage3D.canvas);
             };
 
             Stage.prototype.createHTMLCanvasElement = function () {
@@ -26685,24 +26893,19 @@ var away;
                 }
 
                 if (this._sceneMatrixIndex >= 0) {
-                    //renderable.getRenderSceneTransform(camera).copyRawDataTo( this._pVertexConstantData, this._sceneMatrixIndex, true);
-                    this._pVertexConstantData = renderable.getRenderSceneTransform(camera).copyRawDataTo(this._sceneMatrixIndex, true);
-
-                    //viewProjection.copyRawDataTo( this._pVertexConstantData, 0, true);
-                    this._pVertexConstantData = viewProjection.copyRawDataTo(0, true);
+                    renderable.getRenderSceneTransform(camera).copyRawDataTo(this._pVertexConstantData, this._sceneMatrixIndex, true);
+                    viewProjection.copyRawDataTo(this._pVertexConstantData, 0, true);
                 } else {
                     var matrix3D = away.math.Matrix3DUtils.CALCULATION_MATRIX;
 
                     matrix3D.copyFrom(renderable.getRenderSceneTransform(camera));
                     matrix3D.append(viewProjection);
 
-                    //matrix3D.copyRawDataTo( this._pVertexConstantData, 0, true);
-                    this._pVertexConstantData = matrix3D.copyRawDataTo(0, true);
+                    matrix3D.copyRawDataTo(this._pVertexConstantData, 0, true);
                 }
 
                 if (this._sceneNormalMatrixIndex >= 0) {
-                    //renderable.inverseSceneTransform.copyRawDataTo(this._pVertexConstantData, this._sceneNormalMatrixIndex, false);
-                    this._pVertexConstantData = renderable.inverseSceneTransform.copyRawDataTo(this._sceneNormalMatrixIndex, false);
+                    renderable.inverseSceneTransform.copyRawDataTo(this._pVertexConstantData, this._sceneNormalMatrixIndex, false);
                 }
 
                 if (this._usesNormals) {
@@ -33454,9 +33657,6 @@ var away;
                         this._snapshotRequired = false;
                     }
                 }
-
-                console.log(entityCollector);
-
                 this._pStage3DProxy.scissorRect = null;
             };
 
@@ -34786,8 +34986,8 @@ var View3DTest = (function () {
         this.stage = new away.display.Stage();
 
         this.cam = new away.cameras.Camera3D();
-        this.cam.z = -1000;
         this.cam.lookAt(new away.geom.Vector3D(0, 0, 0));
+        this.cam.z = 0;
 
         this.renderer = new away.render.DefaultRenderer();
         this.scene = new away.containers.Scene3D();
@@ -34809,7 +35009,7 @@ var View3DTest = (function () {
             m.x = Math.cos(t) * radius;
             m.y = 0;
             m.z = Math.sin(t) * radius;
-            console.log('mesh', m.transform, m.position, m.x, m.y, m.z);
+            console.log('mesh', m.transform.rawData, m.position, m.x, m.y, m.z);
 
             this.scene.addChild(m);
         }
@@ -34824,8 +35024,6 @@ var View3DTest = (function () {
         console.log('view ', this.view);
         console.log('scene ', this.scene);
 
-        //this.raf = new away.utils.RequestAnimationFrame( this.tick , this );
-        //this.raf.start();
         document.onmousedown = function (e) {
             return _this.tick(e);
         };
@@ -34833,7 +35031,15 @@ var View3DTest = (function () {
     View3DTest.prototype.tick = function (e) {
         console.log('------------------------------------------------------------------------------------------');
         console.log('-Render');
+        console.log(this.cam.position, this.cam.scenePosition);
 
+        this.view.render();
+    };
+
+    View3DTest.prototype.resize = function (e) {
+        this.view.y = this.view.x = 0;
+        this.view.width = window.innerWidth;
+        this.view.height = window.innerHeight;
         this.view.render();
     };
     return View3DTest;
@@ -34842,5 +35048,11 @@ var View3DTest = (function () {
 var test;
 window.onload = function () {
     test = new View3DTest();
+};
+
+window.onresize = function (e) {
+    if (test) {
+        test.resize(e);
+    }
 };
 //@ sourceMappingURL=View3DTest.js.map

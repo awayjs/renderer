@@ -20,12 +20,10 @@ class View3DTest
     private sManager    : away.managers.Stage3DManager;
     private stage       : away.display.Stage;
     private light       : away.lights.PointLight;
-    private raf         : away.utils.RequestAnimationFrame
+    private raf         : away.utils.RequestAnimationFrame;
 
     constructor()
     {
-
-
 
         away.Debug.THROW_ERRORS = false;
         away.Debug.LOG_PI_ERRORS = false;
@@ -33,8 +31,8 @@ class View3DTest
         this.stage = new away.display.Stage();
 
         this.cam = new away.cameras.Camera3D();
-        this.cam.z = -1000;
         this.cam.lookAt( new away.geom.Vector3D( 0 , 0 ,0 ));
+        this.cam.z = 0;
 
         this.renderer = new away.render.DefaultRenderer();
         this.scene = new away.containers.Scene3D();
@@ -58,7 +56,7 @@ class View3DTest
                 m.x = Math.cos(t)*radius;
                 m.y = 0;
                 m.z = Math.sin(t)*radius;
-            console.log( 'mesh' , m.transform, m.position , m.x , m.y , m.z );
+            console.log( 'mesh' , m.transform.rawData, m.position , m.x , m.y , m.z );
 
             this.scene.addChild( m );
 
@@ -74,20 +72,25 @@ class View3DTest
         console.log( 'view ' , this.view );
         console.log( 'scene ' , this.scene );
 
-        //this.raf = new away.utils.RequestAnimationFrame( this.tick , this );
-        //this.raf.start();
-
-
         document.onmousedown = ( e ) => this.tick( e );
 
     }
 
     private tick( e )
     {
-
         console.log('------------------------------------------------------------------------------------------');
         console.log('-Render');
+        console.log( this.cam.position , this.cam.scenePosition );
 
+        this.view.render();
+    }
+
+    public resize( e )
+    {
+
+        this.view.y = this.view.x = 0;
+        this.view.width = window.innerWidth;
+        this.view.height = window.innerHeight;
         this.view.render();
 
     }
@@ -98,8 +101,14 @@ class View3DTest
 var test: View3DTest;
 window.onload = function ()
 {
-
-
     test = new View3DTest();
-
 }
+
+window.onresize = function ( e )
+{
+    if ( test )
+    {
+        test.resize( e );
+    }
+}
+
