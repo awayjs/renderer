@@ -324,8 +324,6 @@ module away.base
 
             }
 
-            console.log( 'setZ: ' + val );
-			
 			this._z = val;
 			this.invalidatePosition();
 
@@ -909,9 +907,12 @@ module away.base
 		 * @param    target        The vector defining the point to be looked at
 		 * @param    upAxis        An optional vector used to define the desired up orientation of the 3d object after rotation has occurred
 		 */
-        /* TODO: implement
+        //* TODO: implement
 		public lookAt(target:away.geom.Vector3D, upAxis:away.geom.Vector3D = null)
 		{
+
+            away.Debug.throwPIR( 'Object3D' , 'lookAt' , 'PartialImplementationError' );
+            /*
 			var yAxis:away.geom.Vector3D, zAxis:away.geom.Vector3D, xAxis:away.geom.Vector3D;
 			var raw:number[];
 
@@ -931,41 +932,42 @@ module away.base
 			xAxis.normalize();
 			
 			if (xAxis.length < .05)
-				xAxis = upAxis.crossProduct(Vector3D.Z_AXIS);
+				xAxis = upAxis.crossProduct(away.geom.Vector3D.Z_AXIS);
 			
 			yAxis = zAxis.crossProduct(xAxis);
 			
-			raw = away3d.math.Matrix3DUtils.RAW_DATA_CONTAINER;
+			raw = away.math.Matrix3DUtils.RAW_DATA_CONTAINER;
 			
-			raw[uint(0)] = _scaleX*xAxis.x;
-			raw[uint(1)] = _scaleX*xAxis.y;
-			raw[uint(2)] = _scaleX*xAxis.z;
-			raw[uint(3)] = 0;
+			raw[0] = this._scaleX*xAxis.x;
+			raw[1] = this._scaleX*xAxis.y;
+			raw[2] = this._scaleX*xAxis.z;
+			raw[3] = 0;
 			
-			raw[uint(4)] = _scaleY*yAxis.x;
-			raw[uint(5)] = _scaleY*yAxis.y;
-			raw[uint(6)] = _scaleY*yAxis.z;
-			raw[uint(7)] = 0;
+			raw[4] = this._scaleY*yAxis.x;
+			raw[5] = this._scaleY*yAxis.y;
+			raw[6] = this._scaleY*yAxis.z;
+			raw[7] = 0;
 			
-			raw[uint(8)] = _scaleZ*zAxis.x;
-			raw[uint(9)] = _scaleZ*zAxis.y;
-			raw[uint(10)] = _scaleZ*zAxis.z;
-			raw[uint(11)] = 0;
+			raw[8] = this._scaleZ*zAxis.x;
+			raw[9] = this._scaleZ*zAxis.y;
+			raw[10] = this._scaleZ*zAxis.z;
+			raw[11] = 0;
 			
-			raw[uint(12)] = _x;
-			raw[uint(13)] = _y;
-			raw[uint(14)] = _z;
-			raw[uint(15)] = 1;
-			
-			_transform.copyRawDataFrom(raw);
-			
-			transform = transform;
+			raw[12] = this._x;
+			raw[13] = this._y;
+			raw[14] = this._z;
+			raw[15] = 1;
+
+            this._transform.copyRawDataFrom(raw);
+
+            this.transform = transform;
 			
 			if (zAxis.z < 0) {
-				rotationY = (180 - rotationY);
-				rotationX -= 180;
-				rotationZ -= 180;
+                this.rotationY = (180 - this.rotationY);
+                this.rotationX -= 180;
+                this.rotationZ -= 180;
 			}
+			*/
 		}
 		//*/
 		/**
@@ -1022,7 +1024,7 @@ module away.base
             this._rotationDirty = false;
             this._scaleDirty = false;
 
-            console.log( 'object3d' , 'pUpdateTransform _pPos ' , this._transform.rawData );
+            //console.log( 'object3d' , 'pUpdateTransform _pPos ' , this._transform.rawData );
 
 		}
 
