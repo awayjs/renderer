@@ -11,6 +11,27 @@ module away
         public static ENABLE_LOG    : boolean = true;
         public static LOG_PI_ERRORS : boolean = true;
 
+        private static keyword : string  = null;
+
+        public static breakpoint() : void
+        {
+            away.Debug['break']();
+        }
+
+        public static throwPIROnKeyWordOnly( str : string , enable : boolean = true )
+        {
+
+            if ( ! enable )
+            {
+                away.Debug.keyword = null;
+            }
+            else
+            {
+                away.Debug.keyword = str;
+            }
+
+        }
+
         public static throwPIR( clss : string , fnc : string , msg : string )
         {
 
@@ -18,6 +39,18 @@ module away
 
             if ( Debug.THROW_ERRORS )
             {
+
+                if ( away.Debug.keyword )
+                {
+
+                    var e : string = clss + fnc + msg;
+
+                    if ( e.indexOf( away.Debug.keyword ) == -1 )
+                    {
+                        return;
+                    }
+
+                }
 
                 throw new away.errors.PartialImplementationError( clss + '.' + fnc + ': ' +  msg );
 
