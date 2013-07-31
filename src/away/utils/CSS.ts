@@ -7,15 +7,40 @@ module away.utils
 {
 	export class CSS
 	{
-		public static setCanvasSize( canvas:HTMLCanvasElement, width:number, height:number )
-		{
-			canvas.style.width = width + "px";
-			canvas.style.height = height + "px";
-			canvas.width = width;
-			canvas.height = height;
-		}
-		
-		public static setCanvasVisibility( canvas:HTMLCanvasElement, visible:boolean )
+        public static setCanvasSize( canvas:HTMLCanvasElement, width:number, height:number )
+        {
+            canvas.style.width = width + "px";
+            canvas.style.height = height + "px";
+            canvas.width = width;
+            canvas.height = height;
+        }
+
+        public static setCanvasWidth( canvas:HTMLCanvasElement, width:number )
+        {
+            canvas.style.width = width + "px";
+            canvas.width = width;
+        }
+
+        public static setCanvasHeight( canvas:HTMLCanvasElement, height:number )
+        {
+            canvas.style.height = height + "px";
+            canvas.height = height;
+        }
+
+        public static setCanvasX( canvas:HTMLCanvasElement, x:number )
+        {
+            canvas.style.position = 'absolute';
+            canvas.style.left = x + "px";
+        }
+
+        public static setCanvasY( canvas:HTMLCanvasElement, y:number )
+        {
+            canvas.style.position = 'absolute';
+            canvas.style.top = y + "px";
+        }
+
+
+        public static setCanvasVisibility( canvas:HTMLCanvasElement, visible:boolean )
 		{
 			if( visible )
 			{
