@@ -167,25 +167,24 @@ module away.base
 		public set material(value:away.materials.MaterialBase)
 		{
 
-            away.Debug.throwPIR( 'away.base.Submesh' , 'set material' , 'away.base.MaterialBase _iRemoveOwner , _iAddOwner');
-            /*
+            //away.Debug.throwPIR( 'away.base.Submesh' , 'set material' , 'away.base.MaterialBase _iRemoveOwner , _iAddOwner');
+            //*
 			if (this._iMaterial)
             {
 
-                this._iMaterial.removeOwner(this);
+                this._iMaterial.iRemoveOwner(this);
 
             }
 
-			
 			this._iMaterial = value;
 			
 			if (this._iMaterial)
             {
 
-                this._iMaterial.addOwner(this);
+                this._iMaterial.iAddOwner(this);
 
             }
-            */
+            //*/
 		}
 		
 		/**
