@@ -33,8 +33,6 @@ module away.partition
 		public traverse( traverser:away.traverse.PartitionTraverser  )
 		{
 
-            console.log( 'Partition3D' , 'traverse' , traverser );
-
 			if( this._updatesMade )
 			{
 				this.updateEntities();
