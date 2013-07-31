@@ -9,80 +9,83 @@ class View3DTest
 {
 
     private view        : away.containers.BasicView3D;
-    private cam         : away.cameras.Camera3D;
-    private renderer    : away.render.DefaultRenderer;
-    private scene       : away.containers.Scene3D;
     private torus       : away.primitives.TorusGeometry;
 
-    private objCont     : away.containers.ObjectContainer3D;
     private mesh        : away.entities.Mesh;
-    private sProxy      : away.managers.Stage3DProxy;
-    private sManager    : away.managers.Stage3DManager;
-    private stage       : away.display.Stage;
     private light       : away.lights.PointLight;
     private raf         : away.utils.RequestAnimationFrame;
 
     constructor()
     {
 
-        away.Debug.THROW_ERRORS = false;
-        away.Debug.LOG_PI_ERRORS = false;
+        away.Debug.THROW_ERRORS     = false;
+        away.Debug.LOG_PI_ERRORS    = false;
 
-        this.stage = new away.display.Stage();
+        this.light                  = new away.lights.PointLight();
+        this.view                   = new away.containers.BasicView3D( )
+        this.view.backgroundColor   = 0xff0000;
+        this.torus                  = new away.primitives.TorusGeometry();
 
-        this.cam = new away.cameras.Camera3D();
-        this.cam.lookAt( new away.geom.Vector3D( 0 , 0 ,0 ));
-        this.cam.z = 0;
-
-        this.renderer = new away.render.DefaultRenderer();
-        this.scene = new away.containers.Scene3D();
-
-        this.light = new away.lights.PointLight();
-
-        this.view = new away.containers.BasicView3D( this.scene , this.cam , this.renderer );
-        this.view.backgroundColor = 0xff0000;
-
-        this.torus = new away.primitives.TorusGeometry();
-
-        var l       : number = 20;
-        var radius  : number = 500;
+        var l       : number        = 20;
+        var radius  : number        = 500;
 
         for (var c : number = 0; c < l ; c++)
         {
-
             var t   : number=Math.PI * 2 * c / l;
 
             var m : away.entities.Mesh = new away.entities.Mesh( this.torus );
                 m.x = Math.cos(t)*radius;
                 m.y = 0;
                 m.z = Math.sin(t)*radius;
-            console.log( 'mesh' , m.transform.rawData, m.position , m.x , m.y , m.z );
-
-            this.scene.addChild( m );
-
+            this.view.scene.addChild( m );
         }
 
-        this.scene.addChild( this.light );
+        this.view.scene.addChild( this.light );
+
+
 
         console.log('------------------------------------------------------------------------------------------');
         console.log('-Log');
 
-        console.log( 'renderer ' , this.renderer );
-        console.log( 'scene ' , this.scene );
+        console.log( 'renderer ' , this.view.renderer );
+        console.log( 'scene ' , this.view.scene );
         console.log( 'view ' , this.view );
-        console.log( 'scene ' , this.scene );
 
-        document.onmousedown = ( e ) => this.tick( e );
+        document.onmousedown = ( e ) => this.onMouseDowm( e );
+
+        //this.raf = new away.utils.RequestAnimationFrame( this.tick , this );
+        //this.raf.start();
 
     }
 
+    private onMouseDowm( e )
+    {
+
+        if ( this.raf)
+        {
+
+            if ( this.raf.active )
+            {
+                this.raf.stop();
+            }
+            else
+            {
+                this.raf.start();
+            }
+
+        }
+
+        this.tick ( e );
+
+    }
     private tick( e )
     {
         console.log('------------------------------------------------------------------------------------------');
         console.log('-Render');
-        console.log( this.cam.position , this.cam.scenePosition );
+        console.log( this.view.camera.position , this.view.camera.scenePosition );
 
         this.view.render();
+
     }
 
     public resize( e )

@@ -12869,8 +12869,11 @@ var away;
             //public _pMouse3DManager:away.managers.Mouse3DManager;
             //public _pTouch3DManager:away.managers.Touch3DManager;
             function BasicView3D(scene, camera, renderer, forceSoftware, profile) {
+                if (typeof scene === "undefined") { scene = null; }
+                if (typeof camera === "undefined") { camera = null; }
+                if (typeof renderer === "undefined") { renderer = null; }
                 if (typeof forceSoftware === "undefined") { forceSoftware = false; }
-                if (typeof profile === "undefined") { profile = "basline"; }
+                if (typeof profile === "undefined") { profile = "baseline"; }
                 this._pBackBufferInvalid = true;
                 this._pShareContext = false;
                 this._width = 0;
@@ -34983,20 +34986,9 @@ var View3DTest = (function () {
         away.Debug.THROW_ERRORS = false;
         away.Debug.LOG_PI_ERRORS = false;
 
-        this.stage = new away.display.Stage();
-
-        this.cam = new away.cameras.Camera3D();
-        this.cam.lookAt(new away.geom.Vector3D(0, 0, 0));
-        this.cam.z = 0;
-
-        this.renderer = new away.render.DefaultRenderer();
-        this.scene = new away.containers.Scene3D();
-
         this.light = new away.lights.PointLight();
-
-        this.view = new away.containers.BasicView3D(this.scene, this.cam, this.renderer);
+        this.view = new away.containers.BasicView3D();
         this.view.backgroundColor = 0xff0000;
-
         this.torus = new away.primitives.TorusGeometry();
 
         var l = 20;
@@ -35009,29 +35001,37 @@ var View3DTest = (function () {
             m.x = Math.cos(t) * radius;
             m.y = 0;
             m.z = Math.sin(t) * radius;
-            console.log('mesh', m.transform.rawData, m.position, m.x, m.y, m.z);
-
-            this.scene.addChild(m);
+            this.view.scene.addChild(m);
         }
 
-        this.scene.addChild(this.light);
+        this.view.scene.addChild(this.light);
 
         console.log('------------------------------------------------------------------------------------------');
         console.log('-Log');
 
-        console.log('renderer ', this.renderer);
-        console.log('scene ', this.scene);
+        console.log('renderer ', this.view.renderer);
+        console.log('scene ', this.view.scene);
         console.log('view ', this.view);
-        console.log('scene ', this.scene);
 
         document.onmousedown = function (e) {
-            return _this.tick(e);
+            return _this.onMouseDowm(e);
         };
     }
+    View3DTest.prototype.onMouseDowm = function (e) {
+        if (this.raf) {
+            if (this.raf.active) {
+                this.raf.stop();
+            } else {
+                this.raf.start();
+            }
+        }
+
+        this.tick(e);
+    };
     View3DTest.prototype.tick = function (e) {
         console.log('------------------------------------------------------------------------------------------');
         console.log('-Render');
-        console.log(this.cam.position, this.cam.scenePosition);
+        console.log(this.view.camera.position, this.view.camera.scenePosition);
 
         this.view.render();
     };
