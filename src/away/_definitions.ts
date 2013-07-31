@@ -233,6 +233,8 @@
 ///<reference path="materials/methods/ColorTransformMethod.ts"/>
 
 ///<reference path="materials/ColorMaterial.ts"/>
+///<reference path="materials/utils/DefaultMaterialManager.ts"/>
+
 
 ///<reference path="render/RenderBase.ts"/>
 ///<reference path="sort/IEntitySorter.ts"/>
