@@ -402,8 +402,6 @@ module away.entities
 		 */
 		public pCreateEntityPartitionNode():away.partition.EntityNode
 		{
-            away.Debug.throwPIR( "away.entities.Mesh" , "away.partition.MeshNode" , "Missing Dependency: away.partition.MeshNode" );
-            //return null;
 			return new away.partition.MeshNode(this);
 		}
 		
