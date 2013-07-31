@@ -831,28 +831,28 @@ var away;
             Matrix3D.prototype.copyColumnFrom = function (column, vector3D) {
                 switch (column) {
                     case 0:
-                        vector3D.x = this.rawData[0];
-                        vector3D.y = this.rawData[4];
-                        vector3D.z = this.rawData[8];
-                        vector3D.w = this.rawData[12];
+                        this.rawData[0] = vector3D.x;
+                        this.rawData[1] = vector3D.y;
+                        this.rawData[2] = vector3D.z;
+                        this.rawData[3] = vector3D.w;
                         break;
                     case 1:
-                        vector3D.x = this.rawData[1];
-                        vector3D.y = this.rawData[5];
-                        vector3D.z = this.rawData[9];
-                        vector3D.w = this.rawData[13];
+                        this.rawData[4] = vector3D.x;
+                        this.rawData[5] = vector3D.y;
+                        this.rawData[6] = vector3D.z;
+                        this.rawData[7] = vector3D.w;
                         break;
                     case 2:
-                        vector3D.x = this.rawData[2];
-                        vector3D.y = this.rawData[6];
-                        vector3D.z = this.rawData[10];
-                        vector3D.w = this.rawData[14];
+                        this.rawData[8] = vector3D.x;
+                        this.rawData[9] = vector3D.y;
+                        this.rawData[10] = vector3D.z;
+                        this.rawData[11] = vector3D.w;
                         break;
                     case 3:
-                        vector3D.x = this.rawData[3];
-                        vector3D.y = this.rawData[7];
-                        vector3D.z = this.rawData[11];
-                        vector3D.w = this.rawData[15];
+                        this.rawData[12] = vector3D.x;
+                        this.rawData[13] = vector3D.y;
+                        this.rawData[14] = vector3D.z;
+                        this.rawData[15] = vector3D.w;
                         break;
                     default:
                         throw new away.errors.ArgumentError("ArgumentError, Column " + column + " out of bounds [0, ..., 3]");
@@ -864,62 +864,6 @@ var away;
             */
             Matrix3D.prototype.copyColumnTo = function (column, vector3D) {
                 switch (column) {
-                    case 0:
-                        this.rawData[0] = vector3D.x;
-                        this.rawData[4] = vector3D.y;
-                        this.rawData[8] = vector3D.z;
-                        this.rawData[12] = vector3D.w;
-                        break;
-                    case 1:
-                        this.rawData[1] = vector3D.x;
-                        this.rawData[5] = vector3D.y;
-                        this.rawData[9] = vector3D.z;
-                        this.rawData[13] = vector3D.w;
-                        break;
-                    case 2:
-                        this.rawData[2] = vector3D.x;
-                        this.rawData[6] = vector3D.y;
-                        this.rawData[10] = vector3D.z;
-                        this.rawData[14] = vector3D.w;
-                        break;
-                    case 3:
-                        this.rawData[3] = vector3D.x;
-                        this.rawData[7] = vector3D.y;
-                        this.rawData[11] = vector3D.z;
-                        this.rawData[15] = vector3D.w;
-                        break;
-                    default:
-                        throw new away.errors.ArgumentError("ArgumentError, Column " + column + " out of bounds [0, ..., 3]");
-                }
-            };
-
-            /**
-            * Copies all of the matrix data from the source Matrix3D object into the calling Matrix3D object.
-            */
-            Matrix3D.prototype.copyFrom = function (sourceMatrix3D) {
-                this.rawData = sourceMatrix3D.rawData.slice(0);
-            };
-
-            Matrix3D.prototype.copyRawDataFrom = function (vector, index, transpose) {
-                if (typeof index === "undefined") { index = 0; }
-                if (typeof transpose === "undefined") { transpose = false; }
-                //TODO fully implement
-                this.rawData = vector.slice(0);
-            };
-
-            //public copyRawDataTo( vector:number[], index:number = 0, transpose:boolean = false )
-            Matrix3D.prototype.copyRawDataTo = function (index, transpose) {
-                if (typeof index === "undefined") { index = 0; }
-                if (typeof transpose === "undefined") { transpose = false; }
-                //TODO fully implement
-                return this.rawData.slice(0);
-            };
-
-            /**
-            * Copies a Vector3D object into specific row of the calling Matrix3D object.
-            */
-            Matrix3D.prototype.copyRowFrom = function (row, vector3D) {
-                switch (row) {
                     case 0:
                         vector3D.x = this.rawData[0];
                         vector3D.y = this.rawData[1];
@@ -945,6 +889,62 @@ var away;
                         vector3D.w = this.rawData[15];
                         break;
                     default:
+                        throw new away.errors.ArgumentError("ArgumentError, Column " + column + " out of bounds [0, ..., 3]");
+                }
+            };
+
+            /**
+            * Copies all of the matrix data from the source Matrix3D object into the calling Matrix3D object.
+            */
+            Matrix3D.prototype.copyFrom = function (sourceMatrix3D) {
+                this.rawData = sourceMatrix3D.rawData.slice(0);
+            };
+
+            Matrix3D.prototype.copyRawDataFrom = function (vector, index, transpose) {
+                if (typeof index === "undefined") { index = 0; }
+                if (typeof transpose === "undefined") { transpose = false; }
+                //TODO fully implement
+                this.rawData = vector.slice(0);
+            };
+
+            Matrix3D.prototype.copyRawDataTo = function (vector, index, transpose) {
+                if (typeof index === "undefined") { index = 0; }
+                if (typeof transpose === "undefined") { transpose = false; }
+                for (var c = 0; c < this.rawData.length; c++) {
+                    vector[c] = this.rawData[c];
+                }
+            };
+
+            /**
+            * Copies a Vector3D object into specific row of the calling Matrix3D object.
+            */
+            Matrix3D.prototype.copyRowFrom = function (row, vector3D) {
+                switch (row) {
+                    case 0:
+                        this.rawData[0] = vector3D.x;
+                        this.rawData[4] = vector3D.y;
+                        this.rawData[8] = vector3D.z;
+                        this.rawData[12] = vector3D.w;
+                        break;
+                    case 1:
+                        this.rawData[1] = vector3D.x;
+                        this.rawData[5] = vector3D.y;
+                        this.rawData[9] = vector3D.z;
+                        this.rawData[13] = vector3D.w;
+                        break;
+                    case 2:
+                        this.rawData[2] = vector3D.x;
+                        this.rawData[6] = vector3D.y;
+                        this.rawData[10] = vector3D.z;
+                        this.rawData[14] = vector3D.w;
+                        break;
+                    case 3:
+                        this.rawData[3] = vector3D.x;
+                        this.rawData[7] = vector3D.y;
+                        this.rawData[11] = vector3D.z;
+                        this.rawData[15] = vector3D.w;
+                        break;
+                    default:
                         throw new away.errors.ArgumentError("ArgumentError, Row " + row + " out of bounds [0, ..., 3]");
                 }
             };
@@ -955,28 +955,29 @@ var away;
             Matrix3D.prototype.copyRowTo = function (row, vector3D) {
                 switch (row) {
                     case 0:
-                        this.rawData[0] = vector3D.x;
-                        this.rawData[1] = vector3D.y;
-                        this.rawData[2] = vector3D.z;
-                        this.rawData[3] = vector3D.w;
+                        vector3D.x = this.rawData[0];
+                        vector3D.y = this.rawData[4];
+                        vector3D.z = this.rawData[8];
+                        vector3D.w = this.rawData[12];
                         break;
                     case 1:
-                        this.rawData[4] = vector3D.x;
-                        this.rawData[5] = vector3D.y;
-                        this.rawData[6] = vector3D.z;
-                        this.rawData[7] = vector3D.w;
+                        vector3D.x = this.rawData[1];
+                        vector3D.y = this.rawData[5];
+                        vector3D.z = this.rawData[9];
+                        vector3D.w = this.rawData[13];
                         break;
                     case 2:
-                        this.rawData[8] = vector3D.x;
-                        this.rawData[9] = vector3D.y;
-                        this.rawData[10] = vector3D.z;
-                        this.rawData[11] = vector3D.w;
+                        vector3D.x = this.rawData[2];
+                        vector3D.y = this.rawData[6];
+                        vector3D.z = this.rawData[10];
+                        vector3D.w = this.rawData[14];
+
                         break;
                     case 3:
-                        this.rawData[12] = vector3D.x;
-                        this.rawData[13] = vector3D.y;
-                        this.rawData[14] = vector3D.z;
-                        this.rawData[15] = vector3D.w;
+                        vector3D.x = this.rawData[3];
+                        vector3D.y = this.rawData[7];
+                        vector3D.z = this.rawData[11];
+                        vector3D.w = this.rawData[15];
                         break;
                     default:
                         throw new away.errors.ArgumentError("ArgumentError, Row " + row + " out of bounds [0, ..., 3]");
@@ -1079,50 +1080,203 @@ var away;
                 }
             };
 
+            /*
+            public invert():boolean
+            {
+            var d = this.determinant;
+            var invertable = Math.abs (d) > 0.00000000001;
+            
+            if (invertable)
+            {
+            d = -1 / d;
+            var m11:number = this.rawData[0]; var m21:number = this.rawData[4]; var m31:number = this.rawData[8]; var m41:number = this.rawData[12];
+            var m12:number = this.rawData[1]; var m22:number = this.rawData[5]; var m32:number = this.rawData[9]; var m42:number = this.rawData[13];
+            var m13:number = this.rawData[2]; var m23:number = this.rawData[6]; var m33:number = this.rawData[10]; var m43:number = this.rawData[14];
+            var m14:number = this.rawData[3]; var m24:number = this.rawData[7]; var m34:number = this.rawData[11]; var m44:number = this.rawData[15];
+            
+            this.rawData[0] = d * (m22 * (m33 * m44 - m43 * m34) - m32 * (m23 * m44 - m43 * m24) + m42 * (m23 * m34 - m33 * m24));
+            this.rawData[1] = -d * (m12 * (m33 * m44 - m43 * m34) - m32 * (m13 * m44 - m43 * m14) + m42 * (m13 * m34 - m33 * m14));
+            this.rawData[2] = d * (m12 * (m23 * m44 - m43 * m24) - m22 * (m13 * m44 - m43 * m14) + m42 * (m13 * m24 - m23 * m14));
+            this.rawData[3] = -d * (m12 * (m23 * m34 - m33 * m24) - m22 * (m13 * m34 - m33 * m14) + m32 * (m13 * m24 - m23 * m14));
+            this.rawData[4] = -d * (m21 * (m33 * m44 - m43 * m34) - m31 * (m23 * m44 - m43 * m24) + m41 * (m23 * m34 - m33 * m24));
+            this.rawData[5] = d * (m11 * (m33 * m44 - m43 * m34) - m31 * (m13 * m44 - m43 * m14) + m41 * (m13 * m34 - m33 * m14));
+            this.rawData[6] = -d * (m11 * (m23 * m44 - m43 * m24) - m21 * (m13 * m44 - m43 * m14) + m41 * (m13 * m24 - m23 * m14));
+            this.rawData[7] = d * (m11 * (m23 * m34 - m33 * m24) - m21 * (m13 * m34 - m33 * m14) + m31 * (m13 * m24 - m23 * m14));
+            this.rawData[8] = d * (m21 * (m32 * m44 - m42 * m34) - m31 * (m22 * m44 - m42 * m24) + m41 * (m22 * m34 - m32 * m24));
+            this.rawData[9] = -d * (m11 * (m32 * m44 - m42 * m34) - m31 * (m12 * m44 - m42 * m14) + m41 * (m12 * m34 - m32 * m14));
+            this.rawData[10] = d * (m11 * (m22 * m44 - m42 * m24) - m21 * (m12 * m44 - m42 * m14) + m41 * (m12 * m24 - m22 * m14));
+            this.rawData[11] = -d * (m11 * (m22 * m34 - m32 * m24) - m21 * (m12 * m34 - m32 * m14) + m31 * (m12 * m24 - m22 * m14));
+            this.rawData[12] = -d * (m21 * (m32 * m43 - m42 * m33) - m31 * (m22 * m43 - m42 * m23) + m41 * (m22 * m33 - m32 * m23));
+            this.rawData[13] = d * (m11 * (m32 * m43 - m42 * m33) - m31 * (m12 * m43 - m42 * m13) + m41 * (m12 * m33 - m32 * m13));
+            this.rawData[14] = -d * (m11 * (m22 * m43 - m42 * m23) - m21 * (m12 * m43 - m42 * m13) + m41 * (m12 * m23 - m22 * m13));
+            this.rawData[15] = d * (m11 * (m22 * m33 - m32 * m23) - m21 * (m12 * m33 - m32 * m13) + m31 * (m12 * m23 - m22 * m13));
+            }
+            return invertable;
+            }
+            */
             /**
             * Inverts the current matrix.
             */
             Matrix3D.prototype.invert = function () {
-                var d = this.determinant;
-                var invertable = Math.abs(d) > 0.00000000001;
+                var t;
+                var m0, m1, m2, m3, s;
 
-                if (invertable) {
-                    d = -1 / d;
-                    var m11 = this.rawData[0];
-                    var m21 = this.rawData[4];
-                    var m31 = this.rawData[8];
-                    var m41 = this.rawData[12];
-                    var m12 = this.rawData[1];
-                    var m22 = this.rawData[5];
-                    var m32 = this.rawData[9];
-                    var m42 = this.rawData[13];
-                    var m13 = this.rawData[2];
-                    var m23 = this.rawData[6];
-                    var m33 = this.rawData[10];
-                    var m43 = this.rawData[14];
-                    var m14 = this.rawData[3];
-                    var m24 = this.rawData[7];
-                    var m34 = this.rawData[11];
-                    var m44 = this.rawData[15];
+                var r0 = [], r1 = [], r2 = [], r3 = [];
 
-                    this.rawData[0] = d * (m22 * (m33 * m44 - m43 * m34) - m32 * (m23 * m44 - m43 * m24) + m42 * (m23 * m34 - m33 * m24));
-                    this.rawData[1] = -d * (m12 * (m33 * m44 - m43 * m34) - m32 * (m13 * m44 - m43 * m14) + m42 * (m13 * m34 - m33 * m14));
-                    this.rawData[2] = d * (m12 * (m23 * m44 - m43 * m24) - m22 * (m13 * m44 - m43 * m14) + m42 * (m13 * m24 - m23 * m14));
-                    this.rawData[3] = -d * (m12 * (m23 * m34 - m33 * m24) - m22 * (m13 * m34 - m33 * m14) + m32 * (m13 * m24 - m23 * m14));
-                    this.rawData[4] = -d * (m21 * (m33 * m44 - m43 * m34) - m31 * (m23 * m44 - m43 * m24) + m41 * (m23 * m34 - m33 * m24));
-                    this.rawData[5] = d * (m11 * (m33 * m44 - m43 * m34) - m31 * (m13 * m44 - m43 * m14) + m41 * (m13 * m34 - m33 * m14));
-                    this.rawData[6] = -d * (m11 * (m23 * m44 - m43 * m24) - m21 * (m13 * m44 - m43 * m14) + m41 * (m13 * m24 - m23 * m14));
-                    this.rawData[7] = d * (m11 * (m23 * m34 - m33 * m24) - m21 * (m13 * m34 - m33 * m14) + m31 * (m13 * m24 - m23 * m14));
-                    this.rawData[8] = d * (m21 * (m32 * m44 - m42 * m34) - m31 * (m22 * m44 - m42 * m24) + m41 * (m22 * m34 - m32 * m24));
-                    this.rawData[9] = -d * (m11 * (m32 * m44 - m42 * m34) - m31 * (m12 * m44 - m42 * m14) + m41 * (m12 * m34 - m32 * m14));
-                    this.rawData[10] = d * (m11 * (m22 * m44 - m42 * m24) - m21 * (m12 * m44 - m42 * m14) + m41 * (m12 * m24 - m22 * m14));
-                    this.rawData[11] = -d * (m11 * (m22 * m34 - m32 * m24) - m21 * (m12 * m34 - m32 * m14) + m31 * (m12 * m24 - m22 * m14));
-                    this.rawData[12] = -d * (m21 * (m32 * m43 - m42 * m33) - m31 * (m22 * m43 - m42 * m23) + m41 * (m22 * m33 - m32 * m23));
-                    this.rawData[13] = d * (m11 * (m32 * m43 - m42 * m33) - m31 * (m12 * m43 - m42 * m13) + m41 * (m12 * m33 - m32 * m13));
-                    this.rawData[14] = -d * (m11 * (m22 * m43 - m42 * m23) - m21 * (m12 * m43 - m42 * m13) + m41 * (m12 * m23 - m22 * m13));
-                    this.rawData[15] = d * (m11 * (m22 * m33 - m32 * m23) - m21 * (m12 * m33 - m32 * m13) + m31 * (m12 * m23 - m22 * m13));
+                r0[0] = this.rawData[0 * 4 + 0], r0[1] = this.rawData[1 * 4 + 0], r0[2] = this.rawData[2 * 4 + 0], r0[3] = this.rawData[3 * 4 + 0], r0[4] = 1.0, r0[5] = r0[6] = r0[7] = 0.0, r1[0] = this.rawData[0 * 4 + 1], r1[1] = this.rawData[1 * 4 + 1], r1[2] = this.rawData[2 * 4 + 1], r1[3] = this.rawData[3 * 4 + 1], r1[5] = 1.0, r1[4] = r1[6] = r1[7] = 0.0, r2[0] = this.rawData[0 * 4 + 2], r2[1] = this.rawData[1 * 4 + 2], r2[2] = this.rawData[2 * 4 + 2], r2[3] = this.rawData[3 * 4 + 2], r2[6] = 1.0, r2[4] = r2[5] = r2[7] = 0.0, r3[0] = this.rawData[0 * 4 + 3], r3[1] = this.rawData[1 * 4 + 3], r3[2] = this.rawData[2 * 4 + 3], r3[3] = this.rawData[3 * 4 + 3], r3[7] = 1.0, r3[4] = r3[5] = r3[6] = 0.0;
+
+                if (Math.abs(r3[0]) > Math.abs(r2[0])) {
+                    t = r3;
+                    r3 = r2;
+                    r2 = t;
                 }
-                return invertable;
+                if (Math.abs(r2[0]) > Math.abs(r1[0])) {
+                    t = r2;
+                    r2 = r1;
+                    r1 = t;
+                }
+                if (Math.abs(r1[0]) > Math.abs(r0[0])) {
+                    t = r1;
+                    r1 = r0;
+                    r0 = t;
+                }
+                if (0.0 == r0[0])
+                    return false;
+
+                // eliminate first variable
+                m1 = r1[0] / r0[0];
+                m2 = r2[0] / r0[0];
+                m3 = r3[0] / r0[0];
+                s = r0[1];
+                r1[1] -= m1 * s;
+                r2[1] -= m2 * s;
+                r3[1] -= m3 * s;
+                s = r0[2];
+                r1[2] -= m1 * s;
+                r2[2] -= m2 * s;
+                r3[2] -= m3 * s;
+                s = r0[3];
+                r1[3] -= m1 * s;
+                r2[3] -= m2 * s;
+                r3[3] -= m3 * s;
+
+                s = r0[4];
+
+                if (s != 0.0) {
+                    r1[4] -= m1 * s;
+                    r2[4] -= m2 * s;
+                    r3[4] -= m3 * s;
+                }
+                s = r0[5];
+                if (s != 0.0) {
+                    r1[5] -= m1 * s;
+                    r2[5] -= m2 * s;
+                    r3[5] -= m3 * s;
+                }
+                s = r0[6];
+                if (s != 0.0) {
+                    r1[6] -= m1 * s;
+                    r2[6] -= m2 * s;
+                    r3[6] -= m3 * s;
+                }
+                s = r0[7];
+                if (s != 0.0) {
+                    r1[7] -= m1 * s;
+                    r2[7] -= m2 * s;
+                    r3[7] -= m3 * s;
+                }
+
+                if (Math.abs(r3[1]) > Math.abs(r2[1])) {
+                    t = r3;
+                    r3 = r2;
+                    r2 = t;
+                }
+                if (Math.abs(r2[1]) > Math.abs(r1[1])) {
+                    t = r2;
+                    r2 = r1;
+                    r1 = t;
+                }
+                if (0.0 == r1[1])
+                    return false;
+
+                // eliminate second variable
+                m2 = r2[1] / r1[1];
+                m3 = r3[1] / r1[1];
+                r2[2] -= m2 * r1[2];
+                r3[2] -= m3 * r1[2];
+                r2[3] -= m2 * r1[3];
+                r3[3] -= m3 * r1[3];
+                s = r1[4];
+                if (0.0 != s) {
+                    r2[4] -= m2 * s;
+                    r3[4] -= m3 * s;
+                }
+                s = r1[5];
+                if (0.0 != s) {
+                    r2[5] -= m2 * s;
+                    r3[5] -= m3 * s;
+                }
+                s = r1[6];
+                if (0.0 != s) {
+                    r2[6] -= m2 * s;
+                    r3[6] -= m3 * s;
+                }
+                s = r1[7];
+                if (0.0 != s) {
+                    r2[7] -= m2 * s;
+                    r3[7] -= m3 * s;
+                }
+
+                if (Math.abs(r3[2]) > Math.abs(r2[2])) {
+                    t = r3;
+                    r3 = r2;
+                    r2 = t;
+                }
+                if (0.0 == r2[2])
+                    return false;
+
+                // eliminate third variable
+                m3 = r3[2] / r2[2];
+                r3[3] -= m3 * r2[3], r3[4] -= m3 * r2[4], r3[5] -= m3 * r2[5], r3[6] -= m3 * r2[6], r3[7] -= m3 * r2[7];
+
+                if (0.0 == r3[3])
+                    return false;
+                s = 1.0 / r3[3];
+                r3[4] *= s;
+                r3[5] *= s;
+                r3[6] *= s;
+                r3[7] *= s;
+                m2 = r2[3];
+                s = 1.0 / r2[2];
+                r2[4] = s * (r2[4] - r3[4] * m2), r2[5] = s * (r2[5] - r3[5] * m2), r2[6] = s * (r2[6] - r3[6] * m2), r2[7] = s * (r2[7] - r3[7] * m2);
+
+                m1 = r1[3];
+                r1[4] -= r3[4] * m1, r1[5] -= r3[5] * m1, r1[6] -= r3[6] * m1, r1[7] -= r3[7] * m1;
+
+                m0 = r0[3];
+                r0[4] -= r3[4] * m0, r0[5] -= r3[5] * m0, r0[6] -= r3[6] * m0, r0[7] -= r3[7] * m0;
+
+                m1 = r1[2];
+                s = 1.0 / r1[1];
+                r1[4] = s * (r1[4] - r2[4] * m1), r1[5] = s * (r1[5] - r2[5] * m1), r1[6] = s * (r1[6] - r2[6] * m1), r1[7] = s * (r1[7] - r2[7] * m1);
+                m0 = r0[2];
+                r0[4] -= r2[4] * m0, r0[5] -= r2[5] * m0, r0[6] -= r2[6] * m0, r0[7] -= r2[7] * m0;
+
+                m0 = r0[1];
+                s = 1.0 / r0[0];
+                r0[4] = s * (r0[4] - r1[4] * m0), r0[5] = s * (r0[5] - r1[5] * m0), r0[6] = s * (r0[6] - r1[6] * m0), r0[7] = s * (r0[7] - r1[7] * m0);
+
+                this.rawData[0 * 4 + 0] = r0[4];
+                this.rawData[1 * 4 + 0] = r0[5], this.rawData[2 * 4 + 0] = r0[6];
+                this.rawData[3 * 4 + 0] = r0[7], this.rawData[0 * 4 + 1] = r1[4];
+                this.rawData[1 * 4 + 1] = r1[5], this.rawData[2 * 4 + 1] = r1[6];
+                this.rawData[3 * 4 + 1] = r1[7], this.rawData[0 * 4 + 2] = r2[4];
+                this.rawData[1 * 4 + 2] = r2[5], this.rawData[2 * 4 + 2] = r2[6];
+                this.rawData[3 * 4 + 2] = r2[7], this.rawData[0 * 4 + 3] = r3[4];
+                this.rawData[1 * 4 + 3] = r3[5], this.rawData[2 * 4 + 3] = r3[6];
+                this.rawData[3 * 4 + 3] = r3[7];
+
+                return true;
             };
 
             /* TODO implement pointAt
@@ -1290,8 +1444,22 @@ var away;
                 * [read-only] A Number that determines whether a matrix is invertible.
                 */
                 function () {
-                    //*
-                    return -1 * ((this.rawData[0] * this.rawData[5] - this.rawData[4] * this.rawData[1]) * (this.rawData[10] * this.rawData[15] - this.rawData[14] * this.rawData[11]) - (this.rawData[0] * this.rawData[9] - this.rawData[8] * this.rawData[1]) * (this.rawData[6] * this.rawData[15] - this.rawData[14] * this.rawData[7]) + (this.rawData[0] * this.rawData[13] - this.rawData[12] * this.rawData[1]) * (this.rawData[6] * this.rawData[11] - this.rawData[10] * this.rawData[7]) + (this.rawData[4] * this.rawData[9] - this.rawData[8] * this.rawData[5]) * (this.rawData[2] * this.rawData[15] - this.rawData[14] * this.rawData[3]) - (this.rawData[4] * this.rawData[13] - this.rawData[12] * this.rawData[5]) * (this.rawData[2] * this.rawData[11] - this.rawData[10] * this.rawData[3]) + (this.rawData[8] * this.rawData[13] - this.rawData[12] * this.rawData[9]) * (this.rawData[2] * this.rawData[7] - this.rawData[6] * this.rawData[3]));
+                    if (this.rawData[0 * 4 + 3] == 0 && this.rawData[1 * 4 + 3] == 0 && this.rawData[2 * 4 + 3] == 0) {
+                        var a = this.rawData[2 * 4 + 2] * this.rawData[3 * 4 + 3];
+                        var b = this.rawData[1 * 4 + 2] * this.rawData[3 * 4 + 3];
+                        var d = this.rawData[0 * 4 + 2] * this.rawData[3 * 4 + 3];
+
+                        return this.rawData[0 * 4 + 0] * (this.rawData[1 * 4 + 1] * a - this.rawData[2 * 4 + 1] * b) - this.rawData[1 * 4 + 0] * (this.rawData[0 * 4 + 1] * a - this.rawData[2 * 4 + 1] * d) + this.rawData[2 * 4 + 0] * (this.rawData[0 * 4 + 1] * b - this.rawData[1 * 4 + 1] * d);
+                    } else {
+                        var a = this.rawData[2 * 4 + 2] * this.rawData[3 * 4 + 3] - this.rawData[3 * 4 + 2] * this.rawData[2 * 4 + 3];
+                        var b = this.rawData[1 * 4 + 2] * this.rawData[3 * 4 + 3] - this.rawData[3 * 4 + 2] * this.rawData[1 * 4 + 3];
+                        var c = this.rawData[1 * 4 + 2] * this.rawData[2 * 4 + 3] - this.rawData[2 * 4 + 2] * this.rawData[1 * 4 + 3];
+                        var d = this.rawData[0 * 4 + 2] * this.rawData[3 * 4 + 3] - this.rawData[3 * 4 + 2] * this.rawData[0 * 4 + 3];
+                        var e = this.rawData[0 * 4 + 2] * this.rawData[2 * 4 + 3] - this.rawData[2 * 4 + 2] * this.rawData[0 * 4 + 3];
+                        var f = this.rawData[0 * 4 + 2] * this.rawData[1 * 4 + 3] - this.rawData[1 * 4 + 2] * this.rawData[0 * 4 + 3];
+
+                        return this.rawData[0 * 4 + 0] * (this.rawData[1 * 4 + 1] * a - this.rawData[2 * 4 + 1] * b + this.rawData[3 * 4 + 1] * c) - this.rawData[1 * 4 + 0] * (this.rawData[0 * 4 + 1] * a - this.rawData[2 * 4 + 1] * d + this.rawData[3 * 4 + 1] * e) + this.rawData[2 * 4 + 0] * (this.rawData[0 * 4 + 1] * b - this.rawData[1 * 4 + 1] * d + this.rawData[3 * 4 + 1] * f) - this.rawData[3 * 4 + 0] * (this.rawData[0 * 4 + 1] * c - this.rawData[1 * 4 + 1] * e + this.rawData[2 * 4 + 1] * f);
+                    }
                 },
                 enumerable: true,
                 configurable: true
@@ -1981,25 +2149,23 @@ var away;
                 return v;
             };
 
-            Matrix3DUtils.lookAt = /**
+            Matrix3DUtils.compare = /**
             * Returns a boolean value representing whether there is any significant difference between the two given 3d matrices.
             */
-            /* TODO: implement - dependent on Matrix3D.copyRawDataTo
-            public static compare(m1:away.geom.Matrix3D, m2:away.geom.Matrix3D):boolean
-            {
-            var r1:number[] = away.math.Matrix3DUtils.Matrix3DUtils.RAW_DATA_CONTAINER;
-            var r2:number[] = m2.rawData;
-            m1.copyRawDataTo(r1);
-            
-            for (var i:number = 0; i < 16; ++i) {
-            if (r1[i] != r2[i])
-            return false;
-            }
-            
-            return true;
-            }
-            */
-            function (matrix, pos, dir, up) {
+            function (m1, m2) {
+                var r1 = away.math.Matrix3DUtils.RAW_DATA_CONTAINER;
+                var r2 = m2.rawData;
+                m1.copyRawDataTo(r1);
+
+                for (var i = 0; i < 16; ++i) {
+                    if (r1[i] != r2[i])
+                        return false;
+                }
+
+                return true;
+            };
+
+            Matrix3DUtils.lookAt = function (matrix, pos, dir, up) {
                 var dirN;
                 var upN;
                 var lftN;
@@ -2185,7 +2351,9 @@ var away;
                 _super.call(this);
                 this._smallestNumber = 0.0000000000000000000001;
                 this._transformDirty = true;
-                //*/
+                this._positionDirty = true;
+                this._rotationDirty = true;
+                this._scaleDirty = true;
                 this._rotationX = 0;
                 this._rotationY = 0;
                 this._rotationZ = 0;
@@ -2219,7 +2387,7 @@ var away;
             }
             Object3D.prototype.invalidatePivot = function () {
                 this._pivotZero = (this._pivotPoint.x == 0) && (this._pivotPoint.y == 0) && (this._pivotPoint.z == 0);
-                this._iInvalidateTransform();
+                this.iInvalidateTransform();
             };
 
             Object3D.prototype.invalidatePosition = function () {
@@ -2228,7 +2396,7 @@ var away;
 
                 this._positionDirty = true;
 
-                this._iInvalidateTransform();
+                this.iInvalidateTransform();
 
                 if (this._listenToPositionChanged)
                     this.notifyPositionChanged();
@@ -2288,7 +2456,7 @@ var away;
 
                 this._rotationDirty = true;
 
-                this._iInvalidateTransform();
+                this.iInvalidateTransform();
 
                 if (this._listenToRotationChanged)
                     this.notifyRotationChanged();
@@ -2308,7 +2476,7 @@ var away;
 
                 this._scaleDirty = true;
 
-                this._iInvalidateTransform();
+                this.iInvalidateTransform();
 
                 if (this._listenToScaleChanged)
                     this.notifyScaleChanged();
@@ -2372,6 +2540,8 @@ var away;
                     if (this._z == val) {
                         return;
                     }
+
+                    console.log('setZ: ' + val);
 
                     this._z = val;
                     this.invalidatePosition();
@@ -2534,7 +2704,7 @@ var away;
                 */
                 function () {
                     if (this._transformDirty) {
-                        this._pUpdateTransform();
+                        this.pUpdateTransform();
                     }
 
                     return this._transform;
@@ -2542,7 +2712,7 @@ var away;
                 set: function (val) {
                     if (!val.rawData[0]) {
                         var raw = away.math.Matrix3DUtils.RAW_DATA_CONTAINER;
-                        raw = val.copyRawDataTo();
+                        val.copyRawDataTo(raw);
                         raw[0] = this._smallestNumber;
                         val.copyRawDataFrom(raw);
                     }
@@ -2886,7 +3056,6 @@ var away;
             rotate(Vector3D.Z_AXIS, angle);
             }
             */
-            //* TODO: implement
             Object3D.prototype.clone = function () {
                 var clone = new away.base.Object3D();
                 clone.pivotPoint = this.pivotPoint;
@@ -2897,7 +3066,6 @@ var away;
                 return clone;
             };
 
-            //*/
             /**
             * Rotates the 3d object directly to a euler angle
             *
@@ -2992,28 +3160,24 @@ var away;
             /**
             * Cleans up any resources used by the current object.
             */
-            //* TODO: implement
             Object3D.prototype.dispose = function () {
             };
 
-            //*/
             /**
             * @inheritDoc
             */
-            //* TODO: implement
             Object3D.prototype.disposeAsset = function () {
                 this.dispose();
             };
 
-            //*/
             /**
             * Invalidates the transformation matrix, causing it to be updated upon the next request
             */
-            Object3D.prototype._iInvalidateTransform = function () {
+            Object3D.prototype.iInvalidateTransform = function () {
                 this._transformDirty = true;
             };
 
-            Object3D.prototype._pUpdateTransform = function () {
+            Object3D.prototype.pUpdateTransform = function () {
                 this._pPos.x = this._x;
                 this._pPos.y = this._y;
                 this._pPos.z = this._z;
@@ -3037,6 +3201,8 @@ var away;
                 this._positionDirty = false;
                 this._rotationDirty = false;
                 this._scaleDirty = false;
+
+                console.log('object3d', 'pUpdateTransform _pPos ', this._transform.rawData);
             };
 
             Object.defineProperty(Object3D.prototype, "zOffset", {
@@ -4984,7 +5150,7 @@ var away;
             Context3D.prototype.setGLSLVertexBufferAt = function (locationName, buffer, bufferOffset, format) {
                 if (typeof bufferOffset === "undefined") { bufferOffset = 0; }
                 if (typeof format === "undefined") { format = null; }
-                if (!buffer)
+                if (buffer == null)
                     return;
 
                 var location = this._gl.getAttribLocation(this._currentProgram.glProgram, locationName);
@@ -5926,6 +6092,7 @@ var away;
             EntityCollector.prototype.enterNode = function (node) {
                 var enter = away.traverse.PartitionTraverser._iCollectionMark != node._iCollectionMark && node.isInFrustum(this._cullPlanes, this._numCullPlanes);
 
+                console.log('EntityCollector', 'enter', enter);
                 node._iCollectionMark = away.traverse.PartitionTraverser._iCollectionMark;
 
                 return enter;
@@ -7695,7 +7862,7 @@ var away;
                 var cy = sphere._centerY;
                 var cz = sphere._centerZ;
                 var raw = [];
-                raw = matrix.copyRawDataTo();
+                matrix.copyRawDataTo(raw);
                 var m11 = raw[0], m12 = raw[4], m13 = raw[8], m14 = raw[12];
                 var m21 = raw[1], m22 = raw[5], m23 = raw[9], m24 = raw[13];
                 var m31 = raw[2], m32 = raw[6], m33 = raw[10], m34 = raw[14];
@@ -8035,7 +8202,7 @@ var away;
                 var cz = aabb._centerZ;
                 var raw = away.math.Matrix3DUtils.RAW_DATA_CONTAINER;
 
-                raw = matrix.copyRawDataTo();
+                matrix.copyRawDataTo(raw);
 
                 var m11 = raw[0], m12 = raw[4], m13 = raw[8], m14 = raw[12];
                 var m21 = raw[1], m22 = raw[5], m23 = raw[9], m24 = raw[13];
@@ -8249,8 +8416,18 @@ var away;
             });
 
 
-            // TODO override arcane function invalidateTransform():void
+            /**
+            * @inheritDoc
+            */
+            ObjectContainer3D.prototype.iInvalidateTransform = function () {
+                _super.prototype.iInvalidateTransform.call(this);
+
+                this.notifySceneTransformChange();
+            };
+
             ObjectContainer3D.prototype.pInvalidateSceneTransform = function () {
+                console.log('ObjectContainer3D', 'pInvalidateSceneTransform');
+
                 this._pSceneTransformDirty = !this._pIgnoreTransform;
                 this._inverseSceneTransformDirty = !this._pIgnoreTransform;
                 this._scenePositionDirty = !this._pIgnoreTransform;
@@ -8310,6 +8487,8 @@ var away;
                     if (this._scenePositionDirty) {
                         this.sceneTransform.copyColumnTo(3, this._scenePosition);
                         this._scenePositionDirty = false;
+
+                        console.log('ObjectContainer3D get scenePosition', this._scenePosition, this.sceneTransform.rawData);
                     }
                     return this._scenePosition;
                 },
@@ -8613,10 +8792,7 @@ var away;
 
             //@override
             ObjectContainer3D.prototype.translateLocal = function (axis, distance) {
-                away.Debug.throwPIR('ObjectContainer3D', 'translateLocal', 'PartialImplementationError');
-
-                //throw new away.errors.PartialImplementationError();
-                //TODO super.translateLocal( axis, distance );
+                _super.prototype.translateLocal.call(this, axis, distance);
                 this.notifySceneTransformChange();
             };
 
@@ -8656,9 +8832,7 @@ var away;
             */
             //@override
             ObjectContainer3D.prototype.rotate = function (axis, angle) {
-                throw new away.errors.PartialImplementationError();
-
-                //TODO super.rotate(axis, angle);
+                _super.prototype.rotate.call(this, axis, angle);
                 this.notifySceneTransformChange();
             };
 
@@ -8843,6 +9017,9 @@ var away;
             };
 
             Object.defineProperty(Entity.prototype, "bounds", {
+                get: function () {
+                    return this.getBounds();
+                },
                 set: function (value) {
                     this.removeBounds();
                     this._pBounds = value;
@@ -8855,6 +9032,7 @@ var away;
                 enumerable: true,
                 configurable: true
             });
+
 
             Object.defineProperty(Entity.prototype, "worldBounds", {
                 get: function () {
@@ -8977,6 +9155,7 @@ var away;
             };
 
             Entity.prototype.pInvalidateSceneTransform = function () {
+                console.log('Entity', 'pInvalidateSceneTransform');
                 if (!this._pIgnoreTransform) {
                     _super.prototype.pInvalidateSceneTransform.call(this);
                     this._worldBoundsInvalid = true;
@@ -9079,6 +9258,8 @@ var away;
                 this._viewProjectionDirty = true;
                 this._frustumPlanesDirty = true;
 
+                this.z = -1000;
+
                 this._lens = lens || new away.cameras.PerspectiveLens();
                 this._lens.addEventListener(away.events.LensEvent.MATRIX_CHANGED, this.onLensMatrixChanged, this);
 
@@ -9087,8 +9268,6 @@ var away;
                 for (var i = 0; i < 6; ++i) {
                     this._frustumPlanes[i] = new away.math.Plane3D();
                 }
-
-                this.z = -1000;
             }
             Camera3D.prototype.pGetDefaultBoundingVolume = function () {
                 return new away.bounds.NullBounds();
@@ -9132,9 +9311,8 @@ var away;
                 var raw = new Array(16);
                 ;
                 var invLen;
-                raw = this.viewProjection.copyRawDataTo();
+                this.viewProjection.copyRawDataTo(raw);
 
-                //console.log( 'raw' , raw );
                 c11 = raw[0];
                 c12 = raw[4];
                 c13 = raw[8];
@@ -9223,6 +9401,8 @@ var away;
 
             //@override
             Camera3D.prototype.pInvalidateSceneTransform = function () {
+                console.log('Camera3D', 'pInvalidateSceneTransform');
+
                 _super.prototype.pInvalidateSceneTransform.call(this);
 
                 this._viewProjectionDirty = true;
@@ -9230,7 +9410,7 @@ var away;
             };
 
             //@override
-            Camera3D.prototype.updateBounds = function () {
+            Camera3D.prototype.pUpdateBounds = function () {
                 this._pBounds.nullify();
                 this._pBoundsInvalid = false;
             };
@@ -9266,6 +9446,8 @@ var away;
                     if (this._viewProjectionDirty) {
                         //console.log( 'this.inverseSceneTransform' , this.inverseSceneTransform.copyRawDataTo() );
                         //console.log( 'this.sceneTransform ' , this.sceneTransform.copyRawDataTo() );
+                        console.log('this._lens.matrix.rawData: ', this._lens.matrix.rawData);
+
                         this._viewProjection.copyFrom(this.inverseSceneTransform);
                         this._viewProjection.append(this._lens.matrix);
                         this._viewProjectionDirty = false;
@@ -9640,7 +9822,7 @@ var away;
             };
 
             //@override
-            SegmentSet.prototype.updateBounds = function () {
+            SegmentSet.prototype.pUpdateBounds = function () {
                 var subSet;
                 var len;
                 var v;
@@ -10618,7 +10800,7 @@ var away;
 
             Object.defineProperty(SubMesh.prototype, "bounds", {
                 get: function () {
-                    return this._parentMesh.bounds;
+                    return this._parentMesh.getBounds();
                 },
                 enumerable: true,
                 configurable: true
@@ -13172,8 +13354,6 @@ var away;
                 this.pUpdateViewSizeData();
                 this._pEntityCollector.clear();
                 this._pScene.traversePartitions(this._pEntityCollector);
-
-                console.log('this._pEntityCollector._pEntityListItemPool: ', this._pEntityCollector._pEntityListItemPool, this._pEntityCollector._pEntityListItemPool);
 
                 if (this._pRequireDepthRender) {
                     this.pRenderSceneDepthToTexture(this._pEntityCollector);
@@ -18787,7 +18967,7 @@ var away;
 
                 // transform ray dir and origin (cam pos) to object space
                 //invSceneTransform.copyRawDataTo( raw  );
-                raw = invSceneTransform.copyRawDataTo();
+                invSceneTransform.copyRawDataTo(raw);
                 rx = raw[0] * ox + raw[4] * oy + raw[8] * oz;
                 ry = raw[1] * ox + raw[5] * oy + raw[9] * oz;
                 rz = raw[2] * ox + raw[6] * oy + raw[10] * oz;
@@ -26636,24 +26816,19 @@ var away;
                 }
 
                 if (this._sceneMatrixIndex >= 0) {
-                    //renderable.getRenderSceneTransform(camera).copyRawDataTo( this._pVertexConstantData, this._sceneMatrixIndex, true);
-                    this._pVertexConstantData = renderable.getRenderSceneTransform(camera).copyRawDataTo(this._sceneMatrixIndex, true);
-
-                    //viewProjection.copyRawDataTo( this._pVertexConstantData, 0, true);
-                    this._pVertexConstantData = viewProjection.copyRawDataTo(0, true);
+                    renderable.getRenderSceneTransform(camera).copyRawDataTo(this._pVertexConstantData, this._sceneMatrixIndex, true);
+                    viewProjection.copyRawDataTo(this._pVertexConstantData, 0, true);
                 } else {
                     var matrix3D = away.math.Matrix3DUtils.CALCULATION_MATRIX;
 
                     matrix3D.copyFrom(renderable.getRenderSceneTransform(camera));
                     matrix3D.append(viewProjection);
 
-                    //matrix3D.copyRawDataTo( this._pVertexConstantData, 0, true);
-                    this._pVertexConstantData = matrix3D.copyRawDataTo(0, true);
+                    matrix3D.copyRawDataTo(this._pVertexConstantData, 0, true);
                 }
 
                 if (this._sceneNormalMatrixIndex >= 0) {
-                    //renderable.inverseSceneTransform.copyRawDataTo(this._pVertexConstantData, this._sceneNormalMatrixIndex, false);
-                    this._pVertexConstantData = renderable.inverseSceneTransform.copyRawDataTo(this._sceneNormalMatrixIndex, false);
+                    renderable.inverseSceneTransform.copyRawDataTo(this._pVertexConstantData, this._sceneNormalMatrixIndex, false);
                 }
 
                 if (this._usesNormals) {
@@ -34735,33 +34910,79 @@ var away;
 //------------------------------------------------------------------------------------------------
 var MatrixTest = (function () {
     function MatrixTest() {
+        var v = new away.geom.Vector3D();
         var m;
+        var i;
+        var r = new Array(16);
 
-        /*
-        m = new away.geom.Matrix3D( [   1, 2, 4, 5,
-        2, 1, 0, 8,
-        4, 0, 1, 7,
-        5, 8, 7, 1 ] );
-        
-        m.transpose();
-        console.log( m.rawData, m.determinant ) ;
-        m.transpose();
-        console.log( m.rawData, m.determinant ) ;
-        
-        m = new away.geom.Matrix3D( [   1, 0, 4, 5,
-        0, 1, 8, 0,
-        4, 8, 1, 7,
-        5, 0, 7, 1] );
-        
-        console.log( m.rawData, m.determinant ) ;
-        
-        m  = new away.geom.Matrix3D( [   1, 0, 4, 5,
-        0, 1, 8, 0,
-        4, 8, 1, 2,
-        5, 0, 2, 1] );
-        
-        console.log( m.rawData, m.determinant ) ;
-        */
+        m = new away.geom.Matrix3D([
+            1,
+            2,
+            4,
+            5,
+            2,
+            1,
+            0,
+            8,
+            4,
+            0,
+            1,
+            7,
+            5,
+            8,
+            7,
+            1
+        ]);
+        m.copyRawDataTo(r);
+        i = m.invert();
+        this.outputInvert(i, m.rawData, r);
+
+        m = new away.geom.Matrix3D([
+            1,
+            0,
+            4,
+            5,
+            0,
+            1,
+            8,
+            0,
+            4,
+            8,
+            1,
+            7,
+            5,
+            0,
+            7,
+            1
+        ]);
+
+        m.copyRawDataTo(r);
+        i = m.invert();
+        this.outputInvert(i, m.rawData, r);
+
+        m = new away.geom.Matrix3D([
+            1,
+            0,
+            4,
+            5,
+            0,
+            1,
+            8,
+            0,
+            4,
+            8,
+            1,
+            2,
+            5,
+            0,
+            2,
+            1
+        ]);
+
+        m.copyRawDataTo(r);
+        i = m.invert();
+        this.outputInvert(i, m.rawData, r);
+
         m = new away.geom.Matrix3D([
             1,
             0,
@@ -34781,9 +35002,124 @@ var MatrixTest = (function () {
             1
         ]);
 
-        //m.transpose();
-        console.log(m.rawData, m.determinant);
+        m = new away.geom.Matrix3D([
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            1,
+            12,
+            13,
+            14,
+            15,
+            16
+        ]);
+
+        m.copyColumnTo(0, v);
+        console.log(v.toString());
+        m.copyColumnTo(1, v);
+        console.log(v.toString());
+        m.copyColumnTo(2, v);
+        console.log(v.toString());
+        m.copyColumnTo(3, v);
+        console.log(v.toString());
+
+        v.w = v.x = v.y = v.z = 0;
+        m.copyColumnFrom(0, v);
+        console.log(m.rawData);
+        v.w = v.x = v.y = v.z = 1;
+        m.copyColumnFrom(1, v);
+        console.log(m.rawData);
+        v.w = v.x = v.y = v.z = 2;
+        m.copyColumnFrom(2, v);
+        console.log(m.rawData);
+        v.w = v.x = v.y = v.z = 3;
+        m.copyColumnFrom(3, v);
+        console.log(m.rawData);
+
+        /*
+        Vector3D(1, 2, 3)
+        Vector3D(5, 6, 7)
+        Vector3D(9, 10, 1)
+        Vector3D(13, 14, 15)
+        0,0,0,0,5,6,7,8,9,10,1,12,13,14,15,16
+        0,0,0,0,1,1,1,1,9,10,1,12,13,14,15,16
+        0,0,0,0,1,1,1,1,2,2,2,2,13,14,15,16
+        0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3
+        
+        */
+        /*
+        
+        m.copyRowTo( 0, v) ; console.log ( v ) ;
+        m.copyRowTo( 1, v) ; console.log ( v ) ;
+        m.copyRowTo( 2, v) ; console.log ( v ) ;
+        m.copyRowTo( 3, v) ; console.log ( v ) ;
+        
+        v.w = v.x = v.y = v.z = 0;
+        m.copyRowFrom( 0  , v ); console.log (m.rawData ) ;
+        v.w = v.x = v.y = v.z = 1;
+        m.copyRowFrom( 1  , v ); console.log ( m.rawData ) ;
+        v.w = v.x = v.y = v.z = 2;
+        m.copyRowFrom( 2  , v ); console.log ( m.rawData ) ;
+        v.w = v.x = v.y = v.z = 3;
+        m.copyRowFrom( 3  , v ); console.log ( m.rawData ) ;
+        
+        [0, 2, 4, 5, 0, 7, 8, 9, 0, 0, 1, 7, 0, 8, 7, 1] VextMat3DTests.ts:73
+        0, 2, 4, 5, 0, 7, 8, 9, 0, 0, 1, 7, 0, 8, 7, 1 // AS3
+        
+        [0, 1, 4, 5, 0, 1, 8, 9, 0, 1, 1, 7, 0, 1, 7, 1] VextMat3DTests.ts:75
+        0, 1, 4, 5, 0, 1, 8, 9, 0, 1, 1, 7, 0, 1, 7, 1 // AS3
+        
+        [0, 1, 2, 5, 0, 1, 2, 9, 0, 1, 2, 7, 0, 1, 2, 1] VextMat3DTests.ts:77
+        0, 1, 2, 5, 0, 1, 2, 9, 0, 1, 2, 7, 0, 1, 2, 1 // AS3
+        
+        [0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3]
+        0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3 // AS3s
+        
+        
+        */
+        m = new away.geom.Matrix3D([
+            1,
+            2,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            4,
+            0,
+            1,
+            7,
+            5,
+            8,
+            7,
+            1
+        ]);
+
+        m.copyRowTo(0, v);
+        console.log(v);
+        m.copyRowTo(1, v);
+        console.log(v);
+        m.copyRowTo(2, v);
+        console.log(v);
+        m.copyRowTo(3, v);
+        console.log(v);
     }
+    MatrixTest.prototype.outputInvert = function (success, data, original) {
+        console.log('testInvert(' + success + ', new <Number> [' + data + '], new <Number> [' + original + ']);');
+    };
+
+    MatrixTest.prototype.output = function (data, result) {
+        console.log('testDeterminant( new <Number> [' + data + '], ' + result + ');');
+    };
+
     MatrixTest.prototype.getRnd = function (max, min) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     };
