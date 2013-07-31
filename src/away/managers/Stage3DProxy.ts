@@ -187,6 +187,10 @@ module away.managers
 			
 			if (this._iContext3D)
                 this._iContext3D.configureBackBuffer(backBufferWidth, backBufferHeight, antiAlias, enableDepthAndStencil);
+
+            this._stage3D.width = backBufferWidth;
+            this._stage3D.height = backBufferHeight;
+
 		}
 		
 		/*
@@ -419,10 +423,10 @@ module away.managers
 		public get x():number
 		{
 
-            away.Debug.throwPIR( 'Stage3DProxy' , 'get x' ,  'Stage3D.x');
+            //away.Debug.throwPIR( 'Stage3DProxy' , 'get x' ,  'Stage3D.x');
 
-            return 0;
-			//return this._stage3D.x;
+            //return 0;
+			return this._stage3D.x;
 		}
 		
 		public set x(value:number)
@@ -430,14 +434,14 @@ module away.managers
 
             away.Debug.throwPIR( 'Stage3DProxy' , 'set x' ,  'Stage3D.x');
 
-            /*
-			if (_viewPort.x == value)
+            //*
+			if (this._viewPort.x == value)
 				return;
 			
-			_stage3D.x = _viewPort.x = value;
+			this._stage3D.x = this._viewPort.x = value;
 			
-			notifyViewportUpdated();
-			*/
+			this.notifyViewportUpdated();
+			//*/
 		}
 		
 		/**
@@ -446,23 +450,33 @@ module away.managers
 		public get y():number
 		{
 
-            away.Debug.throwPIR( 'Stage3DProxy' , 'get x' ,  'Stage3D.y');
-            return 0;
-			//return _stage3D.y;
+			return this._stage3D.y;
+
 		}
 		
 		public set y(value:number)
 		{
             away.Debug.throwPIR( 'Stage3DProxy' , 'set x' ,  'Stage3D.y');
-            /*
-			if (_viewPort.y == value)
+            //*
+			if (this._viewPort.y == value)
 				return;
 			
-			_stage3D.y = _viewPort.y = value;
-			
-			notifyViewportUpdated();
-			*/
+			this._stage3D.y = this._viewPort.y = value;
+
+            this.notifyViewportUpdated();
+			//*/
 		}
+
+        /**
+         *
+         * @returns {HTMLCanvasElement}
+         */
+        public get canvas () : HTMLCanvasElement
+        {
+
+            return this._stage3D.canvas;
+
+        }
 		
 		/**
 		 * The width of the Stage3D.
@@ -476,8 +490,9 @@ module away.managers
 		{
 			if (this._viewPort.width == width)
 				return;
-			
-			this._backBufferWidth = this._viewPort.width = width;
+
+
+            this._stage3D.width = this._backBufferWidth = this._viewPort.width = width;
 			this._backBufferDirty = true;
 			
 			this.notifyViewportUpdated();
@@ -495,8 +510,8 @@ module away.managers
 		{
 			if (this._viewPort.height == height)
 				return;
-			
-			this._backBufferHeight = this._viewPort.height = height;
+
+            this._stage3D.height = this._backBufferHeight = this._viewPort.height = height;
 			this._backBufferDirty = true;
 			
 			this.notifyViewportUpdated();
