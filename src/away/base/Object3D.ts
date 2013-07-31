@@ -85,9 +85,9 @@ module away.base
 		private _smallestNumber : number = 0.0000000000000000000001;
 		private _transformDirty : boolean = true;
 		
-		private _positionDirty  : boolean;
-		private _rotationDirty  : boolean;
-		private _scaleDirty     : boolean;
+		private _positionDirty  : boolean = true;
+		private _rotationDirty  : boolean = true;
+		private _scaleDirty     : boolean = true;
 		
 		// TODO: not used
 		// private var _positionValuesDirty:boolean;
@@ -324,6 +324,7 @@ module away.base
 
             }
 
+            console.log( 'setZ: ' + val );
 			
 			this._z = val;
 			this.invalidatePosition();
@@ -992,6 +993,9 @@ module away.base
 
 		public pUpdateTransform()
 		{
+
+
+
 			this._pPos.x = this._x;
             this._pPos.y = this._y;
             this._pPos.z = this._z;
@@ -1005,7 +1009,9 @@ module away.base
             this._sca.z = this._scaleZ;
 
             this._transform.recompose(this._transformComponents);
-			
+
+            //console.log( 'object3d' , 'pUpdateTransform _transformComponents' , this._transformComponents );
+
 			if (!this._pivotZero) {
                 this._transform.prependTranslation(-this._pivotPoint.x, -this._pivotPoint.y, -this._pivotPoint.z);
                 this._transform.appendTranslation(this._pivotPoint.x, this._pivotPoint.y, this._pivotPoint.z);
@@ -1015,6 +1021,9 @@ module away.base
             this._positionDirty = false;
             this._rotationDirty = false;
             this._scaleDirty = false;
+
+            console.log( 'object3d' , 'pUpdateTransform _pPos ' , this._transform.rawData );
+
 		}
 
 		public get zOffset():number
