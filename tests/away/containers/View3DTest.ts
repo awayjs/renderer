@@ -23,7 +23,7 @@ class View3DTest
 
         this.light                  = new away.lights.PointLight();
         this.view                   = new away.containers.BasicView3D( )
-        this.view.backgroundColor   = 0xff0000;
+        this.view.backgroundColor   = 0xff00ea;
         this.torus                  = new away.primitives.TorusGeometry();
 
         var l       : number        = 20;
@@ -42,11 +42,7 @@ class View3DTest
 
         this.view.scene.addChild( this.light );
 
-
-
         console.log('------------------------------------------------------------------------------------------');
-        console.log('-Log');
-
         console.log( 'renderer ' , this.view.renderer );
         console.log( 'scene ' , this.view.scene );
         console.log( 'view ' , this.view );
@@ -78,13 +74,14 @@ class View3DTest
         this.tick ( e );
 
     }
+
     private tick( e )
     {
-        console.log('------------------------------------------------------------------------------------------');
-        console.log('-Render');
-        console.log( this.view.camera.position , this.view.camera.scenePosition );
 
         this.view.render();
+
+        console.log('------------------------------------------------------------------------------------------');
+        console.log('-Render' , this.view);
 
     }
 

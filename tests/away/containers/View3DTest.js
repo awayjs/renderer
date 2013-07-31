@@ -34988,7 +34988,7 @@ var View3DTest = (function () {
 
         this.light = new away.lights.PointLight();
         this.view = new away.containers.BasicView3D();
-        this.view.backgroundColor = 0xff0000;
+        this.view.backgroundColor = 0xff00ea;
         this.torus = new away.primitives.TorusGeometry();
 
         var l = 20;
@@ -35029,11 +35029,10 @@ var View3DTest = (function () {
         this.tick(e);
     };
     View3DTest.prototype.tick = function (e) {
-        console.log('------------------------------------------------------------------------------------------');
-        console.log('-Render');
-        console.log(this.view.camera.position, this.view.camera.scenePosition);
-
         this.view.render();
+
+        console.log('------------------------------------------------------------------------------------------');
+        console.log('-Render', this.view);
     };
 
     View3DTest.prototype.resize = function (e) {
