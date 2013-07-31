@@ -10,67 +10,54 @@ module away.containers
 	export class BasicView3D
 	{
 
-        private static sStage : away.display.Stage;
+        // Static
+        private static sStage : away.display.Stage; // View3D's share the same stage
 
+        // Public
         public stage : away.display.Stage;
 
-        private _aspectRatio:number;
-		private _width:number = 0 ;
-		private _height:number = 0;
-		private _localPos:away.geom.Point = new away.geom.Point();
-		private _globalPos:away.geom.Point = new away.geom.Point();
-		private _globalPosDirty:boolean;
-		
+        // Protected
 		public _pScene:away.containers.Scene3D;
 		public _pCamera:away.cameras.Camera3D;
 		public _pEntityCollector:away.traverse.EntityCollector;
 		public _pAspectRation:number;
-		
+        public _pFilter3DRenderer:away.render.Filter3DRenderer;
+        public _pRequireDepthRender:boolean;
+        public _pDepthRender:away.display3D.Texture;
+        public _pStage3DProxy:away.managers.Stage3DProxy;
+        public _pBackBufferInvalid:boolean = true;
+        public _pRttBufferManager:away.managers.RTTBufferManager;
+        public _pShareContext:boolean = false;
+        public _pScissorRect:away.geom.Rectangle;
+        public _pRenderer:away.render.RendererBase;
+
+        // Private
+        private _aspectRatio:number;
+        private _width:number = 0 ;
+        private _height:number = 0;
+        private _localPos:away.geom.Point = new away.geom.Point();
+        private _globalPos:away.geom.Point = new away.geom.Point();
+        private _globalPosDirty:boolean;
 		private _time:number = 0;
 		private _deltaTime:number = 0;
 		private _backgroundColor:number = 0x000000;
 		private _backgroundAlpha:number = 1;
-		
+        private _depthRenderer:away.render.DepthRenderer;
+        private _addedToStage:boolean;
+        private _forceSoftware:boolean;
+        private _depthTextureInvalid:boolean = true;
+        private _background:away.textures.Texture2DBase;
+        private _antiAlias:number;
+        private _rightClickMenuEnabled:boolean = true;
+        private _sourceURL:string;
+        private _scissorRectDirty:boolean = true;
+        private _viewportDirty:boolean = true;
+        private _depthPrepass:boolean;
+        private _profile:string;
+        private _layeredView:boolean = false;
 		//public _pMouse3DManager:away.managers.Mouse3DManager;
 		//public _pTouch3DManager:away.managers.Touch3DManager;
-		
-		public _pRenderer:away.render.RendererBase;
-		private _depthRenderer:away.render.DepthRenderer;
-		private _addedToStage:boolean;
-		
-		private _forceSoftware:boolean;
-		
-		public _pFilter3DRenderer:away.render.Filter3DRenderer;
-		public _pRequireDepthRender:boolean;
-		public _pDepthRender:away.display3D.Texture;
-		private _depthTextureInvalid:boolean = true;
-		
-		//private _hitField:away.display.Sprite;
-		public _pParentIsStage:boolean;
-		
-		private _background:away.textures.Texture2DBase;
-		public _pStage3DProxy:away.managers.Stage3DProxy;
-		public _pBackBufferInvalid:boolean = true;
-		private _antiAlias:number;
-		
-		public _pRttBufferManager:away.managers.RTTBufferManager;
-		
-		private _rightClickMenuEnabled:boolean = true;
-		private _sourceURL:string;
 
-		//private _menu0:away.ui.ContextMenuItem;
-		//private _menu1:away.ui.ContextMenuItem;
-		//private _viewContextMenu:away.ui.ContextMenu;
-
-		public _pShareContext:boolean = false;
-		public _pScissorRect:away.geom.Rectangle;
-		private _scissorRectDirty:boolean = true;
-		private _viewportDirty:boolean = true;
-		
-		private _depthPrepass:boolean;
-		private _profile:string;
-		private _layeredView:boolean = false;
-		
 		constructor( scene:Scene3D,
 					 camera:away.cameras.Camera3D,
 					 renderer:away.render.RendererBase,
@@ -81,37 +68,31 @@ module away.containers
 
             if ( BasicView3D.sStage == null )
             {
-
                 BasicView3D.sStage = new away.display.Stage();
-
             }
 
-			// TODO link to displaylist
-			
 			this._profile = profile;
 			this._pScene = scene || new Scene3D();
-			
 			this._pScene.addEventListener( away.events.Scene3DEvent.PARTITION_CHANGED, this.onScenePartitionChanged, this );
 			this._pCamera = camera || new away.cameras.Camera3D();
-
 			this._pRenderer = renderer || new away.render.DefaultRenderer();
 			this._depthRenderer = new away.render.DepthRenderer();
 			this._forceSoftware = forceSoftware;
-			
 			this._pEntityCollector = this._pRenderer.iCreateEntityCollector();
 			this._pEntityCollector.camera = this._pCamera;
-			
 			this._pScissorRect = new away.geom.Rectangle();
-			
-
 			this._pCamera.addEventListener( away.events.CameraEvent.LENS_CHANGED, this.onLensChanged, this );
 			this._pCamera.partition = this._pScene.partition;
-
             this.stage = BasicView3D.sStage;
+
             this.onAddedToStage();
 
 		}
-		
+
+        /**
+         *
+         * @param e
+         */
 		private onScenePartitionChanged( e:away.events.Scene3DEvent )
 		{
 			if( this._pCamera )
@@ -119,29 +100,20 @@ module away.containers
 				this._pCamera.partition = this.scene.partition;
 			}
 		}
-		
-		/*
-		public get rightClickMenuEnabled():Boolean
-		{
-			return this._rightClickMenuEnabled;
-		}
-		
-		public set rightClickMenuEnabled( val:boolean )
-		{
-			this._rightClickMenuEnabled = val;
-			this.updateRightClickMenu();
-		}
-		*/
-
+        /**
+         *
+         * @returns {away.managers.Stage3DProxy}
+         */
 		public get stage3DProxy():away.managers.Stage3DProxy
 		{
 			return this._pStage3DProxy;
 		}
-		
+        /**
+         *
+         * @param stage3DProxy
+         */
 		public set stage3DProxy( stage3DProxy:away.managers.Stage3DProxy )
 		{
-
-            console.log( '>>>>>>>>>>' , 'BasicView3D stage3DProxy' , stage3DProxy );
 
 			if (this._pStage3DProxy)
 			{
@@ -155,63 +127,34 @@ module away.containers
 			this._pBackBufferInvalid = true;
 
 		}
-
-        /*
-		public get forceMouseMove():boolean
-		{
-			return this._mouse3DManager.forceMouseMove;
-		}
-		
-		public set forceMouseMove( value:boolean )
-		{
-			this._mouse3DManager.forceMouseMove = value;
-			this._touch3DManager.forceTouchMove = value;
-		}
-		*/
-
-        /*
-		public get background():away.textures.Texture2DBase
-		{
-			return this._background;
-		}
-		
-		public set background( value:away.textures.Texture2DBase )
-		{
-			this._background = value;
-			this._renderer.background = _background;
-		}
-		*/
-
+        /**
+         *
+         * @returns {boolean}
+         */
 		public get layeredView():boolean
 		{
 			return this._layeredView;
 		}
-		
+        /**
+         *
+         * @param value
+         */
 		public set layeredView( value:boolean )
 		{
 			this._layeredView = value;
 		}
-
-        /*
-		private initHitField()
-		{
-			this._hitField = new away.display.Sprite();
-			this._hitField.alpha = 0;
-			this._hitField.doubleClickEnabled = true;
-			this._hitField.graphics.beginFill( 0x000000 );
-			this._hitField.graphics.drawRect( 0, 0, 100, 100 );
-			this.addChild( this._hitField );
-		}
-		*/
-		
-		//TODO remove? override public function get filters():Array
-		//TODO remove? override public function set filters(value:Array):void
-
+        /**
+         *
+         * @returns {*}
+         */
 		public get filters3d():Array
 		{
 			return this._pFilter3DRenderer ? this._pFilter3DRenderer.filters : null;
 		}
-
+        /**
+         *
+         * @param value
+         */
         public set filters3d( value )
         {
             if (value && value.length == 0)
@@ -219,42 +162,43 @@ module away.containers
 
             if (this._pFilter3DRenderer && !value)
             {
-
                 this._pFilter3DRenderer.dispose();
                 this._pFilter3DRenderer = null;
-
             }
             else if (!this._pFilter3DRenderer && value)
             {
-
                 this._pFilter3DRenderer = new away.render.Filter3DRenderer( this._pStage3DProxy );
                 this._pFilter3DRenderer.filters = value;
-
             }
 
             if (this._pFilter3DRenderer)
             {
-
                 this._pFilter3DRenderer.filters = value;
                 this._pRequireDepthRender = this._pFilter3DRenderer.requireDepthRender;
-
             }
             else
             {
                 this._pRequireDepthRender = false;
 
-                if (this._pDepthRender) {
+                if (this._pDepthRender)
+                {
                     this._pDepthRender.dispose();
                     this._pDepthRender = null;
                 }
             }
         }
-		
+        /**
+         *
+         * @returns {away.render.RendererBase}
+         */
 		public get renderer():away.render.RendererBase
 		{
 			return this._pRenderer;
 		}
-
+        /**
+         *
+         * @param value
+         */
         public set renderer( value : away.render.RendererBase )
         {
             this._pRenderer.iDispose();
@@ -274,27 +218,37 @@ module away.containers
             this._pBackBufferInvalid = true;
 
         }
-
+        /**
+         *
+         * @returns {number}
+         */
 		public get backgroundColor():number
 		{
 			return this._backgroundColor;
 		}
-
+        /**
+         *
+         * @param value
+         */
         public set backgroundColor(value:number)
         {
-
             this._backgroundColor      = value;
             this._pRenderer.iBackgroundR = ((value >> 16) & 0xff)/0xff;
             this._pRenderer.iBackgroundG = ((value >> 8) & 0xff)/0xff;
             this._pRenderer.iBackgroundB = (value & 0xff)/0xff;
-
         }
-		
+        /**
+         *
+         * @returns {number}
+         */
 		public get backgroundAlpha():number
 		{
 			return this._backgroundAlpha;
 		}
-		
+        /**
+         *
+         * @param value
+         */
 		public set backgroundAlpha(value:number)
 		{
 			if (value > 1)
@@ -309,13 +263,14 @@ module away.containers
 			this._pRenderer.iBackgroundAlpha = value;
 			this._backgroundAlpha = value;
 		}
-		
+        /**
+         *
+         * @returns {away.cameras.Camera3D}
+         */
 		public get camera():away.cameras.Camera3D
 		{
 			return this._pCamera;
 		}
-
-
         /**
          * Set camera that's used to render the scene for this viewport
          */
@@ -328,24 +283,22 @@ module away.containers
 
             if (this._pScene)
             {
-
                 this._pCamera.partition = this._pScene.partition;
-
             }
 
-
             this._pCamera.addEventListener(away.events.CameraEvent.LENS_CHANGED, this.onLensChanged , this);
-
             this._scissorRectDirty = true;
             this._viewportDirty = true;
 
         }
-
+        /**
+         *
+         * @returns {away.containers.Scene3D}
+         */
 		public get scene():away.containers.Scene3D
 		{
 			return this._pScene;
 		}
-
         /**
          * Set the scene that's used to render for this viewport
          */
@@ -361,44 +314,39 @@ module away.containers
             }
 
         }
-
-		
+        /**
+         *
+         * @returns {number}
+         */
 		public get deltaTime():number
 		{
 			return this._deltaTime;
 		}
-		
+        /**
+         *
+         * @returns {number}
+         */
 		public get width():number
 		{
 			return this._width;
 		}
-
-
+        /**
+         *
+         * @param value
+         */
         public set width(value:number)
         {
-            // Backbuffer limitation in software mode. See comment in updateBackBuffer()
-            if (this._pStage3DProxy && this._pStage3DProxy.usesSoftwareRendering && value > 2048) // TODO: Check if still valid in GLSL
-            {
-
-                value = 2048;
-
-            }
 
             if (this._width == value)
             {
-
                 return;
-
             }
 
             if (this._pRttBufferManager)
             {
-
                 this._pRttBufferManager.viewWidth = value;
-
             }
 
-            //this._pHitField.width = value; // TODO: AS3 <> JS conversion / implementation
             this._width = value;
             this._aspectRatio = this._width/this._height;
             this._pCamera.lens.iAspectRatio= this._aspectRatio;
@@ -408,38 +356,31 @@ module away.containers
             this._pBackBufferInvalid = true;
             this._scissorRectDirty = true;
         }
-
+        /**
+         *
+         * @returns {number}
+         */
 		public get height():number
 		{
 			return this._height;
 		}
-
-
+        /**
+         *
+         * @param value
+         */
         public set height(value:number)
         {
-            // Backbuffer limitation in software mode. See comment in updateBackBuffer()
-            if (this._pStage3DProxy && this._pStage3DProxy.usesSoftwareRendering && value > 2048)// TODO: Check if still valid in GLSL
-            {
-
-                value = 2048;
-
-            }
 
             if (this._height == value)
             {
-
                 return;
-
             }
 
             if (this._pRttBufferManager)
             {
-
                 this._pRttBufferManager.viewHeight = value;
-
             }
 
-            //this._hitField.height = value;// TODO: AS3 <> JS conversion / implementation
             this._height = value;
             this._aspectRatio = this._width/this._height;
             this._pCamera.lens.iAspectRatio = this._aspectRatio;
@@ -450,70 +391,106 @@ module away.containers
             this._scissorRectDirty = true;
 
         }
-
+        /**
+         *
+         * @param value
+         */
         public set x(value:number)
         {
             if (this.x == value)
                 return;
 
-            this._localPos.x = value;
-
-            // TODO:
-            //rectObject = canvas.getBoundingClientRect();
-
-            //this._globalPos.x = parent? parent.localToGlobal(_localPos).x : value;// TODO: imeplement AS3 / JS
+            this._globalPos.x = this._localPos.x = value;
             this._globalPosDirty = true;
         }
-
+        /**
+         *
+         * @param value
+         */
         public set y(value:number)
         {
             if (this.y == value)
                 return;
 
-            this._localPos.y = value;
-
-            //this._globalPos.y = parent? parent.localToGlobal(_localPos).y : value;// TODO: imeplement AS3 / JS
+            this._globalPos.y = this._localPos.y = value;
             this._globalPosDirty = true;
         }
-
+        /**
+         *
+         * @returns {number}
+         */
         public get x () : number
         {
-
-            return this._localPos.x; // TODO: imeplement ( for reference only ATM )
-
+            return this._localPos.x;
         }
-
+        /**
+         *
+         * @returns {number}
+         */
         public get y () : number
         {
-
-            return this._localPos.y; // TODO: imeplement ( for reference only ATM )
+            return this._localPos.y;
+        }
+        /**
+         *
+         * @returns {boolean}
+         */
+        public get visible ()
+        {
+            return true;
+        }
+        /**
+         *
+         * @param v
+         */
+        public set visible ( v : boolean )
+        {
 
         }
+        public get canvas () : HTMLCanvasElement
+        {
 
-        //TODO override public function set visible(value:Boolean):void
-		
+            return this._pStage3DProxy.canvas;
+
+        }
+        /**
+         *
+         * @returns {number}
+         */
 		public get antiAlias():number
 		{
 			return this._antiAlias;
 		}
-		
+        /**
+         *
+         * @param value
+         */
 		public set antiAlias( value:number )
 		{
 			this._antiAlias = value;
 			this._pRenderer.antiAlias = value;
 			this._pBackBufferInvalid = true;
 		}
-		
+        /**
+         *
+         * @returns {number}
+         */
 		public get renderedFacesCount():number
 		{
 			return this._pEntityCollector._pNumTriangles;//numTriangles;
 		}
-		
+        /**
+         *
+         * @returns {boolean}
+         */
 		public get shareContext():boolean
 		{
 			return this._pShareContext;
 		}
-		
+        /**
+         *
+         * @param value
+         */
 		public set shareContext( value:boolean )
 		{
 			if ( this._pShareContext == value)
@@ -523,7 +500,6 @@ module away.containers
 			this._pShareContext = value;
 			this._globalPosDirty = true;
 		}
-
         /**
          * Updates the backbuffer dimensions.
          */
@@ -539,56 +515,13 @@ module away.containers
                 if ( this._width && this._height)
                 {
 
-                    // Backbuffers are limited to 2048x2048 in software mode and
-                    // trying to configure the backbuffer to be bigger than that
-                    // will throw an error. Capping the value is a graceful way of
-                    // avoiding runtime exceptions for developers who are unable
-                    // to test their Away3D implementation on screens that are
-                    // large enough for this error to ever occur.
-
-                    if (this._pStage3DProxy.usesSoftwareRendering)
-                    {
-
-                        // Even though these checks where already made in the width
-                        // and height setters, at that point we couldn't be sure that
-                        // the context had even been retrieved and the software flag
-                        // thus be reliable. Make checks again.
-
-                        if (this._width > 2048)
-                        {
-
-                            this._width = 2048;
-
-                        }
-
-                        if (this._height > 2048)
-                        {
-
-                            this._height = 2048;
-
-                        }
-                    }
-
                     this._pStage3DProxy.configureBackBuffer( this._width, this._height, this._antiAlias, true);
                     this._pBackBufferInvalid = false;
                 }
-                else
-                {
 
-                    this._width     = window.innerWidth;//stage.stageWidth;
-                    this._height    = window.innerWidth;//stage.stageHeight;
-
-                }
             }
         }
-		
-		public addSourceURL( url:string )
-		{
-			this._sourceURL = url;
-			//this.updateRightClickMenu();
-		}
-
-        /**
+		/**
          * Renders the view.
          */
         public render()
@@ -610,20 +543,13 @@ module away.containers
                 this._pStage3DProxy.clearDepthBuffer();
             }
 
-            /* TODO: JS <> AS3 conversion - if functionality is needed
-            if (!_parentIsStage) {
-                var globalPos:Point = parent.localToGlobal(_localPos);
-                if (_globalPos.x != globalPos.x || _globalPos.y != globalPos.y) {
-                    _globalPos = globalPos;
-                    _globalPosDirty = true;
-                }
+            if (this._globalPosDirty)
+            {
+                this.pUpdateGlobalPos();
             }
 
-            if (_globalPosDirty)
-                updateGlobalPos();
-            */
 
-            this.pUpdateTime();//updateTime();
+            this.pUpdateTime();
             this.pUpdateViewSizeData();
             this._pEntityCollector.clear();
             this._pScene.traversePartitions( this._pEntityCollector);// collect stuff to render
@@ -638,7 +564,7 @@ module away.containers
                 this.pRenderSceneDepthToTexture(this._pEntityCollector);
             }
 
-            if (this._depthPrepass)// todo: perform depth prepass after light update and before final render
+            if (this._depthPrepass)
             {
                 this.pRenderDepthPrepass(this._pEntityCollector);
             }
@@ -685,10 +611,12 @@ module away.containers
             this._pStage3DProxy.bufferClear = false;
 
         }
-
-        // TODO: JS <> AS3 imeplementation differences - should global pos be canvas ? ... or do we need to set it to 0,0,canvas.width , canvas.height?
+        /**
+         *
+         */
         public pUpdateGlobalPos()
         {
+
             this._globalPosDirty = false;
 
             if (!this._pStage3DProxy)
@@ -715,27 +643,31 @@ module away.containers
 
             this._scissorRectDirty = true;
         }
-
-		
+        /**
+         *
+         */
 		public pUpdateTime():void
 		{
 			var time:number = away.utils.getTimer();
+
 			if ( this._time == 0 )
 			{
 				this._time = time;
 			}
+
 			this._deltaTime = time - this._time;
 			this._time = time;
 
 		}
-
+        /**
+         *
+         */
         public pUpdateViewSizeData()
         {
             this._pCamera.lens.iAspectRatio = this._aspectRatio;
 
             if (this._scissorRectDirty)
             {
-                // TODO: should scissor rect be same as viewport ?
                 this._scissorRectDirty = false;
                 this._pCamera.lens.iUpdateScissorRect(this._pScissorRect.x, this._pScissorRect.y, this._pScissorRect.width, this._pScissorRect.height);
             }
@@ -757,10 +689,12 @@ module away.containers
                 this._pRenderer.iTextureRatioY = 1;
             }
         }
-
+        /**
+         *
+         * @param entityCollector
+         */
         public pRenderDepthPrepass(entityCollector:away.traverse.EntityCollector)
         {
-
             this._depthRenderer.disableColor = true;
 
             if ( this._pFilter3DRenderer || this._pRenderer.iRenderToTexture )
@@ -779,7 +713,10 @@ module away.containers
             this._depthRenderer.disableColor = false;
 
         }
-
+        /**
+         *
+         * @param entityCollector
+         */
         public pRenderSceneDepthToTexture(entityCollector:away.traverse.EntityCollector)
         {
             if (this._depthTextureInvalid || !this._pDepthRender)
@@ -790,7 +727,10 @@ module away.containers
             this._depthRenderer.iTextureRatioY = this._pRttBufferManager.textureRatioY;
             this._depthRenderer.iRender(entityCollector, this._pDepthRender);
         }
-		
+        /**
+         *
+         * @param context
+         */
 		private initDepthTexture( context:away.display3D.Context3D ):void
 		{
 			this._depthTextureInvalid = false;
@@ -801,7 +741,9 @@ module away.containers
 			}
 			this._pDepthRender = context.createTexture( this._pRttBufferManager.textureWidth, this._pRttBufferManager.textureHeight, away.display3D.Context3DTextureFormat.BGRA, true );
 		}
-
+        /**
+         *
+         */
         public dispose()
         {
             this._pStage3DProxy.removeEventListener(away.events.Stage3DEvent.VIEWPORT_UPDATED, this.onViewportUpdated , this );
@@ -838,65 +780,27 @@ module away.containers
             this._pRenderer = null;
             this._pEntityCollector = null;
         }
-        /* TODO: imeplement Camera3D.project
-		public project( point3d:away.geom.Vector3D ):away.geom.Vector3D
-		{
-			var v:away.geom.Vector3D = this._pCamera.project( point3d );
-			v.x = (v.x + 1.0) * this._width/2.0;
-			v.y = (v.y + 1.0) * this._height/2.0;
-			return v;
-		}
-        */
-        /* TODO: imeplement Camera3D.unproject
-		public unproject( sX:Number, sY:Number, sZ:Number ):away.geom.Vector3D
-		{
-			return this._pCamera.unproject( (sX*2 - this._width)/this._pStage3DProxy.width, (sY*2 - this._height)/this._pStage3DProxy.height, sZ );
-		}
-		*/
-        /* TODO: imeplement Camera3D.unproject
-		public getRay( sX:Number, sY:Number, sZ:Number ):away.geom.Vector3D
-		{
-			return this._pCamera.getRay( (sX*2 - this._width)/this._width, (sY*2 - this._height)/this._height, sZ );
-		}
-		*/
-        /* TODO: imeplement Mouse3DManager
-		public get mousePicker():away.pick.IPicker
-		{
-			return this._mouse3DManager.mousePicker;
-		}
-		*/
-        /* TODO: imeplement Mouse3DManager
-		public set mousePicker( value:away.pick.IPicker )
-		{
-			this._mouse3DManager.mousePicker = value;
-		}
-		*/
-        /* TODO: imeplement Touch3DManager
-		public get touchPicker():away.pick.IPicker
-		{
-			return this._touch3DManager.touchPicker;
-		}
-		*/
-        /* TODO: imeplement Touch3DManager
-		public set touchPicker( value:away.pick.IPicker)
-		{
-			this._touch3DManager.touchPicker = value;
-		}
-        */
+        /**
+         *
+         * @returns {away.traverse.EntityCollector}
+         */
 		public get iEntityCollector():away.traverse.EntityCollector
 		{
 			return this._pEntityCollector;
 		}
-		
+        /**
+         *
+         * @param event
+         */
 		private onLensChanged( event:away.events.CameraEvent )
 		{
 			this._scissorRectDirty = true;
 			this._viewportDirty = true;
 		}
-		
-		// TODO private function onAddedToStage(event:Event):void
-		// TODO private function onAdded(event:Event):void
-		
+        /**
+         *
+         * @param event
+         */
 		private onViewportUpdated( event:away.events.Stage3DEvent )
 		{
 			if( this._pShareContext)
@@ -907,19 +811,25 @@ module away.containers
 			}
 			this._viewportDirty = true;
 		}
-		
-		// TODO private function viewSource(e:ContextMenuEvent):void
-		
+        /**
+         *
+         * @returns {boolean}
+         */
 		public get depthPrepass():boolean
 		{
 			return this._depthPrepass;
 		}
-		
+        /**
+         *
+         * @param value
+         */
 		public set depthPrepass( value: boolean )
 		{
 			this._depthPrepass = value;
 		}
-
+        /**
+         *
+         */
         private onAddedToStage()
         {
 
@@ -928,52 +838,109 @@ module away.containers
             if (this._pStage3DProxy == null )
             {
 
-                console.log( 'Get my StageProxy !')
                 this._pStage3DProxy= away.managers.Stage3DManager.getInstance( this.stage ).getFreeStage3DProxy(this._forceSoftware, this._profile);
                 this._pStage3DProxy.addEventListener(away.events.Stage3DEvent.VIEWPORT_UPDATED, this.onViewportUpdated , this );
-                console.log( 'this._pStage3DProxy : ' , this._pStage3DProxy );
 
             }
 
             this._globalPosDirty = true;
-
             this._pRttBufferManager = away.managers.RTTBufferManager.getInstance(this._pStage3DProxy);
-
             this._pRenderer.iStage3DProxy = this._depthRenderer.iStage3DProxy = this._pStage3DProxy;
 
-            //default wiidth/height to stageWidth/stageHeight
             if (this._width == 0)
             {
-
                 this.width = this.stage.stageWidth;
-
             }
             else
             {
-
                 this._pRttBufferManager.viewWidth = this._width;
-
             }
 
             if (this._height == 0)
             {
-
                 this.height = this.stage.stageHeight;
-
             }
             else
             {
-
                 this._pRttBufferManager.viewHeight = this._height;
-
             }
-
 
         }
 
-		// TODO private function visitWebsite(e:ContextMenuEvent):void
-		// TODO private function initRightClickMenu():void
-		// TODO private function updateRightClickMenu():void
+        // TODO private function onAddedToStage(event:Event):void
+        // TODO private function onAdded(event:Event):void
+
+        /* TODO: implement Camera3D.project
+        public project( point3d:away.geom.Vector3D ):away.geom.Vector3D
+        {
+            var v:away.geom.Vector3D = this._pCamera.project( point3d );
+            v.x = (v.x + 1.0) * this._width/2.0;
+            v.y = (v.y + 1.0) * this._height/2.0;
+            return v;
+        }
+        */
+        /* TODO: implement Camera3D.unproject
+        public unproject( sX:Number, sY:Number, sZ:Number ):away.geom.Vector3D
+        {
+            return this._pCamera.unproject( (sX*2 - this._width)/this._pStage3DProxy.width, (sY*2 - this._height)/this._pStage3DProxy.height, sZ );
+        }
+        */
+        /* TODO: implement Camera3D.unproject
+        public getRay( sX:Number, sY:Number, sZ:Number ):away.geom.Vector3D
+        {
+            return this._pCamera.getRay( (sX*2 - this._width)/this._width, (sY*2 - this._height)/this._height, sZ );
+        }
+        */
+        /* TODO: implement Mouse3DManager
+        public get mousePicker():away.pick.IPicker
+        {
+            return this._mouse3DManager.mousePicker;
+        }
+        */
+        /* TODO: implement Mouse3DManager
+        public set mousePicker( value:away.pick.IPicker )
+        {
+            this._mouse3DManager.mousePicker = value;
+        }
+        */
+        /* TODO: implement Touch3DManager
+        public get touchPicker():away.pick.IPicker
+        {
+            return this._touch3DManager.touchPicker;
+        }
+        */
+        /* TODO: implement Touch3DManager
+        public set touchPicker( value:away.pick.IPicker)
+        {
+            this._touch3DManager.touchPicker = value;
+        }
+        */
+        /*TODO: implement Mouse3DManager
+        public get forceMouseMove():boolean
+        {
+            return this._mouse3DManager.forceMouseMove;
+        }
+        */
+        /* TODO: implement Mouse3DManager
+        public set forceMouseMove( value:boolean )
+        {
+            this._mouse3DManager.forceMouseMove = value;
+            this._touch3DManager.forceTouchMove = value;
+        }
+        */
+        /*TODO: implement Background
+        public get background():away.textures.Texture2DBase
+        {
+            return this._background;
+        }
+        */
+        /*TODO: implement Background
+        public set background( value:away.textures.Texture2DBase )
+        {
+            this._background = value;
+            this._renderer.background = _background;
+        }
+        */
 
 	}
 }
