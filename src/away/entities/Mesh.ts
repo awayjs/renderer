@@ -42,34 +42,22 @@ module away.entities
             //this.geometry = geometry || new Geometry(); //this should never happen, but if people insist on trying to create their meshes before they have geometry to fill it, it becomes necessary
             if ( geometry == null )
             {
-
                 this._geometry = new away.base.Geometry();
-
-
             }
             else
             {
-
                 this._geometry = geometry;
-
             }
 
 			if ( material == null)
             {
-
-                away.Debug.throwPIR( "away.entities.Mesh" , "constructor" , "Missing Dependency: DefaultMaterialManager" );
-                //this.material = material || DefaultMaterialManager.getDefaultMaterial(this);
-
+                this.material = away.materials.DefaultMaterialManager.getDefaultMaterial(this);
             }
             else
             {
-
                 this.material = material;
-
             }
 
-            away.Debug.throwPIR( "away.entities.Mesh" , "away.entities.Mesh" , "Missing Dependency: IAnimator" );
-			//this.material = material || DefaultMaterialManager.getDefaultMaterial(this);
 		}
 		
 		public bakeTransformations()
@@ -356,10 +344,7 @@ module away.entities
 			var len:number = this._subMeshes.length;
 			for (var i:number = 0; i < len; ++i)
             {
-
                 clone._subMeshes[i].material = this._subMeshes[i].material;
-                //clone._subMeshes[i]._material = this._subMeshes[i]._material;
-
             }
 
 			
