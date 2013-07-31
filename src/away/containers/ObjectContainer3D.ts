@@ -132,8 +132,6 @@ module away.containers
 		{
 			this._pParent = value;
 
-            away.Debug.throwPIR( 'ObjectContainer3D' , 'iSetParent' , 'PartialImplementationError - Mouse3DManager' );
-
 			this.pUpdateMouseChildren();
 			
 			if( value == null ) {
@@ -596,9 +594,7 @@ module away.containers
 		public lookAt( target:away.geom.Vector3D, upAxis:away.geom.Vector3D = null )
 		{
 
-            away.Debug.throwPIR( 'ObjectContainer3D' , 'lookAt' , 'PartialImplementationError' );
-			//throw new away.errors.PartialImplementationError();
-			//TODO super.lookAt( target, upAxis );
+			super.lookAt( target, upAxis );
 			this.notifySceneTransformChange();
 		}
 		
