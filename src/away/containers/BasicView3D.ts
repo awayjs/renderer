@@ -58,11 +58,11 @@ module away.containers
 		//public _pMouse3DManager:away.managers.Mouse3DManager;
 		//public _pTouch3DManager:away.managers.Touch3DManager;
 
-		constructor( scene:Scene3D,
-					 camera:away.cameras.Camera3D,
-					 renderer:away.render.RendererBase,
+		constructor( scene:Scene3D = null,
+					 camera:away.cameras.Camera3D = null,
+					 renderer:away.render.RendererBase = null,
 					 forceSoftware:boolean = false,
-					 profile: string = "basline" )
+					 profile: string = "baseline" )
 		{
 
 
