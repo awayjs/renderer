@@ -12,6 +12,10 @@ module away.display
 	{
 		private _context3D:away.display3D.Context3D;
 		private _canvas:HTMLCanvasElement;
+        private _width  : number;
+        private _height : number;
+        private _x      : number;
+        private _y      : number;
 		
 		constructor( canvas: HTMLCanvasElement )
 		{
@@ -24,6 +28,7 @@ module away.display
 			try
 			{
 				this._context3D = new away.display3D.Context3D( this._canvas );
+
 			}
 			catch( e )
 			{
@@ -35,7 +40,67 @@ module away.display
 				this.dispatchEvent( new away.events.Event( away.events.Event.CONTEXT3D_CREATE ) );
 			}
 		}
-		
+
+        public set width ( v : number )
+        {
+
+            this._width = v;
+            away.utils.CSS.setCanvasWidth( this._canvas, v );
+
+        }
+
+        public get width ( )
+        {
+
+            return this._width;
+
+        }
+
+        public set height ( v : number )
+        {
+
+            this._height = v;
+            away.utils.CSS.setCanvasHeight( this._canvas, v );
+
+        }
+
+        public get height ( )
+        {
+
+            return this._height;
+
+        }
+
+        public set x ( v : number )
+        {
+
+            this._x = v;
+            away.utils.CSS.setCanvasX( this._canvas, v );
+
+        }
+
+        public get x ( )
+        {
+
+            return this._x;
+
+        }
+
+        public set y ( v : number )
+        {
+
+            this._y = v;
+            away.utils.CSS.setCanvasY( this._canvas, v );
+
+        }
+
+        public get y ( )
+        {
+
+            return this._y;
+
+        }
+
 		public get canvas(): HTMLCanvasElement
 		{
 			return this._canvas;
