@@ -170,18 +170,13 @@ module away.managers
 			while (i < len)
             {
 
-               // console.log( '! Stage3DManager._stageProxies[i]: ' , ! Stage3DManager._stageProxies[i] );
 				if ( ! Stage3DManager._stageProxies[i] )
                 {
 
-                    //console.log( 'hello ');
                     this.getStage3DProxy(i, forceSoftware, profile);
 
-                    away.Debug.throwPIR( 'Stage3DManager' , 'getFreeStage3DProxy' , 'Stage.stageWidth , Stage.stageHeight ' );
-                    //throw new away.errors.PartialImplementationError( 'Stage.stageWidth , Stage.stageHeight ');
-
-                    //Stage3DManager._stageProxies[i].width = this._stage.stageWidth;
-                    //Stage3DManager._stageProxies[i].height = this._stage.stageHeight;
+                    Stage3DManager._stageProxies[i].width = this._stage.stageWidth;
+                    Stage3DManager._stageProxies[i].height = this._stage.stageHeight;
 
 					return Stage3DManager._stageProxies[i];
 
