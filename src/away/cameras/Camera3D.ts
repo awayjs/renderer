@@ -159,15 +159,6 @@ module away.cameras
 			
 			this._frustumPlanesDirty = false;
 
-
-            /*
-            for ( var cntr : number = 0 ; cntr < this._frustumPlanes.length ; cntr ++ )
-            {
-
-                console.log( 'Camera3D this._frustumPlanes[cntr].d ' , this._frustumPlanes[cntr].d );
-
-            }
-            */
 		}
 		
 		//@override
@@ -218,15 +209,9 @@ module away.cameras
 			if( this._viewProjectionDirty)
 			{
 
-                //console.log( 'this.inverseSceneTransform' , this.inverseSceneTransform.copyRawDataTo() );
-                //console.log( 'this.sceneTransform ' , this.sceneTransform.copyRawDataTo() );
-
 				this._viewProjection.copyFrom( this.inverseSceneTransform );
 				this._viewProjection.append( this._lens.matrix );
 				this._viewProjectionDirty = false;
-
-                //console.log( 'this.viewProjection ' , this._viewProjection.copyRawDataTo() );
-
 
 			}
 			return this._viewProjection;
