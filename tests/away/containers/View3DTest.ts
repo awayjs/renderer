@@ -42,10 +42,17 @@ class View3DTest
 
         this.view.scene.addChild( this.light );
 
-        console.log('------------------------------------------------------------------------------------------');
+        this.view.y         = this.view.x = 0;
+        this.view.width     = window.innerWidth;
+        this.view.height    = window.innerHeight;
+
         console.log( 'renderer ' , this.view.renderer );
         console.log( 'scene ' , this.view.scene );
         console.log( 'view ' , this.view );
+
+        this.view.render();
+
+
 
         document.onmousedown = ( e ) => this.onMouseDowm( e );
 
@@ -88,9 +95,9 @@ class View3DTest
     public resize( e )
     {
 
-        this.view.y = this.view.x = 0;
-        this.view.width = window.innerWidth;
-        this.view.height = window.innerHeight;
+        this.view.y         = this.view.x = 0;
+        this.view.width     = window.innerWidth;
+        this.view.height    = window.innerHeight;
         this.view.render();
 
     }
