@@ -285,8 +285,6 @@ module away.entities
 		public getIndexBuffer( stage3DProxy:away.managers.Stage3DProxy ):away.display3D.IndexBuffer3D
 		{
 
-            //away.Debug.throwPIR( 'SegmentSet' , 'getIndexBuffer' , 'PartialImplementation' );
-
 			if( this._activeSubSet.indexContext3D != stage3DProxy.context3D || this._activeSubSet.indexBufferDirty )
 			{
 				this._activeSubSet.indexBuffer = stage3DProxy._iContext3D.createIndexBuffer( this._activeSubSet.numIndices );
@@ -303,8 +301,6 @@ module away.entities
 		public activateVertexBuffer( index:number, stage3DProxy:away.managers.Stage3DProxy )
 		{
 
-            //away.Debug.throwPIR( 'SegmentSet' , 'activateVertexBuffer' , 'PartialImplementation' );
-            //*
 			var subSet:SubSet = this._subSets[index];
 			
 			this._activeSubSet = subSet;
@@ -324,7 +320,7 @@ module away.entities
 			context3d.setVertexBufferAt(1, vertexBuffer, 3, away.display3D.Context3DVertexBufferFormat.FLOAT_3);
 			context3d.setVertexBufferAt(2, vertexBuffer, 6, away.display3D.Context3DVertexBufferFormat.FLOAT_1);
 			context3d.setVertexBufferAt(3, vertexBuffer, 7, away.display3D.Context3DVertexBufferFormat.FLOAT_4);
-			//*/
+
 		}
 		
 		public activateUVBuffer(index:number, stage3DProxy:away.managers.Stage3DProxy)
