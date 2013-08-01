@@ -13,7 +13,7 @@ module away.base
 		public _iMaterial:away.materials.MaterialBase;
 		private _parentMesh:away.entities.Mesh;
 		private _subGeometry:away.base.ISubGeometry;
-		public _iIndex:number;
+		public _iIndex:number = 0;
 		private _uvTransform:away.geom.Matrix;
 		private _uvTransformDirty:boolean;
 		private _uvRotation:number = 0;
