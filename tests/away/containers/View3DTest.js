@@ -10029,18 +10029,16 @@ var away;
                 this._subMeshes = new Array();
 
                 if (geometry == null) {
-                    this._geometry = new away.base.Geometry();
+                    this.geometry = new away.base.Geometry();
                 } else {
-                    this._geometry = geometry;
+                    this.geometry = geometry;
                 }
 
                 if (material == null) {
-                    away.Debug.throwPIR("away.entities.Mesh", "constructor", "Missing Dependency: DefaultMaterialManager");
+                    this.material = away.materials.DefaultMaterialManager.getDefaultMaterial(this);
                 } else {
                     this.material = material;
                 }
-
-                away.Debug.throwPIR("away.entities.Mesh", "away.entities.Mesh", "Missing Dependency: IAnimator");
             }
             Mesh.prototype.bakeTransformations = function () {
                 this.geometry.applyTransformation(this.transform);
@@ -10120,7 +10118,6 @@ var away;
 
                         //var subGeoms:Vector.<ISubGeometry> = _geometry.subGeometries;
                         var subGeoms = this._geometry.subGeometries;
-                        ;
 
                         for (i = 0; i < subGeoms.length; ++i) {
                             this.addSubMesh(subGeoms[i]);
@@ -10396,6 +10393,7 @@ var away;
             */
             function SubMesh(subGeometry, parentMesh, material) {
                 if (typeof material === "undefined") { material = null; }
+                this._iIndex = 0;
                 this._uvRotation = 0;
                 this._scaleU = 1;
                 this._scaleV = 1;
@@ -11629,7 +11627,7 @@ var away;
                     _super.prototype.acceptTraverser.call(this, traverser);
 
                     var subs = this._mesh.subMeshes;
-                    var i;
+                    var i = 0;
                     var len = subs.length;
                     while (i < len) {
                         traverser.applyRenderable(subs[i++]);
@@ -12866,8 +12864,17 @@ var away;
     ///<reference path="../_definitions.ts" />
     (function (containers) {
         var BasicView3D = (function () {
-            //public _pMouse3DManager:away.managers.Mouse3DManager;
-            //public _pTouch3DManager:away.managers.Touch3DManager;
+            /*
+            ***********************************************************************
+            * Disabled / Not yet implemented
+            ***********************************************************************
+            *
+            * private _background:away.textures.Texture2DBase;
+            *
+            * public _pMouse3DManager:away.managers.Mouse3DManager;
+            * public _pTouch3DManager:away.managers.Touch3DManager;
+            *
+            */
             function BasicView3D(scene, camera, renderer, forceSoftware, profile) {
                 if (typeof scene === "undefined") { scene = null; }
                 if (typeof camera === "undefined") { camera = null; }
@@ -12885,7 +12892,6 @@ var away;
                 this._backgroundColor = 0x000000;
                 this._backgroundAlpha = 1;
                 this._depthTextureInvalid = true;
-                this._rightClickMenuEnabled = true;
                 this._scissorRectDirty = true;
                 this._viewportDirty = true;
                 this._layeredView = false;
@@ -20488,14 +20494,11 @@ var away;
 
                 while (i < len) {
                     if (!Stage3DManager._stageProxies[i]) {
-                        //console.log( 'hello ');
                         this.getStage3DProxy(i, forceSoftware, profile);
 
-                        away.Debug.throwPIR('Stage3DManager', 'getFreeStage3DProxy', 'Stage.stageWidth , Stage.stageHeight ');
+                        Stage3DManager._stageProxies[i].width = this._stage.stageWidth;
+                        Stage3DManager._stageProxies[i].height = this._stage.stageHeight;
 
-                        //throw new away.errors.PartialImplementationError( 'Stage.stageWidth , Stage.stageHeight ');
-                        //Stage3DManager._stageProxies[i].width = this._stage.stageWidth;
-                        //Stage3DManager._stageProxies[i].height = this._stage.stageHeight;
                         return Stage3DManager._stageProxies[i];
                     }
 
@@ -20571,6 +20574,142 @@ var Stage3DManagerSingletonEnforcer = (function () {
     function Stage3DManagerSingletonEnforcer() {
     }
     return Stage3DManagerSingletonEnforcer;
+})();
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (managers) {
+        var AGALProgram3DCache = (function () {
+            function AGALProgram3DCache(stage3DProxy, agalProgram3DCacheSingletonEnforcer) {
+                if (!agalProgram3DCacheSingletonEnforcer) {
+                    throw new Error("This class is a multiton and cannot be instantiated manually. Use Stage3DManager.getInstance instead.");
+                }
+
+                this._stage3DProxy = stage3DProxy;
+
+                this._program3Ds = new Array();
+                this._ids = new Array();
+                this._usages = new Array();
+                this._keys = new Array();
+            }
+            AGALProgram3DCache.getInstance = function (stage3DProxy) {
+                var index = stage3DProxy._iStage3DIndex;
+
+                if (AGALProgram3DCache._instances == null) {
+                    AGALProgram3DCache._instances = new Array(8);
+                }
+
+                if (!AGALProgram3DCache._instances[index]) {
+                    AGALProgram3DCache._instances[index] = new AGALProgram3DCache(stage3DProxy, new AGALProgram3DCacheSingletonEnforcer());
+
+                    stage3DProxy.addEventListener(away.events.Stage3DEvent.CONTEXT3D_DISPOSED, AGALProgram3DCache.onContext3DDisposed, AGALProgram3DCache);
+                    stage3DProxy.addEventListener(away.events.Stage3DEvent.CONTEXT3D_CREATED, AGALProgram3DCache.onContext3DDisposed, AGALProgram3DCache);
+                    stage3DProxy.addEventListener(away.events.Stage3DEvent.CONTEXT3D_RECREATED, AGALProgram3DCache.onContext3DDisposed, AGALProgram3DCache);
+                }
+
+                return AGALProgram3DCache._instances[index];
+            };
+
+            AGALProgram3DCache.getInstanceFromIndex = function (index) {
+                if (!AGALProgram3DCache._instances[index]) {
+                    throw new Error("Instance not created yet!");
+                }
+                return AGALProgram3DCache._instances[index];
+            };
+
+            AGALProgram3DCache.onContext3DDisposed = function (event) {
+                var stage3DProxy = event.target;
+
+                var index = stage3DProxy._iStage3DIndex;
+
+                AGALProgram3DCache._instances[index].dispose();
+                AGALProgram3DCache._instances[index] = null;
+
+                stage3DProxy.removeEventListener(away.events.Stage3DEvent.CONTEXT3D_DISPOSED, AGALProgram3DCache.onContext3DDisposed, AGALProgram3DCache);
+                stage3DProxy.removeEventListener(away.events.Stage3DEvent.CONTEXT3D_CREATED, AGALProgram3DCache.onContext3DDisposed, AGALProgram3DCache);
+                stage3DProxy.removeEventListener(away.events.Stage3DEvent.CONTEXT3D_RECREATED, AGALProgram3DCache.onContext3DDisposed, AGALProgram3DCache);
+            };
+
+            AGALProgram3DCache.prototype.dispose = function () {
+                for (var key in this._program3Ds) {
+                    this.destroyProgram(key);
+                }
+
+                this._keys = null;
+                this._program3Ds = null;
+                this._usages = null;
+            };
+
+            AGALProgram3DCache.prototype.setProgram3D = function (pass, vertexCode, fragmentCode) {
+                var stageIndex = this._stage3DProxy._iStage3DIndex;
+                var program;
+                var key = this.getKey(vertexCode, fragmentCode);
+
+                if (this._program3Ds[key] == null) {
+                    this._keys[AGALProgram3DCache._currentId] = key;
+                    this._usages[AGALProgram3DCache._currentId] = 0;
+                    this._ids[key] = AGALProgram3DCache._currentId;
+                    ++AGALProgram3DCache._currentId;
+
+                    program = this._stage3DProxy._iContext3D.createProgram();
+
+                    away.Debug.throwPIR('AGALProgram3DCache', 'setProgram3D', 'Dependency: AGALMiniAssembler.assemble');
+
+                    console.log('AGALProgram3DCache', 'vertexCode', vertexCode);
+                    console.log('AGALProgram3DCache', 'fragmentCode', fragmentCode);
+
+                    //TODO: implement AGAL <> GLSL
+                    //var vertexByteCode:ByteArray = new AGALMiniAssembler(Debug.active).assemble(Context3DProgramType.VERTEX, vertexCode);
+                    //var fragmentByteCode:ByteArray = new AGALMiniAssembler(Debug.active).assemble(Context3DProgramType.FRAGMENT, fragmentCode);
+                    //program.upload(vertexByteCode, fragmentByteCode);
+                    this._program3Ds[key] = program;
+                }
+
+                var oldId = pass._iProgram3Dids[stageIndex];
+                var newId = this._ids[key];
+
+                if (oldId != newId) {
+                    if (oldId >= 0) {
+                        this.freeProgram3D(oldId);
+                    }
+
+                    this._usages[newId]++;
+                }
+
+                pass._iProgram3Dids[stageIndex] = newId;
+                pass._iProgram3Ds[stageIndex] = this._program3Ds[key];
+            };
+
+            AGALProgram3DCache.prototype.freeProgram3D = function (programId) {
+                this._usages[programId]--;
+
+                if (this._usages[programId] == 0) {
+                    this.destroyProgram(this._keys[programId]);
+                }
+            };
+
+            AGALProgram3DCache.prototype.destroyProgram = function (key) {
+                this._program3Ds[key].dispose();
+                this._program3Ds[key] = null;
+                delete this._program3Ds[key];
+                this._ids[key] = -1;
+            };
+
+            AGALProgram3DCache.prototype.getKey = function (vertexCode, fragmentCode) {
+                return vertexCode + "---" + fragmentCode;
+            };
+            AGALProgram3DCache._currentId = 0;
+            return AGALProgram3DCache;
+        })();
+        managers.AGALProgram3DCache = AGALProgram3DCache;
+    })(away.managers || (away.managers = {}));
+    var managers = away.managers;
+})(away || (away = {}));
+
+var AGALProgram3DCacheSingletonEnforcer = (function () {
+    function AGALProgram3DCacheSingletonEnforcer() {
+    }
+    return AGALProgram3DCacheSingletonEnforcer;
 })();
 var away;
 (function (away) {
@@ -20895,10 +21034,31 @@ var away;
     var Debug = (function () {
         function Debug() {
         }
+        Debug.breakpoint = function () {
+            away.Debug['break']();
+        };
+
+        Debug.throwPIROnKeyWordOnly = function (str, enable) {
+            if (typeof enable === "undefined") { enable = true; }
+            if (!enable) {
+                away.Debug.keyword = null;
+            } else {
+                away.Debug.keyword = str;
+            }
+        };
+
         Debug.throwPIR = function (clss, fnc, msg) {
             Debug.logPIR('PartialImplementationError ' + clss, fnc, msg);
 
             if (Debug.THROW_ERRORS) {
+                if (away.Debug.keyword) {
+                    var e = clss + fnc + msg;
+
+                    if (e.indexOf(away.Debug.keyword) == -1) {
+                        return;
+                    }
+                }
+
                 throw new away.errors.PartialImplementationError(clss + '.' + fnc + ': ' + msg);
             }
         };
@@ -20922,6 +21082,8 @@ var away;
         Debug.THROW_ERRORS = true;
         Debug.ENABLE_LOG = true;
         Debug.LOG_PI_ERRORS = true;
+
+        Debug.keyword = null;
         return Debug;
     })();
     away.Debug = Debug;
@@ -24200,6 +24362,8 @@ var away;
     (function (data) {
         var RenderableListItemPool = (function () {
             function RenderableListItemPool() {
+                this._index = 0;
+                this._poolSize = 0;
                 this._pool = [];
             }
             RenderableListItemPool.prototype.getItem = function () {
@@ -25921,9 +26085,8 @@ var away;
 
                 for (var i = 0; i < 8; ++i) {
                     if (this._iProgram3Ds[i]) {
-                        away.Debug.throwPIR('away.materials.MaterialPassBase', 'dispose', 'required dependency: AGALProgram3DCache');
-
-                        //AGALProgram3DCache.getInstanceFromIndex(i).freeProgram3D(_program3Dids[i]);
+                        //away.Debug.throwPIR( 'away.materials.MaterialPassBase' , 'dispose' , 'required dependency: AGALProgram3DCache');
+                        away.managers.AGALProgram3DCache.getInstanceFromIndex(i).freeProgram3D(this._iProgram3Dids[i]);
                         this._iProgram3Ds[i] = null;
                     }
                 }
@@ -26218,7 +26381,7 @@ var away;
                 trace(fragmentCode);
                 }
                 */
-                away.Debug.throwPIR('away.materials.MaterialPassBase', 'dispose', 'required dependency: AGALProgram3DCache');
+                away.managers.AGALProgram3DCache.getInstance(stage3DProxy).setProgram3D(this, vertexCode, fragmentCode);
             };
 
             Object.defineProperty(MaterialPassBase.prototype, "lightPicker", {
@@ -32876,6 +33039,64 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (materials) {
+        var DefaultMaterialManager = (function () {
+            function DefaultMaterialManager() {
+            }
+            DefaultMaterialManager.getDefaultMaterial = function (renderable) {
+                if (typeof renderable === "undefined") { renderable = null; }
+                if (!DefaultMaterialManager._defaultTexture) {
+                    DefaultMaterialManager.createDefaultTexture();
+                }
+
+                if (!DefaultMaterialManager._defaultMaterial) {
+                    DefaultMaterialManager.createDefaultMaterial();
+                }
+
+                return DefaultMaterialManager._defaultMaterial;
+            };
+
+            DefaultMaterialManager.getDefaultTexture = function (renderable) {
+                if (typeof renderable === "undefined") { renderable = null; }
+                if (!DefaultMaterialManager._defaultTexture) {
+                    DefaultMaterialManager.createDefaultTexture();
+                }
+
+                return DefaultMaterialManager._defaultTexture;
+            };
+
+            DefaultMaterialManager.createDefaultTexture = function () {
+                DefaultMaterialManager._defaultTextureBitmapData = new away.display.BitmapData(8, 8, false, 0x0);
+
+                //create chekerboard
+                var i, j;
+                for (i = 0; i < 8; i++) {
+                    for (j = 0; j < 8; j++) {
+                        if ((j & 1) ^ (i & 1)) {
+                            DefaultMaterialManager._defaultTextureBitmapData.setPixel(i, j, 0XFFFFFF);
+                        }
+                    }
+                }
+
+                DefaultMaterialManager._defaultTexture = new away.textures.BitmapTexture(DefaultMaterialManager._defaultTextureBitmapData);
+                DefaultMaterialManager._defaultTexture.name = "defaultTexture";
+            };
+
+            DefaultMaterialManager.createDefaultMaterial = function () {
+                DefaultMaterialManager._defaultMaterial = new away.materials.TextureMaterial(DefaultMaterialManager._defaultTexture);
+                DefaultMaterialManager._defaultMaterial.mipmap = false;
+                DefaultMaterialManager._defaultMaterial.smooth = false;
+                DefaultMaterialManager._defaultMaterial.name = "defaultMaterial";
+            };
+            return DefaultMaterialManager;
+        })();
+        materials.DefaultMaterialManager = DefaultMaterialManager;
+    })(away.materials || (away.materials = {}));
+    var materials = away.materials;
+})(away || (away = {}));
+var away;
+(function (away) {
     /**
     * ...
     * @author Gary Paluk - http://www.plugin.io
@@ -34986,32 +35207,51 @@ var View3DTest = (function () {
         away.Debug.THROW_ERRORS = false;
         away.Debug.LOG_PI_ERRORS = false;
 
+        //away.Debug.throwPIROnKeyWordOnly( 'Mouse3DManager' );
         this.light = new away.lights.PointLight();
         this.view = new away.containers.BasicView3D();
+        this.view.camera.z = -1000;
         this.view.backgroundColor = 0xff00ea;
         this.torus = new away.primitives.TorusGeometry();
 
         var l = 20;
         var radius = 500;
 
+        var mat = new away.materials.ColorMaterial();
+
+        var matB = new away.materials.ColorMaterial();
+        mat.blendMode = away.display.BlendMode.MULTIPLY;
+
+        var f = true;
         for (var c = 0; c < l; c++) {
             var t = Math.PI * 2 * c / l;
 
-            var m = new away.entities.Mesh(this.torus);
+            var m = new away.entities.Mesh(this.torus, f ? mat : matB);
             m.x = Math.cos(t) * radius;
             m.y = 0;
             m.z = Math.sin(t) * radius;
+
             this.view.scene.addChild(m);
+
+            f = !f;
         }
 
+        /*
+        var bitmapMat : away.materials.TextureMaterial = <away.materials.TextureMaterial> m.material;
+        bitmapMat.blendMode
+        console.log( 'Torus.bitmapMat.texture: ' , bitmapMat.texture.width , bitmapMat.texture.height ) ;
+        */
         this.view.scene.addChild(this.light);
 
-        console.log('------------------------------------------------------------------------------------------');
-        console.log('-Log');
+        this.view.y = this.view.x = 0;
+        this.view.width = window.innerWidth;
+        this.view.height = window.innerHeight;
 
         console.log('renderer ', this.view.renderer);
         console.log('scene ', this.view.scene);
         console.log('view ', this.view);
+
+        this.view.render();
 
         document.onmousedown = function (e) {
             return _this.onMouseDowm(e);
@@ -35028,11 +35268,12 @@ var View3DTest = (function () {
 
         this.tick(e);
     };
+
     View3DTest.prototype.tick = function (e) {
         this.view.render();
 
         console.log('------------------------------------------------------------------------------------------');
-        console.log('-Render', this.view);
+        console.log('-Render 2 ', this.view);
     };
 
     View3DTest.prototype.resize = function (e) {
