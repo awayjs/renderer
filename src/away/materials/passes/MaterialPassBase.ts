@@ -287,8 +287,8 @@ module away.materials
 				if (this._iProgram3Ds[i])
                 {
 
-                    away.Debug.throwPIR( 'away.materials.MaterialPassBase' , 'dispose' , 'required dependency: AGALProgram3DCache');
-					//AGALProgram3DCache.getInstanceFromIndex(i).freeProgram3D(_program3Dids[i]);
+                    //away.Debug.throwPIR( 'away.materials.MaterialPassBase' , 'dispose' , 'required dependency: AGALProgram3DCache');
+					away.managers.AGALProgram3DCache.getInstanceFromIndex(i).freeProgram3D(this._iProgram3Dids[i]);
 					this._iProgram3Ds[i] = null;
 
 				}
@@ -639,8 +639,7 @@ module away.materials
 			}
 			*/
 
-            away.Debug.throwPIR( 'away.materials.MaterialPassBase' , 'dispose' , 'required dependency: AGALProgram3DCache');
-			//AGALProgram3DCache.getInstance(stage3DProxy).setProgram3D(this, vertexCode, fragmentCode);
+			away.managers.AGALProgram3DCache.getInstance(stage3DProxy).setProgram3D(this, vertexCode, fragmentCode);
 
 		}
 
