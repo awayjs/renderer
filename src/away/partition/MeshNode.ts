@@ -42,7 +42,7 @@ module away.partition
 				super.acceptTraverser(traverser);
 
 				var subs:away.base.SubMesh[] = this._mesh.subMeshes;
-				var i:number;
+				var i:number = 0;
 				var len:number = subs.length;
 				while (i < len)
                 {
