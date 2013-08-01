@@ -42,11 +42,11 @@ module away.entities
             //this.geometry = geometry || new Geometry(); //this should never happen, but if people insist on trying to create their meshes before they have geometry to fill it, it becomes necessary
             if ( geometry == null )
             {
-                this._geometry = new away.base.Geometry();
+                this.geometry = new away.base.Geometry();
             }
             else
             {
-                this._geometry = geometry;
+                this.geometry = geometry;
             }
 
 			if ( material == null)
@@ -146,7 +146,7 @@ module away.entities
 		public set geometry(value:away.base.Geometry)
 		{
 			var i:number;
-			
+
 			if (this._geometry)
             {
 
@@ -168,12 +168,13 @@ module away.entities
 
 			if (this._geometry)
             {
+
 				this._geometry.addEventListener(away.events.GeometryEvent.BOUNDS_INVALID, this.onGeometryBoundsInvalid , this );
                 this._geometry.addEventListener(away.events.GeometryEvent.SUB_GEOMETRY_ADDED, this.onSubGeometryAdded , this );
                 this._geometry.addEventListener(away.events.GeometryEvent.SUB_GEOMETRY_REMOVED, this.onSubGeometryRemoved , this );
 
                 //var subGeoms:Vector.<ISubGeometry> = _geometry.subGeometries;
-                var subGeoms:away.base.ISubGeometry[] = this._geometry.subGeometries;;//
+                var subGeoms:away.base.ISubGeometry[] = this._geometry.subGeometries;//
 				
 				for (i = 0; i < subGeoms.length; ++i)
                 {
@@ -442,6 +443,7 @@ module away.entities
 		 */
 		private addSubMesh(subGeometry:away.base.ISubGeometry)
 		{
+
 			var subMesh:away.base.SubMesh = new away.base.SubMesh(subGeometry, this, null);
 			var len:number = this._subMeshes.length;
 
