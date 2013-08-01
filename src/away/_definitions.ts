@@ -148,6 +148,7 @@
 ///<reference path="managers/Mouse3DManager.ts"/>
 ///<reference path="events/Stage3DEvent.ts"/>
 ///<reference path="managers/Stage3DManager.ts"/>
+///<reference path="managers/AGALProgram3DCache.ts"/>
 ///<reference path="materials/utils/MipmapGenerator.ts" />
 ///<reference path="net/URLVariables.ts" />
 ///<reference path="utils/PerspectiveMatrix3D.ts"/>
