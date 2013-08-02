@@ -30,6 +30,8 @@ module scene
 		constructor( )
 		{
 			super();
+
+            away.Debug.THROW_ERRORS = false;
 			
 			if( !document )
 			{
@@ -83,9 +85,14 @@ module scene
 			//this._texture.uploadFromBitmapData( bitmapData );
 			
 			this._context3D.configureBackBuffer( 800, 600, 0, true );
-			this._context3D.setColorMask( true, true, true, true ); 
-			
-			var torus: away.primitives.TorusGeometry = new away.primitives.TorusGeometry( 1, 0.5, 32, 16, false );
+			this._context3D.setColorMask( true, true, true, true );
+
+            //var torus: away.primitives.TorusGeometry = new away.primitives.TorusGeometry( 1, 0.5, 32, 16, false );
+            //var torus: away.primitives.CubeGeometry= new away.primitives.CubeGeometry( 1 , 1 , 1 , 32 , 32 , 32 );
+            //var torus: away.primitives.CapsuleGeometry= new away.primitives.CapsuleGeometry( 1 , 1 , 32 , 32 );
+            var torus: away.primitives.CylinderGeometry= new away.primitives.CylinderGeometry( 0 , 2 , 3 , 32 , 32 );
+            //var torus: away.primitives.SphereGeometry= new away.primitives.SphereGeometry( 2 , 32 , 32 );
+            //var torus: away.primitives.RegularPolygonGeometry= new away.primitives.RegularPolygonGeometry( 4 );// NOT WORKING
 			torus.iValidate();
 			
 			var vertices:number[] = torus.getSubGeometries()[0].vertexData;
@@ -181,6 +188,8 @@ module scene
 		private tick( dt:number )
 		{
 			this._mvMatrix.appendRotation( dt * 0.05, new away.geom.Vector3D( 0, 1, 0 ) );
+            this._mvMatrix.position = new away.geom.Vector3D(0, 0, 5);
+
 			this._context3D.setProgram( this._program );
 			this._context3D.setGLSLProgramConstantsFromMatrix( "uNormalMatrix", this._normalMatrix, true );
 			this._context3D.setGLSLProgramConstantsFromMatrix( "uMVMatrix", this._mvMatrix, true );
