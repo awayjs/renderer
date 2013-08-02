@@ -835,6 +835,25 @@ module away.containers
             this._pRenderer = null;
             this._pEntityCollector = null;
         }
+
+        public project( point3d:away.geom.Vector3D ):away.geom.Vector3D
+        {
+            var v:away.geom.Vector3D = this._pCamera.project( point3d );
+            v.x = (v.x + 1.0) * this._width/2.0;
+            v.y = (v.y + 1.0) * this._height/2.0;
+            return v;
+        }
+
+        public unproject( sX:number, sY:number, sZ:number ):away.geom.Vector3D
+        {
+            return this._pCamera.unproject( (sX*2 - this._width)/this._pStage3DProxy.width, (sY*2 - this._height)/this._pStage3DProxy.height, sZ );
+        }
+
+        public getRay( sX:number, sY:number, sZ:number ):away.geom.Vector3D
+        {
+            return this._pCamera.getRay( (sX*2 - this._width)/this._width, (sY*2 - this._height)/this._height, sZ );
+        }
+
         /* TODO: imeplement Camera3D.project
 		public project( point3d:away.geom.Vector3D ):away.geom.Vector3D
 		{
