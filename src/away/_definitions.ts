@@ -72,6 +72,10 @@
 ///<reference path="primitives/WireframePrimitiveBase.ts" />
 ///<reference path="primitives/WireframeSphere.ts" />
 ///<reference path="primitives/WireframeCube.ts" />
+///<reference path="primitives/WireframeCylinder.ts" />
+///<reference path="primitives/WireframePlane.ts" />
+///<reference path="primitives/WireframeRegularPolygon.ts" />
+///<reference path="primitives/WireframeTetrahedron.ts" />
 ///<reference path="partition/NodeBase.ts" />
 ///<reference path="partition/NullNode.ts" />
 ///<reference path="partition/Partition3D.ts" />
