@@ -87,9 +87,7 @@ module away.library
 
         public dispose()
         {
-
-            // AbstractMethodError - Marked for override
-
+            throw new away.errors.AbstractMethodError();
         }
 
 		public get assetNamespace() : string
