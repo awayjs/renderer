@@ -76,7 +76,6 @@ module away.base
 	 *         additional translate *before* the current transform. x/y/z will be reset based on these operations. </li>
 	 * </ul>
 	 */
-	
 	export class Object3D extends away.library.NamedAssetBase
 	{
 		/** @private */
@@ -103,7 +102,6 @@ module away.base
 		private _rotationZ      : number = 0;
 		private _eulers         : away.geom.Vector3D = new away.geom.Vector3D();
 		private _flipY          : away.geom.Matrix3D = new away.geom.Matrix3D();
-
 
 		private _listenToPositionChanged    : boolean;
 		private _listenToRotationChanged    : boolean;
@@ -498,15 +496,6 @@ module away.base
 
 		public set transform(val:away.geom.Matrix3D)
 		{
-			//ridiculous matrix error - AS3 Original
-            /*
-			if (!val.rawData[uint(0)]) {
-				var raw:number[] = Matrix3DUtils.RAW_DATA_CONTAINER;
-				val.copyRawDataTo(raw);
-				raw[uint(0)] = _smallestNumber;
-				val.copyRawDataFrom(raw);
-			}
-			*/
 
             // TODO: From AS3 - Do we still need this in JS ?
             //ridiculous matrix error
@@ -851,8 +840,8 @@ module away.base
 		{
 			var clone:away.base.Object3D = new away.base.Object3D();
 		    	clone.pivotPoint = this.pivotPoint;
-			clone.transform = this.transform;
-			clone.name = name;
+			    clone.transform = this.transform;
+			    clone.name = name;
 			// todo: implement for all subtypes
 			return clone;
 		}
@@ -902,7 +891,7 @@ module away.base
                 upAxis = away.geom.Vector3D.Y_AXIS;
             }
 
-			zAxis = target.subtract(position);
+			zAxis = target.subtract(this.position);
 			zAxis.normalize();
 			
 			xAxis = upAxis.crossProduct(zAxis);
@@ -937,7 +926,7 @@ module away.base
 
             this._transform.copyRawDataFrom(raw);
 
-            this.transform = transform;
+            this.transform = this.transform;
 			
 			if (zAxis.z < 0)
             {
