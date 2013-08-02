@@ -2,25 +2,6 @@
 
 module away.render
 {
-	//import away3d.arcane;
-	//import away3d.managers.Stage3DProxy;
-	//import away3d.core.sort.IEntitySorter;
-	//import away3d.core.sort.RenderableMergeSort;
-	//import away3d.core.traverse.EntityCollector;
-	//import away3d.errors.AbstractMethodError;
-	//import away3d.events.Stage3DEvent;
-	//import away3d.textures.Texture2DBase;
-
-	//import flash.display.BitmapData;
-
-	//import flash.display3D.Context3D;
-	//import flash.display3D.Context3DCompareMode;
-	//import flash.display3D.textures.TextureBase;
-	//import flash.events.Event;
-	//import flash.geom.Matrix3D;
-	//import flash.geom.Rectangle;
-
-	//use namespace arcane;
 
 	/**
 	 * RendererBase forms an abstract base class for classes that are used in the rendering pipeline to render geometry
