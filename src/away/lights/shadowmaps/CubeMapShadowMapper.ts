@@ -76,22 +76,21 @@ module away.lights
 		}
 		
 		//@override
-		//TODO public pDrawDepthMap( target:away.display3D.TextureBase, scene:away.containers.Scene3D, renderer:away.render.DepthRenderer )
-		/*
 		public pDrawDepthMap( target:away.display3D.TextureBase, scene:away.containers.Scene3D, renderer:away.render.DepthRenderer )
 		{
 			for( var i:number = 0; i < 6; ++i )
 			{
 				if( this._needsRender[i] )
 				{
-					this._casterCollector.camera = this._depthCameras[i];
-					this._casterCollector.clear();
-					scene.traversePartitions(this._casterCollector );
-					renderer.render( this._casterCollector, target, null, i );
-					this._casterCollector.cleanUp();
+
+					this._pCasterCollector.camera = this._depthCameras[i];
+					this._pCasterCollector.clear();
+					scene.traversePartitions(this._pCasterCollector );
+					renderer.iRender( this._pCasterCollector, target, null, i );
+					this._pCasterCollector.cleanUp();
 				}
 			}
 		}
-		*/
+
 	}
 }
