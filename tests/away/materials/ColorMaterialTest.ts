@@ -68,7 +68,9 @@ class MaterialsTest
         console.log( '- TextureMaterial' );
         console.log( '-----------------------------------------------------------------------------' );
         console.log( 'this.matTx ' , this.matTx );
-        console.log( 'iUpdateProgram' , this.matTx._pScreenPass.iUpdateProgram( this.sProxy ) );
+
+        this.matTx._pScreenPass.iUpdateProgram( this.sProxy )
+
         console.log( 'iGetVertexCode' , this.matTx._pScreenPass.iGetVertexCode() );
         console.log( 'iGetFragmentCode' , this.matTx._pScreenPass.iGetFragmentCode(''));
 

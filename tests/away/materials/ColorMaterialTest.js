@@ -619,6 +619,9 @@ var away;
             Vector3D.prototype.toString = function () {
                 return "[Vector3D] (x:" + this.x + " ,y:" + this.y + ", z" + this.z + ", w:" + this.w + ")";
             };
+            Vector3D.X_AXIS = new Vector3D(1, 0, 0);
+            Vector3D.Y_AXIS = new Vector3D(0, 1, 0);
+            Vector3D.Z_AXIS = new Vector3D(0, 0, 1);
             return Vector3D;
         })();
         geom.Vector3D = Vector3D;
@@ -831,28 +834,28 @@ var away;
             Matrix3D.prototype.copyColumnFrom = function (column, vector3D) {
                 switch (column) {
                     case 0:
-                        vector3D.x = this.rawData[0];
-                        vector3D.y = this.rawData[4];
-                        vector3D.z = this.rawData[8];
-                        vector3D.w = this.rawData[12];
+                        this.rawData[0] = vector3D.x;
+                        this.rawData[1] = vector3D.y;
+                        this.rawData[2] = vector3D.z;
+                        this.rawData[3] = vector3D.w;
                         break;
                     case 1:
-                        vector3D.x = this.rawData[1];
-                        vector3D.y = this.rawData[5];
-                        vector3D.z = this.rawData[9];
-                        vector3D.w = this.rawData[13];
+                        this.rawData[4] = vector3D.x;
+                        this.rawData[5] = vector3D.y;
+                        this.rawData[6] = vector3D.z;
+                        this.rawData[7] = vector3D.w;
                         break;
                     case 2:
-                        vector3D.x = this.rawData[2];
-                        vector3D.y = this.rawData[6];
-                        vector3D.z = this.rawData[10];
-                        vector3D.w = this.rawData[14];
+                        this.rawData[8] = vector3D.x;
+                        this.rawData[9] = vector3D.y;
+                        this.rawData[10] = vector3D.z;
+                        this.rawData[11] = vector3D.w;
                         break;
                     case 3:
-                        vector3D.x = this.rawData[3];
-                        vector3D.y = this.rawData[7];
-                        vector3D.z = this.rawData[11];
-                        vector3D.w = this.rawData[15];
+                        this.rawData[12] = vector3D.x;
+                        this.rawData[13] = vector3D.y;
+                        this.rawData[14] = vector3D.z;
+                        this.rawData[15] = vector3D.w;
                         break;
                     default:
                         throw new away.errors.ArgumentError("ArgumentError, Column " + column + " out of bounds [0, ..., 3]");
@@ -864,61 +867,6 @@ var away;
             */
             Matrix3D.prototype.copyColumnTo = function (column, vector3D) {
                 switch (column) {
-                    case 0:
-                        this.rawData[0] = vector3D.x;
-                        this.rawData[4] = vector3D.y;
-                        this.rawData[8] = vector3D.z;
-                        this.rawData[12] = vector3D.w;
-                        break;
-                    case 1:
-                        this.rawData[1] = vector3D.x;
-                        this.rawData[5] = vector3D.y;
-                        this.rawData[9] = vector3D.z;
-                        this.rawData[13] = vector3D.w;
-                        break;
-                    case 2:
-                        this.rawData[2] = vector3D.x;
-                        this.rawData[6] = vector3D.y;
-                        this.rawData[10] = vector3D.z;
-                        this.rawData[14] = vector3D.w;
-                        break;
-                    case 3:
-                        this.rawData[3] = vector3D.x;
-                        this.rawData[7] = vector3D.y;
-                        this.rawData[11] = vector3D.z;
-                        this.rawData[15] = vector3D.w;
-                        break;
-                    default:
-                        throw new away.errors.ArgumentError("ArgumentError, Column " + column + " out of bounds [0, ..., 3]");
-                }
-            };
-
-            /**
-            * Copies all of the matrix data from the source Matrix3D object into the calling Matrix3D object.
-            */
-            Matrix3D.prototype.copyFrom = function (sourceMatrix3D) {
-                this.rawData = sourceMatrix3D.rawData.slice(0);
-            };
-
-            Matrix3D.prototype.copyRawDataFrom = function (vector, index, transpose) {
-                if (typeof index === "undefined") { index = 0; }
-                if (typeof transpose === "undefined") { transpose = false; }
-                //TODO fully implement
-                this.rawData = vector.splice(0);
-            };
-
-            Matrix3D.prototype.copyRawDataTo = function (vector, index, transpose) {
-                if (typeof index === "undefined") { index = 0; }
-                if (typeof transpose === "undefined") { transpose = false; }
-                //TODO fully implement
-                vector = this.rawData.splice(0);
-            };
-
-            /**
-            * Copies a Vector3D object into specific row of the calling Matrix3D object.
-            */
-            Matrix3D.prototype.copyRowFrom = function (row, vector3D) {
-                switch (row) {
                     case 0:
                         vector3D.x = this.rawData[0];
                         vector3D.y = this.rawData[1];
@@ -944,6 +892,62 @@ var away;
                         vector3D.w = this.rawData[15];
                         break;
                     default:
+                        throw new away.errors.ArgumentError("ArgumentError, Column " + column + " out of bounds [0, ..., 3]");
+                }
+            };
+
+            /**
+            * Copies all of the matrix data from the source Matrix3D object into the calling Matrix3D object.
+            */
+            Matrix3D.prototype.copyFrom = function (sourceMatrix3D) {
+                this.rawData = sourceMatrix3D.rawData.slice(0);
+            };
+
+            Matrix3D.prototype.copyRawDataFrom = function (vector, index, transpose) {
+                if (typeof index === "undefined") { index = 0; }
+                if (typeof transpose === "undefined") { transpose = false; }
+                //TODO fully implement
+                this.rawData = vector.slice(0);
+            };
+
+            Matrix3D.prototype.copyRawDataTo = function (vector, index, transpose) {
+                if (typeof index === "undefined") { index = 0; }
+                if (typeof transpose === "undefined") { transpose = false; }
+                for (var c = 0; c < this.rawData.length; c++) {
+                    vector[c] = this.rawData[c];
+                }
+            };
+
+            /**
+            * Copies a Vector3D object into specific row of the calling Matrix3D object.
+            */
+            Matrix3D.prototype.copyRowFrom = function (row, vector3D) {
+                switch (row) {
+                    case 0:
+                        this.rawData[0] = vector3D.x;
+                        this.rawData[4] = vector3D.y;
+                        this.rawData[8] = vector3D.z;
+                        this.rawData[12] = vector3D.w;
+                        break;
+                    case 1:
+                        this.rawData[1] = vector3D.x;
+                        this.rawData[5] = vector3D.y;
+                        this.rawData[9] = vector3D.z;
+                        this.rawData[13] = vector3D.w;
+                        break;
+                    case 2:
+                        this.rawData[2] = vector3D.x;
+                        this.rawData[6] = vector3D.y;
+                        this.rawData[10] = vector3D.z;
+                        this.rawData[14] = vector3D.w;
+                        break;
+                    case 3:
+                        this.rawData[3] = vector3D.x;
+                        this.rawData[7] = vector3D.y;
+                        this.rawData[11] = vector3D.z;
+                        this.rawData[15] = vector3D.w;
+                        break;
+                    default:
                         throw new away.errors.ArgumentError("ArgumentError, Row " + row + " out of bounds [0, ..., 3]");
                 }
             };
@@ -954,28 +958,29 @@ var away;
             Matrix3D.prototype.copyRowTo = function (row, vector3D) {
                 switch (row) {
                     case 0:
-                        this.rawData[0] = vector3D.x;
-                        this.rawData[1] = vector3D.y;
-                        this.rawData[2] = vector3D.z;
-                        this.rawData[3] = vector3D.w;
+                        vector3D.x = this.rawData[0];
+                        vector3D.y = this.rawData[4];
+                        vector3D.z = this.rawData[8];
+                        vector3D.w = this.rawData[12];
                         break;
                     case 1:
-                        this.rawData[4] = vector3D.x;
-                        this.rawData[5] = vector3D.y;
-                        this.rawData[6] = vector3D.z;
-                        this.rawData[7] = vector3D.w;
+                        vector3D.x = this.rawData[1];
+                        vector3D.y = this.rawData[5];
+                        vector3D.z = this.rawData[9];
+                        vector3D.w = this.rawData[13];
                         break;
                     case 2:
-                        this.rawData[8] = vector3D.x;
-                        this.rawData[9] = vector3D.y;
-                        this.rawData[10] = vector3D.z;
-                        this.rawData[11] = vector3D.w;
+                        vector3D.x = this.rawData[2];
+                        vector3D.y = this.rawData[6];
+                        vector3D.z = this.rawData[10];
+                        vector3D.w = this.rawData[14];
+
                         break;
                     case 3:
-                        this.rawData[12] = vector3D.x;
-                        this.rawData[13] = vector3D.y;
-                        this.rawData[14] = vector3D.z;
-                        this.rawData[15] = vector3D.w;
+                        vector3D.x = this.rawData[3];
+                        vector3D.y = this.rawData[7];
+                        vector3D.z = this.rawData[11];
+                        vector3D.w = this.rawData[15];
                         break;
                     default:
                         throw new away.errors.ArgumentError("ArgumentError, Row " + row + " out of bounds [0, ..., 3]");
@@ -1078,50 +1083,203 @@ var away;
                 }
             };
 
+            /*
+            public invert():boolean
+            {
+            var d = this.determinant;
+            var invertable = Math.abs (d) > 0.00000000001;
+            
+            if (invertable)
+            {
+            d = -1 / d;
+            var m11:number = this.rawData[0]; var m21:number = this.rawData[4]; var m31:number = this.rawData[8]; var m41:number = this.rawData[12];
+            var m12:number = this.rawData[1]; var m22:number = this.rawData[5]; var m32:number = this.rawData[9]; var m42:number = this.rawData[13];
+            var m13:number = this.rawData[2]; var m23:number = this.rawData[6]; var m33:number = this.rawData[10]; var m43:number = this.rawData[14];
+            var m14:number = this.rawData[3]; var m24:number = this.rawData[7]; var m34:number = this.rawData[11]; var m44:number = this.rawData[15];
+            
+            this.rawData[0] = d * (m22 * (m33 * m44 - m43 * m34) - m32 * (m23 * m44 - m43 * m24) + m42 * (m23 * m34 - m33 * m24));
+            this.rawData[1] = -d * (m12 * (m33 * m44 - m43 * m34) - m32 * (m13 * m44 - m43 * m14) + m42 * (m13 * m34 - m33 * m14));
+            this.rawData[2] = d * (m12 * (m23 * m44 - m43 * m24) - m22 * (m13 * m44 - m43 * m14) + m42 * (m13 * m24 - m23 * m14));
+            this.rawData[3] = -d * (m12 * (m23 * m34 - m33 * m24) - m22 * (m13 * m34 - m33 * m14) + m32 * (m13 * m24 - m23 * m14));
+            this.rawData[4] = -d * (m21 * (m33 * m44 - m43 * m34) - m31 * (m23 * m44 - m43 * m24) + m41 * (m23 * m34 - m33 * m24));
+            this.rawData[5] = d * (m11 * (m33 * m44 - m43 * m34) - m31 * (m13 * m44 - m43 * m14) + m41 * (m13 * m34 - m33 * m14));
+            this.rawData[6] = -d * (m11 * (m23 * m44 - m43 * m24) - m21 * (m13 * m44 - m43 * m14) + m41 * (m13 * m24 - m23 * m14));
+            this.rawData[7] = d * (m11 * (m23 * m34 - m33 * m24) - m21 * (m13 * m34 - m33 * m14) + m31 * (m13 * m24 - m23 * m14));
+            this.rawData[8] = d * (m21 * (m32 * m44 - m42 * m34) - m31 * (m22 * m44 - m42 * m24) + m41 * (m22 * m34 - m32 * m24));
+            this.rawData[9] = -d * (m11 * (m32 * m44 - m42 * m34) - m31 * (m12 * m44 - m42 * m14) + m41 * (m12 * m34 - m32 * m14));
+            this.rawData[10] = d * (m11 * (m22 * m44 - m42 * m24) - m21 * (m12 * m44 - m42 * m14) + m41 * (m12 * m24 - m22 * m14));
+            this.rawData[11] = -d * (m11 * (m22 * m34 - m32 * m24) - m21 * (m12 * m34 - m32 * m14) + m31 * (m12 * m24 - m22 * m14));
+            this.rawData[12] = -d * (m21 * (m32 * m43 - m42 * m33) - m31 * (m22 * m43 - m42 * m23) + m41 * (m22 * m33 - m32 * m23));
+            this.rawData[13] = d * (m11 * (m32 * m43 - m42 * m33) - m31 * (m12 * m43 - m42 * m13) + m41 * (m12 * m33 - m32 * m13));
+            this.rawData[14] = -d * (m11 * (m22 * m43 - m42 * m23) - m21 * (m12 * m43 - m42 * m13) + m41 * (m12 * m23 - m22 * m13));
+            this.rawData[15] = d * (m11 * (m22 * m33 - m32 * m23) - m21 * (m12 * m33 - m32 * m13) + m31 * (m12 * m23 - m22 * m13));
+            }
+            return invertable;
+            }
+            */
             /**
             * Inverts the current matrix.
             */
             Matrix3D.prototype.invert = function () {
-                var d = this.determinant;
-                var invertable = Math.abs(d) > 0.00000000001;
+                var t;
+                var m0, m1, m2, m3, s;
 
-                if (invertable) {
-                    d = -1 / d;
-                    var m11 = this.rawData[0];
-                    var m21 = this.rawData[4];
-                    var m31 = this.rawData[8];
-                    var m41 = this.rawData[12];
-                    var m12 = this.rawData[1];
-                    var m22 = this.rawData[5];
-                    var m32 = this.rawData[9];
-                    var m42 = this.rawData[13];
-                    var m13 = this.rawData[2];
-                    var m23 = this.rawData[6];
-                    var m33 = this.rawData[10];
-                    var m43 = this.rawData[14];
-                    var m14 = this.rawData[3];
-                    var m24 = this.rawData[7];
-                    var m34 = this.rawData[11];
-                    var m44 = this.rawData[15];
+                var r0 = [], r1 = [], r2 = [], r3 = [];
 
-                    this.rawData[0] = d * (m22 * (m33 * m44 - m43 * m34) - m32 * (m23 * m44 - m43 * m24) + m42 * (m23 * m34 - m33 * m24));
-                    this.rawData[1] = -d * (m12 * (m33 * m44 - m43 * m34) - m32 * (m13 * m44 - m43 * m14) + m42 * (m13 * m34 - m33 * m14));
-                    this.rawData[2] = d * (m12 * (m23 * m44 - m43 * m24) - m22 * (m13 * m44 - m43 * m14) + m42 * (m13 * m24 - m23 * m14));
-                    this.rawData[3] = -d * (m12 * (m23 * m34 - m33 * m24) - m22 * (m13 * m34 - m33 * m14) + m32 * (m13 * m24 - m23 * m14));
-                    this.rawData[4] = -d * (m21 * (m33 * m44 - m43 * m34) - m31 * (m23 * m44 - m43 * m24) + m41 * (m23 * m34 - m33 * m24));
-                    this.rawData[5] = d * (m11 * (m33 * m44 - m43 * m34) - m31 * (m13 * m44 - m43 * m14) + m41 * (m13 * m34 - m33 * m14));
-                    this.rawData[6] = -d * (m11 * (m23 * m44 - m43 * m24) - m21 * (m13 * m44 - m43 * m14) + m41 * (m13 * m24 - m23 * m14));
-                    this.rawData[7] = d * (m11 * (m23 * m34 - m33 * m24) - m21 * (m13 * m34 - m33 * m14) + m31 * (m13 * m24 - m23 * m14));
-                    this.rawData[8] = d * (m21 * (m32 * m44 - m42 * m34) - m31 * (m22 * m44 - m42 * m24) + m41 * (m22 * m34 - m32 * m24));
-                    this.rawData[9] = -d * (m11 * (m32 * m44 - m42 * m34) - m31 * (m12 * m44 - m42 * m14) + m41 * (m12 * m34 - m32 * m14));
-                    this.rawData[10] = d * (m11 * (m22 * m44 - m42 * m24) - m21 * (m12 * m44 - m42 * m14) + m41 * (m12 * m24 - m22 * m14));
-                    this.rawData[11] = -d * (m11 * (m22 * m34 - m32 * m24) - m21 * (m12 * m34 - m32 * m14) + m31 * (m12 * m24 - m22 * m14));
-                    this.rawData[12] = -d * (m21 * (m32 * m43 - m42 * m33) - m31 * (m22 * m43 - m42 * m23) + m41 * (m22 * m33 - m32 * m23));
-                    this.rawData[13] = d * (m11 * (m32 * m43 - m42 * m33) - m31 * (m12 * m43 - m42 * m13) + m41 * (m12 * m33 - m32 * m13));
-                    this.rawData[14] = -d * (m11 * (m22 * m43 - m42 * m23) - m21 * (m12 * m43 - m42 * m13) + m41 * (m12 * m23 - m22 * m13));
-                    this.rawData[15] = d * (m11 * (m22 * m33 - m32 * m23) - m21 * (m12 * m33 - m32 * m13) + m31 * (m12 * m23 - m22 * m13));
+                r0[0] = this.rawData[0 * 4 + 0], r0[1] = this.rawData[1 * 4 + 0], r0[2] = this.rawData[2 * 4 + 0], r0[3] = this.rawData[3 * 4 + 0], r0[4] = 1.0, r0[5] = r0[6] = r0[7] = 0.0, r1[0] = this.rawData[0 * 4 + 1], r1[1] = this.rawData[1 * 4 + 1], r1[2] = this.rawData[2 * 4 + 1], r1[3] = this.rawData[3 * 4 + 1], r1[5] = 1.0, r1[4] = r1[6] = r1[7] = 0.0, r2[0] = this.rawData[0 * 4 + 2], r2[1] = this.rawData[1 * 4 + 2], r2[2] = this.rawData[2 * 4 + 2], r2[3] = this.rawData[3 * 4 + 2], r2[6] = 1.0, r2[4] = r2[5] = r2[7] = 0.0, r3[0] = this.rawData[0 * 4 + 3], r3[1] = this.rawData[1 * 4 + 3], r3[2] = this.rawData[2 * 4 + 3], r3[3] = this.rawData[3 * 4 + 3], r3[7] = 1.0, r3[4] = r3[5] = r3[6] = 0.0;
+
+                if (Math.abs(r3[0]) > Math.abs(r2[0])) {
+                    t = r3;
+                    r3 = r2;
+                    r2 = t;
                 }
-                return invertable;
+                if (Math.abs(r2[0]) > Math.abs(r1[0])) {
+                    t = r2;
+                    r2 = r1;
+                    r1 = t;
+                }
+                if (Math.abs(r1[0]) > Math.abs(r0[0])) {
+                    t = r1;
+                    r1 = r0;
+                    r0 = t;
+                }
+                if (0.0 == r0[0])
+                    return false;
+
+                // eliminate first variable
+                m1 = r1[0] / r0[0];
+                m2 = r2[0] / r0[0];
+                m3 = r3[0] / r0[0];
+                s = r0[1];
+                r1[1] -= m1 * s;
+                r2[1] -= m2 * s;
+                r3[1] -= m3 * s;
+                s = r0[2];
+                r1[2] -= m1 * s;
+                r2[2] -= m2 * s;
+                r3[2] -= m3 * s;
+                s = r0[3];
+                r1[3] -= m1 * s;
+                r2[3] -= m2 * s;
+                r3[3] -= m3 * s;
+
+                s = r0[4];
+
+                if (s != 0.0) {
+                    r1[4] -= m1 * s;
+                    r2[4] -= m2 * s;
+                    r3[4] -= m3 * s;
+                }
+                s = r0[5];
+                if (s != 0.0) {
+                    r1[5] -= m1 * s;
+                    r2[5] -= m2 * s;
+                    r3[5] -= m3 * s;
+                }
+                s = r0[6];
+                if (s != 0.0) {
+                    r1[6] -= m1 * s;
+                    r2[6] -= m2 * s;
+                    r3[6] -= m3 * s;
+                }
+                s = r0[7];
+                if (s != 0.0) {
+                    r1[7] -= m1 * s;
+                    r2[7] -= m2 * s;
+                    r3[7] -= m3 * s;
+                }
+
+                if (Math.abs(r3[1]) > Math.abs(r2[1])) {
+                    t = r3;
+                    r3 = r2;
+                    r2 = t;
+                }
+                if (Math.abs(r2[1]) > Math.abs(r1[1])) {
+                    t = r2;
+                    r2 = r1;
+                    r1 = t;
+                }
+                if (0.0 == r1[1])
+                    return false;
+
+                // eliminate second variable
+                m2 = r2[1] / r1[1];
+                m3 = r3[1] / r1[1];
+                r2[2] -= m2 * r1[2];
+                r3[2] -= m3 * r1[2];
+                r2[3] -= m2 * r1[3];
+                r3[3] -= m3 * r1[3];
+                s = r1[4];
+                if (0.0 != s) {
+                    r2[4] -= m2 * s;
+                    r3[4] -= m3 * s;
+                }
+                s = r1[5];
+                if (0.0 != s) {
+                    r2[5] -= m2 * s;
+                    r3[5] -= m3 * s;
+                }
+                s = r1[6];
+                if (0.0 != s) {
+                    r2[6] -= m2 * s;
+                    r3[6] -= m3 * s;
+                }
+                s = r1[7];
+                if (0.0 != s) {
+                    r2[7] -= m2 * s;
+                    r3[7] -= m3 * s;
+                }
+
+                if (Math.abs(r3[2]) > Math.abs(r2[2])) {
+                    t = r3;
+                    r3 = r2;
+                    r2 = t;
+                }
+                if (0.0 == r2[2])
+                    return false;
+
+                // eliminate third variable
+                m3 = r3[2] / r2[2];
+                r3[3] -= m3 * r2[3], r3[4] -= m3 * r2[4], r3[5] -= m3 * r2[5], r3[6] -= m3 * r2[6], r3[7] -= m3 * r2[7];
+
+                if (0.0 == r3[3])
+                    return false;
+                s = 1.0 / r3[3];
+                r3[4] *= s;
+                r3[5] *= s;
+                r3[6] *= s;
+                r3[7] *= s;
+                m2 = r2[3];
+                s = 1.0 / r2[2];
+                r2[4] = s * (r2[4] - r3[4] * m2), r2[5] = s * (r2[5] - r3[5] * m2), r2[6] = s * (r2[6] - r3[6] * m2), r2[7] = s * (r2[7] - r3[7] * m2);
+
+                m1 = r1[3];
+                r1[4] -= r3[4] * m1, r1[5] -= r3[5] * m1, r1[6] -= r3[6] * m1, r1[7] -= r3[7] * m1;
+
+                m0 = r0[3];
+                r0[4] -= r3[4] * m0, r0[5] -= r3[5] * m0, r0[6] -= r3[6] * m0, r0[7] -= r3[7] * m0;
+
+                m1 = r1[2];
+                s = 1.0 / r1[1];
+                r1[4] = s * (r1[4] - r2[4] * m1), r1[5] = s * (r1[5] - r2[5] * m1), r1[6] = s * (r1[6] - r2[6] * m1), r1[7] = s * (r1[7] - r2[7] * m1);
+                m0 = r0[2];
+                r0[4] -= r2[4] * m0, r0[5] -= r2[5] * m0, r0[6] -= r2[6] * m0, r0[7] -= r2[7] * m0;
+
+                m0 = r0[1];
+                s = 1.0 / r0[0];
+                r0[4] = s * (r0[4] - r1[4] * m0), r0[5] = s * (r0[5] - r1[5] * m0), r0[6] = s * (r0[6] - r1[6] * m0), r0[7] = s * (r0[7] - r1[7] * m0);
+
+                this.rawData[0 * 4 + 0] = r0[4];
+                this.rawData[1 * 4 + 0] = r0[5], this.rawData[2 * 4 + 0] = r0[6];
+                this.rawData[3 * 4 + 0] = r0[7], this.rawData[0 * 4 + 1] = r1[4];
+                this.rawData[1 * 4 + 1] = r1[5], this.rawData[2 * 4 + 1] = r1[6];
+                this.rawData[3 * 4 + 1] = r1[7], this.rawData[0 * 4 + 2] = r2[4];
+                this.rawData[1 * 4 + 2] = r2[5], this.rawData[2 * 4 + 2] = r2[6];
+                this.rawData[3 * 4 + 2] = r2[7], this.rawData[0 * 4 + 3] = r3[4];
+                this.rawData[1 * 4 + 3] = r3[5], this.rawData[2 * 4 + 3] = r3[6];
+                this.rawData[3 * 4 + 3] = r3[7];
+
+                return true;
             };
 
             /* TODO implement pointAt
@@ -1289,7 +1447,22 @@ var away;
                 * [read-only] A Number that determines whether a matrix is invertible.
                 */
                 function () {
-                    return -1 * ((this.rawData[0] * this.rawData[5] - this.rawData[4] * this.rawData[1]) * (this.rawData[10] * this.rawData[15] - this.rawData[14] * this.rawData[11]) - (this.rawData[0] * this.rawData[9] - this.rawData[8] * this.rawData[1]) * (this.rawData[6] * this.rawData[15] - this.rawData[14] * this.rawData[7]) + (this.rawData[0] * this.rawData[13] - this.rawData[12] * this.rawData[1]) * (this.rawData[6] * this.rawData[11] - this.rawData[10] * this.rawData[7]) + (this.rawData[4] * this.rawData[9] - this.rawData[8] * this.rawData[5]) * (this.rawData[2] * this.rawData[15] - this.rawData[14] * this.rawData[3]) - (this.rawData[4] * this.rawData[13] - this.rawData[12] * this.rawData[5]) * (this.rawData[2] * this.rawData[11] - this.rawData[10] * this.rawData[3]) + (this.rawData[8] * this.rawData[13] - this.rawData[12] * this.rawData[9]) * (this.rawData[2] * this.rawData[7] - this.rawData[6] * this.rawData[3]));
+                    if (this.rawData[0 * 4 + 3] == 0 && this.rawData[1 * 4 + 3] == 0 && this.rawData[2 * 4 + 3] == 0) {
+                        var a = this.rawData[2 * 4 + 2] * this.rawData[3 * 4 + 3];
+                        var b = this.rawData[1 * 4 + 2] * this.rawData[3 * 4 + 3];
+                        var d = this.rawData[0 * 4 + 2] * this.rawData[3 * 4 + 3];
+
+                        return this.rawData[0 * 4 + 0] * (this.rawData[1 * 4 + 1] * a - this.rawData[2 * 4 + 1] * b) - this.rawData[1 * 4 + 0] * (this.rawData[0 * 4 + 1] * a - this.rawData[2 * 4 + 1] * d) + this.rawData[2 * 4 + 0] * (this.rawData[0 * 4 + 1] * b - this.rawData[1 * 4 + 1] * d);
+                    } else {
+                        var a = this.rawData[2 * 4 + 2] * this.rawData[3 * 4 + 3] - this.rawData[3 * 4 + 2] * this.rawData[2 * 4 + 3];
+                        var b = this.rawData[1 * 4 + 2] * this.rawData[3 * 4 + 3] - this.rawData[3 * 4 + 2] * this.rawData[1 * 4 + 3];
+                        var c = this.rawData[1 * 4 + 2] * this.rawData[2 * 4 + 3] - this.rawData[2 * 4 + 2] * this.rawData[1 * 4 + 3];
+                        var d = this.rawData[0 * 4 + 2] * this.rawData[3 * 4 + 3] - this.rawData[3 * 4 + 2] * this.rawData[0 * 4 + 3];
+                        var e = this.rawData[0 * 4 + 2] * this.rawData[2 * 4 + 3] - this.rawData[2 * 4 + 2] * this.rawData[0 * 4 + 3];
+                        var f = this.rawData[0 * 4 + 2] * this.rawData[1 * 4 + 3] - this.rawData[1 * 4 + 2] * this.rawData[0 * 4 + 3];
+
+                        return this.rawData[0 * 4 + 0] * (this.rawData[1 * 4 + 1] * a - this.rawData[2 * 4 + 1] * b + this.rawData[3 * 4 + 1] * c) - this.rawData[1 * 4 + 0] * (this.rawData[0 * 4 + 1] * a - this.rawData[2 * 4 + 1] * d + this.rawData[3 * 4 + 1] * e) + this.rawData[2 * 4 + 0] * (this.rawData[0 * 4 + 1] * b - this.rawData[1 * 4 + 1] * d + this.rawData[3 * 4 + 1] * f) - this.rawData[3 * 4 + 0] * (this.rawData[0 * 4 + 1] * c - this.rawData[1 * 4 + 1] * e + this.rawData[2 * 4 + 1] * f);
+                    }
                 },
                 enumerable: true,
                 configurable: true
@@ -1979,25 +2152,23 @@ var away;
                 return v;
             };
 
-            Matrix3DUtils.lookAt = /**
+            Matrix3DUtils.compare = /**
             * Returns a boolean value representing whether there is any significant difference between the two given 3d matrices.
             */
-            /* TODO: implement - dependent on Matrix3D.copyRawDataTo
-            public static compare(m1:away.geom.Matrix3D, m2:away.geom.Matrix3D):boolean
-            {
-            var r1:number[] = away.math.Matrix3DUtils.Matrix3DUtils.RAW_DATA_CONTAINER;
-            var r2:number[] = m2.rawData;
-            m1.copyRawDataTo(r1);
-            
-            for (var i:number = 0; i < 16; ++i) {
-            if (r1[i] != r2[i])
-            return false;
-            }
-            
-            return true;
-            }
-            */
-            function (matrix, pos, dir, up) {
+            function (m1, m2) {
+                var r1 = away.math.Matrix3DUtils.RAW_DATA_CONTAINER;
+                var r2 = m2.rawData;
+                m1.copyRawDataTo(r1);
+
+                for (var i = 0; i < 16; ++i) {
+                    if (r1[i] != r2[i])
+                        return false;
+                }
+
+                return true;
+            };
+
+            Matrix3DUtils.lookAt = function (matrix, pos, dir, up) {
                 var dirN;
                 var upN;
                 var lftN;
@@ -2183,7 +2354,9 @@ var away;
                 _super.call(this);
                 this._smallestNumber = 0.0000000000000000000001;
                 this._transformDirty = true;
-                //*/
+                this._positionDirty = true;
+                this._rotationDirty = true;
+                this._scaleDirty = true;
                 this._rotationX = 0;
                 this._rotationY = 0;
                 this._rotationZ = 0;
@@ -2217,7 +2390,7 @@ var away;
             }
             Object3D.prototype.invalidatePivot = function () {
                 this._pivotZero = (this._pivotPoint.x == 0) && (this._pivotPoint.y == 0) && (this._pivotPoint.z == 0);
-                this._iInvalidateTransform();
+                this.iInvalidateTransform();
             };
 
             Object3D.prototype.invalidatePosition = function () {
@@ -2226,7 +2399,7 @@ var away;
 
                 this._positionDirty = true;
 
-                this._iInvalidateTransform();
+                this.iInvalidateTransform();
 
                 if (this._listenToPositionChanged)
                     this.notifyPositionChanged();
@@ -2255,8 +2428,6 @@ var away;
                 }
             };
 
-            //*/
-            //* TODO implement
             Object3D.prototype.removeEventListener = function (type, listener, target) {
                 _super.prototype.removeEventListener.call(this, type, listener, target);
 
@@ -2278,7 +2449,6 @@ var away;
                 }
             };
 
-            //*/
             Object3D.prototype.invalidateRotation = function () {
                 if (this._rotationDirty) {
                     return;
@@ -2286,7 +2456,7 @@ var away;
 
                 this._rotationDirty = true;
 
-                this._iInvalidateTransform();
+                this.iInvalidateTransform();
 
                 if (this._listenToRotationChanged)
                     this.notifyRotationChanged();
@@ -2306,7 +2476,7 @@ var away;
 
                 this._scaleDirty = true;
 
-                this._iInvalidateTransform();
+                this.iInvalidateTransform();
 
                 if (this._listenToScaleChanged)
                     this.notifyScaleChanged();
@@ -2532,7 +2702,7 @@ var away;
                 */
                 function () {
                     if (this._transformDirty) {
-                        this._pUpdateTransform();
+                        this.pUpdateTransform();
                     }
 
                     return this._transform;
@@ -2714,67 +2884,55 @@ var away;
             *
             * @param    distance    The length of the movement
             */
-            /* TODO: implement
-            public moveForward(distance:number)
-            {
-            translateLocal(Vector3D.Z_AXIS, distance);
-            }
-            */
+            Object3D.prototype.moveForward = function (distance) {
+                this.translateLocal(away.geom.Vector3D.Z_AXIS, distance);
+            };
+
             /**
             * Moves the 3d object backwards along it's local z axis
             *
             * @param    distance    The length of the movement
             */
-            /* TODO: implement
-            public moveBackward(distance:number)
-            {
-            translateLocal(Vector3D.Z_AXIS, -distance);
-            }
-            */
+            Object3D.prototype.moveBackward = function (distance) {
+                this.translateLocal(away.geom.Vector3D.Z_AXIS, -distance);
+            };
+
             /**
             * Moves the 3d object backwards along it's local x axis
             *
             * @param    distance    The length of the movement
             */
-            /* TODO: implement
-            public moveLeft(distance:number)
-            {
-            translateLocal(Vector3D.X_AXIS, -distance);
-            }
-            */
+            Object3D.prototype.moveLeft = function (distance) {
+                this.translateLocal(away.geom.Vector3D.X_AXIS, -distance);
+            };
+
             /**
             * Moves the 3d object forwards along it's local x axis
             *
             * @param    distance    The length of the movement
             */
-            /* TODO: implement
-            public moveRight(distance:number)
-            {
-            translateLocal(Vector3D.X_AXIS, distance);
-            }
-            */
+            Object3D.prototype.moveRight = function (distance) {
+                this.translateLocal(away.geom.Vector3D.X_AXIS, distance);
+            };
+
             /**
             * Moves the 3d object forwards along it's local y axis
             *
             * @param    distance    The length of the movement
             */
-            /* TODO: implement
-            public moveUp(distance:number)
-            {
-            translateLocal(Vector3D.Y_AXIS, distance);
-            }
-            */
+            Object3D.prototype.moveUp = function (distance) {
+                this.translateLocal(away.geom.Vector3D.Y_AXIS, distance);
+            };
+
             /**
             * Moves the 3d object backwards along it's local y axis
             *
             * @param    distance    The length of the movement
             */
-            /* TODO: implement
-            public moveDown(distance:number)
-            {
-            translateLocal(Vector3D.Y_AXIS, -distance);
-            }
-            */
+            Object3D.prototype.moveDown = function (distance) {
+                this.translateLocal(away.geom.Vector3D.Y_AXIS, -distance);
+            };
+
             /**
             * Moves the 3d object directly to a point in space
             *
@@ -2856,35 +3014,27 @@ var away;
             *
             * @param    angle        The amount of rotation in degrees
             */
-            /* TODO: implement
-            public pitch(angle:number)
-            {
-            rotate(Vector3D.X_AXIS, angle);
-            }
-            */
+            Object3D.prototype.pitch = function (angle) {
+                this.rotate(away.geom.Vector3D.X_AXIS, angle);
+            };
+
             /**
             * Rotates the 3d object around it's local y-axis
             *
             * @param    angle        The amount of rotation in degrees
             */
-            /* TODO: implement
-            public yaw(angle:number)
-            {
-            rotate(Vector3D.Y_AXIS, angle);
-            }
-            */
+            Object3D.prototype.yaw = function (angle) {
+                this.rotate(away.geom.Vector3D.Y_AXIS, angle);
+            };
+
             /**
             * Rotates the 3d object around it's local z-axis
             *
             * @param    angle        The amount of rotation in degrees
             */
-            /* TODO: implement
-            public roll(angle:number)
-            {
-            rotate(Vector3D.Z_AXIS, angle);
-            }
-            */
-            //* TODO: implement
+            Object3D.prototype.roll = function (angle) {
+                this.rotate(away.geom.Vector3D.Z_AXIS, angle);
+            };
             Object3D.prototype.clone = function () {
                 var clone = new away.base.Object3D();
                 clone.pivotPoint = this.pivotPoint;
@@ -2895,7 +3045,6 @@ var away;
                 return clone;
             };
 
-            //*/
             /**
             * Rotates the 3d object directly to a euler angle
             *
@@ -2928,90 +3077,82 @@ var away;
             * @param    target        The vector defining the point to be looked at
             * @param    upAxis        An optional vector used to define the desired up orientation of the 3d object after rotation has occurred
             */
-            /* TODO: implement
-            public lookAt(target:away.geom.Vector3D, upAxis:away.geom.Vector3D = null)
-            {
-            var yAxis:away.geom.Vector3D, zAxis:away.geom.Vector3D, xAxis:away.geom.Vector3D;
-            var raw:number[];
-            
-            
-            if ( upAxis == null)
-            {
-            
-            upAxis = away.geom.Vector3D.Y_AXIS;
-            
-            }
-            
-            
-            zAxis = target.subtract(position);
-            zAxis.normalize();
-            
-            xAxis = upAxis.crossProduct(zAxis);
-            xAxis.normalize();
-            
-            if (xAxis.length < .05)
-            xAxis = upAxis.crossProduct(Vector3D.Z_AXIS);
-            
-            yAxis = zAxis.crossProduct(xAxis);
-            
-            raw = away3d.math.Matrix3DUtils.RAW_DATA_CONTAINER;
-            
-            raw[uint(0)] = _scaleX*xAxis.x;
-            raw[uint(1)] = _scaleX*xAxis.y;
-            raw[uint(2)] = _scaleX*xAxis.z;
-            raw[uint(3)] = 0;
-            
-            raw[uint(4)] = _scaleY*yAxis.x;
-            raw[uint(5)] = _scaleY*yAxis.y;
-            raw[uint(6)] = _scaleY*yAxis.z;
-            raw[uint(7)] = 0;
-            
-            raw[uint(8)] = _scaleZ*zAxis.x;
-            raw[uint(9)] = _scaleZ*zAxis.y;
-            raw[uint(10)] = _scaleZ*zAxis.z;
-            raw[uint(11)] = 0;
-            
-            raw[uint(12)] = _x;
-            raw[uint(13)] = _y;
-            raw[uint(14)] = _z;
-            raw[uint(15)] = 1;
-            
-            _transform.copyRawDataFrom(raw);
-            
-            transform = transform;
-            
-            if (zAxis.z < 0) {
-            rotationY = (180 - rotationY);
-            rotationX -= 180;
-            rotationZ -= 180;
-            }
-            }
-            //*/
+            Object3D.prototype.lookAt = function (target, upAxis) {
+                if (typeof upAxis === "undefined") { upAxis = null; }
+                var yAxis;
+                var zAxis;
+                var xAxis;
+                var raw;
+
+                if (upAxis == null) {
+                    upAxis = away.geom.Vector3D.Y_AXIS;
+                }
+
+                zAxis = target.subtract(this.position);
+                zAxis.normalize();
+
+                xAxis = upAxis.crossProduct(zAxis);
+                xAxis.normalize();
+
+                if (xAxis.length < .05)
+                    xAxis = upAxis.crossProduct(away.geom.Vector3D.Z_AXIS);
+
+                yAxis = zAxis.crossProduct(xAxis);
+
+                raw = away.math.Matrix3DUtils.RAW_DATA_CONTAINER;
+
+                raw[0] = this._scaleX * xAxis.x;
+                raw[1] = this._scaleX * xAxis.y;
+                raw[2] = this._scaleX * xAxis.z;
+                raw[3] = 0;
+
+                raw[4] = this._scaleY * yAxis.x;
+                raw[5] = this._scaleY * yAxis.y;
+                raw[6] = this._scaleY * yAxis.z;
+                raw[7] = 0;
+
+                raw[8] = this._scaleZ * zAxis.x;
+                raw[9] = this._scaleZ * zAxis.y;
+                raw[10] = this._scaleZ * zAxis.z;
+                raw[11] = 0;
+
+                raw[12] = this._x;
+                raw[13] = this._y;
+                raw[14] = this._z;
+                raw[15] = 1;
+
+                this._transform.copyRawDataFrom(raw);
+
+                this.transform = this.transform;
+
+                if (zAxis.z < 0) {
+                    this.rotationY = (180 - this.rotationY);
+                    this.rotationX -= 180;
+                    this.rotationZ -= 180;
+                }
+            };
+
             /**
             * Cleans up any resources used by the current object.
             */
-            //* TODO: implement
             Object3D.prototype.dispose = function () {
             };
 
-            //*/
             /**
             * @inheritDoc
             */
-            //* TODO: implement
             Object3D.prototype.disposeAsset = function () {
                 this.dispose();
             };
 
-            //*/
             /**
             * Invalidates the transformation matrix, causing it to be updated upon the next request
             */
-            Object3D.prototype._iInvalidateTransform = function () {
+            Object3D.prototype.iInvalidateTransform = function () {
                 this._transformDirty = true;
             };
 
-            Object3D.prototype._pUpdateTransform = function () {
+            Object3D.prototype.pUpdateTransform = function () {
                 this._pPos.x = this._x;
                 this._pPos.y = this._y;
                 this._pPos.z = this._z;
@@ -3131,9 +3272,10 @@ var away;
                 this._iSceneGraphRoot.partition = new away.partition.Partition3D(new away.partition.NodeBase());
             }
             Scene3D.prototype.traversePartitions = function (traverser) {
-                var i;
+                var i = 0;
                 var len = this._partitions.length;
 
+                //console.log( 'Scene3D.traversePartitions' , len );
                 traverser.scene = this;
 
                 while (i < len) {
@@ -3146,6 +3288,7 @@ var away;
                     return this._iSceneGraphRoot.partition;
                 },
                 set: function (value) {
+                    //console.log( 'scene3D.setPartition' , value );
                     this._iSceneGraphRoot.partition = value;
                     this.dispatchEvent(new away.events.Scene3DEvent(away.events.Scene3DEvent.PARTITION_CHANGED, this._iSceneGraphRoot));
                 },
@@ -3160,6 +3303,57 @@ var away;
 
             Scene3D.prototype.addChild = function (child) {
                 return this._iSceneGraphRoot.addChild(child);
+            };
+
+            Scene3D.prototype.removeChild = function (child) {
+                this._iSceneGraphRoot.removeChild(child);
+            };
+
+            Scene3D.prototype.removeChildAt = function (index) {
+                this._iSceneGraphRoot.removeChildAt(index);
+            };
+
+            Scene3D.prototype.getChildAt = function (index) {
+                return this._iSceneGraphRoot.getChildAt(index);
+            };
+
+            Object.defineProperty(Scene3D.prototype, "numChildren", {
+                get: function () {
+                    return this._iSceneGraphRoot.numChildren;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Scene3D.prototype.iRegisterEntity = function (entity) {
+                //console.log( 'Scene3D' , 'iRegisterEntity' , entity._pImplicitPartition );
+                var partition = entity.iGetImplicitPartition();
+
+                //console.log( 'scene3D.iRegisterEntity' , entity , entity.iImplicitPartition , partition );
+                this.iAddPartitionUnique(partition);
+                this.partition.iMarkForUpdate(entity);
+            };
+
+            Scene3D.prototype.iUnregisterEntity = function (entity) {
+                entity.iImplicitPartition.iRemoveEntity(entity);
+            };
+
+            Scene3D.prototype.iInvalidateEntityBounds = function (entity) {
+                entity.iImplicitPartition.iMarkForUpdate(entity);
+            };
+
+            Scene3D.prototype.iRegisterPartition = function (entity) {
+                this.iAddPartitionUnique(entity.iImplicitPartition);
+            };
+
+            Scene3D.prototype.iUnregisterPartition = function (entity) {
+                entity.iImplicitPartition.iRemoveEntity(entity);
+            };
+
+            Scene3D.prototype.iAddPartitionUnique = function (partition) {
+                if (this._partitions.indexOf(partition) == -1) {
+                    this._partitions.push(partition);
+                }
             };
             return Scene3D;
         })(away.events.EventDispatcher);
@@ -3984,6 +4178,37 @@ var away;
             * @param y
             * @param color
             */
+            BitmapData.prototype.getPixel = function (x, y) {
+                if (!this._locked) {
+                    this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
+                } else {
+                    if (this._imageData) {
+                        this._context.putImageData(this._imageData, 0, 0);
+
+                        this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
+                    }
+                }
+
+                var index = (x + y * this._imageCanvas.width) * 4;
+
+                var r = this._imageData.data[index + 0];
+                var g = this._imageData.data[index + 1];
+                var b = this._imageData.data[index + 2];
+                var a = this._imageData.data[index + 3];
+
+                if (!this._locked) {
+                    this._imageData = null;
+                }
+
+                return (a << 24) | (r << 16) | (g << 8) | b;
+            };
+
+            /**
+            *
+            * @param x
+            * @param y
+            * @param color
+            */
             BitmapData.prototype.setPixel = function (x, y, color) {
                 var argb = away.utils.ColorUtils.float32ColorToARGB(color);
 
@@ -4656,11 +4881,86 @@ var away;
                 this._gl.useProgram(null);
             };
 
-            //TODO Context3DBlendFactor
             Context3D.prototype.setBlendFactors = function (sourceFactor, destinationFactor) {
                 this._blendEnabled = true;
-                this._blendSourceFactor = sourceFactor;
-                this._blendDestinationFactor = destinationFactor;
+
+                switch (sourceFactor) {
+                    case away.display3D.Context3DBlendFactor.ONE:
+                        this._blendSourceFactor = this._gl.ONE;
+                        break;
+                    case away.display3D.Context3DBlendFactor.DESTINATION_ALPHA:
+                        this._blendSourceFactor = this._gl.DST_ALPHA;
+                        break;
+                    case away.display3D.Context3DBlendFactor.DESTINATION_COLOR:
+                        this._blendSourceFactor = this._gl.DST_COLOR;
+                        break;
+                    case away.display3D.Context3DBlendFactor.ONE:
+                        this._blendSourceFactor = this._gl.ONE;
+                        break;
+                    case away.display3D.Context3DBlendFactor.ONE_MINUS_DESTINATION_ALPHA:
+                        this._blendSourceFactor = this._gl.ONE_MINUS_DST_ALPHA;
+                        break;
+                    case away.display3D.Context3DBlendFactor.ONE_MINUS_DESTINATION_COLOR:
+                        this._blendSourceFactor = this._gl.ONE_MINUS_DST_COLOR;
+                        break;
+                    case away.display3D.Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA:
+                        this._blendSourceFactor = this._gl.ONE_MINUS_SRC_ALPHA;
+                        break;
+                    case away.display3D.Context3DBlendFactor.ONE_MINUS_SOURCE_COLOR:
+                        this._blendSourceFactor = this._gl.ONE_MINUS_SRC_COLOR;
+                        break;
+                    case away.display3D.Context3DBlendFactor.SOURCE_ALPHA:
+                        this._blendSourceFactor = this._gl.SRC_ALPHA;
+                        break;
+                    case away.display3D.Context3DBlendFactor.SOURCE_COLOR:
+                        this._blendSourceFactor = this._gl.SRC_COLOR;
+                        break;
+                    case away.display3D.Context3DBlendFactor.ZERO:
+                        this._blendSourceFactor = this._gl.ZERO;
+                        break;
+                    default:
+                        throw "Unknown blend source factor";
+                        break;
+                }
+
+                switch (destinationFactor) {
+                    case away.display3D.Context3DBlendFactor.ONE:
+                        this._blendDestinationFactor = this._gl.ONE;
+                        break;
+                    case away.display3D.Context3DBlendFactor.DESTINATION_ALPHA:
+                        this._blendDestinationFactor = this._gl.DST_ALPHA;
+                        break;
+                    case away.display3D.Context3DBlendFactor.DESTINATION_COLOR:
+                        this._blendDestinationFactor = this._gl.DST_COLOR;
+                        break;
+                    case away.display3D.Context3DBlendFactor.ONE:
+                        this._blendDestinationFactor = this._gl.ONE;
+                        break;
+                    case away.display3D.Context3DBlendFactor.ONE_MINUS_DESTINATION_ALPHA:
+                        this._blendDestinationFactor = this._gl.ONE_MINUS_DST_ALPHA;
+                        break;
+                    case away.display3D.Context3DBlendFactor.ONE_MINUS_DESTINATION_COLOR:
+                        this._blendDestinationFactor = this._gl.ONE_MINUS_DST_COLOR;
+                        break;
+                    case away.display3D.Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA:
+                        this._blendDestinationFactor = this._gl.ONE_MINUS_SRC_ALPHA;
+                        break;
+                    case away.display3D.Context3DBlendFactor.ONE_MINUS_SOURCE_COLOR:
+                        this._blendDestinationFactor = this._gl.ONE_MINUS_SRC_COLOR;
+                        break;
+                    case away.display3D.Context3DBlendFactor.SOURCE_ALPHA:
+                        this._blendDestinationFactor = this._gl.SRC_ALPHA;
+                        break;
+                    case away.display3D.Context3DBlendFactor.SOURCE_COLOR:
+                        this._blendDestinationFactor = this._gl.SRC_COLOR;
+                        break;
+                    case away.display3D.Context3DBlendFactor.ZERO:
+                        this._blendDestinationFactor = this._gl.ZERO;
+                        break;
+                    default:
+                        throw "Unknown blend destination factor";
+                        break;
+                }
 
                 this.updateBlendStatus();
             };
@@ -4694,28 +4994,28 @@ var away;
             Context3D.prototype.setDepthTest = function (depthMask, passCompareMode) {
                 switch (passCompareMode) {
                     case display3D.Context3DCompareMode.ALWAYS:
-                        this._gl.depthFunc(7);
+                        this._gl.depthFunc(this._gl.ALWAYS);
                         break;
                     case display3D.Context3DCompareMode.EQUAL:
-                        this._gl.depthFunc(2);
+                        this._gl.depthFunc(this._gl.EQUAL);
                         break;
                     case display3D.Context3DCompareMode.GREATER:
-                        this._gl.depthFunc(4);
+                        this._gl.depthFunc(this._gl.GREATER);
                         break;
                     case display3D.Context3DCompareMode.GREATER_EQUAL:
-                        this._gl.depthFunc(6);
+                        this._gl.depthFunc(this._gl.GEQUAL);
                         break;
                     case display3D.Context3DCompareMode.LESS:
-                        this._gl.depthFunc(1);
+                        this._gl.depthFunc(this._gl.LESS);
                         break;
                     case display3D.Context3DCompareMode.LESS_EQUAL:
-                        this._gl.depthFunc(3);
+                        this._gl.depthFunc(this._gl.LEQUAL);
                         break;
                     case display3D.Context3DCompareMode.NEVER:
-                        this._gl.depthFunc(0);
+                        this._gl.depthFunc(this._gl.NEVER);
                         break;
                     case display3D.Context3DCompareMode.NOT_EQUAL:
-                        this._gl.depthFunc(5);
+                        this._gl.depthFunc(this._gl.NOTEQUAL);
                         break;
                     default:
                         throw "Unknown Context3DCompareMode type.";
@@ -4780,6 +5080,12 @@ var away;
             };
 
             Context3D.prototype.setScissorRectangle = function (rectangle) {
+                if (!rectangle) {
+                    this._gl.disable(this._gl.SCISSOR_TEST);
+                    return;
+                }
+
+                this._gl.enable(this._gl.SCISSOR_TEST);
                 this._gl.scissor(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
             };
 
@@ -4789,6 +5095,12 @@ var away;
             };
 
             Context3D.prototype.setGLSLTextureAt = function (locationName, texture, textureIndex) {
+                if (!texture) {
+                    this._gl.activeTexture(this._gl.TEXTURE0 + (textureIndex));
+                    this._gl.bindTexture(this._gl.TEXTURE_2D, null);
+                    return;
+                }
+
                 var location = this._gl.getUniformLocation(this._currentProgram.glProgram, locationName);
                 switch (textureIndex) {
                     case 0:
@@ -4839,7 +5151,15 @@ var away;
             Context3D.prototype.setGLSLVertexBufferAt = function (locationName, buffer, bufferOffset, format) {
                 if (typeof bufferOffset === "undefined") { bufferOffset = 0; }
                 if (typeof format === "undefined") { format = null; }
+                if (buffer == null)
+                    return;
+
                 var location = this._gl.getAttribLocation(this._currentProgram.glProgram, locationName);
+
+                if (!buffer) {
+                    this._gl.disableVertexAttribArray(location);
+                    return;
+                }
 
                 this._gl.bindBuffer(this._gl.ARRAY_BUFFER, buffer.glBuffer);
 
@@ -5548,362 +5868,6 @@ var away;
         materials.MaterialBase = MaterialBase;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
-})(away || (away = {}));
-var away;
-(function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="../_definitions.ts"/>
-    (function (traverse) {
-        var PartitionTraverser = (function () {
-            function PartitionTraverser() {
-            }
-            PartitionTraverser.prototype.enterNode = function (node) {
-                node = node;
-                return true;
-            };
-
-            PartitionTraverser.prototype.applySkyBox = function (renderable) {
-                throw new away.errors.AbstractMethodError();
-            };
-
-            PartitionTraverser.prototype.applyRenderable = function (renderable) {
-                throw new away.errors.AbstractMethodError();
-            };
-
-            PartitionTraverser.prototype.applyUnknownLight = function (light) {
-                throw new away.errors.AbstractMethodError();
-            };
-
-            PartitionTraverser.prototype.applyDirectionalLight = function (light) {
-                throw new away.errors.AbstractMethodError();
-            };
-
-            PartitionTraverser.prototype.applyPointLight = function (light) {
-                throw new away.errors.AbstractMethodError();
-            };
-
-            PartitionTraverser.prototype.applyLightProbe = function (light) {
-                throw new away.errors.AbstractMethodError();
-            };
-
-            PartitionTraverser.prototype.applyEntity = function (entity) {
-                throw new away.errors.AbstractMethodError();
-            };
-
-            Object.defineProperty(PartitionTraverser.prototype, "entryPoint", {
-                get: function () {
-                    return this._iEntryPoint;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            PartitionTraverser._iCollectionMark = 0;
-            return PartitionTraverser;
-        })();
-        traverse.PartitionTraverser = PartitionTraverser;
-    })(away.traverse || (away.traverse = {}));
-    var traverse = away.traverse;
-})(away || (away = {}));
-var away;
-(function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="../_definitions.ts"/>
-    (function (traverse) {
-        var EntityCollector = (function (_super) {
-            __extends(EntityCollector, _super);
-            function EntityCollector() {
-                _super.call(this);
-                this.init();
-            }
-            EntityCollector.prototype.init = function () {
-                this._pLights = [];
-                this._directionalLights = [];
-                this._pointLights = [];
-                this._lightProbes = [];
-                this._pRenderableListItemPool = new away.data.RenderableListItemPool();
-                this._pEntityListItemPool = new away.data.EntityListItemPool();
-            };
-
-            Object.defineProperty(EntityCollector.prototype, "camera", {
-                get: function () {
-                    return this._pCamera;
-                },
-                set: function (value) {
-                    this._pCamera = value;
-                    this._iEntryPoint = this._pCamera.scenePosition;
-                    this._pCameraForward = this._pCamera.forwardVector;
-                    this._cullPlanes = this._pCamera.frustumPlanes;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(EntityCollector.prototype, "cullPlanes", {
-                get: function () {
-                    return this._customCullPlanes;
-                },
-                set: function (value) {
-                    this._customCullPlanes = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(EntityCollector.prototype, "numMouseEnableds", {
-                get: function () {
-                    return this._pNumMouseEnableds;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(EntityCollector.prototype, "skyBox", {
-                get: function () {
-                    return this._pSkyBox;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(EntityCollector.prototype, "opaqueRenderableHead", {
-                get: function () {
-                    return this._pOpaqueRenderableHead;
-                },
-                set: function (value) {
-                    this._pOpaqueRenderableHead = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(EntityCollector.prototype, "blendedRenderableHead", {
-                get: function () {
-                    return this._pBlendedRenderableHead;
-                },
-                set: function (value) {
-                    this._pBlendedRenderableHead = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(EntityCollector.prototype, "entityHead", {
-                get: function () {
-                    return this._entityHead;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(EntityCollector.prototype, "lights", {
-                get: function () {
-                    return this._pLights;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(EntityCollector.prototype, "directionalLights", {
-                get: function () {
-                    return this._directionalLights;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(EntityCollector.prototype, "pointLights", {
-                get: function () {
-                    return this._pointLights;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(EntityCollector.prototype, "lightProbes", {
-                get: function () {
-                    return this._lightProbes;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            EntityCollector.prototype.clear = function () {
-                this._cullPlanes = this._customCullPlanes ? this._customCullPlanes : (this._pCamera ? this._pCamera.frustumPlanes : null);
-                this._numCullPlanes = this._cullPlanes ? this._cullPlanes.length : 0;
-                this._pNumTriangles = this._pNumMouseEnableds = 0;
-                this._pBlendedRenderableHead = null;
-                this._pOpaqueRenderableHead = null;
-                this._entityHead = null;
-                this._pRenderableListItemPool.freeAll();
-                this._pEntityListItemPool.freeAll();
-                this._pSkyBox = null;
-                if (this._pNumLights > 0) {
-                    this._pLights.length = this._pNumLights = 0;
-                }
-                if (this._numDirectionalLights > 0) {
-                    this._directionalLights.length = this._numDirectionalLights = 0;
-                }
-                if (this._numPointLights > 0) {
-                    this._pointLights.length = this._numPointLights = 0;
-                }
-                if (this._numLightProbes > 0) {
-                    this._lightProbes.length = this._numLightProbes = 0;
-                }
-            };
-
-            //@override
-            EntityCollector.prototype.enterNode = function (node) {
-                var enter = away.traverse.PartitionTraverser._iCollectionMark != away.traverse.PartitionTraverser._iCollectionMark && node.isInFrustum(this._cullPlanes, this._numCullPlanes);
-                away.traverse.PartitionTraverser._iCollectionMark = away.traverse.PartitionTraverser._iCollectionMark;
-                return enter;
-            };
-
-            //@override
-            EntityCollector.prototype.applySkyBox = function (renderable) {
-                this._pSkyBox = renderable;
-            };
-
-            //@override
-            EntityCollector.prototype.applyRenderable = function (renderable) {
-                var material;
-                var entity = renderable.sourceEntity;
-                if (renderable.mouseEnabled) {
-                    ++this._pNumMouseEnableds;
-                }
-                this._pNumTriangles += renderable.numTriangles;
-
-                material = renderable.material;
-                if (material) {
-                    var item = this._pRenderableListItemPool.getItem();
-                    item.renderable = renderable;
-                    item.materialId = material._iUniqueId;
-                    item.renderOrderId = material._iRenderOrderId;
-                    item.cascaded = false;
-                    var dx = this._iEntryPoint.x - entity.x;
-                    var dy = this._iEntryPoint.y - entity.y;
-                    var dz = this._iEntryPoint.z - entity.z;
-
-                    // project onto camera's z-axis
-                    item.zIndex = dx * this._pCameraForward.x + dy * this._pCameraForward.y + dz * this._pCameraForward.z + entity.zOffset;
-                    item.renderSceneTransform = renderable.getRenderSceneTransform(this._pCamera);
-                    if (material.requiresBlending) {
-                        item.next = this._pBlendedRenderableHead;
-                        this._pBlendedRenderableHead = item;
-                    } else {
-                        item.next = this._pOpaqueRenderableHead;
-                        this._pOpaqueRenderableHead = item;
-                    }
-                }
-            };
-
-            //@override
-            EntityCollector.prototype.applyEntity = function (entity) {
-                ++this._pNumEntities;
-
-                var item = this._pEntityListItemPool.getItem();
-                item.entity = entity;
-
-                item.next = this._entityHead;
-                this._entityHead = item;
-            };
-
-            //@override
-            EntityCollector.prototype.applyUnknownLight = function (light) {
-                this._pLights[this._pNumLights++] = light;
-            };
-
-            //@override
-            EntityCollector.prototype.applyDirectionalLight = function (light) {
-                this._pLights[this._pNumLights++] = light;
-                this._directionalLights[this._numDirectionalLights++] = light;
-            };
-
-            //@override
-            EntityCollector.prototype.applyPointLight = function (light) {
-                this._pLights[this._pNumLights++] = light;
-                this._pointLights[this._numPointLights++] = light;
-            };
-
-            //@override
-            EntityCollector.prototype.applyLightProbe = function (light) {
-                this._pLights[this._pNumLights++] = light;
-                this._lightProbes[this._numLightProbes++] = light;
-            };
-            return EntityCollector;
-        })(away.traverse.PartitionTraverser);
-        traverse.EntityCollector = EntityCollector;
-    })(away.traverse || (away.traverse = {}));
-    var traverse = away.traverse;
-})(away || (away = {}));
-var away;
-(function (away) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="../_definitions.ts"/>
-    (function (traverse) {
-        var ShadowCasterCollector = (function (_super) {
-            __extends(ShadowCasterCollector, _super);
-            function ShadowCasterCollector() {
-                _super.call(this);
-            }
-            //@override
-            ShadowCasterCollector.prototype.applyRenderable = function (renderable) {
-                // the test for material is temporary, you SHOULD be hammered with errors if you try to render anything without a material
-                var material = renderable.material;
-                var entity = renderable.sourceEntity;
-                if (renderable.castsShadows && material) {
-                    var item = this._pRenderableListItemPool.getItem();
-                    item.renderable = renderable;
-                    item.next = this._pOpaqueRenderableHead;
-                    item.cascaded = false;
-                    var dx = this._iEntryPoint.x - entity.x;
-                    var dy = this._iEntryPoint.y - entity.y;
-                    var dz = this._iEntryPoint.z - entity.z;
-                    item.zIndex = dx * this._pCameraForward.x + dy * this._pCameraForward.y + dz * this._pCameraForward.z;
-                    item.renderSceneTransform = renderable.getRenderSceneTransform(this._pCamera);
-                    item.renderOrderId = material._iDepthPassId;
-                    this._pOpaqueRenderableHead = item;
-                }
-            };
-
-            //@override
-            ShadowCasterCollector.prototype.applyUnknownLight = function (light) {
-            };
-
-            //@override
-            /*
-            public applyDirectionalLight( light:away.lights.DirectionalLight )
-            {
-            }*/
-            //@override
-            ShadowCasterCollector.prototype.applyPointLight = function (light) {
-            };
-
-            //@override
-            /*
-            public applyLightProbe( light:away.lights.LightProbe )
-            {
-            }*/
-            //@override
-            ShadowCasterCollector.prototype.applySkyBox = function (renderable) {
-            };
-            return ShadowCasterCollector;
-        })(away.traverse.EntityCollector);
-        traverse.ShadowCasterCollector = ShadowCasterCollector;
-    })(away.traverse || (away.traverse = {}));
-    var traverse = away.traverse;
 })(away || (away = {}));
 var away;
 (function (away) {
@@ -7326,11 +7290,9 @@ var away;
             };
 
             //@override
-            /*
-            public fromGeometry( geometry:away.base.Geometry )
-            {
-            }
-            */
+            NullBounds.prototype.fromGeometry = function (geometry) {
+            };
+
             //@override
             NullBounds.prototype.fromSphere = function (center, radius) {
             };
@@ -7362,6 +7324,7 @@ var away;
     * ...
     * @author Gary Paluk - http://www.plugin.io
     */
+    ///<reference path="../_definitions.ts" />
     (function (bounds) {
         var BoundingSphere = (function (_super) {
             __extends(BoundingSphere, _super);
@@ -7494,12 +7457,10 @@ var away;
             };
 
             // TODO pCreateBoundingRenderable():WireframePrimitiveBase
-            /**
-            public function pCreateBoundingRenderable():WireframePrimitiveBase
-            {
-            return new WireframeSphere(1, 16, 12, 0xffffff, 0.5);
-            }
-            */
+            BoundingSphere.prototype.pCreateBoundingRenderable = function () {
+                return new away.primitives.WireframeSphere(1, 16, 12, 0xffffff, 0.5);
+            };
+
             //@override
             BoundingSphere.prototype.classifyToPlane = function (plane) {
                 var a = plane.a;
@@ -7575,6 +7536,347 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
+    ///<reference path="../_definitions.ts" />
+    (function (bounds) {
+        //import away3d.arcane;
+        //import away3d.core.math.*;
+        //import away3d.primitives.*;
+        //import flash.geom.*;
+        //use namespace arcane;
+        /**
+        * AxisAlignedBoundingBox represents a bounding box volume that has its planes aligned to the local coordinate axes of the bounded object.
+        * This is useful for most meshes.
+        */
+        var AxisAlignedBoundingBox = (function (_super) {
+            __extends(AxisAlignedBoundingBox, _super);
+            /**
+            * Creates a new <code>AxisAlignedBoundingBox</code> object.
+            */
+            function AxisAlignedBoundingBox() {
+                _super.call(this);
+                this._centerX = 0;
+                this._centerY = 0;
+                this._centerZ = 0;
+                this._halfExtentsX = 0;
+                this._halfExtentsY = 0;
+                this._halfExtentsZ = 0;
+            }
+            /**
+            * @inheritDoc
+            */
+            AxisAlignedBoundingBox.prototype.nullify = function () {
+                _super.prototype.nullify.call(this);
+
+                this._centerX = this._centerY = this._centerZ = 0;
+                this._halfExtentsX = this._halfExtentsY = this._halfExtentsZ = 0;
+            };
+
+            /**
+            * @inheritDoc
+            */
+            AxisAlignedBoundingBox.prototype.isInFrustum = function (planes, numPlanes) {
+                for (var i = 0; i < numPlanes; ++i) {
+                    var plane = planes[i];
+                    var a = plane.a;
+                    var b = plane.b;
+                    var c = plane.c;
+                    var flippedExtentX = a < 0 ? -this._halfExtentsX : this._halfExtentsX;
+                    var flippedExtentY = b < 0 ? -this._halfExtentsY : this._halfExtentsY;
+                    var flippedExtentZ = c < 0 ? -this._halfExtentsZ : this._halfExtentsZ;
+                    var projDist = a * (this._centerX + flippedExtentX) + b * (this._centerY + flippedExtentY) + c * (this._centerZ + flippedExtentZ) - plane.d;
+
+                    if (projDist < 0)
+                        return false;
+                }
+
+                return true;
+            };
+
+            AxisAlignedBoundingBox.prototype.rayIntersection = function (position, direction, targetNormal) {
+                if (this.containsPoint(position))
+                    return 0;
+
+                var px = position.x - this._centerX;
+                var py = position.y - this._centerY;
+                var pz = position.z - this._centerZ;
+
+                var vx = direction.x;
+                var vy = direction.y;
+                var vz = direction.z;
+
+                var ix;
+                var iy;
+                var iz;
+                var rayEntryDistance;
+
+                // ray-plane tests
+                var intersects;
+                if (vx < 0) {
+                    rayEntryDistance = (this._halfExtentsX - px) / vx;
+                    if (rayEntryDistance > 0) {
+                        iy = py + rayEntryDistance * vy;
+                        iz = pz + rayEntryDistance * vz;
+                        if (iy > -this._halfExtentsY && iy < this._halfExtentsY && iz > -this._halfExtentsZ && iz < this._halfExtentsZ) {
+                            targetNormal.x = 1;
+                            targetNormal.y = 0;
+                            targetNormal.z = 0;
+
+                            intersects = true;
+                        }
+                    }
+                }
+                if (!intersects && vx > 0) {
+                    rayEntryDistance = (-this._halfExtentsX - px) / vx;
+                    if (rayEntryDistance > 0) {
+                        iy = py + rayEntryDistance * vy;
+                        iz = pz + rayEntryDistance * vz;
+                        if (iy > -this._halfExtentsY && iy < this._halfExtentsY && iz > -this._halfExtentsZ && iz < this._halfExtentsZ) {
+                            targetNormal.x = -1;
+                            targetNormal.y = 0;
+                            targetNormal.z = 0;
+                            intersects = true;
+                        }
+                    }
+                }
+                if (!intersects && vy < 0) {
+                    rayEntryDistance = (this._halfExtentsY - py) / vy;
+                    if (rayEntryDistance > 0) {
+                        ix = px + rayEntryDistance * vx;
+                        iz = pz + rayEntryDistance * vz;
+                        if (ix > -this._halfExtentsX && ix < this._halfExtentsX && iz > -this._halfExtentsZ && iz < this._halfExtentsZ) {
+                            targetNormal.x = 0;
+                            targetNormal.y = 1;
+                            targetNormal.z = 0;
+                            intersects = true;
+                        }
+                    }
+                }
+                if (!intersects && vy > 0) {
+                    rayEntryDistance = (-this._halfExtentsY - py) / vy;
+                    if (rayEntryDistance > 0) {
+                        ix = px + rayEntryDistance * vx;
+                        iz = pz + rayEntryDistance * vz;
+                        if (ix > -this._halfExtentsX && ix < this._halfExtentsX && iz > -this._halfExtentsZ && iz < this._halfExtentsZ) {
+                            targetNormal.x = 0;
+                            targetNormal.y = -1;
+                            targetNormal.z = 0;
+                            intersects = true;
+                        }
+                    }
+                }
+                if (!intersects && vz < 0) {
+                    rayEntryDistance = (this._halfExtentsZ - pz) / vz;
+                    if (rayEntryDistance > 0) {
+                        ix = px + rayEntryDistance * vx;
+                        iy = py + rayEntryDistance * vy;
+                        if (iy > -this._halfExtentsY && iy < this._halfExtentsY && ix > -this._halfExtentsX && ix < this._halfExtentsX) {
+                            targetNormal.x = 0;
+                            targetNormal.y = 0;
+                            targetNormal.z = 1;
+                            intersects = true;
+                        }
+                    }
+                }
+                if (!intersects && vz > 0) {
+                    rayEntryDistance = (-this._halfExtentsZ - pz) / vz;
+                    if (rayEntryDistance > 0) {
+                        ix = px + rayEntryDistance * vx;
+                        iy = py + rayEntryDistance * vy;
+                        if (iy > -this._halfExtentsY && iy < this._halfExtentsY && ix > -this._halfExtentsX && ix < this._halfExtentsX) {
+                            targetNormal.x = 0;
+                            targetNormal.y = 0;
+                            targetNormal.z = -1;
+                            intersects = true;
+                        }
+                    }
+                }
+
+                return intersects ? rayEntryDistance : -1;
+            };
+
+            /**
+            * @inheritDoc
+            */
+            AxisAlignedBoundingBox.prototype.containsPoint = function (position) {
+                var px = position.x - this._centerX, py = position.y - this._centerY, pz = position.z - this._centerZ;
+                return px <= this._halfExtentsX && px >= -this._halfExtentsX && py <= this._halfExtentsY && py >= -this._halfExtentsY && pz <= this._halfExtentsZ && pz >= -this._halfExtentsZ;
+            };
+
+            /**
+            * @inheritDoc
+            */
+            AxisAlignedBoundingBox.prototype.fromExtremes = function (minX, minY, minZ, maxX, maxY, maxZ) {
+                this._centerX = (maxX + minX) * .5;
+                this._centerY = (maxY + minY) * .5;
+                this._centerZ = (maxZ + minZ) * .5;
+                this._halfExtentsX = (maxX - minX) * .5;
+                this._halfExtentsY = (maxY - minY) * .5;
+                this._halfExtentsZ = (maxZ - minZ) * .5;
+
+                _super.prototype.fromExtremes.call(this, minX, minY, minZ, maxX, maxY, maxZ);
+            };
+
+            /**
+            * @inheritDoc
+            */
+            AxisAlignedBoundingBox.prototype.clone = function () {
+                var clone = new AxisAlignedBoundingBox();
+                clone.fromExtremes(this._pMin.x, this._pMin.y, this._pMin.z, this._pMax.x, this._pMax.y, this._pMax.z);
+                return clone;
+            };
+
+            Object.defineProperty(AxisAlignedBoundingBox.prototype, "halfExtentsX", {
+                get: function () {
+                    return this._halfExtentsX;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(AxisAlignedBoundingBox.prototype, "halfExtentsY", {
+                get: function () {
+                    return this._halfExtentsY;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(AxisAlignedBoundingBox.prototype, "halfExtentsZ", {
+                get: function () {
+                    return this._halfExtentsZ;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * Finds the closest point on the bounding volume to another given point. This can be used for maximum error calculations for content within a given bound.
+            * @param point The point for which to find the closest point on the bounding volume
+            * @param target An optional Vector3D to store the result to prevent creating a new object.
+            * @return
+            */
+            AxisAlignedBoundingBox.prototype.closestPointToPoint = function (point, target) {
+                if (typeof target === "undefined") { target = null; }
+                var p;
+
+                if (target == null) {
+                    target = new away.geom.Vector3D();
+                }
+
+                p = point.x;
+                if (p < this._pMin.x)
+                    p = this._pMin.x;
+                if (p > this._pMax.x)
+                    p = this._pMax.x;
+                target.x = p;
+
+                p = point.y;
+                if (p < this._pMin.y)
+                    p = this._pMin.y;
+                if (p > this._pMax.y)
+                    p = this._pMax.y;
+                target.y = p;
+
+                p = point.z;
+                if (p < this._pMin.z)
+                    p = this._pMin.z;
+                if (p > this._pMax.z)
+                    p = this._pMax.z;
+                target.z = p;
+
+                return target;
+            };
+
+            AxisAlignedBoundingBox.prototype.pUpdateBoundingRenderable = function () {
+                this._pBoundingRenderable.scaleX = Math.max(this._halfExtentsX * 2, 0.001);
+                this._pBoundingRenderable.scaleY = Math.max(this._halfExtentsY * 2, 0.001);
+                this._pBoundingRenderable.scaleZ = Math.max(this._halfExtentsZ * 2, 0.001);
+                this._pBoundingRenderable.x = this._centerX;
+                this._pBoundingRenderable.y = this._centerY;
+                this._pBoundingRenderable.z = this._centerZ;
+            };
+
+            AxisAlignedBoundingBox.prototype.pCreateBoundingRenderable = function () {
+                return new away.primitives.WireframeCube(1, 1, 1, 0xffffff, 0.5);
+            };
+
+            AxisAlignedBoundingBox.prototype.classifyToPlane = function (plane) {
+                var a = plane.a;
+                var b = plane.b;
+                var c = plane.c;
+                var centerDistance = a * this._centerX + b * this._centerY + c * this._centerZ - plane.d;
+
+                if (a < 0)
+                    a = -a;
+
+                if (b < 0)
+                    b = -b;
+
+                if (c < 0)
+                    c = -c;
+
+                var boundOffset = a * this._halfExtentsX + b * this._halfExtentsY + c * this._halfExtentsZ;
+
+                return centerDistance > boundOffset ? away.math.PlaneClassification.FRONT : centerDistance < -boundOffset ? away.math.PlaneClassification.BACK : away.math.PlaneClassification.INTERSECT;
+            };
+
+            AxisAlignedBoundingBox.prototype.transformFrom = function (bounds, matrix) {
+                var aabb = bounds;
+                var cx = aabb._centerX;
+                var cy = aabb._centerY;
+                var cz = aabb._centerZ;
+                var raw = away.math.Matrix3DUtils.RAW_DATA_CONTAINER;
+
+                matrix.copyRawDataTo(raw);
+
+                var m11 = raw[0], m12 = raw[4], m13 = raw[8], m14 = raw[12];
+                var m21 = raw[1], m22 = raw[5], m23 = raw[9], m24 = raw[13];
+                var m31 = raw[2], m32 = raw[6], m33 = raw[10], m34 = raw[14];
+
+                this._centerX = cx * m11 + cy * m12 + cz * m13 + m14;
+                this._centerY = cx * m21 + cy * m22 + cz * m23 + m24;
+                this._centerZ = cx * m31 + cy * m32 + cz * m33 + m34;
+
+                if (m11 < 0)
+                    m11 = -m11;
+                if (m12 < 0)
+                    m12 = -m12;
+                if (m13 < 0)
+                    m13 = -m13;
+                if (m21 < 0)
+                    m21 = -m21;
+                if (m22 < 0)
+                    m22 = -m22;
+                if (m23 < 0)
+                    m23 = -m23;
+                if (m31 < 0)
+                    m31 = -m31;
+                if (m32 < 0)
+                    m32 = -m32;
+                if (m33 < 0)
+                    m33 = -m33;
+                var hx = aabb._halfExtentsX;
+                var hy = aabb._halfExtentsY;
+                var hz = aabb._halfExtentsZ;
+                this._halfExtentsX = hx * m11 + hy * m12 + hz * m13;
+                this._halfExtentsY = hx * m21 + hy * m22 + hz * m23;
+                this._halfExtentsZ = hx * m31 + hy * m32 + hz * m33;
+
+                this._pMin.x = this._centerX - this._halfExtentsX;
+                this._pMin.y = this._centerY - this._halfExtentsY;
+                this._pMin.z = this._centerZ - this._halfExtentsZ;
+                this._pMax.x = this._centerX + this._halfExtentsX;
+                this._pMax.y = this._centerY + this._halfExtentsY;
+                this._pMax.z = this._centerZ + this._halfExtentsZ;
+            };
+            return AxisAlignedBoundingBox;
+        })(away.bounds.BoundingVolumeBase);
+        bounds.AxisAlignedBoundingBox = AxisAlignedBoundingBox;
+    })(away.bounds || (away.bounds = {}));
+    var bounds = away.bounds;
+})(away || (away = {}));
+var away;
+(function (away) {
     /**
     * ...
     * @author Gary Paluk - http://www.plugin.io
@@ -7618,27 +7920,34 @@ var away;
                     return this._pImplicitPartition;
                 },
                 set: function (value) {
-                    if (value == this._pImplicitPartition) {
-                        return;
-                    }
-
-                    var i;
-                    var len = this._children.length;
-                    var child;
-
-                    this._pImplicitPartition = value;
-
-                    while (i < len) {
-                        child = this._children[i++];
-                        if (!child._pExplicitPartition) {
-                            child._pImplicitPartition = value;
-                        }
-                    }
+                    this.iSetImplicitPartition(value);
                 },
                 enumerable: true,
                 configurable: true
             });
 
+            ObjectContainer3D.prototype.iGetImplicitPartition = function () {
+                return this._pImplicitPartition;
+            };
+
+
+            ObjectContainer3D.prototype.iSetImplicitPartition = function (value) {
+                if (value == this._pImplicitPartition)
+                    return;
+
+                var i = 0;
+                var len = this._children.length;
+                var child;
+
+                this._pImplicitPartition = value;
+
+                while (i < len) {
+                    child = this._children[i++];
+
+                    if (!child._pExplicitPartition)
+                        child._pImplicitPartition = value;
+                }
+            };
 
             Object.defineProperty(ObjectContainer3D.prototype, "_iIsVisible", {
                 get: function () {
@@ -7651,7 +7960,6 @@ var away;
             ObjectContainer3D.prototype.iSetParent = function (value) {
                 this._pParent = value;
 
-                throw new away.errors.PartialImplementationError();
                 this.pUpdateMouseChildren();
 
                 if (value == null) {
@@ -7704,8 +8012,6 @@ var away;
             };
 
             ObjectContainer3D.prototype.pUpdateMouseChildren = function () {
-                throw new away.errors.PartialImplementationError();
-
                 if (this._pParent && !this._pParent._iIsRoot) {
                     this._iAncestorsAllowMouseEnabled = this._pParent._iAncestorsAllowMouseEnabled && this._pParent.mouseChildren;
                 } else {
@@ -7731,7 +8037,15 @@ var away;
             });
 
 
-            // TODO override arcane function invalidateTransform():void
+            /**
+            * @inheritDoc
+            */
+            ObjectContainer3D.prototype.iInvalidateTransform = function () {
+                _super.prototype.iInvalidateTransform.call(this);
+
+                this.notifySceneTransformChange();
+            };
+
             ObjectContainer3D.prototype.pInvalidateSceneTransform = function () {
                 this._pSceneTransformDirty = !this._pIgnoreTransform;
                 this._inverseSceneTransformDirty = !this._pIgnoreTransform;
@@ -7947,13 +8261,48 @@ var away;
                 get: function () {
                     return this._pScene;
                 },
+                set: function (value) {
+                    this.setScene(value);
+                },
                 enumerable: true,
                 configurable: true
             });
 
+
+            ObjectContainer3D.prototype.setScene = function (value) {
+                //console.log( 'ObjectContainer3D' , 'setScene' , value );
+                var i = 0;
+                var len = this._children.length;
+
+                while (i < len) {
+                    this._children[i++].scene = value;
+                }
+
+                if (this._pScene == value)
+                    return;
+
+                if (value == null)
+                    this._oldScene = this._pScene;
+
+                if (this._pExplicitPartition && this._oldScene && this._oldScene != this._pScene)
+                    this.partition = null;
+
+                if (value) {
+                    this._oldScene = null;
+                }
+
+                // end of stupid partition test code
+                this._pScene = value;
+
+                if (this._pScene) {
+                    this._pScene.dispatchEvent(new away.events.Scene3DEvent(away.events.Scene3DEvent.ADDED_TO_SCENE, this));
+                } else if (this._oldScene) {
+                    this._oldScene.dispatchEvent(new away.events.Scene3DEvent(away.events.Scene3DEvent.REMOVED_FROM_SCENE, this));
+                }
+            };
+
             Object.defineProperty(ObjectContainer3D.prototype, "inverseSceneTransform", {
-                get: //TODO public function set scene(value:Scene3D):void
-                function () {
+                get: function () {
                     if (this._inverseSceneTransformDirty) {
                         this._inverseSceneTransform.copyFrom(this.sceneTransform);
                         this._inverseSceneTransform.invert();
@@ -7987,7 +8336,8 @@ var away;
                 }
 
                 if (!child._pExplicitPartition) {
-                    child.iImplicitPartition = this._pImplicitPartition;
+                    //console.log( 'ObjectContainer3D' , 'addChild' , 'set iImplicitPartition' ,  this._pImplicitPartition);
+                    child.iSetImplicitPartition(this._pImplicitPartition);
                 }
 
                 child.iSetParent(this);
@@ -8050,17 +8400,13 @@ var away;
             //@override
             ObjectContainer3D.prototype.lookAt = function (target, upAxis) {
                 if (typeof upAxis === "undefined") { upAxis = null; }
-                throw new away.errors.PartialImplementationError();
-
-                //TODO super.lookAt( target, upAxis );
+                _super.prototype.lookAt.call(this, target, upAxis);
                 this.notifySceneTransformChange();
             };
 
             //@override
             ObjectContainer3D.prototype.translateLocal = function (axis, distance) {
-                throw new away.errors.PartialImplementationError();
-
-                //TODO super.translateLocal( axis, distance );
+                _super.prototype.translateLocal.call(this, axis, distance);
                 this.notifySceneTransformChange();
             };
 
@@ -8079,30 +8425,26 @@ var away;
             };
 
             //override
-            /*
-            public clone():away.base.Object3D
-            {
-            var clone:away.containers.ObjectContainer3D = new away.containers.ObjectContainer3D();
-            clone.pivotPoint = pivotPoint;
-            clone.transform = transform;
-            clone.partition = partition;
-            clone.name = name;
-            
-            var len:number = this._children.length;
-            
-            for(var i:number = 0; i < len; ++i)
-            {
-            clone.addChild(ObjectContainer3D(_children[i].clone()));
-            }
-            // todo: implement for all subtypes
-            return clone;
-            }
-            */
+            ObjectContainer3D.prototype.clone = function () {
+                var clone = new away.containers.ObjectContainer3D();
+                clone.pivotPoint = this.pivotPoint;
+                clone.transform = this.transform;
+                clone.partition = this.partition;
+                clone.name = name;
+
+                var len = this._children.length;
+
+                for (var i = 0; i < len; ++i) {
+                    clone.addChild(this._children[i].clone());
+                }
+
+                // todo: implement for all subtypes
+                return clone;
+            };
+
             //@override
             ObjectContainer3D.prototype.rotate = function (axis, angle) {
-                throw new away.errors.PartialImplementationError();
-
-                //TODO super.rotate(axis, angle);
+                _super.prototype.rotate.call(this, axis, angle);
                 this.notifySceneTransformChange();
             };
 
@@ -8137,11 +8479,14 @@ var away;
                 this._pBoundsInvalid = true;
                 this._worldBoundsInvalid = true;
                 this._pBounds = this.pGetDefaultBoundingVolume();
+
+                //console.log( "Entity() - Bounds:" , this._pBounds );
                 this._worldBounds = this.pGetDefaultBoundingVolume();
             }
             //@override
             Entity.prototype.setIgnoreTransform = function (value) {
                 if (this._pScene) {
+                    this._pScene.iInvalidateEntityBounds(this);
                 }
                 _super.prototype.setIgnoreTransform.call(this, value);
             };
@@ -8284,6 +8629,9 @@ var away;
             };
 
             Object.defineProperty(Entity.prototype, "bounds", {
+                get: function () {
+                    return this.getBounds();
+                },
                 set: function (value) {
                     this.removeBounds();
                     this._pBounds = value;
@@ -8297,6 +8645,7 @@ var away;
                 configurable: true
             });
 
+
             Object.defineProperty(Entity.prototype, "worldBounds", {
                 get: function () {
                     if (this._worldBoundsInvalid) {
@@ -8309,7 +8658,7 @@ var away;
             });
 
             Entity.prototype.updateWorldBounds = function () {
-                this._worldBounds.transformFrom(this.bounds, this.sceneTransform);
+                this._worldBounds.transformFrom(this.getBounds(), this.sceneTransform);
                 this._worldBoundsInvalid = false;
             };
 
@@ -8323,37 +8672,36 @@ var away;
                     if (this._pImplicitPartition) {
                         this.notifyPartitionUnassigned();
                     }
-                    throw new away.errors.PartialImplementationError();
 
-                    //TODO super.implicitPartition = value;
+                    _super.prototype.iSetImplicitPartition.call(this, value);
                     this.notifyPartitionAssigned();
                 },
                 enumerable: true,
                 configurable: true
             });
 
+            Object.defineProperty(Entity.prototype, "scene", {
+                set: //@override
+                function (value) {
+                    if (value == this._pScene) {
+                        return;
+                    }
+                    if (this._pScene) {
+                        this._pScene.iUnregisterEntity(this);
+                    }
+
+                    if (value) {
+                        value.iRegisterEntity(this);
+                    }
+
+                    _super.prototype.setScene.call(this, value);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
             Object.defineProperty(Entity.prototype, "assetType", {
-                get: /*
-                //@override
-                public set scene( value:Scene3D )
-                {
-                if(value == _scene)
-                {
-                return;
-                }
-                if( this._scene)
-                {
-                _scene.unregisterEntity( this );
-                }
-                // callback to notify object has been spawned. Casts to please FDT
-                if ( value )
-                {
-                value.registerEntity(this);
-                }
-                super.scene = value;
-                }
-                */
-                //@override
+                get: //@override
                 function () {
                     return away.library.AssetType.ENTITY;
                 },
@@ -8380,36 +8728,30 @@ var away;
                 return this._partitionNode;
             };
 
-            /* TODO Implementation dependency : BoundingVolumeBase
-            public isIntersectingRay( rayPosition:away.geom.Vector3D, rayDirection:away.geom.Vector3D ):boolean
-            {
-            var localRayPosition:away.geom.Vector3D = this.inverseSceneTransform.transformVector( rayPosition );
-            var localRayDirection:away.geom.Vector3D = this.inverseSceneTransform.deltaTransformVector( rayDirection );
-            
-            
-            if( !this._iPickingCollisionVO.localNormal )
-            {
-            this._iPickingCollisionVO.localNormal = new away.geom.Vector3D()
-            }
-            
-            
-            var rayEntryDistance:number = bounds.rayIntersection(localRayPosition, localRayDirection, this._iPickingCollisionVO.localNormal );
-            
-            if( rayEntryDistance < 0 )
-            {
-            return false;
-            }
-            
-            this._iPickingCollisionVO.rayEntryDistance = rayEntryDistance;
-            this._iPickingCollisionVO.localRayPosition = localRayPosition;
-            this._iPickingCollisionVO.localRayDirection = localRayDirection;
-            this._iPickingCollisionVO.rayPosition = rayPosition;
-            this._iPickingCollisionVO.rayDirection = rayDirection;
-            this._iPickingCollisionVO.rayOriginIsInsideBounds = rayEntryDistance == 0;
-            
-            return true;
-            }
-            //*/
+            Entity.prototype.isIntersectingRay = function (rayPosition, rayDirection) {
+                var localRayPosition = this.inverseSceneTransform.transformVector(rayPosition);
+                var localRayDirection = this.inverseSceneTransform.deltaTransformVector(rayDirection);
+
+                if (!this._iPickingCollisionVO.localNormal) {
+                    this._iPickingCollisionVO.localNormal = new away.geom.Vector3D();
+                }
+
+                var rayEntryDistance = this._pBounds.rayIntersection(localRayPosition, localRayDirection, this._iPickingCollisionVO.localNormal);
+
+                if (rayEntryDistance < 0) {
+                    return false;
+                }
+
+                this._iPickingCollisionVO.rayEntryDistance = rayEntryDistance;
+                this._iPickingCollisionVO.localRayPosition = localRayPosition;
+                this._iPickingCollisionVO.localRayDirection = localRayDirection;
+                this._iPickingCollisionVO.rayPosition = rayPosition;
+                this._iPickingCollisionVO.rayDirection = rayDirection;
+                this._iPickingCollisionVO.rayOriginIsInsideBounds = rayEntryDistance == 0;
+
+                return true;
+            };
+
             Entity.prototype.pCreateEntityPartitionNode = function () {
                 throw new away.errors.AbstractMethodError();
             };
@@ -8417,8 +8759,7 @@ var away;
             Entity.prototype.pGetDefaultBoundingVolume = function () {
                 // point lights should be using sphere bounds
                 // directional lights should be using null bounds
-                // TODO return new AxisAlignedBoundingBox();
-                return null;
+                return new away.bounds.AxisAlignedBoundingBox();
             };
 
             Entity.prototype.pUpdateBounds = function () {
@@ -8439,62 +8780,58 @@ var away;
                 this.notifySceneBoundsInvalid();
             };
 
-            /* TODO: implement dependency super.updateMouseChildren();
-            public pUpdateMouseChildren():void
-            {
-            // If there is a parent and this child does not have a triangle collider, use its parent's triangle collider.
-            
-            if( this._pParent && !this.pickingCollider )
-            {
-            
-            
-            if ( this.pParent instanceof away.entities.Entity ) //if( this._pParent is Entity ) { // TODO: Test / validate
-            {
-            
-            var parentEntity : away.entities.Entity =  <away.entities.Entity> this._pParent;
-            
-            var collider:away.pick.IPickingCollider = parentEntity.pickingCollider;
-            if(collider)
-            {
-            
-            this.pickingCollider = collider;
-            
-            }
-            
-            }
-            }
-            
-            super.updateMouseChildren();
-            }
-            //*/
+            Entity.prototype.pUpdateMouseChildren = function () {
+                if (this._pParent && !this.pickingCollider) {
+                    if (this._pParent instanceof away.entities.Entity) {
+                        var parentEntity = this._pParent;
+
+                        var collider = parentEntity.pickingCollider;
+                        if (collider) {
+                            this.pickingCollider = collider;
+                        }
+                    }
+                }
+
+                _super.prototype.pUpdateMouseChildren.call(this);
+            };
+
             Entity.prototype.notifySceneBoundsInvalid = function () {
                 if (this._pScene) {
+                    this._pScene.iInvalidateEntityBounds(this);
                 }
             };
 
             Entity.prototype.notifyPartitionAssigned = function () {
                 if (this._pScene) {
+                    this._pScene.iRegisterPartition(this);
                 }
             };
 
             Entity.prototype.notifyPartitionUnassigned = function () {
                 if (this._pScene) {
+                    this._pScene.iUnregisterPartition(this);
                 }
             };
 
             Entity.prototype.addBounds = function () {
                 if (!this._boundsIsShown) {
                     this._boundsIsShown = true;
+                    this.addChild(this._pBounds.boundingRenderable);
                 }
             };
 
             Entity.prototype.removeBounds = function () {
                 if (!this._boundsIsShown) {
                     this._boundsIsShown = false;
+                    this.removeChild(this._pBounds.boundingRenderable);
+                    this._pBounds.disposeRenderable();
                 }
             };
 
             Entity.prototype.iInternalUpdate = function () {
+                if (this._iController) {
+                    this._iController.update();
+                }
             };
             return Entity;
         })(away.containers.ObjectContainer3D);
@@ -8527,6 +8864,8 @@ var away;
                 for (var i = 0; i < 6; ++i) {
                     this._frustumPlanes[i] = new away.math.Plane3D();
                 }
+
+                this.z = -1000;
             }
             Camera3D.prototype.pGetDefaultBoundingVolume = function () {
                 return new away.bounds.NullBounds();
@@ -8567,7 +8906,8 @@ var away;
                 var c31, c32, c33, c34;
                 var c41, c42, c43, c44;
                 var p;
-                var raw = [];
+                var raw = new Array(16);
+                ;
                 var invLen;
                 this.viewProjection.copyRawDataTo(raw);
 
@@ -8666,7 +9006,7 @@ var away;
             };
 
             //@override
-            Camera3D.prototype.updateBounds = function () {
+            Camera3D.prototype.pUpdateBounds = function () {
                 this._pBounds.nullify();
                 this._pBoundsInvalid = false;
             };
@@ -8709,6 +9049,40 @@ var away;
                 enumerable: true,
                 configurable: true
             });
+
+            /**
+            * Calculates the ray in scene space from the camera to the given normalized coordinates in screen space.
+            *
+            * @param nX The normalised x coordinate in screen space, -1 corresponds to the left edge of the viewport, 1 to the right.
+            * @param nY The normalised y coordinate in screen space, -1 corresponds to the top edge of the viewport, 1 to the bottom.
+            * @param sZ The z coordinate in screen space, representing the distance into the screen.
+            * @return The ray from the camera to the scene space position of the given screen coordinates.
+            */
+            Camera3D.prototype.getRay = function (nX, nY, sZ) {
+                return this.sceneTransform.deltaTransformVector(this._lens.unproject(nX, nY, sZ));
+            };
+
+            /**
+            * Calculates the normalised position in screen space of the given scene position.
+            *
+            * @param point3d the position vector of the scene coordinates to be projected.
+            * @return The normalised screen position of the given scene coordinates.
+            */
+            Camera3D.prototype.project = function (point3d) {
+                return this._lens.project(this.inverseSceneTransform.transformVector(point3d));
+            };
+
+            /**
+            * Calculates the scene position of the given normalized coordinates in screen space.
+            *
+            * @param nX The normalised x coordinate in screen space, -1 corresponds to the left edge of the viewport, 1 to the right.
+            * @param nY The normalised y coordinate in screen space, -1 corresponds to the top edge of the viewport, 1 to the bottom.
+            * @param sZ The z coordinate in screen space, representing the distance into the screen.
+            * @return The scene position of the given screen coordinates.
+            */
+            Camera3D.prototype.unproject = function (nX, nY, sZ) {
+                return this.sceneTransform.transformVector(this._lens.unproject(nX, nY, sZ));
+            };
             return Camera3D;
         })(away.entities.Entity);
         cameras.Camera3D = Camera3D;
@@ -8734,6 +9108,8 @@ var away;
                 this.addSubSet();
 
                 this._pSegments = new Object();
+
+                away.Debug.throwPIR('SegmentSet', 'constructor', 'implement dependency: away.materials.SegmentMaterial');
             }
             SegmentSet.prototype.addSegment = function (segment) {
                 segment.iSegmentsBase = this;
@@ -8858,8 +9234,7 @@ var away;
                 }
                 this._pSegments = null;
                 this._subSetCount = 0;
-
-                //this._activeSubSet = null;
+                this._activeSubSet = null;
                 this._indexSegments = 0;
                 this._subSets = [];
                 this._pSegments = new Object();
@@ -8967,25 +9342,36 @@ var away;
             });
 
             SegmentSet.prototype.getIndexBuffer = function (stage3DProxy) {
-                away.Debug.throwPIR('SegmentSet', 'getIndexBuffer', 'PartialImplementation');
-
-                /* TODO: implement
-                if( this._activeSubSet.indexContext3D != stage3DProxy.context3D || this._activeSubSet.indexBufferDirty )
-                {
-                this._activeSubSet.indexBuffer = stage3DProxy._context3D.createIndexBuffer( this._activeSubSet.numIndices );
-                this._activeSubSet.indexBuffer.uploadFromVector( this._activeSubSet.indices, 0, this._activeSubSet.numIndices );
-                this._activeSubSet.indexBufferDirty = false;
-                this._activeSubSet.indexContext3D = stage3DProxy.context3D;
+                if (this._activeSubSet.indexContext3D != stage3DProxy.context3D || this._activeSubSet.indexBufferDirty) {
+                    this._activeSubSet.indexBuffer = stage3DProxy._iContext3D.createIndexBuffer(this._activeSubSet.numIndices);
+                    this._activeSubSet.indexBuffer.uploadFromArray(this._activeSubSet.indices, 0, this._activeSubSet.numIndices);
+                    this._activeSubSet.indexBufferDirty = false;
+                    this._activeSubSet.indexContext3D = stage3DProxy.context3D;
                 }
-                
+
                 return this._activeSubSet.indexBuffer;
-                */
-                var c = new Object();
-                return c;
             };
 
             SegmentSet.prototype.activateVertexBuffer = function (index, stage3DProxy) {
-                away.Debug.throwPIR('SegmentSet', 'activateVertexBuffer', 'PartialImplementation');
+                var subSet = this._subSets[index];
+
+                this._activeSubSet = subSet;
+                this._numIndices = subSet.numIndices;
+
+                var vertexBuffer = subSet.vertexBuffer;
+
+                if (subSet.vertexContext3D != stage3DProxy.context3D || subSet.vertexBufferDirty) {
+                    subSet.vertexBuffer = stage3DProxy._iContext3D.createVertexBuffer(subSet.numVertices, 11);
+                    subSet.vertexBuffer.uploadFromArray(subSet.vertices, 0, subSet.numVertices);
+                    subSet.vertexBufferDirty = false;
+                    subSet.vertexContext3D = stage3DProxy.context3D;
+                }
+
+                var context3d = stage3DProxy._iContext3D;
+                context3d.setVertexBufferAt(0, vertexBuffer, 0, away.display3D.Context3DVertexBufferFormat.FLOAT_3);
+                context3d.setVertexBufferAt(1, vertexBuffer, 3, away.display3D.Context3DVertexBufferFormat.FLOAT_3);
+                context3d.setVertexBufferAt(2, vertexBuffer, 6, away.display3D.Context3DVertexBufferFormat.FLOAT_1);
+                context3d.setVertexBufferAt(3, vertexBuffer, 7, away.display3D.Context3DVertexBufferFormat.FLOAT_4);
             };
 
             SegmentSet.prototype.activateUVBuffer = function (index, stage3DProxy) {
@@ -9061,7 +9447,7 @@ var away;
             };
 
             //@override
-            SegmentSet.prototype.updateBounds = function () {
+            SegmentSet.prototype.pUpdateBounds = function () {
                 var subSet;
                 var len;
                 var v;
@@ -9105,26 +9491,23 @@ var away;
                     }
                 }
 
-                /*
-                if (minX != Infinity)
-                this._bounds.fromExtremes(minX, minY, minZ, maxX, maxY, maxZ);
-                
-                else {
-                var min:Number = .5;
-                this._bounds.fromExtremes(-min, -min, -min, min, min, min);
+                if (minX != Infinity) {
+                    this._pBounds.fromExtremes(minX, minY, minZ, maxX, maxY, maxZ);
+                } else {
+                    var min = .5;
+                    this._pBounds.fromExtremes(-min, -min, -min, min, min, min);
                 }
-                */
+
                 this._pBoundsInvalid = false;
             };
 
+            //@override
+            SegmentSet.prototype.pCreateEntityPartitionNode = function () {
+                return new away.partition.RenderableNode(this);
+            };
+
             Object.defineProperty(SegmentSet.prototype, "numTriangles", {
-                get: //@override
-                /*
-                public iCreateEntityPartitionNode():EntityNode
-                {
-                return new RenderableNode(this);
-                }*/
-                function () {
+                get: function () {
                     return this._numIndices / 3;
                 },
                 enumerable: true,
@@ -9151,8 +9534,7 @@ var away;
                 get: function () {
                     return this._material;
                 },
-                set: //*/
-                function (value) {
+                set: function (value) {
                     if (value == this._material) {
                         return;
                     }
@@ -9169,10 +9551,8 @@ var away;
             });
 
             Object.defineProperty(SegmentSet.prototype, "animator", {
-                get: //*
-                function () {
-                    away.Debug.throwPIR('SegmentSet', 'get animator', 'PartialImplementation');
-                    return null;
+                get: function () {
+                    return this._animator;
                 },
                 enumerable: true,
                 configurable: true
@@ -9342,18 +9722,16 @@ var away;
                 this._subMeshes = new Array();
 
                 if (geometry == null) {
-                    this._geometry = new away.base.Geometry();
+                    this.geometry = new away.base.Geometry();
                 } else {
-                    this._geometry = geometry;
+                    this.geometry = geometry;
                 }
 
                 if (material == null) {
-                    away.Debug.throwPIR("away.entities.Mesh", "constructor", "Missing Dependency: DefaultMaterialManager");
+                    this.material = away.materials.DefaultMaterialManager.getDefaultMaterial(this);
                 } else {
                     this.material = material;
                 }
-
-                away.Debug.throwPIR("away.entities.Mesh", "away.entities.Mesh", "Missing Dependency: IAnimator");
             }
             Mesh.prototype.bakeTransformations = function () {
                 this.geometry.applyTransformation(this.transform);
@@ -9433,7 +9811,6 @@ var away;
 
                         //var subGeoms:Vector.<ISubGeometry> = _geometry.subGeometries;
                         var subGeoms = this._geometry.subGeometries;
-                        ;
 
                         for (i = 0; i < subGeoms.length; ++i) {
                             this.addSubMesh(subGeoms[i]);
@@ -9441,7 +9818,8 @@ var away;
                     }
 
                     if (this._material) {
-                        away.Debug.throwPIR("away.entities.Mesh", "material", "Missing Dependency: away.materials.MaterialBase _iRemoveOwner() , _iAddOwner()");
+                        this._material.iRemoveOwner(this);
+                        this._material.iAddOwner(this);
                     }
                 },
                 enumerable: true,
@@ -9457,7 +9835,19 @@ var away;
                     return this._material;
                 },
                 set: function (value) {
-                    away.Debug.throwPIR("away.entities.Mesh", "material", "Missing Dependency: away.materials.MaterialBase _iRemoveOwner() , _iAddOwner()");
+                    if (value == this._material) {
+                        return;
+                    }
+
+                    if (this._material) {
+                        this._material.iRemoveOwner(this);
+                    }
+
+                    this._material = value;
+
+                    if (this._material) {
+                        this._material.iAddOwner(this);
+                    }
                 },
                 enumerable: true,
                 configurable: true
@@ -9594,9 +9984,6 @@ var away;
             * @inheritDoc
             */
             Mesh.prototype.pCreateEntityPartitionNode = function () {
-                away.Debug.throwPIR("away.entities.Mesh", "away.partition.MeshNode", "Missing Dependency: away.partition.MeshNode");
-
-                //return null;
                 return new away.partition.MeshNode(this);
             };
 
@@ -9699,6 +10086,7 @@ var away;
             */
             function SubMesh(subGeometry, parentMesh, material) {
                 if (typeof material === "undefined") { material = null; }
+                this._iIndex = 0;
                 this._uvRotation = 0;
                 this._scaleU = 1;
                 this._scaleV = 1;
@@ -9835,7 +10223,15 @@ var away;
                     return this._iMaterial || this._parentMesh.material;
                 },
                 set: function (value) {
-                    away.Debug.throwPIR('away.base.Submesh', 'set material', 'away.base.MaterialBase _iRemoveOwner , _iAddOwner');
+                    if (this._iMaterial) {
+                        this._iMaterial.iRemoveOwner(this);
+                    }
+
+                    this._iMaterial = value;
+
+                    if (this._iMaterial) {
+                        this._iMaterial.iAddOwner(this);
+                    }
                 },
                 enumerable: true,
                 configurable: true
@@ -10025,7 +10421,7 @@ var away;
 
             Object.defineProperty(SubMesh.prototype, "bounds", {
                 get: function () {
-                    return this._parentMesh.bounds;
+                    return this._parentMesh.getBounds();
                 },
                 enumerable: true,
                 configurable: true
@@ -10233,6 +10629,851 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
+    ///<reference path="../_definitions.ts" />
+    (function (primitives) {
+        /**
+        * A WireframeSphere primitive mesh
+        */
+        var WireframeSphere = (function (_super) {
+            __extends(WireframeSphere, _super);
+            /**
+            * Creates a new WireframeSphere object.
+            * @param radius The radius of the sphere.
+            * @param segmentsW Defines the number of horizontal segments that make up the sphere.
+            * @param segmentsH Defines the number of vertical segments that make up the sphere.
+            * @param color The colour of the wireframe lines
+            * @param thickness The thickness of the wireframe lines
+            */
+            function WireframeSphere(radius, segmentsW, segmentsH, color, thickness) {
+                if (typeof radius === "undefined") { radius = 50; }
+                if (typeof segmentsW === "undefined") { segmentsW = 16; }
+                if (typeof segmentsH === "undefined") { segmentsH = 12; }
+                if (typeof color === "undefined") { color = 0xFFFFFF; }
+                if (typeof thickness === "undefined") { thickness = 1; }
+                _super.call(this, color, thickness);
+
+                this._radius = radius;
+                this._segmentsW = segmentsW;
+                this._segmentsH = segmentsH;
+            }
+            /**
+            * @inheritDoc
+            */
+            WireframeSphere.prototype.pBuildGeometry = function () {
+                var vertices = new Array();
+                var v0 = new away.geom.Vector3D();
+                var v1 = new away.geom.Vector3D();
+                var i, j;
+                var numVerts = 0;
+                var index = 0;
+
+                for (j = 0; j <= this._segmentsH; ++j) {
+                    var horangle = Math.PI * j / this._segmentsH;
+                    var z = -this._radius * Math.cos(horangle);
+                    var ringradius = this._radius * Math.sin(horangle);
+
+                    for (i = 0; i <= this._segmentsW; ++i) {
+                        var verangle = 2 * Math.PI * i / this._segmentsW;
+                        var x = ringradius * Math.cos(verangle);
+                        var y = ringradius * Math.sin(verangle);
+                        vertices[numVerts++] = x;
+                        vertices[numVerts++] = -z;
+                        vertices[numVerts++] = y;
+                    }
+                }
+
+                for (j = 1; j <= this._segmentsH; ++j) {
+                    for (i = 1; i <= this._segmentsW; ++i) {
+                        var a = ((this._segmentsW + 1) * j + i) * 3;
+                        var b = ((this._segmentsW + 1) * j + i - 1) * 3;
+                        var c = ((this._segmentsW + 1) * (j - 1) + i - 1) * 3;
+                        var d = ((this._segmentsW + 1) * (j - 1) + i) * 3;
+
+                        if (j == this._segmentsH) {
+                            v0.x = vertices[c];
+                            v0.y = vertices[c + 1];
+                            v0.z = vertices[c + 2];
+                            v1.x = vertices[d];
+                            v1.y = vertices[d + 1];
+                            v1.z = vertices[d + 2];
+                            this.pUpdateOrAddSegment(index++, v0, v1);
+                            v0.x = vertices[a];
+                            v0.y = vertices[a + 1];
+                            v0.z = vertices[a + 2];
+                            this.pUpdateOrAddSegment(index++, v0, v1);
+                        } else if (j == 1) {
+                            v1.x = vertices[b];
+                            v1.y = vertices[b + 1];
+                            v1.z = vertices[b + 2];
+                            v0.x = vertices[c];
+                            v0.y = vertices[c + 1];
+                            v0.z = vertices[c + 2];
+                            this.pUpdateOrAddSegment(index++, v0, v1);
+                        } else {
+                            v1.x = vertices[b];
+                            v1.y = vertices[b + 1];
+                            v1.z = vertices[b + 2];
+                            v0.x = vertices[c];
+                            v0.y = vertices[c + 1];
+                            v0.z = vertices[c + 2];
+                            this.pUpdateOrAddSegment(index++, v0, v1);
+                            v1.x = vertices[d];
+                            v1.y = vertices[d + 1];
+                            v1.z = vertices[d + 2];
+                            this.pUpdateOrAddSegment(index++, v0, v1);
+                        }
+                    }
+                }
+            };
+            return WireframeSphere;
+        })(away.primitives.WireframePrimitiveBase);
+        primitives.WireframeSphere = WireframeSphere;
+    })(away.primitives || (away.primitives = {}));
+    var primitives = away.primitives;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (primitives) {
+        //import flash.geom.Vector3D;
+        /**
+        * A WirefameCube primitive mesh.
+        */
+        var WireframeCube = (function (_super) {
+            __extends(WireframeCube, _super);
+            /**
+            * Creates a new WireframeCube object.
+            * @param width The size of the cube along its X-axis.
+            * @param height The size of the cube along its Y-axis.
+            * @param depth The size of the cube along its Z-axis.
+            * @param color The colour of the wireframe lines
+            * @param thickness The thickness of the wireframe lines
+            */
+            function WireframeCube(width, height, depth, color, thickness) {
+                if (typeof width === "undefined") { width = 100; }
+                if (typeof height === "undefined") { height = 100; }
+                if (typeof depth === "undefined") { depth = 100; }
+                if (typeof color === "undefined") { color = 0xFFFFFF; }
+                if (typeof thickness === "undefined") { thickness = 1; }
+                _super.call(this, color, thickness);
+
+                this._width = width;
+                this._height = height;
+                this._depth = depth;
+            }
+            Object.defineProperty(WireframeCube.prototype, "width", {
+                get: /**
+                * The size of the cube along its X-axis.
+                */
+                function () {
+                    return this._width;
+                },
+                set: function (value) {
+                    this._width = value;
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframeCube.prototype, "height", {
+                get: /**
+                * The size of the cube along its Y-axis.
+                */
+                function () {
+                    return this._height;
+                },
+                set: function (value) {
+                    if (value <= 0)
+                        throw new Error("Value needs to be greater than 0");
+                    this._height = value;
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframeCube.prototype, "depth", {
+                get: /**
+                * The size of the cube along its Z-axis.
+                */
+                function () {
+                    return this._depth;
+                },
+                set: function (value) {
+                    this._depth = value;
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * @inheritDoc
+            */
+            WireframeCube.prototype.pBuildGeometry = function () {
+                var v0 = new away.geom.Vector3D();
+                var v1 = new away.geom.Vector3D();
+                var hw = this._width * .5;
+                var hh = this._height * .5;
+                var hd = this._depth * .5;
+
+                v0.x = -hw;
+                v0.y = hh;
+                v0.z = -hd;
+                v1.x = -hw;
+                v1.y = -hh;
+                v1.z = -hd;
+
+                this.pUpdateOrAddSegment(0, v0, v1);
+                v0.z = hd;
+                v1.z = hd;
+                this.pUpdateOrAddSegment(1, v0, v1);
+                v0.x = hw;
+                v1.x = hw;
+                this.pUpdateOrAddSegment(2, v0, v1);
+                v0.z = -hd;
+                v1.z = -hd;
+                this.pUpdateOrAddSegment(3, v0, v1);
+
+                v0.x = -hw;
+                v0.y = -hh;
+                v0.z = -hd;
+                v1.x = hw;
+                v1.y = -hh;
+                v1.z = -hd;
+                this.pUpdateOrAddSegment(4, v0, v1);
+                v0.y = hh;
+                v1.y = hh;
+                this.pUpdateOrAddSegment(5, v0, v1);
+                v0.z = hd;
+                v1.z = hd;
+                this.pUpdateOrAddSegment(6, v0, v1);
+                v0.y = -hh;
+                v1.y = -hh;
+                this.pUpdateOrAddSegment(7, v0, v1);
+
+                v0.x = -hw;
+                v0.y = -hh;
+                v0.z = -hd;
+                v1.x = -hw;
+                v1.y = -hh;
+                v1.z = hd;
+                this.pUpdateOrAddSegment(8, v0, v1);
+                v0.y = hh;
+                v1.y = hh;
+                this.pUpdateOrAddSegment(9, v0, v1);
+                v0.x = hw;
+                v1.x = hw;
+                this.pUpdateOrAddSegment(10, v0, v1);
+                v0.y = -hh;
+                v1.y = -hh;
+                this.pUpdateOrAddSegment(11, v0, v1);
+            };
+            return WireframeCube;
+        })(away.primitives.WireframePrimitiveBase);
+        primitives.WireframeCube = WireframeCube;
+    })(away.primitives || (away.primitives = {}));
+    var primitives = away.primitives;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (primitives) {
+        //import flash.geom.Vector3D;
+        /**
+        * Generates a wireframd cylinder primitive.
+        */
+        var WireframeCylinder = (function (_super) {
+            __extends(WireframeCylinder, _super);
+            /**
+            * Creates a new WireframeCylinder instance
+            * @param topRadius Top radius of the cylinder
+            * @param bottomRadius Bottom radius of the cylinder
+            * @param height The height of the cylinder
+            * @param segmentsW Number of radial segments
+            * @param segmentsH Number of vertical segments
+            * @param color The color of the wireframe lines
+            * @param thickness The thickness of the wireframe lines
+            */
+            function WireframeCylinder(topRadius, bottomRadius, height, segmentsW, segmentsH, color, thickness) {
+                if (typeof topRadius === "undefined") { topRadius = 50; }
+                if (typeof bottomRadius === "undefined") { bottomRadius = 50; }
+                if (typeof height === "undefined") { height = 100; }
+                if (typeof segmentsW === "undefined") { segmentsW = 16; }
+                if (typeof segmentsH === "undefined") { segmentsH = 1; }
+                if (typeof color === "undefined") { color = 0xFFFFFF; }
+                if (typeof thickness === "undefined") { thickness = 1; }
+                _super.call(this, color, thickness);
+                this._topRadius = topRadius;
+                this._bottomRadius = bottomRadius;
+                this._height = height;
+                this._segmentsW = segmentsW;
+                this._segmentsH = segmentsH;
+            }
+            WireframeCylinder.prototype.pBuildGeometry = function () {
+                var i, j;
+                var radius = this._topRadius;
+                var revolutionAngle;
+                var revolutionAngleDelta = WireframeCylinder.TWO_PI / this._segmentsW;
+                var nextVertexIndex = 0;
+                var x, y, z;
+
+                var lastLayer = new Array(this._segmentsH + 1);
+
+                for (j = 0; j <= this._segmentsH; ++j) {
+                    lastLayer[j] = new Array(this._segmentsW + 1);
+
+                    radius = this._topRadius - ((j / this._segmentsH) * (this._topRadius - this._bottomRadius));
+                    z = -(this._height / 2) + (j / this._segmentsH * this._height);
+
+                    var previousV = null;
+
+                    for (i = 0; i <= this._segmentsW; ++i) {
+                        // revolution vertex
+                        revolutionAngle = i * revolutionAngleDelta;
+                        x = radius * Math.cos(revolutionAngle);
+                        y = radius * Math.sin(revolutionAngle);
+                        var vertex;
+                        if (previousV) {
+                            vertex = new away.geom.Vector3D(x, -z, y);
+                            this.pUpdateOrAddSegment(nextVertexIndex++, vertex, previousV);
+                            previousV = vertex;
+                        } else
+                            previousV = new away.geom.Vector3D(x, -z, y);
+
+                        if (j > 0) {
+                            this.pUpdateOrAddSegment(nextVertexIndex++, vertex, lastLayer[j - 1][i]);
+                        }
+                        lastLayer[j][i] = previousV;
+                    }
+                }
+            };
+
+            Object.defineProperty(WireframeCylinder.prototype, "topRadius", {
+                get: /**
+                * Top radius of the cylinder
+                */
+                function () {
+                    return this._topRadius;
+                },
+                set: function (value) {
+                    this._topRadius = value;
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframeCylinder.prototype, "bottomRadius", {
+                get: /**
+                * Bottom radius of the cylinder
+                */
+                function () {
+                    return this._bottomRadius;
+                },
+                set: function (value) {
+                    this._bottomRadius = value;
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframeCylinder.prototype, "height", {
+                get: /**
+                * The height of the cylinder
+                */
+                function () {
+                    return this._height;
+                },
+                set: function (value) {
+                    if (this.height <= 0)
+                        throw new Error('Height must be a value greater than zero.');
+
+                    this._height = value;
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            WireframeCylinder.TWO_PI = 2 * Math.PI;
+            return WireframeCylinder;
+        })(away.primitives.WireframePrimitiveBase);
+        primitives.WireframeCylinder = WireframeCylinder;
+    })(away.primitives || (away.primitives = {}));
+    var primitives = away.primitives;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (primitives) {
+        //import flash.geom.Vector3D;
+        /**
+        * A WireframePlane primitive mesh.
+        */
+        var WireframePlane = (function (_super) {
+            __extends(WireframePlane, _super);
+            /**
+            * Creates a new WireframePlane object.
+            * @param width The size of the cube along its X-axis.
+            * @param height The size of the cube along its Y-axis.
+            * @param segmentsW The number of segments that make up the cube along the X-axis.
+            * @param segmentsH The number of segments that make up the cube along the Y-axis.
+            * @param color The colour of the wireframe lines
+            * @param thickness The thickness of the wireframe lines
+            * @param orientation The orientaion in which the plane lies.
+            */
+            function WireframePlane(width, height, segmentsW, segmentsH, color, thickness, orientation) {
+                if (typeof segmentsW === "undefined") { segmentsW = 10; }
+                if (typeof segmentsH === "undefined") { segmentsH = 10; }
+                if (typeof color === "undefined") { color = 0xFFFFFF; }
+                if (typeof thickness === "undefined") { thickness = 1; }
+                if (typeof orientation === "undefined") { orientation = "yz"; }
+                _super.call(this, color, thickness);
+
+                this._width = width;
+                this._height = height;
+                this._segmentsW = segmentsW;
+                this._segmentsH = segmentsH;
+                this._orientation = orientation;
+            }
+            Object.defineProperty(WireframePlane.prototype, "orientation", {
+                get: /**
+                * The orientaion in which the plane lies.
+                */
+                function () {
+                    return this._orientation;
+                },
+                set: function (value) {
+                    this._orientation = value;
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframePlane.prototype, "width", {
+                get: /**
+                * The size of the cube along its X-axis.
+                */
+                function () {
+                    return this._width;
+                },
+                set: function (value) {
+                    this._width = value;
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframePlane.prototype, "height", {
+                get: /**
+                * The size of the cube along its Y-axis.
+                */
+                function () {
+                    return this._height;
+                },
+                set: function (value) {
+                    if (value <= 0)
+                        throw new Error("Value needs to be greater than 0");
+                    this._height = value;
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframePlane.prototype, "segmentsW", {
+                get: /**
+                * The number of segments that make up the plane along the X-axis.
+                */
+                function () {
+                    return this._segmentsW;
+                },
+                set: function (value) {
+                    this._segmentsW = value;
+                    this.removeAllSegments();
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframePlane.prototype, "segmentsH", {
+                get: /**
+                * The number of segments that make up the plane along the Y-axis.
+                */
+                function () {
+                    return this._segmentsH;
+                },
+                set: function (value) {
+                    this._segmentsH = value;
+                    this.removeAllSegments();
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * @inheritDoc
+            */
+            WireframePlane.prototype.pBuildGeometry = function () {
+                var v0 = new away.geom.Vector3D();
+                var v1 = new away.geom.Vector3D();
+                var hw = this._width * .5;
+                var hh = this._height * .5;
+                var index = 0;
+                var ws, hs;
+
+                if (this._orientation == WireframePlane.ORIENTATION_XY) {
+                    v0.y = hh;
+                    v0.z = 0;
+                    v1.y = -hh;
+                    v1.z = 0;
+
+                    for (ws = 0; ws <= this._segmentsW; ++ws) {
+                        v0.x = v1.x = (ws / this._segmentsW - .5) * this._width;
+                        this.pUpdateOrAddSegment(index++, v0, v1);
+                    }
+
+                    v0.x = -hw;
+                    v1.x = hw;
+
+                    for (hs = 0; hs <= this._segmentsH; ++hs) {
+                        v0.y = v1.y = (hs / this._segmentsH - .5) * this._height;
+                        this.pUpdateOrAddSegment(index++, v0, v1);
+                    }
+                } else if (this._orientation == WireframePlane.ORIENTATION_XZ) {
+                    v0.z = hh;
+                    v0.y = 0;
+                    v1.z = -hh;
+                    v1.y = 0;
+
+                    for (ws = 0; ws <= this._segmentsW; ++ws) {
+                        v0.x = v1.x = (ws / this._segmentsW - .5) * this._width;
+                        this.pUpdateOrAddSegment(index++, v0, v1);
+                    }
+
+                    v0.x = -hw;
+                    v1.x = hw;
+
+                    for (hs = 0; hs <= this._segmentsH; ++hs) {
+                        v0.z = v1.z = (hs / this._segmentsH - .5) * this._height;
+                        this.pUpdateOrAddSegment(index++, v0, v1);
+                    }
+                } else if (this._orientation == WireframePlane.ORIENTATION_YZ) {
+                    v0.y = hh;
+                    v0.x = 0;
+                    v1.y = -hh;
+                    v1.x = 0;
+
+                    for (ws = 0; ws <= this._segmentsW; ++ws) {
+                        v0.z = v1.z = (ws / this._segmentsW - .5) * this._width;
+                        this.pUpdateOrAddSegment(index++, v0, v1);
+                    }
+
+                    v0.z = hw;
+                    v1.z = -hw;
+
+                    for (hs = 0; hs <= this._segmentsH; ++hs) {
+                        v0.y = v1.y = (hs / this._segmentsH - .5) * this._height;
+                        this.pUpdateOrAddSegment(index++, v0, v1);
+                    }
+                }
+            };
+            WireframePlane.ORIENTATION_YZ = "yz";
+            WireframePlane.ORIENTATION_XY = "xy";
+            WireframePlane.ORIENTATION_XZ = "xz";
+            return WireframePlane;
+        })(away.primitives.WireframePrimitiveBase);
+        primitives.WireframePlane = WireframePlane;
+    })(away.primitives || (away.primitives = {}));
+    var primitives = away.primitives;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (primitives) {
+        //import flash.geom.Vector3D;
+        /**
+        * A WireframeRegularPolygon primitive mesh.
+        */
+        var WireframeRegularPolygon = (function (_super) {
+            __extends(WireframeRegularPolygon, _super);
+            /**
+            * Creates a new WireframeRegularPolygon object.
+            * @param radius The radius of the polygon.
+            * @param sides The number of sides on the polygon.
+            * @param color The colour of the wireframe lines
+            * @param thickness The thickness of the wireframe lines
+            * @param orientation The orientaion in which the plane lies.
+            */
+            function WireframeRegularPolygon(radius, sides, color, thickness, orientation) {
+                if (typeof color === "undefined") { color = 0xFFFFFF; }
+                if (typeof thickness === "undefined") { thickness = 1; }
+                if (typeof orientation === "undefined") { orientation = "yz"; }
+                _super.call(this, color, thickness);
+
+                this._radius = radius;
+                this._sides = sides;
+                this._orientation = orientation;
+            }
+            Object.defineProperty(WireframeRegularPolygon.prototype, "orientation", {
+                get: /**
+                * The orientaion in which the polygon lies.
+                */
+                function () {
+                    return this._orientation;
+                },
+                set: function (value) {
+                    this._orientation = value;
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframeRegularPolygon.prototype, "radius", {
+                get: /**
+                * The radius of the regular polygon.
+                */
+                function () {
+                    return this._radius;
+                },
+                set: function (value) {
+                    this._radius = value;
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframeRegularPolygon.prototype, "sides", {
+                get: /**
+                * The number of sides to the regular polygon.
+                */
+                function () {
+                    return this._sides;
+                },
+                set: function (value) {
+                    this._sides = value;
+                    this.removeAllSegments();
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * @inheritDoc
+            */
+            WireframeRegularPolygon.prototype.pBuildGeometry = function () {
+                var v0 = new away.geom.Vector3D();
+                var v1 = new away.geom.Vector3D();
+                var index = 0;
+                var s;
+
+                if (this._orientation == WireframeRegularPolygon.ORIENTATION_XY) {
+                    v0.z = 0;
+                    v1.z = 0;
+
+                    for (s = 0; s < this._sides; ++s) {
+                        v0.x = this._radius * Math.cos(2 * Math.PI * s / this._sides);
+                        v0.y = this._radius * Math.sin(2 * Math.PI * s / this._sides);
+                        v1.x = this._radius * Math.cos(2 * Math.PI * (s + 1) / this._sides);
+                        v1.y = this._radius * Math.sin(2 * Math.PI * (s + 1) / this._sides);
+                        this.pUpdateOrAddSegment(index++, v0, v1);
+                    }
+                } else if (this._orientation == WireframeRegularPolygon.ORIENTATION_XZ) {
+                    v0.y = 0;
+                    v1.y = 0;
+
+                    for (s = 0; s < this._sides; ++s) {
+                        v0.x = this._radius * Math.cos(2 * Math.PI * s / this._sides);
+                        v0.z = this._radius * Math.sin(2 * Math.PI * s / this._sides);
+                        v1.x = this._radius * Math.cos(2 * Math.PI * (s + 1) / this._sides);
+                        v1.z = this._radius * Math.sin(2 * Math.PI * (s + 1) / this._sides);
+                        this.pUpdateOrAddSegment(index++, v0, v1);
+                    }
+                } else if (this._orientation == WireframeRegularPolygon.ORIENTATION_YZ) {
+                    v0.x = 0;
+                    v1.x = 0;
+
+                    for (s = 0; s < this._sides; ++s) {
+                        v0.z = this._radius * Math.cos(2 * Math.PI * s / this._sides);
+                        v0.y = this._radius * Math.sin(2 * Math.PI * s / this._sides);
+                        v1.z = this._radius * Math.cos(2 * Math.PI * (s + 1) / this._sides);
+                        v1.y = this._radius * Math.sin(2 * Math.PI * (s + 1) / this._sides);
+                        this.pUpdateOrAddSegment(index++, v0, v1);
+                    }
+                }
+            };
+            WireframeRegularPolygon.ORIENTATION_YZ = "yz";
+            WireframeRegularPolygon.ORIENTATION_XY = "xy";
+            WireframeRegularPolygon.ORIENTATION_XZ = "xz";
+            return WireframeRegularPolygon;
+        })(away.primitives.WireframePrimitiveBase);
+        primitives.WireframeRegularPolygon = WireframeRegularPolygon;
+    })(away.primitives || (away.primitives = {}));
+    var primitives = away.primitives;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts" />
+    (function (primitives) {
+        //import flash.geom.Vector3D;
+        //import away3d.primitives.WireframePrimitiveBase;
+        /**
+        * A WireframeTetrahedron primitive mesh
+        */
+        var WireframeTetrahedron = (function (_super) {
+            __extends(WireframeTetrahedron, _super);
+            /**
+            * Creates a new WireframeTetrahedron object.
+            * @param width The size of the tetrahedron buttom size.
+            * @param height The size of the tetranhedron height.
+            * @param color The color of the wireframe lines.
+            * @param thickness The thickness of the wireframe lines.
+            */
+            function WireframeTetrahedron(width, height, color, thickness, orientation) {
+                if (typeof color === "undefined") { color = 0xffffff; }
+                if (typeof thickness === "undefined") { thickness = 1; }
+                if (typeof orientation === "undefined") { orientation = "yz"; }
+                _super.call(this, color, thickness);
+
+                this._width = width;
+                this._height = height;
+
+                this._orientation = orientation;
+            }
+            Object.defineProperty(WireframeTetrahedron.prototype, "orientation", {
+                get: /**
+                * The orientation in which the plane lies
+                */
+                function () {
+                    return this._orientation;
+                },
+                set: function (value) {
+                    this._orientation = value;
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframeTetrahedron.prototype, "width", {
+                get: /**
+                * The size of the tetrahedron bottom.
+                */
+                function () {
+                    return this._width;
+                },
+                set: function (value) {
+                    if (value <= 0)
+                        throw new Error("Value needs to be greater than 0");
+                    this._width = value;
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(WireframeTetrahedron.prototype, "height", {
+                get: /**
+                * The size of the tetrahedron height.
+                */
+                function () {
+                    return this._height;
+                },
+                set: function (value) {
+                    if (value <= 0)
+                        throw new Error("Value needs to be greater than 0");
+                    this._height = value;
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * @inheritDoc
+            */
+            WireframeTetrahedron.prototype.pBuildGeometry = function () {
+                var bv0;
+                var bv1;
+                var bv2;
+                var bv3;
+                var top;
+
+                var hw = this._width * 0.5;
+
+                switch (this._orientation) {
+                    case WireframeTetrahedron.ORIENTATION_XY:
+                        bv0 = new away.geom.Vector3D(-hw, hw, 0);
+                        bv1 = new away.geom.Vector3D(hw, hw, 0);
+                        bv2 = new away.geom.Vector3D(hw, -hw, 0);
+                        bv3 = new away.geom.Vector3D(-hw, -hw, 0);
+                        top = new away.geom.Vector3D(0, 0, this._height);
+                        break;
+                    case WireframeTetrahedron.ORIENTATION_XZ:
+                        bv0 = new away.geom.Vector3D(-hw, 0, hw);
+                        bv1 = new away.geom.Vector3D(hw, 0, hw);
+                        bv2 = new away.geom.Vector3D(hw, 0, -hw);
+                        bv3 = new away.geom.Vector3D(-hw, 0, -hw);
+                        top = new away.geom.Vector3D(0, this._height, 0);
+                        break;
+                    case WireframeTetrahedron.ORIENTATION_YZ:
+                        bv0 = new away.geom.Vector3D(0, -hw, hw);
+                        bv1 = new away.geom.Vector3D(0, hw, hw);
+                        bv2 = new away.geom.Vector3D(0, hw, -hw);
+                        bv3 = new away.geom.Vector3D(0, -hw, -hw);
+                        top = new away.geom.Vector3D(this._height, 0, 0);
+                        break;
+                }
+
+                //bottom
+                this.pUpdateOrAddSegment(0, bv0, bv1);
+                this.pUpdateOrAddSegment(1, bv1, bv2);
+                this.pUpdateOrAddSegment(2, bv2, bv3);
+                this.pUpdateOrAddSegment(3, bv3, bv0);
+
+                //bottom to top
+                this.pUpdateOrAddSegment(4, bv0, top);
+                this.pUpdateOrAddSegment(5, bv1, top);
+                this.pUpdateOrAddSegment(6, bv2, top);
+                this.pUpdateOrAddSegment(7, bv3, top);
+            };
+            WireframeTetrahedron.ORIENTATION_YZ = "yz";
+            WireframeTetrahedron.ORIENTATION_XY = "xy";
+            WireframeTetrahedron.ORIENTATION_XZ = "xz";
+            return WireframeTetrahedron;
+        })(away.primitives.WireframePrimitiveBase);
+        primitives.WireframeTetrahedron = WireframeTetrahedron;
+    })(away.primitives || (away.primitives = {}));
+    var primitives = away.primitives;
+})(away || (away = {}));
+var away;
+(function (away) {
     /**
     * ...
     * @author Gary Paluk - http://www.plugin.io
@@ -10241,6 +11482,8 @@ var away;
     (function (partition) {
         var NodeBase = (function () {
             function NodeBase() {
+                this._pNumChildNodes = 0;
+                this._iNumEntities = 0;
                 this._pChildNodes = [];
             }
             Object.defineProperty(NodeBase.prototype, "showDebugBounds", {
@@ -10283,7 +11526,7 @@ var away;
 
             NodeBase.prototype.iAddNode = function (node) {
                 node._iParent = this;
-                this._pNumEntities += node._pNumEntities;
+                this._iNumEntities += node._pNumEntities;
                 this._pChildNodes[this._pNumChildNodes++] = node;
                 node.showDebugBounds = this._pDebugPrimitive != null;
 
@@ -10291,7 +11534,7 @@ var away;
                 node = this;
 
                 do {
-                    node._pNumEntities += numEntities;
+                    node._iNumEntities += numEntities;
                 } while((node = node._iParent) != null);
             };
 
@@ -10309,6 +11552,7 @@ var away;
             };
 
             NodeBase.prototype.isInFrustum = function (planes, numPlanes) {
+                //console.log( 'NodeBase' , 'isInFrustum - should be true');
                 planes = planes;
                 numPlanes = numPlanes;
                 return true;
@@ -10329,9 +11573,13 @@ var away;
                 if (this._pNumEntities == 0 && !this._pDebugPrimitive) {
                     return;
                 }
+
                 if (traverser.enterNode(this)) {
-                    var i;
+                    // console.log ( 'NodeBase' , 'acceptTraverser (node entered) : ' , this )
+                    var i = 0;
+
                     while (i < this._pNumChildNodes) {
+                        //console.log ( 'NodeBase' , 'loop through childNodes : ' , i );
                         this._pChildNodes[i++].acceptTraverser(traverser);
                     }
 
@@ -10393,6 +11641,7 @@ var away;
     (function (partition) {
         var Partition3D = (function () {
             function Partition3D(rootNode) {
+                this._updatesMade = false;
                 this._rootNode = rootNode || new away.partition.NullNode();
             }
             Object.defineProperty(Partition3D.prototype, "showDebugBounds", {
@@ -10466,6 +11715,7 @@ var away;
 
                 do {
                     targetNode = this._rootNode.findPartitionForEntity(node.entity);
+
                     if (node.parent != targetNode) {
                         if (node) {
                             node.removeFromParent();
@@ -10545,6 +11795,23 @@ var away;
                     return false;
                 }
                 return this._entity.worldBounds.isInFrustum(planes, numPlanes);
+            };
+
+            /**
+            * @inheritDoc
+            */
+            EntityNode.prototype.acceptTraverser = function (traverser) {
+                traverser.applyEntity(this._entity);
+            };
+
+            /**
+            * @inheritDoc
+            */
+            EntityNode.prototype.isIntersectingRay = function (rayPosition, rayDirection) {
+                if (!this._entity._iIsVisible)
+                    return false;
+
+                return this._entity.isIntersectingRay(rayPosition, rayDirection);
             };
             return EntityNode;
         })(partition.NodeBase);
@@ -10750,7 +12017,7 @@ var away;
                     _super.prototype.acceptTraverser.call(this, traverser);
 
                     var subs = this._mesh.subMeshes;
-                    var i;
+                    var i = 0;
                     var len = subs.length;
                     while (i < len) {
                         traverser.applyRenderable(subs[i++]);
@@ -10848,6 +12115,70 @@ var away;
                 }
             };
 
+
+            Object.defineProperty(Stage3D.prototype, "width", {
+                get: function () {
+                    return this._width;
+                },
+                set: function (v) {
+                    this._width = v;
+                    away.utils.CSS.setCanvasWidth(this._canvas, v);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Stage3D.prototype, "height", {
+                get: function () {
+                    return this._height;
+                },
+                set: function (v) {
+                    this._height = v;
+                    away.utils.CSS.setCanvasHeight(this._canvas, v);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Stage3D.prototype, "x", {
+                get: function () {
+                    return this._x;
+                },
+                set: function (v) {
+                    this._x = v;
+                    away.utils.CSS.setCanvasX(this._canvas, v);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Stage3D.prototype, "y", {
+                get: function () {
+                    return this._y;
+                },
+                set: function (v) {
+                    this._y = v;
+                    away.utils.CSS.setCanvasY(this._canvas, v);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Stage3D.prototype, "visible", {
+                get: function () {
+                    return away.utils.CSS.getCanvasVisibility(this._canvas);
+                },
+                set: function (v) {
+                    away.utils.CSS.setCanvasVisibility(this._canvas, v);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
             Object.defineProperty(Stage3D.prototype, "canvas", {
                 get: function () {
                     return this._canvas;
@@ -10884,6 +12215,30 @@ var away;
                 canvas.style.height = height + "px";
                 canvas.width = width;
                 canvas.height = height;
+            };
+
+            CSS.setCanvasWidth = function (canvas, width) {
+                canvas.style.width = width + "px";
+                canvas.width = width;
+            };
+
+            CSS.setCanvasHeight = function (canvas, height) {
+                canvas.style.height = height + "px";
+                canvas.height = height;
+            };
+
+            CSS.setCanvasX = function (canvas, x) {
+                canvas.style.position = 'absolute';
+                canvas.style.left = x + "px";
+            };
+
+            CSS.setCanvasY = function (canvas, y) {
+                canvas.style.position = 'absolute';
+                canvas.style.top = y + "px";
+            };
+
+            CSS.getCanvasVisibility = function (canvas) {
+                return canvas.style.visibility == 'visible';
             };
 
             CSS.setCanvasVisibility = function (canvas, visible) {
@@ -11178,170 +12533,822 @@ var away;
     ///<reference path="../_definitions.ts" />
     (function (containers) {
         var View3D = (function () {
-            function View3D(scene, camera) {
+            /*
+            ***********************************************************************
+            * Disabled / Not yet implemented
+            ***********************************************************************
+            *
+            * private _background:away.textures.Texture2DBase;
+            *
+            * public _pMouse3DManager:away.managers.Mouse3DManager;
+            * public _pTouch3DManager:away.managers.Touch3DManager;
+            *
+            */
+            function View3D(scene, camera, renderer, forceSoftware, profile) {
+                if (typeof scene === "undefined") { scene = null; }
+                if (typeof camera === "undefined") { camera = null; }
+                if (typeof renderer === "undefined") { renderer = null; }
+                if (typeof forceSoftware === "undefined") { forceSoftware = false; }
+                if (typeof profile === "undefined") { profile = "baseline"; }
+                this._pBackBufferInvalid = true;
+                this._pShareContext = false;
+                this._width = 0;
+                this._height = 0;
+                this._localPos = new away.geom.Point();
+                this._globalPos = new away.geom.Point();
                 this._time = 0;
                 this._deltaTime = 0;
                 this._backgroundColor = 0x000000;
                 this._backgroundAlpha = 1;
                 this._depthTextureInvalid = true;
-                //private _background:away.textures.Texture2DBase;
-                //public _pStage3DProxy:away.managers.Stage3DProxy;
-                this._pBackBufferInvalid = true;
-                //public _pRttBufferManager:away.managers.RTTBufferManager;
-                this._rightClickMenuEnabled = true;
-                //private _menu0:away.ui.ContextMenuItem;
-                //private _menu1:away.ui.ContextMenuItem;
-                //private _viewContextMenu:away.ui.ContextMenu;
-                this._pShareContext = false;
                 this._scissorRectDirty = true;
                 this._viewportDirty = true;
                 this._layeredView = false;
-                // TODO link to displaylist
-                //this._profile = profile;
-                this._pScene = scene || new containers.Scene3D();
+                if (View3D.sStage == null) {
+                    View3D.sStage = new away.display.Stage();
+                }
 
+                this._profile = profile;
+                this._pScene = scene || new containers.Scene3D();
                 this._pScene.addEventListener(away.events.Scene3DEvent.PARTITION_CHANGED, this.onScenePartitionChanged, this);
                 this._pCamera = camera || new away.cameras.Camera3D();
+                this._pRenderer = renderer || new away.render.DefaultRenderer();
+                this._depthRenderer = new away.render.DepthRenderer();
+                this._forceSoftware = forceSoftware;
+                this._pEntityCollector = this._pRenderer.iCreateEntityCollector();
+                this._pEntityCollector.camera = this._pCamera;
+                this._pScissorRect = new away.geom.Rectangle();
+                this._pCamera.addEventListener(away.events.CameraEvent.LENS_CHANGED, this.onLensChanged, this);
+                this._pCamera.partition = this._pScene.partition;
+                this.stage = View3D.sStage;
+
+                this.onAddedToStage();
             }
+            /**
+            *
+            * @param e
+            */
             View3D.prototype.onScenePartitionChanged = function (e) {
                 if (this._pCamera) {
                     this._pCamera.partition = this.scene.partition;
                 }
             };
 
-            Object.defineProperty(View3D.prototype, "scene", {
-                get: /*
-                public get rightClickMenuEnabled():Boolean
-                {
-                return this._rightClickMenuEnabled;
-                }
-                
-                public set rightClickMenuEnabled( val:boolean )
-                {
-                this._rightClickMenuEnabled = val;
-                this.updateRightClickMenu();
-                }
-                
-                public get stage3DProxy():away.managers.Stage3DProxy
-                {
-                return this._stage3DProxy;
-                }
-                
-                public set stage3DProxy( stage3DProxy:away.managers.Stage3DProxy )
-                {
-                if (this._stage3DProxy)
-                {
-                this._stage3DProxy.removeEventListener(away.events.Stage3DEvent.VIEWPORT_UPDATED, this.onViewportUpdated, this );
-                }
-                
-                this._stage3DProxy = stage3DProxy;
-                this._stage3DProxy.addEventListener( away.events.Stage3DEvent.VIEWPORT_UPDATED, this.onViewportUpdated, this );
-                this._renderer.stage3DProxy = this._depthRenderer.stage3DProxy = _stage3DProxy;
-                this._globalPosDirty = true;
-                this._backBufferInvalid = true;
-                }
-                
-                public get forceMouseMove():boolean
-                {
-                return this._mouse3DManager.forceMouseMove;
-                }
-                
-                public set forceMouseMove( value:boolean )
-                {
-                this._mouse3DManager.forceMouseMove = value;
-                this._touch3DManager.forceTouchMove = value;
-                }
-                
-                public get background():away.textures.Texture2DBase
-                {
-                return this._background;
-                }
-                
-                public set background( value:away.textures.Texture2DBase )
-                {
-                this._background = value;
-                this._renderer.background = _background;
-                }
-                
-                public get layeredView():boolean
-                {
-                return this._layeredView;
-                }
-                
-                public set layeredView( value:boolean )
-                {
-                this._layeredView = value;
-                }
-                
-                private initHitField()
-                {
-                this._hitField = new away.display.Sprite();
-                this._hitField.alpha = 0;
-                this._hitField.doubleClickEnabled = true;
-                this._hitField.graphics.beginFill( 0x000000 );
-                this._hitField.graphics.drawRect( 0, 0, 100, 100 );
-                this.addChild( this._hitField );
-                }
-                
-                
-                //TODO override public function get filters():Array
-                //TODO override public function set filters(value:Array):void
-                
-                
-                public get filters3d():Array
-                {
-                return this._filter3DRenderer ? this._filter3DRenderer.filters : null;
-                }
-                
-                //TODO public set filters3d( value:Array )
-                
-                public get renderer():away.render.RendererBase
-                {
-                return this._renderer;
-                }
-                
-                //TODO public function set renderer(value:RendererBase):void
-                
-                public get backgroundColor():number
-                {
-                return this._backgroundColor;
-                }
-                
-                //TODO public function set backgroundColor(value:uint):void
-                
-                public get backgroundAlpha():number
-                {
-                return this._backgroundAlpha;
-                }
-                
-                public function set backgroundAlpha(value:Number):void
-                {
-                if (value > 1)
-                {
-                value = 1;
-                }
-                else if (value < 0)
-                {
-                value = 0;
-                }
-                
-                this._renderer.backgroundAlpha = value;
-                this._backgroundAlpha = value;
-                }
-                
-                public get camera():away.cameras.Camera3D
-                {
-                return this._camera;
-                }
-                
-                //TODO public function set camera(camera:Camera3D):void
+            Object.defineProperty(View3D.prototype, "stage3DProxy", {
+                get: /**
+                *
+                * @returns {away.managers.Stage3DProxy}
                 */
                 function () {
-                    return this._pScene;
+                    return this._pStage3DProxy;
+                },
+                set: /**
+                *
+                * @param stage3DProxy
+                */
+                function (stage3DProxy) {
+                    if (this._pStage3DProxy) {
+                        this._pStage3DProxy.removeEventListener(away.events.Stage3DEvent.VIEWPORT_UPDATED, this.onViewportUpdated, this);
+                    }
+
+                    this._pStage3DProxy = stage3DProxy;
+                    this._pStage3DProxy.addEventListener(away.events.Stage3DEvent.VIEWPORT_UPDATED, this.onViewportUpdated, this);
+                    this._pRenderer.iStage3DProxy = this._depthRenderer.iStage3DProxy = this._pStage3DProxy;
+                    this._globalPosDirty = true;
+                    this._pBackBufferInvalid = true;
                 },
                 enumerable: true,
                 configurable: true
             });
+
+
+            Object.defineProperty(View3D.prototype, "layeredView", {
+                get: /**
+                *
+                * @returns {boolean}
+                */
+                function () {
+                    return this._layeredView;
+                },
+                set: /**
+                *
+                * @param value
+                */
+                function (value) {
+                    this._layeredView = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(View3D.prototype, "filters3d", {
+                get: /**
+                *
+                * @returns {*}
+                */
+                function () {
+                    return this._pFilter3DRenderer ? this._pFilter3DRenderer.filters : null;
+                },
+                set: /**
+                *
+                * @param value
+                */
+                function (value) {
+                    if (value && value.length == 0)
+                        value = null;
+
+                    if (this._pFilter3DRenderer && !value) {
+                        this._pFilter3DRenderer.dispose();
+                        this._pFilter3DRenderer = null;
+                    } else if (!this._pFilter3DRenderer && value) {
+                        this._pFilter3DRenderer = new away.render.Filter3DRenderer(this._pStage3DProxy);
+                        this._pFilter3DRenderer.filters = value;
+                    }
+
+                    if (this._pFilter3DRenderer) {
+                        this._pFilter3DRenderer.filters = value;
+                        this._pRequireDepthRender = this._pFilter3DRenderer.requireDepthRender;
+                    } else {
+                        this._pRequireDepthRender = false;
+
+                        if (this._pDepthRender) {
+                            this._pDepthRender.dispose();
+                            this._pDepthRender = null;
+                        }
+                    }
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(View3D.prototype, "renderer", {
+                get: /**
+                *
+                * @returns {away.render.RendererBase}
+                */
+                function () {
+                    return this._pRenderer;
+                },
+                set: /**
+                *
+                * @param value
+                */
+                function (value) {
+                    this._pRenderer.iDispose();
+                    this._pRenderer = value;
+
+                    this._pEntityCollector = this._pRenderer.iCreateEntityCollector();
+                    this._pEntityCollector.camera = this._pCamera;
+                    this._pRenderer.iStage3DProxy = this._pStage3DProxy;
+                    this._pRenderer.antiAlias = this._antiAlias;
+                    this._pRenderer.iBackgroundR = ((this._backgroundColor >> 16) & 0xff) / 0xff;
+                    this._pRenderer.iBackgroundG = ((this._backgroundColor >> 8) & 0xff) / 0xff;
+                    this._pRenderer.iBackgroundB = (this._backgroundColor & 0xff) / 0xff;
+                    this._pRenderer.iBackgroundAlpha = this._backgroundAlpha;
+                    this._pRenderer.iViewWidth = this._width;
+                    this._pRenderer.iViewHeight = this._height;
+
+                    this._pBackBufferInvalid = true;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(View3D.prototype, "backgroundColor", {
+                get: /**
+                *
+                * @returns {number}
+                */
+                function () {
+                    return this._backgroundColor;
+                },
+                set: /**
+                *
+                * @param value
+                */
+                function (value) {
+                    this._backgroundColor = value;
+                    this._pRenderer.iBackgroundR = ((value >> 16) & 0xff) / 0xff;
+                    this._pRenderer.iBackgroundG = ((value >> 8) & 0xff) / 0xff;
+                    this._pRenderer.iBackgroundB = (value & 0xff) / 0xff;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(View3D.prototype, "backgroundAlpha", {
+                get: /**
+                *
+                * @returns {number}
+                */
+                function () {
+                    return this._backgroundAlpha;
+                },
+                set: /**
+                *
+                * @param value
+                */
+                function (value) {
+                    if (value > 1) {
+                        value = 1;
+                    } else if (value < 0) {
+                        value = 0;
+                    }
+
+                    this._pRenderer.iBackgroundAlpha = value;
+                    this._backgroundAlpha = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(View3D.prototype, "camera", {
+                get: /**
+                *
+                * @returns {away.cameras.Camera3D}
+                */
+                function () {
+                    return this._pCamera;
+                },
+                set: /**
+                * Set camera that's used to render the scene for this viewport
+                */
+                function (camera) {
+                    this._pCamera.removeEventListener(away.events.CameraEvent.LENS_CHANGED, this.onLensChanged, this);
+                    this._pCamera = camera;
+
+                    this._pEntityCollector.camera = this._pCamera;
+
+                    if (this._pScene) {
+                        this._pCamera.partition = this._pScene.partition;
+                    }
+
+                    this._pCamera.addEventListener(away.events.CameraEvent.LENS_CHANGED, this.onLensChanged, this);
+                    this._scissorRectDirty = true;
+                    this._viewportDirty = true;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(View3D.prototype, "scene", {
+                get: /**
+                *
+                * @returns {away.containers.Scene3D}
+                */
+                function () {
+                    return this._pScene;
+                },
+                set: /**
+                * Set the scene that's used to render for this viewport
+                */
+                function (scene) {
+                    this._pScene.removeEventListener(away.events.Scene3DEvent.PARTITION_CHANGED, this.onScenePartitionChanged, this);
+                    this._pScene = scene;
+                    this._pScene.addEventListener(away.events.Scene3DEvent.PARTITION_CHANGED, this.onScenePartitionChanged, this);
+
+                    if (this._pCamera) {
+                        this._pCamera.partition = this._pScene.partition;
+                    }
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(View3D.prototype, "deltaTime", {
+                get: /**
+                *
+                * @returns {number}
+                */
+                function () {
+                    return this._deltaTime;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(View3D.prototype, "width", {
+                get: /**
+                *
+                * @returns {number}
+                */
+                function () {
+                    return this._width;
+                },
+                set: /**
+                *
+                * @param value
+                */
+                function (value) {
+                    if (this._width == value) {
+                        return;
+                    }
+
+                    if (this._pRttBufferManager) {
+                        this._pRttBufferManager.viewWidth = value;
+                    }
+
+                    this._width = value;
+                    this._aspectRatio = this._width / this._height;
+                    this._pCamera.lens.iAspectRatio = this._aspectRatio;
+                    this._depthTextureInvalid = true;
+                    this._pRenderer.iViewWidth = value;
+                    this._pScissorRect.width = value;
+                    this._pBackBufferInvalid = true;
+                    this._scissorRectDirty = true;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(View3D.prototype, "height", {
+                get: /**
+                *
+                * @returns {number}
+                */
+                function () {
+                    return this._height;
+                },
+                set: /**
+                *
+                * @param value
+                */
+                function (value) {
+                    if (this._height == value) {
+                        return;
+                    }
+
+                    if (this._pRttBufferManager) {
+                        this._pRttBufferManager.viewHeight = value;
+                    }
+
+                    this._height = value;
+                    this._aspectRatio = this._width / this._height;
+                    this._pCamera.lens.iAspectRatio = this._aspectRatio;
+                    this._depthTextureInvalid = true;
+                    this._pRenderer.iViewHeight = value;
+                    this._pScissorRect.height = value;
+                    this._pBackBufferInvalid = true;
+                    this._scissorRectDirty = true;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+
+
+            Object.defineProperty(View3D.prototype, "x", {
+                get: /**
+                *
+                * @returns {number}
+                */
+                function () {
+                    return this._localPos.x;
+                },
+                set: /**
+                *
+                * @param value
+                */
+                function (value) {
+                    if (this.x == value)
+                        return;
+
+                    this._globalPos.x = this._localPos.x = value;
+                    this._globalPosDirty = true;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(View3D.prototype, "y", {
+                get: /**
+                *
+                * @returns {number}
+                */
+                function () {
+                    return this._localPos.y;
+                },
+                set: /**
+                *
+                * @param value
+                */
+                function (value) {
+                    if (this.y == value)
+                        return;
+
+                    this._globalPos.y = this._localPos.y = value;
+                    this._globalPosDirty = true;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(View3D.prototype, "visible", {
+                get: /**
+                *
+                * @returns {boolean}
+                */
+                function () {
+                    return true;
+                },
+                set: /**
+                *
+                * @param v
+                */
+                function (v) {
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(View3D.prototype, "canvas", {
+                get: function () {
+                    return this._pStage3DProxy.canvas;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(View3D.prototype, "antiAlias", {
+                get: /**
+                *
+                * @returns {number}
+                */
+                function () {
+                    return this._antiAlias;
+                },
+                set: /**
+                *
+                * @param value
+                */
+                function (value) {
+                    this._antiAlias = value;
+                    this._pRenderer.antiAlias = value;
+                    this._pBackBufferInvalid = true;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(View3D.prototype, "renderedFacesCount", {
+                get: /**
+                *
+                * @returns {number}
+                */
+                function () {
+                    return this._pEntityCollector._pNumTriangles;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(View3D.prototype, "shareContext", {
+                get: /**
+                *
+                * @returns {boolean}
+                */
+                function () {
+                    return this._pShareContext;
+                },
+                set: /**
+                *
+                * @param value
+                */
+                function (value) {
+                    if (this._pShareContext == value) {
+                        return;
+                    }
+                    this._pShareContext = value;
+                    this._globalPosDirty = true;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * Updates the backbuffer dimensions.
+            */
+            View3D.prototype.pUpdateBackBuffer = function () {
+                if (this._pStage3DProxy._iContext3D && !this._pShareContext) {
+                    if (this._width && this._height) {
+                        this._pStage3DProxy.configureBackBuffer(this._width, this._height, this._antiAlias, true);
+                        this._pBackBufferInvalid = false;
+                    }
+                }
+            };
+
+            /**
+            * Renders the view.
+            */
+            View3D.prototype.render = function () {
+                if (!this._pStage3DProxy.recoverFromDisposal()) {
+                    this._pBackBufferInvalid = true;
+                    return;
+                }
+
+                if (this._pBackBufferInvalid) {
+                    this.pUpdateBackBuffer();
+                }
+
+                if (this._pShareContext && this._layeredView) {
+                    this._pStage3DProxy.clearDepthBuffer();
+                }
+
+                if (this._globalPosDirty) {
+                    this.pUpdateGlobalPos();
+                }
+
+                this.pUpdateTime();
+                this.pUpdateViewSizeData();
+                this._pEntityCollector.clear();
+                this._pScene.traversePartitions(this._pEntityCollector);
+
+                if (this._pRequireDepthRender) {
+                    this.pRenderSceneDepthToTexture(this._pEntityCollector);
+                }
+
+                if (this._depthPrepass) {
+                    this.pRenderDepthPrepass(this._pEntityCollector);
+                }
+
+                this._pRenderer.iClearOnRender = !this._depthPrepass;
+
+                if (this._pFilter3DRenderer && this._pStage3DProxy._iContext3D) {
+                    this._pRenderer.iRender(this._pEntityCollector, this._pFilter3DRenderer.getMainInputTexture(this._pStage3DProxy), this._pRttBufferManager.renderToTextureRect);
+                    this._pFilter3DRenderer.render(this._pStage3DProxy, this._pCamera, this._pDepthRender);
+                } else {
+                    this._pRenderer.iShareContext = this._pShareContext;
+
+                    if (this._pShareContext) {
+                        this._pRenderer.iRender(this._pEntityCollector, null, this._pScissorRect);
+                    } else {
+                        this._pRenderer.iRender(this._pEntityCollector);
+                    }
+                }
+
+                if (!this._pShareContext) {
+                    this._pStage3DProxy.present();
+                }
+
+                // clean up data for this render
+                this._pEntityCollector.cleanUp();
+
+                // register that a view has been rendered
+                this._pStage3DProxy.bufferClear = false;
+            };
+
+            /**
+            *
+            */
+            View3D.prototype.pUpdateGlobalPos = function () {
+                this._globalPosDirty = false;
+
+                if (!this._pStage3DProxy) {
+                    return;
+                }
+
+                if (this._pShareContext) {
+                    this._pScissorRect.x = this._globalPos.x - this._pStage3DProxy.x;
+                    this._pScissorRect.y = this._globalPos.y - this._pStage3DProxy.y;
+                } else {
+                    this._pScissorRect.x = 0;
+                    this._pScissorRect.y = 0;
+                    this._pStage3DProxy.x = this._globalPos.x;
+                    this._pStage3DProxy.y = this._globalPos.y;
+                }
+
+                this._scissorRectDirty = true;
+            };
+
+            /**
+            *
+            */
+            View3D.prototype.pUpdateTime = function () {
+                var time = away.utils.getTimer();
+
+                if (this._time == 0) {
+                    this._time = time;
+                }
+
+                this._deltaTime = time - this._time;
+                this._time = time;
+            };
+
+            /**
+            *
+            */
+            View3D.prototype.pUpdateViewSizeData = function () {
+                this._pCamera.lens.iAspectRatio = this._aspectRatio;
+
+                if (this._scissorRectDirty) {
+                    this._scissorRectDirty = false;
+                    this._pCamera.lens.iUpdateScissorRect(this._pScissorRect.x, this._pScissorRect.y, this._pScissorRect.width, this._pScissorRect.height);
+                }
+
+                if (this._viewportDirty) {
+                    this._viewportDirty = false;
+                    this._pCamera.lens.iUpdateViewport(this._pStage3DProxy.viewPort.x, this._pStage3DProxy.viewPort.y, this._pStage3DProxy.viewPort.width, this._pStage3DProxy.viewPort.height);
+                }
+
+                if (this._pFilter3DRenderer || this._pRenderer.iRenderToTexture) {
+                    this._pRenderer.iTextureRatioX = this._pRttBufferManager.textureRatioX;
+                    this._pRenderer.iTextureRatioY = this._pRttBufferManager.textureRatioY;
+                } else {
+                    this._pRenderer.iTextureRatioX = 1;
+                    this._pRenderer.iTextureRatioY = 1;
+                }
+            };
+
+            /**
+            *
+            * @param entityCollector
+            */
+            View3D.prototype.pRenderDepthPrepass = function (entityCollector) {
+                this._depthRenderer.disableColor = true;
+
+                if (this._pFilter3DRenderer || this._pRenderer.iRenderToTexture) {
+                    this._depthRenderer.iTextureRatioX = this._pRttBufferManager.textureRatioX;
+                    this._depthRenderer.iTextureRatioY = this._pRttBufferManager.textureRatioY;
+                    this._depthRenderer.iRender(entityCollector, this._pFilter3DRenderer.getMainInputTexture(this._pStage3DProxy), this._pRttBufferManager.renderToTextureRect);
+                } else {
+                    this._depthRenderer.iTextureRatioX = 1;
+                    this._depthRenderer.iTextureRatioY = 1;
+                    this._depthRenderer.iRender(entityCollector);
+                }
+
+                this._depthRenderer.disableColor = false;
+            };
+
+            /**
+            *
+            * @param entityCollector
+            */
+            View3D.prototype.pRenderSceneDepthToTexture = function (entityCollector) {
+                if (this._depthTextureInvalid || !this._pDepthRender) {
+                    this.initDepthTexture(this._pStage3DProxy._iContext3D);
+                }
+                this._depthRenderer.iTextureRatioX = this._pRttBufferManager.textureRatioX;
+                this._depthRenderer.iTextureRatioY = this._pRttBufferManager.textureRatioY;
+                this._depthRenderer.iRender(entityCollector, this._pDepthRender);
+            };
+
+            /**
+            *
+            * @param context
+            */
+            View3D.prototype.initDepthTexture = function (context) {
+                this._depthTextureInvalid = false;
+
+                if (this._pDepthRender) {
+                    this._pDepthRender.dispose();
+                }
+                this._pDepthRender = context.createTexture(this._pRttBufferManager.textureWidth, this._pRttBufferManager.textureHeight, away.display3D.Context3DTextureFormat.BGRA, true);
+            };
+
+            /**
+            *
+            */
+            View3D.prototype.dispose = function () {
+                this._pStage3DProxy.removeEventListener(away.events.Stage3DEvent.VIEWPORT_UPDATED, this.onViewportUpdated, this);
+
+                if (!this.shareContext) {
+                    this._pStage3DProxy.dispose();
+                }
+
+                this._pRenderer.iDispose();
+
+                if (this._pDepthRender) {
+                    this._pDepthRender.dispose();
+                }
+
+                if (this._pRttBufferManager) {
+                    this._pRttBufferManager.dispose();
+                }
+
+                // TODO: imeplement mouse3DManager / touch3DManager
+                //this._mouse3DManager.disableMouseListeners(this);
+                //this._mouse3DManager.dispose();
+                //this._touch3DManager.disableTouchListeners(this);
+                //this._touch3DManager.dispose();
+                //this._mouse3DManager = null;
+                //this._touch3DManager = null;
+                this._pRttBufferManager = null;
+                this._pDepthRender = null;
+                this._depthRenderer = null;
+                this._pStage3DProxy = null;
+                this._pRenderer = null;
+                this._pEntityCollector = null;
+            };
+
+            Object.defineProperty(View3D.prototype, "iEntityCollector", {
+                get: /**
+                *
+                * @returns {away.traverse.EntityCollector}
+                */
+                function () {
+                    return this._pEntityCollector;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            *
+            * @param event
+            */
+            View3D.prototype.onLensChanged = function (event) {
+                this._scissorRectDirty = true;
+                this._viewportDirty = true;
+            };
+
+            /**
+            *
+            * @param event
+            */
+            View3D.prototype.onViewportUpdated = function (event) {
+                if (this._pShareContext) {
+                    this._pScissorRect.x = this._globalPos.x - this._pStage3DProxy.x;
+                    this._pScissorRect.y = this._globalPos.y - this._pStage3DProxy.y;
+                    this._scissorRectDirty = true;
+                }
+                this._viewportDirty = true;
+            };
+
+            Object.defineProperty(View3D.prototype, "depthPrepass", {
+                get: /**
+                *
+                * @returns {boolean}
+                */
+                function () {
+                    return this._depthPrepass;
+                },
+                set: /**
+                *
+                * @param value
+                */
+                function (value) {
+                    this._depthPrepass = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            *
+            */
+            View3D.prototype.onAddedToStage = function () {
+                this._addedToStage = true;
+
+                if (this._pStage3DProxy == null) {
+                    this._pStage3DProxy = away.managers.Stage3DManager.getInstance(this.stage).getFreeStage3DProxy(this._forceSoftware, this._profile);
+                    this._pStage3DProxy.addEventListener(away.events.Stage3DEvent.VIEWPORT_UPDATED, this.onViewportUpdated, this);
+                }
+
+                this._globalPosDirty = true;
+                this._pRttBufferManager = away.managers.RTTBufferManager.getInstance(this._pStage3DProxy);
+                this._pRenderer.iStage3DProxy = this._depthRenderer.iStage3DProxy = this._pStage3DProxy;
+
+                if (this._width == 0) {
+                    this.width = this.stage.stageWidth;
+                } else {
+                    this._pRttBufferManager.viewWidth = this._width;
+                }
+
+                if (this._height == 0) {
+                    this.height = this.stage.stageHeight;
+                } else {
+                    this._pRttBufferManager.viewHeight = this._height;
+                }
+            };
+
+            // TODO private function onAddedToStage(event:Event):void
+            // TODO private function onAdded(event:Event):void
+            View3D.prototype.project = function (point3d) {
+                var v = this._pCamera.project(point3d);
+                v.x = (v.x + 1.0) * this._width / 2.0;
+                v.y = (v.y + 1.0) * this._height / 2.0;
+                return v;
+            };
+
+            View3D.prototype.unproject = function (sX, sY, sZ) {
+                return this._pCamera.unproject((sX * 2 - this._width) / this._pStage3DProxy.width, (sY * 2 - this._height) / this._pStage3DProxy.height, sZ);
+            };
+
+            View3D.prototype.getRay = function (sX, sY, sZ) {
+                return this._pCamera.getRay((sX * 2 - this._width) / this._width, (sY * 2 - this._height) / this._height, sZ);
+            };
             return View3D;
         })();
         containers.View3D = View3D;
@@ -16334,668 +18341,6 @@ var away;
 var away;
 (function (away) {
     ///<reference path="../_definitions.ts"/>
-    (function (pick) {
-        //import away3d.arcane;
-        //import away3d.cameras.*;
-        //import away3d.containers.*;
-        //import away3d.core.base.*;
-        //import away3d.core.data.*;
-        //import away3d.managers.*;
-        //import away3d.core.math.*;
-        //import away3d.core.traverse.*;
-        //import away3d.entities.*;
-        //import away3d.utils.GeometryUtils;
-        //import flash.display.*;
-        //import flash.display3D.*;
-        //import flash.display3D.textures.*;
-        //import flash.geom.*;
-        //import com.adobe.utils.*;
-        //use namespace arcane;
-        /**
-        * Picks a 3d object from a view or scene by performing a separate render pass on the scene around the area being picked using key color values,
-        * then reading back the color value of the pixel in the render representing the picking ray. Requires multiple passes and readbacks for retriving details
-        * on an entity that has its shaderPickingDetails property set to true.
-        *
-        * A read-back operation from any GPU is not a very efficient process, and the amount of processing used can vary significantly between different hardware.
-        *
-        * @see away3d.entities.Entity#shaderPickingDetails
-        */
-        // TODO: Dependencies needed to before implementing IPicker - EntityCollector
-        var ShaderPicker = (function () {
-            /**
-            * Creates a new <code>ShaderPicker</code> object.
-            */
-            function ShaderPicker() {
-                this._onlyMouseEnabled = true;
-                this._interactives = new Array();
-                this._localHitPosition = new away.geom.Vector3D();
-                this._hitUV = new away.geom.Point();
-                this._localHitNormal = new away.geom.Vector3D();
-                this._rayPos = new away.geom.Vector3D();
-                this._rayDir = new away.geom.Vector3D();
-                this._id = new Array(4);
-                this._viewportData = new Array(4);
-                this._boundOffsetScale = new Array(8);
-                this._boundOffsetScale[3] = 0;
-                this._boundOffsetScale[7] = 1;
-            }
-            Object.defineProperty(ShaderPicker.prototype, "onlyMouseEnabled", {
-                get: /**
-                * @inheritDoc
-                */
-                function () {
-                    return this._onlyMouseEnabled;
-                },
-                set: function (value) {
-                    this._onlyMouseEnabled = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            /**
-            * @inheritDoc
-            */
-            // TODO implement dependency : EntityCollector
-            // TODO: GLSL implementation / conversion
-            ShaderPicker.prototype.getViewCollision = function (x, y, view) {
-                throw new away.errors.PartialImplementationError('EntityCollector, Stage3dProxy');
-                return null;
-            };
-
-            //*/
-            /**
-            * @inheritDoc
-            */
-            ShaderPicker.prototype.getSceneCollision = function (position, direction, scene) {
-                return null;
-            };
-
-            /**
-            * @inheritDoc
-            */
-            /* TODO: Implement dependency - EntityCollector
-            // TODO: GLSL implementation / conversion
-            protected function draw(entityCollector:EntityCollector, target:TextureBase)
-            {
-            var camera:Camera3D = entityCollector.camera;
-            
-            _context.clear(0, 0, 0, 1);
-            _stage3DProxy.scissorRect = ShaderPicker.MOUSE_SCISSOR_RECT;
-            
-            _interactives.length = _interactiveId = 0;
-            
-            if (!_objectProgram3D)
-            initObjectProgram3D();
-            _context.setBlendFactors(Context3DBlendFactor.ONE, Context3DBlendFactor.ZERO);
-            _context.setDepthTest(true, Context3DCompareMode.LESS);
-            _context.setProgram(_objectProgram3D);
-            _context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 4, _viewportData, 1);
-            drawRenderables(entityCollector.opaqueRenderableHead, camera);
-            drawRenderables(entityCollector.blendedRenderableHead, camera);
-            }
-            */
-            /**
-            * Draw a list of renderables.
-            * @param renderables The renderables to draw.
-            * @param camera The camera for which to render.
-            */
-            /* TODO implement dependencies: RenderableListItem , Camera3D
-            private drawRenderables(item:RenderableListItem, camera:Camera3D)
-            {
-            var matrix:Matrix3D = away3d.math.Matrix3DUtils.CALCULATION_MATRIX;
-            var renderable:IRenderable;
-            var viewProjection:Matrix3D = camera.viewProjection;
-            
-            while (item) {
-            renderable = item.renderable;
-            
-            // it's possible that the renderable was already removed from the scene
-            if (!renderable.sourceEntity.scene || (!renderable.mouseEnabled && _onlyMouseEnabled)) {
-            item = item.next;
-            continue;
-            }
-            
-            _potentialFound = true;
-            
-            _context.setCulling(renderable.material.bothSides? Context3DTriangleFace.NONE : Context3DTriangleFace.BACK);
-            
-            _interactives[_interactiveId++] = renderable;
-            // color code so that reading from bitmapdata will contain the correct value
-            _id[1] = (_interactiveId >> 8)/255; // on green channel
-            _id[2] = (_interactiveId & 0xff)/255; // on blue channel
-            
-            matrix.copyFrom(renderable.getRenderSceneTransform(camera));
-            matrix.append(viewProjection);
-            _context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, matrix, true);
-            _context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, _id, 1);
-            renderable.activateVertexBuffer(0, _stage3DProxy);
-            _context.drawTriangles(renderable.getIndexBuffer(_stage3DProxy), 0, renderable.numTriangles);
-            
-            item = item.next;
-            }
-            }
-            */
-            /* TODO implement dependencies: Camera3D
-            private updateRay(camera:Camera3D)
-            {
-            _rayPos = camera.scenePosition;
-            _rayDir = camera.getRay(_projX, _projY, 1);
-            _rayDir.normalize();
-            }
-            */
-            /**
-            * Creates the Program3D that color-codes objects.
-            */
-            /* TODO AGAL <> GLSL conversion.
-            private initObjectProgram3D()
-            {
-            var vertexCode:string;
-            var fragmentCode:string;
-            
-            _objectProgram3D = _context.createProgram();
-            
-            vertexCode = "m44 vt0, va0, vc0			\n" +
-            "mul vt1.xy, vt0.w, vc4.zw	\n" +
-            "add vt0.xy, vt0.xy, vt1.xy	\n" +
-            "mul vt0.xy, vt0.xy, vc4.xy	\n" +
-            "mov op, vt0	\n";
-            fragmentCode = "mov oc, fc0"; // write identifier
-            
-            _objectProgram3D.upload(new AGALMiniAssembler().assemble(Context3DProgramType.VERTEX, vertexCode),
-            new AGALMiniAssembler().assemble(Context3DProgramType.FRAGMENT, fragmentCode));
-            }
-            */
-            /**
-            * Creates the Program3D that renders positions.
-            */
-            /* TODO AGAL <> GLSL conversion.
-            private initTriangleProgram3D()
-            {
-            var vertexCode:string;
-            var fragmentCode:string;
-            
-            this._triangleProgram3D = this._context.createProgram();
-            
-            // todo: add animation code
-            vertexCode = "add vt0, va0, vc5 			\n" +
-            "mul vt0, vt0, vc6 			\n" +
-            "mov v0, vt0				\n" +
-            "m44 vt0, va0, vc0			\n" +
-            "mul vt1.xy, vt0.w, vc4.zw	\n" +
-            "add vt0.xy, vt0.xy, vt1.xy	\n" +
-            "mul vt0.xy, vt0.xy, vc4.xy	\n" +
-            "mov op, vt0	\n";
-            fragmentCode = "mov oc, v0"; // write identifier
-            
-            _triangleProgram3D.upload(new AGALMiniAssembler().assemble(Context3DProgramType.VERTEX, vertexCode),
-            new AGALMiniAssembler().assemble(Context3DProgramType.FRAGMENT, fragmentCode));
-            }
-            */
-            /**
-            * Gets more detailed information about the hir position, if required.
-            * @param camera The camera used to view the hit object.
-            */
-            /* TODO implement dependencies: Camera3D
-            private getHitDetails(camera:Camera3D)
-            {
-            getApproximatePosition(camera);
-            getPreciseDetails(camera);
-            }
-            */
-            /**
-            * Finds a first-guess approximate position about the hit position.
-            * @param camera The camera used to view the hit object.
-            */
-            /* TODO implement dependencies: Camera3D
-            private getApproximatePosition(camera:Camera3D)
-            {
-            var entity:Entity = _hitRenderable.sourceEntity;
-            var col:number;
-            var scX:number, scY:number, scZ:number;
-            var offsX:number, offsY:number, offsZ:number;
-            var localViewProjection:Matrix3D = away3d.math.Matrix3DUtils.CALCULATION_MATRIX;
-            localViewProjection.copyFrom(_hitRenderable.getRenderSceneTransform(camera));
-            localViewProjection.append(camera.viewProjection);
-            if (!_triangleProgram3D)
-            initTriangleProgram3D();
-            
-            _boundOffsetScale[4] = 1/(scX = entity.maxX - entity.minX);
-            _boundOffsetScale[5] = 1/(scY = entity.maxY - entity.minY);
-            _boundOffsetScale[6] = 1/(scZ = entity.maxZ - entity.minZ);
-            _boundOffsetScale[0] = offsX = -entity.minX;
-            _boundOffsetScale[1] = offsY = -entity.minY;
-            _boundOffsetScale[2] = offsZ = -entity.minZ;
-            
-            _context.setProgram(_triangleProgram3D);
-            _context.clear(0, 0, 0, 0, 1, 0, Context3DClearMask.DEPTH);
-            _context.setScissorRectangle(ShaderPicker.MOUSE_SCISSOR_RECT);
-            _context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, localViewProjection, true);
-            _context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 5, _boundOffsetScale, 2);
-            _hitRenderable.activateVertexBuffer(0, _stage3DProxy);
-            _context.drawTriangles(_hitRenderable.getIndexBuffer(_stage3DProxy), 0, _hitRenderable.numTriangles);
-            _context.drawToBitmapData(_bitmapData);
-            
-            col = _bitmapData.getPixel(0, 0);
-            
-            _localHitPosition.x = ((col >> 16) & 0xff)*scX/255 - offsX;
-            _localHitPosition.y = ((col >> 8) & 0xff)*scY/255 - offsY;
-            _localHitPosition.z = (col & 0xff)*scZ/255 - offsZ;
-            }
-            */
-            /**
-            * Use the approximate position info to find the face under the mouse position from which we can derive the precise
-            * ray-face intersection point, then use barycentric coordinates to figure out the uv coordinates, etc.
-            * @param camera The camera used to view the hit object.
-            */
-            /* TODO implement dependencies: Camera3D
-            private getPreciseDetails(camera:Camera3D)
-            {
-            
-            var subGeom:ISubGeometry = SubMesh(_hitRenderable).subGeometry;
-            var indices:number[] = subGeom.indexData;
-            var vertices:number[] = subGeom.vertexData;
-            var len:number = indices.length;
-            var x1:number, y1:number, z1:number;
-            var x2:number, y2:number, z2:number;
-            var x3:number, y3:number, z3:number;
-            var i:number = 0, j:number = 1, k:number = 2;
-            var t1:number, t2:number, t3:number;
-            var v0x:number, v0y:number, v0z:number;
-            var v1x:number, v1y:number, v1z:number;
-            var v2x:number, v2y:number, v2z:number;
-            var dot00:number, dot01:number, dot02:number, dot11:number, dot12:number;
-            var s:number, t:number, invDenom:number;
-            var uvs:number[] = subGeom.UVData;
-            var normals:number[] = subGeom.faceNormals;
-            var x:number = _localHitPosition.x, y:number = _localHitPosition.y, z:number = _localHitPosition.z;
-            var u:number, v:number;
-            var ui1:number, ui2:number, ui3:number;
-            var s0x:number, s0y:number, s0z:number;
-            var s1x:number, s1y:number, s1z:number;
-            var nl:number;
-            var stride:number = subGeom.vertexStride;
-            var vertexOffset:number = subGeom.vertexOffset;
-            
-            updateRay(camera);
-            
-            while (i < len) {
-            t1 = vertexOffset + indices[i]*stride;
-            t2 = vertexOffset + indices[j]*stride;
-            t3 = vertexOffset + indices[k]*stride;
-            x1 = vertices[t1];
-            y1 = vertices[t1 + 1];
-            z1 = vertices[t1 + 2];
-            x2 = vertices[t2];
-            y2 = vertices[t2 + 1];
-            z2 = vertices[t2 + 2];
-            x3 = vertices[t3];
-            y3 = vertices[t3 + 1];
-            z3 = vertices[t3 + 2];
-            
-            // if within bounds
-            if (!(    (x < x1 && x < x2 && x < x3) ||
-            (y < y1 && y < y2 && y < y3) ||
-            (z < z1 && z < z2 && z < z3) ||
-            (x > x1 && x > x2 && x > x3) ||
-            (y > y1 && y > y2 && y > y3) ||
-            (z > z1 && z > z2 && z > z3))) {
-            
-            // calculate barycentric coords for approximated position
-            v0x = x3 - x1;
-            v0y = y3 - y1;
-            v0z = z3 - z1;
-            v1x = x2 - x1;
-            v1y = y2 - y1;
-            v1z = z2 - z1;
-            v2x = x - x1;
-            v2y = y - y1;
-            v2z = z - z1;
-            dot00 = v0x*v0x + v0y*v0y + v0z*v0z;
-            dot01 = v0x*v1x + v0y*v1y + v0z*v1z;
-            dot02 = v0x*v2x + v0y*v2y + v0z*v2z;
-            dot11 = v1x*v1x + v1y*v1y + v1z*v1z;
-            dot12 = v1x*v2x + v1y*v2y + v1z*v2z;
-            invDenom = 1/(dot00*dot11 - dot01*dot01);
-            s = (dot11*dot02 - dot01*dot12)*invDenom;
-            t = (dot00*dot12 - dot01*dot02)*invDenom;
-            
-            // if inside the current triangle, fetch details hit information
-            if (s >= 0 && t >= 0 && (s + t) <= 1) {
-            
-            // this is def the triangle, now calculate precise coords
-            getPrecisePosition(_hitRenderable.inverseSceneTransform, normals[i], normals[i + 1], normals[i + 2], x1, y1, z1);
-            
-            v2x = _localHitPosition.x - x1;
-            v2y = _localHitPosition.y - y1;
-            v2z = _localHitPosition.z - z1;
-            
-            s0x = x2 - x1; // s0 = p1 - p0
-            s0y = y2 - y1;
-            s0z = z2 - z1;
-            s1x = x3 - x1; // s1 = p2 - p0
-            s1y = y3 - y1;
-            s1z = z3 - z1;
-            _localHitNormal.x = s0y*s1z - s0z*s1y; // n = s0 x s1
-            _localHitNormal.y = s0z*s1x - s0x*s1z;
-            _localHitNormal.z = s0x*s1y - s0y*s1x;
-            nl = 1/Math.sqrt(
-            _localHitNormal.x*_localHitNormal.x +
-            _localHitNormal.y*_localHitNormal.y +
-            _localHitNormal.z*_localHitNormal.z
-            ); // normalize n
-            _localHitNormal.x *= nl;
-            _localHitNormal.y *= nl;
-            _localHitNormal.z *= nl;
-            
-            dot02 = v0x*v2x + v0y*v2y + v0z*v2z;
-            dot12 = v1x*v2x + v1y*v2y + v1z*v2z;
-            s = (dot11*dot02 - dot01*dot12)*invDenom;
-            t = (dot00*dot12 - dot01*dot02)*invDenom;
-            
-            ui1 = indices[i] << 1;
-            ui2 = indices[j] << 1;
-            ui3 = indices[k] << 1;
-            
-            u = uvs[ui1];
-            v = uvs[ui1 + 1];
-            _hitUV.x = u + t*(uvs[ui2] - u) + s*(uvs[ui3] - u);
-            _hitUV.y = v + t*(uvs[ui2 + 1] - v) + s*(uvs[ui3 + 1] - v);
-            
-            _faceIndex = i;
-            _subGeometryIndex = GeometryUtils.getMeshSubMeshIndex(SubMesh(_hitRenderable));
-            
-            return;
-            }
-            }
-            
-            i += 3;
-            j += 3;
-            k += 3;
-            }
-            }
-            */
-            /**
-            * Finds the precise hit position by unprojecting the screen coordinate back unto the hit face's plane and
-            * calculating the intersection point.
-            * @param camera The camera used to render the object.
-            * @param invSceneTransform The inverse scene transformation of the hit object.
-            * @param nx The x-coordinate of the face's plane normal.
-            * @param ny The y-coordinate of the face plane normal.
-            * @param nz The z-coordinate of the face plane normal.
-            * @param px The x-coordinate of a point on the face's plane (ie a face vertex)
-            * @param py The y-coordinate of a point on the face's plane (ie a face vertex)
-            * @param pz The z-coordinate of a point on the face's plane (ie a face vertex)
-            */
-            ShaderPicker.prototype.getPrecisePosition = function (invSceneTransform, nx, ny, nz, px, py, pz) {
-                // calculate screen ray and find exact intersection position with triangle
-                var rx, ry, rz;
-                var ox, oy, oz;
-                var t;
-                var raw = away.math.Matrix3DUtils.RAW_DATA_CONTAINER;
-                var cx = this._rayPos.x, cy = this._rayPos.y, cz = this._rayPos.z;
-
-                // unprojected projection point, gives ray dir in cam space
-                ox = this._rayDir.x;
-                oy = this._rayDir.y;
-                oz = this._rayDir.z;
-
-                // transform ray dir and origin (cam pos) to object space
-                invSceneTransform.copyRawDataTo(raw);
-                rx = raw[0] * ox + raw[4] * oy + raw[8] * oz;
-                ry = raw[1] * ox + raw[5] * oy + raw[9] * oz;
-                rz = raw[2] * ox + raw[6] * oy + raw[10] * oz;
-
-                ox = raw[0] * cx + raw[4] * cy + raw[8] * cz + raw[12];
-                oy = raw[1] * cx + raw[5] * cy + raw[9] * cz + raw[13];
-                oz = raw[2] * cx + raw[6] * cy + raw[10] * cz + raw[14];
-
-                t = ((px - ox) * nx + (py - oy) * ny + (pz - oz) * nz) / (rx * nx + ry * ny + rz * nz);
-
-                this._localHitPosition.x = ox + rx * t;
-                this._localHitPosition.y = oy + ry * t;
-                this._localHitPosition.z = oz + rz * t;
-            };
-
-            ShaderPicker.prototype.dispose = function () {
-                this._bitmapData.dispose();
-                if (this._triangleProgram3D) {
-                    this._triangleProgram3D.dispose();
-                }
-
-                if (this._objectProgram3D) {
-                    this._objectProgram3D.dispose();
-                }
-
-                this._triangleProgram3D = null;
-                this._objectProgram3D = null;
-                this._bitmapData = null;
-                this._hitRenderable = null;
-                this._hitEntity = null;
-            };
-            ShaderPicker.MOUSE_SCISSOR_RECT = new away.geom.Rectangle(0, 0, 1, 1);
-            return ShaderPicker;
-        })();
-        pick.ShaderPicker = ShaderPicker;
-    })(away.pick || (away.pick = {}));
-    var pick = away.pick;
-})(away || (away = {}));
-var away;
-(function (away) {
-    ///<reference path="../_definitions.ts"/>
-    (function (pick) {
-        //import flash.geom.Vector3D;
-        //import away3d.arcane;
-        //import away3d.containers.Scene3D;
-        //import away3d.containers.View3D;
-        //import away3d.core.data.EntityListItem;
-        //import away3d.core.traverse.EntityCollector;
-        //import away3d.core.traverse.RaycastCollector;
-        //import away3d.entities.Entity;
-        //use namespace arcane;
-        /**
-        * Picks a 3d object from a view or scene by 3D raycast calculations.
-        * Performs an initial coarse boundary calculation to return a subset of entities whose bounding volumes intersect with the specified ray,
-        * then triggers an optional picking collider on individual entity objects to further determine the precise values of the picking ray collision.
-        */
-        // TODO: Dependencies needed to before implementing IPicker - EntityListItem, EntityCollector
-        var RaycastPicker = (function () {
-            /**
-            * Creates a new <code>RaycastPicker</code> object.
-            *
-            * @param findClosestCollision Determines whether the picker searches for the closest bounds collision along the ray,
-            * or simply returns the first collision encountered Defaults to false.
-            */
-            function RaycastPicker(findClosestCollision) {
-                //private var _raycastCollector:RaycastCollector = new RaycastCollector(); // TODO Implement Dependency: RaycastCollector
-                this._ignoredEntities = [];
-                this._onlyMouseEnabled = true;
-                this._findClosestCollision = findClosestCollision;
-                this._entities = new Array();
-            }
-            Object.defineProperty(RaycastPicker.prototype, "onlyMouseEnabled", {
-                get: /**
-                * @inheritDoc
-                */
-                function () {
-                    return this._onlyMouseEnabled;
-                },
-                set: function (value) {
-                    this._onlyMouseEnabled = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            /**
-            * @inheritDoc
-            */
-            //TODO Implement Dependency: EntityListItem, EntityCollector
-            RaycastPicker.prototype.getViewCollision = function (x, y, view) {
-                throw new away.errors.PartialImplementationError('EntityListItem, EntityCollector');
-                return null;
-            };
-
-            //*/
-            /**
-            * @inheritDoc
-            */
-            //* TODO Implement Dependency: EntityListItem, EntityCollector
-            RaycastPicker.prototype.getSceneCollision = function (position, direction, scene) {
-                throw new away.errors.PartialImplementationError('EntityListItem, EntityCollector');
-                return null;
-            };
-
-            //*/
-            /* TODO: Implement Dependency: Entity.isIntersectingRay
-            public getEntityCollision(position:away.geom.Vector3D, direction:away.geom.Vector3D, entities:away.entities.Entity[] ):away.pick.PickingCollisionVO
-            {
-            
-            
-            position = position; // TODO: remove ?
-            direction = direction;
-            
-            this._numEntities = 0;
-            
-            var entity:away.entities.Entity;
-            var l : number = entities.length;
-            
-            
-            for ( var c : number = 0 ; c < l ; c ++ )
-            {
-            
-            entity = entities[c];
-            
-            if (entity.isIntersectingRay(position, direction))
-            {
-            
-            this._entities[this._numEntities++] = entity;
-            
-            }
-            
-            
-            }
-            
-            return this.getPickingCollisionVO();
-            
-            }
-            //*/
-            RaycastPicker.prototype.setIgnoreList = function (entities) {
-                this._ignoredEntities = entities;
-            };
-
-            RaycastPicker.prototype.isIgnored = function (entity) {
-                if (this._onlyMouseEnabled && (!entity._iAncestorsAllowMouseEnabled || !entity.mouseEnabled)) {
-                    return true;
-                }
-
-                var ignoredEntity;
-
-                var l = this._ignoredEntities.length;
-
-                for (var c = 0; c < l; c++) {
-                    ignoredEntity = this._ignoredEntities[c];
-
-                    if (ignoredEntity == entity) {
-                        return true;
-                    }
-                }
-
-                return false;
-            };
-
-            RaycastPicker.prototype.sortOnNearT = function (entity1, entity2) {
-                return entity1.pickingCollisionVO.rayEntryDistance > entity2.pickingCollisionVO.rayEntryDistance ? 1 : -1;
-            };
-
-            RaycastPicker.prototype.getPickingCollisionVO = function () {
-                // trim before sorting
-                this._entities.length = this._numEntities;
-
-                // Sort entities from closest to furthest.
-                this._entities = this._entities.sort(this.sortOnNearT);
-
-                // ---------------------------------------------------------------------
-                // Evaluate triangle collisions when needed.
-                // Replaces collision data provided by bounds collider with more precise data.
-                // ---------------------------------------------------------------------
-                var shortestCollisionDistance = Number.MAX_VALUE;
-                var bestCollisionVO;
-                var pickingCollisionVO;
-                var entity;
-                var i;
-
-                for (i = 0; i < this._numEntities; ++i) {
-                    entity = this._entities[i];
-                    pickingCollisionVO = entity._iPickingCollisionVO;
-                    if (entity.pickingCollider) {
-                        if ((bestCollisionVO == null || pickingCollisionVO.rayEntryDistance < bestCollisionVO.rayEntryDistance) && entity.iCollidesBefore(shortestCollisionDistance, this._findClosestCollision)) {
-                            shortestCollisionDistance = pickingCollisionVO.rayEntryDistance;
-                            bestCollisionVO = pickingCollisionVO;
-                            if (!this._findClosestCollision) {
-                                this.updateLocalPosition(pickingCollisionVO);
-                                return pickingCollisionVO;
-                            }
-                        }
-                    } else if (bestCollisionVO == null || pickingCollisionVO.rayEntryDistance < bestCollisionVO.rayEntryDistance) {
-                        if (!pickingCollisionVO.rayOriginIsInsideBounds) {
-                            this.updateLocalPosition(pickingCollisionVO);
-                            return pickingCollisionVO;
-                        }
-                    }
-                }
-
-                return bestCollisionVO;
-            };
-
-            RaycastPicker.prototype.updateLocalPosition = function (pickingCollisionVO) {
-                var collisionPos = (pickingCollisionVO.localPosition == null) ? new away.geom.Vector3D() : pickingCollisionVO.localPosition;
-
-                //var collisionPos:away.geom.Vector3D = pickingCollisionVO.localPosition ||= new away.geom.Vector3D();
-                var rayDir = pickingCollisionVO.localRayDirection;
-                var rayPos = pickingCollisionVO.localRayPosition;
-                var t = pickingCollisionVO.rayEntryDistance;
-                collisionPos.x = rayPos.x + t * rayDir.x;
-                collisionPos.y = rayPos.y + t * rayDir.y;
-                collisionPos.z = rayPos.z + t * rayDir.z;
-            };
-
-            RaycastPicker.prototype.dispose = function () {
-            };
-            return RaycastPicker;
-        })();
-        pick.RaycastPicker = RaycastPicker;
-    })(away.pick || (away.pick = {}));
-    var pick = away.pick;
-})(away || (away = {}));
-var away;
-(function (away) {
-    ///<reference path="../_definitions.ts"/>
-    (function (pick) {
-        /**
-        * Options for the different 3D object picking approaches available in Away3D. Can be used for automatic mouse picking on the view.
-        *
-        * @see away3d.containers.View3D#mousePicker
-        */
-        var PickingType = (function () {
-            function PickingType() {
-            }
-            PickingType.SHADER = new away.pick.ShaderPicker();
-
-            PickingType.RAYCAST_FIRST_ENCOUNTERED = new away.pick.RaycastPicker(false);
-
-            PickingType.RAYCAST_BEST_HIT = new away.pick.RaycastPicker(true);
-            return PickingType;
-        })();
-        pick.PickingType = PickingType;
-    })(away.pick || (away.pick = {}));
-    var pick = away.pick;
-})(away || (away = {}));
-var away;
-(function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (events) {
         //import away3d.arcane;
         //import away3d.containers.ObjectContainer3D;
@@ -17196,10 +18541,9 @@ var away;
                 this._iStage3DIndex = stage3DIndex;
                 this._stage3D = stage3D;
 
-                // TODO: dependency required ( stage3d.x , stage3d.y, stage3d.visible );
-                //this._stage3D.x = 0;
-                //this._stage3D.y = 0;
-                //this._stage3D.visible = true;
+                this._stage3D.x = 0;
+                this._stage3D.y = 0;
+                this._stage3D.visible = true;
                 this._stage3DManager = stage3DManager;
                 this._viewPort = new away.geom.Rectangle();
                 this._enableDepthAndStencil = true;
@@ -17282,6 +18626,9 @@ var away;
 
                 if (this._iContext3D)
                     this._iContext3D.configureBackBuffer(backBufferWidth, backBufferHeight, antiAlias, enableDepthAndStencil);
+
+                this._stage3D.width = backBufferWidth;
+                this._stage3D.height = backBufferHeight;
             };
 
             Object.defineProperty(Stage3DProxy.prototype, "enableDepthAndStencil", {
@@ -17418,7 +18765,6 @@ var away;
                 configurable: true
             });
 
-
             Object.defineProperty(Stage3DProxy.prototype, "stage3DIndex", {
                 get: /**
                 * The index of the Stage3D which is managed by this instance of Stage3DProxy.
@@ -17452,21 +18798,22 @@ var away;
                 configurable: true
             });
 
-            Object.defineProperty(Stage3DProxy.prototype, "driverInfo", {
+            Object.defineProperty(Stage3DProxy.prototype, "usesSoftwareRendering", {
                 get: /**
                 * The driver information as reported by the Context3D object (if any)
                 */
-                function () {
-                    away.Debug.throwPIR('Stage3DProxy', 'driverInfo', 'Context3D.driverInfo()');
-
-                    return null;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(Stage3DProxy.prototype, "usesSoftwareRendering", {
-                get: /**
+                /*
+                public get driverInfo():string
+                {
+                
+                away.Debug.throwPIR( 'Stage3DProxy' , 'driverInfo' ,  'Context3D.driverInfo()');
+                
+                return null;
+                
+                //return this._iContext3D? this._iContext3D.driverInfo : null;
+                }
+                */
+                /**
                 * Indicates whether the Stage3D managed by this proxy is running in software mode.
                 * Remember to wait for the CONTEXT3D_CREATED event before checking this property,
                 * as only then will it be guaranteed to be accurate.
@@ -17483,33 +18830,50 @@ var away;
                 * The x position of the Stage3D.
                 */
                 function () {
-                    away.Debug.throwPIR('Stage3DProxy', 'get x', 'Stage3D.x');
-
-                    return 0;
+                    return this._stage3D.x;
                 },
                 set: function (value) {
-                    away.Debug.throwPIR('Stage3DProxy', 'set x', 'Stage3D.x');
+                    if (this._viewPort.x == value)
+                        return;
+
+                    this._stage3D.x = this._viewPort.x = value;
+
+                    this.notifyViewportUpdated();
                 },
                 enumerable: true,
                 configurable: true
             });
-
 
             Object.defineProperty(Stage3DProxy.prototype, "y", {
                 get: /**
                 * The y position of the Stage3D.
                 */
                 function () {
-                    away.Debug.throwPIR('Stage3DProxy', 'get x', 'Stage3D.y');
-                    return 0;
+                    return this._stage3D.y;
                 },
                 set: function (value) {
-                    away.Debug.throwPIR('Stage3DProxy', 'set x', 'Stage3D.y');
+                    if (this._viewPort.y == value)
+                        return;
+
+                    this._stage3D.y = this._viewPort.y = value;
+
+                    this.notifyViewportUpdated();
                 },
                 enumerable: true,
                 configurable: true
             });
 
+            Object.defineProperty(Stage3DProxy.prototype, "canvas", {
+                get: /**
+                *
+                * @returns {HTMLCanvasElement}
+                */
+                function () {
+                    return this._stage3D.canvas;
+                },
+                enumerable: true,
+                configurable: true
+            });
 
             Object.defineProperty(Stage3DProxy.prototype, "width", {
                 get: /**
@@ -17522,7 +18886,7 @@ var away;
                     if (this._viewPort.width == width)
                         return;
 
-                    this._backBufferWidth = this._viewPort.width = width;
+                    this._stage3D.width = this._backBufferWidth = this._viewPort.width = width;
                     this._backBufferDirty = true;
 
                     this.notifyViewportUpdated();
@@ -17530,7 +18894,6 @@ var away;
                 enumerable: true,
                 configurable: true
             });
-
 
             Object.defineProperty(Stage3DProxy.prototype, "height", {
                 get: /**
@@ -17543,7 +18906,7 @@ var away;
                     if (this._viewPort.height == height)
                         return;
 
-                    this._backBufferHeight = this._viewPort.height = height;
+                    this._stage3D.height = this._backBufferHeight = this._viewPort.height = height;
                     this._backBufferDirty = true;
 
                     this.notifyViewportUpdated();
@@ -17551,7 +18914,6 @@ var away;
                 enumerable: true,
                 configurable: true
             });
-
 
             Object.defineProperty(Stage3DProxy.prototype, "antiAlias", {
                 get: /**
@@ -17567,7 +18929,6 @@ var away;
                 enumerable: true,
                 configurable: true
             });
-
 
             Object.defineProperty(Stage3DProxy.prototype, "viewPort", {
                 get: /**
@@ -17602,16 +18963,14 @@ var away;
                 * The visibility of the Stage3D.
                 */
                 function () {
-                    away.Debug.throwPIR('Stage3DProxy', 'get visible', 'Stage3D.visible');
-                    return null;
+                    return this._stage3D.visible;
                 },
                 set: function (value) {
-                    away.Debug.throwPIR('Stage3DProxy', 'set visible', 'Stage3D.visible');
+                    this._stage3D.visible = value;
                 },
                 enumerable: true,
                 configurable: true
             });
-
 
             Object.defineProperty(Stage3DProxy.prototype, "bufferClear", {
                 get: /**
@@ -17626,7 +18985,6 @@ var away;
                 enumerable: true,
                 configurable: true
             });
-
 
             Object.defineProperty(Stage3DProxy.prototype, "mouse3DManager", {
                 get: /*
@@ -17680,7 +19038,7 @@ var away;
                     away.Debug.log('Stage3DProxy', 'onContext3DUpdate this._stage3D.context3D: ', this._stage3D.context3D);
 
                     // todo: implement dependency Context3D.enableErrorChecking, Context3D.driverInfo
-                    away.Debug.throwPIR('Stage3DProxy', 'onContext3DUpdate', 'Context3D.enableErrorChecking, Context3D.driverInfo');
+                    away.Debug.throwPIR('Stage3DProxy', 'onContext3DUpdate', 'Context3D.enableErrorChecking');
 
                     if (this._backBufferWidth && this._backBufferHeight) {
                         this._iContext3D.configureBackBuffer(this._backBufferWidth, this._backBufferHeight, this._antiAlias, this._enableDepthAndStencil);
@@ -17740,7 +19098,7 @@ var away;
                     return false;
                 }
 
-                away.Debug.throwPIR('Stage3DProxy', 'recoverFromDisposal', 'Context3D.driverInfo');
+                away.Debug.throwPIR('Stage3DProxy', 'recoverFromDisposal', '');
 
                 /*
                 if (this._iContext3D.driverInfo == "Disposed")
@@ -17781,6 +19139,7 @@ var away;
                 if (typeof width === "undefined") { width = 640; }
                 if (typeof height === "undefined") { height = 480; }
                 _super.call(this);
+
                 if (!document) {
                     throw new away.errors.DocumentError("A root document object does not exist.");
                 }
@@ -17792,9 +19151,14 @@ var away;
                 this._stageHeight = height;
                 this._stageWidth = width;
 
+                var s3d;
+
                 for (var i = 0; i < Stage.STAGE3D_MAX_QUANTITY; ++i) {
-                    away.utils.CSS.setCanvasSize(this.stage3Ds[i].canvas, width, height);
-                    away.utils.CSS.setCanvasPosition(this.stage3Ds[i].canvas, 0, 0, true);
+                    s3d = this.stage3Ds[i];
+                    s3d.width = width;
+                    s3d.height = height;
+                    s3d.x = 0;
+                    s3d.y = 0;
                 }
                 this.dispatchEvent(new away.events.Event(away.events.Event.RESIZE));
             };
@@ -17808,11 +19172,19 @@ var away;
 
             Stage.prototype.initStage3DObjects = function () {
                 this.stage3Ds = [];
+
                 for (var i = 0; i < Stage.STAGE3D_MAX_QUANTITY; ++i) {
                     var canvas = this.createHTMLCanvasElement();
-                    this.addChildHTMLElement(canvas);
-                    this.stage3Ds.push(new away.display.Stage3D(canvas));
+                    var stage3D = new away.display.Stage3D(canvas);
+                    stage3D.addEventListener(away.events.Event.CONTEXT3D_CREATE, this.onContextCreated, this);
+
+                    this.stage3Ds.push(stage3D);
                 }
+            };
+
+            Stage.prototype.onContextCreated = function (e) {
+                var stage3D = e.target;
+                this.addChildHTMLElement(stage3D.canvas);
             };
 
             Stage.prototype.createHTMLCanvasElement = function () {
@@ -17822,6 +19194,30 @@ var away;
             Stage.prototype.addChildHTMLElement = function (canvas) {
                 document.body.appendChild(canvas);
             };
+
+            Object.defineProperty(Stage.prototype, "stageWidth", {
+                get: function () {
+                    return this._stageWidth;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Stage.prototype, "stageHeight", {
+                get: function () {
+                    return this._stageHeight;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Stage.prototype, "rect", {
+                get: function () {
+                    return new away.geom.Rectangle(0, 0, this._stageWidth, this._stageHeight);
+                },
+                enumerable: true,
+                configurable: true
+            });
             Stage.STAGE3D_MAX_QUANTITY = 8;
             return Stage;
         })(away.events.EventDispatcher);
@@ -18150,18 +19546,18 @@ var away;
             Stage3DManager.prototype.getFreeStage3DProxy = function (forceSoftware, profile) {
                 if (typeof forceSoftware === "undefined") { forceSoftware = false; }
                 if (typeof profile === "undefined") { profile = "baseline"; }
-                var i;
+                var i = 0;
                 var len = Stage3DManager._stageProxies.length;
+
+                console.log(Stage3DManager._stageProxies);
 
                 while (i < len) {
                     if (!Stage3DManager._stageProxies[i]) {
                         this.getStage3DProxy(i, forceSoftware, profile);
 
-                        away.Debug.throwPIR('Stage3DManager', 'getFreeStage3DProxy', 'Stage.stageWidth , Stage.stageHeight ');
+                        Stage3DManager._stageProxies[i].width = this._stage.stageWidth;
+                        Stage3DManager._stageProxies[i].height = this._stage.stageHeight;
 
-                        //throw new away.errors.PartialImplementationError( 'Stage.stageWidth , Stage.stageHeight ');
-                        //Stage3DManager._stageProxies[i].width = this._stage.stageWidth;
-                        //Stage3DManager._stageProxies[i].height = this._stage.stageHeight;
                         return Stage3DManager._stageProxies[i];
                     }
 
@@ -18237,6 +19633,139 @@ var Stage3DManagerSingletonEnforcer = (function () {
     function Stage3DManagerSingletonEnforcer() {
     }
     return Stage3DManagerSingletonEnforcer;
+})();
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (managers) {
+        var AGALProgram3DCache = (function () {
+            function AGALProgram3DCache(stage3DProxy, agalProgram3DCacheSingletonEnforcer) {
+                if (!agalProgram3DCacheSingletonEnforcer) {
+                    throw new Error("This class is a multiton and cannot be instantiated manually. Use Stage3DManager.getInstance instead.");
+                }
+
+                this._stage3DProxy = stage3DProxy;
+
+                this._program3Ds = new Array();
+                this._ids = new Array();
+                this._usages = new Array();
+                this._keys = new Array();
+            }
+            AGALProgram3DCache.getInstance = function (stage3DProxy) {
+                var index = stage3DProxy._iStage3DIndex;
+
+                if (AGALProgram3DCache._instances == null) {
+                    AGALProgram3DCache._instances = new Array(8);
+                }
+
+                if (!AGALProgram3DCache._instances[index]) {
+                    AGALProgram3DCache._instances[index] = new AGALProgram3DCache(stage3DProxy, new AGALProgram3DCacheSingletonEnforcer());
+
+                    stage3DProxy.addEventListener(away.events.Stage3DEvent.CONTEXT3D_DISPOSED, AGALProgram3DCache.onContext3DDisposed, AGALProgram3DCache);
+                    stage3DProxy.addEventListener(away.events.Stage3DEvent.CONTEXT3D_CREATED, AGALProgram3DCache.onContext3DDisposed, AGALProgram3DCache);
+                    stage3DProxy.addEventListener(away.events.Stage3DEvent.CONTEXT3D_RECREATED, AGALProgram3DCache.onContext3DDisposed, AGALProgram3DCache);
+                }
+
+                return AGALProgram3DCache._instances[index];
+            };
+
+            AGALProgram3DCache.getInstanceFromIndex = function (index) {
+                if (!AGALProgram3DCache._instances[index]) {
+                    throw new Error("Instance not created yet!");
+                }
+                return AGALProgram3DCache._instances[index];
+            };
+
+            AGALProgram3DCache.onContext3DDisposed = function (event) {
+                var stage3DProxy = event.target;
+
+                var index = stage3DProxy._iStage3DIndex;
+
+                AGALProgram3DCache._instances[index].dispose();
+                AGALProgram3DCache._instances[index] = null;
+
+                stage3DProxy.removeEventListener(away.events.Stage3DEvent.CONTEXT3D_DISPOSED, AGALProgram3DCache.onContext3DDisposed, AGALProgram3DCache);
+                stage3DProxy.removeEventListener(away.events.Stage3DEvent.CONTEXT3D_CREATED, AGALProgram3DCache.onContext3DDisposed, AGALProgram3DCache);
+                stage3DProxy.removeEventListener(away.events.Stage3DEvent.CONTEXT3D_RECREATED, AGALProgram3DCache.onContext3DDisposed, AGALProgram3DCache);
+            };
+
+            AGALProgram3DCache.prototype.dispose = function () {
+                for (var key in this._program3Ds) {
+                    this.destroyProgram(key);
+                }
+
+                this._keys = null;
+                this._program3Ds = null;
+                this._usages = null;
+            };
+
+            AGALProgram3DCache.prototype.setProgram3D = function (pass, vertexCode, fragmentCode) {
+                var stageIndex = this._stage3DProxy._iStage3DIndex;
+                var program;
+                var key = this.getKey(vertexCode, fragmentCode);
+
+                if (this._program3Ds[key] == null) {
+                    this._keys[AGALProgram3DCache._currentId] = key;
+                    this._usages[AGALProgram3DCache._currentId] = 0;
+                    this._ids[key] = AGALProgram3DCache._currentId;
+                    ++AGALProgram3DCache._currentId;
+
+                    program = this._stage3DProxy._iContext3D.createProgram();
+
+                    away.Debug.throwPIR('AGALProgram3DCache', 'setProgram3D', 'Dependency: AGALMiniAssembler.assemble');
+
+                    //TODO: implement AGAL <> GLSL
+                    //var vertexByteCode:ByteArray = new AGALMiniAssembler(Debug.active).assemble(Context3DProgramType.VERTEX, vertexCode);
+                    //var fragmentByteCode:ByteArray = new AGALMiniAssembler(Debug.active).assemble(Context3DProgramType.FRAGMENT, fragmentCode);
+                    //program.upload(vertexByteCode, fragmentByteCode);
+                    this._program3Ds[key] = program;
+                }
+
+                var oldId = pass._iProgram3Dids[stageIndex];
+                var newId = this._ids[key];
+
+                if (oldId != newId) {
+                    if (oldId >= 0) {
+                        this.freeProgram3D(oldId);
+                    }
+
+                    this._usages[newId]++;
+                }
+
+                pass._iProgram3Dids[stageIndex] = newId;
+                pass._iProgram3Ds[stageIndex] = this._program3Ds[key];
+            };
+
+            AGALProgram3DCache.prototype.freeProgram3D = function (programId) {
+                this._usages[programId]--;
+
+                if (this._usages[programId] == 0) {
+                    this.destroyProgram(this._keys[programId]);
+                }
+            };
+
+            AGALProgram3DCache.prototype.destroyProgram = function (key) {
+                this._program3Ds[key].dispose();
+                this._program3Ds[key] = null;
+                delete this._program3Ds[key];
+                this._ids[key] = -1;
+            };
+
+            AGALProgram3DCache.prototype.getKey = function (vertexCode, fragmentCode) {
+                return vertexCode + "---" + fragmentCode;
+            };
+            AGALProgram3DCache._currentId = 0;
+            return AGALProgram3DCache;
+        })();
+        managers.AGALProgram3DCache = AGALProgram3DCache;
+    })(away.managers || (away.managers = {}));
+    var managers = away.managers;
+})(away || (away = {}));
+
+var AGALProgram3DCacheSingletonEnforcer = (function () {
+    function AGALProgram3DCacheSingletonEnforcer() {
+    }
+    return AGALProgram3DCacheSingletonEnforcer;
 })();
 var away;
 (function (away) {
@@ -18561,10 +20090,31 @@ var away;
     var Debug = (function () {
         function Debug() {
         }
+        Debug.breakpoint = function () {
+            away.Debug['break']();
+        };
+
+        Debug.throwPIROnKeyWordOnly = function (str, enable) {
+            if (typeof enable === "undefined") { enable = true; }
+            if (!enable) {
+                away.Debug.keyword = null;
+            } else {
+                away.Debug.keyword = str;
+            }
+        };
+
         Debug.throwPIR = function (clss, fnc, msg) {
             Debug.logPIR('PartialImplementationError ' + clss, fnc, msg);
 
             if (Debug.THROW_ERRORS) {
+                if (away.Debug.keyword) {
+                    var e = clss + fnc + msg;
+
+                    if (e.indexOf(away.Debug.keyword) == -1) {
+                        return;
+                    }
+                }
+
                 throw new away.errors.PartialImplementationError(clss + '.' + fnc + ': ' + msg);
             }
         };
@@ -18588,6 +20138,8 @@ var away;
         Debug.THROW_ERRORS = true;
         Debug.ENABLE_LOG = true;
         Debug.LOG_PI_ERRORS = true;
+
+        Debug.keyword = null;
         return Debug;
     })();
     away.Debug = Debug;
@@ -19879,7 +21431,8 @@ var away;
             */
             CompactSubGeometry.prototype.stripBuffer = function (offset, numEntries) {
                 var data = new Array(this._numVertices * numEntries);
-                var i = 0, j = offset;
+                var i = 0;
+                var j = offset;
                 var skip = 13 - numEntries;
 
                 for (var v = 0; v < this._numVertices; ++v) {
@@ -20897,18 +22450,18 @@ var away;
 
                     this._castsShadows = value;
 
-                    throw new away.errors.PartialImplementationError();
+                    if (value) {
+                        if (this._shadowMapper == null) {
+                            this._shadowMapper = this.pCreateShadowMapper();
+                        }
 
-                    /*
-                    if( value )
-                    {
-                    _shadowMapper ||= createShadowMapper();
-                    _shadowMapper.light = this;
+                        this._shadowMapper.light = this;
                     } else {
-                    _shadowMapper.dispose();
-                    _shadowMapper = null;
+                        this._shadowMapper.dispose();
+                        this._shadowMapper = null;
                     }
-                    */
+
+                    //*/
                     this.dispatchEvent(new away.events.LightEvent(away.events.LightEvent.CASTS_SHADOW_CHANGE));
                 },
                 enumerable: true,
@@ -20916,15 +22469,12 @@ var away;
             });
 
 
+            LightBase.prototype.pCreateShadowMapper = function () {
+                throw new away.errors.AbstractMethodError();
+            };
+
             Object.defineProperty(LightBase.prototype, "specular", {
-                get: //TODO implement pCreateShadowMapper
-                /*
-                protected pCreateShadowMapper():ShadowMapperBase
-                {
-                throw new AbstractMethodError();
-                }
-                */
-                function () {
+                get: function () {
                     return this._specular;
                 },
                 set: function (value) {
@@ -21041,12 +22591,10 @@ var away;
             };
 
             Object.defineProperty(LightBase.prototype, "shadowMapper", {
-                get: // TODO shadowMapper():ShadowMapperBase
-                function () {
+                get: function () {
                     return this._shadowMapper;
                 },
-                set: // TODO shadowMapper(value:ShadowMapperBase)
-                function (value) {
+                set: function (value) {
                     this._shadowMapper = value;
                     this._shadowMapper.light = this;
                 },
@@ -21497,22 +23045,26 @@ var away;
             };
 
             ShadowMapperBase.prototype.pCreateDepthTexture = function () {
-                throw new away.errors.PartialImplementationError();
+                away.Debug.throwPIR('ShadowMapperBase', 'pCreateDepthTexture', 'Depedency: RenderTexture');
+                return null;
             };
 
-            // TODO iRenderDepthMap(stage3DProxy:away.managers.Stage3DProxy, entityCollector:away.traverse.EntityCollector, renderer:away.render.DepthRenderer )
-            /*
-            public iRenderDepthMap(stage3DProxy:away.managers.Stage3DProxy, entityCollector:away.traverse.EntityCollector, renderer:away.render.DepthRenderer )
-            {
-            this._iShadowsInvalid = false;
-            updateDepthProjection( entityCollector.camera );
-            if( !this._depthMap )
-            {
-            this._depthMap = createDepthTexture();
-            }
-            this.drawDepthMap( this._depthMap.getTextureForStage3D(stage3DProxy), entityCollector.scene, renderer);
-            }*/
+            ShadowMapperBase.prototype.iRenderDepthMap = function (stage3DProxy, entityCollector, renderer) {
+                this._iShadowsInvalid = false;
+
+                this.pUpdateDepthProjection(entityCollector.camera);
+
+                if (!this._depthMap) {
+                    this._depthMap = this.pCreateDepthTexture();
+                }
+                this.pDrawDepthMap(this._depthMap.getTextureForStage3D(stage3DProxy), entityCollector.scene, renderer);
+            };
+
             ShadowMapperBase.prototype.pUpdateDepthProjection = function (viewCamera) {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            ShadowMapperBase.prototype.pDrawDepthMap = function (target, scene, renderer) {
                 throw new away.errors.AbstractMethodError();
             };
             return ShadowMapperBase;
@@ -21580,6 +23132,19 @@ var away;
                     this._lenses[i].far = maxDistance;
                     this._depthCameras[i].position = pos;
                     this._needsRender[i] = true;
+                }
+            };
+
+            //@override
+            CubeMapShadowMapper.prototype.pDrawDepthMap = function (target, scene, renderer) {
+                for (var i = 0; i < 6; ++i) {
+                    if (this._needsRender[i]) {
+                        this._pCasterCollector.camera = this._depthCameras[i];
+                        this._pCasterCollector.clear();
+                        scene.traversePartitions(this._pCasterCollector);
+                        renderer.iRender(this._pCasterCollector, target, null, i);
+                        this._pCasterCollector.cleanUp();
+                    }
                 }
             };
             return CubeMapShadowMapper;
@@ -21651,18 +23216,15 @@ var away;
             });
 
             //@override
-            // public pDrawDepthMap( target:away.display3D.TextureBase, scene:away.containers.Scene3D, renderer:away.render.DepthRenderer )
-            /*
-            public pDrawDepthMap( target:away.display3D.TextureBase, scene:away.containers.Scene3D, renderer:away.render.DepthRenderer )
-            {
-            this._casterCollector.camera = _overallDepthCamera;
-            this._casterCollector.cullPlanes = _cullPlanes;
-            this._casterCollector.clear();
-            scene.traversePartitions(_casterCollector);
-            renderer.render(_casterCollector, target);
-            this._casterCollector.cleanUp();
-            }
-            */
+            DirectionalShadowMapper.prototype.pDrawDepthMap = function (target, scene, renderer) {
+                this._pCasterCollector.camera = this._pOverallDepthCamera;
+                this._pCasterCollector.cullPlanes = this._pCullPlanes;
+                this._pCasterCollector.clear();
+                scene.traversePartitions(this._pCasterCollector);
+                renderer.iRender(this._pCasterCollector, target);
+                this._pCasterCollector.cleanUp();
+            };
+
             //@protected
             DirectionalShadowMapper.prototype.pUpdateCullPlanes = function (viewCamera) {
                 var lightFrustumPlanes = this._pOverallDepthCamera.frustumPlanes;
@@ -21824,6 +23386,8 @@ var away;
     (function (data) {
         var EntityListItemPool = (function () {
             function EntityListItemPool() {
+                this._index = 0;
+                this._poolSize = 0;
                 this._pool = [];
             }
             EntityListItemPool.prototype.getItem = function () {
@@ -21860,6 +23424,8 @@ var away;
     (function (data) {
         var RenderableListItemPool = (function () {
             function RenderableListItemPool() {
+                this._index = 0;
+                this._poolSize = 0;
                 this._pool = [];
             }
             RenderableListItemPool.prototype.getItem = function () {
@@ -21885,6 +23451,1225 @@ var away;
         data.RenderableListItemPool = RenderableListItemPool;
     })(away.data || (away.data = {}));
     var data = away.data;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../_definitions.ts"/>
+    (function (traverse) {
+        var PartitionTraverser = (function () {
+            function PartitionTraverser() {
+            }
+            PartitionTraverser.prototype.enterNode = function (node) {
+                node = node;
+                return true;
+            };
+
+            PartitionTraverser.prototype.applySkyBox = function (renderable) {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            PartitionTraverser.prototype.applyRenderable = function (renderable) {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            PartitionTraverser.prototype.applyUnknownLight = function (light) {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            PartitionTraverser.prototype.applyDirectionalLight = function (light) {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            PartitionTraverser.prototype.applyPointLight = function (light) {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            PartitionTraverser.prototype.applyLightProbe = function (light) {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            PartitionTraverser.prototype.applyEntity = function (entity) {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            Object.defineProperty(PartitionTraverser.prototype, "entryPoint", {
+                get: function () {
+                    return this._iEntryPoint;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            PartitionTraverser._iCollectionMark = 0;
+            return PartitionTraverser;
+        })();
+        traverse.PartitionTraverser = PartitionTraverser;
+    })(away.traverse || (away.traverse = {}));
+    var traverse = away.traverse;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../_definitions.ts"/>
+    (function (traverse) {
+        var EntityCollector = (function (_super) {
+            __extends(EntityCollector, _super);
+            function EntityCollector() {
+                _super.call(this);
+                this._pNumEntities = 0;
+                this._pNumLights = 0;
+                this._pNumTriangles = 0;
+                this._pNumMouseEnableds = 0;
+                this._numDirectionalLights = 0;
+                this._numPointLights = 0;
+                this._numLightProbes = 0;
+                this._numCullPlanes = 0;
+                this.init();
+            }
+            EntityCollector.prototype.init = function () {
+                this._pLights = [];
+                this._directionalLights = [];
+                this._pointLights = [];
+                this._lightProbes = [];
+                this._pRenderableListItemPool = new away.data.RenderableListItemPool();
+                this._pEntityListItemPool = new away.data.EntityListItemPool();
+            };
+
+            Object.defineProperty(EntityCollector.prototype, "camera", {
+                get: function () {
+                    return this._pCamera;
+                },
+                set: function (value) {
+                    this._pCamera = value;
+                    this._iEntryPoint = this._pCamera.scenePosition;
+                    this._pCameraForward = this._pCamera.forwardVector;
+                    this._cullPlanes = this._pCamera.frustumPlanes;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(EntityCollector.prototype, "cullPlanes", {
+                get: function () {
+                    return this._customCullPlanes;
+                },
+                set: function (value) {
+                    this._customCullPlanes = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(EntityCollector.prototype, "numMouseEnableds", {
+                get: function () {
+                    return this._pNumMouseEnableds;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(EntityCollector.prototype, "skyBox", {
+                get: function () {
+                    return this._pSkyBox;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(EntityCollector.prototype, "opaqueRenderableHead", {
+                get: function () {
+                    return this._pOpaqueRenderableHead;
+                },
+                set: function (value) {
+                    this._pOpaqueRenderableHead = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(EntityCollector.prototype, "blendedRenderableHead", {
+                get: function () {
+                    return this._pBlendedRenderableHead;
+                },
+                set: function (value) {
+                    this._pBlendedRenderableHead = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(EntityCollector.prototype, "entityHead", {
+                get: function () {
+                    return this._entityHead;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(EntityCollector.prototype, "lights", {
+                get: function () {
+                    return this._pLights;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(EntityCollector.prototype, "directionalLights", {
+                get: function () {
+                    return this._directionalLights;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(EntityCollector.prototype, "pointLights", {
+                get: function () {
+                    return this._pointLights;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(EntityCollector.prototype, "lightProbes", {
+                get: function () {
+                    return this._lightProbes;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            EntityCollector.prototype.clear = function () {
+                this._cullPlanes = this._customCullPlanes ? this._customCullPlanes : (this._pCamera ? this._pCamera.frustumPlanes : null);
+                this._numCullPlanes = this._cullPlanes ? this._cullPlanes.length : 0;
+                this._pNumTriangles = this._pNumMouseEnableds = 0;
+                this._pBlendedRenderableHead = null;
+                this._pOpaqueRenderableHead = null;
+                this._entityHead = null;
+                this._pRenderableListItemPool.freeAll();
+                this._pEntityListItemPool.freeAll();
+                this._pSkyBox = null;
+                if (this._pNumLights > 0) {
+                    this._pLights.length = this._pNumLights = 0;
+                }
+                if (this._numDirectionalLights > 0) {
+                    this._directionalLights.length = this._numDirectionalLights = 0;
+                }
+                if (this._numPointLights > 0) {
+                    this._pointLights.length = this._numPointLights = 0;
+                }
+                if (this._numLightProbes > 0) {
+                    this._lightProbes.length = this._numLightProbes = 0;
+                }
+            };
+
+            //@override
+            EntityCollector.prototype.enterNode = function (node) {
+                var enter = away.traverse.PartitionTraverser._iCollectionMark != node._iCollectionMark && node.isInFrustum(this._cullPlanes, this._numCullPlanes);
+
+                node._iCollectionMark = away.traverse.PartitionTraverser._iCollectionMark;
+
+                return enter;
+            };
+
+            //@override
+            EntityCollector.prototype.applySkyBox = function (renderable) {
+                this._pSkyBox = renderable;
+            };
+
+            //@override
+            EntityCollector.prototype.applyRenderable = function (renderable) {
+                var material;
+                var entity = renderable.sourceEntity;
+                if (renderable.mouseEnabled) {
+                    ++this._pNumMouseEnableds;
+                }
+                this._pNumTriangles += renderable.numTriangles;
+
+                material = renderable.material;
+                if (material) {
+                    var item = this._pRenderableListItemPool.getItem();
+                    item.renderable = renderable;
+                    item.materialId = material._iUniqueId;
+                    item.renderOrderId = material._iRenderOrderId;
+                    item.cascaded = false;
+                    var dx = this._iEntryPoint.x - entity.x;
+                    var dy = this._iEntryPoint.y - entity.y;
+                    var dz = this._iEntryPoint.z - entity.z;
+
+                    // project onto camera's z-axis
+                    item.zIndex = dx * this._pCameraForward.x + dy * this._pCameraForward.y + dz * this._pCameraForward.z + entity.zOffset;
+                    item.renderSceneTransform = renderable.getRenderSceneTransform(this._pCamera);
+                    if (material.requiresBlending) {
+                        item.next = this._pBlendedRenderableHead;
+                        this._pBlendedRenderableHead = item;
+                    } else {
+                        item.next = this._pOpaqueRenderableHead;
+                        this._pOpaqueRenderableHead = item;
+                    }
+                }
+            };
+
+            //@override
+            EntityCollector.prototype.applyEntity = function (entity) {
+                ++this._pNumEntities;
+
+                var item = this._pEntityListItemPool.getItem();
+                item.entity = entity;
+
+                item.next = this._entityHead;
+                this._entityHead = item;
+            };
+
+            //@override
+            EntityCollector.prototype.applyUnknownLight = function (light) {
+                this._pLights[this._pNumLights++] = light;
+            };
+
+            //@override
+            EntityCollector.prototype.applyDirectionalLight = function (light) {
+                this._pLights[this._pNumLights++] = light;
+                this._directionalLights[this._numDirectionalLights++] = light;
+            };
+
+            //@override
+            EntityCollector.prototype.applyPointLight = function (light) {
+                this._pLights[this._pNumLights++] = light;
+                this._pointLights[this._numPointLights++] = light;
+            };
+
+            //@override
+            EntityCollector.prototype.applyLightProbe = function (light) {
+                this._pLights[this._pNumLights++] = light;
+                this._lightProbes[this._numLightProbes++] = light;
+            };
+
+            /**
+            * Cleans up any data at the end of a frame.
+            */
+            EntityCollector.prototype.cleanUp = function () {
+            };
+            return EntityCollector;
+        })(away.traverse.PartitionTraverser);
+        traverse.EntityCollector = EntityCollector;
+    })(away.traverse || (away.traverse = {}));
+    var traverse = away.traverse;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../_definitions.ts"/>
+    (function (traverse) {
+        var ShadowCasterCollector = (function (_super) {
+            __extends(ShadowCasterCollector, _super);
+            function ShadowCasterCollector() {
+                _super.call(this);
+            }
+            //@override
+            ShadowCasterCollector.prototype.applyRenderable = function (renderable) {
+                // the test for material is temporary, you SHOULD be hammered with errors if you try to render anything without a material
+                var material = renderable.material;
+                var entity = renderable.sourceEntity;
+                if (renderable.castsShadows && material) {
+                    var item = this._pRenderableListItemPool.getItem();
+                    item.renderable = renderable;
+                    item.next = this._pOpaqueRenderableHead;
+                    item.cascaded = false;
+                    var dx = this._iEntryPoint.x - entity.x;
+                    var dy = this._iEntryPoint.y - entity.y;
+                    var dz = this._iEntryPoint.z - entity.z;
+                    item.zIndex = dx * this._pCameraForward.x + dy * this._pCameraForward.y + dz * this._pCameraForward.z;
+                    item.renderSceneTransform = renderable.getRenderSceneTransform(this._pCamera);
+                    item.renderOrderId = material._iDepthPassId;
+                    this._pOpaqueRenderableHead = item;
+                }
+            };
+
+            //@override
+            ShadowCasterCollector.prototype.applyUnknownLight = function (light) {
+            };
+
+            //@override
+            ShadowCasterCollector.prototype.applyDirectionalLight = function (light) {
+            };
+
+            //@override
+            ShadowCasterCollector.prototype.applyPointLight = function (light) {
+            };
+
+            //@override
+            ShadowCasterCollector.prototype.applyLightProbe = function (light) {
+            };
+
+            //@override
+            ShadowCasterCollector.prototype.applySkyBox = function (renderable) {
+            };
+            return ShadowCasterCollector;
+        })(away.traverse.EntityCollector);
+        traverse.ShadowCasterCollector = ShadowCasterCollector;
+    })(away.traverse || (away.traverse = {}));
+    var traverse = away.traverse;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (traverse) {
+        /**
+        * The RaycastCollector class is a traverser for scene partitions that collects all scene graph entities that are
+        * considered intersecting with the defined ray.
+        *
+        * @see away3d.partition.Partition3D
+        * @see away3d.partition.Entity
+        */
+        var RaycastCollector = (function (_super) {
+            __extends(RaycastCollector, _super);
+            /**
+            * Creates a new RaycastCollector object.
+            */
+            function RaycastCollector() {
+                _super.call(this);
+                this._rayPosition = new away.geom.Vector3D();
+                this._rayDirection = new away.geom.Vector3D();
+            }
+            Object.defineProperty(RaycastCollector.prototype, "rayPosition", {
+                get: /**
+                * Provides the starting position of the ray.
+                */
+                function () {
+                    return this._rayPosition;
+                },
+                set: function (value) {
+                    this._rayPosition = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(RaycastCollector.prototype, "rayDirection", {
+                get: /**
+                * Provides the direction vector of the ray.
+                */
+                function () {
+                    return this._rayDirection;
+                },
+                set: function (value) {
+                    this._rayDirection = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * Returns true if the current node is at least partly in the frustum. If so, the partition node knows to pass on the traverser to its children.
+            *
+            * @param node The Partition3DNode object to frustum-test.
+            */
+            RaycastCollector.prototype.enterNode = function (node) {
+                return node.isIntersectingRay(this._rayPosition, this._rayDirection);
+            };
+
+            /**
+            * @inheritDoc
+            */
+            RaycastCollector.prototype.applySkyBox = function (renderable) {
+            };
+
+            /**
+            * Adds an IRenderable object to the potentially visible objects.
+            * @param renderable The IRenderable object to add.
+            */
+            RaycastCollector.prototype.applyRenderable = function (renderable) {
+            };
+
+            /**
+            * @inheritDoc
+            */
+            RaycastCollector.prototype.applyUnknownLight = function (light) {
+            };
+            return RaycastCollector;
+        })(away.traverse.EntityCollector);
+        traverse.RaycastCollector = RaycastCollector;
+    })(away.traverse || (away.traverse = {}));
+    var traverse = away.traverse;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (partition) {
+        /**
+        * RenderableNode is a space partitioning leaf node that contains any Entity that is itself a IRenderable
+        * object. This excludes Mesh (since the renderable objects are its SubMesh children).
+        */
+        var RenderableNode = (function (_super) {
+            __extends(RenderableNode, _super);
+            /**
+            * Creates a new RenderableNode object.
+            * @param mesh The mesh to be contained in the node.
+            */
+            function RenderableNode(renderable) {
+                var e = renderable;
+
+                _super.call(this, e);
+
+                this._renderable = renderable;
+            }
+            /**
+            * @inheritDoc
+            */
+            RenderableNode.prototype.acceptTraverser = function (traverser) {
+                if (traverser.enterNode(this)) {
+                    _super.prototype.acceptTraverser.call(this, traverser);
+
+                    traverser.applyRenderable(this._renderable);
+                }
+            };
+            return RenderableNode;
+        })(partition.EntityNode);
+        partition.RenderableNode = RenderableNode;
+    })(away.partition || (away.partition = {}));
+    var partition = away.partition;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (pick) {
+        //import away3d.arcane;
+        //import away3d.cameras.*;
+        //import away3d.containers.*;
+        //import away3d.core.base.*;
+        //import away3d.core.data.*;
+        //import away3d.managers.*;
+        //import away3d.core.math.*;
+        //import away3d.core.traverse.*;
+        //import away3d.entities.*;
+        //import away3d.utils.GeometryUtils;
+        //import flash.display.*;
+        //import flash.display3D.*;
+        //import flash.display3D.textures.*;
+        //import flash.geom.*;
+        //import com.adobe.utils.*;
+        //use namespace arcane;
+        /**
+        * Picks a 3d object from a view or scene by performing a separate render pass on the scene around the area being picked using key color values,
+        * then reading back the color value of the pixel in the render representing the picking ray. Requires multiple passes and readbacks for retriving details
+        * on an entity that has its shaderPickingDetails property set to true.
+        *
+        * A read-back operation from any GPU is not a very efficient process, and the amount of processing used can vary significantly between different hardware.
+        *
+        * @see away3d.entities.Entity#shaderPickingDetails
+        */
+        // TODO: Dependencies needed to before implementing IPicker - EntityCollector
+        var ShaderPicker = (function () {
+            /**
+            * Creates a new <code>ShaderPicker</code> object.
+            */
+            function ShaderPicker() {
+                this._onlyMouseEnabled = true;
+                this._interactives = new Array();
+                this._localHitPosition = new away.geom.Vector3D();
+                this._hitUV = new away.geom.Point();
+                this._localHitNormal = new away.geom.Vector3D();
+                this._rayPos = new away.geom.Vector3D();
+                this._rayDir = new away.geom.Vector3D();
+                this._id = new Array(4);
+                this._viewportData = new Array(4);
+                this._boundOffsetScale = new Array(8);
+                this._boundOffsetScale[3] = 0;
+                this._boundOffsetScale[7] = 1;
+            }
+            Object.defineProperty(ShaderPicker.prototype, "onlyMouseEnabled", {
+                get: /**
+                * @inheritDoc
+                */
+                function () {
+                    return this._onlyMouseEnabled;
+                },
+                set: function (value) {
+                    this._onlyMouseEnabled = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * @inheritDoc
+            */
+            // TODO implement dependency : EntityCollector
+            // TODO: GLSL implementation / conversion
+            ShaderPicker.prototype.getViewCollision = function (x, y, view) {
+                away.Debug.throwPIR('ShaderPicker', 'getViewCollision', 'implement');
+
+                return null;
+
+                var collector = view.iEntityCollector;
+
+                this._stage3DProxy = view.stage3DProxy;
+
+                if (!this._stage3DProxy)
+                    return null;
+
+                this._context = this._stage3DProxy._iContext3D;
+
+                this._viewportData[0] = view.width;
+                this._viewportData[1] = view.height;
+                this._viewportData[2] = -(this._projX = 2 * x / view.width - 1);
+                this._viewportData[3] = this._projY = 2 * y / view.height - 1;
+
+                // _potentialFound will be set to true if any object is actually rendered
+                this._potentialFound = false;
+
+                this.pDraw(collector, null);
+
+                // clear buffers
+                this._context.setVertexBufferAt(0, null);
+
+                if (!this._context || !this._potentialFound) {
+                    return null;
+                }
+
+                if (!this._bitmapData)
+                    this._bitmapData = new away.display.BitmapData(1, 1, false, 0);
+
+                this._context.drawToBitmapData(this._bitmapData);
+                this._hitColor = this._bitmapData.getPixel(0, 0);
+
+                if (!this._hitColor) {
+                    this._context.present();
+                    return null;
+                }
+
+                this._hitRenderable = this._interactives[this._hitColor - 1];
+                this._hitEntity = this._hitRenderable.sourceEntity;
+                if (this._onlyMouseEnabled && (!this._hitEntity._iAncestorsAllowMouseEnabled || !this._hitEntity.mouseEnabled)) {
+                    return null;
+                }
+
+                var _collisionVO = this._hitEntity.pickingCollisionVO;
+                if (this._hitRenderable.shaderPickingDetails) {
+                    this.getHitDetails(view.camera);
+                    _collisionVO.localPosition = this._localHitPosition;
+                    _collisionVO.localNormal = this._localHitNormal;
+                    _collisionVO.uv = this._hitUV;
+                    _collisionVO.index = this._faceIndex;
+                    _collisionVO.subGeometryIndex = this._subGeometryIndex;
+                } else {
+                    _collisionVO.localPosition = null;
+                    _collisionVO.localNormal = null;
+                    _collisionVO.uv = null;
+                    _collisionVO.index = 0;
+                    _collisionVO.subGeometryIndex = 0;
+                }
+
+                return _collisionVO;
+            };
+
+            //*/
+            /**
+            * @inheritDoc
+            */
+            ShaderPicker.prototype.getSceneCollision = function (position, direction, scene) {
+                return null;
+            };
+
+            /**
+            * @inheritDoc
+            */
+            // TODO: GLSL implementation / conversion
+            ShaderPicker.prototype.pDraw = function (entityCollector, target) {
+                var camera = entityCollector.camera;
+
+                this._context.clear(0, 0, 0, 1);
+                this._stage3DProxy.scissorRect = ShaderPicker.MOUSE_SCISSOR_RECT;
+
+                this._interactives.length = this._interactiveId = 0;
+
+                if (!this._objectProgram3D) {
+                    this.initObjectProgram3D();
+                }
+
+                this._context.setBlendFactors(away.display3D.Context3DBlendFactor.ONE, away.display3D.Context3DBlendFactor.ZERO);
+                this._context.setDepthTest(true, away.display3D.Context3DCompareMode.LESS);
+                this._context.setProgram(this._objectProgram3D);
+                this._context.setProgramConstantsFromArray(away.display3D.Context3DProgramType.VERTEX, 4, this._viewportData, 1);
+                this.drawRenderables(entityCollector.opaqueRenderableHead, camera);
+                this.drawRenderables(entityCollector.blendedRenderableHead, camera);
+            };
+
+            /**
+            * Draw a list of renderables.
+            * @param renderables The renderables to draw.
+            * @param camera The camera for which to render.
+            */
+            ShaderPicker.prototype.drawRenderables = function (item, camera) {
+                away.Debug.throwPIR('ShaderPicker', 'drawRenderables', 'implement');
+
+                var matrix = away.math.Matrix3DUtils.CALCULATION_MATRIX;
+                var renderable;
+                var viewProjection = camera.viewProjection;
+
+                while (item) {
+                    renderable = item.renderable;
+
+                    if (!renderable.sourceEntity.scene || (!renderable.mouseEnabled && this._onlyMouseEnabled)) {
+                        item = item.next;
+                        continue;
+                    }
+
+                    this._potentialFound = true;
+
+                    this._context.setCulling(renderable.material.bothSides ? away.display3D.Context3DTriangleFace.NONE : away.display3D.Context3DTriangleFace.BACK);
+
+                    this._interactives[this._interactiveId++] = renderable;
+
+                    // color code so that reading from bitmapdata will contain the correct value
+                    this._id[1] = (this._interactiveId >> 8) / 255;
+                    this._id[2] = (this._interactiveId & 0xff) / 255;
+
+                    matrix.copyFrom(renderable.getRenderSceneTransform(camera));
+                    matrix.append(viewProjection);
+                    this._context.setProgramConstantsFromMatrix(away.display3D.Context3DProgramType.VERTEX, 0, matrix, true);
+                    this._context.setProgramConstantsFromArray(away.display3D.Context3DProgramType.FRAGMENT, 0, this._id, 1);
+                    renderable.activateVertexBuffer(0, this._stage3DProxy);
+                    this._context.drawTriangles(renderable.getIndexBuffer(this._stage3DProxy), 0, renderable.numTriangles);
+
+                    item = item.next;
+                }
+            };
+
+            ShaderPicker.prototype.updateRay = function (camera) {
+                this._rayPos = camera.scenePosition;
+                this._rayDir = camera.getRay(this._projX, this._projY, 1);
+                this._rayDir.normalize();
+            };
+
+            /**
+            * Creates the Program3D that color-codes objects.
+            */
+            ShaderPicker.prototype.initObjectProgram3D = function () {
+                var vertexCode;
+                var fragmentCode;
+
+                this._objectProgram3D = this._context.createProgram();
+
+                vertexCode = "m44 vt0, va0, vc0			\n" + "mul vt1.xy, vt0.w, vc4.zw	\n" + "add vt0.xy, vt0.xy, vt1.xy	\n" + "mul vt0.xy, vt0.xy, vc4.xy	\n" + "mov op, vt0	\n";
+                fragmentCode = "mov oc, fc0";
+
+                away.Debug.throwPIR('ShaderPicker', 'initTriangleProgram3D', 'Dependency: initObjectProgram3D');
+            };
+
+            /**
+            * Creates the Program3D that renders positions.
+            */
+            ShaderPicker.prototype.initTriangleProgram3D = function () {
+                var vertexCode;
+                var fragmentCode;
+
+                this._triangleProgram3D = this._context.createProgram();
+
+                // todo: add animation code
+                vertexCode = "add vt0, va0, vc5 			\n" + "mul vt0, vt0, vc6 			\n" + "mov v0, vt0				\n" + "m44 vt0, va0, vc0			\n" + "mul vt1.xy, vt0.w, vc4.zw	\n" + "add vt0.xy, vt0.xy, vt1.xy	\n" + "mul vt0.xy, vt0.xy, vc4.xy	\n" + "mov op, vt0	\n";
+                fragmentCode = "mov oc, v0";
+
+                away.Debug.throwPIR('ShaderPicker', 'initTriangleProgram3D', 'Dependency: AGALMiniAssembler');
+            };
+
+            /**
+            * Gets more detailed information about the hir position, if required.
+            * @param camera The camera used to view the hit object.
+            */
+            ShaderPicker.prototype.getHitDetails = function (camera) {
+                this.getApproximatePosition(camera);
+                this.getPreciseDetails(camera);
+            };
+
+            /**
+            * Finds a first-guess approximate position about the hit position.
+            * @param camera The camera used to view the hit object.
+            */
+            ShaderPicker.prototype.getApproximatePosition = function (camera) {
+                var entity = this._hitRenderable.sourceEntity;
+                var col;
+                var scX, scY, scZ;
+                var offsX, offsY, offsZ;
+                var localViewProjection = away.math.Matrix3DUtils.CALCULATION_MATRIX;
+
+                localViewProjection.copyFrom(this._hitRenderable.getRenderSceneTransform(camera));
+                localViewProjection.append(camera.viewProjection);
+                if (!this._triangleProgram3D) {
+                    this.initTriangleProgram3D();
+                }
+
+                this._boundOffsetScale[4] = 1 / (scX = entity.maxX - entity.minX);
+                this._boundOffsetScale[5] = 1 / (scY = entity.maxY - entity.minY);
+                this._boundOffsetScale[6] = 1 / (scZ = entity.maxZ - entity.minZ);
+                this._boundOffsetScale[0] = offsX = -entity.minX;
+                this._boundOffsetScale[1] = offsY = -entity.minY;
+                this._boundOffsetScale[2] = offsZ = -entity.minZ;
+
+                this._context.setProgram(this._triangleProgram3D);
+                this._context.clear(0, 0, 0, 0, 1, 0, away.display3D.Context3DClearMask.DEPTH);
+                this._context.setScissorRectangle(ShaderPicker.MOUSE_SCISSOR_RECT);
+                this._context.setProgramConstantsFromMatrix(away.display3D.Context3DProgramType.VERTEX, 0, localViewProjection, true);
+                this._context.setProgramConstantsFromArray(away.display3D.Context3DProgramType.VERTEX, 5, this._boundOffsetScale, 2);
+                this._hitRenderable.activateVertexBuffer(0, this._stage3DProxy);
+                this._context.drawTriangles(this._hitRenderable.getIndexBuffer(this._stage3DProxy), 0, this._hitRenderable.numTriangles);
+                this._context.drawToBitmapData(this._bitmapData);
+
+                col = this._bitmapData.getPixel(0, 0);
+
+                this._localHitPosition.x = ((col >> 16) & 0xff) * scX / 255 - offsX;
+                this._localHitPosition.y = ((col >> 8) & 0xff) * scY / 255 - offsY;
+                this._localHitPosition.z = (col & 0xff) * scZ / 255 - offsZ;
+            };
+
+            /**
+            * Use the approximate position info to find the face under the mouse position from which we can derive the precise
+            * ray-face intersection point, then use barycentric coordinates to figure out the uv coordinates, etc.
+            * @param camera The camera used to view the hit object.
+            */
+            ShaderPicker.prototype.getPreciseDetails = function (camera) {
+                var subMesh = this._hitRenderable;
+
+                var subGeom = subMesh.subGeometry;
+                var indices = subGeom.indexData;
+                var vertices = subGeom.vertexData;
+                var len = indices.length;
+                var x1, y1, z1;
+                var x2, y2, z2;
+                var x3, y3, z3;
+                var i = 0, j = 1, k = 2;
+                var t1, t2, t3;
+                var v0x, v0y, v0z;
+                var v1x, v1y, v1z;
+                var v2x, v2y, v2z;
+                var dot00, dot01, dot02, dot11, dot12;
+                var s, t, invDenom;
+                var uvs = subGeom.UVData;
+                var normals = subGeom.faceNormals;
+                var x = this._localHitPosition.x, y = this._localHitPosition.y, z = this._localHitPosition.z;
+                var u, v;
+                var ui1, ui2, ui3;
+                var s0x, s0y, s0z;
+                var s1x, s1y, s1z;
+                var nl;
+                var stride = subGeom.vertexStride;
+                var vertexOffset = subGeom.vertexOffset;
+
+                this.updateRay(camera);
+
+                while (i < len) {
+                    t1 = vertexOffset + indices[i] * stride;
+                    t2 = vertexOffset + indices[j] * stride;
+                    t3 = vertexOffset + indices[k] * stride;
+                    x1 = vertices[t1];
+                    y1 = vertices[t1 + 1];
+                    z1 = vertices[t1 + 2];
+                    x2 = vertices[t2];
+                    y2 = vertices[t2 + 1];
+                    z2 = vertices[t2 + 2];
+                    x3 = vertices[t3];
+                    y3 = vertices[t3 + 1];
+                    z3 = vertices[t3 + 2];
+
+                    if (!((x < x1 && x < x2 && x < x3) || (y < y1 && y < y2 && y < y3) || (z < z1 && z < z2 && z < z3) || (x > x1 && x > x2 && x > x3) || (y > y1 && y > y2 && y > y3) || (z > z1 && z > z2 && z > z3))) {
+                        // calculate barycentric coords for approximated position
+                        v0x = x3 - x1;
+                        v0y = y3 - y1;
+                        v0z = z3 - z1;
+                        v1x = x2 - x1;
+                        v1y = y2 - y1;
+                        v1z = z2 - z1;
+                        v2x = x - x1;
+                        v2y = y - y1;
+                        v2z = z - z1;
+                        dot00 = v0x * v0x + v0y * v0y + v0z * v0z;
+                        dot01 = v0x * v1x + v0y * v1y + v0z * v1z;
+                        dot02 = v0x * v2x + v0y * v2y + v0z * v2z;
+                        dot11 = v1x * v1x + v1y * v1y + v1z * v1z;
+                        dot12 = v1x * v2x + v1y * v2y + v1z * v2z;
+                        invDenom = 1 / (dot00 * dot11 - dot01 * dot01);
+                        s = (dot11 * dot02 - dot01 * dot12) * invDenom;
+                        t = (dot00 * dot12 - dot01 * dot02) * invDenom;
+
+                        if (s >= 0 && t >= 0 && (s + t) <= 1) {
+                            // this is def the triangle, now calculate precise coords
+                            this.getPrecisePosition(this._hitRenderable.inverseSceneTransform, normals[i], normals[i + 1], normals[i + 2], x1, y1, z1);
+
+                            v2x = this._localHitPosition.x - x1;
+                            v2y = this._localHitPosition.y - y1;
+                            v2z = this._localHitPosition.z - z1;
+
+                            s0x = x2 - x1;
+                            s0y = y2 - y1;
+                            s0z = z2 - z1;
+                            s1x = x3 - x1;
+                            s1y = y3 - y1;
+                            s1z = z3 - z1;
+                            this._localHitNormal.x = s0y * s1z - s0z * s1y;
+                            this._localHitNormal.y = s0z * s1x - s0x * s1z;
+                            this._localHitNormal.z = s0x * s1y - s0y * s1x;
+                            nl = 1 / Math.sqrt(this._localHitNormal.x * this._localHitNormal.x + this._localHitNormal.y * this._localHitNormal.y + this._localHitNormal.z * this._localHitNormal.z);
+                            this._localHitNormal.x *= nl;
+                            this._localHitNormal.y *= nl;
+                            this._localHitNormal.z *= nl;
+
+                            dot02 = v0x * v2x + v0y * v2y + v0z * v2z;
+                            dot12 = v1x * v2x + v1y * v2y + v1z * v2z;
+                            s = (dot11 * dot02 - dot01 * dot12) * invDenom;
+                            t = (dot00 * dot12 - dot01 * dot02) * invDenom;
+
+                            ui1 = indices[i] << 1;
+                            ui2 = indices[j] << 1;
+                            ui3 = indices[k] << 1;
+
+                            u = uvs[ui1];
+                            v = uvs[ui1 + 1];
+                            this._hitUV.x = u + t * (uvs[ui2] - u) + s * (uvs[ui3] - u);
+                            this._hitUV.y = v + t * (uvs[ui2 + 1] - v) + s * (uvs[ui3 + 1] - v);
+
+                            this._faceIndex = i;
+                            this._subGeometryIndex = away.utils.GeometryUtils.getMeshSubMeshIndex(subMesh);
+
+                            return;
+                        }
+                    }
+
+                    i += 3;
+                    j += 3;
+                    k += 3;
+                }
+            };
+
+            /**
+            * Finds the precise hit position by unprojecting the screen coordinate back unto the hit face's plane and
+            * calculating the intersection point.
+            * @param camera The camera used to render the object.
+            * @param invSceneTransform The inverse scene transformation of the hit object.
+            * @param nx The x-coordinate of the face's plane normal.
+            * @param ny The y-coordinate of the face plane normal.
+            * @param nz The z-coordinate of the face plane normal.
+            * @param px The x-coordinate of a point on the face's plane (ie a face vertex)
+            * @param py The y-coordinate of a point on the face's plane (ie a face vertex)
+            * @param pz The z-coordinate of a point on the face's plane (ie a face vertex)
+            */
+            ShaderPicker.prototype.getPrecisePosition = function (invSceneTransform, nx, ny, nz, px, py, pz) {
+                // calculate screen ray and find exact intersection position with triangle
+                var rx, ry, rz;
+                var ox, oy, oz;
+                var t;
+                var raw = away.math.Matrix3DUtils.RAW_DATA_CONTAINER;
+                var cx = this._rayPos.x, cy = this._rayPos.y, cz = this._rayPos.z;
+
+                // unprojected projection point, gives ray dir in cam space
+                ox = this._rayDir.x;
+                oy = this._rayDir.y;
+                oz = this._rayDir.z;
+
+                // transform ray dir and origin (cam pos) to object space
+                //invSceneTransform.copyRawDataTo( raw  );
+                invSceneTransform.copyRawDataTo(raw);
+                rx = raw[0] * ox + raw[4] * oy + raw[8] * oz;
+                ry = raw[1] * ox + raw[5] * oy + raw[9] * oz;
+                rz = raw[2] * ox + raw[6] * oy + raw[10] * oz;
+
+                ox = raw[0] * cx + raw[4] * cy + raw[8] * cz + raw[12];
+                oy = raw[1] * cx + raw[5] * cy + raw[9] * cz + raw[13];
+                oz = raw[2] * cx + raw[6] * cy + raw[10] * cz + raw[14];
+
+                t = ((px - ox) * nx + (py - oy) * ny + (pz - oz) * nz) / (rx * nx + ry * ny + rz * nz);
+
+                this._localHitPosition.x = ox + rx * t;
+                this._localHitPosition.y = oy + ry * t;
+                this._localHitPosition.z = oz + rz * t;
+            };
+
+            ShaderPicker.prototype.dispose = function () {
+                this._bitmapData.dispose();
+                if (this._triangleProgram3D) {
+                    this._triangleProgram3D.dispose();
+                }
+
+                if (this._objectProgram3D) {
+                    this._objectProgram3D.dispose();
+                }
+
+                this._triangleProgram3D = null;
+                this._objectProgram3D = null;
+                this._bitmapData = null;
+                this._hitRenderable = null;
+                this._hitEntity = null;
+            };
+            ShaderPicker.MOUSE_SCISSOR_RECT = new away.geom.Rectangle(0, 0, 1, 1);
+            return ShaderPicker;
+        })();
+        pick.ShaderPicker = ShaderPicker;
+    })(away.pick || (away.pick = {}));
+    var pick = away.pick;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (pick) {
+        /**
+        * Picks a 3d object from a view or scene by 3D raycast calculations.
+        * Performs an initial coarse boundary calculation to return a subset of entities whose bounding volumes intersect with the specified ray,
+        * then triggers an optional picking collider on individual entity objects to further determine the precise values of the picking ray collision.
+        */
+        var RaycastPicker = (function () {
+            /**
+            * Creates a new <code>RaycastPicker</code> object.
+            *
+            * @param findClosestCollision Determines whether the picker searches for the closest bounds collision along the ray,
+            * or simply returns the first collision encountered Defaults to false.
+            */
+            function RaycastPicker(findClosestCollision) {
+                this._raycastCollector = new away.traverse.RaycastCollector();
+                this._ignoredEntities = [];
+                this._onlyMouseEnabled = true;
+                this._numEntities = 0;
+                this._findClosestCollision = findClosestCollision;
+                this._entities = new Array();
+            }
+            Object.defineProperty(RaycastPicker.prototype, "onlyMouseEnabled", {
+                get: /**
+                * @inheritDoc
+                */
+                function () {
+                    return this._onlyMouseEnabled;
+                },
+                set: function (value) {
+                    this._onlyMouseEnabled = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * @inheritDoc
+            */
+            RaycastPicker.prototype.getViewCollision = function (x, y, view) {
+                //cast ray through the collection of entities on the view
+                var collector = view.iEntityCollector;
+
+                if (collector.numMouseEnableds == 0)
+                    return null;
+
+                //update ray
+                var rayPosition = view.unproject(x, y, 0);
+                var rayDirection = view.unproject(x, y, 1);
+                rayDirection = rayDirection.subtract(rayPosition);
+
+                // Perform ray-bounds collision checks.
+                this._numEntities = 0;
+                var node = collector.entityHead;
+                var entity;
+                while (node) {
+                    entity = node.entity;
+
+                    if (this.isIgnored(entity)) {
+                        node = node.next;
+                        continue;
+                    }
+
+                    if (entity._iIsVisible && entity.isIntersectingRay(rayPosition, rayDirection))
+                        this._entities[this._numEntities++] = entity;
+
+                    node = node.next;
+                }
+
+                if (!this._numEntities)
+                    return null;
+
+                return this.getPickingCollisionVO();
+            };
+
+            //*/
+            /**
+            * @inheritDoc
+            */
+            //* TODO Implement Dependency: EntityListItem, EntityCollector, RaycastCollector
+            RaycastPicker.prototype.getSceneCollision = function (position, direction, scene) {
+                //clear collector
+                this._raycastCollector.clear();
+
+                //setup ray vectors
+                this._raycastCollector.rayPosition = position;
+                this._raycastCollector.rayDirection = direction;
+
+                // collect entities to test
+                scene.traversePartitions(this._raycastCollector);
+
+                this._numEntities = 0;
+                var node = this._raycastCollector.entityHead;
+                var entity;
+
+                while (node) {
+                    entity = node.entity;
+
+                    if (this.isIgnored(entity)) {
+                        node = node.next;
+                        continue;
+                    }
+
+                    this._entities[this._numEntities++] = entity;
+
+                    node = node.next;
+                }
+
+                if (!this._numEntities)
+                    return null;
+
+                return this.getPickingCollisionVO();
+            };
+
+            //*/
+            RaycastPicker.prototype.getEntityCollision = function (position, direction, entities) {
+                position = position;
+                direction = direction;
+
+                this._numEntities = 0;
+
+                var entity;
+                var l = entities.length;
+
+                for (var c = 0; c < l; c++) {
+                    entity = entities[c];
+
+                    if (entity.isIntersectingRay(position, direction)) {
+                        this._entities[this._numEntities++] = entity;
+                    }
+                }
+
+                return this.getPickingCollisionVO();
+            };
+
+            //*/
+            RaycastPicker.prototype.setIgnoreList = function (entities) {
+                this._ignoredEntities = entities;
+            };
+
+            RaycastPicker.prototype.isIgnored = function (entity) {
+                if (this._onlyMouseEnabled && (!entity._iAncestorsAllowMouseEnabled || !entity.mouseEnabled)) {
+                    return true;
+                }
+
+                var ignoredEntity;
+
+                var l = this._ignoredEntities.length;
+
+                for (var c = 0; c < l; c++) {
+                    ignoredEntity = this._ignoredEntities[c];
+
+                    if (ignoredEntity == entity) {
+                        return true;
+                    }
+                }
+
+                return false;
+            };
+
+            RaycastPicker.prototype.sortOnNearT = function (entity1, entity2) {
+                return entity1.pickingCollisionVO.rayEntryDistance > entity2.pickingCollisionVO.rayEntryDistance ? 1 : -1;
+            };
+
+            RaycastPicker.prototype.getPickingCollisionVO = function () {
+                // trim before sorting
+                this._entities.length = this._numEntities;
+
+                // Sort entities from closest to furthest.
+                this._entities = this._entities.sort(this.sortOnNearT);
+
+                // ---------------------------------------------------------------------
+                // Evaluate triangle collisions when needed.
+                // Replaces collision data provided by bounds collider with more precise data.
+                // ---------------------------------------------------------------------
+                var shortestCollisionDistance = Number.MAX_VALUE;
+                var bestCollisionVO;
+                var pickingCollisionVO;
+                var entity;
+                var i;
+
+                for (i = 0; i < this._numEntities; ++i) {
+                    entity = this._entities[i];
+                    pickingCollisionVO = entity._iPickingCollisionVO;
+                    if (entity.pickingCollider) {
+                        if ((bestCollisionVO == null || pickingCollisionVO.rayEntryDistance < bestCollisionVO.rayEntryDistance) && entity.iCollidesBefore(shortestCollisionDistance, this._findClosestCollision)) {
+                            shortestCollisionDistance = pickingCollisionVO.rayEntryDistance;
+                            bestCollisionVO = pickingCollisionVO;
+                            if (!this._findClosestCollision) {
+                                this.updateLocalPosition(pickingCollisionVO);
+                                return pickingCollisionVO;
+                            }
+                        }
+                    } else if (bestCollisionVO == null || pickingCollisionVO.rayEntryDistance < bestCollisionVO.rayEntryDistance) {
+                        if (!pickingCollisionVO.rayOriginIsInsideBounds) {
+                            this.updateLocalPosition(pickingCollisionVO);
+                            return pickingCollisionVO;
+                        }
+                    }
+                }
+
+                return bestCollisionVO;
+            };
+
+            RaycastPicker.prototype.updateLocalPosition = function (pickingCollisionVO) {
+                var collisionPos = (pickingCollisionVO.localPosition == null) ? new away.geom.Vector3D() : pickingCollisionVO.localPosition;
+
+                //var collisionPos:away.geom.Vector3D = pickingCollisionVO.localPosition ||= new away.geom.Vector3D();
+                var rayDir = pickingCollisionVO.localRayDirection;
+                var rayPos = pickingCollisionVO.localRayPosition;
+                var t = pickingCollisionVO.rayEntryDistance;
+                collisionPos.x = rayPos.x + t * rayDir.x;
+                collisionPos.y = rayPos.y + t * rayDir.y;
+                collisionPos.z = rayPos.z + t * rayDir.z;
+            };
+
+            RaycastPicker.prototype.dispose = function () {
+            };
+            return RaycastPicker;
+        })();
+        pick.RaycastPicker = RaycastPicker;
+    })(away.pick || (away.pick = {}));
+    var pick = away.pick;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (pick) {
+        /**
+        * Options for the different 3D object picking approaches available in Away3D. Can be used for automatic mouse picking on the view.
+        *
+        * @see away3d.containers.View3D#mousePicker
+        */
+        var PickingType = (function () {
+            function PickingType() {
+            }
+            PickingType.SHADER = new away.pick.ShaderPicker();
+
+            PickingType.RAYCAST_FIRST_ENCOUNTERED = new away.pick.RaycastPicker(false);
+
+            PickingType.RAYCAST_BEST_HIT = new away.pick.RaycastPicker(true);
+            return PickingType;
+        })();
+        pick.PickingType = PickingType;
+    })(away.pick || (away.pick = {}));
+    var pick = away.pick;
 })(away || (away = {}));
 var away;
 (function (away) {
@@ -22003,7 +24788,7 @@ var away;
             /**
             * Invalidates the primitive's geometry, causing it to be updated when requested.
             */
-            PrimitiveBase.prototype.pIvalidateGeometry = function () {
+            PrimitiveBase.prototype.pInvalidateGeometry = function () {
                 this._geomDirty = true;
             };
 
@@ -22242,7 +25027,7 @@ var away;
                     data = target.UVData;
                 } else {
                     data = new Array(numUvs);
-                    this.pIvalidateGeometry();
+                    this.pInvalidateGeometry();
                 }
 
                 // current uv component index
@@ -22270,7 +25055,7 @@ var away;
                 },
                 set: function (value) {
                     this._radius = value;
-                    this.pIvalidateGeometry();
+                    this.pInvalidateGeometry();
                 },
                 enumerable: true,
                 configurable: true
@@ -22286,7 +25071,7 @@ var away;
                 },
                 set: function (value) {
                     this._tubeRadius = value;
-                    this.pIvalidateGeometry();
+                    this.pInvalidateGeometry();
                 },
                 enumerable: true,
                 configurable: true
@@ -22302,7 +25087,7 @@ var away;
                 },
                 set: function (value) {
                     this._segmentsR = value;
-                    this.pIvalidateGeometry();
+                    this.pInvalidateGeometry();
                     this.pInvalidateUVs();
                 },
                 enumerable: true,
@@ -22319,7 +25104,7 @@ var away;
                 },
                 set: function (value) {
                     this._segmentsT = value;
-                    this.pIvalidateGeometry();
+                    this.pInvalidateGeometry();
                     this.pInvalidateUVs();
                 },
                 enumerable: true,
@@ -22336,7 +25121,7 @@ var away;
                 },
                 set: function (value) {
                     this._yUp = value;
-                    this.pIvalidateGeometry();
+                    this.pInvalidateGeometry();
                 },
                 enumerable: true,
                 configurable: true
@@ -22345,6 +25130,474 @@ var away;
             return TorusGeometry;
         })(away.primitives.PrimitiveBase);
         primitives.TorusGeometry = TorusGeometry;
+    })(away.primitives || (away.primitives = {}));
+    var primitives = away.primitives;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (primitives) {
+        //import away3d.arcane;
+        //import away3d.core.base.CompactSubGeometry;
+        //use namespace arcane;
+        /**
+        * A Cube primitive mesh.
+        */
+        var CubeGeometry = (function (_super) {
+            __extends(CubeGeometry, _super);
+            /**
+            * Creates a new Cube object.
+            * @param width The size of the cube along its X-axis.
+            * @param height The size of the cube along its Y-axis.
+            * @param depth The size of the cube along its Z-axis.
+            * @param segmentsW The number of segments that make up the cube along the X-axis.
+            * @param segmentsH The number of segments that make up the cube along the Y-axis.
+            * @param segmentsD The number of segments that make up the cube along the Z-axis.
+            * @param tile6 The type of uv mapping to use. When true, a texture will be subdivided in a 2x3 grid, each used for a single face. When false, the entire image is mapped on each face.
+            */
+            function CubeGeometry(width, height, depth, segmentsW, segmentsH, segmentsD, tile6) {
+                if (typeof width === "undefined") { width = 100; }
+                if (typeof height === "undefined") { height = 100; }
+                if (typeof depth === "undefined") { depth = 100; }
+                if (typeof segmentsW === "undefined") { segmentsW = 1; }
+                if (typeof segmentsH === "undefined") { segmentsH = 1; }
+                if (typeof segmentsD === "undefined") { segmentsD = 1; }
+                if (typeof tile6 === "undefined") { tile6 = true; }
+                _super.call(this);
+
+                this._width = width;
+                this._height = height;
+                this._depth = depth;
+                this._segmentsW = segmentsW;
+                this._segmentsH = segmentsH;
+                this._segmentsD = segmentsD;
+                this._tile6 = tile6;
+            }
+            Object.defineProperty(CubeGeometry.prototype, "width", {
+                get: /**
+                * The size of the cube along its X-axis.
+                */
+                function () {
+                    return this._width;
+                },
+                set: function (value) {
+                    this._width = value;
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(CubeGeometry.prototype, "height", {
+                get: /**
+                * The size of the cube along its Y-axis.
+                */
+                function () {
+                    return this._height;
+                },
+                set: function (value) {
+                    this._height = value;
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(CubeGeometry.prototype, "depth", {
+                get: /**
+                * The size of the cube along its Z-axis.
+                */
+                function () {
+                    return this._depth;
+                },
+                set: function (value) {
+                    this._depth = value;
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(CubeGeometry.prototype, "tile6", {
+                get: /**
+                * The type of uv mapping to use. When false, the entire image is mapped on each face.
+                * When true, a texture will be subdivided in a 3x2 grid, each used for a single face.
+                * Reading the tiles from left to right, top to bottom they represent the faces of the
+                * cube in the following order: bottom, top, back, left, front, right. This creates
+                * several shared edges (between the top, front, left and right faces) which simplifies
+                * texture painting.
+                */
+                function () {
+                    return this._tile6;
+                },
+                set: function (value) {
+                    this._tile6 = value;
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(CubeGeometry.prototype, "segmentsW", {
+                get: /**
+                * The number of segments that make up the cube along the X-axis. Defaults to 1.
+                */
+                function () {
+                    return this._segmentsW;
+                },
+                set: function (value) {
+                    this._segmentsW = value;
+                    this.pInvalidateGeometry();
+                    this.pInvalidateUVs();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(CubeGeometry.prototype, "segmentsH", {
+                get: /**
+                * The number of segments that make up the cube along the Y-axis. Defaults to 1.
+                */
+                function () {
+                    return this._segmentsH;
+                },
+                set: function (value) {
+                    this._segmentsH = value;
+                    this.pInvalidateGeometry();
+                    this.pInvalidateUVs();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(CubeGeometry.prototype, "segmentsD", {
+                get: /**
+                * The number of segments that make up the cube along the Z-axis. Defaults to 1.
+                */
+                function () {
+                    return this._segmentsD;
+                },
+                set: function (value) {
+                    this._segmentsD = value;
+                    this.pInvalidateGeometry();
+                    this.pInvalidateUVs();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * @inheritDoc
+            */
+            CubeGeometry.prototype.pBuildGeometry = function (target) {
+                var data;
+                var indices/*uint*/ ;
+
+                var tl, tr, bl, br;
+                var i, j, inc = 0;
+
+                var vidx, fidx;
+                var hw, hh, hd;
+                var dw, dh, dd;
+
+                var outer_pos;
+
+                var numVerts = ((this._segmentsW + 1) * (this._segmentsH + 1) + (this._segmentsW + 1) * (this._segmentsD + 1) + (this._segmentsH + 1) * (this._segmentsD + 1)) * 2;
+
+                var stride = target.vertexStride;
+                var skip = stride - 9;
+
+                if (numVerts == target.numVertices) {
+                    data = target.vertexData;
+
+                    indices = (target.indexData) ? target.indexData : new Array((this._segmentsW * this._segmentsH + this._segmentsW * this._segmentsD + this._segmentsH * this._segmentsD) * 12);
+                } else {
+                    data = new Array(numVerts * stride);
+                    indices = new Array((this._segmentsW * this._segmentsH + this._segmentsW * this._segmentsD + this._segmentsH * this._segmentsD) * 12);
+                    this.pInvalidateUVs();
+                }
+
+                // Indices
+                vidx = target.vertexOffset;
+                fidx = 0;
+
+                // half cube dimensions
+                hw = this._width / 2;
+                hh = this._height / 2;
+                hd = this._depth / 2;
+
+                // Segment dimensions
+                dw = this._width / this._segmentsW;
+                dh = this._height / this._segmentsH;
+                dd = this._depth / this._segmentsD;
+
+                for (i = 0; i <= this._segmentsW; i++) {
+                    outer_pos = -hw + i * dw;
+
+                    for (j = 0; j <= this._segmentsH; j++) {
+                        // front
+                        data[vidx++] = outer_pos;
+                        data[vidx++] = -hh + j * dh;
+                        data[vidx++] = -hd;
+                        data[vidx++] = 0;
+                        data[vidx++] = 0;
+                        data[vidx++] = -1;
+                        data[vidx++] = 1;
+                        data[vidx++] = 0;
+                        data[vidx++] = 0;
+                        vidx += skip;
+
+                        // back
+                        data[vidx++] = outer_pos;
+                        data[vidx++] = -hh + j * dh;
+                        data[vidx++] = hd;
+                        data[vidx++] = 0;
+                        data[vidx++] = 0;
+                        data[vidx++] = 1;
+                        data[vidx++] = -1;
+                        data[vidx++] = 0;
+                        data[vidx++] = 0;
+                        vidx += skip;
+
+                        if (i && j) {
+                            tl = 2 * ((i - 1) * (this._segmentsH + 1) + (j - 1));
+                            tr = 2 * (i * (this._segmentsH + 1) + (j - 1));
+                            bl = tl + 2;
+                            br = tr + 2;
+
+                            indices[fidx++] = tl;
+                            indices[fidx++] = bl;
+                            indices[fidx++] = br;
+                            indices[fidx++] = tl;
+                            indices[fidx++] = br;
+                            indices[fidx++] = tr;
+                            indices[fidx++] = tr + 1;
+                            indices[fidx++] = br + 1;
+                            indices[fidx++] = bl + 1;
+                            indices[fidx++] = tr + 1;
+                            indices[fidx++] = bl + 1;
+                            indices[fidx++] = tl + 1;
+                        }
+                    }
+                }
+
+                inc += 2 * (this._segmentsW + 1) * (this._segmentsH + 1);
+
+                for (i = 0; i <= this._segmentsW; i++) {
+                    outer_pos = -hw + i * dw;
+
+                    for (j = 0; j <= this._segmentsD; j++) {
+                        // top
+                        data[vidx++] = outer_pos;
+                        data[vidx++] = hh;
+                        data[vidx++] = -hd + j * dd;
+                        data[vidx++] = 0;
+                        data[vidx++] = 1;
+                        data[vidx++] = 0;
+                        data[vidx++] = 1;
+                        data[vidx++] = 0;
+                        data[vidx++] = 0;
+                        vidx += skip;
+
+                        // bottom
+                        data[vidx++] = outer_pos;
+                        data[vidx++] = -hh;
+                        data[vidx++] = -hd + j * dd;
+                        data[vidx++] = 0;
+                        data[vidx++] = -1;
+                        data[vidx++] = 0;
+                        data[vidx++] = 1;
+                        data[vidx++] = 0;
+                        data[vidx++] = 0;
+                        vidx += skip;
+
+                        if (i && j) {
+                            tl = inc + 2 * ((i - 1) * (this._segmentsD + 1) + (j - 1));
+                            tr = inc + 2 * (i * (this._segmentsD + 1) + (j - 1));
+                            bl = tl + 2;
+                            br = tr + 2;
+
+                            indices[fidx++] = tl;
+                            indices[fidx++] = bl;
+                            indices[fidx++] = br;
+                            indices[fidx++] = tl;
+                            indices[fidx++] = br;
+                            indices[fidx++] = tr;
+                            indices[fidx++] = tr + 1;
+                            indices[fidx++] = br + 1;
+                            indices[fidx++] = bl + 1;
+                            indices[fidx++] = tr + 1;
+                            indices[fidx++] = bl + 1;
+                            indices[fidx++] = tl + 1;
+                        }
+                    }
+                }
+
+                inc += 2 * (this._segmentsW + 1) * (this._segmentsD + 1);
+
+                for (i = 0; i <= this._segmentsD; i++) {
+                    outer_pos = hd - i * dd;
+
+                    for (j = 0; j <= this._segmentsH; j++) {
+                        // left
+                        data[vidx++] = -hw;
+                        data[vidx++] = -hh + j * dh;
+                        data[vidx++] = outer_pos;
+                        data[vidx++] = -1;
+                        data[vidx++] = 0;
+                        data[vidx++] = 0;
+                        data[vidx++] = 0;
+                        data[vidx++] = 0;
+                        data[vidx++] = -1;
+                        vidx += skip;
+
+                        // right
+                        data[vidx++] = hw;
+                        data[vidx++] = -hh + j * dh;
+                        data[vidx++] = outer_pos;
+                        data[vidx++] = 1;
+                        data[vidx++] = 0;
+                        data[vidx++] = 0;
+                        data[vidx++] = 0;
+                        data[vidx++] = 0;
+                        data[vidx++] = 1;
+                        vidx += skip;
+
+                        if (i && j) {
+                            tl = inc + 2 * ((i - 1) * (this._segmentsH + 1) + (j - 1));
+                            tr = inc + 2 * (i * (this._segmentsH + 1) + (j - 1));
+                            bl = tl + 2;
+                            br = tr + 2;
+
+                            indices[fidx++] = tl;
+                            indices[fidx++] = bl;
+                            indices[fidx++] = br;
+                            indices[fidx++] = tl;
+                            indices[fidx++] = br;
+                            indices[fidx++] = tr;
+                            indices[fidx++] = tr + 1;
+                            indices[fidx++] = br + 1;
+                            indices[fidx++] = bl + 1;
+                            indices[fidx++] = tr + 1;
+                            indices[fidx++] = bl + 1;
+                            indices[fidx++] = tl + 1;
+                        }
+                    }
+                }
+
+                target.updateData(data);
+                target.updateIndexData(indices);
+            };
+
+            /**
+            * @inheritDoc
+            */
+            CubeGeometry.prototype.pBuildUVs = function (target) {
+                var i, j, uidx;
+                var data;
+
+                var u_tile_dim, v_tile_dim;
+                var u_tile_step, v_tile_step;
+                var tl0u, tl0v;
+                var tl1u, tl1v;
+                var du, dv;
+                var stride = target.UVStride;
+                var numUvs = ((this._segmentsW + 1) * (this._segmentsH + 1) + (this._segmentsW + 1) * (this._segmentsD + 1) + (this._segmentsH + 1) * (this._segmentsD + 1)) * 2 * stride;
+                var skip = stride - 2;
+
+                if (target.UVData && numUvs == target.UVData.length)
+                    data = target.UVData; else {
+                    data = new Array(numUvs);
+                    this.pInvalidateGeometry();
+                }
+
+                if (this._tile6) {
+                    u_tile_dim = u_tile_step = 1 / 3;
+                    v_tile_dim = v_tile_step = 1 / 2;
+                } else {
+                    u_tile_dim = v_tile_dim = 1;
+                    u_tile_step = v_tile_step = 0;
+                }
+
+                // Create planes two and two, the same way that they were
+                // constructed in the buildGeometry() function. First calculate
+                // the top-left UV coordinate for both planes, and then loop
+                // over the points, calculating the UVs from these numbers.
+                // When tile6 is true, the layout is as follows:
+                //       .-----.-----.-----. (1,1)
+                //       | Bot |  T  | Bak |
+                //       |-----+-----+-----|
+                //       |  L  |  F  |  R  |
+                // (0,0)'-----'-----'-----'
+                uidx = target.UVOffset;
+
+                // FRONT / BACK
+                tl0u = 1 * u_tile_step;
+                tl0v = 1 * v_tile_step;
+                tl1u = 2 * u_tile_step;
+                tl1v = 0 * v_tile_step;
+                du = u_tile_dim / this._segmentsW;
+                dv = v_tile_dim / this._segmentsH;
+                for (i = 0; i <= this._segmentsW; i++) {
+                    for (j = 0; j <= this._segmentsH; j++) {
+                        data[uidx++] = (tl0u + i * du) * target.scaleU;
+                        data[uidx++] = (tl0v + (v_tile_dim - j * dv)) * target.scaleV;
+                        uidx += skip;
+                        data[uidx++] = (tl1u + (u_tile_dim - i * du)) * target.scaleU;
+                        data[uidx++] = (tl1v + (v_tile_dim - j * dv)) * target.scaleV;
+                        uidx += skip;
+                    }
+                }
+
+                // TOP / BOTTOM
+                tl0u = 1 * u_tile_step;
+                tl0v = 0 * v_tile_step;
+                tl1u = 0 * u_tile_step;
+                tl1v = 0 * v_tile_step;
+                du = u_tile_dim / this._segmentsW;
+                dv = v_tile_dim / this._segmentsD;
+                for (i = 0; i <= this._segmentsW; i++) {
+                    for (j = 0; j <= this._segmentsD; j++) {
+                        data[uidx++] = (tl0u + i * du) * target.scaleU;
+                        data[uidx++] = (tl0v + (v_tile_dim - j * dv)) * target.scaleV;
+                        uidx += skip;
+                        data[uidx++] = (tl1u + i * du) * target.scaleU;
+                        data[uidx++] = (tl1v + j * dv) * target.scaleV;
+                        uidx += skip;
+                    }
+                }
+
+                // LEFT / RIGHT
+                tl0u = 0 * u_tile_step;
+                tl0v = 1 * v_tile_step;
+                tl1u = 2 * u_tile_step;
+                tl1v = 1 * v_tile_step;
+                du = u_tile_dim / this._segmentsD;
+                dv = v_tile_dim / this._segmentsH;
+                for (i = 0; i <= this._segmentsD; i++) {
+                    for (j = 0; j <= this._segmentsH; j++) {
+                        data[uidx++] = (tl0u + i * du) * target.scaleU;
+                        ;
+                        data[uidx++] = (tl0v + (v_tile_dim - j * dv)) * target.scaleV;
+                        uidx += skip;
+                        data[uidx++] = (tl1u + (u_tile_dim - i * du)) * target.scaleU;
+                        data[uidx++] = (tl1v + (v_tile_dim - j * dv)) * target.scaleV;
+                        uidx += skip;
+                    }
+                }
+
+                target.updateData(data);
+            };
+            return CubeGeometry;
+        })(away.primitives.PrimitiveBase);
+        primitives.CubeGeometry = CubeGeometry;
     })(away.primitives || (away.primitives = {}));
     var primitives = away.primitives;
 })(away || (away = {}));
@@ -22392,7 +25645,7 @@ var away;
                 set: function (value) {
                     this._segmentsW = value;
 
-                    this.pIvalidateGeometry();
+                    this.pInvalidateGeometry();
                     this.pInvalidateUVs();
                 },
                 enumerable: true,
@@ -22411,7 +25664,7 @@ var away;
                 set: function (value) {
                     this._segmentsH = value;
 
-                    this.pIvalidateGeometry();
+                    this.pInvalidateGeometry();
                     this.pInvalidateUVs();
                 },
                 enumerable: true,
@@ -22428,7 +25681,7 @@ var away;
                 },
                 set: function (value) {
                     this._yUp = value;
-                    this.pIvalidateGeometry();
+                    this.pInvalidateGeometry();
                 },
                 enumerable: true,
                 configurable: true
@@ -22444,7 +25697,7 @@ var away;
                 },
                 set: function (value) {
                     this._doubleSided = value;
-                    this.pIvalidateGeometry();
+                    this.pInvalidateGeometry();
                 },
                 enumerable: true,
                 configurable: true
@@ -22460,7 +25713,7 @@ var away;
                 },
                 set: function (value) {
                     this._width = value;
-                    this.pIvalidateGeometry();
+                    this.pInvalidateGeometry();
                 },
                 enumerable: true,
                 configurable: true
@@ -22476,7 +25729,7 @@ var away;
                 },
                 set: function (value) {
                     this._height = value;
-                    this.pIvalidateGeometry();
+                    this.pInvalidateGeometry();
                 },
                 enumerable: true,
                 configurable: true
@@ -22617,7 +25870,7 @@ var away;
                     data = target.UVData;
                 } else {
                     data = new Array(numUvs);
-                    this.pIvalidateGeometry();
+                    this.pInvalidateGeometry();
                 }
 
                 var index = target.UVOffset;
@@ -22641,6 +25894,1137 @@ var away;
             return PlaneGeometry;
         })(away.primitives.PrimitiveBase);
         primitives.PlaneGeometry = PlaneGeometry;
+    })(away.primitives || (away.primitives = {}));
+    var primitives = away.primitives;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (primitives) {
+        /**
+        * A Capsule primitive mesh.
+        */
+        var CapsuleGeometry = (function (_super) {
+            __extends(CapsuleGeometry, _super);
+            /**
+            * Creates a new Capsule object.
+            * @param radius The radius of the capsule.
+            * @param height The height of the capsule.
+            * @param segmentsW Defines the number of horizontal segments that make up the capsule. Defaults to 16.
+            * @param segmentsH Defines the number of vertical segments that make up the capsule. Defaults to 15. Must be uneven value.
+            * @param yUp Defines whether the capsule poles should lay on the Y-axis (true) or on the Z-axis (false).
+            */
+            function CapsuleGeometry(radius, height, segmentsW, segmentsH, yUp) {
+                if (typeof radius === "undefined") { radius = 50; }
+                if (typeof height === "undefined") { height = 100; }
+                if (typeof segmentsW === "undefined") { segmentsW = 16; }
+                if (typeof segmentsH === "undefined") { segmentsH = 15; }
+                if (typeof yUp === "undefined") { yUp = true; }
+                _super.call(this);
+
+                this._radius = radius;
+                this._height = height;
+                this._segmentsW = segmentsW;
+                this._segmentsH = (segmentsH % 2 == 0) ? segmentsH + 1 : segmentsH;
+                this._yUp = yUp;
+            }
+            /**
+            * @inheritDoc
+            */
+            CapsuleGeometry.prototype.pBuildGeometry = function (target) {
+                var data;
+                var indices/*uint*/ ;
+                var i;
+                var j;
+                var triIndex = 0;
+                var numVerts = (this._segmentsH + 1) * (this._segmentsW + 1);
+                var stride = target.vertexStride;
+                var skip = stride - 9;
+                var index = 0;
+                var startIndex;
+                var comp1, comp2, t1, t2;
+
+                if (numVerts == target.numVertices) {
+                    data = target.vertexData;
+
+                    if (target.indexData) {
+                        indices = target.indexData;
+                    } else {
+                        indices = new Array((this._segmentsH - 1) * this._segmentsW * 6);
+                    }
+                } else {
+                    data = new Array(numVerts * stride);
+                    indices = new Array((this._segmentsH - 1) * this._segmentsW * 6);
+                    this.pInvalidateUVs();
+                }
+
+                for (j = 0; j <= this._segmentsH; ++j) {
+                    var horangle = Math.PI * j / this._segmentsH;
+                    var z = -this._radius * Math.cos(horangle);
+                    var ringradius = this._radius * Math.sin(horangle);
+
+                    startIndex = index;
+
+                    for (i = 0; i <= this._segmentsW; ++i) {
+                        var verangle = 2 * Math.PI * i / this._segmentsW;
+                        var x = ringradius * Math.cos(verangle);
+                        var offset = j > this._segmentsH / 2 ? this._height / 2 : -this._height / 2;
+                        var y = ringradius * Math.sin(verangle);
+                        var normLen = 1 / Math.sqrt(x * x + y * y + z * z);
+                        var tanLen = Math.sqrt(y * y + x * x);
+
+                        if (this._yUp) {
+                            t1 = 0;
+                            t2 = tanLen > .007 ? x / tanLen : 0;
+                            comp1 = -z;
+                            comp2 = y;
+                        } else {
+                            t1 = tanLen > .007 ? x / tanLen : 0;
+                            t2 = 0;
+                            comp1 = y;
+                            comp2 = z;
+                        }
+
+                        if (i == this._segmentsW) {
+                            data[index++] = data[startIndex];
+                            data[index++] = data[startIndex + 1];
+                            data[index++] = data[startIndex + 2];
+                            data[index++] = (data[startIndex + 3] + (x * normLen)) * .5;
+                            data[index++] = (data[startIndex + 4] + (comp1 * normLen)) * .5;
+                            data[index++] = (data[startIndex + 5] + (comp2 * normLen)) * .5;
+                            data[index++] = (data[startIndex + 6] + (tanLen > .007 ? -y / tanLen : 1)) * .5;
+                            data[index++] = (data[startIndex + 7] + t1) * .5;
+                            data[index++] = (data[startIndex + 8] + t2) * .5;
+                        } else {
+                            // vertex
+                            data[index++] = x;
+                            data[index++] = (this._yUp) ? comp1 - offset : comp1;
+                            data[index++] = (this._yUp) ? comp2 : comp2 + offset;
+
+                            // normal
+                            data[index++] = x * normLen;
+                            data[index++] = comp1 * normLen;
+                            data[index++] = comp2 * normLen;
+
+                            // tangent
+                            data[index++] = tanLen > .007 ? -y / tanLen : 1;
+                            data[index++] = t1;
+                            data[index++] = t2;
+                        }
+
+                        if (i > 0 && j > 0) {
+                            var a = (this._segmentsW + 1) * j + i;
+                            var b = (this._segmentsW + 1) * j + i - 1;
+                            var c = (this._segmentsW + 1) * (j - 1) + i - 1;
+                            var d = (this._segmentsW + 1) * (j - 1) + i;
+
+                            if (j == this._segmentsH) {
+                                data[index - 9] = data[startIndex];
+                                data[index - 8] = data[startIndex + 1];
+                                data[index - 7] = data[startIndex + 2];
+
+                                indices[triIndex++] = a;
+                                indices[triIndex++] = c;
+                                indices[triIndex++] = d;
+                            } else if (j == 1) {
+                                indices[triIndex++] = a;
+                                indices[triIndex++] = b;
+                                indices[triIndex++] = c;
+                            } else {
+                                indices[triIndex++] = a;
+                                indices[triIndex++] = b;
+                                indices[triIndex++] = c;
+                                indices[triIndex++] = a;
+                                indices[triIndex++] = c;
+                                indices[triIndex++] = d;
+                            }
+                        }
+
+                        index += skip;
+                    }
+                }
+
+                target.updateData(data);
+                target.updateIndexData(indices);
+            };
+
+            /**
+            * @inheritDoc
+            */
+            CapsuleGeometry.prototype.pBuildUVs = function (target) {
+                var i;
+                var j;
+                var index;
+                var data;
+                var stride = target.UVStride;
+                var UVlen = (this._segmentsH + 1) * (this._segmentsW + 1) * stride;
+                var skip = stride - 2;
+
+                if (target.UVData && UVlen == target.UVData.length) {
+                    data = target.UVData;
+                } else {
+                    data = new Array(UVlen);
+                    this.pInvalidateGeometry();
+                }
+
+                index = target.UVOffset;
+
+                for (j = 0; j <= this._segmentsH; ++j) {
+                    for (i = 0; i <= this._segmentsW; ++i) {
+                        data[index++] = (i / this._segmentsW) * target.scaleU;
+                        data[index++] = (j / this._segmentsH) * target.scaleV;
+                        index += skip;
+                    }
+                }
+
+                target.updateData(data);
+            };
+
+            Object.defineProperty(CapsuleGeometry.prototype, "radius", {
+                get: /**
+                * The radius of the capsule.
+                */
+                function () {
+                    return this._radius;
+                },
+                set: function (value) {
+                    this._radius = value;
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(CapsuleGeometry.prototype, "height", {
+                get: /**
+                * The height of the capsule.
+                */
+                function () {
+                    return this._height;
+                },
+                set: function (value) {
+                    this._height = value;
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(CapsuleGeometry.prototype, "segmentsW", {
+                get: /**
+                * Defines the number of horizontal segments that make up the capsule. Defaults to 16.
+                */
+                function () {
+                    return this._segmentsW;
+                },
+                set: function (value) {
+                    this._segmentsW = value;
+                    this.pInvalidateGeometry();
+                    this.pInvalidateUVs();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(CapsuleGeometry.prototype, "segmentsH", {
+                get: /**
+                * Defines the number of vertical segments that make up the capsule. Defaults to 15. Must be uneven.
+                */
+                function () {
+                    return this._segmentsH;
+                },
+                set: function (value) {
+                    this._segmentsH = (value % 2 == 0) ? value + 1 : value;
+                    this.pInvalidateGeometry();
+                    this.pInvalidateUVs();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(CapsuleGeometry.prototype, "yUp", {
+                get: /**
+                * Defines whether the capsule poles should lay on the Y-axis (true) or on the Z-axis (false).
+                */
+                function () {
+                    return this._yUp;
+                },
+                set: function (value) {
+                    this._yUp = value;
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            return CapsuleGeometry;
+        })(away.primitives.PrimitiveBase);
+        primitives.CapsuleGeometry = CapsuleGeometry;
+    })(away.primitives || (away.primitives = {}));
+    var primitives = away.primitives;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (primitives) {
+        /**
+        * A Cylinder primitive mesh.
+        */
+        var CylinderGeometry = (function (_super) {
+            __extends(CylinderGeometry, _super);
+            /**
+            * Creates a new Cylinder object.
+            * @param topRadius The radius of the top end of the cylinder.
+            * @param bottomRadius The radius of the bottom end of the cylinder
+            * @param height The radius of the bottom end of the cylinder
+            * @param segmentsW Defines the number of horizontal segments that make up the cylinder. Defaults to 16.
+            * @param segmentsH Defines the number of vertical segments that make up the cylinder. Defaults to 1.
+            * @param topClosed Defines whether the top end of the cylinder is closed (true) or open.
+            * @param bottomClosed Defines whether the bottom end of the cylinder is closed (true) or open.
+            * @param yUp Defines whether the cone poles should lay on the Y-axis (true) or on the Z-axis (false).
+            */
+            function CylinderGeometry(topRadius, bottomRadius, height, segmentsW, segmentsH, topClosed, bottomClosed, surfaceClosed, yUp) {
+                if (typeof topRadius === "undefined") { topRadius = 50; }
+                if (typeof bottomRadius === "undefined") { bottomRadius = 50; }
+                if (typeof height === "undefined") { height = 100; }
+                if (typeof segmentsW === "undefined") { segmentsW = 16; }
+                if (typeof segmentsH === "undefined") { segmentsH = 1; }
+                if (typeof topClosed === "undefined") { topClosed = true; }
+                if (typeof bottomClosed === "undefined") { bottomClosed = true; }
+                if (typeof surfaceClosed === "undefined") { surfaceClosed = true; }
+                if (typeof yUp === "undefined") { yUp = true; }
+                _super.call(this);
+                this._currentIndex = 0;
+                this._numVertices = 0;
+
+                this._topRadius = topRadius;
+                this._pBottomRadius = bottomRadius;
+                this._height = height;
+                this._pSegmentsW = segmentsW;
+                this._pSegmentsH = segmentsH;
+                this._topClosed = topClosed;
+                this._bottomClosed = bottomClosed;
+                this._surfaceClosed = surfaceClosed;
+                this._yUp = yUp;
+            }
+            CylinderGeometry.prototype.addVertex = function (px, py, pz, nx, ny, nz, tx, ty, tz) {
+                var compVertInd = this._vertexOffset + this._nextVertexIndex * this._stride;
+                this._rawData[compVertInd++] = px;
+                this._rawData[compVertInd++] = py;
+                this._rawData[compVertInd++] = pz;
+                this._rawData[compVertInd++] = nx;
+                this._rawData[compVertInd++] = ny;
+                this._rawData[compVertInd++] = nz;
+                this._rawData[compVertInd++] = tx;
+                this._rawData[compVertInd++] = ty;
+                this._rawData[compVertInd++] = tz;
+                this._nextVertexIndex++;
+            };
+
+            CylinderGeometry.prototype.addTriangleClockWise = function (cwVertexIndex0, cwVertexIndex1, cwVertexIndex2) {
+                this._rawIndices[this._currentIndex++] = cwVertexIndex0;
+                this._rawIndices[this._currentIndex++] = cwVertexIndex1;
+                this._rawIndices[this._currentIndex++] = cwVertexIndex2;
+                this._currentTriangleIndex++;
+            };
+
+            /**
+            * @inheritDoc
+            */
+            CylinderGeometry.prototype.pBuildGeometry = function (target) {
+                var i;
+                var j;
+                var x;
+                var y;
+                var z;
+                var radius;
+                var revolutionAngle;
+
+                var dr;
+                var latNormElev;
+                var latNormBase;
+                var numTriangles = 0;
+
+                var comp1;
+                var comp2;
+                var startIndex = 0;
+
+                var t1;
+                var t2;
+
+                this._stride = target.vertexStride;
+                this._vertexOffset = target.vertexOffset;
+
+                // reset utility variables
+                this._numVertices = 0;
+                this._nextVertexIndex = 0;
+                this._currentIndex = 0;
+                this._currentTriangleIndex = 0;
+
+                if (this._surfaceClosed) {
+                    this._numVertices += (this._pSegmentsH + 1) * (this._pSegmentsW + 1);
+                    numTriangles += this._pSegmentsH * this._pSegmentsW * 2;
+                }
+                if (this._topClosed) {
+                    this._numVertices += 2 * (this._pSegmentsW + 1);
+                    numTriangles += this._pSegmentsW;
+                }
+                if (this._bottomClosed) {
+                    this._numVertices += 2 * (this._pSegmentsW + 1);
+                    numTriangles += this._pSegmentsW;
+                }
+
+                if (this._numVertices == target.numVertices) {
+                    this._rawData = target.vertexData;
+
+                    if (target.indexData) {
+                        this._rawIndices = target.indexData;
+                    } else {
+                        this._rawIndices = new Array(numTriangles * 3);
+                    }
+                } else {
+                    var numVertComponents = this._numVertices * this._stride;
+                    this._rawData = new Array(numVertComponents);
+                    this._rawIndices = new Array(numTriangles * 3);
+                }
+
+                // evaluate revolution steps
+                var revolutionAngleDelta = 2 * Math.PI / this._pSegmentsW;
+
+                if (this._topClosed && this._topRadius > 0) {
+                    z = -0.5 * this._height;
+
+                    for (i = 0; i <= this._pSegmentsW; ++i) {
+                        if (this._yUp) {
+                            t1 = 1;
+                            t2 = 0;
+                            comp1 = -z;
+                            comp2 = 0;
+                        } else {
+                            t1 = 0;
+                            t2 = -1;
+                            comp1 = 0;
+                            comp2 = z;
+                        }
+
+                        this.addVertex(0, comp1, comp2, 0, t1, t2, 1, 0, 0);
+
+                        // revolution vertex
+                        revolutionAngle = i * revolutionAngleDelta;
+                        x = this._topRadius * Math.cos(revolutionAngle);
+                        y = this._topRadius * Math.sin(revolutionAngle);
+
+                        if (this._yUp) {
+                            comp1 = -z;
+                            comp2 = y;
+                        } else {
+                            comp1 = y;
+                            comp2 = z;
+                        }
+
+                        if (i == this._pSegmentsW)
+                            this.addVertex(this._rawData[startIndex + this._stride], this._rawData[startIndex + this._stride + 1], this._rawData[startIndex + this._stride + 2], 0, t1, t2, 1, 0, 0); else
+                            this.addVertex(x, comp1, comp2, 0, t1, t2, 1, 0, 0);
+
+                        if (i > 0)
+                            this.addTriangleClockWise(this._nextVertexIndex - 1, this._nextVertexIndex - 3, this._nextVertexIndex - 2);
+                    }
+                }
+
+                if (this._bottomClosed && this._pBottomRadius > 0) {
+                    z = 0.5 * this._height;
+
+                    startIndex = this._vertexOffset + this._nextVertexIndex * this._stride;
+
+                    for (i = 0; i <= this._pSegmentsW; ++i) {
+                        if (this._yUp) {
+                            t1 = -1;
+                            t2 = 0;
+                            comp1 = -z;
+                            comp2 = 0;
+                        } else {
+                            t1 = 0;
+                            t2 = 1;
+                            comp1 = 0;
+                            comp2 = z;
+                        }
+
+                        this.addVertex(0, comp1, comp2, 0, t1, t2, 1, 0, 0);
+
+                        // revolution vertex
+                        revolutionAngle = i * revolutionAngleDelta;
+                        x = this._pBottomRadius * Math.cos(revolutionAngle);
+                        y = this._pBottomRadius * Math.sin(revolutionAngle);
+
+                        if (this._yUp) {
+                            comp1 = -z;
+                            comp2 = y;
+                        } else {
+                            comp1 = y;
+                            comp2 = z;
+                        }
+
+                        if (i == this._pSegmentsW)
+                            this.addVertex(x, this._rawData[startIndex + 1], this._rawData[startIndex + 2], 0, t1, t2, 1, 0, 0); else
+                            this.addVertex(x, comp1, comp2, 0, t1, t2, 1, 0, 0);
+
+                        if (i > 0)
+                            this.addTriangleClockWise(this._nextVertexIndex - 2, this._nextVertexIndex - 3, this._nextVertexIndex - 1);
+                    }
+                }
+
+                // The normals on the lateral surface all have the same incline, i.e.
+                // the "elevation" component (Y or Z depending on yUp) is constant.
+                // Same principle goes for the "base" of these vectors, which will be
+                // calculated such that a vector [base,elev] will be a unit vector.
+                dr = (this._pBottomRadius - this._topRadius);
+                latNormElev = dr / this._height;
+                latNormBase = (latNormElev == 0) ? 1 : this._height / dr;
+
+                if (this._surfaceClosed) {
+                    var a;
+                    var b;
+                    var c;
+                    var d;
+                    var na0, na1, naComp1, naComp2;
+
+                    for (j = 0; j <= this._pSegmentsH; ++j) {
+                        radius = this._topRadius - ((j / this._pSegmentsH) * (this._topRadius - this._pBottomRadius));
+                        z = -(this._height / 2) + (j / this._pSegmentsH * this._height);
+
+                        startIndex = this._vertexOffset + this._nextVertexIndex * this._stride;
+
+                        for (i = 0; i <= this._pSegmentsW; ++i) {
+                            // revolution vertex
+                            revolutionAngle = i * revolutionAngleDelta;
+                            x = radius * Math.cos(revolutionAngle);
+                            y = radius * Math.sin(revolutionAngle);
+                            na0 = latNormBase * Math.cos(revolutionAngle);
+                            na1 = latNormBase * Math.sin(revolutionAngle);
+
+                            if (this._yUp) {
+                                t1 = 0;
+                                t2 = -na0;
+                                comp1 = -z;
+                                comp2 = y;
+                                naComp1 = latNormElev;
+                                naComp2 = na1;
+                            } else {
+                                t1 = -na0;
+                                t2 = 0;
+                                comp1 = y;
+                                comp2 = z;
+                                naComp1 = na1;
+                                naComp2 = latNormElev;
+                            }
+
+                            if (i == this._pSegmentsW) {
+                                this.addVertex(this._rawData[startIndex], this._rawData[startIndex + 1], this._rawData[startIndex + 2], na0, latNormElev, na1, na1, t1, t2);
+                            } else {
+                                this.addVertex(x, comp1, comp2, na0, naComp1, naComp2, -na1, t1, t2);
+                            }
+
+                            if (i > 0 && j > 0) {
+                                a = this._nextVertexIndex - 1;
+                                b = this._nextVertexIndex - 2;
+                                c = b - this._pSegmentsW - 1;
+                                d = a - this._pSegmentsW - 1;
+                                this.addTriangleClockWise(a, b, c);
+                                this.addTriangleClockWise(a, c, d);
+                            }
+                        }
+                    }
+                }
+
+                // build real data from raw data
+                target.updateData(this._rawData);
+                target.updateIndexData(this._rawIndices);
+            };
+
+            /**
+            * @inheritDoc
+            */
+            CylinderGeometry.prototype.pBuildUVs = function (target) {
+                var i;
+                var j;
+                var x;
+                var y;
+                var revolutionAngle;
+                var stride = target.UVStride;
+                var skip = stride - 2;
+                var UVData;
+
+                // evaluate num uvs
+                var numUvs = this._numVertices * stride;
+
+                if (target.UVData && numUvs == target.UVData.length) {
+                    UVData = target.UVData;
+                } else {
+                    UVData = new Array(numUvs);
+                    this.pInvalidateGeometry();
+                }
+
+                // evaluate revolution steps
+                var revolutionAngleDelta = 2 * Math.PI / this._pSegmentsW;
+
+                // current uv component index
+                var currentUvCompIndex = target.UVOffset;
+
+                if (this._topClosed) {
+                    for (i = 0; i <= this._pSegmentsW; ++i) {
+                        revolutionAngle = i * revolutionAngleDelta;
+                        x = 0.5 + 0.5 * -Math.cos(revolutionAngle);
+                        y = 0.5 + 0.5 * Math.sin(revolutionAngle);
+
+                        UVData[currentUvCompIndex++] = 0.5 * target.scaleU;
+                        UVData[currentUvCompIndex++] = 0.5 * target.scaleV;
+                        currentUvCompIndex += skip;
+                        UVData[currentUvCompIndex++] = x * target.scaleU;
+                        UVData[currentUvCompIndex++] = y * target.scaleV;
+                        currentUvCompIndex += skip;
+                    }
+                }
+
+                if (this._bottomClosed) {
+                    for (i = 0; i <= this._pSegmentsW; ++i) {
+                        revolutionAngle = i * revolutionAngleDelta;
+                        x = 0.5 + 0.5 * Math.cos(revolutionAngle);
+                        y = 0.5 + 0.5 * Math.sin(revolutionAngle);
+
+                        UVData[currentUvCompIndex++] = 0.5 * target.scaleU;
+                        UVData[currentUvCompIndex++] = 0.5 * target.scaleV;
+                        currentUvCompIndex += skip;
+                        UVData[currentUvCompIndex++] = x * target.scaleU;
+                        UVData[currentUvCompIndex++] = y * target.scaleV;
+                        currentUvCompIndex += skip;
+                    }
+                }
+
+                if (this._surfaceClosed) {
+                    for (j = 0; j <= this._pSegmentsH; ++j) {
+                        for (i = 0; i <= this._pSegmentsW; ++i) {
+                            // revolution vertex
+                            UVData[currentUvCompIndex++] = (i / this._pSegmentsW) * target.scaleU;
+                            UVData[currentUvCompIndex++] = (j / this._pSegmentsH) * target.scaleV;
+                            currentUvCompIndex += skip;
+                        }
+                    }
+                }
+
+                // build real data from raw data
+                target.updateData(UVData);
+            };
+
+            Object.defineProperty(CylinderGeometry.prototype, "topRadius", {
+                get: /**
+                * The radius of the top end of the cylinder.
+                */
+                function () {
+                    return this._topRadius;
+                },
+                set: function (value) {
+                    this._topRadius = value;
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(CylinderGeometry.prototype, "bottomRadius", {
+                get: /**
+                * The radius of the bottom end of the cylinder.
+                */
+                function () {
+                    return this._pBottomRadius;
+                },
+                set: function (value) {
+                    this._pBottomRadius = value;
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(CylinderGeometry.prototype, "height", {
+                get: /**
+                * The radius of the top end of the cylinder.
+                */
+                function () {
+                    return this._height;
+                },
+                set: function (value) {
+                    this._height = value;
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(CylinderGeometry.prototype, "segmentsW", {
+                get: /**
+                * Defines the number of horizontal segments that make up the cylinder. Defaults to 16.
+                */
+                function () {
+                    return this._pSegmentsW;
+                },
+                set: function (value) {
+                    this.setSegmentsW(value);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            CylinderGeometry.prototype.setSegmentsW = function (value) {
+                this._pSegmentsW = value;
+                this.pInvalidateGeometry();
+                this.pInvalidateUVs();
+            };
+
+            Object.defineProperty(CylinderGeometry.prototype, "segmentsH", {
+                get: /**
+                * Defines the number of vertical segments that make up the cylinder. Defaults to 1.
+                */
+                function () {
+                    return this._pSegmentsH;
+                },
+                set: function (value) {
+                    this.setSegmentsH(value);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            CylinderGeometry.prototype.setSegmentsH = function (value) {
+                this._pSegmentsH = value;
+                this.pInvalidateGeometry();
+                this.pInvalidateUVs();
+            };
+
+            Object.defineProperty(CylinderGeometry.prototype, "topClosed", {
+                get: /**
+                * Defines whether the top end of the cylinder is closed (true) or open.
+                */
+                function () {
+                    return this._topClosed;
+                },
+                set: function (value) {
+                    this._topClosed = value;
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(CylinderGeometry.prototype, "bottomClosed", {
+                get: /**
+                * Defines whether the bottom end of the cylinder is closed (true) or open.
+                */
+                function () {
+                    return this._bottomClosed;
+                },
+                set: function (value) {
+                    this._bottomClosed = value;
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(CylinderGeometry.prototype, "yUp", {
+                get: /**
+                * Defines whether the cylinder poles should lay on the Y-axis (true) or on the Z-axis (false).
+                */
+                function () {
+                    return this._yUp;
+                },
+                set: function (value) {
+                    this._yUp = value;
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            return CylinderGeometry;
+        })(away.primitives.PrimitiveBase);
+        primitives.CylinderGeometry = CylinderGeometry;
+    })(away.primitives || (away.primitives = {}));
+    var primitives = away.primitives;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (primitives) {
+        /**
+        * A UV Cone primitive mesh.
+        */
+        var ConeGeometry = (function (_super) {
+            __extends(ConeGeometry, _super);
+            /**
+            * Creates a new Cone object.
+            * @param radius The radius of the bottom end of the cone
+            * @param height The height of the cone
+            * @param segmentsW Defines the number of horizontal segments that make up the cone. Defaults to 16.
+            * @param segmentsH Defines the number of vertical segments that make up the cone. Defaults to 1.
+            * @param yUp Defines whether the cone poles should lay on the Y-axis (true) or on the Z-axis (false).
+            */
+            function ConeGeometry(radius, height, segmentsW, segmentsH, closed, yUp) {
+                if (typeof radius === "undefined") { radius = 50; }
+                if (typeof height === "undefined") { height = 100; }
+                if (typeof segmentsW === "undefined") { segmentsW = 16; }
+                if (typeof segmentsH === "undefined") { segmentsH = 1; }
+                if (typeof closed === "undefined") { closed = true; }
+                if (typeof yUp === "undefined") { yUp = true; }
+                _super.call(this, 0, radius, height, segmentsW, segmentsH, false, closed, true, yUp);
+            }
+            Object.defineProperty(ConeGeometry.prototype, "radius", {
+                get: /**
+                * The radius of the bottom end of the cone.
+                */
+                function () {
+                    return this._pBottomRadius;
+                },
+                set: function (value) {
+                    this._pBottomRadius = value;
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            return ConeGeometry;
+        })(away.primitives.CylinderGeometry);
+        primitives.ConeGeometry = ConeGeometry;
+    })(away.primitives || (away.primitives = {}));
+    var primitives = away.primitives;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (primitives) {
+        /**
+        * A UV RegularPolygon primitive mesh.
+        */
+        var RegularPolygonGeometry = (function (_super) {
+            __extends(RegularPolygonGeometry, _super);
+            /**
+            * Creates a new RegularPolygon disc object.
+            * @param radius The radius of the regular polygon
+            * @param sides Defines the number of sides of the regular polygon.
+            * @param yUp Defines whether the regular polygon should lay on the Y-axis (true) or on the Z-axis (false).
+            */
+            function RegularPolygonGeometry(radius, sides, yUp) {
+                if (typeof radius === "undefined") { radius = 100; }
+                if (typeof sides === "undefined") { sides = 16; }
+                if (typeof yUp === "undefined") { yUp = true; }
+                _super.call(this, radius, 0, 0, sides, 1, true, false, false, yUp);
+            }
+            Object.defineProperty(RegularPolygonGeometry.prototype, "radius", {
+                get: /**
+                * The radius of the regular polygon.
+                */
+                function () {
+                    return this._pBottomRadius;
+                },
+                set: function (value) {
+                    this._pBottomRadius = value;
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(RegularPolygonGeometry.prototype, "sides", {
+                get: /**
+                * The number of sides of the regular polygon.
+                */
+                function () {
+                    return this._pSegmentsW;
+                },
+                set: function (value) {
+                    this.setSegmentsW(value);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(RegularPolygonGeometry.prototype, "subdivisions", {
+                get: /**
+                * The number of subdivisions from the edge to the center of the regular polygon.
+                */
+                function () {
+                    return this._pSegmentsH;
+                },
+                set: function (value) {
+                    this.setSegmentsH(value);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            return RegularPolygonGeometry;
+        })(away.primitives.CylinderGeometry);
+        primitives.RegularPolygonGeometry = RegularPolygonGeometry;
+    })(away.primitives || (away.primitives = {}));
+    var primitives = away.primitives;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (primitives) {
+        //import away3d.arcane;
+        //import away3d.core.base.CompactSubGeometry;
+        /**
+        * A UV Sphere primitive mesh.
+        */
+        var SphereGeometry = (function (_super) {
+            __extends(SphereGeometry, _super);
+            /**
+            * Creates a new Sphere object.
+            * @param radius The radius of the sphere.
+            * @param segmentsW Defines the number of horizontal segments that make up the sphere.
+            * @param segmentsH Defines the number of vertical segments that make up the sphere.
+            * @param yUp Defines whether the sphere poles should lay on the Y-axis (true) or on the Z-axis (false).
+            */
+            function SphereGeometry(radius, segmentsW, segmentsH, yUp) {
+                if (typeof radius === "undefined") { radius = 50; }
+                if (typeof segmentsW === "undefined") { segmentsW = 16; }
+                if (typeof segmentsH === "undefined") { segmentsH = 12; }
+                if (typeof yUp === "undefined") { yUp = true; }
+                _super.call(this);
+
+                this._radius = radius;
+                this._segmentsW = segmentsW;
+                this._segmentsH = segmentsH;
+                this._yUp = yUp;
+            }
+            /**
+            * @inheritDoc
+            */
+            SphereGeometry.prototype.pBuildGeometry = function (target) {
+                var vertices;
+                var indices/*uint*/ ;
+                var i;
+                var j;
+                var triIndex = 0;
+                var numVerts = (this._segmentsH + 1) * (this._segmentsW + 1);
+                var stride = target.vertexStride;
+                var skip = stride - 9;
+
+                if (numVerts == target.numVertices) {
+                    vertices = target.vertexData;
+
+                    if (target.indexData) {
+                        indices = target.indexData;
+                    } else {
+                        indices = new Array((this._segmentsH - 1) * this._segmentsW * 6);
+                    }
+                } else {
+                    vertices = new Array(numVerts * stride);
+                    indices = new Array((this._segmentsH - 1) * this._segmentsW * 6);
+                    this.pInvalidateGeometry();
+                }
+
+                var startIndex;
+                var index = target.vertexOffset;
+                var comp1;
+                var comp2;
+                var t1;
+                var t2;
+
+                for (j = 0; j <= this._segmentsH; ++j) {
+                    startIndex = index;
+
+                    var horangle = Math.PI * j / this._segmentsH;
+                    var z = -this._radius * Math.cos(horangle);
+                    var ringradius = this._radius * Math.sin(horangle);
+
+                    for (i = 0; i <= this._segmentsW; ++i) {
+                        var verangle = 2 * Math.PI * i / this._segmentsW;
+                        var x = ringradius * Math.cos(verangle);
+                        var y = ringradius * Math.sin(verangle);
+                        var normLen = 1 / Math.sqrt(x * x + y * y + z * z);
+                        var tanLen = Math.sqrt(y * y + x * x);
+
+                        if (this._yUp) {
+                            t1 = 0;
+                            t2 = tanLen > .007 ? x / tanLen : 0;
+                            comp1 = -z;
+                            comp2 = y;
+                        } else {
+                            t1 = tanLen > .007 ? x / tanLen : 0;
+                            t2 = 0;
+                            comp1 = y;
+                            comp2 = z;
+                        }
+
+                        if (i == this._segmentsW) {
+                            vertices[index++] = vertices[startIndex];
+                            vertices[index++] = vertices[startIndex + 1];
+                            vertices[index++] = vertices[startIndex + 2];
+                            vertices[index++] = vertices[startIndex + 3] + (x * normLen) * .5;
+                            vertices[index++] = vertices[startIndex + 4] + (comp1 * normLen) * .5;
+                            vertices[index++] = vertices[startIndex + 5] + (comp2 * normLen) * .5;
+                            vertices[index++] = tanLen > .007 ? -y / tanLen : 1;
+                            vertices[index++] = t1;
+                            vertices[index++] = t2;
+                        } else {
+                            vertices[index++] = x;
+                            vertices[index++] = comp1;
+                            vertices[index++] = comp2;
+                            vertices[index++] = x * normLen;
+                            vertices[index++] = comp1 * normLen;
+                            vertices[index++] = comp2 * normLen;
+                            vertices[index++] = tanLen > .007 ? -y / tanLen : 1;
+                            vertices[index++] = t1;
+                            vertices[index++] = t2;
+                        }
+
+                        if (i > 0 && j > 0) {
+                            var a = (this._segmentsW + 1) * j + i;
+                            var b = (this._segmentsW + 1) * j + i - 1;
+                            var c = (this._segmentsW + 1) * (j - 1) + i - 1;
+                            var d = (this._segmentsW + 1) * (j - 1) + i;
+
+                            if (j == this._segmentsH) {
+                                vertices[index - 9] = vertices[startIndex];
+                                vertices[index - 8] = vertices[startIndex + 1];
+                                vertices[index - 7] = vertices[startIndex + 2];
+
+                                indices[triIndex++] = a;
+                                indices[triIndex++] = c;
+                                indices[triIndex++] = d;
+                            } else if (j == 1) {
+                                indices[triIndex++] = a;
+                                indices[triIndex++] = b;
+                                indices[triIndex++] = c;
+                            } else {
+                                indices[triIndex++] = a;
+                                indices[triIndex++] = b;
+                                indices[triIndex++] = c;
+                                indices[triIndex++] = a;
+                                indices[triIndex++] = c;
+                                indices[triIndex++] = d;
+                            }
+                        }
+
+                        index += skip;
+                    }
+                }
+
+                target.updateData(vertices);
+                target.updateIndexData(indices);
+            };
+
+            /**
+            * @inheritDoc
+            */
+            SphereGeometry.prototype.pBuildUVs = function (target) {
+                var i, j;
+                var stride = target.UVStride;
+                var numUvs = (this._segmentsH + 1) * (this._segmentsW + 1) * stride;
+                var data;
+                var skip = stride - 2;
+
+                if (target.UVData && numUvs == target.UVData.length)
+                    data = target.UVData; else {
+                    data = new Array(numUvs);
+                    this.pInvalidateGeometry();
+                }
+
+                var index = target.UVOffset;
+                for (j = 0; j <= this._segmentsH; ++j) {
+                    for (i = 0; i <= this._segmentsW; ++i) {
+                        data[index++] = (i / this._segmentsW) * target.scaleU;
+                        data[index++] = (j / this._segmentsH) * target.scaleV;
+                        index += skip;
+                    }
+                }
+
+                target.updateData(data);
+            };
+
+            Object.defineProperty(SphereGeometry.prototype, "radius", {
+                get: /**
+                * The radius of the sphere.
+                */
+                function () {
+                    return this._radius;
+                },
+                set: function (value) {
+                    this._radius = value;
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(SphereGeometry.prototype, "segmentsW", {
+                get: /**
+                * Defines the number of horizontal segments that make up the sphere. Defaults to 16.
+                */
+                function () {
+                    return this._segmentsW;
+                },
+                set: function (value) {
+                    this._segmentsW = value;
+                    this.pInvalidateGeometry();
+                    this.pInvalidateUVs();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(SphereGeometry.prototype, "segmentsH", {
+                get: /**
+                * Defines the number of vertical segments that make up the sphere. Defaults to 12.
+                */
+                function () {
+                    return this._segmentsH;
+                },
+                set: function (value) {
+                    this._segmentsH = value;
+                    this.pInvalidateGeometry();
+                    this.pInvalidateUVs();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(SphereGeometry.prototype, "yUp", {
+                get: /**
+                * Defines whether the sphere poles should lay on the Y-axis (true) or on the Z-axis (false).
+                */
+                function () {
+                    return this._yUp;
+                },
+                set: function (value) {
+                    this._yUp = value;
+                    this.pInvalidateGeometry();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            return SphereGeometry;
+        })(away.primitives.PrimitiveBase);
+        primitives.SphereGeometry = SphereGeometry;
     })(away.primitives || (away.primitives = {}));
     var primitives = away.primitives;
 })(away || (away = {}));
@@ -22777,6 +27161,264 @@ var away;
         animators.AnimationNodeBase = AnimationNodeBase;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (utils) {
+        var GeometryUtils = (function () {
+            function GeometryUtils() {
+            }
+            GeometryUtils.fromVectors = /**
+            * Build a list of sub-geometries from raw data vectors, splitting them up in
+            * such a way that they won't exceed buffer length limits.
+            */
+            function (verts, indices/*uint*/ , uvs, normals, tangents, weights, jointIndices, triangleOffset) {
+                if (typeof triangleOffset === "undefined") { triangleOffset = 0; }
+                var LIMIT_VERTS = 3 * 0xffff;
+                var LIMIT_INDICES = 15 * 0xffff;
+
+                var subs = new Array();
+
+                if (uvs && !uvs.length)
+                    uvs = null;
+
+                if (normals && !normals.length)
+                    normals = null;
+
+                if (tangents && !tangents.length)
+                    tangents = null;
+
+                if (weights && !weights.length)
+                    weights = null;
+
+                if (jointIndices && !jointIndices.length)
+                    jointIndices = null;
+
+                if ((indices.length >= LIMIT_INDICES) || (verts.length >= LIMIT_VERTS)) {
+                    var i, len, outIndex, j;
+                    var splitVerts = new Array();
+                    var splitIndices = new Array();
+                    var splitUvs = (uvs != null) ? new Array() : null;
+                    var splitNormals = (normals != null) ? new Array() : null;
+                    var splitTangents = (tangents != null) ? new Array() : null;
+                    var splitWeights = (weights != null) ? new Array() : null;
+                    var splitJointIndices = (jointIndices != null) ? new Array() : null;
+
+                    var mappings = new Array(verts.length / 3);
+
+                    i = mappings.length;
+
+                    while (i-- > 0) {
+                        mappings[i] = -1;
+                    }
+
+                    var originalIndex;
+                    var splitIndex;
+                    var o0, o1, o2, s0, s1, s2, su, ou, sv, ov;
+
+                    // Loop over all triangles
+                    outIndex = 0;
+                    len = indices.length;
+
+                    for (i = 0; i < len; i += 3) {
+                        splitIndex = splitVerts.length + 6;
+
+                        if (((outIndex + 2) >= LIMIT_INDICES) || (splitIndex >= LIMIT_VERTS)) {
+                            subs.push(GeometryUtils.constructSubGeometry(splitVerts, splitIndices, splitUvs, splitNormals, splitTangents, splitWeights, splitJointIndices, triangleOffset));
+                            splitVerts = new Array();
+                            splitIndices = new Array();
+                            splitUvs = (uvs != null) ? new Array() : null;
+                            splitNormals = (normals != null) ? new Array() : null;
+                            splitTangents = (tangents != null) ? new Array() : null;
+                            splitWeights = (weights != null) ? new Array() : null;
+                            splitJointIndices = (jointIndices != null) ? new Array() : null;
+                            splitIndex = 0;
+                            j = mappings.length;
+
+                            while (j-- > 0) {
+                                mappings[j] = -1;
+                            }
+
+                            outIndex = 0;
+                        }
+
+                        for (j = 0; j < 3; j++) {
+                            originalIndex = indices[i + j];
+
+                            if (mappings[originalIndex] >= 0)
+                                splitIndex = mappings[originalIndex]; else {
+                                o0 = originalIndex * 3 + 0;
+                                o1 = originalIndex * 3 + 1;
+                                o2 = originalIndex * 3 + 2;
+
+                                // This vertex does not yet exist in the split list and
+                                // needs to be copied from the long list.
+                                splitIndex = splitVerts.length / 3;
+
+                                s0 = splitIndex * 3 + 0;
+                                s1 = splitIndex * 3 + 1;
+                                s2 = splitIndex * 3 + 2;
+
+                                splitVerts[s0] = verts[o0];
+                                splitVerts[s1] = verts[o1];
+                                splitVerts[s2] = verts[o2];
+
+                                if (uvs) {
+                                    su = splitIndex * 2 + 0;
+                                    sv = splitIndex * 2 + 1;
+                                    ou = originalIndex * 2 + 0;
+                                    ov = originalIndex * 2 + 1;
+
+                                    splitUvs[su] = uvs[ou];
+                                    splitUvs[sv] = uvs[ov];
+                                }
+
+                                if (normals) {
+                                    splitNormals[s0] = normals[o0];
+                                    splitNormals[s1] = normals[o1];
+                                    splitNormals[s2] = normals[o2];
+                                }
+
+                                if (tangents) {
+                                    splitTangents[s0] = tangents[o0];
+                                    splitTangents[s1] = tangents[o1];
+                                    splitTangents[s2] = tangents[o2];
+                                }
+
+                                if (weights) {
+                                    splitWeights[s0] = weights[o0];
+                                    splitWeights[s1] = weights[o1];
+                                    splitWeights[s2] = weights[o2];
+                                }
+
+                                if (jointIndices) {
+                                    splitJointIndices[s0] = jointIndices[o0];
+                                    splitJointIndices[s1] = jointIndices[o1];
+                                    splitJointIndices[s2] = jointIndices[o2];
+                                }
+
+                                mappings[originalIndex] = splitIndex;
+                            }
+
+                            // Store new index, which may have come from the mapping look-up,
+                            // or from copying a new set of vertex data from the original vector
+                            splitIndices[outIndex + j] = splitIndex;
+                        }
+
+                        outIndex += 3;
+                    }
+
+                    if (splitVerts.length > 0) {
+                        // More was added in the last iteration of the loop.
+                        subs.push(GeometryUtils.constructSubGeometry(splitVerts, splitIndices, splitUvs, splitNormals, splitTangents, splitWeights, splitJointIndices, triangleOffset));
+                    }
+                } else {
+                    subs.push(GeometryUtils.constructSubGeometry(verts, indices, uvs, normals, tangents, weights, jointIndices, triangleOffset));
+                }
+
+                return subs;
+            };
+
+            GeometryUtils.constructSubGeometry = /**
+            * Build a sub-geometry from data vectors.
+            */
+            function (verts, indices/*uint*/ , uvs, normals, tangents, weights, jointIndices, triangleOffset) {
+                var sub;
+
+                if (weights && jointIndices) {
+                    // If there were weights and joint indices defined, this
+                    // is a skinned mesh and needs to be built from skinned
+                    // sub-geometries.
+                    //TODO: implement dependency: SkinnedSubGeometry
+                    away.Debug.throwPIR('GeometryUtils', 'constructSubGeometry', 'Dependency: SkinnedSubGeometry');
+                } else {
+                    sub = new away.base.CompactSubGeometry();
+                }
+
+                sub.updateIndexData(indices);
+                sub.fromVectors(verts, uvs, normals, tangents);
+
+                return sub;
+            };
+
+            GeometryUtils.interleaveBuffers = /*
+            * Combines a set of separate raw buffers into an interleaved one, compatible
+            * with CompactSubGeometry. SubGeometry uses separate buffers, whereas CompactSubGeometry
+            * uses a single, combined buffer.
+            * */
+            function (numVertices, vertices, normals, tangents, uvs, suvs) {
+                if (typeof vertices === "undefined") { vertices = null; }
+                if (typeof normals === "undefined") { normals = null; }
+                if (typeof tangents === "undefined") { tangents = null; }
+                if (typeof uvs === "undefined") { uvs = null; }
+                if (typeof suvs === "undefined") { suvs = null; }
+                var i, compIndex, uvCompIndex, interleavedCompIndex;
+                var interleavedBuffer;
+
+                interleavedBuffer = new Array();
+
+                for (i = 0; i < numVertices; ++i) {
+                    uvCompIndex = i * 2;
+                    compIndex = i * 3;
+                    interleavedCompIndex = i * 13;
+
+                    interleavedBuffer[interleavedCompIndex] = vertices ? vertices[compIndex] : 0;
+                    interleavedBuffer[interleavedCompIndex + 1] = vertices ? vertices[compIndex + 1] : 0;
+                    interleavedBuffer[interleavedCompIndex + 2] = vertices ? vertices[compIndex + 2] : 0;
+                    interleavedBuffer[interleavedCompIndex + 3] = normals ? normals[compIndex] : 0;
+                    interleavedBuffer[interleavedCompIndex + 4] = normals ? normals[compIndex + 1] : 0;
+                    interleavedBuffer[interleavedCompIndex + 5] = normals ? normals[compIndex + 2] : 0;
+                    interleavedBuffer[interleavedCompIndex + 6] = tangents ? tangents[compIndex] : 0;
+                    interleavedBuffer[interleavedCompIndex + 7] = tangents ? tangents[compIndex + 1] : 0;
+                    interleavedBuffer[interleavedCompIndex + 8] = tangents ? tangents[compIndex + 2] : 0;
+                    interleavedBuffer[interleavedCompIndex + 9] = uvs ? uvs[uvCompIndex] : 0;
+                    interleavedBuffer[interleavedCompIndex + 10] = uvs ? uvs[uvCompIndex + 1] : 0;
+                    interleavedBuffer[interleavedCompIndex + 11] = suvs ? suvs[uvCompIndex] : 0;
+                    interleavedBuffer[interleavedCompIndex + 12] = suvs ? suvs[uvCompIndex + 1] : 0;
+                }
+
+                return interleavedBuffer;
+            };
+
+            GeometryUtils.getMeshSubgeometryIndex = /*
+            * returns the subGeometry index in its parent mesh subgeometries vector
+            */
+            function (subGeometry) {
+                var index;
+                var subGeometries = subGeometry.parentGeometry.subGeometries;
+
+                for (var i = 0; i < subGeometries.length; ++i) {
+                    if (subGeometries[i] == subGeometry) {
+                        index = i;
+                        break;
+                    }
+                }
+
+                return index;
+            };
+
+            GeometryUtils.getMeshSubMeshIndex = /*
+            * returns the subMesh index in its parent mesh subMeshes vector
+            */
+            function (subMesh) {
+                var index;
+                var subMeshes = subMesh.iParentMesh.subMeshes;
+
+                for (var i = 0; i < subMeshes.length; ++i) {
+                    if (subMeshes[i] == subMesh) {
+                        index = i;
+                        break;
+                    }
+                }
+
+                return index;
+            };
+            return GeometryUtils;
+        })();
+        utils.GeometryUtils = GeometryUtils;
+    })(away.utils || (away.utils = {}));
+    var utils = away.utils;
 })(away || (away = {}));
 var away;
 (function (away) {
@@ -23113,9 +27755,8 @@ var away;
 
                 for (var i = 0; i < 8; ++i) {
                     if (this._iProgram3Ds[i]) {
-                        away.Debug.throwPIR('away.materials.MaterialPassBase', 'dispose', 'required dependency: AGALProgram3DCache');
-
-                        //AGALProgram3DCache.getInstanceFromIndex(i).freeProgram3D(_program3Dids[i]);
+                        //away.Debug.throwPIR( 'away.materials.MaterialPassBase' , 'dispose' , 'required dependency: AGALProgram3DCache');
+                        away.managers.AGALProgram3DCache.getInstanceFromIndex(i).freeProgram3D(this._iProgram3Dids[i]);
                         this._iProgram3Ds[i] = null;
                     }
                 }
@@ -23276,11 +27917,10 @@ var away;
                 var contextIndex = stage3DProxy._iStage3DIndex;
                 var context = stage3DProxy._iContext3D;
 
-                //away.Debug.throwPIR( 'MaterialPassBase' , 'iActivate' , 'context.setDepthTest - not matching params' );
                 context.setDepthTest((this._writeDepth && !this._pEnableBlending), this._depthCompareMode);
 
                 if (this._pEnableBlending) {
-                    away.Debug.throwPIR('MaterialPassBase', 'iActivate', 'context.setBlendFactors - not matching params');
+                    context.setBlendFactors(this._blendFactorSource, this._blendFactorDest);
                 }
 
                 if (this._context3Ds[contextIndex] != context || !this._iProgram3Ds[contextIndex]) {
@@ -23411,7 +28051,7 @@ var away;
                 trace(fragmentCode);
                 }
                 */
-                away.Debug.throwPIR('away.materials.MaterialPassBase', 'dispose', 'required dependency: AGALProgram3DCache');
+                away.managers.AGALProgram3DCache.getInstance(stage3DProxy).setProgram3D(this, vertexCode, fragmentCode);
             };
 
             Object.defineProperty(MaterialPassBase.prototype, "lightPicker", {
@@ -24096,6 +28736,7 @@ var away;
 
                     matrix3D.copyFrom(renderable.getRenderSceneTransform(camera));
                     matrix3D.append(viewProjection);
+
                     matrix3D.copyRawDataTo(this._pVertexConstantData, 0, true);
                 }
 
@@ -24303,7 +28944,7 @@ var away;
                     return this._pMethodSetup._iColorTransformMethod;
                 },
                 set: function (value) {
-                    this._pMethodSetup._iColorTransformMethod = value;
+                    this._pMethodSetup.iColorTransformMethod = value;
                 },
                 enumerable: true,
                 configurable: true
@@ -26672,6 +31313,11 @@ var away;
             * @param profile The compatibility profile used by the renderer.
             */
             function ShaderRegisterCache(profile) {
+                this._numUsedVertexConstants = 0;
+                this._numUsedFragmentConstants = 0;
+                this._numUsedStreams = 0;
+                this._numUsedTextures = 0;
+                this._numUsedVaryings = 0;
                 this._profile = profile;
             }
             /**
@@ -27295,8 +31941,10 @@ var away;
 
                     for (var j = 0; j < 4; ++j) {
                         if (this._usedSingleCount[j][i] == 0) {
-                            if (this._persistent)
+                            if (this._persistent) {
                                 this._usedSingleCount[j][i]++;
+                            }
+
                             return this._registerComponents[j][i];
                         }
                     }
@@ -27366,13 +32014,13 @@ var away;
                 this._vectorRegisters = RegisterPool._regPool[hash];
                 this._registerComponents = RegisterPool._regCompsPool[hash];
 
-                this._usedVectorCount = Array(regCount);
+                this._usedVectorCount = this._initArray(Array(regCount), 0);
 
                 this._usedSingleCount = new Array(4);
-                this._usedSingleCount[0] = new Array(regCount);
-                this._usedSingleCount[1] = new Array(regCount);
-                this._usedSingleCount[2] = new Array(regCount);
-                this._usedSingleCount[3] = new Array(regCount);
+                this._usedSingleCount[0] = this._initArray(new Array(regCount), 0);
+                this._usedSingleCount[1] = this._initArray(new Array(regCount), 0);
+                this._usedSingleCount[2] = this._initArray(new Array(regCount), 0);
+                this._usedSingleCount[3] = this._initArray(new Array(regCount), 0);
             };
 
             RegisterPool._initPool = function (regName, regCount) {
@@ -27401,6 +32049,8 @@ var away;
                     }
                 }
 
+                //console.log ( 'RegisterPool._regCompsPool[hash] : ' , RegisterPool._regCompsPool[hash]  );
+                //console.log ( 'RegisterPool._regPool[hash] : ' , RegisterPool._regPool[hash]  );
                 return hash;
             };
 
@@ -27419,6 +32069,16 @@ var away;
                 }
 
                 return false;
+            };
+
+            RegisterPool.prototype._initArray = function (a, val) {
+                var l = a.length;
+
+                for (var c = 0; c < l; c++) {
+                    a[c] = val;
+                }
+
+                return a;
             };
             RegisterPool._regPool = new Object();
             RegisterPool._regCompsPool = new Object();
@@ -29011,8 +33671,6 @@ var away;
                     code += "mov " + targetReg.toString() + ", " + this._ambientInputRegister.toString() + "\n";
                 }
 
-                console.log('BasicAmbientMaterial', 'iGetFragmentCode', code);
-
                 return code;
             };
 
@@ -29059,6 +33717,12 @@ var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
     (function (materials) {
+        //import away3d.arcane;
+        //import away3d.managers.Stage3DProxy;
+        //import away3d.materials.compilation.ShaderRegisterCache;
+        //import away3d.materials.compilation.ShaderRegisterElement;
+        //import away3d.textures.Texture2DBase;
+        //use namespace arcane;
         /**
         * BasicDiffuseMethod provides the default shading method for Lambert (dot3) diffuse lighting.
         */
@@ -29239,8 +33903,6 @@ var away;
                     regCache.addFragmentTempUsages(this._totalLightColorReg, 1);
                 }
 
-                console.log('BasicDiffuseMaterial', 'iGetFragmentPreLightingCode', code);
-
                 return code;
             };
 
@@ -29280,8 +33942,6 @@ var away;
                 //*/
                 this._isFirstLight = false;
 
-                console.log('BasicDiffuseMaterial', 'iGetFragmentCodePerLight', code);
-
                 return code;
             };
 
@@ -29312,8 +33972,6 @@ var away;
                 }
 
                 this._isFirstLight = false;
-
-                console.log('BasicDiffuseMaterial', 'iGetFragmentCodePerProbe', code);
 
                 return code;
             };
@@ -29382,8 +34040,6 @@ var away;
                 regCache.removeFragmentTempUsage(this._totalLightColorReg);
                 regCache.removeFragmentTempUsage(albedo);
 
-                console.log('BasicDiffuseMaterial', 'iGetFragmentPostLightingCode', code);
-
                 return code;
             };
 
@@ -29394,7 +34050,6 @@ var away;
             */
             BasicDiffuseMethod.prototype.pApplyShadow = function (vo, regCache) {
                 //TODO: AGAL <> GLSL
-                //console.log( 'BasicDiffuseMaterial' , 'pApplyShadow' , code );
                 return "mul " + this._totalLightColorReg.toString() + ".xyz, " + this._totalLightColorReg.toString() + ", " + this._shadowRegister.toString() + ".w\n";
             };
 
@@ -29789,7 +34444,6 @@ var away;
 
                 this._isFirstLight = false;
 
-                console.log('BasicSpecularMaterial', 'iGetFragmentCodePerLight', code);
                 return code;
             };
 
@@ -29827,8 +34481,6 @@ var away;
 
                 this._isFirstLight = false;
 
-                console.log('BasicSpecularMaterial', 'iGetFragmentCodePerProbe', code);
-
                 return code;
             };
 
@@ -29859,8 +34511,6 @@ var away;
                 code += "mul " + this._totalLightColorReg.toString() + ".xyz, " + this._totalLightColorReg.toString() + ", " + this._specularDataRegister.toString() + "\n" + "add " + targetReg.toString() + ".xyz, " + targetReg.toString() + ", " + this._totalLightColorReg.toString() + "\n";
 
                 regCache.removeFragmentTempUsage(this._totalLightColorReg);
-
-                console.log('BasicSpecularMaterial', 'iGetFragmentPostLightingCode', code);
 
                 return code;
             };
@@ -30059,6 +34709,64 @@ var away;
             return ColorMaterial;
         })(away.materials.SinglePassMaterialBase);
         materials.ColorMaterial = ColorMaterial;
+    })(away.materials || (away.materials = {}));
+    var materials = away.materials;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (materials) {
+        var DefaultMaterialManager = (function () {
+            function DefaultMaterialManager() {
+            }
+            DefaultMaterialManager.getDefaultMaterial = function (renderable) {
+                if (typeof renderable === "undefined") { renderable = null; }
+                if (!DefaultMaterialManager._defaultTexture) {
+                    DefaultMaterialManager.createDefaultTexture();
+                }
+
+                if (!DefaultMaterialManager._defaultMaterial) {
+                    DefaultMaterialManager.createDefaultMaterial();
+                }
+
+                return DefaultMaterialManager._defaultMaterial;
+            };
+
+            DefaultMaterialManager.getDefaultTexture = function (renderable) {
+                if (typeof renderable === "undefined") { renderable = null; }
+                if (!DefaultMaterialManager._defaultTexture) {
+                    DefaultMaterialManager.createDefaultTexture();
+                }
+
+                return DefaultMaterialManager._defaultTexture;
+            };
+
+            DefaultMaterialManager.createDefaultTexture = function () {
+                DefaultMaterialManager._defaultTextureBitmapData = new away.display.BitmapData(8, 8, false, 0x0);
+
+                //create chekerboard
+                var i, j;
+                for (i = 0; i < 8; i++) {
+                    for (j = 0; j < 8; j++) {
+                        if ((j & 1) ^ (i & 1)) {
+                            DefaultMaterialManager._defaultTextureBitmapData.setPixel(i, j, 0XFFFFFF);
+                        }
+                    }
+                }
+
+                DefaultMaterialManager._defaultTexture = new away.textures.BitmapTexture(DefaultMaterialManager._defaultTextureBitmapData);
+                DefaultMaterialManager._defaultTexture.name = "defaultTexture";
+            };
+
+            DefaultMaterialManager.createDefaultMaterial = function () {
+                DefaultMaterialManager._defaultMaterial = new away.materials.TextureMaterial(DefaultMaterialManager._defaultTexture);
+                DefaultMaterialManager._defaultMaterial.mipmap = false;
+                DefaultMaterialManager._defaultMaterial.smooth = false;
+                DefaultMaterialManager._defaultMaterial.name = "defaultMaterial";
+            };
+            return DefaultMaterialManager;
+        })();
+        materials.DefaultMaterialManager = DefaultMaterialManager;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
@@ -30552,6 +35260,1590 @@ var away;
     })(away.sort || (away.sort = {}));
     var sort = away.sort;
 })(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (render) {
+        /**
+        * RendererBase forms an abstract base class for classes that are used in the rendering pipeline to render geometry
+        * to the back buffer or a texture.
+        */
+        var RendererBase = (function () {
+            /**
+            * Creates a new RendererBase object.
+            */
+            function RendererBase(renderToTexture) {
+                if (typeof renderToTexture === "undefined") { renderToTexture = false; }
+                this._backgroundR = 0;
+                this._backgroundG = 0;
+                this._backgroundB = 0;
+                this._backgroundAlpha = 1;
+                this._shareContext = false;
+                this._textureRatioX = 1;
+                this._textureRatioY = 1;
+                this._clearOnRender = true;
+                this._pRttViewProjectionMatrix = new away.geom.Matrix3D();
+                this._pRenderableSorter = new away.sort.RenderableMergeSort();
+                this._renderToTexture = renderToTexture;
+            }
+            RendererBase.prototype.iCreateEntityCollector = function () {
+                return new away.traverse.EntityCollector();
+            };
+
+            Object.defineProperty(RendererBase.prototype, "iViewWidth", {
+                get: function () {
+                    return this._viewWidth;
+                },
+                set: function (value) {
+                    this._viewWidth = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(RendererBase.prototype, "iViewHeight", {
+                get: function () {
+                    return this._viewHeight;
+                },
+                set: function (value) {
+                    this._viewHeight = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(RendererBase.prototype, "iRenderToTexture", {
+                get: function () {
+                    return this._renderToTexture;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(RendererBase.prototype, "renderableSorter", {
+                get: function () {
+                    return this._pRenderableSorter;
+                },
+                set: function (value) {
+                    this._pRenderableSorter = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(RendererBase.prototype, "iClearOnRender", {
+                get: function () {
+                    return this._clearOnRender;
+                },
+                set: function (value) {
+                    this._clearOnRender = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(RendererBase.prototype, "iBackgroundR", {
+                get: /**
+                * The background color's red component, used when clearing.
+                *
+                * @private
+                */
+                function () {
+                    return this._backgroundR;
+                },
+                set: function (value) {
+                    this._backgroundR = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(RendererBase.prototype, "iBackgroundG", {
+                get: /**
+                * The background color's green component, used when clearing.
+                *
+                * @private
+                */
+                function () {
+                    return this._backgroundG;
+                },
+                set: function (value) {
+                    this._backgroundG = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(RendererBase.prototype, "iBackgroundB", {
+                get: /**
+                * The background color's blue component, used when clearing.
+                *
+                * @private
+                */
+                function () {
+                    return this._backgroundB;
+                },
+                set: function (value) {
+                    this._backgroundB = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(RendererBase.prototype, "iStage3DProxy", {
+                get: /**
+                * The Stage3DProxy that will provide the Context3D used for rendering.
+                *
+                * @private
+                */
+                function () {
+                    return this._pStage3DProxy;
+                },
+                set: function (value) {
+                    this.iSetStage3DProxy(value);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            RendererBase.prototype.iSetStage3DProxy = function (value) {
+                if (value == this._pStage3DProxy) {
+                    return;
+                }
+
+                if (!value) {
+                    if (this._pStage3DProxy) {
+                        this._pStage3DProxy.removeEventListener(away.events.Stage3DEvent.CONTEXT3D_CREATED, this.onContextUpdate, this);
+                        this._pStage3DProxy.removeEventListener(away.events.Stage3DEvent.CONTEXT3D_RECREATED, this.onContextUpdate, this);
+                    }
+
+                    this._pStage3DProxy = null;
+                    this._pContext = null;
+
+                    return;
+                }
+
+                //else if (_pStage3DProxy) throw new Error("A Stage3D instance was already assigned!");
+                this._pStage3DProxy = value;
+                this._pStage3DProxy.addEventListener(away.events.Stage3DEvent.CONTEXT3D_CREATED, this.onContextUpdate, this);
+                this._pStage3DProxy.addEventListener(away.events.Stage3DEvent.CONTEXT3D_RECREATED, this.onContextUpdate, this);
+
+                if (value.context3D)
+                    this._pContext = value.context3D;
+            };
+
+            Object.defineProperty(RendererBase.prototype, "iShareContext", {
+                get: /**
+                * Defers control of Context3D clear() and present() calls to Stage3DProxy, enabling multiple Stage3D frameworks
+                * to share the same Context3D object.
+                *
+                * @private
+                */
+                function () {
+                    return this._shareContext;
+                },
+                set: function (value) {
+                    this._shareContext = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * Disposes the resources used by the RendererBase.
+            *
+            * @private
+            */
+            RendererBase.prototype.iDispose = function () {
+                this._pStage3DProxy = null;
+            };
+
+            /**
+            * Renders the potentially visible geometry to the back buffer or texture.
+            * @param entityCollector The EntityCollector object containing the potentially visible geometry.
+            * @param target An option target texture to render to.
+            * @param surfaceSelector The index of a CubeTexture's face to render to.
+            * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
+            */
+            RendererBase.prototype.iRender = function (entityCollector, target, scissorRect, surfaceSelector) {
+                if (typeof target === "undefined") { target = null; }
+                if (typeof scissorRect === "undefined") { scissorRect = null; }
+                if (typeof surfaceSelector === "undefined") { surfaceSelector = 0; }
+                if (!this._pStage3DProxy || !this._pContext) {
+                    return;
+                }
+
+                this._pRttViewProjectionMatrix.copyFrom(entityCollector.camera.viewProjection);
+                this._pRttViewProjectionMatrix.appendScale(this._textureRatioX, this._textureRatioY, 1);
+
+                this.pExecuteRender(entityCollector, target, scissorRect, surfaceSelector);
+
+                for (var i = 0; i < 8; ++i) {
+                    this._pContext.setVertexBufferAt(i, null);
+                    this._pContext.setTextureAt(i, null);
+                }
+            };
+
+            /**
+            * Renders the potentially visible geometry to the back buffer or texture. Only executed if everything is set up.
+            * @param entityCollector The EntityCollector object containing the potentially visible geometry.
+            * @param target An option target texture to render to.
+            * @param surfaceSelector The index of a CubeTexture's face to render to.
+            * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
+            */
+            RendererBase.prototype.pExecuteRender = function (entityCollector, target, scissorRect, surfaceSelector) {
+                if (typeof target === "undefined") { target = null; }
+                if (typeof scissorRect === "undefined") { scissorRect = null; }
+                if (typeof surfaceSelector === "undefined") { surfaceSelector = 0; }
+                this._pRenderTarget = target;
+                this._pRenderTargetSurface = surfaceSelector;
+
+                if (this._pRenderableSorter) {
+                    this._pRenderableSorter.sort(entityCollector);
+                }
+
+                if (this._renderToTexture) {
+                    this.pExecuteRenderToTexturePass(entityCollector);
+                }
+
+                this._pStage3DProxy.setRenderTarget(target, true, surfaceSelector);
+
+                if ((target || !this._shareContext) && this._clearOnRender) {
+                    this._pContext.clear(this._backgroundR, this._backgroundG, this._backgroundB, this._backgroundAlpha, 1, 0);
+                }
+
+                this._pContext.setDepthTest(false, away.display3D.Context3DCompareMode.ALWAYS);
+
+                this._pStage3DProxy.scissorRect = scissorRect;
+
+                /*
+                if (_backgroundImageRenderer)
+                _backgroundImageRenderer.render();
+                */
+                this.pDraw(entityCollector, target);
+
+                //line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
+                this._pContext.setDepthTest(false, away.display3D.Context3DCompareMode.LESS_EQUAL);
+
+                if (!this._shareContext) {
+                    if (this._snapshotRequired && this._snapshotBitmapData) {
+                        this._pContext.drawToBitmapData(this._snapshotBitmapData);
+                        this._snapshotRequired = false;
+                    }
+                }
+                this._pStage3DProxy.scissorRect = null;
+            };
+
+            /*
+            * Will draw the renderer's output on next render to the provided bitmap data.
+            * */
+            RendererBase.prototype.queueSnapshot = function (bmd) {
+                this._snapshotRequired = true;
+                this._snapshotBitmapData = bmd;
+            };
+
+            RendererBase.prototype.pExecuteRenderToTexturePass = function (entityCollector) {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            /**
+            * Performs the actual drawing of geometry to the target.
+            * @param entityCollector The EntityCollector object containing the potentially visible geometry.
+            */
+            RendererBase.prototype.pDraw = function (entityCollector, target) {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            /**
+            * Assign the context once retrieved
+            */
+            RendererBase.prototype.onContextUpdate = function (event) {
+                this._pContext = this._pStage3DProxy.context3D;
+            };
+
+            Object.defineProperty(RendererBase.prototype, "iBackgroundAlpha", {
+                get: function () {
+                    return this._backgroundAlpha;
+                },
+                set: function (value) {
+                    this._backgroundAlpha = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(RendererBase.prototype, "antiAlias", {
+                get: /*
+                public get iBackground():away.textures.Texture2DBase
+                {
+                return this._background;
+                }
+                */
+                /*
+                public set iBackground(value:away.textures.Texture2DBase)
+                {
+                if (this._backgroundImageRenderer && !value) {
+                this._backgroundImageRenderer.dispose();
+                this._backgroundImageRenderer = null;
+                }
+                
+                if (!this._backgroundImageRenderer && value)
+                {
+                
+                this._backgroundImageRenderer = new BackgroundImageRenderer(this._pStage3DProxy);
+                
+                }
+                
+                
+                this._background = value;
+                
+                if (this._backgroundImageRenderer)
+                this._backgroundImageRenderer.texture = value;
+                }
+                */
+                /*
+                public get backgroundImageRenderer():BackgroundImageRenderer
+                {
+                return _backgroundImageRenderer;
+                }
+                */
+                function () {
+                    return this._antiAlias;
+                },
+                set: function (antiAlias) {
+                    this._antiAlias = antiAlias;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(RendererBase.prototype, "iTextureRatioX", {
+                get: function () {
+                    return this._textureRatioX;
+                },
+                set: function (value) {
+                    this._textureRatioX = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(RendererBase.prototype, "iTextureRatioY", {
+                get: function () {
+                    return this._textureRatioY;
+                },
+                set: function (value) {
+                    this._textureRatioY = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            return RendererBase;
+        })();
+        render.RendererBase = RendererBase;
+    })(away.render || (away.render = {}));
+    var render = away.render;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (render) {
+        /**
+        * The DepthRenderer class renders 32-bit depth information encoded as RGBA
+        */
+        var DepthRenderer = (function (_super) {
+            __extends(DepthRenderer, _super);
+            /**
+            * Creates a new DepthRenderer object.
+            * @param renderBlended Indicates whether semi-transparent objects should be rendered.
+            * @param distanceBased Indicates whether the written depth value is distance-based or projected depth-based
+            */
+            function DepthRenderer(renderBlended, distanceBased) {
+                if (typeof renderBlended === "undefined") { renderBlended = false; }
+                if (typeof distanceBased === "undefined") { distanceBased = false; }
+                _super.call(this);
+
+                this._renderBlended = renderBlended;
+                this._distanceBased = distanceBased;
+                this.iBackgroundR = 1;
+                this.iBackgroundG = 1;
+                this.iBackgroundB = 1;
+            }
+            Object.defineProperty(DepthRenderer.prototype, "disableColor", {
+                get: function () {
+                    return this._disableColor;
+                },
+                set: function (value) {
+                    this._disableColor = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(DepthRenderer.prototype, "iBackgroundR", {
+                set: function (value) {
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(DepthRenderer.prototype, "iBackgroundG", {
+                set: function (value) {
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(DepthRenderer.prototype, "iBackgroundB", {
+                set: function (value) {
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            DepthRenderer.prototype.iRenderCascades = function (entityCollector, target, numCascades, scissorRects, cameras) {
+                this._pRenderTarget = target;
+                this._pRenderTargetSurface = 0;
+
+                this._pRenderableSorter.sort(entityCollector);
+
+                this._pStage3DProxy.setRenderTarget(target, true, 0);
+                this._pContext.clear(1, 1, 1, 1, 1, 0);
+
+                this._pContext.setBlendFactors(away.display3D.Context3DBlendFactor.ONE, away.display3D.Context3DBlendFactor.ZERO);
+                this._pContext.setDepthTest(true, away.display3D.Context3DCompareMode.LESS);
+
+                var head = entityCollector.opaqueRenderableHead;
+
+                var first = true;
+
+                for (var i = numCascades - 1; i >= 0; --i) {
+                    this._pStage3DProxy.scissorRect = scissorRects[i];
+                    this.drawCascadeRenderables(head, cameras[i], first ? null : cameras[i].frustumPlanes);
+                    first = false;
+                }
+
+                if (this._activeMaterial) {
+                    this._activeMaterial.iDeactivateForDepth(this._pStage3DProxy);
+                }
+
+                this._activeMaterial = null;
+
+                //line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
+                this._pContext.setDepthTest(false, away.display3D.Context3DCompareMode.LESS_EQUAL);
+
+                this._pStage3DProxy.scissorRect = null;
+            };
+
+            DepthRenderer.prototype.drawCascadeRenderables = function (item, camera, cullPlanes) {
+                var material;
+
+                while (item) {
+                    if (item.cascaded) {
+                        item = item.next;
+                        continue;
+                    }
+
+                    var renderable = item.renderable;
+
+                    var entity = renderable.sourceEntity;
+
+                    if (!cullPlanes || entity.worldBounds.isInFrustum(cullPlanes, 4)) {
+                        material = renderable.material;
+
+                        if (this._activeMaterial != material) {
+                            if (this._activeMaterial) {
+                                this._activeMaterial.iDeactivateForDepth(this._pStage3DProxy);
+                            }
+
+                            this._activeMaterial = material;
+                            this._activeMaterial.iActivateForDepth(this._pStage3DProxy, camera, false);
+                        }
+
+                        this._activeMaterial.iRenderDepth(renderable, this._pStage3DProxy, camera, camera.viewProjection);
+                    } else {
+                        item.cascaded = true;
+                    }
+
+                    item = item.next;
+                }
+            };
+
+            /**
+            * @inheritDoc
+            */
+            DepthRenderer.prototype.pDraw = function (entityCollector, target) {
+                this._pContext.setBlendFactors(away.display3D.Context3DBlendFactor.ONE, away.display3D.Context3DBlendFactor.ZERO);
+
+                this._pContext.setDepthTest(true, away.display3D.Context3DCompareMode.LESS);
+
+                this.drawRenderables(entityCollector.opaqueRenderableHead, entityCollector);
+
+                if (this._disableColor)
+                    this._pContext.setColorMask(false, false, false, false);
+
+                if (this._renderBlended)
+                    this.drawRenderables(entityCollector.blendedRenderableHead, entityCollector);
+
+                if (this._activeMaterial)
+                    this._activeMaterial.iDeactivateForDepth(this._pStage3DProxy);
+
+                if (this._disableColor)
+                    this._pContext.setColorMask(true, true, true, true);
+
+                this._activeMaterial = null;
+            };
+
+            /**
+            * Draw a list of renderables.
+            * @param renderables The renderables to draw.
+            * @param entityCollector The EntityCollector containing all potentially visible information.
+            */
+            DepthRenderer.prototype.drawRenderables = function (item, entityCollector) {
+                var camera = entityCollector.camera;
+                var item2;
+
+                while (item) {
+                    this._activeMaterial = item.renderable.material;
+
+                    if (this._disableColor && this._activeMaterial.iHasDepthAlphaThreshold()) {
+                        item2 = item;
+
+                        do {
+                            item2 = item2.next;
+                        } while(item2 && item2.renderable.material == this._activeMaterial);
+                    } else {
+                        this._activeMaterial.iActivateForDepth(this._pStage3DProxy, camera, this._distanceBased);
+                        item2 = item;
+                        do {
+                            this._activeMaterial.iRenderDepth(item2.renderable, this._pStage3DProxy, camera, this._pRttViewProjectionMatrix);
+                            item2 = item2.next;
+                        } while(item2 && item2.renderable.material == this._activeMaterial);
+
+                        this._activeMaterial.iDeactivateForDepth(this._pStage3DProxy);
+                    }
+
+                    item = item2;
+                }
+            };
+            return DepthRenderer;
+        })(away.render.RendererBase);
+        render.DepthRenderer = DepthRenderer;
+    })(away.render || (away.render = {}));
+    var render = away.render;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (render) {
+        /**
+        * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the
+        * materials assigned to them.
+        */
+        var DefaultRenderer = (function (_super) {
+            __extends(DefaultRenderer, _super);
+            /**
+            * Creates a new DefaultRenderer object.
+            * @param antiAlias The amount of anti-aliasing to use.
+            * @param renderMode The render mode to use.
+            */
+            function DefaultRenderer() {
+                _super.call(this);
+                this._skyboxProjection = new away.geom.Matrix3D();
+
+                this._pDepthRenderer = new away.render.DepthRenderer();
+                this._pDistanceRenderer = new away.render.DepthRenderer(false, true);
+            }
+            Object.defineProperty(DefaultRenderer.prototype, "iStage3DProxy", {
+                set: function (value) {
+                    _super.prototype.iSetStage3DProxy.call(this, value);
+                    this._pDistanceRenderer.iStage3DProxy = this._pDepthRenderer.iStage3DProxy = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            DefaultRenderer.prototype.pExecuteRender = function (entityCollector, target, scissorRect, surfaceSelector) {
+                if (typeof target === "undefined") { target = null; }
+                if (typeof scissorRect === "undefined") { scissorRect = null; }
+                if (typeof surfaceSelector === "undefined") { surfaceSelector = 0; }
+                this.updateLights(entityCollector);
+
+                if (target) {
+                    this.drawRenderables(entityCollector.opaqueRenderableHead, entityCollector, DefaultRenderer.RTT_PASSES);
+                    this.drawRenderables(entityCollector.blendedRenderableHead, entityCollector, DefaultRenderer.RTT_PASSES);
+                }
+
+                _super.prototype.pExecuteRender.call(this, entityCollector, target, scissorRect, surfaceSelector);
+            };
+
+            DefaultRenderer.prototype.updateLights = function (entityCollector) {
+                var dirLights = entityCollector.directionalLights;
+                var pointLights = entityCollector.pointLights;
+                var len, i;
+                var light;
+                var shadowMapper;
+
+                len = dirLights.length;
+
+                for (i = 0; i < len; ++i) {
+                    light = dirLights[i];
+
+                    shadowMapper = light.shadowMapper;
+
+                    if (light.castsShadows && (shadowMapper.autoUpdateShadows || shadowMapper._iShadowsInvalid)) {
+                        shadowMapper.iRenderDepthMap(this._pStage3DProxy, entityCollector, this._pDepthRenderer);
+                    }
+                }
+
+                len = pointLights.length;
+
+                for (i = 0; i < len; ++i) {
+                    light = pointLights[i];
+
+                    shadowMapper = light.shadowMapper;
+
+                    if (light.castsShadows && (shadowMapper.autoUpdateShadows || shadowMapper._iShadowsInvalid)) {
+                        shadowMapper.iRenderDepthMap(this._pStage3DProxy, entityCollector, this._pDistanceRenderer);
+                    }
+                }
+            };
+
+            /**
+            * @inheritDoc
+            */
+            DefaultRenderer.prototype.pDraw = function (entityCollector, target) {
+                this._pContext.setBlendFactors(away.display3D.Context3DBlendFactor.ONE, away.display3D.Context3DBlendFactor.ZERO);
+
+                if (entityCollector.skyBox) {
+                    if (this._activeMaterial) {
+                        this._activeMaterial.iDeactivate(this._pStage3DProxy);
+                    }
+
+                    this._activeMaterial = null;
+
+                    this._pContext.setDepthTest(false, away.display3D.Context3DCompareMode.ALWAYS);
+                    this.drawSkyBox(entityCollector);
+                }
+
+                this._pContext.setDepthTest(true, away.display3D.Context3DCompareMode.LESS_EQUAL);
+
+                var which = target ? DefaultRenderer.SCREEN_PASSES : DefaultRenderer.ALL_PASSES;
+
+                this.drawRenderables(entityCollector.opaqueRenderableHead, entityCollector, which);
+                this.drawRenderables(entityCollector.blendedRenderableHead, entityCollector, which);
+
+                this._pContext.setDepthTest(false, away.display3D.Context3DCompareMode.LESS_EQUAL);
+
+                if (this._activeMaterial) {
+                    this._activeMaterial.iDeactivate(this._pStage3DProxy);
+                }
+
+                this._activeMaterial = null;
+            };
+
+            /**
+            * Draw the skybox if present.
+            * @param entityCollector The EntityCollector containing all potentially visible information.
+            */
+            DefaultRenderer.prototype.drawSkyBox = function (entityCollector) {
+                var skyBox = entityCollector.skyBox;
+
+                var material = skyBox.material;
+
+                var camera = entityCollector.camera;
+
+                this.updateSkyBoxProjection(camera);
+
+                material.iActivatePass(0, this._pStage3DProxy, camera);
+                material.iRenderPass(0, skyBox, this._pStage3DProxy, entityCollector, this._skyboxProjection);
+                material.iDeactivatePass(0, this._pStage3DProxy);
+            };
+
+            DefaultRenderer.prototype.updateSkyBoxProjection = function (camera) {
+                var near = new away.geom.Vector3D();
+
+                this._skyboxProjection.copyFrom(this._pRttViewProjectionMatrix);
+                this._skyboxProjection.copyRowTo(2, near);
+
+                var camPos = camera.scenePosition;
+
+                var cx = near.x;
+                var cy = near.y;
+                var cz = near.z;
+                var cw = -(near.x * camPos.x + near.y * camPos.y + near.z * camPos.z + Math.sqrt(cx * cx + cy * cy + cz * cz));
+
+                var signX = cx >= 0 ? 1 : -1;
+                var signY = cy >= 0 ? 1 : -1;
+
+                var p = new away.geom.Vector3D(signX, signY, 1, 1);
+
+                var inverse = this._skyboxProjection.clone();
+                inverse.invert();
+
+                var q = inverse.transformVector(p);
+
+                this._skyboxProjection.copyRowTo(3, p);
+
+                var a = (q.x * p.x + q.y * p.y + q.z * p.z + q.w * p.w) / (cx * q.x + cy * q.y + cz * q.z + cw * q.w);
+
+                this._skyboxProjection.copyRowFrom(2, new away.geom.Vector3D(cx * a, cy * a, cz * a, cw * a));
+            };
+
+            /**
+            * Draw a list of renderables.
+            * @param renderables The renderables to draw.
+            * @param entityCollector The EntityCollector containing all potentially visible information.
+            */
+            DefaultRenderer.prototype.drawRenderables = function (item, entityCollector, which) {
+                var numPasses;
+                var j;
+                var camera = entityCollector.camera;
+                var item2;
+
+                while (item) {
+                    console.log('DefaultRenderer', 'drawRenderables', item);
+                    this._activeMaterial = item.renderable.material;
+
+                    this._activeMaterial.iUpdateMaterial(this._pContext);
+
+                    numPasses = this._activeMaterial._iNumPasses;
+
+                    j = 0;
+
+                    do {
+                        item2 = item;
+
+                        console.log('DefaultRenderer', 'drawRenderables', 'passes', item);
+
+                        var rttMask = this._activeMaterial.iPassRendersToTexture(j) ? 1 : 2;
+
+                        if ((rttMask & which) != 0) {
+                            this._activeMaterial.iActivatePass(j, this._pStage3DProxy, camera);
+
+                            do {
+                                console.log('DefaultRenderer', 'drawRenderables', 'items 1');
+
+                                this._activeMaterial.iRenderPass(j, item2.renderable, this._pStage3DProxy, entityCollector, this._pRttViewProjectionMatrix);
+
+                                item2 = item2.next;
+                            } while(item2 && item2.renderable.material == this._activeMaterial);
+
+                            this._activeMaterial.iDeactivatePass(j, this._pStage3DProxy);
+                        } else {
+                            do {
+                                console.log('DefaultRenderer', 'drawRenderables', 'items 2');
+
+                                item2 = item2.next;
+                            } while(item2 && item2.renderable.material == this._activeMaterial);
+                        }
+                    } while(++j < numPasses);
+
+                    item = item2;
+                }
+            };
+
+            DefaultRenderer.prototype.iDispose = function () {
+                _super.prototype.iDispose.call(this);
+
+                this._pDepthRenderer.iDispose();
+                this._pDistanceRenderer.iDispose();
+                this._pDepthRenderer = null;
+                this._pDistanceRenderer = null;
+            };
+            DefaultRenderer.RTT_PASSES = 1;
+            DefaultRenderer.SCREEN_PASSES = 2;
+            DefaultRenderer.ALL_PASSES = 3;
+            return DefaultRenderer;
+        })(away.render.RendererBase);
+        render.DefaultRenderer = DefaultRenderer;
+    })(away.render || (away.render = {}));
+    var render = away.render;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (filters) {
+        var Filter3DTaskBase = (function () {
+            function Filter3DTaskBase(requireDepthRender) {
+                if (typeof requireDepthRender === "undefined") { requireDepthRender = false; }
+                this._scaledTextureWidth = -1;
+                this._scaledTextureHeight = -1;
+                this._textureWidth = -1;
+                this._textureHeight = -1;
+                this._textureDimensionsInvalid = true;
+                this._program3DInvalid = true;
+                this._textureScale = 0;
+                this._requireDepthRender = requireDepthRender;
+            }
+            Object.defineProperty(Filter3DTaskBase.prototype, "textureScale", {
+                get: /**
+                * The texture scale for the input of this texture. This will define the output of the previous entry in the chain
+                */
+                function () {
+                    return this._textureScale;
+                },
+                set: function (value) {
+                    if (this._textureScale == value) {
+                        return;
+                    }
+
+                    this._textureScale = value;
+                    this._scaledTextureWidth = this._textureWidth >> this._textureScale;
+                    this._scaledTextureHeight = this._textureHeight >> this._textureScale;
+                    this._textureDimensionsInvalid = true;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Filter3DTaskBase.prototype, "target", {
+                get: function () {
+                    return this._target;
+                },
+                set: function (value) {
+                    this._target = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Filter3DTaskBase.prototype, "textureWidth", {
+                get: function () {
+                    return this._textureWidth;
+                },
+                set: function (value) {
+                    if (this._textureWidth == value) {
+                        return;
+                    }
+
+                    this._textureWidth = value;
+                    this._scaledTextureWidth = this._textureWidth >> this._textureScale;
+                    this._textureDimensionsInvalid = true;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Filter3DTaskBase.prototype, "textureHeight", {
+                get: function () {
+                    return this._textureHeight;
+                },
+                set: function (value) {
+                    if (this._textureHeight == value) {
+                        return;
+                    }
+
+                    this._textureHeight = value;
+                    this._scaledTextureHeight = this._textureHeight >> this._textureScale;
+                    this._textureDimensionsInvalid = true;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Filter3DTaskBase.prototype.getMainInputTexture = function (stage) {
+                if (this._textureDimensionsInvalid) {
+                    this.pUpdateTextures(stage);
+                }
+
+                return this._mainInputTexture;
+            };
+
+            Filter3DTaskBase.prototype.dispose = function () {
+                if (this._mainInputTexture) {
+                    this._mainInputTexture.dispose();
+                }
+
+                if (this._program3D) {
+                    this._program3D.dispose();
+                }
+            };
+
+            Filter3DTaskBase.prototype.pInvalidateProgram3D = function () {
+                this._program3DInvalid = true;
+            };
+
+            Filter3DTaskBase.prototype.pUpdateProgram3D = function (stage) {
+                if (this._program3D) {
+                    this._program3D.dispose();
+                }
+
+                this._program3D = stage._iContext3D.createProgram();
+
+                away.Debug.log('Filder3DTaskBase', 'pUpdateProgram3D', 'Program3D.upload / AGAL <> GLSL implementation');
+
+                // TODO: imeplement AGAL <> GLSL
+                //this._program3D.upload(new AGALMiniAssembler(Debug.active).assemble(Context3DProgramType.VERTEX, getVertexCode()),new AGALMiniAssembler(Debug.active).assemble(Context3DProgramType.FRAGMENT, getFragmentCode()));
+                this._program3DInvalid = false;
+            };
+
+            Filter3DTaskBase.prototype.pGetVertexCode = function () {
+                // TODO: imeplement AGAL <> GLSL
+                return "mov op, va0\n" + "mov v0, va1\n";
+            };
+
+            Filter3DTaskBase.prototype.pGetFragmentCode = function () {
+                throw new away.errors.AbstractMethodError();
+
+                return null;
+            };
+
+            Filter3DTaskBase.prototype.pUpdateTextures = function (stage) {
+                if (this._mainInputTexture) {
+                    this._mainInputTexture.dispose();
+                }
+
+                this._mainInputTexture = stage._iContext3D.createTexture(this._scaledTextureWidth, this._scaledTextureHeight, away.display3D.Context3DTextureFormat.BGRA, true);
+
+                this._textureDimensionsInvalid = false;
+            };
+
+            Filter3DTaskBase.prototype.getProgram3D = function (stage3DProxy) {
+                if (this._program3DInvalid) {
+                    this.pUpdateProgram3D(stage3DProxy);
+                }
+
+                return this._program3D;
+            };
+
+            Filter3DTaskBase.prototype.activate = function (stage3DProxy, camera, depthTexture) {
+            };
+
+            Filter3DTaskBase.prototype.deactivate = function (stage3DProxy) {
+            };
+
+            Object.defineProperty(Filter3DTaskBase.prototype, "requireDepthRender", {
+                get: function () {
+                    return this._requireDepthRender;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return Filter3DTaskBase;
+        })();
+        filters.Filter3DTaskBase = Filter3DTaskBase;
+    })(away.filters || (away.filters = {}));
+    var filters = away.filters;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (managers) {
+        var RTTBufferManager = (function (_super) {
+            __extends(RTTBufferManager, _super);
+            function RTTBufferManager(se, stage3DProxy) {
+                _super.call(this);
+                this._viewWidth = -1;
+                this._viewHeight = -1;
+                this._textureWidth = -1;
+                this._textureHeight = -1;
+                this._buffersInvalid = true;
+
+                if (!se) {
+                    throw new Error("No cheating the multiton!");
+                }
+
+                this._renderToTextureRect = new away.geom.Rectangle();
+
+                this._stage3DProxy = stage3DProxy;
+            }
+            RTTBufferManager.getInstance = function (stage3DProxy) {
+                if (!stage3DProxy)
+                    throw new Error("stage3DProxy key cannot be null!");
+
+                if (RTTBufferManager._instances == null) {
+                    RTTBufferManager._instances = new Array();
+                }
+
+                var rttBufferManager = RTTBufferManager.getRTTBufferManagerFromStage3DProxy(stage3DProxy);
+
+                if (rttBufferManager == null) {
+                    rttBufferManager = new away.managers.RTTBufferManager(new SingletonEnforcer(), stage3DProxy);
+
+                    var vo = new RTTBufferManagerVO();
+
+                    vo.stage3dProxy = stage3DProxy;
+                    vo.rttbfm = rttBufferManager;
+
+                    RTTBufferManager._instances.push(vo);
+                }
+
+                return rttBufferManager;
+            };
+
+            RTTBufferManager.getRTTBufferManagerFromStage3DProxy = function (stage3DProxy) {
+                var l = RTTBufferManager._instances.length;
+                var r;
+
+                for (var c = 0; c < l; c++) {
+                    r = RTTBufferManager._instances[c];
+
+                    if (r.stage3dProxy === stage3DProxy) {
+                        return r.rttbfm;
+                    }
+                }
+
+                return null;
+            };
+
+            RTTBufferManager.deleteRTTBufferManager = function (stage3DProxy) {
+                var l = RTTBufferManager._instances.length;
+                var r;
+
+                for (var c = 0; c < l; c++) {
+                    r = RTTBufferManager._instances[c];
+
+                    if (r.stage3dProxy === stage3DProxy) {
+                        RTTBufferManager._instances.splice(c, 1);
+                        return;
+                    }
+                }
+            };
+
+            Object.defineProperty(RTTBufferManager.prototype, "textureRatioX", {
+                get: function () {
+                    if (this._buffersInvalid) {
+                        this.updateRTTBuffers();
+                    }
+
+                    return this._textureRatioX;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(RTTBufferManager.prototype, "textureRatioY", {
+                get: function () {
+                    if (this._buffersInvalid) {
+                        this.updateRTTBuffers();
+                    }
+
+                    return this._textureRatioY;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(RTTBufferManager.prototype, "viewWidth", {
+                get: function () {
+                    return this._viewWidth;
+                },
+                set: function (value) {
+                    if (value == this._viewWidth) {
+                        return;
+                    }
+
+                    this._viewWidth = value;
+
+                    this._buffersInvalid = true;
+
+                    this._textureWidth = away.utils.TextureUtils.getBestPowerOf2(this._viewWidth);
+
+                    if (this._textureWidth > this._viewWidth) {
+                        this._renderToTextureRect.x = Math.floor((this._textureWidth - this._viewWidth) * .5);
+                        this._renderToTextureRect.width = this._viewWidth;
+                    } else {
+                        this._renderToTextureRect.x = 0;
+                        this._renderToTextureRect.width = this._textureWidth;
+                    }
+
+                    this.dispatchEvent(new away.events.Event(away.events.Event.RESIZE));
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(RTTBufferManager.prototype, "viewHeight", {
+                get: function () {
+                    return this._viewHeight;
+                },
+                set: function (value) {
+                    if (value == this._viewHeight) {
+                        return;
+                    }
+
+                    this._viewHeight = value;
+
+                    this._buffersInvalid = true;
+
+                    this._textureHeight = away.utils.TextureUtils.getBestPowerOf2(this._viewHeight);
+
+                    if (this._textureHeight > this._viewHeight) {
+                        this._renderToTextureRect.y = Math.floor((this._textureHeight - this._viewHeight) * .5);
+                        this._renderToTextureRect.height = this._viewHeight;
+                    } else {
+                        this._renderToTextureRect.y = 0;
+                        this._renderToTextureRect.height = this._textureHeight;
+                    }
+
+                    this.dispatchEvent(new away.events.Event(away.events.Event.RESIZE));
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(RTTBufferManager.prototype, "renderToTextureVertexBuffer", {
+                get: function () {
+                    if (this._buffersInvalid) {
+                        this.updateRTTBuffers();
+                    }
+
+                    return this._renderToTextureVertexBuffer;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(RTTBufferManager.prototype, "renderToScreenVertexBuffer", {
+                get: function () {
+                    if (this._buffersInvalid) {
+                        this.updateRTTBuffers();
+                    }
+
+                    return this._renderToScreenVertexBuffer;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(RTTBufferManager.prototype, "indexBuffer", {
+                get: function () {
+                    return this._indexBuffer;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(RTTBufferManager.prototype, "renderToTextureRect", {
+                get: function () {
+                    if (this._buffersInvalid) {
+                        this.updateRTTBuffers();
+                    }
+
+                    return this._renderToTextureRect;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(RTTBufferManager.prototype, "textureWidth", {
+                get: function () {
+                    return this._textureWidth;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(RTTBufferManager.prototype, "textureHeight", {
+                get: function () {
+                    return this._textureHeight;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            RTTBufferManager.prototype.dispose = function () {
+                RTTBufferManager.deleteRTTBufferManager(this._stage3DProxy);
+
+                if (this._indexBuffer) {
+                    this._indexBuffer.dispose();
+                    this._renderToScreenVertexBuffer.dispose();
+                    this._renderToTextureVertexBuffer.dispose();
+                    this._renderToScreenVertexBuffer = null;
+                    this._renderToTextureVertexBuffer = null;
+                    this._indexBuffer = null;
+                }
+            };
+
+            // todo: place all this in a separate model, since it's used all over the place
+            // maybe it even has a place in the core (together with screenRect etc)?
+            // needs to be stored per view of course
+            RTTBufferManager.prototype.updateRTTBuffers = function () {
+                var context = this._stage3DProxy._iContext3D;
+                var textureVerts;
+                var screenVerts;
+
+                var x;
+                var y;
+
+                if (this._renderToTextureVertexBuffer == null) {
+                    this._renderToTextureVertexBuffer = context.createVertexBuffer(4, 5);
+                }
+
+                if (this._renderToScreenVertexBuffer == null) {
+                    this._renderToScreenVertexBuffer = context.createVertexBuffer(4, 5);
+                }
+
+                if (!this._indexBuffer) {
+                    this._indexBuffer = context.createIndexBuffer(6);
+
+                    this._indexBuffer.uploadFromArray([2, 1, 0, 3, 2, 0], 0, 6);
+                }
+
+                this._textureRatioX = x = Math.min(this._viewWidth / this._textureWidth, 1);
+                this._textureRatioY = y = Math.min(this._viewHeight / this._textureHeight, 1);
+
+                var u1 = (1 - x) * .5;
+                var u2 = (x + 1) * .5;
+                var v1 = (y + 1) * .5;
+                var v2 = (1 - y) * .5;
+
+                // last element contains indices for data per vertex that can be passed to the vertex shader if necessary (ie: frustum corners for deferred rendering)
+                textureVerts = [
+                    -x,
+                    -y,
+                    u1,
+                    v1,
+                    0,
+                    x,
+                    -y,
+                    u2,
+                    v1,
+                    1,
+                    x,
+                    y,
+                    u2,
+                    v2,
+                    2,
+                    -x,
+                    y,
+                    u1,
+                    v2,
+                    3
+                ];
+
+                screenVerts = [
+                    -1,
+                    -1,
+                    u1,
+                    v1,
+                    0,
+                    1,
+                    -1,
+                    u2,
+                    v1,
+                    1,
+                    1,
+                    1,
+                    u2,
+                    v2,
+                    2,
+                    -1,
+                    1,
+                    u1,
+                    v2,
+                    3
+                ];
+
+                this._renderToTextureVertexBuffer.uploadFromArray(textureVerts, 0, 4);
+                this._renderToScreenVertexBuffer.uploadFromArray(screenVerts, 0, 4);
+
+                this._buffersInvalid = false;
+            };
+            return RTTBufferManager;
+        })(away.events.EventDispatcher);
+        managers.RTTBufferManager = RTTBufferManager;
+    })(away.managers || (away.managers = {}));
+    var managers = away.managers;
+})(away || (away = {}));
+
+var RTTBufferManagerVO = (function () {
+    function RTTBufferManagerVO() {
+    }
+    return RTTBufferManagerVO;
+})();
+
+var SingletonEnforcer = (function () {
+    function SingletonEnforcer() {
+    }
+    return SingletonEnforcer;
+})();
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (filters) {
+        var Filter3DBase = (function () {
+            function Filter3DBase() {
+                this._tasks = new Array();
+            }
+            Object.defineProperty(Filter3DBase.prototype, "requireDepthRender", {
+                get: function () {
+                    return this._requireDepthRender;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Filter3DBase.prototype.pAddTask = function (filter) {
+                this._tasks.push(filter);
+
+                if (this._requireDepthRender == null) {
+                    this._requireDepthRender = filter.requireDepthRender;
+                }
+            };
+
+            Object.defineProperty(Filter3DBase.prototype, "tasks", {
+                get: function () {
+                    return this._tasks;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Filter3DBase.prototype.getMainInputTexture = function (stage3DProxy) {
+                return this._tasks[0].getMainInputTexture(stage3DProxy);
+            };
+
+            Object.defineProperty(Filter3DBase.prototype, "textureWidth", {
+                get: function () {
+                    return this._textureWidth;
+                },
+                set: function (value) {
+                    this._textureWidth = value;
+
+                    for (var i = 0; i < this._tasks.length; ++i) {
+                        this._tasks[i].textureWidth = value;
+                    }
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Filter3DBase.prototype, "textureHeight", {
+                get: function () {
+                    return this._textureHeight;
+                },
+                set: function (value) {
+                    this._textureHeight = value;
+
+                    for (var i = 0; i < this._tasks.length; ++i) {
+                        this._tasks[i].textureHeight = value;
+                    }
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            // link up the filters correctly with the next filter
+            Filter3DBase.prototype.setRenderTargets = function (mainTarget, stage3DProxy) {
+                this._tasks[this._tasks.length - 1].target = mainTarget;
+            };
+
+            Filter3DBase.prototype.dispose = function () {
+                for (var i = 0; i < this._tasks.length; ++i) {
+                    this._tasks[i].dispose();
+                }
+            };
+
+            Filter3DBase.prototype.update = function (stage, camera) {
+            };
+            return Filter3DBase;
+        })();
+        filters.Filter3DBase = Filter3DBase;
+    })(away.filters || (away.filters = {}));
+    var filters = away.filters;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (render) {
+        var Filter3DRenderer = (function () {
+            function Filter3DRenderer(stage3DProxy) {
+                this._filterSizesInvalid = true;
+                this._stage3DProxy = stage3DProxy;
+                this._rttManager = away.managers.RTTBufferManager.getInstance(stage3DProxy);
+                this._rttManager.addEventListener(away.events.Event.RESIZE, this.onRTTResize, this);
+            }
+            Filter3DRenderer.prototype.onRTTResize = function (event) {
+                this._filterSizesInvalid = true;
+            };
+
+            Object.defineProperty(Filter3DRenderer.prototype, "requireDepthRender", {
+                get: function () {
+                    return this._requireDepthRender;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Filter3DRenderer.prototype.getMainInputTexture = function (stage3DProxy) {
+                if (this._filterTasksInvalid) {
+                    this.updateFilterTasks(stage3DProxy);
+                }
+
+                return this._mainInputTexture;
+            };
+
+            Object.defineProperty(Filter3DRenderer.prototype, "filters", {
+                get: function () {
+                    return this._filters;
+                },
+                set: function (value) {
+                    this._filters = value;
+
+                    this._filterTasksInvalid = true;
+
+                    this._requireDepthRender = false;
+
+                    if (!this._filters) {
+                        return;
+                    }
+
+                    for (var i = 0; i < this._filters.length; ++i) {
+                        // TODO: check logic:
+                        // this._requireDepthRender ||=  Boolean ( this._filters[i].requireDepthRender )
+                        var s = this._filters[i];
+                        var b = (s.requireDepthRender == null) ? false : s.requireDepthRender;
+
+                        this._requireDepthRender = this._requireDepthRender || b;
+                    }
+
+                    this._filterSizesInvalid = true;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Filter3DRenderer.prototype.updateFilterTasks = function (stage3DProxy) {
+                var len;
+
+                if (this._filterSizesInvalid) {
+                    this.updateFilterSizes();
+                }
+
+                if (!this._filters) {
+                    this._tasks = null;
+                    return;
+                }
+
+                this._tasks = new Array();
+
+                len = this._filters.length - 1;
+
+                var filter;
+
+                for (var i = 0; i <= len; ++i) {
+                    // make sure all internal tasks are linked together
+                    filter = this._filters[i];
+
+                    // TODO: check logic
+                    // filter.setRenderTargets(i == len? null : Filter3DBase(_filters[i + 1]).getMainInputTexture(stage3DProxy), stage3DProxy);
+                    filter.setRenderTargets(i == len ? null : this._filters[i + 1].getMainInputTexture(stage3DProxy), stage3DProxy);
+
+                    this._tasks = this._tasks.concat(filter.tasks);
+                }
+
+                this._mainInputTexture = this._filters[0].getMainInputTexture(stage3DProxy);
+            };
+
+            Filter3DRenderer.prototype.render = function (stage3DProxy, camera3D, depthTexture) {
+                var len;
+                var i;
+                var task;
+                var context = stage3DProxy._iContext3D;
+
+                var indexBuffer = this._rttManager.indexBuffer;
+
+                var vertexBuffer = this._rttManager.renderToTextureVertexBuffer;
+
+                if (!this._filters) {
+                    return;
+                }
+
+                if (this._filterSizesInvalid) {
+                    this.updateFilterSizes();
+                }
+
+                if (this._filterTasksInvalid) {
+                    this.updateFilterTasks(stage3DProxy);
+                }
+
+                len = this._filters.length;
+
+                for (i = 0; i < len; ++i) {
+                    this._filters[i].update(stage3DProxy, camera3D);
+                }
+
+                len = this._tasks.length;
+
+                if (len > 1) {
+                    context.setVertexBufferAt(0, vertexBuffer, 0, away.display3D.Context3DVertexBufferFormat.FLOAT_2);
+                    context.setVertexBufferAt(1, vertexBuffer, 2, away.display3D.Context3DVertexBufferFormat.FLOAT_2);
+                }
+
+                for (i = 0; i < len; ++i) {
+                    task = this._tasks[i];
+
+                    stage3DProxy.setRenderTarget(task.target);
+
+                    if (!task.target) {
+                        stage3DProxy.scissorRect = null;
+                        vertexBuffer = this._rttManager.renderToScreenVertexBuffer;
+                        context.setVertexBufferAt(0, vertexBuffer, 0, away.display3D.Context3DVertexBufferFormat.FLOAT_2);
+                        context.setVertexBufferAt(1, vertexBuffer, 2, away.display3D.Context3DVertexBufferFormat.FLOAT_2);
+                    }
+
+                    context.setTextureAt(0, task.getMainInputTexture(stage3DProxy));
+                    context.setProgram(task.getProgram3D(stage3DProxy));
+                    context.clear(0.0, 0.0, 0.0, 0.0);
+
+                    task.activate(stage3DProxy, camera3D, depthTexture);
+
+                    context.setBlendFactors(away.display3D.Context3DBlendFactor.ONE, away.display3D.Context3DBlendFactor.ZERO);
+                    context.drawTriangles(indexBuffer, 0, 2);
+
+                    task.deactivate(stage3DProxy);
+                }
+
+                context.setTextureAt(0, null);
+                context.setVertexBufferAt(0, null);
+                context.setVertexBufferAt(1, null);
+            };
+
+            Filter3DRenderer.prototype.updateFilterSizes = function () {
+                for (var i = 0; i < this._filters.length; ++i) {
+                    this._filters[i].textureWidth = this._rttManager.textureWidth;
+                    this._filters[i].textureHeight = this._rttManager.textureHeight;
+                }
+
+                this._filterSizesInvalid = true;
+            };
+
+            Filter3DRenderer.prototype.dispose = function () {
+                this._rttManager.removeEventListener(away.events.Event.RESIZE, this.onRTTResize, this);
+                this._rttManager = null;
+                this._stage3DProxy = null;
+            };
+            return Filter3DRenderer;
+        })();
+        render.Filter3DRenderer = Filter3DRenderer;
+    })(away.render || (away.render = {}));
+    var render = away.render;
+})(away || (away = {}));
 ///<reference path="../../../src/away/_definitions.ts" />
 //------------------------------------------------------------------------------------------------
 // Web / PHP Storm arguments string
@@ -30586,12 +36878,25 @@ var MaterialsTest = (function () {
     MaterialsTest.prototype.imgLoaded = function (e) {
         this.imgTx = new away.textures.HTMLImageElementTexture(this.imgLoader.image);
         this.matTx = new away.materials.TextureMaterial(this.imgTx);
+        this.matTx.colorTransform = new away.geom.ColorTransform(1, 1, 1, 1);
+
+        this.specM = new away.materials.BasicSpecularMethod();
+        this.specM.texture = this.imgTx;
+        this.specM.gloss = 3;
+        this.specM.specularColor = 0xff0000;
+
+        this.matTx.specularMethod = this.specM;
+        this.matTx.ambientTexture = this.imgTx;
+        this.matTx.alpha = .5;
+        this.matTx.blendMode = away.display.BlendMode.MULTIPLY;
 
         console.log('-----------------------------------------------------------------------------');
         console.log('- TextureMaterial');
         console.log('-----------------------------------------------------------------------------');
         console.log('this.matTx ', this.matTx);
-        console.log('iUpdateProgram', this.matTx._pScreenPass.iUpdateProgram(this.sProxy));
+
+        this.matTx._pScreenPass.iUpdateProgram(this.sProxy);
+
         console.log('iGetVertexCode', this.matTx._pScreenPass.iGetVertexCode());
         console.log('iGetFragmentCode', this.matTx._pScreenPass.iGetFragmentCode(''));
     };
@@ -30601,3 +36906,4 @@ var MaterialsTest = (function () {
 window.onload = function () {
     var test = new MaterialsTest();
 };
+//@ sourceMappingURL=ColorMaterialTest.js.map
