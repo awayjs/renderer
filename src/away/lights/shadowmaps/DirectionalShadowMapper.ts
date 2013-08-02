@@ -65,19 +65,16 @@ module away.lights
 		}
 		
 		//@override
-		// public pDrawDepthMap( target:away.display3D.TextureBase, scene:away.containers.Scene3D, renderer:away.render.DepthRenderer )
-		/*
 		public pDrawDepthMap( target:away.display3D.TextureBase, scene:away.containers.Scene3D, renderer:away.render.DepthRenderer )
 		{
-			this._casterCollector.camera = _overallDepthCamera;
-			this._casterCollector.cullPlanes = _cullPlanes;
-			this._casterCollector.clear();
-			scene.traversePartitions(_casterCollector);
-			renderer.render(_casterCollector, target);
-			this._casterCollector.cleanUp();
+			this._pCasterCollector.camera = this._pOverallDepthCamera;
+			this._pCasterCollector.cullPlanes = this._pCullPlanes;
+			this._pCasterCollector.clear();
+			scene.traversePartitions( this._pCasterCollector);
+			renderer.iRender( this._pCasterCollector, target);
+			this._pCasterCollector.cleanUp();
 		}
-		*/
-		
+
 		//@protected
 		public pUpdateCullPlanes( viewCamera:away.cameras.Camera3D )
 		{
