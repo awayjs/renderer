@@ -17,7 +17,7 @@ module away.entities
 		private _subSetCount:number;
 		private _numIndices:number;
 		private _material:away.materials.MaterialBase;
-		//private _animator:IAnimator;
+		private _animator:away.animators.IAnimator;
 		private _hasData:boolean;
 		
 		public _pSegments:Object; //Dictionary
@@ -32,7 +32,10 @@ module away.entities
 			this.addSubSet();
 			
 			this._pSegments = new Object();
-			//TODO this.material = new SegmentMaterial();
+
+            away.Debug.throwPIR( 'SegmentSet' , 'constructor' , 'implement dependency: away.materials.SegmentMaterial')
+            // TODO: implement dependency: away.materials.SegmentMaterial
+			//this.material = new away.materials.SegmentMaterial();
 		}
 		
 		public addSegment( segment:away.primitives.Segment )
@@ -180,7 +183,7 @@ module away.entities
 			}
 			this._pSegments = null; //WHY?
 			this._subSetCount = 0;
-			//this._activeSubSet = null;
+			this._activeSubSet = null;
 			this._indexSegments = 0;
 			this._subSets = [];
 			this._pSegments = new Object();
@@ -454,27 +457,29 @@ module away.entities
 					index += 8;
 				}
 			}
-			/*
+
 			if (minX != Infinity)
-				this._bounds.fromExtremes(minX, minY, minZ, maxX, maxY, maxZ);
-			
-			else {
-				var min:Number = .5;
-				this._bounds.fromExtremes(-min, -min, -min, min, min, min);
+            {
+				this._pBounds.fromExtremes(minX, minY, minZ, maxX, maxY, maxZ);
+
+            }
+			else
+            {
+				var min:number = .5;
+				this._pBounds.fromExtremes(-min, -min, -min, min, min, min);
 			}
-			*/
+
 			this._pBoundsInvalid = false;
 		}
 		
 		
 		//@override
-		/*
-		public iCreateEntityPartitionNode():away.entities.EntityNode
+
+		public pCreateEntityPartitionNode():away.partition.EntityNode
 		{
-			return new RenderableNode(this);
+			return new away.partition.RenderableNode(this);
 		}
-        //*/
-		
+
 		public get numTriangles():number
 		{
 			return this._numIndices/3;
@@ -494,15 +499,12 @@ module away.entities
 		{
 			return this._material;
 		}
-		//*
+
 		public get animator():away.animators.IAnimator
 		{
-
-            away.Debug.throwPIR( 'SegmentSet' , 'get animator' , 'PartialImplementation' );
-            return null;
-			//return this._animator;//TODO <------ IMPLEMENT
+			return this._animator;
 		}
-		//*/
+
 		public set material( value:away.materials.MaterialBase )
 		{
 			if( value == this._material)
