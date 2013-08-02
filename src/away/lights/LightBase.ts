@@ -191,15 +191,10 @@ module away.lights
 			this._iDiffuseB = this._colorB*this._diffuse;
 		}
 		
-		// TODO shadowMapper():ShadowMapperBase
-
 		public get shadowMapper():away.lights.ShadowMapperBase
 		{
 			return this._shadowMapper;
 		}
-
-		
-		// TODO shadowMapper(value:ShadowMapperBase)
 
 		public set shadowMapper(value:away.lights.ShadowMapperBase)
 		{
