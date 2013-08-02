@@ -52,7 +52,7 @@ module away.base
 		 */
 		uvTransform:away.geom.Matrix;//GET
 		
-		//shaderPickingDetails:boolean;//GET
+		shaderPickingDetails:boolean;//GET
 		
 		/**
 		 * The total amount of vertices in the SubGeometry.
