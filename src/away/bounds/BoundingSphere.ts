@@ -2,7 +2,9 @@
  * ...
  * @author Gary Paluk - http://www.plugin.io
  */
- 
+
+///<reference path="../_definitions.ts" />
+
 module away.bounds
 {
 	export class BoundingSphere extends away.bounds.BoundingVolumeBase
@@ -153,12 +155,12 @@ module away.bounds
 		}
 		
 		// TODO pCreateBoundingRenderable():WireframePrimitiveBase
-		/**
-		public function pCreateBoundingRenderable():WireframePrimitiveBase
+
+		public pCreateBoundingRenderable():away.primitives.WireframePrimitiveBase
 		{
-			return new WireframeSphere(1, 16, 12, 0xffffff, 0.5);
+			return new away.primitives.WireframeSphere(1, 16, 12, 0xffffff, 0.5);
 		}
-		*/
+
 		
 		//@override
 		public classifyToPlane( plane:away.math.Plane3D ):number
