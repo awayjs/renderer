@@ -130,6 +130,52 @@ module away.display {
          * @param y
          * @param color
          */
+        public getPixel(x, y ):number
+        {
+
+            if ( ! this._locked )
+            {
+
+                this._imageData = this._context.getImageData(0,0,this._rect.width,this._rect.height);
+
+            }
+            else
+            {
+
+                if (  this._imageData )
+                {
+
+                    this._context.putImageData( this._imageData, 0, 0); // at coords 0,0
+
+                    this._imageData = this._context.getImageData(0,0,this._rect.width,this._rect.height);
+
+                }
+
+            }
+
+            var index : number = (x + y * this._imageCanvas.width) * 4;
+
+            var r : number = this._imageData.data[index+0]
+            var g : number = this._imageData.data[index+1]
+            var b : number = this._imageData.data[index+2]
+            var a : number = this._imageData.data[index+3]
+
+            if ( ! this._locked )
+            {
+
+                this._imageData = null;
+
+            }
+
+            return (a << 24) | (r << 16) | (g << 8) | b;
+
+        }
+        /**
+         *
+         * @param x
+         * @param y
+         * @param color
+         */
         public setPixel(x, y, color : number ):void
         {
 
