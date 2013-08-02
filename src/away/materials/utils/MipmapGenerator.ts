@@ -33,7 +33,7 @@ module away.materials
             MipmapGenerator._rect.height    = source.height;
 
             MipmapGenerator._source = new away.display.BitmapData( source.width , source.height , alpha );
-            MipmapGenerator._source.copyImage( source , MipmapGenerator._rect , MipmapGenerator._rect );
+            MipmapGenerator._source.drawImage( source , MipmapGenerator._rect , MipmapGenerator._rect );
 
             MipmapGenerator.generateMipMaps( MipmapGenerator._source , target , mipmap );
 
