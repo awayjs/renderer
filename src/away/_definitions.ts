@@ -48,6 +48,7 @@
 ///<reference path="traverse/PartitionTraverser.ts" />
 ///<reference path="traverse/EntityCollector.ts" />
 ///<reference path="traverse/ShadowCasterCollector.ts" />
+///<reference path="traverse/RaycastCollector.ts" />
 ///<reference path="primitives/data/Segment.ts" />
 ///<reference path="bounds/BoundingVolumeBase.ts" />
 ///<reference path="events/LensEvent.ts" />
