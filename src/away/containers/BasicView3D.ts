@@ -891,7 +891,6 @@ module away.containers
         // TODO private function onAddedToStage(event:Event):void
         // TODO private function onAdded(event:Event):void
 
-        /* TODO: implement Camera3D.project
         public project( point3d:away.geom.Vector3D ):away.geom.Vector3D
         {
             var v:away.geom.Vector3D = this._pCamera.project( point3d );
@@ -899,19 +898,16 @@ module away.containers
             v.y = (v.y + 1.0) * this._height/2.0;
             return v;
         }
-        */
-        /* TODO: implement Camera3D.unproject
-        public unproject( sX:Number, sY:Number, sZ:Number ):away.geom.Vector3D
+
+        public unproject( sX:number, sY:number, sZ:number ):away.geom.Vector3D
         {
             return this._pCamera.unproject( (sX*2 - this._width)/this._pStage3DProxy.width, (sY*2 - this._height)/this._pStage3DProxy.height, sZ );
         }
-        */
-        /* TODO: implement Camera3D.unproject
-        public getRay( sX:Number, sY:Number, sZ:Number ):away.geom.Vector3D
+
+        public getRay( sX:number, sY:number, sZ:number ):away.geom.Vector3D
         {
             return this._pCamera.getRay( (sX*2 - this._width)/this._width, (sY*2 - this._height)/this._height, sZ );
         }
-        */
         /* TODO: implement Mouse3DManager
         public get mousePicker():away.pick.IPicker
         {
