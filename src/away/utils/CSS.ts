@@ -39,6 +39,10 @@ module away.utils
             canvas.style.top = y + "px";
         }
 
+        public static getCanvasVisibility( canvas:HTMLCanvasElement ) : boolean
+        {
+            return canvas.style.visibility == 'visible';
+        }
 
         public static setCanvasVisibility( canvas:HTMLCanvasElement, visible:boolean )
 		{
