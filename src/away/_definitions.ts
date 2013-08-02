@@ -95,7 +95,6 @@
 ///<reference path="pick/PickingColliderType.ts" />
 ///<reference path="base/IRenderable.ts" />
 ///<reference path="containers/View3D.ts"/>
-///<reference path="containers/BasicView3D.ts"/>
 ///<reference path="library/naming/ConflictStrategyBase.ts" />
 ///<reference path="library/naming/NumSuffixConflictStrategy.ts" />
 ///<reference path="library/naming/IgnoreConflictStrategy.ts" />
