@@ -17,8 +17,8 @@ class BitmapDataTest
     constructor()
     {
 
-        var transparent : boolean = false;
-        var initcolour  : number = 0x88ffffff;
+        var transparent : boolean = true;
+        var initcolour  : number = 0xffffffff;
 
         //---------------------------------------
         // Load a PNG
@@ -74,6 +74,7 @@ class BitmapDataTest
 
                 this.bitmapDataB.lock(); // Lock bitmap - speeds up setPixelOperations
 
+
                 //---------------------------------------
                 // Resize BitmapData
                 this.bitmapData.width  = 256;
@@ -83,7 +84,7 @@ class BitmapDataTest
                 // copy loaded image to first BitmapData
 
                 var rect : away.geom.Rectangle = new away.geom.Rectangle( 0 , 0 , this.imgLoader.width , this.imgLoader.height );
-                this.bitmapData.copyImage( this.imgLoader.image , rect ,  rect );
+                this.bitmapData.drawImage( this.imgLoader.image , rect ,  rect );
 
                 //---------------------------------------
                 // copy image into second bitmap data ( and scale it up 2X )
@@ -128,7 +129,7 @@ class BitmapDataTest
 
             this.bitmapData.width  = 512;
             this.bitmapData.height = 512;
-            this.bitmapData.fillRect( this.bitmapData.rect , 0x88ff0000 ); // fill it RED
+            this.bitmapData.fillRect( this.bitmapData.rect , 0xffff0000 ); // fill it RED
 
             for (var d = 0; d < 1000; d++)
             {
@@ -149,7 +150,23 @@ class BitmapDataTest
 
             this.bitmapDataB.copyPixels( this.bitmapData , this.bitmapDataB.rect ,  targetRect ); // copy first bitmapdata object into the second one
 
+
+
         }
+
+        var m : away.geom.Matrix = new away.geom.Matrix(.5, .08 , .08 ,.5 , this.imgLoader.width / 2 , this.imgLoader.height / 2);
+        this.bitmapData.draw( this.bitmapData , m );
+
+        this.bitmapData.setPixel32(0, 0, 0xccff0000 ) ;
+        this.bitmapData.setPixel32(1, 0, 0xcc00ff00 ) ;
+        this.bitmapData.setPixel32(2, 0, 0xcc0000ff ) ;
+
+        this.bitmapDataB.draw( this.bitmapData , m );
+
+        console.log( 'GetPixel 0,0: ' , away.utils.ColorUtils.ARGBToHexString( away.utils.ColorUtils.float32ColorToARGB( this.bitmapData.getPixel( 0 , 0 ) ) ) );
+        console.log( 'GetPixel 1,0: ' , away.utils.ColorUtils.ARGBToHexString( away.utils.ColorUtils.float32ColorToARGB( this.bitmapData.getPixel( 1 , 0 ) ) ) );
+        console.log( 'GetPixel 2,0: ' , away.utils.ColorUtils.ARGBToHexString( away.utils.ColorUtils.float32ColorToARGB( this.bitmapData.getPixel( 2 , 0 ) ) ) );
+
 
 
     }
@@ -164,7 +181,10 @@ class BitmapDataTest
     private imgLoaded( e : away.events.Event )
     {
 
-        this.bitmapData.copyImage( this.imgLoader.image , new away.geom.Rectangle( 0 , 0 , this.imgLoader.width , this.imgLoader.height ) ,new away.geom.Rectangle( 0 , 0 , this.imgLoader.width  / 2, this.imgLoader.height / 2 ));
+        this.bitmapData.drawImage( this.imgLoader.image , new away.geom.Rectangle( 0 , 0 , this.imgLoader.width , this.imgLoader.height ) ,new away.geom.Rectangle( 0 , 0 , this.imgLoader.width  / 2, this.imgLoader.height / 2 ));
+
+        var m : away.geom.Matrix = new away.geom.Matrix(.5, .08 , .08 ,.5 , this.imgLoader.width / 2 , this.imgLoader.height / 2);
+        this.bitmapData.draw( this.bitmapData , m );
 
     }
 
