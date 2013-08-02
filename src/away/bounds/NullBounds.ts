@@ -44,12 +44,10 @@ module away.bounds
 		}
 		
 		//@override
-		/*
 		public fromGeometry( geometry:away.base.Geometry )
 		{
 		}
-		*/
-		
+
 		//@override
 		public fromSphere( center:away.geom.Vector3D, radius:number )
 		{
