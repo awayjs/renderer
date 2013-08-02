@@ -76,6 +76,7 @@
 ///<reference path="primitives/WireframePlane.ts" />
 ///<reference path="primitives/WireframeRegularPolygon.ts" />
 ///<reference path="primitives/WireframeTetrahedron.ts" />
+
 ///<reference path="partition/NodeBase.ts" />
 ///<reference path="partition/NullNode.ts" />
 ///<reference path="partition/Partition3D.ts" />
@@ -183,6 +184,11 @@
 ///<reference path="primitives/TorusGeometry.ts"/>
 ///<reference path="primitives/CubeGeometry.ts"/>
 ///<reference path="primitives/PlaneGeometry.ts"/>
+///<reference path="primitives/CapsuleGeometry.ts" />
+///<reference path="primitives/CylinderGeometry.ts" />
+///<reference path="primitives/ConeGeometry.ts" />
+///<reference path="primitives/RegularPolygonGeometry.ts" />
+///<reference path="primitives/SphereGeometry.ts" />
 ///<reference path="utils/ColorUtils.ts"/>
 ///<reference path="geom/ColorTransform.ts"/>
 ///<reference path="animators/nodes/AnimationNodeBase.ts"/>
