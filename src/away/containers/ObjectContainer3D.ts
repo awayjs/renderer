@@ -623,7 +623,7 @@ module away.containers
 		}
 		
 		//override
-		/*
+
 		public clone():away.base.Object3D
 		{
 			var clone:away.containers.ObjectContainer3D = new away.containers.ObjectContainer3D();
@@ -636,12 +636,12 @@ module away.containers
 			
 			for(var i:number = 0; i < len; ++i)
 			{
-				clone.addChild(ObjectContainer3D(_children[i].clone()));
+				clone.addChild(ObjectContainer3D(this._children[i].clone()));
 			}
 			// todo: implement for all subtypes
 			return clone;
 		}
-		*/
+
 		
 		//@override
 		public rotate( axis:away.geom.Vector3D, angle:number )
