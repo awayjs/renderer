@@ -217,9 +217,41 @@ module away.cameras
 			return this._viewProjection;
 		}
 
+        /**
+         * Calculates the ray in scene space from the camera to the given normalized coordinates in screen space.
+         *
+         * @param nX The normalised x coordinate in screen space, -1 corresponds to the left edge of the viewport, 1 to the right.
+         * @param nY The normalised y coordinate in screen space, -1 corresponds to the top edge of the viewport, 1 to the bottom.
+         * @param sZ The z coordinate in screen space, representing the distance into the screen.
+         * @return The ray from the camera to the scene space position of the given screen coordinates.
+         */
         public getRay(nX:number, nY:number, sZ:number):away.geom.Vector3D
         {
             return this.sceneTransform.deltaTransformVector(this._lens.unproject(nX, nY, sZ));
+        }
+
+        /**
+         * Calculates the normalised position in screen space of the given scene position.
+         *
+         * @param point3d the position vector of the scene coordinates to be projected.
+         * @return The normalised screen position of the given scene coordinates.
+         */
+        public project(point3d:away.geom.Vector3D):away.geom.Vector3D
+        {
+            return this._lens.project( this.inverseSceneTransform.transformVector(point3d));
+        }
+
+        /**
+         * Calculates the scene position of the given normalized coordinates in screen space.
+         *
+         * @param nX The normalised x coordinate in screen space, -1 corresponds to the left edge of the viewport, 1 to the right.
+         * @param nY The normalised y coordinate in screen space, -1 corresponds to the top edge of the viewport, 1 to the bottom.
+         * @param sZ The z coordinate in screen space, representing the distance into the screen.
+         * @return The scene position of the given screen coordinates.
+         */
+        public unproject(nX:number, nY:number, sZ:number):away.geom.Vector3D
+        {
+            return this.sceneTransform.transformVector(this._lens.unproject(nX, nY, sZ));
         }
 
 	}
