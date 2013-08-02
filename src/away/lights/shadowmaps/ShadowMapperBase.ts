@@ -122,7 +122,7 @@ module away.lights
         public pCreateDepthTexture():away.textures.TextureProxyBase
         {
 
-            throw new away.errors.PartialImplementationError( 'ShadowMapperBase' , 'pCreateDepthTexture' , 'Depedency: RenderTexture');
+            away.Debug.throwPIR( 'ShadowMapperBase' , 'pCreateDepthTexture' , 'Depedency: RenderTexture');
             return null;
 
             //return new away.textures.RenderTexture( this._pDepthMapSize, this._pDepthMapSize);
