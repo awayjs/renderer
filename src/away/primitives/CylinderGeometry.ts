@@ -9,11 +9,12 @@ module away.primitives
 	export class CylinderGeometry extends away.primitives.PrimitiveBase
 	{
 		public _pBottomRadius:number;
-
+        public _pSegmentsW:number;
+        public _pSegmentsH:number;
+        
 		private _topRadius:number;
 		private _height:number;
-		private _segmentsW:number;
-		private _segmentsH:number;
+
 		private _topClosed:boolean;
 		private _bottomClosed:boolean;
 		private _surfaceClosed:boolean;
@@ -87,18 +88,18 @@ module away.primitives
 			// evaluate target number of vertices, triangles and indices
 			if (this._surfaceClosed)
             {
-                this._numVertices += (this._segmentsH + 1)*(this._segmentsW + 1); // segmentsH + 1 because of closure, segmentsW + 1 because of UV unwrapping
-				numTriangles += this._segmentsH*this._segmentsW*2; // each level has segmentW quads, each of 2 triangles
+                this._numVertices += (this._pSegmentsH + 1)*(this._pSegmentsW + 1); // segmentsH + 1 because of closure, segmentsW + 1 because of UV unwrapping
+				numTriangles += this._pSegmentsH*this._pSegmentsW*2; // each level has segmentW quads, each of 2 triangles
 			}
 			if (this._topClosed)
             {
-                this._numVertices += 2*(this._segmentsW + 1); // segmentsW + 1 because of unwrapping
-				numTriangles += this._segmentsW; // one triangle for each segment
+                this._numVertices += 2*(this._pSegmentsW + 1); // segmentsW + 1 because of unwrapping
+				numTriangles += this._pSegmentsW; // one triangle for each segment
 			}
 			if (this._bottomClosed)
             {
-                this._numVertices += 2*(this._segmentsW + 1);
-				numTriangles += this._segmentsW;
+                this._numVertices += 2*(this._pSegmentsW + 1);
+				numTriangles += this._pSegmentsW;
 			}
 			
 			// need to initialize raw arrays or can be reused?
@@ -124,14 +125,14 @@ module away.primitives
 			}
 			
 			// evaluate revolution steps
-			var revolutionAngleDelta:number = 2*Math.PI/this._segmentsW;
+			var revolutionAngleDelta:number = 2*Math.PI/this._pSegmentsW;
 			
 			// top
 			if (this._topClosed && this._topRadius > 0) {
 				
 				z = -0.5*this._height;
 				
-				for (i = 0; i <= this._segmentsW; ++i) {
+				for (i = 0; i <= this._pSegmentsW; ++i) {
 					// central vertex
 					if (this._yUp) {
 						t1 = 1;
@@ -164,7 +165,7 @@ module away.primitives
 						comp2 = z;
 					}
 					
-					if (i == this._segmentsW)
+					if (i == this._pSegmentsW)
                         this.addVertex(this._rawData[startIndex + this._stride], this._rawData[startIndex + this._stride + 1], this._rawData[startIndex + this._stride + 2], 0, t1, t2, 1, 0, 0);
 					else
                         this.addVertex(x, comp1, comp2, 0, t1, t2, 1, 0, 0);
@@ -182,7 +183,7 @@ module away.primitives
 				
 				startIndex = this._vertexOffset + this._nextVertexIndex*this._stride;
 				
-				for (i = 0; i <= this._segmentsW; ++i)
+				for (i = 0; i <= this._pSegmentsW; ++i)
                 {
 					if (this._yUp)
                     {
@@ -214,7 +215,7 @@ module away.primitives
 						comp2 = z;
 					}
 					
-					if (i == this._segmentsW)
+					if (i == this._pSegmentsW)
                         this.addVertex(x, this._rawData[startIndex + 1], this._rawData[startIndex + 2], 0, t1, t2, 1, 0, 0);
 					else
                         this.addVertex(x, comp1, comp2, 0, t1, t2, 1, 0, 0);
@@ -241,14 +242,14 @@ module away.primitives
                 var d:number;
 				var na0:number, na1:number, naComp1:number, naComp2:number;
 				
-				for (j = 0; j <= this._segmentsH; ++j)
+				for (j = 0; j <= this._pSegmentsH; ++j)
                 {
-					radius = this._topRadius - ((j/this._segmentsH)*(this._topRadius - this._pBottomRadius));
-					z = -(this._height/2) + (j/this._segmentsH*this._height);
+					radius = this._topRadius - ((j/this._pSegmentsH)*(this._topRadius - this._pBottomRadius));
+					z = -(this._height/2) + (j/this._pSegmentsH*this._height);
 					
 					startIndex = this._vertexOffset + this._nextVertexIndex*this._stride;
 					
-					for (i = 0; i <= this._segmentsW; ++i)
+					for (i = 0; i <= this._pSegmentsW; ++i)
                     {
 						// revolution vertex
 						revolutionAngle = i*revolutionAngleDelta;
@@ -277,7 +278,7 @@ module away.primitives
 							naComp2 = latNormElev;
 						}
 						
-						if (i == this._segmentsW)
+						if (i == this._pSegmentsW)
                         {
                             this.addVertex( this._rawData[startIndex], this._rawData[startIndex + 1], this._rawData[startIndex + 2],
 								            na0, latNormElev, na1,
@@ -294,8 +295,8 @@ module away.primitives
 						if (i > 0 && j > 0) {
 							a = this._nextVertexIndex - 1; // current
 							b = this._nextVertexIndex - 2; // previous
-							c = b - this._segmentsW - 1; // previous of last level
-							d = a - this._segmentsW - 1; // current of last level
+							c = b - this._pSegmentsW - 1; // previous of last level
+							d = a - this._pSegmentsW - 1; // current of last level
                             this.addTriangleClockWise(a, b, c);
                             this.addTriangleClockWise(a, c, d);
 						}
@@ -337,7 +338,7 @@ module away.primitives
 			}
 			
 			// evaluate revolution steps
-			var revolutionAngleDelta:number = 2*Math.PI/this._segmentsW;
+			var revolutionAngleDelta:number = 2*Math.PI/this._pSegmentsW;
 			
 			// current uv component index
 			var currentUvCompIndex:number = target.UVOffset;
@@ -345,7 +346,7 @@ module away.primitives
 			// top
 			if (this._topClosed)
             {
-				for (i = 0; i <= this._segmentsW; ++i)
+				for (i = 0; i <= this._pSegmentsW; ++i)
                 {
 					
 					revolutionAngle = i*revolutionAngleDelta;
@@ -364,7 +365,7 @@ module away.primitives
 			// bottom
 			if (this._bottomClosed)
             {
-				for (i = 0; i <= this._segmentsW; ++i)
+				for (i = 0; i <= this._pSegmentsW; ++i)
                 {
 					
 					revolutionAngle = i*revolutionAngleDelta;
@@ -383,13 +384,13 @@ module away.primitives
 			// lateral surface
 			if (this._surfaceClosed)
             {
-				for (j = 0; j <= this._segmentsH; ++j)
+				for (j = 0; j <= this._pSegmentsH; ++j)
                 {
-					for (i = 0; i <= this._segmentsW; ++i)
+					for (i = 0; i <= this._pSegmentsW; ++i)
                     {
 						// revolution vertex
-						UVData[currentUvCompIndex++] = ( i/this._segmentsW )*target.scaleU;
-						UVData[currentUvCompIndex++] = ( j/this._segmentsH )*target.scaleV;
+						UVData[currentUvCompIndex++] = ( i/this._pSegmentsW )*target.scaleU;
+						UVData[currentUvCompIndex++] = ( j/this._pSegmentsH )*target.scaleV;
 						currentUvCompIndex += skip;
 					}
 				}
@@ -446,31 +447,43 @@ module away.primitives
 		 */
 		public get segmentsW():number
 		{
-			return this._segmentsW;
+			return this._pSegmentsW;
 		}
-		
-		public set segmentsW(value:number)
-		{
-            this._segmentsW = value;
+
+        public set segmentsW(value:number)
+        {
+            this.setSegmentsW( value );
+        }
+
+        public setSegmentsW(value:number)
+        {
+            this._pSegmentsW = value;
             this.pInvalidateGeometry();
             this.pInvalidateUVs();
-		}
+        }
 		
 		/**
 		 * Defines the number of vertical segments that make up the cylinder. Defaults to 1.
 		 */
 		public get segmentsH():number
 		{
-			return this._segmentsH;
+			return this._pSegmentsH;
 		}
-		
-		public set segmentsH(value:number)
-		{
-            this._segmentsH = value;
+
+        public set segmentsH(value:number)
+        {
+
+            this.setSegmentsH( value )
+
+        }
+
+        public setSegmentsH(value:number)
+        {
+            this._pSegmentsH = value;
             this.pInvalidateGeometry();
             this.pInvalidateUVs();
 
-		}
+        }
 		
 		/**
 		 * Defines whether the top end of the cylinder is closed (true) or open.
@@ -532,8 +545,8 @@ module away.primitives
             this._topRadius = topRadius;
             this._pBottomRadius = bottomRadius;
             this._height = height;
-            this._segmentsW = segmentsW;
-            this._segmentsH = segmentsH;
+            this._pSegmentsW = segmentsW;
+            this._pSegmentsH = segmentsH;
             this._topClosed = topClosed;
             this._bottomClosed = bottomClosed;
             this._surfaceClosed = surfaceClosed;
