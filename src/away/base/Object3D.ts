@@ -160,9 +160,7 @@ module away.base
 					break;
 			}
 		}
-		//*/
 
-        //* TODO implement
 		public removeEventListener(type : string , listener : Function , target : Object )
 		{
 			super.removeEventListener(type, listener, target);
@@ -185,7 +183,6 @@ module away.base
 					break;
 			}
 		}
-		//*/
 
 		private invalidateRotation()
 		{
@@ -253,8 +250,6 @@ module away.base
 		public _pPos        : away.geom.Vector3D = new away.geom.Vector3D();
 		private _rot        : away.geom.Vector3D = new away.geom.Vector3D();
 		private _sca        : away.geom.Vector3D = new away.geom.Vector3D();
-
-        //private _transformComponents:Vector.<Vector3D>;
         private _transformComponents : away.geom.Vector3D[];
 		
 		/**
@@ -513,9 +508,12 @@ module away.base
 			}
 			*/
 
+            // TODO: From AS3 - Do we still need this in JS ?
             //ridiculous matrix error
             //*
-            if (!val.rawData[0]) {
+            if (!val.rawData[0])
+            {
+
                 var raw:number[] = away.math.Matrix3DUtils.RAW_DATA_CONTAINER;
                 val.copyRawDataTo( raw );
                 raw[0] = this._smallestNumber;
@@ -657,7 +655,6 @@ module away.base
 			// Cached vector of transformation components used when
 			// recomposing the transform matrix in updateTransform()
 
-
             this._transformComponents = new Array<away.geom.Vector3D>(3);//_transformComponents = new Vector.<Vector3D>(3, true);
 
 			this._transformComponents[0] = this._pPos;
@@ -686,67 +683,58 @@ module away.base
 		 *
 		 * @param    distance    The length of the movement
 		 */
-        /* TODO: implement
 		public moveForward(distance:number)
 		{
-			translateLocal(Vector3D.Z_AXIS, distance);
+			this.translateLocal(away.geom.Vector3D.Z_AXIS, distance);
 		}
-		*/
 		/**
 		 * Moves the 3d object backwards along it's local z axis
 		 *
 		 * @param    distance    The length of the movement
 		 */
-        /* TODO: implement
 		public moveBackward(distance:number)
 		{
-			translateLocal(Vector3D.Z_AXIS, -distance);
+			this.translateLocal(away.geom.Vector3D.Z_AXIS, -distance);
 		}
-		*/
 		/**
 		 * Moves the 3d object backwards along it's local x axis
 		 *
 		 * @param    distance    The length of the movement
 		 */
-        /* TODO: implement
+
 		public moveLeft(distance:number)
 		{
-			translateLocal(Vector3D.X_AXIS, -distance);
+			this.translateLocal(away.geom.Vector3D.X_AXIS, -distance);
 		}
-		*/
+
 		/**
 		 * Moves the 3d object forwards along it's local x axis
 		 *
 		 * @param    distance    The length of the movement
 		 */
-        /* TODO: implement
 		public moveRight(distance:number)
 		{
-			translateLocal(Vector3D.X_AXIS, distance);
+			this.translateLocal(away.geom.Vector3D.X_AXIS, distance);
 		}
-		*/
 		/**
 		 * Moves the 3d object forwards along it's local y axis
 		 *
 		 * @param    distance    The length of the movement
 		 */
-        /* TODO: implement
 		public moveUp(distance:number)
 		{
-			translateLocal(Vector3D.Y_AXIS, distance);
+			this.translateLocal(away.geom.Vector3D.Y_AXIS, distance);
 		}
-		*/
 		/**
 		 * Moves the 3d object backwards along it's local y axis
 		 *
 		 * @param    distance    The length of the movement
 		 */
-        /* TODO: implement
 		public moveDown(distance:number)
 		{
-			translateLocal(Vector3D.Y_AXIS, -distance);
+			this.translateLocal(away.geom.Vector3D.Y_AXIS, -distance);
 		}
-		*/
+
 		/**
 		 * Moves the 3d object directly to a point in space
 		 *
@@ -837,34 +825,28 @@ module away.base
 		 *
 		 * @param    angle        The amount of rotation in degrees
 		 */
-        /* TODO: implement
 		public pitch(angle:number)
 		{
-			rotate(Vector3D.X_AXIS, angle);
+            this.rotate(away.geom.Vector3D.X_AXIS, angle);
 		}
-		*/
 		/**
 		 * Rotates the 3d object around it's local y-axis
 		 *
 		 * @param    angle        The amount of rotation in degrees
 		 */
-        /* TODO: implement
 		public yaw(angle:number)
 		{
-			rotate(Vector3D.Y_AXIS, angle);
+			this.rotate(away.geom.Vector3D.Y_AXIS, angle);
 		}
-		*/
 		/**
 		 * Rotates the 3d object around it's local z-axis
 		 *
 		 * @param    angle        The amount of rotation in degrees
 		 */
-        /* TODO: implement
 		public roll(angle:number)
 		{
-			rotate(Vector3D.Z_AXIS, angle);
+			this.rotate(away.geom.Vector3D.Z_AXIS, angle);
 		}
-		*/
 		public clone():Object3D
 		{
 			var clone:away.base.Object3D = new away.base.Object3D();
@@ -907,24 +889,19 @@ module away.base
 		 * @param    target        The vector defining the point to be looked at
 		 * @param    upAxis        An optional vector used to define the desired up orientation of the 3d object after rotation has occurred
 		 */
-        //* TODO: implement
 		public lookAt(target:away.geom.Vector3D, upAxis:away.geom.Vector3D = null)
 		{
 
-            away.Debug.throwPIR( 'Object3D' , 'lookAt' , 'PartialImplementationError' );
-            /*
-			var yAxis:away.geom.Vector3D, zAxis:away.geom.Vector3D, xAxis:away.geom.Vector3D;
+			var yAxis:away.geom.Vector3D;
+            var zAxis:away.geom.Vector3D;
+            var xAxis:away.geom.Vector3D;
 			var raw:number[];
-
 
             if ( upAxis == null)
             {
-
                 upAxis = away.geom.Vector3D.Y_AXIS;
-
             }
 
-			
 			zAxis = target.subtract(position);
 			zAxis.normalize();
 			
@@ -962,14 +939,14 @@ module away.base
 
             this.transform = transform;
 			
-			if (zAxis.z < 0) {
+			if (zAxis.z < 0)
+            {
                 this.rotationY = (180 - this.rotationY);
                 this.rotationX -= 180;
                 this.rotationZ -= 180;
 			}
-			*/
+
 		}
-		//*/
 		/**
 		 * Cleans up any resources used by the current object.
 		 */
@@ -996,8 +973,6 @@ module away.base
 		public pUpdateTransform()
 		{
 
-
-
 			this._pPos.x = this._x;
             this._pPos.y = this._y;
             this._pPos.z = this._z;
@@ -1012,9 +987,8 @@ module away.base
 
             this._transform.recompose(this._transformComponents);
 
-            //console.log( 'object3d' , 'pUpdateTransform _transformComponents' , this._transformComponents );
-
-			if (!this._pivotZero) {
+			if (!this._pivotZero)
+            {
                 this._transform.prependTranslation(-this._pivotPoint.x, -this._pivotPoint.y, -this._pivotPoint.z);
                 this._transform.appendTranslation(this._pivotPoint.x, this._pivotPoint.y, this._pivotPoint.z);
 			}
@@ -1023,8 +997,6 @@ module away.base
             this._positionDirty = false;
             this._rotationDirty = false;
             this._scaleDirty = false;
-
-            //console.log( 'object3d' , 'pUpdateTransform _pPos ' , this._transform.rawData );
 
 		}
 
