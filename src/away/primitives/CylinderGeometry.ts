@@ -6,10 +6,11 @@ module away.primitives
 	/**
 	 * A Cylinder primitive mesh.
 	 */
-	export class CylinderGeometry extends PrimitiveBase
+	export class CylinderGeometry extends away.primitives.PrimitiveBase
 	{
+		public _pBottomRadius:number;
+
 		private _topRadius:number;
-		private _bottomRadius:number;
 		private _height:number;
 		private _segmentsW:number;
 		private _segmentsH:number;
@@ -174,7 +175,7 @@ module away.primitives
 			}
 			
 			// bottom
-			if (this._bottomClosed && this._bottomRadius > 0)
+			if (this._bottomClosed && this._pBottomRadius > 0)
             {
 				
 				z = 0.5*this._height;
@@ -202,8 +203,8 @@ module away.primitives
 					
 					// revolution vertex
 					revolutionAngle = i*revolutionAngleDelta;
-					x = this._bottomRadius*Math.cos(revolutionAngle);
-					y = this._bottomRadius*Math.sin(revolutionAngle);
+					x = this._pBottomRadius*Math.cos(revolutionAngle);
+					y = this._pBottomRadius*Math.sin(revolutionAngle);
 					
 					if (this._yUp) {
 						comp1 = -z;
@@ -227,7 +228,7 @@ module away.primitives
 			// the "elevation" component (Y or Z depending on yUp) is constant.
 			// Same principle goes for the "base" of these vectors, which will be
 			// calculated such that a vector [base,elev] will be a unit vector.
-			dr = (this._bottomRadius - this._topRadius);
+			dr = (this._pBottomRadius - this._topRadius);
 			latNormElev = dr/this._height;
 			latNormBase = (latNormElev == 0)? 1 : this._height/dr;
 			
@@ -242,7 +243,7 @@ module away.primitives
 				
 				for (j = 0; j <= this._segmentsH; ++j)
                 {
-					radius = this._topRadius - ((j/this._segmentsH)*(this._topRadius - this._bottomRadius));
+					radius = this._topRadius - ((j/this._segmentsH)*(this._topRadius - this._pBottomRadius));
 					z = -(this._height/2) + (j/this._segmentsH*this._height);
 					
 					startIndex = this._vertexOffset + this._nextVertexIndex*this._stride;
@@ -417,12 +418,12 @@ module away.primitives
 		 */
 		public get bottomRadius():number
 		{
-			return this._bottomRadius;
+			return this._pBottomRadius;
 		}
 		
 		public set bottomRadius(value:number)
 		{
-            this._bottomRadius = value;
+            this._pBottomRadius = value;
             this.pInvalidateGeometry();
 		}
 		
@@ -529,7 +530,7 @@ module away.primitives
 			super();
 
             this._topRadius = topRadius;
-            this._bottomRadius = bottomRadius;
+            this._pBottomRadius = bottomRadius;
             this._height = height;
             this._segmentsW = segmentsW;
             this._segmentsH = segmentsH;
