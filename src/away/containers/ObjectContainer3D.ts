@@ -627,16 +627,16 @@ module away.containers
 		public clone():away.base.Object3D
 		{
 			var clone:away.containers.ObjectContainer3D = new away.containers.ObjectContainer3D();
-			clone.pivotPoint = pivotPoint;
-			clone.transform = transform;
-			clone.partition = partition;
+			clone.pivotPoint = this.pivotPoint;
+			clone.transform = this.transform;
+			clone.partition = this.partition;
 			clone.name = name;
 			
 			var len:number = this._children.length;
 			
 			for(var i:number = 0; i < len; ++i)
 			{
-				clone.addChild(ObjectContainer3D(this._children[i].clone()));
+				clone.addChild( <away.containers.ObjectContainer3D> this._children[i].clone() );
 			}
 			// todo: implement for all subtypes
 			return clone;
