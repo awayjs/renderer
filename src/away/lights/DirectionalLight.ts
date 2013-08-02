@@ -45,7 +45,7 @@ module away.lights
 		public set direction(value:away.geom.Vector3D)
 		{
 			this._direction = value;
-			//lookAt(new Vector3D(x + _direction.x, y + _direction.y, z + _direction.z));
+
 			if (!this._tmpLookAt)
 			{
 				this._tmpLookAt = new away.geom.Vector3D();
