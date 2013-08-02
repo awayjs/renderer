@@ -194,7 +194,6 @@ module away.containers
 		
 		public pUpdateMouseChildren()
 		{
-            away.Debug.throwPIR( 'ObjectContainer3D' , 'pUpdateMouseChildren' , 'PartialImplementationError - Mouse3DManager' );
 
 			if( this._pParent && !this._pParent._iIsRoot )
 			{
