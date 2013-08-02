@@ -2,34 +2,22 @@
 
 module away.pick
 {
-	//import flash.geom.Vector3D;
-	
-	//import away3d.arcane;
-	//import away3d.containers.Scene3D;
-	//import away3d.containers.View3D;
-	//import away3d.core.data.EntityListItem;
-	//import away3d.core.traverse.EntityCollector;
-	//import away3d.core.traverse.RaycastCollector;
-	//import away3d.entities.Entity;
-	
-	//use namespace arcane;
-	
+
 	/**
 	 * Picks a 3d object from a view or scene by 3D raycast calculations.
 	 * Performs an initial coarse boundary calculation to return a subset of entities whose bounding volumes intersect with the specified ray,
 	 * then triggers an optional picking collider on individual entity objects to further determine the precise values of the picking ray collision.
 	 */
 
-    // TODO: Dependencies needed to before implementing IPicker - EntityListItem, EntityCollector
 	export class RaycastPicker implements away.pick.IPicker
 	{
 		private _findClosestCollision:boolean;
-		//private var _raycastCollector:RaycastCollector = new RaycastCollector(); // TODO Implement Dependency: RaycastCollector
+		private _raycastCollector:away.traverse.RaycastCollector = new away.traverse.RaycastCollector ();
 		private _ignoredEntities = [];
 		private _onlyMouseEnabled:boolean = true;
 		
 		private _entities:away.entities.Entity[];//Vector.<Entity>;
-		private _numEntities:number;
+		private _numEntities:number = 0;
 		private _hasCollisions:boolean;
 		
 		/**
@@ -62,14 +50,11 @@ module away.pick
 		 * @inheritDoc
 		 */
 
-        //TODO Implement Dependency: EntityListItem, EntityCollector
 		public getViewCollision(x:number, y:number, view:away.containers.View3D):away.pick.PickingCollisionVO
 		{
-            throw new away.errors.PartialImplementationError( 'EntityListItem, EntityCollector');
-            return null;
-            /*
+
 			//cast ray through the collection of entities on the view
-			var collector:EntityCollector = view.entityCollector;
+			var collector:away.traverse.EntityCollector = view.iEntityCollector;
 			//var i:number;
 			
 			if (collector.numMouseEnableds == 0)
@@ -82,42 +67,40 @@ module away.pick
 			
 			// Perform ray-bounds collision checks.
 			this._numEntities = 0;
-			var node:EntityListItem = collector.entityHead;
-			var entity:Entity;
-			while (node) {
+			var node:away.data.EntityListItem = collector.entityHead;
+			var entity:away.entities.Entity;
+			while (node)
+            {
 				entity = node.entity;
 				
-				if (isIgnored(entity)) {
+				if (this.isIgnored(entity)) {
 					node = node.next;
 					continue;
 				}
 				
 				// If collision detected, store in new data set.
-				if (entity.isVisible && entity.isIntersectingRay(rayPosition, rayDirection))
-					_entities[_numEntities++] = entity;
+				if (entity._iIsVisible && entity.isIntersectingRay(rayPosition, rayDirection))
+					this._entities[this._numEntities++] = entity;
 				
 				node = node.next;
 			}
 			
 			//early out if no collisions detected
-			if (!_numEntities)
+			if (!this._numEntities)
 				return null;
 			
-			return getPickingCollisionVO();
-			*/
+			return this.getPickingCollisionVO();
+
 		}
 		//*/
 		/**
 		 * @inheritDoc
 		 */
 
-        //* TODO Implement Dependency: EntityListItem, EntityCollector
+        //* TODO Implement Dependency: EntityListItem, EntityCollector, RaycastCollector
 		public getSceneCollision(position:away.geom.Vector3D, direction:away.geom.Vector3D, scene:away.containers.Scene3D):away.pick.PickingCollisionVO
 		{
-            throw new away.errors.PartialImplementationError( 'EntityListItem, EntityCollector');
-            return null;
 
-            /*
 			//clear collector
 			this._raycastCollector.clear();
 			
@@ -129,30 +112,32 @@ module away.pick
 			scene.traversePartitions(this._raycastCollector);
 
             this._numEntities = 0;
-			var node:EntityListItem = this._raycastCollector.entityHead;
-			var entity:Entity;
-			while (node) {
+			var node:away.data.EntityListItem = this._raycastCollector.entityHead;
+			var entity:away.entities.Entity;
+
+			while (node)
+            {
 				entity = node.entity;
 				
-				if (isIgnored(entity)) {
+				if (this.isIgnored(entity))
+                {
 					node = node.next;
 					continue;
 				}
 				
-				_entities[_numEntities++] = entity;
+				this._entities[this._numEntities++] = entity;
 				
 				node = node.next;
 			}
 			
 			//early out if no collisions detected
-			if (!_numEntities)
+			if (!this._numEntities)
 				return null;
 			
-			return getPickingCollisionVO();
-			*/
+			return this.getPickingCollisionVO();
+
 		}
 		//*/
-        /* TODO: Implement Dependency: Entity.isIntersectingRay
 		public getEntityCollision(position:away.geom.Vector3D, direction:away.geom.Vector3D, entities:away.entities.Entity[] ):away.pick.PickingCollisionVO
 		{
 
