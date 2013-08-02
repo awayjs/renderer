@@ -317,7 +317,6 @@ module away.managers
                 //_frameEventDriver.addEventListener(Event.ENTER_FRAME, onEnterFrame, useCapture, priority, useWeakReference);
                 // TODO - Start RequestAnimationFrame
 
-
             }
 
             /* Original code
@@ -361,7 +360,6 @@ module away.managers
 		{
 			return this._scissorRect;
 		}
-		
 		public set scissorRect(value:away.geom.Rectangle)
 		{
 			this._scissorRect = value;
@@ -421,26 +419,16 @@ module away.managers
 		 */
 		public get x():number
 		{
-
-            //away.Debug.throwPIR( 'Stage3DProxy' , 'get x' ,  'Stage3D.x');
-
-            //return 0;
 			return this._stage3D.x;
 		}
-		
 		public set x(value:number)
 		{
-
-            away.Debug.throwPIR( 'Stage3DProxy' , 'set x' ,  'Stage3D.x');
-
-            //*
 			if (this._viewPort.x == value)
 				return;
 			
 			this._stage3D.x = this._viewPort.x = value;
 			
 			this.notifyViewportUpdated();
-			//*/
 		}
 		
 		/**
@@ -448,22 +436,16 @@ module away.managers
 		 */
 		public get y():number
 		{
-
 			return this._stage3D.y;
-
 		}
-		
 		public set y(value:number)
 		{
-            away.Debug.throwPIR( 'Stage3DProxy' , 'set x' ,  'Stage3D.y');
-            //*
 			if (this._viewPort.y == value)
 				return;
 			
 			this._stage3D.y = this._viewPort.y = value;
 
             this.notifyViewportUpdated();
-			//*/
 		}
 
         /**
@@ -472,9 +454,7 @@ module away.managers
          */
         public get canvas () : HTMLCanvasElement
         {
-
             return this._stage3D.canvas;
-
         }
 		
 		/**
@@ -484,12 +464,10 @@ module away.managers
 		{
 			return this._backBufferWidth;
 		}
-		
 		public set width(width:number)
 		{
 			if (this._viewPort.width == width)
 				return;
-
 
             this._stage3D.width = this._backBufferWidth = this._viewPort.width = width;
 			this._backBufferDirty = true;
@@ -504,7 +482,6 @@ module away.managers
 		{
 			return this._backBufferHeight;
 		}
-		
 		public set height(height:number)
 		{
 			if (this._viewPort.height == height)
@@ -523,7 +500,6 @@ module away.managers
 		{
 			return this._antiAlias;
 		}
-		
 		public set antiAlias(antiAlias:number)
 		{
 			this._antiAlias = antiAlias;
@@ -558,18 +534,11 @@ module away.managers
 		 */
 		public get visible():boolean
 		{
-
-            away.Debug.throwPIR( 'Stage3DProxy' , 'get visible' ,  'Stage3D.visible');
-            return null;
-
-			//return this._stage3D.visible;
+            return this._stage3D.visible;
 		}
-		
 		public set visible(value:boolean)
 		{
-
-            away.Debug.throwPIR( 'Stage3DProxy' , 'set visible' ,  'Stage3D.visible');
-			//this._stage3D.visible = value;
+			this._stage3D.visible = value;
 		}
 		
 		/**
@@ -579,7 +548,6 @@ module away.managers
 		{
 			return this._bufferClear;
 		}
-		
 		public set bufferClear(newBufferClear:boolean)
 		{
 			this._bufferClear = newBufferClear;
@@ -649,12 +617,9 @@ module away.managers
 				// invoked for the first time.
 				if (this._backBufferWidth && this._backBufferHeight)
                 {
-
                     this._iContext3D.configureBackBuffer(this._backBufferWidth, this._backBufferHeight, this._antiAlias, this._enableDepthAndStencil);
-
                 }
 
-				
 				// Dispatch the appropriate event depending on whether context was
 				// created for the first time or recreated after a device loss.
 				this.dispatchEvent(new away.events.Stage3DEvent( hadContext ? away.events.Stage3DEvent.CONTEXT3D_RECREATED : away.events.Stage3DEvent.CONTEXT3D_CREATED));
@@ -662,9 +627,7 @@ module away.managers
 			}
             else
             {
-
                 throw new Error("Rendering context lost!");
-
             }
 
 		}
@@ -725,21 +688,15 @@ module away.managers
 		{
 			if (!this._iContext3D )
             {
-
                 return;
-
             }
 
-			
 			// Clear the stage3D instance
 			this.clear();
-			
 			//notify the enterframe listeners
 			this.notifyEnterFrame();
-			
 			// Call the present() to render the frame
             this.present();
-			
 			//notify the exitframe listeners
             this.notifyExitFrame();
 		}
@@ -754,7 +711,6 @@ module away.managers
             }
 
             away.Debug.throwPIR( 'Stage3DProxy' , 'recoverFromDisposal' , '' );
-
 
             /*
             if (this._iContext3D.driverInfo == "Disposed")
