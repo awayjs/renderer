@@ -45,10 +45,6 @@
 ///<reference path="display3D/Context3DWrapMode.ts"/>
 ///<reference path="display3D/Context3D.ts" />
 ///<reference path="materials/MaterialBase.ts"/>
-///<reference path="traverse/PartitionTraverser.ts" />
-///<reference path="traverse/EntityCollector.ts" />
-///<reference path="traverse/ShadowCasterCollector.ts" />
-///<reference path="traverse/RaycastCollector.ts" />
 ///<reference path="primitives/data/Segment.ts" />
 ///<reference path="bounds/BoundingVolumeBase.ts" />
 ///<reference path="events/LensEvent.ts" />
@@ -63,7 +59,6 @@
 ///<reference path="bounds/NullBounds.ts" />
 ///<reference path="bounds/BoundingSphere.ts" />
 ///<reference path="bounds/AxisAlignedBoundingBox.ts" />
-
 ///<reference path="containers/ObjectContainer3D.ts" />
 ///<reference path="entities/Entity.ts" />
 ///<reference path="cameras/Camera3D.ts" />
@@ -77,7 +72,6 @@
 ///<reference path="primitives/WireframePlane.ts" />
 ///<reference path="primitives/WireframeRegularPolygon.ts" />
 ///<reference path="primitives/WireframeTetrahedron.ts" />
-
 ///<reference path="partition/NodeBase.ts" />
 ///<reference path="partition/NullNode.ts" />
 ///<reference path="partition/Partition3D.ts" />
@@ -146,9 +140,6 @@
 ///<reference path="pick/IPicker.ts"/>
 ///<reference path="pick/PickingColliderBase.ts" />
 ///<reference path="pick/AS3PickingCollider.ts" />
-///<reference path="pick/ShaderPicker.ts" />
-///<reference path="pick/RaycastPicker.ts" />
-///<reference path="pick/PickingType.ts"/>
 ///<reference path="events/MouseEvent3D.ts"/>
 ///<reference path="managers/Stage3DProxy.ts"/>
 ///<reference path="display/Stage.ts"/>
@@ -180,6 +171,13 @@
 ///<reference path="data/EntityListItem.ts"/>
 ///<reference path="data/EntityListItemPool.ts"/>
 ///<reference path="data/RenderableListItemPool.ts"/>
+///<reference path="traverse/PartitionTraverser.ts" />
+///<reference path="traverse/EntityCollector.ts" />
+///<reference path="traverse/ShadowCasterCollector.ts" />
+///<reference path="traverse/RaycastCollector.ts" />
+///<reference path="pick/ShaderPicker.ts" />
+///<reference path="pick/RaycastPicker.ts" />
+///<reference path="pick/PickingType.ts"/>
 ///<reference path="primitives/PrimitiveBase.ts"/>
 ///<reference path="primitives/LineSegment.ts"/>
 ///<reference path="primitives/TorusGeometry.ts"/>
@@ -195,35 +193,27 @@
 ///<reference path="animators/nodes/AnimationNodeBase.ts"/>
 ///<reference path="animators/states/IAnimationState.ts"/>
 ///<reference path="utils/GeometryUtils.ts"/>
-
 ///<reference path="lights/LightBase.ts"/>
 ///<reference path="lights/LightProbe.ts"/>
 ///<reference path="lights/PointLight.ts"/>
 ///<reference path="lights/DirectionalLight.ts"/>
-
 ///<reference path="lights/shadowmaps/ShadowMapperBase.ts"/>
 ///<reference path="lights/shadowmaps/CubeMapShadowMapper.ts"/>
 ///<reference path="lights/shadowmaps/DirectionalShadowMapper.ts"/>
-
-
 ///<reference path="animators/IAnimationSet.ts"/>
 ///<reference path="animators/states/AnimationStateBase.ts"/>
 ///<reference path="animators/IAnimator.ts"/>
-
 ///<reference path="events/ShadingMethodEvent.ts"/>
 ///<reference path="materials/passes/MaterialPassBase.ts"/>
 ///<reference path="materials/passes/CompiledPass.ts"/>
 ///<reference path="materials/passes/SuperShaderPass.ts"/>
-
 ///<reference path="materials/passes/DepthMapPass.ts"/>
 ///<reference path="materials/passes/DistanceMapPass.ts"/>
-
 ///<reference path="materials/SinglePassMaterialBase.ts"/>
 ///<reference path="materials/methods/MethodVO.ts"/>
 ///<reference path="materials/methods/ShadingMethodBase.ts"/>
 ///<reference path="materials/methods/EffectMethodBase.ts"/>
 ///<reference path="materials/methods/MethodVOSet.ts"/>
-
 ///<reference path="materials/methods/ShaderMethodSetup.ts"/>
 ///<reference path="materials/methods/LightingMethodBase.ts"/>
 ///<reference path="materials/methods/ShadowMapMethodBase.ts"/>
@@ -238,27 +228,20 @@
 ///<reference path="materials/compilation/ShaderCompiler.ts"/>
 ///<reference path="materials/compilation/SuperShaderCompiler.ts"/>
 ///<reference path="materials/LightSources.ts"/>
-
 ///<reference path="materials/methods/BasicAmbientMethod.ts"/>
 ///<reference path="materials/methods/BasicDiffuseMethod.ts"/>
 ///<reference path="materials/methods/BasicNormalMethod.ts"/>
 ///<reference path="materials/methods/BasicSpecularMethod.ts"/>
 ///<reference path="materials/methods/ColorTransformMethod.ts"/>
-
 ///<reference path="materials/ColorMaterial.ts"/>
 ///<reference path="materials/utils/DefaultMaterialManager.ts"/>
-
-
 ///<reference path="render/RenderBase.ts"/>
 ///<reference path="sort/IEntitySorter.ts"/>
 ///<reference path="sort/RenderableMergeSort.ts"/>
-
 ///<reference path="render/RendererBase.ts"/>
 ///<reference path="render/DepthRenderer.ts"/>
 ///<reference path="render/DefaultRenderer.ts"/>
-
 ///<reference path="filters/tasks/Filter3DTaskBase.ts"/>
 ///<reference path="managers/RTTBufferManager.ts"/>
 ///<reference path="filters/Filter3DBase.ts"/>
 ///<reference path="render/Filter3DRenderer.ts"/>
-
