@@ -330,7 +330,6 @@ module away.entities
 			this.notifySceneBoundsInvalid();
 		}
 		
-		/* TODO: implement dependency super.updateMouseChildren();
 		public pUpdateMouseChildren():void
 		{
 			// If there is a parent and this child does not have a triangle collider, use its parent's triangle collider.
@@ -338,8 +337,7 @@ module away.entities
 			if( this._pParent && !this.pickingCollider )
 			{
 
-
-				if ( this.pParent instanceof away.entities.Entity ) //if( this._pParent is Entity ) { // TODO: Test / validate
+				if ( this._pParent instanceof away.entities.Entity ) //if( this._pParent is Entity ) { // TODO: Test / validate
                 {
 
                     var parentEntity : away.entities.Entity =  <away.entities.Entity> this._pParent;
@@ -355,10 +353,9 @@ module away.entities
 				}
 			}
 			
-			super.updateMouseChildren();
+			super.pUpdateMouseChildren();
 		}
-		//*/
-		
+
 		private notifySceneBoundsInvalid()
 		{
 			if( this._pScene )
