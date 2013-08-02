@@ -216,5 +216,11 @@ module away.cameras
 			}
 			return this._viewProjection;
 		}
+
+        public getRay(nX:number, nY:number, sZ:number):away.geom.Vector3D
+        {
+            return this.sceneTransform.deltaTransformVector(this._lens.unproject(nX, nY, sZ));
+        }
+
 	}
 }
