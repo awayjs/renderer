@@ -118,13 +118,16 @@ module away.lights
 			}
 			this._depthMap = null;
 		}
-		
-		public pCreateDepthTexture():away.textures.TextureProxyBase
-		{
-			throw new away.errors.PartialImplementationError();
-			//TODO return new away.textures.RenderTexture( this._depthMapSize, this._depthMapSize );
-		}
-		
+
+        public pCreateDepthTexture():away.textures.TextureProxyBase
+        {
+
+            throw new away.errors.PartialImplementationError( 'ShadowMapperBase' , 'pCreateDepthTexture' , 'Depedency: RenderTexture');
+            return null;
+
+            //return new away.textures.RenderTexture( this._pDepthMapSize, this._pDepthMapSize);
+        }
+
 		public iRenderDepthMap(stage3DProxy:away.managers.Stage3DProxy, entityCollector:away.traverse.EntityCollector, renderer:away.render.DepthRenderer )
 		{
 			this._iShadowsInvalid = false;
