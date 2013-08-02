@@ -70,6 +70,7 @@
 ///<reference path="entities/Mesh.ts"/>
 ///<reference path="base/SubMesh.ts"/>
 ///<reference path="primitives/WireframePrimitiveBase.ts" />
+///<reference path="primitives/WireframeSphere.ts" />
 ///<reference path="primitives/WireframeCube.ts" />
 ///<reference path="partition/NodeBase.ts" />
 ///<reference path="partition/NullNode.ts" />
