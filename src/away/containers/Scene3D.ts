@@ -64,19 +64,16 @@ module away.containers
 			return this._iSceneGraphRoot.addChild( child );
 		}
 		
-		/*
 		public removeChild( child:away.containers.ObjectContainer3D )
 		{
 			this._iSceneGraphRoot.removeChild( child );
 		}
-		*/
-		
-		/*
+
 		public removeChildAt( index:number )
 		{
 			this._iSceneGraphRoot.removeChildAt( index );
 		}
-		
+
 		
 		public getChildAt( index:number ):away.containers.ObjectContainer3D
 		{
@@ -87,7 +84,7 @@ module away.containers
 		{
 			return this._iSceneGraphRoot.numChildren;
 		}
-         */
+
 		public iRegisterEntity( entity:away.entities.Entity )
 		{
 
