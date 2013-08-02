@@ -13,8 +13,8 @@ module away.textures
 		private _textures       : away.display3D.TextureBase[];
 		private _dirty          : away.display3D.Context3D[];
 
-		private _width          : number;
-		private _height         : number;
+		public _pWidth          : number;
+        public _pHeight         : number;
 
 		constructor()
 		{
@@ -59,7 +59,7 @@ module away.textures
          */
 		public get width() : number
 		{
-			return this._width;
+			return this._pWidth;
 		}
 
         /**
@@ -68,7 +68,7 @@ module away.textures
          */
 		public get height() : number
 		{
-			return this._height;
+			return this._pHeight;
 		}
 
 		public getTextureForStage3D(stage3DProxy : away.managers.Stage3DProxy) : away.display3D.TextureBase
@@ -112,15 +112,15 @@ module away.textures
 		public pSetSize(width : number, height : number) : void
 		{
 
-			if (this._width != width || this._height != height)
+			if (this._pWidth != width || this._pHeight != height)
             {
 
                 this.pInvalidateSize();
 
             }
 
-            this._width     = width;
-            this._height    = height;
+            this._pWidth     = width;
+            this._pHeight    = height;
 
 		}
 
