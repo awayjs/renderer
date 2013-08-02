@@ -35,26 +35,14 @@ module away.managers
 		{
 			if (!Stage3DManagerSingletonEnforcer)
             {
-
                 throw new Error("This class is a multiton and cannot be instantiated manually. Use Stage3DManager.getInstance instead.");
-
             }
 
 			this._stage = stage;
 			
 			if (!Stage3DManager._stageProxies)
             {
-
                 Stage3DManager._stageProxies = new Array<away.managers.Stage3DProxy>( this._stage.stage3Ds.length ) ;//, true);
-
-                /*
-                for ( var c : number = 0 ; c < Stage3DManager._stageProxies.length ; c ++ )
-                {
-
-                    Stage3DManager._stageProxies[c] = null;
-
-                }
-                */
             }
 
 		}
