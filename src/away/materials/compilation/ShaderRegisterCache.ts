@@ -22,11 +22,11 @@ module away.materials
 		
 		private _fragmentOutputRegister:away.materials.ShaderRegisterElement;
 		private _vertexOutputRegister:away.materials.ShaderRegisterElement;
-		private _numUsedVertexConstants:number;
-		private _numUsedFragmentConstants:number;
-		private _numUsedStreams:number;
-		private _numUsedTextures:number;
-		private _numUsedVaryings:number;
+		private _numUsedVertexConstants:number = 0;
+		private _numUsedFragmentConstants:number = 0;
+		private _numUsedStreams:number = 0;
+		private _numUsedTextures:number = 0;
+		private _numUsedVaryings:number = 0;
 		private _profile:string;
 		
 		/**
