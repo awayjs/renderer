@@ -43,62 +43,56 @@ module away.display
 
         public set width ( v : number )
         {
-
             this._width = v;
             away.utils.CSS.setCanvasWidth( this._canvas, v );
-
         }
 
         public get width ( )
         {
-
             return this._width;
-
         }
 
         public set height ( v : number )
         {
-
             this._height = v;
             away.utils.CSS.setCanvasHeight( this._canvas, v );
-
         }
 
         public get height ( )
         {
-
             return this._height;
-
         }
 
         public set x ( v : number )
         {
-
             this._x = v;
             away.utils.CSS.setCanvasX( this._canvas, v );
-
         }
 
         public get x ( )
         {
-
             return this._x;
-
         }
 
         public set y ( v : number )
         {
-
             this._y = v;
             away.utils.CSS.setCanvasY( this._canvas, v );
-
         }
 
         public get y ( )
         {
-
             return this._y;
+        }
 
+        public set visible ( v : boolean)
+        {
+            away.utils.CSS.setCanvasVisibility( this._canvas, v );
+        }
+
+        public get visible ( )
+        {
+            return away.utils.CSS.getCanvasVisibility( this._canvas );
         }
 
 		public get canvas(): HTMLCanvasElement
