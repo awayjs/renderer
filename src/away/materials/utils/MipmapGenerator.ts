@@ -89,21 +89,14 @@ module away.materials
 
                 if ( target instanceof away.display3D.Texture)
                 {
-
                     tx = <away.display3D.Texture> target;
-
-                    mipmap.imageData;// TODO: upload to texture from imageData;
-                    //tx.uploadFromHTMLImageElement()
-                    //Texture(target).uploadFromBitmapData(mipmap, i++);
-
-
+                    tx.uploadFromBitmapData(mipmap, i++);
                 }
                 else
                 {
-
+                    away.Debug.throwPIR( 'MipMapGenerator' , 'generateMipMaps' , 'Dependency: CubeTexture');
                     // TODO: implement cube texture upload;
                     //CubeTexture(target).uploadFromBitmapData(mipmap, side, i++);
-
                 }
 
 				w >>= 1;
