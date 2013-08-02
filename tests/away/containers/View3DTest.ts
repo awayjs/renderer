@@ -8,7 +8,7 @@
 class View3DTest
 {
 
-    private view        : away.containers.BasicView3D;
+    private view        : away.containers.View3D;
     private torus       : away.primitives.TorusGeometry;
 
     private mesh        : away.entities.Mesh;
@@ -24,7 +24,7 @@ class View3DTest
         //away.Debug.throwPIROnKeyWordOnly( 'Mouse3DManager' );
 
         this.light                  = new away.lights.PointLight();
-        this.view                   = new away.containers.BasicView3D( )
+        this.view                   = new away.containers.View3D( )
         this.view.camera.z            = -1000;
         this.view.backgroundColor   = 0xff00ea;
         this.torus                  = new away.primitives.TorusGeometry();
@@ -113,9 +113,9 @@ class View3DTest
     public resize( e )
     {
 
-        this.view.y         = this.view.x = 0;
-        this.view.width     = window.innerWidth;
-        this.view.height    = window.innerHeight;
+        this.view.y         = this.view.x = 10;
+        this.view.width     = window.innerWidth - 20;
+        this.view.height    = window.innerHeight - 20;
         this.view.render();
 
     }
