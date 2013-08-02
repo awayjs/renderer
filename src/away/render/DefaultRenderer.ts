@@ -2,27 +2,7 @@
 
 module away.render
 {
-	//import away3d.arcane;
-	//import away3d.cameras.Camera3D;
-	//import away3d.core.base.IRenderable;
-	//import away3d.core.data.RenderableListItem;
-	//import away3d.managers.Stage3DProxy;
-	//import away3d.core.traverse.EntityCollector;
-	//import away3d.lights.DirectionalLight;
-	//import away3d.lights.LightBase;
-	//import away3d.lights.PointLight;
-	//import away3d.lights.shadowmaps.ShadowMapperBase;
-	//import away3d.materials.MaterialBase;
-	
-	//import flash.display3D.Context3DBlendFactor;
-	//import flash.display3D.Context3DCompareMode;
-	//import flash.display3D.textures.TextureBase;
-	//import flash.geom.Matrix3D;
-	//import flash.geom.Rectangle;
-	//import flash.geom.Vector3D;
-	
-	//use namespace arcane;
-	
+
 	/**
 	 * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the
 	 * materials assigned to them.
@@ -236,6 +216,7 @@ module away.render
 			while (item)
             {
 
+                console.log( 'DefaultRenderer' , 'drawRenderables' , item );
 				this._activeMaterial = item.renderable.material;
 
 				this._activeMaterial.iUpdateMaterial( this._pContext);
@@ -248,7 +229,9 @@ module away.render
                 {
 
 					item2 = item;
-					
+
+                    console.log( 'DefaultRenderer' , 'drawRenderables' , 'passes' , item );
+
 					var rttMask:number = this._activeMaterial.iPassRendersToTexture(j)? 1 : 2;
 					
 					if ((rttMask & which) != 0)
@@ -256,6 +239,8 @@ module away.render
 						this._activeMaterial.iActivatePass(j, this._pStage3DProxy, camera);
 
 						do {
+
+                            console.log( 'DefaultRenderer' , 'drawRenderables' , 'items 1' );
 
 							this._activeMaterial.iRenderPass(j, item2.renderable, this._pStage3DProxy, entityCollector, this._pRttViewProjectionMatrix);
 
@@ -270,6 +255,8 @@ module away.render
                     {
 
 						do{
+
+                            console.log( 'DefaultRenderer' , 'drawRenderables' , 'items 2' );
 
                             item2 = item2.next;
 
