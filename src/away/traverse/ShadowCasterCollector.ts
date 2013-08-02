@@ -42,10 +42,10 @@ module away.traverse
 		}
 		
 		//@override
-		/*
+
 		public applyDirectionalLight( light:away.lights.DirectionalLight )
 		{
-		}*/
+		}
 		
 		//@override
 		public applyPointLight( light:away.lights.PointLight )
@@ -53,10 +53,10 @@ module away.traverse
 		}
 		
 		//@override
-		/*
+
 		public applyLightProbe( light:away.lights.LightProbe )
 		{
-		}*/
+		}
 		
 		//@override
 		public applySkyBox( renderable:away.base.IRenderable )
