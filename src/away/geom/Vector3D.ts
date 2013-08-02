@@ -7,6 +7,9 @@ module away.geom {
 
     export class Vector3D {
 
+        public static X_AXIS : Vector3D = new Vector3D( 1 , 0 , 0 );
+        public static Y_AXIS : Vector3D = new Vector3D( 0 , 1 , 0 );
+        public static Z_AXIS : Vector3D = new Vector3D( 0 , 0 , 1 );
         /**
          * The first element of a Vector3D object, such as the x coordinate of a point in the three-dimensional space.
          */
