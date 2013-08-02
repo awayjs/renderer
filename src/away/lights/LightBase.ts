@@ -54,28 +54,30 @@ module away.lights
 			
 			this._castsShadows = value;
 			
-			throw new away.errors.PartialImplementationError();
-			/*
 			if( value )
 			{
-				_shadowMapper ||= createShadowMapper();
-				_shadowMapper.light = this;
+
+                if ( this._shadowMapper == null )
+                {
+
+                    this._shadowMapper = this.pCreateShadowMapper();
+
+                }
+
+				this._shadowMapper.light = this;
 			} else {
-				_shadowMapper.dispose();
-				_shadowMapper = null;
+                this._shadowMapper.dispose();
+                this._shadowMapper = null;
 			}
-			*/
+			//*/
 			this.dispatchEvent(new away.events.LightEvent( away.events.LightEvent.CASTS_SHADOW_CHANGE) );
 		}
 		
-		//TODO implement pCreateShadowMapper
-		/*
-		protected pCreateShadowMapper():ShadowMapperBase
+		public pCreateShadowMapper():away.lights.ShadowMapperBase
 		{
-			throw new AbstractMethodError();
+			throw new away.errors.AbstractMethodError();
 		}
-		*/
-		
+
 		public get specular():number
 		{
 			return this._specular;
