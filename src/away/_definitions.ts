@@ -193,7 +193,7 @@
 ///<reference path="geom/ColorTransform.ts"/>
 ///<reference path="animators/nodes/AnimationNodeBase.ts"/>
 ///<reference path="animators/states/IAnimationState.ts"/>
-
+///<reference path="utils/GeometryUtils.ts"/>
 
 ///<reference path="lights/LightBase.ts"/>
 ///<reference path="lights/LightProbe.ts"/>
