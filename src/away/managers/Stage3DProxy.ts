@@ -131,10 +131,9 @@ module away.managers
 			this._iStage3DIndex = stage3DIndex;
             this._stage3D = stage3D;
 
-            // TODO: dependency required ( stage3d.x , stage3d.y, stage3d.visible );
-            //this._stage3D.x = 0;
-            //this._stage3D.y = 0;
-            //this._stage3D.visible = true;
+            this._stage3D.x = 0;
+            this._stage3D.y = 0;
+            this._stage3D.visible = true;
             this._stage3DManager = stage3DManager;
             this._viewPort = new away.geom.Rectangle();
             this._enableDepthAndStencil = true;
