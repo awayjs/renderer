@@ -174,6 +174,7 @@
 ///<reference path="traverse/EntityCollector.ts" />
 ///<reference path="traverse/ShadowCasterCollector.ts" />
 ///<reference path="traverse/RaycastCollector.ts" />
+///<reference path="partition/RenderableNode.ts" />
 ///<reference path="pick/ShaderPicker.ts" />
 ///<reference path="pick/RaycastPicker.ts" />
 ///<reference path="pick/PickingType.ts"/>
