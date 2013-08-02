@@ -88,9 +88,9 @@ module away.containers
 		{
 
 
-            if ( BasicView3D.sStage == null )
+            if ( View3D.sStage == null )
             {
-                BasicView3D.sStage = new away.display.Stage();
+                View3D.sStage = new away.display.Stage();
             }
 
 			this._profile = profile;
@@ -105,7 +105,7 @@ module away.containers
 			this._pScissorRect = new away.geom.Rectangle();
 			this._pCamera.addEventListener( away.events.CameraEvent.LENS_CHANGED, this.onLensChanged, this );
 			this._pCamera.partition = this._pScene.partition;
-            this.stage = BasicView3D.sStage;
+            this.stage = View3D.sStage;
 
             this.onAddedToStage();
 
