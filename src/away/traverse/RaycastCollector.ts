@@ -1,6 +1,6 @@
 ///<reference path="../_definitions.ts"/>
 
-module away.core.traverse
+module away.traverse
 {
 
 	/**
