@@ -37,7 +37,6 @@ module away.pick
     // TODO: Dependencies needed to before implementing IPicker - EntityCollector
 	export class ShaderPicker implements away.pick.IPicker
 	{
-        // TODO: Stage3DProxy - Implement and Integrate
 		private _stage3DProxy:away.managers.Stage3DProxy;
 		private _context:away.display3D.Context3D;
 		private _onlyMouseEnabled:boolean = true;
@@ -106,56 +105,60 @@ module away.pick
 
             return null;
 
-            /*
-			var collector:EntityCollector = view.entityCollector;
+
+			var collector:away.traverse.EntityCollector = view.iEntityCollector;
 			
-			_stage3DProxy = view.stage3DProxy;
+			this._stage3DProxy = view.stage3DProxy;
 			
-			if (!_stage3DProxy)
+			if (!this._stage3DProxy)
 				return null;
 			
-			_context = _stage3DProxy._context3D;
+			this._context = this._stage3DProxy._iContext3D;
 			
-			_viewportData[0] = view.width;
-			_viewportData[1] = view.height;
-			_viewportData[2] = -(_projX = 2*x/view.width - 1);
-			_viewportData[3] = _projY = 2*y/view.height - 1;
+			this._viewportData[0] = view.width;
+            this._viewportData[1] = view.height;
+            this._viewportData[2] = -(this._projX = 2*x/view.width - 1);
+            this._viewportData[3] = this._projY = 2*y/view.height - 1;
 			
 			// _potentialFound will be set to true if any object is actually rendered
-			_potentialFound = false;
-			
-			draw(collector, null);
+			this._potentialFound = false;
+
+            this.pDraw(collector, null);
 			
 			// clear buffers
-			_context.setVertexBufferAt(0, null);
+			this._context.setVertexBufferAt(0, null);
 			
-			if (!_context || !_potentialFound)
+			if (!this._context || !this._potentialFound)
+            {
 				return null;
+            }
+
+			if (!this._bitmapData)
+                this._bitmapData = new away.display.BitmapData(1, 1, false, 0);
 			
-			if (!_bitmapData)
-				_bitmapData = new BitmapData(1, 1, false, 0);
+			this._context.drawToBitmapData(this._bitmapData);
+			this._hitColor = this._bitmapData.getPixel(0, 0);
 			
-			_context.drawToBitmapData(_bitmapData);
-			_hitColor = _bitmapData.getPixel(0, 0);
-			
-			if (!_hitColor) {
-				_context.present();
+			if (!this._hitColor) {
+                this._context.present();
 				return null;
 			}
-			
-			_hitRenderable = _interactives[_hitColor - 1];
-			_hitEntity = _hitRenderable.sourceEntity;
-			if (_onlyMouseEnabled && (!_hitEntity._ancestorsAllowMouseEnabled || !_hitEntity.mouseEnabled))
+
+            this._hitRenderable = this._interactives[this._hitColor - 1];
+            this._hitEntity = this._hitRenderable.sourceEntity;
+			if (this._onlyMouseEnabled && (!this._hitEntity._iAncestorsAllowMouseEnabled || !this._hitEntity.mouseEnabled))
+            {
 				return null;
-			
-			var _collisionVO:PickingCollisionVO = _hitEntity.pickingCollisionVO;
-			if (_hitRenderable.shaderPickingDetails) {
-				getHitDetails(view.camera);
-				_collisionVO.localPosition = _localHitPosition;
-				_collisionVO.localNormal = _localHitNormal;
-				_collisionVO.uv = _hitUV;
-				_collisionVO.index = _faceIndex;
-				_collisionVO.subGeometryIndex = _subGeometryIndex;
+            }
+
+			var _collisionVO:PickingCollisionVO = this._hitEntity.pickingCollisionVO;
+			if (this._hitRenderable.shaderPickingDetails) {
+				this.getHitDetails(view.camera);
+				_collisionVO.localPosition = this._localHitPosition;
+				_collisionVO.localNormal = this._localHitNormal;
+				_collisionVO.uv = this._hitUV;
+				_collisionVO.index = this._faceIndex;
+				_collisionVO.subGeometryIndex = this._subGeometryIndex;
 				
 			} else {
 				_collisionVO.localPosition = null;
@@ -166,7 +169,7 @@ module away.pick
 			}
 			
 			return _collisionVO;
-			*/
+			//*/
 		}
 		//*/
 		/**
@@ -184,8 +187,6 @@ module away.pick
 		public pDraw(entityCollector:away.traverse.EntityCollector, target:away.display3D.TextureBase)
 		{
 
-            away.Debug.throwPIR( 'ShaderPicker' , 'pDraw' , 'implement' );
-            /*
 			var camera:away.cameras.Camera3D = entityCollector.camera;
 			
 			this._context.clear(0, 0, 0, 1);
@@ -206,7 +207,7 @@ module away.pick
 			this._context.setProgramConstantsFromArray(away.display3D.Context3DProgramType.VERTEX, 4, this._viewportData, 1);
 			this.drawRenderables(entityCollector.opaqueRenderableHead, camera);
 			this.drawRenderables(entityCollector.blendedRenderableHead, camera);
-			*/
+
 		}
 
 		/**
@@ -219,60 +220,61 @@ module away.pick
 
             away.Debug.throwPIR( 'ShaderPicker' , 'drawRenderables' , 'implement' );
 
-            /*
-			var matrix:Matrix3D = away3d.math.Matrix3DUtils.CALCULATION_MATRIX;
-			var renderable:IRenderable;
-			var viewProjection:Matrix3D = camera.viewProjection;
+
+			var matrix:away.geom.Matrix3D = away.math.Matrix3DUtils.CALCULATION_MATRIX;
+			var renderable:away.base.IRenderable;
+			var viewProjection:away.geom.Matrix3D = camera.viewProjection;
 			
-			while (item) {
+			while (item)
+            {
 				renderable = item.renderable;
 				
 				// it's possible that the renderable was already removed from the scene
-				if (!renderable.sourceEntity.scene || (!renderable.mouseEnabled && _onlyMouseEnabled)) {
+				if (!renderable.sourceEntity.scene || (!renderable.mouseEnabled && this._onlyMouseEnabled))
+                {
 					item = item.next;
 					continue;
 				}
 				
-				_potentialFound = true;
+				this._potentialFound = true;
+
+                this._context.setCulling(renderable.material.bothSides? away.display3D.Context3DTriangleFace.NONE : away.display3D.Context3DTriangleFace.BACK);
 				
-				_context.setCulling(renderable.material.bothSides? Context3DTriangleFace.NONE : Context3DTriangleFace.BACK);
-				
-				_interactives[_interactiveId++] = renderable;
+				this._interactives[this._interactiveId++] = renderable;
 				// color code so that reading from bitmapdata will contain the correct value
-				_id[1] = (_interactiveId >> 8)/255; // on green channel
-				_id[2] = (_interactiveId & 0xff)/255; // on blue channel
+                this._id[1] = (this._interactiveId >> 8)/255; // on green channel
+                this._id[2] = (this._interactiveId & 0xff)/255; // on blue channel
 				
 				matrix.copyFrom(renderable.getRenderSceneTransform(camera));
 				matrix.append(viewProjection);
-				_context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, matrix, true);
-				_context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, _id, 1);
-				renderable.activateVertexBuffer(0, _stage3DProxy);
-				_context.drawTriangles(renderable.getIndexBuffer(_stage3DProxy), 0, renderable.numTriangles);
+                this._context.setProgramConstantsFromMatrix(away.display3D.Context3DProgramType.VERTEX, 0, matrix, true);
+                this._context.setProgramConstantsFromArray(away.display3D.Context3DProgramType.FRAGMENT, 0, this._id, 1);
+				renderable.activateVertexBuffer(0, this._stage3DProxy);
+                this._context.drawTriangles(renderable.getIndexBuffer(this._stage3DProxy), 0, renderable.numTriangles);
 				
 				item = item.next;
 			}
-			*/
+
 		}
 
 		private updateRay(camera:away.cameras.Camera3D)
 		{
-            /*
-			_rayPos = camera.scenePosition;
-			_rayDir = camera.getRay(_projX, _projY, 1);
-			_rayDir.normalize();
-			*/
+
+			this._rayPos = camera.scenePosition;
+            this._rayDir = camera.getRay(this._projX, this._projY, 1);
+            this._rayDir.normalize();
+
 		}
 
 		/**
 		 * Creates the Program3D that color-codes objects.
 		 */
-        /* TODO AGAL <> GLSL conversion.
 		private initObjectProgram3D()
 		{
 			var vertexCode:string;
 			var fragmentCode:string;
 			
-			_objectProgram3D = _context.createProgram();
+			this._objectProgram3D = this._context.createProgram();
 			
 			vertexCode = "m44 vt0, va0, vc0			\n" +
 				"mul vt1.xy, vt0.w, vc4.zw	\n" +
@@ -280,15 +282,14 @@ module away.pick
 				"mul vt0.xy, vt0.xy, vc4.xy	\n" +
 				"mov op, vt0	\n";
 			fragmentCode = "mov oc, fc0"; // write identifier
-			
-			_objectProgram3D.upload(new AGALMiniAssembler().assemble(Context3DProgramType.VERTEX, vertexCode),
-				new AGALMiniAssembler().assemble(Context3DProgramType.FRAGMENT, fragmentCode));
+
+            away.Debug.throwPIR( 'ShaderPicker' , 'initTriangleProgram3D' , 'Dependency: initObjectProgram3D')
+			//_objectProgram3D.upload(new AGALMiniAssembler().assemble(Context3DProgramType.VERTEX, vertexCode),new AGALMiniAssembler().assemble(Context3DProgramType.FRAGMENT, fragmentCode));
 		}
-		*/
 		/**
 		 * Creates the Program3D that renders positions.
 		 */
-        /* TODO AGAL <> GLSL conversion.
+
 		private initTriangleProgram3D()
 		{
 			var vertexCode:string;
@@ -306,72 +307,73 @@ module away.pick
 				"mul vt0.xy, vt0.xy, vc4.xy	\n" +
 				"mov op, vt0	\n";
 			fragmentCode = "mov oc, v0"; // write identifier
-			
-			_triangleProgram3D.upload(new AGALMiniAssembler().assemble(Context3DProgramType.VERTEX, vertexCode),
-				new AGALMiniAssembler().assemble(Context3DProgramType.FRAGMENT, fragmentCode));
+
+            away.Debug.throwPIR( 'ShaderPicker' , 'initTriangleProgram3D' , 'Dependency: AGALMiniAssembler')
+			//this._triangleProgram3D.upload(new AGALMiniAssembler().assemble(Context3DProgramType.VERTEX, vertexCode), new AGALMiniAssembler().assemble(Context3DProgramType.FRAGMENT, fragmentCode));
 		}
-		*/
+
 		/**
 		 * Gets more detailed information about the hir position, if required.
 		 * @param camera The camera used to view the hit object.
 		 */
-        /* TODO implement dependencies: Camera3D
-		private getHitDetails(camera:Camera3D)
+		private getHitDetails(camera:away.cameras.Camera3D)
 		{
-			getApproximatePosition(camera);
-			getPreciseDetails(camera);
+			this.getApproximatePosition(camera);
+			this.getPreciseDetails(camera);
 		}
-		*/
 		/**
 		 * Finds a first-guess approximate position about the hit position.
 		 * @param camera The camera used to view the hit object.
 		 */
-        /* TODO implement dependencies: Camera3D
-		private getApproximatePosition(camera:Camera3D)
+
+		private getApproximatePosition(camera:away.cameras.Camera3D)
 		{
-			var entity:Entity = _hitRenderable.sourceEntity;
+			var entity:away.entities.Entity = this._hitRenderable.sourceEntity;
 			var col:number;
 			var scX:number, scY:number, scZ:number;
 			var offsX:number, offsY:number, offsZ:number;
-			var localViewProjection:Matrix3D = away3d.math.Matrix3DUtils.CALCULATION_MATRIX;
-			localViewProjection.copyFrom(_hitRenderable.getRenderSceneTransform(camera));
+			var localViewProjection:away.geom.Matrix3D = away.math.Matrix3DUtils.CALCULATION_MATRIX;
+
+			localViewProjection.copyFrom(this._hitRenderable.getRenderSceneTransform(camera));
 			localViewProjection.append(camera.viewProjection);
-			if (!_triangleProgram3D)
-				initTriangleProgram3D();
+			if (!this._triangleProgram3D)
+            {
+				this.initTriangleProgram3D();
+            }
+
+			this._boundOffsetScale[4] = 1/(scX = entity.maxX - entity.minX);
+            this._boundOffsetScale[5] = 1/(scY = entity.maxY - entity.minY);
+            this._boundOffsetScale[6] = 1/(scZ = entity.maxZ - entity.minZ);
+            this._boundOffsetScale[0] = offsX = -entity.minX;
+            this._boundOffsetScale[1] = offsY = -entity.minY;
+            this._boundOffsetScale[2] = offsZ = -entity.minZ;
+
+            this._context.setProgram(this._triangleProgram3D);
+            this._context.clear(0, 0, 0, 0, 1, 0, away.display3D.Context3DClearMask.DEPTH);
+            this._context.setScissorRectangle(ShaderPicker.MOUSE_SCISSOR_RECT);
+            this._context.setProgramConstantsFromMatrix(away.display3D.Context3DProgramType.VERTEX, 0, localViewProjection, true);
+            this._context.setProgramConstantsFromArray(away.display3D.Context3DProgramType.VERTEX, 5, this._boundOffsetScale, 2);
+            this._hitRenderable.activateVertexBuffer(0, this._stage3DProxy);
+            this._context.drawTriangles(this._hitRenderable.getIndexBuffer(this._stage3DProxy), 0, this._hitRenderable.numTriangles);
+            this._context.drawToBitmapData(this._bitmapData);
 			
-			_boundOffsetScale[4] = 1/(scX = entity.maxX - entity.minX);
-			_boundOffsetScale[5] = 1/(scY = entity.maxY - entity.minY);
-			_boundOffsetScale[6] = 1/(scZ = entity.maxZ - entity.minZ);
-			_boundOffsetScale[0] = offsX = -entity.minX;
-			_boundOffsetScale[1] = offsY = -entity.minY;
-			_boundOffsetScale[2] = offsZ = -entity.minZ;
+			col = this._bitmapData.getPixel(0, 0);
 			
-			_context.setProgram(_triangleProgram3D);
-			_context.clear(0, 0, 0, 0, 1, 0, Context3DClearMask.DEPTH);
-			_context.setScissorRectangle(ShaderPicker.MOUSE_SCISSOR_RECT);
-			_context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, localViewProjection, true);
-			_context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 5, _boundOffsetScale, 2);
-			_hitRenderable.activateVertexBuffer(0, _stage3DProxy);
-			_context.drawTriangles(_hitRenderable.getIndexBuffer(_stage3DProxy), 0, _hitRenderable.numTriangles);
-			_context.drawToBitmapData(_bitmapData);
-			
-			col = _bitmapData.getPixel(0, 0);
-			
-			_localHitPosition.x = ((col >> 16) & 0xff)*scX/255 - offsX;
-			_localHitPosition.y = ((col >> 8) & 0xff)*scY/255 - offsY;
-			_localHitPosition.z = (col & 0xff)*scZ/255 - offsZ;
+			this._localHitPosition.x = ((col >> 16) & 0xff)*scX/255 - offsX;
+            this._localHitPosition.y = ((col >> 8) & 0xff)*scY/255 - offsY;
+            this._localHitPosition.z = (col & 0xff)*scZ/255 - offsZ;
 		}
-		*/
 		/**
 		 * Use the approximate position info to find the face under the mouse position from which we can derive the precise
 		 * ray-face intersection point, then use barycentric coordinates to figure out the uv coordinates, etc.
 		 * @param camera The camera used to view the hit object.
 		 */
-        /* TODO implement dependencies: Camera3D
-		private getPreciseDetails(camera:Camera3D)
+		private getPreciseDetails(camera:away.cameras.Camera3D)
 		{
-			
-			var subGeom:ISubGeometry = SubMesh(_hitRenderable).subGeometry;
+
+            var subMesh : away.base.SubMesh = <away.base.SubMesh > this._hitRenderable;
+
+			var subGeom:away.base.ISubGeometry = subMesh.subGeometry;
 			var indices:number[] = subGeom.indexData;
 			var vertices:number[] = subGeom.vertexData;
 			var len:number = indices.length;
@@ -387,7 +389,7 @@ module away.pick
 			var s:number, t:number, invDenom:number;
 			var uvs:number[] = subGeom.UVData;
 			var normals:number[] = subGeom.faceNormals;
-			var x:number = _localHitPosition.x, y:number = _localHitPosition.y, z:number = _localHitPosition.z;
+			var x:number = this._localHitPosition.x, y:number = this._localHitPosition.y, z:number = this._localHitPosition.z;
 			var u:number, v:number;
 			var ui1:number, ui2:number, ui3:number;
 			var s0x:number, s0y:number, s0z:number;
@@ -396,7 +398,7 @@ module away.pick
 			var stride:number = subGeom.vertexStride;
 			var vertexOffset:number = subGeom.vertexOffset;
 			
-			updateRay(camera);
+			this.updateRay(camera);
 			
 			while (i < len) {
 				t1 = vertexOffset + indices[i]*stride;
@@ -443,11 +445,11 @@ module away.pick
 					if (s >= 0 && t >= 0 && (s + t) <= 1) {
 						
 						// this is def the triangle, now calculate precise coords
-						getPrecisePosition(_hitRenderable.inverseSceneTransform, normals[i], normals[i + 1], normals[i + 2], x1, y1, z1);
+                        this.getPrecisePosition(this._hitRenderable.inverseSceneTransform, normals[i], normals[i + 1], normals[i + 2], x1, y1, z1);
 						
-						v2x = _localHitPosition.x - x1;
-						v2y = _localHitPosition.y - y1;
-						v2z = _localHitPosition.z - z1;
+						v2x = this._localHitPosition.x - x1;
+						v2y = this._localHitPosition.y - y1;
+						v2z = this._localHitPosition.z - z1;
 						
 						s0x = x2 - x1; // s0 = p1 - p0
 						s0y = y2 - y1;
@@ -455,17 +457,17 @@ module away.pick
 						s1x = x3 - x1; // s1 = p2 - p0
 						s1y = y3 - y1;
 						s1z = z3 - z1;
-						_localHitNormal.x = s0y*s1z - s0z*s1y; // n = s0 x s1
-						_localHitNormal.y = s0z*s1x - s0x*s1z;
-						_localHitNormal.z = s0x*s1y - s0y*s1x;
+                        this._localHitNormal.x = s0y*s1z - s0z*s1y; // n = s0 x s1
+                        this._localHitNormal.y = s0z*s1x - s0x*s1z;
+                        this._localHitNormal.z = s0x*s1y - s0y*s1x;
 						nl = 1/Math.sqrt(
-							_localHitNormal.x*_localHitNormal.x +
-							_localHitNormal.y*_localHitNormal.y +
-							_localHitNormal.z*_localHitNormal.z
+                            this._localHitNormal.x*this._localHitNormal.x +
+                                this._localHitNormal.y*this._localHitNormal.y +
+                                this._localHitNormal.z*this._localHitNormal.z
 							); // normalize n
-						_localHitNormal.x *= nl;
-						_localHitNormal.y *= nl;
-						_localHitNormal.z *= nl;
+                        this._localHitNormal.x *= nl;
+                        this._localHitNormal.y *= nl;
+                        this._localHitNormal.z *= nl;
 						
 						dot02 = v0x*v2x + v0y*v2y + v0z*v2z;
 						dot12 = v1x*v2x + v1y*v2y + v1z*v2z;
@@ -478,11 +480,11 @@ module away.pick
 						
 						u = uvs[ui1];
 						v = uvs[ui1 + 1];
-						_hitUV.x = u + t*(uvs[ui2] - u) + s*(uvs[ui3] - u);
-						_hitUV.y = v + t*(uvs[ui2 + 1] - v) + s*(uvs[ui3 + 1] - v);
-						
-						_faceIndex = i;
-						_subGeometryIndex = GeometryUtils.getMeshSubMeshIndex(SubMesh(_hitRenderable));
+                        this._hitUV.x = u + t*(uvs[ui2] - u) + s*(uvs[ui3] - u);
+                        this._hitUV.y = v + t*(uvs[ui2 + 1] - v) + s*(uvs[ui3 + 1] - v);
+
+                        this._faceIndex = i;
+                        this._subGeometryIndex = away.utils.GeometryUtils.getMeshSubMeshIndex( subMesh );
 						
 						return;
 					}
@@ -493,7 +495,6 @@ module away.pick
 				k += 3;
 			}
 		}
-		*/
 		/**
 		 * Finds the precise hit position by unprojecting the screen coordinate back unto the hit face's plane and
 		 * calculating the intersection point.
