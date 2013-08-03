@@ -16,8 +16,17 @@ class MatrixTest
         //this.testAppendTranslation();
         //this.testAppendScale();
         //this.testPosition();
-        this.testDecompose();
+        //this.testDecompose();
 
+        var m : away.geom.Matrix3D= new away.geom.Matrix3D( [   1, 2, 4, 5,
+            2, 1, 0, 8,
+            4, 0, 1, 7,
+            5, 8, 7, 1 ] );
+
+        m.transpose();
+        var v : away.geom.Vector3D[] = m.decompose();
+
+        console.log(v );
 
 
     }
