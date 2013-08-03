@@ -14,10 +14,161 @@ class MatrixTest
 
         //this.testAppendRotation();
         //this.testAppendTranslation();
-        this.testAppendScale();
+        //this.testAppendScale();
+        //this.testPosition();
+        this.testDecompose();
+
 
 
     }
+
+
+    public testDecompose() : void
+    {
+
+        console.log( '----------------------------------------------------------------------');
+        console.log( 'testDecompose');
+        var v : away.geom.Vector3D[] ;
+        var m: away.geom.Matrix3D;
+        var r : Array<number> = new Array<number> ( 16 ) ;
+
+        m = new away.geom.Matrix3D( [   1, 2, 4, 5,
+            2, 1, 0, 8,
+            4, 0, 1, 7,
+            5, 8, 7, 1 ] );
+        m.copyRawDataTo( r );
+
+        v = m.decompose();
+        this.outputDecompose(m.rawData , r , v[0], v[1], v[2]);
+
+        m = new away.geom.Matrix3D( [   1, 0, 4, 5,
+            0, 1, 8, 0,
+            4, 8, 1, 7,
+            5, 0, 7, 1] );
+        m.copyRawDataTo( r );
+        this.outputDecompose(m.rawData , r , v[0], v[1], v[2]);
+
+        m  = new away.geom.Matrix3D( [  1, 0, 4, 5,
+            0, 1, 8, 0,
+            4, 8, 1, 2,
+            5, 0, 2, 1] );
+        m.copyRawDataTo( r );
+        this.outputDecompose(m.rawData , r , v[0], v[1], v[2]);
+
+        m  = new away.geom.Matrix3D( [  1, 0, 4, 5,
+            0, 1, 8, 0,
+            4, 8, 1, 1,
+            5, 0, 1, 1] );
+        m.copyRawDataTo( r );
+        this.outputDecompose(m.rawData , r , v[0], v[1], v[2]);
+
+        console.log('//------------------------------------------------------------ AS3');
+        console.log( 'private function testDecompose( result : Vector.<Number> , original : Vector.<Number> , a1 : Vector3D , a2 : Vector3D  , a3 : Vector3D )' );
+        console.log('{');
+        console.log('    var m 		: Matrix3D = new Matrix3D( original );');
+        console.log('    var result 	: Vector.<Vector3D> = m.decompose();');
+        console.log("   trace('0----------------------------------------');");
+        console.log("   trace( r[0])");
+        console.log("   trace( a1 )");
+        console.log("   trace('1--------------------');");
+        console.log("   trace( r[1])");
+        console.log("   trace( a2 )");
+        console.log("   trace('2--------------------');");
+        console.log("   trace( r[2])");
+        console.log("   trace( a3 )");
+        console.log("   trace('--------------------');");
+        console.log("   trace( 'TSResult: ' , result );");
+        console.log("   trace( 'ASResult: ' , m.rawData );");
+        console.log("   trace( 'original: ' , original );");
+        console.log("   trace('--------------------');");
+        console.log('}');
+
+
+    }
+
+    public outputDecompose(result : number[] , original : number[] , a1 : away.geom.Vector3D , a2 : away.geom.Vector3D , a3 : away.geom.Vector3D)
+    {
+
+        var a1 : string = 'new Vector3D( ' + a1.x + ' , ' + a1.y + ' , ' + a1.z + ' )';
+        var a2 : string = 'new Vector3D( ' + a2.x + ' , ' + a2.y + ' , ' + a2.z + ' )';
+        var a3 : string = 'new Vector3D( ' + a3.x + ' , ' + a3.y + ' , ' + a3.z + ' )';
+
+
+        console.log( 'testDecompose( new <Number> [' + result + '], new <Number> [' + original + '] , ' + a1 + ' , '+ a2 + ' , ' + a3 + ' );' ) ;
+
+
+    }
+
+    public testPosition() : void
+    {
+
+        console.log( '----------------------------------------------------------------------');
+        console.log( 'testPosition');
+        var v : away.geom.Vector3D = new away.geom.Vector3D( 1 , 2 , 3 );
+        var p : away.geom.Vector3D = new away.geom.Vector3D( 2 , 2 , 2 );
+        var pos : away.geom.Vector3D;
+
+        var m: away.geom.Matrix3D;
+        var i : boolean;
+        var r : Array<number> = new Array<number> ( 16 ) ;
+
+        m = new away.geom.Matrix3D( [   1, 2, 4, 5,
+                                        2, 1, 0, 8,
+                                        4, 0, 1, 7,
+                                        5, 8, 7, 1 ] );
+        m.copyRawDataTo( r );
+        m.position = v;
+        pos = m.position;
+        this.outputPosition(m.rawData , r  , v  );
+
+        m = new away.geom.Matrix3D( [   1, 0, 4, 5,
+                                        0, 1, 8, 0,
+                                        4, 8, 1, 7,
+                                        5, 0, 7, 1] );
+        m.copyRawDataTo( r );
+        m.position = v;
+        pos = m.position;
+        this.outputPosition(m.rawData , r  , v  );
+
+        m  = new away.geom.Matrix3D( [  1, 0, 4, 5,
+                                        0, 1, 8, 0,
+                                        4, 8, 1, 2,
+                                        5, 0, 2, 1] );
+        m.copyRawDataTo( r );
+        m.position = v;
+        pos = m.position;
+        this.outputPosition(m.rawData , r  , v  );
+
+        m  = new away.geom.Matrix3D( [  1, 0, 4, 5,
+                                        0, 1, 8, 0,
+                                        4, 8, 1, 1,
+                                        5, 0, 1, 1] );
+        m.copyRawDataTo( r );
+        m.position = v;
+        pos = m.position;
+        this.outputPosition(m.rawData , r  , v  );
+
+        console.log('//------------------------------------------------------------ AS3');
+        console.log( 'private function testPosition( result : Vector.<Number> , original : Vector.<Number> , t : Vector3D )' );
+        console.log('{');
+        console.log('    var m : Matrix3D = new Matrix3D( original );');
+        console.log('    m.position = t;');
+        console.log('    var p : Vector3D = m.position;');
+        console.log('    trace( "TSResult: " , result );');
+        console.log('    trace( "ASResult: " , m.rawData );');
+        console.log('    trace( "Pos: " ,p );');
+        console.log('}');
+
+    }
+    public outputPosition(result : number[] , original : number[] , posResult : away.geom.Vector3D )
+    {
+
+        var a : string = 'new Vector3D( ' + posResult.x + ' , ' + posResult.y + ' , ' + posResult.z + ' )';
+
+        console.log( 'testPosition( new <Number> [' + result + '], new <Number> [' + original + '] , ' + a + ');' ) ;
+
+    }
+
 
     public testAppendScale() : void
     {

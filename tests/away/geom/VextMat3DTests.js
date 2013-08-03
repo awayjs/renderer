@@ -36932,8 +36932,239 @@ var MatrixTest = (function () {
     function MatrixTest() {
         //this.testAppendRotation();
         //this.testAppendTranslation();
-        this.testAppendScale();
+        //this.testAppendScale();
+        //this.testPosition();
+        this.testDecompose();
     }
+    MatrixTest.prototype.testDecompose = function () {
+        console.log('----------------------------------------------------------------------');
+        console.log('testDecompose');
+        var v;
+        var m;
+        var r = new Array(16);
+
+        m = new away.geom.Matrix3D([
+            1,
+            2,
+            4,
+            5,
+            2,
+            1,
+            0,
+            8,
+            4,
+            0,
+            1,
+            7,
+            5,
+            8,
+            7,
+            1
+        ]);
+        m.copyRawDataTo(r);
+
+        v = m.decompose();
+        this.outputDecompose(m.rawData, r, v[0], v[1], v[2]);
+
+        m = new away.geom.Matrix3D([
+            1,
+            0,
+            4,
+            5,
+            0,
+            1,
+            8,
+            0,
+            4,
+            8,
+            1,
+            7,
+            5,
+            0,
+            7,
+            1
+        ]);
+        m.copyRawDataTo(r);
+        this.outputDecompose(m.rawData, r, v[0], v[1], v[2]);
+
+        m = new away.geom.Matrix3D([
+            1,
+            0,
+            4,
+            5,
+            0,
+            1,
+            8,
+            0,
+            4,
+            8,
+            1,
+            2,
+            5,
+            0,
+            2,
+            1
+        ]);
+        m.copyRawDataTo(r);
+        this.outputDecompose(m.rawData, r, v[0], v[1], v[2]);
+
+        m = new away.geom.Matrix3D([
+            1,
+            0,
+            4,
+            5,
+            0,
+            1,
+            8,
+            0,
+            4,
+            8,
+            1,
+            1,
+            5,
+            0,
+            1,
+            1
+        ]);
+        m.copyRawDataTo(r);
+        this.outputDecompose(m.rawData, r, v[0], v[1], v[2]);
+
+        console.log('//------------------------------------------------------------ AS3');
+        console.log('private function testDecompose( result : Vector.<Number> , original : Vector.<Number> , a1 : Vector3D , a2 : Vector3D  , a3 : Vector3D )');
+        console.log('{');
+        console.log('    var m 		: Matrix3D = new Matrix3D( original );');
+        console.log('    var result 	: Vector.<Vector3D> = m.decompose();');
+        console.log('}');
+    };
+
+    MatrixTest.prototype.outputDecompose = function (result, original, a1, a2, a3) {
+        var a1 = 'new Vector3D( ' + a1.x + ' , ' + a1.y + ' , ' + a1.z + ' )';
+        var a2 = 'new Vector3D( ' + a2.x + ' , ' + a2.y + ' , ' + a2.z + ' )';
+        var a3 = 'new Vector3D( ' + a3.x + ' , ' + a3.y + ' , ' + a3.z + ' )';
+
+        console.log('testDecompose( new <Number> [' + result + '], new <Number> [' + original + '] , ' + a1 + ' , ' + a2 + ' , ' + a3 + ' );');
+    };
+
+    MatrixTest.prototype.testPosition = function () {
+        console.log('----------------------------------------------------------------------');
+        console.log('testPosition');
+        var v = new away.geom.Vector3D(1, 2, 3);
+        var p = new away.geom.Vector3D(2, 2, 2);
+        var pos;
+
+        var m;
+        var i;
+        var r = new Array(16);
+
+        m = new away.geom.Matrix3D([
+            1,
+            2,
+            4,
+            5,
+            2,
+            1,
+            0,
+            8,
+            4,
+            0,
+            1,
+            7,
+            5,
+            8,
+            7,
+            1
+        ]);
+        m.copyRawDataTo(r);
+        m.position = v;
+        pos = m.position;
+        this.outputPosition(m.rawData, r, v);
+
+        m = new away.geom.Matrix3D([
+            1,
+            0,
+            4,
+            5,
+            0,
+            1,
+            8,
+            0,
+            4,
+            8,
+            1,
+            7,
+            5,
+            0,
+            7,
+            1
+        ]);
+        m.copyRawDataTo(r);
+        m.position = v;
+        pos = m.position;
+        this.outputPosition(m.rawData, r, v);
+
+        m = new away.geom.Matrix3D([
+            1,
+            0,
+            4,
+            5,
+            0,
+            1,
+            8,
+            0,
+            4,
+            8,
+            1,
+            2,
+            5,
+            0,
+            2,
+            1
+        ]);
+        m.copyRawDataTo(r);
+        m.position = v;
+        pos = m.position;
+        this.outputPosition(m.rawData, r, v);
+
+        m = new away.geom.Matrix3D([
+            1,
+            0,
+            4,
+            5,
+            0,
+            1,
+            8,
+            0,
+            4,
+            8,
+            1,
+            1,
+            5,
+            0,
+            1,
+            1
+        ]);
+        m.copyRawDataTo(r);
+        m.position = v;
+        pos = m.position;
+        this.outputPosition(m.rawData, r, v);
+
+        console.log('//------------------------------------------------------------ AS3');
+        console.log('private function testPosition( result : Vector.<Number> , original : Vector.<Number> , t : Vector3D )');
+        console.log('{');
+        console.log('    var m : Matrix3D = new Matrix3D( original );');
+        console.log('    m.position = t;');
+        console.log('    var p : Vector3D = m.position;');
+        console.log('    trace( "TSResult: " , result );');
+        console.log('    trace( "ASResult: " , m.rawData );');
+        console.log('    trace( "Pos: " ,p );');
+        console.log('}');
+    };
+    MatrixTest.prototype.outputPosition = function (result, original, posResult) {
+        var a = 'new Vector3D( ' + posResult.x + ' , ' + posResult.y + ' , ' + posResult.z + ' )';
+
+        console.log('testPosition( new <Number> [' + result + '], new <Number> [' + original + '] , ' + a + ');');
+    };
+
     MatrixTest.prototype.testAppendScale = function () {
         console.log('----------------------------------------------------------------------');
         console.log('testAppendScale');
