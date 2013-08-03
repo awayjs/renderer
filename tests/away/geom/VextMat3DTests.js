@@ -36985,6 +36985,7 @@ var MatrixTest = (function () {
             1
         ]);
         m.copyRawDataTo(r);
+        v = m.decompose();
         this.outputDecompose(m.rawData, r, v[0], v[1], v[2]);
 
         m = new away.geom.Matrix3D([
@@ -37006,6 +37007,7 @@ var MatrixTest = (function () {
             1
         ]);
         m.copyRawDataTo(r);
+        v = m.decompose();
         this.outputDecompose(m.rawData, r, v[0], v[1], v[2]);
 
         m = new away.geom.Matrix3D([
@@ -37027,6 +37029,7 @@ var MatrixTest = (function () {
             1
         ]);
         m.copyRawDataTo(r);
+        v = m.decompose();
         this.outputDecompose(m.rawData, r, v[0], v[1], v[2]);
 
         console.log('//------------------------------------------------------------ AS3');
@@ -37034,6 +37037,20 @@ var MatrixTest = (function () {
         console.log('{');
         console.log('    var m 		: Matrix3D = new Matrix3D( original );');
         console.log('    var result 	: Vector.<Vector3D> = m.decompose();');
+        console.log("   trace('0----------------------------------------');");
+        console.log("   trace( r[0])");
+        console.log("   trace( a1 )");
+        console.log("   trace('1--------------------');");
+        console.log("   trace( r[1])");
+        console.log("   trace( a2 )");
+        console.log("   trace('2--------------------');");
+        console.log("   trace( r[2])");
+        console.log("   trace( a3 )");
+        console.log("   trace('--------------------');");
+        console.log("   trace( 'TSResult: ' , result );");
+        console.log("   trace( 'ASResult: ' , m.rawData );");
+        console.log("   trace( 'original: ' , original );");
+        console.log("   trace('--------------------');");
         console.log('}');
     };
 

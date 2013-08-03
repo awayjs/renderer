@@ -46,6 +46,7 @@ class MatrixTest
             4, 8, 1, 7,
             5, 0, 7, 1] );
         m.copyRawDataTo( r );
+        v = m.decompose();
         this.outputDecompose(m.rawData , r , v[0], v[1], v[2]);
 
         m  = new away.geom.Matrix3D( [  1, 0, 4, 5,
@@ -53,6 +54,7 @@ class MatrixTest
             4, 8, 1, 2,
             5, 0, 2, 1] );
         m.copyRawDataTo( r );
+        v = m.decompose();
         this.outputDecompose(m.rawData , r , v[0], v[1], v[2]);
 
         m  = new away.geom.Matrix3D( [  1, 0, 4, 5,
@@ -60,6 +62,7 @@ class MatrixTest
             4, 8, 1, 1,
             5, 0, 1, 1] );
         m.copyRawDataTo( r );
+        v = m.decompose();
         this.outputDecompose(m.rawData , r , v[0], v[1], v[2]);
 
         console.log('//------------------------------------------------------------ AS3');
