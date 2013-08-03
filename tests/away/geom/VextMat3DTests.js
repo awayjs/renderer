@@ -37031,6 +37031,15 @@ var MatrixTest = (function () {
         m.copyRawDataTo(r);
         m.appendRotation(90, v, p);
         this.outputAppendRotation(m.rawData, r, v, p);
+
+        console.log('//------------------------------------------------------------ AS3');
+        console.log('private function testAppendRotation( result : Vector.<Number> , original : Vector.<Number> , axis : Vector3D , pivot : Vector3D )');
+        console.log('{');
+        console.log('    var m : Matrix3D = new Matrix3D( original );');
+        console.log('    m.appendRotation( 90 , axis , pivot );');
+        console.log('    trace( "TSResult: " , result );');
+        console.log('    trace( "ASResult: " , m.rawData );');
+        console.log('}');
     };
 
     MatrixTest.prototype.testInvert = function () {
