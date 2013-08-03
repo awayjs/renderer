@@ -36930,9 +36930,252 @@ var away;
 //------------------------------------------------------------------------------------------------
 var MatrixTest = (function () {
     function MatrixTest() {
-        this.testAppendRotation();
+        //this.testAppendRotation();
+        //this.testAppendTranslation();
+        this.testAppendScale();
     }
+    MatrixTest.prototype.testAppendScale = function () {
+        console.log('----------------------------------------------------------------------');
+        console.log('testAppendScale');
+        var v = new away.geom.Vector3D(1, 2, 3);
+        var p = new away.geom.Vector3D(2, 2, 2);
+
+        var m;
+        var i;
+        var r = new Array(16);
+
+        m = new away.geom.Matrix3D([
+            1,
+            2,
+            4,
+            5,
+            2,
+            1,
+            0,
+            8,
+            4,
+            0,
+            1,
+            7,
+            5,
+            8,
+            7,
+            1
+        ]);
+        m.copyRawDataTo(r);
+        m.appendScale(v.x, v.y, v.z);
+
+        this.outputAppendScale(m.rawData, r, v);
+
+        m = new away.geom.Matrix3D([
+            1,
+            0,
+            4,
+            5,
+            0,
+            1,
+            8,
+            0,
+            4,
+            8,
+            1,
+            7,
+            5,
+            0,
+            7,
+            1
+        ]);
+
+        m.copyRawDataTo(r);
+        m.appendScale(v.x, v.y, v.z);
+        this.outputAppendScale(m.rawData, r, v);
+
+        m = new away.geom.Matrix3D([
+            1,
+            0,
+            4,
+            5,
+            0,
+            1,
+            8,
+            0,
+            4,
+            8,
+            1,
+            2,
+            5,
+            0,
+            2,
+            1
+        ]);
+
+        m.copyRawDataTo(r);
+        m.appendScale(v.x, v.y, v.z);
+        this.outputAppendScale(m.rawData, r, v);
+
+        m = new away.geom.Matrix3D([
+            1,
+            0,
+            4,
+            5,
+            0,
+            1,
+            8,
+            0,
+            4,
+            8,
+            1,
+            1,
+            5,
+            0,
+            1,
+            1
+        ]);
+
+        m.copyRawDataTo(r);
+        m.appendScale(v.x, v.y, v.z);
+        this.outputAppendScale(m.rawData, r, v);
+
+        console.log('//------------------------------------------------------------ AS3');
+        console.log('private function testAppendScale( result : Vector.<Number> , original : Vector.<Number> , t : Vector3D )');
+        console.log('{');
+        console.log('    var m : Matrix3D = new Matrix3D( original );');
+        console.log('    m.appendScale( t.x , t.y , t.z );');
+        console.log('    trace( "TSResult: " , result );');
+        console.log('    trace( "ASResult: " , m.rawData );');
+        console.log('}');
+    };
+
+    MatrixTest.prototype.outputAppendScale = function (result, original, v) {
+        var a = 'new Vector3D( ' + v.x + ' , ' + v.y + ' , ' + v.z + ' )';
+
+        console.log('testAppendScale( new <Number> [' + result + '], new <Number> [' + original + '] , ' + a + ');');
+    };
+
+    MatrixTest.prototype.testAppendTranslation = function () {
+        console.log('----------------------------------------------------------------------');
+        console.log('testAppendTranslation');
+        var v = new away.geom.Vector3D(1, 2, 3);
+        var p = new away.geom.Vector3D(2, 2, 2);
+
+        var m;
+        var i;
+        var r = new Array(16);
+
+        m = new away.geom.Matrix3D([
+            1,
+            2,
+            4,
+            5,
+            2,
+            1,
+            0,
+            8,
+            4,
+            0,
+            1,
+            7,
+            5,
+            8,
+            7,
+            1
+        ]);
+        m.copyRawDataTo(r);
+        m.appendTranslation(v.x, v.y, v.z);
+
+        this.outputAppendTranslation(m.rawData, r, v);
+
+        m = new away.geom.Matrix3D([
+            1,
+            0,
+            4,
+            5,
+            0,
+            1,
+            8,
+            0,
+            4,
+            8,
+            1,
+            7,
+            5,
+            0,
+            7,
+            1
+        ]);
+
+        m.copyRawDataTo(r);
+        m.appendTranslation(v.x, v.y, v.z);
+        this.outputAppendTranslation(m.rawData, r, v);
+
+        m = new away.geom.Matrix3D([
+            1,
+            0,
+            4,
+            5,
+            0,
+            1,
+            8,
+            0,
+            4,
+            8,
+            1,
+            2,
+            5,
+            0,
+            2,
+            1
+        ]);
+
+        m.copyRawDataTo(r);
+        m.appendTranslation(v.x, v.y, v.z);
+        this.outputAppendTranslation(m.rawData, r, v);
+
+        m = new away.geom.Matrix3D([
+            1,
+            0,
+            4,
+            5,
+            0,
+            1,
+            8,
+            0,
+            4,
+            8,
+            1,
+            1,
+            5,
+            0,
+            1,
+            1
+        ]);
+
+        m.copyRawDataTo(r);
+        m.appendTranslation(v.x, v.y, v.z);
+        this.outputAppendTranslation(m.rawData, r, v);
+
+        console.log('//------------------------------------------------------------ AS3');
+        console.log('private function testAppendTranslation( result : Vector.<Number> , original : Vector.<Number> , t : Vector3D )');
+        console.log('{');
+        console.log('    var m : Matrix3D = new Matrix3D( original );');
+        console.log('    m.appendTranslation( t.x , t.y , t.z );');
+        console.log('    trace( "TSResult: " , result );');
+        console.log('    trace( "ASResult: " , m.rawData );');
+        console.log('}');
+    };
+
+    MatrixTest.prototype.outputAppendTranslation = function (result, original, v) {
+        //var axis  : number[] = new Array<number>( axis.x , axis.y , axis.z );
+        //var pivot : number[] = new Array<number>( pivot.x , pivot.y , pivot.z );
+        var a = 'new Vector3D( ' + v.x + ' , ' + v.y + ' , ' + v.z + ' )';
+
+        console.log('testAppendTranslation( new <Number> [' + result + '], new <Number> [' + original + '] , ' + a + ');');
+    };
+
     MatrixTest.prototype.testAppendRotation = function () {
+        console.log('----------------------------------------------------------------------');
+        console.log('testAppendRotation');
+
         var v = new away.geom.Vector3D(1, 2, 3);
         var p = new away.geom.Vector3D(2, 2, 2);
 
