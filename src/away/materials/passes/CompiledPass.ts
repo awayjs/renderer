@@ -32,14 +32,14 @@ module away.materials
         public _pLightFragmentConstantIndex:number;
         public _pCameraPositionIndex:number;
         private _uvTransformIndex:number;
-        private _lightProbeDiffuseIndices:number[] /*uint*/;
+        public _pLightProbeDiffuseIndices:number[] /*uint*/;
         public _pLightProbeSpecularIndices:number[] /*uint*/;
 
         public _pAmbientLightR:number;
         public _pAmbientLightG:number;
         public _pAmbientLightB:number;
 
-        private _compiler:away.materials.ShaderCompiler;
+        public _pCompiler:away.materials.ShaderCompiler;
 
         public _pMethodSetup:away.materials.ShaderMethodSetup;
 
@@ -161,12 +161,12 @@ module away.materials
          */
         private updateUsedOffsets()
         {
-            this._pNumUsedVertexConstants= this._compiler.numUsedVertexConstants;
-            this._pNumUsedFragmentConstants = this._compiler.numUsedFragmentConstants;
-            this._pNumUsedStreams= this._compiler.numUsedStreams;
-            this._pNumUsedTextures = this._compiler.numUsedTextures;
-            this._pNumUsedVaryings = this._compiler.numUsedVaryings;
-            this._pNumUsedFragmentConstants = this._compiler.numUsedFragmentConstants;
+            this._pNumUsedVertexConstants= this._pCompiler.numUsedVertexConstants;
+            this._pNumUsedFragmentConstants = this._pCompiler.numUsedFragmentConstants;
+            this._pNumUsedStreams= this._pCompiler.numUsedStreams;
+            this._pNumUsedTextures = this._pCompiler.numUsedTextures;
+            this._pNumUsedVaryings = this._pCompiler.numUsedVaryings;
+            this._pNumUsedFragmentConstants = this._pCompiler.numUsedFragmentConstants;
         }
 
         /**
@@ -203,21 +203,21 @@ module away.materials
          */
         public iInitCompiler(profile:string)
         {
-            this._compiler = this.pCreateCompiler(profile);
-            this._compiler.forceSeperateMVP = this._forceSeparateMVP;
-            this._compiler.numPointLights = this._pNumPointLights;
-            this._compiler.numDirectionalLights = this._pNumDirectionalLights;
-            this._compiler.numLightProbes =this. _pNumLightProbes;
-            this._compiler.methodSetup = this._pMethodSetup;
-            this._compiler.diffuseLightSources = this._pDiffuseLightSources;
-            this._compiler.specularLightSources = this._pSpecularLightSources;
-            this._compiler.setTextureSampling(this._pSmooth, this._pRepeat, this._pMipmap);
-            this._compiler.setConstantDataBuffers(this._pVertexConstantData, this._pFragmentConstantData);
-            this._compiler.animateUVs = this._animateUVs;
-            this._compiler.alphaPremultiplied = this._pAlphaPremultiplied && this._pEnableBlending;
-            this._compiler.preserveAlpha = this._preserveAlpha && this._pEnableBlending;
-            this._compiler.enableLightFallOff = this._enableLightFallOff;
-            this._compiler.compile();
+            this._pCompiler = this.pCreateCompiler(profile);
+            this._pCompiler.forceSeperateMVP = this._forceSeparateMVP;
+            this._pCompiler.numPointLights = this._pNumPointLights;
+            this._pCompiler.numDirectionalLights = this._pNumDirectionalLights;
+            this._pCompiler.numLightProbes =this. _pNumLightProbes;
+            this._pCompiler.methodSetup = this._pMethodSetup;
+            this._pCompiler.diffuseLightSources = this._pDiffuseLightSources;
+            this._pCompiler.specularLightSources = this._pSpecularLightSources;
+            this._pCompiler.setTextureSampling(this._pSmooth, this._pRepeat, this._pMipmap);
+            this._pCompiler.setConstantDataBuffers(this._pVertexConstantData, this._pFragmentConstantData);
+            this._pCompiler.animateUVs = this._animateUVs;
+            this._pCompiler.alphaPremultiplied = this._pAlphaPremultiplied && this._pEnableBlending;
+            this._pCompiler.preserveAlpha = this._preserveAlpha && this._pEnableBlending;
+            this._pCompiler.enableLightFallOff = this._enableLightFallOff;
+            this._pCompiler.compile();
         }
 
         /**
@@ -234,17 +234,17 @@ module away.materials
          */
         public pUpdateShaderProperties()
         {
-            this._pAnimatableAttributes = this._compiler.animatableAttributes;
-            this._pAnimationTargetRegisters = this._compiler.animationTargetRegisters;
-            this._vertexCode = this._compiler.vertexCode;
-            this._fragmentLightCode = this._compiler.fragmentLightCode;
-            this._framentPostLightCode = this._compiler.fragmentPostLightCode;
-            this._pShadedTarget = this._compiler.shadedTarget;
-            this._usingSpecularMethod = this._compiler.usingSpecularMethod;
-            this._usesNormals = this._compiler.usesNormals;
-            this._pNeedUVAnimation = this._compiler.needUVAnimation;
-            this._pUVSource = this._compiler.UVSource;
-            this._pUVTarget = this._compiler.UVTarget;
+            this._pAnimatableAttributes = this._pCompiler.animatableAttributes;
+            this._pAnimationTargetRegisters = this._pCompiler.animationTargetRegisters;
+            this._vertexCode = this._pCompiler.vertexCode;
+            this._fragmentLightCode = this._pCompiler.fragmentLightCode;
+            this._framentPostLightCode = this._pCompiler.fragmentPostLightCode;
+            this._pShadedTarget = this._pCompiler.shadedTarget;
+            this._usingSpecularMethod = this._pCompiler.usingSpecularMethod;
+            this._usesNormals = this._pCompiler.usesNormals;
+            this._pNeedUVAnimation = this._pCompiler.needUVAnimation;
+            this._pUVSource = this._pCompiler.UVSource;
+            this._pUVTarget = this._pCompiler.UVTarget;
 
             this.pUpdateRegisterIndices();
             this.updateUsedOffsets();
@@ -255,19 +255,19 @@ module away.materials
          */
         public pUpdateRegisterIndices()
         {
-            this._uvBufferIndex = this._compiler.uvBufferIndex;
-            this._uvTransformIndex = this._compiler.uvTransformIndex;
-            this._secondaryUVBufferIndex = this._compiler.secondaryUVBufferIndex;
-            this._normalBufferIndex = this._compiler.normalBufferIndex;
-            this._tangentBufferIndex = this._compiler.tangentBufferIndex;
-            this._pLightFragmentConstantIndex = this._compiler.lightFragmentConstantIndex;
-            this._pCameraPositionIndex = this._compiler.cameraPositionIndex;
-            this._commonsDataIndex = this._compiler.commonsDataIndex;
-            this._sceneMatrixIndex = this._compiler.sceneMatrixIndex;
-            this._sceneNormalMatrixIndex = this._compiler.sceneNormalMatrixIndex;
-            this._pProbeWeightsIndex = this._compiler.probeWeightsIndex;
-            this._lightProbeDiffuseIndices = this._compiler.lightProbeDiffuseIndices;
-            this._pLightProbeSpecularIndices = this._compiler.lightProbeSpecularIndices;
+            this._uvBufferIndex = this._pCompiler.uvBufferIndex;
+            this._uvTransformIndex = this._pCompiler.uvTransformIndex;
+            this._secondaryUVBufferIndex = this._pCompiler.secondaryUVBufferIndex;
+            this._normalBufferIndex = this._pCompiler.normalBufferIndex;
+            this._tangentBufferIndex = this._pCompiler.tangentBufferIndex;
+            this._pLightFragmentConstantIndex = this._pCompiler.lightFragmentConstantIndex;
+            this._pCameraPositionIndex = this._pCompiler.cameraPositionIndex;
+            this._commonsDataIndex = this._pCompiler.commonsDataIndex;
+            this._sceneMatrixIndex = this._pCompiler.sceneMatrixIndex;
+            this._sceneNormalMatrixIndex = this._pCompiler.sceneNormalMatrixIndex;
+            this._pProbeWeightsIndex = this._pCompiler.probeWeightsIndex;
+            this._pLightProbeDiffuseIndices = this._pCompiler.lightProbeDiffuseIndices;
+            this._pLightProbeSpecularIndices = this._pCompiler.lightProbeSpecularIndices;
         }
 
         /**
@@ -545,8 +545,8 @@ module away.materials
          */
         public pCleanUp()
         {
-            this._compiler.dispose();
-            this._compiler = null;
+            this._pCompiler.dispose();
+            this._pCompiler = null;
 
         }
 
