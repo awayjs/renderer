@@ -606,7 +606,7 @@ module away.materials
 			if ( this._casterLightPass)
             {
 				this._casterLightPass.setBlendMode(away.display.BlendMode.NORMAL);
-                this._casterLightPass.depthCompareMode = this.depthCompareMode;
+                this._casterLightPass.depthCompareMode = this._pDepthCompareMode;
                 this._casterLightPass.forceSeparateMVP = forceSeparateMVP;
 			}
 
@@ -619,7 +619,7 @@ module away.materials
 				if (!this._casterLightPass) {
 					this._nonCasterLightPasses[0].forceSeparateMVP = forceSeparateMVP;
 					this._nonCasterLightPasses[0].setBlendMode(away.display.BlendMode.NORMAL);
-					this._nonCasterLightPasses[0].depthCompareMode = this.depthCompareMode;
+					this._nonCasterLightPasses[0].depthCompareMode = this._pDepthCompareMode;
 					firstAdditiveIndex = 1;
 				}
 
@@ -649,6 +649,9 @@ module away.materials
 				// effects pass is the only pass, so it should just blend normally
 				this._pEffectsPass.iIgnoreLights = false;
                 this._pEffectsPass.depthCompareMode = this._pDepthCompareMode;
+
+                this.depthCompareMode
+
                 this._pEffectsPass.setBlendMode(away.display.BlendMode.NORMAL);
                 this._pEffectsPass.forceSeparateMVP = false;
 			}
