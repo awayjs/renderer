@@ -648,7 +648,7 @@ module away.materials
             {
 				// effects pass is the only pass, so it should just blend normally
 				this._pEffectsPass.iIgnoreLights = false;
-                this._pEffectsPass.depthCompareMode = this.depthCompareMode;
+                this._pEffectsPass.depthCompareMode = this._pDepthCompareMode;
                 this._pEffectsPass.setBlendMode(away.display.BlendMode.NORMAL);
                 this._pEffectsPass.forceSeparateMVP = false;
 			}
