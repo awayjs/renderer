@@ -83,7 +83,7 @@ module away.materials
 
         public _pDepthPass:away.materials.DepthMapPass;
         public _pDistancePass:away.materials.DistanceMapPass;
-        private _lightPicker:away.materials.LightPickerBase;
+        public _pLightPicker:away.materials.LightPickerBase;
 
         private _distanceBasedDepthRender:boolean;
         public _pDepthCompareMode:string = away.display3D.Context3DCompareMode.LESS_EQUAL;
@@ -126,7 +126,7 @@ module away.materials
          */
         public get lightPicker():away.materials.LightPickerBase
         {
-            return this._lightPicker;
+            return this._pLightPicker;
         }
 
         public set lightPicker(value:away.materials.LightPickerBase)
@@ -139,16 +139,16 @@ module away.materials
         public setLightPicker( value:away.materials.LightPickerBase)
         {
 
-            if (value != this._lightPicker)
+            if (value != this._pLightPicker)
             {
 
-                this._lightPicker = value;
+                this._pLightPicker = value;
                 var len:number = this._passes.length;
 
                 for (var i:number = 0; i < len; ++i)
                 {
 
-                    this._passes[i].lightPicker = this._lightPicker;
+                    this._passes[i].lightPicker = this._pLightPicker;
 
                 }
 
@@ -219,6 +219,11 @@ module away.materials
         }
 
         public set depthCompareMode(value:string)
+        {
+            this.setDepthCompareMode( value );
+        }
+
+        public setDepthCompareMode(value:string)
         {
             this._pDepthCompareMode = value;
         }
@@ -551,10 +556,10 @@ module away.materials
          */
         public iRenderPass(index:number, renderable:away.base.IRenderable, stage3DProxy:away.managers.Stage3DProxy, entityCollector:away.traverse.EntityCollector, viewProjection:away.geom.Matrix3D)
         {
-            if (this._lightPicker)
+            if (this._pLightPicker)
             {
 
-                this._lightPicker.collectLights(renderable, entityCollector);
+                this._pLightPicker.collectLights(renderable, entityCollector);
 
             }
 
@@ -806,7 +811,7 @@ module away.materials
             pass.mipmap = this._pMipmap;
             pass.smooth = this._smooth;
             pass.repeat = this._repeat;
-            pass.lightPicker = this._lightPicker;
+            pass.lightPicker = this._pLightPicker;
             pass.bothSides = this._bothSides;
             pass.addEventListener(away.events.Event.CHANGE, this.onPassChange , this );
             this.iInvalidatePasses(null);
