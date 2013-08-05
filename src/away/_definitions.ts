@@ -230,6 +230,7 @@
 ///<reference path="materials/SinglePassMaterialBase.ts"/>
 ///<reference path="materials/MultiPassMaterialBase.ts"/>
 ///<reference path="materials/TextureMultiPassMaterial.ts"/>
+///<reference path="materials/ColorMultiPassMaterial.ts"/>
 ///<reference path="materials/methods/MethodVO.ts"/>
 ///<reference path="materials/methods/ShadingMethodBase.ts"/>
 ///<reference path="materials/methods/EffectMethodBase.ts"/>
