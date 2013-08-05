@@ -19,15 +19,15 @@ module away.materials
 		private _smooth:boolean;
 		private _repeat:boolean;
 		private _mipmap:boolean;
-		private _enableLightFallOff:boolean;
+		public _pEnableLightFallOff:boolean;
 		private _preserveAlpha:boolean = true;
 		private _animateUVs:boolean;
 		public _pAlphaPremultiplied:boolean; // PROTECTED
 		private _vertexConstantData:number[];
 		private _fragmentConstantData:number[];
 
-		public _pVertexCode:string;
-        public _pFragmentCode:string;
+		public _pVertexCode:string = ''; // Changed to emtpy string- AwayTS
+        public _pFragmentCode:string = '';// Changed to emtpy string - AwayTS
 		private _fragmentLightCode:string;
 		private _fragmentPostLightCode:string;
 		private _commonsDataIndex:number = -1;
@@ -65,7 +65,7 @@ module away.materials
 		private _UVTarget:string;
 		private _UVSource:string;
 
-		private _profile:string;
+		public _pProfile:string;
 
 		private _forceSeperateMVP:boolean;
 
@@ -77,7 +77,7 @@ module away.materials
 		{
 			this._pSharedRegisters = new away.materials.ShaderRegisterData();
             this._pDependencyCounter = new away.materials.MethodDependencyCounter();
-            this._profile = profile;
+            this._pProfile = profile;
             this.initRegisterCache(profile);
 		}
 
@@ -87,12 +87,12 @@ module away.materials
 		 */
 		public get enableLightFallOff():boolean
 		{
-			return this._enableLightFallOff;
+			return this._pEnableLightFallOff;
 		}
 
 		public set enableLightFallOff(value:boolean)
 		{
-            this._enableLightFallOff = value;
+            this._pEnableLightFallOff = value;
 		}
 
 		/**
@@ -552,7 +552,7 @@ module away.materials
 			methodVO.useSmoothTextures = this._smooth;
 			methodVO.repeatTextures = this._repeat;
 			methodVO.useMipmapping = this._mipmap;
-			methodVO.useLightFallOff = this._enableLightFallOff && this._profile != "baselineConstrained";
+			methodVO.useLightFallOff = this._pEnableLightFallOff && this._pProfile != "baselineConstrained";
 			methodVO.numLights = this._pNumLights + this._pNumLightProbes;
 
 			method.iInitVO(methodVO);
