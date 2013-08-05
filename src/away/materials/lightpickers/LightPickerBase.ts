@@ -12,19 +12,19 @@ module away.materials
 	 */
 	export class LightPickerBase extends away.library.NamedAssetBase implements away.library.IAsset
 	{
-		private _numPointLights:number;
-		private _numDirectionalLights:number;
-		private _numCastingPointLights:number;
-		private _numCastingDirectionalLights:number;
-		private _numLightProbes:number;
+        public _pNumPointLights:number = 0;
+        public _pNumDirectionalLights:number = 0;
+        public _pNumCastingPointLights:number =0;
+        public _pNumCastingDirectionalLights:number = 0;
+		public _pNumLightProbes:number = 0;
 
-		private _allPickedLights:away.lights.LightBase[];//Vector.<LightBase>;
-		private _pointLights:away.lights.PointLight[];//Vector.<PointLight>;
-		private _castingPointLights:away.lights.PointLight[];//Vector.<PointLight>;
-		private _directionalLights:away.lights.DirectionalLight[];//Vector.<DirectionalLight>;
-		private _castingDirectionalLights:away.lights.DirectionalLight[];//Vector.<DirectionalLight>;
-		private _lightProbes:away.lights.LightProbe[];//Vector.<LightProbe>;
-		private _lightProbeWeights:number[];
+		public _pAllPickedLights:away.lights.LightBase[];//Vector.<LightBase>;
+        public _pPointLights:away.lights.PointLight[];//Vector.<PointLight>;
+        public _pCastingPointLights:away.lights.PointLight[];//Vector.<PointLight>;
+        public _pDirectionalLights:away.lights.DirectionalLight[];//Vector.<DirectionalLight>;
+        public _pCastingDirectionalLights:away.lights.DirectionalLight[];//Vector.<DirectionalLight>;
+        public _pLightProbes:away.lights.LightProbe[];//Vector.<LightProbe>;
+        public _pLightProbeWeights:number[];
 
 		/**
 		 * Creates a new LightPickerBase object.
@@ -56,7 +56,7 @@ module away.materials
 		 */
 		public get numDirectionalLights():number
 		{
-			return this._numDirectionalLights;
+			return this._pNumDirectionalLights;
 		}
 		
 		/**
@@ -64,7 +64,7 @@ module away.materials
 		 */
 		public get numPointLights():number
 		{
-			return this._numPointLights;
+			return this._pNumPointLights;
 		}
 		
 		/**
@@ -72,7 +72,7 @@ module away.materials
 		 */
 		public get numCastingDirectionalLights():number
 		{
-			return this._numCastingDirectionalLights;
+			return this._pNumCastingDirectionalLights;
 		}
 		
 		/**
@@ -80,7 +80,7 @@ module away.materials
 		 */
 		public get numCastingPointLights():number
 		{
-			return this._numCastingPointLights;
+			return this._pNumCastingPointLights;
 		}
 		
 		/**
@@ -88,7 +88,7 @@ module away.materials
 		 */
 		public get numLightProbes():number
 		{
-			return this._numLightProbes;
+			return this._pNumLightProbes;
 		}
 
 		/**
@@ -96,7 +96,7 @@ module away.materials
 		 */
 		public get pointLights():away.lights.PointLight[]//Vector.<PointLight>
 		{
-			return this._pointLights;
+			return this._pPointLights;
 		}
 
 		/**
@@ -104,7 +104,7 @@ module away.materials
 		 */
 		public get directionalLights():away.lights.DirectionalLight[]//Vector.<DirectionalLight>
 		{
-			return this._directionalLights;
+			return this._pDirectionalLights;
 		}
 
 		/**
@@ -112,7 +112,7 @@ module away.materials
 		 */
 		public get castingPointLights():away.lights.PointLight[]//Vector.<PointLight>
 		{
-			return this._castingPointLights;
+			return this._pCastingPointLights;
 		}
 
 		/**
@@ -120,7 +120,7 @@ module away.materials
 		 */
 		public get castingDirectionalLights():away.lights.DirectionalLight[]//:Vector.<DirectionalLight>
 		{
-			return this._castingDirectionalLights;
+			return this._pCastingDirectionalLights;
 		}
 
 		/**
@@ -128,7 +128,7 @@ module away.materials
 		 */
 		public get lightProbes():away.lights.LightProbe[]//:Vector.<LightProbe>
 		{
-			return this._lightProbes;
+			return this._pLightProbes;
 		}
 
 		/**
@@ -136,7 +136,7 @@ module away.materials
 		 */
 		public get lightProbeWeights():number[]
 		{
-			return this._lightProbeWeights;
+			return this._pLightProbeWeights;
 		}
 
 		/**
@@ -144,7 +144,7 @@ module away.materials
 		 */
 		public get allPickedLights():away.lights.LightBase[]//Vector.<LightBase>
 		{
-			return this._allPickedLights;
+			return this._pAllPickedLights;
 		}
 		
 		/**
@@ -171,10 +171,10 @@ module away.materials
 			var i:number;
 			
 			// calculates weights for probes
-			for (i = 0; i < this._numLightProbes; ++i)
+			for (i = 0; i < this._pNumLightProbes; ++i)
             {
 
-				lightPos = this._lightProbes[i].scenePosition;
+				lightPos = this._pLightProbes[i].scenePosition;
 				dx = rx - lightPos.x;
 				dy = ry - lightPos.y;
 				dz = rz - lightPos.z;
@@ -183,17 +183,17 @@ module away.materials
 				
 				// just... huge if at the same spot
 				w = w > .00001? 1/w : 50000000;
-				this._lightProbeWeights[i] = w;
+				this._pLightProbeWeights[i] = w;
 				total += w;
 			}
 			
 			// normalize
 			total = 1/total;
 
-			for (i = 0; i < this._numLightProbes; ++i)
+			for (i = 0; i < this._pNumLightProbes; ++i)
             {
 
-                this._lightProbeWeights[i] *= total;
+                this._pLightProbeWeights[i] *= total;
 
             }
 
