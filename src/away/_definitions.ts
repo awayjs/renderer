@@ -225,7 +225,11 @@
 ///<reference path="materials/passes/SuperShaderPass.ts"/>
 ///<reference path="materials/passes/DepthMapPass.ts"/>
 ///<reference path="materials/passes/DistanceMapPass.ts"/>
+///<reference path="materials/passes/LightingPass.ts"/>
+///<reference path="materials/passes/ShadowCasterPass.ts"/>
 ///<reference path="materials/SinglePassMaterialBase.ts"/>
+///<reference path="materials/MultiPassMaterialBase.ts"/>
+///<reference path="materials/TextureMultiPassMaterial.ts"/>
 ///<reference path="materials/methods/MethodVO.ts"/>
 ///<reference path="materials/methods/ShadingMethodBase.ts"/>
 ///<reference path="materials/methods/EffectMethodBase.ts"/>
@@ -235,6 +239,7 @@
 ///<reference path="materials/methods/ShadowMapMethodBase.ts"/>
 ///<reference path="materials/TextureMaterial.ts"/>
 ///<reference path="materials/lightpickers/LightPickerBase.ts"/>
+///<reference path="materials/lightpickers/StaticLightPicker.ts"/>
 ///<reference path="materials/compilation/ShaderRegisterCache.ts"/>
 ///<reference path="materials/compilation/ShaderRegisterElement.ts"/>
 ///<reference path="materials/compilation/ShaderRegisterData.ts"/>
@@ -251,6 +256,7 @@
 ///<reference path="materials/methods/ColorTransformMethod.ts"/>
 ///<reference path="materials/ColorMaterial.ts"/>
 ///<reference path="materials/utils/DefaultMaterialManager.ts"/>
+///<reference path="materials/compilation/LightingShaderCompiler.ts"/>
 ///<reference path="render/RenderBase.ts"/>
 ///<reference path="sort/IEntitySorter.ts"/>
 ///<reference path="sort/RenderableMergeSort.ts"/>
