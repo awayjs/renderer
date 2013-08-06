@@ -6,6 +6,7 @@
 ///<reference path="Away3D.ts"/>
 ///<reference path="../tests/scene/PhongTorus.ts"/>
 ///<reference path="../tests/scene/MaterialTorus.ts"/>
+///<reference path="../tests/aglsl/AssemblerTest.ts"/>
 
 module away
 {
@@ -13,7 +14,7 @@ module away
     {
         constructor() 
         {
-			new scene.MaterialTorus();
+			new aglsl.AssemblerTest();
         }
     }
 }
