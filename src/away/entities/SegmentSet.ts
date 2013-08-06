@@ -33,9 +33,7 @@ module away.entities
 			
 			this._pSegments = new Object();
 
-            away.Debug.throwPIR( 'SegmentSet' , 'constructor' , 'implement dependency: away.materials.SegmentMaterial')
-            // TODO: implement dependency: away.materials.SegmentMaterial
-			//this.material = new away.materials.SegmentMaterial();
+        this.material = new away.materials.SegmentMaterial();
 		}
 		
 		public addSegment( segment:away.primitives.Segment )
