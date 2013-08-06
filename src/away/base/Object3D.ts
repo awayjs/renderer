@@ -236,10 +236,10 @@ module away.base
 			this.dispatchEvent(this._scaleChanged);
 		}
 
-		private _transform  : away.geom.Matrix3D = new away.geom.Matrix3D();
-		private _scaleX     : number = 1;
-		private _scaleY     : number = 1;
-		private _scaleZ     : number = 1;
+		public _pTransform  : away.geom.Matrix3D = new away.geom.Matrix3D();
+        public _pScaleX     : number = 1;
+        public _pScaleY     : number = 1;
+        public _pScaleZ     : number = 1;
 		private _x          : number = 0;
 		private _y          : number = 0;
 		private _z          : number = 0;
@@ -394,19 +394,19 @@ module away.base
 		 */
 		public get scaleX():number
 		{
-			return this._scaleX;
+			return this._pScaleX;
 		}
 		
 		public set scaleX(val:number)
 		{
-			if (this._scaleX == val)
+			if (this._pScaleX == val)
             {
 
                 return;
 
             }
 
-			this._scaleX = val;
+			this._pScaleX = val;
 			
 			this.invalidateScale();
 		}
@@ -416,19 +416,19 @@ module away.base
 		 */
 		public get scaleY():number
 		{
-			return this._scaleY;
+			return this._pScaleY;
 		}
 		
 		public set scaleY(val:number)
 		{
-			if (this._scaleY == val)
+			if (this._pScaleY == val)
             {
 
                 return;
 
             }
 
-            this._scaleY = val;
+            this._pScaleY = val;
 
             this.invalidateScale();
 
@@ -439,19 +439,19 @@ module away.base
 		 */
 		public get scaleZ():number
 		{
-			return this._scaleZ;
+			return this._pScaleZ;
 		}
 		
 		public set scaleZ(val:number)
 		{
-			if (this._scaleZ == val)
+			if (this._pScaleZ == val)
             {
 
                 return;
 
             }
 
-			this._scaleZ = val;
+			this._pScaleZ = val;
 			this.invalidateScale();
 
 		}
@@ -491,7 +491,7 @@ module away.base
             }
 
 			
-			return this._transform;
+			return this._pTransform;
 		}
 
 		public set transform(val:away.geom.Matrix3D)
@@ -536,10 +536,10 @@ module away.base
 			
 			vec = elements[2];
 			
-			if (this._scaleX != vec.x || this._scaleY != vec.y || this._scaleZ != vec.z) {
-                this._scaleX = vec.x;
-                this._scaleY = vec.y;
-                this._scaleZ = vec.z;
+			if (this._pScaleX != vec.x || this._pScaleY != vec.y || this._pScaleZ != vec.z) {
+                this._pScaleX = vec.x;
+                this._pScaleY = vec.y;
+                this._pScaleZ = vec.z;
 
                 this.invalidateScale();
 			}
@@ -568,7 +568,7 @@ module away.base
 		 */
 		public get position():away.geom.Vector3D
 		{
-			this._transform.copyColumnTo(3, this._pPos);
+			this._pTransform.copyColumnTo(3, this._pPos);
 			
 			return this._pPos.clone();
 		}
@@ -650,7 +650,7 @@ module away.base
             this._transformComponents[1] = this._rot;
             this._transformComponents[2] = this._sca;
 
-            this._transform.identity();
+            this._pTransform.identity();
 
 			this._flipY.appendScale(1, -1, 1);
 		}
@@ -661,9 +661,9 @@ module away.base
 		 */
 		public scale(value:number)
 		{
-			this._scaleX *= value;
-            this._scaleY *= value;
-            this._scaleZ *= value;
+			this._pScaleX *= value;
+            this._pScaleY *= value;
+            this._pScaleZ *= value;
 
             this.invalidateScale();
 		}
@@ -801,7 +801,7 @@ module away.base
 			
 			this.transform.prependTranslation(x*len, y*len, z*len);
 			
-			this._transform.copyColumnTo(3, this._pPos);
+			this._pTransform.copyColumnTo(3, this._pPos);
 			
 			this._x = this._pPos.x;
             this._y = this._pPos.y;
@@ -904,19 +904,19 @@ module away.base
 			
 			raw = away.math.Matrix3DUtils.RAW_DATA_CONTAINER;
 			
-			raw[0] = this._scaleX*xAxis.x;
-			raw[1] = this._scaleX*xAxis.y;
-			raw[2] = this._scaleX*xAxis.z;
+			raw[0] = this._pScaleX*xAxis.x;
+			raw[1] = this._pScaleX*xAxis.y;
+			raw[2] = this._pScaleX*xAxis.z;
 			raw[3] = 0;
 			
-			raw[4] = this._scaleY*yAxis.x;
-			raw[5] = this._scaleY*yAxis.y;
-			raw[6] = this._scaleY*yAxis.z;
+			raw[4] = this._pScaleY*yAxis.x;
+			raw[5] = this._pScaleY*yAxis.y;
+			raw[6] = this._pScaleY*yAxis.z;
 			raw[7] = 0;
 			
-			raw[8] = this._scaleZ*zAxis.x;
-			raw[9] = this._scaleZ*zAxis.y;
-			raw[10] = this._scaleZ*zAxis.z;
+			raw[8] = this._pScaleZ*zAxis.x;
+			raw[9] = this._pScaleZ*zAxis.y;
+			raw[10] = this._pScaleZ*zAxis.z;
 			raw[11] = 0;
 			
 			raw[12] = this._x;
@@ -924,7 +924,7 @@ module away.base
 			raw[14] = this._z;
 			raw[15] = 1;
 
-            this._transform.copyRawDataFrom(raw);
+            this._pTransform.copyRawDataFrom(raw);
 
             this.transform = this.transform;
 			
@@ -970,16 +970,16 @@ module away.base
             this._rot.y = this._rotationY;
             this._rot.z = this._rotationZ;
 
-            this._sca.x = this._scaleX;
-            this._sca.y = this._scaleY;
-            this._sca.z = this._scaleZ;
+            this._sca.x = this._pScaleX;
+            this._sca.y = this._pScaleY;
+            this._sca.z = this._pScaleZ;
 
-            this._transform.recompose(this._transformComponents);
+            this._pTransform.recompose(this._transformComponents);
 
 			if (!this._pivotZero)
             {
-                this._transform.prependTranslation(-this._pivotPoint.x, -this._pivotPoint.y, -this._pivotPoint.z);
-                this._transform.appendTranslation(this._pivotPoint.x, this._pivotPoint.y, this._pivotPoint.z);
+                this._pTransform.prependTranslation(-this._pivotPoint.x, -this._pivotPoint.y, -this._pivotPoint.z);
+                this._pTransform.appendTranslation(this._pivotPoint.x, this._pivotPoint.y, this._pivotPoint.z);
 			}
 
             this._transformDirty = false;
