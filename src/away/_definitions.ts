@@ -227,6 +227,8 @@
 ///<reference path="materials/passes/DistanceMapPass.ts"/>
 ///<reference path="materials/passes/LightingPass.ts"/>
 ///<reference path="materials/passes/ShadowCasterPass.ts"/>
+///<reference path="materials/passes/SegmentPass.ts"/>
+///<reference path="materials/passes/SkyBoxPass.ts"/>
 ///<reference path="materials/SinglePassMaterialBase.ts"/>
 ///<reference path="materials/MultiPassMaterialBase.ts"/>
 ///<reference path="materials/TextureMultiPassMaterial.ts"/>
@@ -258,6 +260,8 @@
 ///<reference path="materials/ColorMaterial.ts"/>
 ///<reference path="materials/utils/DefaultMaterialManager.ts"/>
 ///<reference path="materials/compilation/LightingShaderCompiler.ts"/>
+///<reference path="materials/SegmentMaterial.ts"/>
+///<reference path="materials/SkyBoxMaterial.ts"/>
 ///<reference path="render/RenderBase.ts"/>
 ///<reference path="sort/IEntitySorter.ts"/>
 ///<reference path="sort/RenderableMergeSort.ts"/>
