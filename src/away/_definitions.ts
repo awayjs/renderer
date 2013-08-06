@@ -280,11 +280,9 @@
 ///<reference path="utils/ByteArray.ts"/>
 ///<reference path="utils/ByteArrayBuffer.ts"/>
 
-
 ///<reference path="../aglsl/Sampler.ts"/>
 ///<reference path="../aglsl/Token.ts"/>
 ///<reference path="../aglsl/Header.ts"/>
-
 ///<reference path="../aglsl/OpLUT.ts"/>
 ///<reference path="../aglsl/Header.ts"/>
 ///<reference path="../aglsl/Description.ts"/>
