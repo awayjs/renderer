@@ -80,6 +80,7 @@
 ///<reference path="entities/SegmentSet.ts" />
 ///<reference path="entities/Mesh.ts"/>
 ///<reference path="entities/SkyBox.ts"/>
+///<reference path="entities/Sprite3D.ts"/>
 ///<reference path="base/SubMesh.ts"/>
 ///<reference path="primitives/WireframePrimitiveBase.ts" />
 ///<reference path="primitives/WireframeSphere.ts" />
