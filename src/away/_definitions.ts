@@ -279,3 +279,23 @@
 ///<reference path="utils/ByteArrayBase.ts"/>
 ///<reference path="utils/ByteArray.ts"/>
 ///<reference path="utils/ByteArrayBuffer.ts"/>
+
+
+///<reference path="../aglsl/Sampler.ts"/>
+///<reference path="../aglsl/Token.ts"/>
+///<reference path="../aglsl/Header.ts"/>
+
+///<reference path="../aglsl/OpLUT.ts"/>
+///<reference path="../aglsl/Header.ts"/>
+///<reference path="../aglsl/Description.ts"/>
+///<reference path="../aglsl/Destination.ts"/>
+///<reference path="../aglsl/Context3D.ts"/>
+///<reference path="../aglsl/Mapping.ts"/>
+///<reference path="../aglsl/assembler/OpCode.ts"/>
+///<reference path="../aglsl/assembler/OpcodeMap.ts"/>
+///<reference path="../aglsl/assembler/Part.ts"/>
+///<reference path="../aglsl/assembler/RegMap.ts"/>
+///<reference path="../aglsl/assembler/SamplerMap.ts"/>
+///<reference path="../aglsl/assembler/AGALMiniAssembler.ts"/>
+///<reference path="../aglsl/AGALTokenizer.ts"/>
+///<reference path="../aglsl/Parser.ts"/>
