@@ -43,7 +43,7 @@ module aglsl
 			{
 				if ( desc.regread[0x2][i] || desc.regwrite[0x2][i] ) // duh, have to check write only also... 
 				{
-					header += "vec4 "+tag+"t"+i+";\n";
+					header += "vec4 " + tag + "t" + i + ";\n";
 				}
 			}
 			
@@ -90,7 +90,7 @@ module aglsl
 			// start body of code
 			body += "void main() {\n";
 			
-			for ( var i=0; i<desc.tokens.length; i++ )
+			for ( var i:number = 0; i < desc.tokens.length; i++ )
 			{
 				var lutentry = Mapping.agal2glsllut[desc.tokens[i].opcode];
 				if ( !lutentry )
@@ -101,7 +101,7 @@ module aglsl
 				
 				for ( var sl:number = 0; sl < sublines; sl++ )
 				{
-					var line = "  " + lutentry.s;
+					var line:string = "  " + lutentry.s;
 					if ( desc.tokens[i].dest )
 					{
 						if ( lutentry.matrixheight )
@@ -187,7 +187,7 @@ module aglsl
 						}
 					}
 					body += line;
-				}                                        
+				}
 			}
 			
 			// adjust z from opengl range of -1..1 to 0..1 as in d3d, this also enforces a left handed coordinate system
@@ -212,8 +212,8 @@ module aglsl
 		{
 			switch ( regtype )
 			{
-				case 0x0: return "va" + regnum; 
-				case 0x1: 
+				case 0x0: return "va" + regnum;
+				case 0x1:
 					if ( desc.hasindirect && desc.header.type == "vertex" )
 					{
 						return "vcarrr[" + regnum + "]";
@@ -231,30 +231,43 @@ module aglsl
 			}
 		}
 		
-		
-		public sourcetostring(s,subline,dwm,isscalar, desc, tag ) {           
+		public sourcetostring(s,subline,dwm,isscalar, desc, tag ):string
+		{
 			var swiz = [ "x","y","z","w" ]; 
 			var r;
+			
 			if ( s.indirectflag ) {                                    
 				r = "vcarrr[int("+this.regtostring(s.indexregtype, s.regnum, desc, tag)+"."+swiz[s.indexselect]+")";
 				var realofs = subline+s.indexoffset;            
 				if ( realofs<0 ) r+=realofs.toString();
 				if ( realofs>0 ) r+="+"+realofs.toString();            
 				r += "]";            
-			} else {
+			}
+			else
+			{
 				r = this.regtostring(s.regtype, s.regnum+subline, desc, tag);
 			}
+			
 			// samplers never add swizzle        
-			if ( s.regtype==0x5 ) 
-				return r;         
+			if ( s.regtype==0x5 )
+			{
+				return r;
+			}
+			
 			// scalar, first component only
-			if ( isscalar ) 
-				return r + "." + swiz[(s.swizzle>>0)&3];                             
+			if ( isscalar )
+			{
+				return r + "." + swiz[(s.swizzle>>0)&3];
+			}
+			
 			// identity
-			if ( s.swizzle == 0xe4 && dwm == 0xf ) 
-				return r; 
+			if ( s.swizzle == 0xe4 && dwm == 0xf )
+			{
+				return r;
+			}
+			
 			// with destination write mask folded in
-			r += ".";   
+			r += ".";
 			if ( dwm&1 ) r += swiz[(s.swizzle>>0)&3]; 
 			if ( dwm&2 ) r += swiz[(s.swizzle>>2)&3]; 
 			if ( dwm&4 ) r += swiz[(s.swizzle>>4)&3]; 

@@ -15,8 +15,6 @@ module aglsl
 		
 		public decribeAGALByteArray( bytes: away.utils.ByteArray )
 		{
-			// AGAL -> object desc
-			
 			var header:aglsl.Header = new aglsl.Header();
 			
 			if ( bytes.readUnsignedByte() != 0xa0 )
@@ -44,21 +42,11 @@ module aglsl
 			}
 			
 			var desc:aglsl.Description = new aglsl.Description();
-			
-			/*
-			var desc = { regread:[[],[],[],[],[],[],[]], 
-						regwrite:[[],[],[],[],[],[],[]], 
-						hasindirect:false, 
-						writedepth:false, 
-						hasmatrix:false, 
-						samplers:[] };
-			*/
-			var tokens = []; 
+			var tokens:aglsl.Token[] = [];
 			while ( bytes.position < bytes.length )
 			{
 				var token:aglsl.Token = new aglsl.Token();
 				
-				//var token = { dest:{}, a:{}, b:{} }; 
 				token.opcode = bytes.readUnsignedInt();          
 				var lutentry = Mapping.agal2glsllut[token.opcode];
 				if ( !lutentry )
@@ -101,7 +89,7 @@ module aglsl
 					bytes.readUnsignedInt(); 
 					bytes.readUnsignedInt(); 
 				}
-				tokens.push ( token );                                  
+				tokens.push( token );                                  
 			}               
 			desc.header = header;
 			desc.tokens = tokens;
@@ -147,7 +135,7 @@ module aglsl
 			}
 			if ( !s.indirectflag && mh )
 			{
-				for ( var mhi=0; mhi<mh; mhi++ ) //TODO wrong, should be |=
+				for ( var mhi:number = 0; mhi < mh; mhi++ ) //TODO wrong, should be |=
 				{
 					desc.regread[s.regtype][s.regnum+mhi] = desc.regread[s.regtype][s.regnum];
 				}

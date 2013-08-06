@@ -10,7 +10,7 @@ module aglsl
 	export class OpLUT
 	{
 		
-		public s: String;
+		public s:string;
 		public flags:number;
 		public dest:boolean;
 		public a:boolean;
