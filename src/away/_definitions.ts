@@ -79,6 +79,7 @@
 ///<reference path="cameras/Camera3D.ts" />
 ///<reference path="entities/SegmentSet.ts" />
 ///<reference path="entities/Mesh.ts"/>
+///<reference path="entities/SkyBox.ts"/>
 ///<reference path="base/SubMesh.ts"/>
 ///<reference path="primitives/WireframePrimitiveBase.ts" />
 ///<reference path="primitives/WireframeSphere.ts" />
@@ -98,6 +99,7 @@
 ///<reference path="partition/PointLightNode.ts"/>
 ///<reference path="partition/LightProbeNode.ts"/>
 ///<reference path="partition/MeshNode.ts" />
+///<reference path="partition/SkyBoxNode.ts" />
 ///<reference path="errors/PartialImplementationError.ts" />
 ///<reference path="library/assets/AssetType.ts" />
 ///<reference path="base/IMaterialOwner.ts" />
