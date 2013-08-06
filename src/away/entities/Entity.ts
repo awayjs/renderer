@@ -251,11 +251,18 @@ module away.entities
 		{
 			return this._iPickingCollider;
 		}
-		
-		public set pickingCollider(value:away.pick.IPickingCollider)
-		{
-			this._iPickingCollider = value;
-		}
+
+        public set pickingCollider(value:away.pick.IPickingCollider)
+        {
+            this.setPickingCollider( value );
+        }
+
+        public setPickingCollider(value:away.pick.IPickingCollider)
+        {
+            this._iPickingCollider = value;
+        }
+
+
 		
 		public getEntityPartitionNode():away.partition.EntityNode
 		{
