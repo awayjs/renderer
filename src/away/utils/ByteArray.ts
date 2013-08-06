@@ -3,11 +3,11 @@
  * @author Gary Paluk - http://www.plugin.io
  */
 
-///<reference path="ByteArrayBase.ts" />
+///<reference path="../_definitions.ts"/>
 
 module away.utils
 {
-	export class ByteArray extends away.utils.ByteArrayBase
+	export class ByteArray extends ByteArrayBase
 	{
 		
 		public maxlength:number = 0;
@@ -19,7 +19,7 @@ module away.utils
 			super();
 			this._mode = "Typed array";
 			this.maxlength = 4;
-			this.arraybytes = new ArrayBuffer( this.maxlength );                      
+			this.arraybytes = new ArrayBuffer( this.maxlength );
 			this.unalignedarraybytestemp = new ArrayBuffer( 16 );
 		}
 		

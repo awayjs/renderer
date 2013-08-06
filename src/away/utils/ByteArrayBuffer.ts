@@ -3,11 +3,11 @@
  * @author Gary Paluk - http://www.plugin.io
  */
 
-///<reference path="ByteArray.ts" />
+///<reference path="../_definitions.ts"/>
 
 module away.utils
 {
-	export class ByteArrayBuffer extends away.ByteArray
+	export class ByteArrayBuffer extends ByteArrayBase
 	{
 		
 		/*
