@@ -326,25 +326,20 @@ module away.entities
 		
 		public activateUVBuffer(index:number, stage3DProxy:away.managers.Stage3DProxy)
 		{
-            away.Debug.throwPIR( 'SegmentSet' , 'activateUVBuffer' , 'PartialImplementation' );
 		}
 		
 		public activateVertexNormalBuffer( index:number, stage3DProxy:away.managers.Stage3DProxy)
 		{
-            away.Debug.throwPIR( 'SegmentSet' , 'activateVertexNormalBuffer' , 'PartialImplementation' );
 		}
 		
 		public activateVertexTangentBuffer( index:number, stage3DProxy:away.managers.Stage3DProxy )
 		{
-            away.Debug.throwPIR( 'SegmentSet' , 'activateVertexTangentBuffer' , 'PartialImplementation' );
 		}
 		
 		public activateSecondaryUVBuffer( index:number, stage3DProxy:away.managers.Stage3DProxy)
 		{
-            away.Debug.throwPIR( 'SegmentSet' , 'activateSecondaryUVBuffer' , 'PartialImplementation' );
 		}
 
-		
 		private reOrderIndices( subSetIndex:number, index:number )
 		{
 			var segRef:SegRef;
