@@ -308,7 +308,17 @@ module away.pick
 				"mov op, vt0	\n";
 			fragmentCode = "mov oc, v0"; // write identifier
 
-            away.Debug.throwPIR( 'ShaderPicker' , 'initTriangleProgram3D' , 'Dependency: AGALMiniAssembler')
+            //away.Debug.throwPIR( 'ShaderPicker' , 'initTriangleProgram3D' , 'Dependency: AGALMiniAssembler')
+
+
+            var vertCompiler:aglsl.AGLSLCompiler = new aglsl.AGLSLCompiler();
+            var fragCompiler:aglsl.AGLSLCompiler = new aglsl.AGLSLCompiler();
+
+            var vertString : string = vertCompiler.compile( away.display3D.Context3DProgramType.VERTEX, vertexCode );
+            var fragString : string = fragCompiler.compile( away.display3D.Context3DProgramType.FRAGMENT, fragmentCode );
+
+            this._triangleProgram3D.upload(vertString, fragString);
+
 			//this._triangleProgram3D.upload(new AGALMiniAssembler().assemble(Context3DProgramType.VERTEX, vertexCode), new AGALMiniAssembler().assemble(Context3DProgramType.FRAGMENT, fragmentCode));
 		}
 
