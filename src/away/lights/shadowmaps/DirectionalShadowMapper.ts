@@ -53,7 +53,7 @@ module away.lights
 		}
 		
 		//@arcane
-		public get iDepthProjection():Matrix3D
+		public get iDepthProjection():away.geom.Matrix3D
 		{
 			return this._pOverallDepthCamera.viewProjection;
 		}
