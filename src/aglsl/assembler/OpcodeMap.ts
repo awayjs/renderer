@@ -62,8 +62,7 @@ module aglsl.assembler
 
                 OpcodeMap._map = new Array<Object>();
                 OpcodeMap._map['mov'] = new aglsl.assembler.Opcode( "vector", "vector", 4,    "none",    0,     0x00,   true,   null,       null,      null );
-                OpcodeMap._map['add'] = new aglsl.assembler.Opcode( "vector", "vector", 4,    "none",    0,     0x01,   true,   null,       null,      null );
-
+                OpcodeMap._map['add'] = new aglsl.assembler.Opcode( "vector", "vector", 4,    "vector",  4,     0x01,   true,   null,       null,      null );
                 OpcodeMap._map['sub'] = new aglsl.assembler.Opcode( "vector", "vector", 4,    "vector",  4,     0x02,   true,   null,       null,      null );
                 OpcodeMap._map['mul'] = new aglsl.assembler.Opcode( "vector", "vector", 4,    "vector",  4,     0x03,   true,   null,       null,      null );
                 OpcodeMap._map['div'] = new aglsl.assembler.Opcode( "vector", "vector", 4,    "vector",  4,     0x04,   true,   null,       null,      null );
