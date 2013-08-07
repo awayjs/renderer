@@ -182,6 +182,16 @@ module away.display3D
 		
 		public drawTriangles( indexBuffer:IndexBuffer3D, firstIndex:number = 0, numTriangles:number = -1 )
 		{
+
+            //------------------------------------------------------------------------
+            // TEST
+
+            console.log( 'DrawTriangles');
+            var perspectiveFieldOfViewLH : away.utils.PerspectiveMatrix3D = new away.utils.PerspectiveMatrix3D( )
+            perspectiveFieldOfViewLH.perspectiveFieldOfViewLH( 80, ( 800/600 ) , 0.1, 5000 );
+
+            this.setProgramConstantsFromMatrix( 'vertex', 0, perspectiveFieldOfViewLH , true );
+
 			if ( !this._drawing ) 
 			{
 				throw "Need to clear before drawing if the buffer has not been cleared since the last present() call.";
@@ -497,12 +507,22 @@ module away.display3D
 		
 		public setGLSLVertexBufferAt( locationName, buffer:VertexBuffer3D, bufferOffset:number = 0, format:string = null )
 		{
+
+            //if ( buffer == null )return;
+
+            console.log( 'setGLSLVertexBufferAt locationName' , locationName , 'buffer' , buffer , 'bufferOffset' , bufferOffset , 'format' , format );
+
 			var location:number = this._gl.getAttribLocation( this._currentProgram.glProgram, locationName );
 			
 			if( !buffer )
 			{
-				this._gl.disableVertexAttribArray( location );
+
+                if ( location > -1 )
+                {
+				    this._gl.disableVertexAttribArray( location );
+                }
 				return;
+
 			}
 			
 			this._gl.bindBuffer( this._gl.ARRAY_BUFFER, buffer.glBuffer );
