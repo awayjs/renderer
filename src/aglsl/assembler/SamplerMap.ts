@@ -24,15 +24,15 @@ module aglsl.assembler
 	export class SamplerMap
 	{
 
-        private static _map : string[];
+        private static _map : Object[];
 
-        public static get map () : object[]
+        public static get map () : Object[]
         {
 
             if ( ! SamplerMap._map )
             {
 
-                SamplerMap._map = new Array<string>();
+                SamplerMap._map = new Array<Object>();
                 SamplerMap._map['rgba'] = new aglsl.assembler.Sampler( 8, 0xf, 0 );
                 SamplerMap._map['rg'] = new aglsl.assembler.Sampler( 8, 0xf, 5 );
                 SamplerMap._map['r'] = new aglsl.assembler.Sampler( 8, 0xf, 4 );
@@ -70,7 +70,6 @@ module aglsl.assembler
             return SamplerMap._map;
 
         }
-
 
         /*
         public static map =     [ new aglsl.assembler.Sampler( 8, 0xf, 0 ),
