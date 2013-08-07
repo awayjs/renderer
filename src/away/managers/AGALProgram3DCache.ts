@@ -110,14 +110,48 @@ module away.managers
 
 				program = this._stage3DProxy._iContext3D.createProgram();
 
-                away.Debug.throwPIR( 'AGALProgram3DCache' , 'setProgram3D' , 'Dependency: AGALMiniAssembler.assemble');
+                //away.Debug.throwPIR( 'AGALProgram3DCache' , 'setProgram3D' , 'Dependency: AGALMiniAssembler.assemble');
 
                 //TODO: implement AGAL <> GLSL
 
 				//var vertexByteCode:ByteArray = new AGALMiniAssembler(Debug.active).assemble(Context3DProgramType.VERTEX, vertexCode);
 				//var fragmentByteCode:ByteArray = new AGALMiniAssembler(Debug.active).assemble(Context3DProgramType.FRAGMENT, fragmentCode);
 				//program.upload(vertexByteCode, fragmentByteCode);
-				
+
+                /*
+                 var vertexByteCode  : ByteArray = new AGLSLCompiler().assemble( Context3DProgramType.VERTEX , vertexCode );
+                 var fragmentByteCode: ByteArray = new AGLSLCompiler().assemble( Context3DProgramType.FRAGMENT , fragmentCode );
+
+                 program.uploadGLSL(vertexByteCode, fragmentByteCode);
+
+                 */
+
+                var vertCompiler:aglsl.AGLSLCompiler = new aglsl.AGLSLCompiler();
+                var fragCompiler:aglsl.AGLSLCompiler = new aglsl.AGLSLCompiler();
+
+                var vertString : string = vertCompiler.compile( away.display3D.Context3DProgramType.VERTEX, vertexCode );
+                var fragString : string = fragCompiler.compile( away.display3D.Context3DProgramType.FRAGMENT, fragmentCode );
+
+                console.log( '============================================================');
+                console.log( 'vertString' );
+                console.log( vertString );
+                console.log( 'fragString' );
+                console.log( fragString );
+
+
+                program.upload(vertString, fragString);
+                /*
+
+                 var vertCompiler:aglsl.AGLSLCompiler = new aglsl.AGLSLCompiler();
+                 var fragCompiler:aglsl.AGLSLCompiler = new aglsl.AGLSLCompiler();
+
+                 var vertString : string = vertCompiler.compile( away.display3D.Context3DProgramType.VERTEX, this.pGetVertexCode() );
+                 var fragString : string = fragCompiler.compile( away.display3D.Context3DProgramType.FRAGMENT, this.pGetFragmentCode() );
+
+                 this._program3D.upload( vertString , fragString );
+
+                 */
+
 				this._program3Ds[key] = program;
 			}
 
