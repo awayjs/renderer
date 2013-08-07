@@ -112,7 +112,7 @@ module away.traverse
 			return this._pLights;
 		}
 		
-		public get directionalLights():away.lightsDirectionalLight[]
+		public get directionalLights():away.lights.DirectionalLight[]
 		{
 			return this._directionalLights;
 		}
