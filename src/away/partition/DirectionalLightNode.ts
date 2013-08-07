@@ -16,7 +16,7 @@ module away.partition
 			this._light = light;
 		}
 		
-		public get light():away.light.DirectionalLight
+		public get light():away.lights.DirectionalLight
 		{
 			return this._light;
 		}
