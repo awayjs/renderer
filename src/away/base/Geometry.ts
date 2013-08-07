@@ -174,9 +174,9 @@ module away.base
 		 */
 		public convertToSeparateBuffers()
 		{
-			var subGeom:ISubGeometry;
+			var subGeom:away.base.ISubGeometry;
 			var numSubGeoms:number = this._subGeometries.length;
-			var _removableCompactSubGeometries:Array = new Array<away.base.CompactSubGeometry>();//Vector.<CompactSubGeometry> = new Vector.<CompactSubGeometry>();
+			var _removableCompactSubGeometries:away.base.CompactSubGeometry[] = new Array<away.base.CompactSubGeometry>();//Vector.<CompactSubGeometry> = new Vector.<CompactSubGeometry>();
 
 			for (var i:number = 0; i < numSubGeoms; ++i)
             {
@@ -190,7 +190,7 @@ module away.base
                 }
 
 
-				_removableCompactSubGeometries.push(subGeom);
+				_removableCompactSubGeometries.push( <away.base.CompactSubGeometry> subGeom);
 
 				this.addSubGeometry(subGeom.cloneWithSeperateBuffers());
 			}
@@ -202,7 +202,7 @@ module away.base
             {
 
                 s = _removableCompactSubGeometries[c];
-                this.removeSubGeometry(s);
+                this.removeSubGeometry( s );
                 s.dispose();
 
             }
