@@ -90,7 +90,7 @@ module aglsl.assembler
 					{
 						return;
 					}
-					var op = OpcodeMap.map[tokens[0]];
+					var op : aglsl.assembler.Opcode = <aglsl.assembler.Opcode> OpcodeMap.map[tokens[0]];
 					if ( !op )
 					{
 						throw "Bad opcode "+tokens[0]+" "+linenr+": "+line;
@@ -216,7 +216,7 @@ module aglsl.assembler
 			var samplerbits = 0x5; 
 			var sampleroptset = 0; 
 			for ( var i=0; i<opts.length; i++ ) {
-				var o = SamplerMap.map[opts[i].toLowerCase()];
+				var o : aglsl.assembler.Sampler = <aglsl.assembler.Sampler> SamplerMap.map[opts[i].toLowerCase()];
 				
                 //console.log( 'AGALMiniAssembler' , 'emitSampler' , 'SampleMap opt:' , o , '<-------- WATCH FOR THIS');
 				
@@ -241,7 +241,7 @@ module aglsl.assembler
 			if ( indexed ) {
 				if ( !RegMap.map[indexed[1]] ) return false;          
 				var selindex = { x:0, y:1, z:2, w:3 };
-				var em = { num:indexed[2]|0, code:RegMap.map[indexed[1]].code, swizzle:this.stringToSwizzle(indexed[5]), select:selindex[indexed[3]], offset:indexed[4]|0 };                        
+				var em : any = { num:indexed[2]|0, code:RegMap.map[indexed[1]].code, swizzle:this.stringToSwizzle(indexed[5]), select:selindex[indexed[3]], offset:indexed[4]|0 };
 				pr.data.writeUnsignedShort ( em.num );      
 				pr.data.writeByte ( em.offset );                     
 				pr.data.writeUnsignedByte ( em.swizzle ); 
@@ -252,7 +252,7 @@ module aglsl.assembler
 			} else {
 				reg = token.match ( /([fov]?[tpocidavs])(\d*)(\.[xyzw]{1,4})?/i ); // g1: regname, g2:regnum, g3:swizzle
 				if ( !RegMap.map[reg[1]] ) return false;          
-				var em = { num:reg[2]|0, code:RegMap.map[reg[1]].code, swizzle:this.stringToSwizzle(reg[3]) };            
+				var em : any = { num:reg[2]|0, code:RegMap.map[reg[1]].code, swizzle:this.stringToSwizzle(reg[3]) };
 				pr.data.writeUnsignedShort ( em.num );      
 				pr.data.writeUnsignedByte ( 0 ); 
 				pr.data.writeUnsignedByte ( em.swizzle ); 
