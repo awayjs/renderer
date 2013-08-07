@@ -482,7 +482,6 @@ module away.materials
 			for (i = this._pNumUsedTextures; i < prevUsed; ++i)
             {
 
-                away.Debug.throwPIR( 'away.materials.MaterialPassBase' , 'iActivate' , 'required dependency: Context3D.setTextureAt');
                 context.setTextureAt(i, null);
 
             }
@@ -539,8 +538,7 @@ module away.materials
 
 			}
 
-            away.Debug.throwPIR( 'MaterialPassBase' , 'iDeactivate' , 'stage3DProxy._iContext3D.setDepthTest - parameters not matching');
-			//stage3DProxy._iContext3D.setDepthTest(true, away.display3D.Context3DCompareMode.LESS_EQUAL); // TODO : imeplement
+			stage3DProxy._iContext3D.setDepthTest(true, away.display3D.Context3DCompareMode.LESS_EQUAL); // TODO : imeplement
 		}
 		
 		/**
