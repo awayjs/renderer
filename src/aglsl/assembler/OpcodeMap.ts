@@ -52,15 +52,15 @@ module aglsl.assembler
          */
 
 
-        private static _map:string[];
+        private static _map:Object[];
 
-        public static get map () : object[]
+        public static get map () : Object[]
         {
 
             if ( ! OpcodeMap._map )
             {
 
-                OpcodeMap._map = new Array<string>();
+                OpcodeMap._map = new Array<Object>();
                 OpcodeMap._map['mov'] = new aglsl.assembler.Opcode( "vector", "vector", 4,    "none",    0,     0x00,   true,   null,       null,      null );
                 OpcodeMap._map['add'] = new aglsl.assembler.Opcode( "vector", "vector", 4,    "none",    0,     0x01,   true,   null,       null,      null );
 
