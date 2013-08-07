@@ -25,17 +25,14 @@ class View3DTest
 
         this.light                  = new away.lights.PointLight();
         this.view                   = new away.containers.View3D( )
-        this.view.camera.z            = -1000;
+        this.view.camera.z          = 0;
         this.view.backgroundColor   = 0xff00ea;
         this.torus                  = new away.primitives.TorusGeometry();
 
         var l       : number        = 20;
         var radius  : number        = 500;
 
-        var mat : away.materials.ColorMaterial = new away.materials.ColorMaterial();
-
         var matB : away.materials.ColorMaterial = new away.materials.ColorMaterial();
-        mat.blendMode  = away.display.BlendMode.MULTIPLY;
 
         var f : boolean = true;
         for (var c : number = 0; c < l ; c++)
@@ -44,7 +41,7 @@ class View3DTest
 
             var t   : number=Math.PI * 2 * c / l;
 
-            var m : away.entities.Mesh = new away.entities.Mesh( this.torus , f ? mat : matB);
+            var m : away.entities.Mesh = new away.entities.Mesh( this.torus , matB);
                 m.x = Math.cos(t)*radius;
                 m.y = 0;
                 m.z = Math.sin(t)*radius;
@@ -103,6 +100,7 @@ class View3DTest
     private tick( e )
     {
 
+        this.view.backgroundColor   = 0xffffff * Math.random();
         this.view.render();
 
         console.log('------------------------------------------------------------------------------------------');
