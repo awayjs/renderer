@@ -9,10 +9,10 @@ module away.managers
 		
 		private _stage3DProxy:away.managers.Stage3DProxy;
 
-        private _program3Ds:Array;
-        private _ids:Array;
-        private _usages:Array;
-        private _keys:Array;
+        private _program3Ds:Object;
+        private _ids:Object;
+        private _usages:Object;
+        private _keys:Object;
 		
 		private static _currentId:number = 0;
 		
@@ -25,10 +25,10 @@ module away.managers
 
 			this._stage3DProxy = stage3DProxy;
 
-            this._program3Ds = new Array();
-            this._ids = new Array();
-            this._usages = new Array();
-            this._keys = new Array();
+            this._program3Ds = new Object();
+            this._ids = new Object();
+            this._usages = new Object();
+            this._keys = new Object();
 
 		}
 		
