@@ -132,11 +132,17 @@ module away.managers
                 var vertString : string = vertCompiler.compile( away.display3D.Context3DProgramType.VERTEX, vertexCode );
                 var fragString : string = fragCompiler.compile( away.display3D.Context3DProgramType.FRAGMENT, fragmentCode );
 
-                console.log( '============================================================');
+                console.log( '===GLSL=========================================================');
                 console.log( 'vertString' );
                 console.log( vertString );
                 console.log( 'fragString' );
                 console.log( fragString );
+
+                console.log( '===AGAL=========================================================');
+                console.log( 'vertexCode' );
+                console.log( vertexCode );
+                console.log( 'fragmentCode' );
+                console.log( fragmentCode );
 
 
                 program.upload(vertString, fragString);
