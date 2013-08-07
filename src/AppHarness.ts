@@ -7,6 +7,7 @@
 ///<reference path="../tests/scene/PhongTorus.ts"/>
 ///<reference path="../tests/scene/MaterialTorus.ts"/>
 ///<reference path="../tests/aglsl/AssemblerTest.ts"/>
+///<reference path="../tests/aglsl/AGALCompilerTest.ts"/>
 
 module away
 {
@@ -14,7 +15,7 @@ module away
     {
         constructor() 
         {
-			new aglsl.AssemblerTest();
+			new aglsl.AGALCompilerTest();
         }
     }
 }

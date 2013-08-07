@@ -297,3 +297,4 @@
 ///<reference path="../aglsl/assembler/AGALMiniAssembler.ts"/>
 ///<reference path="../aglsl/AGALTokenizer.ts"/>
 ///<reference path="../aglsl/Parser.ts"/>
+///<reference path="../aglsl/AGLSLCompiler.ts"/>
