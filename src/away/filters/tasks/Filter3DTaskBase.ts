@@ -163,12 +163,22 @@ module away.filters
 
 			this._program3D = stage._iContext3D.createProgram();
 
-            away.Debug.log( 'Filder3DTaskBase' , 'pUpdateProgram3D' , 'Program3D.upload / AGAL <> GLSL implementation' );
+            //away.Debug.log( 'Filder3DTaskBase' , 'pUpdateProgram3D' , 'Program3D.upload / AGAL <> GLSL implementation' );
 
             // TODO: imeplement AGAL <> GLSL
-			//this._program3D.upload(new AGALMiniAssembler(Debug.active).assemble(Context3DProgramType.VERTEX, getVertexCode()),new AGALMiniAssembler(Debug.active).assemble(Context3DProgramType.FRAGMENT, getFragmentCode()));
+            //this._program3D.upload(new AGALMiniAssembler(Debug.active).assemble(Context3DProgramType.VERTEX, getVertexCode()),new AGALMiniAssembler(Debug.active).assemble(Context3DProgramType.FRAGMENT, getFragmentCode()));
 
-			this._program3DInvalid = false;
+            //new AGALMiniAssembler(Debug.active).assemble(Context3DProgramType.VERTEX, getVertexCode()),
+            //new AGALMiniAssembler(Debug.active).assemble(Context3DProgramType.FRAGMENT, getFragmentCode()));
+
+            var vertCompiler:aglsl.AGLSLCompiler = new aglsl.AGLSLCompiler();
+            var fragCompiler:aglsl.AGLSLCompiler = new aglsl.AGLSLCompiler();
+
+            var vertString : string = vertCompiler.compile( away.display3D.Context3DProgramType.VERTEX, this.pGetVertexCode() );
+            var fragString : string = fragCompiler.compile( away.display3D.Context3DProgramType.FRAGMENT, this.pGetFragmentCode() );
+
+            this._program3D.upload( vertString , fragString );
+            this._program3DInvalid = false;
 		}
 		
 		public pGetVertexCode():string
@@ -230,5 +240,6 @@ module away.filters
 		{
 			return this._requireDepthRender;
 		}
+
 	}
 }
