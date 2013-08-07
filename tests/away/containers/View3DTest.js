@@ -367,6 +367,7 @@ var away;
 
 
             NamedAssetBase.prototype.dispose = function () {
+                throw new away.errors.AbstractMethodError();
             };
 
             Object.defineProperty(NamedAssetBase.prototype, "assetNamespace", {
@@ -916,6 +917,8 @@ var away;
                 for (var c = 0; c < this.rawData.length; c++) {
                     vector[c] = this.rawData[c];
                 }
+                //return this.rawData.slice(0);
+                //return vector = this.rawData.slice(0);
             };
 
             /**
@@ -2019,14 +2022,19 @@ var away;
 
                 var len;
                 if (this._iAlignment == Plane3D.ALIGN_YZ_AXIS)
-                    len = this.a * p.x - this.d; else if (this._iAlignment == Plane3D.ALIGN_XZ_AXIS)
-                    len = this.b * p.y - this.d; else if (this._iAlignment == Plane3D.ALIGN_XY_AXIS)
-                    len = this.c * p.z - this.d; else
+                    len = this.a * p.x - this.d;
+else if (this._iAlignment == Plane3D.ALIGN_XZ_AXIS)
+                    len = this.b * p.y - this.d;
+else if (this._iAlignment == Plane3D.ALIGN_XY_AXIS)
+                    len = this.c * p.z - this.d;
+else
                     len = this.a * p.x + this.b * p.y + this.c * p.z - this.d;
 
                 if (len < -epsilon)
-                    return away.math.PlaneClassification.BACK; else if (len > epsilon)
-                    return away.math.PlaneClassification.FRONT; else
+                    return away.math.PlaneClassification.BACK;
+else if (len > epsilon)
+                    return away.math.PlaneClassification.FRONT;
+else
                     return away.math.PlaneClassification.INTERSECT;
             };
 
@@ -2363,10 +2371,10 @@ var away;
                 this._eulers = new away.geom.Vector3D();
                 this._flipY = new away.geom.Matrix3D();
                 this._zOffset = 0;
-                this._transform = new away.geom.Matrix3D();
-                this._scaleX = 1;
-                this._scaleY = 1;
-                this._scaleZ = 1;
+                this._pTransform = new away.geom.Matrix3D();
+                this._pScaleX = 1;
+                this._pScaleY = 1;
+                this._pScaleZ = 1;
                 this._x = 0;
                 this._y = 0;
                 this._z = 0;
@@ -2384,7 +2392,7 @@ var away;
                 this._transformComponents[1] = this._rot;
                 this._transformComponents[2] = this._sca;
 
-                this._transform.identity();
+                this._pTransform.identity();
 
                 this._flipY.appendScale(1, -1, 1);
             }
@@ -2616,14 +2624,14 @@ var away;
                 * Defines the scale of the 3d object along the x-axis, relative to local coordinates.
                 */
                 function () {
-                    return this._scaleX;
+                    return this._pScaleX;
                 },
                 set: function (val) {
-                    if (this._scaleX == val) {
+                    if (this._pScaleX == val) {
                         return;
                     }
 
-                    this._scaleX = val;
+                    this._pScaleX = val;
 
                     this.invalidateScale();
                 },
@@ -2637,14 +2645,14 @@ var away;
                 * Defines the scale of the 3d object along the y-axis, relative to local coordinates.
                 */
                 function () {
-                    return this._scaleY;
+                    return this._pScaleY;
                 },
                 set: function (val) {
-                    if (this._scaleY == val) {
+                    if (this._pScaleY == val) {
                         return;
                     }
 
-                    this._scaleY = val;
+                    this._pScaleY = val;
 
                     this.invalidateScale();
                 },
@@ -2658,14 +2666,14 @@ var away;
                 * Defines the scale of the 3d object along the z-axis, relative to local coordinates.
                 */
                 function () {
-                    return this._scaleZ;
+                    return this._pScaleZ;
                 },
                 set: function (val) {
-                    if (this._scaleZ == val) {
+                    if (this._pScaleZ == val) {
                         return;
                     }
 
-                    this._scaleZ = val;
+                    this._pScaleZ = val;
                     this.invalidateScale();
                 },
                 enumerable: true,
@@ -2705,7 +2713,7 @@ var away;
                         this.pUpdateTransform();
                     }
 
-                    return this._transform;
+                    return this._pTransform;
                 },
                 set: function (val) {
                     if (!val.rawData[0]) {
@@ -2741,10 +2749,10 @@ var away;
 
                     vec = elements[2];
 
-                    if (this._scaleX != vec.x || this._scaleY != vec.y || this._scaleZ != vec.z) {
-                        this._scaleX = vec.x;
-                        this._scaleY = vec.y;
-                        this._scaleZ = vec.z;
+                    if (this._pScaleX != vec.x || this._pScaleY != vec.y || this._pScaleZ != vec.z) {
+                        this._pScaleX = vec.x;
+                        this._pScaleY = vec.y;
+                        this._pScaleZ = vec.z;
 
                         this.invalidateScale();
                     }
@@ -2776,7 +2784,7 @@ var away;
                 * Defines the position of the 3d object, relative to the local coordinates of the parent <code>ObjectContainer3D</code>.
                 */
                 function () {
-                    this._transform.copyColumnTo(3, this._pPos);
+                    this._pTransform.copyColumnTo(3, this._pPos);
 
                     return this._pPos.clone();
                 },
@@ -2872,9 +2880,9 @@ var away;
             * @param value The amount by which to scale.
             */
             Object3D.prototype.scale = function (value) {
-                this._scaleX *= value;
-                this._scaleY *= value;
-                this._scaleZ *= value;
+                this._pScaleX *= value;
+                this._pScaleY *= value;
+                this._pScaleZ *= value;
 
                 this.invalidateScale();
             };
@@ -3000,7 +3008,7 @@ var away;
 
                 this.transform.prependTranslation(x * len, y * len, z * len);
 
-                this._transform.copyColumnTo(3, this._pPos);
+                this._pTransform.copyColumnTo(3, this._pPos);
 
                 this._x = this._pPos.x;
                 this._y = this._pPos.y;
@@ -3101,19 +3109,19 @@ var away;
 
                 raw = away.math.Matrix3DUtils.RAW_DATA_CONTAINER;
 
-                raw[0] = this._scaleX * xAxis.x;
-                raw[1] = this._scaleX * xAxis.y;
-                raw[2] = this._scaleX * xAxis.z;
+                raw[0] = this._pScaleX * xAxis.x;
+                raw[1] = this._pScaleX * xAxis.y;
+                raw[2] = this._pScaleX * xAxis.z;
                 raw[3] = 0;
 
-                raw[4] = this._scaleY * yAxis.x;
-                raw[5] = this._scaleY * yAxis.y;
-                raw[6] = this._scaleY * yAxis.z;
+                raw[4] = this._pScaleY * yAxis.x;
+                raw[5] = this._pScaleY * yAxis.y;
+                raw[6] = this._pScaleY * yAxis.z;
                 raw[7] = 0;
 
-                raw[8] = this._scaleZ * zAxis.x;
-                raw[9] = this._scaleZ * zAxis.y;
-                raw[10] = this._scaleZ * zAxis.z;
+                raw[8] = this._pScaleZ * zAxis.x;
+                raw[9] = this._pScaleZ * zAxis.y;
+                raw[10] = this._pScaleZ * zAxis.z;
                 raw[11] = 0;
 
                 raw[12] = this._x;
@@ -3121,7 +3129,7 @@ var away;
                 raw[14] = this._z;
                 raw[15] = 1;
 
-                this._transform.copyRawDataFrom(raw);
+                this._pTransform.copyRawDataFrom(raw);
 
                 this.transform = this.transform;
 
@@ -3161,15 +3169,15 @@ var away;
                 this._rot.y = this._rotationY;
                 this._rot.z = this._rotationZ;
 
-                this._sca.x = this._scaleX;
-                this._sca.y = this._scaleY;
-                this._sca.z = this._scaleZ;
+                this._sca.x = this._pScaleX;
+                this._sca.y = this._pScaleY;
+                this._sca.z = this._pScaleZ;
 
-                this._transform.recompose(this._transformComponents);
+                this._pTransform.recompose(this._transformComponents);
 
                 if (!this._pivotZero) {
-                    this._transform.prependTranslation(-this._pivotPoint.x, -this._pivotPoint.y, -this._pivotPoint.z);
-                    this._transform.appendTranslation(this._pivotPoint.x, this._pivotPoint.y, this._pivotPoint.z);
+                    this._pTransform.prependTranslation(-this._pivotPoint.x, -this._pivotPoint.y, -this._pivotPoint.z);
+                    this._pTransform.appendTranslation(this._pivotPoint.x, this._pivotPoint.y, this._pivotPoint.z);
                 }
 
                 this._transformDirty = false;
@@ -3427,6 +3435,7 @@ var away;
             VertexBuffer3D.prototype.uploadFromArray = function (vertices, startVertex, numVertices) {
                 this._gl.bindBuffer(this._gl.ARRAY_BUFFER, this._buffer);
                 console.log("** WARNING upload not fully implemented, startVertex & numVertices not considered.");
+                console.log("** ", vertices, startVertex, numVertices);
 
                 // TODO add offsets , startVertex, numVertices * this._data32PerVertex
                 this._gl.bufferData(this._gl.ARRAY_BUFFER, new Float32Array(vertices), this._gl.STATIC_DRAW);
@@ -4118,28 +4127,6 @@ var away;
                     this.fillRect(this._rect, fillColor);
                 }
             }
-            // Public
-            /*
-            public draw ( source : BitmapData, matrix : away.geom.Matrix = null ) //, colorTransform, blendMode, clipRect, smoothing) {
-            {
-            
-            var sourceMatrix : away.geom.Matrix     = ( matrix === null ) ? matrix : new  away.geom.Matrix();
-            var sourceRect : away.geom.Rectangle    = new away.geom.Rectangle(0, 0, source.width, source.height);
-            
-            this._imageCanvas.width     = source.width;
-            this._imageCanvas.height    = source.height;
-            
-            this._context.transform(
-            sourceMatrix.a,
-            sourceMatrix.b,
-            sourceMatrix.c,
-            sourceMatrix.d,
-            sourceMatrix.tx,
-            sourceMatrix.ty);
-            
-            this.copyPixels(source , source.rect , source.rect );
-            }
-            */
             /**
             *
             */
@@ -4179,22 +4166,32 @@ var away;
             * @param color
             */
             BitmapData.prototype.getPixel = function (x, y) {
-                if (!this._locked) {
-                    this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
-                } else {
-                    if (this._imageData) {
-                        this._context.putImageData(this._imageData, 0, 0);
-
-                        this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
-                    }
-                }
+                var r;
+                var g;
+                var b;
+                var a;
 
                 var index = (x + y * this._imageCanvas.width) * 4;
 
-                var r = this._imageData.data[index + 0];
-                var g = this._imageData.data[index + 1];
-                var b = this._imageData.data[index + 2];
-                var a = this._imageData.data[index + 3];
+                if (!this._locked) {
+                    this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
+
+                    r = this._imageData.data[index + 0];
+                    g = this._imageData.data[index + 1];
+                    b = this._imageData.data[index + 2];
+                    a = this._imageData.data[index + 3];
+                } else {
+                    if (this._imageData) {
+                        this._context.putImageData(this._imageData, 0, 0);
+                    }
+
+                    this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
+
+                    r = this._imageData.data[index + 0];
+                    g = this._imageData.data[index + 1];
+                    b = this._imageData.data[index + 2];
+                    a = this._imageData.data[index + 3];
+                }
 
                 if (!this._locked) {
                     this._imageData = null;
@@ -4227,8 +4224,6 @@ var away;
 
                 if (!this._locked) {
                     this._context.putImageData(this._imageData, 0, 0);
-
-                    //this._context.globalAlpha = this._alpha;
                     this._imageData = null;
                 }
             };
@@ -4257,53 +4252,55 @@ var away;
 
                 if (!this._locked) {
                     this._context.putImageData(this._imageData, 0, 0);
-
-                    //this._context.globalAlpha = this._alpha;
                     this._imageData = null;
                 }
             };
 
-            /**
-            *
-            * @param img
-            * @param sourceRect
-            * @param destRect
-            */
-            BitmapData.prototype.copyImage = function (img, sourceRect, destRect) {
+            BitmapData.prototype.drawImage = function (img, sourceRect, destRect) {
                 if (this._locked) {
                     if (this._imageData) {
                         this._context.putImageData(this._imageData, 0, 0);
                     }
 
-                    this._context.drawImage(img, sourceRect.x, sourceRect.y, sourceRect.width, sourceRect.height, destRect.x, destRect.y, destRect.width, destRect.height);
+                    this._drawImage(img, sourceRect, destRect);
 
                     if (this._imageData) {
                         this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
                     }
                 } else {
+                    this._drawImage(img, sourceRect, destRect);
+                }
+            };
+
+            BitmapData.prototype._drawImage = function (img, sourceRect, destRect) {
+                if (img instanceof away.display.BitmapData) {
+                    this._context.drawImage(img.canvas, sourceRect.x, sourceRect.y, sourceRect.width, sourceRect.height, destRect.x, destRect.y, destRect.width, destRect.height);
+                } else if (img instanceof HTMLImageElement) {
                     this._context.drawImage(img, sourceRect.x, sourceRect.y, sourceRect.width, sourceRect.height, destRect.x, destRect.y, destRect.width, destRect.height);
                 }
             };
 
-            /**
-            *
-            * @param bmpd
-            * @param sourceRect
-            * @param destRect
-            */
             BitmapData.prototype.copyPixels = function (bmpd, sourceRect, destRect) {
                 if (this._locked) {
                     if (this._imageData) {
                         this._context.putImageData(this._imageData, 0, 0);
                     }
 
-                    this._context.drawImage(bmpd.canvas, sourceRect.x, sourceRect.y, sourceRect.width, sourceRect.height, destRect.x, destRect.y, destRect.width, destRect.height);
+                    this._copyPixels(bmpd, sourceRect, destRect);
 
                     if (this._imageData) {
                         this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
                     }
                 } else {
+                    this._copyPixels(bmpd, sourceRect, destRect);
+                }
+            };
+
+            BitmapData.prototype._copyPixels = function (bmpd, sourceRect, destRect) {
+                if (bmpd instanceof away.display.BitmapData) {
                     this._context.drawImage(bmpd.canvas, sourceRect.x, sourceRect.y, sourceRect.width, sourceRect.height, destRect.x, destRect.y, destRect.width, destRect.height);
+                } else if (bmpd instanceof HTMLImageElement) {
+                    this._context.drawImage(bmpd, sourceRect.x, sourceRect.y, sourceRect.width, sourceRect.height, destRect.x, destRect.y, destRect.width, destRect.height);
                 }
             };
 
@@ -4318,15 +4315,45 @@ var away;
                         this._context.putImageData(this._imageData, 0, 0);
                     }
 
-                    this._context.fillStyle = this.decimalToHex(color);
+                    this._context.fillStyle = this.hexToRGBACSS(color);
                     this._context.fillRect(rect.x, rect.y, rect.width, rect.height);
 
                     if (this._imageData) {
                         this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
                     }
                 } else {
-                    this._context.fillStyle = this.decimalToHex(color);
+                    this._context.fillStyle = this.hexToRGBACSS(color);
                     this._context.fillRect(rect.x, rect.y, rect.width, rect.height);
+                }
+            };
+
+            BitmapData.prototype.draw = function (source, matrix) {
+                if (this._locked) {
+                    if (this._imageData) {
+                        this._context.putImageData(this._imageData, 0, 0);
+                    }
+
+                    this._draw(source, matrix);
+
+                    if (this._imageData) {
+                        this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
+                    }
+                } else {
+                    this._draw(source, matrix);
+                }
+            };
+
+            BitmapData.prototype._draw = function (source, matrix) {
+                if (source instanceof away.display.BitmapData) {
+                    this._context.save();
+                    this._context.setTransform(matrix.a, matrix.b, matrix.c, matrix.d, matrix.tx, matrix.ty);
+                    this._context.drawImage(source.canvas, 0, 0);
+                    this._context.restore();
+                } else if (source instanceof HTMLImageElement) {
+                    this._context.save();
+                    this._context.setTransform(matrix.a, matrix.b, matrix.c, matrix.d, matrix.tx, matrix.ty);
+                    this._context.drawImage(source, 0, 0);
+                    this._context.restore();
                 }
             };
 
@@ -4433,7 +4460,7 @@ var away;
             /**
             * convert decimal value to Hex
             */
-            BitmapData.prototype.decimalToHex = function (d) {
+            BitmapData.prototype.hexToRGBACSS = function (d) {
                 var argb = away.utils.ColorUtils.float32ColorToARGB(d);
 
                 if (!this._transparent) {
@@ -4755,9 +4782,11 @@ var away;
                         this._gl = canvas.getContext("webgl");
                     }
                 } catch (e) {
+                    //this.dispatchEvent( new away.events.AwayEvent( away.events.AwayEvent.INITIALIZE_FAILED, e ) );
                 }
 
                 if (this._gl) {
+                    //this.dispatchEvent( new away.events.AwayEvent( away.events.AwayEvent.INITIALIZE_SUCCESS ) );
                 } else {
                     //this.dispatchEvent( new away.events.AwayEvent( away.events.AwayEvent.INITIALIZE_FAILED, e ) );
                     alert("WebGL is not available.");
@@ -4861,6 +4890,14 @@ var away;
             Context3D.prototype.drawTriangles = function (indexBuffer, firstIndex, numTriangles) {
                 if (typeof firstIndex === "undefined") { firstIndex = 0; }
                 if (typeof numTriangles === "undefined") { numTriangles = -1; }
+                //------------------------------------------------------------------------
+                // TEST
+                console.log('DrawTriangles');
+                var perspectiveFieldOfViewLH = new away.utils.PerspectiveMatrix3D();
+                perspectiveFieldOfViewLH.perspectiveFieldOfViewLH(80, (800 / 600), 0.1, 5000);
+
+                this.setProgramConstantsFromMatrix('vertex', 0, perspectiveFieldOfViewLH, true);
+
                 if (!this._drawing) {
                     throw "Need to clear before drawing if the buffer has not been cleared since the last present() call.";
                 }
@@ -5151,13 +5188,15 @@ var away;
             Context3D.prototype.setGLSLVertexBufferAt = function (locationName, buffer, bufferOffset, format) {
                 if (typeof bufferOffset === "undefined") { bufferOffset = 0; }
                 if (typeof format === "undefined") { format = null; }
-                if (buffer == null)
-                    return;
+                //if ( buffer == null )return;
+                console.log('setGLSLVertexBufferAt locationName', locationName, 'buffer', buffer, 'bufferOffset', bufferOffset, 'format', format);
 
                 var location = this._gl.getAttribLocation(this._currentProgram.glProgram, locationName);
 
                 if (!buffer) {
-                    this._gl.disableVertexAttribArray(location);
+                    if (location > -1) {
+                        this._gl.disableVertexAttribArray(location);
+                    }
                     return;
                 }
 
@@ -5265,7 +5304,7 @@ var away;
                 * @see away3d.materials.lightpickers.StaticLightPicker
                 */
                 function () {
-                    return this._lightPicker;
+                    return this._pLightPicker;
                 },
                 set: function (value) {
                     this.setLightPicker(value);
@@ -5276,12 +5315,12 @@ var away;
 
 
             MaterialBase.prototype.setLightPicker = function (value) {
-                if (value != this._lightPicker) {
-                    this._lightPicker = value;
+                if (value != this._pLightPicker) {
+                    this._pLightPicker = value;
                     var len = this._passes.length;
 
                     for (var i = 0; i < len; ++i) {
-                        this._passes[i].lightPicker = this._lightPicker;
+                        this._passes[i].lightPicker = this._pLightPicker;
                     }
                 }
             };
@@ -5338,12 +5377,16 @@ var away;
                     return this._pDepthCompareMode;
                 },
                 set: function (value) {
-                    this._pDepthCompareMode = value;
+                    this.setDepthCompareMode(value);
                 },
                 enumerable: true,
                 configurable: true
             });
 
+
+            MaterialBase.prototype.setDepthCompareMode = function (value) {
+                this._pDepthCompareMode = value;
+            };
 
             Object.defineProperty(MaterialBase.prototype, "repeat", {
                 get: /**
@@ -5614,8 +5657,8 @@ var away;
             * camera.viewProjection as it includes the scaling factors when rendering to textures.
             */
             MaterialBase.prototype.iRenderPass = function (index, renderable, stage3DProxy, entityCollector, viewProjection) {
-                if (this._lightPicker) {
-                    this._lightPicker.collectLights(renderable, entityCollector);
+                if (this._pLightPicker) {
+                    this._pLightPicker.collectLights(renderable, entityCollector);
                 }
 
                 var pass = this._passes[index];
@@ -5798,7 +5841,7 @@ var away;
                 pass.mipmap = this._pMipmap;
                 pass.smooth = this._smooth;
                 pass.repeat = this._repeat;
-                pass.lightPicker = this._lightPicker;
+                pass.lightPicker = this._pLightPicker;
                 pass.bothSides = this._bothSides;
                 pass.addEventListener(away.events.Event.CHANGE, this.onPassChange, this);
                 this.iInvalidatePasses(null);
@@ -6130,15 +6173,18 @@ var away;
                 while (i < len) {
                     v = vertices[i++];
                     if (v < minX)
-                        minX = v; else if (v > maxX)
+                        minX = v;
+else if (v > maxX)
                         maxX = v;
                     v = vertices[i++];
                     if (v < minY)
-                        minY = v; else if (v > maxY)
+                        minY = v;
+else if (v > maxY)
                         maxY = v;
                     v = vertices[i++];
                     if (v < minZ)
-                        minZ = v; else if (v > maxZ)
+                        minZ = v;
+else if (v > maxZ)
                         maxZ = v;
                 }
 
@@ -7947,6 +7993,29 @@ var away;
                     if (!child._pExplicitPartition)
                         child._pImplicitPartition = value;
                 }
+                /*
+                if ( value == this._pImplicitPartition )
+                {
+                return;
+                }
+                
+                console.log( 'ObjectContainer3D','iSetImplicitPartition' , value );
+                
+                var i:number = 0;
+                var len:number = this._children.length;
+                var child:away.containers.ObjectContainer3D;
+                
+                this._pImplicitPartition = value;
+                
+                while (i < len)
+                {
+                child = this._children[i++];
+                if( !child._pExplicitPartition )
+                {
+                child._pImplicitPartition = value;
+                }
+                }
+                */
             };
 
             Object.defineProperty(ObjectContainer3D.prototype, "_iIsVisible", {
@@ -8338,6 +8407,7 @@ var away;
                 if (!child._pExplicitPartition) {
                     //console.log( 'ObjectContainer3D' , 'addChild' , 'set iImplicitPartition' ,  this._pImplicitPartition);
                     child.iSetImplicitPartition(this._pImplicitPartition);
+                    //child.iImplicitPartition = this._pImplicitPartition;
                 }
 
                 child.iSetParent(this);
@@ -8714,12 +8784,16 @@ var away;
                     return this._iPickingCollider;
                 },
                 set: function (value) {
-                    this._iPickingCollider = value;
+                    this.setPickingCollider(value);
                 },
                 enumerable: true,
                 configurable: true
             });
 
+
+            Entity.prototype.setPickingCollider = function (value) {
+                this._iPickingCollider = value;
+            };
 
             Entity.prototype.getEntityPartitionNode = function () {
                 if (!this._partitionNode) {
@@ -9109,7 +9183,7 @@ var away;
 
                 this._pSegments = new Object();
 
-                away.Debug.throwPIR('SegmentSet', 'constructor', 'implement dependency: away.materials.SegmentMaterial');
+                this.material = new away.materials.SegmentMaterial();
             }
             SegmentSet.prototype.addSegment = function (segment) {
                 segment.iSegmentsBase = this;
@@ -9375,19 +9449,15 @@ var away;
             };
 
             SegmentSet.prototype.activateUVBuffer = function (index, stage3DProxy) {
-                away.Debug.throwPIR('SegmentSet', 'activateUVBuffer', 'PartialImplementation');
             };
 
             SegmentSet.prototype.activateVertexNormalBuffer = function (index, stage3DProxy) {
-                away.Debug.throwPIR('SegmentSet', 'activateVertexNormalBuffer', 'PartialImplementation');
             };
 
             SegmentSet.prototype.activateVertexTangentBuffer = function (index, stage3DProxy) {
-                away.Debug.throwPIR('SegmentSet', 'activateVertexTangentBuffer', 'PartialImplementation');
             };
 
             SegmentSet.prototype.activateSecondaryUVBuffer = function (index, stage3DProxy) {
-                away.Debug.throwPIR('SegmentSet', 'activateSecondaryUVBuffer', 'PartialImplementation');
             };
 
             SegmentSet.prototype.reOrderIndices = function (subSetIndex, index) {
@@ -9474,17 +9544,20 @@ var away;
                     while (index < len) {
                         v = vertices[index++];
                         if (v < minX)
-                            minX = v; else if (v > maxX)
+                            minX = v;
+else if (v > maxX)
                             maxX = v;
 
                         v = vertices[index++];
                         if (v < minY)
-                            minY = v; else if (v > maxY)
+                            minY = v;
+else if (v > maxY)
                             maxY = v;
 
                         v = vertices[index++];
                         if (v < minZ)
-                            minZ = v; else if (v > maxZ)
+                            minZ = v;
+else if (v > maxZ)
                             maxZ = v;
 
                         index += 8;
@@ -9774,6 +9847,34 @@ var away;
                 },
                 set: function (value) {
                     away.Debug.throwPIR('Mesh', 'set animator', 'Partial Implementation');
+                    /*
+                    if (_animator)
+                    _animator.removeOwner(this);
+                    
+                    _animator = value;
+                    
+                    // cause material to be unregistered and registered again to work with the new animation type (if possible)
+                    var oldMaterial:MaterialBase = material;
+                    material = null;
+                    material = oldMaterial;
+                    
+                    var len:number = _subMeshes.length;
+                    var subMesh:SubMesh;
+                    
+                    // reassign for each SubMesh
+                    for (var i:number = 0; i < len; ++i) {
+                    subMesh = _subMeshes[i];
+                    oldMaterial = subMesh._material;
+                    if (oldMaterial) {
+                    subMesh.material = null;
+                    subMesh.material = oldMaterial;
+                    }
+                    }
+                    
+                    if (_animator)
+                    _animator.addOwner(this);
+                    
+                    */
                 },
                 enumerable: true,
                 configurable: true
@@ -9891,6 +9992,15 @@ var away;
             */
             Mesh.prototype.clearAnimationGeometry = function () {
                 away.Debug.throwPIR("away.entities.Mesh", "away.entities.Mesh", "Missing Dependency: IAnimator");
+                /* TODO: Missing Dependency: IAnimator
+                var len:number = this._subMeshes.length;
+                for (var i:number = 0; i < len; ++i)
+                {
+                
+                this._subMeshes[i].animationSubGeometry = null;
+                
+                }
+                */
             };
 
             /**
@@ -9911,6 +10021,14 @@ var away;
                 this.disposeWithChildren();
 
                 away.Debug.throwPIR("away.entities.Mesh", "away.entities.Mesh", "Missing Dependency: IAnimator");
+                /* TODO: Missing Dependency: IAnimator
+                if (this._animator)
+                {
+                
+                this._animator.dispose();
+                
+                }
+                */
             };
 
             /**
@@ -10062,6 +10180,562 @@ var away;
             return Mesh;
         })(away.entities.Entity);
         entities.Mesh = Mesh;
+    })(away.entities || (away.entities = {}));
+    var entities = away.entities;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (entities) {
+        /**
+        * A SkyBox class is used to render a sky in the scene. It's always considered static and 'at infinity', and as
+        * such it's always centered at the camera's position and sized to exactly fit within the camera's frustum, ensuring
+        * the sky box is always as large as possible without being clipped.
+        */
+        var SkyBox = (function (_super) {
+            __extends(SkyBox, _super);
+            /**
+            * Create a new SkyBox object.
+            * @param cubeMap The CubeMap to use for the sky box's texture.
+            */
+            function SkyBox(cubeMap) {
+                _super.call(this);
+                this._uvTransform = new away.geom.Matrix();
+
+                this._material = new away.materials.SkyBoxMaterial(cubeMap);
+                this._material.iAddOwner(this);
+                this._geometry = new away.base.SubGeometry();
+                this.buildGeometry(this._geometry);
+            }
+            Object.defineProperty(SkyBox.prototype, "animator", {
+                get: function () {
+                    return this._animator;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            SkyBox.prototype.pGetDefaultBoundingVolume = function () {
+                return new away.bounds.NullBounds();
+            };
+
+            /**
+            * @inheritDoc
+            */
+            SkyBox.prototype.activateVertexBuffer = function (index, stage3DProxy) {
+                this._geometry.activateVertexBuffer(index, stage3DProxy);
+            };
+
+            /**
+            * @inheritDoc
+            */
+            SkyBox.prototype.activateUVBuffer = function (index, stage3DProxy) {
+            };
+
+            /**
+            * @inheritDoc
+            */
+            SkyBox.prototype.activateVertexNormalBuffer = function (index, stage3DProxy) {
+            };
+
+            /**
+            * @inheritDoc
+            */
+            SkyBox.prototype.activateVertexTangentBuffer = function (index, stage3DProxy) {
+            };
+
+            SkyBox.prototype.activateSecondaryUVBuffer = function (index, stage3DProxy) {
+            };
+
+            /**
+            * @inheritDoc
+            */
+            SkyBox.prototype.getIndexBuffer = function (stage3DProxy) {
+                return this._geometry.getIndexBuffer(stage3DProxy);
+            };
+
+            Object.defineProperty(SkyBox.prototype, "numTriangles", {
+                get: /**
+                * The amount of triangles that comprise the SkyBox geometry.
+                */
+                function () {
+                    return this._geometry.numTriangles;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SkyBox.prototype, "sourceEntity", {
+                get: /**
+                * The entity that that initially provided the IRenderable to the render pipeline.
+                */
+                function () {
+                    return null;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SkyBox.prototype, "material", {
+                get: /**
+                * The material with which to render the object.
+                */
+                function () {
+                    return this._material;
+                },
+                set: function (value) {
+                    throw new away.errors.AbstractMethodError("Unsupported method!");
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(SkyBox.prototype, "assetType", {
+                get: function () {
+                    return away.library.AssetType.SKYBOX;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * @inheritDoc
+            */
+            SkyBox.prototype.pInvalidateBounds = function () {
+                // dead end
+            };
+
+            /**
+            * @inheritDoc
+            */
+            SkyBox.prototype.pCreateEntityPartitionNode = function () {
+                return new away.partition.SkyBoxNode(this);
+            };
+
+            /**
+            * @inheritDoc
+            */
+            SkyBox.prototype.pUpdateBounds = function () {
+                this._pBoundsInvalid = false;
+            };
+
+            /**
+            * Builds the geometry that forms the SkyBox
+            */
+            SkyBox.prototype.buildGeometry = function (target) {
+                var vertices = new Array(-1, 1, -1, 1, 1, -1, 1, 1, 1, -1, 1, 1, -1, -1, -1, 1, -1, -1, 1, -1, 1, -1, -1, 1);
+
+                //vertices.fixed = true;
+                var indices = new Array(0, 1, 2, 2, 3, 0, 6, 5, 4, 4, 7, 6, 2, 6, 7, 7, 3, 2, 4, 5, 1, 1, 0, 4, 4, 0, 3, 3, 7, 4, 2, 1, 5, 5, 6, 2);
+
+                target.updateVertexData(vertices);
+                target.updateIndexData(indices);
+            };
+
+            Object.defineProperty(SkyBox.prototype, "castsShadows", {
+                get: function () {
+                    return false;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SkyBox.prototype, "uvTransform", {
+                get: function () {
+                    return this._uvTransform;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SkyBox.prototype, "vertexData", {
+                get: function () {
+                    return this._geometry.vertexData;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SkyBox.prototype, "indexData", {
+                get: function () {
+                    return this._geometry.indexData;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SkyBox.prototype, "UVData", {
+                get: function () {
+                    return this._geometry.UVData;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SkyBox.prototype, "numVertices", {
+                get: function () {
+                    return this._geometry.numVertices;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SkyBox.prototype, "vertexStride", {
+                get: function () {
+                    return this._geometry.vertexStride;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SkyBox.prototype, "vertexNormalData", {
+                get: function () {
+                    return this._geometry.vertexNormalData;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SkyBox.prototype, "vertexTangentData", {
+                get: function () {
+                    return this._geometry.vertexTangentData;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SkyBox.prototype, "vertexOffset", {
+                get: function () {
+                    return this._geometry.vertexOffset;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SkyBox.prototype, "vertexNormalOffset", {
+                get: function () {
+                    return this._geometry.vertexNormalOffset;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SkyBox.prototype, "vertexTangentOffset", {
+                get: function () {
+                    return this._geometry.vertexTangentOffset;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            SkyBox.prototype.getRenderSceneTransform = function (camera) {
+                return this._pSceneTransform;
+            };
+            return SkyBox;
+        })(away.entities.Entity);
+        entities.SkyBox = SkyBox;
+    })(away.entities || (away.entities = {}));
+    var entities = away.entities;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (entities) {
+        /**
+        * Sprite3D is a 3D billboard, a renderable rectangular area that is always aligned with the projection plane.
+        * As a result, no perspective transformation occurs on a Sprite3D object.
+        *
+        * todo: mvp generation or vertex shader code can be optimized
+        */
+        var Sprite3D = (function (_super) {
+            __extends(Sprite3D, _super);
+            function Sprite3D(material, width, height) {
+                _super.call(this);
+                this._shadowCaster = false;
+                this.material = material;
+                this._width = width;
+                this._height = height;
+                this._spriteMatrix = new away.geom.Matrix3D();
+                if (!Sprite3D._geometry) {
+                    Sprite3D._geometry = new away.base.SubGeometry();
+                    Sprite3D._geometry.updateVertexData(Array(-.5, .5, .0, .5, .5, .0, .5, -.5, .0, -.5, -.5, .0));
+                    Sprite3D._geometry.updateUVData(Array(.0, .0, 1.0, .0, 1.0, 1.0, .0, 1.0));
+                    Sprite3D._geometry.updateIndexData(Array(0, 1, 2, 0, 2, 3));
+                    Sprite3D._geometry.updateVertexTangentData(Array(1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0));
+                    Sprite3D._geometry.updateVertexNormalData(Array(.0, .0, -1.0, .0, .0, -1.0, .0, .0, -1.0, .0, .0, -1.0));
+                }
+            }
+            Object.defineProperty(Sprite3D.prototype, "pickingCollider", {
+                set: function (value) {
+                    _super.prototype.setPickingCollider.call(this, value);
+
+                    if (value) {
+                        this._pickingSubMesh = new away.base.SubMesh(Sprite3D._geometry, null);
+                        this._pickingTransform = new away.geom.Matrix3D();
+                    }
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Sprite3D.prototype, "width", {
+                get: function () {
+                    return this._width;
+                },
+                set: function (value) {
+                    if (this._width == value)
+                        return;
+                    this._width = value;
+                    this.iInvalidateTransform();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Sprite3D.prototype, "height", {
+                get: function () {
+                    return this._height;
+                },
+                set: function (value) {
+                    if (this._height == value)
+                        return;
+                    this._height = value;
+                    this.iInvalidateTransform();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Sprite3D.prototype.activateVertexBuffer = function (index, stage3DProxy) {
+                Sprite3D._geometry.activateVertexBuffer(index, stage3DProxy);
+            };
+
+            Sprite3D.prototype.activateUVBuffer = function (index, stage3DProxy) {
+                Sprite3D._geometry.activateUVBuffer(index, stage3DProxy);
+            };
+
+            Sprite3D.prototype.activateSecondaryUVBuffer = function (index, stage3DProxy) {
+                Sprite3D._geometry.activateSecondaryUVBuffer(index, stage3DProxy);
+            };
+
+            Sprite3D.prototype.activateVertexNormalBuffer = function (index, stage3DProxy) {
+                Sprite3D._geometry.activateVertexNormalBuffer(index, stage3DProxy);
+            };
+
+            Sprite3D.prototype.activateVertexTangentBuffer = function (index, stage3DProxy) {
+                Sprite3D._geometry.activateVertexTangentBuffer(index, stage3DProxy);
+            };
+
+            Sprite3D.prototype.getIndexBuffer = function (stage3DProxy) {
+                return Sprite3D._geometry.getIndexBuffer(stage3DProxy);
+            };
+
+            Object.defineProperty(Sprite3D.prototype, "numTriangles", {
+                get: function () {
+                    return 2;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Sprite3D.prototype, "sourceEntity", {
+                get: function () {
+                    return this;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Sprite3D.prototype, "material", {
+                get: function () {
+                    return this._material;
+                },
+                set: function (value) {
+                    if (value == this._material)
+                        return;
+                    if (this._material)
+                        this._material.iRemoveOwner(this);
+                    this._material = value;
+                    if (this._material)
+                        this._material.iAddOwner(this);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Sprite3D.prototype, "animator", {
+                get: /**
+                * Defines the animator of the mesh. Act on the mesh's geometry. Defaults to null
+                */
+                function () {
+                    return this._animator;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Sprite3D.prototype, "castsShadows", {
+                get: function () {
+                    return this._shadowCaster;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Sprite3D.prototype.pGetDefaultBoundingVolume = function () {
+                return new away.bounds.AxisAlignedBoundingBox();
+            };
+
+            Sprite3D.prototype.pUpdateBounds = function () {
+                this._pBounds.fromExtremes(-.5 * this._pScaleX, -.5 * this._pScaleY, -.5 * this._pScaleZ, .5 * this._pScaleX, .5 * this._pScaleY, .5 * this._pScaleZ);
+                this._pBoundsInvalid = false;
+            };
+
+            Sprite3D.prototype.pCreateEntityPartitionNode = function () {
+                return new away.partition.RenderableNode(this);
+            };
+
+            Sprite3D.prototype.pUpdateTransform = function () {
+                _super.prototype.pUpdateTransform.call(this);
+                this._pTransform.prependScale(this._width, this._height, Math.max(this._width, this._height));
+            };
+
+            Object.defineProperty(Sprite3D.prototype, "uvTransform", {
+                get: function () {
+                    return null;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Sprite3D.prototype, "vertexData", {
+                get: function () {
+                    return Sprite3D._geometry.vertexData;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Sprite3D.prototype, "indexData", {
+                get: function () {
+                    return Sprite3D._geometry.indexData;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Sprite3D.prototype, "UVData", {
+                get: function () {
+                    return Sprite3D._geometry.UVData;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Sprite3D.prototype, "numVertices", {
+                get: function () {
+                    return Sprite3D._geometry.numVertices;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Sprite3D.prototype, "vertexStride", {
+                get: function () {
+                    return Sprite3D._geometry.vertexStride;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Sprite3D.prototype, "vertexNormalData", {
+                get: function () {
+                    return Sprite3D._geometry.vertexNormalData;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Sprite3D.prototype, "vertexTangentData", {
+                get: function () {
+                    return Sprite3D._geometry.vertexTangentData;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Sprite3D.prototype, "vertexOffset", {
+                get: function () {
+                    return Sprite3D._geometry.vertexOffset;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Sprite3D.prototype, "vertexNormalOffset", {
+                get: function () {
+                    return Sprite3D._geometry.vertexNormalOffset;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Sprite3D.prototype, "vertexTangentOffset", {
+                get: function () {
+                    return Sprite3D._geometry.vertexTangentOffset;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Sprite3D.prototype.iCollidesBefore = function (shortestCollisionDistance, findClosest) {
+                findClosest = findClosest;
+
+                var viewTransform = this._camera.inverseSceneTransform.clone();
+                viewTransform.transpose();
+                var rawViewTransform = away.math.Matrix3DUtils.RAW_DATA_CONTAINER;
+                viewTransform.copyRawDataTo(rawViewTransform);
+                rawViewTransform[3] = 0;
+                rawViewTransform[7] = 0;
+                rawViewTransform[11] = 0;
+                rawViewTransform[12] = 0;
+                rawViewTransform[13] = 0;
+                rawViewTransform[14] = 0;
+
+                this._pickingTransform.copyRawDataFrom(rawViewTransform);
+                this._pickingTransform.prependScale(this._width, this._height, Math.max(this._width, this._height));
+                this._pickingTransform.appendTranslation(this.scenePosition.x, this.scenePosition.y, this.scenePosition.z);
+                this._pickingTransform.invert();
+
+                var localRayPosition = this._pickingTransform.transformVector(this._iPickingCollisionVO.rayPosition);
+                var localRayDirection = this._pickingTransform.deltaTransformVector(this._iPickingCollisionVO.rayDirection);
+
+                this._iPickingCollider.setLocalRay(localRayPosition, localRayDirection);
+
+                this._iPickingCollisionVO.renderable = null;
+
+                if (this._iPickingCollider.testSubMeshCollision(this._pickingSubMesh, this._iPickingCollisionVO, shortestCollisionDistance))
+                    this._iPickingCollisionVO.renderable = this._pickingSubMesh;
+
+                return this._iPickingCollisionVO.renderable != null;
+            };
+
+            Sprite3D.prototype.getRenderSceneTransform = function (camera) {
+                var comps = camera.sceneTransform.decompose();
+                var scale = comps[2];
+                comps[0] = this.scenePosition;
+                scale.x = this._width * this._pScaleX;
+                scale.y = this._height * this._pScaleY;
+                this._spriteMatrix.recompose(comps);
+                return this._spriteMatrix;
+            };
+            return Sprite3D;
+        })(away.entities.Entity);
+        entities.Sprite3D = Sprite3D;
     })(away.entities || (away.entities = {}));
     var entities = away.entities;
 })(away || (away = {}));
@@ -10232,6 +10906,7 @@ var away;
                     if (this._iMaterial) {
                         this._iMaterial.iAddOwner(this);
                     }
+                    //*/
                 },
                 enumerable: true,
                 configurable: true
@@ -10375,6 +11050,7 @@ var away;
             SubMesh.prototype.updateUVTransform = function () {
                 if (this._uvTransform == null) {
                     this._uvTransform = new away.geom.Matrix();
+                    //_uvTransform ||= new Matrix();
                 }
 
                 this._uvTransform.identity();
@@ -11608,6 +12284,7 @@ var away;
                 do {
                     node._pNumEntities += diff;
                 } while((node = node._iParent) != null);
+                //console.log( 'NodeBase' , '_pUpdateNumEntities' , this._pUpdateNumEntities)
             };
             return NodeBase;
         })();
@@ -11834,6 +12511,7 @@ var away;
             }
             //@override
             CameraNode.prototype.acceptTraverser = function (traverser) {
+                // todo: dead end for now, if it has a debug mesh, then sure accept that
             };
             return CameraNode;
         })(away.partition.EntityNode);
@@ -12027,6 +12705,45 @@ var away;
             return MeshNode;
         })(away.partition.EntityNode);
         partition.MeshNode = MeshNode;
+    })(away.partition || (away.partition = {}));
+    var partition = away.partition;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (partition) {
+        /**
+        * SkyBoxNode is a space partitioning leaf node that contains a SkyBox object.
+        */
+        var SkyBoxNode = (function (_super) {
+            __extends(SkyBoxNode, _super);
+            /**
+            * Creates a new SkyBoxNode object.
+            * @param skyBox The SkyBox to be contained in the node.
+            */
+            function SkyBoxNode(skyBox) {
+                _super.call(this, skyBox);
+                this._skyBox = skyBox;
+            }
+            /**
+            * @inheritDoc
+            */
+            SkyBoxNode.prototype.acceptTraverser = function (traverser) {
+                if (traverser.enterNode(this)) {
+                    _super.prototype.acceptTraverser.call(this, traverser);
+                    traverser.applySkyBox(this._skyBox);
+                }
+            };
+
+            SkyBoxNode.prototype.isInFrustum = function (planes, numPlanes) {
+                planes = planes;
+                numPlanes = numPlanes;
+
+                return true;
+            };
+            return SkyBoxNode;
+        })(away.partition.EntityNode);
+        partition.SkyBoxNode = SkyBoxNode;
     })(away.partition || (away.partition = {}));
     var partition = away.partition;
 })(away || (away = {}));
@@ -12335,6 +13052,7 @@ var away;
             PickingColliderBase.prototype.pGetMeshSubgeometryIndex = function (subGeometry) {
                 away.Debug.throwPIR('away.pick.PickingColliderBase', 'pGetMeshSubMeshIndex', 'GeometryUtils.getMeshSubMeshIndex');
                 return 0;
+                //return GeometryUtils.getMeshSubgeometryIndex(subGeometry);
             };
 
             //*/
@@ -12343,6 +13061,7 @@ var away;
                 away.Debug.throwPIR('away.pick.PickingColliderBase', 'pGetMeshSubMeshIndex', 'GeometryUtils.getMeshSubMeshIndex');
 
                 return 0;
+                //return GeometryUtils.getMeshSubMeshIndex(subMesh);
             };
 
             //*/
@@ -13098,7 +13817,13 @@ var away;
                 }
 
                 if (!this._pShareContext) {
+                    console.log('present');
+
                     this._pStage3DProxy.present();
+                    // TODO: imeplement mouse3dManager
+                    // fire collected mouse events
+                    //_mouse3DManager.fireMouseEvents();
+                    //_touch3DManager.fireTouchEvents();
                 }
 
                 // clean up data for this render
@@ -13835,6 +14560,10 @@ var away;
                         asset = this._assets[c];
                         asset.dispose();
                     }
+                    /*
+                    for each (asset in _assets)
+                    asset.dispose();
+                    */
                 }
 
                 this._assets.length = 0;
@@ -14422,6 +15151,23 @@ var away;
 
                         this._filtered[idx++] = asset;
                     }
+                    /*
+                    for each (asset in _assets) {
+                    // Skip this assets if filtering on type and this is wrong type
+                    if (assetTypeFilter && asset.assetType != assetTypeFilter)
+                    continue;
+                    
+                    // Skip this asset if filtering on namespace and this is wrong namespace
+                    if (namespaceFilter && asset.assetNamespace != namespaceFilter)
+                    continue;
+                    
+                    // Skip this asset if a filter func has been provided and it returns false
+                    if (filterFunc != null && !filterFunc(asset))
+                    continue;
+                    
+                    _filtered[idx++] = asset;
+                    }
+                    */
                 } else {
                     this._filtered = this._assets;
                 }
@@ -14825,7 +15571,8 @@ var away;
 
                 if (url.charAt(0) == '/') {
                     if (this._context && this._context.overrideAbsolutePaths)
-                        return this.joinUrl(this._context.dependencyBaseUrl, url); else
+                        return this.joinUrl(this._context.dependencyBaseUrl, url);
+else
                         return url;
                 } else if (scheme_re.test(url)) {
                     if (this._context && this._context.overrideFullURLs) {
@@ -14940,6 +15687,7 @@ var away;
                     var handlerFunction = this._parseErrorHandlers[i];
 
                     handled = handled || handlerFunction(event);
+                    //handled ||= Boolean(handlerFunction(event));
                 }
 
                 if (handled) {
@@ -16785,6 +17533,7 @@ var away;
             * @param event
             */
             URLLoader.prototype.onTimeOut = function (event) {
+                //TODO: Timeout not currently implemented ( also not part of AS3 API )
             };
 
             /**
@@ -16792,6 +17541,7 @@ var away;
             * @param event
             */
             URLLoader.prototype.onAbort = function (event) {
+                // TODO: investigate whether this needs to be an IOError
             };
 
             /**
@@ -17284,6 +18034,9 @@ var away;
 
                     //if(hasEventListener(LoaderEvent.LOAD_ERROR)){
                     this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.LOAD_ERROR, "", true, msg));
+                    //} else{
+                    //	throw new Error(msg);
+                    //}
                 }
             };
 
@@ -17608,7 +18361,7 @@ var away;
                 * @returns {number}
                 */
                 function () {
-                    return this._width;
+                    return this._pWidth;
                 },
                 enumerable: true,
                 configurable: true
@@ -17620,7 +18373,7 @@ var away;
                 * @returns {number}
                 */
                 function () {
-                    return this._height;
+                    return this._pHeight;
                 },
                 enumerable: true,
                 configurable: true
@@ -17658,12 +18411,12 @@ var away;
             * @private
             */
             TextureProxyBase.prototype.pSetSize = function (width, height) {
-                if (this._width != width || this._height != height) {
+                if (this._pWidth != width || this._pHeight != height) {
                     this.pInvalidateSize();
                 }
 
-                this._width = width;
-                this._height = height;
+                this._pWidth = width;
+                this._pHeight = height;
             };
 
             /**
@@ -17968,6 +18721,65 @@ var away;
             return CubeTextureBase;
         })(away.textures.TextureProxyBase);
         textures.CubeTextureBase = CubeTextureBase;
+    })(away.textures || (away.textures = {}));
+    var textures = away.textures;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (textures) {
+        var RenderTexture = (function (_super) {
+            __extends(RenderTexture, _super);
+            function RenderTexture(width, height) {
+                _super.call(this);
+                this.pSetSize(width, height);
+            }
+            Object.defineProperty(RenderTexture.prototype, "width", {
+                set: function (value) {
+                    if (value == this._pWidth) {
+                        return;
+                    }
+
+                    if (!away.utils.TextureUtils.isDimensionValid(value))
+                        throw new Error("Invalid size: Width and height must be power of 2 and cannot exceed 2048");
+
+                    this.invalidateContent();
+                    this.pSetSize(value, this._pHeight);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(RenderTexture.prototype, "height", {
+                set: function (value) {
+                    if (value == this._pHeight) {
+                        return;
+                    }
+
+                    if (!away.utils.TextureUtils.isDimensionValid(value)) {
+                        throw new Error("Invalid size: Width and height must be power of 2 and cannot exceed 2048");
+                    }
+
+                    this.invalidateContent();
+                    this.pSetSize(this._pWidth, value);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            RenderTexture.prototype.pUploadContent = function (texture) {
+                // fake data, to complete texture for sampling
+                var bmp = new away.display.BitmapData(this.width, this.height, false, 0xff0000);
+                away.materials.MipmapGenerator.generateMipMaps(bmp, texture);
+                bmp.dispose();
+            };
+
+            RenderTexture.prototype.pCreateTexture = function (context) {
+                return context.createTexture(this.width, this.height, away.display3D.Context3DTextureFormat.BGRA, true);
+            };
+            return RenderTexture;
+        })(away.textures.Texture2DBase);
+        textures.RenderTexture = RenderTexture;
     })(away.textures || (away.textures = {}));
     var textures = away.textures;
 })(away || (away = {}));
@@ -18467,6 +19279,14 @@ var away;
                     } else {
                         return this.localNormal;
                     }
+                    /*
+                    if (object is ObjectContainer3D) {
+                    var sceneNormal:Vector3D = ObjectContainer3D(object)
+                    sceneNormal.normalize();
+                    return sceneNormal;
+                    } else
+                    return localNormal;
+                    */
                 },
                 enumerable: true,
                 configurable: true
@@ -18675,6 +19495,22 @@ var away;
                 this._enableDepthAndStencil = enableDepthAndStencil;
 
                 away.Debug.throwPIR('Stage3DProxy', 'setRenderTarget', 'away.display3D.Context3D: setRenderToTexture , setRenderToBackBuffer');
+                /*
+                
+                if (target)
+                {
+                
+                this._iContext3D.setRenderToTexture(target, enableDepthAndStencil, this._antiAlias, surfaceSelector);
+                
+                }
+                else
+                {
+                
+                this._iContext3D.setRenderToBackBuffer();
+                
+                }
+                
+                */
             };
 
             /*
@@ -18733,7 +19569,17 @@ var away;
                 away.Debug.throwPIR('Stage3DProxy', 'addEventListener', 'EnterFrame, ExitFrame');
 
                 if ((type == away.events.Event.ENTER_FRAME || type == away.events.Event.EXIT_FRAME)) {
+                    //_frameEventDriver.addEventListener(Event.ENTER_FRAME, onEnterFrame, useCapture, priority, useWeakReference);
+                    // TODO - Start RequestAnimationFrame
                 }
+                /* Original code
+                if ((type == Event.ENTER_FRAME || type == Event.EXIT_FRAME) && ! _frameEventDriver.hasEventListener(Event.ENTER_FRAME)){
+                
+                _frameEventDriver.addEventListener(Event.ENTER_FRAME, onEnterFrame, useCapture, priority, useWeakReference);
+                
+                
+                }
+                */
             };
 
             /**
@@ -18750,6 +19596,8 @@ var away;
                 away.Debug.throwPIR('Stage3DProxy', 'removeEventListener', 'EnterFrame, ExitFrame');
 
                 if (!this.hasEventListener(away.events.Event.ENTER_FRAME, this.onEnterFrame, this) && !this.hasEventListener(away.events.Event.EXIT_FRAME, this.onEnterFrame, this)) {
+                    //_frameEventDriver.removeEventListener(Event.ENTER_FRAME, this.onEnterFrame, this );
+                    // TODO - Stop RequestAnimationFrame
                 }
             };
 
@@ -19069,6 +19917,23 @@ var away;
 
                 // Throw PartialImplementationError to flag this function as changed
                 away.Debug.throwPIR('Stage3DProxy', 'requestContext', 'Context3DRenderMode');
+                // throw new away.errors.PartialImplementationError( 'Context3DRenderMode');
+                /*
+                // ugly stuff for backward compatibility
+                var renderMode:string = forceSoftware? Context3DRenderMode.SOFTWARE : Context3DRenderMode.AUTO;
+                
+                if (profile == "baseline")
+                this._stage3D.requestContext3D(renderMode);
+                else {
+                try {
+                this._stage3D["requestContext3D"](renderMode, profile);
+                } catch (error:Error) {
+                throw "An error occurred creating a context using the given profile. Profiles are not supported for the SDK this was compiled with.";
+                }
+                }
+                
+                _contextRequested = true;
+                */
             };
 
             /**
@@ -19159,6 +20024,8 @@ var away;
                     s3d.height = height;
                     s3d.x = 0;
                     s3d.y = 0;
+                    //away.utils.CSS.setCanvasSize( this.stage3Ds[ i ].canvas, width, height );
+                    //away.utils.CSS.setCanvasPosition( this.stage3Ds[ i ].canvas, 0, 0, true );
                 }
                 this.dispatchEvent(new away.events.Event(away.events.Event.RESIZE));
             };
@@ -19268,22 +20135,174 @@ var away;
             // TODO: required dependency stage3DProxy
             Mouse3DManager.prototype.updateCollider = function (view) {
                 throw new away.errors.PartialImplementationError('stage3DProxy');
+                /*
+                this._previousCollidingView = this._collidingView;
+                
+                if (view) {
+                // Clear the current colliding objects for multiple views if backBuffer just cleared
+                if (view.stage3DProxy.bufferClear)
+                _collidingViewObjects = new Vector.<PickingCollisionVO>(_viewCount);
+                
+                if (!view.shareContext) {
+                if (view == _activeView && (_forceMouseMove || _updateDirty)) { // If forceMouseMove is off, and no 2D mouse events dirtied the update, don't update either.
+                _collidingObject = _mousePicker.getViewCollision(view.mouseX, view.mouseY, view);
+                }
+                } else {
+                if (view.getBounds(view.parent).contains(view.mouseX + view.x, view.mouseY + view.y)) {
+                if (!_collidingViewObjects)
+                _collidingViewObjects = new Vector.<PickingCollisionVO>(_viewCount);
+                _collidingObject = _collidingViewObjects[_view3Ds[view]] = _mousePicker.getViewCollision(view.mouseX, view.mouseY, view);
+                }
+                }
+                }
+                */
             };
 
             Mouse3DManager.prototype.fireMouseEvents = function () {
                 throw new away.errors.PartialImplementationError('View3D().layeredView');
+                /*
+                
+                var i:number;
+                var len:number;
+                var event:away.events.MouseEvent3D;
+                var dispatcher:away.containers.ObjectContainer3D;
+                
+                
+                
+                // If multiple view are used, determine the best hit based on the depth intersection.
+                if ( Mouse3DManager._collidingViewObjects )
+                {
+                Mouse3DManager._pCollidingObject = null;//_collidingObject = null;
+                
+                // Get the top-most view colliding object
+                var distance:number = Infinity;
+                var view:away.containers.View3D;
+                
+                for (var v:number = Mouse3DManager._viewCount - 1; v >= 0; v--)
+                {
+                view = _view3DLookup[v];
+                
+                if ( Mouse3DManager._collidingViewObjects[v] && (view.layeredView || Mouse3DManager._collidingViewObjects[v].rayEntryDistance < distance))
+                {
+                
+                distance = Mouse3DManager._collidingViewObjects[v].rayEntryDistance;
+                
+                Mouse3DManager._pCollidingObject = Mouse3DManager._collidingViewObjects[v];//_collidingObject = Mouse3DManager._collidingViewObjects[v];
+                
+                if (view.layeredView)
+                {
+                
+                break;
+                
+                }
+                
+                }
+                }
+                }
+                
+                // If colliding object has changed, queue over/out events.
+                if (Mouse3DManager._pCollidingObject  != Mouse3DManager._previousCollidingObject)
+                {
+                
+                if (Mouse3DManager._previousCollidingObject)
+                {
+                
+                this.queueDispatch(Mouse3DManager._mouseOut, this._mouseMoveEvent, Mouse3DManager._previousCollidingObject);
+                
+                }
+                
+                if (Mouse3DManager._pCollidingObject)
+                {
+                this.queueDispatch(Mouse3DManager._mouseOver, this._mouseMoveEvent, Mouse3DManager._pCollidingObject );
+                }
+                
+                }
+                
+                // Fire mouse move events here if forceMouseMove is on.
+                if ( this._forceMouseMove && Mouse3DManager._pCollidingObject)
+                {
+                
+                this.queueDispatch( Mouse3DManager._mouseMove, this._mouseMoveEvent, Mouse3DManager._pCollidingObject);
+                
+                }
+                
+                
+                // Dispatch all queued events.
+                len = Mouse3DManager._queuedEvents.length;
+                
+                for (i = 0; i < len; ++i)
+                {
+                // Only dispatch from first implicitly enabled object ( one that is not a child of a mouseChildren = false hierarchy ).
+                event = Mouse3DManager._queuedEvents[i];
+                dispatcher = event.object;
+                
+                while (dispatcher && ! dispatcher._iAncestorsAllowMouseEnabled )
+                {
+                
+                dispatcher = dispatcher.parent;
+                
+                }
+                
+                
+                if (dispatcher)
+                {
+                
+                dispatcher.dispatchEvent(event);
+                
+                }
+                
+                }
+                Mouse3DManager._queuedEvents.length = 0;
+                
+                this._updateDirty = false;
+                Mouse3DManager._previousCollidingObject = Mouse3DManager._pCollidingObject;//_collidingObject;
+                //*/
             };
 
             Mouse3DManager.prototype.addViewLayer = function (view) {
                 throw new away.errors.PartialImplementationError('Stage3DProxy, Stage, DisplayObjectContainer ( as3 / native ) ');
+                /*
+                var stg:Stage = view.stage;
+                
+                // Add instance to mouse3dmanager to fire mouse events for multiple views
+                if (!view.stage3DProxy.mouse3DManager)
+                view.stage3DProxy.mouse3DManager = this;
+                
+                if (!hasKey(view))
+                _view3Ds[view] = 0;
+                
+                _childDepth = 0;
+                traverseDisplayObjects(stg);
+                _viewCount = _childDepth;
+                */
             };
 
             Mouse3DManager.prototype.enableMouseListeners = function (view) {
                 throw new away.errors.PartialImplementationError('MouseEvent ( as3 / native ) as3 <> JS Conversion');
+                /*
+                view.addEventListener(MouseEvent.CLICK, onClick);
+                view.addEventListener(MouseEvent.DOUBLE_CLICK, onDoubleClick);
+                view.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
+                view.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
+                view.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+                view.addEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel);
+                view.addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
+                view.addEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
+                */
             };
 
             Mouse3DManager.prototype.disableMouseListeners = function (view) {
                 throw new away.errors.PartialImplementationError('MouseEvent ( as3 / native ) as3 <> JS Conversion');
+                /*
+                view.removeEventListener(MouseEvent.CLICK, onClick);
+                view.removeEventListener(MouseEvent.DOUBLE_CLICK, onDoubleClick);
+                view.removeEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
+                view.removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
+                view.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+                view.removeEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel);
+                view.removeEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
+                view.removeEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
+                */
             };
 
             Mouse3DManager.prototype.dispose = function () {
@@ -19296,6 +20315,46 @@ var away;
             Mouse3DManager.prototype.queueDispatch = function (event, sourceEvent, collider) {
                 if (typeof collider === "undefined") { collider = null; }
                 throw new away.errors.PartialImplementationError('MouseEvent ( as3 / native ) as3 <> JS Conversion');
+                /*
+                // 2D properties.
+                event.ctrlKey = sourceEvent.ctrlKey;
+                event.altKey = sourceEvent.altKey;
+                event.shiftKey = sourceEvent.shiftKey;
+                event.delta = sourceEvent.delta;
+                event.screenX = sourceEvent.localX;
+                event.screenY = sourceEvent.localY;
+                
+                collider ||= _collidingObject;
+                
+                // 3D properties.
+                if (collider) {
+                // Object.
+                event.object = collider.entity;
+                event.renderable = collider.renderable;
+                // UV.
+                event.uv = collider.uv;
+                // Position.
+                event.localPosition = collider.localPosition? collider.localPosition.clone() : null;
+                // Normal.
+                event.localNormal = collider.localNormal? collider.localNormal.clone() : null;
+                // Face index.
+                event.index = collider.index;
+                // SubGeometryIndex.
+                event.subGeometryIndex = collider.subGeometryIndex;
+                
+                } else {
+                // Set all to null.
+                event.uv = null;
+                event.object = null;
+                event.localPosition = _nullVector;
+                event.localNormal = _nullVector;
+                event.index = 0;
+                event.subGeometryIndex = 0;
+                }
+                
+                // Store event to be dispatched later.
+                _queuedEvents.push(event);
+                */
             };
 
             Mouse3DManager.prototype.reThrowEvent = function (event) {
@@ -19314,6 +20373,23 @@ var away;
 
             Mouse3DManager.prototype.traverseDisplayObjects = function (container) {
                 throw new away.errors.PartialImplementationError('DisplayObjectContainer ( as3 / native ) as3 <> JS Conversion');
+                /*
+                var childCount:number = container.numChildren;
+                var c:number = 0;
+                var child:DisplayObject;
+                for (c = 0; c < childCount; c++) {
+                child = container.getChildAt(c);
+                for (var v:* in _view3Ds) {
+                if (child == v) {
+                _view3Ds[child] = _childDepth;
+                _view3DLookup[_childDepth] = v;
+                _childDepth++;
+                }
+                }
+                if (child is DisplayObjectContainer)
+                traverseDisplayObjects(child as DisplayObjectContainer);
+                }
+                */
             };
 
             // ---------------------------------------------------------------------
@@ -19321,6 +20397,22 @@ var away;
             // ---------------------------------------------------------------------
             Mouse3DManager.prototype.onMouseMove = function (event) {
                 throw new away.errors.PartialImplementationError('MouseEvent ( as3 / native ) as3 <> JS Conversion');
+                /*
+                if (Mouse3DManager._pCollidingObject)
+                {
+                
+                this.queueDispatch(Mouse3DManager._mouseMove, this._mouseMoveEvent = event);
+                
+                }
+                else
+                {
+                
+                this.reThrowEvent(event);
+                
+                }
+                
+                this._updateDirty = true;
+                */
             };
 
             Mouse3DManager.prototype.onMouseOut = function (event) {
@@ -19646,10 +20738,10 @@ var away;
 
                 this._stage3DProxy = stage3DProxy;
 
-                this._program3Ds = new Array();
-                this._ids = new Array();
-                this._usages = new Array();
-                this._keys = new Array();
+                this._program3Ds = new Object();
+                this._ids = new Object();
+                this._usages = new Object();
+                this._keys = new Object();
             }
             AGALProgram3DCache.getInstance = function (stage3DProxy) {
                 var index = stage3DProxy._iStage3DIndex;
@@ -19712,12 +20804,49 @@ var away;
 
                     program = this._stage3DProxy._iContext3D.createProgram();
 
-                    away.Debug.throwPIR('AGALProgram3DCache', 'setProgram3D', 'Dependency: AGALMiniAssembler.assemble');
-
+                    //away.Debug.throwPIR( 'AGALProgram3DCache' , 'setProgram3D' , 'Dependency: AGALMiniAssembler.assemble');
                     //TODO: implement AGAL <> GLSL
                     //var vertexByteCode:ByteArray = new AGALMiniAssembler(Debug.active).assemble(Context3DProgramType.VERTEX, vertexCode);
                     //var fragmentByteCode:ByteArray = new AGALMiniAssembler(Debug.active).assemble(Context3DProgramType.FRAGMENT, fragmentCode);
                     //program.upload(vertexByteCode, fragmentByteCode);
+                    /*
+                    var vertexByteCode  : ByteArray = new AGLSLCompiler().assemble( Context3DProgramType.VERTEX , vertexCode );
+                    var fragmentByteCode: ByteArray = new AGLSLCompiler().assemble( Context3DProgramType.FRAGMENT , fragmentCode );
+                    
+                    program.uploadGLSL(vertexByteCode, fragmentByteCode);
+                    
+                    */
+                    var vertCompiler = new aglsl.AGLSLCompiler();
+                    var fragCompiler = new aglsl.AGLSLCompiler();
+
+                    var vertString = vertCompiler.compile(away.display3D.Context3DProgramType.VERTEX, vertexCode);
+                    var fragString = fragCompiler.compile(away.display3D.Context3DProgramType.FRAGMENT, fragmentCode);
+
+                    console.log('===GLSL=========================================================');
+                    console.log('vertString');
+                    console.log(vertString);
+                    console.log('fragString');
+                    console.log(fragString);
+
+                    console.log('===AGAL=========================================================');
+                    console.log('vertexCode');
+                    console.log(vertexCode);
+                    console.log('fragmentCode');
+                    console.log(fragmentCode);
+
+                    program.upload(vertString, fragString);
+
+                    /*
+                    
+                    var vertCompiler:aglsl.AGLSLCompiler = new aglsl.AGLSLCompiler();
+                    var fragCompiler:aglsl.AGLSLCompiler = new aglsl.AGLSLCompiler();
+                    
+                    var vertString : string = vertCompiler.compile( away.display3D.Context3DProgramType.VERTEX, this.pGetVertexCode() );
+                    var fragString : string = fragCompiler.compile( away.display3D.Context3DProgramType.FRAGMENT, this.pGetFragmentCode() );
+                    
+                    this._program3D.upload( vertString , fragString );
+                    
+                    */
                     this._program3Ds[key] = program;
                 }
 
@@ -19797,7 +20926,7 @@ var away;
                 MipmapGenerator._rect.height = source.height;
 
                 MipmapGenerator._source = new away.display.BitmapData(source.width, source.height, alpha);
-                MipmapGenerator._source.copyImage(source, MipmapGenerator._rect, MipmapGenerator._rect);
+                MipmapGenerator._source.drawImage(source, MipmapGenerator._rect, MipmapGenerator._rect);
 
                 MipmapGenerator.generateMipMaps(MipmapGenerator._source, target, mipmap);
 
@@ -19844,9 +20973,11 @@ var away;
 
                     if (target instanceof away.display3D.Texture) {
                         tx = target;
-
-                        mipmap.imageData;
+                        tx.uploadFromBitmapData(mipmap, i++);
                     } else {
+                        away.Debug.throwPIR('MipMapGenerator', 'generateMipMaps', 'Dependency: CubeTexture');
+                        // TODO: implement cube texture upload;
+                        //CubeTexture(target).uploadFromBitmapData(mipmap, side, i++);
                     }
 
                     w >>= 1;
@@ -21680,6 +22811,7 @@ var away;
             };
 
             Geometry.prototype.iValidate = function () {
+                // To be overridden when necessary
             };
 
             Geometry.prototype.iInvalidateBounds = function (subGeom) {
@@ -22826,7 +23958,7 @@ var away;
                 var yMin = Infinity, yMax = -Infinity;
                 var zMin = Infinity, zMax = -Infinity;
                 var d;
-                for (var i = 0; i < 24; ) {
+                for (var i = 0; i < 24;) {
                     d = this._projAABBPoints[i++];
                     if (d < xMin)
                         xMin = d;
@@ -23045,8 +24177,9 @@ var away;
             };
 
             ShadowMapperBase.prototype.pCreateDepthTexture = function () {
-                away.Debug.throwPIR('ShadowMapperBase', 'pCreateDepthTexture', 'Depedency: RenderTexture');
-                return null;
+                //away.Debug.throwPIR( 'ShadowMapperBase' , 'pCreateDepthTexture' , 'Depedency: RenderTexture');
+                //return null;
+                return new away.textures.RenderTexture(this._pDepthMapSize, this._pDepthMapSize);
             };
 
             ShadowMapperBase.prototype.iRenderDepthMap = function (stage3DProxy, entityCollector, renderer) {
@@ -23120,6 +24253,9 @@ var away;
             //@override
             CubeMapShadowMapper.prototype.pCreateDepthTexture = function () {
                 throw new away.errors.PartialImplementationError();
+                /*
+                return new away.textures.RenderCubeTexture( this._depthMapSize );
+                */
             };
 
             //@override
@@ -23728,6 +24864,7 @@ var away;
 
                 item.next = this._entityHead;
                 this._entityHead = item;
+                //console.log ( 'EntityCollector' , 'applyEntity: ' , entity , ' item: ' , item , 'item.next' , item.next , ' head: ' , this._entityHead );
             };
 
             //@override
@@ -24076,6 +25213,7 @@ var away;
                 }
 
                 return _collisionVO;
+                //*/
             };
 
             //*/
@@ -24170,6 +25308,7 @@ var away;
                 fragmentCode = "mov oc, fc0";
 
                 away.Debug.throwPIR('ShaderPicker', 'initTriangleProgram3D', 'Dependency: initObjectProgram3D');
+                //_objectProgram3D.upload(new AGALMiniAssembler().assemble(Context3DProgramType.VERTEX, vertexCode),new AGALMiniAssembler().assemble(Context3DProgramType.FRAGMENT, fragmentCode));
             };
 
             /**
@@ -24185,7 +25324,15 @@ var away;
                 vertexCode = "add vt0, va0, vc5 			\n" + "mul vt0, vt0, vc6 			\n" + "mov v0, vt0				\n" + "m44 vt0, va0, vc0			\n" + "mul vt1.xy, vt0.w, vc4.zw	\n" + "add vt0.xy, vt0.xy, vt1.xy	\n" + "mul vt0.xy, vt0.xy, vc4.xy	\n" + "mov op, vt0	\n";
                 fragmentCode = "mov oc, v0";
 
-                away.Debug.throwPIR('ShaderPicker', 'initTriangleProgram3D', 'Dependency: AGALMiniAssembler');
+                //away.Debug.throwPIR( 'ShaderPicker' , 'initTriangleProgram3D' , 'Dependency: AGALMiniAssembler')
+                var vertCompiler = new aglsl.AGLSLCompiler();
+                var fragCompiler = new aglsl.AGLSLCompiler();
+
+                var vertString = vertCompiler.compile(away.display3D.Context3DProgramType.VERTEX, vertexCode);
+                var fragString = fragCompiler.compile(away.display3D.Context3DProgramType.FRAGMENT, fragmentCode);
+
+                this._triangleProgram3D.upload(vertString, fragString);
+                //this._triangleProgram3D.upload(new AGALMiniAssembler().assemble(Context3DProgramType.VERTEX, vertexCode), new AGALMiniAssembler().assemble(Context3DProgramType.FRAGMENT, fragmentCode));
             };
 
             /**
@@ -25318,6 +26465,7 @@ var away;
                     data = target.vertexData;
 
                     indices = (target.indexData) ? target.indexData : new Array((this._segmentsW * this._segmentsH + this._segmentsW * this._segmentsD + this._segmentsH * this._segmentsD) * 12);
+                    //indices = target.indexData || new Vector.<uint>((_segmentsW*_segmentsH + _segmentsW*_segmentsD + _segmentsH*_segmentsD)*12, true);
                 } else {
                     data = new Array(numVerts * stride);
                     indices = new Array((this._segmentsW * this._segmentsH + this._segmentsW * this._segmentsD + this._segmentsH * this._segmentsD) * 12);
@@ -25513,7 +26661,8 @@ var away;
                 var skip = stride - 2;
 
                 if (target.UVData && numUvs == target.UVData.length)
-                    data = target.UVData; else {
+                    data = target.UVData;
+else {
                     data = new Array(numUvs);
                     this.pInvalidateGeometry();
                 }
@@ -26327,7 +27476,8 @@ var away;
                         }
 
                         if (i == this._pSegmentsW)
-                            this.addVertex(this._rawData[startIndex + this._stride], this._rawData[startIndex + this._stride + 1], this._rawData[startIndex + this._stride + 2], 0, t1, t2, 1, 0, 0); else
+                            this.addVertex(this._rawData[startIndex + this._stride], this._rawData[startIndex + this._stride + 1], this._rawData[startIndex + this._stride + 2], 0, t1, t2, 1, 0, 0);
+else
                             this.addVertex(x, comp1, comp2, 0, t1, t2, 1, 0, 0);
 
                         if (i > 0)
@@ -26369,7 +27519,8 @@ var away;
                         }
 
                         if (i == this._pSegmentsW)
-                            this.addVertex(x, this._rawData[startIndex + 1], this._rawData[startIndex + 2], 0, t1, t2, 1, 0, 0); else
+                            this.addVertex(x, this._rawData[startIndex + 1], this._rawData[startIndex + 2], 0, t1, t2, 1, 0, 0);
+else
                             this.addVertex(x, comp1, comp2, 0, t1, t2, 1, 0, 0);
 
                         if (i > 0)
@@ -26940,7 +28091,8 @@ var away;
                 var skip = stride - 2;
 
                 if (target.UVData && numUvs == target.UVData.length)
-                    data = target.UVData; else {
+                    data = target.UVData;
+else {
                     data = new Array(numUvs);
                     this.pInvalidateGeometry();
                 }
@@ -27247,7 +28399,8 @@ var away;
                             originalIndex = indices[i + j];
 
                             if (mappings[originalIndex] >= 0)
-                                splitIndex = mappings[originalIndex]; else {
+                                splitIndex = mappings[originalIndex];
+else {
                                 o0 = originalIndex * 3 + 0;
                                 o1 = originalIndex * 3 + 1;
                                 o2 = originalIndex * 3 + 2;
@@ -27332,6 +28485,11 @@ var away;
                     // sub-geometries.
                     //TODO: implement dependency: SkinnedSubGeometry
                     away.Debug.throwPIR('GeometryUtils', 'constructSubGeometry', 'Dependency: SkinnedSubGeometry');
+                    /*
+                    sub = new SkinnedSubGeometry(weights.length/(verts.length/3));
+                    SkinnedSubGeometry(sub).updateJointWeightsData(weights);
+                    SkinnedSubGeometry(sub).updateJointIndexData(jointIndices);
+                    */
                 } else {
                     sub = new away.base.CompactSubGeometry();
                 }
@@ -27940,7 +29098,6 @@ var away;
                 prevUsed = MaterialPassBase._previousUsedTexs[contextIndex];
 
                 for (i = this._pNumUsedTextures; i < prevUsed; ++i) {
-                    away.Debug.throwPIR('away.materials.MaterialPassBase', 'iActivate', 'required dependency: Context3D.setTextureAt');
                     context.setTextureAt(i, null);
                 }
 
@@ -27981,7 +29138,7 @@ var away;
                     stage3DProxy.scissorRect = this._oldRect;
                 }
 
-                away.Debug.throwPIR('MaterialPassBase', 'iDeactivate', 'stage3DProxy._iContext3D.setDepthTest - parameters not matching');
+                stage3DProxy._iContext3D.setDepthTest(true, away.display3D.Context3DCompareMode.LESS_EQUAL);
             };
 
             /**
@@ -28244,12 +29401,12 @@ var away;
             * Updates the amount of used register indices.
             */
             CompiledPass.prototype.updateUsedOffsets = function () {
-                this._pNumUsedVertexConstants = this._compiler.numUsedVertexConstants;
-                this._pNumUsedFragmentConstants = this._compiler.numUsedFragmentConstants;
-                this._pNumUsedStreams = this._compiler.numUsedStreams;
-                this._pNumUsedTextures = this._compiler.numUsedTextures;
-                this._pNumUsedVaryings = this._compiler.numUsedVaryings;
-                this._pNumUsedFragmentConstants = this._compiler.numUsedFragmentConstants;
+                this._pNumUsedVertexConstants = this._pCompiler.numUsedVertexConstants;
+                this._pNumUsedFragmentConstants = this._pCompiler.numUsedFragmentConstants;
+                this._pNumUsedStreams = this._pCompiler.numUsedStreams;
+                this._pNumUsedTextures = this._pCompiler.numUsedTextures;
+                this._pNumUsedVaryings = this._pCompiler.numUsedVaryings;
+                this._pNumUsedFragmentConstants = this._pCompiler.numUsedFragmentConstants;
             };
 
             /**
@@ -28277,21 +29434,21 @@ var away;
             * @param profile The compatibility profile used by the renderer.
             */
             CompiledPass.prototype.iInitCompiler = function (profile) {
-                this._compiler = this.pCreateCompiler(profile);
-                this._compiler.forceSeperateMVP = this._forceSeparateMVP;
-                this._compiler.numPointLights = this._pNumPointLights;
-                this._compiler.numDirectionalLights = this._pNumDirectionalLights;
-                this._compiler.numLightProbes = this._pNumLightProbes;
-                this._compiler.methodSetup = this._pMethodSetup;
-                this._compiler.diffuseLightSources = this._pDiffuseLightSources;
-                this._compiler.specularLightSources = this._pSpecularLightSources;
-                this._compiler.setTextureSampling(this._pSmooth, this._pRepeat, this._pMipmap);
-                this._compiler.setConstantDataBuffers(this._pVertexConstantData, this._pFragmentConstantData);
-                this._compiler.animateUVs = this._animateUVs;
-                this._compiler.alphaPremultiplied = this._pAlphaPremultiplied && this._pEnableBlending;
-                this._compiler.preserveAlpha = this._preserveAlpha && this._pEnableBlending;
-                this._compiler.enableLightFallOff = this._enableLightFallOff;
-                this._compiler.compile();
+                this._pCompiler = this.pCreateCompiler(profile);
+                this._pCompiler.forceSeperateMVP = this._forceSeparateMVP;
+                this._pCompiler.numPointLights = this._pNumPointLights;
+                this._pCompiler.numDirectionalLights = this._pNumDirectionalLights;
+                this._pCompiler.numLightProbes = this._pNumLightProbes;
+                this._pCompiler.methodSetup = this._pMethodSetup;
+                this._pCompiler.diffuseLightSources = this._pDiffuseLightSources;
+                this._pCompiler.specularLightSources = this._pSpecularLightSources;
+                this._pCompiler.setTextureSampling(this._pSmooth, this._pRepeat, this._pMipmap);
+                this._pCompiler.setConstantDataBuffers(this._pVertexConstantData, this._pFragmentConstantData);
+                this._pCompiler.animateUVs = this._animateUVs;
+                this._pCompiler.alphaPremultiplied = this._pAlphaPremultiplied && this._pEnableBlending;
+                this._pCompiler.preserveAlpha = this._preserveAlpha && this._pEnableBlending;
+                this._pCompiler.enableLightFallOff = this._enableLightFallOff;
+                this._pCompiler.compile();
             };
 
             /**
@@ -28306,17 +29463,17 @@ var away;
             * Copies the shader's properties from the compiler.
             */
             CompiledPass.prototype.pUpdateShaderProperties = function () {
-                this._pAnimatableAttributes = this._compiler.animatableAttributes;
-                this._pAnimationTargetRegisters = this._compiler.animationTargetRegisters;
-                this._vertexCode = this._compiler.vertexCode;
-                this._fragmentLightCode = this._compiler.fragmentLightCode;
-                this._framentPostLightCode = this._compiler.fragmentPostLightCode;
-                this._pShadedTarget = this._compiler.shadedTarget;
-                this._usingSpecularMethod = this._compiler.usingSpecularMethod;
-                this._usesNormals = this._compiler.usesNormals;
-                this._pNeedUVAnimation = this._compiler.needUVAnimation;
-                this._pUVSource = this._compiler.UVSource;
-                this._pUVTarget = this._compiler.UVTarget;
+                this._pAnimatableAttributes = this._pCompiler.animatableAttributes;
+                this._pAnimationTargetRegisters = this._pCompiler.animationTargetRegisters;
+                this._vertexCode = this._pCompiler.vertexCode;
+                this._fragmentLightCode = this._pCompiler.fragmentLightCode;
+                this._framentPostLightCode = this._pCompiler.fragmentPostLightCode;
+                this._pShadedTarget = this._pCompiler.shadedTarget;
+                this._usingSpecularMethod = this._pCompiler.usingSpecularMethod;
+                this._usesNormals = this._pCompiler.usesNormals;
+                this._pNeedUVAnimation = this._pCompiler.needUVAnimation;
+                this._pUVSource = this._pCompiler.UVSource;
+                this._pUVTarget = this._pCompiler.UVTarget;
 
                 this.pUpdateRegisterIndices();
                 this.updateUsedOffsets();
@@ -28326,19 +29483,19 @@ var away;
             * Updates the indices for various registers.
             */
             CompiledPass.prototype.pUpdateRegisterIndices = function () {
-                this._uvBufferIndex = this._compiler.uvBufferIndex;
-                this._uvTransformIndex = this._compiler.uvTransformIndex;
-                this._secondaryUVBufferIndex = this._compiler.secondaryUVBufferIndex;
-                this._normalBufferIndex = this._compiler.normalBufferIndex;
-                this._tangentBufferIndex = this._compiler.tangentBufferIndex;
-                this._pLightFragmentConstantIndex = this._compiler.lightFragmentConstantIndex;
-                this._pCameraPositionIndex = this._compiler.cameraPositionIndex;
-                this._commonsDataIndex = this._compiler.commonsDataIndex;
-                this._sceneMatrixIndex = this._compiler.sceneMatrixIndex;
-                this._sceneNormalMatrixIndex = this._compiler.sceneNormalMatrixIndex;
-                this._pProbeWeightsIndex = this._compiler.probeWeightsIndex;
-                this._lightProbeDiffuseIndices = this._compiler.lightProbeDiffuseIndices;
-                this._pLightProbeSpecularIndices = this._compiler.lightProbeSpecularIndices;
+                this._uvBufferIndex = this._pCompiler.uvBufferIndex;
+                this._uvTransformIndex = this._pCompiler.uvTransformIndex;
+                this._secondaryUVBufferIndex = this._pCompiler.secondaryUVBufferIndex;
+                this._normalBufferIndex = this._pCompiler.normalBufferIndex;
+                this._tangentBufferIndex = this._pCompiler.tangentBufferIndex;
+                this._pLightFragmentConstantIndex = this._pCompiler.lightFragmentConstantIndex;
+                this._pCameraPositionIndex = this._pCompiler.cameraPositionIndex;
+                this._commonsDataIndex = this._pCompiler.commonsDataIndex;
+                this._sceneMatrixIndex = this._pCompiler.sceneMatrixIndex;
+                this._sceneNormalMatrixIndex = this._pCompiler.sceneNormalMatrixIndex;
+                this._pProbeWeightsIndex = this._pCompiler.probeWeightsIndex;
+                this._pLightProbeDiffuseIndices = this._pCompiler.lightProbeDiffuseIndices;
+                this._pLightProbeSpecularIndices = this._pCompiler.lightProbeSpecularIndices;
             };
 
             Object.defineProperty(CompiledPass.prototype, "preserveAlpha", {
@@ -28598,8 +29755,8 @@ var away;
             * Cleans up the after compiling.
             */
             CompiledPass.prototype.pCleanUp = function () {
-                this._compiler.dispose();
-                this._compiler = null;
+                this._pCompiler.dispose();
+                this._pCompiler = null;
             };
 
             /**
@@ -28626,6 +29783,7 @@ var away;
             * Updates constant data render state used by the lights. This method is optional for subclasses to implement.
             */
             CompiledPass.prototype.pUpdateLightConstants = function () {
+                // up to subclasses to optionally implement
             };
 
             /**
@@ -28731,6 +29889,8 @@ var away;
                 if (this._sceneMatrixIndex >= 0) {
                     renderable.getRenderSceneTransform(camera).copyRawDataTo(this._pVertexConstantData, this._sceneMatrixIndex, true);
                     viewProjection.copyRawDataTo(this._pVertexConstantData, 0, true);
+                    //this._pVertexConstantData = renderable.getRenderSceneTransform(camera).copyRawDataTo( this._sceneMatrixIndex, true);
+                    //this._pVertexConstantData = viewProjection.copyRawDataTo( 0, true);
                 } else {
                     var matrix3D = away.math.Matrix3DUtils.CALCULATION_MATRIX;
 
@@ -28738,10 +29898,12 @@ var away;
                     matrix3D.append(viewProjection);
 
                     matrix3D.copyRawDataTo(this._pVertexConstantData, 0, true);
+                    //this._pVertexConstantData = matrix3D.copyRawDataTo( 0, true);
                 }
 
                 if (this._sceneNormalMatrixIndex >= 0) {
                     renderable.inverseSceneTransform.copyRawDataTo(this._pVertexConstantData, this._sceneNormalMatrixIndex, false);
+                    //this._pVertexConstantData = renderable.inverseSceneTransform.copyRawDataTo(this._sceneNormalMatrixIndex, false);
                 }
 
                 if (this._usesNormals) {
@@ -28781,6 +29943,8 @@ var away;
                 context.setProgramConstantsFromArray(away.display3D.Context3DProgramType.FRAGMENT, 0, this._pFragmentConstantData, this._pNumUsedFragmentConstants);
 
                 renderable.activateVertexBuffer(0, stage3DProxy);
+
+                //------------------------------------------------------------------------
                 context.drawTriangles(renderable.getIndexBuffer(stage3DProxy), 0, renderable.numTriangles);
             };
 
@@ -29659,6 +30823,868 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (materials) {
+        //import away3d.arcane;
+        //import away3d.cameras.Camera3D;
+        //import away3d.core.base.IRenderable;
+        //import away3d.managers.Stage3DProxy;
+        //import away3d.lights.DirectionalLight;
+        //import away3d.lights.LightProbe;
+        //import away3d.lights.PointLight;
+        //import away3d.materials.LightSources;
+        //import away3d.materials.MaterialBase;
+        //import away3d.materials.compilation.LightingShaderCompiler;
+        //import away3d.materials.compilation.ShaderCompiler;
+        //import flash.display3D.Context3D;
+        //import flash.geom.Matrix3D;
+        //import flash.geom.Vector3D;
+        //use namespace arcane;
+        /**
+        * LightingPass is a shader pass that uses shader methods to compile a complete program. It only includes the lighting
+        * methods. It's used by multipass materials to accumulate lighting passes.
+        *
+        * @see away3d.materials.MultiPassMaterialBase
+        */
+        var LightingPass = (function (_super) {
+            __extends(LightingPass, _super);
+            /**
+            * Creates a new LightingPass objects.
+            *
+            * @param material The material to which this pass belongs.
+            */
+            function LightingPass(material) {
+                _super.call(this, material);
+                this._includeCasters = true;
+                this._inverseSceneMatrix = new Array();
+                this._maxLights = 3;
+            }
+            Object.defineProperty(LightingPass.prototype, "directionalLightsOffset", {
+                get: /**
+                * Indicates the offset in the light picker's directional light vector for which to start including lights.
+                * This needs to be set before the light picker is assigned.
+                */
+                function () {
+                    return this._directionalLightsOffset;
+                },
+                set: function (value) {
+                    this._directionalLightsOffset = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(LightingPass.prototype, "pointLightsOffset", {
+                get: /**
+                * Indicates the offset in the light picker's point light vector for which to start including lights.
+                * This needs to be set before the light picker is assigned.
+                */
+                function () {
+                    return this._pointLightsOffset;
+                },
+                set: function (value) {
+                    this._pointLightsOffset = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(LightingPass.prototype, "lightProbesOffset", {
+                get: /**
+                * Indicates the offset in the light picker's light probes vector for which to start including lights.
+                * This needs to be set before the light picker is assigned.
+                */
+                function () {
+                    return this._lightProbesOffset;
+                },
+                set: function (value) {
+                    this._lightProbesOffset = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * @inheritDoc
+            */
+            LightingPass.prototype.pCreateCompiler = function (profile) {
+                this._maxLights = profile == "baselineConstrained" ? 1 : 3;
+                return new away.materials.LightingShaderCompiler(profile);
+            };
+
+            Object.defineProperty(LightingPass.prototype, "includeCasters", {
+                get: /**
+                * Indicates whether or not shadow casting lights need to be included.
+                */
+                function () {
+                    return this._includeCasters;
+                },
+                set: function (value) {
+                    if (this._includeCasters == value)
+                        return;
+                    this._includeCasters = value;
+                    this.iInvalidateShaderProgram();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * @inheritDoc
+            */
+            LightingPass.prototype.pUpdateLights = function () {
+                _super.prototype.pUpdateLights.call(this);
+                var numDirectionalLights;
+                var numPointLights = 0;
+                var numLightProbes = 0;
+
+                if (this._pLightPicker) {
+                    numDirectionalLights = this.calculateNumDirectionalLights(this._pLightPicker.numDirectionalLights);
+                    numPointLights = this.calculateNumPointLights(this._pLightPicker.numPointLights);
+                    numLightProbes = this.calculateNumProbes(this._pLightPicker.numLightProbes);
+
+                    if (this._includeCasters) {
+                        numPointLights += this._pLightPicker.numCastingPointLights;
+                        numDirectionalLights += this._pLightPicker.numCastingDirectionalLights;
+                    }
+                } else {
+                    numDirectionalLights = 0;
+                    numPointLights = 0;
+                    numLightProbes = 0;
+                }
+
+                if (numPointLights != this._pNumPointLights || numDirectionalLights != this._pNumDirectionalLights || numLightProbes != this._pNumLightProbes) {
+                    this._pNumPointLights = numPointLights;
+                    this._pNumDirectionalLights = numDirectionalLights;
+                    this._pNumLightProbes = numLightProbes;
+                    this.iInvalidateShaderProgram();
+                }
+            };
+
+            /**
+            * Calculates the amount of directional lights this material will support.
+            * @param numDirectionalLights The maximum amount of directional lights to support.
+            * @return The amount of directional lights this material will support, bounded by the amount necessary.
+            */
+            LightingPass.prototype.calculateNumDirectionalLights = function (numDirectionalLights) {
+                return Math.min(numDirectionalLights - this._directionalLightsOffset, this._maxLights);
+            };
+
+            /**
+            * Calculates the amount of point lights this material will support.
+            * @param numDirectionalLights The maximum amount of point lights to support.
+            * @return The amount of point lights this material will support, bounded by the amount necessary.
+            */
+            LightingPass.prototype.calculateNumPointLights = function (numPointLights) {
+                var numFree = this._maxLights - this._pNumDirectionalLights;
+                return Math.min(numPointLights - this._pointLightsOffset, numFree);
+            };
+
+            /**
+            * Calculates the amount of light probes this material will support.
+            * @param numDirectionalLights The maximum amount of light probes to support.
+            * @return The amount of light probes this material will support, bounded by the amount necessary.
+            */
+            LightingPass.prototype.calculateNumProbes = function (numLightProbes) {
+                var numChannels = 0;
+                if ((this._pSpecularLightSources & away.materials.LightSources.PROBES) != 0) {
+                    ++numChannels;
+                }
+                if ((this._pDiffuseLightSources & away.materials.LightSources.PROBES) != 0)
+                    ++numChannels;
+
+                // 4 channels available
+                return Math.min(numLightProbes - this._lightProbesOffset, (4 / numChannels) | 0);
+            };
+
+            /**
+            * @inheritDoc
+            */
+            LightingPass.prototype.pUpdateShaderProperties = function () {
+                _super.prototype.pUpdateShaderProperties.call(this);
+
+                var compilerV = this._pCompiler;
+                this._tangentSpace = compilerV.tangentSpace;
+            };
+
+            /**
+            * @inheritDoc
+            */
+            LightingPass.prototype.pUpdateRegisterIndices = function () {
+                _super.prototype.pUpdateRegisterIndices.call(this);
+
+                var compilerV = this._pCompiler;
+                this._lightVertexConstantIndex = compilerV.lightVertexConstantIndex;
+            };
+
+            /**
+            * @inheritDoc
+            */
+            LightingPass.prototype.iRender = function (renderable, stage3DProxy, camera, viewProjection) {
+                renderable.inverseSceneTransform.copyRawDataTo(this._inverseSceneMatrix);
+
+                if (this._tangentSpace && this._pCameraPositionIndex >= 0) {
+                    var pos = camera.scenePosition;
+                    var x = pos.x;
+                    var y = pos.y;
+                    var z = pos.z;
+
+                    this._pVertexConstantData[this._pCameraPositionIndex] = this._inverseSceneMatrix[0] * x + this._inverseSceneMatrix[4] * y + this._inverseSceneMatrix[8] * z + this._inverseSceneMatrix[12];
+                    this._pVertexConstantData[this._pCameraPositionIndex + 1] = this._inverseSceneMatrix[1] * x + this._inverseSceneMatrix[5] * y + this._inverseSceneMatrix[9] * z + this._inverseSceneMatrix[13];
+                    this._pVertexConstantData[this._pCameraPositionIndex + 2] = this._inverseSceneMatrix[2] * x + this._inverseSceneMatrix[6] * y + this._inverseSceneMatrix[10] * z + this._inverseSceneMatrix[14];
+                }
+
+                _super.prototype.iRender.call(this, renderable, stage3DProxy, camera, viewProjection);
+            };
+
+            /**
+            * @inheritDoc
+            */
+            LightingPass.prototype.iActivate = function (stage3DProxy, camera) {
+                _super.prototype.iActivate.call(this, stage3DProxy, camera);
+
+                if (!this._tangentSpace && this._pCameraPositionIndex >= 0) {
+                    var pos = camera.scenePosition;
+
+                    this._pVertexConstantData[this._pCameraPositionIndex] = pos.x;
+                    this._pVertexConstantData[this._pCameraPositionIndex + 1] = pos.y;
+                    this._pVertexConstantData[this._pCameraPositionIndex + 2] = pos.z;
+                }
+            };
+
+            /**
+            * Indicates whether any light probes are used to contribute to the specular shading.
+            */
+            LightingPass.prototype.usesProbesForSpecular = function () {
+                return this._pNumLightProbes > 0 && (this._pSpecularLightSources & away.materials.LightSources.PROBES) != 0;
+            };
+
+            /**
+            * Indicates whether any light probes are used to contribute to the diffuse shading.
+            */
+            LightingPass.prototype.usesProbesForDiffuse = function () {
+                return this._pNumLightProbes > 0 && (this._pDiffuseLightSources & away.materials.LightSources.PROBES) != 0;
+            };
+
+            /**
+            * @inheritDoc
+            */
+            LightingPass.prototype.pUpdateLightConstants = function () {
+                var dirLight;
+                var pointLight;
+                var i = 0;
+                var k = 0;
+                var len;
+                var dirPos;
+                var total = 0;
+                var numLightTypes = this._includeCasters ? 2 : 1;
+                var l;
+                var offset;
+
+                l = this._lightVertexConstantIndex;
+                k = this._pLightFragmentConstantIndex;
+
+                var cast = 0;
+                var dirLights = this._pLightPicker.directionalLights;
+                offset = this._directionalLightsOffset;
+                len = this._pLightPicker.directionalLights.length;
+
+                if (offset > len) {
+                    cast = 1;
+                    offset -= len;
+                }
+
+                for (; cast < numLightTypes; ++cast) {
+                    if (cast)
+                        dirLights = this._pLightPicker.castingDirectionalLights;
+                    len = dirLights.length;
+                    if (len > this._pNumDirectionalLights)
+                        len = this._pNumDirectionalLights;
+
+                    for (i = 0; i < len; ++i) {
+                        dirLight = dirLights[offset + i];
+                        dirPos = dirLight.sceneDirection;
+
+                        this._pAmbientLightR += dirLight._iAmbientR;
+                        this._pAmbientLightG += dirLight._iAmbientG;
+                        this._pAmbientLightB += dirLight._iAmbientB;
+
+                        if (this._tangentSpace) {
+                            var x = -dirPos.x;
+                            var y = -dirPos.y;
+                            var z = -dirPos.z;
+
+                            this._pVertexConstantData[l++] = this._inverseSceneMatrix[0] * x + this._inverseSceneMatrix[4] * y + this._inverseSceneMatrix[8] * z;
+                            this._pVertexConstantData[l++] = this._inverseSceneMatrix[1] * x + this._inverseSceneMatrix[5] * y + this._inverseSceneMatrix[9] * z;
+                            this._pVertexConstantData[l++] = this._inverseSceneMatrix[2] * x + this._inverseSceneMatrix[6] * y + this._inverseSceneMatrix[10] * z;
+                            this._pVertexConstantData[l++] = 1;
+                        } else {
+                            this._pFragmentConstantData[k++] = -dirPos.x;
+                            this._pFragmentConstantData[k++] = -dirPos.y;
+                            this._pFragmentConstantData[k++] = -dirPos.z;
+                            this._pFragmentConstantData[k++] = 1;
+                        }
+
+                        this._pFragmentConstantData[k++] = dirLight._iDiffuseR;
+                        this._pFragmentConstantData[k++] = dirLight._iDiffuseG;
+                        this._pFragmentConstantData[k++] = dirLight._iDiffuseB;
+                        this._pFragmentConstantData[k++] = 1;
+
+                        this._pFragmentConstantData[k++] = dirLight._iSpecularR;
+                        this._pFragmentConstantData[k++] = dirLight._iSpecularG;
+                        this._pFragmentConstantData[k++] = dirLight._iSpecularB;
+                        this._pFragmentConstantData[k++] = 1;
+
+                        if (++total == this._pNumDirectionalLights) {
+                            // break loop
+                            i = len;
+                            cast = numLightTypes;
+                        }
+                    }
+                }
+
+                if (this._pNumDirectionalLights > total) {
+                    i = k + (this._pNumDirectionalLights - total) * 12;
+
+                    while (k < i) {
+                        this._pFragmentConstantData[k++] = 0;
+                    }
+                }
+
+                total = 0;
+
+                var pointLights = this._pLightPicker.pointLights;
+                offset = this._pointLightsOffset;
+                len = this._pLightPicker.pointLights.length;
+
+                if (offset > len) {
+                    cast = 1;
+                    offset -= len;
+                } else {
+                    cast = 0;
+                }
+
+                for (; cast < numLightTypes; ++cast) {
+                    if (cast) {
+                        pointLights = this._pLightPicker.castingPointLights;
+                    }
+
+                    len = pointLights.length;
+
+                    for (i = 0; i < len; ++i) {
+                        pointLight = pointLights[offset + i];
+                        dirPos = pointLight.scenePosition;
+
+                        this._pAmbientLightR += pointLight._iAmbientR;
+                        this._pAmbientLightG += pointLight._iAmbientG;
+                        this._pAmbientLightB += pointLight._iAmbientB;
+
+                        if (this._tangentSpace) {
+                            x = dirPos.x;
+                            y = dirPos.y;
+                            z = dirPos.z;
+
+                            this._pVertexConstantData[l++] = this._inverseSceneMatrix[0] * x + this._inverseSceneMatrix[4] * y + this._inverseSceneMatrix[8] * z + this._inverseSceneMatrix[12];
+                            this._pVertexConstantData[l++] = this._inverseSceneMatrix[1] * x + this._inverseSceneMatrix[5] * y + this._inverseSceneMatrix[9] * z + this._inverseSceneMatrix[13];
+                            this._pVertexConstantData[l++] = this._inverseSceneMatrix[2] * x + this._inverseSceneMatrix[6] * y + this._inverseSceneMatrix[10] * z + this._inverseSceneMatrix[14];
+                        } else {
+                            this._pVertexConstantData[l++] = dirPos.x;
+                            this._pVertexConstantData[l++] = dirPos.y;
+                            this._pVertexConstantData[l++] = dirPos.z;
+                        }
+                        this._pVertexConstantData[l++] = 1;
+
+                        this._pFragmentConstantData[k++] = pointLight._iDiffuseR;
+                        this._pFragmentConstantData[k++] = pointLight._iDiffuseG;
+                        this._pFragmentConstantData[k++] = pointLight._iDiffuseB;
+
+                        var radius = pointLight._pRadius;
+                        this._pFragmentConstantData[k++] = radius * radius;
+
+                        this._pFragmentConstantData[k++] = pointLight._iSpecularR;
+                        this._pFragmentConstantData[k++] = pointLight._iSpecularG;
+                        this._pFragmentConstantData[k++] = pointLight._iSpecularB;
+                        this._pFragmentConstantData[k++] = pointLight._pFallOffFactor;
+
+                        if (++total == this._pNumPointLights) {
+                            // break loop
+                            i = len;
+                            cast = numLightTypes;
+                        }
+                    }
+                }
+
+                if (this._pNumPointLights > total) {
+                    i = k + (total - this._pNumPointLights) * 12;
+                    for (; k < i; ++k) {
+                        this._pFragmentConstantData[k] = 0;
+                    }
+                }
+            };
+
+            /**
+            * @inheritDoc
+            */
+            LightingPass.prototype.pUpdateProbes = function (stage3DProxy) {
+                var context = stage3DProxy._iContext3D;
+                var probe;
+                var lightProbes = this._pLightPicker.lightProbes;
+                var weights = this._pLightPicker.lightProbeWeights;
+                var len = lightProbes.length - this._lightProbesOffset;
+                var addDiff = this.usesProbesForDiffuse();
+                var addSpec = (this._pMethodSetup._iSpecularMethod && this.usesProbesForSpecular());
+
+                if (!(addDiff || addSpec))
+                    return;
+
+                if (len > this._pNumLightProbes) {
+                    len = this._pNumLightProbes;
+                }
+
+                for (var i = 0; i < len; ++i) {
+                    probe = lightProbes[this._lightProbesOffset + i];
+
+                    if (addDiff) {
+                        context.setTextureAt(this._pLightProbeDiffuseIndices[i], probe.diffuseMap.getTextureForStage3D(stage3DProxy));
+                    }
+                    if (addSpec) {
+                        context.setTextureAt(this._pLightProbeSpecularIndices[i], probe.specularMap.getTextureForStage3D(stage3DProxy));
+                    }
+                }
+
+                for (i = 0; i < len; ++i)
+                    this._pFragmentConstantData[this._pProbeWeightsIndex + i] = weights[this._lightProbesOffset + i];
+            };
+            return LightingPass;
+        })(away.materials.CompiledPass);
+        materials.LightingPass = LightingPass;
+    })(away.materials || (away.materials = {}));
+    var materials = away.materials;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (materials) {
+        /**
+        * ShadowCasterPass is a shader pass that uses shader methods to compile a complete program. It only draws the lighting
+        * contribution for a single shadow-casting light.
+        *
+        * @see away3d.materials.methods.ShadingMethodBase
+        */
+        var ShadowCasterPass = (function (_super) {
+            __extends(ShadowCasterPass, _super);
+            /**
+            * Creates a new ShadowCasterPass objects.
+            *
+            * @param material The material to which this pass belongs.
+            */
+            function ShadowCasterPass(material) {
+                _super.call(this, material);
+                this._inverseSceneMatrix = new Array();
+            }
+            /**
+            * @inheritDoc
+            */
+            ShadowCasterPass.prototype.pCreateCompiler = function (profile) {
+                return new away.materials.LightingShaderCompiler(profile);
+            };
+
+            /**
+            * @inheritDoc
+            */
+            ShadowCasterPass.prototype.pUpdateLights = function () {
+                _super.prototype.pUpdateLights.call(this);
+
+                var numPointLights = 0;
+                var numDirectionalLights = 0;
+
+                if (this._pLightPicker) {
+                    numPointLights = this._pLightPicker.numCastingPointLights > 0 ? 1 : 0;
+                    numDirectionalLights = this._pLightPicker.numCastingDirectionalLights > 0 ? 1 : 0;
+                } else {
+                    numPointLights = 0;
+                    numDirectionalLights = 0;
+                }
+
+                this._pNumLightProbes = 0;
+
+                if (numPointLights + numDirectionalLights > 1) {
+                    throw new Error("Must have exactly one light!");
+                }
+
+                if (numPointLights != this._pNumPointLights || numDirectionalLights != this._pNumDirectionalLights) {
+                    this._pNumPointLights = numPointLights;
+                    this._pNumDirectionalLights = numDirectionalLights;
+                    this.iInvalidateShaderProgram();
+                }
+            };
+
+            /**
+            * @inheritDoc
+            */
+            ShadowCasterPass.prototype.pUpdateShaderProperties = function () {
+                _super.prototype.pUpdateShaderProperties.call(this);
+
+                var c = this._pCompiler;
+                this._tangentSpace = c.tangentSpace;
+            };
+
+            /**
+            * @inheritDoc
+            */
+            ShadowCasterPass.prototype.pUpdateRegisterIndices = function () {
+                _super.prototype.pUpdateRegisterIndices.call(this);
+
+                var c = this._pCompiler;
+
+                this._lightVertexConstantIndex = c.lightVertexConstantIndex;
+            };
+
+            /**
+            * @inheritDoc
+            */
+            ShadowCasterPass.prototype.iRender = function (renderable, stage3DProxy, camera, viewProjection) {
+                renderable.inverseSceneTransform.copyRawDataTo(this._inverseSceneMatrix);
+
+                if (this._tangentSpace && this._pCameraPositionIndex >= 0) {
+                    var pos = camera.scenePosition;
+                    var x = pos.x;
+                    var y = pos.y;
+                    var z = pos.z;
+                    this._pVertexConstantData[this._pCameraPositionIndex] = this._inverseSceneMatrix[0] * x + this._inverseSceneMatrix[4] * y + this._inverseSceneMatrix[8] * z + this._inverseSceneMatrix[12];
+                    this._pVertexConstantData[this._pCameraPositionIndex + 1] = this._inverseSceneMatrix[1] * x + this._inverseSceneMatrix[5] * y + this._inverseSceneMatrix[9] * z + this._inverseSceneMatrix[13];
+                    this._pVertexConstantData[this._pCameraPositionIndex + 2] = this._inverseSceneMatrix[2] * x + this._inverseSceneMatrix[6] * y + this._inverseSceneMatrix[10] * z + this._inverseSceneMatrix[14];
+                }
+
+                _super.prototype.iRender.call(this, renderable, stage3DProxy, camera, viewProjection);
+            };
+
+            /**
+            * @inheritDoc
+            */
+            ShadowCasterPass.prototype.iActivate = function (stage3DProxy, camera) {
+                _super.prototype.iActivate.call(this, stage3DProxy, camera);
+
+                if (!this._tangentSpace && this._pCameraPositionIndex >= 0) {
+                    var pos = camera.scenePosition;
+                    this._pVertexConstantData[this._pCameraPositionIndex] = pos.x;
+                    this._pVertexConstantData[this._pCameraPositionIndex + 1] = pos.y;
+                    this._pVertexConstantData[this._pCameraPositionIndex + 2] = pos.z;
+                }
+            };
+
+            /**
+            * @inheritDoc
+            */
+            ShadowCasterPass.prototype.pUpdateLightConstants = function () {
+                // first dirs, then points
+                var dirLight;
+                var pointLight;
+                var k = 0;
+                var l = 0;
+                var dirPos;
+
+                l = this._lightVertexConstantIndex;
+                k = this._pLightFragmentConstantIndex;
+
+                if (this._pNumDirectionalLights > 0) {
+                    dirLight = this._pLightPicker.castingDirectionalLights[0];
+                    dirPos = dirLight.sceneDirection;
+
+                    this._pAmbientLightR += dirLight._iAmbientR;
+                    this._pAmbientLightG += dirLight._iAmbientG;
+                    this._pAmbientLightB += dirLight._iAmbientB;
+
+                    if (this._tangentSpace) {
+                        var x = -dirPos.x;
+                        var y = -dirPos.y;
+                        var z = -dirPos.z;
+                        this._pVertexConstantData[l++] = this._inverseSceneMatrix[0] * x + this._inverseSceneMatrix[4] * y + this._inverseSceneMatrix[8] * z;
+                        this._pVertexConstantData[l++] = this._inverseSceneMatrix[1] * x + this._inverseSceneMatrix[5] * y + this._inverseSceneMatrix[9] * z;
+                        this._pVertexConstantData[l++] = this._inverseSceneMatrix[2] * x + this._inverseSceneMatrix[6] * y + this._inverseSceneMatrix[10] * z;
+                        this._pVertexConstantData[l++] = 1;
+                    } else {
+                        this._pFragmentConstantData[k++] = -dirPos.x;
+                        this._pFragmentConstantData[k++] = -dirPos.y;
+                        this._pFragmentConstantData[k++] = -dirPos.z;
+                        this._pFragmentConstantData[k++] = 1;
+                    }
+
+                    this._pFragmentConstantData[k++] = dirLight._iDiffuseR;
+                    this._pFragmentConstantData[k++] = dirLight._iDiffuseG;
+                    this._pFragmentConstantData[k++] = dirLight._iDiffuseB;
+                    this._pFragmentConstantData[k++] = 1;
+
+                    this._pFragmentConstantData[k++] = dirLight._iSpecularR;
+                    this._pFragmentConstantData[k++] = dirLight._iSpecularG;
+                    this._pFragmentConstantData[k++] = dirLight._iSpecularB;
+                    this._pFragmentConstantData[k++] = 1;
+
+                    return;
+                }
+
+                if (this._pNumPointLights > 0) {
+                    pointLight = this._pLightPicker.castingPointLights[0];
+
+                    dirPos = pointLight.scenePosition;
+
+                    this._pAmbientLightR += pointLight._iAmbientR;
+                    this._pAmbientLightG += pointLight._iAmbientG;
+                    this._pAmbientLightB += pointLight._iAmbientB;
+
+                    if (this._tangentSpace) {
+                        x = dirPos.x;
+                        y = dirPos.y;
+                        z = dirPos.z;
+
+                        this._pVertexConstantData[l++] = this._inverseSceneMatrix[0] * x + this._inverseSceneMatrix[4] * y + this._inverseSceneMatrix[8] * z + this._inverseSceneMatrix[12];
+                        this._pVertexConstantData[l++] = this._inverseSceneMatrix[1] * x + this._inverseSceneMatrix[5] * y + this._inverseSceneMatrix[9] * z + this._inverseSceneMatrix[13];
+                        this._pVertexConstantData[l++] = this._inverseSceneMatrix[2] * x + this._inverseSceneMatrix[6] * y + this._inverseSceneMatrix[10] * z + this._inverseSceneMatrix[14];
+                    } else {
+                        this._pVertexConstantData[l++] = dirPos.x;
+                        this._pVertexConstantData[l++] = dirPos.y;
+                        this._pVertexConstantData[l++] = dirPos.z;
+                    }
+                    this._pVertexConstantData[l++] = 1;
+
+                    this._pFragmentConstantData[k++] = pointLight._iDiffuseR;
+                    this._pFragmentConstantData[k++] = pointLight._iDiffuseG;
+                    this._pFragmentConstantData[k++] = pointLight._iDiffuseB;
+                    this._pFragmentConstantData[k++] = pointLight._pRadius * pointLight._pRadius;
+
+                    this._pFragmentConstantData[k++] = pointLight._iSpecularR;
+                    this._pFragmentConstantData[k++] = pointLight._iSpecularG;
+                    this._pFragmentConstantData[k++] = pointLight._iSpecularB;
+                    this._pFragmentConstantData[k++] = pointLight._pFallOffFactor;
+                }
+            };
+
+            /**
+            * @inheritDoc
+            */
+            ShadowCasterPass.prototype.pUsesProbes = function () {
+                return false;
+            };
+
+            /**
+            * @inheritDoc
+            */
+            ShadowCasterPass.prototype.pUsesLights = function () {
+                return true;
+            };
+
+            /**
+            * @inheritDoc
+            */
+            ShadowCasterPass.prototype.pUpdateProbes = function (stage3DProxy) {
+            };
+            return ShadowCasterPass;
+        })(away.materials.CompiledPass);
+        materials.ShadowCasterPass = ShadowCasterPass;
+    })(away.materials || (away.materials = {}));
+    var materials = away.materials;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (materials) {
+        /**
+        * SegmentPass is a material pass that draws wireframe segments.
+        */
+        var SegmentPass = (function (_super) {
+            __extends(SegmentPass, _super);
+            /**
+            * Creates a new SegmentPass object.
+            *
+            * @param thickness the thickness of the segments to be drawn.
+            */
+            function SegmentPass(thickness) {
+                _super.call(this);
+                this._constants = new Array(4);
+
+                this._calcMatrix = new away.geom.Matrix3D();
+
+                this._thickness = thickness;
+                this._constants[1] = 1 / 255;
+            }
+            /**
+            * @inheritDoc
+            */
+            SegmentPass.prototype.iGetVertexCode = function () {
+                return "m44 vt0, va0, vc8			\n" + "m44 vt1, va1, vc8			\n" + "sub vt2, vt1, vt0 			\n" + "slt vt5.x, vt0.z, vc7.z			\n" + "sub vt5.y, vc5.x, vt5.x			\n" + "add vt4.x, vt0.z, vc7.z			\n" + "sub vt4.y, vt0.z, vt1.z			\n" + "seq vt4.z, vt4.y vc6.x			\n" + "add vt4.y, vt4.y, vt4.z			\n" + "div vt4.z, vt4.x, vt4.y			\n" + "mul vt4.xyz, vt4.zzz, vt2.xyz	\n" + "add vt3.xyz, vt0.xyz, vt4.xyz	\n" + "mov vt3.w, vc5.x			\n" + "mul vt0, vt0, vt5.yyyy			\n" + "mul vt3, vt3, vt5.xxxx			\n" + "add vt0, vt0, vt3				\n" + "sub vt2, vt1, vt0 			\n" + "nrm vt2.xyz, vt2.xyz			\n" + "nrm vt5.xyz, vt0.xyz			\n" + "mov vt5.w, vc5.x				\n" + "crs vt3.xyz, vt2, vt5			\n" + "nrm vt3.xyz, vt3.xyz			\n" + "mul vt3.xyz, vt3.xyz, va2.xxx	\n" + "mov vt3.w, vc5.x			\n" + "dp3 vt4.x, vt0, vc6			\n" + "mul vt4.x, vt4.x, vc7.x			\n" + "mul vt3.xyz, vt3.xyz, vt4.xxx	\n" + "add vt0.xyz, vt0.xyz, vt3.xyz	\n" + "m44 op, vt0, vc0			\n" + "mov v0, va3				\n";
+            };
+
+            /**
+            * @inheritDoc
+            */
+            SegmentPass.prototype.iGetFragmentCode = function (animationCode) {
+                return "mov oc, v0\n";
+            };
+
+            /**
+            * @inheritDoc
+            * todo: keep maps in dictionary per renderable
+            */
+            SegmentPass.prototype.iRender = function (renderable, stage3DProxy, camera, viewProjection) {
+                var context = stage3DProxy._iContext3D;
+                this._calcMatrix.copyFrom(renderable.sourceEntity.sceneTransform);
+                this._calcMatrix.append(camera.inverseSceneTransform);
+
+                var ss = renderable;
+
+                var subSetCount = ss.iSubSetCount;
+
+                if (ss.hasData) {
+                    for (var i = 0; i < subSetCount; ++i) {
+                        renderable.activateVertexBuffer(i, stage3DProxy);
+                        context.setProgramConstantsFromMatrix(away.display3D.Context3DProgramType.VERTEX, 8, this._calcMatrix, true);
+                        context.drawTriangles(renderable.getIndexBuffer(stage3DProxy), 0, renderable.numTriangles);
+                    }
+                }
+            };
+
+            /**
+            * @inheritDoc
+            */
+            SegmentPass.prototype.iActivate = function (stage3DProxy, camera) {
+                var context = stage3DProxy._iContext3D;
+                _super.prototype.iActivate.call(this, stage3DProxy, camera);
+
+                if (stage3DProxy.scissorRect)
+                    this._constants[0] = this._thickness / Math.min(stage3DProxy.scissorRect.width, stage3DProxy.scissorRect.height);
+else
+                    this._constants[0] = this._thickness / Math.min(stage3DProxy.width, stage3DProxy.height);
+
+                // value to convert distance from camera to model length per pixel width
+                this._constants[2] = camera.lens.near;
+
+                context.setProgramConstantsFromArray(away.display3D.Context3DProgramType.VERTEX, 5, SegmentPass.pONE_VECTOR);
+                context.setProgramConstantsFromArray(away.display3D.Context3DProgramType.VERTEX, 6, SegmentPass.pFRONT_VECTOR);
+                context.setProgramConstantsFromArray(away.display3D.Context3DProgramType.VERTEX, 7, this._constants);
+
+                // projection matrix
+                context.setProgramConstantsFromMatrix(away.display3D.Context3DProgramType.VERTEX, 0, camera.lens.matrix, true);
+            };
+
+            /**
+            * @inheritDoc
+            */
+            SegmentPass.prototype.pDeactivate = function (stage3DProxy) {
+                var context = stage3DProxy._iContext3D;
+                context.setVertexBufferAt(0, null);
+                context.setVertexBufferAt(1, null);
+                context.setVertexBufferAt(2, null);
+                context.setVertexBufferAt(3, null);
+            };
+            SegmentPass.pONE_VECTOR = Array(1, 1, 1, 1);
+            SegmentPass.pFRONT_VECTOR = Array(0, 0, -1, 0);
+            return SegmentPass;
+        })(materials.MaterialPassBase);
+        materials.SegmentPass = SegmentPass;
+    })(away.materials || (away.materials = {}));
+    var materials = away.materials;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (materials) {
+        /**
+        * SkyBoxPass provides a material pass exclusively used to render sky boxes from a cube texture.
+        */
+        var SkyBoxPass = (function (_super) {
+            __extends(SkyBoxPass, _super);
+            /**
+            * Creates a new SkyBoxPass object.
+            */
+            function SkyBoxPass() {
+                _super.call(this);
+                this.mipmap = false;
+                this._pNumUsedTextures = 1;
+                this._vertexData = new Array(0, 0, 0, 0, 1, 1, 1, 1);
+            }
+            Object.defineProperty(SkyBoxPass.prototype, "cubeTexture", {
+                get: /**
+                * The cube texture to use as the skybox.
+                */
+                function () {
+                    return this._cubeTexture;
+                },
+                set: function (value) {
+                    this._cubeTexture = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * @inheritDoc
+            */
+            SkyBoxPass.prototype.iGetVertexCode = function () {
+                return "mul vt0, va0, vc5		\n" + "add vt0, vt0, vc4		\n" + "m44 op, vt0, vc0		\n" + "mov v0, va0\n";
+            };
+
+            /**
+            * @inheritDoc
+            */
+            SkyBoxPass.prototype.iGetFragmentCode = function (animationCode) {
+                var format;
+                switch (this._cubeTexture.format) {
+                    case away.display3D.Context3DTextureFormat.COMPRESSED:
+                        format = "dxt1,";
+                        break;
+                    case "compressedAlpha":
+                        format = "dxt5,";
+                        break;
+                    default:
+                        format = "";
+                }
+
+                var mip = ",mipnone";
+
+                if (this._cubeTexture.hasMipMaps) {
+                    mip = ",miplinear";
+                }
+                return "tex ft0, v0, fs0 <cube," + format + "linear,clamp" + mip + ">	\n" + "mov oc, ft0							\n";
+            };
+
+            /**
+            * @inheritDoc
+            */
+            SkyBoxPass.prototype.iRender = function (renderable, stage3DProxy, camera, viewProjection) {
+                var context = stage3DProxy._iContext3D;
+                var pos = camera.scenePosition;
+                this._vertexData[0] = pos.x;
+                this._vertexData[1] = pos.y;
+                this._vertexData[2] = pos.z;
+                this._vertexData[4] = this._vertexData[5] = this._vertexData[6] = camera.lens.far / Math.sqrt(3);
+                context.setProgramConstantsFromMatrix(away.display3D.Context3DProgramType.VERTEX, 0, viewProjection, true);
+                context.setProgramConstantsFromArray(away.display3D.Context3DProgramType.VERTEX, 4, this._vertexData, 2);
+                renderable.activateVertexBuffer(0, stage3DProxy);
+                context.drawTriangles(renderable.getIndexBuffer(stage3DProxy), 0, renderable.numTriangles);
+            };
+
+            /**
+            * @inheritDoc
+            */
+            SkyBoxPass.prototype.iActivate = function (stage3DProxy, camera) {
+                _super.prototype.iActivate.call(this, stage3DProxy, camera);
+                var context = stage3DProxy._iContext3D;
+                context.setDepthTest(false, away.display3D.Context3DCompareMode.LESS);
+                context.setTextureAt(0, this._cubeTexture.getTextureForStage3D(stage3DProxy));
+            };
+            return SkyBoxPass;
+        })(away.materials.MaterialPassBase);
+        materials.SkyBoxPass = SkyBoxPass;
+    })(away.materials || (away.materials = {}));
+    var materials = away.materials;
+})(away || (away = {}));
+var away;
+(function (away) {
     ///<reference path="../_definitions.ts"/>
     (function (materials) {
         /**
@@ -30135,6 +32161,918 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (materials) {
+        /**
+        * MultiPassMaterialBase forms an abstract base class for the default multi-pass materials provided by Away3D,
+        * using material methods to define their appearance.
+        */
+        var MultiPassMaterialBase = (function (_super) {
+            __extends(MultiPassMaterialBase, _super);
+            /**
+            * Creates a new MultiPassMaterialBase object.
+            */
+            function MultiPassMaterialBase() {
+                _super.call(this);
+                this._alphaThreshold = 0;
+                this._specularLightSources = 0x01;
+                this._diffuseLightSources = 0x03;
+                this._ambientMethod = new away.materials.BasicAmbientMethod();
+                this._diffuseMethod = new away.materials.BasicDiffuseMethod();
+                this._normalMethod = new away.materials.BasicNormalMethod();
+                this._specularMethod = new away.materials.BasicSpecularMethod();
+                this._screenPassesInvalid = true;
+                this._enableLightFallOff = true;
+            }
+            Object.defineProperty(MultiPassMaterialBase.prototype, "enableLightFallOff", {
+                get: /**
+                * Whether or not to use fallOff and radius properties for lights. This can be used to improve performance and
+                * compatibility for constrained mode.
+                */
+                function () {
+                    return this._enableLightFallOff;
+                },
+                set: function (value) {
+                    if (this._enableLightFallOff != value)
+                        this.pInvalidateScreenPasses();
+                    this._enableLightFallOff = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(MultiPassMaterialBase.prototype, "alphaThreshold", {
+                get: /**
+                * The minimum alpha value for which pixels should be drawn. This is used for transparency that is either
+                * invisible or entirely opaque, often used with textures for foliage, etc.
+                * Recommended values are 0 to disable alpha, or 0.5 to create smooth edges. Default value is 0 (disabled).
+                */
+                function () {
+                    return this._alphaThreshold;
+                },
+                set: function (value) {
+                    this._alphaThreshold = value;
+                    this._diffuseMethod.alphaThreshold = value;
+                    this._pDepthPass.alphaThreshold = value;
+                    this._pDistancePass.alphaThreshold = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(MultiPassMaterialBase.prototype, "depthCompareMode", {
+                set: /**
+                * @inheritDoc
+                */
+                function (value) {
+                    _super.prototype.setDepthCompareMode.call(this, value);
+                    this.pInvalidateScreenPasses();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(MultiPassMaterialBase.prototype, "blendMode", {
+                set: /**
+                * @inheritDoc
+                */
+                function (value) {
+                    _super.prototype.setBlendMode.call(this, value);
+                    this.pInvalidateScreenPasses();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * @inheritDoc
+            */
+            MultiPassMaterialBase.prototype.iActivateForDepth = function (stage3DProxy, camera, distanceBased) {
+                if (typeof distanceBased === "undefined") { distanceBased = false; }
+                if (distanceBased) {
+                    this._pDistancePass.alphaMask = this._diffuseMethod.texture;
+                } else {
+                    this._pDepthPass.alphaMask = this._diffuseMethod.texture;
+                }
+
+                _super.prototype.iActivateForDepth.call(this, stage3DProxy, camera, distanceBased);
+            };
+
+            Object.defineProperty(MultiPassMaterialBase.prototype, "specularLightSources", {
+                get: /**
+                * Define which light source types to use for specular reflections. This allows choosing between regular lights
+                * and/or light probes for specular reflections.
+                *
+                * @see away3d.materials.LightSources
+                */
+                function () {
+                    return this._specularLightSources;
+                },
+                set: function (value) {
+                    this._specularLightSources = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(MultiPassMaterialBase.prototype, "diffuseLightSources", {
+                get: /**
+                * Define which light source types to use for diffuse reflections. This allows choosing between regular lights
+                * and/or light probes for diffuse reflections.
+                *
+                * @see away3d.materials.LightSources
+                */
+                function () {
+                    return this._diffuseLightSources;
+                },
+                set: function (value) {
+                    this._diffuseLightSources = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(MultiPassMaterialBase.prototype, "lightPicker", {
+                set: /**
+                * @inheritDoc
+                */
+                function (value) {
+                    if (this._pLightPicker)
+                        this._pLightPicker.removeEventListener(away.events.Event.CHANGE, this.onLightsChange, this);
+
+                    _super.prototype.setLightPicker.call(this, value);
+
+                    if (this._pLightPicker)
+                        this._pLightPicker.addEventListener(away.events.Event.CHANGE, this.onLightsChange, this);
+                    this.pInvalidateScreenPasses();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(MultiPassMaterialBase.prototype, "requiresBlending", {
+                get: /**
+                * @inheritDoc
+                */
+                function () {
+                    return false;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(MultiPassMaterialBase.prototype, "ambientMethod", {
+                get: /**
+                * The method that provides the ambient lighting contribution. Defaults to BasicAmbientMethod.
+                */
+                function () {
+                    return this._ambientMethod;
+                },
+                set: function (value) {
+                    value.copyFrom(this._ambientMethod);
+                    this._ambientMethod = value;
+                    this.pInvalidateScreenPasses();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(MultiPassMaterialBase.prototype, "shadowMethod", {
+                get: /**
+                * The method used to render shadows cast on this surface, or null if no shadows are to be rendered. Defaults to null.
+                */
+                function () {
+                    return this._shadowMethod;
+                },
+                set: function (value) {
+                    if (value && this._shadowMethod)
+                        value.copyFrom(this._shadowMethod);
+                    this._shadowMethod = value;
+                    this.pInvalidateScreenPasses();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(MultiPassMaterialBase.prototype, "diffuseMethod", {
+                get: /**
+                * The method that provides the diffuse lighting contribution. Defaults to BasicDiffuseMethod.
+                */
+                function () {
+                    return this._diffuseMethod;
+                },
+                set: function (value) {
+                    value.copyFrom(this._diffuseMethod);
+                    this._diffuseMethod = value;
+                    this.pInvalidateScreenPasses();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(MultiPassMaterialBase.prototype, "specularMethod", {
+                get: /**
+                * The method that provides the specular lighting contribution. Defaults to BasicSpecularMethod.
+                */
+                function () {
+                    return this._specularMethod;
+                },
+                set: function (value) {
+                    if (value && this._specularMethod)
+                        value.copyFrom(this._specularMethod);
+                    this._specularMethod = value;
+                    this.pInvalidateScreenPasses();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(MultiPassMaterialBase.prototype, "normalMethod", {
+                get: /**
+                * The method used to generate the per-pixel normals. Defaults to BasicNormalMethod.
+                */
+                function () {
+                    return this._normalMethod;
+                },
+                set: function (value) {
+                    value.copyFrom(this._normalMethod);
+                    this._normalMethod = value;
+                    this.pInvalidateScreenPasses();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * Appends an "effect" shading method to the shader. Effect methods are those that do not influence the lighting
+            * but modulate the shaded colour, used for fog, outlines, etc. The method will be applied to the result of the
+            * methods added prior.
+            */
+            MultiPassMaterialBase.prototype.addMethod = function (method) {
+                if (this._pEffectsPass == null) {
+                    this._pEffectsPass = new away.materials.SuperShaderPass(this);
+                }
+
+                this._pEffectsPass.addMethod(method);
+                this.pInvalidateScreenPasses();
+            };
+
+            Object.defineProperty(MultiPassMaterialBase.prototype, "numMethods", {
+                get: /**
+                * The number of "effect" methods added to the material.
+                */
+                function () {
+                    return this._pEffectsPass ? this._pEffectsPass.numMethods : 0;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * Queries whether a given effect method was added to the material.
+            *
+            * @param method The method to be queried.
+            * @return true if the method was added to the material, false otherwise.
+            */
+            MultiPassMaterialBase.prototype.hasMethod = function (method) {
+                return this._pEffectsPass ? this._pEffectsPass.hasMethod(method) : false;
+            };
+
+            /**
+            * Returns the method added at the given index.
+            * @param index The index of the method to retrieve.
+            * @return The method at the given index.
+            */
+            MultiPassMaterialBase.prototype.getMethodAt = function (index) {
+                return this._pEffectsPass.getMethodAt(index);
+            };
+
+            /**
+            * Adds an effect method at the specified index amongst the methods already added to the material. Effect
+            * methods are those that do not influence the lighting but modulate the shaded colour, used for fog, outlines,
+            * etc. The method will be applied to the result of the methods with a lower index.
+            */
+            MultiPassMaterialBase.prototype.addMethodAt = function (method, index) {
+                if (this._pEffectsPass == null) {
+                    this._pEffectsPass = new away.materials.SuperShaderPass(this);
+                }
+
+                this._pEffectsPass.addMethodAt(method, index);
+                this.pInvalidateScreenPasses();
+            };
+
+            /**
+            * Removes an effect method from the material.
+            * @param method The method to be removed.
+            */
+            MultiPassMaterialBase.prototype.removeMethod = function (method) {
+                if (this._pEffectsPass)
+                    return;
+                this._pEffectsPass.removeMethod(method);
+
+                if (this._pEffectsPass.numMethods == 0)
+                    this.pInvalidateScreenPasses();
+            };
+
+            Object.defineProperty(MultiPassMaterialBase.prototype, "mipmap", {
+                set: /**
+                * @inheritDoc
+                */
+                function (value) {
+                    if (this._pMipmap == value)
+                        return;
+
+                    _super.prototype.setMipMap.call(this, value);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(MultiPassMaterialBase.prototype, "normalMap", {
+                get: /**
+                * The normal map to modulate the direction of the surface for each texel. The default normal method expects
+                * tangent-space normal maps, but others could expect object-space maps.
+                */
+                function () {
+                    return this._normalMethod.normalMap;
+                },
+                set: function (value) {
+                    this._normalMethod.normalMap = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(MultiPassMaterialBase.prototype, "specularMap", {
+                get: /**
+                * A specular map that defines the strength of specular reflections for each texel in the red channel,
+                * and the gloss factor in the green channel. You can use SpecularBitmapTexture if you want to easily set
+                * specular and gloss maps from grayscale images, but correctly authored images are preferred.
+                */
+                function () {
+                    return this._specularMethod.texture;
+                },
+                set: function (value) {
+                    if (this._specularMethod)
+                        this._specularMethod.texture = value;
+else
+                        throw new Error("No specular method was set to assign the specularGlossMap to");
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(MultiPassMaterialBase.prototype, "gloss", {
+                get: /**
+                * The glossiness of the material (sharpness of the specular highlight).
+                */
+                function () {
+                    return this._specularMethod ? this._specularMethod.gloss : 0;
+                },
+                set: function (value) {
+                    if (this._specularMethod)
+                        this._specularMethod.gloss = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(MultiPassMaterialBase.prototype, "ambient", {
+                get: /**
+                * The strength of the ambient reflection.
+                */
+                function () {
+                    return this._ambientMethod.ambient;
+                },
+                set: function (value) {
+                    this._ambientMethod.ambient = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(MultiPassMaterialBase.prototype, "specular", {
+                get: /**
+                * The overall strength of the specular reflection.
+                */
+                function () {
+                    return this._specularMethod ? this._specularMethod.specular : 0;
+                },
+                set: function (value) {
+                    if (this._specularMethod)
+                        this._specularMethod.specular = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(MultiPassMaterialBase.prototype, "ambientColor", {
+                get: /**
+                * The colour of the ambient reflection.
+                */
+                function () {
+                    return this._ambientMethod.ambientColor;
+                },
+                set: function (value) {
+                    this._ambientMethod.ambientColor = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(MultiPassMaterialBase.prototype, "specularColor", {
+                get: /**
+                * The colour of the specular reflection.
+                */
+                function () {
+                    return this._specularMethod.specularColor;
+                },
+                set: function (value) {
+                    this._specularMethod.specularColor = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * @inheritDoc
+            */
+            MultiPassMaterialBase.prototype.iUpdateMaterial = function (context) {
+                var passesInvalid;
+
+                if (this._screenPassesInvalid) {
+                    this.pUpdateScreenPasses();
+                    passesInvalid = true;
+                }
+
+                if (passesInvalid || this.isAnyScreenPassInvalid()) {
+                    this.pClearPasses();
+
+                    this.addChildPassesFor(this._casterLightPass);
+
+                    if (this._nonCasterLightPasses) {
+                        for (var i = 0; i < this._nonCasterLightPasses.length; ++i)
+                            this.addChildPassesFor(this._nonCasterLightPasses[i]);
+                    }
+
+                    this.addChildPassesFor(this._pEffectsPass);
+
+                    this.addScreenPass(this._casterLightPass);
+
+                    if (this._nonCasterLightPasses) {
+                        for (i = 0; i < this._nonCasterLightPasses.length; ++i) {
+                            this.addScreenPass(this._nonCasterLightPasses[i]);
+                        }
+                    }
+
+                    this.addScreenPass(this._pEffectsPass);
+                }
+            };
+
+            /**
+            * Adds a compiled pass that renders to the screen.
+            * @param pass The pass to be added.
+            */
+            MultiPassMaterialBase.prototype.addScreenPass = function (pass) {
+                if (pass) {
+                    this.pAddPass(pass);
+                    pass._iPassesDirty = false;
+                }
+            };
+
+            /**
+            * Tests if any pass that renders to the screen is invalid. This would trigger a new setup of the multiple passes.
+            * @return
+            */
+            MultiPassMaterialBase.prototype.isAnyScreenPassInvalid = function () {
+                if ((this._casterLightPass && this._casterLightPass._iPassesDirty) || (this._pEffectsPass && this._pEffectsPass._iPassesDirty)) {
+                    return true;
+                }
+
+                if (this._nonCasterLightPasses) {
+                    for (var i = 0; i < this._nonCasterLightPasses.length; ++i) {
+                        if (this._nonCasterLightPasses[i]._iPassesDirty)
+                            return true;
+                    }
+                }
+
+                return false;
+            };
+
+            /**
+            * Adds any additional passes on which the given pass is dependent.
+            * @param pass The pass that my need additional passes.
+            */
+            MultiPassMaterialBase.prototype.addChildPassesFor = function (pass) {
+                if (!pass)
+                    return;
+
+                if (pass._iPasses) {
+                    var len = pass._iPasses.length;
+
+                    for (var i = 0; i < len; ++i) {
+                        this.pAddPass(pass._iPasses[i]);
+                    }
+                }
+            };
+
+            /**
+            * @inheritDoc
+            */
+            MultiPassMaterialBase.prototype.iActivatePass = function (index, stage3DProxy, camera) {
+                if (index == 0) {
+                    stage3DProxy._iContext3D.setBlendFactors(away.display3D.Context3DBlendFactor.ONE, away.display3D.Context3DBlendFactor.ZERO);
+                }
+                _super.prototype.iActivatePass.call(this, index, stage3DProxy, camera);
+            };
+
+            /**
+            * @inheritDoc
+            */
+            MultiPassMaterialBase.prototype.iDeactivate = function (stage3DProxy) {
+                _super.prototype.iDeactivate.call(this, stage3DProxy);
+                stage3DProxy._iContext3D.setBlendFactors(away.display3D.Context3DBlendFactor.ONE, away.display3D.Context3DBlendFactor.ZERO);
+            };
+
+            /**
+            * Updates screen passes when they were found to be invalid.
+            */
+            MultiPassMaterialBase.prototype.pUpdateScreenPasses = function () {
+                this.initPasses();
+                this.setBlendAndCompareModes();
+
+                this._screenPassesInvalid = false;
+            };
+
+            /**
+            * Initializes all the passes and their dependent passes.
+            */
+            MultiPassMaterialBase.prototype.initPasses = function () {
+                if (this.numLights == 0 || this.numMethods > 0) {
+                    this.initEffectsPass();
+                } else if (this._pEffectsPass && this.numMethods == 0) {
+                    this.removeEffectsPass();
+                }
+
+                if (this._shadowMethod) {
+                    this.initCasterLightPass();
+                } else {
+                    this.removeCasterLightPass();
+                }
+
+                if (this.numNonCasters > 0)
+                    this.initNonCasterLightPasses();
+else
+                    this.removeNonCasterLightPasses();
+            };
+
+            /**
+            * Sets up the various blending modes for all screen passes, based on whether or not there are previous passes.
+            */
+            MultiPassMaterialBase.prototype.setBlendAndCompareModes = function () {
+                var forceSeparateMVP = (this._casterLightPass || this._pEffectsPass);
+
+                if (this._casterLightPass) {
+                    this._casterLightPass.setBlendMode(away.display.BlendMode.NORMAL);
+                    this._casterLightPass.depthCompareMode = this._pDepthCompareMode;
+                    this._casterLightPass.forceSeparateMVP = forceSeparateMVP;
+                }
+
+                if (this._nonCasterLightPasses) {
+                    var firstAdditiveIndex = 0;
+
+                    if (!this._casterLightPass) {
+                        this._nonCasterLightPasses[0].forceSeparateMVP = forceSeparateMVP;
+                        this._nonCasterLightPasses[0].setBlendMode(away.display.BlendMode.NORMAL);
+                        this._nonCasterLightPasses[0].depthCompareMode = this._pDepthCompareMode;
+                        firstAdditiveIndex = 1;
+                    }
+
+                    for (var i = firstAdditiveIndex; i < this._nonCasterLightPasses.length; ++i) {
+                        this._nonCasterLightPasses[i].forceSeparateMVP = forceSeparateMVP;
+                        this._nonCasterLightPasses[i].setBlendMode(away.display.BlendMode.ADD);
+                        this._nonCasterLightPasses[i].depthCompareMode = away.display3D.Context3DCompareMode.LESS_EQUAL;
+                    }
+                }
+
+                if (this._casterLightPass || this._nonCasterLightPasses) {
+                    if (this._pEffectsPass) {
+                        this._pEffectsPass.iIgnoreLights = true;
+                        this._pEffectsPass.depthCompareMode = away.display3D.Context3DCompareMode.LESS_EQUAL;
+                        this._pEffectsPass.setBlendMode(away.display.BlendMode.LAYER);
+                        this._pEffectsPass.forceSeparateMVP = forceSeparateMVP;
+                    }
+                } else if (this._pEffectsPass) {
+                    // effects pass is the only pass, so it should just blend normally
+                    this._pEffectsPass.iIgnoreLights = false;
+                    this._pEffectsPass.depthCompareMode = this._pDepthCompareMode;
+
+                    this.depthCompareMode;
+
+                    this._pEffectsPass.setBlendMode(away.display.BlendMode.NORMAL);
+                    this._pEffectsPass.forceSeparateMVP = false;
+                }
+            };
+
+            MultiPassMaterialBase.prototype.initCasterLightPass = function () {
+                if (this._casterLightPass == null) {
+                    this._casterLightPass = new away.materials.ShadowCasterPass(this);
+                }
+
+                this._casterLightPass.diffuseMethod = null;
+                this._casterLightPass.ambientMethod = null;
+                this._casterLightPass.normalMethod = null;
+                this._casterLightPass.specularMethod = null;
+                this._casterLightPass.shadowMethod = null;
+                this._casterLightPass.enableLightFallOff = this._enableLightFallOff;
+                this._casterLightPass.lightPicker = new away.materials.StaticLightPicker([this._shadowMethod.castingLight]);
+                this._casterLightPass.shadowMethod = this._shadowMethod;
+                this._casterLightPass.diffuseMethod = this._diffuseMethod;
+                this._casterLightPass.ambientMethod = this._ambientMethod;
+                this._casterLightPass.normalMethod = this._normalMethod;
+                this._casterLightPass.specularMethod = this._specularMethod;
+                this._casterLightPass.diffuseLightSources = this._diffuseLightSources;
+                this._casterLightPass.specularLightSources = this._specularLightSources;
+            };
+
+            MultiPassMaterialBase.prototype.removeCasterLightPass = function () {
+                if (!this._casterLightPass)
+                    return;
+                this._casterLightPass.dispose();
+                this.pRemovePass(this._casterLightPass);
+                this._casterLightPass = null;
+            };
+
+            MultiPassMaterialBase.prototype.initNonCasterLightPasses = function () {
+                this.removeNonCasterLightPasses();
+                var pass;
+                var numDirLights = this._pLightPicker.numDirectionalLights;
+                var numPointLights = this._pLightPicker.numPointLights;
+                var numLightProbes = this._pLightPicker.numLightProbes;
+                var dirLightOffset = 0;
+                var pointLightOffset = 0;
+                var probeOffset = 0;
+
+                if (!this._casterLightPass) {
+                    numDirLights += this._pLightPicker.numCastingDirectionalLights;
+                    numPointLights += this._pLightPicker.numCastingPointLights;
+                }
+
+                this._nonCasterLightPasses = new Array();
+
+                while (dirLightOffset < numDirLights || pointLightOffset < numPointLights || probeOffset < numLightProbes) {
+                    pass = new materials.LightingPass(this);
+                    pass.enableLightFallOff = this._enableLightFallOff;
+                    pass.includeCasters = this._shadowMethod == null;
+                    pass.directionalLightsOffset = dirLightOffset;
+                    pass.pointLightsOffset = pointLightOffset;
+                    pass.lightProbesOffset = probeOffset;
+                    pass.diffuseMethod = null;
+                    pass.ambientMethod = null;
+                    pass.normalMethod = null;
+                    pass.specularMethod = null;
+                    pass.lightPicker = this._pLightPicker;
+                    pass.diffuseMethod = this._diffuseMethod;
+                    pass.ambientMethod = this._ambientMethod;
+                    pass.normalMethod = this._normalMethod;
+                    pass.specularMethod = this._specularMethod;
+                    pass.diffuseLightSources = this._diffuseLightSources;
+                    pass.specularLightSources = this._specularLightSources;
+                    this._nonCasterLightPasses.push(pass);
+
+                    dirLightOffset += pass.iNumDirectionalLights;
+                    pointLightOffset += pass.iNumPointLights;
+                    probeOffset += pass.iNumLightProbes;
+                }
+            };
+
+            MultiPassMaterialBase.prototype.removeNonCasterLightPasses = function () {
+                if (!this._nonCasterLightPasses)
+                    return;
+
+                for (var i = 0; i < this._nonCasterLightPasses.length; ++i) {
+                    this.pRemovePass(this._nonCasterLightPasses[i]);
+                    this._nonCasterLightPasses[i].dispose();
+                }
+                this._nonCasterLightPasses = null;
+            };
+
+            MultiPassMaterialBase.prototype.removeEffectsPass = function () {
+                if (this._pEffectsPass.diffuseMethod != this._diffuseMethod)
+                    this._pEffectsPass.diffuseMethod.dispose();
+
+                this.pRemovePass(this._pEffectsPass);
+                this._pEffectsPass.dispose();
+                this._pEffectsPass = null;
+            };
+
+            MultiPassMaterialBase.prototype.initEffectsPass = function () {
+                if (this._pEffectsPass == null) {
+                    this._pEffectsPass = new away.materials.SuperShaderPass(this);
+                }
+
+                this._pEffectsPass.enableLightFallOff = this._enableLightFallOff;
+                if (this.numLights == 0) {
+                    this._pEffectsPass.diffuseMethod = null;
+                    this._pEffectsPass.diffuseMethod = this._diffuseMethod;
+                } else {
+                    this._pEffectsPass.diffuseMethod = null;
+                    this._pEffectsPass.diffuseMethod = new away.materials.BasicDiffuseMethod();
+                    this._pEffectsPass.diffuseMethod.diffuseColor = 0x000000;
+                    this._pEffectsPass.diffuseMethod.diffuseAlpha = 0;
+                }
+
+                this._pEffectsPass.preserveAlpha = false;
+                this._pEffectsPass.normalMethod = null;
+                this._pEffectsPass.normalMethod = this._normalMethod;
+
+                return this._pEffectsPass;
+            };
+
+            Object.defineProperty(MultiPassMaterialBase.prototype, "numLights", {
+                get: /**
+                * The maximum total number of lights provided by the light picker.
+                */
+                function () {
+                    return this._pLightPicker ? this._pLightPicker.numLightProbes + this._pLightPicker.numDirectionalLights + this._pLightPicker.numPointLights + this._pLightPicker.numCastingDirectionalLights + this._pLightPicker.numCastingPointLights : 0;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(MultiPassMaterialBase.prototype, "numNonCasters", {
+                get: /**
+                * The amount of lights that don't cast shadows.
+                */
+                function () {
+                    return this._pLightPicker ? this._pLightPicker.numLightProbes + this._pLightPicker.numDirectionalLights + this._pLightPicker.numPointLights : 0;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * Flags that the screen passes have become invalid.
+            */
+            MultiPassMaterialBase.prototype.pInvalidateScreenPasses = function () {
+                this._screenPassesInvalid = true;
+            };
+
+            /**
+            * Called when the light picker's configuration changed.
+            */
+            MultiPassMaterialBase.prototype.onLightsChange = function (event) {
+                this.pInvalidateScreenPasses();
+            };
+            return MultiPassMaterialBase;
+        })(away.materials.MaterialBase);
+        materials.MultiPassMaterialBase = MultiPassMaterialBase;
+    })(away.materials || (away.materials = {}));
+    var materials = away.materials;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (materials) {
+        /**
+        * TextureMultiPassMaterial is a multi-pass material that uses a texture to define the surface's diffuse reflection colour (albedo).
+        */
+        var TextureMultiPassMaterial = (function (_super) {
+            __extends(TextureMultiPassMaterial, _super);
+            /**
+            * Creates a new TextureMultiPassMaterial.
+            * @param texture The texture used for the material's albedo color.
+            * @param smooth Indicates whether the texture should be filtered when sampled. Defaults to true.
+            * @param repeat Indicates whether the texture should be tiled when sampled. Defaults to true.
+            * @param mipmap Indicates whether or not any used textures should use mipmapping. Defaults to true.
+            */
+            function TextureMultiPassMaterial(texture, smooth, repeat, mipmap) {
+                if (typeof texture === "undefined") { texture = null; }
+                if (typeof smooth === "undefined") { smooth = true; }
+                if (typeof repeat === "undefined") { repeat = false; }
+                if (typeof mipmap === "undefined") { mipmap = true; }
+                _super.call(this);
+                this._animateUVs = false;
+                this.texture = texture;
+                this.smooth = smooth;
+                this.repeat = repeat;
+                this.mipmap = mipmap;
+            }
+            Object.defineProperty(TextureMultiPassMaterial.prototype, "animateUVs", {
+                get: /**
+                * Specifies whether or not the UV coordinates should be animated using a transformation matrix.
+                */
+                function () {
+                    return this._animateUVs;
+                },
+                set: function (value) {
+                    this._animateUVs = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(TextureMultiPassMaterial.prototype, "texture", {
+                get: /**
+                * The texture object to use for the albedo colour.
+                */
+                function () {
+                    return this.diffuseMethod.texture;
+                },
+                set: function (value) {
+                    this.diffuseMethod.texture = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(TextureMultiPassMaterial.prototype, "ambientTexture", {
+                get: /**
+                * The texture object to use for the ambient colour.
+                */
+                function () {
+                    return this.ambientMethod.texture;
+                },
+                set: function (value) {
+                    this.ambientMethod.texture = value;
+                    this.diffuseMethod.iUseAmbientTexture = (value != null);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            TextureMultiPassMaterial.prototype.pUpdateScreenPasses = function () {
+                _super.prototype.pUpdateScreenPasses.call(this);
+
+                if (this._pEffectsPass)
+                    this._pEffectsPass.animateUVs = this._animateUVs;
+            };
+            return TextureMultiPassMaterial;
+        })(away.materials.MultiPassMaterialBase);
+        materials.TextureMultiPassMaterial = TextureMultiPassMaterial;
+    })(away.materials || (away.materials = {}));
+    var materials = away.materials;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (materials) {
+        /**
+        * ColorMultiPassMaterial is a multi-pass material that uses a flat color as the surface's diffuse reflection value.
+        */
+        var ColorMultiPassMaterial = (function (_super) {
+            __extends(ColorMultiPassMaterial, _super);
+            /**
+            * Creates a new ColorMultiPassMaterial object.
+            *
+            * @param color The material's diffuse surface color.
+            */
+            function ColorMultiPassMaterial(color) {
+                if (typeof color === "undefined") { color = 0xcccccc; }
+                _super.call(this);
+                this.color = color;
+            }
+            Object.defineProperty(ColorMultiPassMaterial.prototype, "color", {
+                get: /**
+                * The diffuse reflectivity color of the surface.
+                */
+                function () {
+                    return this.diffuseMethod.diffuseColor;
+                },
+                set: function (value) {
+                    this.diffuseMethod.diffuseColor = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            return ColorMultiPassMaterial;
+        })(away.materials.MultiPassMaterialBase);
+        materials.ColorMultiPassMaterial = ColorMultiPassMaterial;
+    })(away.materials || (away.materials = {}));
+    var materials = away.materials;
+})(away || (away = {}));
+var away;
+(function (away) {
     ///<reference path="../../_definitions.ts"/>
     (function (materials) {
         /**
@@ -30333,7 +33271,8 @@ var away;
                 var enableMipMaps = vo.useMipmapping && texture.hasMipMaps;
 
                 if (vo.useSmoothTextures)
-                    filter = enableMipMaps ? "linear,miplinear" : "linear"; else
+                    filter = enableMipMaps ? "linear,miplinear" : "linear";
+else
                     filter = enableMipMaps ? "nearest,mipnearest" : "nearest";
 
                 if (uvReg == null) {
@@ -30357,7 +33296,8 @@ var away;
                 var enableMipMaps = vo.useMipmapping && texture.hasMipMaps;
 
                 if (vo.useSmoothTextures)
-                    filter = enableMipMaps ? "linear,miplinear" : "linear"; else
+                    filter = enableMipMaps ? "linear,miplinear" : "linear";
+else
                     filter = enableMipMaps ? "nearest,mipnearest" : "nearest";
 
                 return "tex " + targetReg.toString() + ", " + uvReg.toString() + ", " + inputReg.toString() + " <cube," + format + filter + ">\n";
@@ -31028,7 +33968,8 @@ var away;
                 },
                 set: function (value) {
                     if (value > 1)
-                        value = 1; else if (value < 0)
+                        value = 1;
+else if (value < 0)
                         value = 0;
 
                     if (this.colorTransform == null) {
@@ -31100,6 +34041,11 @@ var away;
             */
             function LightPickerBase() {
                 _super.call(this);
+                this._pNumPointLights = 0;
+                this._pNumDirectionalLights = 0;
+                this._pNumCastingPointLights = 0;
+                this._pNumCastingDirectionalLights = 0;
+                this._pNumLightProbes = 0;
             }
             /**
             * Disposes resources used by the light picker.
@@ -31123,7 +34069,7 @@ var away;
                 * The maximum amount of directional lights that will be provided.
                 */
                 function () {
-                    return this._numDirectionalLights;
+                    return this._pNumDirectionalLights;
                 },
                 enumerable: true,
                 configurable: true
@@ -31134,7 +34080,7 @@ var away;
                 * The maximum amount of point lights that will be provided.
                 */
                 function () {
-                    return this._numPointLights;
+                    return this._pNumPointLights;
                 },
                 enumerable: true,
                 configurable: true
@@ -31145,7 +34091,7 @@ var away;
                 * The maximum amount of directional lights that cast shadows.
                 */
                 function () {
-                    return this._numCastingDirectionalLights;
+                    return this._pNumCastingDirectionalLights;
                 },
                 enumerable: true,
                 configurable: true
@@ -31156,7 +34102,7 @@ var away;
                 * The amount of point lights that cast shadows.
                 */
                 function () {
-                    return this._numCastingPointLights;
+                    return this._pNumCastingPointLights;
                 },
                 enumerable: true,
                 configurable: true
@@ -31167,7 +34113,7 @@ var away;
                 * The maximum amount of light probes that will be provided.
                 */
                 function () {
-                    return this._numLightProbes;
+                    return this._pNumLightProbes;
                 },
                 enumerable: true,
                 configurable: true
@@ -31178,7 +34124,7 @@ var away;
                 * The collected point lights to be used for shading.
                 */
                 function () {
-                    return this._pointLights;
+                    return this._pPointLights;
                 },
                 enumerable: true,
                 configurable: true
@@ -31189,7 +34135,7 @@ var away;
                 * The collected directional lights to be used for shading.
                 */
                 function () {
-                    return this._directionalLights;
+                    return this._pDirectionalLights;
                 },
                 enumerable: true,
                 configurable: true
@@ -31200,7 +34146,7 @@ var away;
                 * The collected point lights that cast shadows to be used for shading.
                 */
                 function () {
-                    return this._castingPointLights;
+                    return this._pCastingPointLights;
                 },
                 enumerable: true,
                 configurable: true
@@ -31211,7 +34157,7 @@ var away;
                 * The collected directional lights that cast shadows to be used for shading.
                 */
                 function () {
-                    return this._castingDirectionalLights;
+                    return this._pCastingDirectionalLights;
                 },
                 enumerable: true,
                 configurable: true
@@ -31222,7 +34168,7 @@ var away;
                 * The collected light probes to be used for shading.
                 */
                 function () {
-                    return this._lightProbes;
+                    return this._pLightProbes;
                 },
                 enumerable: true,
                 configurable: true
@@ -31233,7 +34179,7 @@ var away;
                 * The weights for each light probe, defining their influence on the object.
                 */
                 function () {
-                    return this._lightProbeWeights;
+                    return this._pLightProbeWeights;
                 },
                 enumerable: true,
                 configurable: true
@@ -31244,7 +34190,7 @@ var away;
                 * A collection of all the collected lights.
                 */
                 function () {
-                    return this._allPickedLights;
+                    return this._pAllPickedLights;
                 },
                 enumerable: true,
                 configurable: true
@@ -31271,8 +34217,8 @@ var away;
                 var w, total = 0;
                 var i;
 
-                for (i = 0; i < this._numLightProbes; ++i) {
-                    lightPos = this._lightProbes[i].scenePosition;
+                for (i = 0; i < this._pNumLightProbes; ++i) {
+                    lightPos = this._pLightProbes[i].scenePosition;
                     dx = rx - lightPos.x;
                     dy = ry - lightPos.y;
                     dz = rz - lightPos.z;
@@ -31282,20 +34228,187 @@ var away;
 
                     // just... huge if at the same spot
                     w = w > .00001 ? 1 / w : 50000000;
-                    this._lightProbeWeights[i] = w;
+                    this._pLightProbeWeights[i] = w;
                     total += w;
                 }
 
                 // normalize
                 total = 1 / total;
 
-                for (i = 0; i < this._numLightProbes; ++i) {
-                    this._lightProbeWeights[i] *= total;
+                for (i = 0; i < this._pNumLightProbes; ++i) {
+                    this._pLightProbeWeights[i] *= total;
                 }
             };
             return LightPickerBase;
         })(away.library.NamedAssetBase);
         materials.LightPickerBase = LightPickerBase;
+    })(away.materials || (away.materials = {}));
+    var materials = away.materials;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (materials) {
+        //import flash.events.Event;
+        //import away3d.events.LightEvent;
+        //import away3d.lights.DirectionalLight;
+        //import away3d.lights.LightBase;
+        //import away3d.lights.LightProbe;
+        //import away3d.lights.PointLight;
+        /**
+        * StaticLightPicker is a light picker that provides a static set of lights. The lights can be reassigned, but
+        * if the configuration changes (number of directional lights, point lights, etc), a material recompilation may
+        * occur.
+        */
+        var StaticLightPicker = (function (_super) {
+            __extends(StaticLightPicker, _super);
+            /**
+            * Creates a new StaticLightPicker object.
+            * @param lights The lights to be used for shading.
+            */
+            function StaticLightPicker(lights) {
+                _super.call(this);
+                this.lights = lights;
+            }
+            Object.defineProperty(StaticLightPicker.prototype, "lights", {
+                get: /**
+                * The lights used for shading.
+                */
+                function () {
+                    return this._lights;
+                },
+                set: function (value) {
+                    var numPointLights = 0;
+                    var numDirectionalLights = 0;
+                    var numCastingPointLights = 0;
+                    var numCastingDirectionalLights = 0;
+                    var numLightProbes = 0;
+                    var light;
+
+                    if (this._lights)
+                        this.clearListeners();
+
+                    this._lights = value;
+                    this._pAllPickedLights = value;
+                    this._pPointLights = new Array();
+                    this._pCastingPointLights = new Array();
+                    this._pDirectionalLights = new Array();
+                    this._pCastingDirectionalLights = new Array();
+                    this._pLightProbes = new Array();
+
+                    var len = value.length;
+
+                    for (var i = 0; i < len; ++i) {
+                        light = value[i];
+                        light.addEventListener(away.events.LightEvent.CASTS_SHADOW_CHANGE, this.onCastShadowChange, this);
+
+                        if (light instanceof away.lights.PointLight) {
+                            if (light.castsShadows)
+                                this._pCastingPointLights[numCastingPointLights++] = light;
+else
+                                this._pPointLights[numPointLights++] = light;
+                        } else if (light instanceof away.lights.DirectionalLight) {
+                            if (light.castsShadows)
+                                this._pCastingDirectionalLights[numCastingDirectionalLights++] = light;
+else
+                                this._pDirectionalLights[numDirectionalLights++] = light;
+                        } else if (light instanceof away.lights.LightProbe) {
+                            this._pLightProbes[numLightProbes++] = light;
+                        }
+                    }
+
+                    if (this._pNumDirectionalLights == numDirectionalLights && this._pNumPointLights == numPointLights && this._pNumLightProbes == numLightProbes && this._pNumCastingPointLights == numCastingPointLights && this._pNumCastingDirectionalLights == numCastingDirectionalLights) {
+                        return;
+                    }
+
+                    this._pNumDirectionalLights = numDirectionalLights;
+                    this._pNumCastingDirectionalLights = numCastingDirectionalLights;
+                    this._pNumPointLights = numPointLights;
+                    this._pNumCastingPointLights = numCastingPointLights;
+                    this._pNumLightProbes = numLightProbes;
+
+                    // MUST HAVE MULTIPLE OF 4 ELEMENTS!
+                    this._pLightProbeWeights = new Array(Math.ceil(numLightProbes / 4) * 4);
+
+                    // notify material lights have changed
+                    this.dispatchEvent(new away.events.Event(away.events.Event.CHANGE));
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * Remove configuration change listeners on the lights.
+            */
+            StaticLightPicker.prototype.clearListeners = function () {
+                var len = this._lights.length;
+                for (var i = 0; i < len; ++i)
+                    this._lights[i].removeEventListener(away.events.LightEvent.CASTS_SHADOW_CHANGE, this.onCastShadowChange, this);
+            };
+
+            /**
+            * Notifies the material of a configuration change.
+            */
+            StaticLightPicker.prototype.onCastShadowChange = function (event) {
+                // TODO: Assign to special caster collections, just append it to the lights in SinglePass
+                // But keep seperated in multipass
+                var light = event.target;
+
+                if (light instanceof away.lights.PointLight) {
+                    var pl = light;
+                    this.updatePointCasting(pl);
+                } else if (light instanceof away.lights.DirectionalLight) {
+                    var dl = light;
+                    this.updateDirectionalCasting(dl);
+                }
+
+                this.dispatchEvent(new away.events.Event(away.events.Event.CHANGE));
+            };
+
+            /**
+            * Called when a directional light's shadow casting configuration changes.
+            */
+            StaticLightPicker.prototype.updateDirectionalCasting = function (light) {
+                var dl = light;
+
+                if (light.castsShadows) {
+                    --this._pNumDirectionalLights;
+                    ++this._pNumCastingDirectionalLights;
+
+                    this._pDirectionalLights.splice(this._pDirectionalLights.indexOf(dl), 1);
+                    this._pCastingDirectionalLights.push(light);
+                } else {
+                    ++this._pNumDirectionalLights;
+                    --this._pNumCastingDirectionalLights;
+
+                    this._pCastingDirectionalLights.splice(this._pCastingDirectionalLights.indexOf(dl), 1);
+                    this._pDirectionalLights.push(light);
+                }
+            };
+
+            /**
+            * Called when a point light's shadow casting configuration changes.
+            */
+            StaticLightPicker.prototype.updatePointCasting = function (light) {
+                var pl = light;
+
+                if (light.castsShadows) {
+                    --this._pNumPointLights;
+                    ++this._pNumCastingPointLights;
+                    this._pPointLights.splice(this._pPointLights.indexOf(pl), 1);
+                    this._pCastingPointLights.push(light);
+                } else {
+                    ++this._pNumPointLights;
+                    --this._pNumCastingPointLights;
+
+                    this._pCastingPointLights.splice(this._pCastingPointLights.indexOf(pl), 1);
+                    this._pPointLights.push(light);
+                }
+            };
+            return StaticLightPicker;
+        })(materials.LightPickerBase);
+        materials.StaticLightPicker = StaticLightPicker;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
@@ -32021,6 +35134,8 @@ var away;
                 this._usedSingleCount[1] = this._initArray(new Array(regCount), 0);
                 this._usedSingleCount[2] = this._initArray(new Array(regCount), 0);
                 this._usedSingleCount[3] = this._initArray(new Array(regCount), 0);
+                //console.log( 'this._usedVectorCount: ' , this._usedVectorCount );
+                //console.log( 'this._usedSingleCount: ' , this._usedSingleCount );
             };
 
             RegisterPool._initPool = function (regName, regCount) {
@@ -32105,6 +35220,8 @@ var away;
             */
             function ShaderCompiler(profile) {
                 this._preserveAlpha = true;
+                this._pVertexCode = '';
+                this._pFragmentCode = '';
                 this._commonsDataIndex = -1;
                 this._uvBufferIndex = -1;
                 this._uvTransformIndex = -1;
@@ -32118,7 +35235,7 @@ var away;
                 this._pProbeWeightsIndex = -1;
                 this._pSharedRegisters = new away.materials.ShaderRegisterData();
                 this._pDependencyCounter = new away.materials.MethodDependencyCounter();
-                this._profile = profile;
+                this._pProfile = profile;
                 this.initRegisterCache(profile);
             }
             Object.defineProperty(ShaderCompiler.prototype, "enableLightFallOff", {
@@ -32127,10 +35244,10 @@ var away;
                 * compatibility for constrained mode.
                 */
                 function () {
-                    return this._enableLightFallOff;
+                    return this._pEnableLightFallOff;
                 },
                 set: function (value) {
-                    this._enableLightFallOff = value;
+                    this._pEnableLightFallOff = value;
                 },
                 enumerable: true,
                 configurable: true
@@ -32543,7 +35660,7 @@ var away;
                 methodVO.useSmoothTextures = this._smooth;
                 methodVO.repeatTextures = this._repeat;
                 methodVO.useMipmapping = this._mipmap;
-                methodVO.useLightFallOff = this._enableLightFallOff && this._profile != "baselineConstrained";
+                methodVO.useLightFallOff = this._pEnableLightFallOff && this._pProfile != "baselineConstrained";
                 methodVO.numLights = this._pNumLights + this._pNumLightProbes;
 
                 method.iInitVO(methodVO);
@@ -33171,6 +36288,7 @@ var away;
 
                         this._pVertexCode += "mov " + this._pSharedRegisters.tangentVarying.toString() + ", " + this._pSharedRegisters.tangentInput.toString() + "\n";
                     }
+                    //*/
                 }
 
                 this._pRegisterCache.removeVertexTempUsage(this._pSharedRegisters.animatedNormal);
@@ -33842,7 +36960,8 @@ var away;
                 },
                 set: function (value) {
                     if (value < 0)
-                        value = 0; else if (value > 1)
+                        value = 0;
+else if (value > 1)
                         value = 1;
                     if (value == this._alphaThreshold)
                         return;
@@ -34122,6 +37241,7 @@ var away;
                 } else {
                     vo.needsUV = false;
                 }
+                //vo.needsUV = Boolean(_texture);
             };
 
             Object.defineProperty(BasicNormalMethod.prototype, "iTangentSpace", {
@@ -34772,6 +37892,549 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (materials) {
+        //import away3d.arcane;
+        /**
+        * LightingShaderCompiler is a ShaderCompiler that generates code for passes performing shading only (no effect passes)
+        */
+        var LightingShaderCompiler = (function (_super) {
+            __extends(LightingShaderCompiler, _super);
+            //use namespace arcane;
+            /**
+            * Create a new LightingShaderCompiler object.
+            * @param profile The compatibility profile of the renderer.
+            */
+            function LightingShaderCompiler(profile) {
+                _super.call(this, profile);
+            }
+            Object.defineProperty(LightingShaderCompiler.prototype, "lightVertexConstantIndex", {
+                get: /**
+                * The starting index if the vertex constant to which light data needs to be uploaded.
+                */
+                function () {
+                    return this._lightVertexConstantIndex;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * @inheritDoc
+            */
+            LightingShaderCompiler.prototype.pInitRegisterIndices = function () {
+                _super.prototype.pInitRegisterIndices.call(this);
+                this._lightVertexConstantIndex = -1;
+            };
+
+            /**
+            * @inheritDoc
+            */
+            LightingShaderCompiler.prototype.pCreateNormalRegisters = function () {
+                if (this.tangentSpace) {
+                    this._pSharedRegisters.animatedTangent = this._pRegisterCache.getFreeVertexVectorTemp();
+                    this._pRegisterCache.addVertexTempUsages(this._pSharedRegisters.animatedTangent, 1);
+                    this._pSharedRegisters.bitangent = this._pRegisterCache.getFreeVertexVectorTemp();
+                    this._pRegisterCache.addVertexTempUsages(this._pSharedRegisters.bitangent, 1);
+
+                    this._pSharedRegisters.tangentInput = this._pRegisterCache.getFreeVertexAttribute();
+                    this._pTangentBufferIndex = this._pSharedRegisters.tangentInput.index;
+
+                    this._pAnimatableAttributes.push(this._pSharedRegisters.tangentInput.toString());
+                    this._pAnimationTargetRegisters.push(this._pSharedRegisters.animatedTangent.toString());
+                }
+
+                this._pSharedRegisters.normalInput = this._pRegisterCache.getFreeVertexAttribute();
+                this._pNormalBufferIndex = this._pSharedRegisters.normalInput.index;
+
+                this._pSharedRegisters.animatedNormal = this._pRegisterCache.getFreeVertexVectorTemp();
+                this._pRegisterCache.addVertexTempUsages(this._pSharedRegisters.animatedNormal, 1);
+
+                this._pAnimatableAttributes.push(this._pSharedRegisters.normalInput.toString());
+                this._pAnimationTargetRegisters.push(this._pSharedRegisters.animatedNormal.toString());
+            };
+
+            Object.defineProperty(LightingShaderCompiler.prototype, "tangentSpace", {
+                get: /**
+                * Indicates whether or not lighting happens in tangent space. This is only the case if no world-space
+                * dependencies exist.
+                */
+                function () {
+                    return this._pNumLightProbes == 0 && this._pMethodSetup._iNormalMethod.iHasOutput && this._pMethodSetup._iNormalMethod.iTangentSpace;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * @inheritDoc
+            */
+            LightingShaderCompiler.prototype.pInitLightData = function () {
+                _super.prototype.pInitLightData.call(this);
+
+                this._pointLightVertexConstants = new Array(this._pNumPointLights);
+                this._pointLightFragmentConstants = new Array(this._pNumPointLights * 2);
+
+                if (this.tangentSpace) {
+                    this._dirLightVertexConstants = new Array(this._pNumDirectionalLights);
+                    this._dirLightFragmentConstants = new Array(this._pNumDirectionalLights * 2);
+                } else {
+                    this._dirLightFragmentConstants = new Array(this._pNumDirectionalLights * 3);
+                }
+            };
+
+            /**
+            * @inheritDoc
+            */
+            LightingShaderCompiler.prototype.pCalculateDependencies = function () {
+                _super.prototype.pCalculateDependencies.call(this);
+
+                if (!this.tangentSpace) {
+                    this._pDependencyCounter.addWorldSpaceDependencies(false);
+                }
+            };
+
+            /**
+            * @inheritDoc
+            */
+            LightingShaderCompiler.prototype.pCompileNormalCode = function () {
+                this._pSharedRegisters.normalFragment = this._pRegisterCache.getFreeFragmentVectorTemp();
+                this._pRegisterCache.addFragmentTempUsages(this._pSharedRegisters.normalFragment, this._pDependencyCounter.normalDependencies);
+
+                if (this._pMethodSetup._iNormalMethod.iHasOutput && !this._pMethodSetup._iNormalMethod.iTangentSpace) {
+                    this._pVertexCode += this._pMethodSetup._iNormalMethod.iGetVertexCode(this._pMethodSetup._iNormalMethodVO, this._pRegisterCache);
+                    this._pFragmentCode += this._pMethodSetup._iNormalMethod.iGetFragmentCode(this._pMethodSetup._iNormalMethodVO, this._pRegisterCache, this._pSharedRegisters.normalFragment);
+
+                    return;
+                }
+
+                if (this.tangentSpace) {
+                    this.compileTangentSpaceNormalMapCode();
+                } else {
+                    var normalMatrix = new Array(3);
+                    normalMatrix[0] = this._pRegisterCache.getFreeVertexConstant();
+                    normalMatrix[1] = this._pRegisterCache.getFreeVertexConstant();
+                    normalMatrix[2] = this._pRegisterCache.getFreeVertexConstant();
+
+                    this._pRegisterCache.getFreeVertexConstant();
+
+                    this._pSceneNormalMatrixIndex = normalMatrix[0].index * 4;
+                    this._pSharedRegisters.normalVarying = this._pRegisterCache.getFreeVarying();
+
+                    // no output, world space is enough
+                    this._pVertexCode += "m33 " + this._pSharedRegisters.normalVarying + ".xyz, " + this._pSharedRegisters.animatedNormal + ", " + normalMatrix[0] + "\n" + "mov " + this._pSharedRegisters.normalVarying + ".w, " + this._pSharedRegisters.animatedNormal + ".w	\n";
+
+                    this._pFragmentCode += "nrm " + this._pSharedRegisters.normalFragment + ".xyz, " + this._pSharedRegisters.normalVarying + "\n" + "mov " + this._pSharedRegisters.normalFragment + ".w, " + this._pSharedRegisters.normalVarying + ".w		\n";
+                }
+
+                if (this._pDependencyCounter.tangentDependencies > 0) {
+                    this._pSharedRegisters.tangentInput = this._pRegisterCache.getFreeVertexAttribute();
+                    this._pTangentBufferIndex = this._pSharedRegisters.tangentInput.index;
+                    this._pSharedRegisters.tangentVarying = this._pRegisterCache.getFreeVarying();
+                }
+            };
+
+            /**
+            * Generates code to retrieve the tangent space normal from the normal map
+            */
+            LightingShaderCompiler.prototype.compileTangentSpaceNormalMapCode = function () {
+                // normalize normal + tangent vector and generate (approximated) bitangent
+                this._pVertexCode += "nrm " + this._pSharedRegisters.animatedNormal + ".xyz, " + this._pSharedRegisters.animatedNormal + "\n" + "nrm " + this._pSharedRegisters.animatedTangent + ".xyz, " + this._pSharedRegisters.animatedTangent + "\n";
+                this._pVertexCode += "crs " + this._pSharedRegisters.bitangent + ".xyz, " + this._pSharedRegisters.animatedNormal + ", " + this._pSharedRegisters.animatedTangent + "\n";
+
+                this._pFragmentCode += this._pMethodSetup._iNormalMethod.iGetFragmentCode(this._pMethodSetup._iNormalMethodVO, this._pRegisterCache, this._pSharedRegisters.normalFragment);
+
+                if (this._pMethodSetup._iNormalMethodVO.needsView) {
+                    this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.viewDirFragment);
+                }
+
+                if (this._pMethodSetup._iNormalMethodVO.needsGlobalFragmentPos || this._pMethodSetup._iNormalMethodVO.needsGlobalVertexPos) {
+                    this._pRegisterCache.removeVertexTempUsage(this._pSharedRegisters.globalPositionVertex);
+                }
+            };
+
+            /**
+            * @inheritDoc
+            */
+            LightingShaderCompiler.prototype.pCompileViewDirCode = function () {
+                var cameraPositionReg = this._pRegisterCache.getFreeVertexConstant();
+                this._pSharedRegisters.viewDirVarying = this._pRegisterCache.getFreeVarying();
+                this._pSharedRegisters.viewDirFragment = this._pRegisterCache.getFreeFragmentVectorTemp();
+                this._pRegisterCache.addFragmentTempUsages(this._pSharedRegisters.viewDirFragment, this._pDependencyCounter.viewDirDependencies);
+
+                this._pCameraPositionIndex = cameraPositionReg.index * 4;
+
+                if (this.tangentSpace) {
+                    var temp = this._pRegisterCache.getFreeVertexVectorTemp();
+                    this._pVertexCode += "sub " + temp + ", " + cameraPositionReg + ", " + this._pSharedRegisters.localPosition + "\n" + "m33 " + this._pSharedRegisters.viewDirVarying + ".xyz, " + temp + ", " + this._pSharedRegisters.animatedTangent + "\n" + "mov " + this._pSharedRegisters.viewDirVarying + ".w, " + this._pSharedRegisters.localPosition + ".w\n";
+                } else {
+                    this._pVertexCode += "sub " + this._pSharedRegisters.viewDirVarying + ", " + cameraPositionReg + ", " + this._pSharedRegisters.globalPositionVertex + "\n";
+                    this._pRegisterCache.removeVertexTempUsage(this._pSharedRegisters.globalPositionVertex);
+                }
+
+                this._pFragmentCode += "nrm " + this._pSharedRegisters.viewDirFragment + ".xyz, " + this._pSharedRegisters.viewDirVarying + "\n" + "mov " + this._pSharedRegisters.viewDirFragment + ".w,   " + this._pSharedRegisters.viewDirVarying + ".w 		\n";
+            };
+
+            /**
+            * @inheritDoc
+            */
+            LightingShaderCompiler.prototype.pCompileLightingCode = function () {
+                if (this._pMethodSetup._iShadowMethod)
+                    this.compileShadowCode();
+
+                this._pMethodSetup._iDiffuseMethod.iShadowRegister = this._shadowRegister;
+
+                this._pSharedRegisters.shadedTarget = this._pRegisterCache.getFreeFragmentVectorTemp();
+                this._pRegisterCache.addFragmentTempUsages(this._pSharedRegisters.shadedTarget, 1);
+
+                this._pVertexCode += this._pMethodSetup._iDiffuseMethod.iGetVertexCode(this._pMethodSetup._iDiffuseMethodVO, this._pRegisterCache);
+                this._pFragmentCode += this._pMethodSetup._iDiffuseMethod.iGetFragmentPreLightingCode(this._pMethodSetup._iDiffuseMethodVO, this._pRegisterCache);
+
+                if (this._usingSpecularMethod) {
+                    this._pVertexCode += this._pMethodSetup._iSpecularMethod.iGetVertexCode(this._pMethodSetup._iSpecularMethodVO, this._pRegisterCache);
+                    this._pFragmentCode += this._pMethodSetup._iSpecularMethod.iGetFragmentPreLightingCode(this._pMethodSetup._iSpecularMethodVO, this._pRegisterCache);
+                }
+
+                if (this.pUsesLights()) {
+                    this.initLightRegisters();
+                    this.compileDirectionalLightCode();
+                    this.compilePointLightCode();
+                }
+
+                if (this.pUsesProbes())
+                    this.compileLightProbeCode();
+
+                // only need to create and reserve _shadedTargetReg here, no earlier?
+                this._pVertexCode += this._pMethodSetup._iAmbientMethod.iGetVertexCode(this._pMethodSetup._iAmbientMethodVO, this._pRegisterCache);
+                this._pFragmentCode += this._pMethodSetup._iAmbientMethod.iGetFragmentCode(this._pMethodSetup._iAmbientMethodVO, this._pRegisterCache, this._pSharedRegisters.shadedTarget);
+
+                if (this._pMethodSetup._iAmbientMethodVO.needsNormals) {
+                    this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.normalFragment);
+                }
+
+                if (this._pMethodSetup._iAmbientMethodVO.needsView) {
+                    this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.viewDirFragment);
+                }
+
+                this._pFragmentCode += this._pMethodSetup._iDiffuseMethod.iGetFragmentPostLightingCode(this._pMethodSetup._iDiffuseMethodVO, this._pRegisterCache, this._pSharedRegisters.shadedTarget);
+
+                if (this._pAlphaPremultiplied) {
+                    this._pFragmentCode += "add " + this._pSharedRegisters.shadedTarget + ".w, " + this._pSharedRegisters.shadedTarget + ".w, " + this._pSharedRegisters.commons + ".z\n" + "div " + this._pSharedRegisters.shadedTarget + ".xyz, " + this._pSharedRegisters.shadedTarget + ", " + this._pSharedRegisters.shadedTarget + ".w\n" + "sub " + this._pSharedRegisters.shadedTarget + ".w, " + this._pSharedRegisters.shadedTarget + ".w, " + this._pSharedRegisters.commons + ".z\n" + "sat " + this._pSharedRegisters.shadedTarget + ".xyz, " + this._pSharedRegisters.shadedTarget + "\n";
+                }
+
+                if (this._pMethodSetup._iDiffuseMethodVO.needsNormals)
+                    this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.normalFragment);
+                if (this._pMethodSetup._iDiffuseMethodVO.needsView)
+                    this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.viewDirFragment);
+
+                if (this._usingSpecularMethod) {
+                    this._pMethodSetup._iSpecularMethod.iShadowRegister = this._shadowRegister;
+                    this._pFragmentCode += this._pMethodSetup._iSpecularMethod.iGetFragmentPostLightingCode(this._pMethodSetup._iSpecularMethodVO, this._pRegisterCache, this._pSharedRegisters.shadedTarget);
+                    if (this._pMethodSetup._iSpecularMethodVO.needsNormals)
+                        this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.normalFragment);
+                    if (this._pMethodSetup._iSpecularMethodVO.needsView)
+                        this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.viewDirFragment);
+                }
+
+                if (this._pMethodSetup._iShadowMethod) {
+                    this._pRegisterCache.removeFragmentTempUsage(this._shadowRegister);
+                }
+            };
+
+            /**
+            * Provides the code to provide shadow mapping.
+            */
+            LightingShaderCompiler.prototype.compileShadowCode = function () {
+                if (this._pSharedRegisters.normalFragment)
+                    this._shadowRegister = this._pSharedRegisters.normalFragment;
+else
+                    this._shadowRegister = this._pRegisterCache.getFreeFragmentVectorTemp();
+
+                this._pRegisterCache.addFragmentTempUsages(this._shadowRegister, 1);
+
+                this._pVertexCode += this._pMethodSetup._iShadowMethod.iGetVertexCode(this._pMethodSetup._iShadowMethodVO, this._pRegisterCache);
+                this._pFragmentCode += this._pMethodSetup._iShadowMethod.iGetFragmentCode(this._pMethodSetup._iShadowMethodVO, this._pRegisterCache, this._shadowRegister);
+            };
+
+            /**
+            * Initializes constant registers to contain light data.
+            */
+            LightingShaderCompiler.prototype.initLightRegisters = function () {
+                // init these first so we're sure they're in sequence
+                var i, len;
+
+                if (this._dirLightVertexConstants) {
+                    len = this._dirLightVertexConstants.length;
+
+                    for (i = 0; i < len; ++i) {
+                        this._dirLightVertexConstants[i] = this._pRegisterCache.getFreeVertexConstant();
+
+                        if (this._lightVertexConstantIndex == -1) {
+                            this._lightVertexConstantIndex = this._dirLightVertexConstants[i].index * 4;
+                        }
+                    }
+                }
+
+                len = this._pointLightVertexConstants.length;
+                for (i = 0; i < len; ++i) {
+                    this._pointLightVertexConstants[i] = this._pRegisterCache.getFreeVertexConstant();
+
+                    if (this._lightVertexConstantIndex == -1) {
+                        this._lightVertexConstantIndex = this._pointLightVertexConstants[i].index * 4;
+                    }
+                }
+
+                len = this._dirLightFragmentConstants.length;
+                for (i = 0; i < len; ++i) {
+                    this._dirLightFragmentConstants[i] = this._pRegisterCache.getFreeFragmentConstant();
+
+                    if (this._pLightFragmentConstantIndex == -1) {
+                        this._pLightFragmentConstantIndex = this._dirLightFragmentConstants[i].index * 4;
+                    }
+                }
+
+                len = this._pointLightFragmentConstants.length;
+
+                for (i = 0; i < len; ++i) {
+                    this._pointLightFragmentConstants[i] = this._pRegisterCache.getFreeFragmentConstant();
+                    if (this._pLightFragmentConstantIndex == -1) {
+                        this._pLightFragmentConstantIndex = this._pointLightFragmentConstants[i].index * 4;
+                    }
+                }
+            };
+
+            /**
+            * Compiles the shading code for directional lights.
+            */
+            LightingShaderCompiler.prototype.compileDirectionalLightCode = function () {
+                var diffuseColorReg;
+                var specularColorReg;
+                var lightDirReg;
+                var vertexRegIndex = 0;
+                var fragmentRegIndex = 0;
+                var addSpec = this._usingSpecularMethod && this.pUsesLightsForSpecular();
+                var addDiff = this.pUsesLightsForDiffuse();
+
+                if (!(addSpec || addDiff))
+                    return;
+
+                for (var i = 0; i < this._pNumDirectionalLights; ++i) {
+                    if (this.tangentSpace) {
+                        lightDirReg = this._dirLightVertexConstants[vertexRegIndex++];
+
+                        var lightVarying = this._pRegisterCache.getFreeVarying();
+
+                        this._pVertexCode += "m33 " + lightVarying + ".xyz, " + lightDirReg + ", " + this._pSharedRegisters.animatedTangent + "\n" + "mov " + lightVarying + ".w, " + lightDirReg + ".w\n";
+
+                        lightDirReg = this._pRegisterCache.getFreeFragmentVectorTemp();
+                        this._pRegisterCache.addVertexTempUsages(lightDirReg, 1);
+                        this._pFragmentCode += "nrm " + lightDirReg + ".xyz, " + lightVarying + "\n";
+                        this._pFragmentCode += "mov " + lightDirReg + ".w, " + lightVarying + ".w\n";
+                    } else {
+                        lightDirReg = this._dirLightFragmentConstants[fragmentRegIndex++];
+                    }
+
+                    diffuseColorReg = this._dirLightFragmentConstants[fragmentRegIndex++];
+                    specularColorReg = this._dirLightFragmentConstants[fragmentRegIndex++];
+                    if (addDiff) {
+                        this._pFragmentCode += this._pMethodSetup._iDiffuseMethod.iGetFragmentCodePerLight(this._pMethodSetup._iDiffuseMethodVO, lightDirReg, diffuseColorReg, this._pRegisterCache);
+                    }
+
+                    if (addSpec) {
+                        this._pFragmentCode += this._pMethodSetup._iSpecularMethod.iGetFragmentCodePerLight(this._pMethodSetup._iSpecularMethodVO, lightDirReg, specularColorReg, this._pRegisterCache);
+                    }
+
+                    if (this.tangentSpace)
+                        this._pRegisterCache.removeVertexTempUsage(lightDirReg);
+                }
+            };
+
+            /**
+            * Compiles the shading code for point lights.
+            */
+            LightingShaderCompiler.prototype.compilePointLightCode = function () {
+                var diffuseColorReg;
+                var specularColorReg;
+                var lightPosReg;
+                var lightDirReg;
+                var vertexRegIndex = 0;
+                var fragmentRegIndex = 0;
+                var addSpec = this._usingSpecularMethod && this.pUsesLightsForSpecular();
+                var addDiff = this.pUsesLightsForDiffuse();
+
+                if (!(addSpec || addDiff)) {
+                    return;
+                }
+
+                for (var i = 0; i < this._pNumPointLights; ++i) {
+                    lightPosReg = this._pointLightVertexConstants[vertexRegIndex++];
+                    diffuseColorReg = this._pointLightFragmentConstants[fragmentRegIndex++];
+                    specularColorReg = this._pointLightFragmentConstants[fragmentRegIndex++];
+                    lightDirReg = this._pRegisterCache.getFreeFragmentVectorTemp();
+
+                    this._pRegisterCache.addFragmentTempUsages(lightDirReg, 1);
+
+                    var lightVarying = this._pRegisterCache.getFreeVarying();
+                    if (this.tangentSpace) {
+                        var temp = this._pRegisterCache.getFreeVertexVectorTemp();
+                        this._pVertexCode += "sub " + temp + ", " + lightPosReg + ", " + this._pSharedRegisters.localPosition + "\n" + "m33 " + lightVarying + ".xyz, " + temp + ", " + this._pSharedRegisters.animatedTangent + "\n" + "mov " + lightVarying + ".w, " + this._pSharedRegisters.localPosition + ".w\n";
+                    } else {
+                        this._pVertexCode += "sub " + lightVarying + ", " + lightPosReg + ", " + this._pSharedRegisters.globalPositionVertex + "\n";
+                    }
+
+                    if (this._pEnableLightFallOff && this._pProfile != "baselineConstrained") {
+                        // calculate attenuation
+                        this._pFragmentCode += "dp3 " + lightDirReg + ".w, " + lightVarying + ", " + lightVarying + "\n" + "sub " + lightDirReg + ".w, " + lightDirReg + ".w, " + diffuseColorReg + ".w\n" + "mul " + lightDirReg + ".w, " + lightDirReg + ".w, " + specularColorReg + ".w\n" + "sat " + lightDirReg + ".w, " + lightDirReg + ".w\n" + "sub " + lightDirReg + ".w, " + this._pSharedRegisters.commons + ".w, " + lightDirReg + ".w\n" + "nrm " + lightDirReg + ".xyz, " + lightVarying + "\n";
+                    } else {
+                        this._pFragmentCode += "nrm " + lightDirReg + ".xyz, " + lightVarying + "\n" + "mov " + lightDirReg + ".w, " + lightVarying + ".w\n";
+                    }
+
+                    if (this._pLightFragmentConstantIndex == -1) {
+                        this._pLightFragmentConstantIndex = lightPosReg.index * 4;
+                    }
+
+                    if (addDiff) {
+                        this._pFragmentCode += this._pMethodSetup._iDiffuseMethod.iGetFragmentCodePerLight(this._pMethodSetup._iDiffuseMethodVO, lightDirReg, diffuseColorReg, this._pRegisterCache);
+                    }
+
+                    if (addSpec) {
+                        this._pFragmentCode += this._pMethodSetup._iSpecularMethod.iGetFragmentCodePerLight(this._pMethodSetup._iSpecularMethodVO, lightDirReg, specularColorReg, this._pRegisterCache);
+                    }
+
+                    this._pRegisterCache.removeFragmentTempUsage(lightDirReg);
+                }
+            };
+
+            /**
+            * Compiles shading code for light probes.
+            */
+            LightingShaderCompiler.prototype.compileLightProbeCode = function () {
+                var weightReg;
+                var weightComponents = [".x", ".y", ".z", ".w"];
+                var weightRegisters = new Array();
+                var i;
+                var texReg;
+                var addSpec = this._usingSpecularMethod && this.pUsesProbesForSpecular();
+                var addDiff = this.pUsesProbesForDiffuse();
+
+                if (!(addSpec || addDiff)) {
+                    return;
+                }
+
+                if (addDiff) {
+                    this._pLightProbeDiffuseIndices = new Array();
+                }
+                if (addSpec) {
+                    this._pLightProbeSpecularIndices = new Array();
+                }
+
+                for (i = 0; i < this._pNumProbeRegisters; ++i) {
+                    weightRegisters[i] = this._pRegisterCache.getFreeFragmentConstant();
+                    if (i == 0) {
+                        this._pProbeWeightsIndex = weightRegisters[i].index * 4;
+                    }
+                }
+
+                for (i = 0; i < this._pNumLightProbes; ++i) {
+                    weightReg = weightRegisters[Math.floor(i / 4)].toString() + weightComponents[i % 4];
+
+                    if (addDiff) {
+                        texReg = this._pRegisterCache.getFreeTextureReg();
+                        this._pLightProbeDiffuseIndices[i] = texReg.index;
+                        this._pFragmentCode += this._pMethodSetup._iDiffuseMethod.iGetFragmentCodePerProbe(this._pMethodSetup._iDiffuseMethodVO, texReg, weightReg, this._pRegisterCache);
+                    }
+
+                    if (addSpec) {
+                        texReg = this._pRegisterCache.getFreeTextureReg();
+                        this._pLightProbeSpecularIndices[i] = texReg.index;
+                        this._pFragmentCode += this._pMethodSetup._iSpecularMethod.iGetFragmentCodePerProbe(this._pMethodSetup._iSpecularMethodVO, texReg, weightReg, this._pRegisterCache);
+                    }
+                }
+            };
+            return LightingShaderCompiler;
+        })(away.materials.ShaderCompiler);
+        materials.LightingShaderCompiler = LightingShaderCompiler;
+    })(away.materials || (away.materials = {}));
+    var materials = away.materials;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (materials) {
+        /**
+        * SegmentMaterial is a material exclusively used to render wireframe objects
+        *
+        * @see away3d.entities.Lines
+        */
+        var SegmentMaterial = (function (_super) {
+            __extends(SegmentMaterial, _super);
+            /**
+            * Creates a new SegmentMaterial object.
+            *
+            * @param thickness The thickness of the wireframe lines.
+            */
+            function SegmentMaterial(thickness) {
+                if (typeof thickness === "undefined") { thickness = 1.25; }
+                _super.call(this);
+
+                this.bothSides = true;
+                this.pAddPass(this._screenPass = new away.materials.SegmentPass(thickness));
+                this._screenPass.material = this;
+            }
+            return SegmentMaterial;
+        })(away.materials.MaterialBase);
+        materials.SegmentMaterial = SegmentMaterial;
+    })(away.materials || (away.materials = {}));
+    var materials = away.materials;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (materials) {
+        /**
+        * SkyBoxMaterial is a material exclusively used to render skyboxes
+        *
+        * @see away3d.primitives.SkyBox
+        */
+        var SkyBoxMaterial = (function (_super) {
+            __extends(SkyBoxMaterial, _super);
+            /**
+            * Creates a new SkyBoxMaterial object.
+            * @param cubeMap The CubeMap to use as the skybox.
+            */
+            function SkyBoxMaterial(cubeMap) {
+                _super.call(this);
+
+                this._cubeMap = cubeMap;
+                this.pAddPass(this._skyboxPass = new away.materials.SkyBoxPass());
+                this._skyboxPass.cubeTexture = this._cubeMap;
+            }
+            Object.defineProperty(SkyBoxMaterial.prototype, "cubeMap", {
+                get: /**
+                * The cube texture to use as the skybox.
+                */
+                function () {
+                    return this._cubeMap;
+                },
+                set: function (value) {
+                    if (value && this._cubeMap && (value.hasMipMaps != this._cubeMap.hasMipMaps || value.format != this._cubeMap.format))
+                        this.iInvalidatePasses(null);
+
+                    this._cubeMap = value;
+                    this._skyboxPass.cubeTexture = this._cubeMap;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            return SkyBoxMaterial;
+        })(away.materials.MaterialBase);
+        materials.SkyBoxMaterial = SkyBoxMaterial;
+    })(away.materials || (away.materials = {}));
+    var materials = away.materials;
+})(away || (away = {}));
+var away;
+(function (away) {
     /**
     * ...
     * @author Gary Paluk - http://www.plugin.io
@@ -34953,6 +38616,12 @@ var away;
             //@arcane
             RenderBase.prototype.iDispose = function () {
                 this._pStage3DProxy = null;
+                /*
+                if( this._pBackgroundImageRenderer )
+                {
+                this._pBackgroundImageRenderer.dispose();
+                this._pBackgroundImageRenderer = null;
+                }*/
             };
 
             //@arcane
@@ -35158,14 +38827,16 @@ var away;
                     }
 
                     if (!result)
-                        result = l; else
+                        result = l;
+else
                         curr.next = l;
 
                     curr = l;
                 }
 
                 if (head)
-                    curr.next = head; else if (headB)
+                    curr.next = head;
+else if (headB)
                     curr.next = headB;
 
                 return result;
@@ -35222,13 +38893,16 @@ var away;
 
                         if (ma == mb) {
                             if (head.zIndex < headB.zIndex)
-                                cmp = 1; else
+                                cmp = 1;
+else
                                 cmp = -1;
                         } else if (ma > mb)
-                            cmp = 1; else
+                            cmp = 1;
+else
                             cmp = -1;
                     } else if (aid > bid)
-                        cmp = 1; else
+                        cmp = 1;
+else
                         cmp = -1;
 
                     if (cmp < 0) {
@@ -35249,7 +38923,8 @@ var away;
                 }
 
                 if (head)
-                    curr.next = head; else if (headB)
+                    curr.next = head;
+else if (headB)
                     curr.next = headB;
 
                 return result;
@@ -35465,6 +39140,12 @@ var away;
             */
             RendererBase.prototype.iDispose = function () {
                 this._pStage3DProxy = null;
+                /*
+                if (_backgroundImageRenderer) {
+                _backgroundImageRenderer.dispose();
+                _backgroundImageRenderer = null;
+                }
+                */
             };
 
             /**
@@ -36189,10 +39870,18 @@ var away;
 
                 this._program3D = stage._iContext3D.createProgram();
 
-                away.Debug.log('Filder3DTaskBase', 'pUpdateProgram3D', 'Program3D.upload / AGAL <> GLSL implementation');
-
+                //away.Debug.log( 'Filder3DTaskBase' , 'pUpdateProgram3D' , 'Program3D.upload / AGAL <> GLSL implementation' );
                 // TODO: imeplement AGAL <> GLSL
                 //this._program3D.upload(new AGALMiniAssembler(Debug.active).assemble(Context3DProgramType.VERTEX, getVertexCode()),new AGALMiniAssembler(Debug.active).assemble(Context3DProgramType.FRAGMENT, getFragmentCode()));
+                //new AGALMiniAssembler(Debug.active).assemble(Context3DProgramType.VERTEX, getVertexCode()),
+                //new AGALMiniAssembler(Debug.active).assemble(Context3DProgramType.FRAGMENT, getFragmentCode()));
+                var vertCompiler = new aglsl.AGLSLCompiler();
+                var fragCompiler = new aglsl.AGLSLCompiler();
+
+                var vertString = vertCompiler.compile(away.display3D.Context3DProgramType.VERTEX, this.pGetVertexCode());
+                var fragString = fragCompiler.compile(away.display3D.Context3DProgramType.FRAGMENT, this.pGetFragmentCode());
+
+                this._program3D.upload(vertString, fragString);
                 this._program3DInvalid = false;
             };
 
@@ -36844,6 +40533,1705 @@ var away;
     })(away.render || (away.render = {}));
     var render = away.render;
 })(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../_definitions.ts"/>
+    (function (utils) {
+        var ByteArrayBase = (function () {
+            function ByteArrayBase() {
+                this.position = 0;
+                this.length = 0;
+                this._mode = "";
+                this.Base64Key = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+            }
+            ByteArrayBase.prototype.writeByte = function (b) {
+                throw "Virtual method";
+            };
+            ByteArrayBase.prototype.readByte = function () {
+                throw "Virtual method";
+            };
+            ByteArrayBase.prototype.writeUnsignedByte = function (b) {
+                throw "Virtual method";
+            };
+            ByteArrayBase.prototype.readUnsignedByte = function () {
+                throw "Virtual method";
+            };
+            ByteArrayBase.prototype.writeUnsignedShort = function (b) {
+                throw "Virtual method";
+            };
+            ByteArrayBase.prototype.readUnsignedShort = function () {
+                throw "Virtual method";
+            };
+            ByteArrayBase.prototype.writeUnsignedInt = function (b) {
+                throw "Virtual method";
+            };
+            ByteArrayBase.prototype.readUnsignedInt = function () {
+                throw "Virtual method";
+            };
+            ByteArrayBase.prototype.writeFloat = function (b) {
+                throw "Virtual method";
+            };
+            ByteArrayBase.prototype.toFloatBits = function (x) {
+                throw "Virtual method";
+            };
+            ByteArrayBase.prototype.readFloat = function (b) {
+                throw "Virtual method";
+            };
+            ByteArrayBase.prototype.fromFloatBits = function (x) {
+                throw "Virtual method";
+            };
+
+            ByteArrayBase.prototype.toString = function () {
+                return "[ByteArray] ( " + this._mode + " ) position=" + this.position + " length=" + this.length;
+            };
+
+            ByteArrayBase.prototype.compareEqual = function (other, count) {
+                if (count == undefined || count > this.length - this.position)
+                    count = this.length - this.position;
+                if (count > other.length - other.position)
+                    count = other.length - other.position;
+                var co0 = count;
+                var r = true;
+                while (r && count >= 4) {
+                    count -= 4;
+                    if (this.readUnsignedInt() != other.readUnsignedInt())
+                        r = false;
+                }
+                while (r && count >= 1) {
+                    count--;
+                    if (this.readUnsignedByte() != other.readUnsignedByte())
+                        r = false;
+                }
+                var c0;
+                this.position -= (c0 - count);
+                other.position -= (c0 - count);
+                return r;
+            };
+
+            ByteArrayBase.prototype.writeBase64String = function (s) {
+                for (var i = 0; i < s.length; i++) {
+                    var v = s.charAt(i);
+                }
+            };
+
+            ByteArrayBase.prototype.dumpToConsole = function () {
+                var oldpos = this.position;
+                this.position = 0;
+                var nstep = 8;
+                function asHexString(x, digits) {
+                    var lut = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"];
+                    var sh = "";
+                    for (var d = 0; d < digits; d++) {
+                        sh = lut[(x >> (d << 2)) & 0xf] + sh;
+                    }
+                    return sh;
+                }
+
+                for (var i = 0; i < this.length; i += nstep) {
+                    var s = asHexString(i, 4) + ":";
+                    for (var j = 0; j < nstep && i + j < this.length; j++) {
+                        s += " " + asHexString(this.readUnsignedByte(), 2);
+                    }
+                    console.log(s);
+                }
+                this.position = oldpos;
+            };
+
+            ByteArrayBase.prototype.internalGetBase64String = function (count, getUnsignedByteFunc, self) {
+                var r = "";
+                var b0, b1, b2, enc1, enc2, enc3, enc4;
+                var base64Key = this.Base64Key;
+                while (count >= 3) {
+                    b0 = getUnsignedByteFunc.apply(self);
+                    b1 = getUnsignedByteFunc.apply(self);
+                    b2 = getUnsignedByteFunc.apply(self);
+                    enc1 = b0 >> 2;
+                    enc2 = ((b0 & 3) << 4) | (b1 >> 4);
+                    enc3 = ((b1 & 15) << 2) | (b2 >> 6);
+                    enc4 = b2 & 63;
+                    r += base64Key.charAt(enc1) + base64Key.charAt(enc2) + base64Key.charAt(enc3) + base64Key.charAt(enc4);
+                    count -= 3;
+                }
+
+                if (count == 2) {
+                    b0 = getUnsignedByteFunc.apply(self);
+                    b1 = getUnsignedByteFunc.apply(self);
+                    enc1 = b0 >> 2;
+                    enc2 = ((b0 & 3) << 4) | (b1 >> 4);
+                    enc3 = ((b1 & 15) << 2);
+                    r += base64Key.charAt(enc1) + base64Key.charAt(enc2) + base64Key.charAt(enc3) + "=";
+                } else if (count == 1) {
+                    b0 = getUnsignedByteFunc.apply(self);
+                    enc1 = b0 >> 2;
+                    enc2 = ((b0 & 3) << 4);
+                    r += base64Key.charAt(enc1) + base64Key.charAt(enc2) + "==";
+                }
+                return r;
+            };
+            return ByteArrayBase;
+        })();
+        utils.ByteArrayBase = ByteArrayBase;
+    })(away.utils || (away.utils = {}));
+    var utils = away.utils;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../_definitions.ts"/>
+    (function (utils) {
+        var ByteArray = (function (_super) {
+            __extends(ByteArray, _super);
+            function ByteArray() {
+                _super.call(this);
+                this.maxlength = 0;
+                this._mode = "Typed array";
+                this.maxlength = 4;
+                this.arraybytes = new ArrayBuffer(this.maxlength);
+                this.unalignedarraybytestemp = new ArrayBuffer(16);
+            }
+            ByteArray.prototype.ensureWriteableSpace = function (n) {
+                this.ensureSpace(n + this.position);
+            };
+
+            ByteArray.prototype.ensureSpace = function (n) {
+                if (n > this.maxlength) {
+                    var newmaxlength = (n + 255) & (~255);
+                    var newarraybuffer = new ArrayBuffer(newmaxlength);
+                    var view = new Uint8Array(this.arraybytes, 0, this.length);
+                    var newview = new Uint8Array(newarraybuffer, 0, this.length);
+                    newview.set(view);
+                    this.arraybytes = newarraybuffer;
+                    this.maxlength = newmaxlength;
+                }
+            };
+
+            ByteArray.prototype.writeByte = function (b) {
+                this.ensureWriteableSpace(1);
+                var view = new Int8Array(this.arraybytes);
+                view[this.position++] = (~~b);
+                if (this.position > this.length) {
+                    this.length = this.position;
+                }
+            };
+
+            ByteArray.prototype.readByte = function () {
+                if (this.position >= this.length) {
+                    throw "ByteArray out of bounds read. Positon=" + this.position + ", Length=" + this.length;
+                }
+                var view = new Int8Array(this.arraybytes);
+                return view[this.position++];
+            };
+
+            ByteArray.prototype.writeUnsignedByte = function (b) {
+                this.ensureWriteableSpace(1);
+                var view = new Uint8Array(this.arraybytes);
+                view[this.position++] = (~~b) & 0xff;
+                if (this.position > this.length) {
+                    this.length = this.position;
+                }
+            };
+
+            ByteArray.prototype.readUnsignedByte = function () {
+                if (this.position >= this.length) {
+                    throw "ByteArray out of bounds read. Positon=" + this.position + ", Length=" + this.length;
+                }
+                var view = new Uint8Array(this.arraybytes);
+                return view[this.position++];
+            };
+
+            ByteArray.prototype.writeUnsignedShort = function (b) {
+                this.ensureWriteableSpace(2);
+                if ((this.position & 1) == 0) {
+                    var view = new Uint16Array(this.arraybytes);
+                    view[this.position >> 1] = (~~b) & 0xffff;
+                } else {
+                    var view = new Uint16Array(this.unalignedarraybytestemp, 0, 1);
+                    view[0] = (~~b) & 0xffff;
+                    var view2 = new Uint8Array(this.arraybytes, this.position, 2);
+                    var view3 = new Uint8Array(this.unalignedarraybytestemp, 0, 2);
+                    view2.set(view3);
+                }
+                this.position += 2;
+                if (this.position > this.length) {
+                    this.length = this.position;
+                }
+            };
+
+            ByteArray.prototype.readUnsignedShort = function () {
+                if (this.position > this.length + 2) {
+                    throw "ByteArray out of bounds read. Positon=" + this.position + ", Length=" + this.length;
+                }
+                if ((this.position & 1) == 0) {
+                    var view = new Uint16Array(this.arraybytes);
+                    var pa = this.position >> 1;
+                    this.position += 2;
+                    return view[pa];
+                } else {
+                    var view = new Uint16Array(this.unalignedarraybytestemp, 0, 1);
+                    var view2 = new Uint8Array(this.arraybytes, this.position, 2);
+                    var view3 = new Uint8Array(this.unalignedarraybytestemp, 0, 2);
+                    view3.set(view2);
+                    this.position += 2;
+                    return view[0];
+                }
+            };
+
+            ByteArray.prototype.writeUnsignedInt = function (b) {
+                this.ensureWriteableSpace(4);
+                if ((this.position & 3) == 0) {
+                    var view = new Uint32Array(this.arraybytes);
+                    view[this.position >> 2] = (~~b) & 0xffffffff;
+                } else {
+                    var view = new Uint32Array(this.unalignedarraybytestemp, 0, 1);
+                    view[0] = (~~b) & 0xffffffff;
+                    var view2 = new Uint8Array(this.arraybytes, this.position, 4);
+                    var view3 = new Uint8Array(this.unalignedarraybytestemp, 0, 4);
+                    view2.set(view3);
+                }
+                this.position += 4;
+                if (this.position > this.length) {
+                    this.length = this.position;
+                }
+            };
+
+            ByteArray.prototype.readUnsignedInt = function () {
+                if (this.position > this.length + 4) {
+                    throw "ByteArray out of bounds read. Positon=" + this.position + ", Length=" + this.length;
+                }
+                if ((this.position & 3) == 0) {
+                    var view = new Uint32Array(this.arraybytes);
+                    var pa = this.position >> 2;
+                    this.position += 4;
+                    return view[pa];
+                } else {
+                    var view = new Uint32Array(this.unalignedarraybytestemp, 0, 1);
+                    var view2 = new Uint8Array(this.arraybytes, this.position, 4);
+                    var view3 = new Uint8Array(this.unalignedarraybytestemp, 0, 4);
+                    view3.set(view2);
+                    this.position += 4;
+                    return view[0];
+                }
+            };
+
+            ByteArray.prototype.writeFloat = function (b) {
+                this.ensureWriteableSpace(4);
+                if ((this.position & 3) == 0) {
+                    var view = new Float32Array(this.arraybytes);
+                    view[this.position >> 2] = b;
+                } else {
+                    var view = new Float32Array(this.unalignedarraybytestemp, 0, 1);
+                    view[0] = b;
+                    var view2 = new Uint8Array(this.arraybytes, this.position, 4);
+                    var view3 = new Uint8Array(this.unalignedarraybytestemp, 0, 4);
+                    view2.set(view3);
+                }
+                this.position += 4;
+                if (this.position > this.length) {
+                    this.length = this.position;
+                }
+            };
+
+            ByteArray.prototype.readFloat = function () {
+                if (this.position > this.length + 4) {
+                    throw "ByteArray out of bounds read. Positon=" + this.position + ", Length=" + this.length;
+                }
+                if ((this.position & 3) == 0) {
+                    var view = new Float32Array(this.arraybytes);
+                    var pa = this.position >> 2;
+                    this.position += 4;
+                    return view[pa];
+                } else {
+                    var view = new Float32Array(this.unalignedarraybytestemp, 0, 1);
+                    var view2 = new Uint8Array(this.arraybytes, this.position, 4);
+                    var view3 = new Uint8Array(this.unalignedarraybytestemp, 0, 4);
+                    view3.set(view2);
+                    this.position += 4;
+                    return view[0];
+                }
+            };
+            return ByteArray;
+        })(utils.ByteArrayBase);
+        utils.ByteArray = ByteArray;
+    })(away.utils || (away.utils = {}));
+    var utils = away.utils;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../_definitions.ts"/>
+    (function (utils) {
+        var ByteArrayBuffer = (function (_super) {
+            __extends(ByteArrayBuffer, _super);
+            function ByteArrayBuffer() {
+                _super.call(this);
+                this._bytes = [];
+                this._mode = "Array";
+            }
+            ByteArrayBuffer.prototype.writeByte = function (b) {
+                var bi = ~~b;
+                this._bytes[this.position++] = bi;
+                if (this.position > this.length) {
+                    this.length = this.position;
+                }
+            };
+
+            ByteArrayBuffer.prototype.readByte = function () {
+                if (this.position >= this.length) {
+                    throw "ByteArray out of bounds read. Position=" + this.position + ", Length=" + this.length;
+                }
+                return this._bytes[this.position++];
+            };
+
+            ByteArrayBuffer.prototype.writeUnsignedByte = function (b) {
+                var bi = ~~b;
+                this._bytes[this.position++] = bi & 0xff;
+                if (this.position > this.length) {
+                    this.length = this.position;
+                }
+            };
+
+            ByteArrayBuffer.prototype.readUnsignedByte = function () {
+                if (this.position >= this.length) {
+                    throw "ByteArray out of bounds read. Position=" + this.position + ", Length=" + this.length;
+                }
+                return this._bytes[this.position++];
+            };
+
+            ByteArrayBuffer.prototype.writeUnsignedShort = function (b) {
+                var bi = ~~b;
+                this._bytes[this.position++] = bi & 0xff;
+                this._bytes[this.position++] = (bi >> 8) & 0xff;
+                if (this.position > this.length) {
+                    this.length = this.position;
+                }
+            };
+
+            ByteArrayBuffer.prototype.readUnsignedShort = function () {
+                if (this.position + 2 > this.length) {
+                    throw "ByteArray out of bounds read. Position=" + this.position + ", Length=" + this.length;
+                }
+                var r = this._bytes[this.position] | (this._bytes[this.position + 1] << 8);
+                this.position += 2;
+                return r;
+            };
+
+            ByteArrayBuffer.prototype.writeUnsignedInt = function (b) {
+                var bi = ~~b;
+                this._bytes[this.position++] = bi & 0xff;
+                this._bytes[this.position++] = (bi >>> 8) & 0xff;
+                this._bytes[this.position++] = (bi >>> 16) & 0xff;
+                this._bytes[this.position++] = (bi >>> 24) & 0xff;
+                if (this.position > this.length) {
+                    this.length = this.position;
+                }
+            };
+
+            ByteArrayBuffer.prototype.readUnsignedInt = function () {
+                if (this.position + 4 > this.length) {
+                    throw "ByteArray out of bounds read. Position=" + this.position + ", Length=" + this.length;
+                }
+                var r = this._bytes[this.position] | (this._bytes[this.position + 1] << 8) | (this._bytes[this.position + 2] << 16) | (this._bytes[this.position + 3] << 24);
+                this.position += 4;
+                return r >>> 0;
+            };
+
+            ByteArrayBuffer.prototype.writeFloat = function (b) {
+                // this is crazy slow and silly, but as a fallback...
+                this.writeUnsignedInt(this.toFloatBits(Number(b)));
+            };
+
+            ByteArrayBuffer.prototype.toFloatBits = function (x) {
+                if (x == 0) {
+                    return 0;
+                }
+
+                // remove the sign, after this we only deal with positive numbers
+                var sign = 0;
+                if (x < 0) {
+                    x = -x;
+                    sign = 1;
+                } else {
+                    sign = 0;
+                }
+
+                // a float value is now defined as: x = (1+(mantissa*2^-23))*(2^(exponent-127))
+                var exponent = Math.log(x) / Math.log(2);
+                exponent = Math.floor(exponent);
+                x = x * Math.pow(2, 23 - exponent);
+                var mantissa = Math.floor(x) - 0x800000;
+                exponent = exponent + 127;
+                return ((sign << 31) >>> 0) | (exponent << 23) | mantissa;
+            };
+
+            ByteArrayBuffer.prototype.readFloat = function (b) {
+                return this.fromFloatBits(this.readUnsignedInt());
+            };
+
+            ByteArrayBuffer.prototype.fromFloatBits = function (x) {
+                if (x == 0) {
+                    return 0;
+                }
+                var exponent = (x >>> 23) & 0xff;
+                var mantissa = (x & 0x7fffff) | 0x800000;
+                var y = Math.pow(2, (exponent - 127) - 23) * mantissa;
+                if (x >>> 31 != 0) {
+                    y = -y;
+                }
+                return y;
+            };
+            return ByteArrayBuffer;
+        })(utils.ByteArrayBase);
+        utils.ByteArrayBuffer = ByteArrayBuffer;
+    })(away.utils || (away.utils = {}));
+    var utils = away.utils;
+})(away || (away = {}));
+/**
+* ...
+* @author Gary Paluk - http://www.plugin.io
+*/
+///<reference path="../away/_definitions.ts" />
+var aglsl;
+(function (aglsl) {
+    var Sampler = (function () {
+        function Sampler() {
+            this.lodbias = 0;
+            this.dim = 0;
+            this.readmode = 0;
+            this.special = 0;
+            this.wrap = 0;
+            this.mipmap = 0;
+            this.filter = 0;
+        }
+        return Sampler;
+    })();
+    aglsl.Sampler = Sampler;
+})(aglsl || (aglsl = {}));
+/**
+* ...
+* @author Gary Paluk - http://www.plugin.io
+*/
+///<reference path="../away/_definitions.ts" />
+var aglsl;
+(function (aglsl) {
+    var Token = (function () {
+        function Token() {
+            this.dest = new aglsl.Destination();
+            this.opcode = 0;
+            this.a = new aglsl.Destination();
+            this.b = new aglsl.Destination();
+        }
+        return Token;
+    })();
+    aglsl.Token = Token;
+})(aglsl || (aglsl = {}));
+/**
+* ...
+* @author Gary Paluk - http://www.plugin.io
+*/
+///<reference path="../away/_definitions.ts" />
+var aglsl;
+(function (aglsl) {
+    var Header = (function () {
+        function Header() {
+            this.progid = 0;
+            this.version = 0;
+            this.type = "";
+        }
+        return Header;
+    })();
+    aglsl.Header = Header;
+})(aglsl || (aglsl = {}));
+/**
+* ...
+* @author Gary Paluk - http://www.plugin.io
+*/
+///<reference path="../away/_definitions.ts" />
+var aglsl;
+(function (aglsl) {
+    var OpLUT = (function () {
+        function OpLUT(s, flags, dest, a, b, matrixwidth, matrixheight, ndwm, scaler, dm, lod) {
+            this.s = s;
+            this.flags = flags;
+            this.dest = dest;
+            this.a = a;
+            this.b = b;
+            this.matrixwidth = matrixwidth;
+            this.matrixheight = matrixheight;
+            this.ndwm = ndwm;
+            this.scalar = scaler;
+            this.dm = dm;
+            this.lod = lod;
+        }
+        return OpLUT;
+    })();
+    aglsl.OpLUT = OpLUT;
+})(aglsl || (aglsl = {}));
+/**
+* ...
+* @author Gary Paluk - http://www.plugin.io
+*/
+///<reference path="../away/_definitions.ts" />
+var aglsl;
+(function (aglsl) {
+    var Description = (function () {
+        function Description() {
+            this.regread = [[], [], [], [], [], [], []];
+            this.regwrite = [[], [], [], [], [], [], []];
+            this.hasindirect = false;
+            this.writedepth = false;
+            this.hasmatrix = false;
+            this.samplers = [];
+            // added due to dynamic assignment 3*0xFFFFFFuuuu
+            this.tokens = [];
+            this.header = new aglsl.Header();
+        }
+        return Description;
+    })();
+    aglsl.Description = Description;
+})(aglsl || (aglsl = {}));
+/**
+* ...
+* @author Gary Paluk - http://www.plugin.io
+*/
+///<reference path="../away/_definitions.ts" />
+var aglsl;
+(function (aglsl) {
+    var Destination = (function () {
+        function Destination() {
+            this.mask = 0;
+            this.regnum = 0;
+            this.regtype = 0;
+            this.dim = 0;
+        }
+        return Destination;
+    })();
+    aglsl.Destination = Destination;
+})(aglsl || (aglsl = {}));
+/**
+* ...
+* @author Gary Paluk - http://www.plugin.io
+*/
+///<reference path="../away/_definitions.ts" />
+var aglsl;
+(function (aglsl) {
+    var Context3D = (function () {
+        function Context3D() {
+            this.enableErrorChecking = false;
+            this.resources = [];
+            this.driverInfo = "Call getter function instead";
+        }
+        Context3D.maxvertexconstants = 128;
+        Context3D.maxfragconstants = 28;
+        Context3D.maxtemp = 8;
+        Context3D.maxstreams = 8;
+        Context3D.maxtextures = 8;
+        Context3D.defaultsampler = new aglsl.Sampler();
+        return Context3D;
+    })();
+    aglsl.Context3D = Context3D;
+})(aglsl || (aglsl = {}));
+/**
+* ...
+* @author Gary Paluk - http://www.plugin.io
+*/
+///<reference path="../away/_definitions.ts" />
+var aglsl;
+(function (aglsl) {
+    var Mapping = (function () {
+        function Mapping() {
+        }
+        Mapping.agal2glsllut = [
+            new aglsl.OpLUT("%dest = %cast(%a);\n", 0, true, true, false, null, null, null, null, null, null),
+            new aglsl.OpLUT("%dest = %cast(%a + %b);\n", 0, true, true, true, null, null, null, null, null, null),
+            new aglsl.OpLUT("%dest = %cast(%a - %b);\n", 0, true, true, true, null, null, null, null, null, null),
+            new aglsl.OpLUT("%dest = %cast(%a * %b);\n", 0, true, true, true, null, null, null, null, null, null),
+            new aglsl.OpLUT("%dest = %cast(%a / %b);\n", 0, true, true, true, null, null, null, null, null, null),
+            new aglsl.OpLUT("%dest = %cast(1.0) / %a;\n", 0, true, true, false, null, null, null, null, null, null),
+            new aglsl.OpLUT("%dest = %cast(min(%a,%b));\n", 0, true, true, true, null, null, null, null, null, null),
+            new aglsl.OpLUT("%dest = %cast(min(%a,%b));\n", 0, true, true, true, null, null, null, null, null, null),
+            new aglsl.OpLUT("%dest = %cast(fract(%a));\n", 0, true, true, false, null, null, null, null, null, null),
+            new aglsl.OpLUT("%dest = %cast(sqrt(abs(%a)));\n", 0, true, true, false, null, null, null, null, null, null),
+            new aglsl.OpLUT("%dest = %cast(inversesqrt(abs(%a)));\n", 0, true, true, false, null, null, null, null, null, null),
+            new aglsl.OpLUT("%dest = %cast(pow(abs(%a),%b));\n", 0, true, true, true, null, null, null, null, null, null),
+            new aglsl.OpLUT("%dest = %cast(log2(abs(%a)));\n", 0, true, true, false, null, null, null, null, null, null),
+            new aglsl.OpLUT("%dest = %cast(exp2(%a));\n", 0, true, true, false, null, null, null, null, null, null),
+            new aglsl.OpLUT("%dest = %cast(normalize(%a));\n", 0, true, true, false, null, null, true, null, null, null),
+            new aglsl.OpLUT("%dest = %cast(sin(%a));\n", 0, true, true, false, null, null, null, null, null, null),
+            new aglsl.OpLUT("%dest = %cast(cos(%a));\n", 0, true, true, false, null, null, null, null, null, null),
+            new aglsl.OpLUT("%dest = %cast(cross(vec3(%a),vec3(%b)));\n", 0, true, true, true, null, null, true, null, null, null),
+            new aglsl.OpLUT("%dest = %cast(dot(vec3(%a),vec3(%b)));\n", 0, true, true, true, null, null, true, null, null, null),
+            new aglsl.OpLUT("%dest = %cast(dot(vec4(%a),vec4(%b)));\n", 0, true, true, true, null, null, true, null, null, null),
+            new aglsl.OpLUT("%dest = %cast(abs(%a));\n", 0, true, true, false, null, null, null, null, null, null),
+            new aglsl.OpLUT("%dest = %cast(%a * -1.0);\n", 0, true, true, false, null, null, null, null, null, null),
+            new aglsl.OpLUT("%dest = %cast(clamp(%a,0.0,1.0));\n", 0, true, true, false, null, null, null, null, null, null),
+            new aglsl.OpLUT("%dest = %cast(dot(vec3(%a),vec3(%b)));\n", null, true, true, true, 3, 3, true, null, null, null),
+            new aglsl.OpLUT("%dest = %cast(dot(vec4(%a),vec4(%b)));\n", null, true, true, true, 4, 4, true, null, null, null),
+            new aglsl.OpLUT("%dest = %cast(dot(vec4(%a),vec4(%b)));\n", null, true, true, true, 4, 3, true, null, null, null),
+            new aglsl.OpLUT("%dest = %cast(dFdx(%a));\n", 0, true, true, false, null, null, null, null, null, null),
+            new aglsl.OpLUT("%dest = %cast(dFdx(%a));\n", 0, true, true, false, null, null, null, null, null, null),
+            new aglsl.OpLUT("if (float(%a)==float(%b)) {;\n", 0, false, true, true, null, null, null, true, null, null),
+            new aglsl.OpLUT("if (float(%a)!=float(%b)) {;\n", 0, false, true, true, null, null, null, true, null, null),
+            new aglsl.OpLUT("if (float(%a)>=float(%b)) {;\n", 0, false, true, true, null, null, null, true, null, null),
+            new aglsl.OpLUT("if (float(%a)<float(%b)) {;\n", 0, false, true, true, null, null, null, true, null, null),
+            new aglsl.OpLUT("} else {;\n", 0, false, false, false, null, null, null, null, null, null),
+            new aglsl.OpLUT("};\n", 0, false, false, false, null, null, null, null, null, null),
+            new aglsl.OpLUT(null, null, null, null, false, null, null, null, null, null, null),
+            new aglsl.OpLUT(null, null, null, null, false, null, null, null, null, null, null),
+            new aglsl.OpLUT(null, null, null, null, false, null, null, null, null, null, null),
+            new aglsl.OpLUT(null, null, null, null, false, null, null, null, null, null, null),
+            new aglsl.OpLUT("%dest = %cast(texture%texdimLod(%b,%texsize(%a)).%dm);\n", null, true, true, true, null, null, null, null, true, null),
+            new aglsl.OpLUT("if ( float(%a)<0.0 ) discard;\n", null, false, true, false, null, null, null, true, null, null),
+            new aglsl.OpLUT("%dest = %cast(texture%texdim(%b,%texsize(%a)%lod).%dm);\n", null, true, true, true, null, null, true, null, true, true),
+            new aglsl.OpLUT("%dest = %cast(greaterThanEqual(%a,%b).%dm);\n", 0, true, true, true, null, null, true, null, true, null),
+            new aglsl.OpLUT("%dest = %cast(lessThan(%a,%b).%dm);\n", 0, true, true, true, null, null, true, null, true, null),
+            new aglsl.OpLUT("%dest = %cast(sign(%a));\n", 0, true, true, false, null, null, null, null, null, null),
+            new aglsl.OpLUT("%dest = %cast(equal(%a,%b).%dm);\n", 0, true, true, false, null, null, true, null, true, null),
+            new aglsl.OpLUT("%dest = %cast(notEqual(%a,%b).%dm);\n", 0, true, true, true, null, null, true, null, true, null)
+        ];
+        return Mapping;
+    })();
+    aglsl.Mapping = Mapping;
+})(aglsl || (aglsl = {}));
+var aglsl;
+(function (aglsl) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../../away/_definitions.ts" />
+    (function (assembler) {
+        var Opcode = (function () {
+            function Opcode(dest, aformat, asize, bformat, bsize, opcode, simple, horizontal, fragonly, matrix) {
+                this.a = new aglsl.assembler.FS();
+                this.b = new aglsl.assembler.FS();
+                this.flags = new aglsl.assembler.Flags();
+
+                this.dest = dest;
+                this.a.format = aformat;
+                this.a.size = asize;
+                this.b.format = bformat;
+                this.b.size = bsize;
+                this.opcode = opcode;
+                this.flags.simple = simple;
+                this.flags.horizontal = horizontal;
+                this.flags.fragonly = fragonly;
+                this.flags.matrix = matrix;
+            }
+            return Opcode;
+        })();
+        assembler.Opcode = Opcode;
+
+        var FS = (function () {
+            function FS() {
+            }
+            return FS;
+        })();
+        assembler.FS = FS;
+
+        var Flags = (function () {
+            function Flags() {
+            }
+            return Flags;
+        })();
+        assembler.Flags = Flags;
+    })(aglsl.assembler || (aglsl.assembler = {}));
+    var assembler = aglsl.assembler;
+})(aglsl || (aglsl = {}));
+var aglsl;
+(function (aglsl) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../../away/_definitions.ts" />
+    (function (assembler) {
+        var OpcodeMap = (function () {
+            function OpcodeMap() {
+            }
+            Object.defineProperty(OpcodeMap, "map", {
+                get: function () {
+                    if (!OpcodeMap._map) {
+                        OpcodeMap._map = new Array();
+                        OpcodeMap._map['mov'] = new aglsl.assembler.Opcode("vector", "vector", 4, "none", 0, 0x00, true, null, null, null);
+                        OpcodeMap._map['add'] = new aglsl.assembler.Opcode("vector", "vector", 4, "vector", 4, 0x01, true, null, null, null);
+                        OpcodeMap._map['sub'] = new aglsl.assembler.Opcode("vector", "vector", 4, "vector", 4, 0x02, true, null, null, null);
+                        OpcodeMap._map['mul'] = new aglsl.assembler.Opcode("vector", "vector", 4, "vector", 4, 0x03, true, null, null, null);
+                        OpcodeMap._map['div'] = new aglsl.assembler.Opcode("vector", "vector", 4, "vector", 4, 0x04, true, null, null, null);
+                        OpcodeMap._map['rcp'] = new aglsl.assembler.Opcode("vector", "vector", 4, "none", 0, 0x05, true, null, null, null);
+                        OpcodeMap._map['min'] = new aglsl.assembler.Opcode("vector", "vector", 4, "vector", 4, 0x06, true, null, null, null);
+                        OpcodeMap._map['max'] = new aglsl.assembler.Opcode("vector", "vector", 4, "vector", 4, 0x07, true, null, null, null);
+                        OpcodeMap._map['frc'] = new aglsl.assembler.Opcode("vector", "vector", 4, "none", 0, 0x08, true, null, null, null);
+                        OpcodeMap._map['sqt'] = new aglsl.assembler.Opcode("vector", "vector", 4, "none", 0, 0x09, true, null, null, null);
+                        OpcodeMap._map['rsq'] = new aglsl.assembler.Opcode("vector", "vector", 4, "none", 0, 0x0a, true, null, null, null);
+                        OpcodeMap._map['pow'] = new aglsl.assembler.Opcode("vector", "vector", 4, "vector", 4, 0x0b, true, null, null, null);
+                        OpcodeMap._map['log'] = new aglsl.assembler.Opcode("vector", "vector", 4, "none", 0, 0x0c, true, null, null, null);
+                        OpcodeMap._map['exp'] = new aglsl.assembler.Opcode("vector", "vector", 4, "none", 0, 0x0d, true, null, null, null);
+                        OpcodeMap._map['nrm'] = new aglsl.assembler.Opcode("vector", "vector", 4, "none", 0, 0x0e, true, null, null, null);
+                        OpcodeMap._map['sin'] = new aglsl.assembler.Opcode("vector", "vector", 4, "none", 0, 0x0f, true, null, null, null);
+                        OpcodeMap._map['cos'] = new aglsl.assembler.Opcode("vector", "vector", 4, "none", 0, 0x10, true, null, null, null);
+                        OpcodeMap._map['crs'] = new aglsl.assembler.Opcode("vector", "vector", 4, "vector", 4, 0x11, true, true, null, null);
+                        OpcodeMap._map['dp3'] = new aglsl.assembler.Opcode("vector", "vector", 4, "vector", 4, 0x12, true, true, null, null);
+                        OpcodeMap._map['dp4'] = new aglsl.assembler.Opcode("vector", "vector", 4, "vector", 4, 0x13, true, true, null, null);
+                        OpcodeMap._map['abs'] = new aglsl.assembler.Opcode("vector", "vector", 4, "none", 0, 0x14, true, null, null, null);
+                        OpcodeMap._map['neg'] = new aglsl.assembler.Opcode("vector", "vector", 4, "none", 0, 0x15, true, null, null, null);
+                        OpcodeMap._map['sat'] = new aglsl.assembler.Opcode("vector", "vector", 4, "none", 0, 0x16, true, null, null, null);
+
+                        OpcodeMap._map['ted'] = new aglsl.assembler.Opcode("vector", "vector", 4, "sampler", 1, 0x26, true, null, true, null);
+                        OpcodeMap._map['kil'] = new aglsl.assembler.Opcode("none", "scalar", 1, "none", 0, 0x27, true, null, true, null);
+                        OpcodeMap._map['tex'] = new aglsl.assembler.Opcode("vector", "vector", 4, "sampler", 1, 0x28, true, null, true, null);
+
+                        OpcodeMap._map['m33'] = new aglsl.assembler.Opcode("vector", "matrix", 3, "vector", 3, 0x17, true, null, null, true);
+                        OpcodeMap._map['m44'] = new aglsl.assembler.Opcode("vector", "matrix", 4, "vector", 4, 0x18, true, null, null, true);
+                        OpcodeMap._map['m43'] = new aglsl.assembler.Opcode("vector", "matrix", 3, "vector", 4, 0x19, true, null, null, true);
+
+                        OpcodeMap._map['sge'] = new aglsl.assembler.Opcode("vector", "vector", 4, "vector", 4, 0x29, true, null, null, null);
+                        OpcodeMap._map['slt'] = new aglsl.assembler.Opcode("vector", "vector", 4, "vector", 4, 0x2a, true, null, null, null);
+                        OpcodeMap._map['sgn'] = new aglsl.assembler.Opcode("vector", "vector", 4, "vector", 4, 0x2b, true, null, null, null);
+                        OpcodeMap._map['seq'] = new aglsl.assembler.Opcode("vector", "vector", 4, "vector", 4, 0x2c, true, null, null, null);
+                        OpcodeMap._map['sne'] = new aglsl.assembler.Opcode("vector", "vector", 4, "vector", 4, 0x2d, true, null, null, null);
+                    }
+
+                    return OpcodeMap._map;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return OpcodeMap;
+        })();
+        assembler.OpcodeMap = OpcodeMap;
+    })(aglsl.assembler || (aglsl.assembler = {}));
+    var assembler = aglsl.assembler;
+})(aglsl || (aglsl = {}));
+var aglsl;
+(function (aglsl) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../../away/_definitions.ts" />
+    (function (assembler) {
+        var Part = (function () {
+            function Part(name, version) {
+                if (typeof name === "undefined") { name = null; }
+                if (typeof version === "undefined") { version = null; }
+                this.name = "";
+                this.version = 0;
+                this.name = name;
+                this.version = version;
+                this.data = new away.utils.ByteArray();
+            }
+            return Part;
+        })();
+        assembler.Part = Part;
+    })(aglsl.assembler || (aglsl.assembler = {}));
+    var assembler = aglsl.assembler;
+})(aglsl || (aglsl = {}));
+var aglsl;
+(function (aglsl) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../../away/_definitions.ts" />
+    (function (assembler) {
+        var Reg = (function () {
+            function Reg(code, desc) {
+                this.code = code;
+                this.desc = desc;
+            }
+            return Reg;
+        })();
+        assembler.Reg = Reg;
+
+        var RegMap = (function () {
+            /*
+            public static va:aglsl.assembler.Reg = new aglsl.assembler.Reg( 0x00, "vertex attribute" );
+            public static fc:aglsl.assembler.Reg = new aglsl.assembler.Reg( 0x01, "fragment constant" );
+            public static vc:aglsl.assembler.Reg = new aglsl.assembler.Reg( 0x01, "vertex constant" );
+            public static ft:aglsl.assembler.Reg = new aglsl.assembler.Reg( 0x02, "fragment temporary" );
+            public static vt:aglsl.assembler.Reg = new aglsl.assembler.Reg( 0x02, "vertex temporary" );
+            public static vo:aglsl.assembler.Reg = new aglsl.assembler.Reg( 0x03, "vertex output" );
+            public static op:aglsl.assembler.Reg = new aglsl.assembler.Reg( 0x03, "vertex output" );
+            public static fd:aglsl.assembler.Reg = new aglsl.assembler.Reg( 0x03, "fragment depth output" );
+            public static fo:aglsl.assembler.Reg = new aglsl.assembler.Reg( 0x03, "fragment output" );
+            public static oc:aglsl.assembler.Reg = new aglsl.assembler.Reg( 0x03, "fragment output" );
+            public static v: aglsl.assembler.Reg = new aglsl.assembler.Reg( 0x04, "varying" );
+            public static vi:aglsl.assembler.Reg = new aglsl.assembler.Reg( 0x04, "varying output" );
+            public static fi:aglsl.assembler.Reg = new aglsl.assembler.Reg( 0x04, "varying input" );
+            public static fs:aglsl.assembler.Reg = new aglsl.assembler.Reg( 0x05, "sampler" );
+            */
+            function RegMap() {
+            }
+            Object.defineProperty(RegMap, "map", {
+                get: function () {
+                    if (!RegMap._map) {
+                        RegMap._map = new Array();
+                        RegMap._map['va'] = new aglsl.assembler.Reg(0x00, "vertex attribute");
+                        RegMap._map['fc'] = new aglsl.assembler.Reg(0x01, "fragment constant");
+                        RegMap._map['vc'] = new aglsl.assembler.Reg(0x01, "vertex constant");
+                        RegMap._map['ft'] = new aglsl.assembler.Reg(0x02, "fragment temporary");
+                        RegMap._map['vt'] = new aglsl.assembler.Reg(0x02, "vertex temporary");
+                        RegMap._map['vo'] = new aglsl.assembler.Reg(0x03, "vertex output");
+                        RegMap._map['op'] = new aglsl.assembler.Reg(0x03, "vertex output");
+                        RegMap._map['fd'] = new aglsl.assembler.Reg(0x03, "fragment depth output");
+                        RegMap._map['fo'] = new aglsl.assembler.Reg(0x03, "fragment output");
+                        RegMap._map['oc'] = new aglsl.assembler.Reg(0x03, "fragment output");
+                        RegMap._map['v'] = new aglsl.assembler.Reg(0x04, "varying");
+                        RegMap._map['vi'] = new aglsl.assembler.Reg(0x04, "varying output");
+                        RegMap._map['fi'] = new aglsl.assembler.Reg(0x04, "varying input");
+                        RegMap._map['fs'] = new aglsl.assembler.Reg(0x05, "sampler");
+                    }
+
+                    return RegMap._map;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return RegMap;
+        })();
+        assembler.RegMap = RegMap;
+    })(aglsl.assembler || (aglsl.assembler = {}));
+    var assembler = aglsl.assembler;
+})(aglsl || (aglsl = {}));
+var aglsl;
+(function (aglsl) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../../away/_definitions.ts" />
+    (function (assembler) {
+        var Sampler = (function () {
+            function Sampler(shift, mask, value) {
+                this.shift = shift;
+                this.mask = mask;
+                this.value = value;
+            }
+            return Sampler;
+        })();
+        assembler.Sampler = Sampler;
+
+        var SamplerMap = (function () {
+            /*
+            public static map =     [ new aglsl.assembler.Sampler( 8, 0xf, 0 ),
+            new aglsl.assembler.Sampler( 8, 0xf, 5 ),
+            new aglsl.assembler.Sampler( 8, 0xf, 4 ),
+            new aglsl.assembler.Sampler( 8, 0xf, 1 ),
+            new aglsl.assembler.Sampler( 8, 0xf, 2 ),
+            new aglsl.assembler.Sampler( 8, 0xf, 1 ),
+            new aglsl.assembler.Sampler( 8, 0xf, 2 ),
+            
+            // dimension
+            new aglsl.assembler.Sampler( 12, 0xf, 0 ),
+            new aglsl.assembler.Sampler( 12, 0xf, 1 ),
+            new aglsl.assembler.Sampler( 12, 0xf, 2 ),
+            
+            // special
+            new aglsl.assembler.Sampler( 16, 1, 1 ),
+            new aglsl.assembler.Sampler( 16, 4, 4 ),
+            
+            // repeat
+            new aglsl.assembler.Sampler( 20, 0xf, 0 ),
+            new aglsl.assembler.Sampler( 20, 0xf, 1 ),
+            new aglsl.assembler.Sampler( 20, 0xf, 1 ),
+            
+            // mip
+            new aglsl.assembler.Sampler( 24, 0xf, 0 ),
+            new aglsl.assembler.Sampler( 24, 0xf, 0 ),
+            new aglsl.assembler.Sampler( 24, 0xf, 1 ),
+            new aglsl.assembler.Sampler( 24, 0xf, 2 ),
+            
+            // filter
+            new aglsl.assembler.Sampler( 28, 0xf, 0 ),
+            new aglsl.assembler.Sampler( 28, 0xf, 1 ) ]
+            */
+            /*
+            public static rgba: aglsl.assembler.Sampler = new aglsl.assembler.Sampler( 8, 0xf, 0 );
+            public static rg: aglsl.assembler.Sampler = new aglsl.assembler.Sampler( 8, 0xf, 5 );
+            public static r: aglsl.assembler.Sampler = new aglsl.assembler.Sampler( 8, 0xf, 4 );
+            public static compressed: aglsl.assembler.Sampler = new aglsl.assembler.Sampler( 8, 0xf, 1 );
+            public static compressed_alpha: aglsl.assembler.Sampler = new aglsl.assembler.Sampler( 8, 0xf, 2 );
+            public static dxt1: aglsl.assembler.Sampler = new aglsl.assembler.Sampler( 8, 0xf, 1 );
+            public static dxt5: aglsl.assembler.Sampler = new aglsl.assembler.Sampler( 8, 0xf, 2 );
+            
+            // dimension
+            public static sampler2d: aglsl.assembler.Sampler = new aglsl.assembler.Sampler( 12, 0xf, 0 );
+            public static cube: aglsl.assembler.Sampler = new aglsl.assembler.Sampler( 12, 0xf, 1 );
+            public static sampler3d: aglsl.assembler.Sampler = new aglsl.assembler.Sampler( 12, 0xf, 2 );
+            
+            // special
+            public static centroid: aglsl.assembler.Sampler = new aglsl.assembler.Sampler( 16, 1, 1 );
+            public static ignoresampler: aglsl.assembler.Sampler = new aglsl.assembler.Sampler( 16, 4, 4 );
+            
+            // repeat
+            public static clamp: aglsl.assembler.Sampler = new aglsl.assembler.Sampler( 20, 0xf, 0 );
+            public static repeat: aglsl.assembler.Sampler = new aglsl.assembler.Sampler( 20, 0xf, 1 );
+            public static wrap: aglsl.assembler.Sampler = new aglsl.assembler.Sampler( 20, 0xf, 1 );
+            
+            // mip
+            public static nomip: aglsl.assembler.Sampler = new aglsl.assembler.Sampler( 24, 0xf, 0 );
+            public static mipnone: aglsl.assembler.Sampler = new aglsl.assembler.Sampler( 24, 0xf, 0 );
+            public static mipnearest: aglsl.assembler.Sampler = new aglsl.assembler.Sampler( 24, 0xf, 1 );
+            public static miplinear: aglsl.assembler.Sampler = new aglsl.assembler.Sampler( 24, 0xf, 2 );
+            
+            // filter
+            public static nearest: aglsl.assembler.Sampler = new aglsl.assembler.Sampler( 28, 0xf, 0 );
+            public static linear: aglsl.assembler.Sampler = new aglsl.assembler.Sampler( 28, 0xf, 1 );
+            */
+            function SamplerMap() {
+            }
+            Object.defineProperty(SamplerMap, "map", {
+                get: function () {
+                    if (!SamplerMap._map) {
+                        SamplerMap._map = new Array();
+                        SamplerMap._map['rgba'] = new aglsl.assembler.Sampler(8, 0xf, 0);
+                        SamplerMap._map['rg'] = new aglsl.assembler.Sampler(8, 0xf, 5);
+                        SamplerMap._map['r'] = new aglsl.assembler.Sampler(8, 0xf, 4);
+                        SamplerMap._map['compressed'] = new aglsl.assembler.Sampler(8, 0xf, 1);
+                        SamplerMap._map['compressed_alpha'] = new aglsl.assembler.Sampler(8, 0xf, 2);
+                        SamplerMap._map['dxt1'] = new aglsl.assembler.Sampler(8, 0xf, 1);
+                        SamplerMap._map['dxt5'] = new aglsl.assembler.Sampler(8, 0xf, 2);
+
+                        // dimension
+                        SamplerMap._map['2d'] = new aglsl.assembler.Sampler(12, 0xf, 0);
+                        SamplerMap._map['cube'] = new aglsl.assembler.Sampler(12, 0xf, 1);
+                        SamplerMap._map['3d'] = new aglsl.assembler.Sampler(12, 0xf, 2);
+
+                        // special
+                        SamplerMap._map['centroid'] = new aglsl.assembler.Sampler(16, 1, 1);
+                        SamplerMap._map['ignoresampler'] = new aglsl.assembler.Sampler(16, 4, 4);
+
+                        // repeat
+                        SamplerMap._map['clamp'] = new aglsl.assembler.Sampler(20, 0xf, 0);
+                        SamplerMap._map['repeat'] = new aglsl.assembler.Sampler(20, 0xf, 1);
+                        SamplerMap._map['wrap'] = new aglsl.assembler.Sampler(20, 0xf, 1);
+
+                        // mip
+                        SamplerMap._map['nomip'] = new aglsl.assembler.Sampler(24, 0xf, 0);
+                        SamplerMap._map['mipnone'] = new aglsl.assembler.Sampler(24, 0xf, 0);
+                        SamplerMap._map['mipnearest'] = new aglsl.assembler.Sampler(24, 0xf, 1);
+                        SamplerMap._map['miplinear'] = new aglsl.assembler.Sampler(24, 0xf, 2);
+
+                        // filter
+                        SamplerMap._map['nearest'] = new aglsl.assembler.Sampler(28, 0xf, 0);
+                        SamplerMap._map['linear'] = new aglsl.assembler.Sampler(28, 0xf, 1);
+                    }
+
+                    return SamplerMap._map;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return SamplerMap;
+        })();
+        assembler.SamplerMap = SamplerMap;
+    })(aglsl.assembler || (aglsl.assembler = {}));
+    var assembler = aglsl.assembler;
+})(aglsl || (aglsl = {}));
+var aglsl;
+(function (aglsl) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../../away/_definitions.ts" />
+    (function (assembler) {
+        var AGALMiniAssembler = (function () {
+            function AGALMiniAssembler() {
+                this.r = {};
+                this.cur = new aglsl.assembler.Part();
+            }
+            AGALMiniAssembler.prototype.assemble = function (source, ext_part, ext_version) {
+                if (typeof ext_part === "undefined") { ext_part = null; }
+                if (typeof ext_version === "undefined") { ext_version = null; }
+                if (!ext_version) {
+                    ext_version = 1;
+                }
+
+                if (ext_part) {
+                    this.addHeader(ext_part, ext_version);
+                }
+
+                var lines = source.replace(/[\f\n\r\v]+/g, "\n").split("\n");
+
+                for (var i in lines) {
+                    this.processLine(lines[i], i);
+                }
+
+                return this.r;
+            };
+
+            AGALMiniAssembler.prototype.processLine = function (line, linenr) {
+                var startcomment = line.search("//");
+                if (startcomment != -1) {
+                    line = line.slice(0, startcomment);
+                }
+                line = line.replace(/^\s+|\s+$/g, "");
+                if (!(line.length > 0)) {
+                    return;
+                }
+                var optsi = line.search(/<.*>/g);
+                var opts = null;
+                if (optsi != -1) {
+                    opts = line.slice(optsi).match(/([\w\.\-\+]+)/gi);
+                    line = line.slice(0, optsi);
+                }
+
+                // get opcode/command
+                var tokens = line.match(/([\w\.\+\[\]]+)/gi);
+                if (!tokens || tokens.length < 1) {
+                    if (line.length >= 3) {
+                        console.log("Warning: bad line " + linenr + ": " + line);
+                    }
+                    return;
+                }
+
+                switch (tokens[0]) {
+                    case "part":
+                        this.addHeader(tokens[1], Number(tokens[2]));
+                        break;
+                    case "endpart":
+                        if (!this.cur)
+                            throw "Unexpected endpart";
+                        this.cur.data.position = 0;
+                        this.cur = null;
+                        return;
+                    default:
+                        if (!this.cur) {
+                            console.log("Warning: bad line " + linenr + ": " + line + " (Outside of any part definition)");
+                            return;
+                        }
+                        if (this.cur.name == "comment") {
+                            return;
+                        }
+                        var op = assembler.OpcodeMap.map[tokens[0]];
+                        if (!op) {
+                            throw "Bad opcode " + tokens[0] + " " + linenr + ": " + line;
+                        }
+
+                        // console.log( 'AGALMiniAssembler' , 'op' , op );
+                        this.emitOpcode(this.cur, op.opcode);
+                        var ti = 1;
+                        if (op.dest && op.dest != "none") {
+                            if (!this.emitDest(this.cur, tokens[ti++], op.dest)) {
+                                throw "Bad destination register " + tokens[ti - 1] + " " + linenr + ": " + line;
+                            }
+                        } else
+                            this.emitZeroDword(this.cur);
+                        if (op.a && op.a.format != "none") {
+                            if (!this.emitSource(this.cur, tokens[ti++], op.a))
+                                throw "Bad source register " + tokens[ti - 1] + " " + linenr + ": " + line;
+                        } else
+                            this.emitZeroQword(this.cur);
+                        if (op.b && op.b.format != "none") {
+                            if (op.b.format == "sampler") {
+                                if (!this.emitSampler(this.cur, tokens[ti++], op.b, opts)) {
+                                    throw "Bad sampler register " + tokens[ti - 1] + " " + linenr + ": " + line;
+                                }
+                            } else {
+                                if (!this.emitSource(this.cur, tokens[ti++], op.b)) {
+                                    throw "Bad source register " + tokens[ti - 1] + " " + linenr + ": " + line;
+                                }
+                            }
+                        } else
+                            this.emitZeroQword(this.cur);
+
+                        break;
+                }
+            };
+
+            AGALMiniAssembler.prototype.emitHeader = function (pr) {
+                pr.data.writeUnsignedByte(0xa0);
+                pr.data.writeUnsignedInt(pr.version);
+                if (pr.version >= 0x10) {
+                    pr.data.writeUnsignedByte(0);
+                }
+                pr.data.writeUnsignedByte(0xa1);
+                switch (pr.name) {
+                    case "fragment":
+                        pr.data.writeUnsignedByte(1);
+                        break;
+                    case "vertex":
+                        pr.data.writeUnsignedByte(0);
+                        break;
+                    case "cpu":
+                        pr.data.writeUnsignedByte(2);
+                        break;
+                    default:
+                        pr.data.writeUnsignedByte(0xff);
+                        break;
+                }
+            };
+
+            AGALMiniAssembler.prototype.emitOpcode = function (pr, opcode) {
+                pr.data.writeUnsignedInt(opcode);
+                //console.log ( "Emit opcode: ", opcode );
+            };
+
+            AGALMiniAssembler.prototype.emitZeroDword = function (pr) {
+                pr.data.writeUnsignedInt(0);
+            };
+
+            AGALMiniAssembler.prototype.emitZeroQword = function (pr) {
+                pr.data.writeUnsignedInt(0);
+                pr.data.writeUnsignedInt(0);
+            };
+
+            AGALMiniAssembler.prototype.emitDest = function (pr, token, opdest) {
+                //console.log( 'aglsl.assembler.AGALMiniAssembler' , 'emitDest' , 'RegMap.map' , RegMap.map);
+                var reg = token.match(/([fov]?[tpocidavs])(\d*)(\.[xyzw]{1,4})?/i);
+
+                if (!assembler.RegMap.map[reg[1]])
+                    return false;
+                var em = { num: reg[2] ? reg[2] : 0, code: assembler.RegMap.map[reg[1]].code, mask: this.stringToMask(reg[3]) };
+                pr.data.writeUnsignedShort(em.num);
+                pr.data.writeUnsignedByte(em.mask);
+                pr.data.writeUnsignedByte(em.code);
+
+                //console.log ( "  Emit dest: ", em );
+                return true;
+            };
+
+            AGALMiniAssembler.prototype.stringToMask = function (s) {
+                if (!s)
+                    return 0xf;
+                var r = 0;
+                if (s.indexOf("x") != -1)
+                    r |= 1;
+                if (s.indexOf("y") != -1)
+                    r |= 2;
+                if (s.indexOf("z") != -1)
+                    r |= 4;
+                if (s.indexOf("w") != -1)
+                    r |= 8;
+                return r;
+            };
+
+            AGALMiniAssembler.prototype.stringToSwizzle = function (s) {
+                if (!s)
+                    return 0xe4;
+                var chartoindex = { x: 0, y: 1, z: 2, w: 3 };
+                var sw = 0;
+                if (s.charAt(0) != ".")
+                    throw "Missing . for swizzle";
+                if (s.length > 1)
+                    sw |= chartoindex[s.charAt(1)];
+                if (s.length > 2)
+                    sw |= chartoindex[s.charAt(2)] << 2;
+else
+                    sw |= (sw & 3) << 2;
+                if (s.length > 3)
+                    sw |= chartoindex[s.charAt(3)] << 4;
+else
+                    sw |= (sw & (3 << 2)) << 2;
+                if (s.length > 4)
+                    sw |= chartoindex[s.charAt(4)] << 6;
+else
+                    sw |= (sw & (3 << 4)) << 2;
+                return sw;
+            };
+
+            AGALMiniAssembler.prototype.emitSampler = function (pr, token, opsrc, opts) {
+                var reg = token.match(/fs(\d*)/i);
+                if (!reg || !reg[1])
+                    return false;
+                pr.data.writeUnsignedShort(reg[1]);
+                pr.data.writeUnsignedByte(0);
+                pr.data.writeUnsignedByte(0);
+
+                /*
+                pr.data.writeUnsignedByte ( 0x5 );
+                pr.data.writeUnsignedByte ( 0 );   // readmode, dim
+                pr.data.writeUnsignedByte ( 0 );   // special, wrap
+                pr.data.writeUnsignedByte ( 0 );   // mip, filter
+                */
+                var samplerbits = 0x5;
+                var sampleroptset = 0;
+                for (var i = 0; i < opts.length; i++) {
+                    var o = assembler.SamplerMap.map[opts[i].toLowerCase()];
+
+                    if (o) {
+                        if (((sampleroptset >> o.shift) & o.mask) != 0)
+                            console.log("Warning, duplicate sampler option");
+                        sampleroptset |= o.mask << o.shift;
+                        samplerbits &= ~(o.mask << o.shift);
+                        samplerbits |= o.value << o.shift;
+                    } else {
+                        console.log("Warning, unknown sampler option: ", opts[i]);
+                        // todo bias
+                    }
+                }
+                pr.data.writeUnsignedInt(samplerbits);
+                return true;
+            };
+
+            AGALMiniAssembler.prototype.emitSource = function (pr, token, opsrc) {
+                var indexed = token.match(/vc\[(v[tcai])(\d+)\.([xyzw])([\+\-]\d+)?\](\.[xyzw]{1,4})?/i);
+                var reg;
+                if (indexed) {
+                    if (!assembler.RegMap.map[indexed[1]])
+                        return false;
+                    var selindex = { x: 0, y: 1, z: 2, w: 3 };
+                    var em = { num: indexed[2] | 0, code: assembler.RegMap.map[indexed[1]].code, swizzle: this.stringToSwizzle(indexed[5]), select: selindex[indexed[3]], offset: indexed[4] | 0 };
+                    pr.data.writeUnsignedShort(em.num);
+                    pr.data.writeByte(em.offset);
+                    pr.data.writeUnsignedByte(em.swizzle);
+                    pr.data.writeUnsignedByte(0x1);
+                    pr.data.writeUnsignedByte(em.code);
+                    pr.data.writeUnsignedByte(em.select);
+                    pr.data.writeUnsignedByte(1 << 7);
+                } else {
+                    reg = token.match(/([fov]?[tpocidavs])(\d*)(\.[xyzw]{1,4})?/i);
+                    if (!assembler.RegMap.map[reg[1]])
+                        return false;
+                    var em = { num: reg[2] | 0, code: assembler.RegMap.map[reg[1]].code, swizzle: this.stringToSwizzle(reg[3]) };
+                    pr.data.writeUnsignedShort(em.num);
+                    pr.data.writeUnsignedByte(0);
+                    pr.data.writeUnsignedByte(em.swizzle);
+                    pr.data.writeUnsignedByte(em.code);
+                    pr.data.writeUnsignedByte(0);
+                    pr.data.writeUnsignedByte(0);
+                    pr.data.writeUnsignedByte(0);
+                    //console.log ( "  Emit source: ", em, pr.data.length );
+                }
+                return true;
+            };
+
+            AGALMiniAssembler.prototype.addHeader = function (partname, version) {
+                if (!version) {
+                    version = 1;
+                }
+                if (this.r[partname] == undefined) {
+                    this.r[partname] = new aglsl.assembler.Part(partname, version);
+                    this.emitHeader(this.r[partname]);
+                } else if (this.r[partname].version != version) {
+                    throw "Multiple versions for part " + partname;
+                }
+                this.cur = this.r[partname];
+            };
+            return AGALMiniAssembler;
+        })();
+        assembler.AGALMiniAssembler = AGALMiniAssembler;
+    })(aglsl.assembler || (aglsl.assembler = {}));
+    var assembler = aglsl.assembler;
+})(aglsl || (aglsl = {}));
+/**
+* ...
+* @author Gary Paluk - http://www.plugin.io
+*/
+///<reference path="../away/_definitions.ts" />
+var aglsl;
+(function (aglsl) {
+    var AGALTokenizer = (function () {
+        function AGALTokenizer() {
+        }
+        AGALTokenizer.prototype.decribeAGALByteArray = function (bytes) {
+            var header = new aglsl.Header();
+
+            if (bytes.readUnsignedByte() != 0xa0) {
+                throw "Bad AGAL: Missing 0xa0 magic byte.";
+            }
+
+            header.version = bytes.readUnsignedInt();
+            if (header.version >= 0x10) {
+                bytes.readUnsignedByte();
+                header.version >>= 1;
+            }
+            if (bytes.readUnsignedByte() != 0xa1) {
+                throw "Bad AGAL: Missing 0xa1 magic byte.";
+            }
+
+            header.progid = bytes.readUnsignedByte();
+            switch (header.progid) {
+                case 1:
+                    header.type = "fragment";
+                    break;
+                case 0:
+                    header.type = "vertex";
+                    break;
+                case 2:
+                    header.type = "cpu";
+                    break;
+                default:
+                    header.type = "";
+                    break;
+            }
+
+            var desc = new aglsl.Description();
+            var tokens = [];
+            while (bytes.position < bytes.length) {
+                var token = new aglsl.Token();
+
+                token.opcode = bytes.readUnsignedInt();
+                var lutentry = aglsl.Mapping.agal2glsllut[token.opcode];
+                if (!lutentry) {
+                    throw "Opcode not valid or not implemented yet: " + token.opcode;
+                }
+                if (lutentry.matrixheight) {
+                    desc.hasmatrix = true;
+                }
+                if (lutentry.dest) {
+                    token.dest.regnum = bytes.readUnsignedShort();
+                    token.dest.mask = bytes.readUnsignedByte();
+                    token.dest.regtype = bytes.readUnsignedByte();
+                    desc.regwrite[token.dest.regtype][token.dest.regnum] |= token.dest.mask;
+                } else {
+                    token.dest = null;
+                    bytes.readUnsignedInt();
+                }
+                if (lutentry.a) {
+                    this.readReg(token.a, 1, desc, bytes);
+                } else {
+                    token.a = null;
+                    bytes.readUnsignedInt();
+                    bytes.readUnsignedInt();
+                }
+                if (lutentry.b) {
+                    this.readReg(token.b, lutentry.matrixheight | 0, desc, bytes);
+                } else {
+                    token.b = null;
+                    bytes.readUnsignedInt();
+                    bytes.readUnsignedInt();
+                }
+                tokens.push(token);
+            }
+            desc.header = header;
+            desc.tokens = tokens;
+
+            return desc;
+        };
+
+        AGALTokenizer.prototype.readReg = function (s, mh, desc, bytes) {
+            s.regnum = bytes.readUnsignedShort();
+            s.indexoffset = bytes.readByte();
+            s.swizzle = bytes.readUnsignedByte();
+            s.regtype = bytes.readUnsignedByte();
+            desc.regread[s.regtype][s.regnum] = 0xf;
+            if (s.regtype == 0x5) {
+                // sampler
+                s.lodbiad = s.indexoffset;
+                s.indexoffset = undefined;
+                s.swizzle = undefined;
+
+                // sampler
+                s.readmode = bytes.readUnsignedByte();
+                s.dim = s.readmode >> 4;
+                s.readmode &= 0xf;
+                s.special = bytes.readUnsignedByte();
+                s.wrap = s.special >> 4;
+                s.special &= 0xf;
+                s.mipmap = bytes.readUnsignedByte();
+                s.filter = s.mipmap >> 4;
+                s.mipmap &= 0xf;
+                desc.samplers[s.regnum] = s;
+            } else {
+                s.indexregtype = bytes.readUnsignedByte();
+                s.indexselect = bytes.readUnsignedByte();
+                s.indirectflag = bytes.readUnsignedByte();
+            }
+            if (s.indirectflag) {
+                desc.hasindirect = true;
+            }
+            if (!s.indirectflag && mh) {
+                for (var mhi = 0; mhi < mh; mhi++) {
+                    desc.regread[s.regtype][s.regnum + mhi] = desc.regread[s.regtype][s.regnum];
+                }
+            }
+        };
+        return AGALTokenizer;
+    })();
+    aglsl.AGALTokenizer = AGALTokenizer;
+})(aglsl || (aglsl = {}));
+/**
+* ...
+* @author Gary Paluk - http://www.plugin.io
+*/
+///<reference path="../away/_definitions.ts" />
+var aglsl;
+(function (aglsl) {
+    var AGLSLParser = (function () {
+        function AGLSLParser() {
+        }
+        AGLSLParser.prototype.parse = function (desc) {
+            var header = "";
+            var body = "";
+
+            header += "precision highp float;\n";
+            var tag = desc.header.type[0];
+
+            if (desc.header.type == "vertex") {
+                header += "uniform float yflip;\n";
+            }
+            if (!desc.hasindirect) {
+                for (var i = 0; i < desc.regread[0x1].length; i++) {
+                    if (desc.regread[0x1][i]) {
+                        header += "uniform vec4 " + tag + "c" + i + ";\n";
+                    }
+                }
+            } else {
+                header += "uniform vec4 " + tag + "carrr[" + aglsl.Context3D.maxvertexconstants + "];\n";
+            }
+
+            for (var i = 0; i < desc.regread[0x2].length || i < desc.regwrite[0x2].length; i++) {
+                if (desc.regread[0x2][i] || desc.regwrite[0x2][i]) {
+                    header += "vec4 " + tag + "t" + i + ";\n";
+                }
+            }
+
+            for (var i = 0; i < desc.regread[0x0].length; i++) {
+                if (desc.regread[0x0][i]) {
+                    header += "attribute vec4 va" + i + ";\n";
+                }
+            }
+
+            for (var i = 0; i < desc.regread[0x4].length || i < desc.regwrite[0x4].length; i++) {
+                if (desc.regread[0x4][i] || desc.regwrite[0x4][i]) {
+                    header += "varying vec4 vi" + i + ";\n";
+                }
+            }
+
+            // declare samplers
+            var samptype = ["2D", "Cube", "3D", ""];
+            for (var i = 0; i < desc.samplers.length; i++) {
+                if (desc.samplers[i]) {
+                    header += "uniform sampler" + samptype[desc.samplers[i].dim & 3] + " fs" + i + ";\n";
+                }
+            }
+
+            if (desc.header.type == "vertex") {
+                header += "vec4 outpos;\n";
+            }
+            if (desc.writedepth) {
+                header += "vec4 tmp_FragDepth;\n";
+            }
+
+            //if ( desc.hasmatrix )
+            //    header += "vec4 tmp_matrix;\n";
+            // start body of code
+            body += "void main() {\n";
+
+            for (var i = 0; i < desc.tokens.length; i++) {
+                var lutentry = aglsl.Mapping.agal2glsllut[desc.tokens[i].opcode];
+                if (!lutentry) {
+                    throw "Opcode not valid or not implemented yet: ";
+                }
+                var sublines = lutentry.matrixheight || 1;
+
+                for (var sl = 0; sl < sublines; sl++) {
+                    var line = "  " + lutentry.s;
+                    if (desc.tokens[i].dest) {
+                        if (lutentry.matrixheight) {
+                            if (((desc.tokens[i].dest.mask >> sl) & 1) != 1) {
+                                continue;
+                            }
+                            var destregstring = this.regtostring(desc.tokens[i].dest.regtype, desc.tokens[i].dest.regnum, desc, tag);
+                            var destcaststring = "float";
+                            var destmaskstring = ["x", "y", "z", "w"][sl];
+                            destregstring += "." + destmaskstring;
+                        } else {
+                            var destregstring = this.regtostring(desc.tokens[i].dest.regtype, desc.tokens[i].dest.regnum, desc, tag);
+                            var destcaststring;
+                            var destmaskstring;
+                            if (desc.tokens[i].dest.mask != 0xf) {
+                                var ndest = 0;
+                                destmaskstring = "";
+                                if (desc.tokens[i].dest.mask & 1) {
+                                    ndest++;
+                                    destmaskstring += "x";
+                                }
+                                if (desc.tokens[i].dest.mask & 2) {
+                                    ndest++;
+                                    destmaskstring += "y";
+                                }
+                                if (desc.tokens[i].dest.mask & 4) {
+                                    ndest++;
+                                    destmaskstring += "z";
+                                }
+                                if (desc.tokens[i].dest.mask & 8) {
+                                    ndest++;
+                                    destmaskstring += "w";
+                                }
+                                destregstring += "." + destmaskstring;
+                                switch (ndest) {
+                                    case 1:
+                                        destcaststring = "float";
+                                        break;
+                                    case 2:
+                                        destcaststring = "vec2";
+                                        break;
+                                    case 3:
+                                        destcaststring = "vec3";
+                                        break;
+                                    default:
+                                        throw "Unexpected destination mask";
+                                }
+                            } else {
+                                destcaststring = "vec4";
+                                destmaskstring = "xyzw";
+                            }
+                        }
+                        line = line.replace("%dest", destregstring);
+                        line = line.replace("%cast", destcaststring);
+                        line = line.replace("%dm", destmaskstring);
+                    }
+                    var dwm = 0xf;
+                    if (!lutentry.ndwm && lutentry.dest && desc.tokens[i].dest) {
+                        dwm = desc.tokens[i].dest.mask;
+                    }
+                    if (desc.tokens[i].a) {
+                        line = line.replace("%a", this.sourcetostring(desc.tokens[i].a, 0, dwm, lutentry.scalar, desc, tag));
+                    }
+                    if (desc.tokens[i].b) {
+                        line = line.replace("%b", this.sourcetostring(desc.tokens[i].b, sl, dwm, lutentry.scalar, desc, tag));
+                        if (desc.tokens[i].b.regtype == 0x5) {
+                            // sampler dim
+                            var texdim = ["2D", "Cube", "3D"][desc.tokens[i].b.dim];
+                            var texsize = ["vec2", "vec3", "vec3"][desc.tokens[i].b.dim];
+                            line = line.replace("%texdim", texdim);
+                            line = line.replace("%texsize", texsize);
+                            var texlod = "";
+                            line = line.replace("%lod", texlod);
+                        }
+                    }
+                    body += line;
+                }
+            }
+
+            if (desc.header.type == "vertex") {
+                body += "  gl_Position = vec4(outpos.x, yflip*outpos.y, outpos.z*2.0 - outpos.w, outpos.w);\n";
+            }
+
+            if (desc.writedepth) {
+                body += "  gl_FragDepth = clamp(tmp_FragDepth,0.0,1.0);\n";
+            }
+
+            // close main
+            body += "}\n";
+
+            return header + body;
+        };
+
+        AGLSLParser.prototype.regtostring = function (regtype, regnum, desc, tag) {
+            switch (regtype) {
+                case 0x0:
+                    return "va" + regnum;
+                case 0x1:
+                    if (desc.hasindirect && desc.header.type == "vertex") {
+                        return "vcarrr[" + regnum + "]";
+                    } else {
+                        return tag + "c" + regnum;
+                    }
+                case 0x2:
+                    return tag + "t" + regnum;
+                case 0x3:
+                    return desc.header.type == "vertex" ? "outpos" : "gl_FragColor";
+                case 0x4:
+                    return "vi" + regnum;
+                case 0x5:
+                    return "fs" + regnum;
+                case 0x6:
+                    return "tmp_FragDepth";
+                default:
+                    throw "Unknown register type";
+            }
+        };
+
+        AGLSLParser.prototype.sourcetostring = function (s, subline, dwm, isscalar, desc, tag) {
+            var swiz = ["x", "y", "z", "w"];
+            var r;
+
+            if (s.indirectflag) {
+                r = "vcarrr[int(" + this.regtostring(s.indexregtype, s.regnum, desc, tag) + "." + swiz[s.indexselect] + ")";
+                var realofs = subline + s.indexoffset;
+                if (realofs < 0)
+                    r += realofs.toString();
+                if (realofs > 0)
+                    r += "+" + realofs.toString();
+                r += "]";
+            } else {
+                r = this.regtostring(s.regtype, s.regnum + subline, desc, tag);
+            }
+
+            if (s.regtype == 0x5) {
+                return r;
+            }
+
+            if (isscalar) {
+                return r + "." + swiz[(s.swizzle >> 0) & 3];
+            }
+
+            if (s.swizzle == 0xe4 && dwm == 0xf) {
+                return r;
+            }
+
+            // with destination write mask folded in
+            r += ".";
+            if (dwm & 1)
+                r += swiz[(s.swizzle >> 0) & 3];
+            if (dwm & 2)
+                r += swiz[(s.swizzle >> 2) & 3];
+            if (dwm & 4)
+                r += swiz[(s.swizzle >> 4) & 3];
+            if (dwm & 8)
+                r += swiz[(s.swizzle >> 6) & 3];
+            return r;
+        };
+        return AGLSLParser;
+    })();
+    aglsl.AGLSLParser = AGLSLParser;
+})(aglsl || (aglsl = {}));
+/**
+* ...
+* @author Gary Paluk - http://www.plugin.io
+*/
+///<reference path="../away/_definitions.ts" />
+var aglsl;
+(function (aglsl) {
+    var AGLSLCompiler = (function () {
+        function AGLSLCompiler() {
+        }
+        AGLSLCompiler.prototype.compile = function (programType, source) {
+            var agalMiniAssembler = new aglsl.assembler.AGALMiniAssembler();
+            var tokenizer = new aglsl.AGALTokenizer();
+
+            var data;
+            var concatSource;
+            switch (programType) {
+                case "vertex":
+                    concatSource = "part vertex 1\n" + source + "endpart";
+                    agalMiniAssembler.assemble(concatSource);
+                    data = agalMiniAssembler.r['vertex'].data;
+                    break;
+                case "fragment":
+                    concatSource = "part fragment 1\n" + source + "endpart";
+                    agalMiniAssembler.assemble(concatSource);
+                    data = agalMiniAssembler.r['fragment'].data;
+                    break;
+                default:
+                    throw "Unknown Context3DProgramType";
+            }
+
+            var description = tokenizer.decribeAGALByteArray(data);
+
+            var parser = new aglsl.AGLSLParser();
+            this.glsl = parser.parse(description);
+
+            return this.glsl;
+        };
+        return AGLSLCompiler;
+    })();
+    aglsl.AGLSLCompiler = AGLSLCompiler;
+})(aglsl || (aglsl = {}));
 ///<reference path="../../../src/away/_definitions.ts" />
 //------------------------------------------------------------------------------------------------
 // Web / PHP Storm arguments string
@@ -36858,23 +42246,20 @@ var View3DTest = (function () {
         //away.Debug.throwPIROnKeyWordOnly( 'Mouse3DManager' );
         this.light = new away.lights.PointLight();
         this.view = new away.containers.View3D();
-        this.view.camera.z = -1000;
+        this.view.camera.z = 0;
         this.view.backgroundColor = 0xff00ea;
         this.torus = new away.primitives.TorusGeometry();
 
         var l = 20;
         var radius = 500;
 
-        var mat = new away.materials.ColorMaterial();
-
         var matB = new away.materials.ColorMaterial();
-        mat.blendMode = away.display.BlendMode.MULTIPLY;
 
         var f = true;
         for (var c = 0; c < l; c++) {
             var t = Math.PI * 2 * c / l;
 
-            var m = new away.entities.Mesh(this.torus, f ? mat : matB);
+            var m = new away.entities.Mesh(this.torus, matB);
             m.x = Math.cos(t) * radius;
             m.y = 0;
             m.z = Math.sin(t) * radius;
@@ -36904,6 +42289,8 @@ var View3DTest = (function () {
         document.onmousedown = function (e) {
             return _this.onMouseDowm(e);
         };
+        //this.raf = new away.utils.RequestAnimationFrame( this.tick , this );
+        //this.raf.start();
     }
     View3DTest.prototype.onMouseDowm = function (e) {
         if (this.raf) {
@@ -36918,6 +42305,7 @@ var View3DTest = (function () {
     };
 
     View3DTest.prototype.tick = function (e) {
+        this.view.backgroundColor = 0xffffff * Math.random();
         this.view.render();
 
         console.log('------------------------------------------------------------------------------------------');
@@ -36943,4 +42331,4 @@ window.onresize = function (e) {
         test.resize(e);
     }
 };
-//@ sourceMappingURL=View3DTest.js.map
+//# sourceMappingURL=View3DTest.js.map
