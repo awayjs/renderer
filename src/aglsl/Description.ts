@@ -9,12 +9,12 @@ module aglsl
 {
 	export class Description
 	{
-		public regread:Array = [[],[],[],[],[],[],[]];
-        public regwrite:Array = [[],[],[],[],[],[],[]];
+		public regread:any[] = [[],[],[],[],[],[],[]];
+        public regwrite:any[] = [[],[],[],[],[],[],[]];
         public hasindirect:boolean =  false;
         public writedepth:boolean = false;
         public hasmatrix:boolean = false;
-        public samplers:Array = [];
+        public samplers:any[] = [];
 		
 		// added due to dynamic assignment 3*0xFFFFFFuuuu
 		public tokens: aglsl.Token[] = [];
