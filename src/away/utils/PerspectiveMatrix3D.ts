@@ -16,8 +16,8 @@ module away.utils
 		
 		public perspectiveFieldOfViewLH( fieldOfViewY:number,
 										 aspectRatio:number,
-										 zNear,
-										 zFar)
+										 zNear:number,
+										 zFar: number)
 		{
 			var yScale:number = 1/Math.tan( fieldOfViewY/2 );
 			var xScale:number = yScale / aspectRatio;
