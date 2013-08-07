@@ -49,7 +49,7 @@ module away.geom
         public set color(value:number)
         {
 
-            var argb : Array = away.utils.ColorUtils.float32ColorToARGB( value );
+            var argb : number[] = away.utils.ColorUtils.float32ColorToARGB( value );
 
             this.redOffset          = argb[1];  //(value >> 16) & 0xFF;
             this.greenOffset        = argb[2];  //(value >> 8) & 0xFF;
