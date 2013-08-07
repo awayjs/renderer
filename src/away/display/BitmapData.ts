@@ -149,7 +149,7 @@ module away.display {
         public setPixel(x, y, color : number ):void
         {
 
-            var argb : Array = away.utils.ColorUtils.float32ColorToARGB( color );
+            var argb : number[] = away.utils.ColorUtils.float32ColorToARGB( color );
 
             if ( ! this._locked )
             {
@@ -183,7 +183,7 @@ module away.display {
         public setPixel32(x, y, color : number ):void
         {
 
-            var argb : Array = away.utils.ColorUtils.float32ColorToARGB( color );
+            var argb : number[] = away.utils.ColorUtils.float32ColorToARGB( color );
 
             if ( ! this._locked )
             {
@@ -508,7 +508,7 @@ module away.display {
         private hexToRGBACSS(d : number ) : string
         {
 
-            var argb : Array = away.utils.ColorUtils.float32ColorToARGB( d );
+            var argb : number[] = away.utils.ColorUtils.float32ColorToARGB( d );
 
             if ( ! this._transparent )
             {
