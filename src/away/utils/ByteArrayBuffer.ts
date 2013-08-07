@@ -16,7 +16,7 @@ module away.utils
 		public unalignedarraybytestemp; //ArrayBuffer
 		*/
 		
-		public _bytes:Array;
+		public _bytes:number[];
 		
 		constructor()
 		{
@@ -39,7 +39,7 @@ module away.utils
 		{
 			if ( this.position >= this.length )
 			{
-				throw "ByteArray out of bounds read. Positon=" + this.position + ", Length=" + this.length; 
+				throw "ByteArray out of bounds read. Position=" + this.position + ", Length=" + this.length;
 			}
 			return this._bytes[ this.position++ ];
 		}
@@ -58,7 +58,7 @@ module away.utils
 		{     
 			if ( this.position >= this.length )
 			{
-				throw "Bytearry out of bounds read. Positon="+this.position+", Length="+this.length; 
+				throw "ByteArray out of bounds read. Position="+this.position+", Length="+this.length;
 			}
 			return this._bytes[ this.position++ ];                
 		}
@@ -78,7 +78,7 @@ module away.utils
 		{    
 			if ( this.position+2 > this.length )
 			{
-				throw "Bytearry out of bounds read. Positon="+this.position+", Length="+this.length; 
+				throw "ByteArray out of bounds read. Position="+this.position+", Length="+this.length;
 			}
 			var r:number = this._bytes[ this.position ] | ( this._bytes[ this.position+1 ] << 8 );
 			this.position += 2;
@@ -102,7 +102,7 @@ module away.utils
 		{    
 			if ( this.position+4 > this.length )
 			{
-				throw "Bytearry out of bounds read. Positon=" + this.position + ", Length=" + this.length;
+				throw "ByteArray out of bounds read. Position=" + this.position + ", Length=" + this.length;
 			}
 			var r:number = this._bytes[ this.position ] | ( this._bytes[this.position+1]<<8 )
 				| ( this._bytes[this.position+2]<<16 ) | ( this._bytes[this.position+3]<<24 );        
