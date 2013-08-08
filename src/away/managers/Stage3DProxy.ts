@@ -47,14 +47,14 @@ module away.managers
 		private _stage3DManager:away.managers.Stage3DManager;
 		private _backBufferWidth:number;
 		private _backBufferHeight:number;
-		private _antiAlias:number;
+		private _antiAlias:number = 0;
 		private _enableDepthAndStencil:boolean;
 		private _contextRequested:boolean;
 		//private var _activeVertexBuffers : Vector.<VertexBuffer3D> = new Vector.<VertexBuffer3D>(8, true);
 		//private var _activeTextures : Vector.<TextureBase> = new Vector.<TextureBase>(8, true);
-		private _renderTarget:away.display3D.TextureBase;
-		private _renderSurfaceSelector:number;
-		private _scissorRect:away.geom.Rectangle;
+		private _renderTarget:away.display3D.TextureBase = null ;
+		private _renderSurfaceSelector:number = 0;
+        private _scissorRect:away.geom.Rectangle;
 		private _color:number;
 		private _backBufferDirty:boolean;
 		private _viewPort:away.geom.Rectangle;
@@ -218,7 +218,7 @@ module away.managers
 		
 		public setRenderTarget(target:away.display3D.TextureBase, enableDepthAndStencil:boolean = false, surfaceSelector:number = 0)
 		{
-			if (this._renderTarget == target && surfaceSelector == this._renderSurfaceSelector && this._enableDepthAndStencil == enableDepthAndStencil)
+			if (this._renderTarget === target && surfaceSelector == this._renderSurfaceSelector && this._enableDepthAndStencil == enableDepthAndStencil)
             {
 
                 return;
