@@ -62,7 +62,7 @@ module away.containers
         private _forceSoftware:boolean;
         private _depthTextureInvalid:boolean = true;
 
-        private _antiAlias:number;
+        private _antiAlias:number = 0;
         private _scissorRectDirty:boolean = true;
         private _viewportDirty:boolean = true;
         private _depthPrepass:boolean;
@@ -616,6 +616,9 @@ module away.containers
 
             if (! this._pShareContext)
             {
+
+                console.log( 'present');
+
                 this._pStage3DProxy.present();
 
                 // TODO: imeplement mouse3dManager
