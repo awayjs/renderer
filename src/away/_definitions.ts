@@ -178,6 +178,7 @@
 ///<reference path="base/SubGeometry.ts"/>
 ///<reference path="controllers/ControllerBase.ts"/>
 ///<reference path="controllers/LookAtController.ts"/>
+///<reference path="controllers/HoverController.ts"/>
 ///<reference path="lights/LightBase.ts"/>
 ///<reference path="lights/PointLight.ts"/>
 ///<reference path="lights/DirectionalLight.ts"/>
