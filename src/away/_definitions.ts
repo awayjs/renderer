@@ -174,6 +174,7 @@
 ///<reference path="base/ISubGeometry.ts"/>
 ///<reference path="events/GeometryEvent.ts"/>
 ///<reference path="base/CompactSubGeometry.ts"/>
+///<reference path="base/SkinnedSubGeometry.ts"/>
 ///<reference path="base/Geometry.ts"/>
 ///<reference path="base/SubGeometry.ts"/>
 ///<reference path="controllers/ControllerBase.ts"/>
