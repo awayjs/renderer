@@ -59,6 +59,7 @@
 ///<reference path="display3D/Context3DTextureFilter.ts"/>
 ///<reference path="display3D/Context3DWrapMode.ts"/>
 ///<reference path="display3D/Context3D.ts" />
+///<reference path="display3D/AGLSLContext3D.ts" />
 ///<reference path="materials/MaterialBase.ts"/>
 ///<reference path="primitives/data/Segment.ts" />
 ///<reference path="bounds/BoundingVolumeBase.ts" />

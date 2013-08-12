@@ -15,14 +15,17 @@ module away.display3D
 		private _blendEnabled:boolean;
 		private _blendSourceFactor:number;
 		private _blendDestinationFactor:number;
-		private _currentProgram:Program3D;
 		
 		private _indexBufferList: IndexBuffer3D[] = [];
 		private _vertexBufferList: VertexBuffer3D[] = [];
 		private _textureList: TextureBase[] = [];
 		private _programList: Program3D[] = [];
 		
-		private _gl: WebGLRenderingContext;
+		//@protected
+		public _gl:WebGLRenderingContext;
+		
+		//@protected
+		public _currentProgram:Program3D;
 		
 		constructor( canvas: HTMLCanvasElement )
 		{
@@ -78,7 +81,6 @@ module away.display3D
 				this._gl.enable( this._gl.DEPTH_TEST );
 			}
 			// TODO add antialias (seems to be a webgl bug)
-			// TODO set webgl / canvas dimensions
 			this._gl.viewport.width = width;
 			this._gl.viewport.height = height;
 		}
@@ -182,20 +184,11 @@ module away.display3D
 		
 		public drawTriangles( indexBuffer:IndexBuffer3D, firstIndex:number = 0, numTriangles:number = -1 )
 		{
-
-            //------------------------------------------------------------------------
-            // TEST
-
-            console.log( 'DrawTriangles');
-            var perspectiveFieldOfViewLH : away.utils.PerspectiveMatrix3D = new away.utils.PerspectiveMatrix3D( )
-            perspectiveFieldOfViewLH.perspectiveFieldOfViewLH( 80, ( 800/600 ) , 0.1, 5000 );
-
-            this.setProgramConstantsFromMatrix( 'vertex', 0, perspectiveFieldOfViewLH , true );
-
 			if ( !this._drawing ) 
 			{
 				throw "Need to clear before drawing if the buffer has not been cleared since the last present() call.";
 			}
+			
 			var numIndices:number = 0;
 			
 			if (numTriangles == -1) 
@@ -383,10 +376,10 @@ module away.display3D
 			switch( programType)
 			{
 				case Context3DProgramType.VERTEX:
-					return "vc";
+						return "vc";
 					break;
 				case Context3DProgramType.FRAGMENT:
-					return "fc";
+						return "fc";
 					break;
 				default:
 					throw "Program Type " + programType + " not supported";
@@ -408,7 +401,7 @@ module away.display3D
 			for( var i: number = 0; i < numRegisters; ++i )
 			{
 				var currentIndex:number = i * 4;
-				var locationName:string = this.getUniformLocationNameFromAgalRegisterIndex( programType, firstRegister + i );;
+				var locationName:string = this.getUniformLocationNameFromAgalRegisterIndex( programType, firstRegister + i ) + firstRegister;
 				
 				this.setGLSLProgramConstantsFromArray( locationName, data, currentIndex );
 			}
@@ -419,7 +412,7 @@ module away.display3D
 		
 		*/
 		
-		public setGLSLProgramConstantsFromMatrix( locationName:string, matrix:away.geom.Matrix3D, transposedMatrix:boolean = false) 
+		public setGLSLProgramConstantsFromMatrix( locationName:string, matrix:away.geom.Matrix3D, transposedMatrix:boolean = false ) 
 		{
 			var location:WebGLUniformLocation = this._gl.getUniformLocation( this._currentProgram.glProgram, locationName );
 			this._gl.uniformMatrix4fv( location, !transposedMatrix, new Float32Array( matrix.rawData ) );
@@ -429,6 +422,8 @@ module away.display3D
 		{
 			var location:WebGLUniformLocation = this._gl.getUniformLocation( this._currentProgram.glProgram, locationName );
 			this._gl.uniform4f( location, data[startIndex], data[startIndex+1], data[startIndex+2], data[startIndex+3] );
+			
+			console.log( "locationName: " + location );
 		}
 		
 		public setScissorRectangle( rectangle:away.geom.Rectangle ) 
@@ -501,29 +496,31 @@ module away.display3D
 		
 		public setVertexBufferAt( index:number, buffer:VertexBuffer3D, bufferOffset:number = 0, format:string = null )
 		{
-			var locationName = "va" + index;
+			var locationName:string = "va" + index;
 			this.setGLSLVertexBufferAt( locationName, buffer, bufferOffset, format );
 		}
 		
 		public setGLSLVertexBufferAt( locationName, buffer:VertexBuffer3D, bufferOffset:number = 0, format:string = null )
 		{
-
+			
             //if ( buffer == null )return;
-
+			
             console.log( 'setGLSLVertexBufferAt locationName' , locationName , 'buffer' , buffer , 'bufferOffset' , bufferOffset , 'format' , format );
-
+			
 			var location:number = this._gl.getAttribLocation( this._currentProgram.glProgram, locationName );
 			
+			/*
 			if( !buffer )
 			{
-
+				
                 if ( location > -1 )
                 {
 				    this._gl.disableVertexAttribArray( location );
                 }
 				return;
-
+				
 			}
+			*/
 			
 			this._gl.bindBuffer( this._gl.ARRAY_BUFFER, buffer.glBuffer );
 			

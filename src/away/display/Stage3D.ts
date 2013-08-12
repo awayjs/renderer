@@ -23,11 +23,18 @@ module away.display
 			this._canvas = canvas;
 		}
 		
-		public requestContext()
+		public requestContext( aglslContext:boolean = false )
 		{
 			try
 			{
-				this._context3D = new away.display3D.Context3D( this._canvas );
+				if( aglslContext )
+				{
+					this._context3D = new away.display3D.AGLSLContext3D( this._canvas );
+				}
+				else
+				{
+					this._context3D = new away.display3D.Context3D( this._canvas );
+				}
 
 			}
 			catch( e )
