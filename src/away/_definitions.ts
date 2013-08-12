@@ -181,6 +181,7 @@
 ///<reference path="controllers/HoverController.ts"/>
 ///<reference path="controllers/FirstPersonController.ts"/>
 ///<reference path="controllers/FollowController.ts"/>
+///<reference path="controllers/SpringController.ts"/>
 ///<reference path="lights/LightBase.ts"/>
 ///<reference path="lights/PointLight.ts"/>
 ///<reference path="lights/DirectionalLight.ts"/>
