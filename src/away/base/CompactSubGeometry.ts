@@ -4,14 +4,14 @@ module away.base
 
 	export class CompactSubGeometry extends away.base.SubGeometryBase implements away.base.ISubGeometry
 	{
-		private _vertexDataInvalid:boolean[] = Array<boolean>( 8 );//new Vector.<Boolean>(8, true);
+		public _pVertexDataInvalid:boolean[] = Array<boolean>( 8 );//new Vector.<Boolean>(8, true);
 		private _vertexBuffer:away.display3D.VertexBuffer3D[] = new Array<away.display3D.VertexBuffer3D>( 8 );//Vector.<VertexBuffer3D> = new Vector.<VertexBuffer3D>(8);
 		private _bufferContext:away.display3D.Context3D[] = new Array<away.display3D.Context3D>( 8 );//Vector.<Context3D> = new Vector.<Context3D>(8);
-		private _numVertices:number;
+		public _pNumVertices:number;
 		private _contextIndex:number;
-		private _activeBuffer:away.display3D.VertexBuffer3D;
+		public _pActiveBuffer:away.display3D.VertexBuffer3D;
 		private _activeContext:away.display3D.Context3D;
-		private _activeDataInvalid:boolean;
+		public _pActiveDataInvalid:boolean;
 		private _isolatedVertexPositionData:number[];
 		private _isolatedVertexPositionDataDirty:boolean;
 		
@@ -25,7 +25,7 @@ module away.base
 		
 		public get numVertices():number
 		{
-			return this._numVertices;
+			return this._pNumVertices;
 		}
 		
 		/**
@@ -60,23 +60,23 @@ module away.base
             this._vertexData = data;
 			var numVertices:number = this._vertexData.length/13;
 
-			if (numVertices != this._numVertices)
+			if (numVertices != this._pNumVertices)
             {
 
                 this.pDisposeVertexBuffers(this._vertexBuffer);
 
             }
 
-			this._numVertices = numVertices;
+			this._pNumVertices = numVertices;
 			
-			if (this._numVertices == 0)
+			if (this._pNumVertices == 0)
             {
 
                 throw new Error("Bad data: geometry can't have zero triangles");
 
             }
 
-			this.pInvalidateBuffers( this._vertexDataInvalid );
+			this.pInvalidateBuffers( this._pVertexDataInvalid );
             this.pInvalidateBounds();
 
 		}
@@ -93,21 +93,21 @@ module away.base
 
             }
 
-			if (!this._activeBuffer || this._activeContext != context)
+			if (!this._pActiveBuffer || this._activeContext != context)
             {
 
                 this.pCreateBuffer(contextIndex, context);
 
             }
 
-			if ( this._activeDataInvalid )
+			if ( this._pActiveDataInvalid )
             {
 
                 this.pUploadData(contextIndex);
 
             }
 
-			context.setVertexBufferAt(index, this._activeBuffer, 0, away.display3D.Context3DVertexBufferFormat.FLOAT_3);
+			context.setVertexBufferAt(index, this._pActiveBuffer, 0, away.display3D.Context3DVertexBufferFormat.FLOAT_3);
 
 		}
 		
@@ -121,7 +121,7 @@ module away.base
 
 				this._vertexData = this.pUpdateDummyUVs( this._vertexData);
 
-                this.pInvalidateBuffers( this._vertexDataInvalid );
+                this.pInvalidateBuffers( this._pVertexDataInvalid );
 			}
 			
 			if (contextIndex != this._contextIndex)
@@ -132,14 +132,14 @@ module away.base
             }
 
 			
-			if (!this._activeBuffer || this._activeContext != context)
+			if (!this._pActiveBuffer || this._activeContext != context)
             {
 
                 this.pCreateBuffer( contextIndex , context );
 
             }
 
-			if (this._activeDataInvalid)
+			if (this._pActiveDataInvalid)
             {
 
                 this.pUploadData( contextIndex );
@@ -147,7 +147,7 @@ module away.base
             }
 
 			
-			context.setVertexBufferAt(index, this._activeBuffer, 9, away.display3D.Context3DVertexBufferFormat.FLOAT_2);
+			context.setVertexBufferAt(index, this._pActiveBuffer, 9, away.display3D.Context3DVertexBufferFormat.FLOAT_2);
 
 		}
 		
@@ -163,14 +163,14 @@ module away.base
 
             }
 
-			if (!this._activeBuffer || this._activeContext != context)
+			if (!this._pActiveBuffer || this._activeContext != context)
             {
 
                 this.pCreateBuffer( contextIndex , context );
 
             }
 
-			if ( this._activeDataInvalid )
+			if ( this._pActiveDataInvalid )
             {
 
                 this.pUploadData( contextIndex );
@@ -178,15 +178,15 @@ module away.base
             }
 
 			
-			context.setVertexBufferAt(index, this._activeBuffer, 11, away.display3D.Context3DVertexBufferFormat.FLOAT_2);
+			context.setVertexBufferAt(index, this._pActiveBuffer, 11, away.display3D.Context3DVertexBufferFormat.FLOAT_2);
 
 		}
 		
 		public pUploadData(contextIndex:number)
 		{
 
-			this._activeBuffer.uploadFromArray(this._vertexData, 0, this._numVertices);
-			this._vertexDataInvalid[contextIndex] = this._activeDataInvalid = false;
+			this._pActiveBuffer.uploadFromArray(this._vertexData, 0, this._pNumVertices);
+			this._pVertexDataInvalid[contextIndex] = this._pActiveDataInvalid = false;
 		}
 		
 		public activateVertexNormalBuffer(index:number, stage3DProxy:away.managers.Stage3DProxy)
@@ -202,20 +202,20 @@ module away.base
             }
 
 			
-			if (!this._activeBuffer || this._activeContext != context)
+			if (!this._pActiveBuffer || this._activeContext != context)
             {
 
                 this.pCreateBuffer( contextIndex , context );
             }
 
-			if (this._activeDataInvalid)
+			if (this._pActiveDataInvalid)
             {
 
                 this.pUploadData(contextIndex);
 
             }
 
-			context.setVertexBufferAt(index, this._activeBuffer, 3, away.display3D.Context3DVertexBufferFormat.FLOAT_3);
+			context.setVertexBufferAt(index, this._pActiveBuffer, 3, away.display3D.Context3DVertexBufferFormat.FLOAT_3);
 
 		}
 		
@@ -231,37 +231,37 @@ module away.base
 
             }
 
-			if (!this._activeBuffer || this._activeContext != context)
+			if (!this._pActiveBuffer || this._activeContext != context)
             {
 
                 this.pCreateBuffer( contextIndex , context );
 
             }
 
-			if ( this._activeDataInvalid )
+			if ( this._pActiveDataInvalid )
             {
                 this.pUploadData(contextIndex);
 
             }
 
 			
-			context.setVertexBufferAt(index, this._activeBuffer, 6, away.display3D.Context3DVertexBufferFormat.FLOAT_3);
+			context.setVertexBufferAt(index, this._pActiveBuffer, 6, away.display3D.Context3DVertexBufferFormat.FLOAT_3);
 
 		}
 		
 		public pCreateBuffer(contextIndex:number, context:away.display3D.Context3D)
 		{
-			this._vertexBuffer[contextIndex] = this._activeBuffer = context.createVertexBuffer(this._numVertices, 13);
+			this._vertexBuffer[contextIndex] = this._pActiveBuffer = context.createVertexBuffer(this._pNumVertices, 13);
 			this._bufferContext[contextIndex] = this._activeContext = context;
-			this._vertexDataInvalid[contextIndex] = this._activeDataInvalid = true;
+			this._pVertexDataInvalid[contextIndex] = this._pActiveDataInvalid = true;
 
 		}
 		
 		public pUpdateActiveBuffer(contextIndex:number)
 		{
 			this._contextIndex = contextIndex;
-            this._activeDataInvalid = this._vertexDataInvalid[contextIndex];
-            this._activeBuffer = this._vertexBuffer[contextIndex];
+            this._pActiveDataInvalid = this._pVertexDataInvalid[contextIndex];
+            this._pActiveBuffer = this._vertexBuffer[contextIndex];
             this._activeContext = this._bufferContext[contextIndex];
 		}
 		
@@ -294,7 +294,7 @@ module away.base
 		public pUpdateVertexNormals(target:number[]):number[]
 		{
 
-            this.pInvalidateBuffers( this._vertexDataInvalid);
+            this.pInvalidateBuffers( this._pVertexDataInvalid);
 			return super.pUpdateVertexNormals(target);
 
 		}
@@ -308,7 +308,7 @@ module away.base
 
             }
 
-			this.pInvalidateBuffers( this._vertexDataInvalid);
+			this.pInvalidateBuffers( this._pVertexDataInvalid);
 
 			return super.pUpdateVertexTangents(target);
 
@@ -346,7 +346,7 @@ module away.base
 
 
 				this._vertexData = this.pUpdateDummyUVs(this._vertexData);
-				this.pInvalidateBuffers( this._vertexDataInvalid );
+				this.pInvalidateBuffers( this._pVertexDataInvalid );
 
 			}
 
@@ -357,14 +357,14 @@ module away.base
 		{
 
 			super.applyTransformation(transform);
-			this.pInvalidateBuffers( this._vertexDataInvalid );
+			this.pInvalidateBuffers( this._pVertexDataInvalid );
 
 		}
 		
 		public scale(scale:number)
 		{
 			super.scale(scale);
-			this.pInvalidateBuffers(this._vertexDataInvalid);
+			this.pInvalidateBuffers(this._pVertexDataInvalid);
 		}
 		
 		public clone():away.base.ISubGeometry
@@ -385,7 +385,7 @@ module away.base
 
 			super.scaleUV(scaleU, scaleV);
 
-			this.pInvalidateBuffers( this._vertexDataInvalid );
+			this.pInvalidateBuffers( this._pVertexDataInvalid );
 
 		}
 		
@@ -450,14 +450,14 @@ module away.base
 		{
 
 			super.pDisposeVertexBuffers(buffers);
-			this._activeBuffer = null;
+			this._pActiveBuffer = null;
 
 		}
 		
 		public pInvalidateBuffers(invalid:boolean[])
 		{
 			super.pInvalidateBuffers(invalid);
-			this._activeDataInvalid = true;
+			this._pActiveDataInvalid = true;
 
 		}
 
@@ -521,12 +521,12 @@ module away.base
 		 */
 		public stripBuffer(offset:number, numEntries:number):number[]
 		{
-			var data:number[] = new Array<number>( this._numVertices*numEntries );// Vector.<Number>(_numVertices*numEntries);
+			var data:number[] = new Array<number>( this._pNumVertices*numEntries );// Vector.<Number>(_pNumVertices*numEntries);
 			var i:number = 0;
             var j:number = offset;
 			var skip:number = 13 - numEntries;
 			
-			for (var v:number = 0; v < this._numVertices; ++v)
+			for (var v:number = 0; v < this._pNumVertices; ++v)
             {
 
 				for (var k:number = 0; k < numEntries; ++k)
