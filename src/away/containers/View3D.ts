@@ -65,7 +65,7 @@ module away.containers
         private _antiAlias:number = 0;
         private _scissorRectDirty:boolean = true;
         private _viewportDirty:boolean = true;
-        private _depthPrepass:boolean;
+        private _depthPrepass:boolean = false;
         private _profile:string;
         private _layeredView:boolean = false;
 

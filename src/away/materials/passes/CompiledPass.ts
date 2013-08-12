@@ -434,7 +434,7 @@ module away.materials
          */
         public iInvalidateShaderProgram(updateMaterial:boolean = true)
         {
-            var oldPasses : away.materials.MaterialPassBase[];//:Vector.<MaterialPassBase> = _passes;
+            var oldPasses : away.materials.MaterialPassBase[] = this._iPasses;//:Vector.<MaterialPassBase> = _passes;
             this._iPasses = new Array<away.materials.MaterialPassBase>();//= new Vector.<MaterialPassBase>();
 
             if (this._pMethodSetup)
@@ -469,6 +469,7 @@ module away.materials
          */
         public pAddPassesFromMethods()
         {
+
             if (this._pMethodSetup._iNormalMethod && this._pMethodSetup._iNormalMethod.iHasOutput)
                 this.pAddPasses(this._pMethodSetup._iNormalMethod.passes);
 
