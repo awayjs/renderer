@@ -192,7 +192,7 @@ module away.geom
              }*/
         }
 
-        public multiplyInPlace ( dest : Matrix3D , a : Matrix3D , b  : Matrix3D ) : void
+        public static multiplyInPlace ( dest : Matrix3D , a : Matrix3D , b  : Matrix3D ) : void
         {
             /*
             function dotRowColumn ( ar, bc )
@@ -215,10 +215,10 @@ module away.geom
 
             for ( var row=0; row<4; row++ )
             {
-                dest.data[row*4+0] = this.dotRowColumn ( a , b , row, 0 );
-                dest.data[row*4+1] = this.dotRowColumn ( a , b , row, 1 );
-                dest.data[row*4+2] = this.dotRowColumn ( a , b , row, 2 );
-                dest.data[row*4+3] = this.dotRowColumn ( a , b , row, 3 );
+                dest.data[row*4+0] = Matrix3D.dotRowColumn ( a , b , row, 0 );
+                dest.data[row*4+1] = Matrix3D.dotRowColumn ( a , b , row, 1 );
+                dest.data[row*4+2] = Matrix3D.dotRowColumn ( a , b , row, 2 );
+                dest.data[row*4+3] = Matrix3D.dotRowColumn ( a , b , row, 3 );
             }
 
             if ( orgdest )
@@ -227,12 +227,74 @@ module away.geom
             }
         }
 
-        private dotRowColumn (  a : Matrix3D , b  : Matrix3D , ar : number , bc : number ) : number
+        private static dotRowColumn (  a : Matrix3D , b  : Matrix3D , ar : number , bc : number ) : number
         {
             return  a.data[ar*4  ]*b.data[bc] +
                     a.data[ar*4+1]*b.data[bc+4] +
                     a.data[ar*4+2]*b.data[bc+8] +
                     a.data[ar*4+3]*b.data[bc+12];
+        }
+
+        public multiplyLeft ( b : Matrix3D ) {
+            Matrix3D.multiplyInPlace ( this, this, b );
+        }
+
+        public multiplyRight ( a : Matrix3D ) {
+            Matrix3D.multiplyInPlace ( this, a, this );
+        }
+
+        public append ( m : Matrix3D ) : void
+        {
+            this.multiplyLeft( m );
+        }
+
+        public prepend ( m : Matrix3D ) : void
+        {
+            this.multiplyRight( m );
+        }
+
+
+        public appendScale ( sx : number , sy : number , sz  : number ) : void
+        {
+            Matrix3D.temp[this.isfloat].scale(sx,sy,sz);
+            Matrix3D.multiplyInPlace ( this, this, Matrix3D.temp[this.isfloat] );
+        }
+
+        public appendTranslation ( dx : number , dy : number , dz  : number ) : void
+        {
+            Matrix3D.temp[this.isfloat].translation(dx,dy,dz);
+            Matrix3D.multiplyInPlace ( this, this, Matrix3D.temp[this.isfloat] );
+        }
+
+        public appendRotation ( angledeg : number , axis : away.geom.Vector3D ) : void
+        {
+            Matrix3D.temp[this.isfloat].rotation(angledeg, axis);
+            Matrix3D.multiplyInPlace ( this, this, Matrix3D.temp[this.isfloat] );
+        }
+
+        public prependScale ( sx : number , sy : number , sz : number ) : void
+        {
+            Matrix3D.temp[this.isfloat].scale(sx,sy,sz);
+            Matrix3D.multiplyInPlace ( this, Matrix3D.temp[this.isfloat], this );
+        }
+
+        public prependTranslation ( dx : number , dy : number , dz  : number ) : void
+        {
+            Matrix3D.temp[this.isfloat].translation(dx,dy,dz);
+            Matrix3D.multiplyInPlace ( this, Matrix3D.temp[this.isfloat], this );
+        }
+
+        public prependRotation ( angledeg : number, axis  : away.geom.Vector3D )
+        {
+            Matrix3D.temp[this.isfloat].rotation(angledeg, axis);
+            Matrix3D.multiplyInPlace ( this, Matrix3D.temp[this.isfloat], this );
+        }
+
+        public clone ( ) : away.geom.Matrix3D
+        {
+            var r = new away.geom.Matrix3D( null , this.isfloat);
+                r.copyFrom ( this );
+            return r;
         }
 
         public copyFrom ( othermatrix : Matrix3D ): void
@@ -251,6 +313,17 @@ module away.geom
                     this.data[i] = othermatrix.data[i];
                 }
             }
+        }
+
+        public transpose ( ) : void
+        {
+            var t;
+            t = this.data[1]; this.data[1] = this.data[4]; this.data[4] = t;
+            t = this.data[2]; this.data[2] = this.data[8]; this.data[8] = t;
+            t = this.data[6]; this.data[6] = this.data[9]; this.data[9] = t;
+            t = this.data[3]; this.data[3] = this.data[12]; this.data[12] = t;
+            t = this.data[7]; this.data[7] = this.data[13]; this.data[13] = t;
+            t = this.data[11]; this.data[11] = this.data[14]; this.data[14] = t;
         }
 
         public copyTo ( othermatrix : Matrix3D ) : void
@@ -488,9 +561,19 @@ module away.geom
             vectorout.z = vectorin.x*this.data[2] + vectorin.y*this.data[6] + vectorin.z*this.data[10]  + this.data[14];
         }
 
-        public transformVector ( vectorin : away.geom.Vector3D , vectorout : away.geom.Vector3D ) : void
+        public transformVector ( vectorin : away.geom.Vector3D , vectorout : away.geom.Vector3D = null ) : away.geom.Vector3D
         {
-            return this.transform3x4( vectorin , vectorout );
+
+            if ( vectorout == null )
+            {
+
+                vectorout = new away.geom.Vector3D();
+            }
+
+            this.transform3x4( vectorin , vectorout );
+
+            return vectorout;
+
         }
 
         public transform4x4 ( vectorin : away.geom.Vector3D , vectorout : away.geom.Vector3D ) : void
@@ -502,35 +585,27 @@ module away.geom
         }
 
         // same as Flash function, 3x4, non transposed
-        public transformVectors ( numbersarrayin : away.geom.Vector3D, numbersarrayout : away.geom.Vector3D ) : void
+        public transformVectors ( numbersarrayin:number[], numbersarrayout:number[] ) : void
         {
+
             for ( var i = 0; i<numbersarrayin.length-2; i+=3 )
             {
-                var x = numbersarrayin.x
-                var y = numbersarrayin.y
-                var z = numbersarrayin.z
+                var x = numbersarrayin[0]
+                var y = numbersarrayin[1]
+                var z = numbersarrayin[2]
 
-                numbersarrayout.x = x*this.data[0] + y*this.data[4] + z*this.data[8] + this.data[12]; // implicit w=1
-                numbersarrayout.y = x*this.data[1] + y*this.data[5] + z*this.data[9] + this.data[13]; // implicit w=1
-                numbersarrayout.z = x*this.data[2] + y*this.data[6] + z*this.data[10] + this.data[14]; // implicit w=1
+                numbersarrayout[0] = x*this.data[0] + y*this.data[4] + z*this.data[8] + this.data[12]; // implicit w=1
+                numbersarrayout[1] = x*this.data[1] + y*this.data[5] + z*this.data[9] + this.data[13]; // implicit w=1
+                numbersarrayout[2] = x*this.data[2] + y*this.data[6] + z*this.data[10] + this.data[14]; // implicit w=1
             }
+
+
+
         }
 
         //---------------------------------------------------------------------------
         // missing functions from AS3:
         //---------------------------------------------------------------------------
-
-        // todo: is this the translation function
-        //public function append(lhs : Matrix3D) : void; // Missing
-
-        // todo: is this the rotation function ?
-        //public function appendRotation(degrees : Number, axis : Vector3D, pivotPoint : Vector3D = null) : void;
-
-        // todo: is this the scale function ?
-        //public function appendScale(xScale : Number, yScale : Number, zScale : Number) : void;
-
-        // todo: implement
-        //public function appendTranslation(x : Number, y : Number, z : Number) : void;
 
         // todo: implement
         //public function copyColumnFrom(column : uint, vector3D : Vector3D) : void;
@@ -574,15 +649,6 @@ module away.geom
         // todo: implement
         //public function get position() : Vector3D;
         //public function set position(pos : Vector3D) : void;
-
-        // todo: implement
-        //public function prependRotation(degrees : Number, axis : Vector3D, pivotPoint : Vector3D = null) : void;
-
-        // todo: implement
-        //public function prependScale(xScale : Number, yScale : Number, zScale : Number) : void;
-
-        // todo: implement
-        //public function prependTranslation(x : Number, y : Number, z : Number) : void;
 
         // todo: implement
         //public function recompose(components : Vector.<Vector3D>, orientationStyle : String = "eulerAngles") : Boolean;
