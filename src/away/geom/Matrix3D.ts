@@ -587,9 +587,6 @@ module away.geom
         // todo: implement
         //public function recompose(components : Vector.<Vector3D>, orientationStyle : String = "eulerAngles") : Boolean;
 
-
-
     }
-
 
 }
