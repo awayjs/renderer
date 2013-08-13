@@ -449,7 +449,7 @@ module away.geom
             this.data[15] = 0;
         }
 
-        public projection = function ( znear : number , zfar: number , fovdeg: number , aspect : number ) : void
+        public projection ( znear : number , zfar: number , fovdeg: number , aspect : number ) : void
         {
 
             var yval : number = znear * Math.tan( fovdeg * Matrix3D.DEG2RAD * 0.5 );
