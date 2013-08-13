@@ -235,11 +235,13 @@ module away.geom
                     a.data[ar*4+3]*b.data[bc+12];
         }
 
-        public multiplyLeft ( b : Matrix3D ) {
+        public multiplyLeft ( b : Matrix3D )
+        {
             Matrix3D.multiplyInPlace ( this, this, b );
         }
 
-        public multiplyRight ( a : Matrix3D ) {
+        public multiplyRight ( a : Matrix3D )
+        {
             Matrix3D.multiplyInPlace ( this, a, this );
         }
 
@@ -252,7 +254,6 @@ module away.geom
         {
             this.multiplyRight( m );
         }
-
 
         public appendScale ( sx : number , sy : number , sz  : number ) : void
         {
@@ -601,32 +602,190 @@ module away.geom
 
 
 
+
         }
+
+        /**
+         * Copies specific column of the calling Matrix3D object into the Vector3D object.
+         */
+        public copyColumnTo( column:number, vector3D:Vector3D )
+        {
+
+            switch( column )
+            {
+                case 0:
+                    vector3D.x = this.data[ 0 ];
+                    vector3D.y = this.data[ 1 ];
+                    vector3D.z = this.data[ 2 ];
+                    vector3D.w = this.data[ 3 ];
+                    break;
+                case 1:
+                    vector3D.x = this.data[ 4 ];
+                    vector3D.y = this.data[ 5 ];
+                    vector3D.z = this.data[ 6 ];
+                    vector3D.w = this.data[ 7 ];
+                    break;
+                case 2:
+                    vector3D.x = this.data[ 8 ];
+                    vector3D.y = this.data[ 9 ];
+                    vector3D.z = this.data[ 10 ];
+                    vector3D.w = this.data[ 11 ];
+                    break;
+                case 3:
+                    vector3D.x = this.data[ 12 ];
+                    vector3D.y = this.data[ 13 ];
+                    vector3D.z = this.data[ 14 ];
+                    vector3D.w = this.data[ 15 ];
+                    break;
+                default:
+                    throw new away.errors.ArgumentError( "ArgumentError, Column " + column + " out of bounds [0, ..., 3]");
+            }
+
+        }
+        /**
+         * Copies a Vector3D object into specific column of the calling Matrix3D object.
+         */
+        public copyColumnFrom( column:number, vector3D:Vector3D )
+        {
+
+            switch( column )
+            {
+                case 0:
+                    this.data[ 0 ] = vector3D.x;
+                    this.data[ 1 ] = vector3D.y;
+                    this.data[ 2 ] = vector3D.z;
+                    this.data[ 3 ] = vector3D.w;
+                    break;
+                case 1:
+                    this.data[ 4 ] = vector3D.x;
+                    this.data[ 5 ] = vector3D.y;
+                    this.data[ 6 ] = vector3D.z;
+                    this.data[ 7 ] = vector3D.w;
+                    break;
+                case 2:
+                    this.data[ 8 ] = vector3D.x;
+                    this.data[ 9 ] = vector3D.y;
+                    this.data[ 10 ] = vector3D.z;
+                    this.data[ 11 ] = vector3D.w;
+                    break;
+                case 3:
+                    this.data[ 12 ] = vector3D.x;
+                    this.data[ 13 ] = vector3D.y;
+                    this.data[ 14 ] = vector3D.z;
+                    this.data[ 15 ] = vector3D.w;
+                    break;
+                default:
+                    throw new away.errors.ArgumentError( "ArgumentError, Column " + column + " out of bounds [0, ..., 3]");
+            }
+
+        }
+
+        /**
+         * Copies specific row of the calling Matrix3D object into the Vector3D object.
+         */
+        public copyRowTo( row:number, vector3D:Vector3D )
+        {
+
+            switch( row )
+            {
+                case 0:
+                    vector3D.x = this.data[ 0 ];
+                    vector3D.y = this.data[ 4 ];
+                    vector3D.z = this.data[ 8 ];
+                    vector3D.w = this.data[ 12 ];
+                    break;
+                case 1:
+                    vector3D.x = this.data[ 1 ];
+                    vector3D.y = this.data[ 5 ];
+                    vector3D.z = this.data[ 9 ];
+                    vector3D.w = this.data[ 13 ];
+                    break;
+                case 2:
+                    vector3D.x = this.data[ 2 ];
+                    vector3D.y = this.data[ 6 ];
+                    vector3D.z = this.data[ 10 ];
+                    vector3D.w = this.data[ 14 ];
+
+                    break;
+                case 3:
+                    vector3D.x = this.data[ 3 ];
+                    vector3D.y = this.data[ 7 ];
+                    vector3D.z = this.data[ 11 ];
+                    vector3D.w = this.data[ 15 ];
+                    break;
+                default:
+                    throw new away.errors.ArgumentError( "ArgumentError, Row " + row + " out of bounds [0, ..., 3]");
+            }
+        }
+
+        /**
+         * Copies a Vector3D object into specific row of the calling Matrix3D object.
+         */
+        public copyRowFrom( row:number, vector3D:Vector3D )
+        {
+
+            switch( row )
+            {
+                case 0:
+                    this.data[ 0 ] = vector3D.x;
+                    this.data[ 4 ] = vector3D.y;
+                    this.data[ 8 ] = vector3D.z;
+                    this.data[ 12 ] = vector3D.w;
+                    break;
+                case 1:
+                    this.data[ 1 ] = vector3D.x;
+                    this.data[ 5 ] = vector3D.y;
+                    this.data[ 9 ] = vector3D.z;
+                    this.data[ 13 ] = vector3D.w;
+                    break;
+                case 2:
+                    this.data[ 2 ] = vector3D.x;
+                    this.data[ 6 ] = vector3D.y;
+                    this.data[ 10 ] = vector3D.z;
+                    this.data[ 14 ] = vector3D.w;
+                    break;
+                case 3:
+                    this.data[ 3 ] = vector3D.x;
+                    this.data[ 7 ] = vector3D.y;
+                    this.data[ 11 ] = vector3D.z;
+                    this.data[ 15 ] = vector3D.w;
+                    break;
+                default:
+                    throw new away.errors.ArgumentError( "ArgumentError, Row " + row + " out of bounds [0, ..., 3]");
+            }
+
+        }
+
+        /**
+         * Copies all of the matrix data from the source Matrix3D object into the calling Matrix3D object.
+         */
+        public copyRawDataFrom( vector:number[], index:number = 0, transpose:boolean = false )
+        {
+            //TODO fully implement
+            this.data = vector.slice(0);
+        }
+
+        /**
+         *
+         */
+        public copyRawDataTo( vector:number[], index:number = 0, transpose:boolean = false )
+        {
+
+            //TODO fully implement
+            var l : number =  this.data.length;
+            for (var c : number = 0 ; c < l ; c ++ )
+            {
+
+                vector[c] = this.data[c];
+
+            }
+
+        }
+
 
         //---------------------------------------------------------------------------
         // missing functions from AS3:
         //---------------------------------------------------------------------------
-
-        // todo: implement
-        //public function copyColumnFrom(column : uint, vector3D : Vector3D) : void;
-
-        // todo: implement
-        //public function copyColumnTo(column : uint, vector3D : Vector3D) : void;
-
-        // todo: implement
-        //public function copyFrom(sourceMatrix3D : Matrix3D) : void;
-
-        // todo: implement
-        //public function copyRawDataFrom(vector : Vector.<Number>, index : uint = 0, transpose : Boolean = false) : void;
-
-        // todo: implement
-        //public function copyRawDataTo(vector : Vector.<Number>, index : uint = 0, transpose : Boolean = false) : void;
-
-        // todo: imeplement
-        //public function copyRowFrom(row : uint, vector3D : Vector3D) : void;
-
-        // todo: implement
-        //public function copyRowTo(row : uint, vector3D : Vector3D) : void;
 
         // todo: implement
         //public function copyToMatrix3D(dest : Matrix3D) : void;
