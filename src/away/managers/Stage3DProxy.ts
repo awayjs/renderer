@@ -652,7 +652,7 @@ module away.managers
 			this._profile = profile;
 
             // Updated to work with current JS <> AS3 Display3D System
-            this._stage3D.requestContext();
+            this._stage3D.requestContext( true );
 
             // Throw PartialImplementationError to flag this function as changed
 
