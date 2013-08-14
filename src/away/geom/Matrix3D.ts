@@ -317,12 +317,10 @@ module away.geom
 		public decompose():Vector3D[]
 		{
 
-            //this.transpose();
-
 			var vec:Vector3D[] = [];
 			var m = this.clone();
 			var mr = m.rawData;
-			
+
 			var pos: Vector3D = new Vector3D( mr[12], mr[13], mr[14] );
 			mr[12] = 0;
 			mr[13] = 0;
@@ -369,8 +367,6 @@ module away.geom
 			vec.push(rot);
 			vec.push(scale);
 
-            //this.transpose();
-
 			return vec;
 		}
 		
@@ -414,10 +410,10 @@ module away.geom
 		 */
 		public interpolateTo( toMat:Matrix3D, percent:number )
 		{
-			for( var i: number = 0; i < 16; ++i )
-			{
-				this.rawData[i] = this.rawData[i] + (toMat.rawData[i] - this.rawData[i]) * percent;
-			}
+            for( var i: number = 0; i < 16; ++i )
+            {
+                this.rawData[i] = this.rawData[i] + (toMat.rawData[i] - this.rawData[i]) * percent;
+            }
 		}
 		
 		/**
@@ -430,7 +426,7 @@ module away.geom
 			
 			if (invertable)
 			{
-				d = -1 / d;
+				d = 1 / d;
 				var m11:number = this.rawData[0]; var m21:number = this.rawData[4]; var m31:number = this.rawData[8]; var m41:number = this.rawData[12];
 				var m12:number = this.rawData[1]; var m22:number = this.rawData[5]; var m32:number = this.rawData[9]; var m42:number = this.rawData[13];
 				var m13:number = this.rawData[2]; var m23:number = this.rawData[6]; var m33:number = this.rawData[10]; var m43:number = this.rawData[14];
@@ -500,14 +496,17 @@ module away.geom
 		/**
 		 * Prepends an incremental rotation to a Matrix3D object.
 		 */
-		public prependRotation( degrees:number, axis:Vector3D, pivotPoint:Vector3D = null )
+		public prependRotation( degrees:number, axis:Vector3D ) //, pivotPoint:Vector3D = null )
 		{
 			var m: Matrix3D = Matrix3D.getAxisRotation( axis.x, axis.y, axis.z, degrees );
+
+            /*
 			if ( pivotPoint != null )
 			{
 				var p:Vector3D = pivotPoint;
 				m.appendTranslation( p.x, p.y, p.z );
 			}
+			*/
 			this.prepend( m );
 		}
 		
@@ -535,7 +534,9 @@ module away.geom
 		 */
 		public recompose( components:Vector3D[] ): boolean
 		{
-			if (components.length < 3 || components[2].x == 0 || components[2].y == 0 || components[2].z == 0) return false;
+			if (components.length < 3 ) return false
+
+            //components[2].x == 0 || components[2].y == 0 || components[2].z == 0) return false;
 			
 			this.identity();
 			this.appendScale (components[2].x, components[2].y, components[2].z);
@@ -553,7 +554,7 @@ module away.geom
 			
 			return true;
 		}
-		
+
 		public transformVector( v:away.geom.Vector3D ):away.geom.Vector3D
 		{
 			var x:number = v.x;
@@ -562,11 +563,11 @@ module away.geom
 			return new away.geom.Vector3D(
 				(x * this.rawData[0] + y * this.rawData[4] + z * this.rawData[8] + this.rawData[12]),
 				(x * this.rawData[1] + y * this.rawData[5] + z * this.rawData[9] + this.rawData[13]),
-				(x * this.rawData[2] + y * this.rawData[6] + z * this.rawData[10] + this.rawData[14]),
-			1);
+                (x * this.rawData[2] + y * this.rawData[6] + z * this.rawData[10] + this.rawData[14]),
+                (x * this.rawData[3] + y * this.rawData[7] + z * this.rawData[11] + this.rawData[15]));
 			
 		}
-		
+
 		/**
 		 * Uses the transformation matrix to transform a Vector of Numbers from one coordinate space to another.
 		 */
@@ -586,7 +587,7 @@ module away.geom
 				i += 3;
 			}
 		}
-		
+
 		/**
 		 * Converts the current Matrix3D object to a matrix where the rows and columns are swapped.
 		 */
@@ -608,8 +609,11 @@ module away.geom
 			this.rawData[14] = oRawData[11];
 		}
 		
-		static getAxisRotation( x:number, y:number, z:number, degrees:number ):Matrix3D 
+		static getAxisRotation( x:number, y:number, z:number, degrees:number ):Matrix3D
 		{
+
+            // internal class use by rotations which have been tested
+
 			var m:Matrix3D = new Matrix3D();
 			
 			var a1:Vector3D = new Vector3D( x, y, z );
@@ -643,7 +647,7 @@ module away.geom
 		 */
 		public get determinant(): number
 		{
-			return	-1 * ((this.rawData[0] * this.rawData[5] - this.rawData[4] * this.rawData[1]) * (this.rawData[10] * this.rawData[15] - this.rawData[14] * this.rawData[11])
+			return	((this.rawData[0] * this.rawData[5] - this.rawData[4] * this.rawData[1]) * (this.rawData[10] * this.rawData[15] - this.rawData[14] * this.rawData[11])
 				- (this.rawData[0] * this.rawData[9] - this.rawData[8] * this.rawData[1]) * (this.rawData[6] * this.rawData[15] - this.rawData[14] * this.rawData[7])
 				+ (this.rawData[0] * this.rawData[13] - this.rawData[12] * this.rawData[1]) * (this.rawData[6] * this.rawData[11] - this.rawData[10] * this.rawData[7])
 				+ (this.rawData[4] * this.rawData[9] - this.rawData[8] * this.rawData[5]) * (this.rawData[2] * this.rawData[15] - this.rawData[14] * this.rawData[3])
