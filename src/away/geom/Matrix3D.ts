@@ -26,6 +26,7 @@ module away.geom
 		{
 			if( v != null && v.length == 16 )
 			{
+
 				this.rawData = v;
 			}
 			else
@@ -75,16 +76,17 @@ module away.geom
 		/**
 		 * Appends an incremental rotation to a Matrix3D object.
 		 */
-		public appendRotation( degrees:number, axis:Vector3D, pivotPoint:Vector3D = null ) 
+		public appendRotation( degrees:number, axis:Vector3D ) : void //, pivotPoint:Vector3D = null )
 		{
 			var m:Matrix3D = Matrix3D.getAxisRotation( axis.x, axis.y, axis.z, degrees );
-			
+
+            /*
 			if (pivotPoint != null) 
 			{
 				var p:Vector3D = pivotPoint;
 				m.appendTranslation( p.x, p.y, p.z );
 			}
-			
+            */
 			this.append(m);
 		}
 		
@@ -119,35 +121,37 @@ module away.geom
 		 */
 		public copyColumnFrom( column:number, vector3D:Vector3D )
 		{
-			switch( column )
-			{
-				case 0:
-						vector3D.x = this.rawData[ 0 ];
-						vector3D.y = this.rawData[ 4 ];
-						vector3D.z = this.rawData[ 8 ];
-						vector3D.w = this.rawData[ 12 ];
-					break;
-				case 1:
-						vector3D.x = this.rawData[ 1 ];
-						vector3D.y = this.rawData[ 5 ];
-						vector3D.z = this.rawData[ 9 ];
-						vector3D.w = this.rawData[ 13 ];
-					break;
-				case 2:
-						vector3D.x = this.rawData[ 2 ];
-						vector3D.y = this.rawData[ 6 ];
-						vector3D.z = this.rawData[ 10 ];
-						vector3D.w = this.rawData[ 14 ];
-					break;
-				case 3:
-						vector3D.x = this.rawData[ 3 ];
-						vector3D.y = this.rawData[ 7 ];
-						vector3D.z = this.rawData[ 11 ];
-						vector3D.w = this.rawData[ 15 ];
-					break;
-				default:
-					throw new away.errors.ArgumentError( "ArgumentError, Column " + column + " out of bounds [0, ..., 3]");
-			}
+
+            switch( column )
+            {
+                case 0:
+                    this.rawData[ 0 ] = vector3D.x;
+                    this.rawData[ 1 ] = vector3D.y;
+                    this.rawData[ 2 ] = vector3D.z;
+                    this.rawData[ 3 ] = vector3D.w;
+                    break;
+                case 1:
+                    this.rawData[ 4 ] = vector3D.x;
+                    this.rawData[ 5 ] = vector3D.y;
+                    this.rawData[ 6 ] = vector3D.z;
+                    this.rawData[ 7 ] = vector3D.w;
+                    break;
+                case 2:
+                    this.rawData[ 8 ] = vector3D.x;
+                    this.rawData[ 9 ] = vector3D.y;
+                    this.rawData[ 10 ] = vector3D.z;
+                    this.rawData[ 11 ] = vector3D.w;
+                    break;
+                case 3:
+                    this.rawData[ 12 ] = vector3D.x;
+                    this.rawData[ 13 ] = vector3D.y;
+                    this.rawData[ 14 ] = vector3D.z;
+                    this.rawData[ 15 ] = vector3D.w;
+                    break;
+                default:
+                    throw new away.errors.ArgumentError( "ArgumentError, Column " + column + " out of bounds [0, ..., 3]");
+            }
+
 		}
 		
 		/**
@@ -155,35 +159,36 @@ module away.geom
 		 */
 		public copyColumnTo( column:number, vector3D:Vector3D )
 		{
-			switch( column )
-			{
-				case 0:
-						this.rawData[ 0 ] = vector3D.x;
-						this.rawData[ 4 ] = vector3D.y;
-						this.rawData[ 8 ] = vector3D.z;
-						this.rawData[ 12 ] = vector3D.w;
-					break;
-				case 1:
-						this.rawData[ 1 ] = vector3D.x;
-						this.rawData[ 5 ] = vector3D.y;
-						this.rawData[ 9 ] = vector3D.z;
-						this.rawData[ 13 ] = vector3D.w;
-					break;
-				case 2:
-						this.rawData[ 2 ] = vector3D.x;
-						this.rawData[ 6 ] = vector3D.y;
-						this.rawData[ 10 ] = vector3D.z;
-						this.rawData[ 14 ] = vector3D.w;
-					break;
-				case 3:
-						this.rawData[ 3 ] = vector3D.x;
-						this.rawData[ 7 ] = vector3D.y;
-						this.rawData[ 11 ] = vector3D.z;
-						this.rawData[ 15 ] = vector3D.w;
-					break;
-				default:
+
+            switch( column )
+            {
+                case 0:
+                    vector3D.x = this.rawData[ 0 ];
+                    vector3D.y = this.rawData[ 1 ];
+                    vector3D.z = this.rawData[ 2 ];
+                    vector3D.w = this.rawData[ 3 ];
+                    break;
+                case 1:
+                    vector3D.x = this.rawData[ 4 ];
+                    vector3D.y = this.rawData[ 5 ];
+                    vector3D.z = this.rawData[ 6 ];
+                    vector3D.w = this.rawData[ 7 ];
+                    break;
+                case 2:
+                    vector3D.x = this.rawData[ 8 ];
+                    vector3D.y = this.rawData[ 9 ];
+                    vector3D.z = this.rawData[ 10 ];
+                    vector3D.w = this.rawData[ 11 ];
+                    break;
+                case 3:
+                    vector3D.x = this.rawData[ 12 ];
+                    vector3D.y = this.rawData[ 13 ];
+                    vector3D.z = this.rawData[ 14 ];
+                    vector3D.w = this.rawData[ 15 ];
+                    break;
+                default:
                     throw new away.errors.ArgumentError( "ArgumentError, Column " + column + " out of bounds [0, ..., 3]");
-			}
+            }
 		}
 		
 		/**
@@ -194,7 +199,7 @@ module away.geom
 			this.rawData = sourceMatrix3D.rawData.slice( 0 );
 		}
 		
-		public copyRawDataFrom( vector:number[], index:number = 0, transpose:boolean = false )
+		public copyRawDataFrom( vector:number[] ) : void //, index:number = 0, transpose:boolean = false )
 		{
 			//TODO fully implement
 			this.rawData = vector.splice(0);
@@ -202,8 +207,25 @@ module away.geom
 		
 		public copyRawDataTo( vector:number[], index:number = 0, transpose:boolean = false )
 		{
-			//TODO fully implement
-			vector = this.rawData.splice(0);
+
+            if ( transpose )
+            {
+                this.transpose();
+            }
+
+            var l : number = this.rawData.length
+            for ( var c : number = 0; c < l ; c ++ )
+            {
+
+                vector[c + index ] = this.rawData[c];
+
+            }
+
+            if ( transpose )
+            {
+                this.transpose();
+            }
+
 		}
 		
 		/**
@@ -211,35 +233,36 @@ module away.geom
 		 */
 		public copyRowFrom( row:number, vector3D:Vector3D )
 		{
-			switch( row )
-			{
-				case 0:
-						vector3D.x = this.rawData[ 0 ];
-						vector3D.y = this.rawData[ 1 ];
-						vector3D.z = this.rawData[ 2 ];
-						vector3D.w = this.rawData[ 3 ];
-					break;
-				case 1:
-						vector3D.x = this.rawData[ 4 ];
-						vector3D.y = this.rawData[ 5 ];
-						vector3D.z = this.rawData[ 6 ];
-						vector3D.w = this.rawData[ 7 ];
-					break;
-				case 2:
-						vector3D.x = this.rawData[ 8 ];
-						vector3D.y = this.rawData[ 9 ];
-						vector3D.z = this.rawData[ 10 ];
-						vector3D.w = this.rawData[ 11 ];
-					break;
-				case 3:
-						vector3D.x = this.rawData[ 12 ];
-						vector3D.y = this.rawData[ 13 ];
-						vector3D.z = this.rawData[ 14 ];
-						vector3D.w = this.rawData[ 15 ]
-					break;
-				default:
+
+            switch( row )
+            {
+                case 0:
+                    this.rawData[ 0 ] = vector3D.x;
+                    this.rawData[ 4 ] = vector3D.y;
+                    this.rawData[ 8 ] = vector3D.z;
+                    this.rawData[ 12 ] = vector3D.w;
+                    break;
+                case 1:
+                    this.rawData[ 1 ] = vector3D.x;
+                    this.rawData[ 5 ] = vector3D.y;
+                    this.rawData[ 9 ] = vector3D.z;
+                    this.rawData[ 13 ] = vector3D.w;
+                    break;
+                case 2:
+                    this.rawData[ 2 ] = vector3D.x;
+                    this.rawData[ 6 ] = vector3D.y;
+                    this.rawData[ 10 ] = vector3D.z;
+                    this.rawData[ 14 ] = vector3D.w;
+                    break;
+                case 3:
+                    this.rawData[ 3 ] = vector3D.x;
+                    this.rawData[ 7 ] = vector3D.y;
+                    this.rawData[ 11 ] = vector3D.z;
+                    this.rawData[ 15 ] = vector3D.w;
+                    break;
+                default:
                     throw new away.errors.ArgumentError( "ArgumentError, Row " + row + " out of bounds [0, ..., 3]");
-			}
+            }
 		}
 		
 		/**
@@ -247,35 +270,36 @@ module away.geom
 		 */
 		public copyRowTo( row:number, vector3D:Vector3D )
 		{
-			switch( row )
-			{
-				case 0:
-						this.rawData[ 0 ] = vector3D.x;
-						this.rawData[ 1 ] = vector3D.y;
-						this.rawData[ 2 ] = vector3D.z;
-						this.rawData[ 3 ] = vector3D.w;
-					break;
-				case 1:
-						this.rawData[ 4 ] = vector3D.x;
-						this.rawData[ 5 ] = vector3D.y;
-						this.rawData[ 6 ] = vector3D.z;
-						this.rawData[ 7 ] = vector3D.w;
-					break;
-				case 2:
-						this.rawData[ 8 ] = vector3D.x;
-						this.rawData[ 9 ] = vector3D.y;
-						this.rawData[ 10 ] = vector3D.z;
-						this.rawData[ 11 ] = vector3D.w;
-					break;
-				case 3:
-						this.rawData[ 12 ] = vector3D.x;
-						this.rawData[ 13 ] = vector3D.y;
-						this.rawData[ 14 ] = vector3D.z;
-						this.rawData[ 15 ] = vector3D.w;
-					break;
-				default:
+
+            switch( row )
+            {
+                case 0:
+                    vector3D.x = this.rawData[ 0 ];
+                    vector3D.y = this.rawData[ 4 ];
+                    vector3D.z = this.rawData[ 8 ];
+                    vector3D.w = this.rawData[ 12 ];
+                    break;
+                case 1:
+                    vector3D.x = this.rawData[ 1 ];
+                    vector3D.y = this.rawData[ 5 ];
+                    vector3D.z = this.rawData[ 9 ];
+                    vector3D.w = this.rawData[ 13 ];
+                    break;
+                case 2:
+                    vector3D.x = this.rawData[ 2 ];
+                    vector3D.y = this.rawData[ 6 ];
+                    vector3D.z = this.rawData[ 10 ];
+                    vector3D.w = this.rawData[ 14 ];
+                    break;
+                case 3:
+                    vector3D.x = this.rawData[ 3 ];
+                    vector3D.y = this.rawData[ 7 ];
+                    vector3D.z = this.rawData[ 11 ];
+                    vector3D.w = this.rawData[ 15 ]
+                    break;
+                default:
                     throw new away.errors.ArgumentError( "ArgumentError, Row " + row + " out of bounds [0, ..., 3]");
-			}
+            }
 		}
 		
 		/**
@@ -292,6 +316,9 @@ module away.geom
 		 */
 		public decompose():Vector3D[]
 		{
+
+            //this.transpose();
+
 			var vec:Vector3D[] = [];
 			var m = this.clone();
 			var mr = m.rawData;
@@ -323,7 +350,8 @@ module away.geom
 			mr[10] /= scale.z;
 			
 			var rot = new Vector3D ();
-			rot.y = Math.asin( -mr[2]);
+                rot.y = Math.asin( -mr[2]);
+
 			var cos:number = Math.cos(rot.y);
 			
 			if (cos > 0)
@@ -340,7 +368,9 @@ module away.geom
 			vec.push(pos);
 			vec.push(rot);
 			vec.push(scale);
-			
+
+            //this.transpose();
+
 			return vec;
 		}
 		
