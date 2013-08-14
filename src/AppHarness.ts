@@ -10,14 +10,15 @@
 
 ///<reference path="../tests/aglsl/AssemblerTest.ts"/>
 ///<reference path="../tests/aglsl/AGALCompilerTest.ts"/>
+///<reference path="../tests/demos/cubes/CubeDemo.ts"/>
 
 module away
 {
     export class AppHarness
     {
-        constructor() 
+        constructor()
         {
-			new scene.AGALTorus();
+			new demos.cubes.CubeDemo();
         }
     }
 }
