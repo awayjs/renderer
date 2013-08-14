@@ -43,6 +43,9 @@ module away.geom
 		 */
 		public append( lhs:Matrix3D )
 		{
+
+            // Initial Tests - OK
+
 			var m111:number = this.rawData[0], m121:number = this.rawData[4], m131:number = this.rawData[8], m141:number = this.rawData[12],
 			m112:number = this.rawData[1], m122:number = this.rawData[5], m132:number = this.rawData[9], m142:number = this.rawData[13],
 			m113:number = this.rawData[2], m123:number = this.rawData[6], m133:number = this.rawData[10], m143:number = this.rawData[14],
@@ -78,6 +81,9 @@ module away.geom
 		 */
 		public appendRotation( degrees:number, axis:Vector3D ) : void //, pivotPoint:Vector3D = null )
 		{
+
+            // Initial Tests - OK
+
 			var m:Matrix3D = Matrix3D.getAxisRotation( axis.x, axis.y, axis.z, degrees );
 
             /*
@@ -95,6 +101,9 @@ module away.geom
 		 */
 		public appendScale( xScale:number, yScale:number, zScale:number )
 		{
+
+            // Initial Tests - OK
+
 			this.append(new Matrix3D( [ xScale, 0.0, 0.0, 0.0, 0.0, yScale, 0.0, 0.0, 0.0, 0.0, zScale, 0.0, 0.0, 0.0, 0.0, 1.0 ] ));
 		}
 		
@@ -103,6 +112,9 @@ module away.geom
 		 */
 		public appendTranslation( x:number, y:number, z:number ) 
 		{
+
+            // Initial Tests - OK
+
 			this.rawData[12] += x;
 			this.rawData[13] += y;
 			this.rawData[14] += z;
@@ -113,6 +125,9 @@ module away.geom
 		 */
 		public clone():Matrix3D
 		{
+
+            // Initial Tests - OK
+
 			return new Matrix3D( this.rawData.slice( 0 ) );
 		}
 		
@@ -121,6 +136,8 @@ module away.geom
 		 */
 		public copyColumnFrom( column:number, vector3D:Vector3D )
 		{
+
+            // Initial Tests - OK
 
             switch( column )
             {
@@ -160,6 +177,8 @@ module away.geom
 		public copyColumnTo( column:number, vector3D:Vector3D )
 		{
 
+            // Initial Tests - OK
+
             switch( column )
             {
                 case 0:
@@ -196,17 +215,27 @@ module away.geom
 		 */
 		public copyFrom( sourceMatrix3D: Matrix3D )
 		{
+
+            // Initial Tests - OK
+
+
 			this.rawData = sourceMatrix3D.rawData.slice( 0 );
 		}
 		
 		public copyRawDataFrom( vector:number[] ) : void //, index:number = 0, transpose:boolean = false )
 		{
+
+            // Initial Tests - OK
+
 			//TODO fully implement
 			this.rawData = vector.splice(0);
 		}
 		
 		public copyRawDataTo( vector:number[], index:number = 0, transpose:boolean = false )
 		{
+
+            // Initial Tests - OK
+
 
             if ( transpose )
             {
@@ -233,6 +262,8 @@ module away.geom
 		 */
 		public copyRowFrom( row:number, vector3D:Vector3D )
 		{
+
+            // Initial Tests - OK
 
             switch( row )
             {
@@ -271,6 +302,8 @@ module away.geom
 		public copyRowTo( row:number, vector3D:Vector3D )
 		{
 
+            // Initial Tests - OK
+
             switch( row )
             {
                 case 0:
@@ -307,6 +340,9 @@ module away.geom
 		 */
 		public copyToMatrix3D( dest:Matrix3D )
 		{
+
+            // Initial Tests - OK
+
 			dest.rawData = this.rawData.slice(0);
 		}
 		
@@ -316,6 +352,8 @@ module away.geom
 		 */
 		public decompose():Vector3D[]
 		{
+
+            // Initial Tests - Not OK
 
 			var vec:Vector3D[] = [];
 			var m = this.clone();
@@ -421,6 +459,9 @@ module away.geom
 		 */
 		public invert():boolean
 		{
+
+            // Initial Tests - OK
+
 			var d = this.determinant;
 			var invertable = Math.abs (d) > 0.00000000001;
 			
@@ -463,6 +504,9 @@ module away.geom
 		 */
 		public prepend( rhs:Matrix3D )
 		{
+
+            // Initial Tests - OK
+
 			var m111:number = rhs.rawData[0], m121:number = rhs.rawData[4], m131:number = rhs.rawData[8], m141:number = rhs.rawData[12],
 			m112:number = rhs.rawData[1], m122:number = rhs.rawData[5], m132:number = rhs.rawData[9], m142:number = rhs.rawData[13],
 			m113:number = rhs.rawData[2], m123:number = rhs.rawData[6], m133:number = rhs.rawData[10], m143:number = rhs.rawData[14],
@@ -498,6 +542,9 @@ module away.geom
 		 */
 		public prependRotation( degrees:number, axis:Vector3D ) //, pivotPoint:Vector3D = null )
 		{
+
+            // Initial Tests - OK
+
 			var m: Matrix3D = Matrix3D.getAxisRotation( axis.x, axis.y, axis.z, degrees );
 
             /*
@@ -515,6 +562,9 @@ module away.geom
 		 */
 		public prependScale( xScale:number, yScale:number, zScale:number )
 		{
+
+            // Initial Tests - OK
+
 			this.prepend(new Matrix3D( [ xScale, 0, 0, 0, 0, yScale, 0, 0, 0, 0, zScale, 0, 0, 0, 0, 1 ] ));
 		}
 		
@@ -523,6 +573,9 @@ module away.geom
 		 */
 		public prependTranslation( x:number, y:number, z:number )
 		{
+
+            // Initial Tests - OK
+
 			var m = new Matrix3D();
 			m.position = new Vector3D( x, y, z );
 			this.prepend( m );
@@ -534,6 +587,9 @@ module away.geom
 		 */
 		public recompose( components:Vector3D[] ): boolean
 		{
+
+            // Initial Tests - OK
+
 			if (components.length < 3 ) return false
 
             //components[2].x == 0 || components[2].y == 0 || components[2].z == 0) return false;
@@ -557,6 +613,9 @@ module away.geom
 
 		public transformVector( v:away.geom.Vector3D ):away.geom.Vector3D
 		{
+
+            // Initial Tests - OK
+
 			var x:number = v.x;
 			var y:number = v.y;
 			var z:number = v.z;
@@ -573,6 +632,9 @@ module away.geom
 		 */
 		public transformVectors( vin:number[], vout:number[] )
 		{
+
+            // Initial Tests - OK
+
 			var i:number = 0;
 			var x:number = 0, y:number = 0, z:number = 0;
 			
@@ -593,6 +655,9 @@ module away.geom
 		 */
 		public transpose()
 		{
+
+            // Initial Tests - OK
+
 			var oRawData:number[] = this.rawData.slice( 0 );
 			
 			this.rawData[1] = oRawData[4];
@@ -647,6 +712,9 @@ module away.geom
 		 */
 		public get determinant(): number
 		{
+
+            // Initial Tests - OK
+
 			return	((this.rawData[0] * this.rawData[5] - this.rawData[4] * this.rawData[1]) * (this.rawData[10] * this.rawData[15] - this.rawData[14] * this.rawData[11])
 				- (this.rawData[0] * this.rawData[9] - this.rawData[8] * this.rawData[1]) * (this.rawData[6] * this.rawData[15] - this.rawData[14] * this.rawData[7])
 				+ (this.rawData[0] * this.rawData[13] - this.rawData[12] * this.rawData[1]) * (this.rawData[6] * this.rawData[11] - this.rawData[10] * this.rawData[7])
@@ -661,11 +729,17 @@ module away.geom
 		 */
 		public get position():Vector3D
 		{
+
+            // Initial Tests - OK
+
 			return new Vector3D( this.rawData[12], this.rawData[13], this.rawData[14] );
 		}
 		
 		public set position( value:Vector3D )
 		{
+
+            // Initial Tests - OK
+
 			this.rawData[12] = value.x;
 			this.rawData[13] = value.y;
 			this.rawData[14] = value.z;
