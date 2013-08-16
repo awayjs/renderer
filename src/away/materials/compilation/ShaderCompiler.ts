@@ -571,19 +571,19 @@ module away.materials
 		 */
 		private updateMethodRegisters()
 		{
-			this._pMethodSetup._iNormalMethod._sharedRegisters= this._pSharedRegisters;
-            this._pMethodSetup._iDiffuseMethod._sharedRegisters = this._pSharedRegisters;
+			this._pMethodSetup._iNormalMethod.iSharedRegisters= this._pSharedRegisters;
+            this._pMethodSetup._iDiffuseMethod.iSharedRegisters = this._pSharedRegisters;
 
 			if (this._pMethodSetup._iShadowMethod)
-                this._pMethodSetup._iShadowMethod._sharedRegisters = this._pSharedRegisters;
+                this._pMethodSetup._iShadowMethod.iSharedRegisters = this._pSharedRegisters;
 
-            this._pMethodSetup._iAmbientMethod._sharedRegisters = this._pSharedRegisters;
+            this._pMethodSetup._iAmbientMethod.iSharedRegisters = this._pSharedRegisters;
 
 			if (this._pMethodSetup._iSpecularMethod)
-                this._pMethodSetup._iSpecularMethod._sharedRegisters = this._pSharedRegisters;
+                this._pMethodSetup._iSpecularMethod.iSharedRegisters = this._pSharedRegisters;
 
 			if (this._pMethodSetup._iColorTransformMethod)
-                this._pMethodSetup._iColorTransformMethod._sharedRegisters = this._pSharedRegisters;
+                this._pMethodSetup._iColorTransformMethod.iSharedRegisters = this._pSharedRegisters;
 
 
             var methods : away.materials.MethodVOSet[] = this._pMethodSetup._iMethods;//var methods:Vector.<MethodVOSet> = _pMethodSetup._methods;
