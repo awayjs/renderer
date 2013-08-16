@@ -201,24 +201,46 @@ module away.entities
 			this._worldBounds.transformFrom( this.getBounds() , this.sceneTransform );
 			this._worldBoundsInvalid = false;
 		}
-		
-		//@override
-		public set iImplicitPartition( value:away.partition.Partition3D )
-		{
-			if( value == this._pImplicitPartition )
-			{
-				return;
-			}
-			
-			if( this._pImplicitPartition )
-			{
-				this.notifyPartitionUnassigned();
-			}
 
-			super.iSetImplicitPartition( value );
-			this.notifyPartitionAssigned();
+        //@override
+        public set iImplicitPartition( value:away.partition.Partition3D )
+        {
+            /*
+            if( value == this._pImplicitPartition )
+            {
+                return;
+            }
 
-		}
+            if( this._pImplicitPartition )
+            {
+                this.notifyPartitionUnassigned();
+            }
+
+            super.iSetImplicitPartition( value );
+            this.notifyPartitionAssigned();
+            */
+
+            this.iSetImplicitPartition( value );
+        }
+
+        //@override
+        public iSetImplicitPartition( value:away.partition.Partition3D )
+        {
+            if( value == this._pImplicitPartition )
+            {
+                return;
+            }
+
+            if( this._pImplicitPartition )
+            {
+                this.notifyPartitionUnassigned();
+            }
+
+            super.iSetImplicitPartition( value );
+            this.notifyPartitionAssigned();
+
+        }
+
 
 		//@override
 		public set scene( value:away.containers.Scene3D )
