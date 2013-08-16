@@ -19,6 +19,8 @@ module demos.cubes
 		private _torus       	: away.primitives.TorusGeometry;
 		private _mesh  			: away.entities.Mesh;
 		
+		private _raf			:away.utils.RequestAnimationFrame;
+		
 		constructor()
 		{
 			
@@ -27,24 +29,36 @@ module demos.cubes
 			this._view              = new away.containers.View3D( );
 			this._view.backgroundColor = 0x776655;
 			
-			//var lens:away.cameras.PerspectiveLens = new away.cameras.PerspectiveLens( 40 );
-			//this._view.camera.lens = lens;
-			
 			this._cube              = new away.primitives.CubeGeometry( 100.0, 100.0, 100.0 );
-			this._torus              = new away.primitives.TorusGeometry(  100, 50, 32, 16, false );
+			this._torus              = new away.primitives.TorusGeometry(  150, 80, 32, 16, false );
 			
 			this._mesh              = new away.entities.Mesh( this._torus );
 			this._view.scene.addChild( this._mesh );
 			
-			this._view.render();
+			
 			
             document.onmousedown = ( e ) => this.onMouseDowm( e );
 
+			this._raf = new away.utils.RequestAnimationFrame( this.render , this );
+            this._raf.start();
+			
+		}
+		
+		public render( dt:number = null ):void
+		{
+			try
+			{
+				this._mesh.rotationY += 1;
+				this._view.render();
+			}
+			catch(e)
+			{
+			}
 		}
 
         private onMouseDowm( e )
         {
-			this._mesh.z -= 10;
+			
             this._view.render();
 
         }
