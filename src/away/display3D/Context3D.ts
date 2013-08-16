@@ -446,6 +446,10 @@ module away.display3D
 		
 		public setGLSLTextureAt( locationName:string, texture:TextureBase, textureIndex:number )
 		{
+			
+			console.log( "localtion    >>> " + locationName );
+			console.log( "texture      >>> " + texture );
+			console.log( "textureIndex >>> " + textureIndex );
 			if( !texture )
 			{
 				this._gl.activeTexture( this._gl.TEXTURE0 + (textureIndex));
