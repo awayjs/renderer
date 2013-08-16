@@ -515,7 +515,7 @@ module away.display {
 
                 argb[0] = 255;
 
-                return 'rgb(' + argb[1] + ',' + argb[2]+ ',' + argb[3] + ')';
+                return 'rgba(' + argb[1] + ',' + argb[2]+ ',' + argb[3] +  ',' + argb[0] +')';
 
             }
 
