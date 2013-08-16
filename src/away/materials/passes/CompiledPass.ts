@@ -46,7 +46,7 @@ module away.materials
         private _usingSpecularMethod:boolean;
         private _usesNormals:boolean;
         public _preserveAlpha:boolean = true;
-        private _animateUVs:boolean;
+        private _animateUVs:boolean = false;
 
         public _pNumPointLights:number;
         public _pNumDirectionalLights:number;
@@ -54,7 +54,7 @@ module away.materials
 
         private _enableLightFallOff:boolean = true;
 
-        private _forceSeparateMVP:boolean;
+        private _forceSeparateMVP:boolean = false;
 
         /**
          * Creates a new CompiledPass object.
