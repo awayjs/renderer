@@ -31,7 +31,7 @@ module away.lights
 		public _iDiffuseG:number = 1;
 		public _iDiffuseB:number = 1;
 		
-		private _castsShadows:boolean;
+		private _castsShadows:boolean = false;
 		
 		private _shadowMapper:away.lights.ShadowMapperBase;
 		
