@@ -8,7 +8,7 @@ module away.materials
 	 */
 	export class BasicAmbientMethod extends away.materials.ShadingMethodBase
 	{
-		private _useTexture:boolean;
+		private _useTexture:boolean = false;
 		private _texture:away.textures.Texture2DBase;
 		
 		private _ambientInputRegister:away.materials.ShaderRegisterElement;
