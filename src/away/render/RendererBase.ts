@@ -263,6 +263,7 @@ module away.render
             this.pExecuteRender(entityCollector, target, scissorRect, surfaceSelector);
 			
 			// clear buffers
+			
 			for (var i:number = 0; i < 8; ++i)
             {
 

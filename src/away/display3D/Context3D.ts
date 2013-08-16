@@ -184,6 +184,11 @@ module away.display3D
 		
 		public drawTriangles( indexBuffer:IndexBuffer3D, firstIndex:number = 0, numTriangles:number = -1 )
 		{
+			console.log( "======= drawTriangles ======= " )
+			console.log( indexBuffer );
+			console.log( "firstIndex   >>>>> " + firstIndex );
+			console.log( "numTriangles >>>>> " + numTriangles );
+			
 			if ( !this._drawing ) 
 			{
 				throw "Need to clear before drawing if the buffer has not been cleared since the last present() call.";
@@ -207,7 +212,7 @@ module away.display3D
 		public present()
 		{
 			this._drawing = false;
-			this._gl.useProgram( null );
+			//this._gl.useProgram( null );
 		}
 		
 		public setBlendFactors( sourceFactor:string, destinationFactor:string ) 
@@ -396,12 +401,13 @@ module away.display3D
 			this.setGLSLProgramConstantsFromMatrix( locationName, matrix, transposedMatrix );
 		}
 		
+		public static modulo:number = 0;		
 		public setProgramConstantsFromArray( programType:string, firstRegister:number, data:number[], numRegisters:number = -1 )
-		{
+		{	
 			for( var i: number = 0; i < numRegisters; ++i )
 			{
 				var currentIndex:number = i * 4;
-				var locationName:string = this.getUniformLocationNameFromAgalRegisterIndex( programType, firstRegister + i ) + firstRegister;
+				var locationName:string = this.getUniformLocationNameFromAgalRegisterIndex( programType, firstRegister + i ) + ( i + firstRegister );
 				
 				this.setGLSLProgramConstantsFromArray( locationName, data, currentIndex );
 			}
@@ -446,10 +452,6 @@ module away.display3D
 		
 		public setGLSLTextureAt( locationName:string, texture:TextureBase, textureIndex:number )
 		{
-			
-			console.log( "localtion    >>> " + locationName );
-			console.log( "texture      >>> " + texture );
-			console.log( "textureIndex >>> " + textureIndex );
 			if( !texture )
 			{
 				this._gl.activeTexture( this._gl.TEXTURE0 + (textureIndex));
@@ -509,12 +511,7 @@ module away.display3D
 			
             //if ( buffer == null )return;
 			
-
-			
 			var location:number = this._gl.getAttribLocation( this._currentProgram.glProgram, locationName );
-
-            console.log( 'setGLSLVertexBufferAt ' , location , locationName , 'buffer' , buffer , 'bufferOffset' , bufferOffset , 'format' , format );
-
 			if( !buffer )
 			{
 				

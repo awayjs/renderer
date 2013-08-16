@@ -230,8 +230,6 @@ module away.render
 
 					item2 = item;
 
-                    console.log( 'DefaultRenderer' , 'drawRenderables' , 'passes' , item );
-
 					var rttMask:number = this._activeMaterial.iPassRendersToTexture(j)? 1 : 2;
 					
 					if ((rttMask & which) != 0)
@@ -239,9 +237,6 @@ module away.render
 						this._activeMaterial.iActivatePass(j, this._pStage3DProxy, camera);
 
 						do {
-
-                            console.log( 'DefaultRenderer' , 'drawRenderables' , 'items 1' );
-
 							this._activeMaterial.iRenderPass(j, item2.renderable, this._pStage3DProxy, entityCollector, this._pRttViewProjectionMatrix);
 
 							item2 = item2.next;
@@ -255,8 +250,6 @@ module away.render
                     {
 
 						do{
-
-                            console.log( 'DefaultRenderer' , 'drawRenderables' , 'items 2' );
 
                             item2 = item2.next;
 

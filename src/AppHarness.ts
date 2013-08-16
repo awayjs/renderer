@@ -18,12 +18,13 @@ module away
     {
         constructor()
         {
-			new demos.cubes.CubeDemo();
+			new scene.AGALTorus();
         }
     }
 }
 
 window.onload = function ()
 {
-    var app = new away.AppHarness();
+    //var app = new away.AppHarness();
+	var app = new demos.cubes.CubeDemo();
 }
