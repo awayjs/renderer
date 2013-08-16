@@ -51,7 +51,7 @@ module away.materials
          *
          * @private
          */
-        public _iRenderOrderId:number;//Arcane
+        public _iRenderOrderId:number = 0;//Arcane
 
         /**
          * The same as _renderOrderId, but applied to the depth shader passes.
@@ -60,7 +60,7 @@ module away.materials
          */
         public _iDepthPassId:number;//Arcane
 
-        private _bothSides:boolean;
+        private _bothSides:boolean = false; // update
         private _animationSet:away.animators.IAnimationSet;
 
         /**
@@ -79,7 +79,7 @@ module away.materials
 
         public _pMipmap:boolean = true;
         private _smooth:boolean = true;
-        private _repeat:boolean;
+        private _repeat:boolean = false; // Update
 
         public _pDepthPass:away.materials.DepthMapPass;
         public _pDistancePass:away.materials.DistanceMapPass;
