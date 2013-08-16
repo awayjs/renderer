@@ -57,7 +57,7 @@ module away.materials
 		private _blendFactorSource:string = away.display3D.Context3DBlendFactor.ONE;
 		private _blendFactorDest:string = away.display3D.Context3DBlendFactor.ZERO;
 
-        public _pEnableBlending:boolean;
+        public _pEnableBlending:boolean = false;
 		
 		public _pBothSides:boolean;
 		
@@ -85,7 +85,7 @@ module away.materials
 		private _oldDepthStencil:boolean;
 		private _oldRect:away.geom.Rectangle;
 
-        public  _pAlphaPremultiplied:boolean;
+        public  _pAlphaPremultiplied:boolean = false;
         public _pNeedFragmentAnimation:boolean;
         public  _pNeedUVAnimation:boolean;
         public _pUVTarget:string;
