@@ -15,10 +15,10 @@ module away.materials
 		private _vertexConstantsCache:away.materials.RegisterPool;
 		private _textureCache:away.materials.RegisterPool;
 		private _vertexAttributesCache:away.materials.RegisterPool;
-		private _vertexConstantOffset:number;
-		private _vertexAttributesOffset:number;
-		private _varyingsOffset:number;
-		private _fragmentConstantOffset:number;
+		private _vertexConstantOffset:number; //TODO: check if this should be initialised to 0
+		private _vertexAttributesOffset:number;//TODO: check if this should be initialised to 0
+		private _varyingsOffset:number;//TODO: check if this should be initialised to 0
+		private _fragmentConstantOffset:number;//TODO: check if this should be initialised to 0
 		
 		private _fragmentOutputRegister:away.materials.ShaderRegisterElement;
 		private _vertexOutputRegister:away.materials.ShaderRegisterElement;
