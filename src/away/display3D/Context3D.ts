@@ -505,11 +505,12 @@ module away.display3D
 			
             //if ( buffer == null )return;
 			
-            console.log( 'setGLSLVertexBufferAt locationName' , locationName , 'buffer' , buffer , 'bufferOffset' , bufferOffset , 'format' , format );
+
 			
 			var location:number = this._gl.getAttribLocation( this._currentProgram.glProgram, locationName );
-			
-			/*
+
+            console.log( 'setGLSLVertexBufferAt ' , location , locationName , 'buffer' , buffer , 'bufferOffset' , bufferOffset , 'format' , format );
+
 			if( !buffer )
 			{
 				
@@ -520,8 +521,7 @@ module away.display3D
 				return;
 				
 			}
-			*/
-			
+
 			this._gl.bindBuffer( this._gl.ARRAY_BUFFER, buffer.glBuffer );
 			
 			var dimension:number;
