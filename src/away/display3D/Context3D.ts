@@ -184,11 +184,12 @@ module away.display3D
 		
 		public drawTriangles( indexBuffer:IndexBuffer3D, firstIndex:number = 0, numTriangles:number = -1 )
 		{
+            /*
 			console.log( "======= drawTriangles ======= " )
 			console.log( indexBuffer );
 			console.log( "firstIndex   >>>>> " + firstIndex );
 			console.log( "numTriangles >>>>> " + numTriangles );
-			
+			*/
 			if ( !this._drawing ) 
 			{
 				throw "Need to clear before drawing if the buffer has not been cleared since the last present() call.";
@@ -429,7 +430,6 @@ module away.display3D
 			var location:WebGLUniformLocation = this._gl.getUniformLocation( this._currentProgram.glProgram, locationName );
 			this._gl.uniform4f( location, data[startIndex], data[startIndex+1], data[startIndex+2], data[startIndex+3] );
 			
-			console.log( "locationName: " + location );
 		}
 		
 		public setScissorRectangle( rectangle:away.geom.Rectangle ) 
