@@ -18,12 +18,14 @@ module away.display3D
 		//@override
 		public setProgramConstantsFromMatrix( programType:string, firstRegister:number, matrix:away.geom.Matrix3D, transposedMatrix:boolean = false )
 		{
+            /*
 			console.log( "======== setProgramConstantsFromMatrix ========" );
 			console.log( "programType       >>> " + programType );
 			console.log( "firstRegister     >>> " + firstRegister );
 			console.log( "matrix            >>> " + matrix.rawData );
 			console.log( "transposedMatrix  >>> " + transposedMatrix );
-			
+			*/
+
 			var d:number[] = matrix.rawData;
 			if( transposedMatrix )
 			{
@@ -44,11 +46,12 @@ module away.display3D
 		//@override
 		public drawTriangles( indexBuffer:IndexBuffer3D, firstIndex:number = 0, numTriangles:number = -1 )
 		{
+            /*
 			console.log( "======= drawTriangles ========" );
 			console.log( indexBuffer );
 			console.log( "firstIndex: " +  firstIndex );
 			console.log( "numTriangles:" + numTriangles );
-			
+			*/
 			//TODO switch and track flip direction when altering culling mode WIP
 			var location:WebGLUniformLocation = this._gl.getUniformLocation( this._currentProgram.glProgram, "yflip" );
 			this._gl.uniform1f( location, -1.0 );
