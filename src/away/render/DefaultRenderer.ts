@@ -216,7 +216,7 @@ module away.render
 			while (item)
             {
 
-                console.log( 'DefaultRenderer' , 'drawRenderables' , item );
+                //console.log( 'DefaultRenderer' , 'drawRenderables' , item );
 				this._activeMaterial = item.renderable.material;
 
 				this._activeMaterial.iUpdateMaterial( this._pContext);
