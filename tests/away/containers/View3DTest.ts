@@ -11,26 +11,28 @@ class View3DTest
     private view        : away.containers.View3D;
     private torus       : away.primitives.TorusGeometry;
 
-    private mesh        : away.entities.Mesh;
     private light       : away.lights.PointLight;
     private raf         : away.utils.RequestAnimationFrame;
+    private meshes      : away.entities.Mesh[];
 
     constructor()
     {
 
-
         away.Debug.THROW_ERRORS     = false;
         away.Debug.LOG_PI_ERRORS    = false;
-        //away.Debug.throwPIROnKeyWordOnly( 'Mouse3DManager' );
+
+        this.meshes                 = new Array<away.entities.Mesh>();
 
         this.light                  = new away.lights.PointLight();
         this.view                   = new away.containers.View3D( )
         this.view.camera.z          = 0;
-        this.view.backgroundColor   = 0xff00ea;
-        this.torus                  = new away.primitives.TorusGeometry();
+        this.view.backgroundColor   = 0x776655;
+        this.torus                  = new away.primitives.TorusGeometry(150 , 50 , 32 , 32 , false );
 
-        var l       : number        = 20;
-        var radius  : number        = 500;
+
+
+        var l       : number        = 10;
+        var radius  : number        = 1000;
 
         var matB : away.materials.ColorMaterial = new away.materials.ColorMaterial();
 
@@ -48,6 +50,8 @@ class View3DTest
 
             this.view.scene.addChild( m );
 
+            this.meshes.push( m );
+
             f = !f;
         }
 
@@ -59,10 +63,6 @@ class View3DTest
 
         this.view.scene.addChild( this.light );
 
-        this.view.y         = this.view.x = 0;
-        this.view.width     = window.innerWidth;
-        this.view.height    = window.innerHeight;
-
         console.log( 'renderer ' , this.view.renderer );
         console.log( 'scene ' , this.view.scene );
         console.log( 'view ' , this.view );
@@ -71,8 +71,10 @@ class View3DTest
 
         document.onmousedown = ( e ) => this.onMouseDowm( e );
 
-        //this.raf = new away.utils.RequestAnimationFrame( this.tick , this );
-        //this.raf.start();
+        this.raf = new away.utils.RequestAnimationFrame( this.tick , this );
+        this.raf.start();
+
+        this.resize( null );
 
     }
 
@@ -100,20 +102,34 @@ class View3DTest
     private tick( e )
     {
 
-        this.view.backgroundColor   = 0xffffff * Math.random();
-        this.view.render();
 
-        console.log('------------------------------------------------------------------------------------------');
-        console.log('-Render 2 ' , this.view);
+        //try{
 
+            for ( var c : number = 0 ; c < this.meshes.length ; c ++ )
+            {
+
+                this.meshes[c].rotationY += 2;
+
+            }
+
+            this.view.camera.rotationY += .5;
+            this.view.render();
+
+        /*
+        } catch ( error ){
+
+            console.log( 'error' , error )
+
+        }
+        */
     }
 
     public resize( e )
     {
 
-        this.view.y         = this.view.x = 10;
-        this.view.width     = window.innerWidth - 20;
-        this.view.height    = window.innerHeight - 20;
+        this.view.y         = ( window.innerHeight - this.view.height ) / 2;
+        this.view.x         = ( window.innerWidth - this.view.width) / 2;
+
         this.view.render();
 
     }

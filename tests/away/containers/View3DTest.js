@@ -768,6 +768,7 @@ var away;
             * Appends the matrix by multiplying another Matrix3D object by the current Matrix3D object.
             */
             Matrix3D.prototype.append = function (lhs) {
+                // Initial Tests - OK
                 var m111 = this.rawData[0], m121 = this.rawData[4], m131 = this.rawData[8], m141 = this.rawData[12], m112 = this.rawData[1], m122 = this.rawData[5], m132 = this.rawData[9], m142 = this.rawData[13], m113 = this.rawData[2], m123 = this.rawData[6], m133 = this.rawData[10], m143 = this.rawData[14], m114 = this.rawData[3], m124 = this.rawData[7], m134 = this.rawData[11], m144 = this.rawData[15], m211 = lhs.rawData[0], m221 = lhs.rawData[4], m231 = lhs.rawData[8], m241 = lhs.rawData[12], m212 = lhs.rawData[1], m222 = lhs.rawData[5], m232 = lhs.rawData[9], m242 = lhs.rawData[13], m213 = lhs.rawData[2], m223 = lhs.rawData[6], m233 = lhs.rawData[10], m243 = lhs.rawData[14], m214 = lhs.rawData[3], m224 = lhs.rawData[7], m234 = lhs.rawData[11], m244 = lhs.rawData[15];
 
                 this.rawData[0] = m111 * m211 + m112 * m221 + m113 * m231 + m114 * m241;
@@ -794,15 +795,17 @@ var away;
             /**
             * Appends an incremental rotation to a Matrix3D object.
             */
-            Matrix3D.prototype.appendRotation = function (degrees, axis, pivotPoint) {
-                if (typeof pivotPoint === "undefined") { pivotPoint = null; }
+            Matrix3D.prototype.appendRotation = function (degrees, axis) {
+                // Initial Tests - OK
                 var m = Matrix3D.getAxisRotation(axis.x, axis.y, axis.z, degrees);
 
-                if (pivotPoint != null) {
-                    var p = pivotPoint;
-                    m.appendTranslation(p.x, p.y, p.z);
+                /*
+                if (pivotPoint != null)
+                {
+                var p:Vector3D = pivotPoint;
+                m.appendTranslation( p.x, p.y, p.z );
                 }
-
+                */
                 this.append(m);
             };
 
@@ -810,6 +813,7 @@ var away;
             * Appends an incremental scale change along the x, y, and z axes to a Matrix3D object.
             */
             Matrix3D.prototype.appendScale = function (xScale, yScale, zScale) {
+                // Initial Tests - OK
                 this.append(new Matrix3D([xScale, 0.0, 0.0, 0.0, 0.0, yScale, 0.0, 0.0, 0.0, 0.0, zScale, 0.0, 0.0, 0.0, 0.0, 1.0]));
             };
 
@@ -817,6 +821,7 @@ var away;
             * Appends an incremental translation, a repositioning along the x, y, and z axes, to a Matrix3D object.
             */
             Matrix3D.prototype.appendTranslation = function (x, y, z) {
+                // Initial Tests - OK
                 this.rawData[12] += x;
                 this.rawData[13] += y;
                 this.rawData[14] += z;
@@ -826,6 +831,7 @@ var away;
             * Returns a new Matrix3D object that is an exact copy of the current Matrix3D object.
             */
             Matrix3D.prototype.clone = function () {
+                // Initial Tests - OK
                 return new Matrix3D(this.rawData.slice(0));
             };
 
@@ -901,24 +907,31 @@ var away;
             * Copies all of the matrix data from the source Matrix3D object into the calling Matrix3D object.
             */
             Matrix3D.prototype.copyFrom = function (sourceMatrix3D) {
+                // Initial Tests - OK
                 this.rawData = sourceMatrix3D.rawData.slice(0);
             };
 
-            Matrix3D.prototype.copyRawDataFrom = function (vector, index, transpose) {
-                if (typeof index === "undefined") { index = 0; }
-                if (typeof transpose === "undefined") { transpose = false; }
+            Matrix3D.prototype.copyRawDataFrom = function (vector) {
+                // Initial Tests - OK
                 //TODO fully implement
-                this.rawData = vector.slice(0);
+                this.rawData = vector.splice(0);
             };
 
             Matrix3D.prototype.copyRawDataTo = function (vector, index, transpose) {
                 if (typeof index === "undefined") { index = 0; }
                 if (typeof transpose === "undefined") { transpose = false; }
-                for (var c = 0; c < this.rawData.length; c++) {
-                    vector[c] = this.rawData[c];
+                if (transpose) {
+                    this.transpose();
                 }
-                //return this.rawData.slice(0);
-                //return vector = this.rawData.slice(0);
+
+                var l = this.rawData.length;
+                for (var c = 0; c < l; c++) {
+                    vector[c + index] = this.rawData[c];
+                }
+
+                if (transpose) {
+                    this.transpose();
+                }
             };
 
             /**
@@ -977,7 +990,6 @@ var away;
                         vector3D.y = this.rawData[6];
                         vector3D.z = this.rawData[10];
                         vector3D.w = this.rawData[14];
-
                         break;
                     case 3:
                         vector3D.x = this.rawData[3];
@@ -994,6 +1006,7 @@ var away;
             * Copies this Matrix3D object into a destination Matrix3D object.
             */
             Matrix3D.prototype.copyToMatrix3D = function (dest) {
+                // Initial Tests - OK
                 dest.rawData = this.rawData.slice(0);
             };
 
@@ -1002,6 +1015,7 @@ var away;
             * Returns the transformation matrix's translation, rotation, and scale settings as a Vector of three Vector3D objects.
             */
             Matrix3D.prototype.decompose = function () {
+                // Initial Tests - Not OK
                 var vec = [];
                 var m = this.clone();
                 var mr = m.rawData;
@@ -1033,6 +1047,7 @@ var away;
 
                 var rot = new geom.Vector3D();
                 rot.y = Math.asin(-mr[2]);
+
                 var cos = Math.cos(rot.y);
 
                 if (cos > 0) {
@@ -1086,203 +1101,51 @@ var away;
                 }
             };
 
-            /*
-            public invert():boolean
-            {
-            var d = this.determinant;
-            var invertable = Math.abs (d) > 0.00000000001;
-            
-            if (invertable)
-            {
-            d = -1 / d;
-            var m11:number = this.rawData[0]; var m21:number = this.rawData[4]; var m31:number = this.rawData[8]; var m41:number = this.rawData[12];
-            var m12:number = this.rawData[1]; var m22:number = this.rawData[5]; var m32:number = this.rawData[9]; var m42:number = this.rawData[13];
-            var m13:number = this.rawData[2]; var m23:number = this.rawData[6]; var m33:number = this.rawData[10]; var m43:number = this.rawData[14];
-            var m14:number = this.rawData[3]; var m24:number = this.rawData[7]; var m34:number = this.rawData[11]; var m44:number = this.rawData[15];
-            
-            this.rawData[0] = d * (m22 * (m33 * m44 - m43 * m34) - m32 * (m23 * m44 - m43 * m24) + m42 * (m23 * m34 - m33 * m24));
-            this.rawData[1] = -d * (m12 * (m33 * m44 - m43 * m34) - m32 * (m13 * m44 - m43 * m14) + m42 * (m13 * m34 - m33 * m14));
-            this.rawData[2] = d * (m12 * (m23 * m44 - m43 * m24) - m22 * (m13 * m44 - m43 * m14) + m42 * (m13 * m24 - m23 * m14));
-            this.rawData[3] = -d * (m12 * (m23 * m34 - m33 * m24) - m22 * (m13 * m34 - m33 * m14) + m32 * (m13 * m24 - m23 * m14));
-            this.rawData[4] = -d * (m21 * (m33 * m44 - m43 * m34) - m31 * (m23 * m44 - m43 * m24) + m41 * (m23 * m34 - m33 * m24));
-            this.rawData[5] = d * (m11 * (m33 * m44 - m43 * m34) - m31 * (m13 * m44 - m43 * m14) + m41 * (m13 * m34 - m33 * m14));
-            this.rawData[6] = -d * (m11 * (m23 * m44 - m43 * m24) - m21 * (m13 * m44 - m43 * m14) + m41 * (m13 * m24 - m23 * m14));
-            this.rawData[7] = d * (m11 * (m23 * m34 - m33 * m24) - m21 * (m13 * m34 - m33 * m14) + m31 * (m13 * m24 - m23 * m14));
-            this.rawData[8] = d * (m21 * (m32 * m44 - m42 * m34) - m31 * (m22 * m44 - m42 * m24) + m41 * (m22 * m34 - m32 * m24));
-            this.rawData[9] = -d * (m11 * (m32 * m44 - m42 * m34) - m31 * (m12 * m44 - m42 * m14) + m41 * (m12 * m34 - m32 * m14));
-            this.rawData[10] = d * (m11 * (m22 * m44 - m42 * m24) - m21 * (m12 * m44 - m42 * m14) + m41 * (m12 * m24 - m22 * m14));
-            this.rawData[11] = -d * (m11 * (m22 * m34 - m32 * m24) - m21 * (m12 * m34 - m32 * m14) + m31 * (m12 * m24 - m22 * m14));
-            this.rawData[12] = -d * (m21 * (m32 * m43 - m42 * m33) - m31 * (m22 * m43 - m42 * m23) + m41 * (m22 * m33 - m32 * m23));
-            this.rawData[13] = d * (m11 * (m32 * m43 - m42 * m33) - m31 * (m12 * m43 - m42 * m13) + m41 * (m12 * m33 - m32 * m13));
-            this.rawData[14] = -d * (m11 * (m22 * m43 - m42 * m23) - m21 * (m12 * m43 - m42 * m13) + m41 * (m12 * m23 - m22 * m13));
-            this.rawData[15] = d * (m11 * (m22 * m33 - m32 * m23) - m21 * (m12 * m33 - m32 * m13) + m31 * (m12 * m23 - m22 * m13));
-            }
-            return invertable;
-            }
-            */
             /**
             * Inverts the current matrix.
             */
             Matrix3D.prototype.invert = function () {
-                var t;
-                var m0, m1, m2, m3, s;
+                // Initial Tests - OK
+                var d = this.determinant;
+                var invertable = Math.abs(d) > 0.00000000001;
 
-                var r0 = [], r1 = [], r2 = [], r3 = [];
+                if (invertable) {
+                    d = 1 / d;
+                    var m11 = this.rawData[0];
+                    var m21 = this.rawData[4];
+                    var m31 = this.rawData[8];
+                    var m41 = this.rawData[12];
+                    var m12 = this.rawData[1];
+                    var m22 = this.rawData[5];
+                    var m32 = this.rawData[9];
+                    var m42 = this.rawData[13];
+                    var m13 = this.rawData[2];
+                    var m23 = this.rawData[6];
+                    var m33 = this.rawData[10];
+                    var m43 = this.rawData[14];
+                    var m14 = this.rawData[3];
+                    var m24 = this.rawData[7];
+                    var m34 = this.rawData[11];
+                    var m44 = this.rawData[15];
 
-                r0[0] = this.rawData[0 * 4 + 0], r0[1] = this.rawData[1 * 4 + 0], r0[2] = this.rawData[2 * 4 + 0], r0[3] = this.rawData[3 * 4 + 0], r0[4] = 1.0, r0[5] = r0[6] = r0[7] = 0.0, r1[0] = this.rawData[0 * 4 + 1], r1[1] = this.rawData[1 * 4 + 1], r1[2] = this.rawData[2 * 4 + 1], r1[3] = this.rawData[3 * 4 + 1], r1[5] = 1.0, r1[4] = r1[6] = r1[7] = 0.0, r2[0] = this.rawData[0 * 4 + 2], r2[1] = this.rawData[1 * 4 + 2], r2[2] = this.rawData[2 * 4 + 2], r2[3] = this.rawData[3 * 4 + 2], r2[6] = 1.0, r2[4] = r2[5] = r2[7] = 0.0, r3[0] = this.rawData[0 * 4 + 3], r3[1] = this.rawData[1 * 4 + 3], r3[2] = this.rawData[2 * 4 + 3], r3[3] = this.rawData[3 * 4 + 3], r3[7] = 1.0, r3[4] = r3[5] = r3[6] = 0.0;
-
-                if (Math.abs(r3[0]) > Math.abs(r2[0])) {
-                    t = r3;
-                    r3 = r2;
-                    r2 = t;
+                    this.rawData[0] = d * (m22 * (m33 * m44 - m43 * m34) - m32 * (m23 * m44 - m43 * m24) + m42 * (m23 * m34 - m33 * m24));
+                    this.rawData[1] = -d * (m12 * (m33 * m44 - m43 * m34) - m32 * (m13 * m44 - m43 * m14) + m42 * (m13 * m34 - m33 * m14));
+                    this.rawData[2] = d * (m12 * (m23 * m44 - m43 * m24) - m22 * (m13 * m44 - m43 * m14) + m42 * (m13 * m24 - m23 * m14));
+                    this.rawData[3] = -d * (m12 * (m23 * m34 - m33 * m24) - m22 * (m13 * m34 - m33 * m14) + m32 * (m13 * m24 - m23 * m14));
+                    this.rawData[4] = -d * (m21 * (m33 * m44 - m43 * m34) - m31 * (m23 * m44 - m43 * m24) + m41 * (m23 * m34 - m33 * m24));
+                    this.rawData[5] = d * (m11 * (m33 * m44 - m43 * m34) - m31 * (m13 * m44 - m43 * m14) + m41 * (m13 * m34 - m33 * m14));
+                    this.rawData[6] = -d * (m11 * (m23 * m44 - m43 * m24) - m21 * (m13 * m44 - m43 * m14) + m41 * (m13 * m24 - m23 * m14));
+                    this.rawData[7] = d * (m11 * (m23 * m34 - m33 * m24) - m21 * (m13 * m34 - m33 * m14) + m31 * (m13 * m24 - m23 * m14));
+                    this.rawData[8] = d * (m21 * (m32 * m44 - m42 * m34) - m31 * (m22 * m44 - m42 * m24) + m41 * (m22 * m34 - m32 * m24));
+                    this.rawData[9] = -d * (m11 * (m32 * m44 - m42 * m34) - m31 * (m12 * m44 - m42 * m14) + m41 * (m12 * m34 - m32 * m14));
+                    this.rawData[10] = d * (m11 * (m22 * m44 - m42 * m24) - m21 * (m12 * m44 - m42 * m14) + m41 * (m12 * m24 - m22 * m14));
+                    this.rawData[11] = -d * (m11 * (m22 * m34 - m32 * m24) - m21 * (m12 * m34 - m32 * m14) + m31 * (m12 * m24 - m22 * m14));
+                    this.rawData[12] = -d * (m21 * (m32 * m43 - m42 * m33) - m31 * (m22 * m43 - m42 * m23) + m41 * (m22 * m33 - m32 * m23));
+                    this.rawData[13] = d * (m11 * (m32 * m43 - m42 * m33) - m31 * (m12 * m43 - m42 * m13) + m41 * (m12 * m33 - m32 * m13));
+                    this.rawData[14] = -d * (m11 * (m22 * m43 - m42 * m23) - m21 * (m12 * m43 - m42 * m13) + m41 * (m12 * m23 - m22 * m13));
+                    this.rawData[15] = d * (m11 * (m22 * m33 - m32 * m23) - m21 * (m12 * m33 - m32 * m13) + m31 * (m12 * m23 - m22 * m13));
                 }
-                if (Math.abs(r2[0]) > Math.abs(r1[0])) {
-                    t = r2;
-                    r2 = r1;
-                    r1 = t;
-                }
-                if (Math.abs(r1[0]) > Math.abs(r0[0])) {
-                    t = r1;
-                    r1 = r0;
-                    r0 = t;
-                }
-                if (0.0 == r0[0])
-                    return false;
-
-                // eliminate first variable
-                m1 = r1[0] / r0[0];
-                m2 = r2[0] / r0[0];
-                m3 = r3[0] / r0[0];
-                s = r0[1];
-                r1[1] -= m1 * s;
-                r2[1] -= m2 * s;
-                r3[1] -= m3 * s;
-                s = r0[2];
-                r1[2] -= m1 * s;
-                r2[2] -= m2 * s;
-                r3[2] -= m3 * s;
-                s = r0[3];
-                r1[3] -= m1 * s;
-                r2[3] -= m2 * s;
-                r3[3] -= m3 * s;
-
-                s = r0[4];
-
-                if (s != 0.0) {
-                    r1[4] -= m1 * s;
-                    r2[4] -= m2 * s;
-                    r3[4] -= m3 * s;
-                }
-                s = r0[5];
-                if (s != 0.0) {
-                    r1[5] -= m1 * s;
-                    r2[5] -= m2 * s;
-                    r3[5] -= m3 * s;
-                }
-                s = r0[6];
-                if (s != 0.0) {
-                    r1[6] -= m1 * s;
-                    r2[6] -= m2 * s;
-                    r3[6] -= m3 * s;
-                }
-                s = r0[7];
-                if (s != 0.0) {
-                    r1[7] -= m1 * s;
-                    r2[7] -= m2 * s;
-                    r3[7] -= m3 * s;
-                }
-
-                if (Math.abs(r3[1]) > Math.abs(r2[1])) {
-                    t = r3;
-                    r3 = r2;
-                    r2 = t;
-                }
-                if (Math.abs(r2[1]) > Math.abs(r1[1])) {
-                    t = r2;
-                    r2 = r1;
-                    r1 = t;
-                }
-                if (0.0 == r1[1])
-                    return false;
-
-                // eliminate second variable
-                m2 = r2[1] / r1[1];
-                m3 = r3[1] / r1[1];
-                r2[2] -= m2 * r1[2];
-                r3[2] -= m3 * r1[2];
-                r2[3] -= m2 * r1[3];
-                r3[3] -= m3 * r1[3];
-                s = r1[4];
-                if (0.0 != s) {
-                    r2[4] -= m2 * s;
-                    r3[4] -= m3 * s;
-                }
-                s = r1[5];
-                if (0.0 != s) {
-                    r2[5] -= m2 * s;
-                    r3[5] -= m3 * s;
-                }
-                s = r1[6];
-                if (0.0 != s) {
-                    r2[6] -= m2 * s;
-                    r3[6] -= m3 * s;
-                }
-                s = r1[7];
-                if (0.0 != s) {
-                    r2[7] -= m2 * s;
-                    r3[7] -= m3 * s;
-                }
-
-                if (Math.abs(r3[2]) > Math.abs(r2[2])) {
-                    t = r3;
-                    r3 = r2;
-                    r2 = t;
-                }
-                if (0.0 == r2[2])
-                    return false;
-
-                // eliminate third variable
-                m3 = r3[2] / r2[2];
-                r3[3] -= m3 * r2[3], r3[4] -= m3 * r2[4], r3[5] -= m3 * r2[5], r3[6] -= m3 * r2[6], r3[7] -= m3 * r2[7];
-
-                if (0.0 == r3[3])
-                    return false;
-                s = 1.0 / r3[3];
-                r3[4] *= s;
-                r3[5] *= s;
-                r3[6] *= s;
-                r3[7] *= s;
-                m2 = r2[3];
-                s = 1.0 / r2[2];
-                r2[4] = s * (r2[4] - r3[4] * m2), r2[5] = s * (r2[5] - r3[5] * m2), r2[6] = s * (r2[6] - r3[6] * m2), r2[7] = s * (r2[7] - r3[7] * m2);
-
-                m1 = r1[3];
-                r1[4] -= r3[4] * m1, r1[5] -= r3[5] * m1, r1[6] -= r3[6] * m1, r1[7] -= r3[7] * m1;
-
-                m0 = r0[3];
-                r0[4] -= r3[4] * m0, r0[5] -= r3[5] * m0, r0[6] -= r3[6] * m0, r0[7] -= r3[7] * m0;
-
-                m1 = r1[2];
-                s = 1.0 / r1[1];
-                r1[4] = s * (r1[4] - r2[4] * m1), r1[5] = s * (r1[5] - r2[5] * m1), r1[6] = s * (r1[6] - r2[6] * m1), r1[7] = s * (r1[7] - r2[7] * m1);
-                m0 = r0[2];
-                r0[4] -= r2[4] * m0, r0[5] -= r2[5] * m0, r0[6] -= r2[6] * m0, r0[7] -= r2[7] * m0;
-
-                m0 = r0[1];
-                s = 1.0 / r0[0];
-                r0[4] = s * (r0[4] - r1[4] * m0), r0[5] = s * (r0[5] - r1[5] * m0), r0[6] = s * (r0[6] - r1[6] * m0), r0[7] = s * (r0[7] - r1[7] * m0);
-
-                this.rawData[0 * 4 + 0] = r0[4];
-                this.rawData[1 * 4 + 0] = r0[5], this.rawData[2 * 4 + 0] = r0[6];
-                this.rawData[3 * 4 + 0] = r0[7], this.rawData[0 * 4 + 1] = r1[4];
-                this.rawData[1 * 4 + 1] = r1[5], this.rawData[2 * 4 + 1] = r1[6];
-                this.rawData[3 * 4 + 1] = r1[7], this.rawData[0 * 4 + 2] = r2[4];
-                this.rawData[1 * 4 + 2] = r2[5], this.rawData[2 * 4 + 2] = r2[6];
-                this.rawData[3 * 4 + 2] = r2[7], this.rawData[0 * 4 + 3] = r3[4];
-                this.rawData[1 * 4 + 3] = r3[5], this.rawData[2 * 4 + 3] = r3[6];
-                this.rawData[3 * 4 + 3] = r3[7];
-
-                return true;
+                return invertable;
             };
 
             /* TODO implement pointAt
@@ -1294,6 +1157,7 @@ var away;
             * Prepends a matrix by multiplying the current Matrix3D object by another Matrix3D object.
             */
             Matrix3D.prototype.prepend = function (rhs) {
+                // Initial Tests - OK
                 var m111 = rhs.rawData[0], m121 = rhs.rawData[4], m131 = rhs.rawData[8], m141 = rhs.rawData[12], m112 = rhs.rawData[1], m122 = rhs.rawData[5], m132 = rhs.rawData[9], m142 = rhs.rawData[13], m113 = rhs.rawData[2], m123 = rhs.rawData[6], m133 = rhs.rawData[10], m143 = rhs.rawData[14], m114 = rhs.rawData[3], m124 = rhs.rawData[7], m134 = rhs.rawData[11], m144 = rhs.rawData[15], m211 = this.rawData[0], m221 = this.rawData[4], m231 = this.rawData[8], m241 = this.rawData[12], m212 = this.rawData[1], m222 = this.rawData[5], m232 = this.rawData[9], m242 = this.rawData[13], m213 = this.rawData[2], m223 = this.rawData[6], m233 = this.rawData[10], m243 = this.rawData[14], m214 = this.rawData[3], m224 = this.rawData[7], m234 = this.rawData[11], m244 = this.rawData[15];
 
                 this.rawData[0] = m111 * m211 + m112 * m221 + m113 * m231 + m114 * m241;
@@ -1320,13 +1184,17 @@ var away;
             /**
             * Prepends an incremental rotation to a Matrix3D object.
             */
-            Matrix3D.prototype.prependRotation = function (degrees, axis, pivotPoint) {
-                if (typeof pivotPoint === "undefined") { pivotPoint = null; }
+            Matrix3D.prototype.prependRotation = function (degrees, axis) {
+                // Initial Tests - OK
                 var m = Matrix3D.getAxisRotation(axis.x, axis.y, axis.z, degrees);
-                if (pivotPoint != null) {
-                    var p = pivotPoint;
-                    m.appendTranslation(p.x, p.y, p.z);
+
+                /*
+                if ( pivotPoint != null )
+                {
+                var p:Vector3D = pivotPoint;
+                m.appendTranslation( p.x, p.y, p.z );
                 }
+                */
                 this.prepend(m);
             };
 
@@ -1334,6 +1202,7 @@ var away;
             * Prepends an incremental scale change along the x, y, and z axes to a Matrix3D object.
             */
             Matrix3D.prototype.prependScale = function (xScale, yScale, zScale) {
+                // Initial Tests - OK
                 this.prepend(new Matrix3D([xScale, 0, 0, 0, 0, yScale, 0, 0, 0, 0, zScale, 0, 0, 0, 0, 1]));
             };
 
@@ -1341,6 +1210,7 @@ var away;
             * Prepends an incremental translation, a repositioning along the x, y, and z axes, to a Matrix3D object.
             */
             Matrix3D.prototype.prependTranslation = function (x, y, z) {
+                // Initial Tests - OK
                 var m = new Matrix3D();
                 m.position = new geom.Vector3D(x, y, z);
                 this.prepend(m);
@@ -1351,9 +1221,10 @@ var away;
             * Sets the transformation matrix's translation, rotation, and scale settings.
             */
             Matrix3D.prototype.recompose = function (components) {
-                if (components.length < 3 || components[2].x == 0 || components[2].y == 0 || components[2].z == 0)
+                if (components.length < 3)
                     return false;
 
+                //components[2].x == 0 || components[2].y == 0 || components[2].z == 0) return false;
                 this.identity();
                 this.appendScale(components[2].x, components[2].y, components[2].z);
 
@@ -1372,16 +1243,18 @@ var away;
             };
 
             Matrix3D.prototype.transformVector = function (v) {
+                // Initial Tests - OK
                 var x = v.x;
                 var y = v.y;
                 var z = v.z;
-                return new away.geom.Vector3D((x * this.rawData[0] + y * this.rawData[4] + z * this.rawData[8] + this.rawData[12]), (x * this.rawData[1] + y * this.rawData[5] + z * this.rawData[9] + this.rawData[13]), (x * this.rawData[2] + y * this.rawData[6] + z * this.rawData[10] + this.rawData[14]), 1);
+                return new away.geom.Vector3D((x * this.rawData[0] + y * this.rawData[4] + z * this.rawData[8] + this.rawData[12]), (x * this.rawData[1] + y * this.rawData[5] + z * this.rawData[9] + this.rawData[13]), (x * this.rawData[2] + y * this.rawData[6] + z * this.rawData[10] + this.rawData[14]), (x * this.rawData[3] + y * this.rawData[7] + z * this.rawData[11] + this.rawData[15]));
             };
 
             /**
             * Uses the transformation matrix to transform a Vector of Numbers from one coordinate space to another.
             */
             Matrix3D.prototype.transformVectors = function (vin, vout) {
+                // Initial Tests - OK
                 var i = 0;
                 var x = 0, y = 0, z = 0;
 
@@ -1400,6 +1273,7 @@ var away;
             * Converts the current Matrix3D object to a matrix where the rows and columns are swapped.
             */
             Matrix3D.prototype.transpose = function () {
+                // Initial Tests - OK
                 var oRawData = this.rawData.slice(0);
 
                 this.rawData[1] = oRawData[4];
@@ -1417,6 +1291,7 @@ var away;
             };
 
             Matrix3D.getAxisRotation = function (x, y, z, degrees) {
+                // internal class use by rotations which have been tested
                 var m = new Matrix3D();
 
                 var a1 = new geom.Vector3D(x, y, z);
@@ -1450,22 +1325,8 @@ var away;
                 * [read-only] A Number that determines whether a matrix is invertible.
                 */
                 function () {
-                    if (this.rawData[0 * 4 + 3] == 0 && this.rawData[1 * 4 + 3] == 0 && this.rawData[2 * 4 + 3] == 0) {
-                        var a = this.rawData[2 * 4 + 2] * this.rawData[3 * 4 + 3];
-                        var b = this.rawData[1 * 4 + 2] * this.rawData[3 * 4 + 3];
-                        var d = this.rawData[0 * 4 + 2] * this.rawData[3 * 4 + 3];
-
-                        return this.rawData[0 * 4 + 0] * (this.rawData[1 * 4 + 1] * a - this.rawData[2 * 4 + 1] * b) - this.rawData[1 * 4 + 0] * (this.rawData[0 * 4 + 1] * a - this.rawData[2 * 4 + 1] * d) + this.rawData[2 * 4 + 0] * (this.rawData[0 * 4 + 1] * b - this.rawData[1 * 4 + 1] * d);
-                    } else {
-                        var a = this.rawData[2 * 4 + 2] * this.rawData[3 * 4 + 3] - this.rawData[3 * 4 + 2] * this.rawData[2 * 4 + 3];
-                        var b = this.rawData[1 * 4 + 2] * this.rawData[3 * 4 + 3] - this.rawData[3 * 4 + 2] * this.rawData[1 * 4 + 3];
-                        var c = this.rawData[1 * 4 + 2] * this.rawData[2 * 4 + 3] - this.rawData[2 * 4 + 2] * this.rawData[1 * 4 + 3];
-                        var d = this.rawData[0 * 4 + 2] * this.rawData[3 * 4 + 3] - this.rawData[3 * 4 + 2] * this.rawData[0 * 4 + 3];
-                        var e = this.rawData[0 * 4 + 2] * this.rawData[2 * 4 + 3] - this.rawData[2 * 4 + 2] * this.rawData[0 * 4 + 3];
-                        var f = this.rawData[0 * 4 + 2] * this.rawData[1 * 4 + 3] - this.rawData[1 * 4 + 2] * this.rawData[0 * 4 + 3];
-
-                        return this.rawData[0 * 4 + 0] * (this.rawData[1 * 4 + 1] * a - this.rawData[2 * 4 + 1] * b + this.rawData[3 * 4 + 1] * c) - this.rawData[1 * 4 + 0] * (this.rawData[0 * 4 + 1] * a - this.rawData[2 * 4 + 1] * d + this.rawData[3 * 4 + 1] * e) + this.rawData[2 * 4 + 0] * (this.rawData[0 * 4 + 1] * b - this.rawData[1 * 4 + 1] * d + this.rawData[3 * 4 + 1] * f) - this.rawData[3 * 4 + 0] * (this.rawData[0 * 4 + 1] * c - this.rawData[1 * 4 + 1] * e + this.rawData[2 * 4 + 1] * f);
-                    }
+                    // Initial Tests - OK
+                    return ((this.rawData[0] * this.rawData[5] - this.rawData[4] * this.rawData[1]) * (this.rawData[10] * this.rawData[15] - this.rawData[14] * this.rawData[11]) - (this.rawData[0] * this.rawData[9] - this.rawData[8] * this.rawData[1]) * (this.rawData[6] * this.rawData[15] - this.rawData[14] * this.rawData[7]) + (this.rawData[0] * this.rawData[13] - this.rawData[12] * this.rawData[1]) * (this.rawData[6] * this.rawData[11] - this.rawData[10] * this.rawData[7]) + (this.rawData[4] * this.rawData[9] - this.rawData[8] * this.rawData[5]) * (this.rawData[2] * this.rawData[15] - this.rawData[14] * this.rawData[3]) - (this.rawData[4] * this.rawData[13] - this.rawData[12] * this.rawData[5]) * (this.rawData[2] * this.rawData[11] - this.rawData[10] * this.rawData[3]) + (this.rawData[8] * this.rawData[13] - this.rawData[12] * this.rawData[9]) * (this.rawData[2] * this.rawData[7] - this.rawData[6] * this.rawData[3]));
                 },
                 enumerable: true,
                 configurable: true
@@ -1477,9 +1338,11 @@ var away;
                 * transformation's frame of reference.
                 */
                 function () {
+                    // Initial Tests - OK
                     return new geom.Vector3D(this.rawData[12], this.rawData[13], this.rawData[14]);
                 },
                 set: function (value) {
+                    // Initial Tests - OK
                     this.rawData[12] = value.x;
                     this.rawData[13] = value.y;
                     this.rawData[14] = value.z;
@@ -3343,19 +3206,19 @@ var away;
             };
 
             Scene3D.prototype.iUnregisterEntity = function (entity) {
-                entity.iImplicitPartition.iRemoveEntity(entity);
+                entity.iGetImplicitPartition().iRemoveEntity(entity);
             };
 
             Scene3D.prototype.iInvalidateEntityBounds = function (entity) {
-                entity.iImplicitPartition.iMarkForUpdate(entity);
+                entity.iGetImplicitPartition().iMarkForUpdate(entity);
             };
 
             Scene3D.prototype.iRegisterPartition = function (entity) {
-                this.iAddPartitionUnique(entity.iImplicitPartition);
+                this.iAddPartitionUnique(entity.iGetImplicitPartition());
             };
 
             Scene3D.prototype.iUnregisterPartition = function (entity) {
-                entity.iImplicitPartition.iRemoveEntity(entity);
+                entity.iGetImplicitPartition().iRemoveEntity(entity);
             };
 
             Scene3D.prototype.iAddPartitionUnique = function (partition) {
@@ -3434,8 +3297,8 @@ var away;
             }
             VertexBuffer3D.prototype.uploadFromArray = function (vertices, startVertex, numVertices) {
                 this._gl.bindBuffer(this._gl.ARRAY_BUFFER, this._buffer);
+
                 console.log("** WARNING upload not fully implemented, startVertex & numVertices not considered.");
-                console.log("** ", vertices, startVertex, numVertices);
 
                 // TODO add offsets , startVertex, numVertices * this._data32PerVertex
                 this._gl.bufferData(this._gl.ARRAY_BUFFER, new Float32Array(vertices), this._gl.STATIC_DRAW);
@@ -4466,7 +4329,7 @@ var away;
                 if (!this._transparent) {
                     argb[0] = 255;
 
-                    return 'rgb(' + argb[1] + ',' + argb[2] + ',' + argb[3] + ')';
+                    return 'rgba(' + argb[1] + ',' + argb[2] + ',' + argb[3] + ',' + argb[0] + ')';
                 }
 
                 return 'rgba(' + argb[1] + ',' + argb[2] + ',' + argb[3] + ',' + argb[0] / 255 + ')';
@@ -4822,7 +4685,6 @@ var away;
                 }
 
                 // TODO add antialias (seems to be a webgl bug)
-                // TODO set webgl / canvas dimensions
                 this._gl.viewport.width = width;
                 this._gl.viewport.height = height;
             };
@@ -4890,17 +4752,10 @@ var away;
             Context3D.prototype.drawTriangles = function (indexBuffer, firstIndex, numTriangles) {
                 if (typeof firstIndex === "undefined") { firstIndex = 0; }
                 if (typeof numTriangles === "undefined") { numTriangles = -1; }
-                //------------------------------------------------------------------------
-                // TEST
-                console.log('DrawTriangles');
-                var perspectiveFieldOfViewLH = new away.utils.PerspectiveMatrix3D();
-                perspectiveFieldOfViewLH.perspectiveFieldOfViewLH(80, (800 / 600), 0.1, 5000);
-
-                this.setProgramConstantsFromMatrix('vertex', 0, perspectiveFieldOfViewLH, true);
-
                 if (!this._drawing) {
                     throw "Need to clear before drawing if the buffer has not been cleared since the last present() call.";
                 }
+
                 var numIndices = 0;
 
                 if (numTriangles == -1) {
@@ -4915,7 +4770,7 @@ var away;
 
             Context3D.prototype.present = function () {
                 this._drawing = false;
-                this._gl.useProgram(null);
+                //this._gl.useProgram( null );
             };
 
             Context3D.prototype.setBlendFactors = function (sourceFactor, destinationFactor) {
@@ -5093,8 +4948,7 @@ var away;
                 if (typeof numRegisters === "undefined") { numRegisters = -1; }
                 for (var i = 0; i < numRegisters; ++i) {
                     var currentIndex = i * 4;
-                    var locationName = this.getUniformLocationNameFromAgalRegisterIndex(programType, firstRegister + i);
-                    ;
+                    var locationName = this.getUniformLocationNameFromAgalRegisterIndex(programType, firstRegister + i) + (i + firstRegister);
 
                     this.setGLSLProgramConstantsFromArray(locationName, data, currentIndex);
                 }
@@ -5189,10 +5043,7 @@ var away;
                 if (typeof bufferOffset === "undefined") { bufferOffset = 0; }
                 if (typeof format === "undefined") { format = null; }
                 //if ( buffer == null )return;
-                console.log('setGLSLVertexBufferAt locationName', locationName, 'buffer', buffer, 'bufferOffset', bufferOffset, 'format', format);
-
                 var location = this._gl.getAttribLocation(this._currentProgram.glProgram, locationName);
-
                 if (!buffer) {
                     if (location > -1) {
                         this._gl.disableVertexAttribArray(location);
@@ -5239,9 +5090,68 @@ var away;
                     this._gl.disable(this._gl.BLEND);
                 }
             };
+            Context3D.modulo = 0;
             return Context3D;
         })();
         display3D.Context3D = Context3D;
+    })(away.display3D || (away.display3D = {}));
+    var display3D = away.display3D;
+})(away || (away = {}));
+var away;
+(function (away) {
+    /**
+    * ...
+    * @author Gary Paluk - http://www.plugin.io
+    */
+    ///<reference path="../_definitions.ts"/>
+    (function (display3D) {
+        var AGLSLContext3D = (function (_super) {
+            __extends(AGLSLContext3D, _super);
+            function AGLSLContext3D(canvas) {
+                _super.call(this, canvas);
+            }
+            //@override
+            AGLSLContext3D.prototype.setProgramConstantsFromMatrix = function (programType, firstRegister, matrix, transposedMatrix) {
+                if (typeof transposedMatrix === "undefined") { transposedMatrix = false; }
+                /*
+                console.log( "======== setProgramConstantsFromMatrix ========" );
+                console.log( "programType       >>> " + programType );
+                console.log( "firstRegister     >>> " + firstRegister );
+                console.log( "matrix            >>> " + matrix.rawData );
+                console.log( "transposedMatrix  >>> " + transposedMatrix );
+                */
+                var d = matrix.rawData;
+                if (transposedMatrix) {
+                    this.setProgramConstantsFromArray(programType, firstRegister, [d[0], d[4], d[8], d[12]], 1);
+                    this.setProgramConstantsFromArray(programType, firstRegister + 1, [d[1], d[5], d[9], d[13]], 1);
+                    this.setProgramConstantsFromArray(programType, firstRegister + 2, [d[2], d[6], d[10], d[14]], 1);
+                    this.setProgramConstantsFromArray(programType, firstRegister + 3, [d[3], d[7], d[11], d[15]], 1);
+                } else {
+                    this.setProgramConstantsFromArray(programType, firstRegister, [d[0], d[1], d[2], d[3]], 1);
+                    this.setProgramConstantsFromArray(programType, firstRegister + 1, [d[4], d[5], d[6], d[7]], 1);
+                    this.setProgramConstantsFromArray(programType, firstRegister + 2, [d[8], d[9], d[10], d[11]], 1);
+                    this.setProgramConstantsFromArray(programType, firstRegister + 3, [d[12], d[13], d[14], d[15]], 1);
+                }
+            };
+
+            //@override
+            AGLSLContext3D.prototype.drawTriangles = function (indexBuffer, firstIndex, numTriangles) {
+                if (typeof firstIndex === "undefined") { firstIndex = 0; }
+                if (typeof numTriangles === "undefined") { numTriangles = -1; }
+                /*
+                console.log( "======= drawTriangles ========" );
+                console.log( indexBuffer );
+                console.log( "firstIndex: " +  firstIndex );
+                console.log( "numTriangles:" + numTriangles );
+                */
+                //TODO switch and track flip direction when altering culling mode WIP
+                var location = this._gl.getUniformLocation(this._currentProgram.glProgram, "yflip");
+                this._gl.uniform1f(location, -1.0);
+                _super.prototype.drawTriangles.call(this, indexBuffer, firstIndex, numTriangles);
+            };
+            return AGLSLContext3D;
+        })(display3D.Context3D);
+        display3D.AGLSLContext3D = AGLSLContext3D;
     })(away.display3D || (away.display3D = {}));
     var display3D = away.display3D;
 })(away || (away = {}));
@@ -5267,10 +5177,18 @@ var away;
             */
             function MaterialBase() {
                 _super.call(this);
+                /**
+                * An id for this material used to sort the renderables by shader program, which reduces Program3D state changes.
+                *
+                * @private
+                */
+                this._iRenderOrderId = 0;
+                this._bothSides = false;
                 this._pBlendMode = away.display.BlendMode.NORMAL;
                 this._numPasses = 0;
                 this._pMipmap = true;
                 this._smooth = true;
+                this._repeat = false;
                 this._pDepthCompareMode = away.display3D.Context3DCompareMode.LESS_EQUAL;
 
                 this._owners = new Array();
@@ -7961,22 +7879,23 @@ var away;
                 }
             };
 
-            Object.defineProperty(ObjectContainer3D.prototype, "iImplicitPartition", {
-                get: function () {
-                    return this._pImplicitPartition;
-                },
-                set: function (value) {
-                    this.iSetImplicitPartition(value);
-                },
-                enumerable: true,
-                configurable: true
-            });
-
+            /*
+            public get iImplicitPartition():away.partition.Partition3D
+            {
+            return this._pImplicitPartition;
+            }
+            */
             ObjectContainer3D.prototype.iGetImplicitPartition = function () {
                 return this._pImplicitPartition;
             };
 
-
+            /*
+            public set iImplicitPartition( value:away.partition.Partition3D )
+            {
+            
+            this.iSetImplicitPartition( value );
+            }
+            */
             ObjectContainer3D.prototype.iSetImplicitPartition = function (value) {
                 if (value == this._pImplicitPartition)
                     return;
@@ -8308,7 +8227,7 @@ var away;
                 },
                 set: function (value) {
                     this._pExplicitPartition = value;
-                    this.iImplicitPartition = value ? value : (this._pParent ? this._pParent.iImplicitPartition : null);
+                    this.iSetImplicitPartition(value ? value : (this._pParent ? this._pParent.iGetImplicitPartition() : null));
                 },
                 enumerable: true,
                 configurable: true
@@ -8451,7 +8370,7 @@ var away;
                 child.iSetParent(null);
 
                 if (!child._pExplicitPartition) {
-                    child.iImplicitPartition = null;
+                    child.iSetImplicitPartition(null);
                 }
             };
 
@@ -8732,23 +8651,42 @@ var away;
                 this._worldBoundsInvalid = false;
             };
 
-            Object.defineProperty(Entity.prototype, "iImplicitPartition", {
-                set: //@override
-                function (value) {
-                    if (value == this._pImplicitPartition) {
-                        return;
-                    }
+            //@override
+            /*
+            public set iImplicitPartition( value:away.partition.Partition3D )
+            {
+            */
+            /*
+            if( value == this._pImplicitPartition )
+            {
+            return;
+            }
+            
+            if( this._pImplicitPartition )
+            {
+            this.notifyPartitionUnassigned();
+            }
+            
+            super.iSetImplicitPartition( value );
+            this.notifyPartitionAssigned();
+            */
+            /*
+            this.iSetImplicitPartition( value );
+            }
+            */
+            //@override
+            Entity.prototype.iSetImplicitPartition = function (value) {
+                if (value == this._pImplicitPartition) {
+                    return;
+                }
 
-                    if (this._pImplicitPartition) {
-                        this.notifyPartitionUnassigned();
-                    }
+                if (this._pImplicitPartition) {
+                    this.notifyPartitionUnassigned();
+                }
 
-                    _super.prototype.iSetImplicitPartition.call(this, value);
-                    this.notifyPartitionAssigned();
-                },
-                enumerable: true,
-                configurable: true
-            });
+                _super.prototype.iSetImplicitPartition.call(this, value);
+                this.notifyPartitionAssigned();
+            };
 
             Object.defineProperty(Entity.prototype, "scene", {
                 set: //@override
@@ -12820,9 +12758,14 @@ var away;
                 _super.call(this);
                 this._canvas = canvas;
             }
-            Stage3D.prototype.requestContext = function () {
+            Stage3D.prototype.requestContext = function (aglslContext) {
+                if (typeof aglslContext === "undefined") { aglslContext = false; }
                 try  {
-                    this._context3D = new away.display3D.Context3D(this._canvas);
+                    if (aglslContext) {
+                        this._context3D = new away.display3D.AGLSLContext3D(this._canvas);
+                    } else {
+                        this._context3D = new away.display3D.Context3D(this._canvas);
+                    }
                 } catch (e) {
                     this.dispatchEvent(new away.events.Event(away.events.Event.ERROR));
                 }
@@ -13280,8 +13223,10 @@ var away;
                 this._backgroundColor = 0x000000;
                 this._backgroundAlpha = 1;
                 this._depthTextureInvalid = true;
+                this._antiAlias = 0;
                 this._scissorRectDirty = true;
                 this._viewportDirty = true;
+                this._depthPrepass = false;
                 this._layeredView = false;
                 if (View3D.sStage == null) {
                     View3D.sStage = new away.display.Stage();
@@ -13817,8 +13762,6 @@ var away;
                 }
 
                 if (!this._pShareContext) {
-                    console.log('present');
-
                     this._pStage3DProxy.present();
                     // TODO: imeplement mouse3dManager
                     // fire collected mouse events
@@ -19357,6 +19300,11 @@ var away;
                 if (typeof profile === "undefined") { profile = "baseline"; }
                 _super.call(this);
                 this._iStage3DIndex = -1;
+                this._antiAlias = 0;
+                //private var _activeVertexBuffers : Vector.<VertexBuffer3D> = new Vector.<VertexBuffer3D>(8, true);
+                //private var _activeTextures : Vector.<TextureBase> = new Vector.<TextureBase>(8, true);
+                this._renderTarget = null;
+                this._renderSurfaceSelector = 0;
 
                 this._iStage3DIndex = stage3DIndex;
                 this._stage3D = stage3D;
@@ -19486,7 +19434,7 @@ var away;
             Stage3DProxy.prototype.setRenderTarget = function (target, enableDepthAndStencil, surfaceSelector) {
                 if (typeof enableDepthAndStencil === "undefined") { enableDepthAndStencil = false; }
                 if (typeof surfaceSelector === "undefined") { surfaceSelector = 0; }
-                if (this._renderTarget == target && surfaceSelector == this._renderSurfaceSelector && this._enableDepthAndStencil == enableDepthAndStencil) {
+                if (this._renderTarget === target && surfaceSelector == this._renderSurfaceSelector && this._enableDepthAndStencil == enableDepthAndStencil) {
                     return;
                 }
 
@@ -19913,7 +19861,7 @@ var away;
                 this._profile = profile;
 
                 // Updated to work with current JS <> AS3 Display3D System
-                this._stage3D.requestContext();
+                this._stage3D.requestContext(true);
 
                 // Throw PartialImplementationError to flag this function as changed
                 away.Debug.throwPIR('Stage3DProxy', 'requestContext', 'Context3DRenderMode');
@@ -20641,8 +20589,6 @@ var away;
                 var i = 0;
                 var len = Stage3DManager._stageProxies.length;
 
-                console.log(Stage3DManager._stageProxies);
-
                 while (i < len) {
                     if (!Stage3DManager._stageProxies[i]) {
                         this.getStage3DProxy(i, forceSoftware, profile);
@@ -20822,18 +20768,19 @@ var away;
                     var vertString = vertCompiler.compile(away.display3D.Context3DProgramType.VERTEX, vertexCode);
                     var fragString = fragCompiler.compile(away.display3D.Context3DProgramType.FRAGMENT, fragmentCode);
 
-                    console.log('===GLSL=========================================================');
-                    console.log('vertString');
-                    console.log(vertString);
-                    console.log('fragString');
-                    console.log(fragString);
-
-                    console.log('===AGAL=========================================================');
-                    console.log('vertexCode');
-                    console.log(vertexCode);
-                    console.log('fragmentCode');
-                    console.log(fragmentCode);
-
+                    /*
+                    console.log( '===GLSL=========================================================');
+                    console.log( 'vertString' );
+                    console.log( vertString );
+                    console.log( 'fragString' );
+                    console.log( fragString );
+                    
+                    console.log( '===AGAL=========================================================');
+                    console.log( 'vertexCode' );
+                    console.log( vertexCode );
+                    console.log( 'fragmentCode' );
+                    console.log( fragmentCode );
+                    */
                     program.upload(vertString, fragString);
 
                     /*
@@ -22138,7 +22085,7 @@ var away;
             __extends(CompactSubGeometry, _super);
             function CompactSubGeometry() {
                 _super.call(this);
-                this._vertexDataInvalid = Array(8);
+                this._pVertexDataInvalid = Array(8);
                 this._vertexBuffer = new Array(8);
                 this._bufferContext = new Array(8);
 
@@ -22147,7 +22094,7 @@ var away;
             }
             Object.defineProperty(CompactSubGeometry.prototype, "numVertices", {
                 get: function () {
-                    return this._numVertices;
+                    return this._pNumVertices;
                 },
                 enumerable: true,
                 configurable: true
@@ -22177,17 +22124,17 @@ var away;
                 this._vertexData = data;
                 var numVertices = this._vertexData.length / 13;
 
-                if (numVertices != this._numVertices) {
+                if (numVertices != this._pNumVertices) {
                     this.pDisposeVertexBuffers(this._vertexBuffer);
                 }
 
-                this._numVertices = numVertices;
+                this._pNumVertices = numVertices;
 
-                if (this._numVertices == 0) {
+                if (this._pNumVertices == 0) {
                     throw new Error("Bad data: geometry can't have zero triangles");
                 }
 
-                this.pInvalidateBuffers(this._vertexDataInvalid);
+                this.pInvalidateBuffers(this._pVertexDataInvalid);
                 this.pInvalidateBounds();
             };
 
@@ -22199,15 +22146,15 @@ var away;
                     this.pUpdateActiveBuffer(contextIndex);
                 }
 
-                if (!this._activeBuffer || this._activeContext != context) {
+                if (!this._pActiveBuffer || this._activeContext != context) {
                     this.pCreateBuffer(contextIndex, context);
                 }
 
-                if (this._activeDataInvalid) {
+                if (this._pActiveDataInvalid) {
                     this.pUploadData(contextIndex);
                 }
 
-                context.setVertexBufferAt(index, this._activeBuffer, 0, away.display3D.Context3DVertexBufferFormat.FLOAT_3);
+                context.setVertexBufferAt(index, this._pActiveBuffer, 0, away.display3D.Context3DVertexBufferFormat.FLOAT_3);
             };
 
             CompactSubGeometry.prototype.activateUVBuffer = function (index, stage3DProxy) {
@@ -22217,22 +22164,22 @@ var away;
                 if (this._uvsDirty && this._autoGenerateUVs) {
                     this._vertexData = this.pUpdateDummyUVs(this._vertexData);
 
-                    this.pInvalidateBuffers(this._vertexDataInvalid);
+                    this.pInvalidateBuffers(this._pVertexDataInvalid);
                 }
 
                 if (contextIndex != this._contextIndex) {
                     this.pUpdateActiveBuffer(contextIndex);
                 }
 
-                if (!this._activeBuffer || this._activeContext != context) {
+                if (!this._pActiveBuffer || this._activeContext != context) {
                     this.pCreateBuffer(contextIndex, context);
                 }
 
-                if (this._activeDataInvalid) {
+                if (this._pActiveDataInvalid) {
                     this.pUploadData(contextIndex);
                 }
 
-                context.setVertexBufferAt(index, this._activeBuffer, 9, away.display3D.Context3DVertexBufferFormat.FLOAT_2);
+                context.setVertexBufferAt(index, this._pActiveBuffer, 9, away.display3D.Context3DVertexBufferFormat.FLOAT_2);
             };
 
             CompactSubGeometry.prototype.activateSecondaryUVBuffer = function (index, stage3DProxy) {
@@ -22243,20 +22190,20 @@ var away;
                     this.pUpdateActiveBuffer(contextIndex);
                 }
 
-                if (!this._activeBuffer || this._activeContext != context) {
+                if (!this._pActiveBuffer || this._activeContext != context) {
                     this.pCreateBuffer(contextIndex, context);
                 }
 
-                if (this._activeDataInvalid) {
+                if (this._pActiveDataInvalid) {
                     this.pUploadData(contextIndex);
                 }
 
-                context.setVertexBufferAt(index, this._activeBuffer, 11, away.display3D.Context3DVertexBufferFormat.FLOAT_2);
+                context.setVertexBufferAt(index, this._pActiveBuffer, 11, away.display3D.Context3DVertexBufferFormat.FLOAT_2);
             };
 
             CompactSubGeometry.prototype.pUploadData = function (contextIndex) {
-                this._activeBuffer.uploadFromArray(this._vertexData, 0, this._numVertices);
-                this._vertexDataInvalid[contextIndex] = this._activeDataInvalid = false;
+                this._pActiveBuffer.uploadFromArray(this._vertexData, 0, this._pNumVertices);
+                this._pVertexDataInvalid[contextIndex] = this._pActiveDataInvalid = false;
             };
 
             CompactSubGeometry.prototype.activateVertexNormalBuffer = function (index, stage3DProxy) {
@@ -22267,15 +22214,15 @@ var away;
                     this.pUpdateActiveBuffer(contextIndex);
                 }
 
-                if (!this._activeBuffer || this._activeContext != context) {
+                if (!this._pActiveBuffer || this._activeContext != context) {
                     this.pCreateBuffer(contextIndex, context);
                 }
 
-                if (this._activeDataInvalid) {
+                if (this._pActiveDataInvalid) {
                     this.pUploadData(contextIndex);
                 }
 
-                context.setVertexBufferAt(index, this._activeBuffer, 3, away.display3D.Context3DVertexBufferFormat.FLOAT_3);
+                context.setVertexBufferAt(index, this._pActiveBuffer, 3, away.display3D.Context3DVertexBufferFormat.FLOAT_3);
             };
 
             CompactSubGeometry.prototype.activateVertexTangentBuffer = function (index, stage3DProxy) {
@@ -22286,27 +22233,27 @@ var away;
                     this.pUpdateActiveBuffer(contextIndex);
                 }
 
-                if (!this._activeBuffer || this._activeContext != context) {
+                if (!this._pActiveBuffer || this._activeContext != context) {
                     this.pCreateBuffer(contextIndex, context);
                 }
 
-                if (this._activeDataInvalid) {
+                if (this._pActiveDataInvalid) {
                     this.pUploadData(contextIndex);
                 }
 
-                context.setVertexBufferAt(index, this._activeBuffer, 6, away.display3D.Context3DVertexBufferFormat.FLOAT_3);
+                context.setVertexBufferAt(index, this._pActiveBuffer, 6, away.display3D.Context3DVertexBufferFormat.FLOAT_3);
             };
 
             CompactSubGeometry.prototype.pCreateBuffer = function (contextIndex, context) {
-                this._vertexBuffer[contextIndex] = this._activeBuffer = context.createVertexBuffer(this._numVertices, 13);
+                this._vertexBuffer[contextIndex] = this._pActiveBuffer = context.createVertexBuffer(this._pNumVertices, 13);
                 this._bufferContext[contextIndex] = this._activeContext = context;
-                this._vertexDataInvalid[contextIndex] = this._activeDataInvalid = true;
+                this._pVertexDataInvalid[contextIndex] = this._pActiveDataInvalid = true;
             };
 
             CompactSubGeometry.prototype.pUpdateActiveBuffer = function (contextIndex) {
                 this._contextIndex = contextIndex;
-                this._activeDataInvalid = this._vertexDataInvalid[contextIndex];
-                this._activeBuffer = this._vertexBuffer[contextIndex];
+                this._pActiveDataInvalid = this._pVertexDataInvalid[contextIndex];
+                this._pActiveBuffer = this._vertexBuffer[contextIndex];
                 this._activeContext = this._bufferContext[contextIndex];
             };
 
@@ -22331,7 +22278,7 @@ var away;
             });
 
             CompactSubGeometry.prototype.pUpdateVertexNormals = function (target) {
-                this.pInvalidateBuffers(this._vertexDataInvalid);
+                this.pInvalidateBuffers(this._pVertexDataInvalid);
                 return _super.prototype.pUpdateVertexNormals.call(this, target);
             };
 
@@ -22340,7 +22287,7 @@ var away;
                     this._vertexData = this.pUpdateVertexNormals(this._vertexData);
                 }
 
-                this.pInvalidateBuffers(this._vertexDataInvalid);
+                this.pInvalidateBuffers(this._pVertexDataInvalid);
 
                 return _super.prototype.pUpdateVertexTangents.call(this, target);
             };
@@ -22373,7 +22320,7 @@ var away;
                 get: function () {
                     if (this._uvsDirty && this._autoGenerateUVs) {
                         this._vertexData = this.pUpdateDummyUVs(this._vertexData);
-                        this.pInvalidateBuffers(this._vertexDataInvalid);
+                        this.pInvalidateBuffers(this._pVertexDataInvalid);
                     }
 
                     return this._vertexData;
@@ -22384,12 +22331,12 @@ var away;
 
             CompactSubGeometry.prototype.applyTransformation = function (transform) {
                 _super.prototype.applyTransformation.call(this, transform);
-                this.pInvalidateBuffers(this._vertexDataInvalid);
+                this.pInvalidateBuffers(this._pVertexDataInvalid);
             };
 
             CompactSubGeometry.prototype.scale = function (scale) {
                 _super.prototype.scale.call(this, scale);
-                this.pInvalidateBuffers(this._vertexDataInvalid);
+                this.pInvalidateBuffers(this._pVertexDataInvalid);
             };
 
             CompactSubGeometry.prototype.clone = function () {
@@ -22409,7 +22356,7 @@ var away;
                 if (typeof scaleV === "undefined") { scaleV = 1; }
                 _super.prototype.scaleUV.call(this, scaleU, scaleV);
 
-                this.pInvalidateBuffers(this._vertexDataInvalid);
+                this.pInvalidateBuffers(this._pVertexDataInvalid);
             };
 
             Object.defineProperty(CompactSubGeometry.prototype, "vertexStride", {
@@ -22500,12 +22447,12 @@ var away;
 
             CompactSubGeometry.prototype.pDisposeVertexBuffers = function (buffers) {
                 _super.prototype.pDisposeVertexBuffers.call(this, buffers);
-                this._activeBuffer = null;
+                this._pActiveBuffer = null;
             };
 
             CompactSubGeometry.prototype.pInvalidateBuffers = function (invalid) {
                 _super.prototype.pInvalidateBuffers.call(this, invalid);
-                this._activeDataInvalid = true;
+                this._pActiveDataInvalid = true;
             };
 
             CompactSubGeometry.prototype.cloneWithSeperateBuffers = function () {
@@ -22561,12 +22508,12 @@ var away;
             * - stripBuffer(11, 2): return only the secondary uv's
             */
             CompactSubGeometry.prototype.stripBuffer = function (offset, numEntries) {
-                var data = new Array(this._numVertices * numEntries);
+                var data = new Array(this._pNumVertices * numEntries);
                 var i = 0;
                 var j = offset;
                 var skip = 13 - numEntries;
 
-                for (var v = 0; v < this._numVertices; ++v) {
+                for (var v = 0; v < this._pNumVertices; ++v) {
                     for (var k = 0; k < numEntries; ++k) {
                         data[i++] = this._vertexData[j++];
                     }
@@ -22636,6 +22583,219 @@ var away;
             return CompactSubGeometry;
         })(away.base.SubGeometryBase);
         base.CompactSubGeometry = CompactSubGeometry;
+    })(away.base || (away.base = {}));
+    var base = away.base;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts" />
+    (function (base) {
+        /**
+        * SkinnedSubGeometry provides a SubGeometry extension that contains data needed to skin vertices. In particular,
+        * it provides joint indices and weights.
+        * Important! Joint indices need to be pre-multiplied by 3, since they index the matrix array (and each matrix has 3 float4 elements)
+        */
+        var SkinnedSubGeometry = (function (_super) {
+            __extends(SkinnedSubGeometry, _super);
+            /**
+            * Creates a new SkinnedSubGeometry object.
+            * @param jointsPerVertex The amount of joints that can be assigned per vertex.
+            */
+            function SkinnedSubGeometry(jointsPerVertex) {
+                _super.call(this);
+                this._jointWeightsBuffer = new Array(8);
+                this._jointIndexBuffer = new Array(8);
+                this._jointWeightsInvalid = new Array(8);
+                this._jointIndicesInvalid = new Array(8);
+                this._jointWeightContext = new Array(8);
+                this._jointIndexContext = new Array(8);
+
+                this._jointsPerVertex = jointsPerVertex;
+                this._bufferFormat = "float" + this._jointsPerVertex;
+            }
+            Object.defineProperty(SkinnedSubGeometry.prototype, "condensedIndexLookUp", {
+                get: /**
+                * If indices have been condensed, this will contain the original index for each condensed index.
+                */
+                function () {
+                    return this._condensedIndexLookUp;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SkinnedSubGeometry.prototype, "numCondensedJoints", {
+                get: /**
+                * The amount of joints used when joint indices have been condensed.
+                */
+                function () {
+                    return this._numCondensedJoints;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(SkinnedSubGeometry.prototype, "animatedData", {
+                get: /**
+                * The animated vertex positions when set explicitly if the skinning transformations couldn't be performed on GPU.
+                */
+                function () {
+                    return this._animatedData || this._vertexData.concat();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            SkinnedSubGeometry.prototype.updateAnimatedData = function (value) {
+                this._animatedData = value;
+                this.pInvalidateBuffers(this._pVertexDataInvalid);
+            };
+
+            /**
+            * Assigns the attribute stream for joint weights
+            * @param index The attribute stream index for the vertex shader
+            * @param stage3DProxy The Stage3DProxy to assign the stream to
+            */
+            SkinnedSubGeometry.prototype.activateJointWeightsBuffer = function (index, stage3DProxy) {
+                var contextIndex = stage3DProxy._iStage3DIndex;
+                var context = stage3DProxy._iContext3D;
+                if (this._jointWeightContext[contextIndex] != context || !this._jointWeightsBuffer[contextIndex]) {
+                    this._jointWeightsBuffer[contextIndex] = context.createVertexBuffer(this._pNumVertices, this._jointsPerVertex);
+                    this._jointWeightContext[contextIndex] = context;
+                    this._jointWeightsInvalid[contextIndex] = true;
+                }
+                if (this._jointWeightsInvalid[contextIndex]) {
+                    this._jointWeightsBuffer[contextIndex].uploadFromArray(this._jointWeightsData, 0, this._jointWeightsData.length / this._jointsPerVertex);
+                    this._jointWeightsInvalid[contextIndex] = false;
+                }
+                context.setVertexBufferAt(index, this._jointWeightsBuffer[contextIndex], 0, this._bufferFormat);
+            };
+
+            /**
+            * Assigns the attribute stream for joint indices
+            * @param index The attribute stream index for the vertex shader
+            * @param stage3DProxy The Stage3DProxy to assign the stream to
+            */
+            SkinnedSubGeometry.prototype.activateJointIndexBuffer = function (index, stage3DProxy) {
+                var contextIndex = stage3DProxy._iStage3DIndex;
+                var context = stage3DProxy._iContext3D;
+
+                if (this._jointIndexContext[contextIndex] != context || !this._jointIndexBuffer[contextIndex]) {
+                    this._jointIndexBuffer[contextIndex] = context.createVertexBuffer(this._pNumVertices, this._jointsPerVertex);
+                    this._jointIndexContext[contextIndex] = context;
+                    this._jointIndicesInvalid[contextIndex] = true;
+                }
+                if (this._jointIndicesInvalid[contextIndex]) {
+                    this._jointIndexBuffer[contextIndex].uploadFromArray(this._numCondensedJoints > 0 ? this._condensedJointIndexData : this._jointIndexData, 0, this._jointIndexData.length / this._jointsPerVertex);
+                    this._jointIndicesInvalid[contextIndex] = false;
+                }
+                context.setVertexBufferAt(index, this._jointIndexBuffer[contextIndex], 0, this._bufferFormat);
+            };
+
+            SkinnedSubGeometry.prototype.pUploadData = function (contextIndex) {
+                if (this._animatedData) {
+                    this._pActiveBuffer.uploadFromArray(this._animatedData, 0, this._pNumVertices);
+                    this._pVertexDataInvalid[contextIndex] = this._pActiveDataInvalid = false;
+                } else {
+                    _super.prototype.pUploadData.call(this, contextIndex);
+                }
+            };
+
+            /**
+            * Clones the current object.
+            * @return An exact duplicate of the current object.
+            */
+            SkinnedSubGeometry.prototype.clone = function () {
+                var clone = new SkinnedSubGeometry(this._jointsPerVertex);
+
+                clone.updateData(this._vertexData.concat());
+                clone.updateIndexData(this._indices.concat());
+                clone.iUpdateJointIndexData(this._jointIndexData.concat());
+                clone.iUpdateJointWeightsData(this._jointWeightsData.concat());
+                clone._autoDeriveVertexNormals = this._autoDeriveVertexNormals;
+                clone._autoDeriveVertexTangents = this._autoDeriveVertexTangents;
+                clone._numCondensedJoints = this._numCondensedJoints;
+                clone._condensedIndexLookUp = this._condensedIndexLookUp;
+                clone._condensedJointIndexData = this._condensedJointIndexData;
+
+                return clone;
+            };
+
+            /**
+            * Cleans up any resources used by this object.
+            */
+            SkinnedSubGeometry.prototype.dispose = function () {
+                _super.prototype.dispose.call(this);
+                this.pDisposeVertexBuffers(this._jointWeightsBuffer);
+                this.pDisposeVertexBuffers(this._jointIndexBuffer);
+            };
+
+            /**
+            */
+            SkinnedSubGeometry.prototype.iCondenseIndexData = function () {
+                var len = this._jointIndexData.length;
+                var oldIndex;
+                var newIndex = 0;
+                var dic = new Object();
+
+                this._condensedJointIndexData = new Array(len);
+                this._condensedIndexLookUp = new Array();
+
+                for (var i = 0; i < len; ++i) {
+                    oldIndex = this._jointIndexData[i];
+
+                    if (dic[oldIndex] == undefined) {
+                        dic[oldIndex] = newIndex;
+                        this._condensedIndexLookUp[newIndex++] = oldIndex;
+                        this._condensedIndexLookUp[newIndex++] = oldIndex + 1;
+                        this._condensedIndexLookUp[newIndex++] = oldIndex + 2;
+                    }
+                    this._condensedJointIndexData[i] = dic[oldIndex];
+                }
+                this._numCondensedJoints = newIndex / 3;
+
+                this.pInvalidateBuffers(this._jointIndicesInvalid);
+            };
+
+            Object.defineProperty(SkinnedSubGeometry.prototype, "iJointWeightsData", {
+                get: /**
+                * The raw joint weights data.
+                */
+                function () {
+                    return this._jointWeightsData;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            SkinnedSubGeometry.prototype.iUpdateJointWeightsData = function (value) {
+                // invalidate condensed stuff
+                this._numCondensedJoints = 0;
+                this._condensedIndexLookUp = null;
+                this._condensedJointIndexData = null;
+
+                this._jointWeightsData = value;
+                this.pInvalidateBuffers(this._jointWeightsInvalid);
+            };
+
+            Object.defineProperty(SkinnedSubGeometry.prototype, "iJointIndexData", {
+                get: /**
+                * The raw joint index data.
+                */
+                function () {
+                    return this._jointIndexData;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            SkinnedSubGeometry.prototype.iUpdateJointIndexData = function (value) {
+                this._jointIndexData = value;
+                this.pInvalidateBuffers(this._jointIndicesInvalid);
+            };
+            return SkinnedSubGeometry;
+        })(base.CompactSubGeometry);
+        base.SkinnedSubGeometry = SkinnedSubGeometry;
     })(away.base || (away.base = {}));
     var base = away.base;
 })(away || (away = {}));
@@ -23388,8 +23548,8 @@ var away;
                 this.targetObject = targetObject;
             }
             ControllerBase.prototype.pNotifyUpdate = function () {
-                if (this._pTargetObject && this._pTargetObject.iImplicitPartition && this._pAutoUpdate) {
-                    this._pTargetObject.iImplicitPartition.iMarkForUpdate(this._pTargetObject);
+                if (this._pTargetObject && this._pTargetObject.iGetImplicitPartition() && this._pAutoUpdate) {
+                    this._pTargetObject.iGetImplicitPartition().iMarkForUpdate(this._pTargetObject);
                 }
             };
 
@@ -23543,6 +23703,723 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
+    ///<reference path="../_definitions.ts" />
+    (function (controllers) {
+        /**
+        * Extended camera used to hover round a specified target object.
+        *
+        * @see    away3d.containers.View3D
+        */
+        var HoverController = (function (_super) {
+            __extends(HoverController, _super);
+            /**
+            * Creates a new <code>HoverController</code> object.
+            */
+            function HoverController(targetObject, lookAtObject, panAngle, tiltAngle, distance, minTiltAngle, maxTiltAngle, minPanAngle, maxPanAngle, steps, yFactor, wrapPanAngle) {
+                if (typeof targetObject === "undefined") { targetObject = null; }
+                if (typeof lookAtObject === "undefined") { lookAtObject = null; }
+                if (typeof panAngle === "undefined") { panAngle = 0; }
+                if (typeof tiltAngle === "undefined") { tiltAngle = 90; }
+                if (typeof distance === "undefined") { distance = 1000; }
+                if (typeof minTiltAngle === "undefined") { minTiltAngle = -90; }
+                if (typeof maxTiltAngle === "undefined") { maxTiltAngle = 90; }
+                if (typeof minPanAngle === "undefined") { minPanAngle = NaN; }
+                if (typeof maxPanAngle === "undefined") { maxPanAngle = NaN; }
+                if (typeof steps === "undefined") { steps = 8; }
+                if (typeof yFactor === "undefined") { yFactor = 2; }
+                if (typeof wrapPanAngle === "undefined") { wrapPanAngle = false; }
+                _super.call(this, targetObject, lookAtObject);
+                this._iCurrentPanAngle = 0;
+                this._iCurrentTiltAngle = 90;
+                this._panAngle = 0;
+                this._tiltAngle = 90;
+                this._distance = 1000;
+                this._minPanAngle = -Infinity;
+                this._maxPanAngle = Infinity;
+                this._minTiltAngle = -90;
+                this._maxTiltAngle = 90;
+                this._steps = 8;
+                this._yFactor = 2;
+                this._wrapPanAngle = false;
+
+                this.distance = distance;
+                this.panAngle = panAngle;
+                this.tiltAngle = tiltAngle;
+                this.minPanAngle = minPanAngle || -Infinity;
+                this.maxPanAngle = maxPanAngle || Infinity;
+                this.minTiltAngle = minTiltAngle;
+                this.maxTiltAngle = maxTiltAngle;
+                this.steps = steps;
+                this.yFactor = yFactor;
+                this.wrapPanAngle = wrapPanAngle;
+
+                //values passed in contrustor are applied immediately
+                this._iCurrentPanAngle = this._panAngle;
+                this._iCurrentTiltAngle = this._tiltAngle;
+            }
+            Object.defineProperty(HoverController.prototype, "steps", {
+                get: /**
+                * Fractional step taken each time the <code>hover()</code> method is called. Defaults to 8.
+                *
+                * Affects the speed at which the <code>tiltAngle</code> and <code>panAngle</code> resolve to their targets.
+                *
+                * @see    #tiltAngle
+                * @see    #panAngle
+                */
+                function () {
+                    return this._steps;
+                },
+                set: function (val) {
+                    val = (val < 1) ? 1 : val;
+
+                    if (this._steps == val)
+                        return;
+
+                    this._steps = val;
+
+                    this.pNotifyUpdate();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(HoverController.prototype, "panAngle", {
+                get: /**
+                * Rotation of the camera in degrees around the y axis. Defaults to 0.
+                */
+                function () {
+                    return this._panAngle;
+                },
+                set: function (val) {
+                    val = Math.max(this._minPanAngle, Math.min(this._maxPanAngle, val));
+
+                    if (this._panAngle == val)
+                        return;
+
+                    this._panAngle = val;
+
+                    this.pNotifyUpdate();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(HoverController.prototype, "tiltAngle", {
+                get: /**
+                * Elevation angle of the camera in degrees. Defaults to 90.
+                */
+                function () {
+                    return this._tiltAngle;
+                },
+                set: function (val) {
+                    val = Math.max(this._minTiltAngle, Math.min(this._maxTiltAngle, val));
+
+                    if (this._tiltAngle == val)
+                        return;
+
+                    this._tiltAngle = val;
+
+                    this.pNotifyUpdate();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(HoverController.prototype, "distance", {
+                get: /**
+                * Distance between the camera and the specified target. Defaults to 1000.
+                */
+                function () {
+                    return this._distance;
+                },
+                set: function (val) {
+                    if (this._distance == val)
+                        return;
+
+                    this._distance = val;
+
+                    this.pNotifyUpdate();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(HoverController.prototype, "minPanAngle", {
+                get: /**
+                * Minimum bounds for the <code>panAngle</code>. Defaults to -Infinity.
+                *
+                * @see    #panAngle
+                */
+                function () {
+                    return this._minPanAngle;
+                },
+                set: function (val) {
+                    if (this._minPanAngle == val)
+                        return;
+
+                    this._minPanAngle = val;
+
+                    this.panAngle = Math.max(this._minPanAngle, Math.min(this._maxPanAngle, this._panAngle));
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(HoverController.prototype, "maxPanAngle", {
+                get: /**
+                * Maximum bounds for the <code>panAngle</code>. Defaults to Infinity.
+                *
+                * @see    #panAngle
+                */
+                function () {
+                    return this._maxPanAngle;
+                },
+                set: function (val) {
+                    if (this._maxPanAngle == val)
+                        return;
+
+                    this._maxPanAngle = val;
+
+                    this.panAngle = Math.max(this._minPanAngle, Math.min(this._maxPanAngle, this._panAngle));
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(HoverController.prototype, "minTiltAngle", {
+                get: /**
+                * Minimum bounds for the <code>tiltAngle</code>. Defaults to -90.
+                *
+                * @see    #tiltAngle
+                */
+                function () {
+                    return this._minTiltAngle;
+                },
+                set: function (val) {
+                    if (this._minTiltAngle == val)
+                        return;
+
+                    this._minTiltAngle = val;
+
+                    this.tiltAngle = Math.max(this._minTiltAngle, Math.min(this._maxTiltAngle, this._tiltAngle));
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(HoverController.prototype, "maxTiltAngle", {
+                get: /**
+                * Maximum bounds for the <code>tiltAngle</code>. Defaults to 90.
+                *
+                * @see    #tiltAngle
+                */
+                function () {
+                    return this._maxTiltAngle;
+                },
+                set: function (val) {
+                    if (this._maxTiltAngle == val)
+                        return;
+
+                    this._maxTiltAngle = val;
+
+                    this.tiltAngle = Math.max(this._minTiltAngle, Math.min(this._maxTiltAngle, this._tiltAngle));
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(HoverController.prototype, "yFactor", {
+                get: /**
+                * Fractional difference in distance between the horizontal camera orientation and vertical camera orientation. Defaults to 2.
+                *
+                * @see    #distance
+                */
+                function () {
+                    return this._yFactor;
+                },
+                set: function (val) {
+                    if (this._yFactor == val)
+                        return;
+
+                    this._yFactor = val;
+
+                    this.pNotifyUpdate();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(HoverController.prototype, "wrapPanAngle", {
+                get: /**
+                * Defines whether the value of the pan angle wraps when over 360 degrees or under 0 degrees. Defaults to false.
+                */
+                function () {
+                    return this._wrapPanAngle;
+                },
+                set: function (val) {
+                    if (this._wrapPanAngle == val)
+                        return;
+
+                    this._wrapPanAngle = val;
+
+                    this.pNotifyUpdate();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * Updates the current tilt angle and pan angle values.
+            *
+            * Values are calculated using the defined <code>tiltAngle</code>, <code>panAngle</code> and <code>steps</code> variables.
+            *
+            * @param interpolate   If the update to a target pan- or tiltAngle is interpolated. Default is true.
+            *
+            * @see    #tiltAngle
+            * @see    #panAngle
+            * @see    #steps
+            */
+            HoverController.prototype.update = function (interpolate) {
+                if (typeof interpolate === "undefined") { interpolate = true; }
+                if (this._tiltAngle != this._iCurrentTiltAngle || this._panAngle != this._iCurrentPanAngle) {
+                    this.pNotifyUpdate();
+
+                    if (this._wrapPanAngle) {
+                        if (this._panAngle < 0) {
+                            this._iCurrentPanAngle += this._panAngle % 360 + 360 - this._panAngle;
+                            this._panAngle = this._panAngle % 360 + 360;
+                        } else {
+                            this._iCurrentPanAngle += this._panAngle % 360 - this._panAngle;
+                            this._panAngle = this._panAngle % 360;
+                        }
+
+                        while (this._panAngle - this._iCurrentPanAngle < -180)
+                            this._iCurrentPanAngle -= 360;
+
+                        while (this._panAngle - this._iCurrentPanAngle > 180)
+                            this._iCurrentPanAngle += 360;
+                    }
+
+                    if (interpolate) {
+                        this._iCurrentTiltAngle += (this._tiltAngle - this._iCurrentTiltAngle) / (this.steps + 1);
+                        this._iCurrentPanAngle += (this._panAngle - this._iCurrentPanAngle) / (this.steps + 1);
+                    } else {
+                        this._iCurrentPanAngle = this._panAngle;
+                        this._iCurrentTiltAngle = this._tiltAngle;
+                    }
+
+                    if ((Math.abs(this.tiltAngle - this._iCurrentTiltAngle) < 0.01) && (Math.abs(this._panAngle - this._iCurrentPanAngle) < 0.01)) {
+                        this._iCurrentTiltAngle = this._tiltAngle;
+                        this._iCurrentPanAngle = this._panAngle;
+                    }
+                }
+
+                var pos = (this.lookAtObject) ? this.lookAtObject.position : (this.lookAtPosition) ? this.lookAtPosition : this._pOrigin;
+                this.targetObject.x = pos.x + this.distance * Math.sin(this._iCurrentPanAngle * away.math.MathConsts.DEGREES_TO_RADIANS) * Math.cos(this._iCurrentTiltAngle * away.math.MathConsts.DEGREES_TO_RADIANS);
+                this.targetObject.z = pos.z + this.distance * Math.cos(this._iCurrentPanAngle * away.math.MathConsts.DEGREES_TO_RADIANS) * Math.cos(this._iCurrentTiltAngle * away.math.MathConsts.DEGREES_TO_RADIANS);
+                this.targetObject.y = pos.y + this.distance * Math.sin(this._iCurrentTiltAngle * away.math.MathConsts.DEGREES_TO_RADIANS) * this.yFactor;
+
+                _super.prototype.update.call(this);
+            };
+            return HoverController;
+        })(away.controllers.LookAtController);
+        controllers.HoverController = HoverController;
+    })(away.controllers || (away.controllers = {}));
+    var controllers = away.controllers;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts" />
+    (function (controllers) {
+        /**
+        * Extended camera used to hover round a specified target object.
+        *
+        * @see    away3d.containers.View3D
+        */
+        var FirstPersonController = (function (_super) {
+            __extends(FirstPersonController, _super);
+            /**
+            * Creates a new <code>HoverController</code> object.
+            */
+            function FirstPersonController(targetObject, panAngle, tiltAngle, minTiltAngle, maxTiltAngle, steps, wrapPanAngle) {
+                if (typeof targetObject === "undefined") { targetObject = null; }
+                if (typeof panAngle === "undefined") { panAngle = 0; }
+                if (typeof tiltAngle === "undefined") { tiltAngle = 90; }
+                if (typeof minTiltAngle === "undefined") { minTiltAngle = -90; }
+                if (typeof maxTiltAngle === "undefined") { maxTiltAngle = 90; }
+                if (typeof steps === "undefined") { steps = 8; }
+                if (typeof wrapPanAngle === "undefined") { wrapPanAngle = false; }
+                _super.call(this, targetObject);
+                this._iCurrentPanAngle = 0;
+                this._iCurrentTiltAngle = 90;
+                this._panAngle = 0;
+                this._tiltAngle = 90;
+                this._minTiltAngle = -90;
+                this._maxTiltAngle = 90;
+                this._steps = 8;
+                this._walkIncrement = 0;
+                this._strafeIncrement = 0;
+                this._wrapPanAngle = false;
+                this.fly = false;
+
+                this.panAngle = panAngle;
+                this.tiltAngle = tiltAngle;
+                this.minTiltAngle = minTiltAngle;
+                this.maxTiltAngle = maxTiltAngle;
+                this.steps = steps;
+                this.wrapPanAngle = wrapPanAngle;
+
+                //values passed in contrustor are applied immediately
+                this._iCurrentPanAngle = this._panAngle;
+                this._iCurrentTiltAngle = this._tiltAngle;
+            }
+            Object.defineProperty(FirstPersonController.prototype, "steps", {
+                get: /**
+                * Fractional step taken each time the <code>hover()</code> method is called. Defaults to 8.
+                *
+                * Affects the speed at which the <code>tiltAngle</code> and <code>panAngle</code> resolve to their targets.
+                *
+                * @see    #tiltAngle
+                * @see    #panAngle
+                */
+                function () {
+                    return this._steps;
+                },
+                set: function (val) {
+                    val = (val < 1) ? 1 : val;
+
+                    if (this._steps == val)
+                        return;
+
+                    this._steps = val;
+
+                    this.pNotifyUpdate();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(FirstPersonController.prototype, "panAngle", {
+                get: /**
+                * Rotation of the camera in degrees around the y axis. Defaults to 0.
+                */
+                function () {
+                    return this._panAngle;
+                },
+                set: function (val) {
+                    if (this._panAngle == val)
+                        return;
+
+                    this._panAngle = val;
+
+                    this.pNotifyUpdate();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(FirstPersonController.prototype, "tiltAngle", {
+                get: /**
+                * Elevation angle of the camera in degrees. Defaults to 90.
+                */
+                function () {
+                    return this._tiltAngle;
+                },
+                set: function (val) {
+                    val = Math.max(this._minTiltAngle, Math.min(this._maxTiltAngle, val));
+
+                    if (this._tiltAngle == val)
+                        return;
+
+                    this._tiltAngle = val;
+
+                    this.pNotifyUpdate();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(FirstPersonController.prototype, "minTiltAngle", {
+                get: /**
+                * Minimum bounds for the <code>tiltAngle</code>. Defaults to -90.
+                *
+                * @see    #tiltAngle
+                */
+                function () {
+                    return this._minTiltAngle;
+                },
+                set: function (val) {
+                    if (this._minTiltAngle == val)
+                        return;
+
+                    this._minTiltAngle = val;
+
+                    this.tiltAngle = Math.max(this._minTiltAngle, Math.min(this._maxTiltAngle, this._tiltAngle));
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(FirstPersonController.prototype, "maxTiltAngle", {
+                get: /**
+                * Maximum bounds for the <code>tiltAngle</code>. Defaults to 90.
+                *
+                * @see    #tiltAngle
+                */
+                function () {
+                    return this._maxTiltAngle;
+                },
+                set: function (val) {
+                    if (this._maxTiltAngle == val)
+                        return;
+
+                    this._maxTiltAngle = val;
+
+                    this.tiltAngle = Math.max(this._minTiltAngle, Math.min(this._maxTiltAngle, this._tiltAngle));
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(FirstPersonController.prototype, "wrapPanAngle", {
+                get: /**
+                * Defines whether the value of the pan angle wraps when over 360 degrees or under 0 degrees. Defaults to false.
+                */
+                function () {
+                    return this._wrapPanAngle;
+                },
+                set: function (val) {
+                    if (this._wrapPanAngle == val)
+                        return;
+
+                    this._wrapPanAngle = val;
+
+                    this.pNotifyUpdate();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * Updates the current tilt angle and pan angle values.
+            *
+            * Values are calculated using the defined <code>tiltAngle</code>, <code>panAngle</code> and <code>steps</code> variables.
+            *
+            * @param interpolate   If the update to a target pan- or tiltAngle is interpolated. Default is true.
+            *
+            * @see    #tiltAngle
+            * @see    #panAngle
+            * @see    #steps
+            */
+            FirstPersonController.prototype.update = function (interpolate) {
+                if (typeof interpolate === "undefined") { interpolate = true; }
+                if (this._tiltAngle != this._iCurrentTiltAngle || this._panAngle != this._iCurrentPanAngle) {
+                    this.pNotifyUpdate();
+
+                    if (this._wrapPanAngle) {
+                        if (this._panAngle < 0) {
+                            this._iCurrentPanAngle += this._panAngle % 360 + 360 - this._panAngle;
+                            this._panAngle = this._panAngle % 360 + 360;
+                        } else {
+                            this._iCurrentPanAngle += this._panAngle % 360 - this._panAngle;
+                            this._panAngle = this._panAngle % 360;
+                        }
+
+                        while (this._panAngle - this._iCurrentPanAngle < -180)
+                            this._iCurrentPanAngle -= 360;
+
+                        while (this._panAngle - this._iCurrentPanAngle > 180)
+                            this._iCurrentPanAngle += 360;
+                    }
+
+                    if (interpolate) {
+                        this._iCurrentTiltAngle += (this._tiltAngle - this._iCurrentTiltAngle) / (this.steps + 1);
+                        this._iCurrentPanAngle += (this._panAngle - this._iCurrentPanAngle) / (this.steps + 1);
+                    } else {
+                        this._iCurrentTiltAngle = this._tiltAngle;
+                        this._iCurrentPanAngle = this._panAngle;
+                    }
+
+                    if ((Math.abs(this.tiltAngle - this._iCurrentTiltAngle) < 0.01) && (Math.abs(this._panAngle - this._iCurrentPanAngle) < 0.01)) {
+                        this._iCurrentTiltAngle = this._tiltAngle;
+                        this._iCurrentPanAngle = this._panAngle;
+                    }
+                }
+
+                this.targetObject.rotationX = this._iCurrentTiltAngle;
+                this.targetObject.rotationY = this._iCurrentPanAngle;
+
+                if (this._walkIncrement) {
+                    if (this.fly)
+                        this.targetObject.moveForward(this._walkIncrement);
+else {
+                        this.targetObject.x += this._walkIncrement * Math.sin(this._panAngle * away.math.MathConsts.DEGREES_TO_RADIANS);
+                        this.targetObject.z += this._walkIncrement * Math.cos(this._panAngle * away.math.MathConsts.DEGREES_TO_RADIANS);
+                    }
+                    this._walkIncrement = 0;
+                }
+
+                if (this._strafeIncrement) {
+                    this.targetObject.moveRight(this._strafeIncrement);
+                    this._strafeIncrement = 0;
+                }
+            };
+
+            FirstPersonController.prototype.incrementWalk = function (val) {
+                if (val == 0)
+                    return;
+
+                this._walkIncrement += val;
+
+                this.pNotifyUpdate();
+            };
+
+            FirstPersonController.prototype.incrementStrafe = function (val) {
+                if (val == 0)
+                    return;
+
+                this._strafeIncrement += val;
+
+                this.pNotifyUpdate();
+            };
+            return FirstPersonController;
+        })(away.controllers.ControllerBase);
+        controllers.FirstPersonController = FirstPersonController;
+    })(away.controllers || (away.controllers = {}));
+    var controllers = away.controllers;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts" />
+    (function (controllers) {
+        /**
+        * Controller used to follow behind an object on the XZ plane, with an optional
+        * elevation (tiltAngle).
+        *
+        * @see    away3d.containers.View3D
+        */
+        var FollowController = (function (_super) {
+            __extends(FollowController, _super);
+            function FollowController(targetObject, lookAtObject, tiltAngle, distance) {
+                if (typeof targetObject === "undefined") { targetObject = null; }
+                if (typeof lookAtObject === "undefined") { lookAtObject = null; }
+                if (typeof tiltAngle === "undefined") { tiltAngle = 45; }
+                if (typeof distance === "undefined") { distance = 700; }
+                _super.call(this, targetObject, lookAtObject, 0, tiltAngle, distance);
+            }
+            FollowController.prototype.update = function (interpolate) {
+                if (typeof interpolate === "undefined") { interpolate = true; }
+                interpolate = interpolate;
+
+                if (!this.lookAtObject)
+                    return;
+
+                this.panAngle = this._pLookAtObject.rotationY - 180;
+                _super.prototype.update.call(this);
+            };
+            return FollowController;
+        })(away.controllers.HoverController);
+        controllers.FollowController = FollowController;
+    })(away.controllers || (away.controllers = {}));
+    var controllers = away.controllers;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts" />
+    (function (controllers) {
+        /**
+        * Uses spring physics to animate the target object towards a position that is
+        * defined as the lookAtTarget object's position plus the vector defined by the
+        * positionOffset property.
+        */
+        var SpringController = (function (_super) {
+            __extends(SpringController, _super);
+            function SpringController(targetObject, lookAtObject, stiffness, mass, damping) {
+                if (typeof targetObject === "undefined") { targetObject = null; }
+                if (typeof lookAtObject === "undefined") { lookAtObject = null; }
+                if (typeof stiffness === "undefined") { stiffness = 1; }
+                if (typeof mass === "undefined") { mass = 40; }
+                if (typeof damping === "undefined") { damping = 4; }
+                _super.call(this, targetObject, lookAtObject);
+                /**
+                * Offset of spring center from target in target object space, ie: Where the camera should ideally be in the target object space.
+                */
+                this.positionOffset = new away.geom.Vector3D(0, 500, -1000);
+
+                this.stiffness = stiffness;
+                this.damping = damping;
+                this.mass = mass;
+
+                this._velocity = new away.geom.Vector3D();
+                this._dv = new away.geom.Vector3D();
+                this._stretch = new away.geom.Vector3D();
+                this._force = new away.geom.Vector3D();
+                this._acceleration = new away.geom.Vector3D();
+                this._desiredPosition = new away.geom.Vector3D();
+            }
+            SpringController.prototype.update = function (interpolate) {
+                if (typeof interpolate === "undefined") { interpolate = true; }
+                interpolate = interpolate;
+
+                var offs;
+
+                if (!this._pLookAtObject || !this._pTargetObject)
+                    return;
+
+                offs = this._pLookAtObject.transform.deltaTransformVector(this.positionOffset);
+                this._desiredPosition.x = this._pLookAtObject.x + offs.x;
+                this._desiredPosition.y = this._pLookAtObject.y + offs.y;
+                this._desiredPosition.z = this._pLookAtObject.z + offs.z;
+
+                this._stretch.x = this._pTargetObject.x - this._desiredPosition.x;
+                this._stretch.y = this._pTargetObject.y - this._desiredPosition.y;
+                this._stretch.z = this._pTargetObject.z - this._desiredPosition.z;
+                this._stretch.scaleBy(-this.stiffness);
+
+                this._dv.copyFrom(this._velocity);
+                this._dv.scaleBy(this.damping);
+
+                this._force.x = this._stretch.x - this._dv.x;
+                this._force.y = this._stretch.y - this._dv.y;
+                this._force.z = this._stretch.z - this._dv.z;
+
+                this._acceleration.copyFrom(this._force);
+                this._acceleration.scaleBy(1 / this.mass);
+
+                this._velocity.x += this._acceleration.x;
+                this._velocity.y += this._acceleration.y;
+                this._velocity.z += this._acceleration.z;
+
+                this._pTargetObject.x += this._velocity.x;
+                this._pTargetObject.y += this._velocity.y;
+                this._pTargetObject.z += this._velocity.z;
+
+                _super.prototype.update.call(this);
+            };
+            return SpringController;
+        })(controllers.LookAtController);
+        controllers.SpringController = SpringController;
+    })(away.controllers || (away.controllers = {}));
+    var controllers = away.controllers;
+})(away || (away = {}));
+var away;
+(function (away) {
     /**
     * ...
     * @author Gary Paluk - http://www.plugin.io
@@ -23570,6 +24447,7 @@ var away;
                 this._iDiffuseR = 1;
                 this._iDiffuseG = 1;
                 this._iDiffuseB = 1;
+                this._castsShadows = false;
             }
             Object.defineProperty(LightBase.prototype, "castsShadows", {
                 get: function () {
@@ -28731,6 +29609,7 @@ var away;
                 this._depthCompareMode = away.display3D.Context3DCompareMode.LESS_EQUAL;
                 this._blendFactorSource = away.display3D.Context3DBlendFactor.ONE;
                 this._blendFactorDest = away.display3D.Context3DBlendFactor.ZERO;
+                this._pEnableBlending = false;
                 // TODO: AGAL conversion
                 this._pAnimatableAttributes = new Array("va0");
                 // TODO: AGAL conversion
@@ -28738,6 +29617,7 @@ var away;
                 // TODO: AGAL conversion
                 this._pShadedTarget = "ft0";
                 this._defaultCulling = away.display3D.Context3DTriangleFace.BACK;
+                this._pAlphaPremultiplied = false;
                 this._writeDepth = true;
 
                 this._renderToTexture = renderToTexture;
@@ -29298,7 +30178,9 @@ var away;
                 this._pVertexConstantData = new Array();
                 this._pFragmentConstantData = new Array();
                 this._preserveAlpha = true;
+                this._animateUVs = false;
                 this._enableLightFallOff = true;
+                this._forceSeparateMVP = false;
 
                 //away.Debug.throwPIR( "away.materials.CompiledaPass" , 'normalMethod' , 'implement dependency: BasicNormalMethod, BasicAmbientMethod, BasicDiffuseMethod, BasicSpecularMethod');
                 this._pMaterial = material;
@@ -29666,7 +30548,7 @@ var away;
             */
             CompiledPass.prototype.iInvalidateShaderProgram = function (updateMaterial) {
                 if (typeof updateMaterial === "undefined") { updateMaterial = true; }
-                var oldPasses;
+                var oldPasses = this._iPasses;
                 this._iPasses = new Array();
 
                 if (this._pMethodSetup) {
@@ -29943,8 +30825,6 @@ var away;
                 context.setProgramConstantsFromArray(away.display3D.Context3DProgramType.FRAGMENT, 0, this._pFragmentConstantData, this._pNumUsedFragmentConstants);
 
                 renderable.activateVertexBuffer(0, stage3DProxy);
-
-                //------------------------------------------------------------------------
                 context.drawTriangles(renderable.getIndexBuffer(stage3DProxy), 0, renderable.numTriangles);
             };
 
@@ -35681,19 +36561,19 @@ var away;
             * Assigns the shared register data to all methods.
             */
             ShaderCompiler.prototype.updateMethodRegisters = function () {
-                this._pMethodSetup._iNormalMethod._sharedRegisters = this._pSharedRegisters;
-                this._pMethodSetup._iDiffuseMethod._sharedRegisters = this._pSharedRegisters;
+                this._pMethodSetup._iNormalMethod.iSharedRegisters = this._pSharedRegisters;
+                this._pMethodSetup._iDiffuseMethod.iSharedRegisters = this._pSharedRegisters;
 
                 if (this._pMethodSetup._iShadowMethod)
-                    this._pMethodSetup._iShadowMethod._sharedRegisters = this._pSharedRegisters;
+                    this._pMethodSetup._iShadowMethod.iSharedRegisters = this._pSharedRegisters;
 
-                this._pMethodSetup._iAmbientMethod._sharedRegisters = this._pSharedRegisters;
+                this._pMethodSetup._iAmbientMethod.iSharedRegisters = this._pSharedRegisters;
 
                 if (this._pMethodSetup._iSpecularMethod)
-                    this._pMethodSetup._iSpecularMethod._sharedRegisters = this._pSharedRegisters;
+                    this._pMethodSetup._iSpecularMethod.iSharedRegisters = this._pSharedRegisters;
 
                 if (this._pMethodSetup._iColorTransformMethod)
-                    this._pMethodSetup._iColorTransformMethod._sharedRegisters = this._pSharedRegisters;
+                    this._pMethodSetup._iColorTransformMethod.iSharedRegisters = this._pSharedRegisters;
 
                 var methods = this._pMethodSetup._iMethods;
 
@@ -36511,7 +37391,7 @@ var away;
                 var diffuseColorReg;
                 var specularColorReg;
                 var lightDirReg;
-                var regIndex;
+                var regIndex = 0;
                 var addSpec = this._usingSpecularMethod && this.pUsesLightsForSpecular();
                 var addDiff = this.pUsesLightsForDiffuse();
 
@@ -36541,7 +37421,7 @@ var away;
                 var specularColorReg;
                 var lightPosReg;
                 var lightDirReg;
-                var regIndex;
+                var regIndex = 0;
                 var addSpec = this._usingSpecularMethod && this.pUsesLightsForSpecular();
 
                 var addDiff = this.pUsesLightsForDiffuse();
@@ -36668,6 +37548,7 @@ var away;
             */
             function BasicAmbientMethod() {
                 _super.call(this);
+                this._useTexture = false;
                 this._ambientColor = 0xffffff;
                 this._ambientR = 0;
                 this._ambientG = 0;
@@ -37862,8 +38743,9 @@ var away;
             };
 
             DefaultMaterialManager.createDefaultTexture = function () {
-                DefaultMaterialManager._defaultTextureBitmapData = new away.display.BitmapData(8, 8, false, 0x0);
+                DefaultMaterialManager._defaultTextureBitmapData = new away.display.BitmapData(8, 8, false, 0x000000);
 
+                //DefaultMaterialManager._defaultTextureBitmapData.fillRect( new away.geom.Rectangle( 0 , 0 , 4 , 4 ) , 0xFF0000 );
                 //create chekerboard
                 var i, j;
                 for (i = 0; i < 8; i++) {
@@ -39697,7 +40579,7 @@ var away;
                 var item2;
 
                 while (item) {
-                    console.log('DefaultRenderer', 'drawRenderables', item);
+                    //console.log( 'DefaultRenderer' , 'drawRenderables' , item );
                     this._activeMaterial = item.renderable.material;
 
                     this._activeMaterial.iUpdateMaterial(this._pContext);
@@ -39709,16 +40591,12 @@ var away;
                     do {
                         item2 = item;
 
-                        console.log('DefaultRenderer', 'drawRenderables', 'passes', item);
-
                         var rttMask = this._activeMaterial.iPassRendersToTexture(j) ? 1 : 2;
 
                         if ((rttMask & which) != 0) {
                             this._activeMaterial.iActivatePass(j, this._pStage3DProxy, camera);
 
                             do {
-                                console.log('DefaultRenderer', 'drawRenderables', 'items 1');
-
                                 this._activeMaterial.iRenderPass(j, item2.renderable, this._pStage3DProxy, entityCollector, this._pRttViewProjectionMatrix);
 
                                 item2 = item2.next;
@@ -39727,8 +40605,6 @@ var away;
                             this._activeMaterial.iDeactivatePass(j, this._pStage3DProxy);
                         } else {
                             do {
-                                console.log('DefaultRenderer', 'drawRenderables', 'items 2');
-
                                 item2 = item2.next;
                             } while(item2 && item2.renderable.material == this._activeMaterial);
                         }
@@ -42243,15 +43119,16 @@ var View3DTest = (function () {
         away.Debug.THROW_ERRORS = false;
         away.Debug.LOG_PI_ERRORS = false;
 
-        //away.Debug.throwPIROnKeyWordOnly( 'Mouse3DManager' );
+        this.meshes = new Array();
+
         this.light = new away.lights.PointLight();
         this.view = new away.containers.View3D();
         this.view.camera.z = 0;
-        this.view.backgroundColor = 0xff00ea;
-        this.torus = new away.primitives.TorusGeometry();
+        this.view.backgroundColor = 0x776655;
+        this.torus = new away.primitives.TorusGeometry(150, 50, 32, 32, false);
 
-        var l = 20;
-        var radius = 500;
+        var l = 10;
+        var radius = 1000;
 
         var matB = new away.materials.ColorMaterial();
 
@@ -42266,6 +43143,8 @@ var View3DTest = (function () {
 
             this.view.scene.addChild(m);
 
+            this.meshes.push(m);
+
             f = !f;
         }
 
@@ -42276,10 +43155,6 @@ var View3DTest = (function () {
         */
         this.view.scene.addChild(this.light);
 
-        this.view.y = this.view.x = 0;
-        this.view.width = window.innerWidth;
-        this.view.height = window.innerHeight;
-
         console.log('renderer ', this.view.renderer);
         console.log('scene ', this.view.scene);
         console.log('view ', this.view);
@@ -42289,8 +43164,11 @@ var View3DTest = (function () {
         document.onmousedown = function (e) {
             return _this.onMouseDowm(e);
         };
-        //this.raf = new away.utils.RequestAnimationFrame( this.tick , this );
-        //this.raf.start();
+
+        this.raf = new away.utils.RequestAnimationFrame(this.tick, this);
+        this.raf.start();
+
+        this.resize(null);
     }
     View3DTest.prototype.onMouseDowm = function (e) {
         if (this.raf) {
@@ -42305,17 +43183,25 @@ var View3DTest = (function () {
     };
 
     View3DTest.prototype.tick = function (e) {
-        this.view.backgroundColor = 0xffffff * Math.random();
-        this.view.render();
+        for (var c = 0; c < this.meshes.length; c++) {
+            this.meshes[c].rotationY += 2;
+        }
 
-        console.log('------------------------------------------------------------------------------------------');
-        console.log('-Render 2 ', this.view);
+        this.view.camera.rotationY += .5;
+        this.view.render();
+        /*
+        } catch ( error ){
+        
+        console.log( 'error' , error )
+        
+        }
+        */
     };
 
     View3DTest.prototype.resize = function (e) {
-        this.view.y = this.view.x = 10;
-        this.view.width = window.innerWidth - 20;
-        this.view.height = window.innerHeight - 20;
+        this.view.y = (window.innerHeight - this.view.height) / 2;
+        this.view.x = (window.innerWidth - this.view.width) / 2;
+
         this.view.render();
     };
     return View3DTest;
