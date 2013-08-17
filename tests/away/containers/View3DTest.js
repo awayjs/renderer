@@ -38743,9 +38743,8 @@ var away;
             };
 
             DefaultMaterialManager.createDefaultTexture = function () {
-                DefaultMaterialManager._defaultTextureBitmapData = new away.display.BitmapData(8, 8, false, 0x000000);
+                DefaultMaterialManager._defaultTextureBitmapData = new away.display.BitmapData(8, 8, false, 0x0);
 
-                //DefaultMaterialManager._defaultTextureBitmapData.fillRect( new away.geom.Rectangle( 0 , 0 , 4 , 4 ) , 0xFF0000 );
                 //create chekerboard
                 var i, j;
                 for (i = 0; i < 8; i++) {
@@ -43115,12 +43114,10 @@ var aglsl;
 //------------------------------------------------------------------------------------------------
 var View3DTest = (function () {
     function View3DTest() {
-        var _this = this;
         away.Debug.THROW_ERRORS = false;
         away.Debug.LOG_PI_ERRORS = false;
 
         this.meshes = new Array();
-
         this.light = new away.lights.PointLight();
         this.view = new away.containers.View3D();
         this.view.camera.z = 0;
@@ -43129,10 +43126,8 @@ var View3DTest = (function () {
 
         var l = 10;
         var radius = 1000;
-
         var matB = new away.materials.ColorMaterial();
 
-        var f = true;
         for (var c = 0; c < l; c++) {
             var t = Math.PI * 2 * c / l;
 
@@ -43142,46 +43137,15 @@ var View3DTest = (function () {
             m.z = Math.sin(t) * radius;
 
             this.view.scene.addChild(m);
-
             this.meshes.push(m);
-
-            f = !f;
         }
 
-        /*
-        var bitmapMat : away.materials.TextureMaterial = <away.materials.TextureMaterial> m.material;
-        bitmapMat.blendMode
-        console.log( 'Torus.bitmapMat.texture: ' , bitmapMat.texture.width , bitmapMat.texture.height ) ;
-        */
         this.view.scene.addChild(this.light);
-
-        console.log('renderer ', this.view.renderer);
-        console.log('scene ', this.view.scene);
-        console.log('view ', this.view);
-
-        this.view.render();
-
-        document.onmousedown = function (e) {
-            return _this.onMouseDowm(e);
-        };
 
         this.raf = new away.utils.RequestAnimationFrame(this.tick, this);
         this.raf.start();
-
         this.resize(null);
     }
-    View3DTest.prototype.onMouseDowm = function (e) {
-        if (this.raf) {
-            if (this.raf.active) {
-                this.raf.stop();
-            } else {
-                this.raf.start();
-            }
-        }
-
-        this.tick(e);
-    };
-
     View3DTest.prototype.tick = function (e) {
         for (var c = 0; c < this.meshes.length; c++) {
             this.meshes[c].rotationY += 2;
@@ -43189,19 +43153,11 @@ var View3DTest = (function () {
 
         this.view.camera.rotationY += .5;
         this.view.render();
-        /*
-        } catch ( error ){
-        
-        console.log( 'error' , error )
-        
-        }
-        */
     };
 
     View3DTest.prototype.resize = function (e) {
         this.view.y = (window.innerHeight - this.view.height) / 2;
         this.view.x = (window.innerWidth - this.view.width) / 2;
-
         this.view.render();
     };
     return View3DTest;
