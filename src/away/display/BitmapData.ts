@@ -34,7 +34,7 @@ module away.display {
             this._context               = this._imageCanvas.getContext( "2d" );
             this._rect                  = new away.geom.Rectangle( 0 , 0 , width , height );
 
-            if ( fillColor )
+            if ( fillColor != null )
             {
 
                 if( this._transparent)
@@ -510,12 +510,12 @@ module away.display {
 
             var argb : number[] = away.utils.ColorUtils.float32ColorToARGB( d );
 
-            if ( ! this._transparent )
+            if ( this._transparent == false )
             {
 
                 argb[0] = 255;
 
-                return 'rgba(' + argb[1] + ',' + argb[2]+ ',' + argb[3] +  ',' + argb[0] +')';
+                return 'rgba(' + argb[1] + ',' + argb[2]+ ',' + argb[3] +  ',' + argb[0]   +')';
 
             }
 
