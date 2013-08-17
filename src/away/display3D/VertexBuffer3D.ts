@@ -27,6 +27,7 @@ module away.display3D
 		public uploadFromArray( vertices:number[], startVertex:number, numVertices:number )
 		{
 			this._gl.bindBuffer( this._gl.ARRAY_BUFFER, this._buffer );
+
 			console.log( "** WARNING upload not fully implemented, startVertex & numVertices not considered." );
 			// TODO add offsets , startVertex, numVertices * this._data32PerVertex
 			this._gl.bufferData( this._gl.ARRAY_BUFFER, new Float32Array( vertices ), this._gl.STATIC_DRAW );
