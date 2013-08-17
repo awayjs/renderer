@@ -153,7 +153,7 @@ module away.managers
 			var i:number = 0;
 			var len:number = Stage3DManager._stageProxies.length;
 
-            console.log( Stage3DManager._stageProxies );
+            //console.log( Stage3DManager._stageProxies );
 
 			while (i < len)
             {
