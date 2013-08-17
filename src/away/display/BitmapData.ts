@@ -513,7 +513,7 @@ module away.display {
             if ( this._transparent == false )
             {
 
-                argb[0] = 255;
+                argb[0] = 1;
 
                 return 'rgba(' + argb[1] + ',' + argb[2]+ ',' + argb[3] +  ',' + argb[0]   +')';
 
