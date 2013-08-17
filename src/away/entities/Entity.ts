@@ -203,9 +203,10 @@ module away.entities
 		}
 
         //@override
+        /*
         public set iImplicitPartition( value:away.partition.Partition3D )
         {
-            /*
+          */  /*
             if( value == this._pImplicitPartition )
             {
                 return;
@@ -219,13 +220,16 @@ module away.entities
             super.iSetImplicitPartition( value );
             this.notifyPartitionAssigned();
             */
-
+/*
             this.iSetImplicitPartition( value );
         }
-
+*/
         //@override
         public iSetImplicitPartition( value:away.partition.Partition3D )
         {
+
+            //console.log( 'Entity' , 'iSetImplicitPartition' , value , 'this._pImplicitPartition' , this._pImplicitPartition , '==' , ( this._pImplicitPartition ==  value ));
+
             if( value == this._pImplicitPartition )
             {
                 return;
@@ -240,7 +244,6 @@ module away.entities
             this.notifyPartitionAssigned();
 
         }
-
 
 		//@override
 		public set scene( value:away.containers.Scene3D )

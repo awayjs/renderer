@@ -60,22 +60,25 @@ module away.containers
 			}
 		}
 
+        /*
         public get iImplicitPartition():away.partition.Partition3D
         {
             return this._pImplicitPartition;
         }
-
+        */
         public iGetImplicitPartition():away.partition.Partition3D
         {
+
             return this._pImplicitPartition;
         }
-		
+
+        /*
 		public set iImplicitPartition( value:away.partition.Partition3D )
 		{
 
             this.iSetImplicitPartition( value );
 		}
-
+        */
         public iSetImplicitPartition( value:away.partition.Partition3D )
         {
 
@@ -416,7 +419,7 @@ module away.containers
 		public set partition( value:away.partition.Partition3D )
 		{
 			this._pExplicitPartition = value;
-			this.iImplicitPartition = value ? value : ( this._pParent ? this._pParent.iImplicitPartition : null);
+			this.iSetImplicitPartition( value ? value : ( this._pParent ? this._pParent.iGetImplicitPartition() : null) );
 		}
 		
 		public get sceneTransform():away.geom.Matrix3D
@@ -575,7 +578,7 @@ module away.containers
 			
 			if ( !child._pExplicitPartition )
 			{
-				child.iImplicitPartition = null;
+				child.iSetImplicitPartition( null );
 			}
 		}
 		

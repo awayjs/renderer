@@ -104,22 +104,22 @@ module away.containers
 
 		public iUnregisterEntity( entity:away.entities.Entity )
 		{
-			entity.iImplicitPartition.iRemoveEntity( entity );
+			entity.iGetImplicitPartition().iRemoveEntity( entity );
 		}
 
 		public iInvalidateEntityBounds( entity:away.entities.Entity )
 		{
-            entity.iImplicitPartition.iMarkForUpdate( entity );
+            entity.iGetImplicitPartition().iMarkForUpdate( entity );
 		}
 
 		public iRegisterPartition( entity:away.entities.Entity )
 		{
-			this.iAddPartitionUnique( entity.iImplicitPartition );
+			this.iAddPartitionUnique( entity.iGetImplicitPartition() );
 		}
 
 		public iUnregisterPartition( entity:away.entities.Entity )
 		{
-			entity.iImplicitPartition.iRemoveEntity( entity );
+			entity.iGetImplicitPartition().iRemoveEntity( entity );
 		}
 
 		public iAddPartitionUnique( partition:away.partition.Partition3D )
