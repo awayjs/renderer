@@ -20,6 +20,7 @@ module demos.cubes
 		private _mesh  			: away.entities.Mesh;
 		
 		private _raf			:away.utils.RequestAnimationFrame;
+		private _image			:HTMLImageElement;
 		
 		constructor()
 		{
@@ -30,15 +31,31 @@ module demos.cubes
 			this._view.backgroundColor = 0x776655;
 			
 			this._cube              = new away.primitives.CubeGeometry( 100.0, 100.0, 100.0 );
-			this._torus              = new away.primitives.TorusGeometry(  150, 80, 32, 16, false );
+			this._torus             = new away.primitives.TorusGeometry(  150, 80, 32, 16, false );
 			
-			this._mesh              = new away.entities.Mesh( this._torus );
+			this.loadResources();
+		}
+		
+		private loadResources()
+		{
+			var urlRequest:away.net.URLRequest = new away.net.URLRequest( "130909wall_big.png" );
+			var imgLoader:away.net.IMGLoader = new away.net.IMGLoader();
+			imgLoader.addEventListener( away.events.Event.COMPLETE, this.imageCompleteHandler, this );
+			imgLoader.load( urlRequest );
+		}
+		
+		private imageCompleteHandler(e)
+		{
+			var imageLoader:away.net.IMGLoader = <away.net.IMGLoader> e.target
+			this._image = imageLoader.image;
+			
+			var ts : away.textures.HTMLImageElementTexture = new away.textures.HTMLImageElementTexture( this._image, false );
+			
+			var matTx: away.materials.TextureMaterial = new away.materials.TextureMaterial( ts, true, true, false );
+			
+			this._mesh              = new away.entities.Mesh( this._torus, matTx );
 			this._view.scene.addChild( this._mesh );
 			
-			
-			
-            document.onmousedown = ( e ) => this.onMouseDowm( e );
-
 			this._raf = new away.utils.RequestAnimationFrame( this.render , this );
             this._raf.start();
 			
@@ -55,13 +72,6 @@ module demos.cubes
 			{
 			}
 		}
-
-        private onMouseDowm( e )
-        {
-			
-            this._view.render();
-
-        }
 
 	}
 }
