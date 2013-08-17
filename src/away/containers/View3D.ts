@@ -616,9 +616,6 @@ module away.containers
 
             if (! this._pShareContext)
             {
-
-                console.log( 'present');
-
                 this._pStage3DProxy.present();
 
                 // TODO: imeplement mouse3dManager
