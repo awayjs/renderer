@@ -20,9 +20,9 @@ module away.controllers
 		
 		public pNotifyUpdate()
 		{
-			if( this._pTargetObject && this._pTargetObject.iImplicitPartition && this._pAutoUpdate )
+			if( this._pTargetObject && this._pTargetObject.iGetImplicitPartition() && this._pAutoUpdate )
 			{
-				this._pTargetObject.iImplicitPartition.iMarkForUpdate( this._pTargetObject );
+				this._pTargetObject.iGetImplicitPartition().iMarkForUpdate( this._pTargetObject );
 			}
 		}
 		
