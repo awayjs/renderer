@@ -445,7 +445,7 @@ module away.materials
 			var diffuseColorReg:ShaderRegisterElement;
 			var specularColorReg:ShaderRegisterElement;
 			var lightDirReg:ShaderRegisterElement;
-			var regIndex:number;
+			var regIndex:number = 0;
 			var addSpec:boolean = this._usingSpecularMethod && this.pUsesLightsForSpecular();
 			var addDiff:boolean = this.pUsesLightsForDiffuse();
 
@@ -489,7 +489,7 @@ module away.materials
 			var specularColorReg:ShaderRegisterElement;
 			var lightPosReg:ShaderRegisterElement;
 			var lightDirReg:ShaderRegisterElement;
-			var regIndex:number;
+			var regIndex:number = 0;
 			var addSpec:boolean = this._usingSpecularMethod && this.pUsesLightsForSpecular();
 
 			var addDiff:boolean = this.pUsesLightsForDiffuse();
