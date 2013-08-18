@@ -40,7 +40,7 @@ module away.materials
 		
 		private static createDefaultTexture()
 		{
-            DefaultMaterialManager._defaultTextureBitmapData = new away.display.BitmapData(8, 8, false, 0x0);
+            DefaultMaterialManager._defaultTextureBitmapData = new away.display.BitmapData(8, 8, false, 0x000000);
 			
 			//create chekerboard
 			var i:number, j:number;
@@ -55,7 +55,7 @@ module away.materials
 				}
 			}
 
-            DefaultMaterialManager._defaultTexture = new away.textures.BitmapTexture( DefaultMaterialManager._defaultTextureBitmapData );
+            DefaultMaterialManager._defaultTexture = new away.textures.BitmapTexture( DefaultMaterialManager._defaultTextureBitmapData , false );
             DefaultMaterialManager._defaultTexture.name = "defaultTexture";
 		}
 		
