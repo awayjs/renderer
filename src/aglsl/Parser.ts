@@ -15,7 +15,7 @@ module aglsl
 			var header:string = "";
 			var body:string = "";
 			
-			header += "precision highp float;\n";
+			header += "precision mediump float;\n";
 			var tag = desc.header.type[0]; //TODO
 			
 			// declare uniforms
