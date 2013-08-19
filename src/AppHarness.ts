@@ -12,19 +12,20 @@
 ///<reference path="../tests/aglsl/AGALCompilerTest.ts"/>
 ///<reference path="../tests/demos/cubes/CubeDemo.ts"/>
 
+///<reference path="../tests/unit/TestSuite.ts"/>
+
 module away
 {
     export class AppHarness
     {
         constructor()
         {
-			new scene.AGALTorus();
+			new tests.unit.TestSuite();
         }
     }
 }
 
 window.onload = function ()
 {
-    //var app = new away.AppHarness();
-	var app = new demos.cubes.CubeDemo();
+    var app = new away.AppHarness();
 }
