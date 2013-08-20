@@ -83,6 +83,9 @@ module away.display3D
 			// TODO add antialias (seems to be a webgl bug)
 			this._gl.viewport.width = width;
 			this._gl.viewport.height = height;
+
+            this._gl.viewport(0, 0, width, height);
+
 		}
 		
 		public createCubeTexture( size:number, format:away.display3D.Context3DTextureFormat, optimizeForRenderToTexture:boolean, streamingLevels:number = 0 ):away.display3D.CubeTexture 
