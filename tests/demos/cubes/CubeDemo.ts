@@ -73,21 +73,50 @@ module demos.cubes
 			
 			this._raf = new away.utils.RequestAnimationFrame( this.render , this );
             this._raf.start();
+
+            this.resize( null );
 		}
 		
 		public render( dt:number = null ):void
 		{
-			try
-			{
-				this._view.camera.rotate( this._cameraAxis, 1 ); 
-				this._mesh.rotationY += 1;
-				this._mesh2.rotationX += 0.4;
-				this._mesh2.rotationY += 0.4;
-				this._view.render();
-			}
-			catch(e)
-			{
-			}
+
+            this._view.camera.rotate( this._cameraAxis, 1 );
+            this._mesh.rotationY += 1;
+            this._mesh2.rotationX += 0.4;
+            this._mesh2.rotationY += 0.4;
+            this._view.render();
 		}
+
+        public resize( e )
+        {
+            this._view.y         = 0;
+            this._view.x         = 0;
+
+            this._view.width     = window.innerWidth;
+            this._view.height    = window.innerHeight;
+
+
+            console.log( this._view.width , this._view.height );
+
+            this._view.render();
+        }
+
 	}
 }
+
+
+var test: demos.cubes.CubeDemo;
+window.onload = function ()
+{
+    test = new demos.cubes.CubeDemo();
+}
+
+
+window.onresize = function ( e )
+{
+    if ( test )
+    {
+        test.resize( e );
+    }
+}
+
