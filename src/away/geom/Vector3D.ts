@@ -99,9 +99,12 @@ module away.geom {
          * Vector3D object.
          */
         public crossProduct(a: Vector3D): Vector3D {
-            return new Vector3D(this.y * a.z - this.z * a.y,
+            return new Vector3D(
+                this.y * a.z - this.z * a.y,
                 this.z * a.x - this.x * a.z,
-                this.x * a.y - this.y * a.x);
+                this.x * a.y - this.y * a.x,
+                1
+            );
         }
 
         /**
