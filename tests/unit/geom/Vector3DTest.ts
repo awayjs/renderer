@@ -137,7 +137,7 @@ module tests.unit.geom
             this.areIdentical(result.x , 1 );
             this.areIdentical(result.y , -2 );
             this.areIdentical(result.z , 1 );
-            this.areIdentical(result.w , 1 ); // ERROR - not calulated
+            this.areIdentical(result.w , 1 );
 
 
         }
@@ -153,7 +153,7 @@ module tests.unit.geom
             this.areIdentical(m.x , 1 );
             this.areIdentical(m.y , 1 );
             this.areIdentical(m.z , 1 );
-            this.areIdentical(m.w , 1 ); // ERROR - not calulated
+            this.areIdentical(m.w , 5 );
 
         }
 
