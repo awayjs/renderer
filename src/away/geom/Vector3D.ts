@@ -56,7 +56,7 @@ module away.geom {
          * @returns The squared length of the vector
          */
         public get lengthSquared(): number {
-            return (this.x * this.x + this.y * this.y + this.z + this.z);
+            return (this.x * this.x + this.y * this.y + this.z * this.z);
         }
 
         /**
