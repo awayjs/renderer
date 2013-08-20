@@ -20,7 +20,7 @@ module away
     {
         constructor()
         {
-			new tests.unit.TestSuite();
+			new demos.cubes.CubeDemo();
         }
     }
 }
