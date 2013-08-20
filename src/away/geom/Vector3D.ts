@@ -84,8 +84,14 @@ module away.geom {
         /**
          * Copies all of vector data from the source Vector3D object into the calling Vector3D object.
          */
-        public copyFrom(src: Vector3D): Vector3D {
-            return new Vector3D(src.x, src.y, src.z, src.w);
+        public copyFrom(src: Vector3D): void{
+
+            this.x = src.x;
+            this.y = src.y;
+            this.z = src.z;
+            this.w = src.w;
+
+            //return new Vector3D(src.x, src.y, src.z, src.w);
         }
 
         /**
