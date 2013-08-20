@@ -31,12 +31,12 @@ module demos.cubes
 			
 			this._view              = new away.containers.View3D( );
 			
-			this._view.backgroundColor = 0x776655;
+			this._view.backgroundColor = 0x000000;
 			this._view.camera.x = 130;
 			this._view.camera.y = 0;
 			this._view.camera.z = 0;
 			this._cameraAxis = new away.geom.Vector3D( 0, 0, 1 );
-			
+
 			this._view.camera.lens = new away.cameras.PerspectiveLens( 120 );
 			
 			this._cube              = new away.primitives.CubeGeometry( 20.0, 20.0, 20.0 );
@@ -61,6 +61,8 @@ module demos.cubes
 			var ts : away.textures.HTMLImageElementTexture = new away.textures.HTMLImageElementTexture( this._image, false );
 			
 			var matTx: away.materials.TextureMaterial = new away.materials.TextureMaterial( ts, true, true, false );
+
+            matTx.blendMode = away.display.BlendMode.ADD;
 			matTx.bothSides = true;
 			
 			this._mesh              = new away.entities.Mesh( this._torus, matTx );
