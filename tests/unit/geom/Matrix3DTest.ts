@@ -9,9 +9,14 @@
 module tests.unit.geom
 {
 
-	export class Matrix3DTest extends tsUnit.TestClass
+	export class Matrix3DTest extends tests.unit.tsUnit.TestClass
 	{
-		
+
+        constructor()
+        {
+            super();
+        }
+
 		public construct():void
 		{
 			var m:away.geom.Matrix3D = new away.geom.Matrix3D();
