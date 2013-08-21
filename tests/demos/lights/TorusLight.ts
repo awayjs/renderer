@@ -10,31 +10,29 @@ module demos.lights
 	
 	export class TorusLight
 	{
-		
 
 		private _scene			: away.containers.Scene3D;
 		private _view			: away.containers.View3D;
-
 		private _torus       	: away.primitives.TorusGeometry;
 		private _mesh  			: away.entities.Mesh;
-		private _raf			:away.utils.RequestAnimationFrame;
-		private _image			:HTMLImageElement;
-		private _light			:away.lights.DirectionalLight;
+		private _raf			: away.utils.RequestAnimationFrame;
+		private _image			: HTMLImageElement;
+		private _light			: away.lights.DirectionalLight;
 		
 		constructor()
 		{
 
-            away.Debug.THROW_ERRORS = false;
-            away.Debug.ENABLE_LOG   = false;
-            away.Debug.LOG_PI_ERRORS = false;
+            away.Debug.THROW_ERRORS     = false;
+            away.Debug.ENABLE_LOG       = false;
+            away.Debug.LOG_PI_ERRORS    = false;
 
-			
-			this._view              = new away.containers.View3D( );
-			this._view.backgroundColor = 0x014C73;
-			this._view.camera.lens = new away.cameras.PerspectiveLens( 60 );
-			this._torus             = new away.primitives.TorusGeometry( 120, 80, 32, 16, false );
+			this._view                  = new away.containers.View3D( );
+			this._view.backgroundColor  = 0x014C73;
+			this._view.camera.lens      = new away.cameras.PerspectiveLens( 60 );
+			this._torus                 = new away.primitives.TorusGeometry( 120, 80, 32, 16, false );
 			
 			this.loadResources();
+
 		}
 		
 		private loadResources()
@@ -56,11 +54,11 @@ module demos.lights
 			var ts : away.textures.HTMLImageElementTexture = new away.textures.HTMLImageElementTexture( this._image, false );
 			
 			var light:away.lights.DirectionalLight = new away.lights.DirectionalLight();
-                light.color = 0xFFFFFF;
-                light.direction = new away.geom.Vector3D( 1, 0, 0 );
-                light.ambient = 0.6;
-                light.diffuse = 0.7;
-                light.specular = 1;
+                light.color         = 0x00ff88;
+                light.direction     = new away.geom.Vector3D( 1, 0, 0 );
+                light.ambient       = 0.6;
+                light.diffuse       = .7;
+                light.specular      = 60;
 
 			this._view.scene.addChild( light );
 			
@@ -70,15 +68,31 @@ module demos.lights
 			    matTx.lightPicker = lightPicker;
 
 			this._mesh              = new away.entities.Mesh( this._torus, matTx );
+
 			this._view.scene.addChild( this._mesh );
 
 			this._raf = new away.utils.RequestAnimationFrame( this.render , this );
-            this._raf.start();
+
 
 			this.render( 0 );
 			
 		}
-		
+
+        public stopRender( )
+        {
+
+            if ( this._raf.active )
+            {
+                this._raf.stop();
+            }
+            else
+            {
+                this._raf.start();
+            }
+
+        }
+
+
 		public render( dt:number = null ):void
 		{
             this._mesh.rotationY += 1;
@@ -93,4 +107,10 @@ var test: demos.lights.TorusLight;
 window.onload = function ()
 {
     test = new demos.lights.TorusLight();
+}
+
+document.onmousedown = function ()
+{
+    test.stopRender();
+
 }
