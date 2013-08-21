@@ -55,7 +55,7 @@ module demos.lights
 			
 			var light:away.lights.DirectionalLight = new away.lights.DirectionalLight();
                 light.color         = 0x00ff88;
-                light.direction     = new away.geom.Vector3D( 1, 0, 0 );
+                light.direction     = new away.geom.Vector3D( 0, 0, 1 );
                 light.ambient       = 0.6;
                 light.diffuse       = .7;
                 light.specular      = 60;
@@ -71,13 +71,13 @@ module demos.lights
 
 			this._view.scene.addChild( this._mesh );
 
-			this._raf = new away.utils.RequestAnimationFrame( this.render , this );
+			//this._raf = new away.utils.RequestAnimationFrame( this.render , this );
 
 
 			this.render( 0 );
 			
 		}
-
+/*
         public stopRender( )
         {
 
@@ -91,7 +91,7 @@ module demos.lights
             }
 
         }
-
+*/
 
 		public render( dt:number = null ):void
 		{
@@ -102,15 +102,17 @@ module demos.lights
 
 	}
 }
-
+/*
 var test: demos.lights.TorusLight;
 window.onload = function ()
 {
     test = new demos.lights.TorusLight();
 }
-
+*/
+/*
 document.onmousedown = function ()
 {
     test.stopRender();
 
 }
+*/
