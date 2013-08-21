@@ -407,7 +407,7 @@ module away.display3D
 		
 		public static modulo:number = 0;		
 		public setProgramConstantsFromArray( programType:string, firstRegister:number, data:number[], numRegisters:number = -1 )
-		{	
+		{
 			for( var i: number = 0; i < numRegisters; ++i )
 			{
 				var currentIndex:number = i * 4;
@@ -424,15 +424,24 @@ module away.display3D
 		
 		public setGLSLProgramConstantsFromMatrix( locationName:string, matrix:away.geom.Matrix3D, transposedMatrix:boolean = false ) 
 		{
+			console.log( "======= setGLSLProgramConstantsFromMatrix ======= " )
+			console.log( "locationName : " + locationName );
+			console.log( "matrix : " + matrix.rawData );
+			console.log( "transposedMatrix : " + transposedMatrix );
+			console.log( "================================================= \n" )
 			var location:WebGLUniformLocation = this._gl.getUniformLocation( this._currentProgram.glProgram, locationName );
 			this._gl.uniformMatrix4fv( location, !transposedMatrix, new Float32Array( matrix.rawData ) );
 		}
 		
 		public setGLSLProgramConstantsFromArray( locationName:string, data:number[], startIndex:number = 0 ) 
 		{
+			console.log( "======= setGLSLProgramConstantsFromArray ======= " )
+			console.log( "locationName : " + locationName );
+			console.log( "data : " + data );
+			console.log( "startIndex : " + startIndex );
+			console.log( "================================================ \n" )
 			var location:WebGLUniformLocation = this._gl.getUniformLocation( this._currentProgram.glProgram, locationName );
 			this._gl.uniform4f( location, data[startIndex], data[startIndex+1], data[startIndex+2], data[startIndex+3] );
-			
 		}
 		
 		public setScissorRectangle( rectangle:away.geom.Rectangle ) 
