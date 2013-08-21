@@ -18,6 +18,8 @@
 ///<reference path="events/Event.ts" />
 ///<reference path="events/EventDispatcher.ts" />
 ///<reference path="events/LightEvent.ts" />
+///<reference path="base/data/Vertex.ts" />
+///<reference path="base/data/UV.ts" />
 ///<reference path="library/assets/IAsset.ts" />
 ///<reference path="events/AssetEvent.ts" />
 ///<reference path="library/assets/NamedAssetBase.ts" />

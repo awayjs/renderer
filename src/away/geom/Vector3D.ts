@@ -84,8 +84,14 @@ module away.geom {
         /**
          * Copies all of vector data from the source Vector3D object into the calling Vector3D object.
          */
-        public copyFrom(src: Vector3D): Vector3D {
-            return new Vector3D(src.x, src.y, src.z, src.w);
+        public copyFrom(src: Vector3D): void{
+
+            this.x = src.x;
+            this.y = src.y;
+            this.z = src.z;
+            this.w = src.w;
+
+            //return new Vector3D(src.x, src.y, src.z, src.w);
         }
 
         /**
@@ -93,9 +99,12 @@ module away.geom {
          * Vector3D object.
          */
         public crossProduct(a: Vector3D): Vector3D {
-            return new Vector3D(this.y * a.z - this.z * a.y,
+            return new Vector3D(
+                this.y * a.z - this.z * a.y,
                 this.z * a.x - this.x * a.z,
-                this.x * a.y - this.y * a.x);
+                this.x * a.y - this.y * a.x,
+                1
+            );
         }
 
         /**
