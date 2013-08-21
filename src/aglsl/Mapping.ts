@@ -12,14 +12,14 @@ module aglsl
 		static agal2glsllut:aglsl.OpLUT[] = [
 			
 			//         s 												flags   dest    a     b 	    mw 	  mh    ndwm  scale dm	  lod
-			new OpLUT( "%dest = %cast(%a);\n", 							0, 		true,	true, false, 	null, null, null, null, null, null ), //mov
-			new OpLUT( "%dest = %cast(%a + %b);\n", 					0, 		true, 	true, true , 	null, null, null, null, null, null ), //add
-			new OpLUT( "%dest = %cast(%a - %b);\n", 					0, 		true, 	true, true , 	null, null, null, null, null, null ), //sub
-			new OpLUT( "%dest = %cast(%a * %b);\n", 					0, 		true, 	true, true , 	null, null, null, null, null, null ), //mul
-			new OpLUT( "%dest = %cast(%a / %b);\n", 					0, 		true, 	true, true , 	null, null, null, null, null, null ), //div
-			new OpLUT( "%dest = %cast(1.0) / %a;\n", 					0, 		true, 	true, false, 	null, null, null, null, null, null ), //rcp
-			new OpLUT( "%dest = %cast(min(%a,%b));\n", 					0, 		true, 	true, true , 	null, null, null, null, null, null ), //min
-			new OpLUT( "%dest = %cast(min(%a,%b));\n", 					0, 		true, 	true, true , 	null, null, null, null, null, null ), //max
+			new OpLUT( "%dest = %cast(%a);\n", 							0, 		true,	true, false, 	null, null, null, null, null, null ), //mov     // 0
+			new OpLUT( "%dest = %cast(%a + %b);\n", 					0, 		true, 	true, true , 	null, null, null, null, null, null ), //add     // 1
+			new OpLUT( "%dest = %cast(%a - %b);\n", 					0, 		true, 	true, true , 	null, null, null, null, null, null ), //sub     // 2
+			new OpLUT( "%dest = %cast(%a * %b);\n", 					0, 		true, 	true, true , 	null, null, null, null, null, null ), //mul     // 3
+			new OpLUT( "%dest = %cast(%a / %b);\n", 					0, 		true, 	true, true , 	null, null, null, null, null, null ), //div     // 4
+			new OpLUT( "%dest = %cast(1.0) / %a;\n", 					0, 		true, 	true, false, 	null, null, null, null, null, null ), //rcp     // 5
+			new OpLUT( "%dest = %cast(min(%a,%b));\n", 					0, 		true, 	true, true , 	null, null, null, null, null, null ), //min     // 6
+			new OpLUT( "%dest = %cast(max(%a,%b));\n", 					0, 		true, 	true, true , 	null, null, null, null, null, null ), //max     // 7
 			new OpLUT( "%dest = %cast(fract(%a));\n", 					0, 		true, 	true, false, 	null, null, null, null, null, null ), //frc
 			new OpLUT( "%dest = %cast(sqrt(abs(%a)));\n",				0, 		true, 	true, false, 	null, null, null, null, null, null ), //sqt
 			new OpLUT( "%dest = %cast(inversesqrt(abs(%a)));\n",		0, 		true, 	true, false, 	null, null, null, null, null, null ), //rsq
