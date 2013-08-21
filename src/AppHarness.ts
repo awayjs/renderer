@@ -11,6 +11,7 @@
 ///<reference path="../tests/aglsl/AssemblerTest.ts"/>
 ///<reference path="../tests/aglsl/AGALCompilerTest.ts"/>
 ///<reference path="../tests/demos/cubes/CubeDemo.ts"/>
+///<reference path="../tests/demos/lights/TorusLight.ts"/>
 
 ///<reference path="../tests/unit/TestSuite.ts"/>
 
@@ -20,7 +21,7 @@ module away
     {
         constructor()
         {
-			new demos.cubes.CubeDemo();
+			new demos.lights.TorusLight();
         }
     }
 }
