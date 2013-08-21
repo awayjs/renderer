@@ -218,8 +218,14 @@ module away.geom
 
             // Initial Tests - OK
 
+            var l : number = sourceMatrix3D.rawData.length;
 
-			this.rawData = sourceMatrix3D.rawData.slice( 0 );
+            for ( var c : number = 0 ; c < l ; c ++ )
+            {
+                this.rawData[c] = sourceMatrix3D.rawData[c];
+            }
+
+			//this.rawData = sourceMatrix3D.rawData.slice( 0 );
 		}
 		
 		public copyRawDataFrom( vector:number[] ) : void //, index:number = 0, transpose:boolean = false )
@@ -227,8 +233,16 @@ module away.geom
 
             // Initial Tests - OK
 
+            var l : number = vector.length;
+
+            for ( var c : number = 0 ; c < l ; c ++ )
+            {
+                this.rawData[c] = vector[c];
+            }
+
 			//TODO fully implement
-			this.rawData = vector.splice(0);
+
+			//this.rawData = vector.splice(0);
 		}
 		
 		public copyRawDataTo( vector:number[], index:number = 0, transpose:boolean = false )
