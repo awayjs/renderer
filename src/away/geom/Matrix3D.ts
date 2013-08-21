@@ -228,21 +228,23 @@ module away.geom
 			//this.rawData = sourceMatrix3D.rawData.slice( 0 );
 		}
 		
-		public copyRawDataFrom( vector:number[] ) : void //, index:number = 0, transpose:boolean = false )
+		public copyRawDataFrom( vector:number[], index:number = 0, transpose:boolean = false ):void
 		{
-
-            // Initial Tests - OK
-
-            var l : number = vector.length;
-
+			if ( transpose )
+            {
+                this.transpose();
+            }
+			
+            var l : number = vector.length - index;
             for ( var c : number = 0 ; c < l ; c ++ )
             {
-                this.rawData[c] = vector[c];
+                this.rawData[c] = vector[c+index];
             }
-
-			//TODO fully implement
-
-			//this.rawData = vector.splice(0);
+			
+			if ( transpose )
+            {
+                this.transpose();
+            }
 		}
 		
 		public copyRawDataTo( vector:number[], index:number = 0, transpose:boolean = false )
