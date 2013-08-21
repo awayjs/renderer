@@ -230,6 +230,7 @@ module away.geom
 		
 		public copyRawDataFrom( vector:number[], index:number = 0, transpose:boolean = false ):void
 		{
+			// Initial Tests - OK
 			if ( transpose )
             {
                 this.transpose();
