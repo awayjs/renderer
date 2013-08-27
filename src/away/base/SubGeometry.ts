@@ -35,15 +35,11 @@ module away.base
 		private _tangentsInvalid:boolean[] = new Array<boolean>( 8 );//= new Vector.<Boolean>(8, true);
 		
 		// buffers:
-
-
-
 		private _vertexBuffer:away.display3D.VertexBuffer3D[] = new Array<away.display3D.VertexBuffer3D>( 8 );//Vector.<VertexBuffer3D> = new Vector.<VertexBuffer3D>(8);
 		private _uvBuffer:away.display3D.VertexBuffer3D[] = new Array<away.display3D.VertexBuffer3D>( 8 );//:Vector.<VertexBuffer3D> = new Vector.<VertexBuffer3D>(8);
 		private _secondaryUvBuffer:away.display3D.VertexBuffer3D[] = new Array<away.display3D.VertexBuffer3D>( 8 );//:Vector.<VertexBuffer3D> = new Vector.<VertexBuffer3D>(8);
 		private _vertexNormalBuffer:away.display3D.VertexBuffer3D[] = new Array<away.display3D.VertexBuffer3D>( 8 );//:Vector.<VertexBuffer3D> = new Vector.<VertexBuffer3D>(8);
 		private _vertexTangentBuffer:away.display3D.VertexBuffer3D[] = new Array<away.display3D.VertexBuffer3D>( 8 );//:Vector.<VertexBuffer3D> = new Vector.<VertexBuffer3D>(8);
-
 
 		// buffer dirty flags, per context:
 		private _vertexBufferContext:away.display3D.Context3D[] = new Array<away.display3D.Context3D>( 8 );//:Vector.<Context3D> = new Vector.<Context3D>(8);
@@ -59,9 +55,7 @@ module away.base
 		 */
 		constructor()
 		{
-
             super();
-
 		}
 		
 		/**
@@ -82,13 +76,14 @@ module away.base
 
 			if (!this._vertexBuffer[contextIndex] || this._vertexBufferContext[contextIndex] != context)
             {
-
                 this._vertexBuffer[contextIndex] = context.createVertexBuffer(this._numVertices, 3);
                 this._vertexBufferContext[contextIndex] = context;
                 this._verticesInvalid[contextIndex] = true;
 
 			}
-			if (this._verticesInvalid[contextIndex]) {
+
+			if (this._verticesInvalid[contextIndex])
+            {
                 this._vertexBuffer[contextIndex].uploadFromArray(this._vertexData, 0, this._numVertices);
                 this._verticesInvalid[contextIndex] = false;
 			}
@@ -106,28 +101,21 @@ module away.base
 			
 			if (this._autoGenerateUVs && this._uvsDirty)
             {
-
-
                 this._uvs = this.pUpdateDummyUVs(this._uvs);
-
             }
 
 			
 			if (!this._uvBuffer[contextIndex] || this._uvBufferContext[contextIndex] != context)
             {
-
                 this._uvBuffer[contextIndex] = context.createVertexBuffer(this._numVertices, 2);
                 this._uvBufferContext[contextIndex] = context;
                 this._uvsInvalid[contextIndex] = true;
-
 			}
 
 			if (this._uvsInvalid[contextIndex])
             {
-
                 this._uvBuffer[contextIndex].uploadFromArray(this._uvs, 0, this._numVertices);
                 this._uvsInvalid[contextIndex] = false;
-
 			}
 			
 			context.setVertexBufferAt(index, this._uvBuffer[contextIndex], 0, away.display3D.Context3DVertexBufferFormat.FLOAT_2);
@@ -143,19 +131,15 @@ module away.base
 			
 			if (!this._secondaryUvBuffer[contextIndex] || this._secondaryUvBufferContext[contextIndex] != context)
             {
-
                 this._secondaryUvBuffer[contextIndex] = context.createVertexBuffer(this._numVertices, 2);
                 this._secondaryUvBufferContext[contextIndex] = context;
                 this._secondaryUvsInvalid[contextIndex] = true;
-
 			}
 
 			if (this._secondaryUvsInvalid[contextIndex])
             {
-
                 this._secondaryUvBuffer[contextIndex].uploadFromArray(this._secondaryUvs, 0, this._numVertices);
                 this._secondaryUvsInvalid[contextIndex] = false;
-
 			}
 			
 			context.setVertexBufferAt(index, this._secondaryUvBuffer[contextIndex], 0, away.display3D.Context3DVertexBufferFormat.FLOAT_2);
@@ -173,18 +157,18 @@ module away.base
 			
 			if (this._autoDeriveVertexNormals && this._vertexNormalsDirty)
             {
-
                 this._vertexNormals = this.pUpdateVertexNormals(this._vertexNormals);
-
             }
 
-			
-			if (!this._vertexNormalBuffer[contextIndex] || this._vertexNormalBufferContext[contextIndex] != context) {
+			if (!this._vertexNormalBuffer[contextIndex] || this._vertexNormalBufferContext[contextIndex] != context)
+            {
                 this._vertexNormalBuffer[contextIndex] = context.createVertexBuffer(this._numVertices, 3);
                 this._vertexNormalBufferContext[contextIndex] = context;
                 this._normalsInvalid[contextIndex] = true;
 			}
-			if (this._normalsInvalid[contextIndex]) {
+
+			if (this._normalsInvalid[contextIndex])
+            {
                 this._vertexNormalBuffer[contextIndex].uploadFromArray(this._vertexNormals, 0, this._numVertices);
                 this._normalsInvalid[contextIndex] = false;
 			}
@@ -204,13 +188,9 @@ module away.base
 			
 			if (this._vertexTangentsDirty)
             {
-
-
                 this._vertexTangents = this.pUpdateVertexTangents(this._vertexTangents);
-
             }
 
-			
 			if (!this._vertexTangentBuffer[contextIndex] || this._vertexTangentBufferContext[contextIndex] != context)
             {
                 this._vertexTangentBuffer[contextIndex] = context.createVertexBuffer(this._numVertices, 3);
@@ -220,10 +200,8 @@ module away.base
 
 			if (this._tangentsInvalid[contextIndex])
             {
-
                 this._vertexTangentBuffer[contextIndex].uploadFromArray( this._vertexTangents, 0, this._numVertices);
                 this._tangentsInvalid[contextIndex] = false;
-
 			}
 
 			context.setVertexBufferAt(index, this._vertexTangentBuffer[contextIndex], 0, away.display3D.Context3DVertexBufferFormat.FLOAT_3);
@@ -231,7 +209,6 @@ module away.base
 		
 		public applyTransformation(transform:away.geom.Matrix3D)
 		{
-
 			super.applyTransformation(transform);
             this.pInvalidateBuffers(this._verticesInvalid);
             this.pInvalidateBuffers(this._normalsInvalid);
@@ -245,31 +222,23 @@ module away.base
 		public clone():away.base.ISubGeometry
 		{
 			var clone:away.base.SubGeometry = new away.base.SubGeometry();
-
-
 			    clone.updateVertexData(this._vertexData.concat());
 			    clone.updateUVData(this._uvs.concat());
 			    clone.updateIndexData(this._indices.concat());
 
 			if (this._secondaryUvs)
             {
-
                 clone.updateSecondaryUVData(this._secondaryUvs.concat());
-
             }
 
 			if (!this._autoDeriveVertexNormals)
             {
-
                 clone.updateVertexNormalData(this._vertexNormals.concat());
-
             }
 
 			if (!this._autoDeriveVertexTangents)
             {
-
                 clone.updateVertexTangentData(this._vertexTangents.concat());
-
             }
 
 			return clone;
@@ -347,35 +316,25 @@ module away.base
 		{
 			if (this._autoDeriveVertexNormals)
             {
-
                 this._vertexNormalsDirty = true;
-
             }
 
 			if (this._autoDeriveVertexTangents)
             {
-
                 this._vertexTangentsDirty = true;
-
             }
 
 			this._faceNormalsDirty = true;
-			
 			this._vertexData = vertices;
-
 			var numVertices:number = vertices.length/3;
 
 			if (numVertices != this._numVertices)
             {
-
                 this.pDisposeAllVertexBuffers();
-
             }
 
 			this._numVertices = numVertices;
-			
 			this.pInvalidateBuffers( this._verticesInvalid );
-			
 			this.pInvalidateBounds();//invalidateBounds();
 		}
 		
@@ -386,9 +345,7 @@ module away.base
 		{
 			if (this._uvsDirty && this._autoGenerateUVs)
             {
-
                 this._uvs = this.pUpdateDummyUVs( this._uvs );
-
             }
 
 			return this._uvs;
@@ -408,9 +365,7 @@ module away.base
 			// normals don't get dirty from this
 			if (this._autoDeriveVertexTangents)
             {
-
                 this._vertexTangentsDirty = true;
-
             }
 
 			this._faceTangentsDirty = true;
@@ -431,9 +386,7 @@ module away.base
 		{
 			if ( this._autoDeriveVertexNormals && this._vertexNormalsDirty)
             {
-
                 this._vertexNormals = this.pUpdateVertexNormals(this._vertexNormals);
-
             }
 
 			return this._vertexNormals;
@@ -461,9 +414,7 @@ module away.base
 		{
 			if (this._autoDeriveVertexTangents && this._vertexTangentsDirty)
             {
-
                 this._vertexTangents = this.pUpdateVertexTangents( this._vertexTangents );
-
             }
 
 			return this._vertexTangents;
@@ -501,15 +452,11 @@ module away.base
 		{
 			if (this._vertexNormalsDirty)
             {
-
                 this._vertexNormals = this.pUpdateVertexNormals( this._vertexNormals);
-
             }
 
 			this.pInvalidateBuffers(this._tangentsInvalid);
-
 			return super.pUpdateVertexTangents(target);
-
 		}
 		
 		public pUpdateDummyUVs(target:number[]):number[]
@@ -521,27 +468,33 @@ module away.base
 		public pDisposeForStage3D(stage3DProxy:away.managers.Stage3DProxy)
 		{
 			var index:number = stage3DProxy._iStage3DIndex;
-			if (this._vertexBuffer[index]) {
+			if (this._vertexBuffer[index])
+            {
                 this._vertexBuffer[index].dispose();
                 this._vertexBuffer[index] = null;
 			}
-			if (this._uvBuffer[index]) {
+			if (this._uvBuffer[index])
+            {
                 this._uvBuffer[index].dispose();
                 this._uvBuffer[index] = null;
 			}
-			if (this._secondaryUvBuffer[index]) {
+			if (this._secondaryUvBuffer[index])
+            {
                 this._secondaryUvBuffer[index].dispose();
                 this._secondaryUvBuffer[index] = null;
 			}
-			if (this._vertexNormalBuffer[index]) {
+			if (this._vertexNormalBuffer[index])
+            {
                 this._vertexNormalBuffer[index].dispose();
                 this._vertexNormalBuffer[index] = null;
 			}
-			if (this._vertexTangentBuffer[index]) {
+			if (this._vertexTangentBuffer[index])
+            {
                 this._vertexTangentBuffer[index].dispose();
                 this._vertexTangentBuffer[index] = null;
 			}
-			if (this._indexBuffer[index]) {
+			if (this._indexBuffer[index])
+            {
                 this._indexBuffer[index].dispose();
                 this._indexBuffer[index] = null;
 			}
@@ -599,7 +552,6 @@ module away.base
 		
 		public cloneWithSeperateBuffers():away.base.SubGeometry
 		{
-
             var obj : any = this.clone();
 			return <away.base.SubGeometry> obj;
 		}

@@ -40,40 +40,31 @@ module away.base
 		{
 			if (this._autoDeriveVertexNormals)
             {
-
                 this._vertexNormalsDirty = true;
-
             }
 
 			if (this._autoDeriveVertexTangents)
             {
-
                 this._vertexTangentsDirty = true;
-
             }
 
-			
 			this._faceNormalsDirty = true;
             this._faceTangentsDirty = true;
             this._isolatedVertexPositionDataDirty = true;
-
             this._vertexData = data;
+
 			var numVertices:number = this._vertexData.length/13;
 
 			if (numVertices != this._pNumVertices)
             {
-
                 this.pDisposeVertexBuffers(this._vertexBuffer);
-
             }
 
 			this._pNumVertices = numVertices;
 			
 			if (this._pNumVertices == 0)
             {
-
                 throw new Error("Bad data: geometry can't have zero triangles");
-
             }
 
 			this.pInvalidateBuffers( this._pVertexDataInvalid );
@@ -88,23 +79,17 @@ module away.base
 			
 			if (contextIndex != this._contextIndex)
             {
-
                 this.pUpdateActiveBuffer(contextIndex);
-
             }
 
 			if (!this._pActiveBuffer || this._activeContext != context)
             {
-
                 this.pCreateBuffer(contextIndex, context);
-
             }
 
 			if ( this._pActiveDataInvalid )
             {
-
                 this.pUploadData(contextIndex);
-
             }
 
 			context.setVertexBufferAt(index, this._pActiveBuffer, 0, away.display3D.Context3DVertexBufferFormat.FLOAT_3);
@@ -118,35 +103,26 @@ module away.base
 			
 			if (this._uvsDirty && this._autoGenerateUVs)
             {
-
 				this._vertexData = this.pUpdateDummyUVs( this._vertexData);
-
                 this.pInvalidateBuffers( this._pVertexDataInvalid );
 			}
 			
 			if (contextIndex != this._contextIndex)
             {
-
                 this.pUpdateActiveBuffer( contextIndex );
 
             }
 
-			
 			if (!this._pActiveBuffer || this._activeContext != context)
             {
-
                 this.pCreateBuffer( contextIndex , context );
-
             }
 
 			if (this._pActiveDataInvalid)
             {
-
                 this.pUploadData( contextIndex );
-
             }
 
-			
 			context.setVertexBufferAt(index, this._pActiveBuffer, 9, away.display3D.Context3DVertexBufferFormat.FLOAT_2);
 
 		}
@@ -158,33 +134,25 @@ module away.base
 			
 			if (contextIndex != this._contextIndex)
             {
-
                 this.pUpdateActiveBuffer( contextIndex );
-
             }
 
 			if (!this._pActiveBuffer || this._activeContext != context)
             {
-
                 this.pCreateBuffer( contextIndex , context );
-
             }
 
 			if ( this._pActiveDataInvalid )
             {
-
                 this.pUploadData( contextIndex );
-
             }
 
-			
 			context.setVertexBufferAt(index, this._pActiveBuffer, 11, away.display3D.Context3DVertexBufferFormat.FLOAT_2);
 
 		}
 		
 		public pUploadData(contextIndex:number)
 		{
-
 			this._pActiveBuffer.uploadFromArray(this._vertexData, 0, this._pNumVertices);
 			this._pVertexDataInvalid[contextIndex] = this._pActiveDataInvalid = false;
 		}
@@ -196,23 +164,17 @@ module away.base
 			
 			if (contextIndex != this._contextIndex)
             {
-
                 this.pUpdateActiveBuffer( contextIndex );
-
             }
 
-			
 			if (!this._pActiveBuffer || this._activeContext != context)
             {
-
                 this.pCreateBuffer( contextIndex , context );
             }
 
 			if (this._pActiveDataInvalid)
             {
-
                 this.pUploadData(contextIndex);
-
             }
 
 			context.setVertexBufferAt(index, this._pActiveBuffer, 3, away.display3D.Context3DVertexBufferFormat.FLOAT_3);
@@ -226,22 +188,17 @@ module away.base
 			
 			if (contextIndex != this._contextIndex)
             {
-
                 this.pUpdateActiveBuffer( contextIndex );
-
             }
 
 			if (!this._pActiveBuffer || this._activeContext != context)
             {
-
                 this.pCreateBuffer( contextIndex , context );
-
             }
 
 			if ( this._pActiveDataInvalid )
             {
                 this.pUploadData(contextIndex);
-
             }
 
 			
@@ -254,7 +211,6 @@ module away.base
 			this._vertexBuffer[contextIndex] = this._pActiveBuffer = context.createVertexBuffer(this._pNumVertices, 13);
 			this._bufferContext[contextIndex] = this._activeContext = context;
 			this._pVertexDataInvalid[contextIndex] = this._pActiveDataInvalid = true;
-
 		}
 		
 		public pUpdateActiveBuffer(contextIndex:number)
@@ -269,23 +225,17 @@ module away.base
 		{
 			if ( this._autoDeriveVertexNormals && this._vertexNormalsDirty)
             {
-
                 this._vertexData = this.pUpdateVertexNormals(this._vertexData);
-
             }
 
 			if (this._autoDeriveVertexTangents && this._vertexTangentsDirty)
             {
-
                 this._vertexData = this.pUpdateVertexTangents(this._vertexData);
-
             }
 
 			if (this._uvsDirty && this._autoGenerateUVs)
             {
-
                 this._vertexData = this.pUpdateDummyUVs( this._vertexData );
-
             }
 
 			return this._vertexData;
@@ -293,19 +243,15 @@ module away.base
 		
 		public pUpdateVertexNormals(target:number[]):number[]
 		{
-
             this.pInvalidateBuffers( this._pVertexDataInvalid);
 			return super.pUpdateVertexNormals(target);
-
 		}
 		
 		public pUpdateVertexTangents(target:number[]):number[]
 		{
 			if (this._vertexNormalsDirty)
             {
-
                 this._vertexData = this.pUpdateVertexNormals( this._vertexData );
-
             }
 
 			this.pInvalidateBuffers( this._pVertexDataInvalid);
@@ -318,10 +264,7 @@ module away.base
 		{
 			if ( this._autoDeriveVertexNormals && this._vertexNormalsDirty)
             {
-
-
                 this._vertexData = this.pUpdateVertexNormals(this._vertexData);
-
             }
 
 			return this._vertexData;
@@ -332,9 +275,7 @@ module away.base
 		{
 			if ( this._autoDeriveVertexTangents && this._vertexTangentsDirty)
             {
-
                 this._vertexData = this.pUpdateVertexTangents( this._vertexData );
-
             }
 
 			return this._vertexData;
@@ -342,12 +283,10 @@ module away.base
 		
 		public get UVData():number[]
 		{
-			if ( this._uvsDirty && this._autoGenerateUVs) {
-
-
+			if ( this._uvsDirty && this._autoGenerateUVs)
+            {
 				this._vertexData = this.pUpdateDummyUVs(this._vertexData);
 				this.pInvalidateBuffers( this._pVertexDataInvalid );
-
 			}
 
 			return this._vertexData;
@@ -355,10 +294,8 @@ module away.base
 		
 		public applyTransformation(transform:away.geom.Matrix3D)
 		{
-
 			super.applyTransformation(transform);
 			this.pInvalidateBuffers( this._pVertexDataInvalid );
-
 		}
 		
 		public scale(scale:number)
@@ -458,7 +395,6 @@ module away.base
 		{
 			super.pInvalidateBuffers(invalid);
 			this._pActiveDataInvalid = true;
-
 		}
 
 		public cloneWithSeperateBuffers():away.base.SubGeometry
@@ -471,16 +407,12 @@ module away.base
 
 			if (!this._autoDeriveVertexNormals)
             {
-
                 clone.updateVertexNormalData(this.stripBuffer(3, 3));
-
             }
 
 			if (!this._autoDeriveVertexTangents)
             {
-
                 clone.updateVertexTangentData(this.stripBuffer(6, 3));
-
             }
 
 			clone.updateUVData(this.stripBuffer(9, 2));
@@ -495,10 +427,8 @@ module away.base
         {
             if (this._isolatedVertexPositionDataDirty || !this._isolatedVertexPositionData)
             {
-
                 this._isolatedVertexPositionData = this.stripBuffer(0, 3);
                 this._isolatedVertexPositionDataDirty = false;
-
             }
 
             return this._isolatedVertexPositionData;
@@ -528,12 +458,9 @@ module away.base
 			
 			for (var v:number = 0; v < this._pNumVertices; ++v)
             {
-
 				for (var k:number = 0; k < numEntries; ++k)
                 {
-
                     data[i++] = this._vertexData[j++];
-
                 }
 
 				j += skip;
@@ -565,36 +492,28 @@ module away.base
 				
 				if (normals && normals.length)
                 {
-
+                   	data[index++] = normals[n++];
 					data[index++] = normals[n++];
 					data[index++] = normals[n++];
-					data[index++] = normals[n++];
-
 				}
                 else
                 {
-
 					data[index++] = 0;
 					data[index++] = 0;
 					data[index++] = 0;
-
 				}
 				
 				if (tangents && tangents.length)
                 {
-
 					data[index++] = tangents[t++];
 					data[index++] = tangents[t++];
 					data[index++] = tangents[t++];
-
 				}
                 else
                 {
-
 					data[index++] = 0;
 					data[index++] = 0;
 					data[index++] = 0;
-
 				}
 				
 				if (uvs && uvs.length)
@@ -604,16 +523,13 @@ module away.base
 					// use same secondary uvs as primary
 					data[index++] = uvs[u++];
 					data[index++] = uvs[u++];
-
 				}
                 else
                 {
-
 					data[index++] = 0;
 					data[index++] = 0;
 					data[index++] = 0;
 					data[index++] = 0;
-
 				}
 			}
 			
