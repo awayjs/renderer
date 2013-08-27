@@ -80,16 +80,12 @@ module away.base
 
 			if (this._autoDeriveVertexNormals)
             {
-
                 this._vertexNormalsDirty = true;
-
             }
 
 			if (this._autoDeriveVertexTangents)
             {
-
                 this._vertexTangentsDirty = true;
-
             }
 
             this._faceNormalsDirty = true;
@@ -101,9 +97,7 @@ module away.base
 		 */
 		public get numTriangles():number
 		{
-
 			return this._numTriangles;
-
 		}
 		
 		/**
@@ -137,12 +131,16 @@ module away.base
 		 */
 		public pUpdateFaceTangents()
 		{
-			var i:number;
-			var index1:number, index2:number, index3:number;
+			var i:number = 0;
+			var index1:number;
+            var index2:number;
+            var index3:number;
 			var len:number = this._indices.length;
-			var ui:number, vi:number;
+			var ui:number;
+            var vi:number;
 			var v0:number;
-			var dv1:number, dv2:number;
+			var dv1:number;
+            var dv2:number;
 			var denom:number;
 			var x0:number, y0:number, z0:number;
 			var dx1:number, dy1:number, dz1:number;
@@ -157,9 +155,7 @@ module away.base
 
             if ( this._faceTangents == null)
             {
-
                 this._faceTangents = new Array<number>( this._indices.length ); //||= new Vector.<Number>(_indices.length, true);
-
             }
 
 			while (i < len)
@@ -207,8 +203,11 @@ module away.base
 		 */
 		private updateFaceNormals()
 		{
-			var i:number, j:number, k:number;
+			var i:number = 0;
+            var j:number = 0;
+            var k:number = 0;
 			var index:number;
+
 			var len:number = this._indices.length;
 			var x1:number, x2:number, x3:number;
 			var y1:number, y2:number, y3:number;
@@ -221,27 +220,19 @@ module away.base
 			var posStride:number = this.vertexStride;
 			var posOffset:number = this.vertexOffset;
 
-
             if ( this._faceNormals == null )
             {
-
                 this._faceNormals = new Array<number>( len );//_faceNormals ||= new Vector.<Number>(len, true);
-
             }
-
 
 			if ( this._useFaceWeights )
             {
-
                 if ( this._faceWeights == null )
                 {
-
                     this._faceWeights = new Array<number>( len / 3 );//_faceWeights ||= new Vector.<Number>(len/3, true);
                 }
-
             }
 
-			
 			while (i < len)
             {
 				index = posOffset + this._indices[i++]*posStride;
@@ -274,9 +265,7 @@ module away.base
 
 					if (w < 1)
                     {
-
                         w = 1;
-
                     }
 
                     this._faceWeights[k++] = w;
@@ -300,13 +289,13 @@ module away.base
 		{
 			if (this._faceNormalsDirty)
             {
-
                 this.updateFaceNormals();
-
             }
 
 			var v1:number;
-			var f1:number = 0, f2:number = 1, f3:number = 2;
+			var f1:number = 0;
+            var f2:number = 1;
+            var f3:number = 2;
 			var lenV:number = this._vertexData.length;
 			var normalStride:number = this.vertexNormalStride;
 			var normalOffset:number = this.vertexNormalOffset;
@@ -328,12 +317,14 @@ module away.base
 				v1 += normalStride;
 			}
 			
-			var i:number, k:number;
+			var i:number = 0;
+            var k:number = 0;
 			var lenI:number = this._indices.length;
 			var index:number;
 			var weight:number;
 			
-			while (i < lenI) {
+			while (i < lenI)
+            {
 				weight = this._useFaceWeights? this._faceWeights[k++] : 1;
 				index = normalOffset + this._indices[i++]*normalStride;
 				target[index++] += this._faceNormals[f1]*weight;
@@ -353,7 +344,8 @@ module away.base
 			}
 			
 			v1 = normalOffset;
-			while (v1 < lenV) {
+			while (v1 < lenV)
+            {
 				var vx:number = target[v1];
 				var vy:number = target[v1 + 1];
 				var vz:number = target[v1 + 2];
@@ -376,12 +368,9 @@ module away.base
 		{
 			if ( this._faceTangentsDirty )
             {
-
                 this.pUpdateFaceTangents()//updateFaceTangents();
-
             }
 
-			
 			var i:number;
 			var lenV:number = this._vertexData.length;
 			var tangentStride:number = this.vertexTangentStride;
@@ -406,15 +395,18 @@ module away.base
 
 			}
 			
-			var k:number;
+			var k:number = 0;
 			var lenI:number = this._indices.length;
 			var index:number;
 			var weight:number;
-			var f1:number = 0, f2:number = 1, f3:number = 2;
+			var f1:number = 0;
+            var f2:number = 1;
+            var f3:number = 2;
 			
 			i = 0;
 			
-			while (i < lenI) {
+			while (i < lenI)
+            {
 				weight =this._useFaceWeights? this._faceWeights[k++] : 1;
 				index = tangentOffset + this._indices[i++]*tangentStride;
 				target[index++] += this._faceTangents[f1]*weight;
@@ -434,7 +426,9 @@ module away.base
 			}
 			
 			i = tangentOffset;
-			while (i < lenV) {
+
+			while (i < lenV)
+            {
 				var vx:number = target[i];
 				var vy:number = target[i + 1];
 				var vz:number = target[i + 2];
@@ -452,7 +446,6 @@ module away.base
 		
 		public dispose()
 		{
-
 			this.pDisposeIndexBuffers(this._indexBuffer);
             this._indices = null;
             this._indexBufferContext = null;
@@ -485,29 +478,21 @@ module away.base
 
 			if (this._numTriangles != numTriangles)
             {
-
                 this.pDisposeIndexBuffers(this._indexBuffer);
-
             }
 
 			this._numTriangles = numTriangles;
-
             this.pInvalidateBuffers(this._indicesInvalid);
-
             this._faceNormalsDirty = true;
 			
 			if (this._autoDeriveVertexNormals)
             {
-
                 this._vertexNormalsDirty = true;
-
             }
 
 			if (this._autoDeriveVertexTangents)
             {
-
                 this._vertexTangentsDirty = true;
-
             }
 
 		}
@@ -520,13 +505,10 @@ module away.base
 		{
 			for (var i:number = 0; i < 8; ++i)
             {
-
 				if (buffers[i])
                 {
-
 					buffers[i].dispose();
 					buffers[i] = null;
-
 				}
 			}
 		}
@@ -539,15 +521,11 @@ module away.base
 		{
 			for (var i:number = 0; i < 8; ++i)
             {
-
 				if (buffers[i])
                 {
-
 					buffers[i].dispose();
 					buffers[i] = null;
-
 				}
-
 			}
 		}
 		
@@ -563,7 +541,6 @@ module away.base
 		public set autoDeriveVertexTangents(value:boolean)
 		{
             this._autoDeriveVertexTangents = value;
-
             this._vertexTangentsDirty = value;
 		}
 		
@@ -576,7 +553,6 @@ module away.base
 		{
 			if (this._faceNormalsDirty)
             {
-
                 this.updateFaceNormals();
             }
 
@@ -591,16 +567,12 @@ module away.base
 		{
 			for (var i:number = 0; i < 8; ++i)
             {
-
                 invalid[i] = true;
-
             }
-
 		}
 		
 		public get UVStride():number
 		{
-
 			throw new away.errors.AbstractMethodError();//AbstractMethodError();
 		}
 		
@@ -668,10 +640,8 @@ module away.base
 		{
 			if (this._parentGeometry)
             {
-
                 var me : any  = this;
                 this._parentGeometry.iInvalidateBounds( <away.base.ISubGeometry> me );
-
             }
 
 		}
@@ -717,10 +687,8 @@ module away.base
 			
 			for (var i:number = offset; i < len; i += stride)
             {
-
 				uvs[i] *= ratioU;
 				uvs[i + 1] *= ratioV;
-
 			}
 
             this._scaleU = scaleU;
@@ -738,7 +706,8 @@ module away.base
 			var offset:number = this.vertexOffset;
 			var stride:number = this.vertexStride;
 			
-			for (var i:number = offset; i < len; i += stride) {
+			for (var i:number = offset; i < len; i += stride)
+            {
 				vertices[i] *= scale;
 				vertices[i + 1] *= scale;
 				vertices[i + 2] *= scale;
@@ -757,7 +726,9 @@ module away.base
 			var normalOffset:number = this.vertexNormalOffset;
 			var tangentOffset:number = this.vertexTangentOffset;
 			var len:number = vertices.length/posStride;
-			var i:number, i1:number, i2:number;
+			var i:number;
+            var i1:number;
+            var i2:number;
 			var vector:away.geom.Vector3D = new away.geom.Vector3D();
 			
 			var bakeNormals:boolean = normals != null;
@@ -766,18 +737,17 @@ module away.base
 			
 			if (bakeNormals || bakeTangents)
             {
-
 				invTranspose = transform.clone();
 				invTranspose.invert();
 				invTranspose.transpose();
-
 			}
 			
 			var vi0:number = posOffset;
 			var ni0:number = normalOffset;
 			var ti0:number = tangentOffset;
 			
-			for (i = 0; i < len; ++i) {
+			for (i = 0; i < len; ++i)
+            {
 				i1 = vi0 + 1;
 				i2 = vi0 + 2;
 				
@@ -792,7 +762,8 @@ module away.base
 				vi0 += posStride;
 				
 				// bake normal
-				if (bakeNormals) {
+				if (bakeNormals)
+                {
 					i1 = ni0 + 1;
 					i2 = ni0 + 2;
 					vector.x = normals[ni0];
@@ -807,7 +778,8 @@ module away.base
 				}
 				
 				// bake tangent
-				if (bakeTangents) {
+				if (bakeTangents)
+                {
 					i1 = ti0 + 1;
 					i2 = ti0 + 2;
 					vector.x = tangents[ti0];
@@ -826,23 +798,19 @@ module away.base
 		public pUpdateDummyUVs(target:number[]):number[]
 		{
 			this._uvsDirty = false;
-			
-			var idx:number, uvIdx:number;
+            var idx:number;
+            var uvIdx:number;
 			var stride:number = this.UVStride;
 			var skip:number = stride - 2;
 			var len:number = this._vertexData.length/this.vertexStride*stride;
 			
 			if (!target)
             {
-
-                target = new Array<number>();//Vector.<Number>();
-
+                target = new Array<number>();
             }
 
-			//target.fixed = false;
 			target.length = len;
-			//target.fixed = true;
-			
+
 			idx = this.UVOffset;
 			uvIdx = 0;
 
@@ -853,7 +821,9 @@ module away.base
 				idx += skip;
 				
 				if (++uvIdx == 3)
+                {
 					uvIdx = 0;
+                }
 			}
 			
 			return target;
