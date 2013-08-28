@@ -416,10 +416,10 @@ module away.primitives
 			dv = v_tile_dim/this._segmentsH;
 			for (i = 0; i <= this._segmentsW; i++) {
 				for (j = 0; j <= this._segmentsH; j++) {
-					data[uidx++] = ( tl0u + i*du )*target.scaleU;
+					data[uidx++] = 1 - ( ( tl0u + i*du )*target.scaleU ) ;
 					data[uidx++] = ( tl0v + (v_tile_dim - j*dv))*target.scaleV;
 					uidx += skip;
-					data[uidx++] = ( tl1u + (u_tile_dim - i*du))*target.scaleU;
+					data[uidx++] = 1 - ( ( tl1u + (u_tile_dim - i*du))*target.scaleU ) ;
 					data[uidx++] = ( tl1v + (v_tile_dim - j*dv))*target.scaleV;
 					uidx += skip;
 				}

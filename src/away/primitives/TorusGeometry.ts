@@ -19,10 +19,10 @@ module away.primitives
 		private _yUp:boolean;
 		private _rawVertexData:number[];
 		private _rawIndices:number[] /*uint*/;
-		private _nextVertexIndex:number;
-		private _currentIndex:number;
-		private _currentTriangleIndex:number;
-		private _numVertices:number;
+		private _nextVertexIndex:number = 0;
+		private _currentIndex:number = 0;
+		private _currentTriangleIndex:number = 0;
+		private _numVertices:number = 0;
 		private _vertexStride:number;
 		private _vertexOffset:number;
 		
@@ -77,26 +77,19 @@ module away.primitives
 
                 if ( target.indexData == null )
                 {
-
                     this._rawIndices = new Array<number>( numTriangles * 3 );
-
                 }
                 else
                 {
-
                     this._rawIndices = target.indexData;
-
                 }
 
-
-			}
+                     			}
             else
             {
-
 				var numVertComponents:number = this._numVertices*this._vertexStride;
                 this._rawVertexData = new Array<number>(numVertComponents);
                 this._rawIndices = new Array<number>(numTriangles*3);
-
                 this.pInvalidateUVs();
 
 			}
@@ -203,16 +196,12 @@ module away.primitives
 			// need to initialize raw array or can be reused?
 			if (target.UVData && numUvs == target.UVData.length)
             {
-
                 data = target.UVData;
-
             }
 			else
             {
-
 				data = new Array<number>( numUvs );
 				this.pInvalidateGeometry();//invalidateGeometry();
-
 			}
 			
 			// current uv component index
@@ -225,7 +214,7 @@ module away.primitives
 				for (i = 0; i <= this._segmentsR; ++i)
                 {
 					// revolution vertex
-					data[currentUvCompIndex++] = ( i/this._segmentsR )*target.scaleU;
+					data[currentUvCompIndex++] = 1 - ( i/this._segmentsR )*target.scaleU;
 					data[currentUvCompIndex++] = ( j/this._segmentsT )*target.scaleV;
 					currentUvCompIndex += skip;
 				}
