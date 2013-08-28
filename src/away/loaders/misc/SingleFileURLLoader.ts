@@ -11,10 +11,8 @@ module away.loaders
 
         constructor ()
         {
-
             super();
             this.initLoader();
-
         }
 
         // Public
@@ -25,9 +23,7 @@ module away.loaders
          */
         public load( req : away.net.URLRequest )
         {
-
             this._loader.load( req );
-
         }
 
         /**
@@ -35,11 +31,8 @@ module away.loaders
          */
         public dispose() : void
         {
-
             this.disposeLoader();
             this._data = null;
-
-
         }
 
         // Get / Set
@@ -50,9 +43,7 @@ module away.loaders
          */
         public get data() : HTMLImageElement
         {
-
             return this._loader.data;
-
         }
         /**
          *
@@ -60,13 +51,10 @@ module away.loaders
          */
         public get dataFormat() : string
         {
-
             return this._loader.dataFormat;
-
         }
         public set dataFormat( value : string )
         {
-
             this._loader.dataFormat = value;
 
         }
@@ -78,15 +66,11 @@ module away.loaders
          */
         private initLoader() : void
         {
-
-
             if ( ! this._loader )
             {
-
                 this._loader = new away.net.URLLoader();
                 this._loader.addEventListener( away.events.Event.COMPLETE , this.onLoadComplete , this );
                 this._loader.addEventListener( away.events.IOErrorEvent.IO_ERROR, this.onLoadError , this );
-
             }
 
         }
@@ -96,17 +80,13 @@ module away.loaders
          */
         private disposeLoader() : void
         {
-
             if ( this._loader )
             {
-
                 this._loader.dispose();
                 this._loader.removeEventListener( away.events.Event.COMPLETE , this.onLoadComplete , this );
                 this._loader.removeEventListener( away.events.IOErrorEvent.IO_ERROR, this.onLoadError , this );
                 this._loader = null
-
             }
-
         }
 
         // Events
@@ -117,9 +97,7 @@ module away.loaders
          */
         private onLoadComplete( event : away.events.Event ) : void
         {
-
             this.dispatchEvent( event );
-
         }
 
         /**
@@ -128,9 +106,7 @@ module away.loaders
          */
         private onLoadError( event : away.events.IOErrorEvent ) : void
         {
-
             this.dispatchEvent( event );
-
         }
 
     }

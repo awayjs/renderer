@@ -22,13 +22,11 @@ module away.loaders
 		private _loadAsRawData  : boolean;
 		private _materialMode   : number;
 		private _data           : any;
-        //private _loader         : ISingleFileTSLoader;
 
         // Static
 
 		// Image parser only parser that is added by default, to save file size.
-        //private static _parsers : Vector.<Class> = Vector.<Class>([ ImageParser ]);
-        private static _parsers : any[] = new Array<any>( away.loaders.ImageParser );/* TODO: Add ImageParser as Default */
+        private static _parsers : any[] = new Array<any>( away.loaders.ImageParser );
 
         public static enableParser(parser : Object ) : void
         {
@@ -113,19 +111,13 @@ module away.loaders
 
 				if (parser)
                 {
-
                     this._parser = parser;
-
                 }
 				
 				if ( ! this._parser )
                 {
-
                     this._parser = this.getParserFromSuffix();
-
                 }
-
-                //console.log( 'SingleFileURLLoader.load._parser: ' + this._parser );
 
 				if (this._parser)
                 {
@@ -137,16 +129,11 @@ module away.loaders
                     {
 
                         case away.loaders.ParserDataFormat.BINARY:
-
                             dataFormat = away.net.URLLoaderDataFormat.BINARY;
-
                             break;
 
-
                         case away.loaders.ParserDataFormat.PLAIN_TEXT:
-
                             dataFormat = away.net.URLLoaderDataFormat.TEXT;
-
                             break;
 
                     }
@@ -158,18 +145,12 @@ module away.loaders
                     {
 
                         case away.loaders.ParserLoaderType.IMG_LOADER:
-
                             loaderType = away.loaders.ParserLoaderType.IMG_LOADER;
-
                             break;
-
 
                         case away.loaders.ParserLoaderType.URL_LOADER:
-
                             loaderType = away.loaders.ParserLoaderType.URL_LOADER;
-
                             break;
-
                     }
 					
 				}
@@ -183,9 +164,6 @@ module away.loaders
 
 				}
 			}
-
-            //console.log( 'SingleFileURLLoader.load.dataFormat:' , dataFormat , 'ParserFormat: ' , this._parser.dataFormat );
-            //console.log( 'SingleFileURLLoader.load.loaderType: ' , loaderType );
 
             var loader : away.loaders.ISingleFileTSLoader = this.getLoader( loaderType );
                 loader.dataFormat = dataFormat;
@@ -206,21 +184,15 @@ module away.loaders
 
             if ( data.constructor === Function ) // TODO: Validate
             {
-
                 data = new data();
-
             }
 
 			if (parser)
             {
-
                 this._parser = parser;
-
             }
 
-			
 			this._req = req;
-			
 			this.parse(data);
 
 		}
@@ -231,7 +203,6 @@ module away.loaders
 		public get parser() : away.loaders.ParserBase
 		{
 			return this._parser;
-
 		}
 		
 		/**
@@ -258,15 +229,11 @@ module away.loaders
             {
 
                 case away.loaders.ParserLoaderType.IMG_LOADER :
-
                     loader = new away.loaders.SingleFileImageLoader();
-
                     break;
 
                 case away.loaders.ParserLoaderType.URL_LOADER:
-
                     loader = new away.loaders.SingleFileURLLoader();
-
                     break;
 
             }
@@ -305,13 +272,7 @@ module away.loaders
             {
 
                 var currentParser : away.loaders.ParserBase = SingleFileLoader._parsers[i];
-
-                //console.log( '------------------------------------------');
-                //console.log( i , currentParser );
-
                 var supportstype : boolean                  = SingleFileLoader._parsers[i].supportsType(this._fileExtension);
-
-                //console.log( 'SingleFileURLLoader.getParserFromSuffix.supportstype' , supportstype );
 
                 if (SingleFileLoader._parsers[i]['supportsType'](this._fileExtension)){
 
@@ -377,20 +338,14 @@ module away.loaders
 			
 			this._data = urlLoader.data;
 
-            //console.log( 'SingleFileURLLoader.handleUrlLoaderComplete url: ', this.url, '   LoadedDataType: ' , typeof this._data );
-			
 			if (this._loadAsRawData)
             {
-
-				// No need to parse this data, which should be returned as is
+                // No need to parse this data, which should be returned as is
 				this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.DEPENDENCY_COMPLETE));
-
-			}
+            }
 			else
             {
-
-				this.parse(this._data);
-
+                this.parse(this._data);
 			}
 		}
 		
@@ -400,8 +355,6 @@ module away.loaders
 		 */
 		private parse(data : any) : void
 		{
-
-            //console.log( 'SingleFileURLLoader.parse' , data );
 
 			// If no parser has been defined, try to find one by letting
 			// all plugged in parsers inspect the actual data.
@@ -435,9 +388,7 @@ module away.loaders
 				
 				if (this._req && this._req.url)
                 {
-
                     this._parser._iFileName = this._req.url;
-
                 }
 
 				this._parser.materialMode=this._materialMode;
@@ -459,7 +410,7 @@ module away.loaders
 		
 		private onParseError(event : away.events.ParserEvent) : void
 		{
-				this.dispatchEvent( event.clone() );
+			this.dispatchEvent( event.clone() );
 		}
 		
 		private onReadyForDependencies(event : away.events.ParserEvent) : void
@@ -469,7 +420,6 @@ module away.loaders
 		
 		private onAssetComplete(event : away.events.AssetEvent) : void
 		{
-            //console.log( 'SingleFileLoader.onAssetComplete' , event );
 			this.dispatchEvent( event.clone() ) ;
 		}
 
@@ -484,7 +434,6 @@ module away.loaders
 		private onParseComplete(event : away.events.ParserEvent) : void
 		{
 
-            //console.log( 'SingleFileLoader.onParseComplete' , event );
 			this.dispatchEvent( new away.events.LoaderEvent( away.events.LoaderEvent.DEPENDENCY_COMPLETE , this.url ) );//dispatch in front of removing listeners to allow any remaining asset events to propagate
 			
 			this._parser.removeEventListener(away.events.ParserEvent.READY_FOR_DEPENDENCIES, this.onReadyForDependencies , this );
