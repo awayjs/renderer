@@ -555,7 +555,7 @@ module away.loaders
 		 */
 		private parseUV(trunk)
 		{
-			if (trunk.length > 3)
+            if (trunk.length > 3)
             {
 				var nTrunk = [];
 				var val:number;
@@ -565,12 +565,12 @@ module away.loaders
 					if (!isNaN(val))
 						nTrunk.push(val);
 				}
-				this._uvs.push(new UV(nTrunk[0], 1 - nTrunk[1]));
-				
+				this._uvs.push(new UV( 1 - nTrunk[0], 1 - nTrunk[1]));
+
 			}
             else
             {
-				this._uvs.push(new UV(parseFloat(trunk[1]), 1 - parseFloat(trunk[2])));
+                this._uvs.push(new UV( 1 - parseFloat(trunk[1]), 1 - parseFloat(trunk[2])));
             }
 
 		}
