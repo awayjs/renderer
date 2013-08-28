@@ -37,7 +37,9 @@ module away.loaders
 
             if ( typeof data == 'string' );
             {
-                return <string> data;
+                var s : string = <string> data;
+                return s.substr(0 , s.length );
+
             }
 
             return null;
