@@ -102,7 +102,7 @@ module away.cameras
 				bottom = this._yMax;
 				// assume unscissored frustum
 				raw[0] = this._pNear/this._xMax;
-				raw[5] = this._pNear/this._yMax;
+                raw[5] = this._pNear/this._yMax;
 				raw[10] = this._pFar/(this._pFar - this._pNear);
 				raw[11] = 1;
 				raw[1] = raw[2] = raw[3] = raw[4] =
@@ -131,9 +131,15 @@ module away.cameras
 					raw[6] = raw[7] = raw[12] = raw[13] = raw[15] = 0;
 				raw[14] = -2*this._pFar*this._pNear/(this._pFar - this._pNear);
 			}
-			
+
+
 			this._pMatrix.copyRawDataFrom( raw );
-			
+
+            //---------------------------------------------------------------------------------
+            // HACK ! - Need to find real solution for flipping scene on Z axis
+            this._pMatrix.appendRotation( 180 , new away.geom.Vector3D( 0 , 0 , 1 ));
+            //---------------------------------------------------------------------------------
+
 			var yMaxFar:number = this._pFar * this._focalLengthInv;
 			var xMaxFar:number = yMaxFar * this._pAspectRatio;
 			
@@ -151,6 +157,8 @@ module away.cameras
 			this._pFrustumCorners[14] = this._pFrustumCorners[17] = this._pFrustumCorners[20] = this._pFrustumCorners[23] = this._pFar;
 			
 			this._pMatrixInvalid = false;
+
+
 		}
 	}
 }
