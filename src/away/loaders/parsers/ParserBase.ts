@@ -460,6 +460,16 @@ module away.loaders {
 
 		}
 
+        /**
+         *
+         * @returns {string}
+         * @private
+         */
+        public _pGetTextData():string
+        {
+            return away.loaders.ParserUtil.toString( this._data);
+        }
+
 	}
 
 }
