@@ -283,11 +283,10 @@
 ///<reference path="managers/RTTBufferManager.ts"/>
 ///<reference path="filters/Filter3DBase.ts"/>
 ///<reference path="render/Filter3DRenderer.ts"/>
-
 ///<reference path="utils/ByteArrayBase.ts"/>
 ///<reference path="utils/ByteArray.ts"/>
 ///<reference path="utils/ByteArrayBuffer.ts"/>
-
+///<reference path="loaders/parsers/utils/ParserUtil.ts"/>
 ///<reference path="../aglsl/Sampler.ts"/>
 ///<reference path="../aglsl/Token.ts"/>
 ///<reference path="../aglsl/Header.ts"/>
