@@ -54,14 +54,13 @@ module away.display3D
 			console.log( "firstIndex: " +  firstIndex );
 			console.log( "numTriangles:" + numTriangles );
 			*/
-			//TODO switch and track flip direction when altering culling mode WIP
 			var location:WebGLUniformLocation = this._gl.getUniformLocation( this._currentProgram.glProgram, "yflip" );
 			this._gl.uniform1f( location, this._yFlip );
 			super.drawTriangles( indexBuffer, firstIndex, numTriangles );
 		}
 		
 		//@override
-		public setCulling( triangleFaceToCull:string ) 
+		public setCulling( triangleFaceToCull:string )
 		{
 			switch( triangleFaceToCull )
 			{
@@ -71,8 +70,6 @@ module away.display3D
 				case Context3DTriangleFace.BACK:
 						this._yFlip = -1;
 					break;
-				default:
-					throw "Unknown Context3DTriangleFace type."; // TODO error
 			}
 			super.setCulling( triangleFaceToCull );
 		}
