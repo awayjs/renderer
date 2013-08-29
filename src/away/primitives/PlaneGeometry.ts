@@ -156,38 +156,23 @@ module away.primitives
 			if (numVertices == target.numVertices)
             {
 
-
                 data = target.vertexData;
-
-
-                //indices = target.indexData || new Vector.<uint>(numIndices, true);
 
                 if ( indices == null )
                 {
-
                     indices = new Array<number>( numIndices );
-
                 }
                 else
                 {
-
                     indices = target.indexData;
-
                 }
-
-
-
-
-
 			}
             else
             {
-
 				data = new Array<number>( numVertices*stride );//new Vector.<Number>(numVertices*stride, true);
 				indices = new Array<number>( numIndices );//new Vector.<uint>(numIndices, true);
 
                 this.pInvalidateUVs();//invalidateUVs();
-
 			}
 			
 			numIndices = 0;
@@ -205,31 +190,24 @@ module away.primitives
 					data[index++] = x;
 					if (this._yUp)
                     {
-
 						data[index++] = 0;
 						data[index++] = y;
-
 					}
                     else
                     {
-
 						data[index++] = y;
 						data[index++] = 0;
-
 					}
 					
 					data[index++] = 0;
 
 					if (this._yUp)
                     {
-
 						data[index++] = 1;
 						data[index++] = 0;
-
 					}
                     else
                     {
-
 						data[index++] = 0;
 						data[index++] = -1;
 					}
@@ -246,26 +224,20 @@ module away.primitives
 
 						for (var i:number = 0; i < 3; ++i)
                         {
-
 							data[index] = data[index - stride];
 							++index;
-
 						}
 
 						for (i = 0; i < 3; ++i)
                         {
-
 							data[index] = -data[index - stride];
 							++index;
-
 						}
 
 						for (i = 0; i < 3; ++i)
                         {
-
 							data[index] = -data[index - stride];
 							++index;
-
 						}
 
 						index += skip;
@@ -317,24 +289,18 @@ module away.primitives
 			
 			if (this._doubleSided)
             {
-
                 numUvs *= 2;
-
             }
 
 			
 			if (target.UVData && numUvs == target.UVData.length)
             {
-
                 data = target.UVData;
-
             }
 			else
             {
-
 				data = new Array<number>( numUvs );//Vector.<Number>(numUvs, true);
                 this.pInvalidateGeometry()
-
 			}
 			
 			var index:number = target.UVOffset;
@@ -344,18 +310,15 @@ module away.primitives
 
 				for (var xi:number = 0; xi <= this._segmentsW; ++xi)
                 {
-
-					data[index++] = ( (xi/this._segmentsW)*target.scaleU );
-					data[index++] = (yi/this._segmentsH)*target.scaleV;
+					data[index++] = (1 - (xi/this._segmentsW)*target.scaleU );
+					data[index++] = (1 - yi/this._segmentsH)*target.scaleV;
 					index += skip;
 					
 					if (this._doubleSided)
                     {
-
-						data[index++] = ( (xi/this._segmentsW)*target.scaleU ) ;
-						data[index++] = ( yi/this._segmentsH)*target.scaleV;
+						data[index++] = (1 - (xi/this._segmentsW)*target.scaleU ) ;
+						data[index++] = ( 1 - yi/this._segmentsH)*target.scaleV;
 						index += skip;
-
 					}
 				}
 			}
