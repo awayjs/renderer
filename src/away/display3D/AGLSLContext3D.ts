@@ -10,7 +10,7 @@ module away.display3D
 	export class AGLSLContext3D extends Context3D
 	{
 		
-		private _yFlip:number;
+		private _yFlip:number = -1;
 		
 		constructor( canvas: HTMLCanvasElement )
 		{
