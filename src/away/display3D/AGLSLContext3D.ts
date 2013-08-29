@@ -10,6 +10,8 @@ module away.display3D
 	export class AGLSLContext3D extends Context3D
 	{
 		
+		private _yFlip:number;
+		
 		constructor( canvas: HTMLCanvasElement )
 		{
 			super( canvas );
@@ -54,8 +56,50 @@ module away.display3D
 			*/
 			//TODO switch and track flip direction when altering culling mode WIP
 			var location:WebGLUniformLocation = this._gl.getUniformLocation( this._currentProgram.glProgram, "yflip" );
-			this._gl.uniform1f( location, -1.0 );
+			this._gl.uniform1f( location, this._yFlip );
 			super.drawTriangles( indexBuffer, firstIndex, numTriangles );
 		}
+		
+		//@override
+		public setCulling( triangleFaceToCull:string ) 
+		{
+			switch( triangleFaceToCull )
+			{
+				case Context3DTriangleFace.FRONT:
+						this._yFlip = 1;
+					break
+				case Context3DTriangleFace.BACK:
+						this._yFlip = -1;
+					break;
+				default:
+					throw "Unknown Context3DTriangleFace type."; // TODO error
+			}
+			super.setCulling( triangleFaceToCull );
+		}
+		/*
+			
+			if( triangleFaceToCull == Context3DTriangleFace.NONE )
+			{
+				this._gl.disable( this._gl.CULL_FACE );
+			}
+			else
+			{
+				this._gl.enable( this._gl.CULL_FACE );
+				switch( triangleFaceToCull )
+				{
+					case Context3DTriangleFace.FRONT:
+							this._gl.cullFace( this._gl.FRONT );
+						break
+					case Context3DTriangleFace.BACK:
+							this._gl.cullFace( this._gl.BACK );
+						break;
+					case Context3DTriangleFace.FRONT_AND_BACK:
+							this._gl.cullFace( this._gl.FRONT_AND_BACK );
+						break;
+					default:
+						throw "Unknown Context3DTriangleFace type."; // TODO error
+				}
+			}
+		}*/
 	}
 }
