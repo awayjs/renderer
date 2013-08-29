@@ -76,30 +76,5 @@ module away.display3D
 			}
 			super.setCulling( triangleFaceToCull );
 		}
-		/*
-			
-			if( triangleFaceToCull == Context3DTriangleFace.NONE )
-			{
-				this._gl.disable( this._gl.CULL_FACE );
-			}
-			else
-			{
-				this._gl.enable( this._gl.CULL_FACE );
-				switch( triangleFaceToCull )
-				{
-					case Context3DTriangleFace.FRONT:
-							this._gl.cullFace( this._gl.FRONT );
-						break
-					case Context3DTriangleFace.BACK:
-							this._gl.cullFace( this._gl.BACK );
-						break;
-					case Context3DTriangleFace.FRONT_AND_BACK:
-							this._gl.cullFace( this._gl.FRONT_AND_BACK );
-						break;
-					default:
-						throw "Unknown Context3DTriangleFace type."; // TODO error
-				}
-			}
-		}*/
 	}
 }
