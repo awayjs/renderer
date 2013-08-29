@@ -389,7 +389,7 @@ module away.primitives
 					for (i = 0; i <= this._pSegmentsW; ++i)
                     {
 						// revolution vertex
-						UVData[currentUvCompIndex++] = ( i/this._pSegmentsW )*target.scaleU;
+						UVData[currentUvCompIndex++] = 1 - ( ( i/this._pSegmentsW )*target.scaleU ) ;
 						UVData[currentUvCompIndex++] = ( j/this._pSegmentsH )*target.scaleV;
 						currentUvCompIndex += skip;
 					}
