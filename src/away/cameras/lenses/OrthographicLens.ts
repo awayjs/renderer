@@ -111,7 +111,9 @@ module away.cameras
 				raw[6] = raw[7] = raw[8] = raw[9] = raw[11] = 0;
 				raw[15] = 1;
 			}
-			
+
+
+
 			this._pFrustumCorners[0] = this._pFrustumCorners[9] = this._pFrustumCorners[12] = this._pFrustumCorners[21] = left;
 			this._pFrustumCorners[3] = this._pFrustumCorners[6] = this._pFrustumCorners[15] = this._pFrustumCorners[18] = right;
 			this._pFrustumCorners[1] = this._pFrustumCorners[4] = this._pFrustumCorners[13] = this._pFrustumCorners[16] = top;
@@ -120,7 +122,12 @@ module away.cameras
 			this._pFrustumCorners[14] = this._pFrustumCorners[17] = this._pFrustumCorners[20] = this._pFrustumCorners[23] = this._pFar;
 			
 			this._pMatrix.copyRawDataFrom(raw);
-			
+
+            //---------------------------------------------------------------------------------
+            // HACK ! - Need to find real solution for flipping scene on Z axis
+            this._pMatrix.appendRotation( 180 , new away.geom.Vector3D( 0 , 0 , 1 ));
+            //---------------------------------------------------------------------------------
+
 			this._pMatrixInvalid = false;
 		}
 	}
