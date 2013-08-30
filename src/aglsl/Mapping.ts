@@ -29,7 +29,7 @@ module aglsl
 			new OpLUT( "%dest = %cast(exp2(%a));\n",					0, 		true, 	true, false, 	null, null, null, null, null, null ), //exp
 			
 			//         s 												flags  	dest    a     b 	    mw 	  mh    ndwm  scale dm	  lod
-			new OpLUT( "%dest = %cast(normalize(%a));\n",				0, 	   	true, 	true, false, 	null, null, true, null, null, null ), //nrm
+			new OpLUT( "%dest = %cast(normalize(vec3( %a ) ));\n",				0, 	   	true, 	true, false, 	null, null, true, null, null, null ), //nrm
 			new OpLUT( "%dest = %cast(sin(%a));\n"		,				0, 	   	true, 	true, false, 	null, null, null, null, null, null ), //sin
 			new OpLUT( "%dest = %cast(cos(%a));\n"		,				0, 	   	true, 	true, false, 	null, null, null, null, null, null ), //cos
 			new OpLUT( "%dest = %cast(cross(vec3(%a),vec3(%b)));\n",	0, 	   	true, 	true, true, 	null, null, true, null, null, null ), //crs
