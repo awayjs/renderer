@@ -155,7 +155,7 @@ module away.containers
 			
 			this.pInvalidateSceneTransform();
 			
-			var i:number;
+			var i:number = 0;
 			var len:number = this._children.length;
 			
 			while( i < len )
