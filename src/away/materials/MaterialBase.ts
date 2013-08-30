@@ -670,7 +670,7 @@ module away.materials
          */
         public iUpdateMaterial(context:away.display3D.Context3D) // ARCANE
         {
-            throw new away.errors.AbstractMethodError();
+            //throw new away.errors.AbstractMethodError();
         }
 
         /**
