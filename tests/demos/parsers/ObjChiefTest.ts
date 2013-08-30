@@ -40,18 +40,18 @@ module demos.parsers
             this.view.camera.z          = -50;
             this.view.camera.y          = 20;
             this.view.camera.lens.near  = 0.1;
-            this.view.backgroundColor   = 0x0E0E10;
+            this.view.backgroundColor   = 0x2c2c32;//0E0E10;
 
             //this.view.backgroundColor   = 0xFF0000;
             this.raf                    = new away.utils.RequestAnimationFrame( this.render , this );
 
             this.light                  = new away.lights.DirectionalLight();
-            this.light.color            = 0x683019;
+            this.light.color            = 0x974523;//683019;
             this.light.direction        = new away.geom.Vector3D( 1 , 0 ,0 );
-            this.light.ambient          = 0.3;//0.05;//.4;
-            this.light.ambientColor     = 0x4F6877;//313D51;
-            this.light.diffuse          = 1;
-            this.light.specular         = 1;
+            this.light.ambient          = 0.4;//0.05;//.4;
+            this.light.ambientColor     = 0x7196ac;//4F6877;//313D51;
+            this.light.diffuse          = 1.2;
+            this.light.specular         = 1.1;
             //this.light.x                = 800;
             //this.light.y                = 800;
 
