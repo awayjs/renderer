@@ -72,11 +72,10 @@ module away.loaders
             if ( this.data  instanceof HTMLImageElement )
             {
 
-                asset = <away.textures.Texture2DBase> new away.textures.HTMLImageElementTexture( <HTMLImageElement> this.data );
+                asset = <away.textures.Texture2DBase> new away.textures.HTMLImageElementTexture( <HTMLImageElement> this.data , false );
 
                 if ( away.utils.TextureUtils.isHTMLImageElementValid( <HTMLImageElement> this.data ) )
                 {
-
 
                     this._pFinalizeAsset( <away.library.IAsset> asset , this._iFileName );
 
