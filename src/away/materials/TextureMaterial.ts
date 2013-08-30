@@ -22,7 +22,7 @@ module away.materials
 		 * @param repeat Indicates whether the texture should be tiled when sampled. Defaults to true.
 		 * @param mipmap Indicates whether or not any used textures should use mipmapping. Defaults to true.
 		 */
-		constructor(texture:away.textures.Texture2DBase = null, smooth:boolean = true, repeat:boolean = false, mipmap:boolean = true)
+		constructor(texture:away.textures.Texture2DBase = null, smooth:boolean = true, repeat:boolean = false, mipmap:boolean = false)
 		{
 			super();
 
@@ -74,6 +74,7 @@ module away.materials
 			this.colorTransform.alphaMultiplier = value;
 
             this._pScreenPass.preserveAlpha = this.getRequiresBlending();
+
             this._pScreenPass.setBlendMode( this.getBlendMode() == away.display.BlendMode.NORMAL && this.getRequiresBlending() ? away.display.BlendMode.LAYER : this.getBlendMode() );
 
 		}
