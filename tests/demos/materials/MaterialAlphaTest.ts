@@ -22,6 +22,7 @@ module demos.materials
         private loadedMeshMaterial     : away.materials.TextureMaterial;
         private multiMat: away.materials.TextureMultiPassMaterial;
         private light   : away.lights.DirectionalLight;
+        private lightB  : away.lights.DirectionalLight;
         private t800M   : away.entities.Mesh;
 
         private aValues : number[] = [0 , .1,.5 ,.8 ,.9 ,.99,1];
@@ -38,13 +39,23 @@ module demos.materials
 
             this.light                  = new away.lights.DirectionalLight();
             this.light.color            = 0xFFFFFF;
-            this.light.direction        = new away.geom.Vector3D( 1 , 0 ,0 );
+            this.light.direction        = new away.geom.Vector3D( 1 , 1 ,0 );
             this.light.ambient          = 0;//0.05;//.4;
             this.light.ambientColor     = 0xFFFFFF;
             this.light.diffuse          = 1;
             this.light.specular         = 1;
 
+            this.lightB                  = new away.lights.DirectionalLight();
+            this.lightB.color            = 0xFF0000;
+            this.lightB.direction        = new away.geom.Vector3D( -1 , 0 ,1 );
+            this.lightB.ambient          = 0;//0.05;//.4;
+            this.lightB.ambientColor     = 0xFFFFFF;
+            this.lightB.diffuse          = 1;
+            this.lightB.specular         = 1;
+
             this.view.scene.addChild( this.light );
+            this.view.scene.addChild( this.lightB );
+
             this.view.backgroundColor   = 0x222222;
 
             away.library.AssetLibrary.enableParser( away.loaders.OBJParser ) ;
@@ -147,7 +158,7 @@ module demos.materials
                         var tx  : away.textures.HTMLImageElementTexture     = <away.textures.HTMLImageElementTexture> away.library.AssetLibrary.getAsset( d.name );
 
                         // Light Picker
-                        this.staticLightPicker                              = new away.materials.StaticLightPicker( [this.light] );
+                        this.staticLightPicker                              = new away.materials.StaticLightPicker( [this.light , this.lightB ] );
 
                         // Material for loaded mesh
                         this.loadedMeshMaterial                             = new away.materials.TextureMaterial( tx, true, true, false );
@@ -177,8 +188,9 @@ module demos.materials
                         this.torusColorMaterial.lightPicker                 = this.staticLightPicker ;
                         this.torusColorMaterial.alpha                       = 1;
 
+                        var cube : away.primitives.CubeGeometry             = new away.primitives.CubeGeometry( 300 , 300 , 300 , 20 , 20 , 20 );
                         // Torus Mesh ( right )
-                        torusMesh                                         = new away.entities.Mesh( torus , this.torusColorMaterial );
+                        torusMesh                                         = new away.entities.Mesh( cube , this.torusColorMaterial );
                         torusMesh.rotationX                               = 90;
                         torusMesh.x                                       = -600;
                         this.meshes.push( torusMesh );
