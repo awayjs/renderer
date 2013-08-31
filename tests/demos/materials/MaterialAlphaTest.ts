@@ -60,7 +60,7 @@ module demos.materials
 
             away.library.AssetLibrary.enableParser( away.loaders.OBJParser ) ;
 
-            this.token = away.library.AssetLibrary.load(new away.net.URLRequest('T800.obj') );
+            this.token = away.library.AssetLibrary.load(new away.net.URLRequest('platonic.obj') );
             this.token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE , this.onResourceComplete , this );
 
             this.token = away.library.AssetLibrary.load(new away.net.URLRequest('dots.png') );
@@ -127,6 +127,8 @@ module demos.materials
 
                         var mesh : away.entities.Mesh = <away.entities.Mesh> away.library.AssetLibrary.getAsset( d.name );
 
+                        this.t800M = mesh;
+
                         if (d.name == 'Mesh_g0')
                         {
                             this.t800M = mesh;
@@ -165,6 +167,11 @@ module demos.materials
                         this.loadedMeshMaterial.lightPicker                 = this.staticLightPicker
                         this.loadedMeshMaterial.alpha                       = .25;
 
+                        if ( this.t800M )
+                        {
+                            this.t800M.material = this.loadedMeshMaterial;
+
+                        }
                         // MultiMaterial
                         this.multiMat                                       = new away.materials.TextureMultiPassMaterial( tx, true, true, false );
                         this.multiMat.lightPicker                           = this.staticLightPicker
