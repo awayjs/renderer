@@ -126,7 +126,7 @@ module demos.materials
                     case away.library.AssetType.MESH:
 
                         var mesh : away.entities.Mesh = <away.entities.Mesh> away.library.AssetLibrary.getAsset( d.name );
-
+							
                         this.t800M = mesh;
 
                         if (d.name == 'Mesh_g0')
@@ -143,7 +143,7 @@ module demos.materials
 
                         if ( this.loadedMeshMaterial )
                             mesh.material = this.loadedMeshMaterial;
-
+							mesh.material.bothSides = true;
                         this.view.scene.addChild( mesh );
                         this.meshes.push( mesh );
 
@@ -166,7 +166,8 @@ module demos.materials
                         this.loadedMeshMaterial                             = new away.materials.TextureMaterial( tx, true, true, false );
                         this.loadedMeshMaterial.lightPicker                 = this.staticLightPicker
                         this.loadedMeshMaterial.alpha                       = .25;
-
+						this.loadedMeshMaterial.bothSides = true;
+						
                         if ( this.t800M )
                         {
                             this.t800M.material = this.loadedMeshMaterial;
@@ -182,7 +183,8 @@ module demos.materials
                         // Torus Texture Material
                         this.torusTextureMaterial                           = new away.materials.TextureMaterial( tx, true, true, false );
                         this.torusTextureMaterial.lightPicker               = this.staticLightPicker ;
-
+						this.torusTextureMaterial.bothSides					= true;
+						
                         // Torus Mesh ( left )
                         var torusMesh : away.entities.Mesh                  = new away.entities.Mesh( torus , this.torusTextureMaterial );
                             torusMesh.rotationX                             = 90;
@@ -194,7 +196,8 @@ module demos.materials
                         this.torusColorMaterial                             = new away.materials.ColorMaterial( 0x0090ff );
                         this.torusColorMaterial.lightPicker                 = this.staticLightPicker ;
                         this.torusColorMaterial.alpha                       = 1;
-
+						this.torusColorMaterial.bothSides					= true;
+						
                         var cube : away.primitives.CubeGeometry             = new away.primitives.CubeGeometry( 300 , 300 , 300 , 20 , 20 , 20 );
                         // Torus Mesh ( right )
                         torusMesh                                         = new away.entities.Mesh( cube , this.torusColorMaterial );
