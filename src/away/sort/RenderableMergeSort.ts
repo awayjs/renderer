@@ -22,7 +22,8 @@ module away.sort
 		private mergeSortByDepth( head:away.data.RenderableListItem ):away.data.RenderableListItem
 		{
 			var headB:away.data.RenderableListItem;
-			var fast:away.data.RenderableListItem, slow:away.data.RenderableListItem;
+			var fast:away.data.RenderableListItem;
+			var slow:away.data.RenderableListItem;
 			
 			if( !head || !head.next )
 			{
@@ -116,7 +117,7 @@ module away.sort
 			var result:away.data.RenderableListItem;
 			var curr:away.data.RenderableListItem;
 			var l:away.data.RenderableListItem;
-			var cmp:number;
+			var cmp:number = 0;
 			
 			if (!head)
 				return headB;
