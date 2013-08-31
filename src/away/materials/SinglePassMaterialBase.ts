@@ -10,7 +10,7 @@ module away.materials
 	export class SinglePassMaterialBase extends away.materials.MaterialBase
 	{
 		public _pScreenPass:away.materials.SuperShaderPass;
-		private _alphaBlending:boolean;
+		private _alphaBlending:boolean = false ;
 		
 		/**
 		 * Creates a new SinglePassMaterialBase object.
@@ -146,7 +146,16 @@ module away.materials
 
         public getRequiresBlending() : boolean
         {
-            return super.getRequiresBlending() || this._alphaBlending || ( this._pScreenPass.colorTransform && this._pScreenPass.colorTransform.alphaMultiplier < 1);
+
+            var ct : away.geom.ColorTransform = this._pScreenPass.colorTransform;
+
+            if ( ct )
+            {
+                return ( this._pBlendMode != away.display.BlendMode.NORMAL ) || this._alphaBlending || ( ct.alphaMultiplier < 1);
+            }
+            return ( this._pBlendMode != away.display.BlendMode.NORMAL ) || this._alphaBlending ;
+
+            //return super.getRequiresBlending() || this._alphaBlending || ( this._pScreenPass.colorTransform && this._pScreenPass.colorTransform.alphaMultiplier < 1);
 
         }
 

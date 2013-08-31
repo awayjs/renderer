@@ -70,7 +70,7 @@ module away.materials
 		 */
 		public get requiresBlending():boolean
 		{
-			return super.getRequiresBlending() || this._diffuseAlpha < 1;
+			return this.getRequiresBlending() || this._diffuseAlpha < 1;
 		}
 	}
 }
