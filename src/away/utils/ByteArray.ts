@@ -27,7 +27,57 @@ module away.utils
 		{
 			this.ensureSpace( n + this.position );
 		}
-		
+
+        public setArrayBuffer( aBuffer : ArrayBuffer ) : void
+        {
+
+            /*
+            var v2 : Int8Array = new Int8Array( aBuffer );
+
+            for (var i = 0; i < v2.length - 1 ; i++)
+            {
+                this.writeByte( v2[ i ] );
+            }
+            //*/
+            /*
+            this.maxlength = aBuffer.byteLength + 4;
+            this.arraybytes = new ArrayBuffer( this.maxlength );
+
+            this.length = aBuffer.byteLength;
+
+            for (var i = 0; i < aBuffer.byteLength; i++)
+            {
+                this.arraybytes [ i ] = aBuffer[ i  ];
+            }
+            //*/
+            //bytes.setArrayBuffer( result );
+
+            /*
+            this.maxlength += 4;
+
+            this.maxlength = this.length = aBuffer.byteLength;
+            this.maxlength += 4;
+
+            this.maxlength = this.length = aBuffer.byteLength;
+            this.maxlength += 4;
+
+            this.arraybytes = aBuffer;
+            */
+
+            //*
+            this.maxlength = this.length = aBuffer.byteLength;
+            //this.maxlength += 4;
+
+            this.arraybytes = aBuffer;
+            //*/
+
+        }
+
+        public getBytesAvailable() : number
+        {
+            return ( this.arraybytes.byteLength ) - ( this.position ) ;
+        }
+
 		public ensureSpace( n:number )
 		{
 			if ( n > this.maxlength )
@@ -59,9 +109,31 @@ module away.utils
 			{
 				throw "ByteArray out of bounds read. Positon="+this.position+", Length="+this.length; 
 			}
-			var view = new Int8Array(this.arraybytes); 
-			return view[ this.position++ ];                
+			var view = new Int8Array(this.arraybytes);
+			return view[ this.position++ ];
 		}
+
+        public readBytes( bytes : ByteArray , start : number = 0 , end : number = 0 )
+        {
+
+            var uintArr : Uint8Array = new Uint8Array( this.arraybytes );
+
+            if ( end == start || end <= start )
+            {
+                end = uintArr.length;
+            }
+
+            var result      : ArrayBuffer   = new ArrayBuffer( end - start );
+            var resultArray : Uint8Array    = new Uint8Array(result);
+
+            for (var i = 0; i < resultArray.length; i++)
+            {
+                resultArray[ i ] = uintArr[ i + start ];
+            }
+
+            bytes.setArrayBuffer( result );
+
+        }
 		
 		public writeUnsignedByte( b:number )
 		{                    
@@ -153,12 +225,33 @@ module away.utils
 				this.length = this.position;
 			}
 		}
-		
+
+
+        public readUnsignedInteger()
+        {
+
+            if ( this.position > this.length + 4 )
+            {
+                throw "ByteArray out of bounds read. Position=" + this.position + ", Length=" + this.length;
+            }
+
+            var view = new Uint32Array( this.unalignedarraybytestemp, 0, 1 );
+            var view2 = new Uint8Array( this.arraybytes,this.position, 4 );
+            var view3 = new Uint8Array( this.unalignedarraybytestemp, 0, 4 );
+            view3.set( view2 );
+            this.position += 4;
+            return view[0];
+
+        }
+
+
+
 		public readUnsignedInt()
-		{     
+		{
+
 			if ( this.position > this.length + 4 )
 			{
-				throw "ByteArray out of bounds read. Positon=" + this.position + ", Length=" + this.length;
+				throw "ByteArray out of bounds read. Position=" + this.position + ", Length=" + this.length;
 			}
 			if ( ( this.position & 3 ) == 0 )
 			{
