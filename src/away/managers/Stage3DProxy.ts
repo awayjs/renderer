@@ -77,11 +77,9 @@ module away.managers
 
 			this._viewportDirty = true;
 
-            // TODO - reinstate optimisation after testing
 			//if (!this.hasEventListener(away.events.Stage3DEvent.VIEWPORT_UPDATED))
 				//return;
 			
-			//TODO: investigate bug causing coercion error
 			//if (!_viewportUpdated)
 			this._viewportUpdated = new away.events.Stage3DEvent(away.events.Stage3DEvent.VIEWPORT_UPDATED);
 			this.dispatchEvent(this._viewportUpdated);
@@ -220,17 +218,16 @@ module away.managers
 		{
 			if (this._renderTarget === target && surfaceSelector == this._renderSurfaceSelector && this._enableDepthAndStencil == enableDepthAndStencil)
             {
-
                 return;
-
             }
 
 			this._renderTarget = target;
             this._renderSurfaceSelector = surfaceSelector;
             this._enableDepthAndStencil = enableDepthAndStencil;
 
-
             away.Debug.throwPIR( 'Stage3DProxy' , 'setRenderTarget' , 'away.display3D.Context3D: setRenderToTexture , setRenderToBackBuffer');
+
+            // todo : implement
 
             /*
 
@@ -268,14 +265,6 @@ module away.managers
                                     ( this._color & 0xff00 ) >>> 8, // <----------------|
                                       this._color & 0xff ) ;
 
-            /*
-            this._iContext3D.clear(
-                ((this._color >> 16) & 0xff)/255.0,
-                ((this._color >> 8) & 0xff)/255.0,
-                (this._color & 0xff)/255.0,
-                ((this._color >> 24) & 0xff)/255.0);
-			*/
-
 			this._bufferClear = true;
 		}
 		
@@ -310,14 +299,13 @@ module away.managers
 		{
 			super.addEventListener(type, listener, target ) ;//useCapture, priority, useWeakReference);
 
-            away.Debug.throwPIR( 'Stage3DProxy' , 'addEventListener' ,  'EnterFrame, ExitFrame');
+            //away.Debug.throwPIR( 'Stage3DProxy' , 'addEventListener' ,  'EnterFrame, ExitFrame');
 
-            if ((type == away.events.Event.ENTER_FRAME || type == away.events.Event.EXIT_FRAME) ){//&& ! this._frameEventDriver.hasEventListener(Event.ENTER_FRAME)){
+            //if ((type == away.events.Event.ENTER_FRAME || type == away.events.Event.EXIT_FRAME) ){//&& ! this._frameEventDriver.hasEventListener(Event.ENTER_FRAME)){
 
                 //_frameEventDriver.addEventListener(Event.ENTER_FRAME, onEnterFrame, useCapture, priority, useWeakReference);
-                // TODO - Start RequestAnimationFrame
 
-            }
+            //}
 
             /* Original code
             if ((type == Event.ENTER_FRAME || type == Event.EXIT_FRAME) && ! _frameEventDriver.hasEventListener(Event.ENTER_FRAME)){
@@ -342,18 +330,18 @@ module away.managers
 		{
 			super.removeEventListener(type, listener, target);
 
-            away.Debug.throwPIR( 'Stage3DProxy' , 'removeEventListener' ,  'EnterFrame, ExitFrame');
+            //away.Debug.throwPIR( 'Stage3DProxy' , 'removeEventListener' ,  'EnterFrame, ExitFrame');
 
+            /*
 			// Remove the main rendering listener if no EnterFrame listeners remain
 			if (    ! this.hasEventListener(away.events.Event.ENTER_FRAME , this.onEnterFrame , this )
                 &&  ! this.hasEventListener(away.events.Event.EXIT_FRAME , this.onEnterFrame , this) ) //&& _frameEventDriver.hasEventListener(Event.ENTER_FRAME))
             {
 
                 //_frameEventDriver.removeEventListener(Event.ENTER_FRAME, this.onEnterFrame, this );
-                // TODO - Stop RequestAnimationFrame
 
             }
-
+            */
 		}
 		
 		public get scissorRect():away.geom.Rectangle
@@ -390,20 +378,6 @@ module away.managers
 			return this._iContext3D;
 		}
 		
-		/**
-		 * The driver information as reported by the Context3D object (if any)
-		 */
-        /*
-		public get driverInfo():string
-		{
-
-            away.Debug.throwPIR( 'Stage3DProxy' , 'driverInfo' ,  'Context3D.driverInfo()');
-
-            return null;
-
-			//return this._iContext3D? this._iContext3D.driverInfo : null;
-		}
-        */
 		/**
 		 * Indicates whether the Stage3D managed by this proxy is running in software mode.
 		 * Remember to wait for the CONTEXT3D_CREATED event before checking this property,
@@ -585,8 +559,7 @@ module away.managers
 		{
 			if (this._iContext3D) {
 
-                away.Debug.throwPIR( 'Stage3DProxy' , 'freeContext3D' ,  'Context3D.dispose()');
-				//this._context3D.dispose();
+				this._iContext3D.dispose();
 				this.dispatchEvent(new away.events.Stage3DEvent(away.events.Stage3DEvent.CONTEXT3D_DISPOSED));
 			}
 
@@ -605,13 +578,6 @@ module away.managers
 				var hadContext:boolean = (this._iContext3D != null);
 				this._iContext3D = this._stage3D.context3D;
 
-                away.Debug.log( 'Stage3DProxy' , 'onContext3DUpdate this._stage3D.context3D: ' , this._stage3D.context3D);
-                // todo: implement dependency Context3D.enableErrorChecking, Context3D.driverInfo
-                away.Debug.throwPIR( 'Stage3DProxy' , 'onContext3DUpdate' ,  'Context3D.enableErrorChecking');
-
-				//this._iContext3D.enableErrorChecking = Debug.active;
-				//this._usesSoftwareRendering = (this._iContext3D.driverInfo.indexOf('Software') == 0);
-				
 				// Only configure back buffer if width and height have been set,
 				// which they may not have been if View3D.render() has yet to be
 				// invoked for the first time.
@@ -654,30 +620,6 @@ module away.managers
             // Updated to work with current JS <> AS3 Display3D System
             this._stage3D.requestContext( true );
 
-            // Throw PartialImplementationError to flag this function as changed
-
-            away.Debug.throwPIR( 'Stage3DProxy' , 'requestContext' , 'Context3DRenderMode' );
-
-           // throw new away.errors.PartialImplementationError( 'Context3DRenderMode');
-
-
-            /*
-			// ugly stuff for backward compatibility
-			var renderMode:string = forceSoftware? Context3DRenderMode.SOFTWARE : Context3DRenderMode.AUTO;
-
-			if (profile == "baseline")
-				this._stage3D.requestContext3D(renderMode);
-			else {
-				try {
-                    this._stage3D["requestContext3D"](renderMode, profile);
-				} catch (error:Error) {
-					throw "An error occurred creating a context using the given profile. Profiles are not supported for the SDK this was compiled with.";
-				}
-			}
-			
-			_contextRequested = true;
-			*/
-
 		}
 		
 		/**
@@ -710,7 +652,7 @@ module away.managers
 
             }
 
-            away.Debug.throwPIR( 'Stage3DProxy' , 'recoverFromDisposal' , '' );
+            //away.Debug.throwPIR( 'Stage3DProxy' , 'recoverFromDisposal' , '' );
 
             /*
             if (this._iContext3D.driverInfo == "Disposed")
