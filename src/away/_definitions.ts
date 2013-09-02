@@ -42,6 +42,7 @@
 ///<reference path="display3D/VertexBuffer3D.ts"/>
 ///<reference path="display3D/IndexBuffer3D.ts"/>
 ///<reference path="display3D/Program3D.ts"/>
+///<reference path="display3D/SamplerState.ts"/>
 ///<reference path="geom/Point.ts" />
 ///<reference path="geom/Rectangle.ts" />
 ///<reference path="display3D/Context3DTextureFormat.ts"/>

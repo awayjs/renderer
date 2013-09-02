@@ -16,10 +16,18 @@ module away.display3D
 		private _blendSourceFactor:number;
 		private _blendDestinationFactor:number;
 		
+		private _currentWrap:number = 0;
+		private _currentFilter:number = 0;
+		private _currentMipFilter:number = 0;
+		
 		private _indexBufferList: IndexBuffer3D[] = [];
 		private _vertexBufferList: VertexBuffer3D[] = [];
 		private _textureList: TextureBase[] = [];
 		private _programList: Program3D[] = [];
+		
+		private _samplerStates: away.display3D.SamplerState[] = [];
+		
+		public static MAX_SAMPLERS:number = 8;
 		
 		//@protected
 		public _gl:WebGLRenderingContext;
@@ -52,6 +60,13 @@ module away.display3D
 				alert("WebGL is not available.");
 			}
 			
+			for( var i:number = 0; i < Context3D.MAX_SAMPLERS; ++i )
+			{
+				this._samplerStates[ i ] = new away.display3D.SamplerState();
+				this._samplerStates[ i ].wrap = this._gl.REPEAT
+				this._samplerStates[ i ].filter = this._gl.LINEAR
+				this._samplerStates[ i ].mipfilter = 0;
+			}
 		}
 		
 		public gl(): WebGLRenderingContext
@@ -80,12 +95,11 @@ module away.display3D
 				this._gl.enable( this._gl.STENCIL_TEST );
 				this._gl.enable( this._gl.DEPTH_TEST );
 			}
-			// TODO add antialias (seems to be a webgl bug)
+			
 			this._gl.viewport.width = width;
 			this._gl.viewport.height = height;
-
+			
             this._gl.viewport(0, 0, width, height);
-
 		}
 		
 		public createCubeTexture( size:number, format:away.display3D.Context3DTextureFormat, optimizeForRenderToTexture:boolean, streamingLevels:number = 0 ):away.display3D.CubeTexture 
@@ -111,7 +125,7 @@ module away.display3D
 		
 		public createTexture( width:number, height:number, format:string, optimizeForRenderToTexture:boolean, streamingLevels:number = 0 ): Texture
 		{
-			//TODO 
+			//TODO streaming
 			var texture: Texture = new away.display3D.Texture( this._gl, width, height );
 			this._textureList.push( texture );
 			return texture;
@@ -149,9 +163,14 @@ module away.display3D
 			{
 				this._programList[i].dispose();
 			}
+			
+			for( i = 0; i < this._samplerStates.length; ++i )
+			{
+				this._samplerStates[i] = null;
+			}
+			
 			this._programList = null;
 		}
-		
 		
 		public drawToBitmapData( destination:away.display.BitmapData ) 
 		{
@@ -423,23 +442,23 @@ module away.display3D
 		*/
 		
 		public setGLSLProgramConstantsFromMatrix( locationName:string, matrix:away.geom.Matrix3D, transposedMatrix:boolean = false ) 
-		{
+		{/*
 			console.log( "======= setGLSLProgramConstantsFromMatrix ======= " )
 			console.log( "locationName : " + locationName );
 			console.log( "matrix : " + matrix.rawData );
 			console.log( "transposedMatrix : " + transposedMatrix );
-			console.log( "================================================= \n" )
+			console.log( "================================================= \n" )*/
 			var location:WebGLUniformLocation = this._gl.getUniformLocation( this._currentProgram.glProgram, locationName );
 			this._gl.uniformMatrix4fv( location, !transposedMatrix, new Float32Array( matrix.rawData ) );
 		}
 		
 		public setGLSLProgramConstantsFromArray( locationName:string, data:number[], startIndex:number = 0 ) 
-		{
+		{/*
 			console.log( "======= setGLSLProgramConstantsFromArray ======= " )
 			console.log( "locationName : " + locationName );
 			console.log( "data : " + data );
 			console.log( "startIndex : " + startIndex );
-			console.log( "================================================ \n" )
+			console.log( "================================================ \n" )*/
 			var location:WebGLUniformLocation = this._gl.getUniformLocation( this._currentProgram.glProgram, locationName );
 			this._gl.uniform4f( location, data[startIndex], data[startIndex+1], data[startIndex+2], data[startIndex+3] );
 		}
@@ -505,12 +524,78 @@ module away.display3D
 			this._gl.bindTexture( this._gl.TEXTURE_2D, texture.glTexture );
 			this._gl.uniform1i( location, textureIndex );
 			
-			// TODO create something like setSamplerStateAt(.... 
-			this._gl.texParameteri( this._gl.TEXTURE_2D, this._gl.TEXTURE_WRAP_S, this._gl.CLAMP_TO_EDGE );
-			this._gl.texParameteri( this._gl.TEXTURE_2D, this._gl.TEXTURE_WRAP_T, this._gl.CLAMP_TO_EDGE );
-			this._gl.texParameteri( this._gl.TEXTURE_2D, this._gl.TEXTURE_MIN_FILTER, this._gl.LINEAR );
-			this._gl.texParameteri( this._gl.TEXTURE_2D, this._gl.TEXTURE_MAG_FILTER, this._gl.LINEAR );
+			var samplerState:away.display3D.SamplerState = this._samplerStates[ textureIndex ];
+			
+			if( samplerState.wrap != this._currentWrap )
+			{
+				this._currentWrap = samplerState.wrap;
+				this._gl.texParameteri( this._gl.TEXTURE_2D, this._gl.TEXTURE_WRAP_S, samplerState.wrap );
+				this._gl.texParameteri( this._gl.TEXTURE_2D, this._gl.TEXTURE_WRAP_T, samplerState.wrap );
+			}
+			
+			if( samplerState.filter != this._currentFilter )
+			{
+				this._gl.texParameteri( this._gl.TEXTURE_2D, this._gl.TEXTURE_MIN_FILTER, samplerState.filter );
+				this._gl.texParameteri( this._gl.TEXTURE_2D, this._gl.TEXTURE_MAG_FILTER, samplerState.filter );
+			}
         }
+		
+		public setSamplerStateAt( sampler:number, wrap:string, filter:string, mipfilter:string ):void
+		{			
+			var glWrap:number = 0;
+			var glFilter:number = 0;
+			var glMipFilter:number = 0;
+			
+			switch( wrap )
+			{
+				case Context3DWrapMode.REPEAT:
+						glWrap = this._gl.REPEAT;
+					break;
+				case Context3DWrapMode.CLAMP:
+						glWrap = this._gl.CLAMP_TO_EDGE;
+					break;
+				default:
+					throw "Wrap is not supported: " + wrap;
+			}
+			
+			switch( filter )
+			{
+				case Context3DTextureFilter.LINEAR:
+						glFilter = this._gl.LINEAR;
+					break;
+				case Context3DTextureFilter.NEAREST:
+						glFilter = this._gl.NEAREST;
+					break;
+				default:
+					throw "Filter is not supported " + filter;
+			}
+			
+			switch( mipfilter )
+			{
+				case Context3DMipFilter.MIPNEAREST:
+						glMipFilter = this._gl.NEAREST_MIPMAP_NEAREST;
+					break;
+				case Context3DMipFilter.MIPLINEAR:
+						glMipFilter = this._gl.LINEAR_MIPMAP_LINEAR;
+					break;
+				case Context3DMipFilter.MIPNONE:
+						glMipFilter = this._gl.NONE;
+					break;
+				default:
+					throw "MipFilter is not supported " + mipfilter;
+			}
+			
+			if( 0 <= sampler && sampler < Context3D.MAX_SAMPLERS )
+			{
+				this._samplerStates[ sampler ].wrap = glWrap;
+				this._samplerStates[ sampler ].filter = glFilter;
+				this._samplerStates[ sampler ].mipfilter = glMipFilter;
+			}
+			else
+			{
+				throw "Sampler is out of bounds.";
+			}
+		}
 		
 		public setVertexBufferAt( index:number, buffer:VertexBuffer3D, bufferOffset:number = 0, format:string = null )
 		{
