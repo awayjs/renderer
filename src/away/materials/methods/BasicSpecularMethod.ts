@@ -404,6 +404,10 @@ module away.materials
 			if (this._useTexture)
             {
 
+               stage3DProxy._iContext3D.setSamplerStateAt( vo.texturesIndex ,
+                    vo.repeatTextures ?  away.display3D.Context3DWrapMode.REPEAT :  away.display3D.Context3DWrapMode.CLAMP,
+                    vo.useSmoothTextures ? away.display3D.Context3DTextureFilter.LINEAR : away.display3D.Context3DTextureFilter.NEAREST ,
+                    vo.useMipmapping ? away.display3D.Context3DMipFilter.MIPLINEAR : away.display3D.Context3DMipFilter.MIPNONE );
                stage3DProxy._iContext3D.setTextureAt(vo.texturesIndex, this._texture.getTextureForStage3D(stage3DProxy));
 
             }
