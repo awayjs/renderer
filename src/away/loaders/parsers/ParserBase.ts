@@ -470,6 +470,18 @@ module away.loaders {
             return away.loaders.ParserUtil.toString( this._data);
         }
 
+        /**
+         *
+         * @returns {string}
+         * @private
+         */
+        public _pGetByteData():away.utils.ByteArray
+        {
+
+            return away.loaders.ParserUtil.toByteArray( this._data );
+
+        }
+
 	}
 
 }
