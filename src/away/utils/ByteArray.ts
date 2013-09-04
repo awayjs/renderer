@@ -31,51 +31,22 @@ module away.utils
         public setArrayBuffer( aBuffer : ArrayBuffer ) : void
         {
 
-            /*
-            var v2 : Int8Array = new Int8Array( aBuffer );
+            this.ensureSpace( aBuffer.byteLength );
 
-            for (var i = 0; i < v2.length - 1 ; i++)
-            {
-                this.writeByte( v2[ i ] );
-            }
-            //*/
-            /*
-            this.maxlength = aBuffer.byteLength + 4;
-            this.arraybytes = new ArrayBuffer( this.maxlength );
+            this.length                     = aBuffer.byteLength;
 
-            this.length = aBuffer.byteLength;
+            var inInt8AView     : Int8Array = new Int8Array( aBuffer );
+            var localInt8View   : Int8Array = new Int8Array( this.arraybytes, 0, this.length );
 
-            for (var i = 0; i < aBuffer.byteLength; i++)
-            {
-                this.arraybytes [ i ] = aBuffer[ i  ];
-            }
-            //*/
-            //bytes.setArrayBuffer( result );
+                localInt8View.set( inInt8AView );
 
-            /*
-            this.maxlength += 4;
-
-            this.maxlength = this.length = aBuffer.byteLength;
-            this.maxlength += 4;
-
-            this.maxlength = this.length = aBuffer.byteLength;
-            this.maxlength += 4;
-
-            this.arraybytes = aBuffer;
-            */
-
-            //*
-            this.maxlength = this.length = aBuffer.byteLength;
-            //this.maxlength += 4;
-
-            this.arraybytes = aBuffer;
-            //*/
+            this.position = 0;
 
         }
 
         public getBytesAvailable() : number
         {
-            return ( this.arraybytes.byteLength ) - ( this.position ) ;
+            return ( this.length ) - ( this.position ) ;
         }
 
 		public ensureSpace( n:number )
@@ -104,37 +75,42 @@ module away.utils
 		}
 		
 		public readByte()
-		{     
+		{
+
+
 			if ( this.position >= this.length )
 			{
 				throw "ByteArray out of bounds read. Positon="+this.position+", Length="+this.length; 
 			}
 			var view = new Int8Array(this.arraybytes);
+
 			return view[ this.position++ ];
 		}
 
-        public readBytes( bytes : ByteArray , start : number = 0 , end : number = 0 )
+        public readBytes( bytes : ByteArray , offset : number = 0 , length : number = 0 )
         {
 
-            var uintArr : Uint8Array = new Uint8Array( this.arraybytes );
+            var localInt8A      : Int8Array    = new Int8Array( this.arraybytes );
 
-            if ( end == start || end <= start )
+            if ( length == 0 )
             {
-                end = uintArr.length;
+                length = bytes.length;// - offset;
             }
 
-            var result      : ArrayBuffer   = new ArrayBuffer( end - start );
-            var resultArray : Uint8Array    = new Uint8Array(result);
+            var originalPosition : number = bytes.position; // restore position of bytes once copy is done
 
-            for (var i = 0; i < resultArray.length; i++)
+            bytes.position = offset; // move target to start writing at offset
+
+            for (var i = 0 ; i < length ; i++)
             {
-                resultArray[ i ] = uintArr[ i + start ];
+                bytes.writeByte( localInt8A[ this.position ++ ] ); // Copy data and increment local position - note could check overrun if needed;
             }
 
-            bytes.setArrayBuffer( result );
+            bytes.position = originalPosition;
+
 
         }
-		
+
 		public writeUnsignedByte( b:number )
 		{                    
 			this.ensureWriteableSpace( 1 );         
@@ -145,7 +121,7 @@ module away.utils
 				this.length = this.position;
 			}
 		}
-		
+
 		public readUnsignedByte()
 		{     
 			if ( this.position >= this.length )
@@ -178,12 +154,85 @@ module away.utils
 				this.length = this.position;
 			}
 		}
-		
+
+        public readUTFBytes(len:number):string {
+
+            var value   : string    = "";
+            var max     : number    = this.position + len;
+            var data    : DataView  = new DataView( this.arraybytes );
+
+            // utf8-encode
+            while (this.position < max) {
+
+                var c : number = data.getUint8(this.position++);
+
+                if (c < 0x80) {
+
+                    if (c == 0) break;
+                    value += String.fromCharCode(c);
+
+                } else if (c < 0xE0) {
+
+                    value += String.fromCharCode(((c & 0x3F) << 6) |(data.getUint8(this.position++) & 0x7F));
+
+                } else if (c < 0xF0) {
+
+                    var c2 = data.getUint8(this.position++);
+                    value += String.fromCharCode(((c & 0x1F) << 12) |((c2 & 0x7F) << 6) |(data.getUint8(this.position++) & 0x7F));
+
+                } else {
+
+                    var c2 = data.getUint8(this.position++);
+                    var c3 = data.getUint8(this.position++);
+
+                    value += String.fromCharCode(((c & 0x0F) << 18) |((c2 & 0x7F) << 12) |((c3 << 6) & 0x7F) |(data.getUint8(this.position++) & 0x7F));
+
+                }
+
+            }
+
+            return value;
+
+        }
+
+        public readInt():number
+        {
+
+            var data    : DataView      = new DataView( this.arraybytes );
+            var int     : number        = data.getInt32( this.position );
+
+            this.position += 4;
+
+            return int;
+
+        }
+
+        public readShort():number
+        {
+
+            var data    : DataView      = new DataView( this.arraybytes );
+            var short   : number        = data.getInt16(this.position );
+
+            this.position += 2;
+            return short;
+
+        }
+
+        public readDouble():number
+        {
+            var data    : DataView      = new DataView( this.arraybytes );
+            var double  : number        = data.getFloat64( this.position );
+
+            this.position += 8;
+            return double;
+
+        }
+
 		public readUnsignedShort()
 		{     
 			if ( this.position > this.length + 2 )
 			{
-				throw "ByteArray out of bounds read. Positon=" + this.position + ", Length=" + this.length;         
+				throw "ByteArray out of bounds read. Position=" + this.position + ", Length=" + this.length;
 			}
 			if ( ( this.position & 1 )==0 )
 			{
@@ -225,26 +274,6 @@ module away.utils
 				this.length = this.position;
 			}
 		}
-
-
-        public readUnsignedInteger()
-        {
-
-            if ( this.position > this.length + 4 )
-            {
-                throw "ByteArray out of bounds read. Position=" + this.position + ", Length=" + this.length;
-            }
-
-            var view = new Uint32Array( this.unalignedarraybytestemp, 0, 1 );
-            var view2 = new Uint8Array( this.arraybytes,this.position, 4 );
-            var view3 = new Uint8Array( this.unalignedarraybytestemp, 0, 4 );
-            view3.set( view2 );
-            this.position += 4;
-            return view[0];
-
-        }
-
-
 
 		public readUnsignedInt()
 		{
