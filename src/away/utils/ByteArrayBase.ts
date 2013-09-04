@@ -31,7 +31,12 @@ module away.utils
 		public toFloatBits( x:number ){ throw "Virtual method"; }
 		public readFloat( b:number ){ throw "Virtual method"; }
 		public fromFloatBits( x:number ){ throw "Virtual method"; }
-		
+
+        public getBytesAvailable() : number
+        {
+            throw new away.errors.AbstractMethodError( 'ByteArrayBase, getBytesAvailable() not implemented ');
+        }
+
 		public toString():string
 		{
 			return "[ByteArray] ( " + this._mode + " ) position=" + this.position + " length=" + this.length; 
