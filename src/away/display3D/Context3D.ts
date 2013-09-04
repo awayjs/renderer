@@ -206,6 +206,7 @@ module away.display3D
 		
 		public drawTriangles( indexBuffer:IndexBuffer3D, firstIndex:number = 0, numTriangles:number = -1 )
 		{
+			// this.setCulling( Context3DTriangleFace.FRONT );
             /*
 			console.log( "======= drawTriangles ======= " )
 			console.log( indexBuffer );

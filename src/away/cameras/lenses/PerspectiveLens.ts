@@ -131,15 +131,9 @@ module away.cameras
 					raw[6] = raw[7] = raw[12] = raw[13] = raw[15] = 0;
 				raw[14] = -2*this._pFar*this._pNear/(this._pFar - this._pNear);
 			}
-
-
+			
 			this._pMatrix.copyRawDataFrom( raw );
-
-            //---------------------------------------------------------------------------------
-            // HACK ! - Need to find real solution for flipping scene on Z axis
-            this._pMatrix.appendRotation( 180 , new away.geom.Vector3D( 0 , 0 , 1 ));
-            //---------------------------------------------------------------------------------
-
+			
 			var yMaxFar:number = this._pFar * this._focalLengthInv;
 			var xMaxFar:number = yMaxFar * this._pAspectRatio;
 			

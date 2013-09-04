@@ -649,10 +649,10 @@ module away.base
 			this._transformComponents[0] = this._pPos;
             this._transformComponents[1] = this._rot;
             this._transformComponents[2] = this._sca;
-
+			
             this._pTransform.identity();
-
-			this._flipY.appendScale(1, -1, 1);
+			
+			this._flipY.appendScale( 1, -1, 1 );
 		}
 		
 		/**

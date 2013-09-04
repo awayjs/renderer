@@ -236,7 +236,7 @@ module aglsl.assembler
 			
 			if( s.length > 2 )
 			{
-				sw |= chartoindex[s.charAt(2)]<<2;
+				sw |= chartoindex[s.charAt(2)] << 2;
 			}
 			else
 			{
@@ -245,7 +245,7 @@ module aglsl.assembler
 			
 			if( s.length > 3)
 			{
-				sw |= chartoindex[s.charAt(3)]<<4;
+				sw |= chartoindex[s.charAt(3)] << 4;
 			}
 			else
 			{
@@ -254,14 +254,14 @@ module aglsl.assembler
 			
 			if( s.length > 4)
 			{
-				sw |= chartoindex[s.charAt(4)]<<6;
+				sw |= chartoindex[s.charAt(4)] << 6;
 			}
 			else
 			{
-				sw |= (sw&(3<<4))<<2;
+				sw |= (sw&(3<<4)) << 2;
 			}
 			
-			return sw; 
+			return sw;
 		}
 		
 		public emitSampler( pr: aglsl.assembler.Part, token, opsrc, opts )
@@ -284,7 +284,7 @@ module aglsl.assembler
 			var sampleroptset:number = 0; 
 			for ( var i:number = 0; i < opts.length; i++ )
 			{
-				var o:aglsl.assembler.Sampler = <aglsl.assembler.Sampler> SamplerMap.map[opts[i].toLowerCase()];
+				var o:aglsl.assembler.Sampler = <aglsl.assembler.Sampler> SamplerMap.map[ opts[i].toLowerCase() ];
 				
                 //console.log( 'AGALMiniAssembler' , 'emitSampler' , 'SampleMap opt:' , o , '<-------- WATCH FOR THIS');
 				
@@ -357,11 +357,11 @@ module aglsl.assembler
 			if ( this.r[partname] == undefined )
 			{
 				this.r[partname] = new aglsl.assembler.Part( partname, version );
-				this.emitHeader ( this.r[ partname ] ); 
+				this.emitHeader( this.r[ partname ] ); 
 			} 
 			else if ( this.r[partname].version != version )
 			{
-				throw "Multiple versions for part "+partname;
+				throw "Multiple versions for part " + partname;
 			}
 			this.cur = this.r[partname]; 
 		}
