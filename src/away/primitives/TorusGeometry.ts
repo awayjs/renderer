@@ -214,7 +214,7 @@ module away.primitives
 				for (i = 0; i <= this._segmentsR; ++i)
                 {
 					// revolution vertex
-					data[currentUvCompIndex++] = 1 - ( i/this._segmentsR )*target.scaleU;
+					data[currentUvCompIndex++] = ( i/this._segmentsR )*target.scaleU;
 					data[currentUvCompIndex++] = ( j/this._segmentsT )*target.scaleV;
 					currentUvCompIndex += skip;
 				}
