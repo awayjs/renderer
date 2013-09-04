@@ -62,15 +62,13 @@ module away.display3D
 		//@override
 		public setCulling( triangleFaceToCull:string )
 		{
-			console.log( "triangleFaceToCull : " + triangleFaceToCull );
-			
 			switch( triangleFaceToCull )
 			{
 				case Context3DTriangleFace.FRONT:
 						this._yFlip = -1; 
 					break
 				case Context3DTriangleFace.BACK:
-						this._yFlip = 1;  // checked
+						this._yFlip = 1; // checked
 					break;
 				case Context3DTriangleFace.FRONT_AND_BACK:
 						this._yFlip = 1;
