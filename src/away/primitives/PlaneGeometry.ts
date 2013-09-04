@@ -310,14 +310,14 @@ module away.primitives
 
 				for (var xi:number = 0; xi <= this._segmentsW; ++xi)
                 {
-					data[index++] = (1 - (xi/this._segmentsW)*target.scaleU );
+					data[index++] = (xi/this._segmentsW)*target.scaleU;
 					data[index++] = (1 - yi/this._segmentsH)*target.scaleV;
 					index += skip;
 					
 					if (this._doubleSided)
                     {
-						data[index++] = (1 - (xi/this._segmentsW)*target.scaleU ) ;
-						data[index++] = ( 1 - yi/this._segmentsH)*target.scaleV;
+						data[index++] = (xi/this._segmentsW)*target.scaleU ;
+						data[index++] = (1 - yi/this._segmentsH)*target.scaleV;
 						index += skip;
 					}
 				}

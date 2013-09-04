@@ -353,10 +353,10 @@ module away.primitives
 					x = 0.5 + 0.5* -Math.cos(revolutionAngle);
 					y = 0.5 + 0.5*Math.sin(revolutionAngle);
 					
-					UVData[currentUvCompIndex++] = 1 - ( 0.5*target.scaleU ) ; // central vertex
+					UVData[currentUvCompIndex++] = 0.5*target.scaleU; // central vertex
 					UVData[currentUvCompIndex++] = 0.5*target.scaleV;
 					currentUvCompIndex += skip;
-					UVData[currentUvCompIndex++] = 1 - ( x*target.scaleU ) ; // revolution vertex
+					UVData[currentUvCompIndex++] = x*target.scaleU; // revolution vertex
 					UVData[currentUvCompIndex++] = y*target.scaleV;
 					currentUvCompIndex += skip;
 				}
@@ -372,10 +372,10 @@ module away.primitives
 					x = 0.5 + 0.5*Math.cos(revolutionAngle);
 					y = 0.5 + 0.5*Math.sin(revolutionAngle);
 					
-					UVData[currentUvCompIndex++] = 1 - ( 0.5*target.scaleU ) ; // central vertex
+					UVData[currentUvCompIndex++] = 0.5*target.scaleU ; // central vertex
 					UVData[currentUvCompIndex++] = 0.5*target.scaleV;
 					currentUvCompIndex += skip;
-					UVData[currentUvCompIndex++] = 1 - ( x*target.scaleU ) ; // revolution vertex
+					UVData[currentUvCompIndex++] = x*target.scaleU; // revolution vertex
 					UVData[currentUvCompIndex++] = y*target.scaleV;
 					currentUvCompIndex += skip;
 				}
@@ -389,7 +389,7 @@ module away.primitives
 					for (i = 0; i <= this._pSegmentsW; ++i)
                     {
 						// revolution vertex
-						UVData[currentUvCompIndex++] = 1 - ( ( i/this._pSegmentsW )*target.scaleU ) ;
+						UVData[currentUvCompIndex++] = ( i/this._pSegmentsW )*target.scaleU ;
 						UVData[currentUvCompIndex++] = ( j/this._pSegmentsH )*target.scaleV;
 						currentUvCompIndex += skip;
 					}

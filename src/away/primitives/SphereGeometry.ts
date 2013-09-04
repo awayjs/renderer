@@ -207,7 +207,7 @@ module away.primitives
             {
 				for (i = 0; i <= this._segmentsW; ++i)
                 {
-					data[index++] = 1 - ( i/this._segmentsW )*target.scaleU ;
+					data[index++] = ( i/this._segmentsW )*target.scaleU ;
 					data[index++] = ( j/this._segmentsH )*target.scaleV;
 					index += skip;
 				}
