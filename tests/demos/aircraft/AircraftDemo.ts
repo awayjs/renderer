@@ -146,14 +146,10 @@ module demos.aircraft
 		
         private render( dt: number ) //animate based on dt for firefox
         {
-
             if ( this._f14Geom )
             {
-
                 this._f14Geom.rotationZ += dt * .01
-
             }
-
 			this._appTime += dt;
             this._view.render();
         }
@@ -169,45 +165,29 @@ module demos.aircraft
 			switch( e.url )
 			{
 				case "assets/sea_normals.jpg":
-
 						this._seaNormalTexture = <away.textures.HTMLImageElementTexture> loader.baseDependency.assets[ 0 ];
 						this.initSea();
 						this.initF14(); // TODO remove this mock call which enforces a temporary f14 texture allocation
 					break;
 				case 'assets/f14d.obj':
-
 						this._f14Geom = new away.containers.ObjectContainer3D();
-
 						for( i = 0; i < numAssets; ++i )
 						{
 							var asset: away.library.IAsset = loader.baseDependency.assets[ i ];
-
                             switch ( asset.assetType )
                             {
-
                                 case away.library.AssetType.MESH:
-
                                     var mesh : away.entities.Mesh = <away.entities.Mesh> asset;
-
                                     this._f14Meshes.push( mesh ); // can we just getChildAt or getByResource name in this._f14Geom?
                                     this._f14Geom.addChild( mesh );
-
                                     break;
-
                                 case away.library.AssetType.GEOMETRY:
-
                                     break;
-
                                 case away.library.AssetType.MATERIAL:
-
                                     break;
-
                             }
-
 						}
-
 						this.initF14();
-
 					break;
 			}
         }
@@ -216,7 +196,6 @@ module demos.aircraft
 		{
 			if( this._f14Geom && !this._f14Initialized && this._seaNormalTexture ) // TEMP remove _seaNormalTexture dependency
 			{
-
     			var f14Material: away.materials.TextureMaterial = new away.materials.TextureMaterial( this._seaNormalTexture, true, true, false ); // will be the cubemap
 				    f14Material.lightPicker = this._lightPicker;
 				
@@ -225,18 +204,10 @@ module demos.aircraft
                     //this._f14Meshes[ i ].material = f14Material;
                 }
 				this._view.scene.addChild( this._f14Geom );
-
-
                 this._f14Geom.scale( 50 );
-
-
-
                 this._f14Geom.rotationX = 90;
                 this._f14Geom.y = 200;
-
 				this._f14Initialized = true;
-
-
                 this._view.camera.lookAt( this._f14Geom.position );
 			}
 		}
@@ -245,9 +216,6 @@ module demos.aircraft
 		{
 			if( this._seaNormalTexture && !this._seaInitialized ) // will check for all dependencies e.g. cubemap
 			{
-
-                console.log( 'initSea')
-
 				var seaMaterial: away.materials.TextureMaterial = new away.materials.TextureMaterial( this._seaNormalTexture, true, true, false ); // will be the cubemap
 				//var waterMethod:away.materials.SimpleWaterNormalMethod = new away.materials.SimpleWaterNormalMethod( seaNormalTexture, seaNormalTexture );
 				//var fresnelMethod:away.materials.FresnelSpecularMethod = new away.materials.FresnelSpecularMethod();
@@ -261,7 +229,7 @@ module demos.aircraft
 				//waterMaterial.specularMethod = fresnelMethod;
 				seaMaterial.gloss = 100;
 				seaMaterial.specular = 1;
-
+				
 				this._seaGeom = new away.primitives.PlaneGeometry( 50000, 50000, 1, 1, true, false );
 				this._seaGeom.scaleUV( 100, 100 );
 				this._seaMesh = new away.entities.Mesh( this._seaGeom, seaMaterial );
