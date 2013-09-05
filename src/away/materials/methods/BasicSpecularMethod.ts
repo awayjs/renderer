@@ -433,12 +433,20 @@ module away.materials
 		/**
 		 * Set internally by the compiler, so the method knows the register containing the shadow calculation.
 		 */
-		public set iShadowRegister(shadowReg:away.materials.ShaderRegisterElement)
-		{
+        public set iShadowRegister(shadowReg:away.materials.ShaderRegisterElement)
+        {
 
-			this._shadowRegister = shadowReg;
+            this._shadowRegister = shadowReg;
 
-		}
+        }
+
+        public setIShadowRegister(shadowReg:away.materials.ShaderRegisterElement)
+        {
+
+            this._shadowRegister = shadowReg;
+
+        }
+
         
 	}
 }
