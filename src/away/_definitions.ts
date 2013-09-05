@@ -274,6 +274,13 @@
 ///<reference path="materials/methods/BasicNormalMethod.ts"/>
 ///<reference path="materials/methods/BasicSpecularMethod.ts"/>
 ///<reference path="materials/methods/ColorTransformMethod.ts"/>
+
+///<reference path="materials/methods/CompositeDiffuseMethod.ts"/>
+///<reference path="materials/methods/CompositeSpecularMethod.ts"/>
+///<reference path="materials/methods/EnvMapMethod.ts"/>
+///<reference path="materials/methods/FresnelSpecularMethod.ts"/>
+///<reference path="materials/methods/SimpleWaterNormalMethod.ts"/>
+
 ///<reference path="materials/ColorMaterial.ts"/>
 ///<reference path="materials/utils/DefaultMaterialManager.ts"/>
 ///<reference path="materials/compilation/LightingShaderCompiler.ts"/>
