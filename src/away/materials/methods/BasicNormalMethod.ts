@@ -10,7 +10,7 @@ module away.materials
 	{
 		private _texture:away.textures.Texture2DBase;
 		private _useTexture:boolean;
-		private _normalTextureRegister:ShaderRegisterElement;
+		public _pNormalTextureRegister:away.materials.ShaderRegisterElement;
 
 		/**
 		 * Creates a new BasicNormalMethod object.
@@ -82,16 +82,23 @@ module away.materials
 		public set normalMap(value:away.textures.Texture2DBase)
 		{
 
-            var b : boolean =  ( value != null );
-
-			if ( b != this._useTexture ||
-				(value && this._texture && (value.hasMipMaps != this._texture.hasMipMaps || value.format != this._texture.format))) {
-				this.iInvalidateShaderProgram();//invalidateShaderProgram();
-			}
-			this._useTexture = Boolean(value);
-            this._texture = value;
+            this.setNormalMap( value );
 
 		}
+
+        public setNormalMap(value:away.textures.Texture2DBase)
+        {
+
+            var b : boolean =  ( value != null );
+
+            if ( b != this._useTexture ||
+                (value && this._texture && (value.hasMipMaps != this._texture.hasMipMaps || value.format != this._texture.format))) {
+                this.iInvalidateShaderProgram();//invalidateShaderProgram();
+            }
+            this._useTexture = Boolean(value);
+            this._texture = value;
+
+        }
 
 		/**
 		 * @inheritDoc
@@ -99,7 +106,7 @@ module away.materials
 		public iCleanCompilationData()
 		{
 			super.iCleanCompilationData();
-			this._normalTextureRegister = null;
+			this._pNormalTextureRegister = null;
 		}
 
 		/**
@@ -140,13 +147,13 @@ module away.materials
 		 */
 		public iGetFragmentCode(vo:MethodVO, regCache:ShaderRegisterCache, targetReg:ShaderRegisterElement):string
 		{
-			this._normalTextureRegister = regCache.getFreeTextureReg();
+			this._pNormalTextureRegister = regCache.getFreeTextureReg();
 
-			vo.texturesIndex = this._normalTextureRegister.index;
+			vo.texturesIndex = this._pNormalTextureRegister.index;
 
             // TODO: AGAL <> GLSL
 
-			return this.pGetTex2DSampleCode(vo, targetReg, this._normalTextureRegister, this._texture) +
+			return this.pGetTex2DSampleCode(vo, targetReg, this._pNormalTextureRegister, this._texture) +
 				"sub " + targetReg.toString() + ".xyz, " + targetReg.toString() + ".xyz, " + this._sharedRegisters.commons.toString() + ".xxx	\n" +
 				"nrm " + targetReg.toString() + ".xyz, " + targetReg.toString() + ".xyz							\n";
 
