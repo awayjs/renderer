@@ -201,9 +201,9 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public reset():void
+		public iReset():void
 		{
-			//this._baseMethod.reset();    // TODO: changed from redacted API ?
+            this._baseMethod.iReset();
 		}
 
 		/**
