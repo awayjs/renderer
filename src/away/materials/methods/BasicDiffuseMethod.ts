@@ -18,7 +18,7 @@ module away.materials
 		private _useAmbientTexture:boolean;
 		
 		private _useTexture:boolean;
-		private _totalLightColorReg:away.materials.ShaderRegisterElement;
+		public pTotalLightColorReg:away.materials.ShaderRegisterElement;
 		
 		// TODO: are these registers at all necessary to be members?
 		private _diffuseInputRegister:away.materials.ShaderRegisterElement;
@@ -196,7 +196,7 @@ module away.materials
 			super.iCleanCompilationData();
 
 			this._shadowRegister = null;
-            this._totalLightColorReg = null;
+            this.pTotalLightColorReg = null;
             this._diffuseInputRegister = null;
 		}
 		
@@ -211,8 +211,8 @@ module away.materials
 			
 			if (vo.numLights > 0)
             {
-				this._totalLightColorReg = regCache.getFreeFragmentVectorTemp();
-				regCache.addFragmentTempUsages(this._totalLightColorReg, 1);
+				this.pTotalLightColorReg = regCache.getFreeFragmentVectorTemp();
+				regCache.addFragmentTempUsages(this.pTotalLightColorReg, 1);
 			}
 			
 			return code;
@@ -229,7 +229,7 @@ module away.materials
 			// write in temporary if not first light, so we can add to total diffuse colour
 			if (this._isFirstLight)
             {
-                t = this._totalLightColorReg;
+                t = this.pTotalLightColorReg;
             }
 			else
             {
@@ -264,7 +264,7 @@ module away.materials
 			code += "mul " + t.toString() + ", " + t.toString() + ".w, " + lightColReg.toString() + "\n";
 			
 			if (!this._isFirstLight) {
-				code += "add " + this._totalLightColorReg.toString() + ".xyz, " + this._totalLightColorReg.toString() + ", " + t.toString() + "\n";
+				code += "add " + this.pTotalLightColorReg.toString() + ".xyz, " + this.pTotalLightColorReg.toString() + ", " + t.toString() + "\n";
 				regCache.removeFragmentTempUsage(t);
 			}
 			//*/
@@ -285,7 +285,7 @@ module away.materials
 			if (this._isFirstLight)
             {
 
-                t = this._totalLightColorReg;
+                t = this.pTotalLightColorReg;
 
             }
 			else
@@ -313,7 +313,7 @@ module away.materials
 			if (!this._isFirstLight)
             {
 
-				code += "add " + this._totalLightColorReg + ".xyz, " + this._totalLightColorReg + ", " + t.toString() + "\n";
+				code += "add " + this.pTotalLightColorReg + ".xyz, " + this.pTotalLightColorReg + ", " + t.toString() + "\n";
 				regCache.removeFragmentTempUsage(t);
 
 			}
@@ -394,16 +394,16 @@ module away.materials
 				return code;
 
             //TODO: AGAL <> GLSL
-			code += "sat " + this._totalLightColorReg.toString() + ", " + this._totalLightColorReg.toString() + "\n";
+			code += "sat " + this.pTotalLightColorReg.toString() + ", " + this.pTotalLightColorReg.toString() + "\n";
 			
 			if (this._useAmbientTexture)
             {
 
                 //TODO: AGAL <> GLSL
 
-				code += "mul " + albedo.toString() + ".xyz, " + albedo.toString() + ", " + this._totalLightColorReg.toString() + "\n" +
-					"mul " + this._totalLightColorReg.toString() + ".xyz, " + targetReg.toString() + ", " + this._totalLightColorReg.toString() + "\n" +
-					"sub " + targetReg.toString() + ".xyz, " + targetReg.toString() + ", " + this._totalLightColorReg.toString() + "\n" +
+				code += "mul " + albedo.toString() + ".xyz, " + albedo.toString() + ", " + this.pTotalLightColorReg.toString() + "\n" +
+					"mul " + this.pTotalLightColorReg.toString() + ".xyz, " + targetReg.toString() + ", " + this.pTotalLightColorReg.toString() + "\n" +
+					"sub " + targetReg.toString() + ".xyz, " + targetReg.toString() + ", " + this.pTotalLightColorReg.toString() + "\n" +
 					"add " + targetReg.toString() + ".xyz, " + albedo.toString() + ", " + targetReg.toString() + "\n";
 
 
@@ -413,7 +413,7 @@ module away.materials
 
                 //TODO: AGAL <> GLSL
 
-				code += "add " + targetReg.toString() + ".xyz, " + this._totalLightColorReg.toString() + ", " + targetReg.toString() + "\n";
+				code += "add " + targetReg.toString() + ".xyz, " + this.pTotalLightColorReg.toString() + ", " + targetReg.toString() + "\n";
 
 				if (this._useTexture)
                 {
@@ -432,7 +432,7 @@ module away.materials
 
 			}
 			
-			regCache.removeFragmentTempUsage(this._totalLightColorReg);
+			regCache.removeFragmentTempUsage(this.pTotalLightColorReg);
 			regCache.removeFragmentTempUsage(albedo);
 			
 			return code;
@@ -447,7 +447,7 @@ module away.materials
 		{
 
             //TODO: AGAL <> GLSL
-			return "mul " + this._totalLightColorReg.toString() + ".xyz, " + this._totalLightColorReg.toString() + ", " + this._shadowRegister.toString() + ".w\n";
+			return "mul " + this.pTotalLightColorReg.toString() + ".xyz, " + this.pTotalLightColorReg.toString() + ", " + this._shadowRegister.toString() + ".w\n";
 
 		}
 		
@@ -495,9 +495,14 @@ module away.materials
 		/**
 		 * Set internally by the compiler, so the method knows the register containing the shadow calculation.
 		 */
-		public set iShadowRegister(value:away.materials.ShaderRegisterElement)
-		{
-			this._shadowRegister = value;
-		}
+        public set iShadowRegister(value:away.materials.ShaderRegisterElement)
+        {
+            this._shadowRegister = value;
+        }
+
+        public setIShadowRegister(value:away.materials.ShaderRegisterElement)
+        {
+            this._shadowRegister = value;
+        }
 	}
 }
