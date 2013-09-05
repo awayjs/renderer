@@ -21,7 +21,8 @@ module demos.aircraft
 		//}
 		
 		//{ f14
-		private _f14								: away.containers.ObjectContainer3D;
+		private _f14Geom								: away.containers.ObjectContainer3D;
+		private _f14Meshes							: Array<away.entities.Mesh> = new Array<away.entities.Mesh>();
 		
 		private _f14StoresDiffuseTexture			: away.textures.HTMLImageElementTexture;
 		private _f14StoresNormalTexture				: away.textures.HTMLImageElementTexture;
@@ -86,8 +87,8 @@ module demos.aircraft
             away.Debug.LOG_PI_ERRORS    = false;
             away.Debug.THROW_ERRORS     = false;
 			
-            this.initView();
-            this.initLights();
+			this.initView();
+			this.initLights();
 			this.initAnimation();
 			this.initParsers();
 			this.loadAssets();
@@ -97,7 +98,7 @@ module demos.aircraft
 		
 		private initParsers():void
 		{
-			away.library.AssetLibrary.enableParser( away.loaders.OBJParser ) ;
+			away.library.AssetLibrary.enableParser( away.loaders.OBJParser );
 		}
 		
 		private loadAssets():void
@@ -152,18 +153,28 @@ module demos.aircraft
         public onResourceComplete ( e: away.events.LoaderEvent )
         {
 			console.log( "Loaded asset: " + e.url );
-			var loader  : away.loaders.AssetLoader   = <away.loaders.AssetLoader> e.target;
+			
+			var loader			: away.loaders.AssetLoader   	= <away.loaders.AssetLoader> e.target;
+			var numAssets		: number 						= loader.baseDependency.assets.length;
+			var i				: number						= 0;
 			
 			switch( e.url )
 			{
 				case "assets/sea_normals.jpg":
 						this._seaNormalTexture = <away.textures.HTMLImageElementTexture> loader.baseDependency.assets[ 0 ];
 						this.initSea();
+						this.initF14(); // TODO remove this mock call which enforces a temporary f14 texture allocation
 					break;
 				case 'assets/f14d.obj':
-						this._f14 = new away.containers.ObjectContainer3D();
-						console.log( "*******************************" );
-						console.log( loader.baseDependency );
+						this._f14Geom = new away.containers.ObjectContainer3D();
+						for( i = 0; i < numAssets; ++i )
+						{
+							var asset: away.library.IAsset = loader.baseDependency.assets[ i ];
+							var mesh: away.entities.Mesh = <away.entities.Mesh> away.library.AssetLibrary.getAsset( asset.name );
+							
+							this._f14Meshes.push( mesh ); // can we just getChildAt or getByResource name in this._f14Geom?
+							this._f14Geom.addChild( mesh );
+						}
 						this.initF14();
 					break;
 			}
@@ -171,8 +182,16 @@ module demos.aircraft
 		
 		private initF14():void
 		{
-			if( this._f14 && !this._f14Initialized )
+			if( this._f14Geom && !this._f14Initialized && this._seaNormalTexture ) // TEMP remove _seaNormalTexture dependency
 			{
+				var f14Material: away.materials.TextureMaterial = new away.materials.TextureMaterial( this._seaNormalTexture, true, true, false ); // will be the cubemap
+				f14Material.lightPicker = this._lightPicker;
+				
+				for( var i: number = 0; i < this._f14Meshes.length; ++i )
+                {
+                    this._f14Meshes[ i ].material = f14Material;
+                }
+				this._view.scene.addChild( this._f14Geom );
 				
 				this._f14Initialized = true;
 			}
@@ -202,7 +221,7 @@ module demos.aircraft
 				this._view.scene.addChild( this._seaMesh );
 				
 				this._seaInitialized = true;
-				this._timer.start(); // will be moved to complete handler (why does this not work if nothing in the display list?)
+				this._timer.start(); // will be moved to complete handler (why does this not work when the display list is empty?)
 			}
 		}
 		
