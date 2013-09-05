@@ -21,63 +21,23 @@ module demos.aircraft
 		//}
 		
 		//{ f14
-		private _f14Geom								: away.containers.ObjectContainer3D;
+		private _f14Geom							: away.containers.ObjectContainer3D;
 		private _f14Meshes							: Array<away.entities.Mesh> = new Array<away.entities.Mesh>();
-		
-		private _f14StoresDiffuseTexture			: away.textures.HTMLImageElementTexture;
-		private _f14StoresNormalTexture				: away.textures.HTMLImageElementTexture;
-		private _f14StoresSpecularTexture			: away.textures.HTMLImageElementTexture;
-		
-		private _f14Wing1DiffuseTexture				: away.textures.HTMLImageElementTexture;
-		private _f14Wing1NormalTexture				: away.textures.HTMLImageElementTexture;
-		private _f14Wing1SpecularTexture			: away.textures.HTMLImageElementTexture;
-		
-		private _f14Wing2DiffuseTexture				: away.textures.HTMLImageElementTexture;
-		private _f14Wing2NormalTexture				: away.textures.HTMLImageElementTexture;
-		private _f14Wing2SpecularTexture			: away.textures.HTMLImageElementTexture;
-		
-		private _f14CanopyDiffuseTexture			: away.textures.HTMLImageElementTexture;
-		private _f14CanopySpecularTexture			: away.textures.HTMLImageElementTexture;
-		
-		private _f14BurnerDiffuseTexture			: away.textures.HTMLImageElementTexture;
-		private _f14EngineDiffuseTexture			: away.textures.HTMLImageElementTexture;
-		
-		private _f14FuselageDiffuseTexture			: away.textures.HTMLImageElementTexture;
-		private _f14FuselageNormalTexture			: away.textures.HTMLImageElementTexture;
-		private _f14FuselageSpecularTexture			: away.textures.HTMLImageElementTexture;
-		
-		private _f14FuselageLowerDiffuseTexture		: away.textures.HTMLImageElementTexture;
-		private _f14FuselageLowerNormalTexture		: away.textures.HTMLImageElementTexture;
-		private _f14FuselageLowerSpecularTexture	: away.textures.HTMLImageElementTexture;
-		
-		private _f14IntakesDiffuseTexture			: away.textures.HTMLImageElementTexture;
-		private _f14IntakesNormalTexture			: away.textures.HTMLImageElementTexture;
-		private _f14IntakesSpecularTexture			: away.textures.HTMLImageElementTexture;
-		
-		private _f14InteriorDiffuseTexture			: away.textures.HTMLImageElementTexture;
-		private _f14LandingGearDiffuseTexture		: away.textures.HTMLImageElementTexture;
-		
-		private _f14TailLeftDiffuseTexture			: away.textures.HTMLImageElementTexture;
-		private _f14TailLeftNormalTexture			: away.textures.HTMLImageElementTexture;
-		private _f14TailLeftSpecularTexture			: away.textures.HTMLImageElementTexture;
-		
-		private _f14TailRightDiffuseTexture			: away.textures.HTMLImageElementTexture;
-		private _f14TailRightNormalTexture			: away.textures.HTMLImageElementTexture;
-		private _f14TailRightSpecularTexture		: away.textures.HTMLImageElementTexture;
-		
-		private _f14TaileronLeftDiffuseTexture		: away.textures.HTMLImageElementTexture;
-		private _f14TaileronLeftNormalTexture		: away.textures.HTMLImageElementTexture;
-		private _f14TaileronLeftSpecularTexture		: away.textures.HTMLImageElementTexture;
-		
-		private _f14TaileronRightDiffuseTexture		: away.textures.HTMLImageElementTexture;
-		private _f14TaileronRightNormalTexture		: away.textures.HTMLImageElementTexture;
-		private _f14TaileronRightSpecularTexture	: away.textures.HTMLImageElementTexture;
-		
-		private _f14PilotDiffuseTexture				: away.textures.HTMLImageElementTexture;
-		private _f14SeatDiffuseTexture				: away.textures.HTMLImageElementTexture;
 		
 		private _f14Initialized						: boolean = false;
 		//}
+		
+		//{ skybox
+		private _skyPositiveX						: away.textures.HTMLImageElementTexture;
+		private _skyNegativeX						: away.textures.HTMLImageElementTexture;
+		private _skyPositiveY						: away.textures.HTMLImageElementTexture;
+		private _skyNegativeY						: away.textures.HTMLImageElementTexture;
+		private _skyPositiveZ						: away.textures.HTMLImageElementTexture;
+		private _skyNegativeZ						: away.textures.HTMLImageElementTexture;
+		
+		private _skyboxInitialized					: boolean = false;
+		//}
+		
 		
 		private _lightPicker						: away.materials.StaticLightPicker;
 		private _appTime							: number = 0;
@@ -105,6 +65,13 @@ module demos.aircraft
 		{
 			this.loadAsset( 'assets/sea_normals.jpg' );
 			this.loadAsset( 'assets/f14d.obj' );
+			
+			this.loadAsset( 'assets/sky_negX.jpg' );
+			this.loadAsset( 'assets/sky_posX.jpg' );
+			this.loadAsset( 'assets/sky_negY.jpg' );
+			this.loadAsset( 'assets/sky_posY.jpg' );
+			this.loadAsset( 'assets/sky_negZ.jpg' );
+			this.loadAsset( 'assets/sky_posZ.jpg' );
 		}
 		
 		private loadAsset( path: string ):void
@@ -121,8 +88,8 @@ module demos.aircraft
 		private initView():void
 		{
 			this._view						= new away.containers.View3D();
-            this._view.camera.z				= -1000;//-50;
-			this._view.camera.y				= 600;//600;
+            this._view.camera.z				= -500;
+			this._view.camera.y				= 250;
 			this._view.camera.rotationX		= 20;
             this._view.camera.lens.near		= 0.5;
 			this._view.camera.lens.far		= 14000;
@@ -178,7 +145,7 @@ module demos.aircraft
                             {
                                 case away.library.AssetType.MESH:
                                     var mesh : away.entities.Mesh = <away.entities.Mesh> asset;
-                                    this._f14Meshes.push( mesh ); // can we just getChildAt or getByResource name in this._f14Geom?
+                                   // this._f14Meshes.push( mesh ); // can we just getChildAt or getByResource name in this._f14Geom?
                                     this._f14Geom.addChild( mesh );
                                     break;
                                 case away.library.AssetType.GEOMETRY:
@@ -189,25 +156,60 @@ module demos.aircraft
 						}
 						this.initF14();
 					break;
+				case 'assets/sky_negX.jpg':
+						this._skyNegativeX = <away.textures.HTMLImageElementTexture> loader.baseDependency.assets[ 0 ];
+						this.initSkybox();
+					break;
+				case 'assets/sky_posX.jpg':
+						this._skyPositiveX = <away.textures.HTMLImageElementTexture> loader.baseDependency.assets[ 0 ];
+						this.initSkybox();
+					break;
+				case 'assets/sky_negY.jpg':
+						this._skyNegativeY = <away.textures.HTMLImageElementTexture> loader.baseDependency.assets[ 0 ];
+						this.initSkybox();
+					break;
+				case 'assets/sky_posY.jpg':
+						this._skyPositiveY = <away.textures.HTMLImageElementTexture> loader.baseDependency.assets[ 0 ];
+						this.initSkybox();
+					break;
+				case 'assets/sky_negZ.jpg':
+						this._skyNegativeZ = <away.textures.HTMLImageElementTexture> loader.baseDependency.assets[ 0 ];
+						this.initSkybox();
+					break;
+				case 'assets/sky_posZ.jpg':
+						this._skyPositiveZ = <away.textures.HTMLImageElementTexture> loader.baseDependency.assets[ 0 ];
+						this.initSkybox();
+					break;
 			}
         }
+		
+		private initSkybox():void
+		{
+			if( !this._skyboxInitialized &&
+				 this._skyNegativeX &&
+				 this._skyPositiveX &&
+				 this._skyNegativeY &&
+				 this._skyPositiveY &&
+				 this._skyNegativeZ &&
+				 this._skyPositiveZ )
+			{
+				this._skyboxInitialized = true;
+				console.log( "lets build a skybox!" );
+			}
+		}
 		
 		private initF14():void
 		{
 			if( this._f14Geom && !this._f14Initialized && this._seaNormalTexture ) // TEMP remove _seaNormalTexture dependency
 			{
-    			var f14Material: away.materials.TextureMaterial = new away.materials.TextureMaterial( this._seaNormalTexture, true, true, false ); // will be the cubemap
+				this._f14Initialized = true;
+    			
+				var f14Material: away.materials.TextureMaterial = new away.materials.TextureMaterial( this._seaNormalTexture, true, true, false ); // will be the cubemap
 				    f14Material.lightPicker = this._lightPicker;
-				
-				for( var i: number = 0; i < this._f14Meshes.length; ++i )
-                {
-                    //this._f14Meshes[ i ].material = f14Material;
-                }
 				this._view.scene.addChild( this._f14Geom );
-                this._f14Geom.scale( 50 );
+                this._f14Geom.scale( 20 );
                 this._f14Geom.rotationX = 90;
                 this._f14Geom.y = 200;
-				this._f14Initialized = true;
                 this._view.camera.lookAt( this._f14Geom.position );
 			}
 		}
