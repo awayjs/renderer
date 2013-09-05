@@ -9,16 +9,77 @@ module demos.aircraft
 {
     export class AircraftDemo
     {
-        private _view    : away.containers.View3D;
-        private _raf     : away.utils.RequestAnimationFrame;
 		
-		private _seaGeom					: away.primitives.PlaneGeometry;
-		private _seaMesh					: away.entities.Mesh;		
-		private _seaNormalTexture			: away.textures.HTMLImageElementTexture;
-		private _seaInitialized				: boolean = false;
+        private _view								: away.containers.View3D;
+        private _timer								: away.utils.RequestAnimationFrame;
 		
-		private _lightPicker				: away.materials.StaticLightPicker;
-		private _appTime					: number = 0;
+		//{ sea
+		private _seaGeom							: away.primitives.PlaneGeometry;
+		private _seaMesh							: away.entities.Mesh;		
+		private _seaNormalTexture					: away.textures.HTMLImageElementTexture;
+		private _seaInitialized						: boolean = false;
+		//}
+		
+		//{ f14
+		private _f14								: away.containers.ObjectContainer3D;
+		
+		private _f14StoresDiffuseTexture			: away.textures.HTMLImageElementTexture;
+		private _f14StoresNormalTexture				: away.textures.HTMLImageElementTexture;
+		private _f14StoresSpecularTexture			: away.textures.HTMLImageElementTexture;
+		
+		private _f14Wing1DiffuseTexture				: away.textures.HTMLImageElementTexture;
+		private _f14Wing1NormalTexture				: away.textures.HTMLImageElementTexture;
+		private _f14Wing1SpecularTexture			: away.textures.HTMLImageElementTexture;
+		
+		private _f14Wing2DiffuseTexture				: away.textures.HTMLImageElementTexture;
+		private _f14Wing2NormalTexture				: away.textures.HTMLImageElementTexture;
+		private _f14Wing2SpecularTexture			: away.textures.HTMLImageElementTexture;
+		
+		private _f14CanopyDiffuseTexture			: away.textures.HTMLImageElementTexture;
+		private _f14CanopySpecularTexture			: away.textures.HTMLImageElementTexture;
+		
+		private _f14BurnerDiffuseTexture			: away.textures.HTMLImageElementTexture;
+		private _f14EngineDiffuseTexture			: away.textures.HTMLImageElementTexture;
+		
+		private _f14FuselageDiffuseTexture			: away.textures.HTMLImageElementTexture;
+		private _f14FuselageNormalTexture			: away.textures.HTMLImageElementTexture;
+		private _f14FuselageSpecularTexture			: away.textures.HTMLImageElementTexture;
+		
+		private _f14FuselageLowerDiffuseTexture		: away.textures.HTMLImageElementTexture;
+		private _f14FuselageLowerNormalTexture		: away.textures.HTMLImageElementTexture;
+		private _f14FuselageLowerSpecularTexture	: away.textures.HTMLImageElementTexture;
+		
+		private _f14IntakesDiffuseTexture			: away.textures.HTMLImageElementTexture;
+		private _f14IntakesNormalTexture			: away.textures.HTMLImageElementTexture;
+		private _f14IntakesSpecularTexture			: away.textures.HTMLImageElementTexture;
+		
+		private _f14InteriorDiffuseTexture			: away.textures.HTMLImageElementTexture;
+		private _f14LandingGearDiffuseTexture		: away.textures.HTMLImageElementTexture;
+		
+		private _f14TailLeftDiffuseTexture			: away.textures.HTMLImageElementTexture;
+		private _f14TailLeftNormalTexture			: away.textures.HTMLImageElementTexture;
+		private _f14TailLeftSpecularTexture			: away.textures.HTMLImageElementTexture;
+		
+		private _f14TailRightDiffuseTexture			: away.textures.HTMLImageElementTexture;
+		private _f14TailRightNormalTexture			: away.textures.HTMLImageElementTexture;
+		private _f14TailRightSpecularTexture		: away.textures.HTMLImageElementTexture;
+		
+		private _f14TaileronLeftDiffuseTexture		: away.textures.HTMLImageElementTexture;
+		private _f14TaileronLeftNormalTexture		: away.textures.HTMLImageElementTexture;
+		private _f14TaileronLeftSpecularTexture		: away.textures.HTMLImageElementTexture;
+		
+		private _f14TaileronRightDiffuseTexture		: away.textures.HTMLImageElementTexture;
+		private _f14TaileronRightNormalTexture		: away.textures.HTMLImageElementTexture;
+		private _f14TaileronRightSpecularTexture	: away.textures.HTMLImageElementTexture;
+		
+		private _f14PilotDiffuseTexture				: away.textures.HTMLImageElementTexture;
+		private _f14SeatDiffuseTexture				: away.textures.HTMLImageElementTexture;
+		
+		private _f14Initialized						: boolean = false;
+		//}
+		
+		private _lightPicker						: away.materials.StaticLightPicker;
+		private _appTime							: number = 0;
 		
         constructor()
         {
@@ -28,26 +89,32 @@ module demos.aircraft
             this.initView();
             this.initLights();
 			this.initAnimation();
+			this.initParsers();
 			this.loadAssets();
-			
-            //away.library.AssetLibrary.enableParser( away.loaders.OBJParser ) ;
 			
             window.onresize = () => this.resize();
         }
 		
+		private initParsers():void
+		{
+			away.library.AssetLibrary.enableParser( away.loaders.OBJParser ) ;
+		}
+		
 		private loadAssets():void
 		{
-			var token: away.loaders.AssetLoaderToken;
-			
-            token = away.library.AssetLibrary.load( new away.net.URLRequest( 'sea_normals.jpg' ) );
+			this.loadAsset( 'assets/sea_normals.jpg' );
+			this.loadAsset( 'assets/f14d.obj' );
+		}
+		
+		private loadAsset( path: string ):void
+		{
+			var token:away.loaders.AssetLoaderToken = away.library.AssetLibrary.load( new away.net.URLRequest( path ) );
             token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete, this );
-			
-			
 		}
 		
 		private initAnimation():void
 		{
-			this._raf = new away.utils.RequestAnimationFrame( this.render, this );
+			this._timer = new away.utils.RequestAnimationFrame( this.render, this );
 		}
 		
 		private initView():void
@@ -59,6 +126,7 @@ module demos.aircraft
             this._view.camera.lens.near		= 0.5;
 			this._view.camera.lens.far		= 14000;
             this._view.backgroundColor		= 0x2c2c32;
+            this.resize();
 		}
 		
 		private initLights():void
@@ -83,18 +151,32 @@ module demos.aircraft
 		
         public onResourceComplete ( e: away.events.LoaderEvent )
         {
+			console.log( "Loaded asset: " + e.url );
 			var loader  : away.loaders.AssetLoader   = <away.loaders.AssetLoader> e.target;
 			
 			switch( e.url )
 			{
-				case "sea_normals.jpg":
+				case "assets/sea_normals.jpg":
 						this._seaNormalTexture = <away.textures.HTMLImageElementTexture> loader.baseDependency.assets[ 0 ];
 						this.initSea();
 					break;
+				case 'assets/f14d.obj':
+						this._f14 = new away.containers.ObjectContainer3D();
+						console.log( "*******************************" );
+						console.log( loader.baseDependency );
+						this.initF14();
+					break;
 			}
-			
-            this.resize();
         }
+		
+		private initF14():void
+		{
+			if( this._f14 && !this._f14Initialized )
+			{
+				
+				this._f14Initialized = true;
+			}
+		}
 		
 		private initSea():void
 		{
@@ -120,7 +202,7 @@ module demos.aircraft
 				this._view.scene.addChild( this._seaMesh );
 				
 				this._seaInitialized = true;
-				this._raf.start(); // will be moved to complete handler (why does this not work if nothing in the display list?)
+				this._timer.start(); // will be moved to complete handler (why does this not work if nothing in the display list?)
 			}
 		}
 		
