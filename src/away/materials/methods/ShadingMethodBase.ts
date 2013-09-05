@@ -62,11 +62,16 @@ module away.materials
 		{
 			return this._sharedRegisters;
 		}
-		
-		public set iSharedRegisters(value:away.materials.ShaderRegisterData)
-		{
-			this._sharedRegisters = value;
-		}
+
+        public set iSharedRegisters(value:away.materials.ShaderRegisterData)
+        {
+            this._sharedRegisters = value;
+        }
+
+        public setISharedRegisters(value:away.materials.ShaderRegisterData)
+        {
+            this._sharedRegisters = value;
+        }
 		
 		/**
 		 * Any passes required that render to a texture used by this method.
