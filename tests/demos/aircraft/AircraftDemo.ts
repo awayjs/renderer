@@ -9,7 +9,16 @@ module demos.aircraft
 {
     export class AircraftDemo
     {
-		
+
+        private maxStates                           : number = 2;
+
+        private cameraIncrement                     : number = 0;
+        private rollIncrement                       : number = 0 ;
+        private loopIncrement                       : number = 0 ;
+        private state                               : number = 0;
+
+        private waterMethod : away.materials.SimpleWaterNormalMethod
+
         private _view								: away.containers.View3D;
         private _timer								: away.utils.RequestAnimationFrame;
 		
@@ -18,12 +27,13 @@ module demos.aircraft
 		private _seaMesh							: away.entities.Mesh;		
 		private _seaNormalTexture					: away.textures.HTMLImageElementTexture;
 		private _seaInitialized						: boolean = false;
+        private _seaMaterial : away.materials.TextureMaterial;
+
 		//}
 		
 		//{ f14
 		private _f14Geom							: away.containers.ObjectContainer3D;
-		private _f14Meshes							: Array<away.entities.Mesh> = new Array<away.entities.Mesh>();
-		
+
 		private _f14Initialized						: boolean = false;
 		//}
 		
@@ -34,6 +44,8 @@ module demos.aircraft
 		private _skyNegativeY						: away.textures.HTMLImageElementTexture;
 		private _skyPositiveZ						: away.textures.HTMLImageElementTexture;
 		private _skyNegativeZ						: away.textures.HTMLImageElementTexture;
+
+        private skyboxCubeTexture                         : away.textures.HTMLImageElementCubeTexture;
 		
 		private _skyboxInitialized					: boolean = false;
 		//}
@@ -110,13 +122,84 @@ module demos.aircraft
 			
 			this._lightPicker = new away.materials.StaticLightPicker( [light] );
 		}
-		
+
         private render( dt: number ) //animate based on dt for firefox
         {
+
+
             if ( this._f14Geom )
             {
-                this._f14Geom.rotationZ += dt * .01
+
+                this.rollIncrement += 0.02;
+
+
+                switch ( this.state )
+                {
+
+                    case 0 :
+
+                        this._f14Geom.rotationZ = Math.sin( this.rollIncrement ) * 25;
+
+                        break;
+                    case 1 :
+
+
+                        this.loopIncrement += 0.05;
+
+                        this._f14Geom.z += Math.cos( this.loopIncrement ) * 20
+                        this._f14Geom.y += Math.sin( this.loopIncrement ) * 20;
+                        this._f14Geom.rotationX += -1 * ( ( Math.PI / 180 ) * Math.atan2( this._f14Geom.z , this._f14Geom.y ) ) ;//* 20;
+                        this._f14Geom.rotationZ = Math.sin( this.rollIncrement ) * 25;
+
+                        if ( this.loopIncrement > ( Math.PI * 2 ) )
+                        {
+
+                            this.loopIncrement = 0;
+                            this.state = 0;
+                        }
+
+                        break;
+
+
+
+                }
+
+
             }
+
+            if ( this._f14Geom )
+                this._view.camera.lookAt( this._f14Geom.position );
+
+            if ( this._view.camera )
+            {
+
+                this.cameraIncrement += 0.01;
+
+                this._view.camera.x = Math.cos( this.cameraIncrement ) * 400;
+                this._view.camera.z = Math.sin( this.cameraIncrement ) * 400;
+
+            }
+
+            if ( this._f14Geom )
+                this._view.camera.lookAt( this._f14Geom.position );
+
+            if ( this._seaMaterial )
+            {
+
+
+                this._seaMesh.subMeshes[0].offsetV -= 0.04;
+
+
+                         /*
+                this.waterMethod.water1OffsetX += .001;
+                this.waterMethod.water1OffsetY += .1;
+                this.waterMethod.water2OffsetX += .0007;
+                this.waterMethod.water2OffsetY += .6;
+                           */
+
+                //this._seaMaterial
+            }
+
 			this._appTime += dt;
             this._view.render();
         }
@@ -181,6 +264,9 @@ module demos.aircraft
 						this.initSkybox();
 					break;
 			}
+
+            this.initSea();
+
         }
 		
 		private initSkybox():void
@@ -193,6 +279,10 @@ module demos.aircraft
 				 this._skyNegativeZ &&
 				 this._skyPositiveZ )
 			{
+
+                this.skyboxCubeTexture = new away.textures.HTMLImageElementCubeTexture(   this._skyPositiveX.htmlImageElement, this._skyNegativeX.htmlImageElement,
+                                                                                    this._skyNegativeY.htmlImageElement, this._skyPositiveY.htmlImageElement,
+                                                                                    this._skyNegativeZ.htmlImageElement, this._skyPositiveZ.htmlImageElement);
 				this._skyboxInitialized = true;
 				console.log( "lets build a skybox!" );
 			}
@@ -211,30 +301,53 @@ module demos.aircraft
                 this._f14Geom.rotationX = 90;
                 this._f14Geom.y = 200;
                 this._view.camera.lookAt( this._f14Geom.position );
+
+
+                document.onmousedown = () => this.onMouseDown();
+
 			}
 		}
-		
-		private initSea():void
+
+
+
+        private onMouseDown()
+        {
+
+            this.state ++;
+
+            if ( this.state >= this.maxStates )
+                this.state = 0;
+
+
+        }
+
+
+
+        private initSea():void
 		{
-			if( this._seaNormalTexture && !this._seaInitialized ) // will check for all dependencies e.g. cubemap
+			if( this._seaNormalTexture && !this._seaInitialized && this._skyboxInitialized) // will check for all dependencies e.g. cubemap
 			{
-				var seaMaterial: away.materials.TextureMaterial = new away.materials.TextureMaterial( this._seaNormalTexture, true, true, false ); // will be the cubemap
-				//var waterMethod:away.materials.SimpleWaterNormalMethod = new away.materials.SimpleWaterNormalMethod( seaNormalTexture, seaNormalTexture );
-				//var fresnelMethod:away.materials.FresnelSpecularMethod = new away.materials.FresnelSpecularMethod();
-				//fresnelMethod.normalReflectance = .3;
-				
-				seaMaterial.alphaBlending = true;
-				seaMaterial.lightPicker = this._lightPicker;
-				seaMaterial.repeat = true;
-				//waterMaterial.normalMethod = waterMethod;
-				//waterMaterial.addMethod( new away.materials.EnvMapMethod( cubeTexture ) );
-				//waterMaterial.specularMethod = fresnelMethod;
-				seaMaterial.gloss = 100;
-				seaMaterial.specular = 1;
+				this._seaMaterial                                       = new away.materials.TextureMaterial( this._seaNormalTexture, true, true, false ); // will be the cubemap
+				this.waterMethod                                        = new away.materials.SimpleWaterNormalMethod( this._seaNormalTexture, this._seaNormalTexture );
+				var fresnelMethod:away.materials.FresnelSpecularMethod  = new away.materials.FresnelSpecularMethod();
+				    fresnelMethod.normalReflectance                     = .3;
+
+                this._seaMaterial.alphaBlending   = true;
+                this._seaMaterial.lightPicker     = this._lightPicker;
+                this._seaMaterial.repeat          = true;
+
+                this._seaMaterial.animateUVs = true;
+
+                this._seaMaterial.normalMethod = this.waterMethod ;
+                //this._seaMaterial.addMethod( new away.materials.EnvMapMethod( this.skyboxCubeTexture ) );
+                //this._seaMaterial.specularMethod = fresnelMethod;
+
+                this._seaMaterial.gloss = 100;
+                this._seaMaterial.specular = 1;
 				
 				this._seaGeom = new away.primitives.PlaneGeometry( 50000, 50000, 1, 1, true, false );
 				this._seaGeom.scaleUV( 100, 100 );
-				this._seaMesh = new away.entities.Mesh( this._seaGeom, seaMaterial );
+				this._seaMesh = new away.entities.Mesh( this._seaGeom, this._seaMaterial );
 				this._view.scene.addChild( this._seaMesh );
 				
 				this._seaInitialized = true;
