@@ -265,7 +265,17 @@ module away.materials
             {
 
                 //TODO: AGAL <> GLSL
-                code += this._iModulateMethod (vo, t, regCache, this._sharedRegisters);
+
+                if (  this._iModulateMethodScope != null )
+                {
+                    code += this._iModulateMethod.apply( this._iModulateMethodScope, [vo, t, regCache, this._sharedRegisters] );
+                }
+                else
+                {
+                    throw "Modulated methods needs a scope";
+                }
+
+                //code += this._iModulateMethod (vo, t, regCache, this._sharedRegisters);
 
             }
 
@@ -323,6 +333,25 @@ module away.materials
 				"mul " + t.toString() + ".xyz, " + t.toString() + ", " + weightRegister.toString() + "\n";
 
 
+            if (this._iModulateMethod != null)
+            {
+
+                //TODO: AGAL <> GLSL
+
+                if (  this._iModulateMethodScope != null )
+                {
+                    code += this._iModulateMethod.apply( this._iModulateMethodScope, [vo, t, regCache, this._sharedRegisters] );
+                }
+                else
+                {
+                    throw "Modulated methods needs a scope";
+                }
+
+                //code += this._iModulateMethod (vo, t, regCache, this._sharedRegisters);
+
+            }
+
+            /*
 			if (this._iModulateMethod!= null)
             {
 
@@ -330,8 +359,8 @@ module away.materials
                 code += this._iModulateMethod(vo, t, regCache, this._sharedRegisters);
 
             }
+            */
 
-			
 			if (!this._isFirstLight)
             {
 
