@@ -30,11 +30,12 @@ module away.materials
 
 		}
 
-        public initCompositeSpecularMethod( modulateMethod:Function, baseSpecularMethod:away.materials.BasicSpecularMethod = null)
+        public initCompositeSpecularMethod( scope : Object , modulateMethod:Function, baseSpecularMethod:away.materials.BasicSpecularMethod = null)
         {
 
             this._baseMethod = baseSpecularMethod || new away.materials.BasicSpecularMethod();
             this._baseMethod._iModulateMethod = modulateMethod;
+            this._baseMethod._iModulateMethodScope = scope;
             this._baseMethod.addEventListener(away.events.ShadingMethodEvent.SHADER_INVALIDATED, this.onShaderInvalidated , this );
 
         }
