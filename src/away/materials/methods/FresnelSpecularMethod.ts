@@ -23,7 +23,7 @@ module away.materials
 			// may want to offer diff speculars
 			super();
 
-            this.initCompositeSpecularMethod( this.modulateSpecular, baseSpecularMethod);
+            this.initCompositeSpecularMethod( this , this.modulateSpecular, baseSpecularMethod);
 			this._incidentLight = !basedOnSurface;
 		}
 
@@ -110,6 +110,9 @@ module away.materials
 		public iGetFragmentPreLightingCode(vo:away.materials.MethodVO, regCache:away.materials.ShaderRegisterCache):string
 		{
 			this._dataReg = regCache.getFreeFragmentConstant();
+
+            console.log( 'FresnelSpecularMethod' , 'iGetFragmentPreLightingCode' , this._dataReg ) ;
+
 			vo.secondaryFragmentConstantsIndex = this._dataReg.index*4;
 			return super.iGetFragmentPreLightingCode(vo, regCache);
 		}
@@ -134,7 +137,10 @@ module away.materials
 				"mul " + target + ".y, " + this._dataReg + ".x, " + target + ".y\n" +             // f0*(1 - exp)
 				"add " + target + ".y, " + target + ".x, " + target + ".y\n" +          // exp + f0*(1 - exp)
 				"mul " + target + ".w, " + target + ".w, " + target + ".y\n";
-			
+
+
+            console.log( 'FresnelSpecularMethod' , 'modulateSpecular' , code );
+
 			return code;
 		}
 	
