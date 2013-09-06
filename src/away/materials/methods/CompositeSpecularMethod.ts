@@ -34,11 +34,8 @@ module away.materials
         {
 
             this._baseMethod = baseSpecularMethod || new away.materials.BasicSpecularMethod();
-
-
             this._baseMethod._iModulateMethod = modulateMethod;
             this._baseMethod.addEventListener(away.events.ShadingMethodEvent.SHADER_INVALIDATED, this.onShaderInvalidated , this );
-
 
         }
 
@@ -151,11 +148,16 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public set sharedRegisters(value:away.materials.ShaderRegisterData)
-		{
-            this.setISharedRegisters( value );
-			this._baseMethod.setISharedRegisters(value );
-		}
+        public set iSharedRegisters(value:away.materials.ShaderRegisterData)
+        {
+            super.setISharedRegisters( value );
+            this._baseMethod.setISharedRegisters(value );
+        }
+        public setISharedRegisters(value:away.materials.ShaderRegisterData)
+        {
+            super.setISharedRegisters( value );
+            this._baseMethod.setISharedRegisters(value );
+        }
 		
 		/**
 		 * @inheritDoc
