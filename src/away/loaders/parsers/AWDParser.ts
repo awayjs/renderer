@@ -139,57 +139,81 @@ module away.loaders
                 var block               : AWDBlock;
 
                 // Cube Textures not yet implemented
-                /*
+                //*
                 if (isCubeTextureArray.length == 1)
                 {
-                    asset = resourceDependency.assets[0] as Texture2DBase;
-                    if (asset) {
-                        var mat:TextureMaterial;
-                        var users:Array;
-                        block = _blocks[parseInt(resourceDependency.id)];
-                        block.data = asset; // Store finished asset
+                    asset = <away.textures.Texture2DBase> resourceDependency.assets[0] ;
+                    if (asset)
+                    {
+                        var mat     : away.materials.TextureMaterial;
+                        var users   : Array;
+
+                        block       = this._blocks[ resourceDependency.id ];
+                        block.data  = asset; // Store finished asset
+
                         // Reset name of texture to the one defined in the AWD file,
                         // as opposed to whatever the image parser came up with.
                         asset.resetAssetPath(block.name, null, true);
                         block.name = asset.name;
                         // Finalize texture asset to dispatch texture event, which was
                         // previously suppressed while the dependency was loaded.
-                        finalizeAsset(asset);
-                        if (_debug) {
-                            trace("Successfully loadet Bitmap for texture");
-                            trace("Parsed CubeTexture: Name = " + block.name);
+
+
+                        this._pFinalizeAsset( <away.library.IAsset> asset );
+
+                        if (this._debug)
+                        {
+                            console.log("Successfully loadet Bitmap for texture");
+                            console.log("Parsed CubeTexture: Name = " + block.name);
                         }
                     }
                 }
 
-                */
+               // */
 
                 // Cube Textures not yet implemented
 
-                /*
-                if (isCubeTextureArray.length > 1) {
-                    thisBitmapTexture = resourceDependency.assets[0] as BitmapTexture;
-                    _cubeTextures[uint(isCubeTextureArray[1])] = BitmapTexture(thisBitmapTexture).bitmapData;
-                    _texture_users[ressourceID].push(1);
+                if (isCubeTextureArray.length > 1)
+                {
+                    thisBitmapTexture = <away.textures.BitmapTexture> resourceDependency.assets[0] ;
 
-                    if (_debug)
-                        trace("Successfully loadet Bitmap " + _texture_users[ressourceID].length + " / 6 for Cubetexture");
-                    if (_texture_users[ressourceID].length == _cubeTextures.length) {
-                        asset = new BitmapCubeTexture(_cubeTextures[0], _cubeTextures[1], _cubeTextures[2], _cubeTextures[3], _cubeTextures[4], _cubeTextures[5]);
-                        block = _blocks[ressourceID];
-                        block.data = asset; // Store finished asset
+                    var tx : away.textures.HTMLImageElementTexture = <away.textures.HTMLImageElementTexture> thisBitmapTexture;
+
+                    this._cubeTextures[ isCubeTextureArray[1] ] = tx.htmlImageElement; // ?
+                    this._texture_users[ressourceID].push(1);
+
+                    if (this._debug)
+                    {
+                        console.log("Successfully loaded Bitmap " + this._texture_users[ressourceID].length + " / 6 for Cubetexture");
+                    }
+                    if (this._texture_users[ressourceID].length == this._cubeTextures.length)
+                    {
+
+                        var posX :any = this._cubeTextures[0];
+                        var negX :any = this._cubeTextures[1];
+                        var posY :any = this._cubeTextures[2];
+                        var negY :any = this._cubeTextures[3];
+                        var posZ :any = this._cubeTextures[4];
+                        var negZ :any = this._cubeTextures[5];
+
+                        asset       = new away.textures.HTMLImageElementCubeTexture( posX , negX , posY , negY , posZ , negZ ) ;
+                        block       = this._blocks[ressourceID];
+                        block.data  = asset; // Store finished asset
+
                         // Reset name of texture to the one defined in the AWD file,
                         // as opposed to whatever the image parser came up with.
                         asset.resetAssetPath(block.name, null, true);
                         block.name = asset.name;
                         // Finalize texture asset to dispatch texture event, which was
                         // previously suppressed while the dependency was loaded.
-                        finalizeAsset(asset);
-                        if (_debug)
-                            trace("Parsed CubeTexture: Name = " + block.name);
+                        this._pFinalizeAsset(  <away.library.IAsset> asset );
+                        if (this._debug)
+                        {
+                            console.log("Parsed CubeTexture: Name = " + block.name);
+                        }
                     }
                 }
-                */
+
             }
         }
 
@@ -617,6 +641,9 @@ module away.loaders
             var asset:away.textures.Texture2DBase;
 
             this._blocks[blockID].name  = this.parseVarStr();
+
+            console.log( 'this._blocks[blockID].name: ' , this._blocks[blockID].name );
+
             var type:number             = this._newBlockBytes.readUnsignedByte();
             var data_len:number;
 
@@ -810,61 +837,45 @@ module away.loaders
 
                 case AWDParser.BOOL:
                 case AWDParser.INT8:
-
                     elem_len = 1;
                     read_func = this._newBlockBytes.readByte;
-
                     break;
 
                 case AWDParser.INT16:
-
                     elem_len = 2;
                     read_func = this._newBlockBytes.readShort;
-
                     break;
 
                 case AWDParser.INT32:
-
                     elem_len = 4;
                     read_func = this._newBlockBytes.readInt;
-
                     break;
 
                 case AWDParser.UINT8:
-
                     elem_len = 1;
                     read_func = this._newBlockBytes.readUnsignedByte;
-
                     break;
 
                 case AWDParser.UINT16:
-
                     elem_len = 2;
                     read_func = this._newBlockBytes.readUnsignedShort;
-
                     break;
 
                 case AWDParser.UINT32:
                 case AWDParser.COLOR:
                 case AWDParser.BADDR:
-
                     elem_len = 4;
                     read_func = this._newBlockBytes.readUnsignedInt;
-
                     break;
 
                 case AWDParser.FLOAT32:
-
                     elem_len = 4;
                     read_func = this._newBlockBytes.readFloat;
-
                     break;
 
                 case AWDParser.FLOAT64:
-
                     elem_len = 8;
                     read_func = this._newBlockBytes.readDouble;
-
                     break;
 
                 case AWDParser.AWDSTRING:
@@ -877,23 +888,17 @@ module away.loaders
                 case AWDParser.MTX3x3:
                 case AWDParser.MTX4x3:
                 case AWDParser.MTX4x4:
-
                     elem_len = 8;
                     read_func = this._newBlockBytes.readDouble;
-
                     break;
 
             }
 
             if (elem_len < len)
             {
-                var list      : Array;
-                var num_read  : number;
-                var num_elems : number;
-
-                list        = [];
-                num_read    = 0;
-                num_elems   = len/elem_len;
+                var list      : Array   = [];
+                var num_read  : number  = 0;
+                var num_elems : number  = len/elem_len;
 
                 while (num_read < num_elems)
                 {
@@ -905,9 +910,7 @@ module away.loaders
             }
             else
             {
-                var val:any;
-
-                val = read_func();
+                var val:any = read_func();
                 return val;
             }
         }
