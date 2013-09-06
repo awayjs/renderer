@@ -17,7 +17,8 @@ module away.materials
 		/**
 		 * A method that is exposed to wrappers in case the strength needs to be controlled
 		 */
-		public _iModulateMethod;
+        public _iModulateMethod;
+        public _iModulateMethodScope : Object;
 
 		/**
 		 * Creates a new LightingMethodBase.
