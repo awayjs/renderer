@@ -129,7 +129,10 @@ module away.loaders
                     {
 
                         case away.loaders.ParserDataFormat.BINARY:
-                            dataFormat = away.net.URLLoaderDataFormat.BINARY;
+                            dataFormat = away.net.URLLoaderDataFormat.ARRAY_BUFFER;
+
+                            //dataFormat = away.net.URLLoaderDataFormat.BINARY;
+
                             break;
 
                         case away.loaders.ParserDataFormat.PLAIN_TEXT:
