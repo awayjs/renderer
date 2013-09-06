@@ -76,8 +76,6 @@ module away.utils
 		
 		public readByte()
 		{
-
-
 			if ( this.position >= this.length )
 			{
 				throw "ByteArray out of bounds read. Positon="+this.position+", Length="+this.length; 
@@ -90,24 +88,24 @@ module away.utils
         public readBytes( bytes : ByteArray , offset : number = 0 , length : number = 0 )
         {
 
-            var localInt8A      : Int8Array    = new Int8Array( this.arraybytes );
-
-            if ( length == 0 )
+            if (length == null)
             {
-                length = bytes.length;// - offset;
+                length = bytes.length;
             }
 
-            var originalPosition : number = bytes.position; // restore position of bytes once copy is done
+            bytes.ensureWriteableSpace(offset + length);
 
-            bytes.position = offset; // move target to start writing at offset
+            var byteView        : Int8Array = new Int8Array( bytes.arraybytes );
+            var localByteView   : Int8Array = new Int8Array( this.arraybytes );
 
-            for (var i = 0 ; i < length ; i++)
+            byteView.set( localByteView.subarray( this.position , this.position + length), offset);
+
+            this.position += length;
+
+            if ( length + offset > bytes.length)
             {
-                bytes.writeByte( localInt8A[ this.position ++ ] ); // Copy data and increment local position - note could check overrun if needed;
+                bytes.length += ( length + offset ) - bytes.length;
             }
-
-            bytes.position = originalPosition;
-
 
         }
 
