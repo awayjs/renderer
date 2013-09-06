@@ -210,12 +210,19 @@ module away.materials
 		 * @inheritDoc
 		 */
 
-		public set iSharedRegisters(value:away.materials.ShaderRegisterData)
-		{
+        public set iSharedRegisters(value:away.materials.ShaderRegisterData)
+        {
             this.pBaseMethod.setISharedRegisters( value );
-            this.setISharedRegisters( value ) ;
+            super.setISharedRegisters( value ) ;
 
-		}
+        }
+
+        public setISharedRegisters(value:away.materials.ShaderRegisterData)
+        {
+            this.pBaseMethod.setISharedRegisters( value );
+            super.setISharedRegisters( value ) ;
+
+        }
 
 		/**
 		 * @inheritDoc
