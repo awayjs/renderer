@@ -21,7 +21,7 @@ module away.entities
 		private _hasData:boolean;
 		
 		public _pSegments:Object; //Dictionary
-		private _indexSegments:number;
+		private _indexSegments:number = 0;
 		
 		constructor()
 		{
@@ -33,7 +33,7 @@ module away.entities
 			
 			this._pSegments = new Object();
 
-        this.material = new away.materials.SegmentMaterial();
+            this.material = new away.materials.SegmentMaterial();
 		}
 		
 		public addSegment( segment:away.primitives.Segment )
