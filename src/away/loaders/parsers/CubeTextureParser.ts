@@ -210,9 +210,7 @@ module away.loaders
 
             if ( imgLoader )
             {
-
                 return imgLoader.image;
-
             }
 
             return null;
@@ -229,7 +227,6 @@ module away.loaders
                 this.createCubeTexture();
             }
 
-
         }
 
 		/**
@@ -237,8 +234,6 @@ module away.loaders
 		 */
 		public _pProceedParsing() : boolean
 		{
-
-            console.log( 'JSONTextureParser._pProceedParsing' , this._state );
 
             switch ( this._state )
             {
@@ -256,8 +251,6 @@ module away.loaders
                     //return away.loaders.ParserBase.MORE_TO_PARSE;
 
                     break;
-
-
 
                 case this.STATE_COMPLETE:
 
