@@ -29,7 +29,7 @@ module away.loaders
             var base64Image     : string            = window.btoa ( byteStr );
             var str             : string            = 'data:image/png;base64,'+base64Image;
             var img             : HTMLImageElement  = <HTMLImageElement> new Image();
-                img.src = str;
+                img.src                             = str;
 
             return img;
 
@@ -59,11 +59,25 @@ module away.loaders
 		 */
 		public static toString(data:any , length:number = 0 ):string
 		{
+
             if ( typeof data === 'string' );
             {
 
                 var s : string = <string> data;
-                return s.substr(0 , s.length );
+
+                if (s['substr'] != null )
+                {
+                    return s.substr(0 , s.length );
+                }
+
+            }
+
+            if ( data instanceof away.utils.ByteArray )
+            {
+
+                var ba : away.utils.ByteArray = <away.utils.ByteArray> data;
+                    ba.position = 0;
+                return ba.readUTFBytes( Math.min(ba.getBytesAvailable() , length));
 
             }
 
@@ -86,6 +100,7 @@ module away.loaders
 			return null;
 
 			*/
+
 		}
 	}
 }
