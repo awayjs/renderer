@@ -86,9 +86,6 @@ module away.materials
 		public set texture(value:away.textures.Texture2DBase)
 		{
 
-            // TODO: Check - TRICKY
-            away.Debug.throwPIR( 'BasicAmbientMethod' , 'set texture' , 'TRICKY - Odd boolean assignment - needs testing' );
-
             var b : boolean =  ( value != null );
 
             /* // ORIGINAL conditional
@@ -96,8 +93,6 @@ module away.materials
              (value && _texture && (value.hasMipMaps != _texture.hasMipMaps || value.format != _texture.format))) {
              invalidateShaderProgram();
              }
-
-
              */
 			if ( b != this._useTexture ||
 				(value && this._texture && (value.hasMipMaps != this._texture.hasMipMaps || value.format != this._texture.format))) {
@@ -112,10 +107,6 @@ module away.materials
 		 */
 		public copyFrom(method:away.materials.ShadingMethodBase)
 		{
-
-            // TODO: Check - TRICKY
-            away.Debug.throwPIR( 'BasicAmbientMethod' , 'copyFrom' , 'TRICKY - Odd case assignment - needs testing' );
-
             var m : any = method;
             var b : away.materials.BasicAmbientMethod = <away.materials.BasicAmbientMethod> m;
 
@@ -123,7 +114,6 @@ module away.materials
 
 			this.ambient = diff.ambient;
 			this.ambientColor = diff.ambientColor;
-
 		}
 
 		/**

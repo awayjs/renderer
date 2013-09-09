@@ -119,12 +119,7 @@ module away.materials
 		public set texture(value:away.textures.Texture2DBase)
 		{
 
-            // TODO: Check - TRICKY
-            away.Debug.throwPIR( 'BasicDiffuseMethod' , 'set texture' , 'TRICKY - Odd boolean assignment - needs testing' );
-
-            //var v : any = value;
             var b : boolean =  ( value != null );
-            //var b : boolean = <boolean> value;
 
 			if ( b != this._useTexture ||
 				(value && this._texture && (value.hasMipMaps != this._texture.hasMipMaps || value.format != this._texture.format))) {
