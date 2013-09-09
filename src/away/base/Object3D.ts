@@ -154,7 +154,7 @@ module away.base
                     this._listenToRotationChanged = true;
 					break;
 				case away.events.Object3DEvent.SCALE_CHANGED:
-					this._listenToRotationChanged = true;
+					this._listenToScaleChanged = true;
 					break;
 			}
 		}
