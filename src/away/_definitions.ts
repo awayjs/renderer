@@ -161,8 +161,8 @@
 ///<reference path="textures/BitmapTexture.ts" />
 ///<reference path="textures/CubeTextureBase.ts" />
 ///<reference path="textures/RenderTexture.ts" />
-
 ///<reference path="textures/HTMLImageElementCubeTexture.ts" />
+///<reference path="textures/BitmapCubeTexture.ts" />
 
 ///<reference path="utils/TextureUtils.ts" />
 ///<reference path="events/TimerEvent.ts" />
