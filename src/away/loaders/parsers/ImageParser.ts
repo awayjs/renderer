@@ -52,10 +52,32 @@ module away.loaders
 		{
 
             if ( data  instanceof HTMLImageElement )
-            {
-
                 return true;
-            }
+
+            if (!(data instanceof away.utils.ByteArray))
+                return false;
+
+            var ba:away.utils.ByteArray = <away.utils.ByteArray> data;
+            ba.position = 0;
+
+            if (ba.readUnsignedShort() == 0xffd8)
+                return true; // JPEG, maybe check for "JFIF" as well?
+
+            ba.position = 0;
+            if (ba.readShort() == 0x424D)
+                return true; // BMP
+
+            ba.position = 1;
+            if (ba.readUTFBytes(3) == 'PNG')
+                return true;
+
+            ba.position = 0;
+            if (ba.readUTFBytes(3) == 'GIF' && ba.readShort() == 0x3839 && ba.readByte() == 0x61)
+                return true;
+
+            ba.position = 0;
+            if (ba.readUTFBytes(3) == 'ATF')
+                return true;
 
             return false;
 
@@ -67,29 +89,47 @@ module away.loaders
 		public _pProceedParsing() : boolean
 		{
 
-            var asset : away.textures.Texture2DBase;
+            var asset       : away.textures.Texture2DBase;
+            var sizeError   : boolean = false;
 
-            if ( this.data  instanceof HTMLImageElement )
+            if ( this.data instanceof HTMLImageElement )// Parse HTMLImageElement
             {
-
-                asset = <away.textures.Texture2DBase> new away.textures.HTMLImageElementTexture( <HTMLImageElement> this.data , false );
 
                 if ( away.utils.TextureUtils.isHTMLImageElementValid( <HTMLImageElement> this.data ) )
                 {
-
+                    asset = <away.textures.Texture2DBase> new away.textures.HTMLImageElementTexture( <HTMLImageElement> this.data , false );
                     this._pFinalizeAsset( <away.library.IAsset> asset , this._iFileName );
-
-
                 }
                 else
                 {
-
-                    this.dispatchEvent( new away.events.AssetEvent( away.events.AssetEvent.TEXTURE_SIZE_ERROR , <away.library.IAsset> asset ) );
-
+                    sizeError = true;
                 }
 
-                return away.loaders.ParserBase.PARSING_DONE;
+            }
+            else if ( this.data instanceof away.utils.ByteArray ) // Parse a ByteArray
+            {
 
+                var ba : away.utils.ByteArray = this.data
+                    ba.position = 0;
+                var htmlImageElement : HTMLImageElement = away.loaders.ParserUtil.byteArrayToImage( this.data );
+
+                if ( away.utils.TextureUtils.isHTMLImageElementValid( htmlImageElement ) )
+                {
+                    asset = <away.textures.Texture2DBase> new away.textures.HTMLImageElementTexture( htmlImageElement , false );
+                    this._pFinalizeAsset( <away.library.IAsset> asset , this._iFileName );
+                }
+                else
+                {
+                    sizeError = true;
+                }
+
+            }
+
+            if ( sizeError == true ) // Generate new Checkerboard texture material
+            {
+                asset = <away.textures.Texture2DBase> new away.textures.BitmapTexture( away.materials.DefaultMaterialManager.createCheckeredBitmapData() , false );
+                this._pFinalizeAsset( <away.library.IAsset> asset , this._iFileName );
+                this.dispatchEvent( new away.events.AssetEvent( away.events.AssetEvent.TEXTURE_SIZE_ERROR , <away.library.IAsset> asset ) );
             }
 
             return away.loaders.ParserBase.PARSING_DONE;
