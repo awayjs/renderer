@@ -331,6 +331,19 @@ module away.loaders
 
         }
 
+        private dispose() : void
+        {
+
+            for ( var c in this._blocks)
+            {
+
+                var b : AWDBlock = <AWDBlock> this._blocks[ c ];
+                    b.dispose();
+
+            }
+
+        }
+
         private parseNextBlock():void
         {
             var block       : AWDBlock;
@@ -399,15 +412,15 @@ module away.loaders
                 this._pDieWithError( 'Compressed AWD formats not yet supported');
 
                 /*
-                if (blockCompressionLZMA)
-                {
-                    this._newBlockBytes.uncompress(AWDParser.COMPRESSIONMODE_LZMA);
-                }
-                else
-                {
-                    this._newBlockBytes.uncompress();
-                }
-                */
+                 if (blockCompressionLZMA)
+                 {
+                 this._newBlockBytes.uncompress(AWDParser.COMPRESSIONMODE_LZMA);
+                 }
+                 else
+                 {
+                 this._newBlockBytes.uncompress();
+                 }
+                 */
 
             }
 
@@ -440,74 +453,74 @@ module away.loaders
 
             if ((this._version[0] == 2) && (this._version[1] == 1))
             {
-
                 console.log( 'parse version 2.1');
-                /*
-                switch (type) {
-                    case 11:
-                        this.parsePrimitves(this._cur_block_id);
-                        isParsed = true;
-                        break;
-                    case 31:
-                        this.parseSkyBoxInstance(this._cur_block_id);
-                        isParsed = true;
-                        break;
-                    case 41:
-                        this.parseLight(this._cur_block_id);
-                        isParsed = true;
-                        break;
-                    case 42:
-                        this.parseCamera(this._cur_block_id);
-                        isParsed = true;
-                        break;
 
-                //  case 43:
-                //      parseTextureProjector(_cur_block_id);
-                //      isParsed = true;
-                //      break;
+                 switch (type)
+                 {
+                     case 11:
+                         this.parsePrimitves(this._cur_block_id);
+                         isParsed = true;
+                         break;
+                     case 31:
+                         //this.parseSkyBoxInstance(this._cur_block_id);
+                         //isParsed = true;
+                         break;
+                     case 41:
+                         this.parseLight(this._cur_block_id);
+                         //isParsed = true;
+                         break;
+                     case 42:
+                         //this.parseCamera(this._cur_block_id);
+                         //isParsed = true;
+                         break;
 
-                    case 51:
-                        this.parseLightPicker(this._cur_block_id);
-                        isParsed = true;
-                        break;
-                    case 81:
-                        this.parseMaterial_v1(this._cur_block_id);
-                        isParsed = true;
-                        break;
-                    case 83:
-                        this.parseCubeTexture(this._cur_block_id);
-                        isParsed = true;
-                        break;
-                    case 91:
-                        this.parseSharedMethodBlock(this._cur_block_id);
-                        isParsed = true;
-                        break;
-                    case 92:
-                        this.parseShadowMethodBlock(this._cur_block_id);
-                        isParsed = true;
-                        break;
-                    case 111:
-                        this.parseMeshPoseAnimation(this._cur_block_id, true);
-                        isParsed = true;
-                        break;
-                    case 112:
-                        this.parseMeshPoseAnimation(this._cur_block_id);
-                        isParsed = true;
-                        break;
-                    case 113:
-                        this.parseVertexAnimationSet(this._cur_block_id);
-                        isParsed = true;
-                        break;
-                    case 122:
-                        this.parseAnimatorSet(this._cur_block_id);
-                        isParsed = true;
-                        break;
-                    case 253:
-                        this.parseCommand(this._cur_block_id);
-                        isParsed = true;
-                        break;
-                }
-                //*/
+                     //  case 43:
+                     //      parseTextureProjector(_cur_block_id);
+                     //      isParsed = true;
+                     //      break;
+
+                     case 51:
+                         //this.parseLightPicker(this._cur_block_id);
+                         //isParsed = true;
+                         break;
+                     case 81:
+                         //this.parseMaterial_v1(this._cur_block_id);
+                         //isParsed = true;
+                         break;
+                     case 83:
+                         //this.parseCubeTexture(this._cur_block_id);
+                         //isParsed = true;
+                         break;
+                     case 91:
+                         //this.parseSharedMethodBlock(this._cur_block_id);
+                         //isParsed = true;
+                         break;
+                     case 92:
+                         //this.parseShadowMethodBlock(this._cur_block_id);
+                         //isParsed = true;
+                         break;
+                     case 111:
+                         //this.parseMeshPoseAnimation(this._cur_block_id, true);
+                         //isParsed = true;
+                         break;
+                     case 112:
+                         //this.parseMeshPoseAnimation(this._cur_block_id);
+                         //isParsed = true;
+                         break;
+                     case 113:
+                         //this.parseVertexAnimationSet(this._cur_block_id);
+                         //isParsed = true;
+                         break;
+                     case 122:
+                         //this.parseAnimatorSet(this._cur_block_id);
+                         //isParsed = true;
+                         break;
+                     case 253:
+                         //this.parseCommand(this._cur_block_id);
+                         //isParsed = true;
+                         break;
+                 }
+                 //*/
             }
             //*
             if (isParsed == false)
@@ -519,7 +532,7 @@ module away.loaders
                         this.parseTriangleGeometrieBlock(this._cur_block_id);
                         break;
                     case 22:
-                        //this.parseContainer(this._cur_block_id);
+                        this.parseContainer(this._cur_block_id);
                         break;
                     case 23:
                         this.parseMeshInstance(this._cur_block_id);
@@ -531,22 +544,43 @@ module away.loaders
                         this.parseTexture(this._cur_block_id);
                         break;
                     case 101:
+
+                        //------------------------------------------------------------------
+                        // Not yet supported - animation packages are not yet implemented
+                        //------------------------------------------------------------------
+
                         //this.parseSkeleton(this._cur_block_id);
+
                         break;
                     case 102:
+
+                        //------------------------------------------------------------------
+                        // Not yet supported - animation packages are not yet implemented
+                        //------------------------------------------------------------------
+
                         //this.parseSkeletonPose(this._cur_block_id);
                         break;
                     case 103:
+
+                        //------------------------------------------------------------------
+                        // Not yet supported - animation packages are not yet implemented
+                        //------------------------------------------------------------------
+
                         //this.parseSkeletonAnimation(this._cur_block_id);
                         break;
                     case 121:
+
+                        //------------------------------------------------------------------
+                        // Not yet supported - animation packages are not yet implemented
+                        //------------------------------------------------------------------
+
                         //this.parseUVAnimation(this._cur_block_id);
                         break;
                     case 254:
-                        //this.parseNameSpace(this._cur_block_id);
+                        this.parseNameSpace(this._cur_block_id);
                         break;
                     case 255:
-                        //this.parseMetaData(this._cur_block_id);
+                        this.parseMetaData(this._cur_block_id);
                         break;
                     default:
                         if (this._debug)
@@ -601,217 +635,8 @@ module away.loaders
 
         }
 
-        private dispose() : void
-        {
 
-            for ( var c in this._blocks)
-            {
-
-                var b : AWDBlock = <AWDBlock> this._blocks[ c ];
-                    b.dispose();
-
-            }
-
-        }
-
-        private parseVarStr():string
-        {
-
-            var len:number = this._newBlockBytes.readUnsignedShort();
-            return this._newBlockBytes.readUTFBytes(len);
-        }
-
-        private getAssetByID(assetID:number, assetTypesToGet:Array<string>, extraTypeInfo:string = "SingleTexture"):Array<any>
-        {
-            var returnArray:Array<any> = new Array();
-            var typeCnt:number = 0;
-            if (assetID > 0)
-            {
-                if (this._blocks[assetID])
-                {
-                    if (this._blocks[assetID].data)
-                    {
-                        while (typeCnt < assetTypesToGet.length)
-                        {
-
-                            var iasset : away.library.IAsset = <away.library.IAsset> this._blocks[assetID].data;
-
-                            if ( iasset.assetType == assetTypesToGet[typeCnt]) {
-                                //if the right assetType was found
-                                if ((assetTypesToGet[typeCnt] == away.library.AssetType.TEXTURE) && (extraTypeInfo == "CubeTexture"))
-                                {
-                                    if (this._blocks[assetID].data instanceof away.textures.HTMLImageElementCubeTexture )
-                                    {
-                                        returnArray.push(true);
-                                        returnArray.push(this._blocks[assetID].data);
-                                        return returnArray;
-                                    }
-                                }
-                                if ((assetTypesToGet[typeCnt] == away.library.AssetType.TEXTURE) && (extraTypeInfo == "SingleTexture"))
-                                {
-                                    if (this._blocks[assetID].data instanceof away.textures.HTMLImageElementTexture )
-                                    {
-                                        returnArray.push(true);
-                                        returnArray.push(this._blocks[assetID].data);
-                                        return returnArray;
-                                    }
-                                } else {
-                                    returnArray.push(true);
-                                    returnArray.push(this._blocks[assetID].data);
-                                    return returnArray;
-
-                                }
-                            }
-                            //if ((assetTypesToGet[typeCnt] == away.library.AssetType.GEOMETRY) && (IAsset(_blocks[assetID].data).assetType == AssetType.MESH)) {
-                            if ((assetTypesToGet[typeCnt] == away.library.AssetType.GEOMETRY) && (iasset.assetType == away.library.AssetType.MESH))
-                            {
-
-                                var mesh : away.entities.Mesh = <away.entities.Mesh> this._blocks[assetID].data
-
-                                returnArray.push(true);
-                                returnArray.push( mesh.geometry );
-                                return returnArray;
-
-                            }
-
-                            typeCnt++;
-                        }
-                    }
-                }
-            }
-            // if the function has not returned anything yet, the asset is not found, or the found asset is not the right type.
-            returnArray.push(false);
-            returnArray.push(this.getDefaultAsset(assetTypesToGet[0], extraTypeInfo));
-            return returnArray;
-        }
-
-        private getDefaultAsset(assetType:string, extraTypeInfo:string):away.library.IAsset
-        {
-            switch (true)
-            {
-
-                case (assetType == away.library.AssetType.TEXTURE):
-
-                    if (extraTypeInfo == "CubeTexture")
-                        return this.getDefaultCubeTexture();
-                    if (extraTypeInfo == "SingleTexture")
-                        return this.getDefaultTexture();
-                    break;
-
-                case (assetType == away.library.AssetType.MATERIAL):
-
-                    return this.getDefaultMaterial()
-                    break;
-
-                default:
-
-                    break;
-            }
-
-            return null;
-
-        }
-
-        private getDefaultMaterial():away.library.IAsset
-        {
-            if (!this._defaultBitmapMaterial)
-                this._defaultBitmapMaterial = away.materials.DefaultMaterialManager.getDefaultMaterial();
-            return  <away.library.IAsset>  this._defaultBitmapMaterial;
-        }
-
-        private getDefaultTexture():away.library.IAsset
-        {
-
-            if (!this._defaultTexture)
-            {
-                this._defaultTexture = away.materials.DefaultMaterialManager.getDefaultTexture();
-            }
-
-            return <away.library.IAsset> this._defaultTexture;
-
-        }
-
-        private getDefaultCubeTexture():away.library.IAsset
-        {
-            if (!this._defaultCubeTexture)
-            {
-
-                var defaultBitmap:away.display.BitmapData = away.materials.DefaultMaterialManager.createCheckeredBitmapData();//this._defaultTexture.bitmapData;
-
-                this._defaultCubeTexture = new away.textures.BitmapCubeTexture(defaultBitmap, defaultBitmap, defaultBitmap, defaultBitmap, defaultBitmap, defaultBitmap);
-                this._defaultCubeTexture.name = "defaultTexture";
-            }
-
-            return <away.library.IAsset> this._defaultCubeTexture;
-        }
-
-        private readNumber(precision:boolean = false):number
-        {
-            if (precision)
-                return this._newBlockBytes.readDouble();
-            return this._newBlockBytes.readFloat();
-
-        }
-
-        private parseMatrix3D():away.geom.Matrix3D
-        {
-            return new away.geom.Matrix3D(this.parseMatrix43RawData());
-        }
-
-        private parseMatrix32RawData():Array<number>
-        {
-            var i:number;
-            var mtx_raw:Array<number> = new Array<number>(6);
-            for (i = 0; i < 6; i++)
-            {
-                mtx_raw[i] = this._newBlockBytes.readFloat();
-            }
-
-            return mtx_raw;
-        }
-
-        private parseMatrix43RawData():Array<number>
-        {
-            var mtx_raw:Array<number> = new Array<number>(16);
-
-            mtx_raw[0] = this.readNumber(this._accuracyMatrix);
-            mtx_raw[1] = this.readNumber(this._accuracyMatrix);
-            mtx_raw[2] = this.readNumber(this._accuracyMatrix);
-            mtx_raw[3] = 0.0;
-            mtx_raw[4] = this.readNumber(this._accuracyMatrix);
-            mtx_raw[5] = this.readNumber(this._accuracyMatrix);
-            mtx_raw[6] = this.readNumber(this._accuracyMatrix);
-            mtx_raw[7] = 0.0;
-            mtx_raw[8] = this.readNumber(this._accuracyMatrix);
-            mtx_raw[9] = this.readNumber(this._accuracyMatrix);
-            mtx_raw[10] = this.readNumber(this._accuracyMatrix);
-            mtx_raw[11] = 0.0;
-            mtx_raw[12] = this.readNumber(this._accuracyMatrix);
-            mtx_raw[13] = this.readNumber(this._accuracyMatrix);
-            mtx_raw[14] = this.readNumber(this._accuracyMatrix);
-            mtx_raw[15] = 1.0;
-
-            //TODO: fix max exporter to remove NaN values in joint 0 inverse bind pose
-
-            if (isNaN(mtx_raw[0]))
-            {
-                mtx_raw[0] = 1;
-                mtx_raw[1] = 0;
-                mtx_raw[2] = 0;
-                mtx_raw[4] = 0;
-                mtx_raw[5] = 1;
-                mtx_raw[6] = 0;
-                mtx_raw[8] = 0;
-                mtx_raw[9] = 0;
-                mtx_raw[10] = 1;
-                mtx_raw[12] = 0;
-                mtx_raw[13] = 0;
-                mtx_raw[14] = 0;
-
-            }
-
-            return mtx_raw;
-        }
+        //--Parser Blocks---------------------------------------------------------------------------
 
         //Block ID = 1
         private parseTriangleGeometrieBlock(blockID:number):void
@@ -871,31 +696,65 @@ module away.loaders
                             verts[idx++] = y;
                             verts[idx++] = z;
                         }
-                    } else if (str_type == 2) {
+                    }
+                    else if (str_type == 2)
+                    {
                         var indices:Array<number> = new Array<number>();
-                        while (this._newBlockBytes.position < str_end) {
+
+                        while (this._newBlockBytes.position < str_end)
+                        {
                             // TODO: Respect stream field type
                             indices[idx++] = this._newBlockBytes.readUnsignedShort();
                         }
-                    } else if (str_type == 3) {
+
+                    }
+                    else if (str_type == 3)
+                    {
                         var uvs:Array<number> = new Array<number>();
                         while (this._newBlockBytes.position < str_end)
+                        {
                             uvs[idx++] = this.readNumber(this._accuracyGeo);
-                    } else if (str_type == 4) {
+
+                        }
+                    }
+                    else if (str_type == 4)
+                    {
+
                         var normals:Array<number> = new Array<number>();
+
                         while (this._newBlockBytes.position < str_end)
+                        {
                             normals[idx++] = this.readNumber(this._accuracyGeo);
-                    } else if (str_type == 6) {
+                        }
+
+                    }
+                    else if (str_type == 6)
+                    {
                         w_indices = Array<number>();
+
                         while (this._newBlockBytes.position < str_end)
+                        {
                             w_indices[idx++] = this._newBlockBytes.readUnsignedShort()*3; // TODO: Respect stream field type
-                    } else if (str_type == 7) {
+                        }
+
+                    }
+                    else if (str_type == 7)
+                    {
+
                         weights = new Array<number>();
+
                         while (this._newBlockBytes.position < str_end)
+                        {
                             weights[idx++] = this.readNumber(this._accuracyGeo);
-                    } else
+                        }
+                    }
+                    else
+                    {
                         this._newBlockBytes.position = str_end;
+                    }
+
                 }
+
                 this.parseUserAttributes(); // Ignore sub-mesh attributes for now
 
                 sub_geoms = away.utils.GeometryUtils.fromVectors(verts, indices, uvs, normals, null, weights, w_indices);
@@ -927,8 +786,146 @@ module away.loaders
             this._blocks[blockID].data = geom;
 
             if (this._debug)
+            {
                 console.log("Parsed a TriangleGeometry: Name = " + name + "| SubGeometries = " + sub_geoms.length);
+            }
 
+        }
+
+        //Block ID = 11
+        private parsePrimitves(blockID:number):void
+        {
+            var name        : string;
+            var geom        : away.base.Geometry;
+            var primType    : number;
+            var subs_parsed : number;
+            var props       : AWDProperties;
+            var bsm         : away.geom.Matrix3D;
+
+            // Read name and sub count
+            name        = this.parseVarStr();
+            primType    = this._newBlockBytes.readUnsignedByte();
+            props       = this.parseProperties({101:this._geoNrType, 102:this._geoNrType, 103:this._geoNrType, 110:this._geoNrType, 111:this._geoNrType, 301:AWDParser.UINT16, 302:AWDParser.UINT16, 303:AWDParser.UINT16, 701:AWDParser.BOOL, 702:AWDParser.BOOL, 703:AWDParser.BOOL, 704:AWDParser.BOOL});
+
+            var primitveTypes:Array<string> = ["Unsupported Type-ID", "PlaneGeometry", "CubeGeometry", "SphereGeometry", "CylinderGeometry", "ConeGeometry", "CapsuleGeometry", "TorusGeometry"]
+
+            switch (primType)
+            {
+                // to do, not all properties are set on all primitives
+
+                case 1:
+                    geom = new away.primitives.PlaneGeometry(props.get(101, 100), props.get(102, 100), props.get(301, 1), props.get(302, 1), props.get(701, true), props.get(702, false));
+                    break;
+
+                case 2:
+                    geom = new away.primitives.CubeGeometry(props.get(101, 100), props.get(102, 100), props.get(103, 100), props.get(301, 1), props.get(302, 1), props.get(303, 1), props.get(701, true));
+                    break;
+
+                case 3:
+                    geom = new away.primitives.SphereGeometry(props.get(101, 50), props.get(301, 16), props.get(302, 12), props.get(701, true));
+                    break;
+
+                case 4:
+                    geom = new away.primitives.CylinderGeometry(props.get(101, 50), props.get(102, 50), props.get(103, 100), props.get(301, 16), props.get(302, 1), true, true, true); // bool701, bool702, bool703, bool704);
+                    if (!props.get(701, true))
+                        (<away.primitives.CylinderGeometry>geom).topClosed = false;
+                    if (!props.get(702, true))
+                        (<away.primitives.CylinderGeometry>geom).bottomClosed = false;
+                    if (!props.get(703, true))
+                        (<away.primitives.CylinderGeometry>geom).yUp = false;
+
+                    break;
+
+                case 5:
+                    geom = new away.primitives.ConeGeometry(props.get(101, 50), props.get(102, 100), props.get(301, 16), props.get(302, 1), props.get(701, true), props.get(702, true));
+                    break;
+
+                case 6:
+                    geom = new away.primitives.CapsuleGeometry(props.get(101, 50), props.get(102, 100), props.get(301, 16), props.get(302, 15), props.get(701, true));
+                    break;
+
+                case 7:
+                    geom = new away.primitives.TorusGeometry(props.get(101, 50), props.get(102, 50), props.get(301, 16), props.get(302, 8), props.get(701, true));
+                    break;
+
+                default:
+                    geom = new away.base.Geometry();
+                    console.log("ERROR: UNSUPPORTED PRIMITIVE_TYPE");
+                    break;
+            }
+
+            if ((props.get(110, 1) != 1) || (props.get(111, 1) != 1))
+            {
+                geom.subGeometries;
+                geom.scaleUV(props.get(110, 1), props.get(111, 1));
+            }
+
+            this.parseUserAttributes();
+            geom.name = name;
+            this._pFinalizeAsset(geom, name);
+            this._blocks[blockID].data = geom;
+
+            if (this._debug)
+            {
+                if ((primType < 0) || (primType > 7))
+                {
+                    primType = 0;
+                }
+                console.log("Parsed a Primivite: Name = " + name + "| type = " + primitveTypes[primType]);
+            }
+        }
+
+        // Block ID = 22
+        private parseContainer(blockID:number):void
+        {
+            var name    : string;
+            var par_id  : number;
+            var mtx     : away.geom.Matrix3D;
+            var ctr     : away.containers.ObjectContainer3D;
+            var parent  : away.containers.ObjectContainer3D;
+
+            par_id  = this._newBlockBytes.readUnsignedInt();
+            mtx     = this.parseMatrix3D();
+            name    = this.parseVarStr();
+
+            var parentName:string   = "Root (TopLevel)";
+            ctr                     = new away.containers.ObjectContainer3D();
+            ctr.transform           = mtx;
+
+            var returnedArray:Array<any> = this.getAssetByID(par_id, [away.library.AssetType.CONTAINER, away.library.AssetType.LIGHT, away.library.AssetType.MESH, away.library.AssetType.ENTITY, away.library.AssetType.SEGMENT_SET]);
+
+            if (returnedArray[0])
+            {
+                var obj : away.containers.ObjectContainer3D = ( <away.containers.ObjectContainer3D> returnedArray[1] ).addChild(ctr);
+                parentName = (<away.containers.ObjectContainer3D> returnedArray[1]).name;
+            }
+            else if (par_id > 0)
+            {
+                this._blocks[ blockID ].addError("Could not find a parent for this ObjectContainer3D");
+            }
+
+            // in AWD version 2.1 we read the Container properties
+            if ((this._version[0] == 2) && (this._version[1] == 1))
+            {
+                var props:AWDProperties = this.parseProperties({1:this._matrixNrType, 2:this._matrixNrType, 3:this._matrixNrType, 4:AWDParser.UINT8});
+                ctr.pivotPoint = new away.geom.Vector3D(props.get(1, 0), props.get(2, 0), props.get(3, 0));
+            }
+            // in other versions we do not read the Container properties
+            else
+            {
+                this.parseProperties(null);
+            }
+
+            // the extraProperties should only be set for AWD2.1-Files, but is read for both versions
+            ctr.extra = this.parseUserAttributes();
+
+            this._pFinalizeAsset( <away.library.IAsset> ctr, name);
+            this._blocks[blockID].data = ctr;
+
+            if (this._debug)
+            {
+                console.log("Parsed a Container: Name = '" + name + "' | Parent-Name = " + parentName);
+            }
         }
 
         // Block ID = 23
@@ -937,7 +934,6 @@ module away.loaders
             var num_materials:number;
             var materials_parsed:number;
             var parent:away.containers.ObjectContainer3D;
-
             var par_id:number = this._newBlockBytes.readUnsignedInt();
             var mtx:away.geom.Matrix3D = this.parseMatrix3D();
             var name:string = this.parseVarStr();
@@ -945,6 +941,7 @@ module away.loaders
             var data_id:number = this._newBlockBytes.readUnsignedInt();
             var geom:away.base.Geometry;
             var returnedArrayGeometry:Array<any> = this.getAssetByID(data_id, [away.library.AssetType.GEOMETRY])
+
             if (returnedArrayGeometry[0])
             {
                 geom = <away.base.Geometry> returnedArrayGeometry[1];
@@ -958,18 +955,21 @@ module away.loaders
             this._blocks[blockID].geoID = data_id;
             var materials:Array<away.materials.MaterialBase> = new Array<away.materials.MaterialBase>();
             num_materials = this._newBlockBytes.readUnsignedShort();
+
             var materialNames:Array<string> = new Array<string>();
             materials_parsed = 0;
+
             var returnedArrayMaterial:Array<any>;
+
             while (materials_parsed < num_materials)
             {
-
                 var mat_id:number;
                 mat_id = this._newBlockBytes.readUnsignedInt();
                 returnedArrayMaterial = this.getAssetByID(mat_id, [away.library.AssetType.MATERIAL])
                 if ((!returnedArrayMaterial[0]) && (mat_id > 0))
+                {
                     this._blocks[blockID].addError("Could not find Material Nr " + materials_parsed + " (ID = " + mat_id + " ) for this Mesh");
-
+                }
 
                 var m : away.materials.MaterialBase = <away.materials.MaterialBase> returnedArrayMaterial[1];
 
@@ -977,7 +977,6 @@ module away.loaders
                 materialNames.push(m.name);
 
                 materials_parsed++;
-
             }
 
             var mesh:away.entities.Mesh = new away.entities.Mesh(geom, null);
@@ -988,15 +987,12 @@ module away.loaders
             if (returnedArrayParent[0])
             {
                 var objC : away.containers.ObjectContainer3D = <away.containers.ObjectContainer3D> returnedArrayParent[1];
-
-                objC.addChild(mesh);
+                    objC.addChild(mesh);
                 parentName = objC.name;
-
             }
             else if (par_id > 0)
             {
                 this._blocks[blockID].addError("Could not find a parent for this Mesh");
-
             }
 
             if (materials.length >= 1 && mesh.subMeshes.length == 1)
@@ -1006,6 +1002,7 @@ module away.loaders
             else if (materials.length > 1)
             {
                 var i:number;
+
                 // Assign each sub-mesh in the mesh a material from the list. If more sub-meshes
                 // than materials, repeat the last material for all remaining sub-meshes.
                 for (i = 0; i < mesh.subMeshes.length; i++)
@@ -1022,15 +1019,130 @@ module away.loaders
             else
             {
                 this.parseProperties(null);
-
             }
+
             mesh.extra = this.parseUserAttributes();
+
             this._pFinalizeAsset( <away.library.IAsset> mesh, name);
             this._blocks[blockID].data = mesh;
+
             if (this._debug)
+            {
                 console.log("Parsed a Mesh: Name = '" + name + "' | Parent-Name = " + parentName + "| Geometry-Name = " + geom.name + " | SubMeshes = " + mesh.subMeshes.length + " | Mat-Names = " + materialNames.toString());
+            }
+        }
+
+
+        //Block ID = 41
+        private parseLight(blockID:number):void
+        {
+            var light           : away.lights.LightBase;
+            var newShadowMapper : away.lights.ShadowMapperBase;
+
+            var par_id          : number                = this._newBlockBytes.readUnsignedInt();
+            var mtx             : away.geom.Matrix3D    = this.parseMatrix3D();
+            var name            : string                = this.parseVarStr();
+            var lightType       : number                = this._newBlockBytes.readUnsignedByte();
+            var props           : AWDProperties         = this.parseProperties({1:this._propsNrType, 2:this._propsNrType, 3:AWDParser.COLOR, 4:this._propsNrType, 5:this._propsNrType, 6:AWDParser.BOOL, 7:AWDParser.COLOR, 8:this._propsNrType, 9:AWDParser.UINT8, 10:AWDParser.UINT8, 11:this._propsNrType, 12:AWDParser.UINT16, 21:this._matrixNrType, 22:this._matrixNrType, 23:this._matrixNrType});
+            var shadowMapperType: number                = props.get(9, 0);
+            var parentName      : string                = "Root (TopLevel)";
+            var lightTypes      : Array<string>         = ["Unsupported LightType", "PointLight", "DirectionalLight"];
+            var shadowMapperTypes : Array<string>       = ["No ShadowMapper", "DirectionalShadowMapper", "NearDirectionalShadowMapper", "CascadeShadowMapper", "CubeMapShadowMapper"];
+
+            if (lightType == 1)
+            {
+                light = new away.lights.PointLight();
+
+                (<away.lights.PointLight> light).radius     = props.get(1, 90000);
+                (<away.lights.PointLight> light).fallOff    = props.get(2, 100000);
+
+                if (shadowMapperType > 0)
+                {
+                    if (shadowMapperType == 4)
+                    {
+                        newShadowMapper = new away.lights.CubeMapShadowMapper();
+                    }
+                }
+
+                light.transform = mtx;
+
+            }
+
+            if (lightType == 2)
+            {
+
+                light = new away.lights.DirectionalLight(props.get(21, 0), props.get(22, -1), props.get(23, 1));
+
+                if (shadowMapperType > 0)
+                {
+                    if (shadowMapperType == 1)
+                    {
+                        newShadowMapper = new away.lights.DirectionalShadowMapper();
+                    }
+
+                    //if (shadowMapperType == 2)
+                    //  newShadowMapper = new NearDirectionalShadowMapper(props.get(11, 0.5));
+                    //if (shadowMapperType == 3)
+                    //   newShadowMapper = new CascadeShadowMapper(props.get(12, 3));
+
+                }
+
+            }
+            light.color         = props.get(3, 0xffffff);
+            light.specular      = props.get(4, 1.0);
+            light.diffuse       = props.get(5, 1.0);
+            light.ambientColor  = props.get(7, 0xffffff);
+            light.ambient       = props.get(8, 0.0);
+
+            // if a shadowMapper has been created, adjust the depthMapSize if needed, assign to light and set castShadows to true
+            if (newShadowMapper)
+            {
+                if (newShadowMapper instanceof away.lights.CubeMapShadowMapper )
+                {
+                    if (props.get(10, 1) != 1)
+                    {
+                        newShadowMapper.depthMapSize = this._depthSizeDic[props.get(10, 1)];
+                    }
+                }
+                else
+                {
+                    if (props.get(10, 2) != 2)
+                    {
+                        newShadowMapper.depthMapSize = this._depthSizeDic[props.get(10, 2)];
+                    }
+                }
+
+                light.shadowMapper = newShadowMapper;
+                light.castsShadows = true;
+            }
+
+            if (par_id != 0)
+            {
+
+                var returnedArrayParent : Array<any> = this.getAssetByID(par_id, [away.library.AssetType.CONTAINER, away.library.AssetType.LIGHT, away.library.AssetType.MESH, away.library.AssetType.ENTITY, away.library.AssetType.SEGMENT_SET])
+
+                if (returnedArrayParent[0])
+                {
+                    (<away.containers.ObjectContainer3D> returnedArrayParent[1]).addChild(light);
+                    parentName = (<away.containers.ObjectContainer3D> returnedArrayParent[1]).name;
+                }
+                else
+                {
+                    this._blocks[blockID].addError("Could not find a parent for this Light");
+                }
+            }
+
+            this.parseUserAttributes();
+
+            this._pFinalizeAsset( < away.library.IAsset> light, name);
+
+            this._blocks[blockID].data = light;
+
+            if (this._debug)
+                console.log("Parsed a Light: Name = '" + name + "' | Type = " + lightTypes[lightType] + " | Parent-Name = " + parentName + " | ShadowMapper-Type = " + shadowMapperTypes[shadowMapperType]);
 
         }
+
 
         //Block ID = 81
         private parseMaterial(blockID:number):void
@@ -1177,6 +1289,31 @@ module away.loaders
             }
 
         }
+
+        //blockID 255
+        private parseMetaData(blockID:number):void
+        {
+            var props:AWDProperties = this.parseProperties({1:AWDParser.UINT32, 2:AWDParser.AWDSTRING, 3:AWDParser.AWDSTRING, 4:AWDParser.AWDSTRING, 5:AWDParser.AWDSTRING});
+
+            if (this._debug)
+            {
+                console.log("Parsed a MetaDataBlock: TimeStamp         = " + props.get(1, 0));
+                console.log("                        EncoderName       = " + props.get(2, "unknown"));
+                console.log("                        EncoderVersion    = " + props.get(3, "unknown"));
+                console.log("                        GeneratorName     = " + props.get(4, "unknown"));
+                console.log("                        GeneratorVersion  = " + props.get(5, "unknown"));
+            }
+        }
+        //blockID 254
+        private parseNameSpace(blockID:number):void
+        {
+            var id:number               = this._newBlockBytes.readUnsignedByte();
+            var nameSpaceString:string  = this.parseVarStr();
+            if (this._debug)
+                console.log("Parsed a NameSpaceBlock: ID = " + id + " | String = " + nameSpaceString);
+        }
+
+        //--Parser UTILS---------------------------------------------------------------------------
 
         private parseUserAttributes():Object
         {
@@ -1469,6 +1606,205 @@ module away.loaders
 
         }
 
+        private parseVarStr():string
+        {
+
+            var len:number = this._newBlockBytes.readUnsignedShort();
+            return this._newBlockBytes.readUTFBytes(len);
+        }
+
+        private getAssetByID(assetID:number, assetTypesToGet:Array<string>, extraTypeInfo:string = "SingleTexture"):Array<any>
+        {
+            var returnArray:Array<any> = new Array();
+            var typeCnt:number = 0;
+            if (assetID > 0)
+            {
+                if (this._blocks[assetID])
+                {
+                    if (this._blocks[assetID].data)
+                    {
+                        while (typeCnt < assetTypesToGet.length)
+                        {
+
+                            var iasset : away.library.IAsset = <away.library.IAsset> this._blocks[assetID].data;
+
+                            if ( iasset.assetType == assetTypesToGet[typeCnt]) {
+                                //if the right assetType was found
+                                if ((assetTypesToGet[typeCnt] == away.library.AssetType.TEXTURE) && (extraTypeInfo == "CubeTexture"))
+                                {
+                                    if (this._blocks[assetID].data instanceof away.textures.HTMLImageElementCubeTexture )
+                                    {
+                                        returnArray.push(true);
+                                        returnArray.push(this._blocks[assetID].data);
+                                        return returnArray;
+                                    }
+                                }
+                                if ((assetTypesToGet[typeCnt] == away.library.AssetType.TEXTURE) && (extraTypeInfo == "SingleTexture"))
+                                {
+                                    if (this._blocks[assetID].data instanceof away.textures.HTMLImageElementTexture )
+                                    {
+                                        returnArray.push(true);
+                                        returnArray.push(this._blocks[assetID].data);
+                                        return returnArray;
+                                    }
+                                } else {
+                                    returnArray.push(true);
+                                    returnArray.push(this._blocks[assetID].data);
+                                    return returnArray;
+
+                                }
+                            }
+                            //if ((assetTypesToGet[typeCnt] == away.library.AssetType.GEOMETRY) && (IAsset(_blocks[assetID].data).assetType == AssetType.MESH)) {
+                            if ((assetTypesToGet[typeCnt] == away.library.AssetType.GEOMETRY) && (iasset.assetType == away.library.AssetType.MESH))
+                            {
+
+                                var mesh : away.entities.Mesh = <away.entities.Mesh> this._blocks[assetID].data
+
+                                returnArray.push(true);
+                                returnArray.push( mesh.geometry );
+                                return returnArray;
+
+                            }
+
+                            typeCnt++;
+                        }
+                    }
+                }
+            }
+            // if the function has not returned anything yet, the asset is not found, or the found asset is not the right type.
+            returnArray.push(false);
+            returnArray.push(this.getDefaultAsset(assetTypesToGet[0], extraTypeInfo));
+            return returnArray;
+        }
+
+        private getDefaultAsset(assetType:string, extraTypeInfo:string):away.library.IAsset
+        {
+            switch (true)
+            {
+
+                case (assetType == away.library.AssetType.TEXTURE):
+
+                    if (extraTypeInfo == "CubeTexture")
+                        return this.getDefaultCubeTexture();
+                    if (extraTypeInfo == "SingleTexture")
+                        return this.getDefaultTexture();
+                    break;
+
+                case (assetType == away.library.AssetType.MATERIAL):
+
+                    return this.getDefaultMaterial()
+                    break;
+
+                default:
+
+                    break;
+            }
+
+            return null;
+
+        }
+
+        private getDefaultMaterial():away.library.IAsset
+        {
+            if (!this._defaultBitmapMaterial)
+                this._defaultBitmapMaterial = away.materials.DefaultMaterialManager.getDefaultMaterial();
+            return  <away.library.IAsset>  this._defaultBitmapMaterial;
+        }
+
+        private getDefaultTexture():away.library.IAsset
+        {
+
+            if (!this._defaultTexture)
+            {
+                this._defaultTexture = away.materials.DefaultMaterialManager.getDefaultTexture();
+            }
+
+            return <away.library.IAsset> this._defaultTexture;
+
+        }
+
+        private getDefaultCubeTexture():away.library.IAsset
+        {
+            if (!this._defaultCubeTexture)
+            {
+
+                var defaultBitmap:away.display.BitmapData = away.materials.DefaultMaterialManager.createCheckeredBitmapData();//this._defaultTexture.bitmapData;
+
+                this._defaultCubeTexture = new away.textures.BitmapCubeTexture(defaultBitmap, defaultBitmap, defaultBitmap, defaultBitmap, defaultBitmap, defaultBitmap);
+                this._defaultCubeTexture.name = "defaultTexture";
+            }
+
+            return <away.library.IAsset> this._defaultCubeTexture;
+        }
+
+        private readNumber(precision:boolean = false):number
+        {
+            if (precision)
+                return this._newBlockBytes.readDouble();
+            return this._newBlockBytes.readFloat();
+
+        }
+
+        private parseMatrix3D():away.geom.Matrix3D
+        {
+            return new away.geom.Matrix3D(this.parseMatrix43RawData());
+        }
+
+        private parseMatrix32RawData():Array<number>
+        {
+            var i:number;
+            var mtx_raw:Array<number> = new Array<number>(6);
+            for (i = 0; i < 6; i++)
+            {
+                mtx_raw[i] = this._newBlockBytes.readFloat();
+            }
+
+            return mtx_raw;
+        }
+
+        private parseMatrix43RawData():Array<number>
+        {
+            var mtx_raw:Array<number> = new Array<number>(16);
+
+            mtx_raw[0] = this.readNumber(this._accuracyMatrix);
+            mtx_raw[1] = this.readNumber(this._accuracyMatrix);
+            mtx_raw[2] = this.readNumber(this._accuracyMatrix);
+            mtx_raw[3] = 0.0;
+            mtx_raw[4] = this.readNumber(this._accuracyMatrix);
+            mtx_raw[5] = this.readNumber(this._accuracyMatrix);
+            mtx_raw[6] = this.readNumber(this._accuracyMatrix);
+            mtx_raw[7] = 0.0;
+            mtx_raw[8] = this.readNumber(this._accuracyMatrix);
+            mtx_raw[9] = this.readNumber(this._accuracyMatrix);
+            mtx_raw[10] = this.readNumber(this._accuracyMatrix);
+            mtx_raw[11] = 0.0;
+            mtx_raw[12] = this.readNumber(this._accuracyMatrix);
+            mtx_raw[13] = this.readNumber(this._accuracyMatrix);
+            mtx_raw[14] = this.readNumber(this._accuracyMatrix);
+            mtx_raw[15] = 1.0;
+
+            //TODO: fix max exporter to remove NaN values in joint 0 inverse bind pose
+
+            if (isNaN(mtx_raw[0]))
+            {
+                mtx_raw[0] = 1;
+                mtx_raw[1] = 0;
+                mtx_raw[2] = 0;
+                mtx_raw[4] = 0;
+                mtx_raw[5] = 1;
+                mtx_raw[6] = 0;
+                mtx_raw[8] = 0;
+                mtx_raw[9] = 0;
+                mtx_raw[10] = 1;
+                mtx_raw[12] = 0;
+                mtx_raw[13] = 0;
+                mtx_raw[14] = 0;
+
+            }
+
+            return mtx_raw;
+        }
+
     }
 
 }
@@ -1484,7 +1820,7 @@ class AWDBlock
 	public bytes:away.utils.ByteArray;
 	public errorMessages:Array<string>;
 	public uvsForVertexAnimation:Array<Array<number>>;
-	
+
 	constructor()
 	{
 	}
@@ -1498,7 +1834,7 @@ class AWDBlock
         this.uvsForVertexAnimation = null;
 
     }
-	
+
 	public addError(errorMsg:string):void
 	{
 		if (!this.errorMessages)
@@ -1525,7 +1861,7 @@ class bitFlags
 	public static FLAG14:number = 8192;
 	public static FLAG15:number = 16384;
 	public static FLAG16:number = 32768;
-	
+
 	public static test(flags:number, testFlag:number):boolean
 	{
 		return (flags & testFlag) == testFlag;
@@ -1538,7 +1874,7 @@ class AWDProperties
 	{
 		this[ key.toString() ] = value;
 	}
-	
+
 	public get(key:number, fallback:any):any
 	{
 
