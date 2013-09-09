@@ -31,7 +31,7 @@ module away.loaders
 		private _defaultTexture     : away.textures.BitmapTexture;     // HTML IMAGE TEXTURE >? !
 		private _cubeTextures       : Array;
 		private _defaultBitmapMaterial  : away.materials.TextureMaterial;
-		//private _defaultCubeTexture : BitmapCubeTexture;              // Not yet implemented;
+		private _defaultCubeTexture     : away.textures.BitmapCubeTexture;
 
 		public static COMPRESSIONMODE_LZMA  : string = "lzma";
 		public static UNCOMPRESSED          : number = 0;
@@ -138,9 +138,7 @@ module away.loaders
                 var thisBitmapTexture   : away.textures.Texture2DBase;
                 var block               : AWDBlock;
 
-                // Cube Textures not yet implemented
-                //*
-                if (isCubeTextureArray.length == 1)
+                if (isCubeTextureArray.length == 1) // Not a cube texture
                 {
                     asset = <away.textures.Texture2DBase> resourceDependency.assets[0] ;
                     if (asset)
@@ -157,23 +155,17 @@ module away.loaders
                         block.name = asset.name;
                         // Finalize texture asset to dispatch texture event, which was
                         // previously suppressed while the dependency was loaded.
-
-
                         this._pFinalizeAsset( <away.library.IAsset> asset );
 
                         if (this._debug)
                         {
-                            console.log("Successfully loadet Bitmap for texture");
-                            console.log("Parsed CubeTexture: Name = " + block.name);
+                            console.log("Successfully loaded Bitmap for texture");
+                            console.log("Parsed texture: Name = " + block.name);
                         }
                     }
                 }
 
-               // */
-
-                // Cube Textures not yet implemented
-
-                if (isCubeTextureArray.length > 1)
+                if (isCubeTextureArray.length > 1) // Cube Texture
                 {
                     thisBitmapTexture = <away.textures.BitmapTexture> resourceDependency.assets[0] ;
 
@@ -189,12 +181,12 @@ module away.loaders
                     if (this._texture_users[ressourceID].length == this._cubeTextures.length)
                     {
 
-                        var posX :any = this._cubeTextures[0];
-                        var negX :any = this._cubeTextures[1];
-                        var posY :any = this._cubeTextures[2];
-                        var negY :any = this._cubeTextures[3];
-                        var posZ :any = this._cubeTextures[4];
-                        var negZ :any = this._cubeTextures[5];
+                        var posX : any = this._cubeTextures[0];
+                        var negX : any = this._cubeTextures[1];
+                        var posY : any = this._cubeTextures[2];
+                        var negY : any = this._cubeTextures[3];
+                        var posZ : any = this._cubeTextures[4];
+                        var negZ : any = this._cubeTextures[5];
 
                         asset       = new away.textures.HTMLImageElementCubeTexture( posX , negX , posY , negY , posZ , negZ ) ;
                         block       = this._blocks[ressourceID];
@@ -520,24 +512,20 @@ module away.loaders
             //*
             if (isParsed == false)
             {
-
-                console.log( 'type' , type );
-
-
                 switch (type)
                 {
 
                     case 1:
-                        //this.parseTriangleGeometrieBlock(this._cur_block_id);
+                        this.parseTriangleGeometrieBlock(this._cur_block_id);
                         break;
                     case 22:
                         //this.parseContainer(this._cur_block_id);
                         break;
                     case 23:
-                        //this.parseMeshInstance(this._cur_block_id);
+                        this.parseMeshInstance(this._cur_block_id);
                         break;
                     case 81:
-                        //this.parseMaterial(this._cur_block_id);
+                        this.parseMaterial(this._cur_block_id);
                         break;
                     case 82:
                         this.parseTexture(this._cur_block_id);
@@ -633,6 +621,514 @@ module away.loaders
             return this._newBlockBytes.readUTFBytes(len);
         }
 
+        private getAssetByID(assetID:number, assetTypesToGet:Array<string>, extraTypeInfo:string = "SingleTexture"):Array<any>
+        {
+            var returnArray:Array<any> = new Array();
+            var typeCnt:number = 0;
+            if (assetID > 0)
+            {
+                if (this._blocks[assetID])
+                {
+                    if (this._blocks[assetID].data)
+                    {
+                        while (typeCnt < assetTypesToGet.length)
+                        {
+
+                            var iasset : away.library.IAsset = <away.library.IAsset> this._blocks[assetID].data;
+
+                            if ( iasset.assetType == assetTypesToGet[typeCnt]) {
+                                //if the right assetType was found
+                                if ((assetTypesToGet[typeCnt] == away.library.AssetType.TEXTURE) && (extraTypeInfo == "CubeTexture"))
+                                {
+                                    if (this._blocks[assetID].data instanceof away.textures.HTMLImageElementCubeTexture )
+                                    {
+                                        returnArray.push(true);
+                                        returnArray.push(this._blocks[assetID].data);
+                                        return returnArray;
+                                    }
+                                }
+                                if ((assetTypesToGet[typeCnt] == away.library.AssetType.TEXTURE) && (extraTypeInfo == "SingleTexture"))
+                                {
+                                    if (this._blocks[assetID].data instanceof away.textures.HTMLImageElementTexture )
+                                    {
+                                        returnArray.push(true);
+                                        returnArray.push(this._blocks[assetID].data);
+                                        return returnArray;
+                                    }
+                                } else {
+                                    returnArray.push(true);
+                                    returnArray.push(this._blocks[assetID].data);
+                                    return returnArray;
+
+                                }
+                            }
+                            //if ((assetTypesToGet[typeCnt] == away.library.AssetType.GEOMETRY) && (IAsset(_blocks[assetID].data).assetType == AssetType.MESH)) {
+                            if ((assetTypesToGet[typeCnt] == away.library.AssetType.GEOMETRY) && (iasset.assetType == away.library.AssetType.MESH))
+                            {
+
+                                var mesh : away.entities.Mesh = <away.entities.Mesh> this._blocks[assetID].data
+
+                                returnArray.push(true);
+                                returnArray.push( mesh.geometry );
+                                return returnArray;
+
+                            }
+
+                            typeCnt++;
+                        }
+                    }
+                }
+            }
+            // if the function has not returned anything yet, the asset is not found, or the found asset is not the right type.
+            returnArray.push(false);
+            returnArray.push(this.getDefaultAsset(assetTypesToGet[0], extraTypeInfo));
+            return returnArray;
+        }
+
+        private getDefaultAsset(assetType:string, extraTypeInfo:string):away.library.IAsset
+        {
+            switch (true)
+            {
+
+                case (assetType == away.library.AssetType.TEXTURE):
+
+                    if (extraTypeInfo == "CubeTexture")
+                        return this.getDefaultCubeTexture();
+                    if (extraTypeInfo == "SingleTexture")
+                        return this.getDefaultTexture();
+                    break;
+
+                case (assetType == away.library.AssetType.MATERIAL):
+
+                    return this.getDefaultMaterial()
+                    break;
+
+                default:
+
+                    break;
+            }
+
+            return null;
+
+        }
+
+        private getDefaultMaterial():away.library.IAsset
+        {
+            if (!this._defaultBitmapMaterial)
+                this._defaultBitmapMaterial = away.materials.DefaultMaterialManager.getDefaultMaterial();
+            return  <away.library.IAsset>  this._defaultBitmapMaterial;
+        }
+
+        private getDefaultTexture():away.library.IAsset
+        {
+
+            if (!this._defaultTexture)
+            {
+                this._defaultTexture = away.materials.DefaultMaterialManager.getDefaultTexture();
+            }
+
+            return <away.library.IAsset> this._defaultTexture;
+
+        }
+
+        private getDefaultCubeTexture():away.library.IAsset
+        {
+            if (!this._defaultCubeTexture)
+            {
+
+                var defaultBitmap:away.display.BitmapData = away.materials.DefaultMaterialManager.createCheckeredBitmapData();//this._defaultTexture.bitmapData;
+
+                this._defaultCubeTexture = new away.textures.BitmapCubeTexture(defaultBitmap, defaultBitmap, defaultBitmap, defaultBitmap, defaultBitmap, defaultBitmap);
+                this._defaultCubeTexture.name = "defaultTexture";
+            }
+
+            return <away.library.IAsset> this._defaultCubeTexture;
+        }
+
+        private readNumber(precision:boolean = false):number
+        {
+            if (precision)
+                return this._newBlockBytes.readDouble();
+            return this._newBlockBytes.readFloat();
+
+        }
+
+        private parseMatrix3D():away.geom.Matrix3D
+        {
+            return new away.geom.Matrix3D(this.parseMatrix43RawData());
+        }
+
+        private parseMatrix32RawData():Array<number>
+        {
+            var i:number;
+            var mtx_raw:Array<number> = new Array<number>(6);
+            for (i = 0; i < 6; i++)
+            {
+                mtx_raw[i] = this._newBlockBytes.readFloat();
+            }
+
+            return mtx_raw;
+        }
+
+        private parseMatrix43RawData():Array<number>
+        {
+            var mtx_raw:Array<number> = new Array<number>(16);
+
+            mtx_raw[0] = this.readNumber(this._accuracyMatrix);
+            mtx_raw[1] = this.readNumber(this._accuracyMatrix);
+            mtx_raw[2] = this.readNumber(this._accuracyMatrix);
+            mtx_raw[3] = 0.0;
+            mtx_raw[4] = this.readNumber(this._accuracyMatrix);
+            mtx_raw[5] = this.readNumber(this._accuracyMatrix);
+            mtx_raw[6] = this.readNumber(this._accuracyMatrix);
+            mtx_raw[7] = 0.0;
+            mtx_raw[8] = this.readNumber(this._accuracyMatrix);
+            mtx_raw[9] = this.readNumber(this._accuracyMatrix);
+            mtx_raw[10] = this.readNumber(this._accuracyMatrix);
+            mtx_raw[11] = 0.0;
+            mtx_raw[12] = this.readNumber(this._accuracyMatrix);
+            mtx_raw[13] = this.readNumber(this._accuracyMatrix);
+            mtx_raw[14] = this.readNumber(this._accuracyMatrix);
+            mtx_raw[15] = 1.0;
+
+            //TODO: fix max exporter to remove NaN values in joint 0 inverse bind pose
+
+            if (isNaN(mtx_raw[0]))
+            {
+                mtx_raw[0] = 1;
+                mtx_raw[1] = 0;
+                mtx_raw[2] = 0;
+                mtx_raw[4] = 0;
+                mtx_raw[5] = 1;
+                mtx_raw[6] = 0;
+                mtx_raw[8] = 0;
+                mtx_raw[9] = 0;
+                mtx_raw[10] = 1;
+                mtx_raw[12] = 0;
+                mtx_raw[13] = 0;
+                mtx_raw[14] = 0;
+
+            }
+
+            return mtx_raw;
+        }
+
+        //Block ID = 1
+        private parseTriangleGeometrieBlock(blockID:number):void
+        {
+
+            var geom:away.base.Geometry = new away.base.Geometry();
+
+            // Read name and sub count
+            var name:string = this.parseVarStr();
+            var num_subs:number = this._newBlockBytes.readUnsignedShort();
+
+            // Read optional properties
+            var props:AWDProperties = this.parseProperties({1:this._geoNrType, 2:this._geoNrType});
+            var geoScaleU:number = props.get(1, 1);
+            var geoScaleV:number = props.get(2, 1);
+
+            // Loop through sub meshes
+            var subs_parsed:number = 0;
+            while (subs_parsed < num_subs)
+            {
+                var i:number;
+                var sm_len:number, sm_end:number;
+                var sub_geoms:Array<away.base.ISubGeometry>;
+                var w_indices:Array<number>;
+                var weights:Array<number>;
+
+                sm_len = this._newBlockBytes.readUnsignedInt();
+                sm_end = this._newBlockBytes.position + sm_len;
+
+                // Ignore for now
+                var subProps:AWDProperties = this.parseProperties({1:this._geoNrType, 2:this._geoNrType});
+                // Loop through data streams
+                while (this._newBlockBytes.position < sm_end) {
+                    var idx:number= 0;
+                    var str_ftype:number, str_type:number, str_len:number, str_end:number;
+
+                    // Type, field type, length
+                    str_type = this._newBlockBytes.readUnsignedByte();
+                    str_ftype = this._newBlockBytes.readUnsignedByte();
+                    str_len = this._newBlockBytes.readUnsignedInt();
+                    str_end = this._newBlockBytes.position + str_len;
+
+                    var x:number, y:number, z:number;
+
+                    if (str_type == 1)
+                    {
+                        var verts:Array<number> = new Array<number>();
+
+                        while (this._newBlockBytes.position < str_end)
+                        {
+                            // TODO: Respect stream field type
+                            x = this.readNumber(this._accuracyGeo);
+                            y = this.readNumber(this._accuracyGeo);
+                            z = this.readNumber(this._accuracyGeo);
+
+                            verts[idx++] = x;
+                            verts[idx++] = y;
+                            verts[idx++] = z;
+                        }
+                    } else if (str_type == 2) {
+                        var indices:Array<number> = new Array<number>();
+                        while (this._newBlockBytes.position < str_end) {
+                            // TODO: Respect stream field type
+                            indices[idx++] = this._newBlockBytes.readUnsignedShort();
+                        }
+                    } else if (str_type == 3) {
+                        var uvs:Array<number> = new Array<number>();
+                        while (this._newBlockBytes.position < str_end)
+                            uvs[idx++] = this.readNumber(this._accuracyGeo);
+                    } else if (str_type == 4) {
+                        var normals:Array<number> = new Array<number>();
+                        while (this._newBlockBytes.position < str_end)
+                            normals[idx++] = this.readNumber(this._accuracyGeo);
+                    } else if (str_type == 6) {
+                        w_indices = Array<number>();
+                        while (this._newBlockBytes.position < str_end)
+                            w_indices[idx++] = this._newBlockBytes.readUnsignedShort()*3; // TODO: Respect stream field type
+                    } else if (str_type == 7) {
+                        weights = new Array<number>();
+                        while (this._newBlockBytes.position < str_end)
+                            weights[idx++] = this.readNumber(this._accuracyGeo);
+                    } else
+                        this._newBlockBytes.position = str_end;
+                }
+                this.parseUserAttributes(); // Ignore sub-mesh attributes for now
+
+                sub_geoms = away.utils.GeometryUtils.fromVectors(verts, indices, uvs, normals, null, weights, w_indices);
+
+                var scaleU:number = subProps.get(1, 1);
+                var scaleV:number = subProps.get(2, 1);
+                var setSubUVs:boolean = false; //this should remain false atm, because in AwayBuilder the uv is only scaled by the geometry
+
+                if ((geoScaleU != scaleU) || (geoScaleV != scaleV))
+                {
+                    setSubUVs = true;
+                    scaleU = geoScaleU/scaleU;
+                    scaleV = geoScaleV/scaleV;
+                }
+
+                for (i = 0; i < sub_geoms.length; i++) {
+                    if (setSubUVs)
+                        sub_geoms[i].scaleUV(scaleU, scaleV);
+                    geom.addSubGeometry(sub_geoms[i]);
+                    // TODO: Somehow map in-sub to out-sub indices to enable look-up
+                    // when creating meshes (and their material assignments.)
+                }
+                subs_parsed++;
+            }
+            if ((geoScaleU != 1) || (geoScaleV != 1))
+                geom.scaleUV(geoScaleU, geoScaleV);
+            this.parseUserAttributes();
+            this._pFinalizeAsset(geom, name);
+            this._blocks[blockID].data = geom;
+
+            if (this._debug)
+                console.log("Parsed a TriangleGeometry: Name = " + name + "| SubGeometries = " + sub_geoms.length);
+
+        }
+
+        // Block ID = 23
+        private parseMeshInstance(blockID:number):void
+        {
+            var num_materials:number;
+            var materials_parsed:number;
+            var parent:away.containers.ObjectContainer3D;
+
+            var par_id:number = this._newBlockBytes.readUnsignedInt();
+            var mtx:away.geom.Matrix3D = this.parseMatrix3D();
+            var name:string = this.parseVarStr();
+            var parentName:string = "Root (TopLevel)";
+            var data_id:number = this._newBlockBytes.readUnsignedInt();
+            var geom:away.base.Geometry;
+            var returnedArrayGeometry:Array<any> = this.getAssetByID(data_id, [away.library.AssetType.GEOMETRY])
+            if (returnedArrayGeometry[0])
+            {
+                geom = <away.base.Geometry> returnedArrayGeometry[1];
+            }
+            else
+            {
+                this._blocks[blockID].addError("Could not find a Geometry for this Mesh. A empty Geometry is created!");
+                geom = new away.base.Geometry();
+            }
+
+            this._blocks[blockID].geoID = data_id;
+            var materials:Array<away.materials.MaterialBase> = new Array<away.materials.MaterialBase>();
+            num_materials = this._newBlockBytes.readUnsignedShort();
+            var materialNames:Array<string> = new Array<string>();
+            materials_parsed = 0;
+            var returnedArrayMaterial:Array<any>;
+            while (materials_parsed < num_materials)
+            {
+
+                var mat_id:number;
+                mat_id = this._newBlockBytes.readUnsignedInt();
+                returnedArrayMaterial = this.getAssetByID(mat_id, [away.library.AssetType.MATERIAL])
+                if ((!returnedArrayMaterial[0]) && (mat_id > 0))
+                    this._blocks[blockID].addError("Could not find Material Nr " + materials_parsed + " (ID = " + mat_id + " ) for this Mesh");
+
+
+                var m : away.materials.MaterialBase = <away.materials.MaterialBase> returnedArrayMaterial[1];
+
+                materials.push(m);
+                materialNames.push(m.name);
+
+                materials_parsed++;
+
+            }
+
+            var mesh:away.entities.Mesh = new away.entities.Mesh(geom, null);
+                mesh.transform = mtx;
+
+            var returnedArrayParent:Array<any> = this.getAssetByID(par_id, [away.library.AssetType.CONTAINER, away.library.AssetType.LIGHT, away.library.AssetType.MESH, away.library.AssetType.ENTITY, away.library.AssetType.SEGMENT_SET])
+
+            if (returnedArrayParent[0])
+            {
+                var objC : away.containers.ObjectContainer3D = <away.containers.ObjectContainer3D> returnedArrayParent[1];
+
+                objC.addChild(mesh);
+                parentName = objC.name;
+
+            }
+            else if (par_id > 0)
+            {
+                this._blocks[blockID].addError("Could not find a parent for this Mesh");
+
+            }
+
+            if (materials.length >= 1 && mesh.subMeshes.length == 1)
+            {
+                mesh.material = materials[0];
+            }
+            else if (materials.length > 1)
+            {
+                var i:number;
+                // Assign each sub-mesh in the mesh a material from the list. If more sub-meshes
+                // than materials, repeat the last material for all remaining sub-meshes.
+                for (i = 0; i < mesh.subMeshes.length; i++)
+                {
+                    mesh.subMeshes[i].material = materials[Math.min(materials.length - 1, i)];
+                }
+            }
+            if ((this._version[0] == 2) && (this._version[1] == 1))
+            {
+                var props:AWDProperties = this.parseProperties({1:this._matrixNrType, 2:this._matrixNrType, 3:this._matrixNrType, 4:AWDParser.UINT8, 5:AWDParser.BOOL});
+                mesh.pivotPoint = new away.geom.Vector3D(<number>props.get(1, 0), <number>props.get(2, 0), <number> props.get(3, 0));
+                mesh.castsShadows = props.get(5, true);
+            }
+            else
+            {
+                this.parseProperties(null);
+
+            }
+            mesh.extra = this.parseUserAttributes();
+            this._pFinalizeAsset( <away.library.IAsset> mesh, name);
+            this._blocks[blockID].data = mesh;
+            if (this._debug)
+                console.log("Parsed a Mesh: Name = '" + name + "' | Parent-Name = " + parentName + "| Geometry-Name = " + geom.name + " | SubMeshes = " + mesh.subMeshes.length + " | Mat-Names = " + materialNames.toString());
+
+        }
+
+        //Block ID = 81
+        private parseMaterial(blockID:number):void
+        {
+            // TODO: not used
+            ////blockLength = block.len;
+            var name:string;
+            var type:number;
+            var props:AWDProperties;
+            var mat:away.materials.MaterialBase;
+            var attributes:Object;
+            var finalize:boolean;
+            var num_methods:number;
+            var methods_parsed:number;
+            var returnedArray:Array<any>;
+
+            name = this.parseVarStr();
+            type = this._newBlockBytes.readUnsignedByte();
+            num_methods = this._newBlockBytes.readUnsignedByte();
+
+            // Read material numerical properties
+            // (1=color, 2=bitmap url, 10=alpha, 11=alpha_blending, 12=alpha_threshold, 13=repeat)
+            props = this.parseProperties( { 1:AWDParser.INT32, 2:AWDParser.BADDR, 10:this._propsNrType, 11:AWDParser.BOOL, 12:this._propsNrType, 13:AWDParser.BOOL});
+
+            methods_parsed = 0;
+            while (methods_parsed < num_methods)
+            {
+                var method_type:number;
+
+                method_type = this._newBlockBytes.readUnsignedShort();
+                this.parseProperties(null);
+                this.parseUserAttributes();
+                methods_parsed += 1;
+            }
+            var debugString:string = "";
+            attributes = this.parseUserAttributes();
+            if (type === 1) { // Color material
+                debugString += "Parsed a ColorMaterial(SinglePass): Name = '" + name + "' | ";
+                var color:number;
+                color = props.get(1, 0xcccccc);
+                if (this.materialMode < 2)
+                    mat = new away.materials.ColorMaterial(color, props.get(10, 1.0));
+                else
+                    mat = new away.materials.ColorMultiPassMaterial(color);
+
+            }
+            else if (type === 2)
+            {
+                var tex_addr:number = props.get(2, 0);
+
+                returnedArray = this.getAssetByID(tex_addr, [away.library.AssetType.TEXTURE])
+                if ((!returnedArray[0]) && (tex_addr > 0))
+                {
+                    this._blocks[blockID].addError("Could not find the DiffsueTexture (ID = " + tex_addr + " ) for this Material");
+                }
+
+                if (this.materialMode < 2)
+                {
+                    mat = <away.materials.MaterialBase> new away.materials.TextureMaterial( <away.textures.Texture2DBase> returnedArray[1]);
+
+                    var txMaterial : away.materials.TextureMaterial = <away.materials.TextureMaterial> mat;
+
+                    txMaterial.alphaBlending = props.get(11, false);
+                    txMaterial.alpha = props.get(10, 1.0);
+                    debugString += "Parsed a TextureMaterial(SinglePass): Name = '" + name + "' | Texture-Name = " + mat.name;
+                }
+                else
+                {
+                    mat = <away.materials.MaterialBase> new away.materials.TextureMultiPassMaterial(returnedArray[1]);
+                    debugString += "Parsed a TextureMaterial(MultipAss): Name = '" + name + "' | Texture-Name = " + mat.name;
+                }
+            }
+
+            mat.extra = attributes;
+            if (this.materialMode < 2)
+            {
+
+                var spmb : away.materials.SinglePassMaterialBase = <away.materials.SinglePassMaterialBase> mat;
+                spmb.alphaThreshold = props.get(12, 0.0);
+
+            }
+            else
+            {
+                var mpmb : away.materials.MultiPassMaterialBase = <away.materials.MultiPassMaterialBase> mat;
+                mpmb.alphaThreshold = props.get(12, 0.0);
+            }
+
+
+            mat.repeat = props.get(13, false);
+            this._pFinalizeAsset( <away.library.IAsset> mat, name);
+            this._blocks[blockID].data = mat;
+
+            if (this._debug)
+            {
+                console.log(debugString);
+
+            }
+        }
 
         //Block ID = 82
         private parseTexture(blockID:number):void
@@ -641,8 +1137,6 @@ module away.loaders
             var asset:away.textures.Texture2DBase;
 
             this._blocks[blockID].name  = this.parseVarStr();
-
-            console.log( 'this._blocks[blockID].name: ' , this._blocks[blockID].name );
 
             var type:number             = this._newBlockBytes.readUnsignedByte();
             var data_len:number;
@@ -666,10 +1160,7 @@ module away.loaders
                     data = new away.utils.ByteArray();
                 this._newBlockBytes.readBytes( data , 0 , data_len );
 
-                //this._pAddDependency(this._cur_block_id.toString(), null, false, data, true);
-
-                data.position = 0;
-                away.loaders.ParserUtil.byteArrayToImage( data );
+                this._pAddDependency(this._cur_block_id.toString(), null, false, data, true);
 
             }
 
@@ -896,13 +1387,13 @@ module away.loaders
 
             if (elem_len < len)
             {
-                var list      : Array   = [];
-                var num_read  : number  = 0;
-                var num_elems : number  = len/elem_len;
+                var list      : Array<any>   = [];
+                var num_read  : number       = 0;
+                var num_elems : number       = len/elem_len;
 
                 while (num_read < num_elems)
                 {
-                    list.push(read_func());
+                    list.push( read_func.apply( this._newBlockBytes ) ); // list.push(read_func());
                     num_read++;
                 }
 
@@ -910,7 +1401,8 @@ module away.loaders
             }
             else
             {
-                var val:any = read_func();
+
+                var val:any = read_func.apply( this._newBlockBytes );//read_func();
                 return val;
             }
         }
@@ -1049,6 +1541,8 @@ class AWDProperties
 	
 	public get(key:number, fallback:any):any
 	{
+
+        console.log ( 'this.hasOwnProperty(key.toString());' , key , fallback , this.hasOwnProperty(key.toString()) );
 
 		if ( this.hasOwnProperty(key.toString()))
         {
