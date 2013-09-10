@@ -13,7 +13,6 @@ module away.textures
 		private _htmlImageElement   : HTMLImageElement;
         private _generateMipmaps    : boolean;
 		private _mipMapHolder       : away.display.BitmapData;
-
 		
 		constructor( htmlImageElement:HTMLImageElement , generateMipmaps:boolean = true)
 		{

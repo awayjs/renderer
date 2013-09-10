@@ -484,15 +484,16 @@ module away.display3D
 		
 		public setGLSLTextureAt( locationName:string, texture:TextureBase, textureIndex:number )
 		{
+			
 			if( !texture )
 			{
 				this._gl.activeTexture( this._gl.TEXTURE0 + (textureIndex));
 				this._gl.bindTexture( this._gl.TEXTURE_2D, null );
+				this._gl.bindTexture( this._gl.TEXTURE_CUBE_MAP, null );
 				return;
 			}
 			
-			var location:WebGLUniformLocation = this._gl.getUniformLocation( this._currentProgram.glProgram, locationName );
-            switch( textureIndex )
+			switch( textureIndex )
 			{
                 case 0: 
 						this._gl.activeTexture( this._gl.TEXTURE0 );
@@ -522,27 +523,63 @@ module away.display3D
 					throw "Texture " + textureIndex + " is out of bounds.";
             }
 			
-			this._gl.bindTexture( this._gl.TEXTURE_2D, texture.glTexture );
-			this._gl.uniform1i( location, textureIndex );
+			var location:WebGLUniformLocation = this._gl.getUniformLocation( this._currentProgram.glProgram, locationName );
 			
-			var samplerState:away.display3D.SamplerState = this._samplerStates[ textureIndex ];
-			
-			if( samplerState.wrap != this._currentWrap )
+			if( texture.textureType == "texture2d" )
 			{
-				this._currentWrap = samplerState.wrap;
-				this._gl.texParameteri( this._gl.TEXTURE_2D, this._gl.TEXTURE_WRAP_S, samplerState.wrap );
-				this._gl.texParameteri( this._gl.TEXTURE_2D, this._gl.TEXTURE_WRAP_T, samplerState.wrap );
+				this._gl.bindTexture( this._gl.TEXTURE_2D, (<away.display3D.Texture>texture).glTexture );
+				this._gl.uniform1i( location, textureIndex );
+				
+				var samplerState:away.display3D.SamplerState = this._samplerStates[ textureIndex ];
+				
+				if( samplerState.wrap != this._currentWrap )
+				{
+					this._currentWrap = samplerState.wrap;
+					this._gl.texParameteri( this._gl.TEXTURE_2D, this._gl.TEXTURE_WRAP_S, samplerState.wrap );
+					this._gl.texParameteri( this._gl.TEXTURE_2D, this._gl.TEXTURE_WRAP_T, samplerState.wrap );
+				}
+				
+				if( samplerState.filter != this._currentFilter )
+				{
+					this._gl.texParameteri( this._gl.TEXTURE_2D, this._gl.TEXTURE_MIN_FILTER, samplerState.filter );
+					this._gl.texParameteri( this._gl.TEXTURE_2D, this._gl.TEXTURE_MAG_FILTER, samplerState.filter );
+				}
+				
+				this._gl.bindTexture( this._gl.TEXTURE_2D, null );
+			}
+			else if( texture.textureType == "textureCube" )
+			{
+				//console.log( "******************************* setGLSLTextureAt *******************************" );
+				//console.log( locationName, texture, textureIndex );
+				
+				for( var i:number = 0; i < 6; ++i )
+				{
+					this._gl.bindTexture( this._gl.TEXTURE_CUBE_MAP, (<away.display3D.CubeTexture>texture).glTextureAt( i ) );
+					this._gl.uniform1i( location, textureIndex );
+					
+					var samplerState:away.display3D.SamplerState = this._samplerStates[ textureIndex ];
+					
+					if( samplerState.wrap != this._currentWrap )
+					{
+						this._currentWrap = samplerState.wrap;
+						this._gl.texParameteri( this._gl.TEXTURE_CUBE_MAP, this._gl.TEXTURE_WRAP_S, samplerState.wrap );
+						this._gl.texParameteri( this._gl.TEXTURE_CUBE_MAP, this._gl.TEXTURE_WRAP_T, samplerState.wrap );
+					}
+					
+					if( samplerState.filter != this._currentFilter )
+					{
+						this._gl.texParameteri( this._gl.TEXTURE_CUBE_MAP, this._gl.TEXTURE_MIN_FILTER, samplerState.filter );
+						this._gl.texParameteri( this._gl.TEXTURE_CUBE_MAP, this._gl.TEXTURE_MAG_FILTER, samplerState.filter );
+					}
+					
+					this._gl.bindTexture( this._gl.TEXTURE_CUBE_MAP, null );
+				}
 			}
 			
-			if( samplerState.filter != this._currentFilter )
-			{
-				this._gl.texParameteri( this._gl.TEXTURE_2D, this._gl.TEXTURE_MIN_FILTER, samplerState.filter );
-				this._gl.texParameteri( this._gl.TEXTURE_2D, this._gl.TEXTURE_MAG_FILTER, samplerState.filter );
-			}
         }
 		
 		public setSamplerStateAt( sampler:number, wrap:string, filter:string, mipfilter:string ):void
-		{			
+		{
 			var glWrap:number = 0;
 			var glFilter:number = 0;
 			var glMipFilter:number = 0;
