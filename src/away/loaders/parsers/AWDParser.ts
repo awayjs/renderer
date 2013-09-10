@@ -9,27 +9,27 @@ module away.loaders
 	export class AWDParser extends away.loaders.ParserBase
 	{
 		//set to "true" to have some traces in the Console
-		private _debug              : boolean = true;
-		private _byteData           : away.utils.ByteArray;
-		private _startedParsing     : boolean = false;
-		private _cur_block_id       : number;
-		private _blocks             : Array<AWDBlock>;
-		private _newBlockBytes      : away.utils.ByteArray;
-		private _version            : Array<number>;
-		private _compression        : number;
-		private _accuracyOnBlocks   : boolean;
-		private _accuracyMatrix     : boolean;
-		private _accuracyGeo        : boolean;
-		private _accuracyProps      : boolean;
-		private _matrixNrType       : number;
-		private _geoNrType          : number;
-		private _propsNrType        : number;
-		private _streaming          : boolean;
-		private _texture_users      : Object = {};
-		private _parsed_header      : boolean = false;
-		private _body               : away.utils.ByteArray;
-		private _defaultTexture     : away.textures.BitmapTexture;     // HTML IMAGE TEXTURE >? !
-		private _cubeTextures       : Array;
+		private _debug                  : boolean = true;
+		private _byteData               : away.utils.ByteArray;
+		private _startedParsing         : boolean = false;
+		private _cur_block_id           : number;
+		private _blocks                 : Array<AWDBlock>;
+		private _newBlockBytes          : away.utils.ByteArray;
+		private _version                : Array<number>;
+		private _compression            : number;
+		private _accuracyOnBlocks       : boolean;
+		private _accuracyMatrix         : boolean;
+		private _accuracyGeo            : boolean;
+		private _accuracyProps          : boolean;
+		private _matrixNrType           : number;
+		private _geoNrType              : number;
+		private _propsNrType            : number;
+		private _streaming              : boolean;
+		private _texture_users          : Object = {};
+		private _parsed_header          : boolean = false;
+		private _body                   : away.utils.ByteArray;
+		private _defaultTexture         : away.textures.BitmapTexture;     // HTML IMAGE TEXTURE >? !
+		private _cubeTextures           : Array<any>;
 		private _defaultBitmapMaterial  : away.materials.TextureMaterial;
 		private _defaultCubeTexture     : away.textures.BitmapCubeTexture;
 
@@ -453,7 +453,6 @@ module away.loaders
 
             if ((this._version[0] == 2) && (this._version[1] == 1))
             {
-                console.log( 'parse version 2.1');
 
                  switch (type)
                  {
@@ -467,11 +466,11 @@ module away.loaders
                          break;
                      case 41:
                          this.parseLight(this._cur_block_id);
-                         //isParsed = true;
+                         isParsed = true;
                          break;
                      case 42:
-                         //this.parseCamera(this._cur_block_id);
-                         //isParsed = true;
+                         this.parseCamera(this._cur_block_id);
+                         isParsed = true;
                          break;
 
                      //  case 43:
@@ -480,20 +479,20 @@ module away.loaders
                      //      break;
 
                      case 51:
-                         //this.parseLightPicker(this._cur_block_id);
-                         //isParsed = true;
+                         this.parseLightPicker(this._cur_block_id);
+                         isParsed = true;
                          break;
                      case 81:
-                         //this.parseMaterial_v1(this._cur_block_id);
-                         //isParsed = true;
+                         this.parseMaterial_v1(this._cur_block_id);
+                         isParsed = true;
                          break;
                      case 83:
-                         //this.parseCubeTexture(this._cur_block_id);
-                         //isParsed = true;
+                         this.parseCubeTexture(this._cur_block_id);
+                         isParsed = true;
                          break;
                      case 91:
-                         //this.parseSharedMethodBlock(this._cur_block_id);
-                         //isParsed = true;
+                         this.parseSharedMethodBlock(this._cur_block_id);
+                         isParsed = true;
                          break;
                      case 92:
                          //this.parseShadowMethodBlock(this._cur_block_id);
@@ -782,7 +781,7 @@ module away.loaders
             if ((geoScaleU != 1) || (geoScaleV != 1))
                 geom.scaleUV(geoScaleU, geoScaleV);
             this.parseUserAttributes();
-            this._pFinalizeAsset(geom, name);
+            this._pFinalizeAsset( <away.library.IAsset> geom, name);
             this._blocks[blockID].data = geom;
 
             if (this._debug)
@@ -1032,7 +1031,6 @@ module away.loaders
             }
         }
 
-
         //Block ID = 41
         private parseLight(blockID:number):void
         {
@@ -1143,6 +1141,121 @@ module away.loaders
 
         }
 
+        //Block ID = 43
+        private parseCamera(blockID:number):void
+        {
+
+            var par_id      : number                = this._newBlockBytes.readUnsignedInt();
+            var mtx         : away.geom.Matrix3D    = this.parseMatrix3D();
+            var name        : string                = this.parseVarStr();
+            var parentName  : string                = "Root (TopLevel)";
+            var lens        : away.cameras.LensBase;
+
+            this._newBlockBytes.readUnsignedByte(); //set as active camera
+            this._newBlockBytes.readShort(); //lengthof lenses - not used yet
+
+            var lenstype    : number        = this._newBlockBytes.readShort();
+            var props       : AWDProperties = this.parseProperties({101:this._propsNrType, 102:this._propsNrType, 103:this._propsNrType, 104:this._propsNrType});
+
+            switch (lenstype)
+            {
+                case 5001:
+                    lens = new away.cameras.PerspectiveLens(props.get(101, 60));
+                    break;
+                case 5002:
+                    lens = new away.cameras.OrthographicLens(props.get(101, 500));
+                    break;
+                case 5003:
+                    lens = new away.cameras.OrthographicOffCenterLens(props.get(101, -400), props.get(102, 400), props.get(103, -300), props.get(104, 300));
+                    break;
+                default:
+                    console.log("unsupportedLenstype");
+                    return;
+            }
+
+            var camera:away.cameras.Camera3D    = new away.cameras.Camera3D(lens);
+                camera.transform                = mtx;
+
+            var returnedArrayParent:Array<any>  = this.getAssetByID(par_id, [away.library.AssetType.CONTAINER, away.library.AssetType.LIGHT, away.library.AssetType.MESH, away.library.AssetType.ENTITY, away.library.AssetType.SEGMENT_SET])
+
+            if (returnedArrayParent[0])
+            {
+
+                var objC : away.containers.ObjectContainer3D = <away.containers.ObjectContainer3D> returnedArrayParent[1];
+                    objC.addChild(camera);
+
+                parentName = objC.name;
+
+            }
+            else if (par_id > 0)
+            {
+                this._blocks[blockID].addError("Could not find a parent for this Camera");
+            }
+
+            camera.name         = name;
+            props               = this.parseProperties({1:this._matrixNrType, 2:this._matrixNrType, 3:this._matrixNrType, 4:AWDParser.UINT8});
+            camera.pivotPoint   = new away.geom.Vector3D(props.get(1, 0), props.get(2, 0), props.get(3, 0));
+            camera.extra        = this.parseUserAttributes();
+
+            this._pFinalizeAsset(camera, name);
+
+            this._blocks[blockID].data = camera
+
+            if (this._debug)
+            {
+                console.log("Parsed a Camera: Name = '" + name + "' | Lenstype = " + lens + " | Parent-Name = " + parentName);
+            }
+
+        }
+
+        //Block ID = 51
+        private parseLightPicker(blockID:number):void
+        {
+            var name        : string                            = this.parseVarStr();
+            var numLights   : number                            = this._newBlockBytes.readUnsignedShort();
+            var lightsArray : Array<away.lights.LightBase>      = new Array<away.lights.LightBase>();
+            var k           : number                            = 0;
+            var lightID     : number                            = 0;
+
+            var returnedArrayLight  : Array<any>;
+            var lightsArrayNames    : Array<string>             = new Array<string>();
+
+            for (k = 0; k < numLights; k++)
+            {
+                lightID             = this._newBlockBytes.readUnsignedInt();
+                returnedArrayLight  = this.getAssetByID(lightID, [away.library.AssetType.LIGHT])
+
+                if (returnedArrayLight[0])
+                {
+                    lightsArray.push( <away.lights.LightBase> returnedArrayLight[1] );
+                    lightsArrayNames.push( ( <away.lights.LightBase> returnedArrayLight[1]).name );
+
+                }
+                else
+                {
+                    this._blocks[blockID].addError("Could not find a Light Nr " + k + " (ID = " + lightID + " ) for this LightPicker");
+                }
+            }
+
+            if (lightsArray.length == 0)
+            {
+                this._blocks[blockID].addError("Could not create this LightPicker, cause no Light was found.");
+                this.parseUserAttributes();
+                return; //return without any more parsing for this block
+            }
+
+            var lightPick:away.materials.LightPickerBase    = new away.materials.StaticLightPicker(lightsArray);
+                lightPick.name                              = name;
+
+            this.parseUserAttributes();
+            this._pFinalizeAsset( <away.library.IAsset> lightPick, name);
+
+            this._blocks[blockID].data = lightPick
+            if (this._debug)
+            {
+                console.log("Parsed a StaticLightPicker: Name = '" + name + "' | Texture-Name = " + lightsArrayNames.toString());
+            }
+        }
 
         //Block ID = 81
         private parseMaterial(blockID:number):void
@@ -1242,6 +1355,407 @@ module away.loaders
             }
         }
 
+        // Block ID = 81 AWD2.1
+        private parseMaterial_v1(blockID:number):void
+        {
+            var mat                 : away.materials.MaterialBase;
+            var normalTexture       : away.textures.Texture2DBase;
+            var specTexture         : away.textures.Texture2DBase;
+            var returnedArray       : Array<any>;
+
+            var name                : string        = this.parseVarStr();
+            var type                : number        = this._newBlockBytes.readUnsignedByte();
+            var num_methods         : number        = this._newBlockBytes.readUnsignedByte();
+            var props               : AWDProperties = this.parseProperties({1:AWDParser.UINT32, 2:AWDParser.BADDR, 3:AWDParser.BADDR, 4:AWDParser.UINT8, 5:AWDParser.BOOL, 6:AWDParser.BOOL, 7:AWDParser.BOOL, 8:AWDParser.BOOL, 9:AWDParser.UINT8, 10:this._propsNrType, 11:AWDParser.BOOL, 12:this._propsNrType, 13:AWDParser.BOOL, 15:this._propsNrType, 16:AWDParser.UINT32, 17:AWDParser.BADDR, 18:this._propsNrType, 19:this._propsNrType, 20:AWDParser.UINT32, 21:AWDParser.BADDR, 22:AWDParser.BADDR});
+            var spezialType         : number        = props.get(4, 0);
+            var debugString         : string        = "";
+
+            if (spezialType >= 2)//this is no supported material
+            {
+                this._blocks[blockID].addError("Material-spezialType '" + spezialType + "' is not supported, can only be 0:singlePass, 1:MultiPass !");
+                return;
+            }
+
+            if (this.materialMode == 1)
+            {
+                spezialType = 0;
+            }
+            else if (this.materialMode == 2)
+            {
+                spezialType = 1;
+            }
+
+            if (spezialType < 2)//this is SinglePass or MultiPass
+            {
+                if (type == 1)// Color material
+                {
+                    var color : number = props.get(1, 0xcccccc);//var color : number = color = props.get(1, 0xcccccc);
+
+                    if (spezialType == 1)//	MultiPassMaterial
+                    {
+                        mat         = new away.materials.ColorMultiPassMaterial(color);
+                        debugString += "Parsed a ColorMaterial(MultiPass): Name = '" + name + "' | ";
+                    }
+                    else //	SinglePassMaterial
+                    {
+                        mat = new away.materials.ColorMaterial(color, props.get(10, 1.0));
+                        (<away.materials.ColorMaterial> mat).alphaBlending = props.get(11, false);
+                        debugString += "Parsed a ColorMaterial(SinglePass): Name = '" + name + "' | ";
+                    }
+                }
+                else if (type == 2)// texture material
+                {
+
+                    var tex_addr    : number    = props.get(2, 0);
+                    returnedArray               = this.getAssetByID(tex_addr, [away.library.AssetType.TEXTURE]);
+
+                    if ((!returnedArray[0]) && (tex_addr > 0))
+                    {
+                        this._blocks[blockID].addError("Could not find the DiffuseTexture (ID = " + tex_addr + " ) for this TextureMaterial");
+                    }
+                    var texture         : away.textures.Texture2DBase = returnedArray[1];
+                    var ambientTexture  : away.textures.Texture2DBase;
+                    var ambientTex_addr : number = props.get(17, 0);
+
+                    returnedArray = this.getAssetByID(ambientTex_addr, [away.library.AssetType.TEXTURE]);
+
+                    if ((!returnedArray[0]) && (ambientTex_addr != 0))
+                    {
+                        this._blocks[blockID].addError("Could not find the AmbientTexture (ID = " + ambientTex_addr + " ) for this TextureMaterial");
+                    }
+
+                    if (returnedArray[0])
+                    {
+                        ambientTexture = returnedArray[1]
+                    }
+
+                    if (spezialType == 1)// MultiPassMaterial
+                    {
+                        mat         = new away.materials.TextureMultiPassMaterial(texture);
+                        debugString += "Parsed a TextureMaterial(MultiPass): Name = '" + name + "' | Texture-Name = " + texture.name;
+
+                        if (ambientTexture)
+                        {
+                            ( <away.materials.TextureMultiPassMaterial> mat).ambientTexture = ambientTexture;
+                            debugString += " | AmbientTexture-Name = " + ambientTexture.name;
+                        }
+                    }
+                    else//	SinglePassMaterial
+                    {
+                        mat         = new away.materials.TextureMaterial(texture);
+                        debugString += "Parsed a TextureMaterial(SinglePass): Name = '" + name + "' | Texture-Name = " + texture.name;
+
+                        if (ambientTexture)
+                        {
+                            (<away.materials.TextureMaterial> mat).ambientTexture = ambientTexture;
+                            debugString += " | AmbientTexture-Name = " + ambientTexture.name;
+                        }
+
+                        (<away.materials.TextureMaterial> mat).alpha = props.get(10, 1.0);
+                        (<away.materials.TextureMaterial> mat).alphaBlending = props.get(11, false);
+                    }
+
+                }
+
+                var normalTex_addr:number = props.get(3, 0);
+
+                returnedArray = this.getAssetByID(normalTex_addr, [away.library.AssetType.TEXTURE]);
+
+                if ((!returnedArray[0]) && (normalTex_addr != 0))
+                {
+                    this._blocks[blockID].addError("Could not find the NormalTexture (ID = " + normalTex_addr + " ) for this TextureMaterial");
+                }
+
+                if (returnedArray[0])
+                {
+                    normalTexture = returnedArray[1];
+                    debugString += " | NormalTexture-Name = " + normalTexture.name;
+                }
+
+                var specTex_addr : number = props.get(21, 0);
+                returnedArray = this.getAssetByID(specTex_addr, [away.library.AssetType.TEXTURE]);
+
+                if ((!returnedArray[0]) && (specTex_addr != 0))
+                {
+                    this._blocks[blockID].addError("Could not find the SpecularTexture (ID = " + specTex_addr + " ) for this TextureMaterial");
+                }
+                if (returnedArray[0])
+                {
+                    specTexture = returnedArray[1];
+                    debugString += " | SpecularTexture-Name = " + specTexture.name;
+                }
+
+                var lightPickerAddr : number = props.get(22, 0);
+                returnedArray = this.getAssetByID(lightPickerAddr, [away.library.AssetType.LIGHT_PICKER])
+
+                if ((!returnedArray[0]) && (lightPickerAddr))
+                {
+                    this._blocks[blockID].addError("Could not find the LightPicker (ID = " + lightPickerAddr + " ) for this TextureMaterial");
+                }
+                else
+                {
+                    (<away.materials.MaterialBase> mat).lightPicker = <away.materials.LightPickerBase> returnedArray[1] ;
+                    //debugString+=" | Lightpicker-Name = "+LightPickerBase(returnedArray[1]).name;
+                }
+
+                (<away.materials.MaterialBase> mat).smooth              = props.get(5, true);
+                (<away.materials.MaterialBase> mat).mipmap              = props.get(6, true);
+                (<away.materials.MaterialBase> mat).bothSides           = props.get(7, false);
+                (<away.materials.MaterialBase> mat).alphaPremultiplied  = props.get(8, false);
+                (<away.materials.MaterialBase> mat).blendMode           = this.blendModeDic[props.get(9, 0)];
+                (<away.materials.MaterialBase> mat).repeat              = props.get(13, false);
+
+                if (spezialType == 0)// this is a SinglePassMaterial
+                {
+                    if (normalTexture)
+                    {
+                        (<away.materials.SinglePassMaterialBase> mat).normalMap = normalTexture;
+                    }
+                    if (specTexture)
+                    {
+                        (<away.materials.SinglePassMaterialBase> mat).specularMap = specTexture;
+                    }
+
+                    (<away.materials.SinglePassMaterialBase> mat).alphaThreshold    = props.get(12, 0.0);
+                    (<away.materials.SinglePassMaterialBase> mat).ambient           = props.get(15, 1.0);
+                    (<away.materials.SinglePassMaterialBase> mat).ambientColor      = props.get(16, 0xffffff);
+                    (<away.materials.SinglePassMaterialBase> mat).specular          = props.get(18, 1.0);
+                    (<away.materials.SinglePassMaterialBase> mat).gloss             = props.get(19, 50);
+                    (<away.materials.SinglePassMaterialBase> mat).specularColor     = props.get(20, 0xffffff);
+                }
+                else // this is MultiPassMaterial
+                {
+                    if (normalTexture)
+                    {
+                        (<away.materials.MultiPassMaterialBase> mat).normalMap = normalTexture;
+                    }
+                    if (specTexture)
+                    {
+                        (<away.materials.MultiPassMaterialBase> mat).specularMap = specTexture;
+                    }
+
+                    (<away.materials.MultiPassMaterialBase> mat).alphaThreshold = props.get(12, 0.0);
+                    (<away.materials.MultiPassMaterialBase> mat).ambient        = props.get(15, 1.0);
+                    (<away.materials.MultiPassMaterialBase> mat).ambientColor   = props.get(16, 0xffffff);
+                    (<away.materials.MultiPassMaterialBase> mat).specular       = props.get(18, 1.0);
+                    (<away.materials.MultiPassMaterialBase> mat).gloss          = props.get(19, 50);
+                    (<away.materials.MultiPassMaterialBase> mat).specularColor  = props.get(20, 0xffffff);
+
+                }
+
+                var methods_parsed  : number = 0;
+                var targetID        : number;
+
+                while (methods_parsed < num_methods)
+                {
+                    var method_type : number ;
+                        method_type = this._newBlockBytes.readUnsignedShort();
+
+                    props = this.parseProperties({1:AWDParser.BADDR, 2:AWDParser.BADDR, 3:AWDParser.BADDR, 101:this._propsNrType, 102:this._propsNrType, 103:this._propsNrType, 201:AWDParser.UINT32, 202:AWDParser.UINT32, 301:AWDParser.UINT16, 302:AWDParser.UINT16, 401:AWDParser.UINT8, 402:AWDParser.UINT8, 601:AWDParser.COLOR, 602:AWDParser.COLOR, 701:AWDParser.BOOL, 702:AWDParser.BOOL, 801:AWDParser.MTX4x4});
+
+                    switch (method_type)
+                    {
+                        case 999: //wrapper-Methods that will load a previous parsed EffektMethod returned
+
+                            targetID = props.get(1, 0);
+                            returnedArray = this.getAssetByID(targetID, [away.library.AssetType.EFFECTS_METHOD]);
+
+                            if (!returnedArray[0])
+                            {
+                                this._blocks[blockID].addError("Could not find the EffectMethod (ID = " + targetID + " ) for this Material");
+                            }
+                            else
+                            {
+                                if (spezialType == 0)
+                                {
+                                    (<away.materials.SinglePassMaterialBase> mat).addMethod(returnedArray[1]);
+                                }
+                                if (spezialType == 1)
+                                {
+                                    (<away.materials.MultiPassMaterialBase> mat).addMethod(returnedArray[1]);
+                                }
+
+                                debugString += " | EffectMethod-Name = " + (<away.materials.EffectMethodBase> returnedArray[1]).name;
+                            }
+
+                            break;
+
+                        case 998: //wrapper-Methods that will load a previous parsed ShadowMapMethod
+
+                            targetID = props.get(1, 0);
+                            returnedArray = this.getAssetByID(targetID, [away.library.AssetType.SHADOW_MAP_METHOD]);
+
+                            if (!returnedArray[0])
+                            {
+                                this._blocks[blockID].addError("Could not find the ShadowMethod (ID = " + targetID + " ) for this Material");
+                            }
+                            else
+                            {
+                                if (spezialType == 0)
+                                {
+                                    (<away.materials.SinglePassMaterialBase> mat).shadowMethod = returnedArray[1];
+                                }
+
+                                if (spezialType == 1)
+                                {
+                                    (<away.materials.MultiPassMaterialBase> mat).shadowMethod = returnedArray[1];
+                                }
+
+                                debugString += " | ShadowMethod-Name = " + (<away.materials.ShadowMapMethodBase> returnedArray[1]).name;
+
+                            }
+
+                            break;
+
+    //						case 1: //EnvMapAmbientMethod
+    //							targetID = props.get(1, 0);
+    //							returnedArray = getAssetByID(targetID, [AssetType.TEXTURE], "CubeTexture");
+    //							if (!returnedArray[0])
+    //								_blocks[blockID].addError("Could not find the EnvMap (ID = " + targetID + " ) for this EnvMapAmbientMethodMaterial");
+    //							if (spezialType == 0)
+    //								SinglePassMaterialBase(mat).ambientMethod = new EnvMapAmbientMethod(returnedArray[1]);
+    //							if (spezialType == 1)
+    //								MultiPassMaterialBase(mat).ambientMethod = new EnvMapAmbientMethod(returnedArray[1]);
+    //							debugString += " | EnvMapAmbientMethod | EnvMap-Name =" + CubeTextureBase(returnedArray[1]).name;
+    //							break;
+    //
+    //						case 51: //DepthDiffuseMethod
+    //							if (spezialType == 0)
+    //								SinglePassMaterialBase(mat).diffuseMethod = new DepthDiffuseMethod();
+    //							if (spezialType == 1)
+    //								MultiPassMaterialBase(mat).diffuseMethod = new DepthDiffuseMethod();
+    //							debugString += " | DepthDiffuseMethod";
+    //							break;
+    //						case 52: //GradientDiffuseMethod
+    //							targetID = props.get(1, 0);
+    //							returnedArray = getAssetByID(targetID, [AssetType.TEXTURE]);
+    //							if (!returnedArray[0])
+    //								_blocks[blockID].addError("Could not find the GradientDiffuseTexture (ID = " + targetID + " ) for this GradientDiffuseMethod");
+    //							if (spezialType == 0)
+    //								SinglePassMaterialBase(mat).diffuseMethod = new GradientDiffuseMethod(returnedArray[1]);
+    //							if (spezialType == 1)
+    //								MultiPassMaterialBase(mat).diffuseMethod = new GradientDiffuseMethod(returnedArray[1]);
+    //							debugString += " | GradientDiffuseMethod | GradientDiffuseTexture-Name =" + Texture2DBase(returnedArray[1]).name;
+    //							break;
+    //						case 53: //WrapDiffuseMethod
+    //							if (spezialType == 0)
+    //								SinglePassMaterialBase(mat).diffuseMethod = new WrapDiffuseMethod(props.get(101, 5));
+    //							if (spezialType == 1)
+    //								MultiPassMaterialBase(mat).diffuseMethod = new WrapDiffuseMethod(props.get(101, 5));
+    //							debugString += " | WrapDiffuseMethod";
+    //							break;
+    //						case 54: //LightMapDiffuseMethod
+    //							targetID = props.get(1, 0);
+    //							returnedArray = getAssetByID(targetID, [AssetType.TEXTURE]);
+    //							if (!returnedArray[0])
+    //								_blocks[blockID].addError("Could not find the LightMap (ID = " + targetID + " ) for this LightMapDiffuseMethod");
+    //							if (spezialType == 0)
+    //								SinglePassMaterialBase(mat).diffuseMethod = new LightMapDiffuseMethod(returnedArray[1], blendModeDic[props.get(401, 10)], false, SinglePassMaterialBase(mat).diffuseMethod);
+    //							if (spezialType == 1)
+    //								MultiPassMaterialBase(mat).diffuseMethod = new LightMapDiffuseMethod(returnedArray[1], blendModeDic[props.get(401, 10)], false, MultiPassMaterialBase(mat).diffuseMethod);
+    //							debugString += " | LightMapDiffuseMethod | LightMapTexture-Name =" + Texture2DBase(returnedArray[1]).name;
+    //							break;
+    //						case 55: //CelDiffuseMethod
+    //							if (spezialType == 0) {
+    //								SinglePassMaterialBase(mat).diffuseMethod = new CelDiffuseMethod(props.get(401, 3), SinglePassMaterialBase(mat).diffuseMethod);
+    //								CelDiffuseMethod(SinglePassMaterialBase(mat).diffuseMethod).smoothness = props.get(101, 0.1);
+    //							}
+    //							if (spezialType == 1) {
+    //								MultiPassMaterialBase(mat).diffuseMethod = new CelDiffuseMethod(props.get(401, 3), MultiPassMaterialBase(mat).diffuseMethod);
+    //								CelDiffuseMethod(MultiPassMaterialBase(mat).diffuseMethod).smoothness = props.get(101, 0.1);
+    //							}
+    //							debugString += " | CelDiffuseMethod";
+    //							break;
+    //						case 56: //SubSurfaceScatteringMethod
+    //							if (spezialType == 0) {
+    //								SinglePassMaterialBase(mat).diffuseMethod = new SubsurfaceScatteringDiffuseMethod(); //depthMapSize and depthMapOffset ?
+    //								SubsurfaceScatteringDiffuseMethod(SinglePassMaterialBase(mat).diffuseMethod).scattering = props.get(101, 0.2);
+    //								SubsurfaceScatteringDiffuseMethod(SinglePassMaterialBase(mat).diffuseMethod).translucency = props.get(102, 1);
+    //								SubsurfaceScatteringDiffuseMethod(SinglePassMaterialBase(mat).diffuseMethod).scatterColor = props.get(601, 0xffffff);
+    //							}
+    //							if (spezialType == 1) {
+    //								MultiPassMaterialBase(mat).diffuseMethod = new SubsurfaceScatteringDiffuseMethod(); //depthMapSize and depthMapOffset ?
+    //								SubsurfaceScatteringDiffuseMethod(MultiPassMaterialBase(mat).diffuseMethod).scattering = props.get(101, 0.2);
+    //								SubsurfaceScatteringDiffuseMethod(MultiPassMaterialBase(mat).diffuseMethod).translucency = props.get(102, 1);
+    //								SubsurfaceScatteringDiffuseMethod(MultiPassMaterialBase(mat).diffuseMethod).scatterColor = props.get(601, 0xffffff);
+    //							}
+    //							debugString += " | SubSurfaceScatteringMethod";
+    //							break;
+    //
+    //						case 101: //AnisotropicSpecularMethod
+    //							if (spezialType == 0)
+    //								SinglePassMaterialBase(mat).specularMethod = new AnisotropicSpecularMethod();
+    //							if (spezialType == 1)
+    //								MultiPassMaterialBase(mat).specularMethod = new AnisotropicSpecularMethod();
+    //							debugString += " | AnisotropicSpecularMethod";
+    //							break;
+    //						case 102: //PhongSpecularMethod
+    //							if (spezialType == 0)
+    //								SinglePassMaterialBase(mat).specularMethod = new PhongSpecularMethod();
+    //							if (spezialType == 1)
+    //								MultiPassMaterialBase(mat).specularMethod = new PhongSpecularMethod();
+    //							debugString += " | PhongSpecularMethod";
+    //							break;
+    //						case 103: //CellSpecularMethod
+    //							if (spezialType == 0) {
+    //								SinglePassMaterialBase(mat).specularMethod = new CelSpecularMethod(props.get(101, 0.5), SinglePassMaterialBase(mat).specularMethod);
+    //								CelSpecularMethod(SinglePassMaterialBase(mat).specularMethod).smoothness = props.get(102, 0.1);
+    //							}
+    //							if (spezialType == 1) {
+    //								MultiPassMaterialBase(mat).specularMethod = new CelSpecularMethod(props.get(101, 0.5), MultiPassMaterialBase(mat).specularMethod);
+    //								CelSpecularMethod(MultiPassMaterialBase(mat).specularMethod).smoothness = props.get(102, 0.1);
+    //							}
+    //							debugString += " | CellSpecularMethod";
+    //							break;
+    //						case 104: //FresnelSpecularMethod
+    //							if (spezialType == 0) {
+    //								SinglePassMaterialBase(mat).specularMethod = new FresnelSpecularMethod(props.get(701, true), SinglePassMaterialBase(mat).specularMethod);
+    //								FresnelSpecularMethod(SinglePassMaterialBase(mat).specularMethod).fresnelPower = props.get(101, 5);
+    //								FresnelSpecularMethod(SinglePassMaterialBase(mat).specularMethod).normalReflectance = props.get(102, 0.1);
+    //							}
+    //							if (spezialType == 1) {
+    //								MultiPassMaterialBase(mat).specularMethod = new FresnelSpecularMethod(props.get(701, true), MultiPassMaterialBase(mat).specularMethod);
+    //								FresnelSpecularMethod(MultiPassMaterialBase(mat).specularMethod).fresnelPower = props.get(101, 5);
+    //								FresnelSpecularMethod(MultiPassMaterialBase(mat).specularMethod).normalReflectance = props.get(102, 0.1);
+    //							}
+    //							debugString += " | FresnelSpecularMethod";
+    //							break;
+    //						//case 151://HeightMapNormalMethod - thios is not implemented for now, but might appear later
+    //						//break;
+    //						case 152: //SimpleWaterNormalMethod
+    //							targetID = props.get(1, 0);
+    //							returnedArray = getAssetByID(targetID, [AssetType.TEXTURE]);
+    //							if (!returnedArray[0])
+    //								_blocks[blockID].addError("Could not find the SecoundNormalMap (ID = " + targetID + " ) for this SimpleWaterNormalMethod");
+    //							if (spezialType == 0) {
+    //								if (!SinglePassMaterialBase(mat).normalMap)
+    //									_blocks[blockID].addError("Could not find a normal Map on this Material to use with this SimpleWaterNormalMethod");
+    //								SinglePassMaterialBase(mat).normalMap = returnedArray[1];
+    //								SinglePassMaterialBase(mat).normalMethod = new SimpleWaterNormalMethod(SinglePassMaterialBase(mat).normalMap, returnedArray[1]);
+    //							}
+    //							if (spezialType == 1) {
+    //								if (!MultiPassMaterialBase(mat).normalMap)
+    //									_blocks[blockID].addError("Could not find a normal Map on this Material to use with this SimpleWaterNormalMethod");
+    //								MultiPassMaterialBase(mat).normalMap = returnedArray[1];
+    //								MultiPassMaterialBase(mat).normalMethod = new SimpleWaterNormalMethod(MultiPassMaterialBase(mat).normalMap, returnedArray[1]);
+    //							}
+    //							debugString += " | SimpleWaterNormalMethod | Second-NormalTexture-Name = " + Texture2DBase(returnedArray[1]).name;
+    //							break;
+                    }
+                    this.parseUserAttributes();
+                    methods_parsed += 1;
+                }
+            }
+            (<away.materials.MaterialBase> mat).extra = this.parseUserAttributes();
+            this._pFinalizeAsset( <away.library.IAsset> mat, name);
+
+            this._blocks[blockID].data = mat;
+            if (this._debug)
+            {
+                console.log(debugString);
+            }
+        }
+
         //Block ID = 82
         private parseTexture(blockID:number):void
         {
@@ -1290,6 +1804,78 @@ module away.loaders
 
         }
 
+        //Block ID = 83
+        private parseCubeTexture(blockID : number ) : void
+        {
+            //blockLength = block.len;
+            var data_len    : number;
+            var asset       : away.textures.CubeTextureBase;
+            var i           : number;
+
+            this._cubeTextures = new Array<any>();
+            this._texture_users[ this._cur_block_id.toString() ] = [];
+
+            var type        : number    = this._newBlockBytes.readUnsignedByte();
+
+            this._blocks[blockID].name  = this.parseVarStr();
+
+            for (i = 0; i < 6; i++)
+            {
+                this._texture_users[this._cur_block_id.toString()] = [];
+                this._cubeTextures.push(null);
+
+                // External
+                if (type == 0)
+                {
+                    data_len    = this._newBlockBytes.readUnsignedInt();
+                    var url:string;
+                    url         = this._newBlockBytes.readUTFBytes(data_len);
+
+                    this._pAddDependency(  this._cur_block_id.toString() + "#" + i , new away.net.URLRequest( url ) , false, null, true);
+                }
+                else
+                {
+
+                    data_len = this._newBlockBytes.readUnsignedInt();
+                    var data    : away.utils.ByteArray;
+                        data = new away.utils.ByteArray();
+
+                    this._newBlockBytes.readBytes(data, 0, data_len);
+                    this._pAddDependency(  this._cur_block_id.toString() + "#" + i , null, false, data , true);
+                }
+            }
+
+            // Ignore for now
+            this.parseProperties(null);
+            this._blocks[blockID].extras = this.parseUserAttributes();
+            this._pPauseAndRetrieveDependencies();
+            this._blocks[blockID].data = asset;
+
+            if (this._debug)
+            {
+                var textureStylesNames:Array = ["external", "embed"]
+                console.log("Start parsing 6 " + textureStylesNames[type] + " Bitmaps for CubeTexture");
+            }
+        }
+
+        //Block ID = 91
+        private parseSharedMethodBlock(blockID : number):void
+        {
+            var asset:away.materials.EffectMethodBase;
+
+            this._blocks[blockID].name = this.parseVarStr();
+            asset = this.parseSharedMethodList(blockID);
+            this.parseUserAttributes();
+            this._blocks[blockID].data = asset;
+            this._pFinalizeAsset( <away.library.IAsset> asset, this._blocks[blockID].name);
+            this._blocks[blockID].data = asset;
+
+            if (this._debug)
+            {
+                console.log("Parsed a EffectMethod: Name = " + asset.name + " Type = " + asset);
+            }
+        }
+
         //blockID 255
         private parseMetaData(blockID:number):void
         {
@@ -1314,6 +1900,93 @@ module away.loaders
         }
 
         //--Parser UTILS---------------------------------------------------------------------------
+
+        // this functions reads and creates a EffectMethod
+        private parseSharedMethodList(blockID : number):away.materials.EffectMethodBase
+        {
+
+            var methodType          : number = this._newBlockBytes.readUnsignedShort();
+            var effectMethodReturn  : away.materials.EffectMethodBase;
+
+            var props               : AWDProperties = this.parseProperties({1:AWDParser.BADDR, 2:AWDParser.BADDR, 3:AWDParser.BADDR, 101:this._propsNrType, 102:this._propsNrType, 103:this._propsNrType, 104:this._propsNrType, 105:this._propsNrType, 106:this._propsNrType, 107:this._propsNrType, 201:AWDParser.UINT32, 202:AWDParser.UINT32, 301:AWDParser.UINT16, 302:AWDParser.UINT16, 401:AWDParser.UINT8, 402:AWDParser.UINT8, 601:AWDParser.COLOR, 602:AWDParser.COLOR, 701:AWDParser.BOOL, 702:AWDParser.BOOL});
+            var targetID            : number;
+            var returnedArray       : Array;
+            switch (methodType) {
+                // Effect Methods
+    //				case 401: //ColorMatrix
+    //					effectMethodReturn = new ColorMatrixMethod(props.get(101, new Array(0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)));
+    //					break;
+    //				case 402: //ColorTransform
+    //					effectMethodReturn = new ColorTransformMethod();
+    //					var offCol:uint = props.get(601, 0x00000000);
+    //					var newColorTransform:ColorTransform = new ColorTransform(props.get(102, 1), props.get(103, 1), props.get(104, 1), props.get(101, 1), ((offCol >> 16) & 0xFF), ((offCol >> 8) & 0xFF), (offCol & 0xFF), ((offCol >> 24) & 0xFF));
+    //					ColorTransformMethod(effectMethodReturn).colorTransform = newColorTransform;
+    //					break;
+    //				case 403: //EnvMap
+    //					targetID = props.get(1, 0);
+    //					returnedArray = getAssetByID(targetID, [AssetType.TEXTURE], "CubeTexture");
+    //					if (!returnedArray[0])
+    //						_blocks[blockID].addError("Could not find the EnvMap (ID = " + targetID + " ) for this EnvMapMethod");
+    //					effectMethodReturn = new EnvMapMethod(returnedArray[1], props.get(101, 1));
+    //					targetID = props.get(2, 0);
+    //					if (targetID > 0) {
+    //						returnedArray = getAssetByID(targetID, [AssetType.TEXTURE]);
+    //						if (!returnedArray[0])
+    //							_blocks[blockID].addError("Could not find the Mask-texture (ID = " + targetID + " ) for this EnvMapMethod");
+    //						EnvMapMethod(effectMethodReturn).mask = returnedArray[1];
+    //					}
+    //					break;
+    //				case 404: //LightMapMethod
+    //					targetID = props.get(1, 0);
+    //					returnedArray = getAssetByID(targetID, [AssetType.TEXTURE]);
+    //					if (!returnedArray[0])
+    //						_blocks[blockID].addError("Could not find the LightMap (ID = " + targetID + " ) for this LightMapMethod");
+    //					effectMethodReturn = new LightMapMethod(returnedArray[1], blendModeDic[props.get(401, 10)]); //usesecondaryUV not set
+    //					break;
+    //				case 405: //ProjectiveTextureMethod
+    //					targetID = props.get(1, 0);
+    //					returnedArray = getAssetByID(targetID, [AssetType.TEXTURE_PROJECTOR]);
+    //					if (!returnedArray[0])
+    //						_blocks[blockID].addError("Could not find the TextureProjector (ID = " + targetID + " ) for this ProjectiveTextureMethod");
+    //					effectMethodReturn = new ProjectiveTextureMethod(returnedArray[1], blendModeDic[props.get(401, 10)]);
+    //					break;
+    //				case 406: //RimLightMethod
+    //					effectMethodReturn = new RimLightMethod(props.get(601, 0xffffff), props.get(101, 0.4), props.get(101, 2)); //blendMode
+    //					break;
+    //				case 407: //AlphaMaskMethod
+    //					targetID = props.get(1, 0);
+    //					returnedArray = getAssetByID(targetID, [AssetType.TEXTURE]);
+    //					if (!returnedArray[0])
+    //						_blocks[blockID].addError("Could not find the Alpha-texture (ID = " + targetID + " ) for this AlphaMaskMethod");
+    //					effectMethodReturn = new AlphaMaskMethod(returnedArray[1], props.get(701, false));
+    //					break;
+    //				case 408: //RefractionEnvMapMethod
+    //					targetID = props.get(1, 0);
+    //					returnedArray = getAssetByID(targetID, [AssetType.TEXTURE], "CubeTexture");
+    //					if (!returnedArray[0])
+    //						_blocks[blockID].addError("Could not find the EnvMap (ID = " + targetID + " ) for this RefractionEnvMapMethod");
+    //					effectMethodReturn = new RefractionEnvMapMethod(returnedArray[1], props.get(101, 0.1), props.get(102, 0.01), props.get(103, 0.01), props.get(104, 0.01));
+    //					RefractionEnvMapMethod(effectMethodReturn).alpha = props.get(104, 1);
+    //					break;
+    //				case 409: //OutlineMethod
+    //					effectMethodReturn = new OutlineMethod(props.get(601, 0x00000000), props.get(101, 1), props.get(701, true), props.get(702, false));
+    //					break;
+    //				case 410: //FresnelEnvMapMethod
+    //					targetID = props.get(1, 0);
+    //					returnedArray = getAssetByID(targetID, [AssetType.TEXTURE], "CubeTexture");
+    //					if (!returnedArray[0])
+    //						_blocks[blockID].addError("Could not find the EnvMap (ID = " + targetID + " ) for this FresnelEnvMapMethod");
+    //					effectMethodReturn = new FresnelEnvMapMethod(returnedArray[1], props.get(101, 1));
+    //					break;
+    //				case 411: //FogMethod
+    //					effectMethodReturn = new FogMethod(props.get(101, 0), props.get(102, 1000), props.get(601, 0x808080));
+    //					break;
+
+            }
+            this.parseUserAttributes();
+            return effectMethodReturn;
+
+        }
 
         private parseUserAttributes():Object
         {
