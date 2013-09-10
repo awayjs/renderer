@@ -495,28 +495,48 @@ module away.loaders
                          isParsed = true;
                          break;
                      case 92:
-                         //this.parseShadowMethodBlock(this._cur_block_id);
-                         //isParsed = true;
+                         this.parseShadowMethodBlock(this._cur_block_id);
+                         isParsed = true;
                          break;
                      case 111:
+
+                         //------------------------------------------------------------------
+                         // Not yet supported - animation packages are not yet implemented
+                         //------------------------------------------------------------------
+
                          //this.parseMeshPoseAnimation(this._cur_block_id, true);
                          //isParsed = true;
                          break;
                      case 112:
+
+                         //------------------------------------------------------------------
+                         // Not yet supported - animation packages are not yet implemented
+                         //------------------------------------------------------------------
+
                          //this.parseMeshPoseAnimation(this._cur_block_id);
                          //isParsed = true;
                          break;
                      case 113:
+
+                         //------------------------------------------------------------------
+                         // Not yet supported - animation packages are not yet implemented
+                         //------------------------------------------------------------------
+
                          //this.parseVertexAnimationSet(this._cur_block_id);
                          //isParsed = true;
                          break;
                      case 122:
+
+                         //------------------------------------------------------------------
+                         // Not yet supported - animation packages are not yet implemented
+                         //------------------------------------------------------------------
+
                          //this.parseAnimatorSet(this._cur_block_id);
                          //isParsed = true;
                          break;
                      case 253:
-                         //this.parseCommand(this._cur_block_id);
-                         //isParsed = true;
+                         this.parseCommand(this._cur_block_id);
+                         isParsed = true;
                          break;
                  }
                  //*/
@@ -1875,6 +1895,104 @@ module away.loaders
                 console.log("Parsed a EffectMethod: Name = " + asset.name + " Type = " + asset);
             }
         }
+        //Block ID = 92
+        private parseShadowMethodBlock(blockID : number ):void
+        {
+            var type            : number;
+            var data_len        : number;
+            var asset           : away.materials.ShadowMapMethodBase;
+            var shadowLightID   : number;
+            this._blocks[blockID].name = this.parseVarStr();
+
+            shadowLightID = this._newBlockBytes.readUnsignedInt();
+            var returnedArray:Array<any> = this.getAssetByID(shadowLightID, [away.library.AssetType.LIGHT]);
+
+            if (!returnedArray[0])
+            {
+                this._blocks[blockID].addError("Could not find the TargetLight (ID = " + shadowLightID + " ) for this ShadowMethod - ShadowMethod not created");
+                return;
+            }
+
+            asset = this.parseShadowMethodList(<away.lights.LightBase> returnedArray[1] , blockID);
+
+            if (!asset)
+                return;
+
+            this.parseUserAttributes(); // Ignore for now
+            this._pFinalizeAsset( <away.library.IAsset> asset, this._blocks[blockID].name);
+            this._blocks[blockID].data = asset;
+
+            if (this._debug)
+            {
+                console.log("Parsed a ShadowMapMethodMethod: Name = " + asset.name + " | Type = " + asset + " | Light-Name = " , ( <away.lights.LightBase> returnedArray[1] ).name );
+            }
+        }
+
+
+        //Block ID = 253
+        private parseCommand(blockID: number):void
+        {
+            var hasBlocks       : boolean               = ( this._newBlockBytes.readUnsignedByte() == 1 );
+            var par_id          : number                = this._newBlockBytes.readUnsignedInt();
+            var mtx             : away.geom.Matrix3D    = this.parseMatrix3D();
+            var name            : string                = this.parseVarStr();
+
+            var parentObject    : away.containers.ObjectContainer3D;
+            var targetObject    : away.containers.ObjectContainer3D;
+
+            var returnedArray:Array<any> = this.getAssetByID(par_id, [away.library.AssetType.CONTAINER, away.library.AssetType.LIGHT, away.library.AssetType.MESH, away.library.AssetType.ENTITY, away.library.AssetType.SEGMENT_SET]);
+
+            if (returnedArray[0])
+            {
+                parentObject = <away.containers.ObjectContainer3D> returnedArray[1];
+            }
+
+            var numCommands     : number = this._newBlockBytes.readShort();
+            var typeCommand     : number = this._newBlockBytes.readShort();
+
+            var props           : AWDProperties = this.parseProperties({1:AWDParser.BADDR});
+
+            switch (typeCommand)
+            {
+                case 1:
+
+                    var targetID : number = props.get(1, 0);
+                    var returnedArrayTarget:Array<any> = this.getAssetByID(targetID, [away.library.AssetType.LIGHT, away.library.AssetType.TEXTURE_PROJECTOR]); //for no only light is requested!!!!
+
+                    if ((!returnedArrayTarget[0]) && (targetID != 0))
+                    {
+                        this._blocks[blockID].addError("Could not find the light (ID = " + targetID + " ( for this CommandBock!");
+                        return;
+                    }
+
+                    targetObject = returnedArrayTarget[1];
+
+                    if (parentObject)
+                    {
+                        parentObject.addChild(targetObject);
+                    }
+
+                    targetObject.transform = mtx;
+
+                    break;
+            }
+
+            if (targetObject)
+            {
+                props = this.parseProperties({1:this._matrixNrType, 2:this._matrixNrType, 3:this._matrixNrType, 4:AWDParser.UINT8});
+
+                targetObject.pivotPoint = new away.geom.Vector3D(props.get(1, 0), props.get(2, 0), props.get(3, 0));
+                targetObject.extra = this.parseUserAttributes();
+
+            }
+            this._blocks[blockID].data = targetObject
+
+            if (this._debug)
+            {
+                console.log("Parsed a CommandBlock: Name = '" + name);
+            }
+
+        }
 
         //blockID 255
         private parseMetaData(blockID:number):void
@@ -1900,6 +2018,64 @@ module away.loaders
         }
 
         //--Parser UTILS---------------------------------------------------------------------------
+
+        // this functions reads and creates a ShadowMethodMethod
+        private parseShadowMethodList(light:away.lights.LightBase, blockID:number):away.materials.ShadowMapMethodBase
+        {
+
+            var methodType      : number = this._newBlockBytes.readUnsignedShort();
+            var shadowMethod    : away.materials.ShadowMapMethodBase;
+            var props           : AWDProperties = this.parseProperties({1:AWDParser.BADDR, 2:AWDParser.BADDR, 3:AWDParser.BADDR, 101:this._propsNrType, 102:this._propsNrType, 103:this._propsNrType, 201:AWDParser.UINT32, 202:AWDParser.UINT32, 301:AWDParser.UINT16, 302:AWDParser.UINT16, 401:AWDParser.UINT8, 402:AWDParser.UINT8, 601:AWDParser.COLOR, 602:AWDParser.COLOR, 701:AWDParser.BOOL, 702:AWDParser.BOOL, 801:AWDParser.MTX4x4});
+
+            var targetID        : number;
+            var returnedArray   : Array
+            switch (methodType)
+            {
+    //				case 1001: //CascadeShadowMapMethod
+    //					targetID = props.get(1, 0);
+    //					returnedArray = getAssetByID(targetID, [AssetType.SHADOW_MAP_METHOD]);
+    //					if (!returnedArray[0]) {
+    //						_blocks[blockID].addError("Could not find the ShadowBaseMethod (ID = " + targetID + " ) for this CascadeShadowMapMethod - ShadowMethod not created");
+    //						return shadowMethod;
+    //					}
+    //					shadowMethod = new CascadeShadowMapMethod(returnedArray[1]);
+    //					break;
+    //				case 1002: //NearShadowMapMethod
+    //					targetID = props.get(1, 0);
+    //					returnedArray = getAssetByID(targetID, [AssetType.SHADOW_MAP_METHOD]);
+    //					if (!returnedArray[0]) {
+    //						_blocks[blockID].addError("Could not find the ShadowBaseMethod (ID = " + targetID + " ) for this NearShadowMapMethod - ShadowMethod not created");
+    //						return shadowMethod;
+    //					}
+    //					shadowMethod = new NearShadowMapMethod(returnedArray[1]);
+    //					break;
+    //				case 1101: //FilteredShadowMapMethod
+    //					shadowMethod = new FilteredShadowMapMethod(DirectionalLight(light));
+    //					FilteredShadowMapMethod(shadowMethod).alpha = props.get(101, 1);
+    //					FilteredShadowMapMethod(shadowMethod).epsilon = props.get(102, 0.002);
+    //					break;
+    //				case 1102: //DitheredShadowMapMethod
+    //					shadowMethod = new DitheredShadowMapMethod(DirectionalLight(light), props.get(201, 5));
+    //					DitheredShadowMapMethod(shadowMethod).alpha = props.get(101, 1);
+    //					DitheredShadowMapMethod(shadowMethod).epsilon = props.get(102, 0.002);
+    //					DitheredShadowMapMethod(shadowMethod).range = props.get(103, 1);
+    //					break;
+    //				case 1103: //SoftShadowMapMethod
+    //					shadowMethod = new SoftShadowMapMethod(DirectionalLight(light), props.get(201, 5));
+    //					SoftShadowMapMethod(shadowMethod).alpha = props.get(101, 1);
+    //					SoftShadowMapMethod(shadowMethod).epsilon = props.get(102, 0.002);
+    //					SoftShadowMapMethod(shadowMethod).range = props.get(103, 1);
+    //					break;
+    //				case 1104: //HardShadowMapMethod
+    //					shadowMethod = new HardShadowMapMethod(light);
+    //					HardShadowMapMethod(shadowMethod).alpha = props.get(101, 1);
+    //					HardShadowMapMethod(shadowMethod).epsilon = props.get(102, 0.002);
+    //					break;
+
+            }
+            this.parseUserAttributes();
+            return shadowMethod;
+        }
 
         // this functions reads and creates a EffectMethod
         private parseSharedMethodList(blockID : number):away.materials.EffectMethodBase
