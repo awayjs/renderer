@@ -11,8 +11,8 @@ module away.utils
 		 */
 		public static fromVectors(verts:number[], indices:number[] /*uint*/, uvs:number[], normals:number[], tangents:number[], weights:number[], jointIndices:number[], triangleOffset:number = 0):away.base.ISubGeometry[]
 		{
-			var LIMIT_VERTS:number = 3*0xffff;
-            var LIMIT_INDICES:number = 15*0xffff;
+			var LIMIT_VERTS     : number = 3*0xffff;
+            var LIMIT_INDICES   : number = 15*0xffff;
 			
 			var subs:away.base.ISubGeometry[] = new Array<away.base.ISubGeometry>();
 
@@ -34,7 +34,10 @@ module away.utils
 			if ((indices.length >= LIMIT_INDICES) || (verts.length >= LIMIT_VERTS))
             {
 
-				var i:number, len:number, outIndex:number, j:number;
+				var i:number;
+                var len:number;
+                var outIndex:number;
+                var j:number;
 				var splitVerts:number[] = new Array<number>();
 				var splitIndices:number[] /*uint*/ = new Array<number>();
 				var splitUvs:number[] = (uvs != null)? new Array<number>() : null;
@@ -54,8 +57,16 @@ module away.utils
 
 				var originalIndex:number;
 				var splitIndex:number;
-				var o0:number, o1:number, o2:number, s0:number, s1:number, s2:number,
-					su:number, ou:number, sv:number, ov:number;
+				var o0:number;
+                var o1:number;
+                var o2:number;
+                var s0:number;
+                var s1:number;
+                var s2:number;
+                var su:number;
+                var ou:number;
+                var sv:number;
+                var ov:number;
 				// Loop over all triangles
 				outIndex = 0;
 				len = indices.length;
@@ -93,9 +104,12 @@ module away.utils
 						originalIndex = indices[i + j];
 						
 						if (mappings[originalIndex] >= 0)
+                        {
 							splitIndex = mappings[originalIndex];
-						
-						else {
+
+                        }
+						else
+                        {
 							
 							o0 = originalIndex*3 + 0;
 							o1 = originalIndex*3 + 1;
@@ -187,11 +201,15 @@ module away.utils
                 //TODO: implement dependency: SkinnedSubGeometry
                 away.Debug.throwPIR( 'GeometryUtils' , 'constructSubGeometry' , 'Dependency: SkinnedSubGeometry');
 
-                /*
-				sub = new SkinnedSubGeometry(weights.length/(verts.length/3));
-				SkinnedSubGeometry(sub).updateJointWeightsData(weights);
-				SkinnedSubGeometry(sub).updateJointIndexData(jointIndices);
-				*/
+                //*
+				sub = new away.base.SkinnedSubGeometry(weights.length/(verts.length/3));
+
+                var ssg : away.base.SkinnedSubGeometry = <away.base.SkinnedSubGeometry> sub;
+
+                    //ssg.updateJointWeightsData(weights);
+                    //ssg.updateJointWeightsData(weights);
+                    //ssg.updateJointIndexData(jointIndices);
+				//*/
 				
 			}
             else
