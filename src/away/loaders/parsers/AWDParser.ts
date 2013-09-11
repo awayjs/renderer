@@ -337,7 +337,21 @@ module away.loaders
             else
             {
 
-                // Error - most likely _body not set because we do not support compression.
+                switch (this._compression)
+                {
+
+                    case AWDParser.DEFLATE:
+                    case AWDParser.LZMA:
+
+                        if ( this._debug )
+                        {
+                            console.log("(!) AWDParser Error: Compressed AWD formats not yet supported (!)");
+                        }
+
+                        break;
+
+                }
+                                // Error - most likely _body not set because we do not support compression.
                 return  away.loaders.ParserBase.PARSING_DONE;
 
             }
