@@ -282,6 +282,8 @@ module away.loaders
 
                     //----------------------------------------------------------------------------
                     // Compressed AWD Formats not yet supported
+                    //----------------------------------------------------------------------------
+
                     /*
                     case AWDParser.DEFLATE:
 
@@ -311,22 +313,33 @@ module away.loaders
 
             }
 
-            while (this._body.getBytesAvailable() > 0 && ! this.parsingPaused ) //&& this._pHasTime() )
+            if ( this._body )
             {
-                this.parseNextBlock();
 
-            }
+                while (this._body.getBytesAvailable() > 0 && ! this.parsingPaused ) //&& this._pHasTime() )
+                {
+                    this.parseNextBlock();
 
-            //----------------------------------------------------------------------------
-            // Return complete status
-            if (this._body.getBytesAvailable() == 0)
-            {
-                this.dispose();
-                return  away.loaders.ParserBase.PARSING_DONE;
+                }
+
+                //----------------------------------------------------------------------------
+                // Return complete status
+                if (this._body.getBytesAvailable() == 0)
+                {
+                    this.dispose();
+                    return  away.loaders.ParserBase.PARSING_DONE;
+                }
+                else
+                {
+                    return  away.loaders.ParserBase.MORE_TO_PARSE;
+                }
             }
             else
             {
-                return  away.loaders.ParserBase.MORE_TO_PARSE;
+
+                // Error - most likely _body not set because we do not support compression.
+                return  away.loaders.ParserBase.PARSING_DONE;
+
             }
 
         }
@@ -2395,7 +2408,7 @@ module away.loaders
 
         private parseHeader():void
         {
-            var flags       : number; /* uint */
+            var flags       : number;
             var body_len    : number;
 
             this._byteData.position = 3; // Skip magic string and parse version
