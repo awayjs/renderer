@@ -423,7 +423,7 @@ module away.entities
 		
 		private removeBounds()
 		{
-			if( !this._boundsIsShown )
+			if( this._boundsIsShown )
 			{
 				this._boundsIsShown = false;
 				this.removeChild( this._pBounds.boundingRenderable );
