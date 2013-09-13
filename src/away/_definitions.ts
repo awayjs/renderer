@@ -13,8 +13,8 @@
  *
  *********************************************************************************************************************************************************************************************************/
 
-///<reference path="../def/webgl.d.ts"/>
-///<reference path="../def/js.d.ts"/>
+///<reference path="../../lib/webgl.d.ts"/>
+///<reference path="../../lib/js.d.ts"/>
 ///<reference path="events/Event.ts" />
 ///<reference path="events/EventDispatcher.ts" />
 ///<reference path="events/LightEvent.ts" />
