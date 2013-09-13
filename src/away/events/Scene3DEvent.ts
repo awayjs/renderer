@@ -5,7 +5,9 @@
 
 ///<reference path="../_definitions.ts"/>
 
-
+/**
+ * @module away.events
+ */
 module away.events 
 {
 	

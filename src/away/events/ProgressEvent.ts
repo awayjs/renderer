@@ -1,5 +1,8 @@
 ///<reference path="../_definitions.ts"/>
 
+/**
+ * @module away.events
+ */
 module away.events
 {	
 	export class ProgressEvent extends away.events.Event

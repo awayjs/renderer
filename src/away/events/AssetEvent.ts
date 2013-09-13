@@ -6,7 +6,9 @@ module away.events
 	//import away3d.library.assets.IAsset;
 
 	//import flash.events.Event;
-
+    /**
+     * @class away.events.AssetEvent
+     */
 	export class AssetEvent extends away.events.Event
 	{
 		public static ASSET_COMPLETE : string = "assetComplete";

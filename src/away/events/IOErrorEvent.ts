@@ -1,5 +1,8 @@
 ///<reference path="../_definitions.ts"/>
 
+/**
+ * @module away.events
+ */
 module away.events
 {	
 	export class IOErrorEvent extends away.events.Event

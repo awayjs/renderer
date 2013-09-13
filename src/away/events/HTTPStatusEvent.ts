@@ -1,7 +1,10 @@
 ///<reference path="../_definitions.ts"/>
 
 module away.events
-{	
+{
+    /**
+     * @class away.events.HTTPStatusEvent
+     */
 	export class HTTPStatusEvent extends away.events.Event
 	{
 

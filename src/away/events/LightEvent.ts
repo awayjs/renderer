@@ -5,6 +5,9 @@
 
 ///<reference path="../_definitions.ts" />
 
+/**
+ * @module away.events
+ */
 module away.events
 {
 	export class LightEvent extends away.events.Event

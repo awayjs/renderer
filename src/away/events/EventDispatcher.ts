@@ -6,14 +6,14 @@
 ///<reference path="../_definitions.ts"/>
 
 /**
- * @module kurst.events
+ * @module away.events
  */
 module away.events {
 
     /**
      * Base class for dispatching events
      *
-     * @class kurst.events.EventDispatcher
+     * @class away.events.EventDispatcher
      *
      */
     export class EventDispatcher{

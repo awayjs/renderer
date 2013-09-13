@@ -4,7 +4,9 @@
  */
 
 ///<reference path="../_definitions.ts"/>
-
+/**
+ * @module away.events
+ */
 module away.events
 {
 	export class Object3DEvent extends Event

@@ -5,9 +5,14 @@
 
 ///<reference path="../_definitions.ts"/>
 
-
+/**
+ * @module away.events
+ */
 module away.events
 {
+    /**
+     * @class away.events.CameraEvent
+     */
 	export class CameraEvent extends away.events.Event
 	{
 		public static LENS_CHANGED:string = "lensChanged";

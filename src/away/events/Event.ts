@@ -1,6 +1,6 @@
 /**
  * Base event class
- * @class kurst.events.Event
+ * @class away.events.Event
  *
  * @author Karim Beyrouti
  */

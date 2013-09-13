@@ -5,6 +5,7 @@ module away.events
 	/**
 	 * Dispatched to notify changes in a geometry object's state.
 	 *
+     * @class away.events.GeometryEvent
 	 * @see away3d.core.base.Geometry
 	 */
 	export class GeometryEvent extends away.events.Event
