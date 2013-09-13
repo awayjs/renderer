@@ -133,9 +133,9 @@ module.exports = function(grunt) {
 
     grunt.option.init();
     grunt.registerTask('default',   ['ts' , 'uglify' , 'yuidoc' ]); // Default Tasks
-    grunt.registerTask('ts',        [ 'ts' ]);                      // Export TypeScript only
-    grunt.registerTask('doc',       [ 'yuidoc' ]);                  // Export Documentation only
-    grunt.registerTask('min',       [ 'uglify' ]);                  // Minify only
+    //grunt.registerTask('ts',        [ 'ts' ]);                      // Export TypeScript only
+    //grunt.registerTask('doc',       [ 'yuidoc' ]);                  // Export Documentation only
+    //grunt.registerTask('min',       [ 'uglify' ]);                  // Minify only
 
 };
 
