@@ -42,7 +42,9 @@ declare module away.events {
 declare module away.events {
     /**
     * Base class for dispatching events
+    *
     * @class away.events.EventDispatcher
+    *
     */
     class EventDispatcher {
         private listeners;
@@ -241,7 +243,7 @@ declare module away.library {
         public name : string;
         public dispose(): void;
         public assetNamespace : string;
-        public assetFullPath : Array<T>;
+        public assetFullPath : string[];
         public assetPathEquals(name: string, ns: string): boolean;
         public resetAssetPath(name: string, ns?: string, overrideOriginal?: boolean): void;
         private updateFullPath();
@@ -3752,7 +3754,7 @@ declare module away.containers {
         *
         * @param value
         */
-        public filters3d : Array<T>;
+        public filters3d : away.filters.Filter3DBase[];
         /**
         *
         * @returns {away.render.RendererBase}
@@ -5764,6 +5766,169 @@ declare module away.loaders {
         public _pProceedParsing(): boolean;
     }
 }
+declare module away.loaders {
+    /**
+    * AWDParser provides a parser for the AWD data type.
+    */
+    class AWDParser extends loaders.ParserBase {
+        private _debug;
+        private _byteData;
+        private _startedParsing;
+        private _cur_block_id;
+        private _blocks;
+        private _newBlockBytes;
+        private _version;
+        private _compression;
+        private _accuracyOnBlocks;
+        private _accuracyMatrix;
+        private _accuracyGeo;
+        private _accuracyProps;
+        private _matrixNrType;
+        private _geoNrType;
+        private _propsNrType;
+        private _streaming;
+        private _texture_users;
+        private _parsed_header;
+        private _body;
+        private _defaultTexture;
+        private _cubeTextures;
+        private _defaultBitmapMaterial;
+        private _defaultCubeTexture;
+        static COMPRESSIONMODE_LZMA: string;
+        static UNCOMPRESSED: number;
+        static DEFLATE: number;
+        static LZMA: number;
+        static INT8: number;
+        static INT16: number;
+        static INT32: number;
+        static UINT8: number;
+        static UINT16: number;
+        static UINT32: number;
+        static FLOAT32: number;
+        static FLOAT64: number;
+        static BOOL: number;
+        static COLOR: number;
+        static BADDR: number;
+        static AWDSTRING: number;
+        static AWDBYTEARRAY: number;
+        static VECTOR2x1: number;
+        static VECTOR3x1: number;
+        static VECTOR4x1: number;
+        static MTX3x2: number;
+        static MTX3x3: number;
+        static MTX4x3: number;
+        static MTX4x4: number;
+        private blendModeDic;
+        private _depthSizeDic;
+        /**
+        * Creates a new AWDParser object.
+        * @param uri The url or id of the data or file to be parsed.
+        * @param extra The holder for extra contextual data that the parser might need.
+        */
+        constructor();
+        /**
+        * Indicates whether or not a given file extension is supported by the parser.
+        * @param extension The file extension of a potential file to be parsed.
+        * @return Whether or not the given file type is supported.
+        */
+        static supportsType(extension: string): boolean;
+        /**
+        * Tests whether a data block can be parsed by the parser.
+        * @param data The data block to potentially be parsed.
+        * @return Whether or not the given data is supported.
+        */
+        static supportsData(data: any): boolean;
+        /**
+        * @inheritDoc
+        */
+        public _iResolveDependency(resourceDependency: loaders.ResourceDependency): void;
+        /**
+        * @inheritDoc
+        */
+        public _iResolveDependencyFailure(resourceDependency: loaders.ResourceDependency): void;
+        /**
+        * Resolve a dependency name
+        *
+        * @param resourceDependency The dependency to be resolved.
+        */
+        public _iResolveDependencyName(resourceDependency: loaders.ResourceDependency, asset: away.library.IAsset): string;
+        /**
+        * @inheritDoc
+        */
+        public _pProceedParsing(): boolean;
+        private dispose();
+        private parseNextBlock();
+        private parseTriangleGeometrieBlock(blockID);
+        private parsePrimitves(blockID);
+        private parseContainer(blockID);
+        private parseMeshInstance(blockID);
+        private parseLight(blockID);
+        private parseCamera(blockID);
+        private parseLightPicker(blockID);
+        private parseMaterial(blockID);
+        private parseMaterial_v1(blockID);
+        private parseTexture(blockID);
+        private parseCubeTexture(blockID);
+        private parseSharedMethodBlock(blockID);
+        private parseShadowMethodBlock(blockID);
+        private parseCommand(blockID);
+        private parseMetaData(blockID);
+        private parseNameSpace(blockID);
+        private parseShadowMethodList(light, blockID);
+        private parseSharedMethodList(blockID);
+        private parseUserAttributes();
+        private parseProperties(expected);
+        private parseAttrValue(type, len);
+        private parseHeader();
+        private parseVarStr();
+        private getAssetByID(assetID, assetTypesToGet, extraTypeInfo?);
+        private getDefaultAsset(assetType, extraTypeInfo);
+        private getDefaultMaterial();
+        private getDefaultTexture();
+        private getDefaultCubeTexture();
+        private readNumber(precision?);
+        private parseMatrix3D();
+        private parseMatrix32RawData();
+        private parseMatrix43RawData();
+    }
+}
+declare class AWDBlock {
+    public id: number;
+    public name: string;
+    public data: any;
+    public len: any;
+    public geoID: number;
+    public extras: Object;
+    public bytes: away.utils.ByteArray;
+    public errorMessages: string[];
+    public uvsForVertexAnimation: number[][];
+    constructor();
+    public dispose(): void;
+    public addError(errorMsg: string): void;
+}
+declare class bitFlags {
+    static FLAG1: number;
+    static FLAG2: number;
+    static FLAG3: number;
+    static FLAG4: number;
+    static FLAG5: number;
+    static FLAG6: number;
+    static FLAG7: number;
+    static FLAG8: number;
+    static FLAG9: number;
+    static FLAG10: number;
+    static FLAG11: number;
+    static FLAG12: number;
+    static FLAG13: number;
+    static FLAG14: number;
+    static FLAG15: number;
+    static FLAG16: number;
+    static test(flags: number, testFlag: number): boolean;
+}
+declare class AWDProperties {
+    public set(key: number, value: any): void;
+    public get(key: number, fallback: any): any;
+}
 declare module away.textures {
     class TextureProxyBase extends away.library.NamedAssetBase implements away.library.IAsset {
         private _format;
@@ -7015,6 +7180,9 @@ declare module away.events {
     }
 }
 declare module away.base {
+    /**
+    * @class away.base.Geometry
+    */
     class CompactSubGeometry extends base.SubGeometryBase implements base.ISubGeometry {
         public _pVertexDataInvalid: boolean[];
         private _vertexBuffer;
@@ -12790,7 +12958,7 @@ declare module aglsl {
 declare module aglsl {
     class Context3D {
         public enableErrorChecking: boolean;
-        public resources: Array<T>;
+        public resources: any[];
         public driverInfo: string;
         static maxvertexconstants: number;
         static maxfragconstants: number;
