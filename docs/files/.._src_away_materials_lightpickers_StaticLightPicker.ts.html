@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>../src/away/materials/lightpickers/StaticLightPicker.ts</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="../assets/css/logo.png" title=""></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 0.1.0</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/away.base.Geometry.html">away.base.Geometry</a></li>
+            
+                <li><a href="../classes/away.base.Object3D.html">away.base.Object3D</a></li>
+            
+                <li><a href="../classes/away.base.SkinnedSubGeometry.html">away.base.SkinnedSubGeometry</a></li>
+            
+                <li><a href="../classes/away.base.SubGeometry.html">away.base.SubGeometry</a></li>
+            
+                <li><a href="../classes/away.base.SubGeometryBase.html">away.base.SubGeometryBase</a></li>
+            
+                <li><a href="../classes/away.events.AssetEvent.html">away.events.AssetEvent</a></li>
+            
+                <li><a href="../classes/away.events.CameraEvent.html">away.events.CameraEvent</a></li>
+            
+                <li><a href="../classes/away.events.Event.html">away.events.Event</a></li>
+            
+                <li><a href="../classes/away.events.EventDispatcher.html">away.events.EventDispatcher</a></li>
+            
+                <li><a href="../classes/away.events.GeometryEvent.html">away.events.GeometryEvent</a></li>
+            
+                <li><a href="../classes/away.events.HTTPStatusEvent.html">away.events.HTTPStatusEvent</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="../modules/away.base.html">away.base</a></li>
+            
+                <li><a href="../modules/away.events.html">away.events</a></li>
+            
+                <li><a href="../modules/away.geom.html">away.geom</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: ../src/away/materials/lightpickers/StaticLightPicker.ts</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+///&lt;reference path=&quot;../../_definitions.ts&quot;/&gt;
+
+module away.materials
+{
+	//import flash.events.Event;
+	
+	//import away3d.events.LightEvent;
+	//import away3d.lights.DirectionalLight;
+	//import away3d.lights.LightBase;
+	//import away3d.lights.LightProbe;
+	//import away3d.lights.PointLight;
+
+	/**
+	 * StaticLightPicker is a light picker that provides a static set of lights. The lights can be reassigned, but
+	 * if the configuration changes (number of directional lights, point lights, etc), a material recompilation may
+	 * occur.
+	 */
+	export class StaticLightPicker extends LightPickerBase
+	{
+		private _lights : any[] ; // not typed in AS3 - should it be lightbase ?
+
+		/**
+		 * Creates a new StaticLightPicker object.
+		 * @param lights The lights to be used for shading.
+		 */
+		constructor(lights)
+		{
+            super();
+			this.lights = lights;
+		}
+
+		/**
+		 * The lights used for shading.
+		 */
+		public get lights()
+		{
+			return this._lights;
+		}
+
+		public set lights(value : any[] )
+		{
+			var numPointLights:number = 0;
+			var numDirectionalLights:number = 0;
+			var numCastingPointLights:number = 0;
+			var numCastingDirectionalLights:number = 0;
+			var numLightProbes:number = 0;
+			var light:away.lights.LightBase;
+			
+			if (this._lights)
+				this.clearListeners();
+			
+			this._lights = value;
+			this._pAllPickedLights = value;
+            this._pPointLights = new Array&lt;away.lights.PointLight&gt;();
+            this._pCastingPointLights = new Array&lt;away.lights.PointLight&gt;();
+            this._pDirectionalLights = new Array&lt;away.lights.DirectionalLight&gt;();
+            this._pCastingDirectionalLights = new Array&lt;away.lights.DirectionalLight&gt;();
+            this._pLightProbes = new Array&lt;away.lights.LightProbe&gt;();
+			
+			var len:number = value.length;
+
+			for (var i:number = 0; i &lt; len; ++i)
+            {
+				light = value[i];
+				light.addEventListener(away.events.LightEvent.CASTS_SHADOW_CHANGE, this.onCastShadowChange , this );
+
+				if (light instanceof away.lights.PointLight)
+                {
+					if (light.castsShadows)
+						this._pCastingPointLights[numCastingPointLights++] = &lt;away.lights.PointLight&gt; light;
+					else
+						this._pPointLights[numPointLights++] = &lt;away.lights.PointLight&gt; light;
+					
+				}
+                else if (light instanceof away.lights.DirectionalLight)
+                {
+					if (light.castsShadows)
+						this._pCastingDirectionalLights[numCastingDirectionalLights++] = &lt;away.lights.DirectionalLight&gt; light;
+					else
+						this._pDirectionalLights[numDirectionalLights++] = &lt;away.lights.DirectionalLight&gt; light;
+
+				}
+                else if (light instanceof away.lights.LightProbe)
+                {
+					this._pLightProbes[numLightProbes++] = &lt;away.lights.LightProbe&gt; light;
+
+                }
+			}
+			
+			if (this._pNumDirectionalLights == numDirectionalLights &amp;&amp; this._pNumPointLights == numPointLights &amp;&amp; this._pNumLightProbes == numLightProbes &amp;&amp;
+				this._pNumCastingPointLights == numCastingPointLights &amp;&amp; this._pNumCastingDirectionalLights == numCastingDirectionalLights) {
+				return;
+			}
+			
+			this._pNumDirectionalLights = numDirectionalLights;
+			this._pNumCastingDirectionalLights = numCastingDirectionalLights;
+			this._pNumPointLights = numPointLights;
+			this._pNumCastingPointLights = numCastingPointLights;
+			this._pNumLightProbes = numLightProbes;
+			
+			// MUST HAVE MULTIPLE OF 4 ELEMENTS!
+			this._pLightProbeWeights = new Array&lt;number&gt;(Math.ceil(numLightProbes/4)*4 );
+			
+			// notify material lights have changed
+			this.dispatchEvent(new away.events.Event(away.events.Event.CHANGE));
+
+		}
+
+		/**
+		 * Remove configuration change listeners on the lights.
+		 */
+		private clearListeners()
+		{
+			var len:number = this._lights.length;
+			for (var i:number = 0; i &lt; len; ++i)
+				this._lights[i].removeEventListener(away.events.LightEvent.CASTS_SHADOW_CHANGE, this.onCastShadowChange , this );
+		}
+
+		/**
+		 * Notifies the material of a configuration change.
+		 */
+		private onCastShadowChange(event:away.events.LightEvent)
+		{
+			// TODO: Assign to special caster collections, just append it to the lights in SinglePass
+			// But keep seperated in multipass
+			
+			var light:away.lights.LightBase = &lt;away.lights.LightBase &gt; event.target;
+			
+			if (light instanceof away.lights.PointLight)
+            {
+
+                var pl : away.lights.PointLight = &lt;away.lights.PointLight&gt; light;
+                this.updatePointCasting( pl );
+
+            }
+			else if (light instanceof away.lights.DirectionalLight)
+            {
+
+                var dl : away.lights.DirectionalLight = &lt;away.lights.DirectionalLight&gt; light;
+				this.updateDirectionalCasting( dl );
+
+            }
+
+			this.dispatchEvent(new away.events.Event(away.events.Event.CHANGE));
+		}
+
+		/**
+		 * Called when a directional light&#x27;s shadow casting configuration changes.
+		 */
+		private updateDirectionalCasting(light:away.lights.DirectionalLight)
+		{
+
+            var dl : away.lights.DirectionalLight = &lt;away.lights.DirectionalLight&gt; light;
+
+			if (light.castsShadows)
+            {
+				-- this._pNumDirectionalLights;
+				++this._pNumCastingDirectionalLights;
+
+
+
+				this._pDirectionalLights.splice(this._pDirectionalLights.indexOf( dl ), 1);
+				this._pCastingDirectionalLights.push(light);
+
+			}
+            else
+            {
+				++this._pNumDirectionalLights;
+				--this._pNumCastingDirectionalLights;
+
+				this._pCastingDirectionalLights.splice(this._pCastingDirectionalLights.indexOf( dl ), 1);
+				this._pDirectionalLights.push(light);
+			}
+		}
+
+		/**
+		 * Called when a point light&#x27;s shadow casting configuration changes.
+		 */
+		private updatePointCasting(light:away.lights.PointLight)
+		{
+
+            var pl : away.lights.PointLight = &lt;away.lights.PointLight&gt; light;
+
+			if (light.castsShadows)
+            {
+
+				--this._pNumPointLights;
+				++this._pNumCastingPointLights;
+                this._pPointLights.splice( this._pPointLights.indexOf( pl ), 1);
+                this._pCastingPointLights.push(light);
+
+			}
+            else
+            {
+
+				++this._pNumPointLights;
+				--this._pNumCastingPointLights;
+
+                this._pCastingPointLights.splice(this._pCastingPointLights.indexOf( pl ) , 1);
+                this._pPointLights.push(light);
+
+			}
+		}
+	}
+}
+
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>../src/away/primitives/WireframeTetrahedron.ts</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="../assets/css/logo.png" title=""></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 0.1.0</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/away.base.Geometry.html">away.base.Geometry</a></li>
+            
+                <li><a href="../classes/away.base.Object3D.html">away.base.Object3D</a></li>
+            
+                <li><a href="../classes/away.base.SkinnedSubGeometry.html">away.base.SkinnedSubGeometry</a></li>
+            
+                <li><a href="../classes/away.base.SubGeometry.html">away.base.SubGeometry</a></li>
+            
+                <li><a href="../classes/away.base.SubGeometryBase.html">away.base.SubGeometryBase</a></li>
+            
+                <li><a href="../classes/away.events.AssetEvent.html">away.events.AssetEvent</a></li>
+            
+                <li><a href="../classes/away.events.CameraEvent.html">away.events.CameraEvent</a></li>
+            
+                <li><a href="../classes/away.events.Event.html">away.events.Event</a></li>
+            
+                <li><a href="../classes/away.events.EventDispatcher.html">away.events.EventDispatcher</a></li>
+            
+                <li><a href="../classes/away.events.GeometryEvent.html">away.events.GeometryEvent</a></li>
+            
+                <li><a href="../classes/away.events.HTTPStatusEvent.html">away.events.HTTPStatusEvent</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="../modules/away.base.html">away.base</a></li>
+            
+                <li><a href="../modules/away.events.html">away.events</a></li>
+            
+                <li><a href="../modules/away.geom.html">away.geom</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: ../src/away/primitives/WireframeTetrahedron.ts</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+///&lt;reference path=&quot;../_definitions.ts&quot; /&gt;
+module away.primitives
+{
+	//import flash.geom.Vector3D;
+	
+	//import away3d.primitives.WireframePrimitiveBase;
+	
+	/**
+	 * A WireframeTetrahedron primitive mesh
+	 */
+	export class WireframeTetrahedron extends away.primitives.WireframePrimitiveBase
+	{
+		
+		public static ORIENTATION_YZ:string = &quot;yz&quot;;
+		public static ORIENTATION_XY:string = &quot;xy&quot;;
+		public static ORIENTATION_XZ:string = &quot;xz&quot;;
+		
+		private _width:number;
+		private _height:number;
+		private _orientation:string;
+		
+		/**
+		 * Creates a new WireframeTetrahedron object.
+		 * @param width The size of the tetrahedron buttom size.
+		 * @param height The size of the tetranhedron height.
+		 * @param color The color of the wireframe lines.
+		 * @param thickness The thickness of the wireframe lines.
+		 */
+		constructor(width:number, height:number, color:number = 0xffffff, thickness:number = 1, orientation:string = &quot;yz&quot;)
+		{
+			super(color, thickness);
+			
+			this._width = width;
+            this._height = height;
+
+            this._orientation = orientation;
+		}
+		
+		/**
+		 * The orientation in which the plane lies
+		 */
+		public get orientation():string
+		{
+			return this._orientation;
+		}
+		
+		public set orientation(value:string)
+		{
+            this._orientation = value;
+            this.pInvalidateGeometry();
+		}
+		
+		/**
+		 * The size of the tetrahedron bottom.
+		 */
+		public get width():number
+		{
+			return this._width;
+		}
+		
+		public set width(value:number)
+		{
+			if (value &lt;= 0)
+				throw new Error(&quot;Value needs to be greater than 0&quot;);
+            this._width = value;
+			this.pInvalidateGeometry();
+		}
+		
+		/**
+		 * The size of the tetrahedron height.
+		 */
+		public get height():number
+		{
+			return this._height;
+		}
+		
+		public set height(value:number)
+		{
+			if (value &lt;= 0)
+				throw new Error(&quot;Value needs to be greater than 0&quot;);
+            this._height = value;
+            this.pInvalidateGeometry();
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public pBuildGeometry()
+		{
+			
+			var bv0:away.geom.Vector3D;
+			var bv1:away.geom.Vector3D;
+			var bv2:away.geom.Vector3D;
+			var bv3:away.geom.Vector3D;
+			var top:away.geom.Vector3D;
+
+			var hw:number = this._width*0.5;
+			
+			switch (this._orientation)
+            {
+				case WireframeTetrahedron.ORIENTATION_XY:
+
+					bv0 = new away.geom.Vector3D(-hw, hw, 0);
+					bv1 = new away.geom.Vector3D(hw, hw, 0);
+					bv2 = new away.geom.Vector3D(hw, -hw, 0);
+					bv3 = new away.geom.Vector3D(-hw, -hw, 0);
+					top = new away.geom.Vector3D(0, 0, this._height);
+					break;
+				case WireframeTetrahedron.ORIENTATION_XZ:
+					bv0 = new away.geom.Vector3D(-hw, 0, hw);
+					bv1 = new away.geom.Vector3D(hw, 0, hw);
+					bv2 = new away.geom.Vector3D(hw, 0, -hw);
+					bv3 = new away.geom.Vector3D(-hw, 0, -hw);
+					top = new away.geom.Vector3D(0, this._height, 0);
+					break;
+				case WireframeTetrahedron.ORIENTATION_YZ:
+					bv0 = new away.geom.Vector3D(0, -hw, hw);
+					bv1 = new away.geom.Vector3D(0, hw, hw);
+					bv2 = new away.geom.Vector3D(0, hw, -hw);
+					bv3 = new away.geom.Vector3D(0, -hw, -hw);
+					top = new away.geom.Vector3D(this._height, 0, 0);
+					break;
+			}
+			//bottom
+			this.pUpdateOrAddSegment(0, bv0, bv1);
+            this.pUpdateOrAddSegment(1, bv1, bv2);
+            this.pUpdateOrAddSegment(2, bv2, bv3);
+            this.pUpdateOrAddSegment(3, bv3, bv0);
+			//bottom to top
+            this.pUpdateOrAddSegment(4, bv0, top);
+            this.pUpdateOrAddSegment(5, bv1, top);
+            this.pUpdateOrAddSegment(6, bv2, top);
+            this.pUpdateOrAddSegment(7, bv3, top);
+		}
+	}
+}
+
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

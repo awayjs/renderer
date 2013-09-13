@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>../src/aglsl/Mapping.ts</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="../assets/css/logo.png" title=""></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 0.1.0</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/away.base.Geometry.html">away.base.Geometry</a></li>
+            
+                <li><a href="../classes/away.base.Object3D.html">away.base.Object3D</a></li>
+            
+                <li><a href="../classes/away.base.SkinnedSubGeometry.html">away.base.SkinnedSubGeometry</a></li>
+            
+                <li><a href="../classes/away.base.SubGeometry.html">away.base.SubGeometry</a></li>
+            
+                <li><a href="../classes/away.base.SubGeometryBase.html">away.base.SubGeometryBase</a></li>
+            
+                <li><a href="../classes/away.events.AssetEvent.html">away.events.AssetEvent</a></li>
+            
+                <li><a href="../classes/away.events.CameraEvent.html">away.events.CameraEvent</a></li>
+            
+                <li><a href="../classes/away.events.Event.html">away.events.Event</a></li>
+            
+                <li><a href="../classes/away.events.EventDispatcher.html">away.events.EventDispatcher</a></li>
+            
+                <li><a href="../classes/away.events.GeometryEvent.html">away.events.GeometryEvent</a></li>
+            
+                <li><a href="../classes/away.events.HTTPStatusEvent.html">away.events.HTTPStatusEvent</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="../modules/away.base.html">away.base</a></li>
+            
+                <li><a href="../modules/away.events.html">away.events</a></li>
+            
+                <li><a href="../modules/away.geom.html">away.geom</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: ../src/aglsl/Mapping.ts</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**
+ * ...
+ * @author Gary Paluk - http://www.plugin.io
+ */
+
+///&lt;reference path=&quot;../away/_definitions.ts&quot; /&gt;
+
+module aglsl
+{
+	export class Mapping
+	{
+		static agal2glsllut:aglsl.OpLUT[] =
+		[
+			
+			//         s 												flags   dest    a     b 	    mw 	  mh    ndwm  scale dm	  lod
+			new OpLUT( &quot;%dest = %cast(%a);\n&quot;, 							0, 		true,	true, false, 	null, null, null, null, null, null ), //mov
+			new OpLUT( &quot;%dest = %cast(%a + %b);\n&quot;, 					0, 		true, 	true, true , 	null, null, null, null, null, null ), //add
+			new OpLUT( &quot;%dest = %cast(%a - %b);\n&quot;, 					0, 		true, 	true, true , 	null, null, null, null, null, null ), //sub
+			new OpLUT( &quot;%dest = %cast(%a * %b);\n&quot;, 					0, 		true, 	true, true , 	null, null, null, null, null, null ), //mul
+			new OpLUT( &quot;%dest = %cast(%a / %b);\n&quot;, 					0, 		true, 	true, true , 	null, null, null, null, null, null ), //div
+			new OpLUT( &quot;%dest = %cast(1.0) / %a;\n&quot;, 					0, 		true, 	true, false, 	null, null, null, null, null, null ), //rcp
+			new OpLUT( &quot;%dest = %cast(min(%a,%b));\n&quot;, 					0, 		true, 	true, true , 	null, null, null, null, null, null ), //min
+			new OpLUT( &quot;%dest = %cast(max(%a,%b));\n&quot;, 					0, 		true, 	true, true , 	null, null, null, null, null, null ), //max
+			new OpLUT( &quot;%dest = %cast(fract(%a));\n&quot;, 					0, 		true, 	true, false, 	null, null, null, null, null, null ), //frc
+			new OpLUT( &quot;%dest = %cast(sqrt(abs(%a)));\n&quot;,				0, 		true, 	true, false, 	null, null, null, null, null, null ), //sqt
+			new OpLUT( &quot;%dest = %cast(inversesqrt(abs(%a)));\n&quot;,		0, 		true, 	true, false, 	null, null, null, null, null, null ), //rsq
+			new OpLUT( &quot;%dest = %cast(pow(abs(%a),%b));\n&quot;,				0, 		true, 	true, true , 	null, null, null, null, null, null ), //pow
+			new OpLUT( &quot;%dest = %cast(log2(abs(%a)));\n&quot;,				0, 		true, 	true, false, 	null, null, null, null, null, null ), //log
+			new OpLUT( &quot;%dest = %cast(exp2(%a));\n&quot;,					0, 		true, 	true, false, 	null, null, null, null, null, null ), //exp
+			
+			//         s 												flags  	dest    a     b 	    mw 	  mh    ndwm  scale dm	  lod
+			new OpLUT( &quot;%dest = %cast(normalize(vec3( %a ) ));\n&quot;,				0, 	   	true, 	true, false, 	null, null, true, null, null, null ), //nrm
+			new OpLUT( &quot;%dest = %cast(sin(%a));\n&quot;		,				0, 	   	true, 	true, false, 	null, null, null, null, null, null ), //sin
+			new OpLUT( &quot;%dest = %cast(cos(%a));\n&quot;		,				0, 	   	true, 	true, false, 	null, null, null, null, null, null ), //cos
+			new OpLUT( &quot;%dest = %cast(cross(vec3(%a),vec3(%b)));\n&quot;,	0, 	   	true, 	true, true, 	null, null, true, null, null, null ), //crs
+			new OpLUT( &quot;%dest = %cast(dot(vec3(%a),vec3(%b)));\n&quot;,		0, 	   	true, 	true, true, 	null, null, true, null, null, null ), //dp3
+			new OpLUT( &quot;%dest = %cast(dot(vec4(%a),vec4(%b)));\n&quot;,		0, 	   	true, 	true, true, 	null, null, true, null, null, null ), //dp4
+			new OpLUT( &quot;%dest = %cast(abs(%a));\n&quot;,						0, 	   	true, 	true, false, 	null, null, null, null, null, null ), //abs
+			new OpLUT( &quot;%dest = %cast(%a * -1.0);\n&quot;,					0, 	   	true, 	true, false, 	null, null, null, null, null, null ), //neg
+            new OpLUT( &quot;%dest = %cast(clamp(%a,0.0,1.0));\n&quot;,           0,      true,   true, false,    null, null, null, null, null, null ), //sat
+            new OpLUT( &quot;%dest = %cast(dot(vec3(%a),vec3(%b)));\n&quot;,      null,   true,   true, true,     3,    3,    true, null, null, null ), //m33
+            new OpLUT( &quot;%dest = %cast(dot(vec4(%a),vec4(%b)));\n&quot;,      null,   true,   true, true,     4,    4,    true, null, null, null ), //m44
+            new OpLUT( &quot;%dest = %cast(dot(vec4(%a),vec4(%b)));\n&quot;,      null,   true,   true, true,     4,    3,    true, null, null, null ), //m43
+			new OpLUT( &quot;%dest = %cast(dFdx(%a));\n&quot;,					0, 	   	true, 	true, false, 	null, null, null, null, null, null ), //dFdx
+			new OpLUT( &quot;%dest = %cast(dFdx(%a));\n&quot;,					0, 	   	true, 	true, false, 	null, null, null, null, null, null ), //dFdx
+			new OpLUT( &quot;if (float(%a)==float(%b)) {;\n&quot;,				0, 	   	false, 	true, true, 	null, null, null, true, null, null ),
+			new OpLUT( &quot;if (float(%a)!=float(%b)) {;\n&quot;,				0, 	   	false, 	true, true, 	null, null, null, true, null, null ),
+			new OpLUT( &quot;if (float(%a)&gt;=float(%b)) {;\n&quot;,				0, 	   	false, 	true, true, 	null, null, null, true, null, null ),
+			new OpLUT( &quot;if (float(%a)&lt;float(%b)) {;\n&quot;,					0, 	   	false, 	true, true, 	null, null, null, true, null, null ),
+			new OpLUT( &quot;} else {;\n&quot;,									0, 	   	false, 	false,false, 	null, null, null, null, null, null ),
+			new OpLUT( &quot;};\n&quot;,											0, 	   	false, 	false,false, 	null, null, null, null, null, null ),
+			new OpLUT( null,											null, 	null, 	null, false, 	null, null, null, null, null, null ),
+			new OpLUT( null,											null, 	null, 	null, false, 	null, null, null, null, null, null ),
+			new OpLUT( null,											null, 	null, 	null, false, 	null, null, null, null, null, null ),
+			new OpLUT( null,											null, 	null, 	null, false, 	null, null, null, null, null, null ),
+			
+			//         s 															flags  	dest    a     b 	    mw 	  mh    ndwm  scale dm	  lod 
+			new OpLUT( &quot;%dest = %cast(texture%texdimLod(%b,%texsize(%a)).%dm);\n&quot;,	null,  	true, 	true, true, 	null, null, null, null, true, null ),
+			new OpLUT( &quot;if ( float(%a)&lt;0.0 ) discard;\n&quot;,							null,  	false, 	true, false, 	null, null, null, true, null, null ),
+            new OpLUT( &quot;%dest = %cast(texture%texdim(%b,%texsize(%a)%lod).%dm);\n&quot;, null,   true,   true, true,     null, null, true, null, true, true ),
+			new OpLUT( &quot;%dest = %cast(greaterThanEqual(%a,%b).%dm);\n&quot;,				0,  	true, 	true, true, 	null, null, true, null, true, null ),
+			new OpLUT( &quot;%dest = %cast(lessThan(%a,%b).%dm);\n&quot;,						0,  	true, 	true, true, 	null, null, true, null, true, null ),
+			new OpLUT( &quot;%dest = %cast(sign(%a));\n&quot;,								0,  	true, 	true, false, 	null, null, null, null, null, null ),
+			new OpLUT( &quot;%dest = %cast(equal(%a,%b).%dm);\n&quot;,						0,  	true, 	true, true, 	null, null, true, null, true, null ),
+			new OpLUT( &quot;%dest = %cast(notEqual(%a,%b).%dm);\n&quot;,						0,  	true, 	true, true, 	null, null, true, null, true, null )
+			
+		];
+	}
+}
+
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

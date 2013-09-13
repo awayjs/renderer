@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>../src/away/primitives/CapsuleGeometry.ts</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="../assets/css/logo.png" title=""></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 0.1.0</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/away.base.Geometry.html">away.base.Geometry</a></li>
+            
+                <li><a href="../classes/away.base.Object3D.html">away.base.Object3D</a></li>
+            
+                <li><a href="../classes/away.base.SkinnedSubGeometry.html">away.base.SkinnedSubGeometry</a></li>
+            
+                <li><a href="../classes/away.base.SubGeometry.html">away.base.SubGeometry</a></li>
+            
+                <li><a href="../classes/away.base.SubGeometryBase.html">away.base.SubGeometryBase</a></li>
+            
+                <li><a href="../classes/away.events.AssetEvent.html">away.events.AssetEvent</a></li>
+            
+                <li><a href="../classes/away.events.CameraEvent.html">away.events.CameraEvent</a></li>
+            
+                <li><a href="../classes/away.events.Event.html">away.events.Event</a></li>
+            
+                <li><a href="../classes/away.events.EventDispatcher.html">away.events.EventDispatcher</a></li>
+            
+                <li><a href="../classes/away.events.GeometryEvent.html">away.events.GeometryEvent</a></li>
+            
+                <li><a href="../classes/away.events.HTTPStatusEvent.html">away.events.HTTPStatusEvent</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="../modules/away.base.html">away.base</a></li>
+            
+                <li><a href="../modules/away.events.html">away.events</a></li>
+            
+                <li><a href="../modules/away.geom.html">away.geom</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: ../src/away/primitives/CapsuleGeometry.ts</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+///&lt;reference path=&quot;../_definitions.ts&quot;/&gt;
+
+module away.primitives
+{
+
+	/**
+	 * A Capsule primitive mesh.
+	 */
+	export class CapsuleGeometry extends away.primitives.PrimitiveBase
+	{
+		private _radius:number;
+		private _height:number;
+		private _segmentsW:number;
+		private _segmentsH:number;
+		private _yUp:boolean;
+		
+		/**
+		 * Creates a new Capsule object.
+		 * @param radius The radius of the capsule.
+		 * @param height The height of the capsule.
+		 * @param segmentsW Defines the number of horizontal segments that make up the capsule. Defaults to 16.
+		 * @param segmentsH Defines the number of vertical segments that make up the capsule. Defaults to 15. Must be uneven value.
+		 * @param yUp Defines whether the capsule poles should lay on the Y-axis (true) or on the Z-axis (false).
+		 */
+		constructor(radius:number = 50, height:number = 100, segmentsW:number = 16, segmentsH:number = 15, yUp:boolean = true)
+		{
+			super();
+			
+			this._radius = radius;
+            this._height = height;
+            this._segmentsW = segmentsW;
+            this._segmentsH = (segmentsH%2 == 0)? segmentsH + 1 : segmentsH;
+            this._yUp = yUp;
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public pBuildGeometry(target:away.base.CompactSubGeometry)
+		{
+			var data:number[];
+			var indices:number[] /*uint*/;
+			var i:number;
+            var j:number;
+            var triIndex:number = 0;
+			var numVerts:number = (this._segmentsH + 1)*(this._segmentsW + 1);
+			var stride:number = target.vertexStride;
+			var skip:number = stride - 9;
+			var index:number = 0;
+			var startIndex:number;
+			var comp1:number, comp2:number, t1:number, t2:number;
+			
+			if (numVerts == target.numVertices)
+            {
+				data = target.vertexData;
+
+                if ( target.indexData )
+                {
+
+                    indices = target.indexData
+
+
+                }
+                else
+                {
+                    indices = new Array&lt;number&gt;((this._segmentsH - 1)*this._segmentsW*6 );
+                }
+
+				
+			}
+            else
+            {
+
+				data = new Array&lt;number&gt;(numVerts*stride);
+				indices = new Array&lt;number&gt;((this._segmentsH - 1)*this._segmentsW*6);
+				this.pInvalidateUVs();
+
+			}
+			
+			for (j = 0; j &lt;= this._segmentsH; ++j)
+            {
+				
+				var horangle:number = Math.PI*j/this._segmentsH;
+				var z:number = -this._radius*Math.cos(horangle);
+				var ringradius:number = this._radius*Math.sin(horangle);
+
+				startIndex = index;
+				
+				for (i = 0; i &lt;= this._segmentsW; ++i)
+                {
+					var verangle:number = 2*Math.PI*i/this._segmentsW;
+					var x:number = ringradius*Math.cos(verangle);
+					var offset:number = j &gt; this._segmentsH/2? this._height/2 : -this._height/2;
+					var y:number = ringradius*Math.sin(verangle);
+					var normLen:number = 1/Math.sqrt(x*x + y*y + z*z);
+					var tanLen:number = Math.sqrt(y*y + x*x);
+					
+					if (this._yUp) {
+						t1 = 0;
+						t2 = tanLen &gt; .007? x/tanLen : 0;
+						comp1 = -z;
+						comp2 = y;
+						
+					} else {
+						t1 = tanLen &gt; .007? x/tanLen : 0;
+						t2 = 0;
+						comp1 = y;
+						comp2 = z;
+					}
+					
+					if (i == this._segmentsW) {
+						
+						data[index++] = data[startIndex];
+						data[index++] = data[startIndex + 1];
+						data[index++] = data[startIndex + 2];
+						data[index++] = (data[startIndex + 3] + (x*normLen))*.5;
+						data[index++] = (data[startIndex + 4] + ( comp1*normLen))*.5;
+						data[index++] = (data[startIndex + 5] + (comp2*normLen))*.5;
+						data[index++] = (data[startIndex + 6] + (tanLen &gt; .007? -y/tanLen : 1))*.5;
+						data[index++] = (data[startIndex + 7] + t1)*.5;
+						data[index++] = (data[startIndex + 8] + t2)*.5;
+						
+					} else {
+						// vertex
+						data[index++] = x;
+						data[index++] = (this._yUp)? comp1 - offset : comp1;
+						data[index++] = (this._yUp)? comp2 : comp2 + offset;
+						// normal
+						data[index++] = x*normLen;
+						data[index++] = comp1*normLen;
+						data[index++] = comp2*normLen;
+						// tangent
+						data[index++] = tanLen &gt; .007? -y/tanLen : 1;
+						data[index++] = t1;
+						data[index++] = t2;
+					}
+					
+					if (i &gt; 0 &amp;&amp; j &gt; 0) {
+						var a:number = (this._segmentsW + 1)*j + i;
+						var b:number = (this._segmentsW + 1)*j + i - 1;
+						var c:number = (this._segmentsW + 1)*(j - 1) + i - 1;
+						var d:number = (this._segmentsW + 1)*(j - 1) + i;
+						
+						if (j == this._segmentsH) {
+							data[index - 9] = data[startIndex];
+							data[index - 8] = data[startIndex + 1];
+							data[index - 7] = data[startIndex + 2];
+							
+							indices[triIndex++] = a;
+							indices[triIndex++] = c;
+							indices[triIndex++] = d;
+							
+						} else if (j == 1) {
+							indices[triIndex++] = a;
+							indices[triIndex++] = b;
+							indices[triIndex++] = c;
+							
+						} else {
+							indices[triIndex++] = a;
+							indices[triIndex++] = b;
+							indices[triIndex++] = c;
+							indices[triIndex++] = a;
+							indices[triIndex++] = c;
+							indices[triIndex++] = d;
+						}
+					}
+					
+					index += skip;
+				}
+			}
+			
+			target.updateData(data);
+			target.updateIndexData(indices);
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public pBuildUVs(target:away.base.CompactSubGeometry)
+		{
+			var i:number;
+            var j:number;
+			var index:number;
+			var data:number[];
+			var stride:number = target.UVStride;
+			var UVlen:number = (this._segmentsH + 1)*(this._segmentsW + 1)*stride;
+			var skip:number = stride - 2;
+			
+			if (target.UVData &amp;&amp; UVlen == target.UVData.length)
+            {
+				data = target.UVData;
+            }
+			else
+            {
+				data = new Array&lt;number&gt;( UVlen );
+				this.pInvalidateGeometry();
+			}
+			
+			index = target.UVOffset;
+
+			for (j = 0; j &lt;= this._segmentsH; ++j)
+            {
+				for (i = 0; i &lt;= this._segmentsW; ++i)
+                {
+					data[index++] = ( i/this._segmentsW )*target.scaleU;
+					data[index++] = ( j/this._segmentsH )*target.scaleV;
+					index += skip;
+				}
+			}
+			
+			target.updateData(data);
+		}
+		
+		/**
+		 * The radius of the capsule.
+		 */
+		public get radius():number
+		{
+			return this._radius;
+		}
+		
+		public set radius(value:number)
+		{
+            this._radius = value;
+            this.pInvalidateGeometry();
+		}
+		
+		/**
+		 * The height of the capsule.
+		 */
+		public get height():number
+		{
+			return this._height;
+		}
+		
+		public set height(value:number)
+		{
+            this._height = value;
+            this.pInvalidateGeometry();
+		}
+		
+		/**
+		 * Defines the number of horizontal segments that make up the capsule. Defaults to 16.
+		 */
+		public get segmentsW():number
+		{
+			return this._segmentsW;
+		}
+		
+		public set segmentsW(value:number)
+		{
+            this._segmentsW = value;
+            this.pInvalidateGeometry();
+            this.pInvalidateUVs();
+		}
+		
+		/**
+		 * Defines the number of vertical segments that make up the capsule. Defaults to 15. Must be uneven.
+		 */
+		public get segmentsH():number
+		{
+			return this._segmentsH;
+		}
+		
+		public set segmentsH(value:number)
+		{
+            this._segmentsH = (value%2 == 0)? value + 1 : value;
+            this.pInvalidateGeometry();
+            this.pInvalidateUVs();
+		}
+		
+		/**
+		 * Defines whether the capsule poles should lay on the Y-axis (true) or on the Z-axis (false).
+		 */
+		public get yUp():boolean
+		{
+			return this._yUp;
+		}
+		
+		public set yUp(value:boolean)
+		{
+            this._yUp = value;
+            this.pInvalidateGeometry();
+		}
+	}
+}
+
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

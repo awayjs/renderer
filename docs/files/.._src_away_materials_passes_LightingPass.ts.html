@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>../src/away/materials/passes/LightingPass.ts</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="../assets/css/logo.png" title=""></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 0.1.0</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/away.base.Geometry.html">away.base.Geometry</a></li>
+            
+                <li><a href="../classes/away.base.Object3D.html">away.base.Object3D</a></li>
+            
+                <li><a href="../classes/away.base.SkinnedSubGeometry.html">away.base.SkinnedSubGeometry</a></li>
+            
+                <li><a href="../classes/away.base.SubGeometry.html">away.base.SubGeometry</a></li>
+            
+                <li><a href="../classes/away.base.SubGeometryBase.html">away.base.SubGeometryBase</a></li>
+            
+                <li><a href="../classes/away.events.AssetEvent.html">away.events.AssetEvent</a></li>
+            
+                <li><a href="../classes/away.events.CameraEvent.html">away.events.CameraEvent</a></li>
+            
+                <li><a href="../classes/away.events.Event.html">away.events.Event</a></li>
+            
+                <li><a href="../classes/away.events.EventDispatcher.html">away.events.EventDispatcher</a></li>
+            
+                <li><a href="../classes/away.events.GeometryEvent.html">away.events.GeometryEvent</a></li>
+            
+                <li><a href="../classes/away.events.HTTPStatusEvent.html">away.events.HTTPStatusEvent</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="../modules/away.base.html">away.base</a></li>
+            
+                <li><a href="../modules/away.events.html">away.events</a></li>
+            
+                <li><a href="../modules/away.geom.html">away.geom</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: ../src/away/materials/passes/LightingPass.ts</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+///&lt;reference path=&quot;../../_definitions.ts&quot;/&gt;
+
+module away.materials
+{
+	//import away3d.arcane;
+	//import away3d.cameras.Camera3D;
+	//import away3d.core.base.IRenderable;
+	//import away3d.managers.Stage3DProxy;
+	//import away3d.lights.DirectionalLight;
+	//import away3d.lights.LightProbe;
+	//import away3d.lights.PointLight;
+	//import away3d.materials.LightSources;
+	//import away3d.materials.MaterialBase;
+	//import away3d.materials.compilation.LightingShaderCompiler;
+	//import away3d.materials.compilation.ShaderCompiler;
+	
+	//import flash.display3D.Context3D;
+	//import flash.geom.Matrix3D;
+	//import flash.geom.Vector3D;
+	
+	//use namespace arcane;
+	
+	/**
+	 * LightingPass is a shader pass that uses shader methods to compile a complete program. It only includes the lighting
+	 * methods. It&#x27;s used by multipass materials to accumulate lighting passes.
+	 *
+	 * @see away3d.materials.MultiPassMaterialBase
+	 */
+	
+	export class LightingPass extends away.materials.CompiledPass
+	{
+		private _includeCasters:boolean = true;
+		private _tangentSpace:boolean;
+		private _lightVertexConstantIndex:number;
+		private _inverseSceneMatrix:number[] = new Array&lt;number&gt;();
+		
+		private _directionalLightsOffset:number;
+		private _pointLightsOffset:number;
+		private _lightProbesOffset:number;
+		private _maxLights:number = 3;
+		
+		/**
+		 * Creates a new LightingPass objects.
+		 *
+		 * @param material The material to which this pass belongs.
+		 */
+		constructor(material:MaterialBase)
+		{
+			super(material);
+		}
+
+		/**
+		 * Indicates the offset in the light picker&#x27;s directional light vector for which to start including lights.
+		 * This needs to be set before the light picker is assigned.
+		 */
+		public get directionalLightsOffset():number
+		{
+			return this._directionalLightsOffset;
+		}
+		
+		public set directionalLightsOffset(value:number)
+		{
+			this._directionalLightsOffset = value;
+		}
+
+		/**
+		 * Indicates the offset in the light picker&#x27;s point light vector for which to start including lights.
+		 * This needs to be set before the light picker is assigned.
+		 */
+		public get pointLightsOffset():number
+		{
+			return this._pointLightsOffset;
+		}
+		
+		public set pointLightsOffset(value:number)
+		{
+            this._pointLightsOffset = value;
+		}
+
+		/**
+		 * Indicates the offset in the light picker&#x27;s light probes vector for which to start including lights.
+		 * This needs to be set before the light picker is assigned.
+		 */
+		public get lightProbesOffset():number
+		{
+			return this._lightProbesOffset;
+		}
+		
+		public set lightProbesOffset(value:number)
+		{
+            this._lightProbesOffset = value;
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public pCreateCompiler(profile:string):away.materials.ShaderCompiler
+		{
+			this._maxLights = profile == &quot;baselineConstrained&quot;? 1 : 3;
+			return new away.materials.LightingShaderCompiler(profile);
+		}
+
+		/**
+		 * Indicates whether or not shadow casting lights need to be included.
+		 */
+		public get includeCasters():boolean
+		{
+			return this._includeCasters;
+		}
+		
+		public set includeCasters(value:boolean)
+		{
+			if (this._includeCasters == value)
+				return;
+            this._includeCasters = value;
+            this.iInvalidateShaderProgram();
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public pUpdateLights()
+		{
+			super.pUpdateLights();
+			var numDirectionalLights:number;
+			var numPointLights:number = 0;
+			var numLightProbes:number = 0;
+			
+			if (this._pLightPicker)
+            {
+				numDirectionalLights = this.calculateNumDirectionalLights(this._pLightPicker.numDirectionalLights);
+				numPointLights = this.calculateNumPointLights(this._pLightPicker.numPointLights);
+				numLightProbes = this.calculateNumProbes(this._pLightPicker.numLightProbes);
+				
+				if (this._includeCasters)
+                {
+					numPointLights += this._pLightPicker.numCastingPointLights;
+					numDirectionalLights += this._pLightPicker.numCastingDirectionalLights;
+				}
+
+			}
+            else
+            {
+				numDirectionalLights = 0;
+				numPointLights = 0;
+				numLightProbes = 0;
+			}
+			
+			
+			if (numPointLights != this._pNumPointLights ||
+				numDirectionalLights != this._pNumDirectionalLights ||
+				numLightProbes != this._pNumLightProbes) {
+                this._pNumPointLights = numPointLights;
+                this._pNumDirectionalLights = numDirectionalLights;
+                this._pNumLightProbes = numLightProbes;
+                this.iInvalidateShaderProgram();
+			}
+		
+		}
+
+		/**
+		 * Calculates the amount of directional lights this material will support.
+		 * @param numDirectionalLights The maximum amount of directional lights to support.
+		 * @return The amount of directional lights this material will support, bounded by the amount necessary.
+		 */
+		private calculateNumDirectionalLights(numDirectionalLights:number):number
+		{
+			return Math.min(numDirectionalLights - this._directionalLightsOffset, this._maxLights);
+		}
+
+		/**
+		 * Calculates the amount of point lights this material will support.
+		 * @param numDirectionalLights The maximum amount of point lights to support.
+		 * @return The amount of point lights this material will support, bounded by the amount necessary.
+		 */
+		private calculateNumPointLights(numPointLights:number):number
+		{
+			var numFree:number = this._maxLights - this._pNumDirectionalLights;
+			return Math.min(numPointLights - this._pointLightsOffset, numFree);
+		}
+
+		/**
+		 * Calculates the amount of light probes this material will support.
+		 * @param numDirectionalLights The maximum amount of light probes to support.
+		 * @return The amount of light probes this material will support, bounded by the amount necessary.
+		 */
+		private calculateNumProbes(numLightProbes:number):number
+		{
+			var numChannels:number = 0;
+			if ((this._pSpecularLightSources &amp; away.materials.LightSources.PROBES) != 0)
+            {
+				++numChannels;
+            }
+			if ((this._pDiffuseLightSources &amp; away.materials.LightSources.PROBES) != 0)
+				++numChannels;
+
+
+			// 4 channels available
+			return Math.min(numLightProbes - this._lightProbesOffset, (4/numChannels) | 0);
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public pUpdateShaderProperties()
+		{
+			super.pUpdateShaderProperties();
+
+            var compilerV : away.materials.LightingShaderCompiler = &lt;away.materials.LightingShaderCompiler&gt; this._pCompiler;
+            this._tangentSpace = compilerV.tangentSpace;
+
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public pUpdateRegisterIndices()
+		{
+			super.pUpdateRegisterIndices();
+
+            var compilerV : away.materials.LightingShaderCompiler = &lt;away.materials.LightingShaderCompiler&gt; this._pCompiler;
+			this._lightVertexConstantIndex = compilerV.lightVertexConstantIndex;
+
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public iRender(renderable:away.base.IRenderable, stage3DProxy:away.managers.Stage3DProxy, camera:away.cameras.Camera3D, viewProjection:away.geom.Matrix3D)
+		{
+			renderable.inverseSceneTransform.copyRawDataTo(this._inverseSceneMatrix);
+			
+			if (this._tangentSpace &amp;&amp; this._pCameraPositionIndex &gt;= 0)
+            {
+				var pos:away.geom.Vector3D = camera.scenePosition;
+				var x:number = pos.x;
+				var y:number = pos.y;
+				var z:number = pos.z;
+
+				this._pVertexConstantData[this._pCameraPositionIndex] = this._inverseSceneMatrix[0]*x + this._inverseSceneMatrix[4]*y + this._inverseSceneMatrix[8]*z + this._inverseSceneMatrix[12];
+                this._pVertexConstantData[this._pCameraPositionIndex + 1] = this._inverseSceneMatrix[1]*x + this._inverseSceneMatrix[5]*y + this._inverseSceneMatrix[9]*z + this._inverseSceneMatrix[13];
+                this._pVertexConstantData[this._pCameraPositionIndex + 2] = this._inverseSceneMatrix[2]*x + this._inverseSceneMatrix[6]*y + this._inverseSceneMatrix[10]*z + this._inverseSceneMatrix[14];
+			}
+			
+			super.iRender(renderable, stage3DProxy, camera, viewProjection);
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public iActivate(stage3DProxy:away.managers.Stage3DProxy, camera:away.cameras.Camera3D)
+		{
+			super.iActivate(stage3DProxy, camera);
+			
+			if (!this._tangentSpace &amp;&amp; this._pCameraPositionIndex &gt;= 0)
+            {
+				var pos:away.geom.Vector3D = camera.scenePosition;
+
+				this._pVertexConstantData[this._pCameraPositionIndex] = pos.x;
+                this._pVertexConstantData[this._pCameraPositionIndex + 1] = pos.y;
+                this._pVertexConstantData[this._pCameraPositionIndex + 2] = pos.z;
+			}
+		}
+
+		/**
+		 * Indicates whether any light probes are used to contribute to the specular shading.
+		 */
+		private usesProbesForSpecular():boolean
+		{
+			return this._pNumLightProbes &gt; 0 &amp;&amp; (this._pSpecularLightSources &amp; away.materials.LightSources.PROBES) != 0;
+		}
+
+		/**
+		 * Indicates whether any light probes are used to contribute to the diffuse shading.
+		 */
+		private usesProbesForDiffuse():boolean
+		{
+			return this._pNumLightProbes &gt; 0 &amp;&amp; (this._pDiffuseLightSources &amp; away.materials.LightSources.PROBES) != 0;
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public pUpdateLightConstants()
+		{
+			var dirLight:away.lights.DirectionalLight;
+			var pointLight:away.lights.PointLight;
+			var i:number = 0;
+            var k:number = 0;
+			var len:number;
+			var dirPos:away.geom.Vector3D;
+			var total:number = 0;
+			var numLightTypes:number = this._includeCasters? 2 : 1;
+			var l:number;
+			var offset:number;
+			
+			l = this._lightVertexConstantIndex;
+			k = this._pLightFragmentConstantIndex;
+			
+			var cast:number = 0;
+			var dirLights:Array&lt;away.lights.DirectionalLight&gt; = this._pLightPicker.directionalLights;
+			offset = this._directionalLightsOffset;
+			len = this._pLightPicker.directionalLights.length;
+
+			if (offset &gt; len)
+            {
+				cast = 1;
+				offset -= len;
+			}
+			
+			for (; cast &lt; numLightTypes; ++cast)
+            {
+				if (cast)
+					dirLights = this._pLightPicker.castingDirectionalLights;
+				len = dirLights.length;
+				if (len &gt; this._pNumDirectionalLights)
+					len = this._pNumDirectionalLights;
+
+				for (i = 0; i &lt; len; ++i)
+                {
+					dirLight = dirLights[offset + i];
+					dirPos = dirLight.sceneDirection;
+					
+					this._pAmbientLightR += dirLight._iAmbientR;
+                    this._pAmbientLightG += dirLight._iAmbientG;
+                    this._pAmbientLightB += dirLight._iAmbientB;
+					
+					if (this._tangentSpace)
+                    {
+						var x:number = -dirPos.x;
+						var y:number = -dirPos.y;
+						var z:number = -dirPos.z;
+
+						this._pVertexConstantData[l++] = this._inverseSceneMatrix[0]*x + this._inverseSceneMatrix[4]*y + this._inverseSceneMatrix[8]*z;
+                        this._pVertexConstantData[l++] = this._inverseSceneMatrix[1]*x + this._inverseSceneMatrix[5]*y + this._inverseSceneMatrix[9]*z;
+                        this._pVertexConstantData[l++] = this._inverseSceneMatrix[2]*x + this._inverseSceneMatrix[6]*y + this._inverseSceneMatrix[10]*z;
+                        this._pVertexConstantData[l++] = 1;
+					}
+                    else
+                    {
+						this._pFragmentConstantData[k++] = -dirPos.x;
+                        this._pFragmentConstantData[k++] = -dirPos.y;
+                        this._pFragmentConstantData[k++] = -dirPos.z;
+                        this._pFragmentConstantData[k++] = 1;
+					}
+					
+					this._pFragmentConstantData[k++] = dirLight._iDiffuseR;
+                    this._pFragmentConstantData[k++] = dirLight._iDiffuseG;
+                    this._pFragmentConstantData[k++] = dirLight._iDiffuseB;
+                    this._pFragmentConstantData[k++] = 1;
+
+                    this._pFragmentConstantData[k++] = dirLight._iSpecularR;
+                    this._pFragmentConstantData[k++] = dirLight._iSpecularG;
+                    this._pFragmentConstantData[k++] = dirLight._iSpecularB;
+                    this._pFragmentConstantData[k++] = 1;
+					
+					if (++total == this._pNumDirectionalLights) {
+						// break loop
+						i = len;
+						cast = numLightTypes;
+					}
+				}
+			}
+			
+			// more directional supported than currently picked, need to clamp all to 0
+			if (this._pNumDirectionalLights &gt; total)
+            {
+				i = k + (this._pNumDirectionalLights - total)*12;
+
+				while (k &lt; i)
+                {
+					this._pFragmentConstantData[k++] = 0;
+                }
+
+			}
+			
+			total = 0;
+			
+			var pointLights:Array&lt;away.lights.PointLight&gt; = this._pLightPicker.pointLights;
+			offset = this._pointLightsOffset;
+			len = this._pLightPicker.pointLights.length;
+
+			if (offset &gt; len)
+            {
+				cast = 1;
+				offset -= len;
+			}
+            else
+            {
+				cast = 0;
+            }
+
+			for (; cast &lt; numLightTypes; ++cast)
+            {
+				if (cast)
+                {
+					pointLights = this._pLightPicker.castingPointLights;
+                }
+
+				len = pointLights.length;
+
+				for (i = 0; i &lt; len; ++i)
+                {
+					pointLight = pointLights[offset + i];
+					dirPos = pointLight.scenePosition;
+					
+					this._pAmbientLightR += pointLight._iAmbientR;
+                    this._pAmbientLightG += pointLight._iAmbientG;
+                    this._pAmbientLightB += pointLight._iAmbientB;
+					
+					if (this._tangentSpace)
+                    {
+						x = dirPos.x;
+						y = dirPos.y;
+						z = dirPos.z;
+
+						this._pVertexConstantData[l++] = this._inverseSceneMatrix[0]*x + this._inverseSceneMatrix[4]*y + this._inverseSceneMatrix[8]*z + this._inverseSceneMatrix[12];
+                        this._pVertexConstantData[l++] = this._inverseSceneMatrix[1]*x + this._inverseSceneMatrix[5]*y + this._inverseSceneMatrix[9]*z + this._inverseSceneMatrix[13];
+                        this._pVertexConstantData[l++] = this._inverseSceneMatrix[2]*x + this._inverseSceneMatrix[6]*y + this._inverseSceneMatrix[10]*z + this._inverseSceneMatrix[14];
+					}
+                    else
+                    {
+
+						this._pVertexConstantData[l++] = dirPos.x;
+						this._pVertexConstantData[l++] = dirPos.y;
+						this._pVertexConstantData[l++] = dirPos.z;
+
+					}
+					this._pVertexConstantData[l++] = 1;
+					
+					this._pFragmentConstantData[k++] = pointLight._iDiffuseR;
+                    this._pFragmentConstantData[k++] = pointLight._iDiffuseG;
+                    this._pFragmentConstantData[k++] = pointLight._iDiffuseB;
+
+					var radius:number = pointLight._pRadius;
+					this._pFragmentConstantData[k++] = radius*radius;
+
+                    this._pFragmentConstantData[k++] = pointLight._iSpecularR;
+                    this._pFragmentConstantData[k++] = pointLight._iSpecularG;
+                    this._pFragmentConstantData[k++] = pointLight._iSpecularB;
+                    this._pFragmentConstantData[k++] = pointLight._pFallOffFactor;
+					
+					if (++total == this._pNumPointLights)
+                    {
+						// break loop
+						i = len;
+						cast = numLightTypes;
+					}
+				}
+			}
+			
+			// more directional supported than currently picked, need to clamp all to 0
+			if (this._pNumPointLights &gt; total)
+            {
+				i = k + (total - this._pNumPointLights)*12;
+				for (; k &lt; i; ++k)
+                {
+					this._pFragmentConstantData[k] = 0;
+
+                }
+			}
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public pUpdateProbes(stage3DProxy:away.managers.Stage3DProxy)
+		{
+			var context:away.display3D.Context3D = stage3DProxy._iContext3D;
+			var probe:away.lights.LightProbe;
+			var lightProbes:Array&lt;away.lights.LightProbe&gt; = this._pLightPicker.lightProbes;
+			var weights:number[] = this._pLightPicker.lightProbeWeights;
+			var len:number = lightProbes.length - this._lightProbesOffset;
+			var addDiff:boolean = this.usesProbesForDiffuse();
+			var addSpec:boolean = &lt;boolean&gt; (this._pMethodSetup._iSpecularMethod &amp;&amp; this.usesProbesForSpecular());
+			
+			if (!(addDiff || addSpec))
+				return;
+			
+			if (len &gt; this._pNumLightProbes)
+            {
+				len = this._pNumLightProbes;
+            }
+
+			for (var i:number = 0; i &lt; len; ++i)
+            {
+				probe = lightProbes[ this._lightProbesOffset + i];
+				
+				if (addDiff)
+                {
+					context.setTextureAt(this._pLightProbeDiffuseIndices[i], probe.diffuseMap.getTextureForStage3D(stage3DProxy));
+                }
+				if (addSpec)
+                {
+					context.setTextureAt(this._pLightProbeSpecularIndices[i], probe.specularMap.getTextureForStage3D(stage3DProxy));
+                }
+			}
+			
+			for (i = 0; i &lt; len; ++i)
+				this._pFragmentConstantData[this._pProbeWeightsIndex + i] = weights[this._lightProbesOffset + i];
+		}
+	}
+}
+
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

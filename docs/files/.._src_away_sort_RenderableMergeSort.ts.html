@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>../src/away/sort/RenderableMergeSort.ts</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="../assets/css/logo.png" title=""></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 0.1.0</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/away.base.Geometry.html">away.base.Geometry</a></li>
+            
+                <li><a href="../classes/away.base.Object3D.html">away.base.Object3D</a></li>
+            
+                <li><a href="../classes/away.base.SkinnedSubGeometry.html">away.base.SkinnedSubGeometry</a></li>
+            
+                <li><a href="../classes/away.base.SubGeometry.html">away.base.SubGeometry</a></li>
+            
+                <li><a href="../classes/away.base.SubGeometryBase.html">away.base.SubGeometryBase</a></li>
+            
+                <li><a href="../classes/away.events.AssetEvent.html">away.events.AssetEvent</a></li>
+            
+                <li><a href="../classes/away.events.CameraEvent.html">away.events.CameraEvent</a></li>
+            
+                <li><a href="../classes/away.events.Event.html">away.events.Event</a></li>
+            
+                <li><a href="../classes/away.events.EventDispatcher.html">away.events.EventDispatcher</a></li>
+            
+                <li><a href="../classes/away.events.GeometryEvent.html">away.events.GeometryEvent</a></li>
+            
+                <li><a href="../classes/away.events.HTTPStatusEvent.html">away.events.HTTPStatusEvent</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="../modules/away.base.html">away.base</a></li>
+            
+                <li><a href="../modules/away.events.html">away.events</a></li>
+            
+                <li><a href="../modules/away.geom.html">away.geom</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: ../src/away/sort/RenderableMergeSort.ts</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**
+ * ...
+ * @author Gary Paluk - http://www.plugin.io
+ */
+
+///&lt;reference path=&quot;../_definitions.ts&quot;/&gt;
+
+module away.sort
+{
+	export class RenderableMergeSort implements away.sort.IEntitySorter
+	{
+		constructor()
+		{
+		}
+		
+		public sort( collector:away.traverse.EntityCollector )
+		{
+			collector.opaqueRenderableHead = this.mergeSortByMaterial(collector.opaqueRenderableHead);
+			collector.blendedRenderableHead = this.mergeSortByDepth(collector.blendedRenderableHead);
+		}
+		
+		private mergeSortByDepth( head:away.data.RenderableListItem ):away.data.RenderableListItem
+		{
+			var headB:away.data.RenderableListItem;
+			var fast:away.data.RenderableListItem;
+			var slow:away.data.RenderableListItem;
+			
+			if( !head || !head.next )
+			{
+				return head;
+			}
+			
+			// split in two sublists
+			slow = head;
+			fast = head.next;
+			
+			while (fast) {
+				fast = fast.next;
+				if (fast) {
+					slow = slow.next;
+					fast = fast.next;
+				}
+			}
+			
+			headB = slow.next;
+			slow.next = null;
+			
+			// recurse
+			head = this.mergeSortByDepth(head);
+			headB = this.mergeSortByDepth(headB);
+			
+			// merge sublists while respecting order
+			var result:away.data.RenderableListItem;
+			var curr:away.data.RenderableListItem;
+			var l:away.data.RenderableListItem;
+			
+			if (!head)
+				return headB;
+			if (!headB)
+				return head;
+			
+			while (head &amp;&amp; headB) {
+				if (head.zIndex &lt; headB.zIndex) {
+					l = head;
+					head = head.next;
+				} else {
+					l = headB;
+					headB = headB.next;
+				}
+				
+				if (!result)
+					result = l;
+				else
+					curr.next = l;
+				
+				curr = l;
+			}
+			
+			if (head)
+				curr.next = head;
+			else if (headB)
+				curr.next = headB;
+			
+			return result;
+		}
+		
+		private mergeSortByMaterial( head:away.data.RenderableListItem):away.data.RenderableListItem
+		{
+			var headB:away.data.RenderableListItem;
+			var fast:away.data.RenderableListItem, slow:away.data.RenderableListItem;
+			
+			if (!head || !head.next)
+			{
+				return head;
+			}
+			
+			// split in two sublists
+			slow = head;
+			fast = head.next;
+			
+			while (fast) {
+				fast = fast.next;
+				if (fast) {
+					slow = slow.next;
+					fast = fast.next;
+				}
+			}
+			
+			headB = slow.next;
+			slow.next = null;
+			
+			// recurse
+			head = this.mergeSortByMaterial(head);
+			headB = this.mergeSortByMaterial(headB);
+			
+			// merge sublists while respecting order
+			var result:away.data.RenderableListItem;
+			var curr:away.data.RenderableListItem;
+			var l:away.data.RenderableListItem;
+			var cmp:number = 0;
+			
+			if (!head)
+				return headB;
+			if (!headB)
+				return head;
+			
+			while (head &amp;&amp; headB &amp;&amp; head != null &amp;&amp; headB != null) {
+				
+				// first sort per render order id (reduces program3D switches),
+				// then on material id (reduces setting props),
+				// then on zIndex (reduces overdraw)
+				var aid:number = head.renderOrderId;
+				var bid:number = headB.renderOrderId;
+				
+				if (aid == bid) {
+					var ma:number = head.materialId;
+					var mb:number = headB.materialId;
+					
+					if (ma == mb) {
+						if (head.zIndex &lt; headB.zIndex)
+							cmp = 1;
+						else
+							cmp = -1;
+					} else if (ma &gt; mb)
+						cmp = 1;
+					else
+						cmp = -1;
+				} else if (aid &gt; bid)
+					cmp = 1;
+				else
+					cmp = -1;
+				
+				if (cmp &lt; 0) {
+					l = head;
+					head = head.next;
+				} else {
+					l = headB;
+					headB = headB.next;
+				}
+				
+				if (!result) {
+					result = l;
+					curr = l;
+				} else {
+					curr.next = l;
+					curr = l;
+				}
+			}
+			
+			if (head)
+				curr.next = head;
+			else if (headB)
+				curr.next = headB;
+			
+			return result;
+		}
+	}
+}
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

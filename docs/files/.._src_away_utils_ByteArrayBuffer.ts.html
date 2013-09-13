@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>../src/away/utils/ByteArrayBuffer.ts</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="../assets/css/logo.png" title=""></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 0.1.0</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/away.base.Geometry.html">away.base.Geometry</a></li>
+            
+                <li><a href="../classes/away.base.Object3D.html">away.base.Object3D</a></li>
+            
+                <li><a href="../classes/away.base.SkinnedSubGeometry.html">away.base.SkinnedSubGeometry</a></li>
+            
+                <li><a href="../classes/away.base.SubGeometry.html">away.base.SubGeometry</a></li>
+            
+                <li><a href="../classes/away.base.SubGeometryBase.html">away.base.SubGeometryBase</a></li>
+            
+                <li><a href="../classes/away.events.AssetEvent.html">away.events.AssetEvent</a></li>
+            
+                <li><a href="../classes/away.events.CameraEvent.html">away.events.CameraEvent</a></li>
+            
+                <li><a href="../classes/away.events.Event.html">away.events.Event</a></li>
+            
+                <li><a href="../classes/away.events.EventDispatcher.html">away.events.EventDispatcher</a></li>
+            
+                <li><a href="../classes/away.events.GeometryEvent.html">away.events.GeometryEvent</a></li>
+            
+                <li><a href="../classes/away.events.HTTPStatusEvent.html">away.events.HTTPStatusEvent</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="../modules/away.base.html">away.base</a></li>
+            
+                <li><a href="../modules/away.events.html">away.events</a></li>
+            
+                <li><a href="../modules/away.geom.html">away.geom</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: ../src/away/utils/ByteArrayBuffer.ts</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**
+ * ...
+ * @author Gary Paluk - http://www.plugin.io
+ */
+
+///&lt;reference path=&quot;../_definitions.ts&quot;/&gt;
+
+module away.utils
+{
+	export class ByteArrayBuffer extends ByteArrayBase
+	{
+		
+		/*
+		public maxlength:number = 0;
+		public arraybytes; //ArrayBuffer  
+		public unalignedarraybytestemp; //ArrayBuffer
+		*/
+		
+		public _bytes:number[];
+		
+		constructor()
+		{
+			super();
+			this._bytes = [];
+			this._mode = &quot;Array&quot;;
+		}
+		
+		public writeByte( b:number )
+		{
+			var bi:number = ~~b;
+			this._bytes[ this.position++ ] = bi;
+			if( this.position &gt; this.length )
+			{
+				this.length = this.position; 
+			}
+		}
+		
+		public readByte():number
+		{
+			if ( this.position &gt;= this.length )
+			{
+				throw &quot;ByteArray out of bounds read. Position=&quot; + this.position + &quot;, Length=&quot; + this.length;
+			}
+			return this._bytes[ this.position++ ];
+		}
+		
+		public writeUnsignedByte( b:number )
+		{
+			var bi:number = ~~b;
+			this._bytes[this.position++] = bi &amp; 0xff;     
+			if ( this.position &gt; this.length )
+			{
+				this.length = this.position;
+			}
+		}
+		
+		public readUnsignedByte():number
+		{     
+			if ( this.position &gt;= this.length )
+			{
+				throw &quot;ByteArray out of bounds read. Position=&quot;+this.position+&quot;, Length=&quot;+this.length;
+			}
+			return this._bytes[ this.position++ ];                
+		}
+		
+		public writeUnsignedShort( b:number )
+		{
+			var bi:number = ~~b;
+			this._bytes[ this.position++ ] = bi &amp; 0xff;
+			this._bytes[ this.position++ ] = (bi&gt;&gt;8) &amp; 0xff;
+			if ( this.position &gt; this.length )
+			{
+				this.length = this.position;
+			}
+		}
+		
+		public readUnsignedShort():number
+		{    
+			if ( this.position+2 &gt; this.length )
+			{
+				throw &quot;ByteArray out of bounds read. Position=&quot;+this.position+&quot;, Length=&quot;+this.length;
+			}
+			var r:number = this._bytes[ this.position ] | ( this._bytes[ this.position+1 ] &lt;&lt; 8 );
+			this.position += 2;
+			return r;                
+		}
+		
+		public writeUnsignedInt( b:number )
+		{   
+			var bi:number = ~~b; 
+			this._bytes[ this.position++ ] = bi &amp; 0xff;     
+			this._bytes[ this.position++ ] = (bi&gt;&gt;&gt;8) &amp; 0xff;     
+			this._bytes[ this.position++ ] = (bi&gt;&gt;&gt;16) &amp; 0xff;     
+			this._bytes[ this.position++ ] = (bi&gt;&gt;&gt;24) &amp; 0xff;     
+			if ( this.position &gt; this.length )
+			{
+				this.length = this.position;
+			}
+		}
+		
+		public readUnsignedInt():number
+		{    
+			if ( this.position+4 &gt; this.length )
+			{
+				throw &quot;ByteArray out of bounds read. Position=&quot; + this.position + &quot;, Length=&quot; + this.length;
+			}
+			var r:number = this._bytes[ this.position ] | ( this._bytes[this.position+1]&lt;&lt;8 )
+				| ( this._bytes[this.position+2]&lt;&lt;16 ) | ( this._bytes[this.position+3]&lt;&lt;24 );        
+			this.position += 4;
+			return r &gt;&gt;&gt; 0;                
+		}
+		
+		public writeFloat( b:number ) {   
+			// this is crazy slow and silly, but as a fallback... 
+			
+			this.writeUnsignedInt( this.toFloatBits(Number(b)));
+		}
+		
+		public toFloatBits( x:number )
+		{
+			// don&#x27;t handle inf/nan yet
+			// special case zero
+			if( x == 0 )
+			{
+				return 0;
+			}
+			// remove the sign, after this we only deal with positive numbers
+			var sign:number = 0;
+			if( x &lt; 0 )
+			{
+				x =- x;
+				sign = 1;
+			}
+			else
+			{
+				sign = 0;
+			}
+			// a float value is now defined as: x = (1+(mantissa*2^-23))*(2^(exponent-127))
+			var exponent:number = Math.log( x ) / Math.log( 2 );  // rough exponent
+			exponent = Math.floor( exponent );
+			x = x*Math.pow( 2, 23-exponent );             // normalize to 24 bits
+			var mantissa = Math.floor( x ) - 0x800000;
+			exponent = exponent + 127;
+			return( ( sign &lt;&lt; 31 ) &gt;&gt;&gt; 0) | ( exponent &lt;&lt; 23 ) | mantissa;
+		}
+		
+		public readFloat( b:number )
+		{
+			return this.fromFloatBits ( this.readUnsignedInt() );
+		}
+		
+		public fromFloatBits( x:number )
+		{
+			if ( x == 0 )
+			{
+				return 0;
+			}
+			var exponent:number = ( x &gt;&gt;&gt; 23 )&amp;0xff;
+			var mantissa:number = ( x &amp; 0x7fffff )| 0x800000;
+			var y = Math.pow( 2, ( exponent-127 ) - 23 ) * mantissa;
+			if( x &gt;&gt;&gt; 31 != 0 )
+			{
+				y = -y;
+			}
+			return y;
+		}
+		
+		/*
+		public ensureWriteableSpace( n:number )
+		{
+			this.ensureSpace( n + this.position ); 
+		}
+		
+		private ensureSpace( n:number )
+		{
+			if ( n &gt; this.maxlength ) {
+				var newmaxlength:number = (n+255)&amp;(~255); 
+				var newarraybuffer = new ArrayBuffer(newmaxlength);                              
+				var view = new Uint8Array(this.arraybytes, 0, this.length); 
+				var newview = new Uint8Array(newarraybuffer, 0, this.length); 
+				newview.set(view);      // memcpy                        
+				this.arraybytes = newarraybuffer;
+				this.maxlength = newmaxlength;                         
+			}
+		}
+		*/
+		
+	}
+}
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

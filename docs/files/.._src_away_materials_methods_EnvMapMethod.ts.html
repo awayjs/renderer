@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>../src/away/materials/methods/EnvMapMethod.ts</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="../assets/css/logo.png" title=""></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 0.1.0</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/away.base.Geometry.html">away.base.Geometry</a></li>
+            
+                <li><a href="../classes/away.base.Object3D.html">away.base.Object3D</a></li>
+            
+                <li><a href="../classes/away.base.SkinnedSubGeometry.html">away.base.SkinnedSubGeometry</a></li>
+            
+                <li><a href="../classes/away.base.SubGeometry.html">away.base.SubGeometry</a></li>
+            
+                <li><a href="../classes/away.base.SubGeometryBase.html">away.base.SubGeometryBase</a></li>
+            
+                <li><a href="../classes/away.events.AssetEvent.html">away.events.AssetEvent</a></li>
+            
+                <li><a href="../classes/away.events.CameraEvent.html">away.events.CameraEvent</a></li>
+            
+                <li><a href="../classes/away.events.Event.html">away.events.Event</a></li>
+            
+                <li><a href="../classes/away.events.EventDispatcher.html">away.events.EventDispatcher</a></li>
+            
+                <li><a href="../classes/away.events.GeometryEvent.html">away.events.GeometryEvent</a></li>
+            
+                <li><a href="../classes/away.events.HTTPStatusEvent.html">away.events.HTTPStatusEvent</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="../modules/away.base.html">away.base</a></li>
+            
+                <li><a href="../modules/away.events.html">away.events</a></li>
+            
+                <li><a href="../modules/away.geom.html">away.geom</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: ../src/away/materials/methods/EnvMapMethod.ts</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+///&lt;reference path=&quot;../../_definitions.ts&quot;/&gt;
+
+module away.materials
+{
+
+	/**
+	 * EnvMapMethod provides a material method to perform reflection mapping using cube maps.
+	 */
+	export class EnvMapMethod extends away.materials.EffectMethodBase
+	{
+		private _cubeTexture:away.textures.CubeTextureBase;
+		private _alpha:number;
+		private _mask:away.textures.Texture2DBase;
+
+		/**
+		 * Creates an EnvMapMethod object.
+		 * @param envMap The environment map containing the reflected scene.
+		 * @param alpha The reflectivity of the surface.
+		 */
+		constructor(envMap:away.textures.CubeTextureBase, alpha:number = 1)
+		{
+			super();
+			this._cubeTexture = envMap;
+            this._alpha = alpha;
+
+		}
+
+		/**
+		 * An optional texture to modulate the reflectivity of the surface.
+		 */
+		public get mask():away.textures.Texture2DBase
+		{
+			return this._mask;
+		}
+		
+		public set mask(value:away.textures.Texture2DBase)
+		{
+            if ( value != this._mask ||
+                (value &amp;&amp; this._mask &amp;&amp; (value.hasMipMaps != this._mask.hasMipMaps || value.format != this._mask.format))) {
+
+                this.iInvalidateShaderProgram();
+            }
+
+            /*
+			if (Boolean(value) != Boolean(_mask) ||
+				(value &amp;&amp; _mask &amp;&amp; (value.hasMipMaps != _mask.hasMipMaps || value.format != _mask.format))) {
+				invalidateShaderProgram();
+			}
+			*/
+
+			this._mask = value;
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public iInitVO(vo:MethodVO):void
+		{
+			vo.needsNormals = true;
+			vo.needsView = true;
+			vo.needsUV = this._mask != null;
+		}
+		
+		/**
+		 * The cubic environment map containing the reflected scene.
+		 */
+		public get envMap():away.textures.CubeTextureBase
+		{
+			return this._cubeTexture;
+		}
+		
+		public set envMap(value:away.textures.CubeTextureBase)
+		{
+            this._cubeTexture = value;
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public dispose():void
+		{
+		}
+		
+		/**
+		 * The reflectivity of the surface.
+		 */
+		public get alpha():number
+		{
+			return this._alpha;
+		}
+		
+		public set alpha(value:number)
+		{
+			this._alpha = value;
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public iActivate(vo:away.materials.MethodVO, stage3DProxy:away.managers.Stage3DProxy):void
+		{
+			var context:away.display3D.Context3D = stage3DProxy._iContext3D;
+			vo.fragmentData[vo.fragmentConstantsIndex] = this._alpha;
+
+			context.setTextureAt(vo.texturesIndex, this._cubeTexture.getTextureForStage3D(stage3DProxy));
+			if (this._mask)
+            {
+				context.setTextureAt(vo.texturesIndex + 1, this._mask.getTextureForStage3D(stage3DProxy));
+            }
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public iGetFragmentCode(vo:away.materials.MethodVO, regCache:away.materials.ShaderRegisterCache, targetReg:away.materials.ShaderRegisterElement):string
+		{
+			var dataRegister:ShaderRegisterElement = regCache.getFreeFragmentConstant();
+			var temp:ShaderRegisterElement = regCache.getFreeFragmentVectorTemp();
+			var code:string = &quot;&quot;;
+			var cubeMapReg:ShaderRegisterElement = regCache.getFreeTextureReg();
+
+			    vo.texturesIndex = cubeMapReg.index;
+			vo.fragmentConstantsIndex = dataRegister.index*4;
+			
+			regCache.addFragmentTempUsages(temp, 1);
+			var temp2:ShaderRegisterElement = regCache.getFreeFragmentVectorTemp();
+			
+			// r = I - 2(I.N)*N
+			code += &quot;dp3 &quot; + temp + &quot;.w, &quot; + this._sharedRegisters.viewDirFragment + &quot;.xyz, &quot; + this._sharedRegisters.normalFragment + &quot;.xyz		\n&quot; +
+				&quot;add &quot; + temp + &quot;.w, &quot; + temp + &quot;.w, &quot; + temp + &quot;.w											\n&quot; +
+				&quot;mul &quot; + temp + &quot;.xyz, &quot; + this._sharedRegisters.normalFragment + &quot;.xyz, &quot; + temp + &quot;.w						\n&quot; +
+				&quot;sub &quot; + temp + &quot;.xyz, &quot; + temp + &quot;.xyz, &quot; + this._sharedRegisters.viewDirFragment + &quot;.xyz					\n&quot; +
+                this.pGetTexCubeSampleCode(vo, temp, cubeMapReg, this._cubeTexture, temp) +
+				&quot;sub &quot; + temp2 + &quot;.w, &quot; + temp + &quot;.w, fc0.x									\n&quot; +               	// -.5
+				&quot;kil &quot; + temp2 + &quot;.w\n&quot; +	// used for real time reflection mapping - if alpha is not 1 (mock texture) kil output
+				&quot;sub &quot; + temp + &quot;, &quot; + temp + &quot;, &quot; + targetReg + &quot;											\n&quot;;
+			
+			if (this._mask) {
+				var maskReg:away.materials.ShaderRegisterElement = regCache.getFreeTextureReg();
+				code += this.pGetTex2DSampleCode(vo, temp2, maskReg, this._mask, this._sharedRegisters.uvVarying) +
+					&quot;mul &quot; + temp + &quot;, &quot; + temp2 + &quot;, &quot; + temp + &quot;\n&quot;;
+			}
+			code += &quot;mul &quot; + temp + &quot;, &quot; + temp + &quot;, &quot; + dataRegister + &quot;.x										\n&quot; +
+				&quot;add &quot; + targetReg + &quot;, &quot; + targetReg + &quot;, &quot; + temp + &quot;										\n&quot;;
+			
+			regCache.removeFragmentTempUsage(temp);
+			
+			return code;
+		}
+	}
+}
+
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>../src/away/net/URLLoader.ts</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="../assets/css/logo.png" title=""></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 0.1.0</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/away.base.Geometry.html">away.base.Geometry</a></li>
+            
+                <li><a href="../classes/away.base.Object3D.html">away.base.Object3D</a></li>
+            
+                <li><a href="../classes/away.base.SkinnedSubGeometry.html">away.base.SkinnedSubGeometry</a></li>
+            
+                <li><a href="../classes/away.base.SubGeometry.html">away.base.SubGeometry</a></li>
+            
+                <li><a href="../classes/away.base.SubGeometryBase.html">away.base.SubGeometryBase</a></li>
+            
+                <li><a href="../classes/away.events.AssetEvent.html">away.events.AssetEvent</a></li>
+            
+                <li><a href="../classes/away.events.CameraEvent.html">away.events.CameraEvent</a></li>
+            
+                <li><a href="../classes/away.events.Event.html">away.events.Event</a></li>
+            
+                <li><a href="../classes/away.events.EventDispatcher.html">away.events.EventDispatcher</a></li>
+            
+                <li><a href="../classes/away.events.GeometryEvent.html">away.events.GeometryEvent</a></li>
+            
+                <li><a href="../classes/away.events.HTTPStatusEvent.html">away.events.HTTPStatusEvent</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="../modules/away.base.html">away.base</a></li>
+            
+                <li><a href="../modules/away.events.html">away.events</a></li>
+            
+                <li><a href="../modules/away.geom.html">away.geom</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: ../src/away/net/URLLoader.ts</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+
+///&lt;reference path=&quot;../_definitions.ts&quot;/&gt;
+
+module away.net {
+
+    // TODO: implement / test cross domain policy
+
+    export class URLLoader extends away.events.EventDispatcher
+    {
+
+        private _XHR            : XMLHttpRequest;
+        private _bytesLoaded    : number = 0;
+        private _bytesTotal     : number = 0;
+        private _data           : any;
+        private _dataFormat     : string = away.net.URLLoaderDataFormat.TEXT;
+        private _request        : away.net.URLRequest;
+        private _loadError      : boolean = false;
+
+        constructor()
+        {
+
+            super();
+
+        }
+
+        // Public
+
+        /**
+         *
+         * @param request {away.net.URLRequest}
+         */
+        public load( request : away.net.URLRequest ) : void
+        {
+
+            this.initXHR();
+            this._request = request;
+
+            if ( request.method === away.net.URLRequestMethod.POST ){
+
+                this.postRequest( request );
+
+
+            } else {
+
+                this.getRequest( request );
+
+            }
+
+        }
+
+        /**
+         *
+         */
+        public close( ) : void
+        {
+
+            this._XHR.abort();
+            this.disposeXHR();
+
+        }
+
+        /**
+         *
+         */
+        public dispose() : void
+        {
+
+            if ( this._XHR)
+            {
+
+                this._XHR.abort();
+
+            }
+
+            this.disposeXHR();
+
+            this._data          = null;
+            this._dataFormat    = null;
+            this._bytesLoaded   = null;
+            this._bytesTotal    = null;
+
+            /*
+            if( this._request )
+            {
+
+                this._request.dispose();
+
+            }
+            */
+
+            this._request   = null;
+
+        }
+
+        // Get / Set
+
+        /**
+         *
+         * away.net.URLLoaderDataFormat.BINARY
+         * away.net.URLLoaderDataFormat.TEXT
+         * away.net.URLLoaderDataFormat.VARIABLES
+         *
+         * @param format
+         */
+        public set dataFormat( format : string )
+        {
+
+            if( format === away.net.URLLoaderDataFormat.BLOB
+                || format === away.net.URLLoaderDataFormat.ARRAY_BUFFER
+                || format === away.net.URLLoaderDataFormat.BINARY
+                || format === away.net.URLLoaderDataFormat.TEXT
+                || format === away.net.URLLoaderDataFormat.VARIABLES) {
+
+                this._dataFormat = format;
+
+            } else {
+
+                throw new away.errors.Error( &#x27;URLLoader error: incompatible dataFormat&#x27; );
+
+            }
+
+        }
+
+        /**
+         *
+         * @returns {string}
+         *      away.net.URLLoaderDataFormat
+         */
+        public get dataFormat( ) : string
+        {
+
+            return this._dataFormat;
+
+        }
+
+        /**
+         *
+         * @returns {*}
+         */
+        public get data() : any
+        {
+
+            return this._data;
+
+        }
+
+        /**
+         *
+         * @returns {number}
+         */
+        public get bytesLoaded() : number
+        {
+
+            return this._bytesLoaded;
+
+        }
+
+        /**
+         *
+         * @returns {number}
+         */
+        public get bytesTotal() : number
+        {
+
+            return this._bytesTotal;
+
+        }
+
+        /**
+         *
+         * @returns {away.net.URLRequest}
+         */
+        public get request() : away.net.URLRequest
+        {
+
+            return this._request;
+
+        }
+
+        // Private
+
+        /**
+         *
+         * @param xhr
+         * @param responseType
+         */
+        private setResponseType( xhr: XMLHttpRequest , responseType : string ) : void
+        {
+
+            switch( responseType )
+            {
+
+                case away.net.URLLoaderDataFormat.ARRAY_BUFFER:
+                case away.net.URLLoaderDataFormat.BLOB:
+                case away.net.URLLoaderDataFormat.TEXT:
+
+                    xhr.responseType = responseType;
+
+                    break;
+
+                case away.net.URLLoaderDataFormat.VARIABLES:
+
+                    xhr.responseType = away.net.URLLoaderDataFormat.TEXT;
+
+                    break;
+
+
+                case away.net.URLLoaderDataFormat.BINARY:
+
+                    xhr.responseType = &#x27;&#x27;;
+
+                    break;
+
+
+            }
+
+
+        }
+
+        /**
+         *
+         * @param request {away.net.URLRequest}
+         */
+        private getRequest( request : away.net.URLRequest ) : void
+        {
+
+            try {
+
+                this._XHR.open( request.method , request.url , request.async );
+                this.setResponseType( this._XHR , this._dataFormat );
+                this._XHR.send(); // No data to send
+
+            } catch ( e /* &lt;XMLHttpRequestException&gt; */ ) {
+
+                this.handleXmlHttpRequestException( e);
+
+            }
+
+        }
+
+        /**
+         *
+         * @param request {away.net.URLRequest}
+         */
+        private postRequest( request : away.net.URLRequest ) : void
+        {
+
+            this._loadError = false;
+
+            this._XHR.open( request.method , request.url , request.async );
+
+            if ( request.data != null )
+            {
+
+                if ( request.data instanceof away.net.URLVariables )
+                {
+
+                    var urlVars : away.net.URLVariables = &lt;away.net.URLVariables&gt; request.data;
+
+                    try {
+
+                        this._XHR.responseType = &#x27;text&#x27;;
+                        this._XHR.send( urlVars.formData );
+
+
+                    } catch ( e /* &lt;XMLHttpRequestException&gt; */ ) {
+
+                        this.handleXmlHttpRequestException( e );
+
+                    }
+
+                }
+                else
+                {
+
+                    this.setResponseType( this._XHR , this._dataFormat );
+
+                    if ( request.data ) {
+
+                        this._XHR.send( request.data ); // TODO: Test
+
+                    } else {
+
+                        this._XHR.send( ); // no data to send
+
+                    }
+
+
+                }
+
+            }
+            else
+            {
+
+                this._XHR.send(); // No data to send
+
+            }
+
+        }
+
+        /**
+         *
+         * @param error {XMLHttpRequestException}
+         */
+        private handleXmlHttpRequestException( error /* &lt;XMLHttpRequestException&gt; */ ) : void
+        {
+
+            switch ( error.code )
+            {
+
+                /******************************************************************************************************************************************************************************************************
+                 *
+                 *  XMLHttpRequestException { message: &quot;NETWORK_ERR: XMLHttpRequest Exception 101&quot;, name: &quot;NETWORK_ERR&quot;, code: 101, stack: &quot;Error: A network error occurred in synchronous req…&quot;,NETWORK_ERR: 101… }
+                 *  code: 101 , message: &quot;NETWORK_ERR: XMLHttpRequest Exception 101&quot; ,  name: &quot;NETWORK_ERR&quot;
+                 *
+                 ******************************************************************************************************************************************************************************************************/
+
+                case 101:
+
+                    // Note: onLoadError event throws IO_ERROR event - this case is already Covered
+
+                    break;
+
+
+
+            }
+
+
+        }
+
+        /**
+         *
+         */
+        private initXHR()
+        {
+
+            if ( ! this._XHR )
+            {
+
+                this._XHR = new XMLHttpRequest();
+
+                this._XHR.onloadstart = ( event ) =&gt; this.onLoadStart( event );                 // loadstart	        - When the request starts.
+                this._XHR.onprogress = ( event ) =&gt; this.onProgress( event );	                // progress	            - While loading and sending data.
+                this._XHR.onabort = ( event ) =&gt; this.onAbort( event );	                        // abort	            - When the request has been aborted, either by invoking the abort() method or navigating away from the page.
+                this._XHR.onerror = ( event ) =&gt; this.onLoadError( event );                     // error	            - When the request has failed.
+                this._XHR.onload = ( event ) =&gt; this.onLoadComplete( event );                   // load	                - When the request has successfully completed.
+                this._XHR.ontimeout	= ( event ) =&gt; this.onTimeOut( event );                     // timeout	            - When the author specified timeout has passed before the request could complete.
+                this._XHR.onloadend	= ( event ) =&gt; this.onLoadEnd( event );                     // loadend	            - When the request has completed, regardless of whether or not it was successful.
+                this._XHR.onreadystatechange = ( event ) =&gt; this.onReadyStateChange( event );   // onreadystatechange   - When XHR state changes
+
+            }
+
+        }
+
+        /**
+         *
+         */
+        private disposeXHR()
+        {
+
+            if ( this._XHR !== null )
+            {
+
+                this._XHR.onloadstart   = null;
+                this._XHR.onprogress    = null;
+                this._XHR.onabort       = null;
+                this._XHR.onerror       = null;
+                this._XHR.onload        = null;
+                this._XHR.ontimeout	    = null;
+                this._XHR.onloadend	    = null;
+                this._XHR               = null;
+
+            }
+
+        }
+
+        /**
+         *
+         * @param source
+         */
+        public decodeURLVariables( source : string ) : Object
+        {
+
+            var result : Object = new Object();
+
+            source = source.split(&quot;+&quot;).join(&quot; &quot;);
+
+            var tokens, re = /[?&amp;]?([^=]+)=([^&amp;]*)/g;
+
+            while (tokens = re.exec(source))
+            {
+
+                result[decodeURIComponent(tokens[1])] = decodeURIComponent(tokens[2]);
+
+            }
+
+            return result;
+
+        }
+
+        // XMLHttpRequest - Event Handlers
+
+        /**
+         * When XHR state changes
+         * @param event
+         */
+        private onReadyStateChange( event )
+        {
+            if (this._XHR.readyState==4)
+            {
+
+                if (this._XHR.status==404)
+                {
+
+                    this._loadError = true;
+                    this.dispatchEvent( new away.events.IOErrorEvent(away.events.IOErrorEvent.IO_ERROR ));
+
+                }
+
+                this.dispatchEvent( new away.events.HTTPStatusEvent( away.events.HTTPStatusEvent.HTTP_STATUS , this._XHR.status ));
+
+            }
+
+        }
+
+        /**
+         * When the request has completed, regardless of whether or not it was successful.
+         * @param event
+         */
+        private onLoadEnd( event )
+        {
+
+            if( this._loadError === true ) return;
+
+        }
+
+        /**
+         * When the author specified timeout has passed before the request could complete.
+         * @param event
+         */
+        private onTimeOut( event )
+        {
+
+            //TODO: Timeout not currently implemented ( also not part of AS3 API )
+
+        }
+
+        /**
+         * When the request has been aborted, either by invoking the abort() method or navigating away from the page.
+         * @param event
+         */
+        private onAbort( event )
+        {
+
+            // TODO: investigate whether this needs to be an IOError
+
+        }
+
+        /**
+         * While loading and sending data.
+         * @param event
+         */
+        private onProgress( event )
+        {
+
+            this._bytesTotal    = event.total;
+            this._bytesLoaded   = event.loaded;
+
+            var progressEvent : away.events.ProgressEvent   = new away.events.ProgressEvent( away.events.ProgressEvent.PROGRESS );
+                progressEvent.bytesLoaded                   = this._bytesLoaded;
+                progressEvent.bytesTotal                    = this._bytesTotal;
+            this.dispatchEvent( progressEvent );
+
+        }
+
+        /**
+         * When the request starts.
+         * @param event
+         */
+        private onLoadStart( event )
+        {
+
+            this.dispatchEvent( new away.events.Event( away.events.Event.OPEN ));
+
+        }
+
+        /**
+         * When the request has successfully completed.
+         * @param event
+         */
+        private onLoadComplete( event )
+        {
+
+            if( this._loadError === true ) return;
+
+            // TODO: Assert received data format
+
+            switch ( this._dataFormat ){
+
+                case away.net.URLLoaderDataFormat.TEXT:
+
+                    this._data = this._XHR.responseText;
+
+                    break;
+
+                case away.net.URLLoaderDataFormat.VARIABLES:
+
+                    this._data = this.decodeURLVariables( this._XHR.responseText );
+
+                    break;
+
+                case away.net.URLLoaderDataFormat.BLOB:
+                case away.net.URLLoaderDataFormat.ARRAY_BUFFER:
+                case away.net.URLLoaderDataFormat.BINARY:
+
+                    this._data = this._XHR.response;
+
+                    break;
+
+                default:
+
+                    this._data = this._XHR.responseText;
+
+                    break;
+
+            }
+
+            this.dispatchEvent( new away.events.Event( away.events.Event.COMPLETE ));
+
+        }
+
+        /**
+         * When the request has failed. ( due to network issues ).
+         * @param event
+         */
+        private onLoadError( event )
+        {
+
+            this._loadError = true;
+            this.dispatchEvent( new away.events.IOErrorEvent(away.events.IOErrorEvent.IO_ERROR ));
+
+        }
+
+
+    }
+
+}
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>../src/away/library/AssetLibraryBundle.ts</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="../assets/css/logo.png" title=""></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 0.1.0</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/away.base.Geometry.html">away.base.Geometry</a></li>
+            
+                <li><a href="../classes/away.base.Object3D.html">away.base.Object3D</a></li>
+            
+                <li><a href="../classes/away.base.SkinnedSubGeometry.html">away.base.SkinnedSubGeometry</a></li>
+            
+                <li><a href="../classes/away.base.SubGeometry.html">away.base.SubGeometry</a></li>
+            
+                <li><a href="../classes/away.base.SubGeometryBase.html">away.base.SubGeometryBase</a></li>
+            
+                <li><a href="../classes/away.events.AssetEvent.html">away.events.AssetEvent</a></li>
+            
+                <li><a href="../classes/away.events.CameraEvent.html">away.events.CameraEvent</a></li>
+            
+                <li><a href="../classes/away.events.Event.html">away.events.Event</a></li>
+            
+                <li><a href="../classes/away.events.EventDispatcher.html">away.events.EventDispatcher</a></li>
+            
+                <li><a href="../classes/away.events.GeometryEvent.html">away.events.GeometryEvent</a></li>
+            
+                <li><a href="../classes/away.events.HTTPStatusEvent.html">away.events.HTTPStatusEvent</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="../modules/away.base.html">away.base</a></li>
+            
+                <li><a href="../modules/away.events.html">away.events</a></li>
+            
+                <li><a href="../modules/away.geom.html">away.geom</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: ../src/away/library/AssetLibraryBundle.ts</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+
+
+///&lt;reference path=&quot;../_definitions.ts&quot;/&gt;
+
+module away.library
+{
+
+	
+	/**
+	 * AssetLibraryBundle enforces a multiton pattern and is not intended to be instanced directly.
+	 * Its purpose is to create a container for 3D data management, both before and after parsing.
+	 * If you are interested in creating multiple library bundles, please use the &lt;code&gt;getInstance()&lt;/code&gt; method.
+	 */
+	export class AssetLibraryBundle extends away.events.EventDispatcher
+	{
+		private _loadingSessions        : away.loaders.AssetLoader[];//Vector.&lt;AssetLoader&gt;;
+		private _strategy               : away.library.ConflictStrategyBase;
+		private _strategyPreference     : string;
+		private _assets                 : away.library.IAsset[];//Vector.&lt;IAsset&gt;;
+		private _assetDictionary        : Object;
+		private _assetDictDirty         : boolean;
+        private _loadingSessionsGarbage : away.loaders.AssetLoader[] = new Array&lt;away.loaders.AssetLoader&gt;();
+        private _gcTimeoutIID           : number;
+		
+		/**
+		 * Creates a new &lt;code&gt;AssetLibraryBundle&lt;/code&gt; object.
+		 *
+		 * @param me A multiton enforcer for the AssetLibraryBundle ensuring it cannnot be instanced.
+		 */
+		constructor(me:AssetLibraryBundleSingletonEnforcer)
+		{
+            super();
+
+			//me = me;
+			
+			this._assets = new Array&lt;away.library.IAsset&gt;();//new Vector.&lt;IAsset&gt;;
+			this._assetDictionary = new Object();
+			this._loadingSessions = new Array&lt;away.loaders.AssetLoader&gt;();
+
+			this.conflictStrategy = away.library.ConflictStrategy.IGNORE.create();
+			this.conflictPrecedence = away.library.ConflictPrecedence.FAVOR_NEW;
+		}
+		
+		/**
+		 * Returns an AssetLibraryBundle instance. If no key is given, returns the default bundle instance (which is
+		 * similar to using the AssetLibraryBundle as a singleton.) To keep several separated library bundles,
+		 * pass a string key to this method to define which bundle should be returned. This is
+		 * referred to as using the AssetLibrary as a multiton.
+		 *
+		 * @param key Defines which multiton instance should be returned.
+		 * @return An instance of the asset library
+		 */
+		public static getInstance(key:string = &#x27;default&#x27;):AssetLibraryBundle
+		{
+			if (!key)
+            {
+
+                key = &#x27;default&#x27;;
+
+            }
+
+			
+			if (!away.library.AssetLibrary._iInstances.hasOwnProperty(key))
+            {
+
+                away.library.AssetLibrary._iInstances[key] = new away.library.AssetLibraryBundle(new AssetLibraryBundleSingletonEnforcer());
+
+            }
+
+			
+			return away.library.AssetLibrary._iInstances[key];
+
+		}
+		
+		/**
+		 *
+		 */
+		public enableParser( parserClass : Object )
+		{
+			away.loaders.SingleFileLoader.enableParser(parserClass);
+		}
+		
+		/**
+		 *
+		 */
+		public enableParsers(parserClasses : Object[])
+		{
+			away.loaders.SingleFileLoader.enableParsers(parserClasses);
+		}
+		
+		/**
+		 * Defines which strategy should be used for resolving naming conflicts, when two library
+		 * assets are given the same name. By default, &lt;code&gt;ConflictStrategy.APPEND_NUM_SUFFIX&lt;/code&gt;
+		 * is used which means that a numeric suffix is appended to one of the assets. The
+		 * &lt;code&gt;conflictPrecedence&lt;/code&gt; property defines which of the two conflicting assets will
+		 * be renamed.
+		 *
+		 * @see away3d.library.naming.ConflictStrategy
+		 * @see away3d.library.AssetLibrary.conflictPrecedence
+		 */
+		public get conflictStrategy():away.library.ConflictStrategyBase
+		{
+			return this._strategy;
+		}
+		
+		public set conflictStrategy(val:away.library.ConflictStrategyBase)
+		{
+
+			if (!val)
+            {
+
+                throw new away.errors.Error(&#x27;namingStrategy must not be null. To ignore naming, use AssetLibrary.IGNORE&#x27;);
+
+            }
+
+			this._strategy = val.create();
+
+		}
+		
+		/**
+		 * Defines which asset should have precedence when resolving a naming conflict between
+		 * two assets of which one has just been renamed by the user or by a parser. By default
+		 * &lt;code&gt;ConflictPrecedence.FAVOR_NEW&lt;/code&gt; is used, meaning that the newly renamed
+		 * asset will keep it&#x27;s new name while the older asset gets renamed to not conflict.
+		 *
+		 * This property is ignored for conflict strategies that do not actually rename an
+		 * asset automatically, such as ConflictStrategy.IGNORE and ConflictStrategy.THROW_ERROR.
+		 *
+		 * @see away3d.library.naming.ConflictPrecedence
+		 * @see away3d.library.naming.ConflictStrategy
+		 */
+		public get conflictPrecedence():string
+		{
+			return this._strategyPreference;
+		}
+		
+		public set conflictPrecedence(val:string)
+		{
+			this._strategyPreference = val;
+		}
+		
+		/**
+		 * Create an AssetLibraryIterator instance that can be used to iterate over the assets
+		 * in this asset library instance. The iterator can filter assets on asset type and/or
+		 * namespace. A &quot;null&quot; filter value means no filter of that type is used.
+		 *
+		 * @param assetTypeFilter Asset type to filter on (from the AssetType enum class.) Use
+		 * null to not filter on asset type.
+		 * @param namespaceFilter Namespace to filter on. Use null to not filter on namespace.
+		 * @param filterFunc Callback function to use when deciding whether an asset should be
+		 * included in the iteration or not. This needs to be a function that takes a single
+		 * parameter of type IAsset and returns a boolean where true means it should be included.
+		 *
+		 * @see away3d.library.assets.AssetType
+		 */
+		public createIterator(assetTypeFilter:string = null, namespaceFilter:string = null, filterFunc = null):away.library.AssetLibraryIterator
+		{
+			return new away.library.AssetLibraryIterator(this._assets, assetTypeFilter, namespaceFilter, filterFunc);
+		}
+		
+		/**
+		 * Loads a file and (optionally) all of its dependencies.
+		 *
+		 * @param req The URLRequest object containing the URL of the file to be loaded.
+		 * @param context An optional context object providing additional parameters for loading
+		 * @param ns An optional namespace string under which the file is to be loaded, allowing the differentiation of two resources with identical assets
+		 * @param parser An optional parser object for translating the loaded data into a usable resource. If not provided, AssetLoader will attempt to auto-detect the file type.
+		 */
+		public load(req:away.net.URLRequest, context:away.loaders.AssetLoaderContext = null, ns:string = null, parser:away.loaders.ParserBase = null):away.loaders.AssetLoaderToken
+		{
+			return this.loadResource(req, context, ns, parser);
+		}
+		
+		/**
+		 * Loads a resource from existing data in memory.
+		 *
+		 * @param data The data object containing all resource information.
+		 * @param context An optional context object providing additional parameters for loading
+		 * @param ns An optional namespace string under which the file is to be loaded, allowing the differentiation of two resources with identical assets
+		 * @param parser An optional parser object for translating the loaded data into a usable resource. If not provided, AssetLoader will attempt to auto-detect the file type.
+		 */
+		public loadData(data: any, context:away.loaders.AssetLoaderContext = null, ns:string = null, parser:away.loaders.ParserBase = null):away.loaders.AssetLoaderToken
+		{
+			return this.parseResource(data, context, ns, parser);
+		}
+		
+		/**
+		 *
+		 */
+		public getAsset(name:string, ns:string = null):IAsset
+		{
+			//var asset : IAsset;
+			
+			if (this._assetDictDirty)
+            {
+
+                this.rehashAssetDict();
+
+            }
+
+            //ns ||= NamedAssetBase.DEFAULT_NAMESPACE;
+            if ( ns == null )
+            {
+
+                ns = away.library.NamedAssetBase.DEFAULT_NAMESPACE;
+
+            }
+			
+
+			if (!this._assetDictionary.hasOwnProperty(ns))
+            {
+
+                return null;
+
+            }
+
+			return this._assetDictionary[ns][name];
+
+		}
+		
+		/**
+		 * Adds an asset to the asset library, first making sure that it&#x27;s name is unique
+		 * using the method defined by the &lt;code&gt;conflictStrategy&lt;/code&gt; and
+		 * &lt;code&gt;conflictPrecedence&lt;/code&gt; properties.
+		 */
+		public addAsset( asset : away.library.IAsset )
+		{
+			var ns:string;
+			var old:away.library.IAsset;
+			
+			// Bail if asset has already been added.
+			if (this._assets.indexOf(asset) &gt;= 0)
+            {
+
+                return;
+
+            }
+
+			old = this.getAsset(asset.name, asset.assetNamespace);
+			ns = asset.assetNamespace || NamedAssetBase.DEFAULT_NAMESPACE;
+			
+			if (old != null)
+            {
+
+                this._strategy.resolveConflict(asset, old, this._assetDictionary[ns], this._strategyPreference);
+
+            }
+
+			//create unique-id (for now this is used in AwayBuilder only
+			asset.id = away.library.IDUtil.createUID();
+			
+			// Add it
+			this._assets.push(asset);
+
+			if (!this._assetDictionary.hasOwnProperty(ns))
+            {
+
+                this._assetDictionary[ns] = new Object();
+
+            }
+
+			this._assetDictionary[ns][asset.name] = asset;
+			
+			asset.addEventListener(away.events.AssetEvent.ASSET_RENAME, this.onAssetRename , this );
+			asset.addEventListener(away.events.AssetEvent.ASSET_CONFLICT_RESOLVED, this.onAssetConflictResolved , this );
+		}
+		
+		/**
+		 * Removes an asset from the library, and optionally disposes that asset by calling
+		 * it&#x27;s disposeAsset() method (which for most assets is implemented as a default
+		 * version of that type&#x27;s dispose() method.
+		 *
+		 * @param asset The asset which should be removed from this library.
+		 * @param dispose Defines whether the assets should also be disposed.
+		 */
+		public removeAsset(asset:away.library.IAsset, dispose:boolean = true)
+		{
+			var idx:number;
+			
+			this.removeAssetFromDict(asset);
+			
+			asset.removeEventListener(away.events.AssetEvent.ASSET_RENAME, this.onAssetRename , this );
+			asset.removeEventListener(away.events.AssetEvent.ASSET_CONFLICT_RESOLVED, this.onAssetConflictResolved , this );
+			
+			idx = this._assets.indexOf(asset);
+			if (idx &gt;= 0)
+            {
+
+                this._assets.splice(idx, 1);
+
+            }
+
+			if (dispose)
+            {
+
+                asset.dispose();
+
+            }
+
+		}
+		
+		/**
+		 * Removes an asset which is specified using name and namespace.
+		 *
+		 * @param name The name of the asset to be removed.
+		 * @param ns The namespace to which the desired asset belongs.
+		 * @param dispose Defines whether the assets should also be disposed.
+		 *
+		 * @see away3d.library.AssetLibrary.removeAsset()
+		 */
+		public removeAssetByName(name:string, ns:string = null, dispose:boolean = true):away.library.IAsset
+		{
+
+			var asset:away.library.IAsset = this.getAsset(name, ns);
+
+			if (asset)
+            {
+
+                this.removeAsset(asset, dispose);
+
+            }
+
+			return asset;
+		}
+		
+		/**
+		 * Removes all assets from the asset library, optionally disposing them as they
+		 * are removed.
+		 *
+		 * @param dispose Defines whether the assets should also be disposed.
+		 */
+		public removeAllAssets(dispose:boolean = true)
+		{
+			if (dispose)
+            {
+				var asset:away.library.IAsset;
+
+                for ( var c : number = 0 ; c &lt; this._assets.length ; c ++ )
+                {
+                    asset = this._assets[ c ];
+                    asset.dispose();
+
+                }
+                /*
+				for each (asset in _assets)
+					asset.dispose();
+		        */
+			}
+			
+			this._assets.length = 0;
+            this.rehashAssetDict();
+		}
+		
+		/**
+		 * Removes all assets belonging to a particular namespace (null for default)
+		 * from the asset library, and optionall disposes them by calling their
+		 * disposeAsset() method.
+		 *
+		 * @param ns The namespace from which all assets should be removed.
+		 * @param dispose Defines whether the assets should also be disposed.
+		 *
+		 * @see away3d.library.AssetLibrary.removeAsset()
+		 */
+		public removeNamespaceAssets(ns:string = null, dispose:boolean = true)
+		{
+			var idx:number = 0;
+			var asset:IAsset;
+			var old_assets:away.library.IAsset[];
+			
+			// Empty the assets vector after having stored a copy of it.
+			// The copy will be filled with all assets which weren&#x27;t removed.
+			old_assets = this._assets.concat();
+			this._assets.length = 0;
+
+            if ( ns == null )
+            {
+
+                ns = away.library.NamedAssetBase.DEFAULT_NAMESPACE;//ns ||= NamedAssetBase.DEFAULT_NAMESPACE;
+
+            }
+
+            for ( var d : number = 0 ; d &lt; old_assets.length ; d ++ )
+            {
+                asset = old_assets[d];
+
+                // Remove from dict if in the supplied namespace. If not,
+                // transfer over to the new vector.
+                if (asset.assetNamespace == ns)
+                {
+                    if (dispose)
+                    {
+
+                        asset.dispose();
+
+                    }
+
+                    // Remove asset from dictionary, but don&#x27;t try to auto-remove
+                    // the namespace, which will trigger an unnecessarily expensive
+                    // test that is not needed since we know that the namespace
+                    // will be empty when loop finishes.
+                    this.removeAssetFromDict(asset, false);
+                }
+                else
+                {
+
+                    this._assets[idx++] = asset;
+
+                }
+
+
+            }
+
+            /*
+			for each (asset in old_assets) {
+				// Remove from dict if in the supplied namespace. If not,
+				// transfer over to the new vector.
+				if (asset.assetNamespace == ns) {
+					if (dispose)
+						asset.dispose();
+					
+					// Remove asset from dictionary, but don&#x27;t try to auto-remove
+					// the namespace, which will trigger an unnecessarily expensive
+					// test that is not needed since we know that the namespace
+					// will be empty when loop finishes.
+					removeAssetFromDict(asset, false);
+				} else
+					_assets[idx++] = asset;
+
+			}
+             */
+			
+			// Remove empty namespace
+			if (this._assetDictionary.hasOwnProperty(ns))
+            {
+
+                delete this._assetDictionary[ns];
+
+            }
+
+		}
+		
+		private removeAssetFromDict(asset:away.library.IAsset, autoRemoveEmptyNamespace:boolean = true)
+		{
+			if (this._assetDictDirty)
+            {
+                this.rehashAssetDict();
+            }
+
+			
+			if (this._assetDictionary.hasOwnProperty(asset.assetNamespace))
+            {
+				if (this._assetDictionary[asset.assetNamespace].hasOwnProperty(asset.name))
+                {
+                    delete this._assetDictionary[asset.assetNamespace][asset.name];
+                }
+
+				
+				if (autoRemoveEmptyNamespace) {
+
+					var key:string;
+					var empty:boolean = true;
+					
+					for (key in this._assetDictionary[asset.assetNamespace]) {
+						empty = false;
+						break;
+					}
+					
+					if (empty)
+                    {
+
+                        delete this._assetDictionary[asset.assetNamespace];
+
+                    }
+
+				}
+			}
+		}
+		
+		/**
+		 * Loads a yet unloaded resource file from the given url.
+		 */
+		private loadResource(req:away.net.URLRequest, context:away.loaders.AssetLoaderContext = null, ns:string = null, parser:away.loaders.ParserBase = null):away.loaders.AssetLoaderToken
+		{
+			var loader:away.loaders.AssetLoader = new away.loaders.AssetLoader();
+
+			if (!this._loadingSessions)
+            {
+
+                this._loadingSessions = new Array&lt;away.loaders.AssetLoader&gt;();
+
+            }
+
+			this._loadingSessions.push(loader);
+
+			loader.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceRetrieved , this);
+			loader.addEventListener(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this.onDependencyRetrieved, this);
+			loader.addEventListener(away.events.AssetEvent.TEXTURE_SIZE_ERROR, this.onTextureSizeError, this);
+			loader.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+			loader.addEventListener(away.events.AssetEvent.ANIMATION_SET_COMPLETE, this.onAssetComplete, this);
+			loader.addEventListener(away.events.AssetEvent.ANIMATION_STATE_COMPLETE, this.onAssetComplete, this);
+			loader.addEventListener(away.events.AssetEvent.ANIMATION_NODE_COMPLETE, this.onAssetComplete, this);
+			loader.addEventListener(away.events.AssetEvent.STATE_TRANSITION_COMPLETE, this.onAssetComplete, this);
+			loader.addEventListener(away.events.AssetEvent.TEXTURE_COMPLETE, this.onAssetComplete, this);
+			loader.addEventListener(away.events.AssetEvent.CONTAINER_COMPLETE, this.onAssetComplete, this);
+			loader.addEventListener(away.events.AssetEvent.GEOMETRY_COMPLETE, this.onAssetComplete, this);
+			loader.addEventListener(away.events.AssetEvent.MATERIAL_COMPLETE, this.onAssetComplete, this);
+			loader.addEventListener(away.events.AssetEvent.MESH_COMPLETE, this.onAssetComplete, this);
+			loader.addEventListener(away.events.AssetEvent.ENTITY_COMPLETE, this.onAssetComplete, this);
+			loader.addEventListener(away.events.AssetEvent.SKELETON_COMPLETE, this.onAssetComplete, this);
+			loader.addEventListener(away.events.AssetEvent.SKELETON_POSE_COMPLETE, this.onAssetComplete, this);
+
+			// Error are handled separately (see documentation for addErrorHandler)
+			loader._iAddErrorHandler(this.onDependencyRetrievingError);
+			loader._iAddParseErrorHandler(this.onDependencyRetrievingParseError);
+			
+			return loader.load(req, context, ns, parser);
+		}
+		
+		public stopAllLoadingSessions()
+		{
+			var i:number;
+
+			if (! this._loadingSessions )
+            {
+
+                this._loadingSessions = new Array&lt;away.loaders.AssetLoader&gt;();
+
+            }
+
+			var length:number = this._loadingSessions.length;
+
+			for (i = 0; i &lt; length; i++)
+            {
+
+                this.killLoadingSession(this._loadingSessions[i]);
+
+            }
+
+			this._loadingSessions = null;
+		}
+		
+		/**
+		 * Retrieves an unloaded resource parsed from the given data.
+		 * @param data The data to be parsed.
+		 * @param id The id that will be assigned to the resource. This can later also be used by the getResource method.
+		 * @param ignoreDependencies Indicates whether or not dependencies should be ignored or loaded.
+		 * @param parser An optional parser object that will translate the data into a usable resource.
+		 * @return A handle to the retrieved resource.
+		 */
+		private parseResource( data : any , context:away.loaders.AssetLoaderContext = null, ns:string = null, parser:away.loaders.ParserBase = null):away.loaders.AssetLoaderToken
+		{
+			var loader:away.loaders.AssetLoader = new away.loaders.AssetLoader();
+
+			if (!this._loadingSessions)
+            {
+
+                this._loadingSessions = new Array&lt;away.loaders.AssetLoader&gt;();
+
+            }
+
+			this._loadingSessions.push(loader);
+
+			loader.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceRetrieved , this);
+			loader.addEventListener(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this.onDependencyRetrieved, this);
+			loader.addEventListener(away.events.AssetEvent.TEXTURE_SIZE_ERROR, this.onTextureSizeError, this);
+			loader.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+			loader.addEventListener(away.events.AssetEvent.ANIMATION_SET_COMPLETE, this.onAssetComplete, this);
+			loader.addEventListener(away.events.AssetEvent.ANIMATION_STATE_COMPLETE, this.onAssetComplete, this);
+			loader.addEventListener(away.events.AssetEvent.ANIMATION_NODE_COMPLETE, this.onAssetComplete, this);
+			loader.addEventListener(away.events.AssetEvent.STATE_TRANSITION_COMPLETE, this.onAssetComplete, this);
+			loader.addEventListener(away.events.AssetEvent.TEXTURE_COMPLETE, this.onAssetComplete, this);
+			loader.addEventListener(away.events.AssetEvent.CONTAINER_COMPLETE, this.onAssetComplete, this);
+			loader.addEventListener(away.events.AssetEvent.GEOMETRY_COMPLETE, this.onAssetComplete, this);
+			loader.addEventListener(away.events.AssetEvent.MATERIAL_COMPLETE, this.onAssetComplete, this);
+			loader.addEventListener(away.events.AssetEvent.MESH_COMPLETE, this.onAssetComplete, this);
+			loader.addEventListener(away.events.AssetEvent.ENTITY_COMPLETE, this.onAssetComplete, this);
+			loader.addEventListener(away.events.AssetEvent.SKELETON_COMPLETE, this.onAssetComplete, this);
+			loader.addEventListener(away.events.AssetEvent.SKELETON_POSE_COMPLETE, this.onAssetComplete, this);
+			
+			// Error are handled separately (see documentation for addErrorHandler)
+			loader._iAddErrorHandler(this.onDependencyRetrievingError);
+			loader._iAddParseErrorHandler(this.onDependencyRetrievingParseError);
+			
+			return loader.loadData(data, &#x27;&#x27;, context, ns, parser);
+		}
+		
+		private rehashAssetDict()
+		{
+			var asset:IAsset;
+			
+			this._assetDictionary = {};
+
+            var l : number = this._assets.length;
+
+            for ( var c : number = 0 ; c &lt; l ; c ++)
+            {
+
+                asset = this._assets[c];
+
+				if (!this._assetDictionary.hasOwnProperty(asset.assetNamespace))
+                {
+
+                    this._assetDictionary[asset.assetNamespace] = {};
+
+                }
+
+				this._assetDictionary[asset.assetNamespace][asset.name] = asset;
+
+			}
+
+			this._assetDictDirty = false;
+
+		}
+		
+		/**
+		 * Called when a dependency was retrieved.
+		 */
+		private onDependencyRetrieved(event:away.events.LoaderEvent)
+		{
+			//if (hasEventListener(LoaderEvent.DEPENDENCY_COMPLETE))
+			this.dispatchEvent(event);
+
+		}
+		
+		/**
+		 * Called when a an error occurs during dependency retrieving.
+		 */
+		private onDependencyRetrievingError(event:away.events.LoaderEvent):boolean
+		{
+			if (this.hasEventListener(away.events.LoaderEvent.LOAD_ERROR , this.onDependencyRetrievingError , this ) )
+            {
+
+				this.dispatchEvent(event);
+				return true;
+
+			}
+            else
+            {
+
+                return false;
+
+            }
+
+		}
+		
+		/**
+		 * Called when a an error occurs during parsing.
+		 */
+		private onDependencyRetrievingParseError(event:away.events.ParserEvent):boolean
+		{
+			if (this.hasEventListener(away.events.ParserEvent.PARSE_ERROR, this.onDependencyRetrievingParseError, this ))
+            {
+
+				this.dispatchEvent(event);
+				return true;
+
+			}
+            else
+            {
+
+                return false;
+
+            }
+
+		}
+		
+		private onAssetComplete(event:away.events.AssetEvent)
+		{
+
+            //console.log( &#x27;AssetLibraryBundle.onAssetComplete &#x27; , event );
+
+			// Only add asset to library the first time.
+			if (event.type == away.events.AssetEvent.ASSET_COMPLETE)
+            {
+
+                this.addAsset(event.asset);
+
+            }
+
+			this.dispatchEvent(event.clone());
+
+		}
+		
+		private onTextureSizeError(event:away.events.AssetEvent)
+		{
+			this.dispatchEvent(event.clone());
+		}
+		
+		/**
+		 * Called when the resource and all of its dependencies was retrieved.
+		 */
+		private onResourceRetrieved(event:away.events.LoaderEvent)
+		{
+
+			var loader:away.loaders.AssetLoader = &lt;away.loaders.AssetLoader&gt; event.target;
+
+			this.dispatchEvent(event.clone());
+
+            var index:number = this._loadingSessions.indexOf(loader);
+            this._loadingSessions.splice(index, 1);
+
+            // Add loader to a garbage array - for a collection sweep and kill
+            this._loadingSessionsGarbage.push( loader );
+            this._gcTimeoutIID = setTimeout( () =&gt; { this.loadingSessionGC() }  , 100 );
+
+		}
+
+        private loadingSessionGC() : void
+        {
+
+            var loader  : away.loaders.AssetLoader;
+
+            while( this._loadingSessionsGarbage.length &gt; 0 )
+            {
+
+                loader = this._loadingSessionsGarbage.pop();
+                this.killLoadingSession( loader );
+
+            }
+
+            clearTimeout(this._gcTimeoutIID);
+            this._gcTimeoutIID = null;
+
+        }
+
+		private killLoadingSession(loader:away.loaders.AssetLoader)
+		{
+			
+			loader.removeEventListener(away.events.LoaderEvent.LOAD_ERROR, this.onDependencyRetrievingError , this);
+			loader.removeEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceRetrieved, this);
+			loader.removeEventListener(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this.onDependencyRetrieved, this);
+			loader.removeEventListener(away.events.AssetEvent.TEXTURE_SIZE_ERROR, this.onTextureSizeError, this);
+			loader.removeEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+			loader.removeEventListener(away.events.AssetEvent.ANIMATION_SET_COMPLETE, this.onAssetComplete, this);
+			loader.removeEventListener(away.events.AssetEvent.ANIMATION_STATE_COMPLETE, this.onAssetComplete, this);
+			loader.removeEventListener(away.events.AssetEvent.ANIMATION_NODE_COMPLETE, this.onAssetComplete, this);
+			loader.removeEventListener(away.events.AssetEvent.STATE_TRANSITION_COMPLETE, this.onAssetComplete, this);
+			loader.removeEventListener(away.events.AssetEvent.TEXTURE_COMPLETE, this.onAssetComplete, this);
+			loader.removeEventListener(away.events.AssetEvent.CONTAINER_COMPLETE, this.onAssetComplete, this);
+			loader.removeEventListener(away.events.AssetEvent.GEOMETRY_COMPLETE, this.onAssetComplete, this);
+			loader.removeEventListener(away.events.AssetEvent.MATERIAL_COMPLETE, this.onAssetComplete, this);
+			loader.removeEventListener(away.events.AssetEvent.MESH_COMPLETE, this.onAssetComplete, this);
+			loader.removeEventListener(away.events.AssetEvent.ENTITY_COMPLETE, this.onAssetComplete, this);
+			loader.removeEventListener(away.events.AssetEvent.SKELETON_COMPLETE, this.onAssetComplete, this);
+			loader.removeEventListener(away.events.AssetEvent.SKELETON_POSE_COMPLETE, this.onAssetComplete, this);
+			loader.stop();
+		
+		}
+		
+		/**
+		 * Called when unespected error occurs
+		 */
+		/*
+		 private onResourceError() : void
+		 {
+		 var msg:string = &quot;Unexpected parser error&quot;;
+		 if(hasEventListener(LoaderEvent.DEPENDENCY_ERROR)){
+		 var re:LoaderEvent = new LoaderEvent(LoaderEvent.DEPENDENCY_ERROR, &quot;&quot;);
+		 dispatchEvent(re);
+		 } else{
+		 throw new Error(msg);
+		 }
+		 }
+		 */
+		
+		private onAssetRename(ev:away.events.AssetEvent)
+		{
+			var asset:away.library.IAsset = &lt;away.library.IAsset &gt; ev.target ;// TODO: was ev.currentTarget - watch this var
+			var old:away.library.IAsset  = this.getAsset(asset.assetNamespace, asset.name);
+			
+			if (old != null)
+            {
+
+                this._strategy.resolveConflict(asset, old, this._assetDictionary[asset.assetNamespace], this._strategyPreference);
+
+            }
+			else
+            {
+				var dict:Object = this._assetDictionary[ev.asset.assetNamespace];
+
+				if (dict == null)
+                {
+
+                    return;
+
+                }
+
+				
+				dict[ev.assetPrevName] = null;
+				dict[ev.asset.name] = ev.asset;
+
+			}
+		}
+		
+		private onAssetConflictResolved(ev:away.events.AssetEvent)
+		{
+			this.dispatchEvent(ev.clone());
+		}
+
+	}
+}
+
+// singleton enforcer
+class AssetLibraryBundleSingletonEnforcer
+{
+}
+
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>../src/away/traverse/EntityCollector.ts</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="../assets/css/logo.png" title=""></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 0.1.0</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/away.base.Geometry.html">away.base.Geometry</a></li>
+            
+                <li><a href="../classes/away.base.Object3D.html">away.base.Object3D</a></li>
+            
+                <li><a href="../classes/away.base.SkinnedSubGeometry.html">away.base.SkinnedSubGeometry</a></li>
+            
+                <li><a href="../classes/away.base.SubGeometry.html">away.base.SubGeometry</a></li>
+            
+                <li><a href="../classes/away.base.SubGeometryBase.html">away.base.SubGeometryBase</a></li>
+            
+                <li><a href="../classes/away.events.AssetEvent.html">away.events.AssetEvent</a></li>
+            
+                <li><a href="../classes/away.events.CameraEvent.html">away.events.CameraEvent</a></li>
+            
+                <li><a href="../classes/away.events.Event.html">away.events.Event</a></li>
+            
+                <li><a href="../classes/away.events.EventDispatcher.html">away.events.EventDispatcher</a></li>
+            
+                <li><a href="../classes/away.events.GeometryEvent.html">away.events.GeometryEvent</a></li>
+            
+                <li><a href="../classes/away.events.HTTPStatusEvent.html">away.events.HTTPStatusEvent</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="../modules/away.base.html">away.base</a></li>
+            
+                <li><a href="../modules/away.events.html">away.events</a></li>
+            
+                <li><a href="../modules/away.geom.html">away.geom</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: ../src/away/traverse/EntityCollector.ts</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**
+ * ...
+ * @author Gary Paluk - http://www.plugin.io
+ */
+
+///&lt;reference path=&quot;../_definitions.ts&quot;/&gt;
+
+module away.traverse
+{
+	export class EntityCollector extends away.traverse.PartitionTraverser
+	{
+		
+		public _pSkyBox:away.base.IRenderable;
+		public _pOpaqueRenderableHead:away.data.RenderableListItem;
+		public _pBlendedRenderableHead:away.data.RenderableListItem;
+		private _entityHead:away.data.EntityListItem;
+		public _pRenderableListItemPool:away.data.RenderableListItemPool;
+		public _pEntityListItemPool:away.data.EntityListItemPool;
+		public _pLights:away.lights.LightBase[];
+		private _directionalLights:away.lights.DirectionalLight[];
+		private _pointLights:away.lights.PointLight[];
+		private _lightProbes:away.lights.LightProbe[];
+		public _pNumEntities:number = 0;
+		public _pNumLights:number = 0;
+		public _pNumTriangles:number = 0;
+		public _pNumMouseEnableds:number =0;
+		public _pCamera:away.cameras.Camera3D;
+		private _numDirectionalLights:number =0;
+		private _numPointLights:number = 0;
+		private _numLightProbes:number = 0;
+		public _pCameraForward:away.geom.Vector3D;
+		private _customCullPlanes:away.math.Plane3D[];
+		private _cullPlanes:away.math.Plane3D[];
+		private _numCullPlanes:number = 0;
+		
+		constructor()
+		{
+			super();
+			this.init();
+		}
+		
+		private init()
+		{
+			this._pLights = [];
+			this._directionalLights = [];
+			this._pointLights = [];
+			this._lightProbes = [];
+			this._pRenderableListItemPool = new away.data.RenderableListItemPool();
+			this._pEntityListItemPool = new away.data.EntityListItemPool();
+		}
+		
+		public get camera():away.cameras.Camera3D
+		{
+			return this._pCamera;
+		}
+		
+		public set camera( value:away.cameras.Camera3D )
+		{
+			this._pCamera = value;
+			this._iEntryPoint = this._pCamera.scenePosition;
+			this._pCameraForward = this._pCamera.forwardVector;
+			this._cullPlanes = this._pCamera.frustumPlanes;
+		}
+		
+		public get cullPlanes():away.math.Plane3D[]
+		{
+			return this._customCullPlanes;
+		}
+		
+		public set cullPlanes( value:away.math.Plane3D[] )
+		{
+			this._customCullPlanes = value;
+		}
+		
+		public get numMouseEnableds():number
+		{
+			return this._pNumMouseEnableds;
+		}
+		
+		public get skyBox():away.base.IRenderable
+		{
+			return this._pSkyBox;
+		}
+		
+		public get opaqueRenderableHead():away.data.RenderableListItem
+		{
+			return this._pOpaqueRenderableHead;
+		}
+		
+		public set opaqueRenderableHead( value:away.data.RenderableListItem )
+		{
+			this._pOpaqueRenderableHead = value;
+		}
+		
+		public get blendedRenderableHead():away.data.RenderableListItem
+		{
+			return this._pBlendedRenderableHead;
+		}
+		
+		public set blendedRenderableHead( value:away.data.RenderableListItem )
+		{
+			this._pBlendedRenderableHead = value;
+		}
+		
+		public get entityHead():away.data.EntityListItem
+		{
+			return this._entityHead;
+		}
+		
+		public get lights():away.lights.LightBase[]
+		{
+			return this._pLights;
+		}
+		
+		public get directionalLights():away.lights.DirectionalLight[]
+		{
+			return this._directionalLights;
+		}
+		
+		public get pointLights():away.lights.PointLight[]
+		{
+			return this._pointLights;
+		}
+		
+		public get lightProbes():away.lights.LightProbe[]
+		{
+			return this._lightProbes;
+		}
+		
+		public clear()
+		{
+			this._cullPlanes = this._customCullPlanes ? this._customCullPlanes : ( this._pCamera ? this._pCamera.frustumPlanes : null );
+			this._numCullPlanes = this._cullPlanes ? this._cullPlanes.length : 0;
+			this._pNumTriangles = this._pNumMouseEnableds = 0;
+			this._pBlendedRenderableHead = null;
+			this._pOpaqueRenderableHead = null;
+			this._entityHead = null;
+			this._pRenderableListItemPool.freeAll();
+			this._pEntityListItemPool.freeAll();
+			this._pSkyBox = null;
+			if( this._pNumLights &gt; 0 )
+			{
+				this._pLights.length = this._pNumLights = 0;
+			}
+			if( this._numDirectionalLights &gt; 0 )
+			{
+				this._directionalLights.length = this._numDirectionalLights = 0;
+			}
+			if( this._numPointLights &gt; 0 )
+			{
+				this._pointLights.length = this._numPointLights = 0;
+			}
+			if( this._numLightProbes &gt; 0 )
+			{
+				this._lightProbes.length = this._numLightProbes = 0;
+			}
+		}
+		
+		//@override
+		public enterNode( node:away.partition.NodeBase ):boolean
+		{
+
+            var enter : boolean = away.traverse.PartitionTraverser._iCollectionMark != node._iCollectionMark &amp;&amp; node.isInFrustum( this._cullPlanes, this._numCullPlanes );
+
+            node._iCollectionMark = away.traverse.PartitionTraverser._iCollectionMark;
+
+			return enter;
+		}
+		
+		//@override
+		public applySkyBox( renderable:away.base.IRenderable )
+		{
+			this._pSkyBox = renderable;
+		}
+		
+		//@override
+		public applyRenderable( renderable:away.base.IRenderable )
+		{
+			var material:away.materials.MaterialBase;
+			var entity:away.entities.Entity = renderable.sourceEntity;
+			if( renderable.mouseEnabled )
+			{
+				++this._pNumMouseEnableds;
+			}
+			this._pNumTriangles += renderable.numTriangles;
+			
+			material = renderable.material;
+			if( material )
+			{
+				var item:away.data.RenderableListItem = this._pRenderableListItemPool.getItem();
+				item.renderable = renderable;
+				item.materialId = material._iUniqueId;
+				item.renderOrderId = material._iRenderOrderId;
+				item.cascaded = false;
+				var dx:number = this._iEntryPoint.x - entity.x;
+				var dy:number = this._iEntryPoint.y - entity.y;
+				var dz:number = this._iEntryPoint.z - entity.z;
+				// project onto camera&#x27;s z-axis
+				item.zIndex = dx*this._pCameraForward.x + dy*this._pCameraForward.y + dz*this._pCameraForward.z + entity.zOffset;
+				item.renderSceneTransform = renderable.getRenderSceneTransform( this._pCamera );
+				if( material.requiresBlending )
+				{
+					item.next = this._pBlendedRenderableHead;
+					this._pBlendedRenderableHead = item;
+				}
+				else
+				{
+					item.next = this._pOpaqueRenderableHead;
+					this._pOpaqueRenderableHead = item;
+				}
+			}
+		}
+		
+		//@override
+		public applyEntity(entity:away.entities.Entity )
+		{
+
+
+
+			++this._pNumEntities;
+			
+			var item:away.data.EntityListItem = this._pEntityListItemPool.getItem();
+			item.entity = entity;
+			
+			item.next = this._entityHead;
+			this._entityHead = item;
+
+
+            //console.log ( &#x27;EntityCollector&#x27; , &#x27;applyEntity: &#x27; , entity , &#x27; item: &#x27; , item , &#x27;item.next&#x27; , item.next , &#x27; head: &#x27; , this._entityHead );
+
+		}
+		
+		//@override
+		public applyUnknownLight( light:away.lights.LightBase )
+		{
+			this._pLights[ this._pNumLights++ ] = light;
+		}
+		
+		//@override
+		public applyDirectionalLight( light:away.lights.DirectionalLight )
+		{
+			this._pLights[ this._pNumLights++ ] = light;
+			this._directionalLights[ this._numDirectionalLights++ ] = light;
+		}
+		
+		//@override
+		public applyPointLight( light:away.lights.PointLight )
+		{
+			this._pLights[ this._pNumLights++ ] = light;
+			this._pointLights[ this._numPointLights++ ] = light;
+		}
+		
+		//@override
+		public applyLightProbe( light:away.lights.LightProbe )
+		{
+			this._pLights[ this._pNumLights++ ] = light;
+			this._lightProbes[ this._numLightProbes++ ] = light;
+		}
+
+        /**
+         * Cleans up any data at the end of a frame.
+         */
+        public cleanUp()
+        {
+        }
+
+	}
+}
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>../src/away/geom/Vector3D.ts</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="../assets/css/logo.png" title=""></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 0.1.0</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/away.base.Geometry.html">away.base.Geometry</a></li>
+            
+                <li><a href="../classes/away.base.Object3D.html">away.base.Object3D</a></li>
+            
+                <li><a href="../classes/away.base.SkinnedSubGeometry.html">away.base.SkinnedSubGeometry</a></li>
+            
+                <li><a href="../classes/away.base.SubGeometry.html">away.base.SubGeometry</a></li>
+            
+                <li><a href="../classes/away.base.SubGeometryBase.html">away.base.SubGeometryBase</a></li>
+            
+                <li><a href="../classes/away.events.AssetEvent.html">away.events.AssetEvent</a></li>
+            
+                <li><a href="../classes/away.events.CameraEvent.html">away.events.CameraEvent</a></li>
+            
+                <li><a href="../classes/away.events.Event.html">away.events.Event</a></li>
+            
+                <li><a href="../classes/away.events.EventDispatcher.html">away.events.EventDispatcher</a></li>
+            
+                <li><a href="../classes/away.events.GeometryEvent.html">away.events.GeometryEvent</a></li>
+            
+                <li><a href="../classes/away.events.HTTPStatusEvent.html">away.events.HTTPStatusEvent</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="../modules/away.base.html">away.base</a></li>
+            
+                <li><a href="../modules/away.events.html">away.events</a></li>
+            
+                <li><a href="../modules/away.geom.html">away.geom</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: ../src/away/geom/Vector3D.ts</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**
+ * @author Gary Paluk
+ * @created 6/29/13
+ * @module away.geom
+ */
+module away.geom {
+
+    export class Vector3D {
+
+        public static X_AXIS : Vector3D = new Vector3D( 1 , 0 , 0 );
+        public static Y_AXIS : Vector3D = new Vector3D( 0 , 1 , 0 );
+        public static Z_AXIS : Vector3D = new Vector3D( 0 , 0 , 1 );
+        /**
+         * The first element of a Vector3D object, such as the x coordinate of a point in the three-dimensional space.
+         */
+        public x: number;
+
+        /*
+         *The second element of a Vector3D object, such as the y coordinate of a point in the three-dimensional space.
+         */
+        public y: number;
+
+        /**
+         * The third element of a Vector3D object, such as the y coordinate of a point in the three-dimensional space.
+         */
+        public z: number;
+
+        /**
+         * The fourth element of a Vector3D object (in addition to the x, y, and z properties) can hold data such as
+         * the angle of rotation.
+         */
+        public w: number;
+
+        /**
+         * Creates an instance of a Vector3D object.
+         */
+        constructor(x: number = 0, y: number = 0, z: number = 0, w: number = 0) {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.w = w;
+        }
+
+        /**
+         * [read-only] The length, magnitude, of the current Vector3D object from the origin (0,0,0) to the object&#x27;s
+         * x, y, and z coordinates.
+         * @returns The length of the Vector3D
+         */
+        public get length(): number {
+            return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+        }
+
+        /**
+         * [read-only] The square of the length of the current Vector3D object, calculated using the x, y, and z
+         * properties.
+         * @returns The squared length of the vector
+         */
+        public get lengthSquared(): number {
+            return (this.x * this.x + this.y * this.y + this.z * this.z);
+        }
+
+        /**
+         * Adds the value of the x, y, and z elements of the current Vector3D object to the values of the x, y, and z
+         * elements of another Vector3D object.
+         */
+        public add(a: Vector3D): Vector3D {
+            return new Vector3D(this.x + a.x, this.y + a.y, this.z + a.z, this.w + a.w)
+        }
+
+        /**
+         * [static] Returns the angle in radians between two vectors.
+         */
+        static angleBetween(a: Vector3D, b: Vector3D): number {
+            return Math.acos(a.dotProduct(b) / (a.length * b.length));
+        }
+
+        /**
+         * Returns a new Vector3D object that is an exact copy of the current Vector3D object.
+         */
+        public clone(): Vector3D {
+            return new Vector3D(this.x, this.y, this.z, this.w);
+        }
+
+        /**
+         * Copies all of vector data from the source Vector3D object into the calling Vector3D object.
+         */
+        public copyFrom(src: Vector3D): void{
+
+            this.x = src.x;
+            this.y = src.y;
+            this.z = src.z;
+            this.w = src.w;
+
+            //return new Vector3D(src.x, src.y, src.z, src.w);
+        }
+
+        /**
+         * Returns a new Vector3D object that is perpendicular (at a right angle) to the current Vector3D and another
+         * Vector3D object.
+         */
+        public crossProduct(a: Vector3D): Vector3D {
+            return new Vector3D(
+                this.y * a.z - this.z * a.y,
+                this.z * a.x - this.x * a.z,
+                this.x * a.y - this.y * a.x,
+                1
+            );
+        }
+
+        /**
+         * Decrements the value of the x, y, and z elements of the current Vector3D object by the values of the x, y,
+         * and z elements of specified Vector3D object.
+         */
+        public decrementBy(a: Vector3D) {
+            this.x -= a.x;
+            this.y -= a.y;
+            this.z -= a.z;
+        }
+
+        /**
+         * [static] Returns the distance between two Vector3D objects.
+         */
+        static distance(pt1: Vector3D, pt2: Vector3D): number {
+            var x: number = (pt1.x - pt2.x);
+            var y: number = (pt1.y - pt2.y);
+            var z: number = (pt1.z - pt2.z);
+            return Math.sqrt(x*x + y*y + z*z);
+        }
+
+        /**
+         * If the current Vector3D object and the one specified as the parameter are unit vertices, this method returns
+         * the cosine of the angle between the two vertices.
+         */
+        public dotProduct(a: Vector3D) {
+            return this.x * a.x + this.y * a.y + this.z * a.z;
+        }
+
+        /**
+         * Determines whether two Vector3D objects are equal by comparing the x, y, and z elements of the current
+         * Vector3D object with a specified Vector3D object.
+         */
+        public equals(cmp: Vector3D, allFour: boolean = false): boolean {
+            return (this.x == cmp.x &amp;&amp; this.y == cmp.y &amp;&amp; this.z == cmp.z &amp;&amp; (!allFour || this.w == cmp.w ));
+        }
+
+        /**
+         * Increments the value of the x, y, and z elements of the current Vector3D object by the values of the x, y,
+         * and z elements of a specified Vector3D object.
+         */
+        public incrementBy(a: Vector3D) {
+            this.x += a.x;
+            this.y += a.y;
+            this.z += a.z;
+        }
+
+        /**
+         * Compares the elements of the current Vector3D object with the elements of a specified Vector3D object to
+         * determine whether they are nearly equal.
+         */
+        public nearEquals(cmp: Vector3D, epsilon: number, allFour: boolean = true): boolean {
+            return ((Math.abs(this.x - cmp.x) &lt; epsilon)
+                 &amp;&amp; (Math.abs(this.y - cmp.y) &lt; epsilon)
+                 &amp;&amp; (Math.abs(this.z - cmp.z) &lt; epsilon)
+                 &amp;&amp; (!allFour || Math.abs(this.w - cmp.w) &lt; epsilon));
+        }
+
+        /**
+         * Sets the current Vector3D object to its inverse.
+         */
+        public negate(): void {
+            this.x = -this.x;
+            this.y = -this.y;
+            this.z = -this.z;
+        }
+
+        /**
+         * Converts a Vector3D object to a unit vector by dividing the first three elements (x, y, z) by the length of
+         * the vector.
+         */
+        public normalize(): void {
+            var invLength = 1 / this.length;
+            if (invLength != 0)
+            {
+                this.x *= invLength;
+                this.y *= invLength;
+                this.z *= invLength;
+                return;
+            }
+            throw &quot;Cannot divide by zero.&quot;;
+        }
+
+        /**
+         * Divides the value of the x, y, and z properties of the current Vector3D object by the value of its w
+         * property.
+         */
+        public project(): void {
+            this.x /= this.w;
+            this.y /= this.w;
+            this.z /= this.w;
+        }
+
+        /**
+         * Scales the current Vector3D object by a scalar, a magnitude.
+         */
+        public scaleBy(s: number): void {
+            this.x *= s;
+            this.y *= s;
+            this.z *= s;
+        }
+
+        /**
+         * Sets the members of Vector3D to the specified values
+         */
+        public setTo(xa: number, ya: number, za: number): void {
+            this.x = xa;
+            this.y = ya;
+            this.z = za;
+        }
+
+        /**
+         * Subtracts the value of the x, y, and z elements of the current Vector3D object from the values of the x, y,
+         * and z elements of another Vector3D object.
+         */
+        public subtract(a: Vector3D): Vector3D {
+            return new Vector3D(this.x - a.x, this.y - a.y, this.z - a.z);
+        }
+
+        /**
+         * Returns a string representation of the current Vector3D object.
+         */
+        public toString(): string {
+            return &quot;[Vector3D] (x:&quot; + this.x + &quot; ,y:&quot; + this.y + &quot;, z&quot; + this.z + &quot;, w:&quot; + this.w + &quot;)&quot;;
+        }
+
+    }
+}
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>
