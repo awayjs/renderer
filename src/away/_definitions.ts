@@ -153,6 +153,7 @@
 ///<reference path="loaders/parsers/utils/ParserUtil.ts"/>
 ///<reference path="loaders/parsers/OBJParser.ts"/>
 ///<reference path="loaders/parsers/CubeTextureParser.ts"/>
+///<reference path="loaders/parsers/AWDParser.ts"/>
 
 
 ///<reference path="textures/TextureProxyBase.ts" />
