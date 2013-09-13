@@ -46,12 +46,12 @@ module away.render
 			return this._mainInputTexture;
 		}
 		
-		public get filters()
+		public get filters() : away.filters.Filter3DBase[]
 		{
 			return this._filters;
 		}
 		
-		public set filters(value)
+		public set filters(value : away.filters.Filter3DBase[] )
 		{
             this._filters = value;
 
