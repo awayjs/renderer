@@ -1,6 +1,7 @@
 /**
  * ...
  * @author Gary Paluk - http://www.plugin.io
+ * @author Karim Beyrouti - http://www.kurst.co.uk
  */
 
 ///<reference path="away/_definitions.ts"/>
