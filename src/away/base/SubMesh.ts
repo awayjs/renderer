@@ -1,12 +1,18 @@
 ///<reference path="../_definitions.ts"/>
+/**
+ * @module away.base
+ */
 module away.base
 {
 
-	/**
+    /**
 	 * SubMesh wraps a SubGeometry as a scene graph instantiation. A SubMesh is owned by a Mesh object.
 	 *
+     *
 	 * @see away3d.core.base.SubGeometry
 	 * @see away3d.scenegraph.Mesh
+     *
+     * @class away.base.SubGeometryBase
 	 */
 	export class SubMesh implements away.base.IRenderable
 	{

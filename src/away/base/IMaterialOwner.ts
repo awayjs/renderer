@@ -1,12 +1,14 @@
 ///<reference path="../_definitions.ts"/>
-
+/**
+ * @module away.base
+ */
 module away.base
 {
-	//import away3d.animators.IAnimator;
-	//import away3d.materials.MaterialBase;
-	
-	/**
+    /**
+     *
 	 * IMaterialOwner provides an interface for objects that can use materials.
+     *
+     * @interface away.base.IMaterialOwner
 	 */
 	export interface IMaterialOwner
 	{

@@ -1,4 +1,7 @@
 ﻿///<reference path="../_definitions.ts"/>
+/**
+ * @module away.base
+ */
 module away.base
 {
 	//import away3d.arcane;
@@ -11,7 +14,7 @@ module away.base
 	
 	//use namespace arcane;
 	
-	/**
+    /**
 	 * The SubGeometry class is a collections of geometric data that describes a triangle mesh. It is owned by a
 	 * Geometry instance, and wrapped by a SubMesh in the scene graph.
 	 * Several SubGeometries are grouped so they can be rendered with different materials, but still represent a single
@@ -19,6 +22,8 @@ module away.base
 	 *
 	 * @see away3d.core.base.Geometry
 	 * @see away3d.core.base.SubMesh
+     *
+     * @class away.base.SubGeometry
 	 */
 	export class SubGeometry extends away.base.SubGeometryBase implements away.base.ISubGeometry
 	{

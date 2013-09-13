@@ -1,12 +1,18 @@
 ///<reference path="../_definitions.ts" />
-
+/**
+ * @module away.base
+ */
 module away.base
 {
 
-	/**
+    /**
+     *
 	 * SkinnedSubGeometry provides a SubGeometry extension that contains data needed to skin vertices. In particular,
 	 * it provides joint indices and weights.
 	 * Important! Joint indices need to be pre-multiplied by 3, since they index the matrix array (and each matrix has 3 float4 elements)
+     *
+     * @class away.base.SkinnedSubGeometry
+     *
 	 */
 	export class SkinnedSubGeometry extends CompactSubGeometry
 	{

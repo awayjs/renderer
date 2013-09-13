@@ -1,7 +1,12 @@
 ///<reference path="../_definitions.ts" />
+/**
+ * @module away.base
+ */
 module away.base
 {
-
+    /**
+     * @class away.base.SubGeometryBase
+     */
 	export class SubGeometryBase
 	{
 		public _parentGeometry:away.base.Geometry;

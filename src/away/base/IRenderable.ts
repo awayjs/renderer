@@ -1,4 +1,7 @@
 ///<reference path="../_definitions.ts" />
+/**
+ * @module away.base
+ */
 module away.base
 {
 	//import away3d.cameras.Camera3D;
@@ -10,6 +13,10 @@ module away.base
 	//import flash.geom.Matrix3D;
 	
 	/**
+     * @interface away.base.IRenderable
+     */
+    /**
+     *
 	 * IRenderable provides an interface for objects that can be rendered in the rendering pipeline.
 	 */
 	export interface IRenderable extends away.base.IMaterialOwner

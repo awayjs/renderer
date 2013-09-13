@@ -1,12 +1,17 @@
 ///<reference path="../_definitions.ts"/>
-
+/**
+ * @module away.base
+ */
 module away.base
 {
 	//import away3d.managers.Stage3DProxy;
 	
 	//import flash.display3D.IndexBuffer3D;
 	//import flash.geom.Matrix3D;
-	
+
+    /**
+     * @interface away.base.ISubGeometry
+     */
 	export interface ISubGeometry
 	{
 		/**

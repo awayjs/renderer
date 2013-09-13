@@ -1,7 +1,9 @@
 ///<reference path="../_definitions.ts"/>
 module away.base
 {
-
+    /**
+     * @class away.base.Geometry
+     */
 	export class CompactSubGeometry extends away.base.SubGeometryBase implements away.base.ISubGeometry
 	{
 		public _pVertexDataInvalid:boolean[] = Array<boolean>( 8 );//new Vector.<Boolean>(8, true);

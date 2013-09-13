@@ -1,8 +1,11 @@
 ///<reference path="../_definitions.ts"/>
+/**
+ * @module away.base
+ */
 module away.base
 {
-
-	/**
+    /**
+     *
 	 * Geometry is a collection of SubGeometries, each of which contain the actual geometrical data such as vertices,
 	 * normals, uvs, etc. It also contains a reference to an animation class, which defines how the geometry moves.
 	 * A Geometry object is assigned to a Mesh, a scene graph occurence of the geometry, which in turn assigns
@@ -12,6 +15,8 @@ module away.base
 	 *
 	 * @see away3d.core.base.SubGeometry
 	 * @see away3d.scenegraph.Mesh
+     *
+     * @class away.base.Geometry
 	 */
 	export class Geometry extends away.library.NamedAssetBase implements away.library.IAsset
 	{

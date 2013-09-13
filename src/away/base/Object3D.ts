@@ -1,5 +1,7 @@
 ///<reference path="../_definitions.ts" />
-
+/**
+ * @module away.base
+ */
 module away.base
 {
 	//import away3d.arcane;
@@ -33,8 +35,9 @@ module away.base
 	 * @eventType away3d.events.Object3DEvent
 	 */
 	//[Event(name="rotationChanged", type="away3d.events.Object3DEvent")]
-	
-	/**
+
+    /**
+     *
 	 * Object3D provides a base class for any 3D object that has a (local) transformation.<br/><br/>
 	 *
 	 * Standard Transform:
@@ -75,6 +78,8 @@ module away.base
 	 *    <li> call moveForward()/moveBackward()/moveLeft()/moveRight()/moveUp()/moveDown()/translateLocal() to add an
 	 *         additional translate *before* the current transform. x/y/z will be reset based on these operations. </li>
 	 * </ul>
+     *
+     * @class away.base.Object3D
 	 */
 	export class Object3D extends away.library.NamedAssetBase
 	{
