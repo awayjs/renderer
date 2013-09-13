@@ -1,58 +1,70 @@
-/********************************************************************************
+/****************************************************************************************************************************************************************
  *   Grunt File Usage:
- ********************************************************************************
+ ****************************************************************************************************************************************************************
  *
- *       Default Tasks:      grunt --libversion=0.0.1
- *       TypeScript Only:    grunt ts
- *       Documentation Only: grunt doc
- *       Minify Only:        grunt min
+ *  Tasks:          grunt --libversion=0.0.1
  *
- *  libversion = verion number of the lib defaults to 'next' if no
- *  version is specified
+ *  --libversion    version number of the lib. This defaults to 'next' if not specified
  *
- ********************************************************************************
+ ****************************************************************************************************************************************************************
  *    Installing Dependencies:
- ********************************************************************************
+ ****************************************************************************************************************************************************************
  *
  *  To install Grunt dependencies. Run from 'build' folder:
  *
- *      OSX : sudo npm install
+ *      OSX :       sudo npm install
+ *      Windows:    npm install
  *
- ********************************************************************************/
+ ****************************************************************************************************************************************************************/
 
 module.exports = function(grunt) {
 
-    var version = grunt.option('libversion') || 'next';
 
-    // Plugins used by this Grunt Script
+    var version = grunt.option('libversion') || 'next';                     // Check for a version number | defaults to next if not specified
+
+    //--------------------------------------------------------------------------------------------------------------
+    // Plugins used by Grunt Script
+    //--------------------------------------------------------------------------------------------------------------
 
     grunt.loadNpmTasks("grunt-ts");
     grunt.loadNpmTasks('grunt-contrib-yuidoc');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-concat');
 
-    // Configuration
+    //--------------------------------------------------------------------------------------------------------------
+    // Grunt Config
+    //--------------------------------------------------------------------------------------------------------------
+
     grunt.initConfig( {
 
-        //Read the package.json
+        //--------------------------------------------------------------------------------------------------------------
+        // Read the package.json
+        //--------------------------------------------------------------------------------------------------------------
+
         pkg: grunt.file.readJSON('package.json'),
 
+        //--------------------------------------------------------------------------------------------------------------
         // Metadata / Configuration
+        //--------------------------------------------------------------------------------------------------------------
+
         meta: {
 
-            v:grunt.option('vers') || "",
+            v:grunt.option('vers') || "",                                   // Optional library version string
+            tsFile: '../src/Away3D.ts',                                     // TypeScript export source
+            tsPath: '../src/',                                              // TypeScript source folder
 
-            basePath: '../',
-            tsFile: '../src/Away3D.ts',
-            tsPath: '../src/',
-            tsExportFile: '../lib/Away3D.' + version + '.js',
-            tsExportUglyFile: '../lib/Away3D.' + version + '.min.js',
-            tsExportFolder: '../lib/',
-            tsMultiExportFolder: '../lib/src/',
-            docsPath: '../docs/',
-            deployPath: '../lib/'
+            tsExportFile: '../lib/Away3D.' + version + '.js',               // JavaScript export target
+            tsExportUglyFile: '../lib/Away3D.' + version + '.min.js',       // JavaScript minified target
+
+            tsExportFolder: '../lib/',                                      // Export folder
+            tsMultiExportFolder: '../lib/src/',                             // Emit to multiple JS - folder
+            docsPath: '../docs/'                                            // Documentation export path
 
         },
+
+        //--------------------------------------------------------------------------------------------------------------
+        // Export and compile TypeScript
+        //--------------------------------------------------------------------------------------------------------------
 
         ts: {
 
@@ -80,7 +92,10 @@ module.exports = function(grunt) {
 
         },
 
-        // Concatenate ( NOT CURRENTLY USED )
+        //--------------------------------------------------------------------------------------------------------------
+        // Concatenate file ( currently not used )
+        //--------------------------------------------------------------------------------------------------------------
+
         concat: {
             options: {
                 // define a string to put between each file in the concatenated output
@@ -90,12 +105,15 @@ module.exports = function(grunt) {
                 // the files to concatenate
                 src: [ '<%= meta.tsExportFile %>' ],
                 // the location of the resulting JS file
-                dest: '../deploy/CONACT_TEST.js'
+                dest: ''
 
             }
         },
 
-        // Minify
+        //--------------------------------------------------------------------------------------------------------------
+        // Minify JavaScript source
+        //--------------------------------------------------------------------------------------------------------------
+
         uglify: {
 
             options: {
@@ -109,7 +127,10 @@ module.exports = function(grunt) {
 
         },
 
+        //--------------------------------------------------------------------------------------------------------------
         // Export Documentation ( using multi export JS files )
+        //--------------------------------------------------------------------------------------------------------------
+
         yuidoc: {
 
             compile: {
@@ -131,11 +152,12 @@ module.exports = function(grunt) {
 
     } );
 
+    //--------------------------------------------------------------------------------------------------------------
+    // Register Grunt tasks
+    //--------------------------------------------------------------------------------------------------------------
+
     grunt.option.init();
     grunt.registerTask('default',   ['ts' , 'uglify' , 'yuidoc' ]); // Default Tasks
-    //grunt.registerTask('ts',        [ 'ts' ]);                      // Export TypeScript only
-    //grunt.registerTask('doc',       [ 'yuidoc' ]);                  // Export Documentation only
-    //grunt.registerTask('min',       [ 'uglify' ]);                  // Minify only
 
 };
 
