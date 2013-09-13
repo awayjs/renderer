@@ -10,7 +10,7 @@ module away.library
 		private _namespace      : string;
 		private _name           : string;
 		private _id             : string;
-		private _full_path      : Array;
+		private _full_path      : Array<string>;
         private _assetType      : string;
 
 		public static DEFAULT_NAMESPACE : string = 'default';
@@ -95,7 +95,7 @@ module away.library
 			return this._namespace;
 		}
 		
-		public get assetFullPath() : Array
+		public get assetFullPath() : Array<string>
 		{
 			return this._full_path;
 		}
