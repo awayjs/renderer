@@ -1,0 +1,15 @@
+{
+    "name": "",
+    "version": "0.1.0",
+    "description": "Kurst EventDispatcher / Docs Demo ",
+    "url": "http://www.kurst.co.uk",
+    "devDependencies": {
+        "grunt": "*",
+        "grunt-contrib-yuidoc": "*",
+        "grunt-typescript": "*",
+        "uglify-js": "~2.3.5",
+        "grunt-lib-contrib": "~0.6.0",
+        "grunt-contrib-uglify":"*",
+        "grunt-contrib-concat":"*"
+    }
+}
