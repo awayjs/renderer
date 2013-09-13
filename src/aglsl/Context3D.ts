@@ -11,7 +11,7 @@ module aglsl
 	{
 		
 		public enableErrorChecking:boolean = false;    
-		public resources:Array = []; 
+		public resources:Array<any> = [];
 		public driverInfo:string = "Call getter function instead";
 		
 		static maxvertexconstants:number = 128; 
