@@ -10,8 +10,8 @@ module away.materials
 	{
 		public static pONE_VECTOR:number[] = Array<number>( 1, 1, 1, 1 );
 		public static pFRONT_VECTOR:number[] = Array<number>( 0, 0, -1, 0 );
-		
-		private _constants:number[] = new Array<number>(4);
+
+        private _constants:number[] = new Array<number>(0 , 0 , 0 , 0 );//private _constants:number[] = new Array<number>(4);
 		private _calcMatrix:away.geom.Matrix3D;
 		private _thickness:number;
 		
@@ -147,9 +147,9 @@ module away.materials
 			// value to convert distance from camera to model length per pixel width
 			this._constants[2] = camera.lens.near;
 			
-			context.setProgramConstantsFromArray(away.display3D.Context3DProgramType.VERTEX, 5, SegmentPass.pONE_VECTOR);
-			context.setProgramConstantsFromArray(away.display3D.Context3DProgramType.VERTEX, 6, SegmentPass.pFRONT_VECTOR);
-			context.setProgramConstantsFromArray(away.display3D.Context3DProgramType.VERTEX, 7, this._constants);
+			context.setProgramConstantsFromArray(away.display3D.Context3DProgramType.VERTEX, 5, SegmentPass.pONE_VECTOR , 1);
+			context.setProgramConstantsFromArray(away.display3D.Context3DProgramType.VERTEX, 6, SegmentPass.pFRONT_VECTOR, 1);
+			context.setProgramConstantsFromArray(away.display3D.Context3DProgramType.VERTEX, 7, this._constants, 1);
 			
 			// projection matrix
 			context.setProgramConstantsFromMatrix(away.display3D.Context3DProgramType.VERTEX, 0, camera.lens.matrix, true);
