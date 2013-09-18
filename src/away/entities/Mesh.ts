@@ -324,7 +324,7 @@ module away.entities
 		 * var clone : Mesh = new Mesh(original.geometry, original.material);
 		 * </code>
 		 */
-		public clone():away.base.Object3D
+		public clone():away.entities.Mesh
 		{
 			var clone:away.entities.Mesh = new away.entities.Mesh(this._geometry, this._material);
 			clone.transform = this.transform;
@@ -359,8 +359,6 @@ module away.entities
                 clone.addChild( <away.containers.ObjectContainer3D> obj ) ;
 
             }
-
-            away.Debug.throwPIR( "away.entities.Mesh" , "away.entities.Mesh" , "Missing Dependency: IAnimator" );
 
             /* TODO: implement dependency IAnimator
 			if ( this._animator)
