@@ -65,8 +65,7 @@ module tests.unit.geom
 			var m2:away.geom.Matrix3D = new away.geom.Matrix3D( r2 );
 			
 			m1.append( m2 );
-			console.log( m1.rawData );
-			
+
 			this.areIdentical( m1.rawData[0], 79 );
 			this.areIdentical( m1.rawData[1], 75 );
 			this.areIdentical( m1.rawData[2], 112 );
@@ -84,12 +83,13 @@ module tests.unit.geom
 			this.areIdentical( m1.rawData[14], 99 );
 			this.areIdentical( m1.rawData[15], 56 );
 		}
+        /*
 		
 		public appendRotation():void
 		{
 			
 		}
-		
+		  */
 		public appendScale():void
 		{
 			var m:away.geom.Matrix3D = new away.geom.Matrix3D();
@@ -111,7 +111,8 @@ module tests.unit.geom
 			this.areIdentical( m.rawData[14], 0 );
 			this.areIdentical( m.rawData[15], 1 );
 		}
-		
+
+        /*
 		public appendTranslation():void
 		{
 			
@@ -161,6 +162,7 @@ module tests.unit.geom
 		{
 			
 		}
+        */
 
 		public decompose():void
 		{
@@ -168,6 +170,11 @@ module tests.unit.geom
             var scope : any = this;
             function testDecomposeResults (result : away.geom.Vector3D[] , fromFlash : away.geom.Vector3D[] , decimalPlaces : number = 5 ) : void
             {
+
+                console.log( '-----testDecomposeResults-------' );
+                console.log( 'fromFlash' , fromFlash);
+                console.log( 'result' , result);
+
 
                 for ( var c : number = 0 ; c < result.length ;c ++ )
                 {
@@ -275,51 +282,91 @@ module tests.unit.geom
 
             testDecomposeResults( result , fromFlash , roundToDecimalPlaces );
 
-            //--------------------------------------------------------------------------------------------------------
-
-            /*
-            matrix = new away.geom.Matrix3D ( );
-            result = matrix.decompose();
-
-            fromFlash = [
-                ,
-                ,
-            ];
-
-            this.testDecomposeResults( result , fromFlash );
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            [77,73,51,-95,86,-57,-48,-55,-26,1,-76,-59,-35,-80,-14,23]
-             new away.geom.Vector3D(-35, -80, -14)
-             new away.geom.Vector3D(-2.492260217666626, -0.4480576515197754, 0.7587378025054932)
-             new away.geom.Vector3D(117.72425079345703, 122.14283752441406, 74.67543029785156)
-
-            [-70,85,-76,43,5,-68,76,-16,-49,18,-94,-35,70,-39,-96,87]
-             new away.geom.Vector3D(70, -39, -96)
-             new away.geom.Vector3D(2.6026899814605713, 0.6041160821914673, 2.259720802307129)
-             new away.geom.Vector3D(133.79461669921875, 50.326255798339844, 58.36058044433594)
-
-            [33,51,-33,-47,-10,-25,37,-62,-51,-51,-17,-87,12,80,80,-74]
-            Vector3D(12, 80, 80)
-            Vector3D(2.4511656761169434, 0.49764707684516907, 0.996491551399231)
-            Vector3D(69.13031005859375, 46.90091323852539, 130.15431213378906)
-                  */
 		}
-		
+
+        public recompose():void
+        {
+
+            var scope : any = this;
+            function testRecomposeResults (result : number[] , as3Result : number[] , decimalPlaces : number = 5 ) : void
+            {
+
+                for ( var c : number = 0 ; c < result.length ;c ++ )
+                {
+
+                    var value       : number= result[c];
+                    var as3Value    : number = as3Result[c];
+
+                    console.log( value.toFixed( decimalPlaces ) , as3Value.toFixed( decimalPlaces ) );
+                    scope.areIdentical( value.toFixed( decimalPlaces ) , as3Value.toFixed( decimalPlaces ) );
+
+                }
+            }
+
+            var matrix                  : away.geom.Matrix3D;
+            var as3Result               : number[];
+            var vArray                  : Array<away.geom.Vector3D>;//[];
+            var roundToDecimalPlaces    : number = 5;
+            var vS 	                    : away.geom.Vector3D;// = new Vector3D( 0 , 2 , 3 ) // 2 - Scale
+            var vR 	                    : away.geom.Vector3D;// = new Vector3D( 7 , 8 , 0 ) // 1 - Rotation
+            var vT 	                    : away.geom.Vector3D;// = new Vector3D( 4 , 0 , 6 ) // 0 - Transform
+
+            //---------------------------------------------------------------------------------------------
+
+            as3Result = [0,0,0,0,1.299990177154541,1.5078045129776,-0.1911831498146057,0,2.237638235092163,-1.9709597826004028,-0.32907840609550476,0,4,0,6,1];
+            matrix = new away.geom.Matrix3D( [  0, 10, 10, 1,
+                                                10, 5, 10, 10,
+                                                10, 10, 5, 10,
+                                                1, 10, 10, 0 ]);
+
+            vS 	= new away.geom.Vector3D( 0 , 2 , 3 ) // 2 - Scale
+            vR 	= new away.geom.Vector3D( 7 , 8 , 0 ) // 1 - Rotation
+            vT 	= new away.geom.Vector3D( 4 , 0 , 6 ) // 0 - Transform
+
+            vArray = new Array<away.geom.Vector3D>( vT , vR , vS );
+
+            matrix.recompose( vArray );
+
+            testRecomposeResults( matrix.rawData , as3Result , roundToDecimalPlaces );
+
+            //---------------------------------------------------------------------------------------------
+
+            as3Result = [-0.22484508156776428,0.4912954568862915,-0.8414709568023682,0,-1.571915864944458,0.838008463382721,0.9092973470687866,0,1.7278404235839844,2.2907590866088867,0.8757796883583069,0,2,1,5,1];
+            matrix = new away.geom.Matrix3D( [  0, 20, 20, 1,
+                20, 5, 20, 20,
+                20, 20, 5, 10,
+                1, 20, 20, 0 ]);
+
+            vS 	= new away.geom.Vector3D( 1 , 2 , 3 ) // 2 - Scale
+            vR 	= new away.geom.Vector3D( 1 , 1 , 2 ) // 1 - Rotation
+            vT 	= new away.geom.Vector3D( 2 , 1 , 5 ) // 0 - Transform
+
+            vArray = new Array<away.geom.Vector3D>( vT , vR , vS );
+
+            matrix.recompose( vArray );
+
+            testRecomposeResults( matrix.rawData , as3Result , roundToDecimalPlaces );
+
+            //---------------------------------------------------------------------------------------------
+
+            as3Result = [1.361820101737976,-0.39629805088043213,4.794621467590332,0,3.085038185119629,-4.98231315612793,-1.288057565689087,0,5.6930437088012695,3.860661506652832,-1.2978979349136353,0,3,4,5,1];
+            matrix = new away.geom.Matrix3D( [  0, 2, 2, 1,
+                                                2, 5, 2, 2,
+                                                2, 2, 5, 2,
+                                                1, 2, 2, 0 ]);
+
+            vS 	= new away.geom.Vector3D( 5 , 6 , 7 ) // 2 - Scale
+            vR 	= new away.geom.Vector3D( 4 , 5 , 6 ) // 1 - Rotation
+            vT 	= new away.geom.Vector3D( 3 , 4 , 5 ) // 0 - Transform
+
+            vArray = new Array<away.geom.Vector3D>( vT , vR , vS );
+
+            matrix.recompose( vArray );
+
+            testRecomposeResults( matrix.rawData , as3Result , roundToDecimalPlaces );
+
+        }
+
 		public deltaTransformVector():void
 		{
 			var rawData:number[] = [ 1, 5, 6, 4, 8, 9, 1, 2, 3, 7, 8, 9, 1, 3, 5, 6 ];
@@ -355,7 +402,107 @@ module tests.unit.geom
 			this.areIdentical( m.rawData[14], 0 );
 			this.areIdentical( m.rawData[15], 1 );
 		}
-		
+
+        public interpolate():void
+        {
+            var scope : any = this;
+            function testInterpolateResults (result : number[] , as3Result : number[] , decimalPlaces : number = 5 ) : void
+            {
+
+                console.log( '------' );
+                console.log( 'testInterpolateResults - TS :' , result );
+                console.log( 'testInterpolateResults - AS3:' , as3Result );
+
+                for ( var c : number = 0 ; c < result.length ;c ++ )
+                {
+
+                    var value       : number= result[c];
+                    var as3Value    : number = as3Result[c];
+
+
+                    scope.areIdentical( value.toFixed( decimalPlaces ) , as3Value.toFixed( decimalPlaces ) );
+
+                }
+            }
+
+            var roundToDecimalPlaces    : number = 5;
+
+            var percent     : number;
+            var as3Result   : number[];
+
+            var thisMat : away.geom.Matrix3D;
+            var result 	: away.geom.Matrix3D;
+            var toMat 	: away.geom.Matrix3D;
+
+
+            thisMat  = new away.geom.Matrix3D( [    0, 10, 10, 1,
+                                                    10, 5, 10, 10,
+                                                    10, 10, 5, 10,
+                                                    1, 10, 10, 0 ] );
+
+            toMat = new away.geom.Matrix3D( [   	10, 20, 20, 10,
+                                                    20, 50, 20, 20,
+                                                    20, 20, 50, 20,
+                                                    10, 20, 20, 10 ] );
+
+            percent 	= 0;
+            as3Result  	= [1,0,0,0,0,1,0,0,0,0,1,0,1,10,10,1];
+            result      = away.geom.Matrix3D.interpolate(thisMat , toMat , percent );
+            testInterpolateResults( result.rawData , as3Result , roundToDecimalPlaces );
+
+            percent 	= 0.1;
+            as3Result  	= [1,0,0,0,0,1,0,0,0,0,1,0,1.899999976158142,11,11,1];
+            result      = away.geom.Matrix3D.interpolate(thisMat , toMat , percent );
+            testInterpolateResults( result.rawData , as3Result , roundToDecimalPlaces);
+
+            percent 	= 0.2;
+            as3Result  	= [1,0,0,0,0,1,0,0,0,0,1,0,2.799999952316284,12,12,1];
+            result      = away.geom.Matrix3D.interpolate(thisMat , toMat , percent );
+            testInterpolateResults( result.rawData , as3Result , roundToDecimalPlaces);
+
+            percent 	= 0.3;
+            as3Result  	= [1,0,0,0,0,1,0,0,0,0,1,0,3.700000047683716,13,13,1];
+            result      = away.geom.Matrix3D.interpolate(thisMat , toMat , percent );
+            testInterpolateResults( result.rawData , as3Result , roundToDecimalPlaces);
+
+            percent 	= 0.4;
+            as3Result  	= [1,0,0,0,0,1,0,0,0,0,1,0,4.599999904632568,14,14,1];
+            result      = away.geom.Matrix3D.interpolate(thisMat , toMat , percent );
+            testInterpolateResults( result.rawData , as3Result , roundToDecimalPlaces);
+
+            percent 	= 0.5;
+            as3Result  	= [1,0,0,0,0,1,0,0,0,0,1,0,5.5,15,15,1];
+            result      = away.geom.Matrix3D.interpolate(thisMat , toMat , percent );
+            testInterpolateResults( result.rawData , as3Result , roundToDecimalPlaces);
+
+            percent 	= 0.6;
+            as3Result  	= [1,0,0,0,0,1,0,0,0,0,1,0,6.400000095367432,16,16,1];
+            result      = away.geom.Matrix3D.interpolate(thisMat , toMat , percent );
+            testInterpolateResults( result.rawData , as3Result , roundToDecimalPlaces);
+
+            percent 	= 0.7;
+            as3Result  	= [1,0,0,0,0,1,0,0,0,0,1,0,7.300000190734863,17,17,1];
+            result      = away.geom.Matrix3D.interpolate(thisMat , toMat , percent );
+            testInterpolateResults( result.rawData , as3Result , roundToDecimalPlaces);
+
+            percent 	= 0.8;
+            as3Result  	= [1,0,0,0,0,1,0,0,0,0,1,0,8.199999809265137,18,18,1];
+            result      = away.geom.Matrix3D.interpolate(thisMat , toMat , percent );
+            testInterpolateResults( result.rawData , as3Result , roundToDecimalPlaces);
+
+            percent 	= 0.9;
+            as3Result  	= [1,0,0,0,0,1,0,0,0,0,1,0,9.100000381469727,19,19,1];
+            result      = away.geom.Matrix3D.interpolate(thisMat , toMat , percent );
+            testInterpolateResults( result.rawData , as3Result, roundToDecimalPlaces);
+
+            percent 	= 1;
+            as3Result  	= [1,0,0,0,0,1,0,0,0,0,1,0,10,20,20,1];
+            result      = away.geom.Matrix3D.interpolate(thisMat , toMat , percent );
+            testInterpolateResults( result.rawData , as3Result , roundToDecimalPlaces);
+
+        }
+
+        /*
 		public interpolate():void
 		{
 			// static
@@ -395,11 +542,7 @@ module tests.unit.geom
 		{
 			
 		}
-		
-		public recompose():void
-		{
-			
-		}
+
 		
 		public transformVector():void
 		{
@@ -430,5 +573,6 @@ module tests.unit.geom
 		{
 			
 		}
+		*/
 	}
 }
