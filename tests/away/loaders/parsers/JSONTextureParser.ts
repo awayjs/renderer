@@ -1,6 +1,6 @@
-///<reference path="../../../../src/away/_definitions.ts" />
+///<reference path="../../../../lib/Away3D.next.d.ts" />
 
-module loaders
+module parsers
 {
 
 	/**

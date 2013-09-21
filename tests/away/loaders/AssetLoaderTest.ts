@@ -1,14 +1,10 @@
-///<reference path="../../../src/away/_definitions.ts" />
-///<reference path="parsers/JSONTextureParser.ts"/>
-
-//------------------------------------------------------------------------------------------------
-// Web / PHP Storm arguments string
-//------------------------------------------------------------------------------------------------
-// --sourcemap $ProjectFileDir$/tests/away/loaders/AssetLoaderTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/away/loaders/AssetLoaderTest.js
-//------------------------------------------------------------------------------------------------
+///<reference path="../../../lib/Away3D.next.d.ts" />
+///<reference path="parsers/JSONTextureParser.ts" />
+//<reference path="../../../src/Away3D.ts" />
 
 
-module tests {
+
+module tests.loaders {
 
     export class AssetLoaderTest //extends away.events.EventDispatcher
     {
@@ -22,7 +18,7 @@ module tests {
 
             //---------------------------------------------------------------------------------------------------------------------
             // Enable Custom Parser ( JSON file format with multiple texture dependencies )
-            away.loaders.AssetLoader.enableParser( loaders.JSONTextureParser );
+            away.loaders.AssetLoader.enableParser( parsers.JSONTextureParser );
 
             var token : away.loaders.AssetLoaderToken;
             var urlRq : away.net.URLRequest;
@@ -31,7 +27,7 @@ module tests {
             // LOAD A SINGLE IMAGE
 
             this.alImage  = new away.loaders.AssetLoader();
-            urlRq         = new away.net.URLRequest('../../assets/1024x1024.png');
+            urlRq         = new away.net.URLRequest('assets/1024x1024.png');
             token         = this.alImage .load( urlRq );
 
             token.addEventListener( away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete , this );
@@ -41,7 +37,7 @@ module tests {
             // LOAD A SINGLE IMAGE - With wrong dimensions
 
             this.alErrorImage    = new away.loaders.AssetLoader();
-            urlRq                = new away.net.URLRequest('../../assets/2.png');
+            urlRq                = new away.net.URLRequest('assets/2.png');
             token                = this.alErrorImage.load( urlRq );
 
             token.addEventListener( away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete , this );
@@ -51,7 +47,7 @@ module tests {
             // LOAD WITH A JSON PARSER
 
             this.alJson    = new away.loaders.AssetLoader();
-            urlRq          = new away.net.URLRequest('../../assets/JSNParserTest.json');
+            urlRq          = new away.net.URLRequest('assets/JSNParserTest.json');
             token          = this.alJson.load( urlRq );
 
             token.addEventListener( away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete , this );
@@ -104,16 +100,3 @@ module tests {
 
 
 }
-
-
-var GL = null;//: WebGLRenderingContext;
-
-window.onload = function ()
-{
-
-    var test = new tests.AssetLoaderTest();
-    var canvas : HTMLCanvasElement = document.createElement('canvas');
-    GL = canvas.getContext("experimental-webgl");
-
-}
-
