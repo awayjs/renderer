@@ -1,13 +1,9 @@
-///<reference path="../../../src/away/_definitions.ts" />
+///<reference path="../../../lib/Away3D.next.d.ts" />
+//<reference path="../../../src/Away3D.ts" />
 
-//------------------------------------------------------------------------------------------------
-// Web / PHP Storm arguments string
-//------------------------------------------------------------------------------------------------
-// --sourcemap $ProjectFileDir$/tests/away/pick/PickingTests.ts --target ES5 --comments --out $ProjectFileDir$/tests/away/pick/PickingTests.js
-//------------------------------------------------------------------------------------------------
+module tests.pick
+{
 
-
-module tests {
 
     export class PickingTests //extends away.events.EventDispatcher
     {
@@ -38,29 +34,13 @@ module tests {
             this.pickCBase          = new away.pick.PickingColliderBase();
             this.as3PickCollider    = new away.pick.AS3PickingCollider();
 
-            var arr : Array = new Array( 10 );
-                arr.length = 5;
+            console.log( 'away.pick.PickingCollisionVO' , this.pickCOllVo  );
+            console.log( 'away.pick.PickingColliderBase' , this.pickCBase  );
+            console.log( 'away.pick.AS3PickingCollider' , this.as3PickCollider  );
 
-            console.log( arr );
 
         }
 
     }
 
 }
-
-var GL = null;//: WebGLRenderingContext;
-
-var test
-
-window.onload = function ()
-{
-
-    test = new tests.PickingTests();
-
-    var canvas : HTMLCanvasElement = document.createElement('canvas');
-    GL = canvas.getContext("experimental-webgl");
-
-}
-
-
