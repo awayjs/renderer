@@ -43,8 +43,6 @@ module tests.managers
             console.log( 'this.rttBfrA' , this.rttBfrA );
             console.log( 'this.rttBfrB' , this.rttBfrB );
 
-
-
         }
 
         public onContextCreated( e : away.events.Stage3DEvent ) : void
