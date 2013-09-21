@@ -22,7 +22,6 @@ module tests {
         constructor()
         {
 
-
             away.Debug.LOG_PI_ERRORS    = false;
             away.Debug.THROW_ERRORS     = false;
 
