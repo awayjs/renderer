@@ -140,6 +140,8 @@ module away
 
             this.dropDown.options[this.dropDown.selectedIndex].value
 
+            this.counter = this.dropDown.selectedIndex;
+
             var dataIndex : number = parseInt( this.dropDown.options[this.dropDown.selectedIndex].value ) ;
 
             if ( ! isNaN( dataIndex ) )
