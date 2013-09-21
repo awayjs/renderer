@@ -1,14 +1,9 @@
-///<reference path="../../../src/away/_definitions.ts" />
-
-//------------------------------------------------------------------------------------------------
-// Web / PHP Storm arguments string
-//------------------------------------------------------------------------------------------------
-// --sourcemap $ProjectFileDir$/tests/away/entities/MeshTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/away/entities/MeshTest.js
-//------------------------------------------------------------------------------------------------
+///<reference path="../../../lib/Away3D.next.d.ts" />
+//<reference path="../../../src/Away3D.ts" />
 
 module tests.entities {
 
-    export class EntityTest //extends away.events.EventDispatcher
+    export class MeshTest //extends away.events.EventDispatcher
     {
 
         private entity  : away.entities.Entity;

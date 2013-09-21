@@ -1,10 +1,5 @@
-///<reference path="../../../src/away/_definitions.ts" />
-
-//------------------------------------------------------------------------------------------------
-// Web / PHP Storm arguments string
-//------------------------------------------------------------------------------------------------
-// --sourcemap $ProjectFileDir$/tests/away/entities/EntityTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/away/entities/EntityTest.js
-//------------------------------------------------------------------------------------------------
+///<reference path="../../../lib/Away3D.next.d.ts" />
+//<reference path="../../../src/Away3D.ts" />
 
 module tests.entities {
 
@@ -22,6 +17,8 @@ module tests.entities {
             this.entity.z = 10;
 
             this.entity.getIgnoreTransform();
+
+            console.log( this.entity );
         }
 
     }
