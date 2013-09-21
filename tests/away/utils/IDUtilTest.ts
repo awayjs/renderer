@@ -1,33 +1,17 @@
-///<reference path="../../../src/away/_definitions.ts" />
+///<reference path="../../../lib/Away3D.next.d.ts" />
 
-//------------------------------------------------------------------------------------------------
-// Web / PHP Storm arguments string
-//------------------------------------------------------------------------------------------------
-// --sourcemap $ProjectFileDir$/tests/away/utils/IDUtilTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/away/utils/IDUtilTest.js
-//------------------------------------------------------------------------------------------------
+module tests.away.utils{
 
-class IDUtilTest
-{
-
-
-    constructor()
+    class IDUtilTest
     {
-        console.log( away.library.IDUtil.createUID() );
+
+
+        constructor()
+        {
+            console.log( away.library.IDUtil.createUID() );
+        }
+
+
     }
 
-
 }
-
-var GL = null;//: WebGLRenderingContext;
-var test: IDUtilTest;
-window.onload = function ()
-{
-
-    var canvas : HTMLCanvasElement = document.createElement('canvas');
-    GL = canvas.getContext("experimental-webgl");
-    test = new IDUtilTest();
-
-}
-
-
-
