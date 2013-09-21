@@ -29,9 +29,6 @@ module tests.controllers{
 
             this._hoverControl          = new away.controllers.HoverController( this._view.camera , this._wireframeCube , 150, 10, 2000);
 
-
-
-
             window.onresize             = () => this.resize();
 
             document.onmousedown        = ( e ) => this.onMouseDownHandler( e );
@@ -65,8 +62,6 @@ module tests.controllers{
             this._view.render();
 
         }
-
-
 
         private onMouseUpHandler( e  )
         {
