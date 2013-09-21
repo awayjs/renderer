@@ -1,14 +1,7 @@
-///<reference path="../../../src/away/_definitions.ts" />
+///<reference path="../../../lib/Away3D.next.d.ts" />
+//<reference path="../../../src/Away3D.ts" />
 
-
-//------------------------------------------------------------------------------------------------
-// Web / PHP Storm arguments string
-//------------------------------------------------------------------------------------------------
-// --sourcemap $ProjectFileDir$/tests/EventsTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/EventsTest.js
-//------------------------------------------------------------------------------------------------
-
-
-module tests {
+module tests.events {
 
     export class EDTest extends away.events.EventDispatcher
     {
@@ -36,11 +29,3 @@ module tests {
 
 
 }
-
-window.onload = function ()
-{
-
-    var test = new tests.EDTest();
-
-}
-
