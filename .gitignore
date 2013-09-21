@@ -1,6 +1,6 @@
 # Build and Release Folders
-bin/
 bin-debug/
+bin-debug-old/
 bin-release/
 out/
 target/
