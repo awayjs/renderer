@@ -6,7 +6,7 @@
 // --sourcemap $ProjectFileDir$/tests/away/entities/EntityTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/away/entities/EntityTest.js
 //------------------------------------------------------------------------------------------------
 
-module tests {
+module tests.entities {
 
     export class EntityTest //extends away.events.EventDispatcher
     {
@@ -27,18 +27,3 @@ module tests {
     }
 
 }
-
-var GL = null;//: WebGLRenderingContext;
-
-var test
-
-window.onload = function ()
-{
-
-    test = new tests.EntityTest();
-
-    var canvas : HTMLCanvasElement = document.createElement('canvas');
-    GL = canvas.getContext("experimental-webgl");
-
-}
-
