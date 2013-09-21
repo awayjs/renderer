@@ -1,15 +1,9 @@
-///<reference path="../../../src/away/_definitions.ts" />
-///<reference path="../loaders/parsers/JSONTextureParser.ts" />
+///<reference path="../../../lib/Away3D.next.d.ts" />
+//<reference path="../../../src/Away3D.ts" />
 
-//------------------------------------------------------------------------------------------------
-// Web / PHP Storm arguments string
-//------------------------------------------------------------------------------------------------
-// --sourcemap $ProjectFileDir$/tests/away/library/AssetLibraryTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/away/library/AssetLibraryTest.js
-//------------------------------------------------------------------------------------------------
+module tests.library {
 
-module tests {
-
-    export class AssetLibraryTest //extends away.events.EventDispatcher
+    export class ObjLibLoaderTest //extends away.events.EventDispatcher
     {
 
         private height : number = 0;
@@ -29,12 +23,9 @@ module tests {
             this.view                  = new away.containers.View3D( );
             this.raf                    = new away.utils.RequestAnimationFrame( this.render , this );
 
-
-
-            //away.library.AssetLibrary.enableParser( loaders.JSONTextureParser) ;
             away.library.AssetLibrary.enableParser( away.loaders.OBJParser ) ;
 
-            this.token = away.library.AssetLibrary.load(new away.net.URLRequest('../../assets/t800.obj') );
+            this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/t800.obj') );
             this.token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE , this.onResourceComplete , this );
             this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE , this.onAssetComplete, this );
 
@@ -99,8 +90,7 @@ module tests {
             console.log( away.library.AssetLibrary.getAsset( 'Mesh_g0' ) ) ;
 
             this.mesh = <away.entities.Mesh> away.library.AssetLibrary.getAsset( 'Mesh_g0' );
-            this.mesh.rotationX = 180;
-            this.mesh.y = 400;
+            this.mesh.y = -200;
             this.mesh.scale( 4 );
 
             this.view.scene.addChild( this.mesh );
@@ -129,17 +119,3 @@ module tests {
     }
 
 }
-
-var GL = null;//: WebGLRenderingContext;
-var test
-
-window.onload = function ()
-{
-
-    test = new tests.AssetLibraryTest();
-
-    var canvas : HTMLCanvasElement = document.createElement('canvas');
-    GL = canvas.getContext("experimental-webgl");
-
-}
-

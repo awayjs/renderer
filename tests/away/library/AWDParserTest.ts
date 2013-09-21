@@ -1,11 +1,5 @@
-///<reference path="../../../src/away/_definitions.ts" />
-///<reference path="../../../src/away/loaders/parsers/AWDParser.ts" />
-
-//------------------------------------------------------------------------------------------------
-// Web / PHP Storm arguments string
-//------------------------------------------------------------------------------------------------
-// --sourcemap $ProjectFileDir$/tests/away/library/AssetLibraryTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/away/library/AssetLibraryTest.js
-//------------------------------------------------------------------------------------------------
+///<reference path="../../../lib/Away3D.next.d.ts" />
+//<reference path="../../../src/Away3D.ts" />
 
 module tests.library {
 
@@ -27,7 +21,7 @@ module tests.library {
 
             away.library.AssetLibrary.enableParser( away.loaders.AWDParser ) ;
 
-            this.token = away.library.AssetLibrary.load(new away.net.URLRequest('suzanne.awd') );
+            this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/suzanne.awd') );
             this.token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE , this.onResourceComplete , this );
             this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE , this.onAssetComplete, this );
 

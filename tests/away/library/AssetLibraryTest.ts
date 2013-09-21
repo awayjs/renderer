@@ -1,13 +1,8 @@
-///<reference path="../../../src/away/_definitions.ts" />
 ///<reference path="../loaders/parsers/JSONTextureParser.ts" />
+///<reference path="../../../lib/Away3D.next.d.ts" />
+//<reference path="../../../src/Away3D.ts" />
 
-//------------------------------------------------------------------------------------------------
-// Web / PHP Storm arguments string
-//------------------------------------------------------------------------------------------------
-// --sourcemap $ProjectFileDir$/tests/away/library/AssetLibraryTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/away/library/AssetLibraryTest.js
-//------------------------------------------------------------------------------------------------
-
-module tests {
+module tests.library {
 
     export class AssetLibraryTest //extends away.events.EventDispatcher
     {
@@ -28,7 +23,7 @@ module tests {
 
             }
 
-            away.library.AssetLibrary.enableParser( loaders.JSONTextureParser) ;
+            away.library.AssetLibrary.enableParser( parsers.JSONTextureParser) ;
 
             //------------------------------------------------------------------------------------------------------------------
             // AssetLibraryBundle - Debug / Test
@@ -43,11 +38,11 @@ module tests {
            // away.library.AssetLibrary.addEventListener(away.events.AssetEvent.ASSET_COMPLETE , this.onAssetComplete, this );
 
 
-            this.token = away.library.AssetLibrary.load(new away.net.URLRequest('../../assets/JSNParserTest.json') );
+            this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/JSNParserTest.json') );
             this.token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE , this.onResourceComplete , this );
             this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE , this.onAssetComplete, this );
 
-            this.token = away.library.AssetLibrary.load(new away.net.URLRequest('../../assets/1024x1024.png') );
+            this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/1024x1024.png') );
             this.token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE , this.onResourceComplete , this );
             this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE , this.onAssetComplete, this );
 
@@ -85,17 +80,3 @@ module tests {
     }
 
 }
-
-var GL = null;//: WebGLRenderingContext;
-var test
-
-window.onload = function ()
-{
-
-    test = new tests.AssetLibraryTest();
-
-    var canvas : HTMLCanvasElement = document.createElement('canvas');
-    GL = canvas.getContext("experimental-webgl");
-
-}
-
