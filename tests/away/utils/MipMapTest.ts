@@ -1,7 +1,7 @@
 ///<reference path="../../../lib/Away3D.next.d.ts" />
 
-module tests.away.utils{
-    class MipMapTest
+module tests.utils{
+    export class MipMapTest
     {
 
         private mipLoader       : away.net.IMGLoader;
@@ -18,7 +18,7 @@ module tests.away.utils{
             //---------------------------------------
             // Load a PNG
 
-            var mipUrlRequest = new away.net.URLRequest( '../../assets/1024x1024.png');
+            var mipUrlRequest = new away.net.URLRequest( 'assets/1024x1024.png');
             this.mipLoader  = new away.net.IMGLoader();
             this.mipLoader.load( mipUrlRequest );
             this.mipLoader.addEventListener( away.events.Event.COMPLETE , this.mipImgLoaded , this );
@@ -35,7 +35,7 @@ module tests.away.utils{
             var loader : away.net.IMGLoader             = <away.net.IMGLoader > e.target;
 
             this.sourceBitmap                        = new away.display.BitmapData( 1024 , 1024 , true , 0xff0000 );
-            this.sourceBitmap.copyImage( loader.image , this.sourceBitmap.rect , this.sourceBitmap.rect );
+            this.sourceBitmap.drawImage( loader.image , this.sourceBitmap.rect , this.sourceBitmap.rect );
             this.sourceBitmap.canvas.style.position  = 'absolute';
             this.sourceBitmap.canvas.style.left      = '0px';
             this.sourceBitmap.canvas.style.top       = '1030px';

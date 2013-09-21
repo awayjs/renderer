@@ -1,9 +1,9 @@
 ///<reference path="../../../lib/Away3D.next.d.ts" />
 
-module tests.away.utils{
+module tests.utils{
 
 
-    class ByteArrayTest
+    export class ByteArrayTest
     {
 
         constructor()

@@ -1,8 +1,8 @@
 ///<reference path="../../../lib/Away3D.next.d.ts" />
 
-module tests.away.utils{
+module tests.utils{
 
-    class IDUtilTest
+    export class IDUtilTest
     {
 
 

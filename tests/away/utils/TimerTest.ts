@@ -1,6 +1,6 @@
 ///<reference path="../../../lib/Away3D.next.d.ts" />
 
-module tests.away.utils{
+module tests.utils{
 
     export class TimerTest
     {

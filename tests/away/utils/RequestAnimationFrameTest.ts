@@ -1,7 +1,7 @@
 ///<reference path="../../../lib/Away3D.next.d.ts" />
-module tests.away.utils{
+module tests.utils{
 
-    class RequestAnimationFrameTest
+    export class RequestAnimationFrameTest
     {
 
         private requestAnimationFrameTimer : away.utils.RequestAnimationFrame;
