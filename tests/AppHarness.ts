@@ -10,9 +10,13 @@ module away
         //------------------------------------------------------------------------------
 
         private tests           : Array<TestData> = new Array<TestData>();
-        private dropDown        : HTMLSelectElement
+        private dropDown        : HTMLSelectElement;
+        private previous        : HTMLButtonElement
+        private next            : HTMLButtonElement
         private contentIFrame   : HTMLIFrameElement;
         private srcIFrame       : HTMLIFrameElement;
+
+        private counter         : number = 0;
 
         //------------------------------------------------------------------------------
 
@@ -20,6 +24,13 @@ module away
         {
 
             this.dropDown           = <HTMLSelectElement> this.getId('selectTest');
+
+            this.previous           = <HTMLButtonElement> this.getId('previous');
+            this.next               = <HTMLButtonElement> this.getId('next');
+
+            this.previous.onclick   = () => this.nagigateBy( -1 );
+            this.next.onclick       = () => this.nagigateBy( 1 );
+
             this.dropDown.onchange  = ( e ) => this.dropDownChange( e );
 
             this.contentIFrame      = <HTMLIFrameElement> this.getId('testContainer');
@@ -28,7 +39,6 @@ module away
         }
 
         //------------------------------------------------------------------------------
-        // Init
 
         /*
          */
@@ -65,6 +75,49 @@ module away
         }
 
         //------------------------------------------------------------------------------
+
+        /*
+         */
+        private nagigateBy( direction : number = 1 ) : void
+        {
+
+            var l : number  = this.tests.length;
+            var nextCounter = this.counter + direction;
+
+            if ( nextCounter < 0 )
+            {
+                nextCounter = this.tests.length - 1;
+            }
+            else if ( nextCounter > this.tests.length - 1 )
+            {
+                nextCounter = 0;
+            }
+
+            var testData : TestData = this.tests[nextCounter];
+
+            if ( testData.name.indexOf ('--') != -1 ) // skip section headers
+            {
+                this.counter = nextCounter;
+                this.nagigateBy( direction );
+            }
+            else
+            {
+                this.navigateToSection( testData );
+                this.dropDown.selectedIndex = nextCounter;
+                this.counter = nextCounter;
+            }
+
+        }
+        /*
+         */
+        private navigateToSection ( testData : TestData ) : void
+        {
+            this.srcIFrame.src = testData.src;
+            this.contentIFrame.src = 'frame.html?name=' + testData.classpath + '&js=' + testData.js;
+
+        }
+
+        //------------------------------------------------------------------------------
         // Utils
 
         /*
@@ -75,6 +128,7 @@ module away
             return document.getElementById( id );
 
         }
+
 
         //------------------------------------------------------------------------------
         // Events
@@ -90,12 +144,7 @@ module away
 
             if ( ! isNaN( dataIndex ) )
             {
-                var testData : TestData = this.tests[dataIndex];
-                console.log( testData.classpath , testData.js , testData.src );
-
-                this.srcIFrame.src = testData.src;
-                this.contentIFrame.src = 'frame.html?name=' + testData.classpath + '&js=' + testData.js;
-
+                this.navigateToSection( this.tests[dataIndex] );
             }
         }
 
