@@ -11,7 +11,8 @@ module away.controllers
 	 */
 	export class FollowController extends away.controllers.HoverController
 	{
-		constructor(targetObject:away.entities.Entity = null, lookAtObject:away.containers.ObjectContainer3D = null, tiltAngle:number = 45, distance:number = 700)
+		constructor(targetObject:away.entities.Entity = null,
+                    lookAtObject:away.containers.ObjectContainer3D = null, tiltAngle:number = 45, distance:number = 700)
 		{
 			super(targetObject, lookAtObject, 0, tiltAngle, distance);
 		}

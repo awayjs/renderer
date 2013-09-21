@@ -228,15 +228,19 @@ module away.controllers
 		/**
 		 * Creates a new <code>HoverController</code> object.
 		 */
-		constructor(targetObject:away.entities.Entity = null, lookAtObject:away.containers.ObjectContainer3D = null, panAngle:number = 0, tiltAngle:number = 90, distance:number = 1000, minTiltAngle:number = -90, maxTiltAngle:number = 90, minPanAngle:number = NaN, maxPanAngle:number = NaN, steps:number = 8, yFactor:number = 2, wrapPanAngle:boolean = false)
+		constructor(targetObject:away.entities.Entity = null, lookAtObject:away.containers.ObjectContainer3D = null,
+                    panAngle:number = 0, tiltAngle:number = 90, distance:number = 1000,
+                    minTiltAngle:number = -90, maxTiltAngle:number = 90,
+                    minPanAngle:number = null, maxPanAngle:number = null,
+                    steps:number = 8, yFactor:number = 2, wrapPanAngle:boolean = false)
 		{
 			super(targetObject, lookAtObject);
 			
 			this.distance = distance;
 			this.panAngle = panAngle;
 			this.tiltAngle = tiltAngle;
-			this.minPanAngle = minPanAngle || -Infinity;
-			this.maxPanAngle = maxPanAngle || Infinity;
+			this.minPanAngle = ( minPanAngle != null ) ? minPanAngle : -Infinity;
+			this.maxPanAngle = ( maxPanAngle  != null ) ? maxPanAngle : Infinity;
 			this.minTiltAngle = minTiltAngle;
 			this.maxTiltAngle = maxTiltAngle;
 			this.steps = steps;

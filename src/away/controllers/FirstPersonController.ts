@@ -149,7 +149,10 @@ module away.controllers
 		/**
 		 * Creates a new <code>HoverController</code> object.
 		 */
-		constructor(targetObject:away.entities.Entity = null, panAngle:number = 0, tiltAngle:number = 90, minTiltAngle:number = -90, maxTiltAngle:number = 90, steps:number = 8, wrapPanAngle:boolean = false)
+		constructor(targetObject:away.entities.Entity = null,
+                    panAngle:number = 0, tiltAngle:number = 90,
+                    minTiltAngle:number = -90, maxTiltAngle:number = 90,
+                    steps:number = 8, wrapPanAngle:boolean = false)
 		{
 			super(targetObject);
 			
