@@ -61,7 +61,7 @@ module tests.base{
             this.raf.start();
             this.resize( null );
 
-            window.onresize = (e) => this.resize( null )l
+            window.onresize = (e) => this.resize( null );
             document.onmousedown = ( e ) => this.followObject( e );
 
         }
