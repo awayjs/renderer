@@ -1,10 +1,4 @@
-///<reference path="../../../src/away/_definitions.ts" />
-
-//------------------------------------------------------------------------------------------------
-// Web / PHP Storm arguments string
-//------------------------------------------------------------------------------------------------
-// --sourcemap $ProjectFileDir$/tests/away/library/AssetLibraryTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/away/library/AssetLibraryTest.js
-//------------------------------------------------------------------------------------------------
+///<reference path="../../../lib/Away3D.next.d.ts" />
 
 module demos.parsers
 {
@@ -62,21 +56,21 @@ module demos.parsers
 
             away.library.AssetLibrary.enableParser( away.loaders.OBJParser ) ;
 
-            this.token = away.library.AssetLibrary.load(new away.net.URLRequest('Halo_3_SPARTAN4.obj') );
+            this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/Halo_3_SPARTAN4.obj') );
             this.token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE , this.onResourceComplete , this );
             this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE , this.onAssetComplete, this );
 
-            this.token = away.library.AssetLibrary.load(new away.net.URLRequest('terrain.obj') );
+            this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/terrain.obj') );
             this.token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE , this.onResourceComplete , this );
             this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE , this.onAssetComplete, this );
 
 
             //*
-            this.token = away.library.AssetLibrary.load(new away.net.URLRequest('masterchief_base.png') );
+            this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/masterchief_base.png') );
             this.token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE , this.onResourceComplete , this );
             this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE , this.onAssetComplete, this );
 
-            this.token = away.library.AssetLibrary.load(new away.net.URLRequest('stone_tx.jpg' ) );
+            this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/stone_tx.jpg' ) );
             this.token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE , this.onResourceComplete , this );
             this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE , this.onAssetComplete, this );
             // */
@@ -133,7 +127,7 @@ module demos.parsers
                     case away.library.AssetType.MESH:
 
 
-                        if (e.url =='Halo_3_SPARTAN4.obj')
+                        if (e.url =='assets/Halo_3_SPARTAN4.obj')
                         {
 
                             var mesh : away.entities.Mesh = <away.entities.Mesh> away.library.AssetLibrary.getAsset( d.name );
@@ -149,7 +143,7 @@ module demos.parsers
 
                         }
 
-                        if (e.url =='terrain.obj')
+                        if (e.url =='assets/terrain.obj')
                         {
 
                             this.terrainObjFlag = true;
@@ -165,7 +159,7 @@ module demos.parsers
 
                     case away.library.AssetType.TEXTURE :
 
-                        if (e.url == 'masterchief_base.png' )
+                        if (e.url == 'assets/masterchief_base.png' )
                         {
 
                             var lightPicker:away.materials.StaticLightPicker    = new away.materials.StaticLightPicker( [this.light] );
@@ -177,7 +171,7 @@ module demos.parsers
 
                         }
 
-                        if (e.url == 'stone_tx.jpg')
+                        if (e.url == 'assets/stone_tx.jpg')
                         {
 
                             var lp:away.materials.StaticLightPicker    = new away.materials.StaticLightPicker( [this.light] );

@@ -1,9 +1,4 @@
-/**
- * ...
- * @author Gary Paluk - http://www.plugin.io
- */
-
-///<reference path="../../../src/away/_definitions.ts" />
+///<reference path="../../../lib/Away3D.next.d.ts" />
 
 module demos.cubes
 {
@@ -47,7 +42,7 @@ module demos.cubes
 		
 		private loadResources()
 		{
-			var urlRequest:away.net.URLRequest = new away.net.URLRequest( "130909wall_big.png" );
+			var urlRequest:away.net.URLRequest = new away.net.URLRequest( "assets/130909wall_big.png" );
 			var imgLoader:away.net.IMGLoader = new away.net.IMGLoader();
 			imgLoader.addEventListener( away.events.Event.COMPLETE, this.imageCompleteHandler, this );
 			imgLoader.load( urlRequest );
@@ -76,6 +71,8 @@ module demos.cubes
 			this._raf = new away.utils.RequestAnimationFrame( this.render , this );
             this._raf.start();
 
+            window.onresize = () => this.resize( null );
+
             this.resize( null );
 		}
 		
@@ -97,28 +94,7 @@ module demos.cubes
             this._view.width     = window.innerWidth;
             this._view.height    = window.innerHeight;
 
-
-            console.log( this._view.width , this._view.height );
-
-            this._view.render();
         }
 
 	}
 }
-
-
-var test: demos.cubes.CubeDemo;
-window.onload = function ()
-{
-    test = new demos.cubes.CubeDemo();
-}
-
-
-window.onresize = function ( e )
-{
-    if ( test )
-    {
-        test.resize( e );
-    }
-}
-

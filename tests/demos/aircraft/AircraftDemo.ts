@@ -1,9 +1,4 @@
-/**
- * ...
- * @author Gary Paluk - http://www.plugin.io
- */
-
-///<reference path="../../../src/away/_definitions.ts" />
+///<reference path="../../../lib/Away3D.next.d.ts" />
 
 module demos.aircraft
 {

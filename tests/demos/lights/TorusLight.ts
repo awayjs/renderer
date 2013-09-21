@@ -1,9 +1,4 @@
-/**
- * ...
- * @author Gary Paluk - http://www.plugin.io
- */
-
-///<reference path="../../../src/away/_definitions.ts" />
+///<reference path="../../../lib/Away3D.next.d.ts" />
 
 module demos.lights
 {
@@ -50,7 +45,7 @@ module demos.lights
 			var imageLoader:away.net.IMGLoader = <away.net.IMGLoader> e.target
 			this._image = imageLoader.image;
 
-            this._view.camera.z = -400;
+            this._view.camera.z = -1000;
 			var ts : away.textures.HTMLImageElementTexture = new away.textures.HTMLImageElementTexture( this._image, false );
 			
 			var light:away.lights.DirectionalLight = new away.lights.DirectionalLight();
@@ -71,48 +66,37 @@ module demos.lights
 
 			this._view.scene.addChild( this._mesh );
 
-			//this._raf = new away.utils.RequestAnimationFrame( this.render , this );
+			this._raf = new away.utils.RequestAnimationFrame( this.render , this );
+            this._raf.start();
 
 
-			this.render( 0 );
+
+            window.onresize = () => this.resize( );
+
+            this.resize( );
+
+            this.render( 0 );
 			
 		}
-/*
-        public stopRender( )
-        {
 
-            if ( this._raf.active )
-            {
-                this._raf.stop();
-            }
-            else
-            {
-                this._raf.start();
-            }
-
-        }
-*/
 
 		public render( dt:number = null ):void
 		{
             this._mesh.rotationY += 1;
             this._view.render();
 		}
+
+
+        public resize(  )
+        {
+            this._view.y         = 0;
+            this._view.x         = 0;
+
+            this._view.width     = window.innerWidth;
+            this._view.height    = window.innerHeight;
+
+        }
 		
 
 	}
 }
-/*
-var test: demos.lights.TorusLight;
-window.onload = function ()
-{
-    test = new demos.lights.TorusLight();
-}
-*/
-/*
-document.onmousedown = function ()
-{
-    test.stopRender();
-
-}
-*/

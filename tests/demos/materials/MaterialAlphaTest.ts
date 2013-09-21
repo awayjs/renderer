@@ -1,10 +1,4 @@
-///<reference path="../../../src/away/_definitions.ts" />
-
-//------------------------------------------------------------------------------------------------
-// Web / PHP Storm arguments string
-//------------------------------------------------------------------------------------------------
-// --sourcemap $ProjectFileDir$/tests/away/library/AssetLibraryTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/away/library/AssetLibraryTest.js
-//------------------------------------------------------------------------------------------------
+///<reference path="../../../lib/Away3D.next.d.ts" />
 
 module demos.materials
 {
@@ -31,7 +25,7 @@ module demos.materials
         constructor()
         {
 
-            away.Debug.LOG_PI_ERRORS    = false;
+            //away.Debug.LOG_PI_ERRORS    = false;
             away.Debug.THROW_ERRORS     = false;
 
             this.view                  = new away.containers.View3D( );
@@ -60,10 +54,10 @@ module demos.materials
 
             away.library.AssetLibrary.enableParser( away.loaders.OBJParser ) ;
 
-            this.token = away.library.AssetLibrary.load(new away.net.URLRequest('platonic.obj') );
+            this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/platonic.obj') );
             this.token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE , this.onResourceComplete , this );
 
-            this.token = away.library.AssetLibrary.load(new away.net.URLRequest('dots.png') );
+            this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/dots.png') );
             this.token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE , this.onResourceComplete , this );
 
             window.onresize = () => this.resize();
@@ -78,12 +72,15 @@ module demos.materials
 
             this.torusColorMaterial.alpha = this.torusTextureMaterial.alpha = this.loadedMeshMaterial.alpha = this.aValues[this.aValuesP];
 
+            //this.torusColorMaterial.alpha =this.aValues[this.aValuesP];
             alert( 'Alpha: ' + this.aValues[this.aValuesP]);
 
             this.aValuesP ++;
 
             if ( this.aValuesP > this.aValues.length -1 )
                 this.aValuesP  = 0;
+
+            this.render();
 
         }
 
@@ -148,9 +145,6 @@ module demos.materials
                         this.meshes.push( mesh );
 
                         this.raf.start();
-
-
-
                         break;
 
 
@@ -165,7 +159,7 @@ module demos.materials
                         // Material for loaded mesh
                         this.loadedMeshMaterial                             = new away.materials.TextureMaterial( tx, true, true, false );
                         this.loadedMeshMaterial.lightPicker                 = this.staticLightPicker
-                        this.loadedMeshMaterial.alpha                       = .25;
+                        this.loadedMeshMaterial.alpha                       = 1;
 						this.loadedMeshMaterial.bothSides = true;
 						
                         if ( this.t800M )
@@ -184,6 +178,7 @@ module demos.materials
                         this.torusTextureMaterial                           = new away.materials.TextureMaterial( tx, true, true, false );
                         this.torusTextureMaterial.lightPicker               = this.staticLightPicker ;
 						this.torusTextureMaterial.bothSides					= true;
+                        this.torusTextureMaterial.alpha                     = .8;
 						
                         // Torus Mesh ( left )
                         var torusMesh : away.entities.Mesh                  = new away.entities.Mesh( torus , this.torusTextureMaterial );
@@ -195,9 +190,9 @@ module demos.materials
                         // Torus Color Material
                         this.torusColorMaterial                             = new away.materials.ColorMaterial( 0x0090ff );
                         this.torusColorMaterial.lightPicker                 = this.staticLightPicker ;
-                        this.torusColorMaterial.alpha                       = 1;
+                        this.torusColorMaterial.alpha                       = .8;
 						this.torusColorMaterial.bothSides					= true;
-						
+
                         var cube : away.primitives.CubeGeometry             = new away.primitives.CubeGeometry( 300 , 300 , 300 , 20 , 20 , 20 );
                         // Torus Mesh ( right )
                         torusMesh                                         = new away.entities.Mesh( cube , this.torusColorMaterial );
@@ -206,15 +201,34 @@ module demos.materials
                         this.meshes.push( torusMesh );
                         this.view.scene.addChild( torusMesh );
 
+
+                        this.capsuleColorMAterial = new away.materials.ColorMaterial( 0x00ffff );
+                        this.capsuleColorMAterial.lightPicker = this.staticLightPicker;
+
+                        var caps : away.primitives.CapsuleGeometry        = new away.primitives.CapsuleGeometry( 100 , 200 );
+                        // Torus Mesh ( right )
+                        torusMesh                                         = new away.entities.Mesh( caps , this.capsuleColorMAterial );
+                        //torusMesh.rotationX                               = 90;
+                        //torusMesh.scale( 2 );
+
+                        this.meshes.push( torusMesh );
+                        this.view.scene.addChild( torusMesh );
+
+
+                        this.torusColorMaterial.alpha = this.torusTextureMaterial.alpha = this.loadedMeshMaterial.alpha = 1;
+
                         break;
 
                 }
 
             }
 
+            this.render();
             this.resize();
 
         }
+
+        public capsuleColorMAterial : away.materials.ColorMaterial;
 
         public resize()
         {

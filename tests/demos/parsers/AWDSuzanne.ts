@@ -1,11 +1,4 @@
-///<reference path="../../../src/away/_definitions.ts" />
-///<reference path="../../../src/away/loaders/parsers/AWDParser.ts" />
-
-//------------------------------------------------------------------------------------------------
-// Web / PHP Storm arguments string
-//------------------------------------------------------------------------------------------------
-// --sourcemap $ProjectFileDir$/tests/away/library/AssetLibraryTest.ts --target ES5 --comments --out $ProjectFileDir$/tests/away/library/AssetLibraryTest.js
-//------------------------------------------------------------------------------------------------
+///<reference path="../../../lib/Away3D.next.d.ts" />
 
 module demos.parsers {
 
@@ -18,13 +11,8 @@ module demos.parsers {
         private _suzane         : away.entities.Mesh;
         private _light          : away.lights.DirectionalLight;
         private _lightPicker    : away.materials.StaticLightPicker;
-        private _hoverControl   : away.controllers.HoverController;
-
-        private _move           : boolean = false;
-        private _lastPanAngle   : number;
-        private _lastTiltAngle  : number;
-        private _lastMouseX     : number;
-        private _lastMouseY     : number;
+        private lookAtPosition  : away.geom.Vector3D = new away.geom.Vector3D();
+        private _cameraIncrement: number = 0;
 
         constructor()
         {
@@ -39,6 +27,7 @@ module demos.parsers {
             this._token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE , this.onAssetComplete, this );
 
             this._view = new away.containers.View3D();
+            this._view.camera.lens.far  = 6000;
             this._timer = new away.utils.RequestAnimationFrame( this.render, this );
 
             this._light                  = new away.lights.DirectionalLight();
@@ -49,8 +38,6 @@ module demos.parsers {
             this._light.diffuse          = 2.8;
             this._light.specular         = 1.8;
             this._view.scene.addChild( this._light );
-
-
 
             this._lightPicker           = new away.materials.StaticLightPicker( [this._light] );
 
@@ -69,30 +56,27 @@ module demos.parsers {
         private render( dt : number ) //animate based on dt for firefox
         {
 
-
-            if ( this._suzane )
+            if ( this._view.camera )
             {
-                this._suzane.rotationY += 1;
+                this._view.camera.lookAt( this.lookAtPosition ) ;
+                this._cameraIncrement += 0.01;
+                this._view.camera.x = Math.cos( this._cameraIncrement ) * 1400;
+                this._view.camera.z = Math.sin( this._cameraIncrement ) * 1400;
+
+                this._light.x = Math.cos( this._cameraIncrement ) * 1400;
+                this._light.y = Math.sin( this._cameraIncrement ) * 1400;
+
             }
 
-            this._view.render();
-
-            if ( this._hoverControl  )
-            {
-
-                this._hoverControl.update(false);
-
-            }
+             this._view.render();
 
         }
 
         public onAssetComplete ( e : away.events.AssetEvent )
         {
-
             console.log( '------------------------------------------------------------------------------');
             console.log( 'away.events.AssetEvent.ASSET_COMPLETE' , away.library.AssetLibrary.getAsset(e.asset.name) );
             console.log( '------------------------------------------------------------------------------');
-
         }
 
         public onResourceComplete ( e : away.events.LoaderEvent )
@@ -114,13 +98,30 @@ module demos.parsers {
                     case away.library.AssetType.MESH:
 
                         var mesh : away.entities.Mesh = <away.entities.Mesh> asset;
-                            mesh.scale( 400 );
+
 
                         this._suzane = mesh;
                         this._suzane.material.lightPicker = this._lightPicker;
                         this._suzane.y = -100;
 
+
+                        for ( var c : number = 0 ; c < 80 ; c ++ )
+                        {
+
+                            var clone : away.entities.Mesh = mesh.clone();
+                                clone.x = this.getRandom( -2000 , 2000 );
+                                clone.y = this.getRandom( -2000 , 2000 );
+                                clone.z = this.getRandom( -2000 , 2000 );
+                                clone.scale( this.getRandom( 50 , 200 ));
+                                clone.rotationY = this.getRandom( 0 , 360 );
+                            this._view.scene.addChild( clone );
+
+                        }
+
+                        mesh.scale( 500 );
+
                         this._view.scene.addChild( mesh );
+
                         this._timer.start();
 
 
@@ -133,64 +134,21 @@ module demos.parsers {
 
                     case away.library.AssetType.MATERIAL:
 
-                        /*
-                        var m : away.materials.MaterialBase = <away.materials.MaterialBase> asset;
-                            m.lightPicker = this._lightPicker;
-
-                        console.log( m );
-                        //*/
                         break;
 
                 }
 
             }
 
-            /*
-            this._hoverControl = new away.controllers.HoverController( this._view.camera , this._suzane );
-            document.onmousedown = ( e ) => this.onMouseDownHandler( e );
-            document.onmouseup = ( e ) => this.onMouseUpHandler( e );
-            document.onmousemove = ( e ) => this.onMouseMove( e );
-            */
-
         }
 
-        /*
 
-        private onMouseUpHandler( e  )
+        private getRandom(min : number , max : number )  : number
         {
-            this._move = false;
+            return Math.random() * (max - min) + min;
         }
 
-        private onMouseMove( e )
-        {
 
-
-            if (this._move)
-            {
-
-                this._hoverControl.panAngle = 0.3 * (window.event.clientX - this._lastMouseX) + this._lastPanAngle;
-                this._hoverControl.tiltAngle = 0.3 * (window.event.clientY - this._lastMouseY) + this._lastTiltAngle;
-            }
-
-
-
-        }
-
-        private onMouseDownHandler( e  )
-        {
-
-            this._lastPanAngle      = this._hoverControl.panAngle;
-            this._lastTiltAngle     = this._hoverControl.tiltAngle;
-
-            this._lastMouseX        = window.event.clientX;//e.clientX;
-            this._lastMouseY        = window.event.clientY;//e.clientX;
-
-            this._move              = true;
-
-
-        }
-
-        */
     }
 
 }

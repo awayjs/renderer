@@ -19,8 +19,6 @@ module demos.materials
         {
 
             this.view = new away.containers.View3D();
-
-
             away.library.AssetLibrary.enableParser( away.loaders.CubeTextureParser );
 
             this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/CubeTextureTest.cube') );
