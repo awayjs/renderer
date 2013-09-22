@@ -40,26 +40,49 @@ module away
 
         //------------------------------------------------------------------------------
 
-        /*
+        /**
+         *
+         * Load a test
+         *
+         * @param classPath - Module and Class path of test
+         * @param js Path to JavaScript file
+         * @param ts Path to Typescript file ( not yet used - reserved for future show source )
          */
         public load( classPath : string , js : string , ts : string ) : void
         {
             this.contentIFrame.src = 'frame.html?name=' + classPath + '&js=' + js;
             this.srcIFrame.src = ts;
         }
-        /*
+
+        /**
+         *
+         * Add a test to the AppHarness
+         *
+         * @param name Name of test
+         * @param classPath - Module and Class path of test
+         * @param js Path to JavaScript file
+         * @param ts Path to Typescript file ( not yet used - reserved for future show source )
          */
         public addTest( name : string , classpath : string , js : string , ts : string ) : void
         {
             this.tests.push ( new TestData( name , classpath , js , ts ) );
         }
-        /*
+
+        /**
+         *
+         * Add a separator to the menu
+         *
+         * @param name
          */
         public addSeperator( name : string = '' ) : void
         {
             this.tests.push ( new TestData( '-- ' + name , '' , '' , '') );
         }
-        /*
+
+        /**
+         *
+         * Start the application harness
+         *
          */
         public start() : void
         {
@@ -76,7 +99,11 @@ module away
 
         //------------------------------------------------------------------------------
 
-        /*
+        /**
+         *
+         * Selectnext / previous menu item
+         *
+         * @param direction
          */
         private nagigateBy( direction : number = 1 ) : void
         {
@@ -108,7 +135,12 @@ module away
             }
 
         }
-        /*
+
+        /**
+         *
+         * Navigate to a section
+         *
+         * @param testData
          */
         private navigateToSection ( testData : TestData ) : void
         {
@@ -120,7 +152,12 @@ module away
         //------------------------------------------------------------------------------
         // Utils
 
-        /*
+        /**
+         *
+         * Util function - get Element by ID
+         *
+         * @param id
+         * @returns {HTMLElement}
          */
         private getId(id : string ) : HTMLElement
         {
@@ -133,7 +170,11 @@ module away
         //------------------------------------------------------------------------------
         // Events
 
-        /*
+        /**
+         *
+         * Dropbox event handler
+         *
+         * @param e
          */
         private dropDownChange( e ) : void
         {
@@ -176,7 +217,12 @@ module away
             }
 
         }
-        /*
+
+        /**
+         *
+         * Load a JavaScript file
+         *
+         * @param url - URL of JavaScript file
          */
         private loadJS(url : string )
         {
@@ -189,13 +235,16 @@ module away
 
             head.appendChild(script);
         }
-        /*
+
+        /**
+         *
+         * Event Handler for loaded JavaScript files
+         *
          */
         private jsLoaded()
         {
 
-
-            var createPath : Array<string> = this.classPath.split('.');
+            var createPath : Array<string> = this.classPath.split('.'); // Split the classpath
             var obj         : any;
 
             for ( var c : number = 0 ; c < createPath.length ; c++ )
@@ -203,11 +252,11 @@ module away
 
                 if ( obj == null )
                 {
-                    obj = window[createPath[c]];
+                    obj = window[createPath[c]]; // reference base module ( will be a child of the window )
                 }
                 else
                 {
-                    obj = obj[createPath[c]];
+                    obj = obj[createPath[c]]; // reference sub module / Class
                 }
 
 
@@ -215,11 +264,17 @@ module away
 
             if ( obj != null )
             {
-                new obj();
+                new obj(); // if Class has been found - start the test
             }
 
         }
-        /*
+
+        /**
+         *
+         * Utility function - Parse a Query formatted string
+         *
+         * @param qs
+         * @returns {{}}
          */
         static getQueryParams( qs ) : Object {
 
