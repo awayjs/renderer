@@ -81,6 +81,16 @@
             harness.addTest( 'Primitives.PrimitivesTest'       , 'tests.primitives.PrimitivesTest'  , 'tests/PrimitivesTest.js' , 'tests/PrimitivesTest.js'  );
 
             //---------------------------------------------------------------------------
+            // Test - Scene
+            //---------------------------------------------------------------------------
+
+            harness.addSeperator( 'Scene' );
+            //harness.addTest( 'Scene.RotatingTorus'  ,  'scene.RotatingTorus'      , 'tests/RotatingTorus.js'     , 'tests/RotatingTorus.js'  );
+            harness.addTest( '(GLSL) Scene.PhongTorus'     ,  'scene.PhongTorus'      , 'tests/PhongTorus.js'     , 'tests/PhongTorus.js'  );
+
+
+
+            //---------------------------------------------------------------------------
             // Test - Utils
             //---------------------------------------------------------------------------
 
@@ -211,6 +221,7 @@
 
             harness.addSeperator( 'Units' );
             harness.addTest( 'Units.TestSuite'  ,  'tests.unit.TestSuite'      , 'tests/TestSuite.js'     , 'tests/TestSuite.js'  );
+
 
             //---------------------------------------------------------------------------
             // Load a default
