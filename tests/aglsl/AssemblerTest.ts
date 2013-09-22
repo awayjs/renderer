@@ -3,7 +3,7 @@
  * @author Gary Paluk - http://www.plugin.io
  */
 
-///<reference path="../../src/away/_definitions.ts" />
+///<reference path="../../lib/Away3D.next.d.ts" />
 
 module aglsl
 {
@@ -12,7 +12,21 @@ module aglsl
 		
 		constructor()
 		{
-			
+
+            var div : HTMLDivElement = <HTMLDivElement> document.createElement( 'div');
+                div.style.position = 'absolute'
+                div.style.height    = "100%";
+                div.style.width     = "100%";
+                div.style.left      = '0px';
+                div.style.top       = '0px';
+                div.style.color     = '#000000';
+            document.body.appendChild( div );
+
+            var p : HTMLParagraphElement = <HTMLParagraphElement> document.createElement( 'p');
+
+            div.appendChild( p );
+
+
 			var shader:string =
 				"part fragment 1                            	\n" +
 				"mov oc, fc0                                    \n" +
@@ -33,23 +47,33 @@ module aglsl
 			var fragData:away.utils.ByteArray = agalMiniAssembler.r['fragment'].data;
 			var fragDesc:aglsl.Description = tokenizer.decribeAGALByteArray( fragData );
 			
-			console.log( "=== Vertex Description ===" );
+			console.log("=== Vertex Description ===" );
 			console.log( vertDesc );
 			
 			console.log( "\n" );
 			
-			console.log( "=== Fragment Description ===" );
+			console.log("=== Fragment Description ===" );
 			console.log( fragDesc );
 			
-			console.log( "\n" );
+			console.log("\n" );
 			console.log( "=== Vertex GLSL ===" );
+
 			var vertParser:aglsl.AGLSLParser = new aglsl.AGLSLParser();
-			console.log( vertParser.parse( vertDesc ) );
-			
-			console.log( "\n" );
+            var vertStr : string =  vertParser.parse( vertDesc )
+			console.log( vertStr);
+
+            p.innerHTML = vertStr ;//+ '</p>';
+
+            console.log( "\n" );
 			console.log( "=== Fragment GLSL ===" );
 			var fragParser:aglsl.AGLSLParser = new aglsl.AGLSLParser();
 			console.log( fragParser.parse( fragDesc ) );
+            //div.innerHTML += fragParser.parse( fragDesc )
+
+            p.innerHTML += '<br/><br/>'
+            p.innerHTML += fragParser.parse( fragDesc ) ;//+ '</p>';
+
+
 		}
 	}
 }
