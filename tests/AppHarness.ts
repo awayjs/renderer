@@ -13,9 +13,8 @@ module away
         private dropDown        : HTMLSelectElement;
         private previous        : HTMLButtonElement
         private next            : HTMLButtonElement
-        private contentIFrame   : HTMLIFrameElement;
-        private srcIFrame       : HTMLIFrameElement;
-
+        private testIframe      : HTMLIFrameElement;
+        private srcIframe       : HTMLIFrameElement;
         private counter         : number = 0;
 
         //------------------------------------------------------------------------------
@@ -23,18 +22,20 @@ module away
         constructor()
         {
 
+            this.initFrameSet();
+            this.initInterface();
+
+            /*
             this.dropDown           = <HTMLSelectElement> this.getId('selectTest');
 
             this.previous           = <HTMLButtonElement> this.getId('previous');
             this.next               = <HTMLButtonElement> this.getId('next');
+            */
 
             this.previous.onclick   = () => this.nagigateBy( -1 );
             this.next.onclick       = () => this.nagigateBy( 1 );
 
             this.dropDown.onchange  = ( e ) => this.dropDownChange( e );
-
-            this.contentIFrame      = <HTMLIFrameElement> this.getId('testContainer');
-            this.srcIFrame          = <HTMLIFrameElement> this.getId('testSourceContainer');
 
         }
 
@@ -50,8 +51,8 @@ module away
          */
         public load( classPath : string , js : string , ts : string ) : void
         {
-            this.contentIFrame.src = 'frame.html?name=' + classPath + '&js=' + js;
-            this.srcIFrame.src = ts;
+            this.testIframe.src = 'frame.html?name=' + classPath + '&js=' + js;
+            this.srcIframe.src = ts;
         }
 
         /**
@@ -101,6 +102,83 @@ module away
 
         /**
          *
+         */
+        private initInterface() : void
+        {
+
+            var testSelector : HTMLDivElement   = <HTMLDivElement> document.createElement( 'div' );
+                testSelector.style.cssFloat     = 'none';
+                testSelector.style.position     = 'absolute';
+                testSelector.style.bottom       = '15px';
+                testSelector.style.width        = '600px';
+                testSelector.style.left         = '50%';
+                testSelector.style.marginLeft   = '-300px'
+                testSelector.style.textAlign    = 'center';
+
+
+            this.dropDown                       = <HTMLSelectElement> document.createElement( 'select' );
+            this.dropDown.name                  = "selectTestDropDown"
+            this.dropDown.id                    = "selectTest"
+
+            this.previous                       = <HTMLButtonElement> document.createElement( 'button' );
+            this.previous.innerHTML             = '<<';
+            this.previous.id                    = 'previous';
+
+            this.next                           = <HTMLButtonElement> document.createElement( 'button' );
+            this.next.innerHTML                 = '>>';
+            this.next.id                        = 'next';
+
+
+            testSelector.appendChild( this.previous );
+            testSelector.appendChild( this.dropDown );
+            testSelector.appendChild( this.next );
+            document.body.appendChild( testSelector );
+        }
+        /**
+         *
+         */
+        private initFrameSet() : void
+        {
+
+            console.log( 'initFrameSet');
+
+            var iframeContainer : HTMLDivElement    = <HTMLDivElement> document.createElement( 'div' );
+                iframeContainer.style.width         = '100%';
+                iframeContainer.style.height        = '100%';
+
+            this.testIframe                      = <HTMLIFrameElement> document.createElement( 'iframe' );
+            this.testIframe.id                   = 'testContainer';
+            this.testIframe.style.backgroundColor = '#9e9e9e';
+            this.testIframe.style.cssFloat       = 'none';
+            this.testIframe.style.position       = 'absolute';
+            this.testIframe.style.top            = '0px';
+            this.testIframe.style.left           = '0px';
+            this.testIframe.style.border         = '0px';
+            this.testIframe.style.width          = '100%';
+            this.testIframe.style.height         = '100%';
+            //bottom: 120px;
+
+            this.srcIframe                          = <HTMLIFrameElement> document.createElement( 'iframe' );
+            this.srcIframe.id                       = 'testSourceContainer';
+            this.srcIframe.style.backgroundColor    = '#9e9e9e';
+            this.srcIframe.style.cssFloat           = 'none';
+            this.srcIframe.style.position           = 'absolute';
+            this.srcIframe.style.right              = '0px';
+            this.srcIframe.style.top                = '0px';
+            this.srcIframe.style.bottom             = '0px';
+            this.srcIframe.style.border             = '0px';
+            this.srcIframe.style.width              = '0%';
+            this.srcIframe.style.height             = '100%';
+
+            iframeContainer.appendChild( this.testIframe );
+            iframeContainer.appendChild( this.srcIframe );
+
+            document.body.appendChild( iframeContainer );
+
+        }
+
+        /**
+         *
          * Selectnext / previous menu item
          *
          * @param direction
@@ -144,8 +222,8 @@ module away
          */
         private navigateToSection ( testData : TestData ) : void
         {
-            this.srcIFrame.src = testData.src;
-            this.contentIFrame.src = 'frame.html?name=' + testData.classpath + '&js=' + testData.js;
+            this.srcIframe.src = testData.src;
+            this.testIframe.src = 'frame.html?name=' + testData.classpath + '&js=' + testData.js;
 
         }
 
