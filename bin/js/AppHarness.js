@@ -9,11 +9,15 @@ var away;
             //------------------------------------------------------------------------------
             this.tests = new Array();
             this.counter = 0;
-            this.dropDown = this.getId('selectTest');
+            this.initFrameSet();
+            this.initInterface();
 
-            this.previous = this.getId('previous');
-            this.next = this.getId('next');
-
+            /*
+            this.dropDown           = <HTMLSelectElement> this.getId('selectTest');
+            
+            this.previous           = <HTMLButtonElement> this.getId('previous');
+            this.next               = <HTMLButtonElement> this.getId('next');
+            */
             this.previous.onclick = function () {
                 return _this.nagigateBy(-1);
             };
@@ -24,32 +28,49 @@ var away;
             this.dropDown.onchange = function (e) {
                 return _this.dropDownChange(e);
             };
-
-            this.contentIFrame = this.getId('testContainer');
-            this.srcIFrame = this.getId('testSourceContainer');
         }
         //------------------------------------------------------------------------------
-        /*
+        /**
+        *
+        * Load a test
+        *
+        * @param classPath - Module and Class path of test
+        * @param js Path to JavaScript file
+        * @param ts Path to Typescript file ( not yet used - reserved for future show source )
         */
         AppHarness.prototype.load = function (classPath, js, ts) {
-            this.contentIFrame.src = 'frame.html?name=' + classPath + '&js=' + js;
-            this.srcIFrame.src = ts;
+            this.testIframe.src = 'frame.html?name=' + classPath + '&js=' + js;
+            this.srcIframe.src = ts;
         };
 
-        /*
+        /**
+        *
+        * Add a test to the AppHarness
+        *
+        * @param name Name of test
+        * @param classPath - Module and Class path of test
+        * @param js Path to JavaScript file
+        * @param ts Path to Typescript file ( not yet used - reserved for future show source )
         */
         AppHarness.prototype.addTest = function (name, classpath, js, ts) {
             this.tests.push(new TestData(name, classpath, js, ts));
         };
 
-        /*
+        /**
+        *
+        * Add a separator to the menu
+        *
+        * @param name
         */
         AppHarness.prototype.addSeperator = function (name) {
             if (typeof name === "undefined") { name = ''; }
             this.tests.push(new TestData('-- ' + name, '', '', ''));
         };
 
-        /*
+        /**
+        *
+        * Start the application harness
+        *
         */
         AppHarness.prototype.start = function () {
             for (var c = 0; c < this.tests.length; c++) {
@@ -59,7 +80,82 @@ var away;
         };
 
         //------------------------------------------------------------------------------
-        /*
+        /**
+        *
+        */
+        AppHarness.prototype.initInterface = function () {
+            var testSelector = document.createElement('div');
+            testSelector.style.cssFloat = 'none';
+            testSelector.style.position = 'absolute';
+            testSelector.style.bottom = '15px';
+            testSelector.style.width = '600px';
+            testSelector.style.left = '50%';
+            testSelector.style.marginLeft = '-300px';
+            testSelector.style.textAlign = 'center';
+
+            this.dropDown = document.createElement('select');
+            this.dropDown.name = "selectTestDropDown";
+            this.dropDown.id = "selectTest";
+
+            this.previous = document.createElement('button');
+            this.previous.innerHTML = '<<';
+            this.previous.id = 'previous';
+
+            this.next = document.createElement('button');
+            this.next.innerHTML = '>>';
+            this.next.id = 'next';
+
+            testSelector.appendChild(this.previous);
+            testSelector.appendChild(this.dropDown);
+            testSelector.appendChild(this.next);
+            document.body.appendChild(testSelector);
+        };
+
+        /**
+        *
+        */
+        AppHarness.prototype.initFrameSet = function () {
+            console.log('initFrameSet');
+
+            var iframeContainer = document.createElement('div');
+            iframeContainer.style.width = '100%';
+            iframeContainer.style.height = '100%';
+
+            this.testIframe = document.createElement('iframe');
+            this.testIframe.id = 'testContainer';
+            this.testIframe.style.backgroundColor = '#9e9e9e';
+            this.testIframe.style.cssFloat = 'none';
+            this.testIframe.style.position = 'absolute';
+            this.testIframe.style.top = '0px';
+            this.testIframe.style.left = '0px';
+            this.testIframe.style.border = '0px';
+            this.testIframe.style.width = '100%';
+            this.testIframe.style.height = '100%';
+
+            //bottom: 120px;
+            this.srcIframe = document.createElement('iframe');
+            this.srcIframe.id = 'testSourceContainer';
+            this.srcIframe.style.backgroundColor = '#9e9e9e';
+            this.srcIframe.style.cssFloat = 'none';
+            this.srcIframe.style.position = 'absolute';
+            this.srcIframe.style.right = '0px';
+            this.srcIframe.style.top = '0px';
+            this.srcIframe.style.bottom = '0px';
+            this.srcIframe.style.border = '0px';
+            this.srcIframe.style.width = '0%';
+            this.srcIframe.style.height = '100%';
+
+            iframeContainer.appendChild(this.testIframe);
+            iframeContainer.appendChild(this.srcIframe);
+
+            document.body.appendChild(iframeContainer);
+        };
+
+        /**
+        *
+        * Selectnext / previous menu item
+        *
+        * @param direction
         */
         AppHarness.prototype.nagigateBy = function (direction) {
             if (typeof direction === "undefined") { direction = 1; }
@@ -84,16 +180,25 @@ var away;
             }
         };
 
-        /*
+        /**
+        *
+        * Navigate to a section
+        *
+        * @param testData
         */
         AppHarness.prototype.navigateToSection = function (testData) {
-            this.srcIFrame.src = testData.src;
-            this.contentIFrame.src = 'frame.html?name=' + testData.classpath + '&js=' + testData.js;
+            this.srcIframe.src = testData.src;
+            this.testIframe.src = 'frame.html?name=' + testData.classpath + '&js=' + testData.js;
         };
 
         //------------------------------------------------------------------------------
         // Utils
-        /*
+        /**
+        *
+        * Util function - get Element by ID
+        *
+        * @param id
+        * @returns {HTMLElement}
         */
         AppHarness.prototype.getId = function (id) {
             return document.getElementById(id);
@@ -101,7 +206,11 @@ var away;
 
         //------------------------------------------------------------------------------
         // Events
-        /*
+        /**
+        *
+        * Dropbox event handler
+        *
+        * @param e
         */
         AppHarness.prototype.dropDownChange = function (e) {
             this.dropDown.options[this.dropDown.selectedIndex].value;
@@ -132,7 +241,11 @@ var away;
                 this.loadJS(this.jsPath);
             }
         }
-        /*
+        /**
+        *
+        * Load a JavaScript file
+        *
+        * @param url - URL of JavaScript file
         */
         AppFrame.prototype.loadJS = function (url) {
             var _this = this;
@@ -147,7 +260,10 @@ var away;
             head.appendChild(script);
         };
 
-        /*
+        /**
+        *
+        * Event Handler for loaded JavaScript files
+        *
         */
         AppFrame.prototype.jsLoaded = function () {
             var createPath = this.classPath.split('.');
@@ -166,7 +282,12 @@ var away;
             }
         };
 
-        AppFrame.getQueryParams = /*
+        AppFrame.getQueryParams = /**
+        *
+        * Utility function - Parse a Query formatted string
+        *
+        * @param qs
+        * @returns {{}}
         */
         function (qs) {
             qs = qs.split("+").join(" ");

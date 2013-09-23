@@ -10,45 +10,6 @@
             height: 100%;
         }
 
-        #iframeContainer
-        {
-            width: 100%;
-            height: 100%;
-        }
-        #testContainer
-        {
-            background-color: #9e9e9e;
-            float: none;
-            position: absolute;
-            top:0px;
-            left: 0px;
-            border: 0px;
-            width: 100%;
-            bottom: 120px;
-            height: 100%;
-        }
-        #testSourceContainer
-        {
-            background-color: #9e9e9e;
-            float: none;
-            position: absolute;
-            right: 0px;
-            top:0px;
-            bottom: 0px;
-            border: 0px;
-            width: 0%;
-            height: 100%;
-        }
-        #testSelector
-        {
-            float: none;
-            position: absolute;
-            bottom: 15px;
-            width: 600px;
-            left: 50%;
-            margin-left: -300px;
-            text-align: center;
-        }
     </style>
 
     <script type="text/javascript" language="javascript" src="js/AppHarness.js"></script>
@@ -88,13 +49,12 @@
             //harness.addTest( 'Scene.RotatingTorus'  ,  'scene.RotatingTorus'      , 'tests/RotatingTorus.js'     , 'tests/RotatingTorus.js'  );
             harness.addTest( '(GLSL) Scene.PhongTorus'     ,  'scene.PhongTorus'      , 'tests/PhongTorus.js'     , 'tests/PhongTorus.js'  );
 
-
+            //---------------------------------------------------------------------------
+            // Test - AGLSL
+            //---------------------------------------------------------------------------
 
             harness.addSeperator( 'AGLSL' );
             harness.addTest( 'AGLSL.AssemblerTest'     ,  'aglsl.AssemblerTest'      , 'tests/AssemblerTest.js'     , 'tests/AssemblerTest.js'  );
-
-
-
 
             //---------------------------------------------------------------------------
             // Test - Utils
@@ -233,6 +193,7 @@
             // Load a default
             harness.load( 'demos.object3d.Object3DTestV2' , 'tests/TorusObject3DDemo.js'    , 'tests/TorusObject3DDemo.js'  );
             harness.start(); // Start
+
         }
 
 
@@ -241,18 +202,6 @@
 
 </head>
 <body>
-
-    <div id="iframeContainer">
-        <iframe id="testContainer" src="frame.html"></iframe>
-        <iframe id="testSourceContainer" src="ts/TestApp.ts"></iframe>
-    </div>
-
-    <div id="testSelector">
-        <button id="previous"><<</button>
-        <select name="selectTestDropDown" id="selectTest">
-        </select>
-        <button id="next">>></button>
-    </div>
 
 </body>
 </html>
