@@ -221,7 +221,7 @@ var away;
             html += '               padding: 0px;';
             html += '          }';
             html += '       </style>';
-            html += '   <script src="http://gist-it.appspot.com/github' + url + '"></script>';
+            html += '   <script src="http://gist-it.appspot.com/github' + url + '?footer=no"></script>';
             html += '</head>';
             html += '<body>';
             html += '</body>';
