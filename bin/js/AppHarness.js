@@ -9,20 +9,18 @@ var away;
             //------------------------------------------------------------------------------
             this.tests = new Array();
             this.counter = 0;
+            this.sourceVisible = false;
             this.initFrameSet();
             this.initInterface();
 
-            /*
-            this.dropDown           = <HTMLSelectElement> this.getId('selectTest');
-            
-            this.previous           = <HTMLButtonElement> this.getId('previous');
-            this.next               = <HTMLButtonElement> this.getId('next');
-            */
-            this.previous.onclick = function () {
+            this.previousBtn.onclick = function () {
                 return _this.nagigateBy(-1);
             };
-            this.next.onclick = function () {
+            this.nextBtn.onclick = function () {
                 return _this.nagigateBy(1);
+            };
+            this.sourceBtn.onclick = function () {
+                return _this.toggleSource();
             };
 
             this.dropDown.onchange = function (e) {
@@ -40,7 +38,7 @@ var away;
         */
         AppHarness.prototype.load = function (classPath, js, ts) {
             this.testIframe.src = 'frame.html?name=' + classPath + '&js=' + js;
-            this.srcIframe.src = ts;
+            this.srcIframe.src = "data:text/html;charset=utf-8," + this.createSourceViewHTML(ts);
         };
 
         /**
@@ -97,17 +95,22 @@ var away;
             this.dropDown.name = "selectTestDropDown";
             this.dropDown.id = "selectTest";
 
-            this.previous = document.createElement('button');
-            this.previous.innerHTML = '<<';
-            this.previous.id = 'previous';
+            this.sourceBtn = document.createElement('button');
+            this.sourceBtn.innerHTML = 'Show Source';
+            this.sourceBtn.id = 'previous';
 
-            this.next = document.createElement('button');
-            this.next.innerHTML = '>>';
-            this.next.id = 'next';
+            this.previousBtn = document.createElement('button');
+            this.previousBtn.innerHTML = '<<';
+            this.previousBtn.id = 'previous';
 
-            testSelector.appendChild(this.previous);
+            this.nextBtn = document.createElement('button');
+            this.nextBtn.innerHTML = '>>';
+            this.nextBtn.id = 'next';
+
+            testSelector.appendChild(this.sourceBtn);
+            testSelector.appendChild(this.previousBtn);
             testSelector.appendChild(this.dropDown);
-            testSelector.appendChild(this.next);
+            testSelector.appendChild(this.nextBtn);
             document.body.appendChild(testSelector);
         };
 
@@ -115,8 +118,6 @@ var away;
         *
         */
         AppHarness.prototype.initFrameSet = function () {
-            console.log('initFrameSet');
-
             var iframeContainer = document.createElement('div');
             iframeContainer.style.width = '100%';
             iframeContainer.style.height = '100%';
@@ -187,8 +188,46 @@ var away;
         * @param testData
         */
         AppHarness.prototype.navigateToSection = function (testData) {
-            this.srcIframe.src = testData.src;
+            this.srcIframe.src = "data:text/html;charset=utf-8," + this.createSourceViewHTML(testData.src);
             this.testIframe.src = 'frame.html?name=' + testData.classpath + '&js=' + testData.js;
+        };
+
+        AppHarness.prototype.toggleSource = function () {
+            if (this.sourceVisible) {
+                this.testIframe.style.width = '100%';
+                this.srcIframe.style.width = '0%';
+                this.sourceBtn.innerHTML = 'Show Source';
+            } else {
+                this.testIframe.style.width = '20%';
+                this.srcIframe.style.width = '80%';
+                this.sourceBtn.innerHTML = 'Hide Source';
+            }
+
+            this.sourceVisible = !this.sourceVisible;
+        };
+
+        AppHarness.prototype.createSourceViewHTML = function (url) {
+            var html = '';
+
+            html += '<!DOCTYPE html>';
+            html += '<html>';
+            html += '   <head>';
+            html += '       <title></title>';
+            html += '       <style>';
+            html += '           html';
+            html += '           {';
+            html += '               height: 100%;';
+            html += '               border: 0px;';
+            html += '               padding: 0px;';
+            html += '          }';
+            html += '       </style>';
+            html += '   <script src="http://gist-it.appspot.com/github' + url + '"></script>';
+            html += '</head>';
+            html += '<body>';
+            html += '</body>';
+            html += '</html>';
+
+            return html;
         };
 
         //------------------------------------------------------------------------------

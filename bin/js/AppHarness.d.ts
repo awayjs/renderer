@@ -2,11 +2,13 @@ declare module away {
     class AppHarness {
         private tests;
         private dropDown;
-        private previous;
-        private next;
+        private previousBtn;
+        private nextBtn;
+        private sourceBtn;
         private testIframe;
         private srcIframe;
         private counter;
+        private sourceVisible;
         constructor();
         /**
         *
@@ -62,6 +64,8 @@ declare module away {
         * @param testData
         */
         private navigateToSection(testData);
+        private toggleSource();
+        private createSourceViewHTML(url);
         /**
         *
         * Util function - get Element by ID

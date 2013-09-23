@@ -26,20 +26,20 @@
             //---------------------------------------------------------------------------
 
             harness.addSeperator( 'Demos' );
-            harness.addTest( 'Demo.AWDParser'                       , 'demos.parsers.AWDSuzanne'        , 'tests/AWDSuzanne.js'         , 'tests/AWDSuzanne.js' );
-            harness.addTest( 'Demo.OBJParser'                       , 'demos.parsers.ObjChiefTestDay'   , 'tests/ObjChiefTestDay.js'    , 'tests/ObjChiefTestDay.js' );
-            harness.addTest( 'Demo.OBJParser - AirCraft ( Canary )' , 'demos.aircraft.AircraftDemo'     , 'tests/AircraftDemo.js'       , 'tests/AircraftDemo.js'  );
-            harness.addTest( 'Demo.TorusVortex'                     , 'demos.cubes.CubeDemo'            , 'tests/CubeDemo.js'           , 'tests/CubeDemo.js' );
-            harness.addTest( 'Demo.Object3D'                        , 'demos.object3d.Object3DTestV2' , 'tests/TorusObject3DDemo.js'    , 'tests/TorusObject3DDemo.js'  );
-            harness.addTest( 'Demo.Materials - Alpha'               , 'demos.materials.MaterialAlphaTest' , 'tests/MaterialAlphaTest.js' , 'tests/MaterialAlphaTest.js'  );
+            harness.addTest( 'Demo.AWDParser'                       , 'demos.parsers.AWDSuzanne'            , 'tests/AWDSuzanne.js'         , '/away3d/away3d-core-ts/blob/master/tests/demos/parsers/AWDSuzanne.ts' );
+            harness.addTest( 'Demo.OBJParser'                       , 'demos.parsers.ObjChiefTestDay'       , 'tests/ObjChiefTestDay.js'    , '/away3d/away3d-core-ts/blob/master/tests/demos/parsers/ObjChiefTest.ts' );
+            harness.addTest( 'Demo.OBJParser - AirCraft ( Canary )' , 'demos.aircraft.AircraftDemo'         , 'tests/AircraftDemo.js'       , '/away3d/away3d-core-ts/blob/master/tests/demos/aircraft/AircraftDemo.ts'  );
+            harness.addTest( 'Demo.TorusVortex'                     , 'demos.cubes.CubeDemo'                , 'tests/CubeDemo.js'           , '/away3d/away3d-core-ts/blob/master/tests/demos/cubes/CubeDemo.ts' );
+            harness.addTest( 'Demo.Object3D'                        , 'demos.object3d.Object3DTestV2'       , 'tests/TorusObject3DDemo.js'  , '/away3d/away3d-core-ts/blob/master/tests/demos/Object3D/TorusObject3DDemo.ts'  );
+            harness.addTest( 'Demo.Materials - Alpha'               , 'demos.materials.MaterialAlphaTest'   , 'tests/MaterialAlphaTest.js'  , '/away3d/away3d-core-ts/blob/master/tests/demos/materials/MaterialAlphaTest.ts'  );
 
             //---------------------------------------------------------------------------
             // Test - Primitives
             //---------------------------------------------------------------------------
 
             harness.addSeperator( 'Primitives' );
-            harness.addTest( 'Primitives.WireframePrimitives'  , 'tests.primitives.WireframePrimitiveTest'  , 'tests/WireframePrimitive.js' , 'tests/WireframePrimitive.js'  );
-            harness.addTest( 'Primitives.PrimitivesTest'       , 'tests.primitives.PrimitivesTest'  , 'tests/PrimitivesTest.js' , 'tests/PrimitivesTest.js'  );
+            harness.addTest( 'Primitives.WireframePrimitives'  , 'tests.primitives.WireframePrimitiveTest'  , 'tests/WireframePrimitive.js' , '/away3d/away3d-core-ts/blob/master/tests/away/primitives/WireframePrimitive.ts'  );
+            harness.addTest( 'Primitives.PrimitivesTest'       , 'tests.primitives.PrimitivesTest'          , 'tests/PrimitivesTest.js'     , '/away3d/away3d-core-ts/blob/master/tests/away/primitives/PrimitivesTest.ts'  );
 
             //---------------------------------------------------------------------------
             // Test - Scene
@@ -47,151 +47,151 @@
 
             harness.addSeperator( 'Scene' );
             //harness.addTest( 'Scene.RotatingTorus'  ,  'scene.RotatingTorus'      , 'tests/RotatingTorus.js'     , 'tests/RotatingTorus.js'  );
-            harness.addTest( '(GLSL) Scene.PhongTorus'     ,  'scene.PhongTorus'      , 'tests/PhongTorus.js'     , 'tests/PhongTorus.js'  );
+            harness.addTest( '(GLSL) Scene.PhongTorus'     ,  'scene.PhongTorus'      , 'tests/PhongTorus.js'     , '/away3d/away3d-core-ts/blob/master/tests/scene/PhongTorus.ts'  );
 
             //---------------------------------------------------------------------------
             // Test - AGLSL
             //---------------------------------------------------------------------------
 
             harness.addSeperator( 'AGLSL' );
-            harness.addTest( 'AGLSL.AssemblerTest'     ,  'aglsl.AssemblerTest'      , 'tests/AssemblerTest.js'     , 'tests/AssemblerTest.js'  );
+            harness.addTest( 'AGLSL.AssemblerTest'     ,  'aglsl.AssemblerTest'      , 'tests/AssemblerTest.js'     , '/away3d/away3d-core-ts/blob/master/tests/aglsl/AssemblerTest.ts'  );
 
             //---------------------------------------------------------------------------
             // Test - Utils
             //---------------------------------------------------------------------------
 
             harness.addSeperator( 'Utils' );
-            harness.addTest( 'Utils.MipMapTest'                 , 'tests.utils.MipMapTest' , 'tests/MipMapTest.js' , 'tests/MipMapTest.js'  );
-            harness.addTest( '(Console) Utils.ByteArrayTest'    , 'tests.utils.ByteArrayTest' , 'tests/ByteArrayTest.js' , 'tests/ByteArrayTest.js'  );
-            harness.addTest( '(Console) Utils.IDUtilTest '      , 'tests.utils.IDUtilTest' , 'tests/IDUtilTest.js' , 'tests/IDUtilTest.js'  );
-            harness.addTest( '(Console) Utils.RAF '             , 'tests.utils.RequestAnimationFrameTest' , 'tests/RequestAnimationFrameTest.js' , 'tests/RequestAnimationFrameTest.js'  );
-            harness.addTest( '(Console) Utils.TimerTest'        , 'tests.utils.TimerTest' , 'tests/TimerTest.js' , 'tests/TimerTest.js'  );
+            harness.addTest( 'Utils.MipMapTest'                 , 'tests.utils.MipMapTest'                  , 'tests/MipMapTest.js'                 , '/away3d/away3d-core-ts/blob/master/tests/away/utils/MipMapTest.ts'  );
+            harness.addTest( '(Console) Utils.ByteArrayTest'    , 'tests.utils.ByteArrayTest'               , 'tests/ByteArrayTest.js'              , '/away3d/away3d-core-ts/blob/master/tests/away/utils/ByteArrayTest.ts'  );
+            harness.addTest( '(Console) Utils.IDUtilTest '      , 'tests.utils.IDUtilTest'                  , 'tests/IDUtilTest.js'                 , '/away3d/away3d-core-ts/blob/master/tests/away/utils/IDUtilTest.ts'  );
+            harness.addTest( '(Console) Utils.RAF '             , 'tests.utils.RequestAnimationFrameTest'   , 'tests/RequestAnimationFrameTest.js'  , '/away3d/away3d-core-ts/blob/master/tests/away/utils/RequestAnimationFrameTest.ts'  );
+            harness.addTest( '(Console) Utils.TimerTest'        , 'tests.utils.TimerTest'                   , 'tests/TimerTest.js'                  , '/away3d/away3d-core-ts/blob/master/tests/away/utils/TimerTest.ts'  );
 
             //---------------------------------------------------------------------------
             // Test - Textures
             //---------------------------------------------------------------------------
 
             harness.addSeperator( 'Textures' );
-            harness.addTest( '(Console) Textures.BitmapTextureTest'                 , 'tests.textures.BitmapTextureTest'            , 'tests/BitmapTextureTest.js' , 'tests/BitmapTextureTest.js'  );
-            harness.addTest( '(Console) Textures.HTMLImageElementTextureTest'       , 'tests.textures.HTMLImageElementTextureTest'  , 'tests/HTMLImageElementTextureTest.js' , 'tests/HTMLImageElementTextureTest.js'  );
+            harness.addTest( '(Console) Textures.BitmapTextureTest'                 , 'tests.textures.BitmapTextureTest'            , 'tests/BitmapTextureTest.js'              , '/away3d/away3d-core-ts/blob/master/tests/away/textures/BitmapTextureTest.ts'  );
+            harness.addTest( '(Console) Textures.HTMLImageElementTextureTest'       , 'tests.textures.HTMLImageElementTextureTest'  , 'tests/HTMLImageElementTextureTest.js'    , '/away3d/away3d-core-ts/blob/master/tests/away/textures/HTMLImageElementTextureTest.ts'  );
 
             //---------------------------------------------------------------------------
             // Test - Render
             //---------------------------------------------------------------------------
 
             harness.addSeperator( 'Render' );
-            harness.addTest( '(Console) Render.DefaultRenderer'       , 'tests.render.RenderTest'  , 'tests/RenderTest.js' , 'tests/RenderTest.js'  );
+            harness.addTest( '(Console) Render.DefaultRenderer'       , 'tests.render.RenderTest'  , 'tests/RenderTest.js' , '/away3d/away3d-core-ts/blob/master/tests/away/render/RenderTest.ts'  );
 
             //---------------------------------------------------------------------------
             // Test - Pick
             //---------------------------------------------------------------------------
 
             harness.addSeperator( 'Pick' );
-            harness.addTest( '(Console) Pick.Test'       , 'tests.pick.PickingTests'  , 'tests/PickingTests.js' , 'tests/PickingTests.js'  );
+            harness.addTest( '(Console) Pick.Test'       , 'tests.pick.PickingTests'  , 'tests/PickingTests.js' , '/away3d/away3d-core-ts/blob/master/tests/away/pick/PickingTests.ts'  );
 
             //---------------------------------------------------------------------------
             // Test - Net
             //---------------------------------------------------------------------------
 
             harness.addSeperator( 'Net' );
-            harness.addTest( 'Net.URLLoader'       , 'tests.net.LoaderTest'  , 'tests/URLLoaderTests.js' , 'tests/URLLoaderTests.js'  );
+            harness.addTest( 'Net.URLLoader'       , 'tests.net.LoaderTest'  , 'tests/URLLoaderTests.js' , '/away3d/away3d-core-ts/blob/master/tests/away/net/URLLoaderTests.ts'  );
 
             //---------------------------------------------------------------------------
             // Test - Materials
             //---------------------------------------------------------------------------
 
             harness.addSeperator( 'Materials' );
-            harness.addTest( '(Console) Materials.ColorMaterialTest'    ,  'tests.materials.ColorMaterialTest'          , 'tests/ColorMaterialTest.js'          , 'tests/ColorMaterialTest.js'  );
-            harness.addTest( 'Materials.ColorMultiPassMatTest'          , 'tests.materials.ColorMultiPassMatTest'       , 'tests/ColorMultiPassMatTest.js'      , 'tests/ColorMultiPassMatTest.js'  );
-            harness.addTest( 'Materials.TextureMultiPassMatTest'        , 'tests.materials.TextureMultiPassMatTest'     , 'tests/TextureMultiPassMatTest.js'    , 'tests/ColorMultiPassMatTest.js'  );
+            harness.addTest( '(Console) Materials.ColorMaterialTest'    ,  'tests.materials.ColorMaterialTest'          , 'tests/ColorMaterialTest.js'          , '/away3d/away3d-core-ts/blob/master/tests/away/materials/ColorMaterialTest.ts'  );
+            harness.addTest( 'Materials.ColorMultiPassMatTest'          , 'tests.materials.ColorMultiPassMatTest'       , 'tests/ColorMultiPassMatTest.js'      , '/away3d/away3d-core-ts/blob/master/tests/away/materials/ColorMultiPassMatTest.ts'  );
+            harness.addTest( 'Materials.TextureMultiPassMatTest'        , 'tests.materials.TextureMultiPassMatTest'     , 'tests/TextureMultiPassMatTest.js'    , '/away3d/away3d-core-ts/blob/master/tests/away/materials/TextureMultiPassMatTest.ts'  );
 
             //---------------------------------------------------------------------------
             // Test - Managers
             //---------------------------------------------------------------------------
 
             harness.addSeperator( 'Managers' );
-            harness.addTest( '(Console) tests.managers.ManagersTest' ,  'tests.managers.ManagersTest'  , 'tests/ManagersTest.js' , 'tests/ManagersTest.js'  );
+            harness.addTest( '(Console) tests.managers.ManagersTest' ,  'tests.managers.ManagersTest'  , 'tests/ManagersTest.js' , '/away3d/away3d-core-ts/blob/master/tests/away/managers/ManagersTest.ts'  );
 
             //---------------------------------------------------------------------------
             // Test - Loaders
             //---------------------------------------------------------------------------
 
             harness.addSeperator( 'Loaders' );
-            harness.addTest( '(Console) Loaders.AssetLoaderTest'    ,  'tests.loaders.AssetLoaderTest'  , 'tests/AssetLoaderTest.js'    , 'tests/AssetLoaderTest.js'  );
-            harness.addTest( 'Loaders.IMGLoaderTest'                ,  'tests.loaders.IMGLoaderTest'    , 'tests/IMGLoaderTest.js'      , 'tests/IMGLoaderTest.js'  );
+            harness.addTest( '(Console) Loaders.AssetLoaderTest'    ,  'tests.loaders.AssetLoaderTest'  , 'tests/AssetLoaderTest.js'    , '/away3d/away3d-core-ts/blob/master/tests/away/loaders/AssetLoaderTest.ts'  );
+            harness.addTest( 'Loaders.IMGLoaderTest'                ,  'tests.loaders.IMGLoaderTest'    , 'tests/IMGLoaderTest.js'      , '/away3d/away3d-core-ts/blob/master/tests/away/loaders/IMGLoaderTest.ts'  );
 
             //---------------------------------------------------------------------------
             // Test - Library
             //---------------------------------------------------------------------------
 
             harness.addSeperator( 'Library' );
-            harness.addTest( 'Library.AssetLibraryTest'     ,  'tests.library.AssetLibraryTest'  , 'tests/AssetLibraryTest.js' , 'tests/AssetLibraryTest.js'  );
-            harness.addTest( 'Library.AWDParserTest'        ,  'tests.library.AWDParserTest'  , 'tests/AWDParserTest.js' , 'tests/AWDParserTest.js'  );
-            harness.addTest( 'Library.ObjLibLoaderTest'     ,  'tests.library.ObjLibLoaderTest'  , 'tests/ObjLibLoaderTest.js' , 'tests/ObjLibLoaderTest.js'  );
+            harness.addTest( 'Library.AssetLibraryTest'     ,  'tests.library.AssetLibraryTest'  , 'tests/AssetLibraryTest.js'  , '/away3d/away3d-core-ts/blob/master/tests/away/library/AssetLibraryTest.ts'  );
+            harness.addTest( 'Library.AWDParserTest'        ,  'tests.library.AWDParserTest'  , 'tests/AWDParserTest.js'        , '/away3d/away3d-core-ts/blob/master/tests/away/library/AWDParserTest.ts'  );
+            harness.addTest( 'Library.ObjLibLoaderTest'     ,  'tests.library.ObjLibLoaderTest'  , 'tests/ObjLibLoaderTest.js'  , '/away3d/away3d-core-ts/blob/master/tests/away/library/ObjLibLoaderTest.ts'  );
 
             //---------------------------------------------------------------------------
             // Test - Geom
             //---------------------------------------------------------------------------
 
             harness.addSeperator( 'Geom' );
-            harness.addTest( '(Console) Geom.ColorUtils'          ,  'tests.geom.ColorUtils'      , 'tests/ColorUtils.js'     , 'tests/ColorUtils.js'  );
-            harness.addTest( '(Console) Geom.MatrixTest'          ,  'tests.geom.MatrixTest'      , 'tests/MatrixTest.js'     , 'tests/MatrixTest.js'  );
-            harness.addTest( '(Console) Geom.VextMat3DTests'      ,  'tests.geom.VextMat3DTests'  , 'tests/VextMat3DTests.js' , 'tests/VextMat3DTests.js'  );
+            harness.addTest( '(Console) Geom.ColorUtils'          ,  'tests.geom.ColorUtils'      , 'tests/ColorUtils.js'     , '/away3d/away3d-core-ts/blob/master/tests/away/geom/ColorUtils.ts'  );
+            harness.addTest( '(Console) Geom.MatrixTest'          ,  'tests.geom.MatrixTest'      , 'tests/MatrixTest.js'     , '/away3d/away3d-core-ts/blob/master/tests/away/geom/MatrixTest.ts'  );
+            harness.addTest( '(Console) Geom.VextMat3DTests'      ,  'tests.geom.VextMat3DTests'  , 'tests/VextMat3DTests.js' , '/away3d/away3d-core-ts/blob/master/tests/away/geom/VextMat3DTests.ts'  );
 
             //---------------------------------------------------------------------------
             // Test - Events
             //---------------------------------------------------------------------------
 
             harness.addSeperator( 'Events' );
-            harness.addTest( '(Console) Events'      ,  'tests.events.EDTest'      , 'tests/EDTest.js'     , 'tests/EDTest.js'  );
+            harness.addTest( '(Console) Events'      ,  'tests.events.EDTest'      , 'tests/EDTest.js'     , '/away3d/away3d-core-ts/blob/master/tests/away/events/EDTest.ts'  );
 
             //---------------------------------------------------------------------------
             // Test - Entities
             //---------------------------------------------------------------------------
 
             harness.addSeperator( 'Entities' );
-            harness.addTest( '(Console) EntityTest'   ,  'tests.entities.EntityTest', 'tests/EntityTest.js' , 'tests/EntityTest.js'  );
-            harness.addTest( '(Console) MeshTest'     ,  'tests.entities.MeshTest'  , 'tests/MeshTest.js'   , 'tests/MeshTest.js'  );
+            harness.addTest( '(Console) EntityTest'   ,  'tests.entities.EntityTest', 'tests/EntityTest.js' , '/away3d/away3d-core-ts/blob/master/tests/away/entities/EntityTest.ts'  );
+            harness.addTest( '(Console) MeshTest'     ,  'tests.entities.MeshTest'  , 'tests/MeshTest.js'   , '/away3d/away3d-core-ts/blob/master/tests/away/entities/MeshTest.ts'  );
 
             //---------------------------------------------------------------------------
             // Test - Display
             //---------------------------------------------------------------------------
 
             harness.addSeperator( 'Display' );
-            harness.addTest( 'Display.BitmapDataTest'  ,  'tests.display.BitmapDataTest'      , 'tests/BitmapDataTest.js'     , 'tests/BitmapDataTest.js'  );
+            harness.addTest( 'Display.BitmapDataTest'  ,  'tests.display.BitmapDataTest'      , 'tests/BitmapDataTest.js'     , '/away3d/away3d-core-ts/blob/master/tests/away/display/BitmapDataTest.ts'  );
 
             //---------------------------------------------------------------------------
             // Test - Controllers
             //---------------------------------------------------------------------------
 
             harness.addSeperator( 'Controllers' );
-            harness.addTest( 'Controllers.HoverControllerTest'  ,  'tests.controllers.HoverControllerTest'      , 'tests/HoverControllerTest.js'     , 'tests/HoverControllerTest.js'  );
+            harness.addTest( 'Controllers.HoverControllerTest'  ,  'tests.controllers.HoverControllerTest'      , 'tests/HoverControllerTest.js'     , '/away3d/away3d-core-ts/blob/master/tests/away/controllers/HoverControllerTest.ts'  );
 
             //---------------------------------------------------------------------------
             // Test - Containers
             //---------------------------------------------------------------------------
 
             harness.addSeperator( 'Containers' );
-            harness.addTest( 'Containers.View3DTest'  ,  'tests.containers.View3DTest'      , 'tests/View3DTest.js'     , 'tests/View3DTest.js'  );
+            harness.addTest( 'Containers.View3DTest'  ,  'tests.containers.View3DTest'      , 'tests/View3DTest.js'     , '/away3d/away3d-core-ts/blob/master/tests/away/containers/View3DTest.ts'  );
 
             //---------------------------------------------------------------------------
             // Test - Base
             //---------------------------------------------------------------------------
 
             harness.addSeperator( 'Base' );
-            harness.addTest( 'Base.View3DTest'  ,  'tests.base.Object3DTestV2'      , 'tests/Object3DTest_v2.js'     , 'tests/Object3DTest_v2.js'  );
+            harness.addTest( 'Base.View3DTest'  ,  'tests.base.Object3DTestV2'      , 'tests/Object3DTest_v2.js'     , '/away3d/away3d-core-ts/blob/master/tests/away/base/Object3DTest_v2.ts'  );
 
             //---------------------------------------------------------------------------
             // Test - Base
             //---------------------------------------------------------------------------
 
             harness.addSeperator( 'Units' );
-            harness.addTest( 'Units.TestSuite'  ,  'tests.unit.TestSuite'      , 'tests/TestSuite.js'     , 'tests/TestSuite.js'  );
+            harness.addTest( 'Units.TestSuite'  ,  'tests.unit.TestSuite'      , 'tests/TestSuite.js'     , '/away3d/away3d-core-ts/blob/master/tests/unit/TestSuite.ts'  );
 
 
             //---------------------------------------------------------------------------
             // Load a default
-            harness.load( 'demos.object3d.Object3DTestV2' , 'tests/TorusObject3DDemo.js'    , 'tests/TorusObject3DDemo.js'  );
+            harness.load( 'demos.object3d.Object3DTestV2' , 'tests/TorusObject3DDemo.js'    , '/away3d/away3d-core-ts/blob/master/tests/demos/parsers/ObjChiefTest.ts'  );
             harness.start(); // Start
 
         }
