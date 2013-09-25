@@ -37,7 +37,11 @@ package away3d.loaders.parsers
 		 *
 		 * @see away3d.loading.AssetLibrary.enableParser
 		 */
-		public static const ALL_BUNDLED:Vector.<Class> = Vector.<Class>([AWDParser, Max3DSParser, MD2Parser, MD5AnimParser, MD5MeshParser, OBJParser, DAEParser]);
+		public static const ALL_BUNDLED:Vector.<Class> = Vector.<Class>([
+			AWDParser, Max3DSParser, DXFParser,
+			MD2Parser, MD5AnimParser, MD5MeshParser, OBJParser,
+			DAEParser
+			]);
 		
 		/**
 		 * Short-hand function to enable all bundled parsers for auto-detection. In practice,
