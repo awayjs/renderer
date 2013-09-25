@@ -393,10 +393,10 @@ package away3d.materials.passes
 				context.setVertexBufferAt(i, null);
 			
 			prevUsed = _previousUsedTexs[contextIndex];
-			/*
+			
 			for (i = _numUsedTextures; i < prevUsed; ++i)
 				context.setTextureAt(i, null);
-			*/
+			
 			if (_animationSet && !_animationSet.usesCPU)
 				_animationSet.activate(stage3DProxy, this);
 			

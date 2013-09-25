@@ -1,4 +1,4 @@
-﻿package away3d.controllers
+package away3d.controllers
 {
 	import away3d.containers.*;
 	import away3d.entities.*;
@@ -16,7 +16,8 @@
 		protected var _lookAtPosition:Vector3D;
 		protected var _lookAtObject:ObjectContainer3D;
 		protected var _origin:Vector3D = new Vector3D(0.0, 0.0, 0.0);
-		
+		protected var _upAxis:Vector3D = Vector3D.Y_AXIS;
+
 		/**
 		 * Creates a new <code>LookAtController</code> object.
 		 */
@@ -30,6 +31,21 @@
 				this.lookAtPosition = new Vector3D();
 		}
 		
+		/**
+        * The vector representing the up direction of the target object.
+        */
+		public function get upAxis():Vector3D
+		{
+			return _upAxis;
+		}
+		
+		public function set upAxis(upAxis:Vector3D):void
+		{
+			_upAxis = upAxis;
+			
+			notifyUpdate();
+		}
+
 		/**
 		 * The Vector3D object that the target looks at.
 		 */
@@ -86,10 +102,11 @@
 			
 			if (_targetObject) {
 				
-				if (_lookAtPosition)
-					_targetObject.lookAt(_lookAtPosition);
-				else if (_lookAtObject)
-					_targetObject.lookAt(_lookAtObject.scene? _lookAtObject.scenePosition : _lookAtObject.position);
+				if (_lookAtPosition) {
+					_targetObject.lookAt(_lookAtPosition, _upAxis);
+				} else if (_lookAtObject) {
+					_targetObject.lookAt(_lookAtObject.scene ? _lookAtObject.scenePosition : _lookAtObject.position, _upAxis);
+				}
 			}
 		}
 		

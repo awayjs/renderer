@@ -1,4 +1,4 @@
-package away.materials
+package away3d.materials.compilation
 {
 	import away3d.arcane;
 	import away3d.materials.LightSources;
