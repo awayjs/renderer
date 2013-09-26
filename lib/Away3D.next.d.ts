@@ -12839,7 +12839,7 @@ declare module away.utils {
         public toString(): string;
         public compareEqual(other, count): boolean;
         public writeBase64String(s: string): void;
-        public dumpToConsole(): void;
+        public dumpToConsole(start?: number, len?: number): void;
         public internalGetBase64String(count, getUnsignedByteFunc, self): string;
     }
 }
