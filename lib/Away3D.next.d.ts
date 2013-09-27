@@ -3,8 +3,6 @@
 /**
 * Base event class
 * @class away.events.Event
-*
-* @author Karim Beyrouti
 */
 declare module away.events {
     class Event {
