@@ -3,6 +3,7 @@
  ****************************************************************************************************************************************************************
  *
  *  Tasks:          grunt --libversion=0.0.1
+ *                  grunt --tests
  *
  *  --libversion    version number of the lib. This defaults to 'next' if not specified
  *
@@ -79,6 +80,7 @@ module.exports = function(grunt) {
                 }
             },
 
+	        /*
             MultipleJsFile: {
                 src: ['<%= meta.tsFile %>'],
                 outDir: '<%= meta.tsMultiExportFolder %>',
@@ -89,7 +91,7 @@ module.exports = function(grunt) {
                     comments: true
                 }
             }
-
+			*/
         },
 
         //--------------------------------------------------------------------------------------------------------------
