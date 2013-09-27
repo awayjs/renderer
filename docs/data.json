@@ -1448,8 +1448,7 @@
             "namespace": "",
             "file": "../src/away/events/Event.ts",
             "line": 1,
-            "description": "Base event class",
-            "author": "Karim Beyrouti"
+            "description": "Base event class"
         },
         "away.events.EventDispatcher": {
             "name": "away.events.EventDispatcher",
@@ -1462,7 +1461,7 @@
             "module": "away.events",
             "namespace": "",
             "file": "../src/away/events/EventDispatcher.ts",
-            "line": 13,
+            "line": 8,
             "description": "Base class for dispatching events"
         },
         "away.events.GeometryEvent": {
@@ -7969,7 +7968,7 @@
         },
         {
             "file": "../src/away/events/Event.ts",
-            "line": 23,
+            "line": 21,
             "description": "Type of event",
             "itemtype": "property",
             "name": "type",
@@ -7979,7 +7978,7 @@
         },
         {
             "file": "../src/away/events/Event.ts",
-            "line": 30,
+            "line": 28,
             "description": "Reference to target object",
             "itemtype": "property",
             "name": "target",
@@ -7989,7 +7988,7 @@
         },
         {
             "file": "../src/away/events/Event.ts",
-            "line": 42,
+            "line": 40,
             "description": "Clones the current event.",
             "return": {
                 "description": "An exact duplicate of the current event."
@@ -7999,7 +7998,7 @@
         },
         {
             "file": "../src/away/events/EventDispatcher.ts",
-            "line": 24,
+            "line": 19,
             "description": "Add an event listener",
             "itemtype": "method",
             "name": "addEventListener",
@@ -8025,7 +8024,7 @@
         },
         {
             "file": "../src/away/events/EventDispatcher.ts",
-            "line": 51,
+            "line": 46,
             "description": "Remove an event listener",
             "itemtype": "method",
             "name": "removeEventListener",
@@ -8051,7 +8050,7 @@
         },
         {
             "file": "../src/away/events/EventDispatcher.ts",
-            "line": 69,
+            "line": 64,
             "description": "Dispatch an event",
             "itemtype": "method",
             "name": "dispatchEvent",
@@ -8067,7 +8066,7 @@
         },
         {
             "file": "../src/away/events/EventDispatcher.ts",
-            "line": 94,
+            "line": 89,
             "description": "get Event Listener Index in array. Returns -1 if no listener is added",
             "itemtype": "method",
             "name": "getEventListenerIndex",
@@ -8093,7 +8092,7 @@
         },
         {
             "file": "../src/away/events/EventDispatcher.ts",
-            "line": 127,
+            "line": 122,
             "description": "check if an object has an event listener assigned to it",
             "itemtype": "method",
             "name": "hasListener",
@@ -8119,7 +8118,7 @@
         },
         {
             "file": "../src/away/events/EventDispatcher.ts",
-            "line": 168,
+            "line": 163,
             "description": "Event listener data container",
             "class": "away.events.EventDispatcher",
             "module": "away.events"
@@ -23155,11 +23154,11 @@
         },
         {
             "message": "Missing item type\nClones the current event.",
-            "line": " ../src/away/events/Event.ts:42"
+            "line": " ../src/away/events/Event.ts:40"
         },
         {
             "message": "Missing item type\nEvent listener data container",
-            "line": " ../src/away/events/EventDispatcher.ts:168"
+            "line": " ../src/away/events/EventDispatcher.ts:163"
         },
         {
             "message": "Missing item type\nDispatched when a SubGeometry was added from the dispatching Geometry.",
