@@ -1,8 +1,6 @@
 /**
  * Base event class
  * @class away.events.Event
- *
- * @author Karim Beyrouti
  */
 module away.events
 {
