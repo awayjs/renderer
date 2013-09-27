@@ -12839,7 +12839,7 @@ declare module away.utils {
         public toString(): string;
         public compareEqual(other, count): boolean;
         public writeBase64String(s: string): void;
-        public dumpToConsole(): void;
+        public dumpToConsole(start?: number, len?: number): void;
         public internalGetBase64String(count, getUnsignedByteFunc, self): string;
     }
 }
@@ -13078,93 +13078,6 @@ declare module away {
         constructor();
     }
 }
-declare module scene {
-    class PhongTorus extends away.events.EventDispatcher {
-        private _requestAnimationFrameTimer;
-        private _image;
-        private _context3D;
-        private _iBuffer;
-        private _normalMatrix;
-        private _mvMatrix;
-        private _pMatrix;
-        private _texture;
-        private _program;
-        private _stage;
-        constructor();
-        public stage : away.display.Stage;
-        private loadResources();
-        private imageCompleteHandler(e);
-        private onContext3DCreateHandler(e);
-        private tick(dt);
-    }
-}
-declare module scene {
-    class MaterialTorus extends away.events.EventDispatcher {
-        private _requestAnimationFrameTimer;
-        private _image;
-        private _context3D;
-        private _iBuffer;
-        private _normalMatrix;
-        private _mvMatrix;
-        private _pMatrix;
-        private _texture;
-        private _program;
-        private _stage;
-        private _material;
-        private _stageProxy;
-        private _stage3DManager;
-        constructor();
-        public stage : away.display.Stage;
-        private loadResources();
-        private imageCompleteHandler(e);
-        private onContext3DCreateHandler(e);
-        private tick(dt);
-    }
-}
-declare module aglsl {
-    class AssemblerTest {
-        constructor();
-    }
-}
-declare module aglsl {
-    class AGALCompilerTest {
-        constructor();
-    }
-}
-declare module demos.cubes {
-    class CubeDemo {
-        private _scene;
-        private _view;
-        private _cube;
-        private _torus;
-        private _mesh;
-        private _mesh2;
-        private _raf;
-        private _image;
-        private _cameraAxis;
-        constructor();
-        private loadResources();
-        private imageCompleteHandler(e);
-        public render(dt?: number): void;
-        public resize(e): void;
-    }
-}
-declare var test: demos.cubes.CubeDemo;
-declare module demos.lights {
-    class TorusLight {
-        private _scene;
-        private _view;
-        private _torus;
-        private _mesh;
-        private _raf;
-        private _image;
-        private _light;
-        constructor();
-        private loadResources();
-        private imageCompleteHandler(e);
-        public render(dt?: number): void;
-    }
-}
 declare module tests.unit.tsUnit {
     interface ITestClass {
     }
@@ -13261,8 +13174,40 @@ declare module tests.unit {
         private bind;
     }
 }
+declare module tests.library {
+    class AWDParserTest {
+        private _view;
+        private token;
+        private _timer;
+        private _suzane;
+        constructor();
+        private resize();
+        private render(dt);
+        public onAssetComplete(e: away.events.AssetEvent): void;
+        public onResourceComplete(e: away.events.LoaderEvent): void;
+    }
+}
+declare module demos.parsers {
+    class AWDSuzanne {
+        private _view;
+        private _token;
+        private _timer;
+        private _suzane;
+        private _light;
+        private _lightPicker;
+        private lookAtPosition;
+        private _cameraIncrement;
+        constructor();
+        private resize();
+        private render(dt);
+        public onAssetComplete(e: away.events.AssetEvent): void;
+        public onResourceComplete(e: away.events.LoaderEvent): void;
+        private getRandom(min, max);
+    }
+}
 declare module away {
     class AppHarnessDebug {
         constructor();
+        private init();
     }
 }

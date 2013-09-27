@@ -1,10 +1,7 @@
-/**
- * ...
- * @author Gary Paluk - http://www.plugin.io
- */
-
 ///<reference path="../src/Away3D.ts"/>
 ///<reference path="unit/TestSuite.ts"/>
+///<reference path="away/library/AWDParserTest.ts"/>
+///<reference path="demos/parsers/AWDSuzanne.ts"/>
 
 module away
 {
@@ -12,8 +9,18 @@ module away
     {
         constructor()
         {
-            new tests.unit.TestSuite();
+            //new tests.unit.TestSuite();
+            setTimeout(this.init , 1000 );
         }
+
+        private init() : void
+        {
+
+            new tests.library.AWDParserTest();
+            //new demos.parsers.AWDSuzanne();
+
+        }
+
     }
 }
 

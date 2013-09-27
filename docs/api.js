@@ -15,8 +15,7 @@ YUI.add("yuidoc-meta", function(Y) {
     ],
     "modules": [
         "away.base",
-        "away.events",
-        "away.geom"
+        "away.events"
     ],
     "allModules": [
         {
@@ -26,10 +25,6 @@ YUI.add("yuidoc-meta", function(Y) {
         {
             "displayName": "away.events",
             "name": "away.events"
-        },
-        {
-            "displayName": "away.geom",
-            "name": "away.geom"
         }
     ]
 } };

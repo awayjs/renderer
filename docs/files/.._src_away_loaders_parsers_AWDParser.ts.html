@@ -71,8 +71,6 @@
             
                 <li><a href="../modules/away.events.html">away.events</a></li>
             
-                <li><a href="../modules/away.geom.html">away.geom</a></li>
-            
             </ul>
         </div>
     </div>
@@ -1947,7 +1945,14 @@ module away.loaders
                     data = new away.utils.ByteArray();
                 this._newBlockBytes.readBytes( data , 0 , data_len );
 
-                this._pAddDependency(this._cur_block_id.toString(), null, false, data, true);
+	            //
+	            // AWDParser - Fix for FireFox Bug: https://bugzilla.mozilla.org/show_bug.cgi?id=715075 .
+	            //
+	            // Converting data to image here instead of parser - fix FireFox bug where image width / height is 0 when created from data
+	            // This gives the browser time to initialise image width / height.
+
+	            this._pAddDependency(this._cur_block_id.toString(), null, false, away.loaders.ParserUtil.byteArrayToImage( data ), true);
+	            //this._pAddDependency(this._cur_block_id.toString(), null, false, data, true);
 
             }
 

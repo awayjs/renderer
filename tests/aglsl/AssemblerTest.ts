@@ -1,8 +1,3 @@
-/**
- * ...
- * @author Gary Paluk - http://www.plugin.io
- */
-
 ///<reference path="../../lib/Away3D.next.d.ts" />
 
 module aglsl

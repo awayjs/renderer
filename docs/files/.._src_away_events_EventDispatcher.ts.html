@@ -71,8 +71,6 @@
             
                 <li><a href="../modules/away.events.html">away.events</a></li>
             
-                <li><a href="../modules/away.geom.html">away.geom</a></li>
-            
             </ul>
         </div>
     </div>
@@ -124,10 +122,12 @@
  */
 module away.events {
 
-/**
- * Base class for dispatching events
- * @class away.events.EventDispatcher
- */
+    /**
+     * Base class for dispatching events
+     *
+     * @class away.events.EventDispatcher
+     *
+     */
     export class EventDispatcher{
 
         private listeners   : Object[] = new Array&lt;Object&gt;();

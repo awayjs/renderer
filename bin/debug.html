@@ -51,21 +51,14 @@
         }
     </style>
 
-    <script type="text/javascript" language="javascript" src="js/AppHarness.js"></script>
+    <script type="text/javascript" language="javascript" src="js/AppHarnessDebug.js"></script>
 
     <script type="text/javascript">
 
 
         window.onload = function ()
         {
-            var harness = new away.AppHarness();
-
-            harness.addTest( 'demos.parsers.AWDSuzanne' , 'tests/AWDSuzanne.js' , 'tests/AWDSuzanne.js' );
-            harness.addTest( 'demos.parsers.ObjChiefTestDay' , 'tests/ObjChiefTestDay.js' , 'tests/ObjChiefTestDay.js' );
-
-            harness.load( 'demos.parsers.ObjChiefTestDay' , 'tests/ObjChiefTestDay.js' , 'tests/ObjChiefTestDay.js'  );
-
-            harness.start();
+            new away.AppHarnessDebug();
         }
 
 

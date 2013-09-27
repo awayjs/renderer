@@ -1,8 +1,3 @@
-/**
- * ...
- * @author Gary Paluk - http://www.plugin.io
- */
-
 ///<reference path="../../src/away/_definitions.ts" />
 
 module aglsl

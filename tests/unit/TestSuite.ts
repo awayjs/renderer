@@ -1,10 +1,5 @@
-/**
- * ...
- * @author Gary Paluk - http://www.plugin.io
- */
-
 ///<reference path="geom/Matrix3DTest.ts" />
-    ///<reference path="geom/Vector3DTest.ts" />
+///<reference path="geom/Vector3DTest.ts" />
 
 module tests.unit
 {

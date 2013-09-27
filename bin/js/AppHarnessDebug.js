@@ -21438,7 +21438,13 @@ else
                     data = new away.utils.ByteArray();
                     this._newBlockBytes.readBytes(data, 0, data_len);
 
-                    this._pAddDependency(this._cur_block_id.toString(), null, false, data, true);
+                    //
+                    // AWDParser - Fix for FireFox Bug: https://bugzilla.mozilla.org/show_bug.cgi?id=715075 .
+                    //
+                    // Converting data to image here instead of parser - fix FireFox bug where image width / height is 0 when created from data
+                    // This gives the browser time to initialise image width / height.
+                    this._pAddDependency(this._cur_block_id.toString(), null, false, away.loaders.ParserUtil.byteArrayToImage(data), true);
+                    //this._pAddDependency(this._cur_block_id.toString(), null, false, data, true);
                 }
 
                 // Ignore for now
@@ -48461,520 +48467,6 @@ var away;
     })(away.events.EventDispatcher);
     away.Away3D = Away3D;
 })(away || (away = {}));
-/**
-* ...
-* @author Gary Paluk - http://www.plugin.io
-*/
-///<reference path="../../src/away/_definitions.ts" />
-var scene;
-(function (scene) {
-    var PhongTorus = (function (_super) {
-        __extends(PhongTorus, _super);
-        function PhongTorus() {
-            _super.call(this);
-
-            if (!document) {
-                throw "The document root object must be avaiable";
-            }
-            this._stage = new away.display.Stage(800, 600);
-            this.loadResources();
-        }
-        Object.defineProperty(PhongTorus.prototype, "stage", {
-            get: function () {
-                return this._stage;
-            },
-            enumerable: true,
-            configurable: true
-        });
-
-        PhongTorus.prototype.loadResources = function () {
-            var urlRequest = new away.net.URLRequest("130909wall_big.png");
-            var imgLoader = new away.net.IMGLoader();
-            imgLoader.addEventListener(away.events.Event.COMPLETE, this.imageCompleteHandler, this);
-            imgLoader.load(urlRequest);
-        };
-
-        PhongTorus.prototype.imageCompleteHandler = function (e) {
-            var imageLoader = e.target;
-            this._image = imageLoader.image;
-
-            this._stage.stage3Ds[0].addEventListener(away.events.Event.CONTEXT3D_CREATE, this.onContext3DCreateHandler, this);
-            this._stage.stage3Ds[0].requestContext();
-        };
-
-        PhongTorus.prototype.onContext3DCreateHandler = function (e) {
-            this._stage.stage3Ds[0].removeEventListener(away.events.Event.CONTEXT3D_CREATE, this.onContext3DCreateHandler, this);
-
-            var stage3D = e.target;
-            this._context3D = stage3D.context3D;
-
-            //this._texture = this._context3D.createTexture( 512, 512, away.display3D.Context3DTextureFormat.BGRA, true );
-            //this._texture.uploadFromHTMLImageElement( this._image );
-            //var bitmapData: away.display.BitmapData = new away.display.BitmapData( 512, 512, true, 0x02C3D4 );
-            //this._texture.uploadFromBitmapData( bitmapData );
-            this._context3D.configureBackBuffer(800, 600, 0, true);
-            this._context3D.setColorMask(true, true, true, true);
-
-            var torus = new away.primitives.TorusGeometry(1, 0.5, 32, 16, false);
-            torus.iValidate();
-
-            var vertices = torus.getSubGeometries()[0].vertexData;
-            var indices = torus.getSubGeometries()[0].indexData;
-
-            /**
-            * Updates the vertex data. All vertex properties are contained in a single Vector, and the order is as follows:
-            * 0 - 2: vertex position X, Y, Z
-            * 3 - 5: normal X, Y, Z
-            * 6 - 8: tangent X, Y, Z
-            * 9 - 10: U V
-            * 11 - 12: Secondary U V
-            */
-            var stride = 13;
-            var numVertices = vertices.length / stride;
-            var vBuffer = this._context3D.createVertexBuffer(numVertices, stride);
-            vBuffer.uploadFromArray(vertices, 0, numVertices);
-
-            var numIndices = indices.length;
-            this._iBuffer = this._context3D.createIndexBuffer(numIndices);
-            this._iBuffer.uploadFromArray(indices, 0, numIndices);
-
-            this._program = this._context3D.createProgram();
-
-            var vProgram = "attribute vec3 aVertexPosition;\n" + "attribute vec2 aTextureCoord;\n" + "attribute vec3 aVertexNormal;\n" + "uniform mat4 uPMatrix;\n" + "uniform mat4 uMVMatrix;\n" + "uniform mat4 uNormalMatrix;\n" + "varying vec3 vNormalInterp;\n" + "varying vec3 vVertPos;\n" + "void main(){\n" + "	gl_Position = uPMatrix * uMVMatrix * vec4( aVertexPosition, 1.0 );\n" + "	vec4 vertPos4 = uMVMatrix * vec4( aVertexPosition, 1.0 );\n" + "	vVertPos = vec3( vertPos4 ) / vertPos4.w;\n" + "	vNormalInterp = vec3( uNormalMatrix * vec4( aVertexNormal, 0.0 ) );\n" + "}\n";
-
-            var fProgram = "precision mediump float;\n" + "varying vec3 vNormalInterp;\n" + "varying vec3 vVertPos;\n" + "const vec3 lightPos = vec3( 1.0,1.0,1.0 );\n" + "const vec3 diffuseColor = vec3( 0.3, 0.6, 0.9 );\n" + "const vec3 specColor = vec3( 1.0, 1.0, 1.0 );\n" + "void main() {\n" + "	vec3 normal = normalize( vNormalInterp );\n" + "	vec3 lightDir = normalize( lightPos - vVertPos );\n" + "	float lambertian = max( dot( lightDir,normal ), 0.0 );\n" + "	float specular = 0.0;\n" + "	if( lambertian > 0.0 ) {\n" + "		vec3 reflectDir = reflect( -lightDir, normal );\n" + "		vec3 viewDir = normalize( -vVertPos );\n" + "		float specAngle = max( dot( reflectDir, viewDir ), 0.0 );\n" + "		specular = pow( specAngle, 4.0 );\n" + "		specular *= lambertian;\n" + "	}\n" + "	gl_FragColor = vec4( lambertian * diffuseColor + specular * specColor, 1.0 );\n" + "}\n";
-
-            this._program.upload(vProgram, fProgram);
-            this._context3D.setProgram(this._program);
-
-            this._pMatrix = new away.utils.PerspectiveMatrix3D();
-            this._pMatrix.perspectiveFieldOfViewLH(45, 800 / 600, 0.1, 1000);
-
-            this._mvMatrix = new away.geom.Matrix3D();
-            this._mvMatrix.appendTranslation(0, 0, 7);
-
-            this._normalMatrix = this._mvMatrix.clone();
-            this._normalMatrix.invert();
-            this._normalMatrix.transpose();
-
-            this._context3D.setGLSLVertexBufferAt("aVertexPosition", vBuffer, 0, away.display3D.Context3DVertexBufferFormat.FLOAT_3);
-            this._context3D.setGLSLVertexBufferAt("aVertexNormal", vBuffer, 3, away.display3D.Context3DVertexBufferFormat.FLOAT_3);
-
-            this._requestAnimationFrameTimer = new away.utils.RequestAnimationFrame(this.tick, this);
-            this._requestAnimationFrameTimer.start();
-        };
-
-        PhongTorus.prototype.tick = function (dt) {
-            this._mvMatrix.appendRotation(dt * 0.05, new away.geom.Vector3D(0, 1, 0));
-            this._context3D.setProgram(this._program);
-            this._context3D.setGLSLProgramConstantsFromMatrix("uNormalMatrix", this._normalMatrix, true);
-            this._context3D.setGLSLProgramConstantsFromMatrix("uMVMatrix", this._mvMatrix, true);
-            this._context3D.setGLSLProgramConstantsFromMatrix("uPMatrix", this._pMatrix, true);
-
-            this._context3D.clear(0.16, 0.16, 0.16, 1);
-            this._context3D.drawTriangles(this._iBuffer, 0, this._iBuffer.numIndices / 3);
-            this._context3D.present();
-        };
-        return PhongTorus;
-    })(away.events.EventDispatcher);
-    scene.PhongTorus = PhongTorus;
-})(scene || (scene = {}));
-/**
-* ...
-* @author Gary Paluk - http://www.plugin.io
-*/
-///<reference path="../../src/away/_definitions.ts" />
-var scene;
-(function (scene) {
-    var MaterialTorus = (function (_super) {
-        __extends(MaterialTorus, _super);
-        function MaterialTorus() {
-            _super.call(this);
-
-            away.Debug.THROW_ERRORS = false;
-
-            if (!document) {
-                throw "The document root object must be avaiable";
-            }
-            this._stage = new away.display.Stage(800, 600);
-
-            this._stage3DManager = away.managers.Stage3DManager.getInstance(this._stage);
-
-            this.loadResources();
-        }
-        Object.defineProperty(MaterialTorus.prototype, "stage", {
-            get: function () {
-                return this._stage;
-            },
-            enumerable: true,
-            configurable: true
-        });
-
-        MaterialTorus.prototype.loadResources = function () {
-            var urlRequest = new away.net.URLRequest("130909wall_big.png");
-            var imgLoader = new away.net.IMGLoader();
-            imgLoader.addEventListener(away.events.Event.COMPLETE, this.imageCompleteHandler, this);
-            imgLoader.load(urlRequest);
-        };
-
-        MaterialTorus.prototype.imageCompleteHandler = function (e) {
-            var imageLoader = e.target;
-            this._image = imageLoader.image;
-
-            this._stage.stage3Ds[0].addEventListener(away.events.Event.CONTEXT3D_CREATE, this.onContext3DCreateHandler, this);
-            this._stage.stage3Ds[0].requestContext();
-        };
-
-        MaterialTorus.prototype.onContext3DCreateHandler = function (e) {
-            this._stage.stage3Ds[0].removeEventListener(away.events.Event.CONTEXT3D_CREATE, this.onContext3DCreateHandler, this);
-
-            var stage3D = e.target;
-
-            //constructor(stage3DIndex:number, stage3D:away.display.Stage3D, stage3DManager:away.managers.Stage3DManager, forceSoftware:boolean = false, profile:string = "baseline")
-            this._stageProxy = new away.managers.Stage3DProxy(0, stage3D, this._stage3DManager);
-
-            this._context3D = stage3D.context3D;
-
-            //this._texture = this._context3D.createTexture( 512, 512, away.display3D.Context3DTextureFormat.BGRA, true );
-            //this._texture.uploadFromHTMLImageElement( this._image );
-            //var bitmapData: away.display.BitmapData = new away.display.BitmapData( 512, 512, true, 0x02C3D4 );
-            //this._texture.uploadFromBitmapData( bitmapData );
-            this._context3D.configureBackBuffer(800, 600, 0, true);
-            this._context3D.setColorMask(true, true, true, true);
-
-            //var torus: away.primitives.TorusGeometry = new away.primitives.TorusGeometry( 1, 0.5, 32, 16, false );
-            //var torus: away.primitives.CubeGeometry= new away.primitives.CubeGeometry( 1 , 1 , 1 , 32 , 32 , 32 );
-            //var torus: away.primitives.CapsuleGeometry= new away.primitives.CapsuleGeometry( 1 , 1 , 32 , 32 );
-            var torus = new away.primitives.CylinderGeometry(0, 2, 3, 32, 32);
-
-            //var torus: away.primitives.SphereGeometry= new away.primitives.SphereGeometry( 2 , 32 , 32 );
-            //var torus: away.primitives.RegularPolygonGeometry= new away.primitives.RegularPolygonGeometry( 4 );// NOT WORKING
-            torus.iValidate();
-
-            var vertices = torus.getSubGeometries()[0].vertexData;
-            var indices = torus.getSubGeometries()[0].indexData;
-
-            /**
-            * Updates the vertex data. All vertex properties are contained in a single Vector, and the order is as follows:
-            * 0 - 2: vertex position X, Y, Z
-            * 3 - 5: normal X, Y, Z
-            * 6 - 8: tangent X, Y, Z
-            * 9 - 10: U V
-            * 11 - 12: Secondary U V
-            */
-            var stride = 13;
-            var numVertices = vertices.length / stride;
-            var vBuffer = this._context3D.createVertexBuffer(numVertices, stride);
-            vBuffer.uploadFromArray(vertices, 0, numVertices);
-
-            var numIndices = indices.length;
-            this._iBuffer = this._context3D.createIndexBuffer(numIndices);
-            this._iBuffer.uploadFromArray(indices, 0, numIndices);
-
-            this._program = this._context3D.createProgram();
-
-            this._material = new away.materials.ColorMaterial();
-            this._material._pScreenPass.iUpdateProgram(this._stageProxy);
-
-            console.log(this._material._pScreenPass.iGetVertexCode());
-
-            var vProgram = "attribute vec3 aVertexPosition;\n" + "attribute vec2 aTextureCoord;\n" + "attribute vec3 aVertexNormal;\n" + "uniform mat4 uPMatrix;\n" + "uniform mat4 uMVMatrix;\n" + "uniform mat4 uNormalMatrix;\n" + "varying vec3 vNormalInterp;\n" + "varying vec3 vVertPos;\n" + "void main(){\n" + "	gl_Position = uPMatrix * uMVMatrix * vec4( aVertexPosition, 1.0 );\n" + "	vec4 vertPos4 = uMVMatrix * vec4( aVertexPosition, 1.0 );\n" + "	vVertPos = vec3( vertPos4 ) / vertPos4.w;\n" + "	vNormalInterp = vec3( uNormalMatrix * vec4( aVertexNormal, 0.0 ) );\n" + "}\n";
-
-            var fProgram = "precision mediump float;\n" + "varying vec3 vNormalInterp;\n" + "varying vec3 vVertPos;\n" + "const vec3 lightPos = vec3( 1.0,1.0,1.0 );\n" + "const vec3 diffuseColor = vec3( 0.3, 0.6, 0.9 );\n" + "const vec3 specColor = vec3( 1.0, 1.0, 1.0 );\n" + "void main() {\n" + "	vec3 normal = normalize( vNormalInterp );\n" + "	vec3 lightDir = normalize( lightPos - vVertPos );\n" + "	float lambertian = max( dot( lightDir,normal ), 0.0 );\n" + "	float specular = 0.0;\n" + "	if( lambertian > 0.0 ) {\n" + "		vec3 reflectDir = reflect( -lightDir, normal );\n" + "		vec3 viewDir = normalize( -vVertPos );\n" + "		float specAngle = max( dot( reflectDir, viewDir ), 0.0 );\n" + "		specular = pow( specAngle, 4.0 );\n" + "		specular *= lambertian;\n" + "	}\n" + "	gl_FragColor = vec4( lambertian * diffuseColor + specular * specColor, 1.0 );\n" + "}\n";
-
-            this._program.upload(vProgram, fProgram);
-            this._context3D.setProgram(this._program);
-
-            this._pMatrix = new away.utils.PerspectiveMatrix3D();
-            this._pMatrix.perspectiveFieldOfViewLH(45, 800 / 600, 0.1, 1000);
-
-            this._mvMatrix = new away.geom.Matrix3D();
-            this._mvMatrix.appendTranslation(0, 0, 7);
-
-            this._normalMatrix = this._mvMatrix.clone();
-            this._normalMatrix.invert();
-            this._normalMatrix.transpose();
-
-            this._context3D.setGLSLVertexBufferAt("aVertexPosition", vBuffer, 0, away.display3D.Context3DVertexBufferFormat.FLOAT_3);
-            this._context3D.setGLSLVertexBufferAt("aVertexNormal", vBuffer, 3, away.display3D.Context3DVertexBufferFormat.FLOAT_3);
-
-            this._requestAnimationFrameTimer = new away.utils.RequestAnimationFrame(this.tick, this);
-            this._requestAnimationFrameTimer.start();
-        };
-
-        MaterialTorus.prototype.tick = function (dt) {
-            this._mvMatrix.appendRotation(dt * 0.05, new away.geom.Vector3D(0, 1, 0));
-            this._mvMatrix.position = new away.geom.Vector3D(0, 0, 5);
-
-            this._context3D.setProgram(this._program);
-            this._context3D.setGLSLProgramConstantsFromMatrix("uNormalMatrix", this._normalMatrix, true);
-            this._context3D.setGLSLProgramConstantsFromMatrix("uMVMatrix", this._mvMatrix, true);
-            this._context3D.setGLSLProgramConstantsFromMatrix("uPMatrix", this._pMatrix, true);
-
-            this._context3D.clear(0.16, 0.16, 0.16, 1);
-            this._context3D.drawTriangles(this._iBuffer, 0, this._iBuffer.numIndices / 3);
-            this._context3D.present();
-        };
-        return MaterialTorus;
-    })(away.events.EventDispatcher);
-    scene.MaterialTorus = MaterialTorus;
-})(scene || (scene = {}));
-/**
-* ...
-* @author Gary Paluk - http://www.plugin.io
-*/
-///<reference path="../../src/away/_definitions.ts" />
-var aglsl;
-(function (aglsl) {
-    var AssemblerTest = (function () {
-        function AssemblerTest() {
-            var shader = "part fragment 1                            	\n" + "mov oc, fc0                                    \n" + "endpart                                  		\n\n" + "part vertex 1                             		\n" + "m44 op, vt0, vc0	                        	\n" + "endpart                                		\n";
-
-            var agalMiniAssembler = new aglsl.assembler.AGALMiniAssembler();
-            agalMiniAssembler.assemble(shader);
-
-            var tokenizer = new aglsl.AGALTokenizer();
-
-            // TODO clean up the API for data access
-            var vertData = agalMiniAssembler.r['vertex'].data;
-            var vertDesc = tokenizer.decribeAGALByteArray(vertData);
-
-            var fragData = agalMiniAssembler.r['fragment'].data;
-            var fragDesc = tokenizer.decribeAGALByteArray(fragData);
-
-            console.log("=== Vertex Description ===");
-            console.log(vertDesc);
-
-            console.log("\n");
-
-            console.log("=== Fragment Description ===");
-            console.log(fragDesc);
-
-            console.log("\n");
-            console.log("=== Vertex GLSL ===");
-            var vertParser = new aglsl.AGLSLParser();
-            console.log(vertParser.parse(vertDesc));
-
-            console.log("\n");
-            console.log("=== Fragment GLSL ===");
-            var fragParser = new aglsl.AGLSLParser();
-            console.log(fragParser.parse(fragDesc));
-        }
-        return AssemblerTest;
-    })();
-    aglsl.AssemblerTest = AssemblerTest;
-})(aglsl || (aglsl = {}));
-/**
-* ...
-* @author Gary Paluk - http://www.plugin.io
-*/
-///<reference path="../../src/away/_definitions.ts" />
-var aglsl;
-(function (aglsl) {
-    var AGALCompilerTest = (function () {
-        function AGALCompilerTest() {
-            var vertSource = "mov oc, fc0 \n";
-            var fragSource = "m44 op, vt0, vc0 \n";
-
-            var vertCompiler = new aglsl.AGLSLCompiler();
-            var fragCompiler = new aglsl.AGLSLCompiler();
-
-            console.log(vertCompiler.compile(away.display3D.Context3DProgramType.VERTEX, vertSource));
-
-            console.log("\n");
-
-            console.log(fragCompiler.compile(away.display3D.Context3DProgramType.FRAGMENT, fragSource));
-        }
-        return AGALCompilerTest;
-    })();
-    aglsl.AGALCompilerTest = AGALCompilerTest;
-})(aglsl || (aglsl = {}));
-var demos;
-(function (demos) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="../../../src/away/_definitions.ts" />
-    (function (cubes) {
-        var CubeDemo = (function () {
-            function CubeDemo() {
-                away.Debug.THROW_ERRORS = false;
-
-                this._view = new away.containers.View3D();
-
-                this._view.backgroundColor = 0x000000;
-                this._view.camera.x = 130;
-                this._view.camera.y = 0;
-                this._view.camera.z = 0;
-                this._cameraAxis = new away.geom.Vector3D(0, 0, 1);
-
-                this._view.camera.lens = new away.cameras.PerspectiveLens(120);
-
-                this._cube = new away.primitives.CubeGeometry(20.0, 20.0, 20.0);
-                this._torus = new away.primitives.TorusGeometry(150, 80, 32, 16, true);
-
-                this.loadResources();
-            }
-            CubeDemo.prototype.loadResources = function () {
-                var urlRequest = new away.net.URLRequest("130909wall_big.png");
-                var imgLoader = new away.net.IMGLoader();
-                imgLoader.addEventListener(away.events.Event.COMPLETE, this.imageCompleteHandler, this);
-                imgLoader.load(urlRequest);
-            };
-
-            CubeDemo.prototype.imageCompleteHandler = function (e) {
-                var imageLoader = e.target;
-                this._image = imageLoader.image;
-
-                var ts = new away.textures.HTMLImageElementTexture(this._image, false);
-
-                var matTx = new away.materials.TextureMaterial(ts, true, true, false);
-
-                matTx.blendMode = away.display.BlendMode.ADD;
-                matTx.bothSides = true;
-
-                this._mesh = new away.entities.Mesh(this._torus, matTx);
-                this._mesh2 = new away.entities.Mesh(this._cube, matTx);
-                this._mesh2.x = 130;
-                this._mesh2.z = 40;
-
-                this._view.scene.addChild(this._mesh);
-                this._view.scene.addChild(this._mesh2);
-
-                this._raf = new away.utils.RequestAnimationFrame(this.render, this);
-                this._raf.start();
-
-                this.resize(null);
-            };
-
-            CubeDemo.prototype.render = function (dt) {
-                if (typeof dt === "undefined") { dt = null; }
-                this._view.camera.rotate(this._cameraAxis, 1);
-                this._mesh.rotationY += 1;
-                this._mesh2.rotationX += 0.4;
-                this._mesh2.rotationY += 0.4;
-                this._view.render();
-            };
-
-            CubeDemo.prototype.resize = function (e) {
-                this._view.y = 0;
-                this._view.x = 0;
-
-                this._view.width = window.innerWidth;
-                this._view.height = window.innerHeight;
-
-                console.log(this._view.width, this._view.height);
-
-                this._view.render();
-            };
-            return CubeDemo;
-        })();
-        cubes.CubeDemo = CubeDemo;
-    })(demos.cubes || (demos.cubes = {}));
-    var cubes = demos.cubes;
-})(demos || (demos = {}));
-
-var test;
-window.onload = function () {
-    test = new demos.cubes.CubeDemo();
-};
-
-window.onresize = function (e) {
-    if (test) {
-        test.resize(e);
-    }
-};
-var demos;
-(function (demos) {
-    /**
-    * ...
-    * @author Gary Paluk - http://www.plugin.io
-    */
-    ///<reference path="../../../src/away/_definitions.ts" />
-    (function (lights) {
-        var TorusLight = (function () {
-            function TorusLight() {
-                away.Debug.THROW_ERRORS = false;
-                away.Debug.ENABLE_LOG = false;
-                away.Debug.LOG_PI_ERRORS = false;
-
-                this._view = new away.containers.View3D();
-                this._view.backgroundColor = 0x014C73;
-                this._view.camera.lens = new away.cameras.PerspectiveLens(60);
-                this._torus = new away.primitives.TorusGeometry(120, 80, 32, 16, false);
-
-                this.loadResources();
-            }
-            TorusLight.prototype.loadResources = function () {
-                var urlRequest = new away.net.URLRequest("dots.png");
-
-                var imgLoader = new away.net.IMGLoader();
-
-                imgLoader.addEventListener(away.events.Event.COMPLETE, this.imageCompleteHandler, this);
-                imgLoader.load(urlRequest);
-            };
-
-            TorusLight.prototype.imageCompleteHandler = function (e) {
-                var _this = this;
-                var imageLoader = e.target;
-                this._image = imageLoader.image;
-
-                this._view.camera.z = -1000;
-                var ts = new away.textures.HTMLImageElementTexture(this._image, false);
-
-                var light = new away.lights.DirectionalLight();
-                light.color = 0x00ff88;
-                light.direction = new away.geom.Vector3D(0, 0, 1);
-                light.ambient = 0.6;
-                light.diffuse = .7;
-                light.specular = 60;
-
-                this._view.scene.addChild(light);
-
-                var lightPicker = new away.materials.StaticLightPicker([light]);
-
-                var matTx = new away.materials.TextureMaterial(ts, true, true, false);
-                matTx.lightPicker = lightPicker;
-
-                this._mesh = new away.entities.Mesh(this._torus, matTx);
-
-                this._view.scene.addChild(this._mesh);
-
-                //this._raf = new away.utils.RequestAnimationFrame( this.render , this );
-                document.onmousedown = function () {
-                    return _this.render();
-                };
-
-                this.render(0);
-            };
-
-            /*
-            public stopRender( )
-            {
-            
-            if ( this._raf.active )
-            {
-            this._raf.stop();
-            }
-            else
-            {
-            this._raf.start();
-            }
-            
-            }
-            */
-            TorusLight.prototype.render = function (dt) {
-                if (typeof dt === "undefined") { dt = null; }
-                this._mesh.rotationY += 1;
-                this._view.render();
-            };
-            return TorusLight;
-        })();
-        lights.TorusLight = TorusLight;
-    })(demos.lights || (demos.lights = {}));
-    var lights = demos.lights;
-})(demos || (demos = {}));
 var tests;
 (function (tests) {
     (function (unit) {
@@ -50068,24 +49560,233 @@ var tests;
     })(tests.unit || (tests.unit = {}));
     var unit = tests.unit;
 })(tests || (tests = {}));
+var tests;
+(function (tests) {
+    ///<reference path="../../../lib/Away3D.next.d.ts" />
+    //<reference path="../../../src/Away3D.ts" />
+    (function (library) {
+        var AWDParserTest = (function () {
+            function AWDParserTest() {
+                var _this = this;
+                away.Debug.LOG_PI_ERRORS = true;
+                away.Debug.THROW_ERRORS = false;
+
+                away.library.AssetLibrary.enableParser(away.loaders.AWDParser);
+
+                this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/suzanne.awd'));
+                this.token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete, this);
+                this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+
+                this._view = new away.containers.View3D();
+                this._timer = new away.utils.RequestAnimationFrame(this.render, this);
+
+                window.onresize = function () {
+                    return _this.resize();
+                };
+            }
+            AWDParserTest.prototype.resize = function () {
+                this._view.y = 0;
+                this._view.x = 0;
+                this._view.width = window.innerWidth;
+                this._view.height = window.innerHeight;
+            };
+
+            AWDParserTest.prototype.render = function (dt) {
+                if (this._suzane) {
+                    this._suzane.rotationY += 1;
+                }
+
+                this._view.render();
+                this._view.camera.z = -2000;
+            };
+
+            AWDParserTest.prototype.onAssetComplete = function (e) {
+                console.log('------------------------------------------------------------------------------');
+                console.log('away.events.AssetEvent.ASSET_COMPLETE', away.library.AssetLibrary.getAsset(e.asset.name));
+                console.log('------------------------------------------------------------------------------');
+            };
+
+            AWDParserTest.prototype.onResourceComplete = function (e) {
+                console.log('------------------------------------------------------------------------------');
+                console.log('away.events.LoaderEvent.RESOURCE_COMPLETE', e);
+                console.log('------------------------------------------------------------------------------');
+
+                var loader = e.target;
+                var numAssets = loader.baseDependency.assets.length;
+
+                for (var i = 0; i < numAssets; ++i) {
+                    var asset = loader.baseDependency.assets[i];
+
+                    switch (asset.assetType) {
+                        case away.library.AssetType.MESH:
+                            var mesh = asset;
+
+                            mesh.scale(600);
+
+                            this._suzane = mesh;
+
+                            this._view.scene.addChild(mesh);
+                            this._timer.start();
+
+                            this.resize();
+
+                            break;
+
+                        case away.library.AssetType.GEOMETRY:
+                            break;
+
+                        case away.library.AssetType.MATERIAL:
+                            break;
+                    }
+                }
+            };
+            return AWDParserTest;
+        })();
+        library.AWDParserTest = AWDParserTest;
+    })(tests.library || (tests.library = {}));
+    var library = tests.library;
+})(tests || (tests = {}));
+var demos;
+(function (demos) {
+    //<reference path="../../../lib/Away3D.next.d.ts" />
+    ///<reference path="../../../src/Away3D.ts" />
+    (function (parsers) {
+        var AWDSuzanne = (function () {
+            function AWDSuzanne() {
+                var _this = this;
+                this.lookAtPosition = new away.geom.Vector3D();
+                this._cameraIncrement = 0;
+                away.Debug.LOG_PI_ERRORS = true;
+                away.Debug.THROW_ERRORS = false;
+
+                away.library.AssetLibrary.enableParser(away.loaders.AWDParser);
+
+                this._token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/suzanne.awd'));
+                this._token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete, this);
+                this._token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+
+                this._view = new away.containers.View3D();
+                this._view.camera.lens.far = 6000;
+                this._timer = new away.utils.RequestAnimationFrame(this.render, this);
+
+                this._light = new away.lights.DirectionalLight();
+                this._light.color = 0x683019;
+                this._light.direction = new away.geom.Vector3D(1, 0, 0);
+                this._light.ambient = 0.1;
+                this._light.ambientColor = 0x85b2cd;
+                this._light.diffuse = 2.8;
+                this._light.specular = 1.8;
+                this._view.scene.addChild(this._light);
+
+                this._lightPicker = new away.materials.StaticLightPicker([this._light]);
+
+                window.onresize = function () {
+                    return _this.resize();
+                };
+            }
+            AWDSuzanne.prototype.resize = function () {
+                this._view.y = 0;
+                this._view.x = 0;
+                this._view.width = window.innerWidth;
+                this._view.height = window.innerHeight;
+            };
+
+            AWDSuzanne.prototype.render = function (dt) {
+                if (this._view.camera) {
+                    this._view.camera.lookAt(this.lookAtPosition);
+                    this._cameraIncrement += 0.01;
+                    this._view.camera.x = Math.cos(this._cameraIncrement) * 1400;
+                    this._view.camera.z = Math.sin(this._cameraIncrement) * 1400;
+
+                    this._light.x = Math.cos(this._cameraIncrement) * 1400;
+                    this._light.y = Math.sin(this._cameraIncrement) * 1400;
+                }
+
+                this._view.render();
+            };
+
+            AWDSuzanne.prototype.onAssetComplete = function (e) {
+                console.log('------------------------------------------------------------------------------');
+                console.log('away.events.AssetEvent.ASSET_COMPLETE', away.library.AssetLibrary.getAsset(e.asset.name));
+                console.log('------------------------------------------------------------------------------');
+            };
+
+            AWDSuzanne.prototype.onResourceComplete = function (e) {
+                console.log('------------------------------------------------------------------------------');
+                console.log('away.events.LoaderEvent.RESOURCE_COMPLETE', e);
+                console.log('------------------------------------------------------------------------------');
+
+                var loader = e.target;
+                var numAssets = loader.baseDependency.assets.length;
+
+                for (var i = 0; i < numAssets; ++i) {
+                    var asset = loader.baseDependency.assets[i];
+
+                    switch (asset.assetType) {
+                        case away.library.AssetType.MESH:
+                            var mesh = asset;
+
+                            this._suzane = mesh;
+                            this._suzane.material.lightPicker = this._lightPicker;
+                            this._suzane.y = -100;
+
+                            for (var c = 0; c < 80; c++) {
+                                var clone = mesh.clone();
+                                clone.x = this.getRandom(-2000, 2000);
+                                clone.y = this.getRandom(-2000, 2000);
+                                clone.z = this.getRandom(-2000, 2000);
+                                clone.scale(this.getRandom(50, 200));
+                                clone.rotationY = this.getRandom(0, 360);
+                                this._view.scene.addChild(clone);
+                            }
+
+                            mesh.scale(500);
+
+                            this._view.scene.addChild(mesh);
+
+                            this._timer.start();
+
+                            this.resize();
+
+                            break;
+
+                        case away.library.AssetType.GEOMETRY:
+                            break;
+
+                        case away.library.AssetType.MATERIAL:
+                            break;
+                    }
+                }
+            };
+
+            AWDSuzanne.prototype.getRandom = function (min, max) {
+                return Math.random() * (max - min) + min;
+            };
+            return AWDSuzanne;
+        })();
+        parsers.AWDSuzanne = AWDSuzanne;
+    })(demos.parsers || (demos.parsers = {}));
+    var parsers = demos.parsers;
+})(demos || (demos = {}));
 /**
 * ...
 * @author Gary Paluk - http://www.plugin.io
 */
-///<reference path="Away3D.ts"/>
-///<reference path="../tests/scene/PhongTorus.ts"/>
-///<reference path="../tests/scene/MaterialTorus.ts"/>
-///<reference path="../tests/aglsl/AssemblerTest.ts"/>
-///<reference path="../tests/aglsl/AGALCompilerTest.ts"/>
-///<reference path="../tests/demos/cubes/CubeDemo.ts"/>
-///<reference path="../tests/demos/lights/TorusLight.ts"/>
-///<reference path="../tests/unit/TestSuite.ts"/>
+///<reference path="../src/Away3D.ts"/>
+///<reference path="unit/TestSuite.ts"/>
+///<reference path="away/library/AWDParserTest.ts"/>
+///<reference path="demos/parsers/AWDSuzanne.ts"/>
 var away;
 (function (away) {
     var AppHarnessDebug = (function () {
         function AppHarnessDebug() {
-            new demos.lights.TorusLight();
+            //new tests.unit.TestSuite();
+            setTimeout(this.init, 1000);
         }
+        AppHarnessDebug.prototype.init = function () {
+            new tests.library.AWDParserTest();
+            //new demos.parsers.AWDSuzanne();
+        };
         return AppHarnessDebug;
     })();
     away.AppHarnessDebug = AppHarnessDebug;

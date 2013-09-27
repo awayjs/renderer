@@ -71,8 +71,6 @@
             
                 <li><a href="../modules/away.events.html">away.events</a></li>
             
-                <li><a href="../modules/away.geom.html">away.geom</a></li>
-            
             </ul>
         </div>
     </div>
@@ -124,7 +122,7 @@ module away.library
 		private _namespace      : string;
 		private _name           : string;
 		private _id             : string;
-		private _full_path      : Array;
+		private _full_path      : Array&lt;string&gt;;
         private _assetType      : string;
 
 		public static DEFAULT_NAMESPACE : string = &#x27;default&#x27;;
@@ -209,7 +207,7 @@ module away.library
 			return this._namespace;
 		}
 		
-		public get assetFullPath() : Array
+		public get assetFullPath() : Array&lt;string&gt;
 		{
 			return this._full_path;
 		}
