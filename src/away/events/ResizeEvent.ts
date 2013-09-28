@@ -5,7 +5,7 @@
  */
 module away.events
 {
-	export class ResizeEvent
+	export class ResizeEvent extends away.events.Event
 	{
 		
 		public static RESIZE:string = "resize";
