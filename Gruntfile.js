@@ -24,7 +24,13 @@
  *    Installing Dependencies:
  ****************************************************************************************************************************************************************
  *
- *  To install Grunt dependencies. Run from 'build' folder:
+ *  To install Grunt
+ *
+ *  1) install the grunt cli:
+ *
+ *      npm install -g grunt-cli
+ *
+ *  2) install the dependencies used by the build script:
  *
  *      OSX :       sudo npm install
  *      Windows:    npm install
