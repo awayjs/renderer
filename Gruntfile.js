@@ -2,10 +2,23 @@
  *   Grunt File Usage:
  ****************************************************************************************************************************************************************
  *
- *  Tasks:          grunt --libversion=0.0.1
- *                  grunt --tests
+ *  Export Documentation, TypeScript and Minify:
  *
- *  --libversion    version number of the lib. This defaults to 'next' if not specified
+ *      grunt
+ *
+ *  Export TypeScript and Minify:
+ *
+ *      grunt lib
+ *
+ *****************************************************************************************************************************************************************
+ *  Options
+ *****************************************************************************************************************************************************************
+ *
+ *  Export lib version, defaults to 'next' if not specified:
+ *
+ *      grunt --libversion=0.0.1
+ *
+ *
  *
  ****************************************************************************************************************************************************************
  *    Installing Dependencies:
@@ -145,7 +158,8 @@ module.exports = function(grunt) {
     //--------------------------------------------------------------------------------------------------------------
 
     grunt.option.init();
-    grunt.registerTask('default',   ['ts' , 'uglify' , 'yuidoc' ]); // Default Tasks
+	grunt.registerTask('default',   ['ts' , 'uglify' , 'yuidoc' ]); // Default Tasks
+	grunt.registerTask('lib',   ['ts' , 'uglify' ]); // Export TypeScript only
 
 };
 
