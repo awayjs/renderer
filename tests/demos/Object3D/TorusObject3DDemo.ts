@@ -4,7 +4,7 @@ module demos.object3d
 {
 
 
-    export class Object3DTestV2
+    export class TorusObject3DDemo
     {
 
         private view        : away.containers.View3D;
