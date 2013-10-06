@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+
+    <style>
+
+        body
+        {
+            height: 100%;
+        }
+
+    </style>
+
+    <script type="text/javascript" language="javascript" src="js/AppHarness.js"></script>
+
+    <script type="text/javascript">
+
+
+        window.onload = function ()
+        {
+            var harness = new away.AppHarness();
+
+            //---------------------------------------------------------------------------
+            // Demos
+            //---------------------------------------------------------------------------
+
+            harness.addSeperator( 'Demos' );
+            harness.addTest( 'Demo.AWDParser'                       , 'demos.parsers.AWDSuzanne'            , 'js/AWDSuzanne.js'         , 'demos/parsers/AWDSuzanne.ts' );
+            harness.addTest( 'Demo.OBJParser'                       , 'demos.parsers.ObjChiefTestDay'       , 'js/ObjChiefTestDay.js'    , 'demos/parsers/ObjChiefTest.ts' );
+            harness.addTest( 'Demo.OBJParser - AirCraft ( Canary )' , 'demos.aircraft.AircraftDemo'         , 'js/AircraftDemo.js'       , 'demos/aircraft/AircraftDemo.ts'  );
+            harness.addTest( 'Demo.TorusVortex'                     , 'demos.cubes.CubeDemo'                , 'js/CubeDemo.js'           , 'demos/cubes/CubeDemo.ts' );
+            harness.addTest( 'Demo.TorusObject3DDemo'               , 'demos.object3d.TorusObject3DDemo'       , 'js/TorusObject3DDemo.js'  , 'demos/Object3D/TorusObject3DDemo.ts'  );
+            harness.addTest( 'Demo.Materials - Alpha'               , 'demos.materials.MaterialAlphaTest'   , 'js/MaterialAlphaTest.js'  , 'demos/materials/MaterialAlphaTest.ts'  );
+
+            //---------------------------------------------------------------------------
+            // Test - Primitives
+            //---------------------------------------------------------------------------
+
+            harness.addSeperator( 'Primitives' );
+            harness.addTest( 'Primitives.WireframePrimitives'  , 'tests.primitives.WireframePrimitiveTest'  , 'js/WireframePrimitive.js' , 'away/primitives/WireframePrimitive.ts'  );
+            harness.addTest( 'Primitives.PrimitivesTest'       , 'tests.primitives.PrimitivesTest'          , 'js/PrimitivesTest.js'     , 'away/primitives/PrimitivesTest.ts'  );
+
+            //---------------------------------------------------------------------------
+            // Test - Scene
+            //---------------------------------------------------------------------------
+
+            harness.addSeperator( 'Scene' );
+            //harness.addTest( 'Scene.RotatingTorus'  ,  'scene.RotatingTorus'      , 'js/RotatingTorus.js'     , 'js/RotatingTorus.js'  );
+            harness.addTest( '(GLSL) Scene.PhongTorus'     ,  'scene.PhongTorus'      , 'js/PhongTorus.js'     , 'scene/PhongTorus.ts'  );
+
+            //---------------------------------------------------------------------------
+            // Test - AGLSL
+            //---------------------------------------------------------------------------
+
+            harness.addSeperator( 'AGLSL' );
+            harness.addTest( 'AGLSL.AssemblerTest'     ,  'aglsl.AssemblerTest'      , 'js/AssemblerTest.js'     , 'aglsl/AssemblerTest.ts'  );
+
+            //---------------------------------------------------------------------------
+            // Test - Utils
+            //---------------------------------------------------------------------------
+
+            harness.addSeperator( 'Utils' );
+            harness.addTest( 'Utils.MipMapTest'                 , 'tests.utils.MipMapTest'                  , 'js/MipMapTest.js'                 , 'away/utils/MipMapTest.ts'  );
+            harness.addTest( '(Console) Utils.ByteArrayTest'    , 'tests.utils.ByteArrayTest'               , 'js/ByteArrayTest.js'              , 'away/utils/ByteArrayTest.ts'  );
+            harness.addTest( '(Console) Utils.IDUtilTest '      , 'tests.utils.IDUtilTest'                  , 'js/IDUtilTest.js'                 , 'away/utils/IDUtilTest.ts'  );
+            harness.addTest( '(Console) Utils.RAF '             , 'tests.utils.RequestAnimationFrameTest'   , 'js/RequestAnimationFrameTest.js'  , 'away/utils/RequestAnimationFrameTest.ts'  );
+            harness.addTest( '(Console) Utils.TimerTest'        , 'tests.utils.TimerTest'                   , 'js/TimerTest.js'                  , 'away/utils/TimerTest.ts'  );
+
+            //---------------------------------------------------------------------------
+            // Test - Textures
+            //---------------------------------------------------------------------------
+
+            harness.addSeperator( 'Textures' );
+            harness.addTest( '(Console) Textures.BitmapTextureTest'                 , 'tests.textures.BitmapTextureTest'            , 'js/BitmapTextureTest.js'              , 'away/textures/BitmapTextureTest.ts'  );
+            harness.addTest( '(Console) Textures.HTMLImageElementTextureTest'       , 'tests.textures.HTMLImageElementTextureTest'  , 'js/HTMLImageElementTextureTest.js'    , 'away/textures/HTMLImageElementTextureTest.ts'  );
+
+            //---------------------------------------------------------------------------
+            // Test - Render
+            //---------------------------------------------------------------------------
+
+            harness.addSeperator( 'Render' );
+            harness.addTest( '(Console) Render.DefaultRenderer'       , 'tests.render.RenderTest'  , 'js/RenderTest.js' , 'away/render/RenderTest.ts'  );
+
+            //---------------------------------------------------------------------------
+            // Test - Pick
+            //---------------------------------------------------------------------------
+
+            harness.addSeperator( 'Pick' );
+            harness.addTest( '(Console) Pick.Test'       , 'tests.pick.PickingTests'  , 'js/PickingTests.js' , 'away/pick/PickingTests.ts'  );
+
+            //---------------------------------------------------------------------------
+            // Test - Net
+            //---------------------------------------------------------------------------
+
+            harness.addSeperator( 'Net' );
+            harness.addTest( 'Net.URLLoader'       , 'tests.net.LoaderTest'  , 'js/URLLoaderTests.js' , 'away/net/URLLoaderTests.ts'  );
+
+            //---------------------------------------------------------------------------
+            // Test - Materials
+            //---------------------------------------------------------------------------
+
+            harness.addSeperator( 'Materials' );
+            harness.addTest( '(Console) Materials.ColorMaterialTest'    ,  'tests.materials.ColorMaterialTest'          , 'js/ColorMaterialTest.js'          , 'away/materials/ColorMaterialTest.ts'  );
+            harness.addTest( 'Materials.ColorMultiPassMatTest'          , 'tests.materials.ColorMultiPassMatTest'       , 'js/ColorMultiPassMatTest.js'      , 'away/materials/ColorMultiPassMatTest.ts'  );
+            harness.addTest( 'Materials.TextureMultiPassMatTest'        , 'tests.materials.TextureMultiPassMatTest'     , 'js/TextureMultiPassMatTest.js'    , 'away/materials/TextureMultiPassMatTest.ts'  );
+
+            //---------------------------------------------------------------------------
+            // Test - Managers
+            //---------------------------------------------------------------------------
+
+            harness.addSeperator( 'Managers' );
+            harness.addTest( '(Console) tests.managers.ManagersTest' ,  'tests.managers.ManagersTest'  , 'js/ManagersTest.js' , 'away/managers/ManagersTest.ts'  );
+
+            //---------------------------------------------------------------------------
+            // Test - Loaders
+            //---------------------------------------------------------------------------
+
+            harness.addSeperator( 'Loaders' );
+            harness.addTest( '(Console) Loaders.AssetLoaderTest'    ,  'tests.loaders.AssetLoaderTest'  , 'js/AssetLoaderTest.js'    , 'away/loaders/AssetLoaderTest.ts'  );
+            harness.addTest( 'Loaders.IMGLoaderTest'                ,  'tests.loaders.IMGLoaderTest'    , 'js/IMGLoaderTest.js'      , 'away/loaders/IMGLoaderTest.ts'  );
+
+            //---------------------------------------------------------------------------
+            // Test - Library
+            //---------------------------------------------------------------------------
+
+            harness.addSeperator( 'Library' );
+            harness.addTest( 'Library.AssetLibraryTest'     ,  'tests.library.AssetLibraryTest'  , 'js/AssetLibraryTest.js'  , 'away/library/AssetLibraryTest.ts'  );
+            harness.addTest( 'Library.AWDParserTest'        ,  'tests.library.AWDParserTest'  , 'js/AWDParserTest.js'        , 'away/library/AWDParserTest.ts'  );
+            harness.addTest( 'Library.ObjLibLoaderTest'     ,  'tests.library.ObjLibLoaderTest'  , 'js/ObjLibLoaderTest.js'  , 'away/library/ObjLibLoaderTest.ts'  );
+
+            //---------------------------------------------------------------------------
+            // Test - Geom
+            //---------------------------------------------------------------------------
+
+            harness.addSeperator( 'Geom' );
+            harness.addTest( '(Console) Geom.ColorUtils'          ,  'tests.geom.ColorUtils'      , 'js/ColorUtils.js'     , 'away/geom/ColorUtils.ts'  );
+            harness.addTest( '(Console) Geom.MatrixTest'          ,  'tests.geom.MatrixTest'      , 'js/MatrixTest.js'     , 'away/geom/MatrixTest.ts'  );
+            harness.addTest( '(Console) Geom.VextMat3DTests'      ,  'tests.geom.VextMat3DTests'  , 'js/VextMat3DTests.js' , 'away/geom/VextMat3DTests.ts'  );
+
+            //---------------------------------------------------------------------------
+            // Test - Events
+            //---------------------------------------------------------------------------
+
+            harness.addSeperator( 'Events' );
+            harness.addTest( '(Console) Events'      ,  'tests.events.EDTest'      , 'js/EDTest.js'     , 'away/events/EDTest.ts'  );
+
+            //---------------------------------------------------------------------------
+            // Test - Entities
+            //---------------------------------------------------------------------------
+
+            harness.addSeperator( 'Entities' );
+            harness.addTest( '(Console) EntityTest'   ,  'tests.entities.EntityTest', 'js/EntityTest.js' , 'away/entities/EntityTest.ts'  );
+            harness.addTest( '(Console) MeshTest'     ,  'tests.entities.MeshTest'  , 'js/MeshTest.js'   , 'away/entities/MeshTest.ts'  );
+
+            //---------------------------------------------------------------------------
+            // Test - Display
+            //---------------------------------------------------------------------------
+
+            harness.addSeperator( 'Display' );
+            harness.addTest( 'Display.BitmapDataTest'  ,  'tests.display.BitmapDataTest'      , 'js/BitmapDataTest.js'     , 'away/display/BitmapDataTest.ts'  );
+
+            //---------------------------------------------------------------------------
+            // Test - Controllers
+            //---------------------------------------------------------------------------
+
+            harness.addSeperator( 'Controllers' );
+            harness.addTest( 'Controllers.HoverControllerTest'  ,  'tests.controllers.HoverControllerTest'      , 'js/HoverControllerTest.js'     , 'away/controllers/HoverControllerTest.ts'  );
+
+            //---------------------------------------------------------------------------
+            // Test - Containers
+            //---------------------------------------------------------------------------
+
+            harness.addSeperator( 'Containers' );
+            harness.addTest( 'Containers.View3DTest'  ,  'tests.containers.View3DTest'      , 'js/View3DTest.js'     , 'away/containers/View3DTest.ts'  );
+
+            //---------------------------------------------------------------------------
+            // Test - Base
+            //---------------------------------------------------------------------------
+
+            harness.addSeperator( 'Base' );
+            harness.addTest( 'Base.View3DTest'  ,  'tests.base.Object3DTestV2'      , 'js/Object3DTest_v2.js'     , 'away/base/Object3DTest_v2.ts'  );
+
+            //---------------------------------------------------------------------------
+            // Test - Base
+            //---------------------------------------------------------------------------
+
+            harness.addSeperator( 'Units' );
+            harness.addTest( 'Units.TestSuite'  ,  'tests.unit.TestSuite'      , 'js/TestSuite.js'     , 'unit/TestSuite.ts'  );
+
+            //---------------------------------------------------------------------------
+            // Load a default
+            harness.load( 'demos.object3d.TorusObject3DDemo' , 'js/TorusObject3DDemo.js'    , 'demos/Object3D/TorusObject3DDemo.ts'  );
+            harness.start(); // Start
+
+        }
+
+
+    </script>
+</head>
+
+</head>
+<body>
+
+</body>
+</html>
