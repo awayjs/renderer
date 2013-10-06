@@ -1,8 +1,8 @@
 {
     "name": "",
     "version": "0.1.0",
-    "description": "Kurst EventDispatcher / Docs Demo ",
-    "url": "http://www.kurst.co.uk",
+    "description": "Away3D.ts build scripts",
+    "url": "http://www.away3d.com",
     "devDependencies": {
         "grunt" : "0.4.1",
         "grunt-contrib-yuidoc": "*",
