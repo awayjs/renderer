@@ -51,15 +51,14 @@ module.exports = function(grunt) {
         meta: {
 
             v:grunt.option('vers') || "",                                   // Optional library version string
-            tsFile: '../src/Away3D.ts',                                     // TypeScript export source
-            tsPath: '../src/',                                              // TypeScript source folder
+            tsFile: 'src/Away3D.ts',                                     // TypeScript export source
+            tsPath: 'src/',                                              // TypeScript source folder
 
-            tsExportFile: '../lib/Away3D.' + version + '.js',               // JavaScript export target
-            tsExportUglyFile: '../lib/Away3D.' + version + '.min.js',       // JavaScript minified target
+            tsExportFile: 'lib/Away3D.' + version + '.js',               // JavaScript export target
+            tsExportUglyFile: 'lib/Away3D.' + version + '.min.js',       // JavaScript minified target
 
-            tsExportFolder: '../lib/',                                      // Export folder
-            tsMultiExportFolder: '../lib/src/',                             // Emit to multiple JS - folder
-            docsPath: '../docs/'                                            // Documentation export path
+            tsExportFolder: 'lib/',                                      // Export folder
+            docsPath: 'docs/'                                            // Documentation export path
 
         },
 
@@ -78,20 +77,7 @@ module.exports = function(grunt) {
                     declaration: true,
                     comments: true
                 }
-            },
-
-	        /*
-            MultipleJsFile: {
-                src: ['<%= meta.tsFile %>'],
-                outDir: '<%= meta.tsMultiExportFolder %>',
-                options: {
-                    target: 'es5',
-                    sourcemap: false,
-                    declaration: false,
-                    comments: true
-                }
             }
-			*/
         },
 
         //--------------------------------------------------------------------------------------------------------------
