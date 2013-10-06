@@ -49562,7 +49562,7 @@ var tests;
 })(tests || (tests = {}));
 var tests;
 (function (tests) {
-    ///<reference path="../../../lib/Away3D.next.d.ts" />
+    ///<reference path="../../../build/Away3D.next.d.ts" />
     //<reference path="../../../src/Away3D.ts" />
     (function (library) {
         var AWDParserTest = (function () {
@@ -49648,7 +49648,7 @@ var tests;
 })(tests || (tests = {}));
 var demos;
 (function (demos) {
-    //<reference path="../../../lib/Away3D.next.d.ts" />
+    //<reference path="../../../build/Away3D.next.d.ts" />
     ///<reference path="../../../src/Away3D.ts" />
     (function (parsers) {
         var AWDSuzanne = (function () {

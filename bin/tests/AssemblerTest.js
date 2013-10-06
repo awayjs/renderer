@@ -2,7 +2,7 @@
 * ...
 * @author Gary Paluk - http://www.plugin.io
 */
-///<reference path="../../lib/Away3D.next.d.ts" />
+///<reference path="../../build/Away3D.next.d.ts" />
 var aglsl;
 (function (aglsl) {
     var AssemblerTest = (function () {

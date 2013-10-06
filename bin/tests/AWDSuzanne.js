@@ -1,6 +1,6 @@
 var demos;
 (function (demos) {
-    ///<reference path="../../../lib/Away3D.next.d.ts" />
+    ///<reference path="../../../build/Away3D.next.d.ts" />
     (function (parsers) {
         var AWDSuzanne = (function () {
             function AWDSuzanne() {

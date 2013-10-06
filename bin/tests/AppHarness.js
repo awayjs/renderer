@@ -7,7 +7,7 @@ var away;
         function AppHarness() {
             var _this = this;
             //------------------------------------------------------------------------------
-            this.iframeContent = "<!DOCTYPE html>" + "<html><head><title></title>" + "<style>html{height: 100%;border: 0px;padding: 0px;}</style>" + "<script type='text/javascript' language='javascript' src='js/AppHarness.js'></script>" + "<script type='text/javascript' language='javascript' src='../lib/Away3D.next.min.js'></script>" + "<script type='text/javascript'>window.onload = function (){new away.AppFrame();}</script>" + "</head><body></body></html>";
+            this.iframeContent = "<!DOCTYPE html>" + "<html><head><title></title>" + "<style>html{height: 100%;border: 0px;padding: 0px;}</style>" + "<script type='text/javascript' language='javascript' src='js/AppHarness.js'></script>" + "<script type='text/javascript' language='javascript' src='../build/Away3D.next.min.js'></script>" + "<script type='text/javascript'>window.onload = function (){new away.AppFrame();}</script>" + "</head><body></body></html>";
             this.tests = new Array();
             this.counter = 0;
             this.initFrameSet();

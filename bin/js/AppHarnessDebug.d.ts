@@ -1,5 +1,5 @@
-/// <reference path="../../lib/ref/webgl.d.ts" />
-/// <reference path="../../lib/ref/js.d.ts" />
+/// <reference path="../../build/ref/webgl.d.ts" />
+/// <reference path="../../build/ref/js.d.ts" />
 /**
 * Base event class
 * @class away.events.Event

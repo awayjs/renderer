@@ -54,10 +54,10 @@ module.exports = function(grunt) {
             tsFile: 'src/Away3D.ts',                                     // TypeScript export source
             tsPath: 'src/',                                              // TypeScript source folder
 
-            tsExportFile: 'lib/Away3D.' + version + '.js',               // JavaScript export target
-            tsExportUglyFile: 'lib/Away3D.' + version + '.min.js',       // JavaScript minified target
+            tsExportFile: 'build/Away3D.' + version + '.js',               // JavaScript export target
+            tsExportUglyFile: 'build/Away3D.' + version + '.min.js',       // JavaScript minified target
 
-            tsExportFolder: 'lib/',                                      // Export folder
+            tsExportFolder: 'build/',                                      // Export folder
             docsPath: 'docs/'                                            // Documentation export path
 
         },

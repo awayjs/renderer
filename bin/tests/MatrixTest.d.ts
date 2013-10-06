@@ -1,4 +1,4 @@
-/// <reference path="../../lib/Away3D.next.d.ts" />
+/// <reference path="../../build/Away3D.next.d.ts" />
 declare module parsers {
     /**
     * ImageParser provides a "parser" for natively supported image types (jpg, png). While it simply loads bytes into

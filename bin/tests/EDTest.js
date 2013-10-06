@@ -6,7 +6,7 @@ var __extends = this.__extends || function (d, b) {
 };
 var tests;
 (function (tests) {
-    ///<reference path="../../../lib/Away3D.next.d.ts" />
+    ///<reference path="../../../build/Away3D.next.d.ts" />
     //<reference path="../../../src/Away3D.ts" />
     (function (events) {
         var EDTest = (function (_super) {

@@ -194,7 +194,7 @@ var parsers;
 var tests;
 (function (tests) {
     ///<reference path="../loaders/parsers/JSONTextureParser.ts" />
-    ///<reference path="../../../lib/Away3D.next.d.ts" />
+    ///<reference path="../../../build/Away3D.next.d.ts" />
     //<reference path="../../../src/Away3D.ts" />
     (function (geom) {
         var ColorUtils = (function () {

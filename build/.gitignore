@@ -1,16 +1,2 @@
 # Build and Release Folders
-bin-debug/
-bin-debug-old/
-bin-release/
-out/
-target/
-node_modules/
-
-# Project property files
-.actionScriptProperties
-.flexLibProperties
-.settings/
-.idea/
-.project
-.DS_Store
-*.iml
+src/

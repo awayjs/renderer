@@ -1,4 +1,4 @@
-/// <reference path="../../lib/Away3D.next.d.ts" />
+/// <reference path="../../build/Away3D.next.d.ts" />
 declare module demos.cubes {
     class CubeDemoTest {
         private _view;

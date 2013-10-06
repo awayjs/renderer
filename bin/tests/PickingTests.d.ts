@@ -1,4 +1,4 @@
-/// <reference path="../../lib/Away3D.next.d.ts" />
+/// <reference path="../../build/Away3D.next.d.ts" />
 declare module tests.pick {
     class PickingTests {
         private mouse3DManager;

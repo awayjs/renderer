@@ -193,7 +193,7 @@ var parsers;
 })(parsers || (parsers = {}));
 var tests;
 (function (tests) {
-    ///<reference path="../../../lib/Away3D.next.d.ts" />
+    ///<reference path="../../../build/Away3D.next.d.ts" />
     ///<reference path="parsers/JSONTextureParser.ts" />
     //<reference path="../../../src/Away3D.ts" />
     (function (loaders) {
