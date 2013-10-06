@@ -4,6 +4,7 @@ bin-debug-old/
 bin-release/
 out/
 target/
+node_modules/
 
 # Project property files
 .actionScriptProperties

@@ -1,0 +1,16 @@
+{
+    "name": "",
+    "version": "0.1.0",
+    "description": "Away3D.ts build scripts",
+    "url": "http://www.away3d.com",
+    "devDependencies": {
+        "grunt" : "0.4.1",
+        "grunt-contrib-yuidoc": "*",
+        "uglify-js": "~2.3.5",
+        "grunt-lib-contrib": "~0.6.0",
+        "grunt-contrib-uglify":"*",
+        "grunt-contrib-concat":"*",
+        "grunt-shell":"*",
+        "grunt-ts" : "latest"
+    }
+}
