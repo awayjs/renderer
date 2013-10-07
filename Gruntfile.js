@@ -18,8 +18,6 @@
  *
  *      grunt --libversion=0.0.1
  *
- *
- *
  ****************************************************************************************************************************************************************
  *    Installing Dependencies:
  ****************************************************************************************************************************************************************
@@ -69,14 +67,13 @@ module.exports = function(grunt) {
 
         meta: {
 
-            v:grunt.option('vers') || "",                                   // Optional library version string
             tsFile: 'src/Away3D.ts',                                     // TypeScript export source
             tsPath: 'src/',                                              // TypeScript source folder
 
-            tsExportFile: 'build/Away3D.' + version + '.js',               // JavaScript export target
-            tsExportUglyFile: 'build/Away3D.' + version + '.min.js',       // JavaScript minified target
+            tsExportFile: 'build/Away3D.' + version + '.js',             // JavaScript export target
+            tsExportUglyFile: 'build/Away3D.' + version + '.min.js',     // JavaScript minified target
 
-            tsExportFolder: 'build/',                                      // Export folder
+            tsExportFolder: 'build/',                                    // Export folder
             docsPath: 'docs/'                                            // Documentation export path
 
         },
@@ -154,8 +151,6 @@ module.exports = function(grunt) {
                 }
             }
         }
-
-
 
     } );
 
