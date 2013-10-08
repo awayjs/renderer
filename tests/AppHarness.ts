@@ -18,6 +18,7 @@ module away
         private srcIframe       : HTMLIFrameElement;
         private counter         : number = 0;
         private sourceVisible   : boolean = false;
+	    private loadDefault     : boolean = true;
 
         //------------------------------------------------------------------------------
 
@@ -27,11 +28,11 @@ module away
             this.initFrameSet();
             this.initInterface();
 
+
             this.previousBtn.onclick   = () => this.nagigateBy( -1 );
             this.nextBtn.onclick       = () => this.nagigateBy( 1 );
             this.sourceBtn.onclick     = () => this.toggleSource();
-
-            this.dropDown.onchange  = ( e ) => this.dropDownChange( e );
+            this.dropDown.onchange      = ( e ) => this.dropDownChange( e );
 
         }
 
@@ -48,9 +49,15 @@ module away
         public load( classPath : string , js : string , ts : string ) : void
         {
 
-            this.testIframe.src = 'frame.html?name=' + classPath + '&js=' + js;
-            this.srcIframe.src = "data:text/html;charset=utf-8," + this.createSourceViewHTML( ts );
+	        this.loadFromURL();
 
+	        if ( this.loadDefault )
+	        {
+	            window.history.pushState(js, js, '?test=' + js);
+	            this.testIframe.src = 'frame.html?name=' + classPath + '&js=' + js;
+                this.srcIframe.src = "data:text/html;charset=utf-8," + this.createSourceViewHTML( ts );
+
+	        }
         }
 
         /**
@@ -85,19 +92,35 @@ module away
          */
         public start() : void
         {
-
             for ( var c : number = 0 ; c < this.tests.length ; c ++  )
             {
-
                 var option : HTMLOptionElement = <HTMLOptionElement> new Option( this.tests[c].name , String( c ) );
                 this.dropDown.add( option );
-
             }
-
         }
 
         //------------------------------------------------------------------------------
 
+	    private loadFromURL() : void
+	    {
+		    var queryParams : any = AppFrame.getQueryParams( document.location.search );
+
+		    if ( queryParams.test != null )
+		    {
+			    var l : number =  this.tests.length;
+
+			    for ( var c : number = 0 ; c < l ; c ++ )
+			    {
+				    if ( this.tests[c].js == queryParams.test )
+				    {
+					    console.log ( '======>>>> LOAD TEST');
+
+					    this.navigateToSection( this.tests[c] );
+					    this.loadDefault = false;
+				    }
+			    }
+		    }
+	    }
         /**
          *
          */
@@ -223,6 +246,7 @@ module away
          */
         private navigateToSection ( testData : TestData ) : void
         {
+	        window.history.pushState(testData.js, testData.js, '?test=' + testData.js);
             this.srcIframe.src = "data:text/html;charset=utf-8," + this.createSourceViewHTML( testData.src );
             this.testIframe.src = 'frame.html?name=' + testData.classpath + '&js=' + testData.js;
         }
@@ -290,8 +314,6 @@ module away
             return document.getElementById( id );
 
         }
-
-
 
         //------------------------------------------------------------------------------
         // Events
