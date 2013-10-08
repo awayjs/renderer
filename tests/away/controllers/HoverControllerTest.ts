@@ -66,8 +66,8 @@ module tests.controllers{
         {
             if (this._move)
             {
-                this._hoverControl.panAngle = 0.3 * (window.event.clientX - this._lastMouseX) + this._lastPanAngle;
-                this._hoverControl.tiltAngle = 0.3 * (window.event.clientY - this._lastMouseY) + this._lastTiltAngle;
+                this._hoverControl.panAngle = 0.3 * (e.clientX - this._lastMouseX) + this._lastPanAngle;
+                this._hoverControl.tiltAngle = 0.3 * (e.clientY - this._lastMouseY) + this._lastTiltAngle;
             }
         }
 
@@ -75,8 +75,8 @@ module tests.controllers{
         {
             this._lastPanAngle      = this._hoverControl.panAngle;
             this._lastTiltAngle     = this._hoverControl.tiltAngle;
-            this._lastMouseX        = window.event.clientX;//e.clientX;
-            this._lastMouseY        = window.event.clientY;//e.clientX;
+            this._lastMouseX        = e.clientX;//e.clientX;
+            this._lastMouseY        = e.clientY;//e.clientX;
             this._move              = true;
         }
 
