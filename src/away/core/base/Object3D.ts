@@ -529,7 +529,7 @@ module away.base
 			}
 			
 			vec = elements[1];
-			
+
 			if (this._rotationX != vec.x || this._rotationY != vec.y || this._rotationZ != vec.z)
             {
                 this._rotationX = vec.x;
@@ -573,7 +573,7 @@ module away.base
 		 */
 		public get position():away.geom.Vector3D
 		{
-			this._pTransform.copyColumnTo(3, this._pPos);
+			this.transform.copyColumnTo(3, this._pPos);
 			
 			return this._pPos.clone();
 		}
@@ -873,9 +873,16 @@ module away.base
 		 */
 		public rotate(axis:away.geom.Vector3D, angle:number)
 		{
-			this.transform.prependRotation(angle, axis);
-			this.transform = this.transform;
+            var m:away.geom.Matrix3D = new away.geom.Matrix3D();
+            m.prependRotation(angle, axis);
 
+            var vec:away.geom.Vector3D = m.decompose()[1];
+
+            this._rotationX += vec.x;
+            this._rotationY += vec.y;
+            this._rotationZ += vec.z;
+
+            this.invalidateRotation();
 		}
 		/**
 		 * Rotates the 3d object around to face a point defined relative to the local coordinates of the parent <code>ObjectContainer3D</code>.
@@ -908,38 +915,32 @@ module away.base
 			yAxis = zAxis.crossProduct(xAxis);
 			
 			raw = away.math.Matrix3DUtils.RAW_DATA_CONTAINER;
-			
-			raw[0] = this._pScaleX*xAxis.x;
-			raw[1] = this._pScaleX*xAxis.y;
-			raw[2] = this._pScaleX*xAxis.z;
+
+			raw[0] = xAxis.x;
+			raw[1] = xAxis.y;
+			raw[2] = xAxis.z;
 			raw[3] = 0;
 			
-			raw[4] = this._pScaleY*yAxis.x;
-			raw[5] = this._pScaleY*yAxis.y;
-			raw[6] = this._pScaleY*yAxis.z;
+			raw[4] = yAxis.x;
+			raw[5] = yAxis.y;
+			raw[6] = yAxis.z;
 			raw[7] = 0;
 			
-			raw[8] = this._pScaleZ*zAxis.x;
-			raw[9] = this._pScaleZ*zAxis.y;
-			raw[10] = this._pScaleZ*zAxis.z;
+			raw[8] = zAxis.x;
+			raw[9] = zAxis.y;
+			raw[10] = zAxis.z;
 			raw[11] = 0;
-			
-			raw[12] = this._x;
-			raw[13] = this._y;
-			raw[14] = this._z;
-			raw[15] = 1;
 
-            this._pTransform.copyRawDataFrom(raw);
+            var m:away.geom.Matrix3D = new away.geom.Matrix3D();
+            m.copyRawDataFrom(raw);
 
-            this.transform = this.transform;
-			
-			if (zAxis.z < 0)
-            {
-                this.rotationY = (180 - this.rotationY);
-                this.rotationX -= 180;
-                this.rotationZ -= 180;
-			}
+            var vec:away.geom.Vector3D = m.decompose()[1];
 
+            this._rotationX = vec.x;
+            this._rotationY = vec.y;
+            this._rotationZ = vec.z;
+
+            this.invalidateRotation();
 		}
 		/**
 		 * Cleans up any resources used by the current object.

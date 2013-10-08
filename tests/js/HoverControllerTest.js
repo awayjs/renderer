@@ -42,7 +42,7 @@ var tests;
 
             HoverControllerTest.prototype.render = function (dt) {
                 if (this._hoverControl) {
-                    this._hoverControl.update();
+                    //this._hoverControl.update();
                 }
 
                 this._view.render();

@@ -56,7 +56,7 @@ module tests.controllers{
 
             if ( this._hoverControl  )
             {
-                this._hoverControl.update();
+                //this._hoverControl.update();
             }
 
             this._view.render();
