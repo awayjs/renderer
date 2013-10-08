@@ -41,10 +41,6 @@ var tests;
             };
 
             HoverControllerTest.prototype.render = function (dt) {
-                if (this._hoverControl) {
-                    //this._hoverControl.update();
-                }
-
                 this._view.render();
             };
 
@@ -54,16 +50,17 @@ var tests;
 
             HoverControllerTest.prototype.onMouseMove = function (e) {
                 if (this._move) {
-                    this._hoverControl.panAngle = 0.3 * (window.event.clientX - this._lastMouseX) + this._lastPanAngle;
-                    this._hoverControl.tiltAngle = 0.3 * (window.event.clientY - this._lastMouseY) + this._lastTiltAngle;
+                    this._hoverControl.panAngle = 0.3 * (e.clientX - this._lastMouseX) + this._lastPanAngle;
+                    this._hoverControl.tiltAngle = 0.3 * (e.clientY - this._lastMouseY) + this._lastTiltAngle;
                 }
             };
 
             HoverControllerTest.prototype.onMouseDownHandler = function (e) {
+                console.log('onMouseDownHandler');
                 this._lastPanAngle = this._hoverControl.panAngle;
                 this._lastTiltAngle = this._hoverControl.tiltAngle;
-                this._lastMouseX = window.event.clientX;
-                this._lastMouseY = window.event.clientY;
+                this._lastMouseX = e.clientX;
+                this._lastMouseY = e.clientY;
                 this._move = true;
             };
             return HoverControllerTest;
