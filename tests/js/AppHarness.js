@@ -10,6 +10,7 @@ var away;
             this.tests = new Array();
             this.counter = 0;
             this.sourceVisible = false;
+            this.loadDefault = true;
             this.initFrameSet();
             this.initInterface();
 
@@ -37,8 +38,13 @@ var away;
         * @param ts Path to Typescript file ( not yet used - reserved for future show source )
         */
         AppHarness.prototype.load = function (classPath, js, ts) {
-            this.testIframe.src = 'frame.html?name=' + classPath + '&js=' + js;
-            this.srcIframe.src = "data:text/html;charset=utf-8," + this.createSourceViewHTML(ts);
+            this.loadFromURL();
+
+            if (this.loadDefault) {
+                window.history.pushState(js, js, '?test=' + js);
+                this.testIframe.src = 'frame.html?name=' + classPath + '&js=' + js;
+                this.srcIframe.src = "data:text/html;charset=utf-8," + this.createSourceViewHTML(ts);
+            }
         };
 
         /**
@@ -78,6 +84,23 @@ var away;
         };
 
         //------------------------------------------------------------------------------
+        AppHarness.prototype.loadFromURL = function () {
+            var queryParams = AppFrame.getQueryParams(document.location.search);
+
+            if (queryParams.test != null) {
+                var l = this.tests.length;
+
+                for (var c = 0; c < l; c++) {
+                    if (this.tests[c].js == queryParams.test) {
+                        console.log('======>>>> LOAD TEST');
+
+                        this.navigateToSection(this.tests[c]);
+                        this.loadDefault = false;
+                    }
+                }
+            }
+        };
+
         /**
         *
         */
@@ -188,6 +211,7 @@ var away;
         * @param testData
         */
         AppHarness.prototype.navigateToSection = function (testData) {
+            window.history.pushState(testData.js, testData.js, '?test=' + testData.js);
             this.srcIframe.src = "data:text/html;charset=utf-8," + this.createSourceViewHTML(testData.src);
             this.testIframe.src = 'frame.html?name=' + testData.classpath + '&js=' + testData.js;
         };
