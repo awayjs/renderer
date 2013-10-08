@@ -12,7 +12,7 @@ var tests;
                 this._wireframeCube = new away.primitives.WireframeCube(400, 400, 400);
                 this._view.scene.addChild(this._wireframeCube);
 
-                this._hoverControl = new away.controllers.HoverController(this._view.camera, this._wireframeCube, 150, 10, 2000);
+                this._hoverControl = new away.controllers.HoverController(this._view.camera, this._wireframeCube, 150, 10);
 
                 window.onresize = function () {
                     return _this.resize();

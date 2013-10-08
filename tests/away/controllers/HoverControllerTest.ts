@@ -27,7 +27,7 @@ module tests.controllers{
             this._wireframeCube         = new away.primitives.WireframeCube( 400 , 400 , 400 )
             this._view.scene.addChild( this._wireframeCube );
 
-            this._hoverControl          = new away.controllers.HoverController( this._view.camera , this._wireframeCube , 150, 10, 2000);
+            this._hoverControl          = new away.controllers.HoverController( this._view.camera , this._wireframeCube , 150, 10);
 
             window.onresize             = () => this.resize();
 
@@ -53,12 +53,6 @@ module tests.controllers{
 
         private render( dt : number ) //animate based on dt for firefox
         {
-
-            if ( this._hoverControl  )
-            {
-                //this._hoverControl.update();
-            }
-
             this._view.render();
 
         }
