@@ -103,7 +103,7 @@ module away
 
 	    private loadFromURL() : void
 	    {
-		    var queryParams : any = AppFrame.getQueryParams( document.location.search );
+		    var queryParams : any = Utils.getQueryParams( document.location.search );
 
 		    if ( queryParams.test != null )
 		    {
@@ -354,7 +354,7 @@ module away
         constructor( )
         {
 
-            var queryParams : any = AppFrame.getQueryParams( document.location.search );
+            var queryParams : any = Utils.getQueryParams( document.location.search );
 
             if ( queryParams.js != undefined && queryParams.name != undefined )
             {
@@ -418,28 +418,36 @@ module away
 
         }
 
-        /**
-         *
-         * Utility function - Parse a Query formatted string
-         *
-         * @param qs
-         * @returns {{}}
-         */
-        static getQueryParams( qs ) : Object {
 
-            qs = qs.split("+").join(" ");
-
-            var params = {}, tokens,
-                re = /[?&]?([^=]+)=([^&]*)/g;
-
-            while (tokens = re.exec(qs)) {
-                params[decodeURIComponent(tokens[1])] = decodeURIComponent(tokens[2]);
-            }
-
-            return params;
-        }
 
     }
+
+	//---------------------------------------------------
+	// Common Utilities
+
+	export class Utils
+	{
+		/**
+		 *
+		 * Utility function - Parse a Query formatted string
+		 *
+		 * @param qs
+		 * @returns {{}}
+		 */
+		static getQueryParams( qs ) : Object {
+
+			qs = qs.split("+").join(" ");
+
+			var params = {}, tokens,
+				re = /[?&]?([^=]+)=([^&]*)/g;
+
+			while (tokens = re.exec(qs)) {
+				params[decodeURIComponent(tokens[1])] = decodeURIComponent(tokens[2]);
+			}
+
+			return params;
+		}
+	}
 
     //---------------------------------------------------
     // Data
