@@ -24,6 +24,7 @@ module away.events
         public static DEPENDENCY_COMPLETE : string = "dependencyComplete";
 
         private _url                : string;
+        private _assets             : away.library.IAsset[];
         private _message            : string;
         private _isDependency       : boolean;
         private _isDefaultPrevented : boolean;
@@ -34,11 +35,12 @@ module away.events
          * @param resource The loaded or parsed resource.
          * @param url The url of the loaded resource.
          */
-        constructor( type : string, url : string = null, isDependency : boolean = false, errmsg : string = null )
+        constructor( type : string, url : string = null, assets : away.library.IAsset[] = null, isDependency : boolean = false, errmsg : string = null )
 		{
 			super(type);
 
             this._url           = url;
+            this._assets        = assets;
             this._message       = errmsg;
             this._isDependency  = isDependency;
 
@@ -56,11 +58,18 @@ module away.events
         /**
          * The error string on loadError.
          */
+        public get assets() : away.library.IAsset[]
+        {
+            return this._assets;
+        }
+
+        /**
+         * The error string on loadError.
+         */
         public get message() : string
         {
             return this._message;
         }
-
 
         /**
          * Indicates whether the event occurred while loading a dependency, as opposed
@@ -78,7 +87,7 @@ module away.events
          */
         public clone() : away.events.Event
         {
-            return <away.events.Event> new LoaderEvent(this.type, this._url, this._isDependency, this._message);
+            return <away.events.Event> new LoaderEvent(this.type, this._url, this._assets, this._isDependency, this._message);
 
         }
 

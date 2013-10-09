@@ -4664,6 +4664,7 @@ declare module away.events {
         */
         static DEPENDENCY_COMPLETE: string;
         private _url;
+        private _assets;
         private _message;
         private _isDependency;
         private _isDefaultPrevented;
@@ -4673,11 +4674,15 @@ declare module away.events {
         * @param resource The loaded or parsed resource.
         * @param url The url of the loaded resource.
         */
-        constructor(type: string, url?: string, isDependency?: boolean, errmsg?: string);
+        constructor(type: string, url?: string, assets?: away.library.IAsset[], isDependency?: boolean, errmsg?: string);
         /**
         * The url of the loaded resource.
         */
         public url : string;
+        /**
+        * The error string on loadError.
+        */
+        public assets : away.library.IAsset[];
         /**
         * The error string on loadError.
         */
@@ -5188,6 +5193,7 @@ declare module away.loaders {
     */
     class SingleFileLoader extends away.events.EventDispatcher {
         private _parser;
+        private _assets;
         private _req;
         private _fileExtension;
         private _fileName;

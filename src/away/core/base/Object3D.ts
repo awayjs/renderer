@@ -909,7 +909,7 @@ module away.base
 			xAxis = upAxis.crossProduct(zAxis);
 			xAxis.normalize();
 			
-			if (xAxis.length < .05)
+			if (isNaN(xAxis.length) || xAxis.length < .05)
 				xAxis = upAxis.crossProduct(away.geom.Vector3D.Z_AXIS);
 			
 			yAxis = zAxis.crossProduct(xAxis);

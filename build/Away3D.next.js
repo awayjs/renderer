@@ -1234,9 +1234,7 @@ var away;
                 var rot = new geom.Vector3D();
                 rot.y = Math.asin(-mr[2]);
 
-                var cos = Math.cos(rot.y);
-
-                if (cos > 0) {
+                if (mr[2] != 1 && mr[2] != -1) {
                     rot.x = Math.atan2(mr[6], mr[10]);
                     rot.z = Math.atan2(mr[1], mr[0]);
                 } else {
@@ -3166,7 +3164,7 @@ var away;
                 xAxis = upAxis.crossProduct(zAxis);
                 xAxis.normalize();
 
-                if (xAxis.length < .05)
+                if (isNaN(xAxis.length) || xAxis.length < .05)
                     xAxis = upAxis.crossProduct(away.geom.Vector3D.Z_AXIS);
 
                 yAxis = zAxis.crossProduct(xAxis);
@@ -15737,8 +15735,7 @@ var away;
 
                     this.retrieveNext(parser);
                 } else {
-                    //console.log( 'AssetLoader.retrieveNext - away.events.LoaderEvent.RESOURCE_COMPLETE');
-                    this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.RESOURCE_COMPLETE, this._uri));
+                    this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.RESOURCE_COMPLETE, this._uri, this._baseDependency.assets));
                 }
             };
 
@@ -15771,7 +15768,7 @@ var away;
                     if (this._loadingDependency.retrieveAsRawData) {
                         // No need to parse. The parent parser is expecting this
                         // to be raw data so it can be passed directly.
-                        this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this._loadingDependency.request.url, true));
+                        this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this._loadingDependency.request.url, this._baseDependency.assets, true));
                         this._loadingDependency._iSetData(data);
                         this._loadingDependency.resolve();
 
@@ -15875,7 +15872,7 @@ else
 
                 this.removeEventListeners(loader);
 
-                event = new away.events.LoaderEvent(away.events.LoaderEvent.LOAD_ERROR, this._uri, isDependency, event.message);
+                event = new away.events.LoaderEvent(away.events.LoaderEvent.LOAD_ERROR, this._uri, this._baseDependency.assets, isDependency, event.message);
 
                 // TODO: JS / AS3 Change - debug this code with a fine tooth combe
                 //if (this.hasEventListener( away.events.LoaderEvent.LOAD_ERROR , this )) {
@@ -15984,7 +15981,7 @@ else
                 this._loadingDependency._iSetData(loader.data);
                 this._loadingDependency._iSuccess = true;
 
-                this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.DEPENDENCY_COMPLETE, event.url));
+                this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.DEPENDENCY_COMPLETE, event.url, this._baseDependency.assets));
                 this.removeEventListeners(loader);
 
                 if (loader.dependencies.length && (!this._context || this._context.includeDependencies)) {
@@ -16886,13 +16883,15 @@ var away;
             * @param resource The loaded or parsed resource.
             * @param url The url of the loaded resource.
             */
-            function LoaderEvent(type, url, isDependency, errmsg) {
+            function LoaderEvent(type, url, assets, isDependency, errmsg) {
                 if (typeof url === "undefined") { url = null; }
+                if (typeof assets === "undefined") { assets = null; }
                 if (typeof isDependency === "undefined") { isDependency = false; }
                 if (typeof errmsg === "undefined") { errmsg = null; }
                 _super.call(this, type);
 
                 this._url = url;
+                this._assets = assets;
                 this._message = errmsg;
                 this._isDependency = isDependency;
             }
@@ -16902,6 +16901,17 @@ var away;
                 */
                 function () {
                     return this._url;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(LoaderEvent.prototype, "assets", {
+                get: /**
+                * The error string on loadError.
+                */
+                function () {
+                    return this._assets;
                 },
                 enumerable: true,
                 configurable: true
@@ -16936,7 +16946,7 @@ var away;
             * @return An exact duplicate of the current event.
             */
             LoaderEvent.prototype.clone = function () {
-                return new LoaderEvent(this.type, this._url, this._isDependency, this._message);
+                return new LoaderEvent(this.type, this._url, this._assets, this._isDependency, this._message);
             };
             LoaderEvent.LOAD_ERROR = "loadError";
 
@@ -18050,6 +18060,7 @@ var away;
                 if (typeof materialMode === "undefined") { materialMode = 0; }
                 _super.call(this);
                 this._materialMode = materialMode;
+                this._assets = new Array();
             }
             SingleFileLoader.enableParser = function (parser) {
                 if (SingleFileLoader._parsers.indexOf(parser) < 0) {
@@ -18285,7 +18296,7 @@ var away;
                 this.removeListeners(urlLoader);
 
                 //if(this.hasEventListener(away.events.LoaderEvent.LOAD_ERROR , this.handleUrlLoaderError , this ))
-                this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.LOAD_ERROR, this._req.url, true));
+                this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.LOAD_ERROR, this.url, this._assets));
             };
 
             /**
@@ -18299,7 +18310,7 @@ var away;
 
                 if (this._loadAsRawData) {
                     // No need to parse this data, which should be returned as is
-                    this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.DEPENDENCY_COMPLETE));
+                    this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this.url, this._assets));
                 } else {
                     this.parse(this._data);
                 }
@@ -18343,7 +18354,7 @@ var away;
                     var msg = "No parser defined. To enable all parsers for auto-detection, use Parsers.enableAllBundled()";
 
                     //if(hasEventListener(LoaderEvent.LOAD_ERROR)){
-                    this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.LOAD_ERROR, "", true, msg));
+                    this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.LOAD_ERROR, this.url, this._assets, true, msg));
                     //} else{
                     //	throw new Error(msg);
                     //}
@@ -18359,6 +18370,9 @@ var away;
             };
 
             SingleFileLoader.prototype.onAssetComplete = function (event) {
+                if (event.type == away.events.AssetEvent.ASSET_COMPLETE)
+                    this._assets.push(event.asset);
+
                 this.dispatchEvent(event.clone());
             };
 
@@ -18370,7 +18384,7 @@ var away;
             * Called when parsing is complete.
             */
             SingleFileLoader.prototype.onParseComplete = function (event) {
-                this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this.url));
+                this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this.url, this._assets));
 
                 this._parser.removeEventListener(away.events.ParserEvent.READY_FOR_DEPENDENCIES, this.onReadyForDependencies, this);
                 this._parser.removeEventListener(away.events.ParserEvent.PARSE_COMPLETE, this.onParseComplete, this);
@@ -28746,7 +28760,7 @@ var away;
                     this._tmpLookAt.x = this.x + this._direction.x;
                     this._tmpLookAt.y = this.y + this._direction.y;
                     this._tmpLookAt.z = this.z + this._direction.z;
-
+                    console.log(this._tmpLookAt);
                     this.lookAt(this._tmpLookAt);
                 },
                 enumerable: true,

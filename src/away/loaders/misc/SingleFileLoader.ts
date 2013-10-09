@@ -16,6 +16,7 @@ module away.loaders
 	export class SingleFileLoader extends away.events.EventDispatcher
 	{
 		private _parser         : away.loaders.ParserBase;
+        private _assets         : away.library.IAsset[];
 		private _req            : away.net.URLRequest;
 		private _fileExtension  : string;
 		private _fileName       : string;
@@ -60,7 +61,8 @@ module away.loaders
 		{
 
             super();
-			this._materialMode=materialMode;
+			this._materialMode = materialMode;
+            this._assets = new Array<away.library.IAsset>();
 		}
 
         // Get / Set
@@ -327,7 +329,7 @@ module away.loaders
 			this.removeListeners(urlLoader);
 			
 			//if(this.hasEventListener(away.events.LoaderEvent.LOAD_ERROR , this.handleUrlLoaderError , this ))
-				this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.LOAD_ERROR, this._req.url, true ) ) ;//, event.text));
+				this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.LOAD_ERROR, this.url, this._assets ) ) ;//, event.text));
 		}
 		
 		/**
@@ -344,7 +346,7 @@ module away.loaders
 			if (this._loadAsRawData)
             {
                 // No need to parse this data, which should be returned as is
-				this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.DEPENDENCY_COMPLETE));
+				this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this.url, this._assets));
             }
 			else
             {
@@ -404,7 +406,7 @@ module away.loaders
 				var msg:string = "No parser defined. To enable all parsers for auto-detection, use Parsers.enableAllBundled()";
 
 				//if(hasEventListener(LoaderEvent.LOAD_ERROR)){
-					this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.LOAD_ERROR, "", true, msg) );
+					this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.LOAD_ERROR, this.url, this._assets, true, msg) );
 				//} else{
 				//	throw new Error(msg);
 				//}
@@ -423,6 +425,11 @@ module away.loaders
 		
 		private onAssetComplete(event : away.events.AssetEvent) : void
 		{
+            // Event is dispatched twice per asset (once as generic ASSET_COMPLETE,
+            // and once as type-specific, e.g. MESH_COMPLETE.) Do this only once.
+            if (event.type == away.events.AssetEvent.ASSET_COMPLETE)
+                this._assets.push(event.asset);
+
 			this.dispatchEvent( event.clone() ) ;
 		}
 
@@ -437,7 +444,7 @@ module away.loaders
 		private onParseComplete(event : away.events.ParserEvent) : void
 		{
 
-			this.dispatchEvent( new away.events.LoaderEvent( away.events.LoaderEvent.DEPENDENCY_COMPLETE , this.url ) );//dispatch in front of removing listeners to allow any remaining asset events to propagate
+			this.dispatchEvent( new away.events.LoaderEvent( away.events.LoaderEvent.DEPENDENCY_COMPLETE, this.url, this._assets ) );//dispatch in front of removing listeners to allow any remaining asset events to propagate
 			
 			this._parser.removeEventListener(away.events.ParserEvent.READY_FOR_DEPENDENCIES, this.onReadyForDependencies , this );
             this._parser.removeEventListener(away.events.ParserEvent.PARSE_COMPLETE, this.onParseComplete, this );

@@ -399,9 +399,9 @@ module away.geom
 			var rot = new Vector3D ();
                 rot.y = Math.asin( -mr[2]);
 
-			var cos:number = Math.cos(rot.y);
+			//var cos:number = Math.cos(rot.y);
 			
-			if (cos > 0)
+			if (mr[2] != 1 && mr[2] != -1)
 			{
 				rot.x = Math.atan2 (mr[6], mr[10]);
 				rot.z = Math.atan2 (mr[1], mr[0]);

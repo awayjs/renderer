@@ -376,9 +376,7 @@ module away.loaders
 			}
             else
             {
-
-                //console.log( 'AssetLoader.retrieveNext - away.events.LoaderEvent.RESOURCE_COMPLETE');
-                this.dispatchEvent( new away.events.LoaderEvent( away.events.LoaderEvent.RESOURCE_COMPLETE , this._uri ));
+                this.dispatchEvent( new away.events.LoaderEvent( away.events.LoaderEvent.RESOURCE_COMPLETE , this._uri , this._baseDependency.assets ));
 
             }
 
@@ -423,7 +421,7 @@ module away.loaders
 					// No need to parse. The parent parser is expecting this
 					// to be raw data so it can be passed directly.
 
-					this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this._loadingDependency.request.url, true));
+					this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this._loadingDependency.request.url, this._baseDependency.assets, true));
 					this._loadingDependency._iSetData( data );
                     this._loadingDependency.resolve();
 					
@@ -569,7 +567,7 @@ module away.loaders
 			
 			this.removeEventListeners(loader);
 			
-			event = new away.events.LoaderEvent(away.events.LoaderEvent.LOAD_ERROR, this._uri, isDependency, event.message);
+			event = new away.events.LoaderEvent(away.events.LoaderEvent.LOAD_ERROR, this._uri, this._baseDependency.assets, isDependency, event.message);
 
             // TODO: JS / AS3 Change - debug this code with a fine tooth combe
 
@@ -724,7 +722,7 @@ module away.loaders
 			this._loadingDependency._iSetData( loader.data );
             this._loadingDependency._iSuccess = true;
 			
-			this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.DEPENDENCY_COMPLETE, event.url));
+			this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.DEPENDENCY_COMPLETE, event.url, this._baseDependency.assets));
 			this.removeEventListeners(loader);
 			
 			// Retrieve any last dependencies remaining on this loader, or
