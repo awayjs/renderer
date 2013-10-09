@@ -1,8 +1,8 @@
 ///<reference path="../../../build/Away3D.next.d.ts" />
 
-module demos.aircraft
+module tests.textures
 {
-	export class AircraftDemo
+	export class CubeTextures
 	{
 		private _appTime			: number = 0;
 		private _lightPicker		: away.materials.StaticLightPicker;
