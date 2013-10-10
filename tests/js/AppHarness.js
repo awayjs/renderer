@@ -23,7 +23,6 @@ var away;
             this.sourceBtn.onclick = function () {
                 return _this.toggleSource();
             };
-
             this.dropDown.onchange = function (e) {
                 return _this.dropDownChange(e);
             };
@@ -85,7 +84,7 @@ var away;
 
         //------------------------------------------------------------------------------
         AppHarness.prototype.loadFromURL = function () {
-            var queryParams = AppFrame.getQueryParams(document.location.search);
+            var queryParams = Utils.getQueryParams(document.location.search);
 
             if (queryParams.test != null) {
                 var l = this.tests.length;
@@ -245,7 +244,7 @@ var away;
             html += '               padding: 0px;';
             html += '          }';
             html += '       </style>';
-            html += '   <script src="' + url + '?footer=no"></script>';
+            html += '   <script src="http://gist-it.appspot.com/github/away3d/away3d-core-ts/tree/master/tests/' + url + '?footer=no"></script>';
             html += '</head>';
             html += '<body>';
             html += '</body>';
@@ -277,9 +276,7 @@ var away;
         */
         AppHarness.prototype.dropDownChange = function (e) {
             this.dropDown.options[this.dropDown.selectedIndex].value;
-
             this.counter = this.dropDown.selectedIndex;
-
             var dataIndex = parseInt(this.dropDown.options[this.dropDown.selectedIndex].value);
 
             if (!isNaN(dataIndex)) {
@@ -296,7 +293,7 @@ var away;
         function AppFrame() {
             this.classPath = '';
             this.jsPath = '';
-            var queryParams = AppFrame.getQueryParams(document.location.search);
+            var queryParams = Utils.getQueryParams(document.location.search);
 
             if (queryParams.js != undefined && queryParams.name != undefined) {
                 this.jsPath = queryParams.js;
@@ -344,8 +341,16 @@ var away;
                 new obj();
             }
         };
+        return AppFrame;
+    })();
+    away.AppFrame = AppFrame;
 
-        AppFrame.getQueryParams = /**
+    //---------------------------------------------------
+    // Common Utilities
+    var Utils = (function () {
+        function Utils() {
+        }
+        Utils.getQueryParams = /**
         *
         * Utility function - Parse a Query formatted string
         *
@@ -363,9 +368,9 @@ var away;
 
             return params;
         };
-        return AppFrame;
+        return Utils;
     })();
-    away.AppFrame = AppFrame;
+    away.Utils = Utils;
 
     //---------------------------------------------------
     // Data
