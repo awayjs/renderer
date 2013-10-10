@@ -4828,6 +4828,86 @@ declare module away.library {
 }
 declare class AssetLibrarySingletonEnforcer {
 }
+declare module away.loaders {
+    /**
+    * Loader3D can load any file format that Away3D supports (or for which a third-party parser
+    * has been plugged in) and be added directly to the scene. As assets are encountered
+    * they are added to the Loader3D container. Assets that can not be displayed in the scene
+    * graph (e.g. unused bitmaps/materials/skeletons etc) will be ignored.
+    *
+    * This provides a fast and easy way to load models (no need for event listeners) but is not
+    * very versatile since many types of assets are ignored.
+    *
+    * Loader3D by default uses the AssetLibrary to load all assets, which means that they also
+    * ends up in the library. To circumvent this, Loader3D can be configured to not use the
+    * AssetLibrary in which case it will use the AssetLoader directly.
+    *
+    * @see away3d.loaders.AssetLoader
+    * @see away3d.library.AssetLibrary
+    */
+    class Loader3D extends away.containers.ObjectContainer3D {
+        private _loadingSessions;
+        private _useAssetLib;
+        private _assetLibId;
+        constructor(useAssetLibrary?: boolean, assetLibraryId?: string);
+        /**
+        * Loads a file and (optionally) all of its dependencies.
+        *
+        * @param req The URLRequest object containing the URL of the file to be loaded.
+        * @param context An optional context object providing additional parameters for loading
+        * @param ns An optional namespace string under which the file is to be loaded, allowing the differentiation of two resources with identical assets
+        * @param parser An optional parser object for translating the loaded data into a usable resource. If not provided, AssetLoader will attempt to auto-detect the file type.
+        */
+        public load(req: away.net.URLRequest, context?: loaders.AssetLoaderContext, ns?: string, parser?: loaders.ParserBase): loaders.AssetLoaderToken;
+        /**
+        * Loads a resource from already loaded data.
+        *
+        * @param data The data object containing all resource information.
+        * @param context An optional context object providing additional parameters for loading
+        * @param ns An optional namespace string under which the file is to be loaded, allowing the differentiation of two resources with identical assets
+        * @param parser An optional parser object for translating the loaded data into a usable resource. If not provided, AssetLoader will attempt to auto-detect the file type.
+        */
+        public loadData(data: any, context?: loaders.AssetLoaderContext, ns?: string, parser?: loaders.ParserBase): loaders.AssetLoaderToken;
+        /**
+        * Stop the current loading/parsing process.
+        */
+        public stopLoad(): void;
+        /**
+        * Enables a specific parser.
+        * When no specific parser is set for a loading/parsing opperation,
+        * loader3d can autoselect the correct parser to use.
+        * A parser must have been enabled, to be considered when autoselecting the parser.
+        *
+        * @param parserClass The parser class to enable.
+        * @see away3d.loaders.parsers.Parsers
+        */
+        static enableParser(parserClass: Object): void;
+        /**
+        * Enables a list of parsers.
+        * When no specific parser is set for a loading/parsing opperation,
+        * loader3d can autoselect the correct parser to use.
+        * A parser must have been enabled, to be considered when autoselecting the parser.
+        *
+        * @param parserClasses A Vector of parser classes to enable.
+        * @see away3d.loaders.parsers.Parsers
+        */
+        static enableParsers(parserClasses: Object[]): void;
+        private removeListeners(dispatcher);
+        private onAssetComplete(ev);
+        /**
+        * Called when a an error occurs during dependency retrieving.
+        */
+        private onDependencyRetrievingError(event);
+        /**
+        * Called when a an error occurs during parsing.
+        */
+        private onDependencyRetrievingParseError(event);
+        /**
+        * Called when the resource and all of its dependencies was retrieved.
+        */
+        private onResourceRetrieved(event);
+    }
+}
 declare module away.net {
     class IMGLoader extends away.events.EventDispatcher {
         private _image;
@@ -5863,6 +5943,157 @@ declare class bitFlags {
 declare class AWDProperties {
     public set(key: number, value: any): void;
     public get(key: number, fallback: any): any;
+}
+declare module away.loaders {
+    /**
+    * Max3DSParser provides a parser for the 3ds data type.
+    */
+    class Max3DSParser extends loaders.ParserBase {
+        private _byteData;
+        private _textures;
+        private _materials;
+        private _unfinalized_objects;
+        private _cur_obj_end;
+        private _cur_obj;
+        private _cur_mat_end;
+        private _cur_mat;
+        constructor();
+        /**
+        * Indicates whether or not a given file extension is supported by the parser.
+        * @param extension The file extension of a potential file to be parsed.
+        * @return Whether or not the given file type is supported.
+        */
+        static supportsType(extension: string): boolean;
+        /**
+        * Tests whether a data block can be parsed by the parser.
+        * @param data The data block to potentially be parsed.
+        * @return Whether or not the given data is supported.
+        */
+        static supportsData(data: any): boolean;
+        /**
+        * @inheritDoc
+        */
+        public _iResolveDependency(resourceDependency: loaders.ResourceDependency): void;
+        /**
+        * @inheritDoc
+        */
+        public _iResolveDependencyFailure(resourceDependency: loaders.ResourceDependency): void;
+        /**
+        * @inheritDoc
+        */
+        public _pProceedParsing(): boolean;
+        private parseMaterial();
+        private parseTexture(end);
+        private parseVertexList();
+        private parseFaceList();
+        private parseSmoothingGroups();
+        private parseUVList();
+        private parseFaceMaterialList();
+        private parseObjectAnimation(end);
+        private constructObject(obj, pivot?);
+        private prepareData(vertices, faces, obj);
+        private applySmoothGroups(vertices, faces);
+        private finalizeCurrentMaterial();
+        private readNulTermstring();
+        private readTransform();
+        private readColor();
+    }
+}
+declare class TextureVO {
+    public url: string;
+    public texture: away.textures.Texture2DBase;
+    public TextureVO(): void;
+}
+declare class MaterialVO {
+    public name: string;
+    public ambientColor: number;
+    public diffuseColor: number;
+    public specularColor: number;
+    public twoSided: boolean;
+    public colorMap: TextureVO;
+    public specularMap: TextureVO;
+    public material: away.materials.MaterialBase;
+    public MaterialVO(): void;
+}
+declare class ObjectVO {
+    public name: string;
+    public type: string;
+    public pivotX: number;
+    public pivotY: number;
+    public pivotZ: number;
+    public transform: number[];
+    public verts: number[];
+    public indices: number[];
+    public uvs: number[];
+    public materialFaces: Object;
+    public materials: string[];
+    public smoothingGroups: number[];
+    public ObjectVO(): void;
+}
+declare class VertexVO {
+    public x: number;
+    public y: number;
+    public z: number;
+    public u: number;
+    public v: number;
+    public normal: away.geom.Vector3D;
+    public tangent: away.geom.Vector3D;
+    public VertexVO(): void;
+}
+declare class FaceVO {
+    public a: number;
+    public b: number;
+    public c: number;
+    public smoothGroup: number;
+    public FaceVO(): void;
+}
+declare module away.loaders {
+    class Parsers {
+        /**
+        * A list of all parsers that come bundled with Away3D. Use this to quickly
+        * enable support for all bundled parsers to the file format auto-detection
+        * feature, using any of the enableParsers() methods on loaders, e.g.:
+        *
+        * <code>AssetLibrary.enableParsers(Parsers.ALL_BUNDLED);</code>
+        *
+        * Beware however that this requires all parser classes to be included in the
+        * SWF file, which will add 50-100 kb to the file. When only a limited set of
+        * file formats are used, SWF file size can be saved by adding the parsers
+        * individually using AssetLibrary.enableParser()
+        *
+        * A third way is to specify a parser for each loaded file, thereby bypassing
+        * the auto-detection mechanisms altogether, while at the same time allowing
+        * any properties that are unique to that parser to be set for that load.
+        *
+        * The bundled parsers are:
+        *
+        * <ul>
+        * <li>AC3D (.ac)</li>
+        * <li>Away Data version 1 ASCII and version 2 binary (.awd). AWD1 BSP unsupported</li>
+        * <li>3DMax (.3ds)</li>
+        * <li>DXF (.dxf)</li>
+        * <li>Quake 2 MD2 models (.md2)</li>
+        * <li>Doom 3 MD5 animation clips (.md5anim)</li>
+        * <li>Doom 3 MD5 meshes (.md5mesh)</li>
+        * <li>Wavefront OBJ (.obj)</li>
+        * <li>Collada (.dae)</li>
+        * <li>Images (.jpg, .png)</li>
+        * </ul>
+        *
+        * @see away3d.loading.AssetLibrary.enableParser
+        */
+        static ALL_BUNDLED: Object[];
+        /**
+        * Short-hand function to enable all bundled parsers for auto-detection. In practice,
+        * this is the same as invoking enableParsers(Parsers.ALL_BUNDLED) on any of the
+        * loader classes SingleFileLoader, AssetLoader, AssetLibrary or Loader3D.
+        *
+        * See notes about file size in the documentation for the ALL_BUNDLED constant.
+        *
+        * @see away3d.loaders.parsers.Parsers.ALL_BUNDLED
+        */
+        static enableAllBundled(): void;
+    }
 }
 declare module away.textures {
     class TextureProxyBase extends away.library.NamedAssetBase implements away.library.IAsset {
@@ -10557,10 +10788,10 @@ declare module away.materials {
     * ShadowMapMethodBase provides an abstract base method for shadow map methods.
     */
     class ShadowMapMethodBase extends materials.ShadingMethodBase implements away.library.IAsset {
-        private _castingLight;
-        private _shadowMapper;
-        private _epsilon;
-        private _alpha;
+        public _pCastingLight: away.lights.LightBase;
+        public _pShadowMapper: away.lights.ShadowMapperBase;
+        public _pEpsilon: number;
+        public _pAlpha: number;
         /**
         * Creates a new ShadowMapMethodBase object.
         * @param castingLight The light used to cast shadows.
@@ -10587,6 +10818,127 @@ declare module away.materials {
         * @inheritDoc
         */
         public iGetFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+    }
+}
+declare module away.materials {
+    /**
+    * SimpleShadowMapMethodBase provides an abstract method for simple (non-wrapping) shadow map methods.
+    */
+    class SimpleShadowMapMethodBase extends materials.ShadowMapMethodBase {
+        public _pDepthMapCoordReg: materials.ShaderRegisterElement;
+        public _pUsePoint: boolean;
+        /**
+        * Creates a new SimpleShadowMapMethodBase object.
+        * @param castingLight The light used to cast shadows.
+        */
+        constructor(castingLight: away.lights.LightBase);
+        /**
+        * @inheritDoc
+        */
+        public iInitVO(vo: materials.MethodVO): void;
+        /**
+        * @inheritDoc
+        */
+        public iInitConstants(vo: materials.MethodVO): void;
+        /**
+        * Wrappers that override the vertex shader need to set this explicitly
+        */
+        public _iDepthMapCoordReg : materials.ShaderRegisterElement;
+        /**
+        * @inheritDoc
+        */
+        public iCleanCompilationData(): void;
+        /**
+        * @inheritDoc
+        */
+        public iGetVertexCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache): string;
+        /**
+        * Gets the vertex code for shadow mapping with a point light.
+        *
+        * @param vo The MethodVO object linking this method with the pass currently being compiled.
+        * @param regCache The register cache used during the compilation.
+        */
+        public _pGetPointVertexCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache): string;
+        /**
+        * Gets the vertex code for shadow mapping with a planar shadow map (fe: directional lights).
+        *
+        * @param vo The MethodVO object linking this method with the pass currently being compiled.
+        * @param regCache The register cache used during the compilation.
+        */
+        public pGetPlanarVertexCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
+        public iGetFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+        /**
+        * Gets the fragment code for shadow mapping with a planar shadow map.
+        * @param vo The MethodVO object linking this method with the pass currently being compiled.
+        * @param regCache The register cache used during the compilation.
+        * @param targetReg The register to contain the shadow coverage
+        * @return
+        */
+        public _pGetPlanarFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+        /**
+        * Gets the fragment code for shadow mapping with a point light.
+        * @param vo The MethodVO object linking this method with the pass currently being compiled.
+        * @param regCache The register cache used during the compilation.
+        * @param targetReg The register to contain the shadow coverage
+        * @return
+        */
+        public _pGetPointFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+        /**
+        * @inheritDoc
+        */
+        public iSetRenderState(vo: materials.MethodVO, renderable: away.base.IRenderable, stage3DProxy: away.managers.Stage3DProxy, camera: away.cameras.Camera3D): void;
+        /**
+        * Gets the fragment code for combining this method with a cascaded shadow map method.
+        * @param vo The MethodVO object linking this method with the pass currently being compiled.
+        * @param regCache The register cache used during the compilation.
+        * @param decodeRegister The register containing the data to decode the shadow map depth value.
+        * @param depthTexture The texture containing the shadow map.
+        * @param depthProjection The projection of the fragment relative to the light.
+        * @param targetRegister The register to contain the shadow coverage
+        * @return
+        */
+        public _iGetCascadeFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, decodeRegister: materials.ShaderRegisterElement, depthTexture: materials.ShaderRegisterElement, depthProjection: materials.ShaderRegisterElement, targetRegister: materials.ShaderRegisterElement): string;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(vo: materials.MethodVO, stage3DProxy: away.managers.Stage3DProxy): void;
+        /**
+        * Sets the method state for cascade shadow mapping.
+        */
+        public iActivateForCascade(vo: materials.MethodVO, stage3DProxy: away.managers.Stage3DProxy): void;
+    }
+}
+declare module away.materials {
+    /**
+    * DitheredShadowMapMethod provides a softened shadowing technique by bilinearly interpolating shadow comparison
+    * results of neighbouring pixels.
+    */
+    class FilteredShadowMapMethod extends materials.SimpleShadowMapMethodBase {
+        /**
+        * Creates a new BasicDiffuseMethod object.
+        *
+        * @param castingLight The light casting the shadow
+        */
+        constructor(castingLight: away.lights.DirectionalLight);
+        /**
+        * @inheritDoc
+        */
+        public iInitConstants(vo: materials.MethodVO): void;
+        /**
+        * @inheritDoc
+        */
+        public _pGetPlanarFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+        /**
+        * @inheritDoc
+        */
+        public iActivateForCascade(vo: materials.MethodVO, stage3DProxy: away.managers.Stage3DProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public _iGetCascadeFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, decodeRegister: materials.ShaderRegisterElement, depthTexture: materials.ShaderRegisterElement, depthProjection: materials.ShaderRegisterElement, targetRegister: materials.ShaderRegisterElement): string;
     }
 }
 declare module away.materials {

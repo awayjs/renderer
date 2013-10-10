@@ -135,6 +135,7 @@
 ///<reference path="library/utils/IDUtil.ts" />
 ///<reference path="events/LoaderEvent.ts" />
 ///<reference path="library/AssetLibrary.ts" />
+///<reference path="loaders/Loader3D.ts" />
 ///<reference path="core/net/IMGLoader.ts" />
 ///<reference path="loaders/misc/ISingleFileTSLoader.ts" />
 ///<reference path="events/IOErrorEvent.ts" />
@@ -154,7 +155,8 @@
 ///<reference path="loaders/parsers/OBJParser.ts"/>
 ///<reference path="loaders/parsers/CubeTextureParser.ts"/>
 ///<reference path="loaders/parsers/AWDParser.ts"/>
-
+///<reference path="loaders/parsers/Max3DSParser.ts"/>
+///<reference path="loaders/parsers/Parsers.ts"/>
 
 ///<reference path="textures/TextureProxyBase.ts" />
 ///<reference path="textures/Texture2DBase.ts" />
@@ -265,6 +267,8 @@
 ///<reference path="materials/methods/ShaderMethodSetup.ts"/>
 ///<reference path="materials/methods/LightingMethodBase.ts"/>
 ///<reference path="materials/methods/ShadowMapMethodBase.ts"/>
+///<reference path="materials/methods/SimpleShadowMapMethodBase.ts"/>
+///<reference path="materials/methods/FilteredShadowMapMethod.ts"/>
 ///<reference path="materials/TextureMaterial.ts"/>
 ///<reference path="materials/lightpickers/LightPickerBase.ts"/>
 ///<reference path="materials/lightpickers/StaticLightPicker.ts"/>

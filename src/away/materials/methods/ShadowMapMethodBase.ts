@@ -16,11 +16,11 @@ module away.materials
 	 */
 	export class ShadowMapMethodBase extends away.materials.ShadingMethodBase implements away.library.IAsset
 	{
-		private _castingLight:away.lights.LightBase;
-		private _shadowMapper:away.lights.ShadowMapperBase;
+		public _pCastingLight:away.lights.LightBase;
+		public _pShadowMapper:away.lights.ShadowMapperBase;
 		
-		private _epsilon:number = .02;
-		private _alpha:number = 1;
+		public _pEpsilon:number = .02;
+		public _pAlpha:number = 1;
 
 		/**
 		 * Creates a new ShadowMapMethodBase object.
@@ -29,9 +29,9 @@ module away.materials
 		constructor(castingLight:away.lights.LightBase)
 		{
 			super();
-			this._castingLight = castingLight;
+			this._pCastingLight = castingLight;
 			castingLight.castsShadows = true;
-            this._shadowMapper = castingLight.shadowMapper;
+            this._pShadowMapper = castingLight.shadowMapper;
 
 		}
 
@@ -48,12 +48,12 @@ module away.materials
 		 */
 		public get alpha():number
 		{
-			return this._alpha;
+			return this._pAlpha;
 		}
 		
 		public set alpha(value:number)
 		{
-            this._alpha = value;
+            this._pAlpha = value;
 		}
 
 		/**
@@ -61,7 +61,7 @@ module away.materials
 		 */
 		public get castingLight():away.lights.LightBase
 		{
-			return this._castingLight;
+			return this._pCastingLight;
 		}
 
 		/**
@@ -70,12 +70,12 @@ module away.materials
 		 */
 		public get epsilon():number
 		{
-			return this._epsilon;
+			return this._pEpsilon;
 		}
 		
 		public set epsilon(value:number)
 		{
-            this._epsilon = value;
+            this._pEpsilon = value;
 		}
 
 		/**
