@@ -265,7 +265,6 @@ module away
                 this.testIframe.style.width         = '20%';
                 this.srcIframe.style.width          = '80%';
                 this.sourceBtn.innerHTML            = 'Hide Source';
-
             }
 
             this.sourceVisible = !this.sourceVisible;
@@ -289,7 +288,7 @@ module away
             html += '               padding: 0px;';
             html += '          }';
             html += '       </style>';
-            html += '   <script src="' + url + '?footer=no"></script>';
+	        html += '   <script src="http://gist-it.appspot.com/github/away3d/away3d-core-ts/tree/master/tests/' + url + '?footer=no"></script>';
             html += '</head>';
             html += '<body>';
             html += '</body>';
@@ -310,9 +309,7 @@ module away
          */
         private getId(id : string ) : HTMLElement
         {
-
             return document.getElementById( id );
-
         }
 
         //------------------------------------------------------------------------------
@@ -326,11 +323,8 @@ module away
          */
         private dropDownChange( e ) : void
         {
-
             this.dropDown.options[this.dropDown.selectedIndex].value
-
             this.counter = this.dropDown.selectedIndex;
-
             var dataIndex : number = parseInt( this.dropDown.options[this.dropDown.selectedIndex].value ) ;
 
             if ( ! isNaN( dataIndex ) )
@@ -338,7 +332,6 @@ module away
                 this.navigateToSection( this.tests[dataIndex] );
             }
         }
-
 
     }
 
