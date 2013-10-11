@@ -17193,6 +17193,417 @@ var AssetLibrarySingletonEnforcer = (function () {
 })();
 var away;
 (function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (loaders) {
+        /**
+        * Dispatched when any asset finishes parsing. Also see specific events for each
+        * individual asset type (meshes, materials et c.)
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="assetComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when a full resource (including dependencies) finishes loading.
+        *
+        * @eventType away3d.events.LoaderEvent
+        */
+        //[Event(name="resourceComplete", type="away3d.events.LoaderEvent")]
+        /**
+        * Dispatched when a single dependency (which may be the main file of a resource)
+        * finishes loading.
+        *
+        * @eventType away3d.events.LoaderEvent
+        */
+        //[Event(name="dependencyComplete", type="away3d.events.LoaderEvent")]
+        /**
+        * Dispatched when an error occurs during loading. I
+        *
+        * @eventType away3d.events.LoaderEvent
+        */
+        //[Event(name="loadError", type="away3d.events.LoaderEvent")]
+        /**
+        * Dispatched when an error occurs during parsing.
+        *
+        * @eventType away3d.events.ParserEvent
+        */
+        //[Event(name="parseError", type="away3d.events.ParserEvent")]
+        /**
+        * Dispatched when a skybox asset has been costructed from a ressource.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="skyboxComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when a camera3d asset has been costructed from a ressource.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="cameraComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when a mesh asset has been costructed from a ressource.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="meshComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when a geometry asset has been constructed from a resource.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="geometryComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when a skeleton asset has been constructed from a resource.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="skeletonComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when a skeleton pose asset has been constructed from a resource.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="skeletonPoseComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when a container asset has been constructed from a resource.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="containerComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when a texture asset has been constructed from a resource.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="textureComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when a texture projector asset has been constructed from a resource.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="textureProjectorComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when a material asset has been constructed from a resource.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="materialComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when a animator asset has been constructed from a resource.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="animatorComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when an animation set has been constructed from a group of animation state resources.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="animationSetComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when an animation state has been constructed from a group of animation node resources.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="animationStateComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when an animation node has been constructed from a resource.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="animationNodeComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when an animation state transition has been constructed from a group of animation node resources.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="stateTransitionComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when an light asset has been constructed from a resources.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="lightComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when an light picker asset has been constructed from a resources.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="lightPickerComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when an effect method asset has been constructed from a resources.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="effectMethodComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when an shadow map method asset has been constructed from a resources.
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="shadowMapMethodComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when an image asset dimensions are not a power of 2
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="textureSizeError", type="away3d.events.AssetEvent")]
+        /**
+        * Loader3D can load any file format that Away3D supports (or for which a third-party parser
+        * has been plugged in) and be added directly to the scene. As assets are encountered
+        * they are added to the Loader3D container. Assets that can not be displayed in the scene
+        * graph (e.g. unused bitmaps/materials/skeletons etc) will be ignored.
+        *
+        * This provides a fast and easy way to load models (no need for event listeners) but is not
+        * very versatile since many types of assets are ignored.
+        *
+        * Loader3D by default uses the AssetLibrary to load all assets, which means that they also
+        * ends up in the library. To circumvent this, Loader3D can be configured to not use the
+        * AssetLibrary in which case it will use the AssetLoader directly.
+        *
+        * @see away3d.loaders.AssetLoader
+        * @see away3d.library.AssetLibrary
+        */
+        var Loader3D = (function (_super) {
+            __extends(Loader3D, _super);
+            function Loader3D(useAssetLibrary, assetLibraryId) {
+                if (typeof useAssetLibrary === "undefined") { useAssetLibrary = true; }
+                if (typeof assetLibraryId === "undefined") { assetLibraryId = null; }
+                _super.call(this);
+
+                this._loadingSessions = new Array();
+                this._useAssetLib = useAssetLibrary;
+                this._assetLibId = assetLibraryId;
+            }
+            /**
+            * Loads a file and (optionally) all of its dependencies.
+            *
+            * @param req The URLRequest object containing the URL of the file to be loaded.
+            * @param context An optional context object providing additional parameters for loading
+            * @param ns An optional namespace string under which the file is to be loaded, allowing the differentiation of two resources with identical assets
+            * @param parser An optional parser object for translating the loaded data into a usable resource. If not provided, AssetLoader will attempt to auto-detect the file type.
+            */
+            Loader3D.prototype.load = function (req, context, ns, parser) {
+                if (typeof context === "undefined") { context = null; }
+                if (typeof ns === "undefined") { ns = null; }
+                if (typeof parser === "undefined") { parser = null; }
+                var token;
+
+                if (this._useAssetLib) {
+                    var lib;
+                    lib = away.library.AssetLibraryBundle.getInstance(this._assetLibId);
+                    token = lib.load(req, context, ns, parser);
+                } else {
+                    var loader = new away.loaders.AssetLoader();
+                    this._loadingSessions.push(loader);
+                    token = loader.load(req, context, ns, parser);
+                }
+
+                token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceRetrieved, this);
+                token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+                token.addEventListener(away.events.AssetEvent.ANIMATION_SET_COMPLETE, this.onAssetComplete, this);
+                token.addEventListener(away.events.AssetEvent.ANIMATION_STATE_COMPLETE, this.onAssetComplete, this);
+                token.addEventListener(away.events.AssetEvent.ANIMATION_NODE_COMPLETE, this.onAssetComplete, this);
+                token.addEventListener(away.events.AssetEvent.STATE_TRANSITION_COMPLETE, this.onAssetComplete, this);
+                token.addEventListener(away.events.AssetEvent.TEXTURE_COMPLETE, this.onAssetComplete, this);
+                token.addEventListener(away.events.AssetEvent.CONTAINER_COMPLETE, this.onAssetComplete, this);
+                token.addEventListener(away.events.AssetEvent.GEOMETRY_COMPLETE, this.onAssetComplete, this);
+                token.addEventListener(away.events.AssetEvent.MATERIAL_COMPLETE, this.onAssetComplete, this);
+                token.addEventListener(away.events.AssetEvent.MESH_COMPLETE, this.onAssetComplete, this);
+                token.addEventListener(away.events.AssetEvent.ENTITY_COMPLETE, this.onAssetComplete, this);
+                token.addEventListener(away.events.AssetEvent.SKELETON_COMPLETE, this.onAssetComplete, this);
+                token.addEventListener(away.events.AssetEvent.SKELETON_POSE_COMPLETE, this.onAssetComplete, this);
+
+                // Error are handled separately (see documentation for addErrorHandler)
+                token._iLoader._iAddErrorHandler(this.onDependencyRetrievingError);
+                token._iLoader._iAddParseErrorHandler(this.onDependencyRetrievingParseError);
+
+                return token;
+            };
+
+            /**
+            * Loads a resource from already loaded data.
+            *
+            * @param data The data object containing all resource information.
+            * @param context An optional context object providing additional parameters for loading
+            * @param ns An optional namespace string under which the file is to be loaded, allowing the differentiation of two resources with identical assets
+            * @param parser An optional parser object for translating the loaded data into a usable resource. If not provided, AssetLoader will attempt to auto-detect the file type.
+            */
+            Loader3D.prototype.loadData = function (data, context, ns, parser) {
+                if (typeof context === "undefined") { context = null; }
+                if (typeof ns === "undefined") { ns = null; }
+                if (typeof parser === "undefined") { parser = null; }
+                var token;
+
+                if (this._useAssetLib) {
+                    var lib;
+                    lib = away.library.AssetLibraryBundle.getInstance(this._assetLibId);
+                    token = lib.loadData(data, context, ns, parser);
+                } else {
+                    var loader = new away.loaders.AssetLoader();
+                    this._loadingSessions.push(loader);
+                    token = loader.loadData(data, '', context, ns, parser);
+                }
+
+                token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceRetrieved, this);
+                token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+                token.addEventListener(away.events.AssetEvent.ANIMATION_SET_COMPLETE, this.onAssetComplete, this);
+                token.addEventListener(away.events.AssetEvent.ANIMATION_STATE_COMPLETE, this.onAssetComplete, this);
+                token.addEventListener(away.events.AssetEvent.ANIMATION_NODE_COMPLETE, this.onAssetComplete, this);
+                token.addEventListener(away.events.AssetEvent.STATE_TRANSITION_COMPLETE, this.onAssetComplete, this);
+                token.addEventListener(away.events.AssetEvent.TEXTURE_COMPLETE, this.onAssetComplete, this);
+                token.addEventListener(away.events.AssetEvent.CONTAINER_COMPLETE, this.onAssetComplete, this);
+                token.addEventListener(away.events.AssetEvent.GEOMETRY_COMPLETE, this.onAssetComplete, this);
+                token.addEventListener(away.events.AssetEvent.MATERIAL_COMPLETE, this.onAssetComplete, this);
+                token.addEventListener(away.events.AssetEvent.MESH_COMPLETE, this.onAssetComplete, this);
+                token.addEventListener(away.events.AssetEvent.ENTITY_COMPLETE, this.onAssetComplete, this);
+                token.addEventListener(away.events.AssetEvent.SKELETON_COMPLETE, this.onAssetComplete, this);
+                token.addEventListener(away.events.AssetEvent.SKELETON_POSE_COMPLETE, this.onAssetComplete, this);
+
+                // Error are handled separately (see documentation for addErrorHandler)
+                token._iLoader._iAddErrorHandler(this.onDependencyRetrievingError);
+                token._iLoader._iAddParseErrorHandler(this.onDependencyRetrievingParseError);
+
+                return token;
+            };
+
+            /**
+            * Stop the current loading/parsing process.
+            */
+            Loader3D.prototype.stopLoad = function () {
+                if (this._useAssetLib) {
+                    var lib;
+                    lib = away.library.AssetLibraryBundle.getInstance(this._assetLibId);
+                    lib.stopAllLoadingSessions();
+                    this._loadingSessions = null;
+                    return;
+                }
+                var i/*int*/ ;
+                var length = this._loadingSessions.length;
+                for (i = 0; i < length; i++) {
+                    this.removeListeners(this._loadingSessions[i]);
+                    this._loadingSessions[i].stop();
+                    this._loadingSessions[i] = null;
+                }
+                this._loadingSessions = null;
+            };
+
+            Loader3D.enableParser = /**
+            * Enables a specific parser.
+            * When no specific parser is set for a loading/parsing opperation,
+            * loader3d can autoselect the correct parser to use.
+            * A parser must have been enabled, to be considered when autoselecting the parser.
+            *
+            * @param parserClass The parser class to enable.
+            * @see away3d.loaders.parsers.Parsers
+            */
+            function (parserClass) {
+                away.loaders.SingleFileLoader.enableParser(parserClass);
+            };
+
+            Loader3D.enableParsers = /**
+            * Enables a list of parsers.
+            * When no specific parser is set for a loading/parsing opperation,
+            * loader3d can autoselect the correct parser to use.
+            * A parser must have been enabled, to be considered when autoselecting the parser.
+            *
+            * @param parserClasses A Vector of parser classes to enable.
+            * @see away3d.loaders.parsers.Parsers
+            */
+            function (parserClasses) {
+                away.loaders.SingleFileLoader.enableParsers(parserClasses);
+            };
+
+            Loader3D.prototype.removeListeners = function (dispatcher) {
+                dispatcher.removeEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceRetrieved, this);
+                dispatcher.removeEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+                dispatcher.removeEventListener(away.events.AssetEvent.ANIMATION_SET_COMPLETE, this.onAssetComplete, this);
+                dispatcher.removeEventListener(away.events.AssetEvent.ANIMATION_STATE_COMPLETE, this.onAssetComplete, this);
+                dispatcher.removeEventListener(away.events.AssetEvent.ANIMATION_NODE_COMPLETE, this.onAssetComplete, this);
+                dispatcher.removeEventListener(away.events.AssetEvent.STATE_TRANSITION_COMPLETE, this.onAssetComplete, this);
+                dispatcher.removeEventListener(away.events.AssetEvent.TEXTURE_COMPLETE, this.onAssetComplete, this);
+                dispatcher.removeEventListener(away.events.AssetEvent.CONTAINER_COMPLETE, this.onAssetComplete, this);
+                dispatcher.removeEventListener(away.events.AssetEvent.GEOMETRY_COMPLETE, this.onAssetComplete, this);
+                dispatcher.removeEventListener(away.events.AssetEvent.MATERIAL_COMPLETE, this.onAssetComplete, this);
+                dispatcher.removeEventListener(away.events.AssetEvent.MESH_COMPLETE, this.onAssetComplete, this);
+                dispatcher.removeEventListener(away.events.AssetEvent.ENTITY_COMPLETE, this.onAssetComplete, this);
+                dispatcher.removeEventListener(away.events.AssetEvent.SKELETON_COMPLETE, this.onAssetComplete, this);
+                dispatcher.removeEventListener(away.events.AssetEvent.SKELETON_POSE_COMPLETE, this.onAssetComplete, this);
+            };
+
+            Loader3D.prototype.onAssetComplete = function (ev) {
+                if (ev.type == away.events.AssetEvent.ASSET_COMPLETE) {
+                    // TODO: not used
+                    // var type : string = ev.asset.assetType;
+                    var obj;
+                    switch (ev.asset.assetType) {
+                        case away.library.AssetType.LIGHT:
+                            obj = ev.asset;
+                            break;
+                        case away.library.AssetType.CONTAINER:
+                            obj = ev.asset;
+                            break;
+                        case away.library.AssetType.MESH:
+                            obj = ev.asset;
+                            break;
+
+                            break;
+
+                            break;
+                        case away.library.AssetType.CAMERA:
+                            obj = ev.asset;
+                            break;
+                        case away.library.AssetType.SEGMENT_SET:
+                            obj = ev.asset;
+                            break;
+                    }
+
+                    if (obj && obj.parent == null)
+                        this.addChild(obj);
+                }
+
+                this.dispatchEvent(ev.clone());
+            };
+
+            /**
+            * Called when a an error occurs during dependency retrieving.
+            */
+            Loader3D.prototype.onDependencyRetrievingError = function (event) {
+                if (this.hasEventListener(away.events.LoaderEvent.LOAD_ERROR, this.onDependencyRetrievingError, this)) {
+                    this.dispatchEvent(event);
+                    return true;
+                } else {
+                    return false;
+                }
+            };
+
+            /**
+            * Called when a an error occurs during parsing.
+            */
+            Loader3D.prototype.onDependencyRetrievingParseError = function (event) {
+                if (this.hasEventListener(away.events.ParserEvent.PARSE_ERROR, this.onDependencyRetrievingParseError, this)) {
+                    this.dispatchEvent(event);
+                    return true;
+                } else {
+                    return false;
+                }
+            };
+
+            /**
+            * Called when the resource and all of its dependencies was retrieved.
+            */
+            Loader3D.prototype.onResourceRetrieved = function (event) {
+                var loader = event.target;
+
+                this.dispatchEvent(event.clone());
+            };
+            return Loader3D;
+        })(away.containers.ObjectContainer3D);
+        loaders.Loader3D = Loader3D;
+    })(away.loaders || (away.loaders = {}));
+    var loaders = away.loaders;
+})(away || (away = {}));
+var away;
+(function (away) {
     ///<reference path="../../_definitions.ts"/>
     (function (net) {
         // TODO: implement / test cross domain policy
@@ -21954,6 +22365,794 @@ var AWDProperties = (function () {
     };
     return AWDProperties;
 })();
+var away;
+(function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (loaders) {
+        /**
+        * Max3DSParser provides a parser for the 3ds data type.
+        */
+        var Max3DSParser = (function (_super) {
+            __extends(Max3DSParser, _super);
+            function Max3DSParser() {
+                _super.call(this, loaders.ParserDataFormat.BINARY);
+            }
+            Max3DSParser.supportsType = /**
+            * Indicates whether or not a given file extension is supported by the parser.
+            * @param extension The file extension of a potential file to be parsed.
+            * @return Whether or not the given file type is supported.
+            */
+            function (extension) {
+                extension = extension.toLowerCase();
+                return extension == "3ds";
+            };
+
+            Max3DSParser.supportsData = /**
+            * Tests whether a data block can be parsed by the parser.
+            * @param data The data block to potentially be parsed.
+            * @return Whether or not the given data is supported.
+            */
+            function (data) {
+                var ba;
+
+                ba = away.loaders.ParserUtil.toByteArray(data);
+                if (ba) {
+                    ba.position = 0;
+                    if (ba.readShort() == 0x4d4d)
+                        return true;
+                }
+
+                return false;
+            };
+
+            /**
+            * @inheritDoc
+            */
+            Max3DSParser.prototype._iResolveDependency = function (resourceDependency) {
+                if (resourceDependency.assets.length == 1) {
+                    var asset;
+
+                    asset = resourceDependency.assets[0];
+                    if (asset.assetType == away.library.AssetType.TEXTURE) {
+                        var tex;
+
+                        tex = this._textures[resourceDependency.id];
+                        tex.texture = asset;
+                    }
+                }
+            };
+
+            /**
+            * @inheritDoc
+            */
+            Max3DSParser.prototype._iResolveDependencyFailure = function (resourceDependency) {
+                // TODO: Implement
+            };
+
+            /**
+            * @inheritDoc
+            */
+            Max3DSParser.prototype._pProceedParsing = function () {
+                if (!this._byteData) {
+                    this._byteData = this._pGetByteData();
+                    this._byteData.position = 0;
+
+                    //----------------------------------------------------------------------------
+                    // LITTLE_ENDIAN - Default for ArrayBuffer / Not implemented in ByteArray
+                    //----------------------------------------------------------------------------
+                    //this._byteData.endian = Endian.LITTLE_ENDIAN;// Should be default
+                    //----------------------------------------------------------------------------
+                    this._textures = {};
+                    this._materials = {};
+                    this._unfinalized_objects = {};
+                }
+
+                while (this._pHasTime()) {
+                    if (this._cur_mat && this._byteData.position >= this._cur_mat_end)
+                        this.finalizeCurrentMaterial();
+else if (this._cur_obj && this._byteData.position >= this._cur_obj_end) {
+                        // Can't finalize at this point, because we have to wait until the full
+                        // animation section has been parsed for any potential pivot definitions
+                        this._unfinalized_objects[this._cur_obj.name] = this._cur_obj;
+                        this._cur_obj_end = Number.MAX_VALUE;
+                        ;
+                        this._cur_obj = null;
+                    }
+
+                    if (this._byteData.getBytesAvailable() > 0) {
+                        var cid/*uint*/ ;
+                        var len/*uint*/ ;
+                        var end/*uint*/ ;
+
+                        cid = this._byteData.readUnsignedShort();
+                        len = this._byteData.readUnsignedInt();
+                        end = this._byteData.position + (len - 6);
+
+                        switch (cid) {
+                            case 0x4D4D:
+                            case 0x3D3D:
+                            case 0xB000:
+                                continue;
+                                break;
+
+                            case 0xAFFF:
+                                this._cur_mat_end = end;
+                                this._cur_mat = this.parseMaterial();
+                                break;
+
+                            case 0x4000:
+                                this._cur_obj_end = end;
+                                this._cur_obj = new ObjectVO();
+                                this._cur_obj.name = this.readNulTermstring();
+                                this._cur_obj.materials = new Array();
+                                this._cur_obj.materialFaces = {};
+                                break;
+
+                            case 0x4100:
+                                this._cur_obj.type = away.library.AssetType.MESH;
+                                break;
+
+                            case 0x4110:
+                                this.parseVertexList();
+                                break;
+
+                            case 0x4120:
+                                this.parseFaceList();
+                                break;
+
+                            case 0x4140:
+                                this.parseUVList();
+                                break;
+
+                            case 0x4130:
+                                this.parseFaceMaterialList();
+                                break;
+
+                            case 0x4160:
+                                this._cur_obj.transform = this.readTransform();
+                                break;
+
+                            case 0xB002:
+                                this.parseObjectAnimation(end);
+                                break;
+
+                            case 0x4150:
+                                this.parseSmoothingGroups();
+                                break;
+
+                            default:
+                                // Skip this (unknown) chunk
+                                this._byteData.position += (len - 6);
+                                break;
+                        }
+
+                        if (this.dependencies.length) {
+                            this._pPauseAndRetrieveDependencies();
+                            break;
+                        }
+                    }
+                }
+
+                if (this._byteData.getBytesAvailable() || this._cur_obj || this._cur_mat)
+                    return away.loaders.ParserBase.MORE_TO_PARSE;
+else {
+                    var name;
+
+                    for (name in this._unfinalized_objects) {
+                        var obj;
+                        obj = this.constructObject(this._unfinalized_objects[name]);
+                        if (obj)
+                            this._pFinalizeAsset(obj, name);
+                    }
+
+                    return away.loaders.ParserBase.PARSING_DONE;
+                }
+            };
+
+            Max3DSParser.prototype.parseMaterial = function () {
+                var mat;
+
+                mat = new MaterialVO();
+
+                while (this._byteData.position < this._cur_mat_end) {
+                    var cid/*uint*/ ;
+                    var len/*uint*/ ;
+                    var end/*uint*/ ;
+
+                    cid = this._byteData.readUnsignedShort();
+                    len = this._byteData.readUnsignedInt();
+                    end = this._byteData.position + (len - 6);
+
+                    switch (cid) {
+                        case 0xA000:
+                            mat.name = this.readNulTermstring();
+                            break;
+
+                        case 0xA010:
+                            mat.ambientColor = this.readColor();
+                            break;
+
+                        case 0xA020:
+                            mat.diffuseColor = this.readColor();
+                            break;
+
+                        case 0xA030:
+                            mat.specularColor = this.readColor();
+                            break;
+
+                        case 0xA081:
+                            mat.twoSided = true;
+                            break;
+
+                        case 0xA200:
+                            mat.colorMap = this.parseTexture(end);
+                            break;
+
+                        case 0xA204:
+                            mat.specularMap = this.parseTexture(end);
+                            break;
+
+                        default:
+                            this._byteData.position = end;
+                            break;
+                    }
+                }
+
+                return mat;
+            };
+
+            Max3DSParser.prototype.parseTexture = function (end/*uint*/ ) {
+                var tex;
+
+                tex = new TextureVO();
+
+                while (this._byteData.position < end) {
+                    var cid/*uint*/ ;
+                    var len/*uint*/ ;
+
+                    cid = this._byteData.readUnsignedShort();
+                    len = this._byteData.readUnsignedInt();
+
+                    switch (cid) {
+                        case 0xA300:
+                            tex.url = this.readNulTermstring();
+                            break;
+
+                        default:
+                            // Skip this unknown texture sub-chunk
+                            this._byteData.position += (len - 6);
+                            break;
+                    }
+                }
+
+                this._textures[tex.url] = tex;
+                this._pAddDependency(tex.url, new away.net.URLRequest(tex.url));
+
+                return tex;
+            };
+
+            Max3DSParser.prototype.parseVertexList = function () {
+                var i/*uint*/ ;
+                var len/*uint*/ ;
+                var count/*uint*/ ;
+
+                count = this._byteData.readUnsignedShort();
+                this._cur_obj.verts = new Array(count * 3);
+
+                i = 0;
+                len = this._cur_obj.verts.length;
+                while (i < len) {
+                    var x, y, z;
+
+                    x = this._byteData.readFloat();
+                    y = this._byteData.readFloat();
+                    z = this._byteData.readFloat();
+
+                    this._cur_obj.verts[i++] = x;
+                    this._cur_obj.verts[i++] = z;
+                    this._cur_obj.verts[i++] = y;
+                }
+            };
+
+            Max3DSParser.prototype.parseFaceList = function () {
+                var i/*uint*/ ;
+                var len/*uint*/ ;
+                var count/*uint*/ ;
+
+                count = this._byteData.readUnsignedShort();
+                this._cur_obj.indices = new Array(count * 3);
+
+                i = 0;
+                len = this._cur_obj.indices.length;
+                while (i < len) {
+                    var i0/*uint*/ , i1, i2;
+
+                    i0 = this._byteData.readUnsignedShort();
+                    i1 = this._byteData.readUnsignedShort();
+                    i2 = this._byteData.readUnsignedShort();
+
+                    this._cur_obj.indices[i++] = i0;
+                    this._cur_obj.indices[i++] = i2;
+                    this._cur_obj.indices[i++] = i1;
+
+                    // Skip "face info", irrelevant in Away3D
+                    this._byteData.position += 2;
+                }
+
+                this._cur_obj.smoothingGroups = new Array(count);
+            };
+
+            Max3DSParser.prototype.parseSmoothingGroups = function () {
+                var len = this._cur_obj.indices.length / 3;
+                var i = 0;
+                while (i < len) {
+                    this._cur_obj.smoothingGroups[i] = this._byteData.readUnsignedInt();
+                    i++;
+                }
+            };
+
+            Max3DSParser.prototype.parseUVList = function () {
+                var i/*uint*/ ;
+                var len/*uint*/ ;
+                var count/*uint*/ ;
+
+                count = this._byteData.readUnsignedShort();
+                this._cur_obj.uvs = new Array(count * 2);
+
+                i = 0;
+                len = this._cur_obj.uvs.length;
+                while (i < len) {
+                    this._cur_obj.uvs[i++] = this._byteData.readFloat();
+                    this._cur_obj.uvs[i++] = 1.0 - this._byteData.readFloat();
+                }
+            };
+
+            Max3DSParser.prototype.parseFaceMaterialList = function () {
+                var mat;
+                var count/*uint*/ ;
+                var i/*uint*/ ;
+                var faces/*uint*/ ;
+
+                mat = this.readNulTermstring();
+                count = this._byteData.readUnsignedShort();
+
+                faces = new Array(count);
+                i = 0;
+                while (i < faces.length)
+                    faces[i++] = this._byteData.readUnsignedShort();
+
+                this._cur_obj.materials.push(mat);
+                this._cur_obj.materialFaces[mat] = faces;
+            };
+
+            Max3DSParser.prototype.parseObjectAnimation = function (end) {
+                var vo;
+                var obj;
+                var pivot;
+                var name;
+                var hier/*uint*/ ;
+
+                // Pivot defaults to origin
+                pivot = new away.geom.Vector3D();
+
+                while (this._byteData.position < end) {
+                    var cid/*uint*/ ;
+                    var len/*uint*/ ;
+
+                    cid = this._byteData.readUnsignedShort();
+                    len = this._byteData.readUnsignedInt();
+
+                    switch (cid) {
+                        case 0xb010:
+                            name = this.readNulTermstring();
+                            this._byteData.position += 4;
+                            hier = this._byteData.readShort();
+                            break;
+
+                        case 0xb013:
+                            pivot.x = this._byteData.readFloat();
+                            pivot.z = this._byteData.readFloat();
+                            pivot.y = this._byteData.readFloat();
+                            break;
+
+                        default:
+                            this._byteData.position += (len - 6);
+                            break;
+                    }
+                }
+
+                if (name != '$$$DUMMY' && this._unfinalized_objects.hasOwnProperty(name)) {
+                    vo = this._unfinalized_objects[name];
+                    obj = this.constructObject(vo, pivot);
+
+                    if (obj)
+                        this._pFinalizeAsset(obj, vo.name);
+
+                    delete this._unfinalized_objects[name];
+                }
+            };
+
+            Max3DSParser.prototype.constructObject = function (obj, pivot) {
+                if (typeof pivot === "undefined") { pivot = null; }
+                if (obj.type == away.library.AssetType.MESH) {
+                    var i/*uint*/ ;
+                    var subs;
+                    var geom;
+                    var mat;
+                    var mesh;
+                    var mtx;
+                    var vertices;
+                    var faces;
+
+                    if (obj.materials.length > 1)
+                        console.log("The Away3D 3DS parser does not support multiple materials per mesh at this point.");
+
+                    if (!obj.indices || obj.indices.length == 0)
+                        return null;
+
+                    vertices = new Array(obj.verts.length / 3);
+                    faces = new Array(obj.indices.length / 3);
+
+                    this.prepareData(vertices, faces, obj);
+                    this.applySmoothGroups(vertices, faces);
+
+                    obj.verts = new Array(vertices.length * 3);
+                    for (i = 0; i < vertices.length; i++) {
+                        obj.verts[i * 3] = vertices[i].x;
+                        obj.verts[i * 3 + 1] = vertices[i].y;
+                        obj.verts[i * 3 + 2] = vertices[i].z;
+                    }
+                    obj.indices = new Array(faces.length * 3);
+                    ;
+                    for (i = 0; i < faces.length; i++) {
+                        obj.indices[i * 3] = faces[i].a;
+                        obj.indices[i * 3 + 1] = faces[i].b;
+                        obj.indices[i * 3 + 2] = faces[i].c;
+                    }
+
+                    if (obj.uvs) {
+                        // If the object had UVs to start with, use UVs generated by
+                        // smoothing group splitting algorithm. Otherwise those UVs
+                        // will be nonsense and should be skipped.
+                        obj.uvs = new Array(vertices.length * 2);
+                        for (i = 0; i < vertices.length; i++) {
+                            obj.uvs[i * 2] = vertices[i].u;
+                            obj.uvs[i * 2 + 1] = vertices[i].v;
+                        }
+                    }
+
+                    geom = new away.base.Geometry();
+
+                    // Construct sub-geometries (potentially splitting buffers)
+                    // and add them to geometry.
+                    subs = away.utils.GeometryUtils.fromVectors(obj.verts, obj.indices, obj.uvs, null, null, null, null);
+                    for (i = 0; i < subs.length; i++)
+                        geom.subGeometries.push(subs[i]);
+
+                    if (obj.materials.length > 0) {
+                        var mname;
+                        mname = obj.materials[0];
+                        mat = this._materials[mname].material;
+                    }
+
+                    if (pivot) {
+                        if (obj.transform) {
+                            // If a transform was found while parsing the
+                            // object chunk, use it to find the local pivot vector
+                            var dat = obj.transform.concat();
+                            dat[12] = 0;
+                            dat[13] = 0;
+                            dat[14] = 0;
+                            mtx = new away.geom.Matrix3D(dat);
+                            pivot = mtx.transformVector(pivot);
+                        }
+
+                        pivot.scaleBy(-1);
+
+                        mtx = new away.geom.Matrix3D();
+                        mtx.appendTranslation(pivot.x, pivot.y, pivot.z);
+                        geom.applyTransformation(mtx);
+                    }
+
+                    if (obj.transform) {
+                        mtx = new away.geom.Matrix3D(obj.transform);
+                        mtx.invert();
+                        geom.applyTransformation(mtx);
+                    }
+
+                    // Final transform applied to geometry. Finalize the geometry,
+                    // which will no longer be modified after this point.
+                    this._pFinalizeAsset(geom, obj.name.concat('_geom'));
+
+                    // Build mesh and return it
+                    mesh = new away.entities.Mesh(geom, mat);
+                    mesh.transform = new away.geom.Matrix3D(obj.transform);
+                    return mesh;
+                }
+
+                // If reached, unknown
+                return null;
+            };
+
+            Max3DSParser.prototype.prepareData = function (vertices, faces, obj) {
+                // convert raw ObjectVO's data to structured VertexVO and FaceVO
+                var i/*int*/ ;
+                var j/*int*/ ;
+                var k/*int*/ ;
+                var len = obj.verts.length;
+                for (i = 0, j = 0, k = 0; i < len;) {
+                    var v = new VertexVO();
+                    v.x = obj.verts[i++];
+                    v.y = obj.verts[i++];
+                    v.z = obj.verts[i++];
+                    if (obj.uvs) {
+                        v.u = obj.uvs[j++];
+                        v.v = obj.uvs[j++];
+                    }
+                    vertices[k++] = v;
+                }
+                len = obj.indices.length;
+                for (i = 0, k = 0; i < len;) {
+                    var f = new FaceVO();
+                    f.a = obj.indices[i++];
+                    f.b = obj.indices[i++];
+                    f.c = obj.indices[i++];
+                    f.smoothGroup = obj.smoothingGroups[k];
+                    faces[k++] = f;
+                }
+            };
+
+            Max3DSParser.prototype.applySmoothGroups = function (vertices, faces) {
+                // clone vertices according to following rule:
+                // clone if vertex's in faces from groups 1+2 and 3
+                // don't clone if vertex's in faces from groups 1+2, 3 and 1+3
+                var i/*int*/ ;
+                var j/*int*/ ;
+                var k/*int*/ ;
+                var l/*int*/ ;
+                var len/*int*/ ;
+                var numVerts = vertices.length;
+                var numFaces = faces.length;
+
+                // extract groups data for vertices
+                var vGroups = new Array(numVerts)/*uint*/ ;
+                for (i = 0; i < numVerts; i++)
+                    vGroups[i] = new Array();
+                for (i = 0; i < numFaces; i++) {
+                    var face = faces[i];
+                    for (j = 0; j < 3; j++) {
+                        var groups = vGroups[(j == 0) ? face.a : ((j == 1) ? face.b : face.c)];
+                        var group = face.smoothGroup;
+                        for (k = groups.length - 1; k >= 0; k--) {
+                            if ((group & groups[k]) > 0) {
+                                group |= groups[k];
+                                groups.splice(k, 1);
+                                k = groups.length - 1;
+                            }
+                        }
+                        groups.push(group);
+                    }
+                }
+
+                // clone vertices
+                var vClones = new Array(numVerts)/*uint*/ ;
+                for (i = 0; i < numVerts; i++) {
+                    if ((len = vGroups[i].length) < 1)
+                        continue;
+                    var clones = new Array(len)/*uint*/ ;
+                    vClones[i] = clones;
+                    clones[0] = i;
+                    var v0 = vertices[i];
+                    for (j = 1; j < len; j++) {
+                        var v1 = new VertexVO();
+                        v1.x = v0.x;
+                        v1.y = v0.y;
+                        v1.z = v0.z;
+                        v1.u = v0.u;
+                        v1.v = v0.v;
+                        clones[j] = vertices.length;
+                        vertices.push(v1);
+                    }
+                }
+                numVerts = vertices.length;
+
+                for (i = 0; i < numFaces; i++) {
+                    face = faces[i];
+                    group = face.smoothGroup;
+                    for (j = 0; j < 3; j++) {
+                        k = (j == 0) ? face.a : ((j == 1) ? face.b : face.c);
+                        groups = vGroups[k];
+                        len = groups.length;
+                        clones = vClones[k];
+                        for (l = 0; l < len; l++) {
+                            if (((group == 0) && (groups[l] == 0)) || ((group & groups[l]) > 0)) {
+                                var index = clones[l];
+                                if (group == 0) {
+                                    // vertex is unique if no smoothGroup found
+                                    groups.splice(l, 1);
+                                    clones.splice(l, 1);
+                                }
+                                if (j == 0)
+                                    face.a = index;
+else if (j == 1)
+                                    face.b = index;
+else
+                                    face.c = index;
+                                l = len;
+                            }
+                        }
+                    }
+                }
+            };
+
+            Max3DSParser.prototype.finalizeCurrentMaterial = function () {
+                var mat;
+                if (this.materialMode < 2) {
+                    if (this._cur_mat.colorMap)
+                        mat = new away.materials.TextureMaterial(this._cur_mat.colorMap.texture || away.materials.DefaultMaterialManager.getDefaultTexture());
+else
+                        mat = new away.materials.ColorMaterial(this._cur_mat.diffuseColor);
+                    (mat).ambientColor = this._cur_mat.ambientColor;
+                    (mat).specularColor = this._cur_mat.specularColor;
+                } else {
+                    if (this._cur_mat.colorMap)
+                        mat = new away.materials.TextureMultiPassMaterial(this._cur_mat.colorMap.texture || away.materials.DefaultMaterialManager.getDefaultTexture());
+else
+                        mat = new away.materials.ColorMultiPassMaterial(this._cur_mat.diffuseColor);
+                    (mat).ambientColor = this._cur_mat.ambientColor;
+                    (mat).specularColor = this._cur_mat.specularColor;
+                }
+
+                mat.bothSides = this._cur_mat.twoSided;
+
+                this._pFinalizeAsset(mat, this._cur_mat.name);
+
+                this._materials[this._cur_mat.name] = this._cur_mat;
+                this._cur_mat.material = mat;
+
+                this._cur_mat = null;
+            };
+
+            Max3DSParser.prototype.readNulTermstring = function () {
+                var chr/*int*/ ;
+                var str = "";
+
+                while ((chr = this._byteData.readUnsignedByte()) > 0)
+                    str += String.fromCharCode(chr);
+
+                return str;
+            };
+
+            Max3DSParser.prototype.readTransform = function () {
+                var data;
+
+                data = new Array(16);
+
+                // X axis
+                data[0] = this._byteData.readFloat();
+                data[2] = this._byteData.readFloat();
+                data[1] = this._byteData.readFloat();
+                data[3] = 0;
+
+                // Z axis
+                data[8] = this._byteData.readFloat();
+                data[10] = this._byteData.readFloat();
+                data[9] = this._byteData.readFloat();
+                data[11] = 0;
+
+                // Y Axis
+                data[4] = this._byteData.readFloat();
+                data[6] = this._byteData.readFloat();
+                data[5] = this._byteData.readFloat();
+                data[7] = 0;
+
+                // Translation
+                data[12] = this._byteData.readFloat();
+                data[14] = this._byteData.readFloat();
+                data[13] = this._byteData.readFloat();
+                data[15] = 1;
+
+                return data;
+            };
+
+            Max3DSParser.prototype.readColor = function () {
+                var cid/*int*/ ;
+                var len/*int*/ ;
+                var r/*int*/ , g, b;
+
+                cid = this._byteData.readUnsignedShort();
+                len = this._byteData.readUnsignedInt();
+
+                switch (cid) {
+                    case 0x0010:
+                        r = this._byteData.readFloat() * 255;
+                        g = this._byteData.readFloat() * 255;
+                        b = this._byteData.readFloat() * 255;
+                        break;
+                    case 0x0011:
+                        r = this._byteData.readUnsignedByte();
+                        g = this._byteData.readUnsignedByte();
+                        b = this._byteData.readUnsignedByte();
+                        break;
+                    default:
+                        this._byteData.position += (len - 6);
+                        break;
+                }
+
+                return (r << 16) | (g << 8) | b;
+            };
+            return Max3DSParser;
+        })(away.loaders.ParserBase);
+        loaders.Max3DSParser = Max3DSParser;
+    })(away.loaders || (away.loaders = {}));
+    var loaders = away.loaders;
+})(away || (away = {}));
+
+var TextureVO = (function () {
+    function TextureVO() {
+    }
+    TextureVO.prototype.TextureVO = function () {
+    };
+    return TextureVO;
+})();
+
+var MaterialVO = (function () {
+    function MaterialVO() {
+    }
+    MaterialVO.prototype.MaterialVO = function () {
+    };
+    return MaterialVO;
+})();
+
+var ObjectVO = (function () {
+    function ObjectVO() {
+    }
+    ObjectVO.prototype.ObjectVO = function () {
+    };
+    return ObjectVO;
+})();
+
+var VertexVO = (function () {
+    function VertexVO() {
+    }
+    VertexVO.prototype.VertexVO = function () {
+    };
+    return VertexVO;
+})();
+
+var FaceVO = (function () {
+    function FaceVO() {
+    }
+    FaceVO.prototype.FaceVO = function () {
+    };
+    return FaceVO;
+})();
+var away;
+(function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (loaders) {
+        var Parsers = (function () {
+            function Parsers() {
+            }
+            Parsers.enableAllBundled = /**
+            * Short-hand function to enable all bundled parsers for auto-detection. In practice,
+            * this is the same as invoking enableParsers(Parsers.ALL_BUNDLED) on any of the
+            * loader classes SingleFileLoader, AssetLoader, AssetLibrary or Loader3D.
+            *
+            * See notes about file size in the documentation for the ALL_BUNDLED constant.
+            *
+            * @see away3d.loaders.parsers.Parsers.ALL_BUNDLED
+            */
+            function () {
+                away.loaders.SingleFileLoader.enableParsers(this.ALL_BUNDLED);
+            };
+            Parsers.ALL_BUNDLED = Array(away.loaders.AWDParser, away.loaders.Max3DSParser, away.loaders.OBJParser);
+            return Parsers;
+        })();
+        loaders.Parsers = Parsers;
+    })(away.loaders || (away.loaders = {}));
+    var loaders = away.loaders;
+})(away || (away = {}));
 var away;
 (function (away) {
     ///<reference path="../_definitions.ts"/>
@@ -28760,7 +29959,7 @@ var away;
                     this._tmpLookAt.x = this.x + this._direction.x;
                     this._tmpLookAt.y = this.y + this._direction.y;
                     this._tmpLookAt.z = this.z + this._direction.z;
-                    console.log(this._tmpLookAt);
+
                     this.lookAt(this._tmpLookAt);
                 },
                 enumerable: true,
@@ -38658,11 +39857,11 @@ var away;
             */
             function ShadowMapMethodBase(castingLight) {
                 _super.call(this);
-                this._epsilon = .02;
-                this._alpha = 1;
-                this._castingLight = castingLight;
+                this._pEpsilon = .02;
+                this._pAlpha = 1;
+                this._pCastingLight = castingLight;
                 castingLight.castsShadows = true;
-                this._shadowMapper = castingLight.shadowMapper;
+                this._pShadowMapper = castingLight.shadowMapper;
             }
             Object.defineProperty(ShadowMapMethodBase.prototype, "assetType", {
                 get: /**
@@ -38680,10 +39879,10 @@ var away;
                 * The "transparency" of the shadows. This allows making shadows less strong.
                 */
                 function () {
-                    return this._alpha;
+                    return this._pAlpha;
                 },
                 set: function (value) {
-                    this._alpha = value;
+                    this._pAlpha = value;
                 },
                 enumerable: true,
                 configurable: true
@@ -38695,7 +39894,7 @@ var away;
                 * The light casting the shadows.
                 */
                 function () {
-                    return this._castingLight;
+                    return this._pCastingLight;
                 },
                 enumerable: true,
                 configurable: true
@@ -38707,10 +39906,10 @@ var away;
                 * calculated depth value. Increase this if shadow banding occurs, decrease it if the shadow seems to be too detached.
                 */
                 function () {
-                    return this._epsilon;
+                    return this._pEpsilon;
                 },
                 set: function (value) {
-                    this._epsilon = value;
+                    this._pEpsilon = value;
                 },
                 enumerable: true,
                 configurable: true
@@ -38727,6 +39926,320 @@ var away;
             return ShadowMapMethodBase;
         })(away.materials.ShadingMethodBase);
         materials.ShadowMapMethodBase = ShadowMapMethodBase;
+    })(away.materials || (away.materials = {}));
+    var materials = away.materials;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (materials) {
+        /**
+        * SimpleShadowMapMethodBase provides an abstract method for simple (non-wrapping) shadow map methods.
+        */
+        var SimpleShadowMapMethodBase = (function (_super) {
+            __extends(SimpleShadowMapMethodBase, _super);
+            /**
+            * Creates a new SimpleShadowMapMethodBase object.
+            * @param castingLight The light used to cast shadows.
+            */
+            function SimpleShadowMapMethodBase(castingLight) {
+                this._pUsePoint = (castingLight instanceof away.lights.PointLight);
+                _super.call(this, castingLight);
+            }
+            /**
+            * @inheritDoc
+            */
+            SimpleShadowMapMethodBase.prototype.iInitVO = function (vo) {
+                vo.needsView = true;
+                vo.needsGlobalVertexPos = true;
+                vo.needsGlobalFragmentPos = this._pUsePoint;
+                vo.needsNormals = vo.numLights > 0;
+            };
+
+            /**
+            * @inheritDoc
+            */
+            SimpleShadowMapMethodBase.prototype.iInitConstants = function (vo) {
+                var fragmentData = vo.fragmentData;
+                var vertexData = vo.vertexData;
+                var index = vo.fragmentConstantsIndex;
+                fragmentData[index] = 1.0;
+                fragmentData[index + 1] = 1 / 255.0;
+                fragmentData[index + 2] = 1 / 65025.0;
+                fragmentData[index + 3] = 1 / 16581375.0;
+
+                fragmentData[index + 6] = 0;
+                fragmentData[index + 7] = 1;
+
+                if (this._pUsePoint) {
+                    fragmentData[index + 8] = 0;
+                    fragmentData[index + 9] = 0;
+                    fragmentData[index + 10] = 0;
+                    fragmentData[index + 11] = 1;
+                }
+
+                index = vo.vertexConstantsIndex;
+                if (index != -1) {
+                    vertexData[index] = .5;
+                    vertexData[index + 1] = -.5;
+                    vertexData[index + 2] = 0.0;
+                    vertexData[index + 3] = 1.0;
+                }
+            };
+
+            Object.defineProperty(SimpleShadowMapMethodBase.prototype, "_iDepthMapCoordReg", {
+                get: /**
+                * Wrappers that override the vertex shader need to set this explicitly
+                */
+                function () {
+                    return this._pDepthMapCoordReg;
+                },
+                set: function (value) {
+                    this._pDepthMapCoordReg = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * @inheritDoc
+            */
+            SimpleShadowMapMethodBase.prototype.iCleanCompilationData = function () {
+                _super.prototype.iCleanCompilationData.call(this);
+
+                this._pDepthMapCoordReg = null;
+            };
+
+            /**
+            * @inheritDoc
+            */
+            SimpleShadowMapMethodBase.prototype.iGetVertexCode = function (vo, regCache) {
+                return this._pUsePoint ? this._pGetPointVertexCode(vo, regCache) : this.pGetPlanarVertexCode(vo, regCache);
+            };
+
+            /**
+            * Gets the vertex code for shadow mapping with a point light.
+            *
+            * @param vo The MethodVO object linking this method with the pass currently being compiled.
+            * @param regCache The register cache used during the compilation.
+            */
+            SimpleShadowMapMethodBase.prototype._pGetPointVertexCode = function (vo, regCache) {
+                vo.vertexConstantsIndex = -1;
+                return "";
+            };
+
+            /**
+            * Gets the vertex code for shadow mapping with a planar shadow map (fe: directional lights).
+            *
+            * @param vo The MethodVO object linking this method with the pass currently being compiled.
+            * @param regCache The register cache used during the compilation.
+            */
+            SimpleShadowMapMethodBase.prototype.pGetPlanarVertexCode = function (vo, regCache) {
+                var code = "";
+                var temp = regCache.getFreeVertexVectorTemp();
+                var dataReg = regCache.getFreeVertexConstant();
+                var depthMapProj = regCache.getFreeVertexConstant();
+                regCache.getFreeVertexConstant();
+                regCache.getFreeVertexConstant();
+                regCache.getFreeVertexConstant();
+                this._pDepthMapCoordReg = regCache.getFreeVarying();
+                vo.vertexConstantsIndex = dataReg.index * 4;
+
+                // todo: can epsilon be applied here instead of fragment shader?
+                code += "m44 " + temp + ", " + this._sharedRegisters.globalPositionVertex + ", " + depthMapProj + "\n" + "div " + temp + ", " + temp + ", " + temp + ".w\n" + "mul " + temp + ".xy, " + temp + ".xy, " + dataReg + ".xy\n" + "add " + this._pDepthMapCoordReg + ", " + temp + ", " + dataReg + ".xxwz\n";
+
+                return code;
+            };
+
+            /**
+            * @inheritDoc
+            */
+            SimpleShadowMapMethodBase.prototype.iGetFragmentCode = function (vo, regCache, targetReg) {
+                var code = this._pUsePoint ? this._pGetPointFragmentCode(vo, regCache, targetReg) : this._pGetPlanarFragmentCode(vo, regCache, targetReg);
+                code += "add " + targetReg + ".w, " + targetReg + ".w, fc" + (vo.fragmentConstantsIndex / 4 + 1) + ".y\n" + "sat " + targetReg + ".w, " + targetReg + ".w\n";
+                return code;
+            };
+
+            /**
+            * Gets the fragment code for shadow mapping with a planar shadow map.
+            * @param vo The MethodVO object linking this method with the pass currently being compiled.
+            * @param regCache The register cache used during the compilation.
+            * @param targetReg The register to contain the shadow coverage
+            * @return
+            */
+            SimpleShadowMapMethodBase.prototype._pGetPlanarFragmentCode = function (vo, regCache, targetReg) {
+                throw new away.errors.AbstractMethodError();
+                return "";
+            };
+
+            /**
+            * Gets the fragment code for shadow mapping with a point light.
+            * @param vo The MethodVO object linking this method with the pass currently being compiled.
+            * @param regCache The register cache used during the compilation.
+            * @param targetReg The register to contain the shadow coverage
+            * @return
+            */
+            SimpleShadowMapMethodBase.prototype._pGetPointFragmentCode = function (vo, regCache, targetReg) {
+                throw new away.errors.AbstractMethodError();
+                return "";
+            };
+
+            /**
+            * @inheritDoc
+            */
+            SimpleShadowMapMethodBase.prototype.iSetRenderState = function (vo, renderable, stage3DProxy, camera) {
+                if (!this._pUsePoint)
+                    (this._pShadowMapper).iDepthProjection.copyRawDataTo(vo.vertexData, vo.vertexConstantsIndex + 4, true);
+            };
+
+            /**
+            * Gets the fragment code for combining this method with a cascaded shadow map method.
+            * @param vo The MethodVO object linking this method with the pass currently being compiled.
+            * @param regCache The register cache used during the compilation.
+            * @param decodeRegister The register containing the data to decode the shadow map depth value.
+            * @param depthTexture The texture containing the shadow map.
+            * @param depthProjection The projection of the fragment relative to the light.
+            * @param targetRegister The register to contain the shadow coverage
+            * @return
+            */
+            SimpleShadowMapMethodBase.prototype._iGetCascadeFragmentCode = function (vo, regCache, decodeRegister, depthTexture, depthProjection, targetRegister) {
+                throw new Error("This shadow method is incompatible with cascade shadows");
+            };
+
+            /**
+            * @inheritDoc
+            */
+            SimpleShadowMapMethodBase.prototype.iActivate = function (vo, stage3DProxy) {
+                var fragmentData = vo.fragmentData;
+                var index = vo.fragmentConstantsIndex;
+
+                if (this._pUsePoint)
+                    fragmentData[index + 4] = -Math.pow(1 / ((this._pCastingLight).fallOff * this._pEpsilon), 2);
+else
+                    vo.vertexData[vo.vertexConstantsIndex + 3] = -1 / ((this._pShadowMapper).depth * this._pEpsilon);
+
+                fragmentData[index + 5] = 1 - this._pAlpha;
+                if (this._pUsePoint) {
+                    var pos = this._pCastingLight.scenePosition;
+                    fragmentData[index + 8] = pos.x;
+                    fragmentData[index + 9] = pos.y;
+                    fragmentData[index + 10] = pos.z;
+
+                    // used to decompress distance
+                    var f = (this._pCastingLight).fallOff;
+                    fragmentData[index + 11] = 1 / (2 * f * f);
+                }
+                stage3DProxy._iContext3D.setTextureAt(vo.texturesIndex, this._pCastingLight.shadowMapper.depthMap.getTextureForStage3D(stage3DProxy));
+            };
+
+            /**
+            * Sets the method state for cascade shadow mapping.
+            */
+            SimpleShadowMapMethodBase.prototype.iActivateForCascade = function (vo, stage3DProxy) {
+                throw new Error("This shadow method is incompatible with cascade shadows");
+            };
+            return SimpleShadowMapMethodBase;
+        })(away.materials.ShadowMapMethodBase);
+        materials.SimpleShadowMapMethodBase = SimpleShadowMapMethodBase;
+    })(away.materials || (away.materials = {}));
+    var materials = away.materials;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (materials) {
+        /**
+        * DitheredShadowMapMethod provides a softened shadowing technique by bilinearly interpolating shadow comparison
+        * results of neighbouring pixels.
+        */
+        var FilteredShadowMapMethod = (function (_super) {
+            __extends(FilteredShadowMapMethod, _super);
+            /**
+            * Creates a new BasicDiffuseMethod object.
+            *
+            * @param castingLight The light casting the shadow
+            */
+            function FilteredShadowMapMethod(castingLight) {
+                _super.call(this, castingLight);
+            }
+            /**
+            * @inheritDoc
+            */
+            FilteredShadowMapMethod.prototype.iInitConstants = function (vo) {
+                _super.prototype.iInitConstants.call(this, vo);
+
+                var fragmentData = vo.fragmentData;
+                var index = vo.fragmentConstantsIndex;
+                fragmentData[index + 8] = .5;
+                var size = this.castingLight.shadowMapper.depthMapSize;
+                fragmentData[index + 9] = size;
+                fragmentData[index + 10] = 1 / size;
+            };
+
+            /**
+            * @inheritDoc
+            */
+            FilteredShadowMapMethod.prototype._pGetPlanarFragmentCode = function (vo, regCache, targetReg) {
+                var depthMapRegister = regCache.getFreeTextureReg();
+                var decReg = regCache.getFreeFragmentConstant();
+                var dataReg = regCache.getFreeFragmentConstant();
+
+                // TODO: not used
+                dataReg = dataReg;
+                var customDataReg = regCache.getFreeFragmentConstant();
+                var depthCol = regCache.getFreeFragmentVectorTemp();
+                var uvReg;
+                var code = "";
+                vo.fragmentConstantsIndex = decReg.index * 4;
+
+                regCache.addFragmentTempUsages(depthCol, 1);
+
+                uvReg = regCache.getFreeFragmentVectorTemp();
+                regCache.addFragmentTempUsages(uvReg, 1);
+
+                code += "mov " + uvReg + ", " + this._pDepthMapCoordReg + "\n" + "tex " + depthCol + ", " + this._pDepthMapCoordReg + ", " + depthMapRegister + " <2d, nearest, clamp>\n" + "dp4 " + depthCol + ".z, " + depthCol + ", " + decReg + "\n" + "slt " + uvReg + ".z, " + this._pDepthMapCoordReg + ".z, " + depthCol + ".z\n" + "add " + uvReg + ".x, " + this._pDepthMapCoordReg + ".x, " + customDataReg + ".z\n" + "tex " + depthCol + ", " + uvReg + ", " + depthMapRegister + " <2d, nearest, clamp>\n" + "dp4 " + depthCol + ".z, " + depthCol + ", " + decReg + "\n" + "slt " + uvReg + ".w, " + this._pDepthMapCoordReg + ".z, " + depthCol + ".z\n" + "mul " + depthCol + ".x, " + this._pDepthMapCoordReg + ".x, " + customDataReg + ".y\n" + "frc " + depthCol + ".x, " + depthCol + ".x\n" + "sub " + uvReg + ".w, " + uvReg + ".w, " + uvReg + ".z\n" + "mul " + uvReg + ".w, " + uvReg + ".w, " + depthCol + ".x\n" + "add " + targetReg + ".w, " + uvReg + ".z, " + uvReg + ".w\n" + "mov " + uvReg + ".x, " + this._pDepthMapCoordReg + ".x\n" + "add " + uvReg + ".y, " + this._pDepthMapCoordReg + ".y, " + customDataReg + ".z\n" + "tex " + depthCol + ", " + uvReg + ", " + depthMapRegister + " <2d, nearest, clamp>\n" + "dp4 " + depthCol + ".z, " + depthCol + ", " + decReg + "\n" + "slt " + uvReg + ".z, " + this._pDepthMapCoordReg + ".z, " + depthCol + ".z\n" + "add " + uvReg + ".x, " + this._pDepthMapCoordReg + ".x, " + customDataReg + ".z\n" + "tex " + depthCol + ", " + uvReg + ", " + depthMapRegister + " <2d, nearest, clamp>\n" + "dp4 " + depthCol + ".z, " + depthCol + ", " + decReg + "\n" + "slt " + uvReg + ".w, " + this._pDepthMapCoordReg + ".z, " + depthCol + ".z\n" + "mul " + depthCol + ".x, " + this._pDepthMapCoordReg + ".x, " + customDataReg + ".y\n" + "frc " + depthCol + ".x, " + depthCol + ".x\n" + "sub " + uvReg + ".w, " + uvReg + ".w, " + uvReg + ".z\n" + "mul " + uvReg + ".w, " + uvReg + ".w, " + depthCol + ".x\n" + "add " + uvReg + ".w, " + uvReg + ".z, " + uvReg + ".w\n" + "mul " + depthCol + ".x, " + this._pDepthMapCoordReg + ".y, " + customDataReg + ".y\n" + "frc " + depthCol + ".x, " + depthCol + ".x\n" + "sub " + uvReg + ".w, " + uvReg + ".w, " + targetReg + ".w\n" + "mul " + uvReg + ".w, " + uvReg + ".w, " + depthCol + ".x\n" + "add " + targetReg + ".w, " + targetReg + ".w, " + uvReg + ".w\n";
+
+                regCache.removeFragmentTempUsage(depthCol);
+                regCache.removeFragmentTempUsage(uvReg);
+
+                vo.texturesIndex = depthMapRegister.index;
+
+                return code;
+            };
+
+            /**
+            * @inheritDoc
+            */
+            FilteredShadowMapMethod.prototype.iActivateForCascade = function (vo, stage3DProxy) {
+                var size = this.castingLight.shadowMapper.depthMapSize;
+                var index = vo.secondaryFragmentConstantsIndex;
+                var data = vo.fragmentData;
+                data[index] = size;
+                data[index + 1] = 1 / size;
+            };
+
+            /**
+            * @inheritDoc
+            */
+            FilteredShadowMapMethod.prototype._iGetCascadeFragmentCode = function (vo, regCache, decodeRegister, depthTexture, depthProjection, targetRegister) {
+                var code;
+                var dataReg = regCache.getFreeFragmentConstant();
+                vo.secondaryFragmentConstantsIndex = dataReg.index * 4;
+                var temp = regCache.getFreeFragmentVectorTemp();
+                regCache.addFragmentTempUsages(temp, 1);
+                var predicate = regCache.getFreeFragmentVectorTemp();
+                regCache.addFragmentTempUsages(predicate, 1);
+
+                code = "tex " + temp + ", " + depthProjection + ", " + depthTexture + " <2d, nearest, clamp>\n" + "dp4 " + temp + ".z, " + temp + ", " + decodeRegister + "\n" + "slt " + predicate + ".x, " + depthProjection + ".z, " + temp + ".z\n" + "add " + depthProjection + ".x, " + depthProjection + ".x, " + dataReg + ".y\n" + "tex " + temp + ", " + depthProjection + ", " + depthTexture + " <2d, nearest, clamp>\n" + "dp4 " + temp + ".z, " + temp + ", " + decodeRegister + "\n" + "slt " + predicate + ".z, " + depthProjection + ".z, " + temp + ".z\n" + "add " + depthProjection + ".y, " + depthProjection + ".y, " + dataReg + ".y\n" + "tex " + temp + ", " + depthProjection + ", " + depthTexture + " <2d, nearest, clamp>\n" + "dp4 " + temp + ".z, " + temp + ", " + decodeRegister + "\n" + "slt " + predicate + ".w, " + depthProjection + ".z, " + temp + ".z\n" + "sub " + depthProjection + ".x, " + depthProjection + ".x, " + dataReg + ".y\n" + "tex " + temp + ", " + depthProjection + ", " + depthTexture + " <2d, nearest, clamp>\n" + "dp4 " + temp + ".z, " + temp + ", " + decodeRegister + "\n" + "slt " + predicate + ".y, " + depthProjection + ".z, " + temp + ".z\n" + "mul " + temp + ".xy, " + depthProjection + ".xy, " + dataReg + ".x\n" + "frc " + temp + ".xy, " + temp + ".xy\n" + "sub " + depthProjection + ", " + predicate + ".xyzw, " + predicate + ".zwxy\n" + "mul " + depthProjection + ", " + depthProjection + ", " + temp + ".x\n" + "add " + predicate + ".xy, " + predicate + ".xy, " + depthProjection + ".zw\n" + "sub " + predicate + ".y, " + predicate + ".y, " + predicate + ".x\n" + "mul " + predicate + ".y, " + predicate + ".y, " + temp + ".y\n" + "add " + targetRegister + ".w, " + predicate + ".x, " + predicate + ".y\n";
+
+                regCache.removeFragmentTempUsage(temp);
+                regCache.removeFragmentTempUsage(predicate);
+                return code;
+            };
+            return FilteredShadowMapMethod;
+        })(away.materials.SimpleShadowMapMethodBase);
+        materials.FilteredShadowMapMethod = FilteredShadowMapMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
