@@ -26,5 +26,10 @@ module away.partition
 				traverser.applyDirectionalLight( this._light );
 			}
 		}
+
+        public isCastingShadow():boolean
+        {
+            return false;
+        }
 	}
 }

@@ -15,7 +15,7 @@ module away.traverse
 			// the test for material is temporary, you SHOULD be hammered with errors if you try to render anything without a material
 			var material:away.materials.MaterialBase = renderable.material;
 			var entity:away.entities.Entity = renderable.sourceEntity;
-			if( renderable.castsShadows && material )
+			if( material )
 			{
 				var item:away.data.RenderableListItem = this._pRenderableListItemPool.getItem();
 				item.renderable = renderable;
@@ -30,7 +30,7 @@ module away.traverse
 				this._pOpaqueRenderableHead = item;
 			}
 		}
-		
+
 		//@override
 		public applyUnknownLight( light:away.lights.LightBase )
 		{
@@ -57,5 +57,20 @@ module away.traverse
 		public applySkyBox( renderable:away.base.IRenderable )
 		{
 		}
+
+
+        //@override
+        public enterNode( node:away.partition.NodeBase ):boolean
+        {
+            var enter : boolean = away.traverse.PartitionTraverser._iCollectionMark != node._iCollectionMark && node.isCastingShadow();
+
+            if (!enter) {
+                node._iCollectionMark = away.traverse.PartitionTraverser._iCollectionMark
+
+                return false;
+            }
+
+            return super.enterNode(node);
+        }
 	}
 }

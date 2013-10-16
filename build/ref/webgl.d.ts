@@ -15,7 +15,8 @@ interface WebGLBuffer extends WebGLObject {
 }
 
 interface WebGLFramebuffer extends WebGLObject {
-	$__dummyprop__WebGLFramebuffer : any;
+    width : number;
+    height : number;
 }
 
 interface WebGLProgram extends WebGLObject {

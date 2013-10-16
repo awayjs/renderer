@@ -14,22 +14,22 @@ module away.lights
 			super();
 			this._pFallOffFactor = 1/(this._pFallOff*this._pFallOff - this._pRadius*this._pRadius);
 		}
-		
+
 		public pCreateShadowMapper():away.lights.ShadowMapperBase
 		{
 			return new away.lights.CubeMapShadowMapper();
 		}
-		
+
 		public pCreateEntityPartitionNode():away.partition.EntityNode
 		{
 			return new away.partition.PointLightNode( this );
 		}
-		
+
 		public get radius():number
 		{
 			return this._pRadius;
 		}
-		
+
 		public set radius( value:number )
 		{
 			this._pRadius = value;
@@ -44,17 +44,17 @@ module away.lights
 			}
 			this._pFallOffFactor = 1/( this._pFallOff*this._pFallOff - this._pRadius*this._pRadius );
 		}
-		
+
 		public iFallOffFactor():number
 		{
 			return this._pFallOffFactor;
 		}
-		
+
 		public get fallOff():number
 		{
 			return this._pFallOff;
 		}
-		
+
 		public set fallOff( value:number )
 		{
 			this._pFallOff = value;
@@ -69,7 +69,7 @@ module away.lights
 			this._pFallOffFactor = 1/( this._pFallOff*this._pFallOff - this._pRadius*this._pRadius);
 			this.pInvalidateBounds();
 		}
-		
+
 		public pUpdateBounds()
 		{
 			this._pBounds.fromSphere( new away.geom.Vector3D(), this._pFallOff );

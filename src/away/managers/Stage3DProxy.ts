@@ -227,9 +227,6 @@ module away.managers
 
             away.Debug.throwPIR( 'Stage3DProxy' , 'setRenderTarget' , 'away.display3D.Context3D: setRenderToTexture , setRenderToBackBuffer');
 
-            // todo : implement
-
-            /*
 
 			if (target)
             {
@@ -241,10 +238,9 @@ module away.managers
             {
 
                 this._iContext3D.setRenderToBackBuffer();
-
+                this.configureBackBuffer(this._backBufferWidth, this._backBufferHeight, this._antiAlias, this._enableDepthAndStencil);
             }
 
-            */
 		}
 		
 		/*

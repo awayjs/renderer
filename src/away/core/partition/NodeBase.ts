@@ -106,6 +106,11 @@ module away.partition
 			rayDirection = rayDirection;
 			return true;
 		}
+
+        public isCastingShadow():boolean
+        {
+            return true;
+        }
 		
 		public findPartitionForEntity( entity:away.entities.Entity ):NodeBase
 		{

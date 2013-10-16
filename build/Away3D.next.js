@@ -4543,6 +4543,14 @@ var away;
                 configurable: true
             });
 
+            Object.defineProperty(Texture.prototype, "frameBuffer", {
+                get: function () {
+                    return this._frameBuffer;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
             Texture.prototype.uploadFromHTMLImageElement = function (image, miplevel) {
                 if (typeof miplevel === "undefined") { miplevel = 0; }
                 this._gl.bindTexture(this._gl.TEXTURE_2D, this._glTexture);
@@ -4564,6 +4572,32 @@ var away;
                 enumerable: true,
                 configurable: true
             });
+
+            Texture.prototype.generateFromRenderBuffer = function (data) {
+                this._frameBuffer = this._gl.createFramebuffer();
+                this._gl.bindFramebuffer(this._gl.FRAMEBUFFER, this._frameBuffer);
+                this._frameBuffer.width = this._width;
+                this._frameBuffer.height = this._height;
+
+                this._gl.bindTexture(this._gl.TEXTURE_2D, this._glTexture);
+
+                //this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MAG_FILTER, this._gl.LINEAR);
+                //this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MIN_FILTER, this._gl.LINEAR_MIPMAP_NEAREST);
+                //this._gl.generateMipmap(this._gl.TEXTURE_2D);
+                //this._gl.texImage2D( this._gl.TEXTURE_2D, 0, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data.imageData );
+                this._gl.texImage2D(this._gl.TEXTURE_2D, 0, this._gl.RGBA, this._width, this._height, 0, this._gl.RGBA, this._gl.UNSIGNED_BYTE, null);
+
+                var renderBuffer = this._gl.createRenderbuffer();
+                this._gl.bindRenderbuffer(this._gl.RENDERBUFFER, renderBuffer);
+                this._gl.renderbufferStorage(this._gl.RENDERBUFFER, this._gl.DEPTH_COMPONENT16, this._width, this._height);
+
+                this._gl.framebufferTexture2D(this._gl.FRAMEBUFFER, this._gl.COLOR_ATTACHMENT0, this._gl.TEXTURE_2D, this._glTexture, 0);
+                this._gl.framebufferRenderbuffer(this._gl.FRAMEBUFFER, this._gl.DEPTH_ATTACHMENT, this._gl.RENDERBUFFER, renderBuffer);
+
+                this._gl.bindTexture(this._gl.TEXTURE_2D, null);
+                this._gl.bindRenderbuffer(this._gl.RENDERBUFFER, null);
+                this._gl.bindFramebuffer(this._gl.FRAMEBUFFER, null);
+            };
             return Texture;
         })(display3D.TextureBase);
         display3D.Texture = Texture;
@@ -5410,6 +5444,19 @@ var away;
 
                 this._gl.enableVertexAttribArray(location);
                 this._gl.vertexAttribPointer(location, dimension, type, false, buffer.data32PerVertex * numBytes, bufferOffset * numBytes);
+            };
+
+            Context3D.prototype.setRenderToTexture = function (target, enableDepthAndStencil, antiAlias, surfaceSelector) {
+                if (typeof enableDepthAndStencil === "undefined") { enableDepthAndStencil = false; }
+                if (typeof antiAlias === "undefined") { antiAlias = 0; }
+                if (typeof surfaceSelector === "undefined") { surfaceSelector = 0; }
+                var frameBuffer = (target).frameBuffer;
+                this._gl.bindFramebuffer(this._gl.FRAMEBUFFER, frameBuffer);
+                this._gl.viewport(0, 0, frameBuffer.width, frameBuffer.height);
+            };
+
+            Context3D.prototype.setRenderToBackBuffer = function () {
+                this._gl.bindFramebuffer(this._gl.FRAMEBUFFER, null);
             };
 
             Context3D.prototype.updateBlendStatus = function () {
@@ -12527,6 +12574,10 @@ var away;
                 return true;
             };
 
+            NodeBase.prototype.isCastingShadow = function () {
+                return true;
+            };
+
             NodeBase.prototype.findPartitionForEntity = function (entity) {
                 entity = entity;
                 return this;
@@ -12847,6 +12898,10 @@ var away;
                     traverser.applyDirectionalLight(this._light);
                 }
             };
+
+            DirectionalLightNode.prototype.isCastingShadow = function () {
+                return false;
+            };
             return DirectionalLightNode;
         })(away.partition.EntityNode);
         partition.DirectionalLightNode = DirectionalLightNode;
@@ -12876,6 +12931,10 @@ var away;
                     _super.prototype.acceptTraverser.call(this, traverser);
                     traverser.applyPointLight(this._light);
                 }
+            };
+
+            PointLightNode.prototype.isCastingShadow = function () {
+                return false;
             };
             return PointLightNode;
         })(away.partition.EntityNode);
@@ -12959,6 +13018,10 @@ var away;
                         traverser.applyRenderable(subs[i++]);
                     }
                 }
+            };
+
+            MeshNode.prototype.isCastingShadow = function () {
+                return this._mesh.castsShadows;
             };
             return MeshNode;
         })(away.partition.EntityNode);
@@ -23579,6 +23642,13 @@ var away;
                 this.pSetSize(width, height);
             }
             Object.defineProperty(RenderTexture.prototype, "width", {
+                get: /**
+                *
+                * @returns {number}
+                */
+                function () {
+                    return this._pWidth;
+                },
                 set: function (value) {
                     if (value == this._pWidth) {
                         return;
@@ -23594,7 +23664,15 @@ var away;
                 configurable: true
             });
 
+
             Object.defineProperty(RenderTexture.prototype, "height", {
+                get: /**
+                *
+                * @returns {number}
+                */
+                function () {
+                    return this._pHeight;
+                },
                 set: function (value) {
                     if (value == this._pHeight) {
                         return;
@@ -23611,10 +23689,14 @@ var away;
                 configurable: true
             });
 
+
             RenderTexture.prototype.pUploadContent = function (texture) {
                 // fake data, to complete texture for sampling
                 var bmp = new away.display.BitmapData(this.width, this.height, false, 0xff0000);
-                away.materials.MipmapGenerator.generateMipMaps(bmp, texture);
+
+                //(<away.display3D.Texture> texture).uploadFromBitmapData(bmp, 0);
+                //away.materials.MipmapGenerator.generateMipMaps(bmp, texture);
+                (texture).generateFromRenderBuffer(bmp);
                 bmp.dispose();
             };
 
@@ -24653,23 +24735,13 @@ var away;
                 this._enableDepthAndStencil = enableDepthAndStencil;
 
                 away.Debug.throwPIR('Stage3DProxy', 'setRenderTarget', 'away.display3D.Context3D: setRenderToTexture , setRenderToBackBuffer');
-                // todo : implement
-                /*
-                
-                if (target)
-                {
-                
-                this._iContext3D.setRenderToTexture(target, enableDepthAndStencil, this._antiAlias, surfaceSelector);
-                
+
+                if (target) {
+                    this._iContext3D.setRenderToTexture(target, enableDepthAndStencil, this._antiAlias, surfaceSelector);
+                } else {
+                    this._iContext3D.setRenderToBackBuffer();
+                    this.configureBackBuffer(this._backBufferWidth, this._backBufferHeight, this._antiAlias, this._enableDepthAndStencil);
                 }
-                else
-                {
-                
-                this._iContext3D.setRenderToBackBuffer();
-                
-                }
-                
-                */
             };
 
             /*
@@ -30925,7 +30997,7 @@ var away;
                 // the test for material is temporary, you SHOULD be hammered with errors if you try to render anything without a material
                 var material = renderable.material;
                 var entity = renderable.sourceEntity;
-                if (renderable.castsShadows && material) {
+                if (material) {
                     var item = this._pRenderableListItemPool.getItem();
                     item.renderable = renderable;
                     item.next = this._pOpaqueRenderableHead;
@@ -30958,6 +31030,19 @@ var away;
 
             //@override
             ShadowCasterCollector.prototype.applySkyBox = function (renderable) {
+            };
+
+            //@override
+            ShadowCasterCollector.prototype.enterNode = function (node) {
+                var enter = away.traverse.PartitionTraverser._iCollectionMark != node._iCollectionMark && node.isCastingShadow();
+
+                if (!enter) {
+                    node._iCollectionMark = away.traverse.PartitionTraverser._iCollectionMark;
+
+                    return false;
+                }
+
+                return _super.prototype.enterNode.call(this, node);
             };
             return ShadowCasterCollector;
         })(away.traverse.EntityCollector);
@@ -40245,6 +40330,86 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (materials) {
+        /**
+        * HardShadowMapMethod provides the cheapest shadow map method by using a single tap without any filtering.
+        */
+        var HardShadowMapMethod = (function (_super) {
+            __extends(HardShadowMapMethod, _super);
+            /**
+            * Creates a new HardShadowMapMethod object.
+            */
+            function HardShadowMapMethod(castingLight) {
+                _super.call(this, castingLight);
+            }
+            /**
+            * @inheritDoc
+            */
+            HardShadowMapMethod.prototype._pGetPlanarFragmentCode = function (vo, regCache, targetReg) {
+                var depthMapRegister = regCache.getFreeTextureReg();
+                var decReg = regCache.getFreeFragmentConstant();
+
+                // needs to be reserved anyway. DO NOT REMOVE
+                var dataReg = regCache.getFreeFragmentConstant();
+
+                // TODO not used
+                dataReg = dataReg;
+                var depthCol = regCache.getFreeFragmentVectorTemp();
+                var code = "";
+
+                vo.fragmentConstantsIndex = decReg.index * 4;
+                vo.texturesIndex = depthMapRegister.index;
+
+                code += "tex " + depthCol + ", " + this._pDepthMapCoordReg + ", " + depthMapRegister + " <2d, nearest, clamp>\n" + "dp4 " + depthCol + ".z, " + depthCol + ", " + decReg + "\n" + "slt " + targetReg + ".w, " + this._pDepthMapCoordReg + ".z, " + depthCol + ".z\n";
+
+                return code;
+            };
+
+            /**
+            * @inheritDoc
+            */
+            HardShadowMapMethod.prototype._pGetPointFragmentCode = function (vo, regCache, targetReg) {
+                var depthMapRegister = regCache.getFreeTextureReg();
+                var decReg = regCache.getFreeFragmentConstant();
+                var epsReg = regCache.getFreeFragmentConstant();
+                var posReg = regCache.getFreeFragmentConstant();
+                var depthSampleCol = regCache.getFreeFragmentVectorTemp();
+                regCache.addFragmentTempUsages(depthSampleCol, 1);
+                var lightDir = regCache.getFreeFragmentVectorTemp();
+                var code = "";
+
+                vo.fragmentConstantsIndex = decReg.index * 4;
+                vo.texturesIndex = depthMapRegister.index;
+
+                code += "sub " + lightDir + ", " + this._sharedRegisters.globalPositionVarying + ", " + posReg + "\n" + "dp3 " + lightDir + ".w, " + lightDir + ".xyz, " + lightDir + ".xyz\n" + "mul " + lightDir + ".w, " + lightDir + ".w, " + posReg + ".w\n" + "nrm " + lightDir + ".xyz, " + lightDir + ".xyz\n" + "tex " + depthSampleCol + ", " + lightDir + ", " + depthMapRegister + " <cube, nearest, clamp>\n" + "dp4 " + depthSampleCol + ".z, " + depthSampleCol + ", " + decReg + "\n" + "add " + targetReg + ".w, " + lightDir + ".w, " + epsReg + ".x\n" + "slt " + targetReg + ".w, " + targetReg + ".w, " + depthSampleCol + ".z\n";
+
+                regCache.removeFragmentTempUsage(depthSampleCol);
+
+                return code;
+            };
+
+            /**
+            * @inheritDoc
+            */
+            HardShadowMapMethod.prototype._iGetCascadeFragmentCode = function (vo, regCache, decodeRegister, depthTexture, depthProjection, targetRegister) {
+                var temp = regCache.getFreeFragmentVectorTemp();
+                return "tex " + temp + ", " + depthProjection + ", " + depthTexture + " <2d, nearest, clamp>\n" + "dp4 " + temp + ".z, " + temp + ", " + decodeRegister + "\n" + "slt " + targetRegister + ".w, " + depthProjection + ".z, " + temp + ".z\n";
+            };
+
+            /**
+            * @inheritDoc
+            */
+            HardShadowMapMethod.prototype.iActivateForCascade = function (vo, stage3DProxy) {
+            };
+            return HardShadowMapMethod;
+        })(materials.SimpleShadowMapMethodBase);
+        materials.HardShadowMapMethod = HardShadowMapMethod;
+    })(away.materials || (away.materials = {}));
+    var materials = away.materials;
+})(away || (away = {}));
+var away;
+(function (away) {
     ///<reference path="../_definitions.ts"/>
     (function (materials) {
         //import away3d.*;
@@ -45750,333 +45915,6 @@ var away;
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
-    (function (render) {
-        var RenderBase = (function () {
-            function RenderBase(renderToTexture) {
-                if (typeof renderToTexture === "undefined") { renderToTexture = false; }
-                this._pBackgroundR = 0;
-                this._pBackgroundG = 0;
-                this._pBackgroundB = 0;
-                this._pBackgroundAlpha = 1;
-                this._pShareContext = false;
-                this._pTextureRatioX = 1;
-                this._pTextureRatioY = 1;
-                this._clearOnRender = true;
-                this._pRttViewProjectionMatrix = new away.geom.Matrix3D();
-                this._pRenderableSorter = new away.sort.RenderableMergeSort();
-                this._pRenderToTexture = renderToTexture;
-            }
-            //@arcane
-            RenderBase.prototype.iCreateEntityCollector = function () {
-                return new away.traverse.EntityCollector();
-            };
-
-            Object.defineProperty(RenderBase.prototype, "iViewWidth", {
-                get: //@arcane
-                function () {
-                    return this._pViewWidth;
-                },
-                set: //@arcane
-                function (value) {
-                    this._pViewWidth = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(RenderBase.prototype, "iViewHeight", {
-                get: //@arcane
-                function () {
-                    return this._pViewHeight;
-                },
-                set: //@arcane
-                function (value) {
-                    this._pViewHeight = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(RenderBase.prototype, "iRenderToTexture", {
-                get: //@arcane
-                function () {
-                    return this._pRenderToTexture;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(RenderBase.prototype, "renderableSorter", {
-                get: function () {
-                    return this._pRenderableSorter;
-                },
-                set: function (value) {
-                    this._pRenderableSorter = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(RenderBase.prototype, "iClearOnRender", {
-                get: //@arcane
-                function () {
-                    return this._clearOnRender;
-                },
-                set: //@arcane
-                function (value) {
-                    this._clearOnRender = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(RenderBase.prototype, "iBackgroundR", {
-                get: //@arcane
-                function () {
-                    return this._pBackgroundR;
-                },
-                set: //@arcane
-                function (value) {
-                    this._pBackgroundR = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(RenderBase.prototype, "iBackgroundG", {
-                get: //@arcane
-                function () {
-                    return this._pBackgroundG;
-                },
-                set: //@arcane
-                function (value) {
-                    this._pBackgroundG = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(RenderBase.prototype, "iBackgroundB", {
-                get: //@arcane
-                function () {
-                    return this._pBackgroundB;
-                },
-                set: //@arcane
-                function (value) {
-                    this._pBackgroundB = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(RenderBase.prototype, "iStage3DProxy", {
-                get: //@arcane
-                function () {
-                    return this._pStage3DProxy;
-                },
-                set: //@arcane
-                function (value) {
-                    if (value == this._pStage3DProxy) {
-                        return;
-                    }
-                    if (!value) {
-                        if (this._pStage3DProxy) {
-                            this._pStage3DProxy.removeEventListener(away.events.Stage3DEvent.CONTEXT3D_CREATED, this.onContextUpdate, this);
-                            this._pStage3DProxy.removeEventListener(away.events.Stage3DEvent.CONTEXT3D_RECREATED, this.onContextUpdate, this);
-                        }
-                        this._pStage3DProxy = null;
-                        this._pContext = null;
-                        return;
-                    }
-
-                    this._pStage3DProxy = value;
-                    this._pStage3DProxy.addEventListener(away.events.Stage3DEvent.CONTEXT3D_CREATED, this.onContextUpdate, this);
-                    this._pStage3DProxy.addEventListener(away.events.Stage3DEvent.CONTEXT3D_RECREATED, this.onContextUpdate, this);
-
-                    if (value.context3D) {
-                        this._pContext = value.context3D;
-                    }
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(RenderBase.prototype, "iShareContext", {
-                get: //@arcane
-                function () {
-                    return this._pShareContext;
-                },
-                set: //@arcane
-                function (value) {
-                    this._pShareContext = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            //@arcane
-            RenderBase.prototype.iDispose = function () {
-                this._pStage3DProxy = null;
-                /*
-                if( this._pBackgroundImageRenderer )
-                {
-                this._pBackgroundImageRenderer.dispose();
-                this._pBackgroundImageRenderer = null;
-                }*/
-            };
-
-            //@arcane
-            RenderBase.prototype.iRender = function (entityCollector, target, scissorRect, surfaceSelector) {
-                if (typeof target === "undefined") { target = null; }
-                if (typeof scissorRect === "undefined") { scissorRect = null; }
-                if (typeof surfaceSelector === "undefined") { surfaceSelector = 0; }
-                if (!this._pStage3DProxy || !this._pContext) {
-                    return;
-                }
-
-                this._pRttViewProjectionMatrix.copyFrom(entityCollector.camera.viewProjection);
-                this._pRttViewProjectionMatrix.appendScale(this._pTextureRatioX, this._pTextureRatioY, 1);
-
-                this.pExecuteRender(entityCollector, target, scissorRect, surfaceSelector);
-
-                for (var i = 0; i < 8; ++i) {
-                    this._pContext.setVertexBufferAt(i, null);
-                    this._pContext.setTextureAt(i, null);
-                }
-            };
-
-            RenderBase.prototype.pExecuteRender = function (entityCollector, target, scissorRect, surfaceSelector) {
-                if (typeof target === "undefined") { target = null; }
-                if (typeof scissorRect === "undefined") { scissorRect = null; }
-                if (typeof surfaceSelector === "undefined") { surfaceSelector = 0; }
-                this._pRenderTarget = target;
-                this._pRenderTargetSurface = surfaceSelector;
-
-                if (this._pRenderableSorter) {
-                    this._pRenderableSorter.sort(entityCollector);
-                }
-                if (this._pRenderToTexture) {
-                    this.pExecuteRenderToTexturePass(entityCollector);
-                }
-
-                this._pStage3DProxy.setRenderTarget(target, true, surfaceSelector);
-
-                if ((target || !this._pShareContext) && this._clearOnRender) {
-                    this._pContext.clear(this._pBackgroundR, this._pBackgroundG, this._pBackgroundB, this._pBackgroundAlpha, 1, 0);
-                }
-                this._pContext.setDepthTest(false, away.display3D.Context3DCompareMode.ALWAYS);
-                this._pStage3DProxy.scissorRect = scissorRect;
-
-                /*
-                if( this._backgroundImageRenderer )
-                {
-                this._backgroundImageRenderer.render();
-                }*/
-                this.pDraw(entityCollector, target);
-
-                //line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
-                this._pContext.setDepthTest(false, away.display3D.Context3DCompareMode.LESS_EQUAL);
-
-                if (!this._pShareContext) {
-                    if (this._snapshotRequired && this._snapshotBitmapData) {
-                        this._pContext.drawToBitmapData(this._snapshotBitmapData);
-                        this._snapshotRequired = false;
-                    }
-                }
-                this._pStage3DProxy.scissorRect = null;
-            };
-
-            RenderBase.prototype.queueSnapshot = function (bmd) {
-                this._snapshotRequired = true;
-                this._snapshotBitmapData = bmd;
-            };
-
-            RenderBase.prototype.pExecuteRenderToTexturePass = function (entityCollector) {
-                throw new away.errors.AbstractMethodError();
-            };
-
-            RenderBase.prototype.pDraw = function (entityCollector, target) {
-                throw new away.errors.AbstractMethodError();
-            };
-
-            RenderBase.prototype.onContextUpdate = function (event) {
-                this._pContext = this._pStage3DProxy.context3D;
-            };
-
-            Object.defineProperty(RenderBase.prototype, "iBackgroundAlpha", {
-                get: //@arcane
-                function () {
-                    return this._pBackgroundAlpha;
-                },
-                set: //@arcane
-                function (value) {
-                    this._pBackgroundAlpha = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(RenderBase.prototype, "iBackground", {
-                get: //@arcane
-                function () {
-                    return this._background;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(RenderBase.prototype, "antiAlias", {
-                get: //@arcane
-                /*
-                public set iBackground( value:away.textures.Texture2DBase )
-                {
-                if( this._backgroundImageRenderer && !value )
-                {
-                this._backgroundImageRenderer.dispose();
-                this._backgroundImageRenderer = null;
-                }
-                
-                if( !this._backgroundImageRenderer && value )
-                {
-                this._backgroundImageRenderer = new away.render.BackgroundImageRenderer( this._stage3DProxy );
-                }
-                this._background = value;
-                
-                if( this._backgroundImageRenderer )
-                {
-                this._backgroundImageRenderer.texture = value;
-                }
-                }*/
-                /*
-                public get backgroundImageRenderer():away.render.BackgroundImageRenderer
-                {
-                return this._backgroundImageRenderer;
-                }*/
-                function () {
-                    return this._pAntiAlias;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            return RenderBase;
-        })();
-        render.RenderBase = RenderBase;
-    })(away.render || (away.render = {}));
-    var render = away.render;
-})(away || (away = {}));
-var away;
-(function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (sort) {
         var RenderableMergeSort = (function () {
             function RenderableMergeSort() {
@@ -46466,7 +46304,7 @@ var away;
                 if (typeof target === "undefined") { target = null; }
                 if (typeof scissorRect === "undefined") { scissorRect = null; }
                 if (typeof surfaceSelector === "undefined") { surfaceSelector = 0; }
-                if (!this._pStage3DProxy || !this._pContext) {
+                if (!this._pStage3DProxy || !this._pContext || !entityCollector.entityHead) {
                     return;
                 }
 

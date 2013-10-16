@@ -1538,14 +1538,17 @@ declare module away.display3D {
         public textureType: string;
         private _width;
         private _height;
+        private _frameBuffer;
         private _glTexture;
         constructor(gl: WebGLRenderingContext, width: number, height: number);
         public dispose(): void;
         public width : number;
         public height : number;
+        public frameBuffer : WebGLFramebuffer;
         public uploadFromHTMLImageElement(image: HTMLImageElement, miplevel?: number): void;
         public uploadFromBitmapData(data: away.display.BitmapData, miplevel?: number): void;
         public glTexture : WebGLTexture;
+        public generateFromRenderBuffer(data: away.display.BitmapData): void;
     }
 }
 declare module away.display3D {
@@ -1695,6 +1698,8 @@ declare module away.display3D {
         public setSamplerStateAt(sampler: number, wrap: string, filter: string, mipfilter: string): void;
         public setVertexBufferAt(index: number, buffer: display3D.VertexBuffer3D, bufferOffset?: number, format?: string): void;
         public setGLSLVertexBufferAt(locationName, buffer: display3D.VertexBuffer3D, bufferOffset?: number, format?: string): void;
+        public setRenderToTexture(target: display3D.TextureBase, enableDepthAndStencil?: boolean, antiAlias?: number, surfaceSelector?: number): void;
+        public setRenderToBackBuffer(): void;
         private updateBlendStatus();
     }
 }
@@ -3131,6 +3136,7 @@ declare module away.partition {
         public iRemoveNode(node: NodeBase): void;
         public isInFrustum(planes: away.math.Plane3D[], numPlanes: number): boolean;
         public isIntersectingRay(rayPosition: away.geom.Vector3D, rayDirection: away.geom.Vector3D): boolean;
+        public isCastingShadow(): boolean;
         public findPartitionForEntity(entity: away.entities.Entity): NodeBase;
         public acceptTraverser(traverser: away.traverse.PartitionTraverser): void;
         public pCreateDebugBounds(): away.primitives.WireframePrimitiveBase;
@@ -3264,6 +3270,7 @@ declare module away.partition {
         constructor(light: away.lights.DirectionalLight);
         public light : away.lights.DirectionalLight;
         public acceptTraverser(traverser: away.traverse.PartitionTraverser): void;
+        public isCastingShadow(): boolean;
     }
 }
 declare module away.partition {
@@ -3272,6 +3279,7 @@ declare module away.partition {
         constructor(light: away.lights.PointLight);
         public light : away.lights.PointLight;
         public acceptTraverser(traverser: away.traverse.PartitionTraverser): void;
+        public isCastingShadow(): boolean;
     }
 }
 declare module away.partition {
@@ -3301,6 +3309,7 @@ declare module away.partition {
         * @inheritDoc
         */
         public acceptTraverser(traverser: away.traverse.PartitionTraverser): void;
+        public isCastingShadow(): boolean;
     }
 }
 declare module away.partition {
@@ -6210,7 +6219,15 @@ declare module away.textures {
 declare module away.textures {
     class RenderTexture extends textures.Texture2DBase {
         constructor(width: number, height: number);
+        /**
+        *
+        * @returns {number}
+        */
         public width : number;
+        /**
+        *
+        * @returns {number}
+        */
         public height : number;
         public pUploadContent(texture: away.display3D.TextureBase): void;
         public pCreateTexture(context: away.display3D.Context3D): away.display3D.TextureBase;
@@ -8214,6 +8231,7 @@ declare module away.traverse {
         public applyPointLight(light: away.lights.PointLight): void;
         public applyLightProbe(light: away.lights.LightProbe): void;
         public applySkyBox(renderable: away.base.IRenderable): void;
+        public enterNode(node: away.partition.NodeBase): boolean;
     }
 }
 declare module away.traverse {
@@ -10943,6 +10961,33 @@ declare module away.materials {
 }
 declare module away.materials {
     /**
+    * HardShadowMapMethod provides the cheapest shadow map method by using a single tap without any filtering.
+    */
+    class HardShadowMapMethod extends materials.SimpleShadowMapMethodBase {
+        /**
+        * Creates a new HardShadowMapMethod object.
+        */
+        constructor(castingLight: away.lights.LightBase);
+        /**
+        * @inheritDoc
+        */
+        public _pGetPlanarFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+        /**
+        * @inheritDoc
+        */
+        public _pGetPointFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+        /**
+        * @inheritDoc
+        */
+        public _iGetCascadeFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, decodeRegister: materials.ShaderRegisterElement, depthTexture: materials.ShaderRegisterElement, depthProjection: materials.ShaderRegisterElement, targetRegister: materials.ShaderRegisterElement): string;
+        /**
+        * @inheritDoc
+        */
+        public iActivateForCascade(vo: materials.MethodVO, stage3DProxy: away.managers.Stage3DProxy): void;
+    }
+}
+declare module away.materials {
+    /**
     * TextureMaterial is a single-pass material that uses a texture to define the surface's diffuse reflection colour (albedo).
     */
     class TextureMaterial extends materials.SinglePassMaterialBase {
@@ -12743,53 +12788,6 @@ declare module away.materials {
         * The cube texture to use as the skybox.
         */
         public cubeMap : away.textures.CubeTextureBase;
-    }
-}
-declare module away.render {
-    class RenderBase {
-        public _pContext: away.display3D.Context3D;
-        public _pStage3DProxy: away.managers.Stage3DProxy;
-        public _pBackgroundR: number;
-        public _pBackgroundG: number;
-        public _pBackgroundB: number;
-        public _pBackgroundAlpha: number;
-        public _pShareContext: boolean;
-        public _pRenderTarget: away.display3D.TextureBase;
-        public _pRenderTargetSurface: number;
-        public _pViewWidth: number;
-        public _pViewHeight: number;
-        public _pRenderableSorter: away.sort.IEntitySorter;
-        private _background;
-        public _pRenderToTexture: boolean;
-        public _pAntiAlias: number;
-        public _pTextureRatioX: number;
-        public _pTextureRatioY: number;
-        private _snapshotBitmapData;
-        private _snapshotRequired;
-        private _clearOnRender;
-        public _pRttViewProjectionMatrix: away.geom.Matrix3D;
-        constructor(renderToTexture?: boolean);
-        public iCreateEntityCollector(): away.traverse.EntityCollector;
-        public iViewWidth : number;
-        public iViewHeight : number;
-        public iRenderToTexture : boolean;
-        public renderableSorter : away.sort.IEntitySorter;
-        public iClearOnRender : boolean;
-        public iBackgroundR : number;
-        public iBackgroundG : number;
-        public iBackgroundB : number;
-        public iStage3DProxy : away.managers.Stage3DProxy;
-        public iShareContext : boolean;
-        public iDispose(): void;
-        public iRender(entityCollector: away.traverse.EntityCollector, target?: away.display3D.TextureBase, scissorRect?: away.geom.Rectangle, surfaceSelector?: number): void;
-        public pExecuteRender(entityCollector: away.traverse.EntityCollector, target?: away.display3D.TextureBase, scissorRect?: away.geom.Rectangle, surfaceSelector?: number): void;
-        public queueSnapshot(bmd: away.display.BitmapData): void;
-        public pExecuteRenderToTexturePass(entityCollector: away.traverse.EntityCollector): void;
-        public pDraw(entityCollector: away.traverse.EntityCollector, target: away.display3D.TextureBase): void;
-        private onContextUpdate(event);
-        public iBackgroundAlpha : number;
-        public iBackground : away.textures.Texture2DBase;
-        public antiAlias : number;
     }
 }
 declare module away.sort {
