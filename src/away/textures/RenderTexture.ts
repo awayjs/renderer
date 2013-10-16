@@ -10,7 +10,16 @@ module away.textures
 			super();
 			this.pSetSize(width, height);
 		}
-		
+
+        /**
+         *
+         * @returns {number}
+         */
+        public get width() : number
+        {
+            return this._pWidth;
+        }
+
 		public set width(value:number)
 		{
 			if (value == this._pWidth)
@@ -24,7 +33,16 @@ module away.textures
 			this.invalidateContent();
 			this.pSetSize(value, this._pHeight);
 		}
-		
+
+        /**
+         *
+         * @returns {number}
+         */
+        public get height() : number
+        {
+            return this._pHeight;
+        }
+
 		public set height(value:number)
 		{
 			if (value == this._pHeight)
@@ -45,8 +63,10 @@ module away.textures
 		{
 			// fake data, to complete texture for sampling
 			var bmp:away.display.BitmapData = new away.display.BitmapData ( this.width, this.height, false, 0xff0000);
-			away.materials.MipmapGenerator.generateMipMaps(bmp, texture);
-			bmp.dispose();
+            //(<away.display3D.Texture> texture).uploadFromBitmapData(bmp, 0);
+			//away.materials.MipmapGenerator.generateMipMaps(bmp, texture);
+            (<away.display3D.Texture>texture).generateFromRenderBuffer(bmp);
+            bmp.dispose();
 		}
 		
 		public pCreateTexture(context:away.display3D.Context3D):away.display3D.TextureBase

@@ -247,7 +247,7 @@ module away.render
 		 */
 		public iRender(entityCollector:away.traverse.EntityCollector, target:away.display3D.TextureBase = null, scissorRect:away.geom.Rectangle = null, surfaceSelector:number = 0)
 		{
-			if (!this._pStage3DProxy || !this._pContext)
+			if (!this._pStage3DProxy || !this._pContext || !entityCollector.entityHead )
             {
 
                 return;

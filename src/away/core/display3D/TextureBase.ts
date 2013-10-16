@@ -4,7 +4,7 @@ module away.display3D
 {
 	export class TextureBase
 	{
-		
+
 		public textureType:string = "";
 		public _gl:WebGLRenderingContext;
 		
@@ -12,7 +12,7 @@ module away.display3D
 		{
 			this._gl = gl;
 		}
-		
+
 		public dispose():void
 		{
 			throw "Abstract method must be overridden.";

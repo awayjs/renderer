@@ -269,6 +269,7 @@
 ///<reference path="materials/methods/ShadowMapMethodBase.ts"/>
 ///<reference path="materials/methods/SimpleShadowMapMethodBase.ts"/>
 ///<reference path="materials/methods/FilteredShadowMapMethod.ts"/>
+///<reference path="materials/methods/HardShadowMapMethod.ts"/>
 ///<reference path="materials/TextureMaterial.ts"/>
 ///<reference path="materials/lightpickers/LightPickerBase.ts"/>
 ///<reference path="materials/lightpickers/StaticLightPicker.ts"/>
@@ -298,7 +299,6 @@
 ///<reference path="materials/compilation/LightingShaderCompiler.ts"/>
 ///<reference path="materials/SegmentMaterial.ts"/>
 ///<reference path="materials/SkyBoxMaterial.ts"/>
-///<reference path="core/render/RenderBase.ts"/>
 ///<reference path="core/sort/IEntitySorter.ts"/>
 ///<reference path="core/sort/RenderableMergeSort.ts"/>
 ///<reference path="core/render/RendererBase.ts"/>

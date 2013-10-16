@@ -54,6 +54,11 @@ module away.partition
 			}
 
 		}
+
+        public isCastingShadow():boolean
+        {
+            return this._mesh.castsShadows;
+        }
 	
 	}
 }

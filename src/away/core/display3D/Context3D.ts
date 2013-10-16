@@ -683,7 +683,19 @@ module away.display3D
 			this._gl.enableVertexAttribArray( location );
 			this._gl.vertexAttribPointer( location, dimension, type, false, buffer.data32PerVertex * numBytes, bufferOffset * numBytes );
 		}
-		
+
+        public setRenderToTexture(target:away.display3D.TextureBase, enableDepthAndStencil:boolean = false, antiAlias:number = 0, surfaceSelector:number = 0)
+        {
+            var frameBuffer:WebGLFramebuffer = (<away.display3D.Texture>target).frameBuffer
+            this._gl.bindFramebuffer(this._gl.FRAMEBUFFER, frameBuffer);
+            this._gl.viewport(0, 0, frameBuffer.width, frameBuffer.height);
+        }
+
+        public setRenderToBackBuffer()
+        {
+            this._gl.bindFramebuffer(this._gl.FRAMEBUFFER, null);
+        }
+
 		private updateBlendStatus() 
 		{
 			if ( this._blendEnabled ) 
