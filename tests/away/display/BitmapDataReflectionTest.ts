@@ -11,6 +11,7 @@ module tests.display {
 		private view : away.containers.View3D;
 		private raf  : away.utils.RequestAnimationFrame;
 		private reflectionMesh : away.entities.Mesh;
+		private fullmesh : away.entities.Mesh;
 
 		constructor()
 		{
@@ -48,8 +49,6 @@ module tests.display {
 						var tx      : away.textures.HTMLImageElementTexture = <away.textures.HTMLImageElementTexture> asset;
 						var bitmap  : away.display.BitmapData = new away.display.BitmapData(  1024, 1024 , true , 0x00000000 )
 
-						//document.body.appendChild(tx.htmlImageElement );
-
 						bitmap.context.translate(0, 1024);
 						bitmap.context.scale(1, -1);
 						bitmap.context.drawImage(tx.htmlImageElement, 0, 0, 1024, 1024);
@@ -76,10 +75,15 @@ module tests.display {
 							material.bothSides = true;
 							material.alphaBlending = true;
 
+						var material2 : away.materials.TextureMaterial = new away.materials.TextureMaterial( tx );
+							material2.bothSides = true;
+							material2.alphaBlending = true;
 
-						this.reflectionMesh= new away.entities.Mesh( geom , material );
-
+						this.fullmesh  = new away.entities.Mesh( geom , material2 );
+						this.fullmesh.rotationY = 90;
+						this.reflectionMesh = new away.entities.Mesh( geom , material );
 						this.view.scene.addChild(this.reflectionMesh);
+						this.view.scene.addChild(this.fullmesh);
 
 						break;
 
@@ -105,6 +109,7 @@ module tests.display {
 
 		private render()
 		{
+			this.fullmesh.rotationY +=.5;
 			this.reflectionMesh.rotationY +=.5;
 
 			this.view.render();
