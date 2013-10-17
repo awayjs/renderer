@@ -48,7 +48,7 @@ module tests.display {
 						var tx      : away.textures.HTMLImageElementTexture = <away.textures.HTMLImageElementTexture> asset;
 						var bitmap  : away.display.BitmapData = new away.display.BitmapData(  1024, 1024 , true , 0x00000000 )
 
-						document.body.appendChild(tx.htmlImageElement );
+						//document.body.appendChild(tx.htmlImageElement );
 
 						bitmap.context.translate(0, 1024);
 						bitmap.context.scale(1, -1);
