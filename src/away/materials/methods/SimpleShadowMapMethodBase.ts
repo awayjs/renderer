@@ -57,7 +57,7 @@ module away.materials
             index = vo.vertexConstantsIndex;
             if (index != -1) {
                 vertexData[index] = .5;
-                vertexData[index + 1] = -.5;
+                vertexData[index + 1] = .5;
                 vertexData[index + 2] = 0.0;
                 vertexData[index + 3] = 1.0;
             }
@@ -130,6 +130,7 @@ module away.materials
                 "div " + temp + ", " + temp + ", " + temp + ".w\n" +
                 "mul " + temp + ".xy, " + temp + ".xy, " + dataReg + ".xy\n" +
                 "add " + this._pDepthMapCoordReg + ", " + temp + ", " + dataReg + ".xxwz\n";
+                //"sub " + this._pDepthMapCoordReg + ".z, " + this._pDepthMapCoordReg + ".z, " + this._pDepthMapCoordReg + ".w\n";
 
             return code;
         }
