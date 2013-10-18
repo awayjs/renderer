@@ -39,18 +39,6 @@ module away.render
             this._disableColor = value;
 		}
 		
-		public set iBackgroundR(value:number)
-		{
-		}
-
-        public set iBackgroundG(value:number)
-		{
-		}
-
-        public set iBackgroundB(value:number)
-		{
-		}
-		
 		public iRenderCascades(entityCollector:away.traverse.EntityCollector, target:away.display3D.TextureBase, numCascades:number, scissorRects:away.geom.Rectangle[], cameras:away.cameras.Camera3D[])
 		{
 

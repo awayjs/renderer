@@ -60,7 +60,7 @@ module away.display3D
 			switch( triangleFaceToCull )
 			{
 				case Context3DTriangleFace.FRONT:
-						this._yFlip = -1; 
+						this._yFlip = -1;
 					break
 				case Context3DTriangleFace.BACK:
 						this._yFlip = 1; // checked

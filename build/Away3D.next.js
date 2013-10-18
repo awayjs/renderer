@@ -4580,9 +4580,9 @@ var away;
                 this._frameBuffer.height = this._height;
 
                 this._gl.bindTexture(this._gl.TEXTURE_2D, this._glTexture);
+                this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MAG_FILTER, this._gl.LINEAR);
+                this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MIN_FILTER, this._gl.LINEAR_MIPMAP_NEAREST);
 
-                //this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MAG_FILTER, this._gl.LINEAR);
-                //this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MIN_FILTER, this._gl.LINEAR_MIPMAP_NEAREST);
                 //this._gl.generateMipmap(this._gl.TEXTURE_2D);
                 //this._gl.texImage2D( this._gl.TEXTURE_2D, 0, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data.imageData );
                 this._gl.texImage2D(this._gl.TEXTURE_2D, 0, this._gl.RGBA, this._width, this._height, 0, this._gl.RGBA, this._gl.UNSIGNED_BYTE, null);
@@ -4597,6 +4597,12 @@ var away;
                 this._gl.bindTexture(this._gl.TEXTURE_2D, null);
                 this._gl.bindRenderbuffer(this._gl.RENDERBUFFER, null);
                 this._gl.bindFramebuffer(this._gl.FRAMEBUFFER, null);
+            };
+
+            Texture.prototype.generateMipmaps = function () {
+                //this._gl.bindTexture( this._gl.TEXTURE_2D, this._glTexture );
+                //this._gl.generateMipmap(this._gl.TEXTURE_2D);
+                //this._gl.bindTexture( this._gl.TEXTURE_2D, null );
             };
             return Texture;
         })(display3D.TextureBase);
@@ -40066,7 +40072,7 @@ var away;
                 index = vo.vertexConstantsIndex;
                 if (index != -1) {
                     vertexData[index] = .5;
-                    vertexData[index + 1] = -.5;
+                    vertexData[index + 1] = .5;
                     vertexData[index + 2] = 0.0;
                     vertexData[index + 3] = 1.0;
                 }
@@ -40134,6 +40140,7 @@ var away;
                 // todo: can epsilon be applied here instead of fragment shader?
                 code += "m44 " + temp + ", " + this._sharedRegisters.globalPositionVertex + ", " + depthMapProj + "\n" + "div " + temp + ", " + temp + ", " + temp + ".w\n" + "mul " + temp + ".xy, " + temp + ".xy, " + dataReg + ".xy\n" + "add " + this._pDepthMapCoordReg + ", " + temp + ", " + dataReg + ".xxwz\n";
 
+                //"sub " + this._pDepthMapCoordReg + ".z, " + dataReg + ".w, " + this._pDepthMapCoordReg + ".z\n";
                 return code;
             };
 
@@ -46313,6 +46320,10 @@ var away;
 
                 this.pExecuteRender(entityCollector, target, scissorRect, surfaceSelector);
 
+                if (target) {
+                    (target).generateMipmaps();
+                }
+
                 for (var i = 0; i < 8; ++i) {
                     this._pContext.setVertexBufferAt(i, null);
                     this._pContext.setTextureAt(i, null);
@@ -46519,27 +46530,6 @@ var away;
                 configurable: true
             });
 
-
-            Object.defineProperty(DepthRenderer.prototype, "iBackgroundR", {
-                set: function (value) {
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(DepthRenderer.prototype, "iBackgroundG", {
-                set: function (value) {
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(DepthRenderer.prototype, "iBackgroundB", {
-                set: function (value) {
-                },
-                enumerable: true,
-                configurable: true
-            });
 
             DepthRenderer.prototype.iRenderCascades = function (entityCollector, target, numCascades, scissorRects, cameras) {
                 this._pRenderTarget = target;

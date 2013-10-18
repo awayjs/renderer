@@ -260,7 +260,12 @@ module away.render
             this._pRttViewProjectionMatrix.appendScale(this._textureRatioX, this._textureRatioY, 1);
 
             this.pExecuteRender(entityCollector, target, scissorRect, surfaceSelector);
-			
+
+            // generate mip maps on target (if target exists)
+            if (target) {
+                (<away.display3D.Texture>target).generateMipmaps();
+            }
+
 			// clear buffers
 			
 			for (var i:number = 0; i < 8; ++i)

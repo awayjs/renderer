@@ -1549,6 +1549,7 @@ declare module away.display3D {
         public uploadFromBitmapData(data: away.display.BitmapData, miplevel?: number): void;
         public glTexture : WebGLTexture;
         public generateFromRenderBuffer(data: away.display.BitmapData): void;
+        public generateMipmaps(): void;
     }
 }
 declare module away.display3D {
@@ -12926,9 +12927,6 @@ declare module away.render {
         */
         constructor(renderBlended?: boolean, distanceBased?: boolean);
         public disableColor : boolean;
-        public iBackgroundR : number;
-        public iBackgroundG : number;
-        public iBackgroundB : number;
         public iRenderCascades(entityCollector: away.traverse.EntityCollector, target: away.display3D.TextureBase, numCascades: number, scissorRects: away.geom.Rectangle[], cameras: away.cameras.Camera3D[]): void;
         private drawCascadeRenderables(item, camera, cullPlanes);
         /**
