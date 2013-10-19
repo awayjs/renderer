@@ -58,7 +58,6 @@ module examples
         //scene objects
         private _loader:away.loaders.Loader3D;
         private _ground:away.entities.Mesh;
-        private _cube:away.entities.Mesh;
 
         //navigation variables
         private _timer:away.utils.RequestAnimationFrame;
@@ -109,8 +108,6 @@ module examples
         private initLights():void
         {
             this._light = new away.lights.DirectionalLight(-1, -1, 1);
-            //this._light.castsShadows = true;
-            //this._light.shadowMapper.depthMapSize = 2048;
             this._direction = new away.geom.Vector3D(-1, -1, 1);
             this._lightPicker = new away.materials.StaticLightPicker([this._light]);
             this._view.scene.addChild(this._light);
@@ -136,9 +133,6 @@ module examples
          */
         private initObjects():void
         {
-            this._cube = new away.entities.Mesh(new away.primitives.CubeGeometry(200,200,200));
-            this._cube.y = 100;
-            this._view.scene.addChild(this._cube);
             this._loader = new away.loaders.Loader3D();
             this._loader.scale(300);
             this._loader.z = -200;
@@ -168,8 +162,8 @@ module examples
             var assetLoaderContext:away.loaders.AssetLoaderContext = new away.loaders.AssetLoaderContext();
             assetLoaderContext.mapUrl("texture.jpg", "assets/demos/soldier_ant.jpg");
 
-            //this._loader.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
-            //this._loader.load(new away.net.URLRequest("assets/demos/soldier_ant.3ds"), assetLoaderContext);
+            this._loader.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+            this._loader.load(new away.net.URLRequest("assets/demos/soldier_ant.3ds"), assetLoaderContext);
 
             away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete, this);
             away.library.AssetLibrary.load(new away.net.URLRequest("assets/demos/CoarseRedSand.jpg"));
@@ -182,12 +176,10 @@ module examples
         {
             this._time += dt;
 
-            //this._cube.y += 1;
             this._direction.x = -Math.sin(this._time/4000);
             this._direction.z = -Math.cos(this._time/4000);
-            //this._light.direction = this._direction;
-            //this._light.castsShadows = true;
-            //this._light.shadowMapper.depthMapSize = 256;
+            this._light.direction = this._direction;
+
             this._view.render();
         }
 
@@ -206,7 +198,7 @@ module examples
                     break;
                 case away.library.AssetType.MATERIAL :
                     var material:away.materials.TextureMaterial = <away.materials.TextureMaterial> event.asset;
-                    //material.shadowMethod = new away.materials.HardShadowMapMethod(this._light);
+                    material.shadowMethod = new away.materials.HardShadowMapMethod(this._light);
                     material.lightPicker = this._lightPicker;
                     material.gloss = 30;
                     material.specular = 1;
@@ -234,7 +226,7 @@ module examples
                 {
                     //plane textures
                     case "assets/demos/CoarseRedSand.jpg" :
-                        //this._groundMaterial.texture = <away.textures.Texture2DBase> away.library.AssetLibrary.getAsset(asset.name);
+                        this._groundMaterial.texture = <away.textures.Texture2DBase> away.library.AssetLibrary.getAsset(asset.name);
                         break;
                 }
             }

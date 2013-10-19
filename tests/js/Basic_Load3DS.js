@@ -76,9 +76,6 @@ var examples;
         */
         Basic_Load3DS.prototype.initLights = function () {
             this._light = new away.lights.DirectionalLight(-1, -1, 1);
-
-            //this._light.castsShadows = true;
-            //this._light.shadowMapper.depthMapSize = 2048;
             this._direction = new away.geom.Vector3D(-1, -1, 1);
             this._lightPicker = new away.materials.StaticLightPicker([this._light]);
             this._view.scene.addChild(this._light);
@@ -102,9 +99,6 @@ var examples;
         * Initialise the scene objects
         */
         Basic_Load3DS.prototype.initObjects = function () {
-            this._cube = new away.entities.Mesh(new away.primitives.CubeGeometry(200, 200, 200));
-            this._cube.y = 100;
-            this._view.scene.addChild(this._cube);
             this._loader = new away.loaders.Loader3D();
             this._loader.scale(300);
             this._loader.z = -200;
@@ -142,8 +136,9 @@ var examples;
             var assetLoaderContext = new away.loaders.AssetLoaderContext();
             assetLoaderContext.mapUrl("texture.jpg", "assets/demos/soldier_ant.jpg");
 
-            //this._loader.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
-            //this._loader.load(new away.net.URLRequest("assets/demos/soldier_ant.3ds"), assetLoaderContext);
+            this._loader.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+            this._loader.load(new away.net.URLRequest("assets/demos/soldier_ant.3ds"), assetLoaderContext);
+
             away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete, this);
             away.library.AssetLibrary.load(new away.net.URLRequest("assets/demos/CoarseRedSand.jpg"));
         };
@@ -154,13 +149,10 @@ var examples;
         Basic_Load3DS.prototype.onEnterFrame = function (dt) {
             this._time += dt;
 
-            //this._cube.y += 1;
             this._direction.x = -Math.sin(this._time / 4000);
             this._direction.z = -Math.cos(this._time / 4000);
+            this._light.direction = this._direction;
 
-            //this._light.direction = this._direction;
-            //this._light.castsShadows = true;
-            //this._light.shadowMapper.depthMapSize = 256;
             this._view.render();
         };
 
@@ -177,8 +169,7 @@ var examples;
                     break;
                 case away.library.AssetType.MATERIAL:
                     var material = event.asset;
-
-                    //material.shadowMethod = new away.materials.HardShadowMapMethod(this._light);
+                    material.shadowMethod = new away.materials.HardShadowMapMethod(this._light);
                     material.lightPicker = this._lightPicker;
                     material.gloss = 30;
                     material.specular = 1;
@@ -202,6 +193,7 @@ var examples;
 
                 switch (event.url) {
                     case "assets/demos/CoarseRedSand.jpg":
+                        this._groundMaterial.texture = away.library.AssetLibrary.getAsset(asset.name);
                         break;
                 }
             }
