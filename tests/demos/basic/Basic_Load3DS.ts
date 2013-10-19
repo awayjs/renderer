@@ -119,7 +119,7 @@ module examples
         private initMaterials():void
         {
             this._groundMaterial = new away.materials.TextureMaterial();
-            this._groundMaterial.shadowMethod = new away.materials.HardShadowMapMethod(this._light);
+            this._groundMaterial.shadowMethod = new away.materials.FilteredShadowMapMethod(this._light);
             this._groundMaterial.shadowMethod.epsilon = 0.2;
             this._groundMaterial.lightPicker = this._lightPicker;
             this._groundMaterial.specular = 0;
@@ -198,7 +198,8 @@ module examples
                     break;
                 case away.library.AssetType.MATERIAL :
                     var material:away.materials.TextureMaterial = <away.materials.TextureMaterial> event.asset;
-                    material.shadowMethod = new away.materials.HardShadowMapMethod(this._light);
+                    material.shadowMethod = new away.materials.FilteredShadowMapMethod(this._light);
+                    material.shadowMethod.epsilon = 0.2;
                     material.lightPicker = this._lightPicker;
                     material.gloss = 30;
                     material.specular = 1;

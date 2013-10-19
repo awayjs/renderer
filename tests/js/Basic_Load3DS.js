@@ -86,7 +86,7 @@ var examples;
         */
         Basic_Load3DS.prototype.initMaterials = function () {
             this._groundMaterial = new away.materials.TextureMaterial();
-            this._groundMaterial.shadowMethod = new away.materials.HardShadowMapMethod(this._light);
+            this._groundMaterial.shadowMethod = new away.materials.FilteredShadowMapMethod(this._light);
             this._groundMaterial.shadowMethod.epsilon = 0.2;
             this._groundMaterial.lightPicker = this._lightPicker;
             this._groundMaterial.specular = 0;
@@ -169,7 +169,8 @@ var examples;
                     break;
                 case away.library.AssetType.MATERIAL:
                     var material = event.asset;
-                    material.shadowMethod = new away.materials.HardShadowMapMethod(this._light);
+                    material.shadowMethod = new away.materials.FilteredShadowMapMethod(this._light);
+                    material.shadowMethod.epsilon = 0.2;
                     material.lightPicker = this._lightPicker;
                     material.gloss = 30;
                     material.specular = 1;
