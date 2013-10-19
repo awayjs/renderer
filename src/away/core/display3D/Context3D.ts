@@ -688,6 +688,16 @@ module away.display3D
         {
             var frameBuffer:WebGLFramebuffer = (<away.display3D.Texture>target).frameBuffer
             this._gl.bindFramebuffer(this._gl.FRAMEBUFFER, frameBuffer);
+
+            if( enableDepthAndStencil )
+            {
+                this._gl.enable( this._gl.STENCIL_TEST );
+                this._gl.enable( this._gl.DEPTH_TEST );
+            }
+
+            this._gl.viewport.width = frameBuffer.width;
+            this._gl.viewport.height = frameBuffer.height;
+
             this._gl.viewport(0, 0, frameBuffer.width, frameBuffer.height);
         }
 

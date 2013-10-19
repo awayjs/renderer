@@ -322,9 +322,9 @@ module away.render
 			*/
 
 			this.pDraw(entityCollector, target);
-			
+
 			//line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
-			this._pContext.setDepthTest(false, away.display3D.Context3DCompareMode.LESS_EQUAL);
+			//this._pContext.setDepthTest(false, away.display3D.Context3DCompareMode.LESS_EQUAL); //oopsie
 			
 			if (!this._shareContext)
             {

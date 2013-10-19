@@ -147,9 +147,13 @@ module away.materials
 			
 			var codeF:string =
 				"div ft2, v0, v0.w		\n" +
+                //"sub ft2.z, fc0.x, ft2.z\n" +    //invert
 				"mul ft0, fc0, ft2.z	\n" +
 				"frc ft0, ft0			\n" +
 				"mul ft1, ft0.yzww, fc1	\n";
+
+            //codeF += "mov ft1.w, fc1.w	\n" +
+            //    "mov ft0.w, fc0.x	\n";
 			
 			if (this._alphaThreshold > 0)
             {

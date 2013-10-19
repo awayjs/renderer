@@ -5458,6 +5458,15 @@ var away;
                 if (typeof surfaceSelector === "undefined") { surfaceSelector = 0; }
                 var frameBuffer = (target).frameBuffer;
                 this._gl.bindFramebuffer(this._gl.FRAMEBUFFER, frameBuffer);
+
+                if (enableDepthAndStencil) {
+                    this._gl.enable(this._gl.STENCIL_TEST);
+                    this._gl.enable(this._gl.DEPTH_TEST);
+                }
+
+                this._gl.viewport.width = frameBuffer.width;
+                this._gl.viewport.height = frameBuffer.height;
+
                 this._gl.viewport(0, 0, frameBuffer.width, frameBuffer.height);
             };
 
@@ -40140,7 +40149,7 @@ var away;
                 // todo: can epsilon be applied here instead of fragment shader?
                 code += "m44 " + temp + ", " + this._sharedRegisters.globalPositionVertex + ", " + depthMapProj + "\n" + "div " + temp + ", " + temp + ", " + temp + ".w\n" + "mul " + temp + ".xy, " + temp + ".xy, " + dataReg + ".xy\n" + "add " + this._pDepthMapCoordReg + ", " + temp + ", " + dataReg + ".xxwz\n";
 
-                //"sub " + this._pDepthMapCoordReg + ".z, " + dataReg + ".w, " + this._pDepthMapCoordReg + ".z\n";
+                //"sub " + this._pDepthMapCoordReg + ".z, " + this._pDepthMapCoordReg + ".z, " + this._pDepthMapCoordReg + ".w\n";
                 return code;
             };
 
@@ -46367,9 +46376,6 @@ var away;
                 _backgroundImageRenderer.render();
                 */
                 this.pDraw(entityCollector, target);
-
-                //line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
-                this._pContext.setDepthTest(false, away.display3D.Context3DCompareMode.LESS_EQUAL);
 
                 if (!this._shareContext) {
                     if (this._snapshotRequired && this._snapshotBitmapData) {
