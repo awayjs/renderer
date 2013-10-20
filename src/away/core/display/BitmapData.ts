@@ -208,6 +208,36 @@ module away.display {
 
         }
 
+        public setVector(rect:away.geom.Rectangle, inputVector:Array<number>):void
+        {
+            if ( ! this._locked )
+            {
+                this._imageData = this._context.getImageData(0,0,this._rect.width,this._rect.height);
+            }
+
+            if ( this._imageData )
+            {
+                var i:number /*uint*/, j:number /*uint*/, index : number /*uint*/, argb : number[] /*uint*/;
+                for (i = 0; i < rect.width; ++i) {
+                    for (j = 0; j < rect.height; ++j) {
+                        argb = away.utils.ColorUtils.float32ColorToARGB( i + j*rect.width );
+                        index = (i + rect.x + (j + rect.y)*this._imageCanvas.width) * 4;
+
+                        this._imageData.data[index+0] = argb[1];
+                        this._imageData.data[index+1] = argb[2];
+                        this._imageData.data[index+2] = argb[3];
+                        this._imageData.data[index+3] = argb[0];
+                    }
+                }
+            }
+
+            if ( ! this._locked )
+            {
+                this._context.putImageData( this._imageData, 0, 0);
+                this._imageData = null;
+            }
+        }
+
         /**
          * Copy an HTMLImageElement or BitmapData object
          *

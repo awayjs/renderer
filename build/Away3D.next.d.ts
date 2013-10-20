@@ -787,6 +787,13 @@ declare module away.math {
         static reflection(plane: math.Plane3D, target?: away.geom.Matrix3D): away.geom.Matrix3D;
     }
 }
+declare module away.math {
+    class PoissonLookup {
+        static _distributions: number[][];
+        static initDistributions(): void;
+        static getDistribution(n: number): number[];
+    }
+}
 /**
 * @module away.events
 */
@@ -1452,6 +1459,7 @@ declare module away.display {
         * @param color
         */
         public setPixel32(x, y, color: number): void;
+        public setVector(rect: away.geom.Rectangle, inputVector: number[]): void;
         /**
         * Copy an HTMLImageElement or BitmapData object
         *
@@ -10985,6 +10993,149 @@ declare module away.materials {
         * @inheritDoc
         */
         public iActivateForCascade(vo: materials.MethodVO, stage3DProxy: away.managers.Stage3DProxy): void;
+    }
+}
+declare module away.materials {
+    /**
+    * SoftShadowMapMethod provides a soft shadowing technique by randomly distributing sample points.
+    */
+    class SoftShadowMapMethod extends materials.SimpleShadowMapMethodBase {
+        private _range;
+        private _numSamples;
+        private _offsets;
+        /**
+        * Creates a new BasicDiffuseMethod object.
+        *
+        * @param castingLight The light casting the shadows
+        * @param numSamples The amount of samples to take for dithering. Minimum 1, maximum 32.
+        */
+        constructor(castingLight: away.lights.DirectionalLight, numSamples?: number, range?: number);
+        /**
+        * The amount of samples to take for dithering. Minimum 1, maximum 32. The actual maximum may depend on the
+        * complexity of the shader.
+        */
+        public numSamples : number;
+        /**
+        * The range in the shadow map in which to distribute the samples.
+        */
+        public range : number;
+        /**
+        * @inheritDoc
+        */
+        public iInitConstants(vo: materials.MethodVO): void;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(vo: materials.MethodVO, stage3DProxy: away.managers.Stage3DProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public _pGetPlanarFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+        /**
+        * Adds the code for another tap to the shader code.
+        * @param uv The uv register for the tap.
+        * @param texture The texture register containing the depth map.
+        * @param decode The register containing the depth map decoding data.
+        * @param target The target register to add the tap comparison result.
+        * @param regCache The register cache managing the registers.
+        * @return
+        */
+        private addSample(uv, texture, decode, target, regCache);
+        /**
+        * @inheritDoc
+        */
+        public iActivateForCascade(vo: materials.MethodVO, stage3DProxy: away.managers.Stage3DProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public _iGetCascadeFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, decodeRegister: materials.ShaderRegisterElement, depthTexture: materials.ShaderRegisterElement, depthProjection: materials.ShaderRegisterElement, targetRegister: materials.ShaderRegisterElement): string;
+        /**
+        * Get the actual shader code for shadow mapping
+        * @param regCache The register cache managing the registers.
+        * @param depthTexture The texture register containing the depth map.
+        * @param decodeRegister The register containing the depth map decoding data.
+        * @param targetReg The target register to add the shadow coverage.
+        * @param dataReg The register containing additional data.
+        */
+        private getSampleCode(regCache, depthTexture, decodeRegister, targetRegister, dataReg);
+    }
+}
+declare module away.materials {
+    /**
+    * DitheredShadowMapMethod provides a soft shadowing technique by randomly distributing sample points differently for each fragment.
+    */
+    class DitheredShadowMapMethod extends materials.SimpleShadowMapMethodBase {
+        private static _grainTexture;
+        private static _grainUsages;
+        private static _grainBitmapData;
+        private _depthMapSize;
+        private _range;
+        private _numSamples;
+        /**
+        * Creates a new DitheredShadowMapMethod object.
+        * @param castingLight The light casting the shadows
+        * @param numSamples The amount of samples to take for dithering. Minimum 1, maximum 24.
+        */
+        constructor(castingLight: away.lights.DirectionalLight, numSamples?: number, range?: number);
+        /**
+        * The amount of samples to take for dithering. Minimum 1, maximum 24. The actual maximum may depend on the
+        * complexity of the shader.
+        */
+        public numSamples : number;
+        /**
+        * @inheritDoc
+        */
+        public iInitVO(vo: materials.MethodVO): void;
+        /**
+        * @inheritDoc
+        */
+        public iInitConstants(vo: materials.MethodVO): void;
+        /**
+        * The range in the shadow map in which to distribute the samples.
+        */
+        public range : number;
+        /**
+        * Creates a texture containing the dithering noise texture.
+        */
+        private initGrainTexture();
+        /**
+        * @inheritDoc
+        */
+        public dispose(): void;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(vo: materials.MethodVO, stage3DProxy: away.managers.Stage3DProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public _pGetPlanarFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+        /**
+        * Get the actual shader code for shadow mapping
+        * @param regCache The register cache managing the registers.
+        * @param depthMapRegister The texture register containing the depth map.
+        * @param decReg The register containing the depth map decoding data.
+        * @param targetReg The target register to add the shadow coverage.
+        */
+        private getSampleCode(regCache, customDataReg, depthMapRegister, decReg, targetReg);
+        /**
+        * Adds the code for another tap to the shader code.
+        * @param uvReg The uv register for the tap.
+        * @param depthMapRegister The texture register containing the depth map.
+        * @param decReg The register containing the depth map decoding data.
+        * @param targetReg The target register to add the tap comparison result.
+        * @param regCache The register cache managing the registers.
+        * @return
+        */
+        private addSample(uvReg, depthMapRegister, decReg, targetReg, regCache);
+        /**
+        * @inheritDoc
+        */
+        public iActivateForCascade(vo: materials.MethodVO, stage3DProxy: away.managers.Stage3DProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public _iGetCascadeFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, decodeRegister: materials.ShaderRegisterElement, depthTexture: materials.ShaderRegisterElement, depthProjection: materials.ShaderRegisterElement, targetRegister: materials.ShaderRegisterElement): string;
     }
 }
 declare module away.materials {

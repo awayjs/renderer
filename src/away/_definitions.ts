@@ -32,6 +32,7 @@
 ///<reference path="core/math/PlaneClassification.ts" />
 ///<reference path="core/math/Plane3D.ts" />
 ///<reference path="core/math/Matrix3DUtils.ts" />
+///<reference path="core/math/PoissonLookup.ts" />
 ///<reference path="events/Object3DEvent.ts" />
 ///<reference path="core/base/Object3D.ts" />
 ///<reference path="errors/AbstractMethodError.ts" />
@@ -270,6 +271,8 @@
 ///<reference path="materials/methods/SimpleShadowMapMethodBase.ts"/>
 ///<reference path="materials/methods/FilteredShadowMapMethod.ts"/>
 ///<reference path="materials/methods/HardShadowMapMethod.ts"/>
+///<reference path="materials/methods/SoftShadowMapMethod.ts"/>
+///<reference path="materials/methods/DitheredShadowMapMethod.ts"/>
 ///<reference path="materials/TextureMaterial.ts"/>
 ///<reference path="materials/lightpickers/LightPickerBase.ts"/>
 ///<reference path="materials/lightpickers/StaticLightPicker.ts"/>
