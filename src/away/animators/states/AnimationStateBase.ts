@@ -5,15 +5,15 @@ module away.animators
 	/**
 	 *
 	 */
-	export class AnimationStateBase //implements away.animators.IAnimationState // TODO: imeplement
+	export class AnimationStateBase implements IAnimationState
 	{
 		private _animationNode:away.animators.AnimationNodeBase;
 		private _rootDelta:away.geom.Vector3D = new away.geom.Vector3D();
 		private _positionDeltaDirty:boolean = true;
 		
-		private _time:number;
-		private _startTime:number;
-		private _animator:away.animators.IAnimator;
+		public _pTime:number;
+		public _pStartTime:number;
+		public _pAnimator:away.animators.IAnimator;
 		
 		/**
 		 * Returns a 3d vector representing the translation delta of the animating entity for the current timestep of animation
@@ -23,7 +23,7 @@ module away.animators
 			if (this._positionDeltaDirty)
             {
 
-                this.pUpdatePositionDelta();
+                this._pUpdatePositionDelta();
             }
 
 			return this._rootDelta;
@@ -32,7 +32,7 @@ module away.animators
 		
 		constructor (animator:away.animators.IAnimator, animationNode:away.animators.AnimationNodeBase)
 		{
-			this._animator = animator;
+			this._pAnimator = animator;
             this._animationNode = animationNode;
 		}
 		
@@ -43,7 +43,7 @@ module away.animators
 		 */
 		public offset(startTime:number)
 		{
-            this._startTime = startTime;
+            this._pStartTime = startTime;
 
             this._positionDeltaDirty = true;
 		}
@@ -53,18 +53,18 @@ module away.animators
 		 *
 		 * @param time The absolute time (in milliseconds) of the animator's play head position.
 		 *
-		 * @see away3d.animators.AnimatorBase#update()
+		 * @see away.animators.AnimatorBase#update()
 		 */
 		public update(time:number)
 		{
-			if (this._time == time - this._startTime)
+			if (this._pTime == time - this._pStartTime)
             {
 
                 return;
 
             }
 
-            this.pUpdateTime(time);
+            this._pUpdateTime(time);
 
 		}
 		
@@ -83,9 +83,9 @@ module away.animators
 		 *
 		 * @param time The local time (in milliseconds) of the node's playhead position.
 		 */
-		public pUpdateTime(time:number)
+		public _pUpdateTime(time:number)
 		{
-			this._time = time - this._startTime;
+			this._pTime = time - this._pStartTime;
 			
 			this._positionDeltaDirty = true;
 		}
@@ -93,7 +93,7 @@ module away.animators
 		/**
 		 * Updates the node's root delta position
 		 */
-		public pUpdatePositionDelta()
+		public _pUpdatePositionDelta()
 		{
 		}
 	}

@@ -1,18 +1,6 @@
 ﻿///<reference path="../_definitions.ts"/>
 module away.entities
 {
-	//import away3d.materials.utils.DefaultMaterialManager;
-	//import away3d.animators.IAnimator;
-	//import away3d.arcane;
-	//import away3d.containers.*;
-	//import away3d.core.base.*;
-	//import away3d.core.partition.*;
-	//import away3d.events.*;
-	//import away3d.library.assets.*;
-	//import away3d.materials.*;
-	
-	//use namespace arcane;
-	
 	/**
 	 * Mesh is an instance of a Geometry, augmenting it with a presence in the scene graph, a material, and an animation
 	 * state. It consists out of SubMeshes, which in turn correspond to SubGeometries. SubMeshes allow different parts
@@ -103,36 +91,31 @@ module away.entities
 
 		public set animator(value:away.animators.IAnimator)
 		{
-
-            away.Debug.throwPIR('Mesh' , 'set animator' , 'Partial Implementation')
-            /*
-			if (_animator)
-				_animator.removeOwner(this);
+			if (this._animator)
+				this._animator.removeOwner(this);
 			
-			_animator = value;
+			this._animator = value;
 			
 			// cause material to be unregistered and registered again to work with the new animation type (if possible)
-			var oldMaterial:MaterialBase = material;
-			material = null;
-			material = oldMaterial;
+			var oldMaterial:away.materials.MaterialBase = this.material;
+			this.material = null;
+            this.material = oldMaterial;
 			
-			var len:number = _subMeshes.length;
-			var subMesh:SubMesh;
+			var len:number = this._subMeshes.length;
+			var subMesh:away.base.SubMesh;
 			
 			// reassign for each SubMesh
 			for (var i:number = 0; i < len; ++i) {
-				subMesh = _subMeshes[i];
-				oldMaterial = subMesh._material;
+				subMesh = this._subMeshes[i];
+				oldMaterial = subMesh._iMaterial;
 				if (oldMaterial) {
 					subMesh.material = null;
 					subMesh.material = oldMaterial;
 				}
 			}
 			
-			if (_animator)
-				_animator.addOwner(this);
-
-			*/
+			if (this._animator)
+                this._animator.addOwner(this);
 		}
 
 		/**
@@ -345,7 +328,7 @@ module away.entities
 			var len:number = this._subMeshes.length;
 			for (var i:number = 0; i < len; ++i)
             {
-                clone._subMeshes[i].material = this._subMeshes[i].material;
+                clone._subMeshes[i]._iMaterial = this._subMeshes[i]._iMaterial;
             }
 
 			
@@ -360,14 +343,12 @@ module away.entities
 
             }
 
-            /* TODO: implement dependency IAnimator
 			if ( this._animator)
             {
 
                 clone.animator = this._animator.clone();
 
             }
-			*/
 			
 			return clone;
 		}

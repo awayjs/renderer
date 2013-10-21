@@ -192,7 +192,7 @@ module away.utils
         {
 
             var data    : DataView      = new DataView( this.arraybytes );
-            var int     : number        = data.getInt32( this.position );
+            var int     : number        = data.getInt32( this.position, true );
 
             this.position += 4;
 
@@ -204,7 +204,7 @@ module away.utils
         {
 
             var data    : DataView      = new DataView( this.arraybytes );
-            var short   : number        = data.getInt16(this.position );
+            var short   : number        = data.getInt16(this.position, true );
 
             this.position += 2;
             return short;

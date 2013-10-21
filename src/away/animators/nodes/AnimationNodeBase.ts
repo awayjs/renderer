@@ -1,4 +1,5 @@
 ///<reference path="../../_definitions.ts"/>
+
 module away.animators
 {
 
@@ -7,11 +8,20 @@ module away.animators
 	 */
 	export class AnimationNodeBase extends away.library.NamedAssetBase implements away.library.IAsset
 	{
-		private _stateClass;
+        public static ANIMATIONNODE_ID_COUNT:number;
+
+        /**
+         * An id for this animation node, used to identify animations when using animation states.
+         *
+         * @private
+         */
+        public _iUniqueId:number;//Arcane
+
+		public _pStateClass:any;
 		
-		public get stateClass()
+		public get stateClass():any
 		{
-			return this._stateClass;
+			return this._pStateClass;
 		}
 		
 		/**
@@ -19,9 +29,9 @@ module away.animators
 		 */
 		constructor()
 		{
-
             super();
 
+            this._iUniqueId = away.animators.AnimationNodeBase.ANIMATIONNODE_ID_COUNT++;
 		}
 		
 		/**

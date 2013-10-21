@@ -39,7 +39,7 @@ module away.loaders
          * @see away3d.loading.AssetLibrary.enableParser
          */
         public static ALL_BUNDLED:Array<Object> = Array<Object>(
-            away.loaders.AWDParser, away.loaders.Max3DSParser, away.loaders.OBJParser
+            away.loaders.AWDParser, away.loaders.Max3DSParser, away.loaders.MD2Parser, away.loaders.OBJParser
         );
 
         /**

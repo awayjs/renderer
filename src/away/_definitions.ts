@@ -157,6 +157,7 @@
 ///<reference path="loaders/parsers/CubeTextureParser.ts"/>
 ///<reference path="loaders/parsers/AWDParser.ts"/>
 ///<reference path="loaders/parsers/Max3DSParser.ts"/>
+///<reference path="loaders/parsers/MD2Parser.ts"/>
 ///<reference path="loaders/parsers/Parsers.ts"/>
 
 ///<reference path="textures/TextureProxyBase.ts" />
@@ -234,8 +235,16 @@
 ///<reference path="primitives/SphereGeometry.ts" />
 ///<reference path="utils/ColorUtils.ts"/>
 ///<reference path="core/geom/ColorTransform.ts"/>
+///<reference path="animators/data/VertexAnimationMode.ts"/>
 ///<reference path="animators/nodes/AnimationNodeBase.ts"/>
+///<reference path="animators/nodes/AnimationClipNodeBase.ts"/>
+///<reference path="animators/nodes/VertexClipNode.ts"/>
 ///<reference path="animators/states/IAnimationState.ts"/>
+///<reference path="animators/states/IVertexAnimationState.ts"/>
+///<reference path="animators/states/AnimationStateBase.ts"/>
+///<reference path="animators/states/AnimationClipState.ts"/>
+///<reference path="animators/states/VertexClipState.ts"/>
+///<reference path="animators/transitions/IAnimationTransition.ts"/>
 ///<reference path="utils/GeometryUtils.ts"/>
 ///<reference path="lights/LightBase.ts"/>
 ///<reference path="lights/LightProbe.ts"/>
@@ -245,9 +254,15 @@
 ///<reference path="lights/shadowmaps/CubeMapShadowMapper.ts"/>
 ///<reference path="lights/shadowmaps/DirectionalShadowMapper.ts"/>
 ///<reference path="animators/IAnimationSet.ts"/>
-///<reference path="animators/states/AnimationStateBase.ts"/>
 ///<reference path="animators/IAnimator.ts"/>
+///<reference path="animators/AnimationSetBase.ts"/>
+///<reference path="animators/VertexAnimationSet.ts"/>
+///<reference path="animators/AnimatorBase.ts"/>
+///<reference path="animators/VertexAnimator.ts"/>
+///<reference path="events/AnimationStateEvent.ts" />
+///<reference path="events/AnimatorEvent.ts" />
 ///<reference path="events/ShadingMethodEvent.ts"/>
+///<reference path="errors/AnimationSetError.ts"/>
 ///<reference path="materials/passes/MaterialPassBase.ts"/>
 ///<reference path="materials/passes/CompiledPass.ts"/>
 ///<reference path="materials/passes/SuperShaderPass.ts"/>

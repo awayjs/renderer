@@ -22,7 +22,7 @@ module away.animators
 		 *
 		 * @param stateName The name of the animation state object to be retrieved.
 		 */
-		getAnimation(name:string):away.animators.AnimationNodeBase;
+		getAnimation(name:string):AnimationNodeBase;
 		
 		/**
 		 * Indicates whether the properties of the animation data contained within the set combined with

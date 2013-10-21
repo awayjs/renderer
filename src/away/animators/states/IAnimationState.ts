@@ -3,10 +3,10 @@
 module away.animators
 {
 
-	interface IAnimationState
+	export interface IAnimationState
 	{
 
-		positionDelta():away.geom.Vector3D; // GET
+		positionDelta:away.geom.Vector3D; // GET
 
 		offset(startTime:number);
 

@@ -10140,16 +10140,6 @@ var away;
 (function (away) {
     ///<reference path="../_definitions.ts"/>
     (function (entities) {
-        //import away3d.materials.utils.DefaultMaterialManager;
-        //import away3d.animators.IAnimator;
-        //import away3d.arcane;
-        //import away3d.containers.*;
-        //import away3d.core.base.*;
-        //import away3d.core.partition.*;
-        //import away3d.events.*;
-        //import away3d.library.assets.*;
-        //import away3d.materials.*;
-        //use namespace arcane;
         /**
         * Mesh is an instance of a Geometry, augmenting it with a presence in the scene graph, a material, and an animation
         * state. It consists out of SubMeshes, which in turn correspond to SubGeometries. SubMeshes allow different parts
@@ -10223,35 +10213,30 @@ var away;
                     return this._animator;
                 },
                 set: function (value) {
-                    away.Debug.throwPIR('Mesh', 'set animator', 'Partial Implementation');
-                    /*
-                    if (_animator)
-                    _animator.removeOwner(this);
-                    
-                    _animator = value;
-                    
+                    if (this._animator)
+                        this._animator.removeOwner(this);
+
+                    this._animator = value;
+
                     // cause material to be unregistered and registered again to work with the new animation type (if possible)
-                    var oldMaterial:MaterialBase = material;
-                    material = null;
-                    material = oldMaterial;
-                    
-                    var len:number = _subMeshes.length;
-                    var subMesh:SubMesh;
-                    
-                    // reassign for each SubMesh
-                    for (var i:number = 0; i < len; ++i) {
-                    subMesh = _subMeshes[i];
-                    oldMaterial = subMesh._material;
-                    if (oldMaterial) {
-                    subMesh.material = null;
-                    subMesh.material = oldMaterial;
+                    var oldMaterial = this.material;
+                    this.material = null;
+                    this.material = oldMaterial;
+
+                    var len = this._subMeshes.length;
+                    var subMesh;
+
+                    for (var i = 0; i < len; ++i) {
+                        subMesh = this._subMeshes[i];
+                        oldMaterial = subMesh._iMaterial;
+                        if (oldMaterial) {
+                            subMesh.material = null;
+                            subMesh.material = oldMaterial;
+                        }
                     }
-                    }
-                    
-                    if (_animator)
-                    _animator.addOwner(this);
-                    
-                    */
+
+                    if (this._animator)
+                        this._animator.addOwner(this);
                 },
                 enumerable: true,
                 configurable: true
@@ -10443,7 +10428,7 @@ var away;
 
                 var len = this._subMeshes.length;
                 for (var i = 0; i < len; ++i) {
-                    clone._subMeshes[i].material = this._subMeshes[i].material;
+                    clone._subMeshes[i]._iMaterial = this._subMeshes[i]._iMaterial;
                 }
 
                 len = this.numChildren;
@@ -10454,14 +10439,10 @@ var away;
                     clone.addChild(obj);
                 }
 
-                /* TODO: implement dependency IAnimator
-                if ( this._animator)
-                {
-                
-                clone.animator = this._animator.clone();
-                
+                if (this._animator) {
+                    clone.animator = this._animator.clone();
                 }
-                */
+
                 return clone;
             };
 
@@ -23294,6 +23275,421 @@ var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
     (function (loaders) {
+        /**
+        * MD2Parser provides a parser for the MD2 data type.
+        */
+        var MD2Parser = (function (_super) {
+            __extends(MD2Parser, _super);
+            /**
+            * Creates a new MD2Parser object.
+            * @param textureType The extension of the texture (e.g. jpg/png/...)
+            * @param ignoreTexturePath If true, the path of the texture is ignored
+            */
+            function MD2Parser(textureType, ignoreTexturePath) {
+                if (typeof textureType === "undefined") { textureType = "jpg"; }
+                if (typeof ignoreTexturePath === "undefined") { ignoreTexturePath = true; }
+                _super.call(this, loaders.ParserDataFormat.BINARY);
+                this._clipNodes = new Object();
+                // the current subgeom being built
+                this._animationSet = new away.animators.VertexAnimationSet();
+                this.materialFinal = false;
+                this.geoCreated = false;
+                this._textureType = textureType;
+                this._ignoreTexturePath = ignoreTexturePath;
+            }
+            MD2Parser.supportsType = /**
+            * Indicates whether or not a given file extension is supported by the parser.
+            * @param extension The file extension of a potential file to be parsed.
+            * @return Whether or not the given file type is supported.
+            */
+            function (extension) {
+                extension = extension.toLowerCase();
+                return extension == "md2";
+            };
+
+            MD2Parser.supportsData = /**
+            * Tests whether a data block can be parsed by the parser.
+            * @param data The data block to potentially be parsed.
+            * @return Whether or not the given data is supported.
+            */
+            function (data) {
+                return (loaders.ParserUtil.toString(data, 4) == 'IDP2');
+            };
+
+            /**
+            * @inheritDoc
+            */
+            MD2Parser.prototype._iResolveDependency = function (resourceDependency) {
+                if (resourceDependency.assets.length != 1)
+                    return;
+
+                var asset = resourceDependency.assets[0];
+                if (asset) {
+                    var material;
+                    if (this.materialMode < 2)
+                        material = new away.materials.TextureMaterial(asset);
+else
+                        material = new away.materials.TextureMultiPassMaterial(asset);
+
+                    material.name = this._mesh.material.name;
+                    this._mesh.material = material;
+                    this._pFinalizeAsset(material);
+                    this._pFinalizeAsset(this._mesh.geometry);
+                    this._pFinalizeAsset(this._mesh);
+                }
+                this.materialFinal = true;
+            };
+
+            /**
+            * @inheritDoc
+            */
+            MD2Parser.prototype._iResolveDependencyFailure = function (resourceDependency) {
+                if (this.materialMode < 2)
+                    this._mesh.material = away.materials.DefaultMaterialManager.getDefaultMaterial();
+else
+                    this._mesh.material = new away.materials.TextureMultiPassMaterial(away.materials.DefaultMaterialManager.getDefaultTexture());
+
+                this._pFinalizeAsset(this._mesh.geometry);
+                this._pFinalizeAsset(this._mesh);
+                this.materialFinal = true;
+            };
+
+            /**
+            * @inheritDoc
+            */
+            MD2Parser.prototype._pProceedParsing = function () {
+                if (!this._startedParsing) {
+                    this._byteData = this._pGetByteData();
+                    this._startedParsing = true;
+
+                    // Reset bytearray read position (which may have been
+                    // moved forward by the supportsData() function.)
+                    this._byteData.position = 0;
+                }
+
+                while (this._pHasTime()) {
+                    if (!this._parsedHeader) {
+                        //----------------------------------------------------------------------------
+                        // LITTLE_ENDIAN - Default for ArrayBuffer / Not implemented in ByteArray
+                        //----------------------------------------------------------------------------
+                        //this._byteData.endian = Endian.LITTLE_ENDIAN;
+                        // TODO: Create a mesh only when encountered (if it makes sense
+                        // for this file format) and return it using this._pFinalizeAsset()
+                        this._geometry = new away.base.Geometry();
+                        this._mesh = new away.entities.Mesh(this._geometry, null);
+                        if (this.materialMode < 2)
+                            this._mesh.material = away.materials.DefaultMaterialManager.getDefaultMaterial();
+else
+                            this._mesh.material = new away.materials.TextureMultiPassMaterial(away.materials.DefaultMaterialManager.getDefaultTexture());
+
+                        //_geometry.animation = new VertexAnimation(2, VertexAnimationMode.ABSOLUTE);
+                        //_animator = new VertexAnimator(VertexAnimationState(_mesh.animationState));
+                        // Parse header and decompress body
+                        this.parseHeader();
+                        this.parseMaterialNames();
+                    } else if (!this._parsedUV)
+                        this.parseUV();
+else if (!this._parsedFaces)
+                        this.parseFaces();
+else if (!this._parsedFrames)
+                        this.parseFrames();
+else if ((this.geoCreated) && (this.materialFinal))
+                        return away.loaders.ParserBase.PARSING_DONE;
+else if (!this.geoCreated) {
+                        this.geoCreated = true;
+                        this.createDefaultSubGeometry();
+
+                        // Force name to be chosen by this._pFinalizeAsset()
+                        this._mesh.name = "";
+                        if (this.materialFinal) {
+                            this._pFinalizeAsset(this._mesh.geometry);
+                            this._pFinalizeAsset(this._mesh);
+                        }
+
+                        this._pPauseAndRetrieveDependencies();
+                    }
+                }
+
+                return away.loaders.ParserBase.MORE_TO_PARSE;
+            };
+
+            /**
+            * Reads in all that MD2 Header data that is declared as private variables.
+            * I know its a lot, and it looks ugly, but only way to do it in Flash
+            */
+            MD2Parser.prototype.parseHeader = function () {
+                this._ident = this._byteData.readInt();
+                this._version = this._byteData.readInt();
+                this._skinWidth = this._byteData.readInt();
+                this._skinHeight = this._byteData.readInt();
+
+                //skip this._frameSize
+                this._byteData.readInt();
+                this._numSkins = this._byteData.readInt();
+                this._numVertices = this._byteData.readInt();
+                this._numST = this._byteData.readInt();
+                this._numTris = this._byteData.readInt();
+
+                //skip this._numGlCmds
+                this._byteData.readInt();
+                this._numFrames = this._byteData.readInt();
+                this._offsetSkins = this._byteData.readInt();
+                this._offsetST = this._byteData.readInt();
+                this._offsetTris = this._byteData.readInt();
+                this._offsetFrames = this._byteData.readInt();
+
+                //skip this._offsetGlCmds
+                this._byteData.readInt();
+                this._offsetEnd = this._byteData.readInt();
+
+                this._parsedHeader = true;
+            };
+
+            /**
+            * Parses the file names for the materials.
+            */
+            MD2Parser.prototype.parseMaterialNames = function () {
+                var url;
+                var name;
+                var extIndex/*int*/ ;
+                var slashIndex/*int*/ ;
+                this._materialNames = new Array();
+                this._byteData.position = this._offsetSkins;
+
+                var regExp = new RegExp("[^a-zA-Z0-9\\_\/.]", "g");
+                for (var i = 0; i < this._numSkins; ++i) {
+                    name = this._byteData.readUTFBytes(64);
+                    name = name.replace(regExp, "");
+                    extIndex = name.lastIndexOf(".");
+                    if (this._ignoreTexturePath)
+                        slashIndex = name.lastIndexOf("/");
+                    if (name.toLowerCase().indexOf(".jpg") == -1 && name.toLowerCase().indexOf(".png") == -1) {
+                        name = name.substring(slashIndex + 1, extIndex);
+                        url = name + "." + this._textureType;
+                    } else
+                        url = name;
+
+                    this._materialNames[i] = name;
+
+                    if (this.dependencies.length == 0)
+                        this._pAddDependency(name, new away.net.URLRequest(url));
+                }
+
+                if (this._materialNames.length > 0)
+                    this._mesh.material.name = this._materialNames[0];
+else
+                    this.materialFinal = true;
+            };
+
+            /**
+            * Parses the uv data for the mesh.
+            */
+            MD2Parser.prototype.parseUV = function () {
+                var j = 0;
+
+                this._uvs = new Array(this._numST * 2);
+                this._byteData.position = this._offsetST;
+                for (var i = 0; i < this._numST; i++) {
+                    this._uvs[j++] = this._byteData.readShort() / this._skinWidth;
+                    this._uvs[j++] = this._byteData.readShort() / this._skinHeight;
+                }
+
+                this._parsedUV = true;
+            };
+
+            /**
+            * Parses unique indices for the faces.
+            */
+            MD2Parser.prototype.parseFaces = function () {
+                var a/*uint*/ , b, c, ta, tb, tc;
+                var i/*uint*/ ;
+
+                this._vertIndices = new Array();
+                this._uvIndices = new Array();
+                this._indices = new Array();
+
+                this._byteData.position = this._offsetTris;
+
+                for (i = 0; i < this._numTris; i++) {
+                    //collect vertex indices
+                    a = this._byteData.readUnsignedShort();
+                    b = this._byteData.readUnsignedShort();
+                    c = this._byteData.readUnsignedShort();
+
+                    //collect uv indices
+                    ta = this._byteData.readUnsignedShort();
+                    tb = this._byteData.readUnsignedShort();
+                    tc = this._byteData.readUnsignedShort();
+
+                    this.addIndex(a, ta);
+                    this.addIndex(b, tb);
+                    this.addIndex(c, tc);
+                }
+
+                var len = this._uvIndices.length;
+                this._finalUV = new Array(len * 2);
+
+                for (i = 0; i < len; ++i) {
+                    this._finalUV[Math.floor(i << 1)] = this._uvs[Math.floor(this._uvIndices[i] << 1)];
+                    this._finalUV[Math.floor(((i << 1) + 1))] = this._uvs[Math.floor((this._uvIndices[i] << 1) + 1)];
+                }
+
+                this._parsedFaces = true;
+            };
+
+            /**
+            * Adds a face index to the list if it doesn't exist yet, based on vertexIndex and uvIndex, and adds the
+            * corresponding vertex and uv data in the correct location.
+            * @param vertexIndex The original index in the vertex list.
+            * @param uvIndex The original index in the uv list.
+            */
+            MD2Parser.prototype.addIndex = function (vertexIndex/*uint*/ , uvIndex/*uint*/ ) {
+                var index = this.findIndex(vertexIndex, uvIndex);
+
+                if (index == -1) {
+                    this._indices.push(this._vertIndices.length);
+                    this._vertIndices.push(vertexIndex);
+                    this._uvIndices.push(uvIndex);
+                } else
+                    this._indices.push(index);
+            };
+
+            /**
+            * Finds the final index corresponding to the original MD2's vertex and uv indices. Returns -1 if it wasn't added yet.
+            * @param vertexIndex The original index in the vertex list.
+            * @param uvIndex The original index in the uv list.
+            * @return The index of the final mesh corresponding to the original vertex and uv index. -1 if it doesn't exist yet.
+            */
+            MD2Parser.prototype.findIndex = function (vertexIndex/*uint*/ , uvIndex/*uint*/ ) {
+                var len = this._vertIndices.length;
+
+                for (var i = 0; i < len; ++i) {
+                    if (this._vertIndices[i] == vertexIndex && this._uvIndices[i] == uvIndex)
+                        return i;
+                }
+
+                return -1;
+            };
+
+            /**
+            * Parses all the frame geometries.
+            */
+            MD2Parser.prototype.parseFrames = function () {
+                var sx, sy, sz;
+                var tx, ty, tz;
+                var geometry;
+                var subGeom;
+                var vertLen = this._vertIndices.length;
+                var fvertices;
+                var tvertices;
+                var i/*uint*/ , j, k;
+
+                //var ch : number /*uint*/;
+                var name = "";
+                var prevClip = null;
+
+                this._byteData.position = this._offsetFrames;
+
+                for (i = 0; i < this._numFrames; i++) {
+                    subGeom = new away.base.CompactSubGeometry();
+
+                    if (this._firstSubGeom == null)
+                        this._firstSubGeom = subGeom;
+
+                    geometry = new away.base.Geometry();
+                    geometry.addSubGeometry(subGeom);
+                    tvertices = new Array();
+                    fvertices = new Array(vertLen * 3);
+
+                    sx = this._byteData.readFloat();
+                    sy = this._byteData.readFloat();
+                    sz = this._byteData.readFloat();
+
+                    tx = this._byteData.readFloat();
+                    ty = this._byteData.readFloat();
+                    tz = this._byteData.readFloat();
+
+                    name = this.readFrameName();
+
+                    for (j = 0; j < this._numVertices; j++, this._byteData.position++)
+                        tvertices.push(sx * this._byteData.readUnsignedByte() + tx, sy * this._byteData.readUnsignedByte() + ty, sz * this._byteData.readUnsignedByte() + tz);
+
+                    k = 0;
+                    for (j = 0; j < vertLen; j++) {
+                        fvertices[k++] = tvertices[Math.floor(this._vertIndices[j] * 3)];
+                        fvertices[k++] = tvertices[Math.floor(this._vertIndices[j] * 3 + 2)];
+                        fvertices[k++] = tvertices[Math.floor(this._vertIndices[j] * 3 + 1)];
+                    }
+
+                    subGeom.fromVectors(fvertices, this._finalUV, null, null);
+                    subGeom.updateIndexData(this._indices);
+                    subGeom.vertexNormalData;
+                    subGeom.vertexTangentData;
+                    subGeom.autoDeriveVertexNormals = false;
+                    subGeom.autoDeriveVertexTangents = false;
+
+                    var clip = this._clipNodes[name];
+
+                    if (!clip) {
+                        if (prevClip) {
+                            this._pFinalizeAsset(prevClip);
+                            this._animationSet.addAnimation(prevClip);
+                        }
+
+                        clip = new away.animators.VertexClipNode();
+                        clip.name = name;
+                        clip.stitchFinalFrame = true;
+
+                        this._clipNodes[name] = clip;
+
+                        prevClip = clip;
+                    }
+                    clip.addFrame(geometry, 1000 / away.loaders.MD2Parser.FPS);
+                }
+
+                if (prevClip) {
+                    this._pFinalizeAsset(prevClip);
+                    this._animationSet.addAnimation(prevClip);
+                }
+
+                // Force this._pFinalizeAsset() to decide name
+                this._pFinalizeAsset(this._animationSet);
+
+                this._parsedFrames = true;
+            };
+
+            MD2Parser.prototype.readFrameName = function () {
+                var name = "";
+                var k = 0;
+                for (var j = 0; j < 16; j++) {
+                    var ch = this._byteData.readUnsignedByte();
+
+                    if (Math.floor(ch) > 0x39 && Math.floor(ch) <= 0x7A && k == 0)
+                        name += String.fromCharCode(ch);
+
+                    if (Math.floor(ch) >= 0x30 && Math.floor(ch) <= 0x39)
+                        k++;
+                }
+                return name;
+            };
+
+            MD2Parser.prototype.createDefaultSubGeometry = function () {
+                var sub = new away.base.CompactSubGeometry();
+                sub.updateData(this._firstSubGeom.vertexData);
+                sub.updateIndexData(this._indices);
+                this._geometry.addSubGeometry(sub);
+            };
+            MD2Parser.FPS = 6;
+            return MD2Parser;
+        })(loaders.ParserBase);
+        loaders.MD2Parser = MD2Parser;
+    })(away.loaders || (away.loaders = {}));
+    var loaders = away.loaders;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (loaders) {
         var Parsers = (function () {
             function Parsers() {
             }
@@ -34448,6 +34844,27 @@ var away;
     ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         /**
+        * Options for setting the animation mode of a vertex animator object.
+        *
+        * @see away.animators.VertexAnimator
+        */
+        var VertexAnimationMode = (function () {
+            function VertexAnimationMode() {
+            }
+            VertexAnimationMode.ADDITIVE = "additive";
+
+            VertexAnimationMode.ABSOLUTE = "absolute";
+            return VertexAnimationMode;
+        })();
+        animators.VertexAnimationMode = VertexAnimationMode;
+    })(away.animators || (away.animators = {}));
+    var animators = away.animators;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (animators) {
+        /**
         * Provides an abstract base class for nodes in an animation blend tree.
         */
         var AnimationNodeBase = (function (_super) {
@@ -34457,10 +34874,12 @@ var away;
             */
             function AnimationNodeBase() {
                 _super.call(this);
+
+                this._iUniqueId = away.animators.AnimationNodeBase.ANIMATIONNODE_ID_COUNT++;
             }
             Object.defineProperty(AnimationNodeBase.prototype, "stateClass", {
                 get: function () {
-                    return this._stateClass;
+                    return this._pStateClass;
                 },
                 enumerable: true,
                 configurable: true
@@ -34485,6 +34904,542 @@ var away;
             return AnimationNodeBase;
         })(away.library.NamedAssetBase);
         animators.AnimationNodeBase = AnimationNodeBase;
+    })(away.animators || (away.animators = {}));
+    var animators = away.animators;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (animators) {
+        /**
+        * Provides an abstract base class for nodes with time-based animation data in an animation blend tree.
+        */
+        var AnimationClipNodeBase = (function (_super) {
+            __extends(AnimationClipNodeBase, _super);
+            /**
+            * Creates a new <code>AnimationClipNodeBase</code> object.
+            */
+            function AnimationClipNodeBase() {
+                _super.call(this);
+                this._pLooping = true;
+                this._pTotalDuration = 0;
+                this._pStitchDirty = true;
+                this._pStitchFinalFrame = false;
+                this._pNumFrames = 0;
+                this._pDurations = new Array();
+                this._pTotalDelta = new away.geom.Vector3D();
+                this.fixedFrameRate = true;
+            }
+            Object.defineProperty(AnimationClipNodeBase.prototype, "looping", {
+                get: /**
+                * Determines whether the contents of the animation node have looping characteristics enabled.
+                */
+                function () {
+                    return this._pLooping;
+                },
+                set: function (value) {
+                    if (this._pLooping == value)
+                        return;
+
+                    this._pLooping = value;
+
+                    this._pStitchDirty = true;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(AnimationClipNodeBase.prototype, "stitchFinalFrame", {
+                get: /**
+                * Defines if looping content blends the final frame of animation data with the first (true) or works on the
+                * assumption that both first and last frames are identical (false). Defaults to false.
+                */
+                function () {
+                    return this._pStitchFinalFrame;
+                },
+                set: function (value) {
+                    if (this._pStitchFinalFrame == value)
+                        return;
+
+                    this._pStitchFinalFrame = value;
+
+                    this._pStitchDirty = true;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(AnimationClipNodeBase.prototype, "totalDuration", {
+                get: function () {
+                    if (this._pStitchDirty)
+                        this._pUpdateStitch();
+
+                    return this._pTotalDuration;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(AnimationClipNodeBase.prototype, "totalDelta", {
+                get: function () {
+                    if (this._pStitchDirty)
+                        this._pUpdateStitch();
+
+                    return this._pTotalDelta;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(AnimationClipNodeBase.prototype, "lastFrame", {
+                get: function () {
+                    if (this._pStitchDirty)
+                        this._pUpdateStitch();
+
+                    return this._pLastFrame;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(AnimationClipNodeBase.prototype, "durations", {
+                get: /**
+                * Returns a vector of time values representing the duration (in milliseconds) of each animation frame in the clip.
+                */
+                function () {
+                    return this._pDurations;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * Updates the node's final frame stitch state.
+            *
+            * @see #stitchFinalFrame
+            */
+            AnimationClipNodeBase.prototype._pUpdateStitch = function () {
+                this._pStitchDirty = false;
+
+                this._pLastFrame = (this._pStitchFinalFrame) ? this._pNumFrames : this._pNumFrames - 1;
+
+                this._pTotalDuration = 0;
+                this._pTotalDelta.x = 0;
+                this._pTotalDelta.y = 0;
+                this._pTotalDelta.z = 0;
+            };
+            return AnimationClipNodeBase;
+        })(animators.AnimationNodeBase);
+        animators.AnimationClipNodeBase = AnimationClipNodeBase;
+    })(away.animators || (away.animators = {}));
+    var animators = away.animators;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (animators) {
+        /**
+        * A vertex animation node containing time-based animation data as individual geometry obejcts.
+        */
+        var VertexClipNode = (function (_super) {
+            __extends(VertexClipNode, _super);
+            /**
+            * Creates a new <code>VertexClipNode</code> object.
+            */
+            function VertexClipNode() {
+                _super.call(this);
+                this._frames = new Array();
+                this._translations = new Array();
+
+                this._pStateClass = away.animators.VertexClipState;
+            }
+            Object.defineProperty(VertexClipNode.prototype, "frames", {
+                get: /**
+                * Returns a vector of geometry frames representing the vertex values of each animation frame in the clip.
+                */
+                function () {
+                    return this._frames;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * Adds a geometry object to the internal timeline of the animation node.
+            *
+            * @param geometry The geometry object to add to the timeline of the node.
+            * @param duration The specified duration of the frame in milliseconds.
+            * @param translation The absolute translation of the frame, used in root delta calculations for mesh movement.
+            */
+            VertexClipNode.prototype.addFrame = function (geometry, duration/*uint*/ , translation) {
+                if (typeof translation === "undefined") { translation = null; }
+                this._frames.push(geometry);
+                this._pDurations.push(duration);
+                this._translations.push(translation || new away.geom.Vector3D());
+
+                this._pNumFrames = this._pDurations.length;
+
+                this._pStitchDirty = true;
+            };
+
+            /**
+            * @inheritDoc
+            */
+            VertexClipNode.prototype._pUpdateStitch = function () {
+                _super.prototype._pUpdateStitch.call(this);
+
+                var i = this._pNumFrames - 1;
+                var p1, p2, delta;
+                while (i--) {
+                    this._pTotalDuration += this._pDurations[i];
+                    p1 = this._translations[i];
+                    p2 = this._translations[i + 1];
+                    delta = p2.subtract(p1);
+                    this._pTotalDelta.x += delta.x;
+                    this._pTotalDelta.y += delta.y;
+                    this._pTotalDelta.z += delta.z;
+                }
+
+                if (this._pNumFrames > 1 && (this._pStitchFinalFrame || !this._pLooping)) {
+                    this._pTotalDuration += this._pDurations[this._pNumFrames - 1];
+                    p1 = this._translations[0];
+                    p2 = this._translations[1];
+                    delta = p2.subtract(p1);
+                    this._pTotalDelta.x += delta.x;
+                    this._pTotalDelta.y += delta.y;
+                    this._pTotalDelta.z += delta.z;
+                }
+            };
+            return VertexClipNode;
+        })(animators.AnimationClipNodeBase);
+        animators.VertexClipNode = VertexClipNode;
+    })(away.animators || (away.animators = {}));
+    var animators = away.animators;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (animators) {
+        /**
+        *
+        */
+        var AnimationStateBase = (function () {
+            function AnimationStateBase(animator, animationNode) {
+                this._rootDelta = new away.geom.Vector3D();
+                this._positionDeltaDirty = true;
+                this._pAnimator = animator;
+                this._animationNode = animationNode;
+            }
+            Object.defineProperty(AnimationStateBase.prototype, "positionDelta", {
+                get: /**
+                * Returns a 3d vector representing the translation delta of the animating entity for the current timestep of animation
+                */
+                function () {
+                    if (this._positionDeltaDirty) {
+                        this._pUpdatePositionDelta();
+                    }
+
+                    return this._rootDelta;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * Resets the start time of the node to a  new value.
+            *
+            * @param startTime The absolute start time (in milliseconds) of the node's starting time.
+            */
+            AnimationStateBase.prototype.offset = function (startTime) {
+                this._pStartTime = startTime;
+
+                this._positionDeltaDirty = true;
+            };
+
+            /**
+            * Updates the configuration of the node to its current state.
+            *
+            * @param time The absolute time (in milliseconds) of the animator's play head position.
+            *
+            * @see away.animators.AnimatorBase#update()
+            */
+            AnimationStateBase.prototype.update = function (time) {
+                if (this._pTime == time - this._pStartTime) {
+                    return;
+                }
+
+                this._pUpdateTime(time);
+            };
+
+            /**
+            * Sets the animation phase of the node.
+            *
+            * @param value The phase value to use. 0 represents the beginning of an animation clip, 1 represents the end.
+            */
+            AnimationStateBase.prototype.phase = function (value) {
+            };
+
+            /**
+            * Updates the node's internal playhead position.
+            *
+            * @param time The local time (in milliseconds) of the node's playhead position.
+            */
+            AnimationStateBase.prototype._pUpdateTime = function (time) {
+                this._pTime = time - this._pStartTime;
+
+                this._positionDeltaDirty = true;
+            };
+
+            /**
+            * Updates the node's root delta position
+            */
+            AnimationStateBase.prototype._pUpdatePositionDelta = function () {
+            };
+            return AnimationStateBase;
+        })();
+        animators.AnimationStateBase = AnimationStateBase;
+    })(away.animators || (away.animators = {}));
+    var animators = away.animators;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (animators) {
+        /**
+        *
+        */
+        var AnimationClipState = (function (_super) {
+            __extends(AnimationClipState, _super);
+            function AnimationClipState(animator, animationClipNode) {
+                _super.call(this, animator, animationClipNode);
+                this._pFramesDirty = true;
+
+                this._animationClipNode = animationClipNode;
+            }
+            Object.defineProperty(AnimationClipState.prototype, "blendWeight", {
+                get: /**
+                * Returns a fractional value between 0 and 1 representing the blending ratio of the current playhead position
+                * between the current frame (0) and next frame (1) of the animation.
+                *
+                * @see #currentFrame
+                * @see #nextFrame
+                */
+                function () {
+                    if (this._pFramesDirty)
+                        this._pUpdateFrames();
+
+                    return this._pBlendWeight;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(AnimationClipState.prototype, "currentFrame", {
+                get: /**
+                * Returns the current frame of animation in the clip based on the internal playhead position.
+                */
+                function () {
+                    if (this._pFramesDirty)
+                        this._pUpdateFrames();
+
+                    return this._pCurrentFrame;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(AnimationClipState.prototype, "nextFrame", {
+                get: /**
+                * Returns the next frame of animation in the clip based on the internal playhead position.
+                */
+                function () {
+                    if (this._pFramesDirty)
+                        this._pUpdateFrames();
+
+                    return this._pNextFrame;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * @inheritDoc
+            */
+            AnimationClipState.prototype.update = function (time/*int*/ ) {
+                if (!this._animationClipNode.looping) {
+                    if (time > this._pStartTime + this._animationClipNode.totalDuration)
+                        time = this._pStartTime + this._animationClipNode.totalDuration;
+else if (time < this._pStartTime)
+                        time = this._pStartTime;
+                }
+
+                if (this._pTime == time - this._pStartTime)
+                    return;
+
+                this._pUpdateTime(time);
+            };
+
+            /**
+            * @inheritDoc
+            */
+            AnimationClipState.prototype.phase = function (value) {
+                var time = value * this._animationClipNode.totalDuration + this._pStartTime;
+
+                if (this._pTime == time - this._pStartTime)
+                    return;
+
+                this._pUpdateTime(time);
+            };
+
+            /**
+            * @inheritDoc
+            */
+            AnimationClipState.prototype._pUpdateTime = function (time/*int*/ ) {
+                this._pFramesDirty = true;
+
+                this._pTimeDir = (time - this._pStartTime > this._pTime) ? 1 : -1;
+
+                _super.prototype._pUpdateTime.call(this, time);
+            };
+
+            /**
+            * Updates the nodes internal playhead to determine the current and next animation frame, and the blendWeight between the two.
+            *
+            * @see #currentFrame
+            * @see #nextFrame
+            * @see #blendWeight
+            */
+            AnimationClipState.prototype._pUpdateFrames = function () {
+                this._pFramesDirty = false;
+
+                var looping = this._animationClipNode.looping;
+                var totalDuration = this._animationClipNode.totalDuration;
+                var lastFrame = this._animationClipNode.lastFrame;
+                var time = this._pTime;
+
+                if (looping && (time >= totalDuration || time < 0)) {
+                    time %= totalDuration;
+                    if (time < 0)
+                        time += totalDuration;
+                }
+
+                if (!looping && time >= totalDuration) {
+                    this.notifyPlaybackComplete();
+                    this._pCurrentFrame = lastFrame;
+                    this._pNextFrame = lastFrame;
+                    this._pBlendWeight = 0;
+                } else if (!looping && time <= 0) {
+                    this._pCurrentFrame = 0;
+                    this._pNextFrame = 0;
+                    this._pBlendWeight = 0;
+                } else if (this._animationClipNode.fixedFrameRate) {
+                    var t = time / totalDuration * lastFrame;
+                    this._pCurrentFrame = Math.floor(t);
+                    this._pBlendWeight = t - this._pCurrentFrame;
+                    this._pNextFrame = this._pCurrentFrame + 1;
+                } else {
+                    this._pCurrentFrame = 0;
+                    this._pNextFrame = 0;
+
+                    var dur = 0/*uint*/ , frameTime;
+                    var durations = this._animationClipNode.durations;
+
+                    do {
+                        frameTime = dur;
+                        dur += durations[this._pNextFrame];
+                        this._pCurrentFrame = this._pNextFrame++;
+                    } while(time > dur);
+
+                    if (this._pCurrentFrame == lastFrame) {
+                        this._pCurrentFrame = 0;
+                        this._pNextFrame = 1;
+                    }
+
+                    this._pBlendWeight = (time - frameTime) / durations[this._pCurrentFrame];
+                }
+            };
+
+            AnimationClipState.prototype.notifyPlaybackComplete = function () {
+                if (this._animationStatePlaybackComplete == null)
+                    this._animationStatePlaybackComplete = new away.events.AnimationStateEvent(away.events.AnimationStateEvent.PLAYBACK_COMPLETE, this._pAnimator, this, this._animationClipNode);
+
+                this._animationClipNode.dispatchEvent(this._animationStatePlaybackComplete);
+            };
+            return AnimationClipState;
+        })(animators.AnimationStateBase);
+        animators.AnimationClipState = AnimationClipState;
+    })(away.animators || (away.animators = {}));
+    var animators = away.animators;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (animators) {
+        /**
+        *
+        */
+        var VertexClipState = (function (_super) {
+            __extends(VertexClipState, _super);
+            function VertexClipState(animator, vertexClipNode) {
+                _super.call(this, animator, vertexClipNode);
+
+                this._vertexClipNode = vertexClipNode;
+                this._frames = this._vertexClipNode.frames;
+            }
+            Object.defineProperty(VertexClipState.prototype, "currentGeometry", {
+                get: /**
+                * @inheritDoc
+                */
+                function () {
+                    if (this._pFramesDirty)
+                        this._pUpdateFrames();
+
+                    return this._currentGeometry;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(VertexClipState.prototype, "nextGeometry", {
+                get: /**
+                * @inheritDoc
+                */
+                function () {
+                    if (this._pFramesDirty)
+                        this._pUpdateFrames();
+
+                    return this._nextGeometry;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * @inheritDoc
+            */
+            VertexClipState.prototype._pUpdateFrames = function () {
+                _super.prototype._pUpdateFrames.call(this);
+
+                this._currentGeometry = this._frames[this._pCurrentFrame];
+
+                if (this._vertexClipNode.looping && this._pNextFrame >= this._vertexClipNode.lastFrame) {
+                    this._nextGeometry = this._frames[0];
+                    (this._pAnimator).dispatchCycleEvent();
+                } else
+                    this._nextGeometry = this._frames[this._pNextFrame];
+            };
+
+            /**
+            * @inheritDoc
+            */
+            VertexClipState.prototype._pUpdatePositionDelta = function () {
+                //TODO:implement positiondelta functionality for vertex animations
+            };
+            return VertexClipState;
+        })(animators.AnimationClipState);
+        animators.VertexClipState = VertexClipState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
@@ -34770,88 +35725,947 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
+    ///<reference path="../_definitions.ts"/>
     (function (animators) {
         /**
+        * Provides an abstract base class for data set classes that hold animation data for use in animator classes.
         *
+        * @see away.animators.AnimatorBase
         */
-        var AnimationStateBase = (function () {
-            function AnimationStateBase(animator, animationNode) {
-                this._rootDelta = new away.geom.Vector3D();
-                this._positionDeltaDirty = true;
-                this._animator = animator;
-                this._animationNode = animationNode;
+        var AnimationSetBase = (function (_super) {
+            __extends(AnimationSetBase, _super);
+            function AnimationSetBase() {
+                _super.call(this);
+                this._animations = new Array();
+                this._animationNames = new Array();
+                this._animationDictionary = new Object();
             }
-            Object.defineProperty(AnimationStateBase.prototype, "positionDelta", {
+            /**
+            * Retrieves a temporary GPU register that's still free.
+            *
+            * @param exclude An array of non-free temporary registers.
+            * @param excludeAnother An additional register that's not free.
+            * @return A temporary register that can be used.
+            */
+            AnimationSetBase.prototype._pFindTempReg = function (exclude, excludeAnother) {
+                if (typeof excludeAnother === "undefined") { excludeAnother = null; }
+                var i/*uint*/ ;
+                var reg;
+
+                while (true) {
+                    reg = "vt" + i;
+                    if (exclude.indexOf(reg) == -1 && excludeAnother != reg)
+                        return reg;
+                    ++i;
+                }
+
+                // can't be reached
+                return null;
+            };
+
+            Object.defineProperty(AnimationSetBase.prototype, "usesCPU", {
                 get: /**
-                * Returns a 3d vector representing the translation delta of the animating entity for the current timestep of animation
+                * Indicates whether the properties of the animation data contained within the set combined with
+                * the vertex registers aslready in use on shading materials allows the animation data to utilise
+                * GPU calls.
                 */
                 function () {
-                    if (this._positionDeltaDirty) {
-                        this.pUpdatePositionDelta();
-                    }
-
-                    return this._rootDelta;
+                    return this._usesCPU;
                 },
                 enumerable: true,
                 configurable: true
             });
 
             /**
-            * Resets the start time of the node to a  new value.
+            * Called by the material to reset the GPU indicator before testing whether register space in the shader
+            * is available for running GPU-based animation code.
             *
-            * @param startTime The absolute start time (in milliseconds) of the node's starting time.
+            * @private
             */
-            AnimationStateBase.prototype.offset = function (startTime) {
-                this._startTime = startTime;
+            AnimationSetBase.prototype.resetGPUCompatibility = function () {
+                this._usesCPU = false;
+            };
 
-                this._positionDeltaDirty = true;
+            AnimationSetBase.prototype.cancelGPUCompatibility = function () {
+                this._usesCPU = true;
+            };
+
+            Object.defineProperty(AnimationSetBase.prototype, "assetType", {
+                get: /**
+                * @inheritDoc
+                */
+                function () {
+                    return away.library.AssetType.ANIMATION_SET;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(AnimationSetBase.prototype, "animations", {
+                get: /**
+                * Returns a vector of animation state objects that make up the contents of the animation data set.
+                */
+                function () {
+                    return this._animations;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(AnimationSetBase.prototype, "animationNames", {
+                get: /**
+                * Returns a vector of animation state objects that make up the contents of the animation data set.
+                */
+                function () {
+                    return this._animationNames;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * Check to determine whether a state is registered in the animation set under the given name.
+            *
+            * @param stateName The name of the animation state object to be checked.
+            */
+            AnimationSetBase.prototype.hasAnimation = function (name) {
+                return this._animationDictionary[name] != null;
             };
 
             /**
-            * Updates the configuration of the node to its current state.
+            * Retrieves the animation state object registered in the animation data set under the given name.
             *
-            * @param time The absolute time (in milliseconds) of the animator's play head position.
-            *
-            * @see away3d.animators.AnimatorBase#update()
+            * @param stateName The name of the animation state object to be retrieved.
             */
-            AnimationStateBase.prototype.update = function (time) {
-                if (this._time == time - this._startTime) {
-                    return;
+            AnimationSetBase.prototype.getAnimation = function (name) {
+                return this._animationDictionary[name];
+            };
+
+            /**
+            * Adds an animation state object to the aniamtion data set under the given name.
+            *
+            * @param stateName The name under which the animation state object will be stored.
+            * @param animationState The animation state object to be staored in the set.
+            */
+            AnimationSetBase.prototype.addAnimation = function (node) {
+                if (this._animationDictionary[node.name])
+                    throw new away.errors.AnimationSetError("root node name '" + node.name + "' already exists in the set");
+
+                this._animationDictionary[node.name] = node;
+
+                this._animations.push(node);
+
+                this._animationNames.push(node.name);
+            };
+
+            /**
+            * Cleans up any resources used by the current object.
+            */
+            AnimationSetBase.prototype.dispose = function () {
+            };
+            return AnimationSetBase;
+        })(away.library.NamedAssetBase);
+        animators.AnimationSetBase = AnimationSetBase;
+    })(away.animators || (away.animators = {}));
+    var animators = away.animators;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (animators) {
+        /**
+        * The animation data set used by vertex-based animators, containing vertex animation state data.
+        *
+        * @see away.animators.VertexAnimator
+        */
+        var VertexAnimationSet = (function (_super) {
+            __extends(VertexAnimationSet, _super);
+            /**
+            * Creates a new <code>VertexAnimationSet</code> object.
+            *
+            * @param numPoses The number of poses made available at once to the GPU animation code.
+            * @param blendMode Optional value for setting the animation mode of the vertex animator object.
+            *
+            * @see away3d.animators.data.VertexAnimationMode
+            */
+            function VertexAnimationSet(numPoses, blendMode) {
+                if (typeof numPoses === "undefined") { numPoses = 2; }
+                if (typeof blendMode === "undefined") { blendMode = "absolute"; }
+                _super.call(this);
+                this._streamIndices = new Object();
+                this._useNormals = new Object();
+                this._useTangents = new Object();
+                this._numPoses = numPoses;
+                this._blendMode = blendMode;
+            }
+            Object.defineProperty(VertexAnimationSet.prototype, "numPoses", {
+                get: /**
+                * Returns the number of poses made available at once to the GPU animation code.
+                */
+                function () {
+                    return this._numPoses;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(VertexAnimationSet.prototype, "blendMode", {
+                get: /**
+                * Returns the active blend mode of the vertex animator object.
+                */
+                function () {
+                    return this._blendMode;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(VertexAnimationSet.prototype, "useNormals", {
+                get: /**
+                * Returns whether or not normal data is used in last set GPU pass of the vertex shader.
+                */
+                function () {
+                    return this._uploadNormals;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * @inheritDoc
+            */
+            VertexAnimationSet.prototype.getAGALVertexCode = function (pass, sourceRegisters, targetRegisters, profile) {
+                if (this._blendMode == away.animators.VertexAnimationMode.ABSOLUTE)
+                    return this.getAbsoluteAGALCode(pass, sourceRegisters, targetRegisters);
+else
+                    return this.getAdditiveAGALCode(pass, sourceRegisters, targetRegisters);
+            };
+
+            /**
+            * @inheritDoc
+            */
+            VertexAnimationSet.prototype.activate = function (stage3DProxy, pass) {
+                var uID = pass._iUniqueId;
+                this._uploadNormals = this._useNormals[uID];
+                this._uploadTangents = this._useTangents[uID];
+            };
+
+            /**
+            * @inheritDoc
+            */
+            VertexAnimationSet.prototype.deactivate = function (stage3DProxy, pass) {
+                var uID = pass._iUniqueId;
+                var index = this._streamIndices[uID];
+                var context = stage3DProxy._iContext3D;
+                context.setVertexBufferAt(index, null);
+                if (this._uploadNormals)
+                    context.setVertexBufferAt(index + 1, null);
+                if (this._uploadTangents)
+                    context.setVertexBufferAt(index + 2, null);
+            };
+
+            /**
+            * @inheritDoc
+            */
+            VertexAnimationSet.prototype.getAGALFragmentCode = function (pass, shadedTarget, profile) {
+                return "";
+            };
+
+            /**
+            * @inheritDoc
+            */
+            VertexAnimationSet.prototype.getAGALUVCode = function (pass, UVSource, UVTarget) {
+                return "mov " + UVTarget + "," + UVSource + "\n";
+            };
+
+            /**
+            * @inheritDoc
+            */
+            VertexAnimationSet.prototype.doneAGALCode = function (pass) {
+            };
+
+            /**
+            * Generates the vertex AGAL code for absolute blending.
+            */
+            VertexAnimationSet.prototype.getAbsoluteAGALCode = function (pass, sourceRegisters, targetRegisters) {
+                var code = "";
+                var uID = pass._iUniqueId;
+                var temp1 = this._pFindTempReg(targetRegisters);
+                var temp2 = this._pFindTempReg(targetRegisters, temp1);
+                var regs = ["x", "y", "z", "w"];
+                var len = sourceRegisters.length;
+                var constantReg = "vc" + pass.numUsedVertexConstants;
+                var useTangents = Boolean(this._useTangents[uID] = len > 2);
+                this._useNormals[uID] = len > 1;
+
+                if (len > 2)
+                    len = 2;
+                var streamIndex = this._streamIndices[uID] = pass.numUsedStreams;
+
+                for (var i = 0; i < len; ++i) {
+                    code += "mul " + temp1 + ", " + sourceRegisters[i] + ", " + constantReg + "." + regs[0] + "\n";
+
+                    for (var j = 1; j < this._numPoses; ++j) {
+                        code += "mul " + temp2 + ", va" + streamIndex + ", " + constantReg + "." + regs[j] + "\n";
+
+                        if (j < this._numPoses - 1)
+                            code += "add " + temp1 + ", " + temp1 + ", " + temp2 + "\n";
+
+                        ++streamIndex;
+                    }
+
+                    code += "add " + targetRegisters[i] + ", " + temp1 + ", " + temp2 + "\n";
                 }
 
-                this.pUpdateTime(time);
+                if (useTangents) {
+                    code += "dp3 " + temp1 + ".x, " + sourceRegisters[Math.floor(2)] + ", " + targetRegisters[Math.floor(1)] + "\n" + "mul " + temp1 + ", " + targetRegisters[Math.floor(1)] + ", " + temp1 + ".x			 \n" + "sub " + targetRegisters[Math.floor(2)] + ", " + sourceRegisters[Math.floor(2)] + ", " + temp1 + "\n";
+                }
+                return code;
             };
 
             /**
-            * Sets the animation phase of the node.
+            * Generates the vertex AGAL code for additive blending.
+            */
+            VertexAnimationSet.prototype.getAdditiveAGALCode = function (pass, sourceRegisters, targetRegisters) {
+                var code = "";
+                var uID = pass._iUniqueId;
+                var len = sourceRegisters.length;
+                var regs = ["x", "y", "z", "w"];
+                var temp1 = this._pFindTempReg(targetRegisters);
+                var k/*uint*/ ;
+                var useTangents = Boolean(this._useTangents[uID] = len > 2);
+                var useNormals = Boolean(this._useNormals[uID] = len > 1);
+                var streamIndex = this._streamIndices[uID] = pass.numUsedStreams;
+
+                if (len > 2)
+                    len = 2;
+
+                code += "mov  " + targetRegisters[0] + ", " + sourceRegisters[0] + "\n";
+                if (useNormals)
+                    code += "mov " + targetRegisters[1] + ", " + sourceRegisters[1] + "\n";
+
+                for (var i = 0; i < len; ++i) {
+                    for (var j = 0; j < this._numPoses; ++j) {
+                        code += "mul " + temp1 + ", va" + (streamIndex + k) + ", vc" + pass.numUsedVertexConstants + "." + regs[j] + "\n" + "add " + targetRegisters[i] + ", " + targetRegisters[i] + ", " + temp1 + "\n";
+                        k++;
+                    }
+                }
+
+                if (useTangents) {
+                    code += "dp3 " + temp1 + ".x, " + sourceRegisters[Math.floor(2)] + ", " + targetRegisters[Math.floor(1)] + "\n" + "mul " + temp1 + ", " + targetRegisters[Math.floor(1)] + ", " + temp1 + ".x			 \n" + "sub " + targetRegisters[Math.floor(2)] + ", " + sourceRegisters[Math.floor(2)] + ", " + temp1 + "\n";
+                }
+
+                return code;
+            };
+            return VertexAnimationSet;
+        })(animators.AnimationSetBase);
+        animators.VertexAnimationSet = VertexAnimationSet;
+    })(away.animators || (away.animators = {}));
+    var animators = away.animators;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (animators) {
+        /**
+        * Dispatched when playback of an animation inside the animator object starts.
+        *
+        * @eventType away3d.events.AnimatorEvent
+        */
+        //[Event(name="start", type="away3d.events.AnimatorEvent")]
+        /**
+        * Dispatched when playback of an animation inside the animator object stops.
+        *
+        * @eventType away3d.events.AnimatorEvent
+        */
+        //[Event(name="stop", type="away3d.events.AnimatorEvent")]
+        /**
+        * Dispatched when playback of an animation reaches the end of an animation.
+        *
+        * @eventType away3d.events.AnimatorEvent
+        */
+        //[Event(name="cycle_complete", type="away3d.events.AnimatorEvent")]
+        /**
+        * Provides an abstract base class for animator classes that control animation output from a data set subtype of <code>AnimationSetBase</code>.
+        *
+        * @see away.animators.AnimationSetBase
+        */
+        var AnimatorBase = (function (_super) {
+            __extends(AnimatorBase, _super);
+            /**
+            * Creates a new <code>AnimatorBase</code> object.
+            *
+            * @param animationSet The animation data set to be used by the animator object.
+            */
+            function AnimatorBase(animationSet) {
+                _super.call(this);
+                this._autoUpdate = true;
+                this._playbackSpeed = 1;
+                this._pOwners = new Array();
+                this._pAbsoluteTime = 0;
+                this._animationStates = new Object();
+                /**
+                * Enables translation of the animated mesh from data returned per frame via the positionDelta property of the active animation node. Defaults to true.
+                *
+                * @see away.animators.states.IAnimationState#positionDelta
+                */
+                this.updatePosition = true;
+
+                this._pAnimationSet = animationSet;
+
+                this._broadcaster = new away.utils.RequestAnimationFrame(this.onEnterFrame, this);
+            }
+            AnimatorBase.prototype.getAnimationState = function (node) {
+                var className = node.stateClass;
+                var uID = node._iUniqueId;
+
+                if (this._animationStates[uID] == null)
+                    this._animationStates[uID] = new className(this, node);
+
+                return this._animationStates[uID];
+            };
+
+            AnimatorBase.prototype.getAnimationStateByName = function (name) {
+                return this.getAnimationState(this._pAnimationSet.getAnimation(name));
+            };
+
+            Object.defineProperty(AnimatorBase.prototype, "absoluteTime", {
+                get: /**
+                * Returns the internal absolute time of the animator, calculated by the current time and the playback speed.
+                *
+                * @see #time
+                * @see #playbackSpeed
+                */
+                function () {
+                    return this._pAbsoluteTime;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(AnimatorBase.prototype, "animationSet", {
+                get: /**
+                * Returns the animation data set in use by the animator.
+                */
+                function () {
+                    return this._pAnimationSet;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(AnimatorBase.prototype, "activeState", {
+                get: /**
+                * Returns the current active animation state.
+                */
+                function () {
+                    return this._pActiveState;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(AnimatorBase.prototype, "activeAnimation", {
+                get: /**
+                * Returns the current active animation node.
+                */
+                function () {
+                    return this._pAnimationSet.getAnimation(this._pActiveAnimationName);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(AnimatorBase.prototype, "activeAnimationName", {
+                get: /**
+                * Returns the current active animation node.
+                */
+                function () {
+                    return this._pActiveAnimationName;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(AnimatorBase.prototype, "autoUpdate", {
+                get: /**
+                * Determines whether the animators internal update mechanisms are active. Used in cases
+                * where manual updates are required either via the <code>time</code> property or <code>update()</code> method.
+                * Defaults to true.
+                *
+                * @see #time
+                * @see #update()
+                */
+                function () {
+                    return this._autoUpdate;
+                },
+                set: function (value) {
+                    if (this._autoUpdate == value)
+                        return;
+
+                    this._autoUpdate = value;
+
+                    if (this._autoUpdate)
+                        this.start();
+else
+                        this.stop();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(AnimatorBase.prototype, "time", {
+                get: /**
+                * Gets and sets the internal time clock of the animator.
+                */
+                function () {
+                    return this._time;
+                },
+                set: function (value/*int*/ ) {
+                    if (this._time == value)
+                        return;
+
+                    this.update(value);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * Sets the animation phase of the current active state's animation clip(s).
             *
             * @param value The phase value to use. 0 represents the beginning of an animation clip, 1 represents the end.
             */
-            AnimationStateBase.prototype.phase = function (value) {
+            AnimatorBase.prototype.phase = function (value) {
+                this._pActiveState.phase(value);
+            };
+
+            Object.defineProperty(AnimatorBase.prototype, "playbackSpeed", {
+                get: /**
+                * The amount by which passed time should be scaled. Used to slow down or speed up animations. Defaults to 1.
+                */
+                function () {
+                    return this._playbackSpeed;
+                },
+                set: function (value) {
+                    this._playbackSpeed = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * Resumes the automatic playback clock controling the active state of the animator.
+            */
+            AnimatorBase.prototype.start = function () {
+                if (this._isPlaying || !this._autoUpdate)
+                    return;
+
+                this._time = this._pAbsoluteTime = away.utils.getTimer();
+
+                this._isPlaying = true;
+
+                this._broadcaster.start();
+
+                if (!this.hasEventListener(away.events.AnimatorEvent.START))
+                    return;
+
+                if (this._startEvent == null)
+                    this._startEvent = new away.events.AnimatorEvent(away.events.AnimatorEvent.START, this);
+
+                this.dispatchEvent(this._startEvent);
             };
 
             /**
-            * Updates the node's internal playhead position.
+            * Pauses the automatic playback clock of the animator, in case manual updates are required via the
+            * <code>time</code> property or <code>update()</code> method.
             *
-            * @param time The local time (in milliseconds) of the node's playhead position.
+            * @see #time
+            * @see #update()
             */
-            AnimationStateBase.prototype.pUpdateTime = function (time) {
-                this._time = time - this._startTime;
+            AnimatorBase.prototype.stop = function () {
+                if (!this._isPlaying)
+                    return;
 
-                this._positionDeltaDirty = true;
+                this._isPlaying = false;
+
+                this._broadcaster.stop();
+
+                if (!this.hasEventListener(away.events.AnimatorEvent.STOP))
+                    return;
+
+                if (this._stopEvent == null)
+                    this._stopEvent = new away.events.AnimatorEvent(away.events.AnimatorEvent.STOP, this);
+
+                this.dispatchEvent(this._stopEvent);
             };
 
             /**
-            * Updates the node's root delta position
+            * Provides a way to manually update the active state of the animator when automatic
+            * updates are disabled.
+            *
+            * @see #stop()
+            * @see #autoUpdate
             */
-            AnimationStateBase.prototype.pUpdatePositionDelta = function () {
+            AnimatorBase.prototype.update = function (time/*int*/ ) {
+                var dt = (time - this._time) * this.playbackSpeed;
+
+                this._pUpdateDeltaTime(dt);
+
+                this._time = time;
             };
-            return AnimationStateBase;
-        })();
-        animators.AnimationStateBase = AnimationStateBase;
+
+            AnimatorBase.prototype.reset = function (name, offset) {
+                if (typeof offset === "undefined") { offset = 0; }
+                this.getAnimationState(this._pAnimationSet.getAnimation(name)).offset(offset + this._pAbsoluteTime);
+            };
+
+            /**
+            * Used by the mesh object to which the animator is applied, registers the owner for internal use.
+            *
+            * @private
+            */
+            AnimatorBase.prototype.addOwner = function (mesh) {
+                this._pOwners.push(mesh);
+            };
+
+            /**
+            * Used by the mesh object from which the animator is removed, unregisters the owner for internal use.
+            *
+            * @private
+            */
+            AnimatorBase.prototype.removeOwner = function (mesh) {
+                this._pOwners.splice(this._pOwners.indexOf(mesh), 1);
+            };
+
+            /**
+            * Internal abstract method called when the time delta property of the animator's contents requires updating.
+            *
+            * @private
+            */
+            AnimatorBase.prototype._pUpdateDeltaTime = function (dt) {
+                this._pAbsoluteTime += dt;
+
+                this._pActiveState.update(this._pAbsoluteTime);
+
+                if (this.updatePosition)
+                    this.applyPositionDelta();
+            };
+
+            /**
+            * Enter frame event handler for automatically updating the active state of the animator.
+            */
+            AnimatorBase.prototype.onEnterFrame = function (event) {
+                if (typeof event === "undefined") { event = null; }
+                this.update(away.utils.getTimer());
+            };
+
+            AnimatorBase.prototype.applyPositionDelta = function () {
+                var delta = this._pActiveState.positionDelta;
+                var dist = delta.length;
+                var len/*uint*/ ;
+                if (dist > 0) {
+                    len = this._pOwners.length;
+                    for (var i = 0; i < len; ++i)
+                        this._pOwners[i].translateLocal(delta, dist);
+                }
+            };
+
+            /**
+            *  for internal use.
+            *
+            * @private
+            */
+            AnimatorBase.prototype.dispatchCycleEvent = function () {
+                if (this.hasEventListener(away.events.AnimatorEvent.CYCLE_COMPLETE)) {
+                    if (this._cycleEvent == null)
+                        this._cycleEvent = new away.events.AnimatorEvent(away.events.AnimatorEvent.CYCLE_COMPLETE, this);
+
+                    this.dispatchEvent(this._cycleEvent);
+                }
+            };
+
+            /**
+            * @inheritDoc
+            */
+            AnimatorBase.prototype.dispose = function () {
+            };
+
+            Object.defineProperty(AnimatorBase.prototype, "assetType", {
+                get: /**
+                * @inheritDoc
+                */
+                function () {
+                    return away.library.AssetType.ANIMATOR;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return AnimatorBase;
+        })(away.library.NamedAssetBase);
+        animators.AnimatorBase = AnimatorBase;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
+})(away || (away = {}));
+var away;
+(function (away) {
+    (function (animators) {
+        /**
+        * Provides an interface for assigning vertex-based animation data sets to mesh-based entity objects
+        * and controlling the various available states of animation through an interative playhead that can be
+        * automatically updated or manually triggered.
+        */
+        var VertexAnimator = (function (_super) {
+            __extends(VertexAnimator, _super);
+            /**
+            * Creates a new <code>VertexAnimator</code> object.
+            *
+            * @param vertexAnimationSet The animation data set containing the vertex animations used by the animator.
+            */
+            function VertexAnimator(vertexAnimationSet) {
+                _super.call(this, vertexAnimationSet);
+                this._poses = new Array();
+                this._weights = Array(1, 0, 0, 0);
+
+                this._vertexAnimationSet = vertexAnimationSet;
+                this._numPoses = vertexAnimationSet.numPoses;
+                this._blendMode = vertexAnimationSet.blendMode;
+            }
+            /**
+            * @inheritDoc
+            */
+            VertexAnimator.prototype.clone = function () {
+                return new VertexAnimator(this._vertexAnimationSet);
+            };
+
+            /**
+            * Plays a sequence with a given name. If the sequence is not found, it may not be loaded yet, and it will retry every frame.
+            * @param sequenceName The name of the clip to be played.
+            */
+            VertexAnimator.prototype.play = function (name, transition, offset) {
+                if (typeof transition === "undefined") { transition = null; }
+                if (typeof offset === "undefined") { offset = NaN; }
+                if (this._pActiveAnimationName == name)
+                    return;
+
+                this._pActiveAnimationName = name;
+
+                if (!this._pAnimationSet.hasAnimation(name))
+                    throw new Error("Animation root node " + name + " not found!");
+
+                this._pActiveNode = this._pAnimationSet.getAnimation(name);
+
+                this._pActiveState = this.getAnimationState(this._pActiveNode);
+
+                if (this.updatePosition) {
+                    //update straight away to reset position deltas
+                    this._pActiveState.update(this._pAbsoluteTime);
+                    this._pActiveState.positionDelta;
+                }
+
+                this._activeVertexState = this._pActiveState;
+
+                this.start();
+
+                if (!isNaN(offset))
+                    this.reset(name, offset);
+            };
+
+            /**
+            * @inheritDoc
+            */
+            VertexAnimator.prototype._pUpdateDeltaTime = function (dt) {
+                _super.prototype._pUpdateDeltaTime.call(this, dt);
+
+                this._poses[0] = this._activeVertexState.currentGeometry;
+                this._poses[1] = this._activeVertexState.nextGeometry;
+                this._weights[0] = 1 - (this._weights[1] = this._activeVertexState.blendWeight);
+            };
+
+            /**
+            * @inheritDoc
+            */
+            VertexAnimator.prototype.setRenderState = function (stage3DProxy, renderable, vertexConstantOffset/*int*/ , vertexStreamOffset/*int*/ , camera) {
+                if (!this._poses.length) {
+                    this.setNullPose(stage3DProxy, renderable, vertexConstantOffset, vertexStreamOffset);
+                    return;
+                }
+
+                // this type of animation can only be SubMesh
+                var subMesh = renderable;
+                var subGeom;
+                var i/*uint*/ ;
+                var len = this._numPoses;
+
+                stage3DProxy._iContext3D.setProgramConstantsFromArray(away.display3D.Context3DProgramType.VERTEX, vertexConstantOffset, this._weights, 1);
+
+                if (this._blendMode == animators.VertexAnimationMode.ABSOLUTE) {
+                    i = 1;
+                    subGeom = this._poses[0].subGeometries[subMesh._iIndex];
+
+                    if (subGeom)
+                        subMesh.subGeometry = subGeom;
+                } else
+                    i = 0;
+
+                for (; i < len; ++i) {
+                    subGeom = this._poses[i].subGeometries[subMesh._iIndex] || subMesh.subGeometry;
+
+                    subGeom.activateVertexBuffer(vertexStreamOffset++, stage3DProxy);
+
+                    if (this._vertexAnimationSet.useNormals)
+                        subGeom.activateVertexNormalBuffer(vertexStreamOffset++, stage3DProxy);
+                }
+            };
+
+            VertexAnimator.prototype.setNullPose = function (stage3DProxy, renderable, vertexConstantOffset/*int*/ , vertexStreamOffset/*int*/ ) {
+                stage3DProxy._iContext3D.setProgramConstantsFromArray(away.display3D.Context3DProgramType.VERTEX, vertexConstantOffset, this._weights, 1);
+
+                if (this._blendMode == animators.VertexAnimationMode.ABSOLUTE) {
+                    var len = this._numPoses;
+                    for (var i = 1; i < len; ++i) {
+                        renderable.activateVertexBuffer(vertexStreamOffset++, stage3DProxy);
+
+                        if (this._vertexAnimationSet.useNormals)
+                            renderable.activateVertexNormalBuffer(vertexStreamOffset++, stage3DProxy);
+                    }
+                }
+                // todo: set temp data for additive?
+            };
+
+            /**
+            * Verifies if the animation will be used on cpu. Needs to be true for all passes for a material to be able to use it on gpu.
+            * Needs to be called if gpu code is potentially required.
+            */
+            VertexAnimator.prototype.testGPUCompatibility = function (pass) {
+            };
+            return VertexAnimator;
+        })(animators.AnimatorBase);
+        animators.VertexAnimator = VertexAnimator;
+    })(away.animators || (away.animators = {}));
+    var animators = away.animators;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (events) {
+        /**
+        * Dispatched to notify changes in an animation state's state.
+        */
+        var AnimationStateEvent = (function (_super) {
+            __extends(AnimationStateEvent, _super);
+            /**
+            * Create a new <code>AnimatonStateEvent</code>
+            *
+            * @param type The event type.
+            * @param animator The animation state object that is the subject of this event.
+            * @param animationNode The animation node inside the animation state from which the event originated.
+            */
+            function AnimationStateEvent(type, animator, animationState, animationNode) {
+                _super.call(this, type);
+
+                this._animator = animator;
+                this._animationState = animationState;
+                this._animationNode = animationNode;
+            }
+            Object.defineProperty(AnimationStateEvent.prototype, "animator", {
+                get: /**
+                * The animator object that is the subject of this event.
+                */
+                function () {
+                    return this._animator;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(AnimationStateEvent.prototype, "animationState", {
+                get: /**
+                * The animation state object that is the subject of this event.
+                */
+                function () {
+                    return this._animationState;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(AnimationStateEvent.prototype, "animationNode", {
+                get: /**
+                * The animation node inside the animation state from which the event originated.
+                */
+                function () {
+                    return this._animationNode;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * Clones the event.
+            *
+            * @return An exact duplicate of the current object.
+            */
+            AnimationStateEvent.prototype.clone = function () {
+                return new AnimationStateEvent(this.type, this._animator, this._animationState, this._animationNode);
+            };
+            AnimationStateEvent.PLAYBACK_COMPLETE = "playbackComplete";
+
+            AnimationStateEvent.TRANSITION_COMPLETE = "transitionComplete";
+            return AnimationStateEvent;
+        })(events.Event);
+        events.AnimationStateEvent = AnimationStateEvent;
+    })(away.events || (away.events = {}));
+    var events = away.events;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (events) {
+        /**
+        * Dispatched to notify changes in an animator's state.
+        */
+        var AnimatorEvent = (function (_super) {
+            __extends(AnimatorEvent, _super);
+            /**
+            * Create a new <code>AnimatorEvent</code> object.
+            *
+            * @param type The event type.
+            * @param animator The animator object that is the subject of this event.
+            */
+            function AnimatorEvent(type, animator) {
+                _super.call(this, type);
+                this._animator = animator;
+            }
+            Object.defineProperty(AnimatorEvent.prototype, "animator", {
+                get: function () {
+                    return this._animator;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * Clones the event.
+            *
+            * @return An exact duplicate of the current event object.
+            */
+            AnimatorEvent.prototype.clone = function () {
+                return new AnimatorEvent(this.type, this._animator);
+            };
+            AnimatorEvent.START = "start";
+
+            AnimatorEvent.STOP = "stop";
+
+            AnimatorEvent.CYCLE_COMPLETE = "cycle_complete";
+            return AnimatorEvent;
+        })(events.Event);
+        events.AnimatorEvent = AnimatorEvent;
+    })(away.events || (away.events = {}));
+    var events = away.events;
 })(away || (away = {}));
 var away;
 (function (away) {
@@ -34875,31 +36689,22 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
+    (function (errors) {
+        var AnimationSetError = (function (_super) {
+            __extends(AnimationSetError, _super);
+            function AnimationSetError(message) {
+                _super.call(this, message);
+            }
+            return AnimationSetError;
+        })(errors.Error);
+        errors.AnimationSetError = AnimationSetError;
+    })(away.errors || (away.errors = {}));
+    var errors = away.errors;
+})(away || (away = {}));
+var away;
+(function (away) {
     ///<reference path="../../_definitions.ts"/>
     (function (materials) {
-        //import away3d.animators.data.AnimationRegisterCache;
-        //import away3d.animators.IAnimationSet;
-        //import away3d.arcane;
-        //import away3d.cameras.Camera3D;
-        //import away3d.core.base.IRenderable;
-        //import away3d.managers.AGALProgram3DCache;
-        //import away3d.managers.Stage3DProxy;
-        //import away3d.debug.Debug;
-        //import away3d.errors.AbstractMethodError;
-        //import away3d.materials.MaterialBase;
-        //import away3d.materials.lightpickers.LightPickerBase;
-        //import flash.display.BlendMode;
-        //import flash.display3D.Context3D;
-        //import flash.display3D.Context3DBlendFactor;
-        //import flash.display3D.Context3DCompareMode;
-        //import flash.display3D.Context3DTriangleFace;
-        //import flash.display3D.Program3D;
-        //import flash.display3D.textures.TextureBase;
-        //import flash.events.Event;
-        //import flash.events.EventDispatcher;
-        //import flash.geom.Matrix3D;
-        //import flash.geom.Rectangle;
-        //use namespace arcane;
         /**
         * MaterialPassBase provides an abstract base class for material shader passes. A material pass constitutes at least
         * a render call per required renderable.
@@ -34938,6 +36743,8 @@ var away;
                 this._renderToTexture = renderToTexture;
                 this._pNumUsedStreams = 1;
                 this._pNumUsedVertexConstants = 5;
+
+                this._iUniqueId = away.materials.MaterialPassBase.MATERIALPASS_ID_COUNT++;
             }
             Object.defineProperty(MaterialPassBase.prototype, "material", {
                 get: /**
@@ -40720,7 +42527,6 @@ var away;
                 if (typeof numSamples === "undefined") { numSamples = 4; }
                 if (typeof range === "undefined") { range = 1; }
                 _super.call(this, castingLight);
-                this._range = 1;
 
                 this._depthMapSize = this._pCastingLight.shadowMapper.depthMapSize;
 
@@ -48519,7 +50325,7 @@ var away;
 
             ByteArray.prototype.readInt = function () {
                 var data = new DataView(this.arraybytes);
-                var int = data.getInt32(this.position);
+                var int = data.getInt32(this.position, true);
 
                 this.position += 4;
 
@@ -48528,7 +50334,7 @@ var away;
 
             ByteArray.prototype.readShort = function () {
                 var data = new DataView(this.arraybytes);
-                var short = data.getInt16(this.position);
+                var short = data.getInt16(this.position, true);
 
                 this.position += 2;
                 return short;

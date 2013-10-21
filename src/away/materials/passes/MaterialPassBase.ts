@@ -2,38 +2,21 @@
 
 module away.materials
 {
-	//import away3d.animators.data.AnimationRegisterCache;
-	//import away3d.animators.IAnimationSet;
-	//import away3d.arcane;
-	//import away3d.cameras.Camera3D;
-	//import away3d.core.base.IRenderable;
-	//import away3d.managers.AGALProgram3DCache;
-	//import away3d.managers.Stage3DProxy;
-	//import away3d.debug.Debug;
-	//import away3d.errors.AbstractMethodError;
-	//import away3d.materials.MaterialBase;
-	//import away3d.materials.lightpickers.LightPickerBase;
-	
-	//import flash.display.BlendMode;
-	//import flash.display3D.Context3D;
-	//import flash.display3D.Context3DBlendFactor;
-	//import flash.display3D.Context3DCompareMode;
-	//import flash.display3D.Context3DTriangleFace;
-	//import flash.display3D.Program3D;
-	//import flash.display3D.textures.TextureBase;
-	//import flash.events.Event;
-	//import flash.events.EventDispatcher;
-	//import flash.geom.Matrix3D;
-	//import flash.geom.Rectangle;
-	
-	//use namespace arcane;
-	
 	/**
 	 * MaterialPassBase provides an abstract base class for material shader passes. A material pass constitutes at least
 	 * a render call per required renderable.
 	 */
 	export class MaterialPassBase extends away.events.EventDispatcher
 	{
+        public static MATERIALPASS_ID_COUNT:number;
+
+        /**
+         * An id for this material pass, used to identify material passes when using animation sets.
+         *
+         * @private
+         */
+        public _iUniqueId:number;//Arcane
+
         public _pMaterial:away.materials.MaterialBase;
 		private _animationSet:away.animators.IAnimationSet;
 
@@ -109,6 +92,7 @@ module away.materials
             this._pNumUsedStreams = 1;
             this._pNumUsedVertexConstants = 5;
 
+            this._iUniqueId = away.materials.MaterialPassBase.MATERIALPASS_ID_COUNT++;
 		}
 		
 		/**

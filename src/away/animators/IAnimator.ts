@@ -1,14 +1,7 @@
 ///<reference path="../_definitions.ts"/>
+
 module away.animators
 {
-	//import away3d.animators.nodes.*;
-	//import away3d.animators.states.*;
-	//import away3d.cameras.Camera3D;
-	//import away3d.core.base.*;
-	//import away3d.managers.*;
-	//import away3d.entities.*;
-	//import away3d.materials.passes.*;
-	
 	/**
 	 * Provides an interface for animator classes that control animation output from a data set subtype of <code>AnimationSetBase</code>.
 	 *
@@ -19,7 +12,7 @@ module away.animators
 		/**
 		 * Returns the animation data set in use by the animator.
 		 */
-		animationSet:away.animators.IAnimationSet; //GET
+		animationSet:IAnimationSet; //GET
 		
 		/**
 		 * Sets the GPU render state required by the animation that is dependent of the rendered object.
@@ -51,14 +44,14 @@ module away.animators
 		 */
 		removeOwner(mesh:away.entities.Mesh)
 		
-		getAnimationState(node:AnimationNodeBase):away.animators.AnimationStateBase;
+		getAnimationState(node:AnimationNodeBase):AnimationStateBase;
 		
-		getAnimationStateByName(name:string):away.animators.AnimationStateBase;
+		getAnimationStateByName(name:string):AnimationStateBase;
 		
 		/**
 		 * Returns a shallow clone (re-using the same IAnimationSet) of this IAnimator.
 		 */
-		clone():away.animators.IAnimator;
+		clone():IAnimator;
 		
 		dispose();
 	}

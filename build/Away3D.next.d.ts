@@ -6066,6 +6066,116 @@ declare class FaceVO {
     public FaceVO(): void;
 }
 declare module away.loaders {
+    /**
+    * MD2Parser provides a parser for the MD2 data type.
+    */
+    class MD2Parser extends loaders.ParserBase {
+        static FPS: number;
+        private _clipNodes;
+        private _byteData;
+        private _startedParsing;
+        private _parsedHeader;
+        private _parsedUV;
+        private _parsedFaces;
+        private _parsedFrames;
+        private _ident;
+        private _version;
+        private _skinWidth;
+        private _skinHeight;
+        private _numSkins;
+        private _numVertices;
+        private _numST;
+        private _numTris;
+        private _numFrames;
+        private _offsetSkins;
+        private _offsetST;
+        private _offsetTris;
+        private _offsetFrames;
+        private _offsetEnd;
+        private _uvIndices;
+        private _indices;
+        private _vertIndices;
+        private _animationSet;
+        private _firstSubGeom;
+        private _uvs;
+        private _finalUV;
+        private _materialNames;
+        private _textureType;
+        private _ignoreTexturePath;
+        private _mesh;
+        private _geometry;
+        private materialFinal;
+        private geoCreated;
+        /**
+        * Creates a new MD2Parser object.
+        * @param textureType The extension of the texture (e.g. jpg/png/...)
+        * @param ignoreTexturePath If true, the path of the texture is ignored
+        */
+        constructor(textureType?: string, ignoreTexturePath?: boolean);
+        /**
+        * Indicates whether or not a given file extension is supported by the parser.
+        * @param extension The file extension of a potential file to be parsed.
+        * @return Whether or not the given file type is supported.
+        */
+        static supportsType(extension: string): boolean;
+        /**
+        * Tests whether a data block can be parsed by the parser.
+        * @param data The data block to potentially be parsed.
+        * @return Whether or not the given data is supported.
+        */
+        static supportsData(data: any): boolean;
+        /**
+        * @inheritDoc
+        */
+        public _iResolveDependency(resourceDependency: loaders.ResourceDependency): void;
+        /**
+        * @inheritDoc
+        */
+        public _iResolveDependencyFailure(resourceDependency: loaders.ResourceDependency): void;
+        /**
+        * @inheritDoc
+        */
+        public _pProceedParsing(): boolean;
+        /**
+        * Reads in all that MD2 Header data that is declared as private variables.
+        * I know its a lot, and it looks ugly, but only way to do it in Flash
+        */
+        private parseHeader();
+        /**
+        * Parses the file names for the materials.
+        */
+        private parseMaterialNames();
+        /**
+        * Parses the uv data for the mesh.
+        */
+        private parseUV();
+        /**
+        * Parses unique indices for the faces.
+        */
+        private parseFaces();
+        /**
+        * Adds a face index to the list if it doesn't exist yet, based on vertexIndex and uvIndex, and adds the
+        * corresponding vertex and uv data in the correct location.
+        * @param vertexIndex The original index in the vertex list.
+        * @param uvIndex The original index in the uv list.
+        */
+        private addIndex(vertexIndex, uvIndex);
+        /**
+        * Finds the final index corresponding to the original MD2's vertex and uv indices. Returns -1 if it wasn't added yet.
+        * @param vertexIndex The original index in the vertex list.
+        * @param uvIndex The original index in the uv list.
+        * @return The index of the final mesh corresponding to the original vertex and uv index. -1 if it doesn't exist yet.
+        */
+        private findIndex(vertexIndex, uvIndex);
+        /**
+        * Parses all the frame geometries.
+        */
+        private parseFrames();
+        private readFrameName();
+        private createDefaultSubGeometry();
+    }
+}
+declare module away.loaders {
     class Parsers {
         /**
         * A list of all parsers that come bundled with Away3D. Use this to quickly
@@ -8946,10 +9056,34 @@ declare module away.geom {
 }
 declare module away.animators {
     /**
+    * Options for setting the animation mode of a vertex animator object.
+    *
+    * @see away.animators.VertexAnimator
+    */
+    class VertexAnimationMode {
+        /**
+        * Animation mode that adds all outputs from active vertex animation state to form the current vertex animation pose.
+        */
+        static ADDITIVE: String;
+        /**
+        * Animation mode that picks the output from a single vertex animation state to form the current vertex animation pose.
+        */
+        static ABSOLUTE: String;
+    }
+}
+declare module away.animators {
+    /**
     * Provides an abstract base class for nodes in an animation blend tree.
     */
     class AnimationNodeBase extends away.library.NamedAssetBase implements away.library.IAsset {
-        private _stateClass;
+        static ANIMATIONNODE_ID_COUNT: number;
+        /**
+        * An id for this animation node, used to identify animations when using animation states.
+        *
+        * @private
+        */
+        public _iUniqueId: number;
+        public _pStateClass: any;
         public stateClass : any;
         /**
         * Creates a new <code>AnimationNodeBase</code> object.
@@ -8966,6 +9100,244 @@ declare module away.animators {
     }
 }
 declare module away.animators {
+    /**
+    * Provides an abstract base class for nodes with time-based animation data in an animation blend tree.
+    */
+    class AnimationClipNodeBase extends animators.AnimationNodeBase {
+        public _pLooping: boolean;
+        public _pTotalDuration: number;
+        public _pLastFrame: number;
+        public _pStitchDirty: boolean;
+        public _pStitchFinalFrame: boolean;
+        public _pNumFrames: number;
+        public _pDurations: number[];
+        public _pTotalDelta: away.geom.Vector3D;
+        public fixedFrameRate: boolean;
+        /**
+        * Determines whether the contents of the animation node have looping characteristics enabled.
+        */
+        public looping : boolean;
+        /**
+        * Defines if looping content blends the final frame of animation data with the first (true) or works on the
+        * assumption that both first and last frames are identical (false). Defaults to false.
+        */
+        public stitchFinalFrame : boolean;
+        public totalDuration : number;
+        public totalDelta : away.geom.Vector3D;
+        public lastFrame : number;
+        /**
+        * Returns a vector of time values representing the duration (in milliseconds) of each animation frame in the clip.
+        */
+        public durations : number[];
+        /**
+        * Creates a new <code>AnimationClipNodeBase</code> object.
+        */
+        constructor();
+        /**
+        * Updates the node's final frame stitch state.
+        *
+        * @see #stitchFinalFrame
+        */
+        public _pUpdateStitch(): void;
+    }
+}
+declare module away.animators {
+    /**
+    * A vertex animation node containing time-based animation data as individual geometry obejcts.
+    */
+    class VertexClipNode extends animators.AnimationClipNodeBase {
+        private _frames;
+        private _translations;
+        /**
+        * Returns a vector of geometry frames representing the vertex values of each animation frame in the clip.
+        */
+        public frames : away.base.Geometry[];
+        /**
+        * Creates a new <code>VertexClipNode</code> object.
+        */
+        constructor();
+        /**
+        * Adds a geometry object to the internal timeline of the animation node.
+        *
+        * @param geometry The geometry object to add to the timeline of the node.
+        * @param duration The specified duration of the frame in milliseconds.
+        * @param translation The absolute translation of the frame, used in root delta calculations for mesh movement.
+        */
+        public addFrame(geometry: away.base.Geometry, duration: number, translation?: away.geom.Vector3D): void;
+        /**
+        * @inheritDoc
+        */
+        public _pUpdateStitch(): void;
+    }
+}
+declare module away.animators {
+    interface IAnimationState {
+        positionDelta: away.geom.Vector3D;
+        offset(startTime: number);
+        update(time: number);
+        /**
+        * Sets the animation phase of the node.
+        *
+        * @param value The phase value to use. 0 represents the beginning of an animation clip, 1 represents the end.
+        */
+        phase(value: number);
+    }
+}
+declare module away.animators {
+    /**
+    * Provides an interface for animation node classes that hold animation data for use in the Vertex animator class.
+    *
+    * @see away.animators.VertexAnimator
+    */
+    interface IVertexAnimationState extends animators.IAnimationState {
+        /**
+        * Returns the current geometry frame of animation in the clip based on the internal playhead position.
+        */
+        currentGeometry: away.base.Geometry;
+        /**
+        * Returns the current geometry frame of animation in the clip based on the internal playhead position.
+        */
+        nextGeometry: away.base.Geometry;
+        /**
+        * Returns a fractional value between 0 and 1 representing the blending ratio of the current playhead position
+        * between the current geometry frame (0) and next geometry frame (1) of the animation.
+        */
+        blendWeight: number;
+    }
+}
+declare module away.animators {
+    /**
+    *
+    */
+    class AnimationStateBase implements animators.IAnimationState {
+        private _animationNode;
+        private _rootDelta;
+        private _positionDeltaDirty;
+        public _pTime: number;
+        public _pStartTime: number;
+        public _pAnimator: animators.IAnimator;
+        /**
+        * Returns a 3d vector representing the translation delta of the animating entity for the current timestep of animation
+        */
+        public positionDelta : away.geom.Vector3D;
+        constructor(animator: animators.IAnimator, animationNode: animators.AnimationNodeBase);
+        /**
+        * Resets the start time of the node to a  new value.
+        *
+        * @param startTime The absolute start time (in milliseconds) of the node's starting time.
+        */
+        public offset(startTime: number): void;
+        /**
+        * Updates the configuration of the node to its current state.
+        *
+        * @param time The absolute time (in milliseconds) of the animator's play head position.
+        *
+        * @see away.animators.AnimatorBase#update()
+        */
+        public update(time: number): void;
+        /**
+        * Sets the animation phase of the node.
+        *
+        * @param value The phase value to use. 0 represents the beginning of an animation clip, 1 represents the end.
+        */
+        public phase(value: number): void;
+        /**
+        * Updates the node's internal playhead position.
+        *
+        * @param time The local time (in milliseconds) of the node's playhead position.
+        */
+        public _pUpdateTime(time: number): void;
+        /**
+        * Updates the node's root delta position
+        */
+        public _pUpdatePositionDelta(): void;
+    }
+}
+declare module away.animators {
+    /**
+    *
+    */
+    class AnimationClipState extends animators.AnimationStateBase {
+        private _animationClipNode;
+        private _animationStatePlaybackComplete;
+        public _pBlendWeight: number;
+        public _pCurrentFrame: number;
+        public _pNextFrame: number;
+        public _pOldFrame: number;
+        public _pTimeDir: number;
+        public _pFramesDirty: boolean;
+        /**
+        * Returns a fractional value between 0 and 1 representing the blending ratio of the current playhead position
+        * between the current frame (0) and next frame (1) of the animation.
+        *
+        * @see #currentFrame
+        * @see #nextFrame
+        */
+        public blendWeight : number;
+        /**
+        * Returns the current frame of animation in the clip based on the internal playhead position.
+        */
+        public currentFrame : number;
+        /**
+        * Returns the next frame of animation in the clip based on the internal playhead position.
+        */
+        public nextFrame : number;
+        constructor(animator: animators.IAnimator, animationClipNode: animators.AnimationClipNodeBase);
+        /**
+        * @inheritDoc
+        */
+        public update(time: number): void;
+        /**
+        * @inheritDoc
+        */
+        public phase(value: number): void;
+        /**
+        * @inheritDoc
+        */
+        public _pUpdateTime(time: number): void;
+        /**
+        * Updates the nodes internal playhead to determine the current and next animation frame, and the blendWeight between the two.
+        *
+        * @see #currentFrame
+        * @see #nextFrame
+        * @see #blendWeight
+        */
+        public _pUpdateFrames(): void;
+        private notifyPlaybackComplete();
+    }
+}
+declare module away.animators {
+    /**
+    *
+    */
+    class VertexClipState extends animators.AnimationClipState implements animators.IVertexAnimationState {
+        private _frames;
+        private _vertexClipNode;
+        private _currentGeometry;
+        private _nextGeometry;
+        /**
+        * @inheritDoc
+        */
+        public currentGeometry : away.base.Geometry;
+        /**
+        * @inheritDoc
+        */
+        public nextGeometry : away.base.Geometry;
+        constructor(animator: animators.IAnimator, vertexClipNode: animators.VertexClipNode);
+        /**
+        * @inheritDoc
+        */
+        public _pUpdateFrames(): void;
+        /**
+        * @inheritDoc
+        */
+        public _pUpdatePositionDelta(): void;
+    }
+}
+declare module away.animators {
+    interface IAnimationTransition {
+        getAnimationNode(animator: animators.IAnimator, startNode: animators.AnimationNodeBase, endNode: animators.AnimationNodeBase, startTime: number): animators.AnimationNodeBase;
+    }
 }
 declare module away.utils {
     class GeometryUtils {
@@ -9083,54 +9455,6 @@ declare module away.animators {
 }
 declare module away.animators {
     /**
-    *
-    */
-    class AnimationStateBase {
-        private _animationNode;
-        private _rootDelta;
-        private _positionDeltaDirty;
-        private _time;
-        private _startTime;
-        private _animator;
-        /**
-        * Returns a 3d vector representing the translation delta of the animating entity for the current timestep of animation
-        */
-        public positionDelta : away.geom.Vector3D;
-        constructor(animator: animators.IAnimator, animationNode: animators.AnimationNodeBase);
-        /**
-        * Resets the start time of the node to a  new value.
-        *
-        * @param startTime The absolute start time (in milliseconds) of the node's starting time.
-        */
-        public offset(startTime: number): void;
-        /**
-        * Updates the configuration of the node to its current state.
-        *
-        * @param time The absolute time (in milliseconds) of the animator's play head position.
-        *
-        * @see away3d.animators.AnimatorBase#update()
-        */
-        public update(time: number): void;
-        /**
-        * Sets the animation phase of the node.
-        *
-        * @param value The phase value to use. 0 represents the beginning of an animation clip, 1 represents the end.
-        */
-        public phase(value: number): void;
-        /**
-        * Updates the node's internal playhead position.
-        *
-        * @param time The local time (in milliseconds) of the node's playhead position.
-        */
-        public pUpdateTime(time: number): void;
-        /**
-        * Updates the node's root delta position
-        */
-        public pUpdatePositionDelta(): void;
-    }
-}
-declare module away.animators {
-    /**
     * Provides an interface for animator classes that control animation output from a data set subtype of <code>AnimationSetBase</code>.
     *
     * @see away3d.animators.IAnimationSet
@@ -9175,6 +9499,407 @@ declare module away.animators {
         dispose();
     }
 }
+declare module away.animators {
+    /**
+    * Provides an abstract base class for data set classes that hold animation data for use in animator classes.
+    *
+    * @see away.animators.AnimatorBase
+    */
+    class AnimationSetBase extends away.library.NamedAssetBase implements away.library.IAsset {
+        private _usesCPU;
+        private _animations;
+        private _animationNames;
+        private _animationDictionary;
+        constructor();
+        /**
+        * Retrieves a temporary GPU register that's still free.
+        *
+        * @param exclude An array of non-free temporary registers.
+        * @param excludeAnother An additional register that's not free.
+        * @return A temporary register that can be used.
+        */
+        public _pFindTempReg(exclude: string[], excludeAnother?: string): string;
+        /**
+        * Indicates whether the properties of the animation data contained within the set combined with
+        * the vertex registers aslready in use on shading materials allows the animation data to utilise
+        * GPU calls.
+        */
+        public usesCPU : boolean;
+        /**
+        * Called by the material to reset the GPU indicator before testing whether register space in the shader
+        * is available for running GPU-based animation code.
+        *
+        * @private
+        */
+        public resetGPUCompatibility(): void;
+        public cancelGPUCompatibility(): void;
+        /**
+        * @inheritDoc
+        */
+        public assetType : string;
+        /**
+        * Returns a vector of animation state objects that make up the contents of the animation data set.
+        */
+        public animations : animators.AnimationNodeBase[];
+        /**
+        * Returns a vector of animation state objects that make up the contents of the animation data set.
+        */
+        public animationNames : string[];
+        /**
+        * Check to determine whether a state is registered in the animation set under the given name.
+        *
+        * @param stateName The name of the animation state object to be checked.
+        */
+        public hasAnimation(name: string): boolean;
+        /**
+        * Retrieves the animation state object registered in the animation data set under the given name.
+        *
+        * @param stateName The name of the animation state object to be retrieved.
+        */
+        public getAnimation(name: string): animators.AnimationNodeBase;
+        /**
+        * Adds an animation state object to the aniamtion data set under the given name.
+        *
+        * @param stateName The name under which the animation state object will be stored.
+        * @param animationState The animation state object to be staored in the set.
+        */
+        public addAnimation(node: animators.AnimationNodeBase): void;
+        /**
+        * Cleans up any resources used by the current object.
+        */
+        public dispose(): void;
+    }
+}
+declare module away.animators {
+    /**
+    * The animation data set used by vertex-based animators, containing vertex animation state data.
+    *
+    * @see away.animators.VertexAnimator
+    */
+    class VertexAnimationSet extends animators.AnimationSetBase implements animators.IAnimationSet {
+        private _numPoses;
+        private _blendMode;
+        private _streamIndices;
+        private _useNormals;
+        private _useTangents;
+        private _uploadNormals;
+        private _uploadTangents;
+        /**
+        * Returns the number of poses made available at once to the GPU animation code.
+        */
+        public numPoses : number;
+        /**
+        * Returns the active blend mode of the vertex animator object.
+        */
+        public blendMode : string;
+        /**
+        * Returns whether or not normal data is used in last set GPU pass of the vertex shader.
+        */
+        public useNormals : boolean;
+        /**
+        * Creates a new <code>VertexAnimationSet</code> object.
+        *
+        * @param numPoses The number of poses made available at once to the GPU animation code.
+        * @param blendMode Optional value for setting the animation mode of the vertex animator object.
+        *
+        * @see away3d.animators.data.VertexAnimationMode
+        */
+        constructor(numPoses?: number, blendMode?: string);
+        /**
+        * @inheritDoc
+        */
+        public getAGALVertexCode(pass: away.materials.MaterialPassBase, sourceRegisters: string[], targetRegisters: string[], profile: string): string;
+        /**
+        * @inheritDoc
+        */
+        public activate(stage3DProxy: away.managers.Stage3DProxy, pass: away.materials.MaterialPassBase): void;
+        /**
+        * @inheritDoc
+        */
+        public deactivate(stage3DProxy: away.managers.Stage3DProxy, pass: away.materials.MaterialPassBase): void;
+        /**
+        * @inheritDoc
+        */
+        public getAGALFragmentCode(pass: away.materials.MaterialPassBase, shadedTarget: string, profile: string): string;
+        /**
+        * @inheritDoc
+        */
+        public getAGALUVCode(pass: away.materials.MaterialPassBase, UVSource: string, UVTarget: string): string;
+        /**
+        * @inheritDoc
+        */
+        public doneAGALCode(pass: away.materials.MaterialPassBase): void;
+        /**
+        * Generates the vertex AGAL code for absolute blending.
+        */
+        private getAbsoluteAGALCode(pass, sourceRegisters, targetRegisters);
+        /**
+        * Generates the vertex AGAL code for additive blending.
+        */
+        private getAdditiveAGALCode(pass, sourceRegisters, targetRegisters);
+    }
+}
+declare module away.animators {
+    /**
+    * Provides an abstract base class for animator classes that control animation output from a data set subtype of <code>AnimationSetBase</code>.
+    *
+    * @see away.animators.AnimationSetBase
+    */
+    class AnimatorBase extends away.library.NamedAssetBase implements away.library.IAsset {
+        private _broadcaster;
+        private _isPlaying;
+        private _autoUpdate;
+        private _startEvent;
+        private _stopEvent;
+        private _cycleEvent;
+        private _time;
+        private _playbackSpeed;
+        public _pAnimationSet: animators.IAnimationSet;
+        public _pOwners: away.entities.Mesh[];
+        public _pActiveNode: animators.AnimationNodeBase;
+        public _pActiveState: animators.IAnimationState;
+        public _pActiveAnimationName: string;
+        public _pAbsoluteTime: number;
+        private _animationStates;
+        /**
+        * Enables translation of the animated mesh from data returned per frame via the positionDelta property of the active animation node. Defaults to true.
+        *
+        * @see away.animators.states.IAnimationState#positionDelta
+        */
+        public updatePosition: Boolean;
+        public getAnimationState(node: animators.AnimationNodeBase): animators.AnimationStateBase;
+        public getAnimationStateByName(name: string): animators.AnimationStateBase;
+        /**
+        * Returns the internal absolute time of the animator, calculated by the current time and the playback speed.
+        *
+        * @see #time
+        * @see #playbackSpeed
+        */
+        public absoluteTime : number;
+        /**
+        * Returns the animation data set in use by the animator.
+        */
+        public animationSet : animators.IAnimationSet;
+        /**
+        * Returns the current active animation state.
+        */
+        public activeState : animators.IAnimationState;
+        /**
+        * Returns the current active animation node.
+        */
+        public activeAnimation : animators.AnimationNodeBase;
+        /**
+        * Returns the current active animation node.
+        */
+        public activeAnimationName : string;
+        /**
+        * Determines whether the animators internal update mechanisms are active. Used in cases
+        * where manual updates are required either via the <code>time</code> property or <code>update()</code> method.
+        * Defaults to true.
+        *
+        * @see #time
+        * @see #update()
+        */
+        public autoUpdate : Boolean;
+        /**
+        * Gets and sets the internal time clock of the animator.
+        */
+        public time : number;
+        /**
+        * Sets the animation phase of the current active state's animation clip(s).
+        *
+        * @param value The phase value to use. 0 represents the beginning of an animation clip, 1 represents the end.
+        */
+        public phase(value: number): void;
+        /**
+        * Creates a new <code>AnimatorBase</code> object.
+        *
+        * @param animationSet The animation data set to be used by the animator object.
+        */
+        constructor(animationSet: animators.IAnimationSet);
+        /**
+        * The amount by which passed time should be scaled. Used to slow down or speed up animations. Defaults to 1.
+        */
+        public playbackSpeed : number;
+        /**
+        * Resumes the automatic playback clock controling the active state of the animator.
+        */
+        public start(): void;
+        /**
+        * Pauses the automatic playback clock of the animator, in case manual updates are required via the
+        * <code>time</code> property or <code>update()</code> method.
+        *
+        * @see #time
+        * @see #update()
+        */
+        public stop(): void;
+        /**
+        * Provides a way to manually update the active state of the animator when automatic
+        * updates are disabled.
+        *
+        * @see #stop()
+        * @see #autoUpdate
+        */
+        public update(time: number): void;
+        public reset(name: string, offset?: number): void;
+        /**
+        * Used by the mesh object to which the animator is applied, registers the owner for internal use.
+        *
+        * @private
+        */
+        public addOwner(mesh: away.entities.Mesh): void;
+        /**
+        * Used by the mesh object from which the animator is removed, unregisters the owner for internal use.
+        *
+        * @private
+        */
+        public removeOwner(mesh: away.entities.Mesh): void;
+        /**
+        * Internal abstract method called when the time delta property of the animator's contents requires updating.
+        *
+        * @private
+        */
+        public _pUpdateDeltaTime(dt: number): void;
+        /**
+        * Enter frame event handler for automatically updating the active state of the animator.
+        */
+        private onEnterFrame(event?);
+        private applyPositionDelta();
+        /**
+        *  for internal use.
+        *
+        * @private
+        */
+        public dispatchCycleEvent(): void;
+        /**
+        * @inheritDoc
+        */
+        public dispose(): void;
+        /**
+        * @inheritDoc
+        */
+        public assetType : string;
+    }
+}
+declare module away.animators {
+    /**
+    * Provides an interface for assigning vertex-based animation data sets to mesh-based entity objects
+    * and controlling the various available states of animation through an interative playhead that can be
+    * automatically updated or manually triggered.
+    */
+    class VertexAnimator extends animators.AnimatorBase implements animators.IAnimator {
+        private _vertexAnimationSet;
+        private _poses;
+        private _weights;
+        private _numPoses;
+        private _blendMode;
+        private _activeVertexState;
+        /**
+        * Creates a new <code>VertexAnimator</code> object.
+        *
+        * @param vertexAnimationSet The animation data set containing the vertex animations used by the animator.
+        */
+        constructor(vertexAnimationSet: animators.VertexAnimationSet);
+        /**
+        * @inheritDoc
+        */
+        public clone(): animators.IAnimator;
+        /**
+        * Plays a sequence with a given name. If the sequence is not found, it may not be loaded yet, and it will retry every frame.
+        * @param sequenceName The name of the clip to be played.
+        */
+        public play(name: string, transition?: animators.IAnimationTransition, offset?: number): void;
+        /**
+        * @inheritDoc
+        */
+        public _pUpdateDeltaTime(dt: number): void;
+        /**
+        * @inheritDoc
+        */
+        public setRenderState(stage3DProxy: away.managers.Stage3DProxy, renderable: away.base.IRenderable, vertexConstantOffset: number, vertexStreamOffset: number, camera: away.cameras.Camera3D): void;
+        private setNullPose(stage3DProxy, renderable, vertexConstantOffset, vertexStreamOffset);
+        /**
+        * Verifies if the animation will be used on cpu. Needs to be true for all passes for a material to be able to use it on gpu.
+        * Needs to be called if gpu code is potentially required.
+        */
+        public testGPUCompatibility(pass: away.materials.MaterialPassBase): void;
+    }
+}
+declare module away.events {
+    /**
+    * Dispatched to notify changes in an animation state's state.
+    */
+    class AnimationStateEvent extends events.Event {
+        /**
+        * Dispatched when a non-looping clip node inside an animation state reaches the end of its timeline.
+        */
+        static PLAYBACK_COMPLETE: string;
+        static TRANSITION_COMPLETE: string;
+        private _animator;
+        private _animationState;
+        private _animationNode;
+        /**
+        * Create a new <code>AnimatonStateEvent</code>
+        *
+        * @param type The event type.
+        * @param animator The animation state object that is the subject of this event.
+        * @param animationNode The animation node inside the animation state from which the event originated.
+        */
+        constructor(type: string, animator: away.animators.IAnimator, animationState: away.animators.IAnimationState, animationNode: away.animators.AnimationNodeBase);
+        /**
+        * The animator object that is the subject of this event.
+        */
+        public animator : away.animators.IAnimator;
+        /**
+        * The animation state object that is the subject of this event.
+        */
+        public animationState : away.animators.IAnimationState;
+        /**
+        * The animation node inside the animation state from which the event originated.
+        */
+        public animationNode : away.animators.AnimationNodeBase;
+        /**
+        * Clones the event.
+        *
+        * @return An exact duplicate of the current object.
+        */
+        public clone(): events.Event;
+    }
+}
+declare module away.events {
+    /**
+    * Dispatched to notify changes in an animator's state.
+    */
+    class AnimatorEvent extends events.Event {
+        /**
+        * Defines the value of the type property of a start event object.
+        */
+        static START: string;
+        /**
+        * Defines the value of the type property of a stop event object.
+        */
+        static STOP: string;
+        /**
+        * Defines the value of the type property of a cycle complete event object.
+        */
+        static CYCLE_COMPLETE: string;
+        private _animator;
+        /**
+        * Create a new <code>AnimatorEvent</code> object.
+        *
+        * @param type The event type.
+        * @param animator The animator object that is the subject of this event.
+        */
+        constructor(type: string, animator: away.animators.AnimatorBase);
+        public animator : away.animators.AnimatorBase;
+        /**
+        * Clones the event.
+        *
+        * @return An exact duplicate of the current event object.
+        */
+        public clone(): events.Event;
+    }
+}
 /**
 * @module away.events
 */
@@ -9184,12 +9909,24 @@ declare module away.events {
         constructor(type: string);
     }
 }
+declare module away.errors {
+    class AnimationSetError extends errors.Error {
+        constructor(message: string);
+    }
+}
 declare module away.materials {
     /**
     * MaterialPassBase provides an abstract base class for material shader passes. A material pass constitutes at least
     * a render call per required renderable.
     */
     class MaterialPassBase extends away.events.EventDispatcher {
+        static MATERIALPASS_ID_COUNT: number;
+        /**
+        * An id for this material pass, used to identify material passes when using animation sets.
+        *
+        * @private
+        */
+        public _iUniqueId: number;
         public _pMaterial: materials.MaterialBase;
         private _animationSet;
         public _iProgram3Ds: away.display3D.Program3D[];
