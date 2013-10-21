@@ -68,7 +68,10 @@ module examples
         private _lastMouseX:number;
         private _lastMouseY:number;
 
-        /**
+	    //ui
+	    private dropDown : HTMLSelectElement;
+
+	    /**
          * Constructor
          */
         constructor()
@@ -119,7 +122,7 @@ module examples
         private initMaterials():void
         {
             this._groundMaterial = new away.materials.TextureMaterial();
-            this._groundMaterial.shadowMethod = new away.materials.FilteredShadowMapMethod(this._light);
+            this._groundMaterial.shadowMethod = new away.materials.SoftShadowMapMethod(this._light , 10 , 5 );
             this._groundMaterial.shadowMethod.epsilon = 0.2;
             this._groundMaterial.lightPicker = this._lightPicker;
             this._groundMaterial.specular = 0;
@@ -198,13 +201,16 @@ module examples
                     break;
                 case away.library.AssetType.MATERIAL :
                     var material:away.materials.TextureMaterial = <away.materials.TextureMaterial> event.asset;
-                    material.shadowMethod = new away.materials.FilteredShadowMapMethod(this._light);
+                    material.shadowMethod = new away.materials.SoftShadowMapMethod(this._light , 10 , 5 );
                     material.shadowMethod.epsilon = 0.2;
                     material.lightPicker = this._lightPicker;
                     material.gloss = 30;
                     material.specular = 1;
                     material.ambientColor = 0x303040;
                     material.ambient = 1;
+
+	                this.initInterface();
+
                     break;
             }
         }
@@ -270,5 +276,66 @@ module examples
             this._view.width     = window.innerWidth;
             this._view.height    = window.innerHeight;
         }
+
+	    /**
+	     * Test interface to swap ShadowMapMethod
+	     */
+	    private initInterface() : void
+	    {
+
+		    var testDiv : HTMLDivElement   = <HTMLDivElement> document.createElement( 'div' );
+			    testDiv.style.cssFloat     = 'none';
+			    testDiv.style.position     = 'absolute';
+			    testDiv.style.top           = '15px';
+			    testDiv.style.width        = '600px';
+			    testDiv.style.left         = '50%';
+			    testDiv.style.marginLeft   = '-300px'
+			    testDiv.style.textAlign    = 'center';
+
+		    this.dropDown                       = <HTMLSelectElement> document.createElement( 'select' );
+		    this.dropDown.name                  = "selectTestDropDown"
+		    this.dropDown.id                    = "selectTest"
+
+		        testDiv.appendChild( this.dropDown );
+
+		    var option : HTMLOptionElement = <HTMLOptionElement> new Option( 'FilteredShadowMapMethod' , 'FilteredShadowMapMethod' );
+		    this.dropDown.add( option );
+
+		    option = <HTMLOptionElement> new Option( 'SoftShadowMapMethod' , 'SoftShadowMapMethod' );
+		    this.dropDown.add( option );
+
+		    option = <HTMLOptionElement> new Option( 'DitheredShadowMapMethod' , 'DitheredShadowMapMethod' );
+		    this.dropDown.add( option );
+
+		     document.body.appendChild( testDiv );
+
+		    this.dropDown.onchange      = ( e ) => this.dropDownChange( e );
+
+	    }
+
+	    private dropDownChange( e ) : void
+	    {
+
+		    switch( this.dropDown.options[this.dropDown.selectedIndex].value ) {
+
+			    case 'FilteredShadowMapMethod':
+				    this._groundMaterial.shadowMethod = new away.materials.FilteredShadowMapMethod(this._light );
+				    break;
+
+			    case 'SoftShadowMapMethod':
+				    this._groundMaterial.shadowMethod = new away.materials.SoftShadowMapMethod(this._light , 10 , 5 );
+				    break;
+
+			    case 'DitheredShadowMapMethod':
+				    this._groundMaterial.shadowMethod = new away.materials.DitheredShadowMapMethod(this._light , 10 , 5 );
+				    break;
+
+		    }
+		    //var dataIndex : number = parseInt( this.dropDown.options[this.dropDown.selectedIndex].value ) ;
+
+
+
+	    }
+
     }
 }

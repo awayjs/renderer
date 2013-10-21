@@ -9,7 +9,6 @@ declare module examples {
         private _direction;
         private _loader;
         private _ground;
-        private _cube;
         private _timer;
         private _time;
         private _move;
@@ -17,6 +16,7 @@ declare module examples {
         private _lastTiltAngle;
         private _lastMouseX;
         private _lastMouseY;
+        private dropDown;
         /**
         * Constructor
         */
@@ -70,5 +70,10 @@ declare module examples {
         * stage listener for resize events
         */
         private onResize(event?);
+        /**
+        * Test interface to swap ShadowMapMethod
+        */
+        private initInterface();
+        private dropDownChange(e);
     }
 }
