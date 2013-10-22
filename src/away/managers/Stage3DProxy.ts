@@ -225,9 +225,6 @@ module away.managers
             this._renderSurfaceSelector = surfaceSelector;
             this._enableDepthAndStencil = enableDepthAndStencil;
 
-            away.Debug.throwPIR( 'Stage3DProxy' , 'setRenderTarget' , 'away.display3D.Context3D: setRenderToTexture , setRenderToBackBuffer');
-
-
 			if (target)
             {
 
