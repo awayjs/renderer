@@ -33,9 +33,7 @@
             harness.addTest( 'Demo.TorusObject3DDemo'               , 'demos.object3d.TorusObject3DDemo'       , 'js/TorusObject3DDemo.js'  , 'demos/Object3D/TorusObject3DDemo.ts'  );
             harness.addTest( 'Demo.Materials - Alpha'               , 'demos.materials.MaterialAlphaTest'   , 'js/MaterialAlphaTest.js'     , 'demos/materials/MaterialAlphaTest.ts'  );
             harness.addTest( 'Demo.ShadowMaps'                      , 'examples.Basic_Load3DS'               , 'js/Basic_Load3DS.js'        , 'demos/basic/Basic_Load3DS.ts'  );
-            harness.addTest( 'Demo.Intermediate_PerelithKnight'     , 'examples.Intermediate_PerelithKnight'                                , 'js/Intermediate_PerelithKnight.js'  , 'demos/intermediate/Intermediate_PerelithKnight.ts'  );
-            harness.addTest( 'Demo.AWDSponza'                       , 'demos.parsers.AWDSponza'               , 'js/AWDSponza.js'           , 'demos/parsers/AWDSponza.ts'  );
-            harness.addTest( 'Demo.AWDShadow'                       , 'demos.parsers.AWDShadowTest'               , 'js/AWDShadowTest.js'   , 'demos/parsers/AWDShadowTest.ts'  );
+
 
             //---------------------------------------------------------------------------
             // Test - Primitives
@@ -54,11 +52,20 @@
             harness.addTest( '(GLSL) Scene.PhongTorus'     ,  'scene.PhongTorus'      , 'js/PhongTorus.js'     , 'scene/PhongTorus.ts'  );
 
             //---------------------------------------------------------------------------
-            // Test - AGLSL
+            // Test - Parsers
             //---------------------------------------------------------------------------
 
+            harness.addSeperator( 'Parsers' );
             harness.addSeperator( 'AGLSL' );
             harness.addTest( 'AGLSL.AssemblerTest'     ,  'aglsl.AssemblerTest'      , 'js/AssemblerTest.js'     , 'aglsl/AssemblerTest.ts'  );
+
+            //---------------------------------------------------------------------------
+            // Test - Utils
+            //---------------------------------------------------------------------------
+
+
+            harness.addTest( 'Demo.AWDSponza'                       , 'demos.parsers.AWDSponza'               , 'js/AWDSponza.js'           , 'demos/parsers/AWDSponza.ts'  );
+            harness.addTest( 'Demo.AWDShadow'                       , 'demos.parsers.AWDShadowTest'               , 'js/AWDShadowTest.js'   , 'demos/parsers/AWDShadowTest.ts'  );
 
             //---------------------------------------------------------------------------
             // Test - Utils
