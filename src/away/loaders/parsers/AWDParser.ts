@@ -2083,23 +2083,30 @@ module away.loaders
     //					}
     //					shadowMethod = new NearShadowMapMethod(returnedArray[1]);
     //					break;
-    //				case 1101: //FilteredShadowMapMethod
-    //					shadowMethod = new FilteredShadowMapMethod(DirectionalLight(light));
-    //					FilteredShadowMapMethod(shadowMethod).alpha = props.get(101, 1);
-    //					FilteredShadowMapMethod(shadowMethod).epsilon = props.get(102, 0.002);
-    //					break;
-    //				case 1102: //DitheredShadowMapMethod
-    //					shadowMethod = new DitheredShadowMapMethod(DirectionalLight(light), props.get(201, 5));
-    //					DitheredShadowMapMethod(shadowMethod).alpha = props.get(101, 1);
-    //					DitheredShadowMapMethod(shadowMethod).epsilon = props.get(102, 0.002);
-    //					DitheredShadowMapMethod(shadowMethod).range = props.get(103, 1);
-    //					break;
-    //				case 1103: //SoftShadowMapMethod
-    //					shadowMethod = new SoftShadowMapMethod(DirectionalLight(light), props.get(201, 5));
-    //					SoftShadowMapMethod(shadowMethod).alpha = props.get(101, 1);
-    //					SoftShadowMapMethod(shadowMethod).epsilon = props.get(102, 0.002);
-    //					SoftShadowMapMethod(shadowMethod).range = props.get(103, 1);
-    //					break;
+    				case 1101: //FilteredShadowMapMethod
+
+    					shadowMethod = new away.materials.FilteredShadowMapMethod(  <away.lights.DirectionalLight> light  );
+					    ( <away.materials.FilteredShadowMapMethod> shadowMethod).alpha = props.get(101, 1);
+					    ( <away.materials.FilteredShadowMapMethod> shadowMethod).epsilon = props.get(102, 0.002);
+    					break;
+
+    				case 1102: //DitheredShadowMapMethod
+
+
+					    shadowMethod = new away.materials.DitheredShadowMapMethod( <away.lights.DirectionalLight> light , <number> props.get(201, 5));
+					    ( <away.materials.DitheredShadowMapMethod> shadowMethod).alpha = props.get(101, 1);
+					    ( <away.materials.DitheredShadowMapMethod> shadowMethod).epsilon = props.get(102, 0.002);
+					    ( <away.materials.DitheredShadowMapMethod> shadowMethod).range = props.get(103, 1);
+
+    					break;
+    				case 1103: //SoftShadowMapMethod
+
+    					shadowMethod = new away.materials.SoftShadowMapMethod( <away.lights.DirectionalLight> light , <number> props.get(201, 5));
+					    ( <away.materials.SoftShadowMapMethod> shadowMethod).alpha = props.get(101, 1);
+					    ( <away.materials.SoftShadowMapMethod> shadowMethod).epsilon = props.get(102, 0.002);
+					    ( <away.materials.SoftShadowMapMethod> shadowMethod).range = props.get(103, 1);
+
+    					break;
     //				case 1104: //HardShadowMapMethod
     //					shadowMethod = new HardShadowMapMethod(light);
     //					HardShadowMapMethod(shadowMethod).alpha = props.get(101, 1);
