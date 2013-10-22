@@ -21985,6 +21985,26 @@ else
                 var targetID;
                 var returnedArray;
                 switch (methodType) {
+                    case 1101:
+                        shadowMethod = new away.materials.FilteredShadowMapMethod(light);
+                        (shadowMethod).alpha = props.get(101, 1);
+                        (shadowMethod).epsilon = props.get(102, 0.002);
+                        break;
+
+                    case 1102:
+                        shadowMethod = new away.materials.DitheredShadowMapMethod(light, props.get(201, 5));
+                        (shadowMethod).alpha = props.get(101, 1);
+                        (shadowMethod).epsilon = props.get(102, 0.002);
+                        (shadowMethod).range = props.get(103, 1);
+
+                        break;
+                    case 1103:
+                        shadowMethod = new away.materials.SoftShadowMapMethod(light, props.get(201, 5));
+                        (shadowMethod).alpha = props.get(101, 1);
+                        (shadowMethod).epsilon = props.get(102, 0.002);
+                        (shadowMethod).range = props.get(103, 1);
+
+                        break;
                 }
                 this.parseUserAttributes();
                 return shadowMethod;
@@ -23705,7 +23725,7 @@ var away;
             function () {
                 away.loaders.SingleFileLoader.enableParsers(this.ALL_BUNDLED);
             };
-            Parsers.ALL_BUNDLED = Array(away.loaders.AWDParser, away.loaders.Max3DSParser, away.loaders.OBJParser);
+            Parsers.ALL_BUNDLED = Array(away.loaders.AWDParser, away.loaders.Max3DSParser, away.loaders.MD2Parser, away.loaders.OBJParser);
             return Parsers;
         })();
         loaders.Parsers = Parsers;
@@ -25229,8 +25249,6 @@ var away;
                 this._renderTarget = target;
                 this._renderSurfaceSelector = surfaceSelector;
                 this._enableDepthAndStencil = enableDepthAndStencil;
-
-                away.Debug.throwPIR('Stage3DProxy', 'setRenderTarget', 'away.display3D.Context3D: setRenderToTexture , setRenderToBackBuffer');
 
                 if (target) {
                     this._iContext3D.setRenderToTexture(target, enableDepthAndStencil, this._antiAlias, surfaceSelector);
