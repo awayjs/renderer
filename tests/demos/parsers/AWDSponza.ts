@@ -86,16 +86,12 @@ module demos.parsers {
             {
                 var asset: away.library.IAsset = loader.baseDependency.assets[ i ];
 
-	            console.log ( asset.assetType  );
                 switch ( asset.assetType )
                 {
                     case away.library.AssetType.MESH:
 
                         var mesh : away.entities.Mesh = <away.entities.Mesh> asset;
-
                         this._view.scene.addChild( mesh );
-
-
 
                         break;
 
