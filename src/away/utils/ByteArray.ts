@@ -214,7 +214,7 @@ module away.utils
         public readDouble():number
         {
             var data    : DataView      = new DataView( this.arraybytes );
-            var double  : number        = data.getFloat64( this.position );
+            var double  : number        = data.getFloat64( this.position, true );
 
             this.position += 8;
             return double;
