@@ -28,7 +28,7 @@ module away.animators
          */
         public _pFindTempReg(exclude:Array<string>, excludeAnother:string = null):string
         {
-            var i:number /*uint*/;
+            var i:number /*uint*/ = 0;
             var reg:string;
     
             while (true) {
