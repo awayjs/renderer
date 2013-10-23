@@ -23550,8 +23550,8 @@ else
                 this._finalUV = new Array(len * 2);
 
                 for (i = 0; i < len; ++i) {
-                    this._finalUV[Math.floor(i << 1)] = this._uvs[Math.floor(this._uvIndices[i] << 1)];
-                    this._finalUV[Math.floor(((i << 1) + 1))] = this._uvs[Math.floor((this._uvIndices[i] << 1) + 1)];
+                    this._finalUV[i << 1] = this._uvs[this._uvIndices[i] << 1];
+                    this._finalUV[(i << 1) + 1] = this._uvs[(this._uvIndices[i] << 1) + 1];
                 }
 
                 this._parsedFaces = true;
@@ -23636,9 +23636,9 @@ else
 
                     k = 0;
                     for (j = 0; j < vertLen; j++) {
-                        fvertices[k++] = tvertices[Math.floor(this._vertIndices[j] * 3)];
-                        fvertices[k++] = tvertices[Math.floor(this._vertIndices[j] * 3 + 2)];
-                        fvertices[k++] = tvertices[Math.floor(this._vertIndices[j] * 3 + 1)];
+                        fvertices[k++] = tvertices[this._vertIndices[j] * 3];
+                        fvertices[k++] = tvertices[this._vertIndices[j] * 3 + 2];
+                        fvertices[k++] = tvertices[this._vertIndices[j] * 3 + 1];
                     }
 
                     subGeom.fromVectors(fvertices, this._finalUV, null, null);
@@ -30804,8 +30804,6 @@ var away;
             };
 
             ShadowMapperBase.prototype.pCreateDepthTexture = function () {
-                //away.Debug.throwPIR( 'ShadowMapperBase' , 'pCreateDepthTexture' , 'Depedency: RenderTexture');
-                //return null;
                 return new away.textures.RenderTexture(this._pDepthMapSize, this._pDepthMapSize);
             };
 
@@ -35767,7 +35765,7 @@ var away;
             */
             AnimationSetBase.prototype._pFindTempReg = function (exclude, excludeAnother) {
                 if (typeof excludeAnother === "undefined") { excludeAnother = null; }
-                var i/*uint*/ ;
+                var i = 0;
                 var reg;
 
                 while (true) {
@@ -36010,11 +36008,11 @@ else
                 var uID = pass._iUniqueId;
                 var temp1 = this._pFindTempReg(targetRegisters);
                 var temp2 = this._pFindTempReg(targetRegisters, temp1);
-                var regs = ["x", "y", "z", "w"];
+                var regs = new Array("x", "y", "z", "w");
                 var len = sourceRegisters.length;
                 var constantReg = "vc" + pass.numUsedVertexConstants;
-                var useTangents = Boolean(this._useTangents[uID] = len > 2);
-                this._useNormals[uID] = len > 1;
+                var useTangents = this._useTangents[uID] = (len > 2);
+                this._useNormals[uID] = (len > 1);
 
                 if (len > 2)
                     len = 2;
@@ -36036,7 +36034,7 @@ else
                 }
 
                 if (useTangents) {
-                    code += "dp3 " + temp1 + ".x, " + sourceRegisters[Math.floor(2)] + ", " + targetRegisters[Math.floor(1)] + "\n" + "mul " + temp1 + ", " + targetRegisters[Math.floor(1)] + ", " + temp1 + ".x			 \n" + "sub " + targetRegisters[Math.floor(2)] + ", " + sourceRegisters[Math.floor(2)] + ", " + temp1 + "\n";
+                    code += "dp3 " + temp1 + ".x, " + sourceRegisters[2] + ", " + targetRegisters[1] + "\n" + "mul " + temp1 + ", " + targetRegisters[1] + ", " + temp1 + ".x			 \n" + "sub " + targetRegisters[2] + ", " + sourceRegisters[2] + ", " + temp1 + "\n";
                 }
                 return code;
             };
@@ -36051,8 +36049,8 @@ else
                 var regs = ["x", "y", "z", "w"];
                 var temp1 = this._pFindTempReg(targetRegisters);
                 var k/*uint*/ ;
-                var useTangents = Boolean(this._useTangents[uID] = len > 2);
-                var useNormals = Boolean(this._useNormals[uID] = len > 1);
+                var useTangents = this._useTangents[uID] = (len > 2);
+                var useNormals = this._useNormals[uID] = (len > 1);
                 var streamIndex = this._streamIndices[uID] = pass.numUsedStreams;
 
                 if (len > 2)
@@ -36070,7 +36068,7 @@ else
                 }
 
                 if (useTangents) {
-                    code += "dp3 " + temp1 + ".x, " + sourceRegisters[Math.floor(2)] + ", " + targetRegisters[Math.floor(1)] + "\n" + "mul " + temp1 + ", " + targetRegisters[Math.floor(1)] + ", " + temp1 + ".x			 \n" + "sub " + targetRegisters[Math.floor(2)] + ", " + sourceRegisters[Math.floor(2)] + ", " + temp1 + "\n";
+                    code += "dp3 " + temp1 + ".x, " + sourceRegisters[2] + ", " + targetRegisters[1] + "\n" + "mul " + temp1 + ", " + targetRegisters[1] + ", " + temp1 + ".x			 \n" + "sub " + targetRegisters[2] + ", " + sourceRegisters[2] + ", " + temp1 + "\n";
                 }
 
                 return code;
@@ -50360,7 +50358,7 @@ var away;
 
             ByteArray.prototype.readDouble = function () {
                 var data = new DataView(this.arraybytes);
-                var double = data.getFloat64(this.position);
+                var double = data.getFloat64(this.position, true);
 
                 this.position += 8;
                 return double;
