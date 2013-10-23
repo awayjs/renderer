@@ -97,7 +97,7 @@ module demos.parsers {
 
                     case away.library.AssetType.LIGHT:
 
-                        this._view.scene.addChild( <away.lights.LightBase> asset );
+                        //this._view.scene.addChild( <away.lights.LightBase> asset );
 
                         break;
 
