@@ -116,10 +116,6 @@ module away.lights
 
         public pCreateDepthTexture():away.textures.TextureProxyBase
         {
-
-            //away.Debug.throwPIR( 'ShadowMapperBase' , 'pCreateDepthTexture' , 'Depedency: RenderTexture');
-            //return null;
-
             return new away.textures.RenderTexture( this._pDepthMapSize, this._pDepthMapSize);
         }
 
