@@ -61,7 +61,7 @@ module examples
 
         //material objects
         private _floorMaterial:away.materials.TextureMaterial;
-        //private _shadowMapMethod:away.materials.FilteredShadowMapMethod;
+        private _shadowMapMethod:away.materials.FilteredShadowMapMethod;
 
         //scene objects
         private _floor:away.entities.Mesh;
@@ -139,14 +139,15 @@ module examples
             away.library.AssetLibrary.load(new away.net.URLRequest("assets/demos/pknight.md2"), null, null, new away.loaders.MD2Parser());
 
             //create a global shadow map method
-            //this._shadowMapMethod = new FilteredShadowMapMethod(_light);
+            this._shadowMapMethod = new away.materials.FilteredShadowMapMethod(this._light);
+            this._shadowMapMethod.epsilon = 0.2;
 
             //setup floor material
             this._floorMaterial = new away.materials.TextureMaterial();
             this._floorMaterial.lightPicker = this._lightPicker;
             this._floorMaterial.specular = 0;
             this._floorMaterial.ambient = 1;
-            //this._floorMaterial.shadowMethod = _shadowMapMethod;
+            this._floorMaterial.shadowMethod = this._shadowMapMethod;
             this._floorMaterial.repeat = true;
 
             //setup knight materials
@@ -158,7 +159,7 @@ module examples
                 knightMaterial.gloss = 30;
                 knightMaterial.specular = 1;
                 knightMaterial.ambient = 1;
-                //knightMaterial.shadowMethod = _shadowMapMethod;
+                knightMaterial.shadowMethod = this._shadowMapMethod;
                 this._pKnightMaterials.push(knightMaterial);
             }
 
@@ -178,8 +179,9 @@ module examples
             document.onmousedown = (event) => this.onMouseDown(event);
             document.onmouseup = (event) => this.onMouseUp(event);
             document.onmousemove = (event) => this.onMouseMove(event);
-            document.onmousewheel= (event) => this.onMouseWheel(event);
-
+            document.onmousewheel = (event) => this.onMouseWheel(event);
+            document.onkeydown = (event) => this.onKeyDown(event);
+            document.onkeyup = (event) => this.onKeyUp(event);
             this.onResize();
 
             this._timer = new away.utils.RequestAnimationFrame(this.onEnterFrame, this);
@@ -193,18 +195,16 @@ module examples
         {
             this._time += dt;
 
-            /*
-            if (_keyUp)
-                _lookAtPosition.x -= 10;
-            if (_keyDown)
-                _lookAtPosition.x += 10;
-            if (_keyLeft)
-                _lookAtPosition.z -= 10;
-            if (_keyRight)
-                _lookAtPosition.z += 10;
+            if (this._keyUp)
+                this._lookAtPosition.x -= 10;
+            if (this._keyDown)
+                this._lookAtPosition.x += 10;
+            if (this._keyLeft)
+                this._lookAtPosition.z -= 10;
+            if (this._keyRight)
+                this._lookAtPosition.z += 10;
 
             this._cameraController.lookAtPosition = this._lookAtPosition;
-            */
 
             this._view.render();
         }
@@ -226,8 +226,8 @@ module examples
                     this._mesh.scale(5);
 
                     //create 20 x 20 different clones of the knight
-                    var numWide:number = 1;
-                    var numDeep:number = 1;
+                    var numWide:number = 20;
+                    var numDeep:number = 20;
                     var k:number /*uint*/ = 0;
                     for (var i:number /*uint*/  = 0; i < numWide; i++) {
                         for (var j:number /*uint*/  = 0; j < numDeep; j++) {
@@ -295,57 +295,57 @@ module examples
 
         /**
          * Key down listener for animation
-        private onKeyDown(event:KeyboardEvent):void
+         */
+        private onKeyDown(event):void
         {
             switch (event.keyCode) {
-                case Keyboard.UP:
-                case Keyboard.W:
-                case Keyboard.Z: //fr
-                    _keyUp = true;
+                case 38://Keyboard.UP:
+                case 87://Keyboard.W:
+                case 90://Keyboard.Z: //fr
+                    this._keyUp = true;
                     break;
-                case Keyboard.DOWN:
-                case Keyboard.S:
-                    _keyDown = true;
+                case 40://Keyboard.DOWN:
+                case 83://Keyboard.S:
+                    this._keyDown = true;
                     break;
-                case Keyboard.LEFT:
-                case Keyboard.A:
-                case Keyboard.Q: //fr
-                    _keyLeft = true;
+                case 37://Keyboard.LEFT:
+                case 65://Keyboard.A:
+                case 81://Keyboard.Q: //fr
+                    this._keyLeft = true;
                     break;
-                case Keyboard.RIGHT:
-                case Keyboard.D:
-                    _keyRight = true;
+                case 39://Keyboard.RIGHT:
+                case 68://Keyboard.D:
+                    this._keyRight = true;
                     break;
             }
         }
-        */
 
         /**
          * Key up listener
-        private onKeyUp(event:KeyboardEvent):void
+         */
+        private onKeyUp(event):void
         {
             switch (event.keyCode) {
-                case Keyboard.UP:
-                case Keyboard.W:
-                case Keyboard.Z: //fr
-                    _keyUp = false;
+                case 38://Keyboard.UP:
+                case 87://Keyboard.W:
+                case 90://Keyboard.Z: //fr
+                    this._keyUp = false;
                     break;
-                case Keyboard.DOWN:
-                case Keyboard.S:
-                    _keyDown = false;
+                case 40://Keyboard.DOWN:
+                case 83://Keyboard.S:
+                    this._keyDown = false;
                     break;
-                case Keyboard.LEFT:
-                case Keyboard.A:
-                case Keyboard.Q: //fr
-                    _keyLeft = false;
+                case 37://Keyboard.LEFT:
+                case 65://Keyboard.A:
+                case 81://Keyboard.Q: //fr
+                    this._keyLeft = false;
                     break;
-                case Keyboard.RIGHT:
-                case Keyboard.D:
-                    _keyRight = false;
+                case 39://Keyboard.RIGHT:
+                case 68://Keyboard.D:
+                    this._keyRight = false;
                     break;
             }
         }
-        */
 
         /**
          * Mouse down listener for navigation

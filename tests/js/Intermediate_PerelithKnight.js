@@ -103,14 +103,15 @@ var examples;
             away.library.AssetLibrary.load(new away.net.URLRequest("assets/demos/pknight.md2"), null, null, new away.loaders.MD2Parser());
 
             //create a global shadow map method
-            //this._shadowMapMethod = new FilteredShadowMapMethod(_light);
+            this._shadowMapMethod = new away.materials.FilteredShadowMapMethod(this._light);
+            this._shadowMapMethod.epsilon = 0.2;
+
             //setup floor material
             this._floorMaterial = new away.materials.TextureMaterial();
             this._floorMaterial.lightPicker = this._lightPicker;
             this._floorMaterial.specular = 0;
             this._floorMaterial.ambient = 1;
-
-            //this._floorMaterial.shadowMethod = _shadowMapMethod;
+            this._floorMaterial.shadowMethod = this._shadowMapMethod;
             this._floorMaterial.repeat = true;
 
             for (var i = 0; i < this._pKnightTextures.length; i++) {
@@ -122,8 +123,7 @@ var examples;
                 knightMaterial.gloss = 30;
                 knightMaterial.specular = 1;
                 knightMaterial.ambient = 1;
-
-                //knightMaterial.shadowMethod = _shadowMapMethod;
+                knightMaterial.shadowMethod = this._shadowMapMethod;
                 this._pKnightMaterials.push(knightMaterial);
             }
 
@@ -153,7 +153,12 @@ var examples;
             document.onmousewheel = function (event) {
                 return _this.onMouseWheel(event);
             };
-
+            document.onkeydown = function (event) {
+                return _this.onKeyDown(event);
+            };
+            document.onkeyup = function (event) {
+                return _this.onKeyUp(event);
+            };
             this.onResize();
 
             this._timer = new away.utils.RequestAnimationFrame(this.onEnterFrame, this);
@@ -165,18 +170,17 @@ var examples;
         Intermediate_PerelithKnight.prototype.onEnterFrame = function (dt) {
             this._time += dt;
 
-            /*
-            if (_keyUp)
-            _lookAtPosition.x -= 10;
-            if (_keyDown)
-            _lookAtPosition.x += 10;
-            if (_keyLeft)
-            _lookAtPosition.z -= 10;
-            if (_keyRight)
-            _lookAtPosition.z += 10;
-            
+            if (this._keyUp)
+                this._lookAtPosition.x -= 10;
+            if (this._keyDown)
+                this._lookAtPosition.x += 10;
+            if (this._keyLeft)
+                this._lookAtPosition.z -= 10;
+            if (this._keyRight)
+                this._lookAtPosition.z += 10;
+
             this._cameraController.lookAtPosition = this._lookAtPosition;
-            */
+
             this._view.render();
         };
 
@@ -195,8 +199,8 @@ var examples;
                     this._mesh.scale(5);
 
                     //create 20 x 20 different clones of the knight
-                    var numWide = 1;
-                    var numDeep = 1;
+                    var numWide = 20;
+                    var numDeep = 20;
                     var k = 0;
                     for (var i = 0; i < numWide; i++) {
                         for (var j = 0; j < numDeep; j++) {
@@ -257,56 +261,56 @@ var examples;
 
         /**
         * Key down listener for animation
-        private onKeyDown(event:KeyboardEvent):void
-        {
-        switch (event.keyCode) {
-        case Keyboard.UP:
-        case Keyboard.W:
-        case Keyboard.Z: //fr
-        _keyUp = true;
-        break;
-        case Keyboard.DOWN:
-        case Keyboard.S:
-        _keyDown = true;
-        break;
-        case Keyboard.LEFT:
-        case Keyboard.A:
-        case Keyboard.Q: //fr
-        _keyLeft = true;
-        break;
-        case Keyboard.RIGHT:
-        case Keyboard.D:
-        _keyRight = true;
-        break;
-        }
-        }
         */
+        Intermediate_PerelithKnight.prototype.onKeyDown = function (event) {
+            switch (event.keyCode) {
+                case 38:
+                case 87:
+                case 90:
+                    this._keyUp = true;
+                    break;
+                case 40:
+                case 83:
+                    this._keyDown = true;
+                    break;
+                case 37:
+                case 65:
+                case 81:
+                    this._keyLeft = true;
+                    break;
+                case 39:
+                case 68:
+                    this._keyRight = true;
+                    break;
+            }
+        };
+
         /**
         * Key up listener
-        private onKeyUp(event:KeyboardEvent):void
-        {
-        switch (event.keyCode) {
-        case Keyboard.UP:
-        case Keyboard.W:
-        case Keyboard.Z: //fr
-        _keyUp = false;
-        break;
-        case Keyboard.DOWN:
-        case Keyboard.S:
-        _keyDown = false;
-        break;
-        case Keyboard.LEFT:
-        case Keyboard.A:
-        case Keyboard.Q: //fr
-        _keyLeft = false;
-        break;
-        case Keyboard.RIGHT:
-        case Keyboard.D:
-        _keyRight = false;
-        break;
-        }
-        }
         */
+        Intermediate_PerelithKnight.prototype.onKeyUp = function (event) {
+            switch (event.keyCode) {
+                case 38:
+                case 87:
+                case 90:
+                    this._keyUp = false;
+                    break;
+                case 40:
+                case 83:
+                    this._keyDown = false;
+                    break;
+                case 37:
+                case 65:
+                case 81:
+                    this._keyLeft = false;
+                    break;
+                case 39:
+                case 68:
+                    this._keyRight = false;
+                    break;
+            }
+        };
+
         /**
         * Mouse down listener for navigation
         */
