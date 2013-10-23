@@ -126,11 +126,11 @@ module away.animators
             var uID:number = pass._iUniqueId;
             var temp1:string = this._pFindTempReg(targetRegisters);
             var temp2:string = this._pFindTempReg(targetRegisters, temp1);
-            var regs:Array = ["x", "y", "z", "w"];
+            var regs:Array<string> = new Array<string>("x", "y", "z", "w");
             var len:number /*uint*/ = sourceRegisters.length;
             var constantReg:string = "vc" + pass.numUsedVertexConstants;
-            var useTangents:boolean = Boolean(this._useTangents[uID] = len > 2);
-            this._useNormals[uID] = len > 1;
+            var useTangents:boolean = this._useTangents[uID] = <boolean> (len > 2);
+            this._useNormals[uID] = <boolean> (len > 1);
 
             if (len > 2)
                 len = 2;
@@ -153,9 +153,9 @@ module away.animators
 
             // add code for bitangents if tangents are used
             if (useTangents) {
-                code += "dp3 " + temp1 + ".x, " + sourceRegisters[Math.floor(2)] + ", " + targetRegisters[Math.floor(1)] + "\n" +
-                    "mul " + temp1 + ", " + targetRegisters[Math.floor(1)] + ", " + temp1 + ".x			 \n" +
-                    "sub " + targetRegisters[Math.floor(2)] + ", " + sourceRegisters[Math.floor(2)] + ", " + temp1 + "\n";
+                code += "dp3 " + temp1 + ".x, " + sourceRegisters[2] + ", " + targetRegisters[1] + "\n" +
+                    "mul " + temp1 + ", " + targetRegisters[1] + ", " + temp1 + ".x			 \n" +
+                    "sub " + targetRegisters[2] + ", " + sourceRegisters[2] + ", " + temp1 + "\n";
             }
             return code;
         }
@@ -171,8 +171,8 @@ module away.animators
             var regs:Array = ["x", "y", "z", "w"];
             var temp1:string = this._pFindTempReg(targetRegisters);
             var k:number /*uint*/;
-            var useTangents:boolean = Boolean(this._useTangents[uID] = len > 2);
-            var useNormals:boolean = Boolean(this._useNormals[uID] = len > 1);
+            var useTangents:boolean = this._useTangents[uID] = <boolean> (len > 2);
+            var useNormals:boolean = this._useNormals[uID] = <boolean> (len > 1);
             var streamIndex:number /*uint*/ = this._streamIndices[uID] = pass.numUsedStreams;
 
             if (len > 2)
@@ -191,9 +191,9 @@ module away.animators
             }
 
             if (useTangents) {
-                code += "dp3 " + temp1 + ".x, " + sourceRegisters[Math.floor(2)] + ", " + targetRegisters[Math.floor(1)] + "\n" +
-                    "mul " + temp1 + ", " + targetRegisters[Math.floor(1)] + ", " + temp1 + ".x			 \n" +
-                    "sub " + targetRegisters[Math.floor(2)] + ", " + sourceRegisters[Math.floor(2)] + ", " + temp1 + "\n";
+                code += "dp3 " + temp1 + ".x, " + sourceRegisters[2] + ", " + targetRegisters[1] + "\n" +
+                    "mul " + temp1 + ", " + targetRegisters[1] + ", " + temp1 + ".x			 \n" +
+                    "sub " + targetRegisters[2] + ", " + sourceRegisters[2] + ", " + temp1 + "\n";
             }
 
             return code;

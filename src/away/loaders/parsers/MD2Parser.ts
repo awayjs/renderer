@@ -314,8 +314,8 @@ module away.loaders
             this._finalUV = new Array<number>(len*2);
 
             for (i = 0; i < len; ++i) {
-                this._finalUV[Math.floor(i << 1)] = this._uvs[Math.floor(this._uvIndices[i] << 1)];
-                this._finalUV[Math.floor(((i << 1) + 1))] = this._uvs[Math.floor((this._uvIndices[i] << 1) + 1)];
+                this._finalUV[i << 1] = this._uvs[this._uvIndices[i] << 1];
+                this._finalUV[(i << 1) + 1] = this._uvs[(this._uvIndices[i] << 1) + 1];
             }
 
             this._parsedFaces = true;
@@ -404,9 +404,9 @@ module away.loaders
 
                 k = 0;
                 for (j = 0; j < vertLen; j++) {
-                    fvertices[k++] = tvertices[Math.floor(this._vertIndices[j]*3)];
-                    fvertices[k++] = tvertices[Math.floor(this._vertIndices[j]*3 + 2)];
-                    fvertices[k++] = tvertices[Math.floor(this._vertIndices[j]*3 + 1)];
+                    fvertices[k++] = tvertices[this._vertIndices[j]*3];
+                    fvertices[k++] = tvertices[this._vertIndices[j]*3 + 2];
+                    fvertices[k++] = tvertices[this._vertIndices[j]*3 + 1];
                 }
 
                 subGeom.fromVectors(fvertices, this._finalUV, null, null);
