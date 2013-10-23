@@ -1,5 +1,6 @@
 ///<reference path="../../../build/Away3D.next.d.ts" />
 
+
 module demos.parsers {
 
     export class AWDShadowTest
@@ -25,7 +26,7 @@ module demos.parsers {
             this._token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE , this.onAssetComplete, this );
 
             this._view = new away.containers.View3D();
-            this._view.camera.lens.far  = 6000;
+            this._view.camera.lens.far  = 1000;
 	        this._view.camera.y = 100;
 
             this._timer = new away.utils.RequestAnimationFrame( this.render, this );

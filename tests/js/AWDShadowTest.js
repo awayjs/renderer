@@ -18,7 +18,7 @@ var demos;
                 this._token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
 
                 this._view = new away.containers.View3D();
-                this._view.camera.lens.far = 6000;
+                this._view.camera.lens.far = 1000;
                 this._view.camera.y = 100;
 
                 this._timer = new away.utils.RequestAnimationFrame(this.render, this);
