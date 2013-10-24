@@ -8,7 +8,7 @@ module away.materials
 	 */
 	export class MaterialPassBase extends away.events.EventDispatcher
 	{
-        public static MATERIALPASS_ID_COUNT:number;
+        public static MATERIALPASS_ID_COUNT:number = 0;
 
         /**
          * An id for this material pass, used to identify material passes when using animation sets.
