@@ -4705,48 +4705,42 @@ var away;
                 _super.call(this, gl);
                 this.textureType = "textureCube";
                 this._size = size;
-
-                this._textures = [];
-                for (var i = 0; i < 6; ++i) {
-                    this._textures[i] = this._gl.createTexture();
-                }
+                this._texture = this._gl.createTexture();
             }
             CubeTexture.prototype.dispose = function () {
-                for (var i = 0; i < 6; ++i) {
-                    this._gl.deleteTexture(this._textures[i]);
-                }
+                this._gl.deleteTexture(this._texture);
             };
 
             CubeTexture.prototype.uploadFromHTMLImageElement = function (image, side, miplevel) {
                 if (typeof miplevel === "undefined") { miplevel = 0; }
                 switch (side) {
                     case 0:
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._textures[0]);
+                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._texture);
                         this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_POSITIVE_X, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, image);
                         this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
                         break;
                     case 1:
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._textures[1]);
+                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._texture);
                         this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_NEGATIVE_X, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, image);
                         this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
                         break;
                     case 2:
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._textures[2]);
+                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._texture);
                         this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_POSITIVE_Y, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, image);
                         this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
                         break;
                     case 3:
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._textures[3]);
+                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._texture);
                         this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, image);
                         this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
                         break;
                     case 4:
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._textures[4]);
+                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._texture);
                         this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_POSITIVE_Z, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, image);
                         this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
                         break;
                     case 5:
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._textures[5]);
+                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._texture);
                         this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, image);
                         this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
                         break;
@@ -4759,32 +4753,32 @@ var away;
                 if (typeof miplevel === "undefined") { miplevel = 0; }
                 switch (side) {
                     case 0:
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._textures[0]);
+                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._texture);
                         this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_POSITIVE_X, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data.imageData);
                         this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
                         break;
                     case 1:
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._textures[1]);
+                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._texture);
                         this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_NEGATIVE_X, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data.imageData);
                         this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
                         break;
                     case 2:
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._textures[2]);
+                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._texture);
                         this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_POSITIVE_Y, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data.imageData);
                         this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
                         break;
                     case 3:
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._textures[3]);
+                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._texture);
                         this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data.imageData);
                         this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
                         break;
                     case 4:
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._textures[4]);
+                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._texture);
                         this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_POSITIVE_Z, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data.imageData);
                         this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
                         break;
                     case 5:
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._textures[5]);
+                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._texture);
                         this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data.imageData);
                         this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
                         break;
@@ -4801,9 +4795,13 @@ var away;
                 configurable: true
             });
 
-            CubeTexture.prototype.glTextureAt = function (index) {
-                return this._textures[index];
-            };
+            Object.defineProperty(CubeTexture.prototype, "glTexture", {
+                get: function () {
+                    return this._texture;
+                },
+                enumerable: true,
+                configurable: true
+            });
             return CubeTexture;
         })(away.display3D.TextureBase);
         display3D.CubeTexture = CubeTexture;
@@ -5417,24 +5415,22 @@ var away;
                     }
                     //this._gl.bindTexture( this._gl.TEXTURE_2D, null );
                 } else if (texture.textureType == "textureCube") {
-                    for (var i = 0; i < 6; ++i) {
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, (texture).glTextureAt(i));
-                        this._gl.uniform1i(location, textureIndex);
+                    this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, (texture).glTexture);
+                    this._gl.uniform1i(location, textureIndex);
+                    var samplerState = this._samplerStates[textureIndex];
 
-                        var samplerState = this._samplerStates[textureIndex];
-
-                        if (samplerState.wrap != this._currentWrap) {
-                            this._currentWrap = samplerState.wrap;
-                            this._gl.texParameteri(this._gl.TEXTURE_CUBE_MAP, this._gl.TEXTURE_WRAP_S, samplerState.wrap);
-                            this._gl.texParameteri(this._gl.TEXTURE_CUBE_MAP, this._gl.TEXTURE_WRAP_T, samplerState.wrap);
-                        }
-
-                        if (samplerState.filter != this._currentFilter) {
-                            this._gl.texParameteri(this._gl.TEXTURE_CUBE_MAP, this._gl.TEXTURE_MIN_FILTER, samplerState.filter);
-                            this._gl.texParameteri(this._gl.TEXTURE_CUBE_MAP, this._gl.TEXTURE_MAG_FILTER, samplerState.filter);
-                        }
-                        //this._gl.bindTexture( this._gl.TEXTURE_CUBE_MAP, null );
+                    if (samplerState.wrap != this._currentWrap) {
+                        this._currentWrap = samplerState.wrap;
+                        this._gl.texParameteri(this._gl.TEXTURE_CUBE_MAP, this._gl.TEXTURE_WRAP_S, samplerState.wrap);
+                        this._gl.texParameteri(this._gl.TEXTURE_CUBE_MAP, this._gl.TEXTURE_WRAP_T, samplerState.wrap);
                     }
+
+                    if (samplerState.filter != this._currentFilter) {
+                        this._currentFilter = samplerState.filter;
+                        this._gl.texParameteri(this._gl.TEXTURE_CUBE_MAP, this._gl.TEXTURE_MIN_FILTER, samplerState.filter);
+                        this._gl.texParameteri(this._gl.TEXTURE_CUBE_MAP, this._gl.TEXTURE_MAG_FILTER, samplerState.filter);
+                    }
+                    //this._gl.bindTexture( this._gl.TEXTURE_CUBE_MAP, null );
                 }
             };
 

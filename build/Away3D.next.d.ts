@@ -1563,14 +1563,14 @@ declare module away.display3D {
 declare module away.display3D {
     class CubeTexture extends display3D.TextureBase {
         public textureType: string;
-        private _textures;
+        private _texture;
         private _size;
         constructor(gl: WebGLRenderingContext, size: number);
         public dispose(): void;
         public uploadFromHTMLImageElement(image: HTMLImageElement, side: number, miplevel?: number): void;
         public uploadFromBitmapData(data: away.display.BitmapData, side: number, miplevel?: number): void;
         public size : number;
-        public glTextureAt(index: number): WebGLTexture;
+        public glTexture : WebGLTexture;
     }
 }
 declare module away.display3D {
