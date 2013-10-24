@@ -90,12 +90,18 @@ module away
          * Start the application harness
          *
          */
-        public start() : void
+        public start( slideshowMode : boolean = false ) : void
         {
             for ( var c : number = 0 ; c < this.tests.length ; c ++  )
             {
                 var option : HTMLOptionElement = <HTMLOptionElement> new Option( this.tests[c].name , String( c ) );
                 this.dropDown.add( option );
+            }
+
+            if ( slideshowMode )
+            {
+
+                setInterval( () => this.nagigateBy( 1 ) , 15000);
             }
         }
 
