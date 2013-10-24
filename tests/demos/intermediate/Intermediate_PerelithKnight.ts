@@ -44,6 +44,11 @@ module examples
 {
     export class Intermediate_PerelithKnight
     {
+
+        private _meshInitialised            : boolean = false;
+        private _animationSetInitialised    : boolean = false;
+        private _sceneInitialised           : boolean = false;
+
         //array of materials for random sampling
         private _pKnightTextures:Array<string> = new Array<string>("assets/demos/pknight1.png", "assets/demos/pknight2.png", "assets/demos/pknight3.png", "assets/demos/pknight4.png");
         private _pKnightMaterials:Array<away.materials.TextureMaterial> = new Array<away.materials.TextureMaterial>();
@@ -225,35 +230,44 @@ module examples
                     this._mesh.y = 120;
                     this._mesh.scale(5);
 
-                    //create 20 x 20 different clones of the knight
-                    var numWide:number = 20;
-                    var numDeep:number = 20;
-                    var k:number /*uint*/ = 0;
-                    for (var i:number /*uint*/  = 0; i < numWide; i++) {
-                        for (var j:number /*uint*/  = 0; j < numDeep; j++) {
-                            //clone mesh
-                            var clone:away.entities.Mesh = <away.entities.Mesh> this._mesh.clone();
-                            clone.x = (i-(numWide-1)/2)*5000/numWide;
-                            clone.z = (j-(numDeep-1)/2)*5000/numDeep;
-                            clone.castsShadows = true;
-                            clone.material = this._pKnightMaterials[Math.floor(Math.random()*this._pKnightMaterials.length)];
-                            this._view.scene.addChild(clone);
+                    this._meshInitialised = true;
 
-                            //create animator
-                            var vertexAnimator:away.animators.VertexAnimator = new away.animators.VertexAnimator(this._animationSet);
-
-                            //play specified state
-                            vertexAnimator.play(this._animationSet.animationNames[Math.floor(Math.random()*this._animationSet.animationNames.length)], null, Math.random()*1000);
-                            clone.animator = vertexAnimator;
-                            k++;
-                        }
-                    }
 
                     break;
                 case away.library.AssetType.ANIMATION_SET :
                     this._animationSet = <away.animators.VertexAnimationSet> event.asset
+                    this._animationSetInitialised = true;
                     break;
             }
+
+            if ( this._animationSetInitialised && this._meshInitialised && ! this._sceneInitialised)
+            {
+                this._sceneInitialised = true;
+                //create 20 x 20 different clones of the knight
+                var numWide:number = 20;
+                var numDeep:number = 20;
+                var k:number /*uint*/ = 0;
+                for (var i:number /*uint*/  = 0; i < numWide; i++) {
+                    for (var j:number /*uint*/  = 0; j < numDeep; j++) {
+                        //clone mesh
+                        var clone:away.entities.Mesh = <away.entities.Mesh> this._mesh.clone();
+                        clone.x = (i-(numWide-1)/2)*5000/numWide;
+                        clone.z = (j-(numDeep-1)/2)*5000/numDeep;
+                        clone.castsShadows = true;
+                        clone.material = this._pKnightMaterials[Math.floor(Math.random()*this._pKnightMaterials.length)];
+                        this._view.scene.addChild(clone);
+
+                        //create animator
+                        var vertexAnimator:away.animators.VertexAnimator = new away.animators.VertexAnimator(this._animationSet);
+
+                        //play specified state
+                        vertexAnimator.play(this._animationSet.animationNames[Math.floor(Math.random()*this._animationSet.animationNames.length)], null, Math.random()*1000);
+                        clone.animator = vertexAnimator;
+                        k++;
+                    }
+                }
+            }
+
         }
 
         /**

@@ -46,6 +46,9 @@ var examples;
         */
         function Intermediate_PerelithKnight() {
             var _this = this;
+            this._meshInitialised = false;
+            this._animationSetInitialised = false;
+            this._sceneInitialised = false;
             //array of materials for random sampling
             this._pKnightTextures = new Array("assets/demos/pknight1.png", "assets/demos/pknight2.png", "assets/demos/pknight3.png", "assets/demos/pknight4.png");
             this._pKnightMaterials = new Array();
@@ -198,34 +201,41 @@ var examples;
                     this._mesh.y = 120;
                     this._mesh.scale(5);
 
-                    //create 20 x 20 different clones of the knight
-                    var numWide = 20;
-                    var numDeep = 20;
-                    var k = 0;
-                    for (var i = 0; i < numWide; i++) {
-                        for (var j = 0; j < numDeep; j++) {
-                            //clone mesh
-                            var clone = this._mesh.clone();
-                            clone.x = (i - (numWide - 1) / 2) * 5000 / numWide;
-                            clone.z = (j - (numDeep - 1) / 2) * 5000 / numDeep;
-                            clone.castsShadows = true;
-                            clone.material = this._pKnightMaterials[Math.floor(Math.random() * this._pKnightMaterials.length)];
-                            this._view.scene.addChild(clone);
-
-                            //create animator
-                            var vertexAnimator = new away.animators.VertexAnimator(this._animationSet);
-
-                            //play specified state
-                            vertexAnimator.play(this._animationSet.animationNames[Math.floor(Math.random() * this._animationSet.animationNames.length)], null, Math.random() * 1000);
-                            clone.animator = vertexAnimator;
-                            k++;
-                        }
-                    }
+                    this._meshInitialised = true;
 
                     break;
                 case away.library.AssetType.ANIMATION_SET:
                     this._animationSet = event.asset;
+                    this._animationSetInitialised = true;
                     break;
+            }
+
+            if (this._animationSetInitialised && this._meshInitialised && !this._sceneInitialised) {
+                this._sceneInitialised = true;
+
+                //create 20 x 20 different clones of the knight
+                var numWide = 20;
+                var numDeep = 20;
+                var k = 0;
+                for (var i = 0; i < numWide; i++) {
+                    for (var j = 0; j < numDeep; j++) {
+                        //clone mesh
+                        var clone = this._mesh.clone();
+                        clone.x = (i - (numWide - 1) / 2) * 5000 / numWide;
+                        clone.z = (j - (numDeep - 1) / 2) * 5000 / numDeep;
+                        clone.castsShadows = true;
+                        clone.material = this._pKnightMaterials[Math.floor(Math.random() * this._pKnightMaterials.length)];
+                        this._view.scene.addChild(clone);
+
+                        //create animator
+                        var vertexAnimator = new away.animators.VertexAnimator(this._animationSet);
+
+                        //play specified state
+                        vertexAnimator.play(this._animationSet.animationNames[Math.floor(Math.random() * this._animationSet.animationNames.length)], null, Math.random() * 1000);
+                        clone.animator = vertexAnimator;
+                        k++;
+                    }
+                }
             }
         };
 

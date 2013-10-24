@@ -34913,6 +34913,7 @@ var away;
                 enumerable: true,
                 configurable: true
             });
+            AnimationNodeBase.ANIMATIONNODE_ID_COUNT = 0;
             return AnimationNodeBase;
         })(away.library.NamedAssetBase);
         animators.AnimationNodeBase = AnimationNodeBase;
@@ -36424,6 +36425,7 @@ else
 })(away || (away = {}));
 var away;
 (function (away) {
+    ///<reference path="../_definitions.ts"/>
     (function (animators) {
         /**
         * Provides an interface for assigning vertex-based animation data sets to mesh-based entity objects
@@ -37282,6 +37284,8 @@ var away;
                 enumerable: true,
                 configurable: true
             });
+
+            MaterialPassBase.MATERIALPASS_ID_COUNT = 0;
 
             MaterialPassBase._previousUsedStreams = new Array(0, 0, 0, 0, 0, 0, 0, 0);
             MaterialPassBase._previousUsedTexs = new Array(0, 0, 0, 0, 0, 0, 0, 0);

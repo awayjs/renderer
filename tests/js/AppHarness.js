@@ -75,10 +75,18 @@ var away;
         * Start the application harness
         *
         */
-        AppHarness.prototype.start = function () {
+        AppHarness.prototype.start = function (slideshowMode) {
+            if (typeof slideshowMode === "undefined") { slideshowMode = false; }
+            var _this = this;
             for (var c = 0; c < this.tests.length; c++) {
                 var option = new Option(this.tests[c].name, String(c));
                 this.dropDown.add(option);
+            }
+
+            if (slideshowMode) {
+                setInterval(function () {
+                    return _this.nagigateBy(1);
+                }, 15000);
             }
         };
 
