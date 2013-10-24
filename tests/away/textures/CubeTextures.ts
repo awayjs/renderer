@@ -1,4 +1,5 @@
 ///<reference path="../../../build/Away3D.next.d.ts" />
+//<reference path="../../../src/Away3D.ts" />
 
 module tests.textures
 {
@@ -10,10 +11,17 @@ module tests.textures
 		private _timer              : away.utils.RequestAnimationFrame;
 		private _skyboxCubeTexture  : away.textures.HTMLImageElementCubeTexture;
 
+        private _torus              : away.primitives.TorusGeometry;
+        private _torusMesh          : away.entities.Mesh;
+        private _cubeMaterial       : away.materials.SkyBoxMaterial;
+
+
+
+
 		constructor()
 		{
-			away.Debug.LOG_PI_ERRORS    = false;
-			away.Debug.THROW_ERRORS     = false;
+			away.Debug.LOG_PI_ERRORS    = true;
+			away.Debug.THROW_ERRORS     = true;
 
 			this.initView();
 			this.initLights();
@@ -22,6 +30,7 @@ module tests.textures
 			this.loadAssets();
 
 			window.onresize = () => this.resize();
+            document.onmousedown = (event) => this.render( 0 );
 		}
 
 		private loadAssets():void
@@ -42,7 +51,7 @@ module tests.textures
 
 		private initAnimation():void
 		{
-			this._timer = new away.utils.RequestAnimationFrame( this.render, this );
+			//this._timer = new away.utils.RequestAnimationFrame( this.render, this );
 		}
 
 		private initView():void
@@ -77,11 +86,25 @@ module tests.textures
 
 			switch( e.url )
 			{
-				case 'assets/CubeTextureTest.cube':
+                case 'assets/CubeTextureTest.cube':
 					this._skyboxCubeTexture = <away.textures.HTMLImageElementCubeTexture> loader.baseDependency.assets[ 0 ];
+
+                    this._torus = new away.primitives.TorusGeometry();
+
+                    this._cubeMaterial = new away.materials.SkyBoxMaterial( this._skyboxCubeTexture );
+                    this._torusMesh = new away.entities.Mesh( this._torus, this._cubeMaterial );
+
+                    this._view.scene.addChild( this._torusMesh );
+
+
+                    var sb : away.primitives.SkyBox = new away.primitives.SkyBox( this._skyboxCubeTexture );
+                    this._view.scene.addChild( sb );
+
 					break;
 			}
 
+            this._timer = new away.utils.RequestAnimationFrame( this.render, this );
+            this._timer.start();
 		}
 
 		private render( dt: number ) //animate based on dt for firefox

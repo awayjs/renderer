@@ -58,8 +58,8 @@ module away.display3D
 			for( var i:number = 0; i < Context3D.MAX_SAMPLERS; ++i )
 			{
 				this._samplerStates[ i ] = new away.display3D.SamplerState();
-				this._samplerStates[ i ].wrap = this._gl.REPEAT
-				this._samplerStates[ i ].filter = this._gl.LINEAR
+				this._samplerStates[ i ].wrap = this._gl.REPEAT;
+				this._samplerStates[ i ].filter = this._gl.LINEAR;
 				this._samplerStates[ i ].mipfilter = 0;
 			}
 		}
@@ -93,8 +93,8 @@ module away.display3D
 			
 			this._gl.viewport.width = width;
 			this._gl.viewport.height = height;
-			
-            this._gl.viewport(0, 0, width, height);
+
+            this._gl.viewport( 0, 0, width, height );
 		}
 		
 		public createCubeTexture( size:number, format:away.display3D.Context3DTextureFormat, optimizeForRenderToTexture:boolean, streamingLevels:number = 0 ):away.display3D.CubeTexture 
@@ -201,13 +201,6 @@ module away.display3D
 		
 		public drawTriangles( indexBuffer:IndexBuffer3D, firstIndex:number = 0, numTriangles:number = -1 )
 		{
-			// this.setCulling( Context3DTriangleFace.FRONT );
-            /*
-			console.log( "======= drawTriangles ======= " )
-			console.log( indexBuffer );
-			console.log( "firstIndex   >>>>> " + firstIndex );
-			console.log( "numTriangles >>>>> " + numTriangles );
-			*/
 			if ( !this._drawing ) 
 			{
 				throw "Need to clear before drawing if the buffer has not been cleared since the last present() call.";
@@ -438,12 +431,7 @@ module away.display3D
 		*/
 		
 		public setGLSLProgramConstantsFromMatrix( locationName:string, matrix:away.geom.Matrix3D, transposedMatrix:boolean = false ) 
-		{/*
-			console.log( "======= setGLSLProgramConstantsFromMatrix ======= " )
-			console.log( "locationName : " + locationName );
-			console.log( "matrix : " + matrix.rawData );
-			console.log( "transposedMatrix : " + transposedMatrix );
-			console.log( "================================================= \n" )*/
+		{
 			var location:WebGLUniformLocation = this._gl.getUniformLocation( this._currentProgram.glProgram, locationName );
 			this._gl.uniformMatrix4fv( location, !transposedMatrix, new Float32Array( matrix.rawData ) );
 		}
@@ -487,7 +475,7 @@ module away.display3D
 				this._gl.bindTexture( this._gl.TEXTURE_CUBE_MAP, null );
 				return;
 			}
-			
+
 			switch( textureIndex )
 			{
                 case 0: 
@@ -526,51 +514,47 @@ module away.display3D
 				this._gl.uniform1i( location, textureIndex );
 				
 				var samplerState:away.display3D.SamplerState = this._samplerStates[ textureIndex ];
-				
-				if( samplerState.wrap != this._currentWrap )
-				{
-					this._currentWrap = samplerState.wrap;
-					this._gl.texParameteri( this._gl.TEXTURE_2D, this._gl.TEXTURE_WRAP_S, samplerState.wrap );
-					this._gl.texParameteri( this._gl.TEXTURE_2D, this._gl.TEXTURE_WRAP_T, samplerState.wrap );
-				}
-				
-				if( samplerState.filter != this._currentFilter )
-				{
-					this._gl.texParameteri( this._gl.TEXTURE_2D, this._gl.TEXTURE_MIN_FILTER, samplerState.filter );
-					this._gl.texParameteri( this._gl.TEXTURE_2D, this._gl.TEXTURE_MAG_FILTER, samplerState.filter );
-				}
-				
+
+                if( samplerState.wrap != this._currentWrap )
+                {
+                    this._currentWrap = samplerState.wrap;
+                    this._gl.texParameteri( this._gl.TEXTURE_2D, this._gl.TEXTURE_WRAP_S, samplerState.wrap );
+                    this._gl.texParameteri( this._gl.TEXTURE_2D, this._gl.TEXTURE_WRAP_T, samplerState.wrap );
+                }
+
+                if( samplerState.filter != this._currentFilter )
+                {
+                    this._gl.texParameteri( this._gl.TEXTURE_2D, this._gl.TEXTURE_MIN_FILTER, samplerState.filter );
+                    this._gl.texParameteri( this._gl.TEXTURE_2D, this._gl.TEXTURE_MAG_FILTER, samplerState.filter );
+                }
+
 				//this._gl.bindTexture( this._gl.TEXTURE_2D, null );
 			}
 			else if( texture.textureType == "textureCube" )
 			{
-				//console.log( "******************************* setGLSLTextureAt *******************************" );
-				//console.log( locationName, texture, textureIndex );
-				
-				for( var i:number = 0; i < 6; ++i )
-				{
-					this._gl.bindTexture( this._gl.TEXTURE_CUBE_MAP, (<away.display3D.CubeTexture>texture).glTextureAt( i ) );
-					this._gl.uniform1i( location, textureIndex );
-					
-					var samplerState:away.display3D.SamplerState = this._samplerStates[ textureIndex ];
-					
-					if( samplerState.wrap != this._currentWrap )
-					{
-						this._currentWrap = samplerState.wrap;
-						this._gl.texParameteri( this._gl.TEXTURE_CUBE_MAP, this._gl.TEXTURE_WRAP_S, samplerState.wrap );
-						this._gl.texParameteri( this._gl.TEXTURE_CUBE_MAP, this._gl.TEXTURE_WRAP_T, samplerState.wrap );
-					}
-					
-					if( samplerState.filter != this._currentFilter )
-					{
-						this._gl.texParameteri( this._gl.TEXTURE_CUBE_MAP, this._gl.TEXTURE_MIN_FILTER, samplerState.filter );
-						this._gl.texParameteri( this._gl.TEXTURE_CUBE_MAP, this._gl.TEXTURE_MAG_FILTER, samplerState.filter );
-					}
-					
-					//this._gl.bindTexture( this._gl.TEXTURE_CUBE_MAP, null );
-				}
+
+                this._gl.bindTexture( this._gl.TEXTURE_CUBE_MAP, (<away.display3D.CubeTexture>texture).glTexture );
+                this._gl.uniform1i( location, textureIndex );
+                var samplerState:away.display3D.SamplerState = this._samplerStates[ textureIndex ];
+
+                if( samplerState.wrap != this._currentWrap )
+                {
+                    this._currentWrap = samplerState.wrap;
+                    this._gl.texParameteri( this._gl.TEXTURE_CUBE_MAP, this._gl.TEXTURE_WRAP_S, samplerState.wrap );
+                    this._gl.texParameteri( this._gl.TEXTURE_CUBE_MAP, this._gl.TEXTURE_WRAP_T, samplerState.wrap );
+                }
+
+                if( samplerState.filter != this._currentFilter )
+                {
+                    this._currentFilter = samplerState.filter;
+                    this._gl.texParameteri( this._gl.TEXTURE_CUBE_MAP, this._gl.TEXTURE_MIN_FILTER, samplerState.filter );
+                    this._gl.texParameteri( this._gl.TEXTURE_CUBE_MAP, this._gl.TEXTURE_MAG_FILTER, samplerState.filter );
+                }
+
+                //this._gl.bindTexture( this._gl.TEXTURE_CUBE_MAP, null );
 			}
-			
+
+
         }
 		
 		public setSamplerStateAt( sampler:number, wrap:string, filter:string, mipfilter:string ):void
