@@ -37289,6 +37289,8 @@ var away;
                 configurable: true
             });
 
+            MaterialPassBase.MATERIALPASS_ID_COUNT = 0;
+
             MaterialPassBase._previousUsedStreams = new Array(0, 0, 0, 0, 0, 0, 0, 0);
             MaterialPassBase._previousUsedTexs = new Array(0, 0, 0, 0, 0, 0, 0, 0);
             return MaterialPassBase;
