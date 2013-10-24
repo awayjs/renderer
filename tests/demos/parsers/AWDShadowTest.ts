@@ -6,11 +6,17 @@ module demos.parsers {
     export class AWDShadowTest
     {
 
-        private _view           : away.containers.View3D;
-        private _token          : away.loaders.AssetLoaderToken;
-        private _timer          : away.utils.RequestAnimationFrame;
-        private lookAtPosition  : away.geom.Vector3D = new away.geom.Vector3D();
-        private _cameraIncrement: number = 0;
+        private _view               : away.containers.View3D;
+        private _token              : away.loaders.AssetLoaderToken;
+        private _timer              : away.utils.RequestAnimationFrame;
+        private lookAtPosition      : away.geom.Vector3D = new away.geom.Vector3D();
+        private _awdMesh            : away.entities.Mesh;
+        private _cameraController   : away.controllers.HoverController;
+        private _move:boolean = false;
+        private _lastPanAngle:number;
+        private _lastTiltAngle:number;
+        private _lastMouseX:number;
+        private _lastMouseY:number;
 
         constructor()
         {
@@ -20,18 +26,25 @@ module demos.parsers {
 
             away.library.AssetLibrary.enableParser( away.loaders.AWDParser ) ;
 
+
 	        this._token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/awd/ShadowTest.awd') );
 
 	        this._token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE , this.onResourceComplete , this );
             this._token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE , this.onAssetComplete, this );
 
             this._view = new away.containers.View3D();
-            this._view.camera.lens.far  = 1000;
+            this._view.camera.lens.far  = 5000;
 	        this._view.camera.y = 100;
 
             this._timer = new away.utils.RequestAnimationFrame( this.render, this );
 
 
+            this._cameraController = new away.controllers.HoverController(this._view.camera, null, 45, 20, 2000, 5);
+
+            document.onmousedown = (event) => this.onMouseDown(event);
+            document.onmouseup = (event) => this.onMouseUp(event);
+            document.onmousemove = (event) => this.onMouseMove(event);
+            document.onmousewheel = (event) => this.onMouseWheel(event);
             window.onresize = () => this.resize();
 
         }
@@ -50,12 +63,15 @@ module demos.parsers {
             if ( this._view.camera )
             {
                 this._view.camera.lookAt( this.lookAtPosition ) ;
-                this._cameraIncrement += 0.01;
-                this._view.camera.x = Math.cos( this._cameraIncrement ) * 400;
-                this._view.camera.z = Math.sin( this._cameraIncrement ) * 400;
+
 
             }
 
+            if ( this._awdMesh )
+            {
+
+                this._awdMesh.rotationY += 0.2;
+            }
              this._view.render();
 
         }
@@ -81,17 +97,12 @@ module demos.parsers {
             {
                 var asset: away.library.IAsset = loader.baseDependency.assets[ i ];
 
-	            console.log ( asset.assetType  );
                 switch ( asset.assetType )
                 {
                     case away.library.AssetType.MESH:
 
-                        var mesh : away.entities.Mesh = <away.entities.Mesh> asset;
-
-                        this._view.scene.addChild( mesh );
-
-
-
+                        this._awdMesh = <away.entities.Mesh> asset;
+                        this._view.scene.addChild( this._awdMesh );
                         this.resize();
 
                         break;
@@ -110,36 +121,51 @@ module demos.parsers {
 
             }
 
-	        /*
-	        switch (ev.asset.assetType) {
-
-			        obj = <away.lights.LightBase> ev.asset;
-			        break;
-		        case away.library.AssetType.CONTAINER:
-			        obj = <away.containers.ObjectContainer3D> ev.asset;
-			        break;
-		        case away.library.AssetType.MESH:
-			        obj = <away.entities.Mesh> ev.asset;
-			        break;
-			        //case away.library.AssetType.SKYBOX:
-			        //    obj = <away.entities.SkyBox> ev.asset;
-			        break;
-			        //case away.library.AssetType.TEXTURE_PROJECTOR:
-			        //    obj = <away.entities.TextureProjector> ev.asset;
-			        break;
-		        case away.library.AssetType.CAMERA:
-			        obj = <away.cameras.Camera3D> ev.asset;
-			        break;
-		        case away.library.AssetType.SEGMENT_SET:
-			        obj = <away.entities.SegmentSet> ev.asset;
-			        break;
-	        }
-	        */
 	        this._timer.start();
 
 
         }
 
+        /**
+         * Mouse down listener for navigation
+         */
+        private onMouseDown(event):void
+        {
+            this._lastPanAngle = this._cameraController.panAngle;
+            this._lastTiltAngle = this._cameraController.tiltAngle;
+            this._lastMouseX = event.clientX;
+            this._lastMouseY = event.clientY;
+            this._move = true;
+        }
+
+        /**
+         * Mouse up listener for navigation
+         */
+        private onMouseUp(event):void
+        {
+            this._move = false;
+        }
+
+        private onMouseMove(event)
+        {
+            if (this._move) {
+                this._cameraController.panAngle = 0.3*(event.clientX - this._lastMouseX) + this._lastPanAngle;
+                this._cameraController.tiltAngle = 0.3*(event.clientY - this._lastMouseY) + this._lastTiltAngle;
+            }
+        }
+
+        /**
+         * Mouse wheel listener for navigation
+         */
+        private onMouseWheel(event):void
+        {
+            this._cameraController.distance -= event.wheelDelta * 2;
+
+            if (this._cameraController.distance < 100)
+                this._cameraController.distance = 100;
+            else if (this._cameraController.distance > 2000)
+                this._cameraController.distance = 2000;
+        }
 
     }
 

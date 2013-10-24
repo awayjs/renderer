@@ -6,7 +6,7 @@ var demos;
             function AWDShadowTest() {
                 var _this = this;
                 this.lookAtPosition = new away.geom.Vector3D();
-                this._cameraIncrement = 0;
+                this._move = false;
                 away.Debug.LOG_PI_ERRORS = true;
                 away.Debug.THROW_ERRORS = false;
 
@@ -18,11 +18,25 @@ var demos;
                 this._token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
 
                 this._view = new away.containers.View3D();
-                this._view.camera.lens.far = 1000;
+                this._view.camera.lens.far = 5000;
                 this._view.camera.y = 100;
 
                 this._timer = new away.utils.RequestAnimationFrame(this.render, this);
 
+                this._cameraController = new away.controllers.HoverController(this._view.camera, null, 45, 20, 2000, 5);
+
+                document.onmousedown = function (event) {
+                    return _this.onMouseDown(event);
+                };
+                document.onmouseup = function (event) {
+                    return _this.onMouseUp(event);
+                };
+                document.onmousemove = function (event) {
+                    return _this.onMouseMove(event);
+                };
+                document.onmousewheel = function (event) {
+                    return _this.onMouseWheel(event);
+                };
                 window.onresize = function () {
                     return _this.resize();
                 };
@@ -37,11 +51,11 @@ var demos;
             AWDShadowTest.prototype.render = function (dt) {
                 if (this._view.camera) {
                     this._view.camera.lookAt(this.lookAtPosition);
-                    this._cameraIncrement += 0.01;
-                    this._view.camera.x = Math.cos(this._cameraIncrement) * 400;
-                    this._view.camera.z = Math.sin(this._cameraIncrement) * 400;
                 }
 
+                if (this._awdMesh) {
+                    this._awdMesh.rotationY += 0.2;
+                }
                 this._view.render();
             };
 
@@ -62,13 +76,10 @@ var demos;
                 for (var i = 0; i < numAssets; ++i) {
                     var asset = loader.baseDependency.assets[i];
 
-                    console.log(asset.assetType);
                     switch (asset.assetType) {
                         case away.library.AssetType.MESH:
-                            var mesh = asset;
-
-                            this._view.scene.addChild(mesh);
-
+                            this._awdMesh = asset;
+                            this._view.scene.addChild(this._awdMesh);
                             this.resize();
 
                             break;
@@ -83,32 +94,44 @@ var demos;
                     }
                 }
 
-                /*
-                switch (ev.asset.assetType) {
-                
-                obj = <away.lights.LightBase> ev.asset;
-                break;
-                case away.library.AssetType.CONTAINER:
-                obj = <away.containers.ObjectContainer3D> ev.asset;
-                break;
-                case away.library.AssetType.MESH:
-                obj = <away.entities.Mesh> ev.asset;
-                break;
-                //case away.library.AssetType.SKYBOX:
-                //    obj = <away.entities.SkyBox> ev.asset;
-                break;
-                //case away.library.AssetType.TEXTURE_PROJECTOR:
-                //    obj = <away.entities.TextureProjector> ev.asset;
-                break;
-                case away.library.AssetType.CAMERA:
-                obj = <away.cameras.Camera3D> ev.asset;
-                break;
-                case away.library.AssetType.SEGMENT_SET:
-                obj = <away.entities.SegmentSet> ev.asset;
-                break;
-                }
-                */
                 this._timer.start();
+            };
+
+            /**
+            * Mouse down listener for navigation
+            */
+            AWDShadowTest.prototype.onMouseDown = function (event) {
+                this._lastPanAngle = this._cameraController.panAngle;
+                this._lastTiltAngle = this._cameraController.tiltAngle;
+                this._lastMouseX = event.clientX;
+                this._lastMouseY = event.clientY;
+                this._move = true;
+            };
+
+            /**
+            * Mouse up listener for navigation
+            */
+            AWDShadowTest.prototype.onMouseUp = function (event) {
+                this._move = false;
+            };
+
+            AWDShadowTest.prototype.onMouseMove = function (event) {
+                if (this._move) {
+                    this._cameraController.panAngle = 0.3 * (event.clientX - this._lastMouseX) + this._lastPanAngle;
+                    this._cameraController.tiltAngle = 0.3 * (event.clientY - this._lastMouseY) + this._lastTiltAngle;
+                }
+            };
+
+            /**
+            * Mouse wheel listener for navigation
+            */
+            AWDShadowTest.prototype.onMouseWheel = function (event) {
+                this._cameraController.distance -= event.wheelDelta * 2;
+
+                if (this._cameraController.distance < 100)
+                    this._cameraController.distance = 100;
+else if (this._cameraController.distance > 2000)
+                    this._cameraController.distance = 2000;
             };
             return AWDShadowTest;
         })();
