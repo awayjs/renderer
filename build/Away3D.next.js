@@ -6108,11 +6108,11 @@ var away;
                             this._animationSet = owner.animator.animationSet;
 
                             for (var i = 0; i < this._numPasses; ++i) {
-                                this._passes[i].setAnimationSet(this._animationSet);
+                                this._passes[i].animationSet = this._animationSet;
                             }
 
-                            this._pDepthPass.setAnimationSet(this._animationSet);
-                            this._pDistancePass.setAnimationSet(this._animationSet);
+                            this._pDepthPass.animationSet = this._animationSet;
+                            this._pDistancePass.animationSet = this._animationSet;
 
                             this.iInvalidatePasses(null);
                         }
@@ -6133,11 +6133,11 @@ var away;
                     this._animationSet = null;
 
                     for (var i = 0; i < this._numPasses; ++i) {
-                        this._passes[i].setAnimationSet(this._animationSet);
+                        this._passes[i].animationSet = this._animationSet;
                     }
 
-                    this._pDepthPass.setAnimationSet(this._animationSet);
-                    this._pDistancePass.setAnimationSet(this._animationSet);
+                    this._pDepthPass.animationSet = this._animationSet;
+                    this._pDistancePass.animationSet = this._animationSet;
                     this.iInvalidatePasses(null);
                 }
             };
@@ -36910,16 +36910,6 @@ var away;
                 configurable: true
             });
 
-
-            MaterialPassBase.prototype.setAnimationSet = function (value) {
-                if (this._animationSet == value) {
-                    return;
-                }
-
-                this._animationSet = value;
-
-                this.iInvalidateShaderProgram();
-            };
 
             Object.defineProperty(MaterialPassBase.prototype, "renderToTexture", {
                 get: /**
