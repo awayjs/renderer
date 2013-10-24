@@ -148,6 +148,7 @@ module demos.aircraft
 			this._seaGeom = new away.primitives.PlaneGeometry( 50000, 50000, 1, 1, true, false );
 			this._seaGeom.scaleUV( 100, 100 );
 			this._seaMesh = new away.entities.Mesh( this._seaGeom, this._seaMaterial );
+            //this._view.scene.addChild( new away.primitives.SkyBox( this._skyboxCubeTexture ));
 			this._view.scene.addChild( this._seaMesh );
         }
 		
