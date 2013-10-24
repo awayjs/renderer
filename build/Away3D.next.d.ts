@@ -10004,6 +10004,7 @@ declare module away.materials {
         * Returns the animation data set adding animations to the material.
         */
         public animationSet : away.animators.IAnimationSet;
+        public setAnimationSet(value: away.animators.IAnimationSet): void;
         /**
         * Specifies whether this pass renders to texture
         */
