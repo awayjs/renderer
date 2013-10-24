@@ -1,5 +1,5 @@
-///<reference path="../../../build/Away3D.next.d.ts" />
-//<reference path="../../../src/Away3D.ts" />
+//<reference path="../../../build/Away3D.next.d.ts" />
+///<reference path="../../../src/Away3D.ts" />
 
 module tests.textures
 {
@@ -15,13 +15,14 @@ module tests.textures
         private _torusMesh          : away.entities.Mesh;
         private _cubeMaterial       : away.materials.SkyBoxMaterial;
 
+        private _skybox             : away.primitives.SkyBox;
 
 
 
 		constructor()
 		{
-			away.Debug.LOG_PI_ERRORS    = true;
-			away.Debug.THROW_ERRORS     = true;
+			away.Debug.LOG_PI_ERRORS    = false;
+			away.Debug.THROW_ERRORS     = false;
 
 			this.initView();
 			this.initLights();
@@ -97,8 +98,8 @@ module tests.textures
                     this._view.scene.addChild( this._torusMesh );
 
 
-                    var sb : away.primitives.SkyBox = new away.primitives.SkyBox( this._skyboxCubeTexture );
-                    this._view.scene.addChild( sb );
+                    this._skybox = new away.primitives.SkyBox( this._skyboxCubeTexture );
+                    this._view.scene.addChild( this._skybox );
 
 					break;
 			}
@@ -110,6 +111,7 @@ module tests.textures
 		private render( dt: number ) //animate based on dt for firefox
 		{
 			this._appTime += dt;
+            this._view.camera.rotationY += 0.01 * dt;
 			this._view.render();
 		}
 

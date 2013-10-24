@@ -512,7 +512,6 @@ module away.display3D
 			{
 				this._gl.bindTexture( this._gl.TEXTURE_2D, (<away.display3D.Texture>texture).glTexture );
 				this._gl.uniform1i( location, textureIndex );
-				
 				var samplerState:away.display3D.SamplerState = this._samplerStates[ textureIndex ];
 
                 if( samplerState.wrap != this._currentWrap )
@@ -524,6 +523,7 @@ module away.display3D
 
                 if( samplerState.filter != this._currentFilter )
                 {
+                    this._currentFilter = samplerState.filter;
                     this._gl.texParameteri( this._gl.TEXTURE_2D, this._gl.TEXTURE_MIN_FILTER, samplerState.filter );
                     this._gl.texParameteri( this._gl.TEXTURE_2D, this._gl.TEXTURE_MAG_FILTER, samplerState.filter );
                 }
