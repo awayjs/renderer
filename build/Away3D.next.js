@@ -5400,7 +5400,6 @@ var away;
                 if (texture.textureType == "texture2d") {
                     this._gl.bindTexture(this._gl.TEXTURE_2D, (texture).glTexture);
                     this._gl.uniform1i(location, textureIndex);
-
                     var samplerState = this._samplerStates[textureIndex];
 
                     if (samplerState.wrap != this._currentWrap) {
@@ -5410,6 +5409,7 @@ var away;
                     }
 
                     if (samplerState.filter != this._currentFilter) {
+                        this._currentFilter = samplerState.filter;
                         this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MIN_FILTER, samplerState.filter);
                         this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MAG_FILTER, samplerState.filter);
                     }
