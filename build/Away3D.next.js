@@ -5409,7 +5409,7 @@ var away;
                     }
 
                     if (samplerState.filter != this._currentFilter) {
-                        this._currentFilter = samplerState.filter;
+                        //this._currentFilter = samplerState.filter;
                         this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MIN_FILTER, samplerState.filter);
                         this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MAG_FILTER, samplerState.filter);
                     }
@@ -21805,6 +21805,8 @@ else
 
             //Block ID = 83
             AWDParser.prototype.parseCubeTexture = function (blockID) {
+                console.log('parseCubeTexture');
+
                 //blockLength = block.len;
                 var data_len;
                 var asset;
@@ -21833,7 +21835,8 @@ else
                         data = new away.utils.ByteArray();
 
                         this._newBlockBytes.readBytes(data, 0, data_len);
-                        this._pAddDependency(this._cur_block_id.toString() + "#" + i, null, false, data, true);
+
+                        this._pAddDependency(this._cur_block_id.toString() + "#" + i, null, false, away.loaders.ParserUtil.byteArrayToImage(data), true);
                     }
                 }
 
@@ -22014,7 +22017,24 @@ else
                 var props = this.parseProperties({ 1: AWDParser.BADDR, 2: AWDParser.BADDR, 3: AWDParser.BADDR, 101: this._propsNrType, 102: this._propsNrType, 103: this._propsNrType, 104: this._propsNrType, 105: this._propsNrType, 106: this._propsNrType, 107: this._propsNrType, 201: AWDParser.UINT32, 202: AWDParser.UINT32, 301: AWDParser.UINT16, 302: AWDParser.UINT16, 401: AWDParser.UINT8, 402: AWDParser.UINT8, 601: AWDParser.COLOR, 602: AWDParser.COLOR, 701: AWDParser.BOOL, 702: AWDParser.BOOL });
                 var targetID;
                 var returnedArray;
+
                 switch (methodType) {
+                    case 403:
+                        console.log('ENV MAP');
+                        targetID = props.get(1, 0);
+
+                        returnedArray = this.getAssetByID(targetID, [away.library.AssetType.TEXTURE], "CubeTexture");
+                        if (!returnedArray[0])
+                            this._blocks[blockID].addError("Could not find the EnvMap (ID = " + targetID + " ) for this EnvMapMethod");
+                        effectMethodReturn = new away.materials.EnvMapMethod(returnedArray[1], props.get(101, 1));
+                        targetID = props.get(2, 0);
+                        if (targetID > 0) {
+                            returnedArray = this.getAssetByID(targetID, [away.library.AssetType.TEXTURE]);
+                            if (!returnedArray[0])
+                                this._blocks[blockID].addError("Could not find the Mask-texture (ID = " + targetID + " ) for this EnvMapMethod");
+                            (effectMethodReturn).mask = returnedArray[1];
+                        }
+                        break;
                 }
                 this.parseUserAttributes();
                 return effectMethodReturn;
