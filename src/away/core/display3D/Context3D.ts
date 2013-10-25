@@ -523,7 +523,7 @@ module away.display3D
 
                 if( samplerState.filter != this._currentFilter )
                 {
-                    this._currentFilter = samplerState.filter;
+                    //this._currentFilter = samplerState.filter;
                     this._gl.texParameteri( this._gl.TEXTURE_2D, this._gl.TEXTURE_MIN_FILTER, samplerState.filter );
                     this._gl.texParameteri( this._gl.TEXTURE_2D, this._gl.TEXTURE_MAG_FILTER, samplerState.filter );
                 }
