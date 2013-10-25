@@ -6,6 +6,10 @@ out/
 target/
 node_modules/
 
+# Dev files
+tests/AppHarnessDebug.ts
+tests/debug.html
+
 # Project property files
 .actionScriptProperties
 .flexLibProperties
