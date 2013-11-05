@@ -23,41 +23,34 @@ module away.display3D
 		
 		public uploadFromHTMLImageElement( image:HTMLImageElement, side:number, miplevel:number = 0 )
 		{
+            this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._texture);
+
 			switch( side )
 			{
 				case 0:
-						this._gl.bindTexture( this._gl.TEXTURE_CUBE_MAP, this._texture );
 						this._gl.texImage2D( this._gl.TEXTURE_CUBE_MAP_POSITIVE_X, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, image );
-						this._gl.bindTexture( this._gl.TEXTURE_CUBE_MAP, null );
+
 					break;
 				case 1:
-						this._gl.bindTexture( this._gl.TEXTURE_CUBE_MAP, this._texture );
 						this._gl.texImage2D( this._gl.TEXTURE_CUBE_MAP_NEGATIVE_X, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, image );
-						this._gl.bindTexture( this._gl.TEXTURE_CUBE_MAP, null );
 					break;
 				case 2:
-						this._gl.bindTexture( this._gl.TEXTURE_CUBE_MAP, this._texture );
 						this._gl.texImage2D( this._gl.TEXTURE_CUBE_MAP_POSITIVE_Y, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, image );
-						this._gl.bindTexture( this._gl.TEXTURE_CUBE_MAP, null );
 					break;
 				case 3:
-						this._gl.bindTexture( this._gl.TEXTURE_CUBE_MAP, this._texture );
 						this._gl.texImage2D( this._gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, image );
-						this._gl.bindTexture( this._gl.TEXTURE_CUBE_MAP, null );
 					break;
 				case 4:
-						this._gl.bindTexture( this._gl.TEXTURE_CUBE_MAP, this._texture );
 						this._gl.texImage2D( this._gl.TEXTURE_CUBE_MAP_POSITIVE_Z, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, image );
-						this._gl.bindTexture( this._gl.TEXTURE_CUBE_MAP, null );
 					break;
-				case 5:
-						this._gl.bindTexture( this._gl.TEXTURE_CUBE_MAP, this._texture );
+                case 5:
 						this._gl.texImage2D( this._gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, image );
-						this._gl.bindTexture( this._gl.TEXTURE_CUBE_MAP, null );
 					break;
 				default :
 					throw "unknown side type";
 			}
+
+            this._gl.bindTexture( this._gl.TEXTURE_CUBE_MAP, null );
 		}
 		
 		public uploadFromBitmapData( data:away.display.BitmapData, side:number, miplevel:number = 0 )
