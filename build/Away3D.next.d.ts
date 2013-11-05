@@ -3047,13 +3047,13 @@ declare module away.primitives {
         public pBuildGeometry(): void;
     }
 }
-declare module away.primitives {
+declare module away.entities {
     /**
     * A SkyBox class is used to render a sky in the scene. It's always considered static and 'at infinity', and as
     * such it's always centered at the camera's position and sized to exactly fit within the camera's frustum, ensuring
     * the sky box is always as large as possible without being clipped.
     */
-    class SkyBox extends away.entities.Entity implements away.base.IRenderable {
+    class SkyBox extends entities.Entity implements away.base.IRenderable {
         private _geometry;
         private _material;
         private _uvTransform;
@@ -3093,7 +3093,7 @@ declare module away.primitives {
         /**
         * The entity that that initially provided the IRenderable to the render pipeline.
         */
-        public sourceEntity : away.entities.Entity;
+        public sourceEntity : entities.Entity;
         /**
         * The material with which to render the object.
         */
@@ -3331,7 +3331,7 @@ declare module away.partition {
         * Creates a new SkyBoxNode object.
         * @param skyBox The SkyBox to be contained in the node.
         */
-        constructor(skyBox: away.primitives.SkyBox);
+        constructor(skyBox: away.entities.SkyBox);
         /**
         * @inheritDoc
         */

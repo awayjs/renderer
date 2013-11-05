@@ -4665,9 +4665,9 @@ var away;
                 this._frameBuffer.height = this._height;
 
                 this._gl.bindTexture(this._gl.TEXTURE_2D, this._glTexture);
-                this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MAG_FILTER, this._gl.LINEAR);
-                this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MIN_FILTER, this._gl.LINEAR_MIPMAP_NEAREST);
 
+                //this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MAG_FILTER, this._gl.LINEAR);
+                //this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MIN_FILTER, this._gl.LINEAR_MIPMAP_NEAREST);
                 //this._gl.generateMipmap(this._gl.TEXTURE_2D);
                 //this._gl.texImage2D( this._gl.TEXTURE_2D, 0, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data.imageData );
                 this._gl.texImage2D(this._gl.TEXTURE_2D, 0, this._gl.RGBA, this._width, this._height, 0, this._gl.RGBA, this._gl.UNSIGNED_BYTE, null);
@@ -4713,40 +4713,33 @@ var away;
 
             CubeTexture.prototype.uploadFromHTMLImageElement = function (image, side, miplevel) {
                 if (typeof miplevel === "undefined") { miplevel = 0; }
+                this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._texture);
+
                 switch (side) {
                     case 0:
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._texture);
                         this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_POSITIVE_X, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, image);
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
+
                         break;
                     case 1:
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._texture);
                         this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_NEGATIVE_X, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, image);
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
                         break;
                     case 2:
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._texture);
                         this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_POSITIVE_Y, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, image);
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
                         break;
                     case 3:
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._texture);
                         this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, image);
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
                         break;
                     case 4:
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._texture);
                         this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_POSITIVE_Z, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, image);
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
                         break;
                     case 5:
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, this._texture);
                         this._gl.texImage2D(this._gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, image);
-                        this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
                         break;
                     default:
                         throw "unknown side type";
                 }
+
+                this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, null);
             };
 
             CubeTexture.prototype.uploadFromBitmapData = function (data, side, miplevel) {
@@ -12250,7 +12243,7 @@ var away;
 var away;
 (function (away) {
     ///<reference path="../_definitions.ts"/>
-    (function (primitives) {
+    (function (entities) {
         /**
         * A SkyBox class is used to render a sky in the scene. It's always considered static and 'at infinity', and as
         * such it's always centered at the camera's position and sized to exactly fit within the camera's frustum, ensuring
@@ -12388,71 +12381,9 @@ var away;
             * Builds the geometry that forms the SkyBox
             */
             SkyBox.prototype.buildGeometry = function (target) {
-                var vertices = [
-                    -1,
-                    1,
-                    -1,
-                    1,
-                    1,
-                    -1,
-                    1,
-                    1,
-                    1,
-                    -1,
-                    1,
-                    1,
-                    -1,
-                    -1,
-                    -1,
-                    1,
-                    -1,
-                    -1,
-                    1,
-                    -1,
-                    1,
-                    -1,
-                    -1,
-                    1
-                ];
+                var vertices = new Array(-1, 1, -1, 1, 1, -1, 1, 1, 1, -1, 1, 1, -1, -1, -1, 1, -1, -1, 1, -1, 1, -1, -1, 1);
 
-                var indices = [
-                    0,
-                    1,
-                    2,
-                    2,
-                    3,
-                    0,
-                    6,
-                    5,
-                    4,
-                    4,
-                    7,
-                    6,
-                    2,
-                    6,
-                    7,
-                    7,
-                    3,
-                    2,
-                    4,
-                    5,
-                    1,
-                    1,
-                    0,
-                    4,
-                    4,
-                    0,
-                    3,
-                    3,
-                    7,
-                    4,
-                    2,
-                    1,
-                    5,
-                    5,
-                    6,
-                    2
-                ];
+                var indices = new Array(0, 1, 2, 2, 3, 0, 6, 5, 4, 4, 7, 6, 2, 6, 7, 7, 3, 2, 4, 5, 1, 1, 0, 4, 4, 0, 3, 3, 7, 4, 2, 1, 5, 5, 6, 2);
 
                 target.updateVertexData(vertices);
                 target.updateIndexData(indices);
@@ -12558,10 +12489,10 @@ var away;
                 return this._pSceneTransform;
             };
             return SkyBox;
-        })(away.entities.Entity);
-        primitives.SkyBox = SkyBox;
-    })(away.primitives || (away.primitives = {}));
-    var primitives = away.primitives;
+        })(entities.Entity);
+        entities.SkyBox = SkyBox;
+    })(away.entities || (away.entities = {}));
+    var entities = away.entities;
 })(away || (away = {}));
 var away;
 (function (away) {
@@ -13140,7 +13071,7 @@ var away;
                 return true;
             };
             return SkyBoxNode;
-        })(away.partition.EntityNode);
+        })(partition.EntityNode);
         partition.SkyBoxNode = SkyBoxNode;
     })(away.partition || (away.partition = {}));
     var partition = away.partition;
@@ -21805,8 +21736,6 @@ else
 
             //Block ID = 83
             AWDParser.prototype.parseCubeTexture = function (blockID) {
-                console.log('parseCubeTexture');
-
                 //blockLength = block.len;
                 var data_len;
                 var asset;
@@ -21835,8 +21764,7 @@ else
                         data = new away.utils.ByteArray();
 
                         this._newBlockBytes.readBytes(data, 0, data_len);
-
-                        this._pAddDependency(this._cur_block_id.toString() + "#" + i, null, false, away.loaders.ParserUtil.byteArrayToImage(data), true);
+                        this._pAddDependency(this._cur_block_id.toString() + "#" + i, null, false, data, true);
                     }
                 }
 
@@ -22017,24 +21945,7 @@ else
                 var props = this.parseProperties({ 1: AWDParser.BADDR, 2: AWDParser.BADDR, 3: AWDParser.BADDR, 101: this._propsNrType, 102: this._propsNrType, 103: this._propsNrType, 104: this._propsNrType, 105: this._propsNrType, 106: this._propsNrType, 107: this._propsNrType, 201: AWDParser.UINT32, 202: AWDParser.UINT32, 301: AWDParser.UINT16, 302: AWDParser.UINT16, 401: AWDParser.UINT8, 402: AWDParser.UINT8, 601: AWDParser.COLOR, 602: AWDParser.COLOR, 701: AWDParser.BOOL, 702: AWDParser.BOOL });
                 var targetID;
                 var returnedArray;
-
                 switch (methodType) {
-                    case 403:
-                        console.log('ENV MAP');
-                        targetID = props.get(1, 0);
-
-                        returnedArray = this.getAssetByID(targetID, [away.library.AssetType.TEXTURE], "CubeTexture");
-                        if (!returnedArray[0])
-                            this._blocks[blockID].addError("Could not find the EnvMap (ID = " + targetID + " ) for this EnvMapMethod");
-                        effectMethodReturn = new away.materials.EnvMapMethod(returnedArray[1], props.get(101, 1));
-                        targetID = props.get(2, 0);
-                        if (targetID > 0) {
-                            returnedArray = this.getAssetByID(targetID, [away.library.AssetType.TEXTURE]);
-                            if (!returnedArray[0])
-                                this._blocks[blockID].addError("Could not find the Mask-texture (ID = " + targetID + " ) for this EnvMapMethod");
-                            (effectMethodReturn).mask = returnedArray[1];
-                        }
-                        break;
                 }
                 this.parseUserAttributes();
                 return effectMethodReturn;
@@ -39712,6 +39623,7 @@ var away;
             SkyBoxPass.prototype.iActivate = function (stage3DProxy, camera) {
                 _super.prototype.iActivate.call(this, stage3DProxy, camera);
                 var context = stage3DProxy._iContext3D;
+                context.setSamplerStateAt(0, away.display3D.Context3DWrapMode.CLAMP, away.display3D.Context3DTextureFilter.LINEAR, this._cubeTexture.hasMipMaps ? away.display3D.Context3DMipFilter.MIPLINEAR : away.display3D.Context3DMipFilter.MIPNONE);
                 context.setDepthTest(false, away.display3D.Context3DCompareMode.LESS);
                 context.setTextureAt(0, this._cubeTexture.getTextureForStage3D(stage3DProxy));
             };
