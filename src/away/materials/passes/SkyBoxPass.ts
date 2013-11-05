@@ -98,6 +98,7 @@ module away.materials
 		{
 			super.iActivate(stage3DProxy, camera);
 			var context:away.display3D.Context3D = stage3DProxy._iContext3D;
+            context.setSamplerStateAt( 0 , away.display3D.Context3DWrapMode.CLAMP, away.display3D.Context3DTextureFilter.LINEAR, this._cubeTexture.hasMipMaps ? away.display3D.Context3DMipFilter.MIPLINEAR : away.display3D.Context3DMipFilter.MIPNONE );
 			context.setDepthTest(false, away.display3D.Context3DCompareMode.LESS);
 			context.setTextureAt(0, this._cubeTexture.getTextureForStage3D(stage3DProxy));
 		}
