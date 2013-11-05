@@ -94,7 +94,7 @@
 ///<reference path="primitives/WireframePlane.ts" />
 ///<reference path="primitives/WireframeRegularPolygon.ts" />
 ///<reference path="primitives/WireframeTetrahedron.ts" />
-///<reference path="primitives/SkyBox.ts" />
+///<reference path="entities/SkyBox.ts" />
 
 ///<reference path="core/partition/NodeBase.ts" />
 ///<reference path="core/partition/NullNode.ts" />

@@ -5,15 +5,15 @@ module away.partition
 	/**
 	 * SkyBoxNode is a space partitioning leaf node that contains a SkyBox object.
 	 */
-	export class SkyBoxNode extends away.partition.EntityNode
+	export class SkyBoxNode extends EntityNode
 	{
-		private _skyBox:away.primitives.SkyBox;
+		private _skyBox:away.entities.SkyBox;
 		
 		/**
 		 * Creates a new SkyBoxNode object.
 		 * @param skyBox The SkyBox to be contained in the node.
 		 */
-		constructor(skyBox:away.primitives.SkyBox)
+		constructor(skyBox:away.entities.SkyBox)
 		{
 			super( <away.entities.Entity > skyBox );
 			this._skyBox = skyBox;

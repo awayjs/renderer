@@ -1,5 +1,5 @@
 ///<reference path="../_definitions.ts"/>
-module away.primitives
+module away.entities
 {
 
 	/**
@@ -7,7 +7,7 @@ module away.primitives
 	 * such it's always centered at the camera's position and sized to exactly fit within the camera's frustum, ensuring
 	 * the sky box is always as large as possible without being clipped.
 	 */
-	export class SkyBox extends away.entities.Entity implements away.base.IRenderable
+	export class SkyBox extends Entity implements away.base.IRenderable
 	{
 		// todo: remove SubGeometry, use a simple single buffer with offsets
 		private _geometry:away.base.SubGeometry;
@@ -116,7 +116,7 @@ module away.primitives
 		/**
 		 * @inheritDoc
 		 */
-		public pInvalidateBounds():void
+		public pInvalidateBounds()
 		{
 			// dead end
 		}
@@ -143,21 +143,21 @@ module away.primitives
 		 */
 		private buildGeometry(target:away.base.SubGeometry):void
 		{
-			var vertices:Array<number> = [
+			var vertices:Array<number> = new Array<number>(
 				-1, 1, -1, 1, 1, -1,
 				1, 1, 1, -1, 1, 1,
 				-1, -1, -1, 1, -1, -1,
 				1, -1, 1, -1, -1, 1
-				];
+            );
 
-			var indices:Array<number> = [
+			var indices:Array<number> = new Array<number>(
 				0, 1, 2, 2, 3, 0,
 				6, 5, 4, 4, 7, 6,
 				2, 6, 7, 7, 3, 2,
 				4, 5, 1, 1, 0, 4,
 				4, 0, 3, 3, 7, 4,
 				2, 1, 5, 5, 6, 2
-				];
+            );
 			
 			target.updateVertexData(vertices);
 			target.updateIndexData(indices);
