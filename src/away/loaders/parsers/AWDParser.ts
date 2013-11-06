@@ -9,7 +9,7 @@ module away.loaders
 	export class AWDParser extends away.loaders.ParserBase
 	{
 		//set to "true" to have some traces in the Console
-		private _debug                  : boolean = true;
+		private _debug                  : boolean = false;
 		private _byteData               : away.utils.ByteArray;
 		private _startedParsing         : boolean = false;
 		private _cur_block_id           : number;
@@ -488,8 +488,8 @@ module away.loaders
                          isParsed = true;
                          break;
                      case 31:
-                         //this.parseSkyBoxInstance(this._cur_block_id);
-                         //isParsed = true;
+                         this.parseSkyBoxInstance(this._cur_block_id);
+                         isParsed = true;
                          break;
                      case 41:
                          this.parseLight(this._cur_block_id);
@@ -1076,6 +1076,27 @@ module away.loaders
             {
                 console.log("Parsed a Mesh: Name = '" + name + "' | Parent-Name = " + parentName + "| Geometry-Name = " + geom.name + " | SubMeshes = " + mesh.subMeshes.length + " | Mat-Names = " + materialNames.toString());
             }
+        }
+
+
+        //Block ID 31
+        private parseSkyBoxInstance(blockID:number):void
+        {
+            var name:string         = this.parseVarStr();
+            var cubeTexAddr:number  = this._newBlockBytes.readUnsignedInt();
+
+            var returnedArrayCubeTex:Array<any> = this.getAssetByID(cubeTexAddr, [away.library.AssetType.TEXTURE], "CubeTexture");
+            if ((!returnedArrayCubeTex[0]) && (cubeTexAddr != 0))
+                this._blocks[blockID].addError("Could not find the Cubetexture (ID = " + cubeTexAddr + " ) for this SkyBox");
+            var asset:away.entities.SkyBox = new away.entities.SkyBox(<away.textures.HTMLImageElementCubeTexture> returnedArrayCubeTex[1] );
+
+            this.parseProperties(null)
+            asset.extra = this.parseUserAttributes();
+            this._pFinalizeAsset(asset, name);
+            this._blocks[blockID].data = asset;
+            if (this._debug)
+                console.log("Parsed a SkyBox: Name = '" + name + "' | CubeTexture-Name = " + (<away.textures.HTMLImageElementCubeTexture> returnedArrayCubeTex[1]).name);
+
         }
 
         //Block ID = 41
@@ -1895,7 +1916,8 @@ module away.loaders
                         data = new away.utils.ByteArray();
 
                     this._newBlockBytes.readBytes(data, 0, data_len);
-                    this._pAddDependency(  this._cur_block_id.toString() + "#" + i , null, false, data , true);
+
+                    this._pAddDependency(  this._cur_block_id.toString() + "#" + i , null, false, away.loaders.ParserUtil.byteArrayToImage( data ) , true);
                 }
             }
 
@@ -2127,7 +2149,8 @@ module away.loaders
 
             var props               : AWDProperties = this.parseProperties({1:AWDParser.BADDR, 2:AWDParser.BADDR, 3:AWDParser.BADDR, 101:this._propsNrType, 102:this._propsNrType, 103:this._propsNrType, 104:this._propsNrType, 105:this._propsNrType, 106:this._propsNrType, 107:this._propsNrType, 201:AWDParser.UINT32, 202:AWDParser.UINT32, 301:AWDParser.UINT16, 302:AWDParser.UINT16, 401:AWDParser.UINT8, 402:AWDParser.UINT8, 601:AWDParser.COLOR, 602:AWDParser.COLOR, 701:AWDParser.BOOL, 702:AWDParser.BOOL});
             var targetID            : number;
-            var returnedArray       : Array;
+            var returnedArray       : Array<any>;
+
             switch (methodType) {
                 // Effect Methods
     //				case 401: //ColorMatrix
@@ -2139,20 +2162,26 @@ module away.loaders
     //					var newColorTransform:ColorTransform = new ColorTransform(props.get(102, 1), props.get(103, 1), props.get(104, 1), props.get(101, 1), ((offCol >> 16) & 0xFF), ((offCol >> 8) & 0xFF), (offCol & 0xFF), ((offCol >> 24) & 0xFF));
     //					ColorTransformMethod(effectMethodReturn).colorTransform = newColorTransform;
     //					break;
-    //				case 403: //EnvMap
-    //					targetID = props.get(1, 0);
-    //					returnedArray = getAssetByID(targetID, [AssetType.TEXTURE], "CubeTexture");
-    //					if (!returnedArray[0])
-    //						_blocks[blockID].addError("Could not find the EnvMap (ID = " + targetID + " ) for this EnvMapMethod");
-    //					effectMethodReturn = new EnvMapMethod(returnedArray[1], props.get(101, 1));
-    //					targetID = props.get(2, 0);
-    //					if (targetID > 0) {
-    //						returnedArray = getAssetByID(targetID, [AssetType.TEXTURE]);
-    //						if (!returnedArray[0])
-    //							_blocks[blockID].addError("Could not find the Mask-texture (ID = " + targetID + " ) for this EnvMapMethod");
-    //						EnvMapMethod(effectMethodReturn).mask = returnedArray[1];
-    //					}
-    //					break;
+    				case 403: //EnvMap
+
+    					targetID = props.get(1, 0);
+                        console.log( 'ENV MAP' , targetID );
+
+
+    					returnedArray = this.getAssetByID(targetID, [ away.library.AssetType.TEXTURE ], "CubeTexture");
+    					if (!returnedArray[0])
+    						this._blocks[blockID].addError("Could not find the EnvMap (ID = " + targetID + " ) for this EnvMapMethod");
+    					effectMethodReturn = new away.materials.EnvMapMethod( <away.textures.CubeTextureBase> returnedArray[1], <number> props.get(101, 1));
+    					targetID = props.get(2, 0);
+    					if (targetID > 0) {
+    						returnedArray = this.getAssetByID(targetID, [away.library.AssetType.TEXTURE]);
+    						if (!returnedArray[0])
+    							this._blocks[blockID].addError("Could not find the Mask-texture (ID = " + targetID + " ) for this EnvMapMethod");
+
+                            // Todo: test mask with EnvMapMethod
+    						//(<away.materials.EnvMapMethod> effectMethodReturn).mask = <away.textures.Texture2DBase> returnedArray[1];
+    					}
+    					break;
     //				case 404: //LightMapMethod
     //					targetID = props.get(1, 0);
     //					returnedArray = getAssetByID(targetID, [AssetType.TEXTURE]);
