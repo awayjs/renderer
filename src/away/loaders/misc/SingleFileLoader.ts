@@ -27,7 +27,7 @@ module away.loaders
         // Static
 
 		// Image parser only parser that is added by default, to save file size.
-        private static _parsers : any[] = new Array<any>( away.loaders.ImageParser );
+        private static _parsers : any[] = new Array<any>( away.loaders.ImageParser, away.loaders.CubeTextureParser );
 
         public static enableParser(parser : Object ) : void
         {
@@ -104,9 +104,9 @@ module away.loaders
 
 			if ( this._loadAsRawData ) {
 
-				// Always use binary for raw data loading
+				// Always use binary and IMGLoader for raw data loading
 				dataFormat = away.net.URLLoaderDataFormat.BINARY;
-
+                loaderType = away.loaders.ParserLoaderType.IMG_LOADER;
 			}
 			else
             {

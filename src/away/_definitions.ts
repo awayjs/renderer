@@ -147,6 +147,7 @@
 ///<reference path="core/net/URLLoader.ts" />
 ///<reference path="loaders/parsers/ParserDataFormat.ts" />
 ///<reference path="loaders/parsers/ImageParser.ts" />
+///<reference path="loaders/parsers/CubeTextureParser.ts"/>
 ///<reference path="loaders/misc/SingleFileLoader.ts"/>
 ///<reference path="loaders/misc/SingleFileImageLoader.ts" />
 ///<reference path="loaders/misc/SingleFileURLLoader.ts" />
@@ -154,7 +155,6 @@
 
 ///<reference path="loaders/parsers/utils/ParserUtil.ts"/>
 ///<reference path="loaders/parsers/OBJParser.ts"/>
-///<reference path="loaders/parsers/CubeTextureParser.ts"/>
 ///<reference path="loaders/parsers/AWDParser.ts"/>
 ///<reference path="loaders/parsers/Max3DSParser.ts"/>
 ///<reference path="loaders/parsers/MD2Parser.ts"/>

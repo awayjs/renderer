@@ -383,10 +383,12 @@ module away.loaders {
 			this.dispatchEvent(new away.events.ParserEvent(away.events.ParserEvent.PARSE_ERROR, message));
 		}
 
-		public _pAddDependency(id : string, req : away.net.URLRequest, retrieveAsRawData : boolean = false, data : any = null, suppressErrorEvents : boolean = false) : void
+		public _pAddDependency(id : string, req : away.net.URLRequest, retrieveAsRawData : boolean = false, data : any = null, suppressErrorEvents : boolean = false) : away.loaders.ResourceDependency
 		{
+            var dependency:away.loaders.ResourceDependency = new away.loaders.ResourceDependency(id, req, data, this, retrieveAsRawData, suppressErrorEvents);
+			this._dependencies.push(dependency);
 
-			this._dependencies.push(new away.loaders.ResourceDependency(id, req, data, this, retrieveAsRawData, suppressErrorEvents));
+            return dependency;
 		}
 
 		public _pPauseAndRetrieveDependencies() : void

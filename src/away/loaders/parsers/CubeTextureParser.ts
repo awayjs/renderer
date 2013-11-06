@@ -4,7 +4,7 @@ module away.loaders
 {
 
 	/**
-	 * ImageParser provides a "parser" for natively supported image types (jpg, png). While it simply loads bytes into
+	 * CubeTextureParser provides a "parser" for natively supported image types (jpg, png). While it simply loads bytes into
 	 * a loader object, it wraps it in a BitmapDataResource so resource management can happen consistently without
 	 * exception cases.
 	 */
@@ -18,31 +18,16 @@ module away.loaders
         private static posZ : string = 'posZ';
         private static negZ : string = 'negZ';
 
-        private STATE_PARSE_DATA        : number = 0;
-        private STATE_LOAD_IMAGES       : number = 1;
-        private STATE_COMPLETE          : number = 2;
-
-        private _state                  : number = -1;
-        private _dependencyCount        : number = 0;
-        private _loadedTextures         : away.textures.Texture2DBase[];
-
-        private _imgLoaderDictionary    : Object;
-        private _totalImages            : number = 0;
-        private _loadedImageCounter     : number = 0;
+        private _imgDependencyDictionary:Object;
 
 		/**
-		 * Creates a new ImageParser object.
+		 * Creates a new CubeTextureParser object.
 		 * @param uri The url or id of the data or file to be parsed.
 		 * @param extra The holder for extra contextual data that the parser might need.
 		 */
 		constructor()
 		{
-
 			super( away.loaders.ParserDataFormat.PLAIN_TEXT , away.loaders.ParserLoaderType.URL_LOADER );
-
-            this._loadedTextures = new Array<away.textures.Texture2DBase>();
-            this._state = this.STATE_PARSE_DATA;
-
 		}
 
 		/**
@@ -100,167 +85,93 @@ module away.loaders
 
         }
 
-        private parseJson( ) : void
+        /**
+         * @inheritDoc
+         */
+        public _pProceedParsing() : boolean
         {
+            if (this._imgDependencyDictionary != null) { //all images loaded
+                var asset : away.textures.HTMLImageElementCubeTexture = new away.textures.HTMLImageElementCubeTexture (
 
-            if ( CubeTextureParser.supportsData( this.data ) )
-            {
-
-                try
-                {
-
-                    this._imgLoaderDictionary = new Object();
-
-                    var json        : any = JSON.parse( this.data );
-                    var data        : Array = <Array> json.data;
-                    var rec         : any;
-                    var rq          : away.net.URLRequest;
-
-                    for ( var c : number = 0 ; c < data.length ; c ++ )
-                    {
-
-                        rec                 = data[c];
-
-                        var uri : string    = rec.image;
-                        var id  : number    = rec.id;
-
-                        rq                  = new away.net.URLRequest( uri );
-
-                        // Note: Not loading dependencies as we want these to be CubeTexture ( loader will automatically convert to Texture2d ) ;
-                        var imgLoader : away.net.IMGLoader  = new away.net.IMGLoader();
-
-                            imgLoader.name                  = rec.id;
-                            imgLoader.load( rq );
-                            imgLoader.addEventListener( away.events.Event.COMPLETE , this.onIMGLoadComplete , this );
-
-                        this._imgLoaderDictionary[ imgLoader.name ] = imgLoader;
-
-                    }
-
-                    if ( data.length != 6 )
-                    {
-                        this._pDieWithError( 'CubeTextureParser: Error - cube texture should have exactly 6 images');
-                        this._state = this.STATE_COMPLETE;
-
-                        return;
-                    }
-
-
-                    if ( ! this.validateCubeData() )
-                    {
-
-                        this._pDieWithError(    "CubeTextureParser: JSON data error - cubes require id of:   \n" +
-                                                CubeTextureParser.posX + ', ' + CubeTextureParser.negX + ',  \n' +
-                                                CubeTextureParser.posY + ', ' + CubeTextureParser.negY + ',  \n' +
-                                                CubeTextureParser.posZ + ', ' + CubeTextureParser.negZ ) ;
-
-                        this._state = this.STATE_COMPLETE;
-
-                        return;
-
-                    }
-
-                    this._state = this.STATE_LOAD_IMAGES;
-
-                }
-                catch ( e )
-                {
-
-                    this._pDieWithError( 'CubeTexturePaser Error parsing JSON');
-                    this._state = this.STATE_COMPLETE;
-
-                }
-
-
-            }
-
-        }
-
-        private createCubeTexture() : void
-        {
-
-            var asset : away.textures.HTMLImageElementCubeTexture = new away.textures.HTMLImageElementCubeTexture (
-
-                    this.getHTMLImageElement( CubeTextureParser.posX ) , this.getHTMLImageElement( CubeTextureParser.negX ),
-                    this.getHTMLImageElement( CubeTextureParser.posY ) , this.getHTMLImageElement( CubeTextureParser.negY ),
-                    this.getHTMLImageElement( CubeTextureParser.posZ ) , this.getHTMLImageElement( CubeTextureParser.negZ )
+                    this._getHTMLImageElement( CubeTextureParser.posX ) , this._getHTMLImageElement( CubeTextureParser.negX ),
+                    this._getHTMLImageElement( CubeTextureParser.posY ) , this._getHTMLImageElement( CubeTextureParser.negY ),
+                    this._getHTMLImageElement( CubeTextureParser.posZ ) , this._getHTMLImageElement( CubeTextureParser.negZ )
                 );
+
+                //clear dictionary
+                this._imgDependencyDictionary = null;
 
                 asset.name = this._iFileName;
 
-            this._pFinalizeAsset( <away.library.IAsset> asset , this._iFileName );
+                this._pFinalizeAsset( <away.library.IAsset> asset , this._iFileName );
 
-            this._state = this.STATE_COMPLETE;
+                return away.loaders.ParserBase.PARSING_DONE;
+            }
 
-        }
-
-        private validateCubeData() : boolean
-        {
-
-            return  ( this.getHTMLImageElement( CubeTextureParser.posX ) != null && this.getHTMLImageElement( CubeTextureParser.negX ) != null &&
-                      this.getHTMLImageElement( CubeTextureParser.posY ) != null && this.getHTMLImageElement( CubeTextureParser.negY ) != null &&
-                      this.getHTMLImageElement( CubeTextureParser.posZ ) != null && this.getHTMLImageElement( CubeTextureParser.negZ ) != null );
-
-        }
-
-        private getHTMLImageElement( name : string ) : HTMLImageElement
-        {
-
-            var imgLoader : away.net.IMGLoader = <away.net.IMGLoader> this._imgLoaderDictionary[ name ];
-
-            if ( imgLoader )
+            try
             {
-                return imgLoader.image;
+                var json:any = JSON.parse( this.data );
+                var data:Array = <Array> json.data;
+                var rec:any;
+
+                if ( data.length != 6 )
+                {
+                    this._pDieWithError( 'CubeTextureParser: Error - cube texture should have exactly 6 images');
+                }
+
+                if ( json )
+                {
+                    this._imgDependencyDictionary = new Object();
+
+                    for ( var c : number = 0 ; c < data.length ; c ++ )
+                    {
+                        rec = data[c];
+                        this._imgDependencyDictionary[rec.id] = this._pAddDependency(rec.id, new away.net.URLRequest(rec.image), true);
+                    }
+
+                    if ( ! this._validateCubeData() )
+                    {
+
+                        this._pDieWithError(    "CubeTextureParser: JSON data error - cubes require id of:   \n" +
+                            CubeTextureParser.posX + ', ' + CubeTextureParser.negX + ',  \n' +
+                            CubeTextureParser.posY + ', ' + CubeTextureParser.negY + ',  \n' +
+                            CubeTextureParser.posZ + ', ' + CubeTextureParser.negZ ) ;
+
+                        return away.loaders.ParserBase.PARSING_DONE;
+
+                    }
+
+                    this._pPauseAndRetrieveDependencies();
+
+                    return away.loaders.ParserBase.MORE_TO_PARSE;
+                }
+            }
+            catch ( e )
+            {
+                this._pDieWithError( 'CubeTexturePaser Error parsing JSON');
+            }
+
+            return away.loaders.ParserBase.PARSING_DONE;
+
+        }
+
+        private _validateCubeData() : boolean
+        {
+            return  ( this._imgDependencyDictionary[ CubeTextureParser.posX ] != null && this._imgDependencyDictionary[ CubeTextureParser.negX ] != null &&
+                this._imgDependencyDictionary[ CubeTextureParser.posY ] != null && this._imgDependencyDictionary[ CubeTextureParser.negY ] != null &&
+                this._imgDependencyDictionary[ CubeTextureParser.posZ ] != null && this._imgDependencyDictionary[ CubeTextureParser.negZ ] != null );
+        }
+
+        private _getHTMLImageElement( name : string ) : HTMLImageElement
+        {
+            var dependency : away.loaders.ResourceDependency = <away.loaders.ResourceDependency> this._imgDependencyDictionary[ name ];
+
+            if ( dependency ) {
+                return <HTMLImageElement> dependency.data;
             }
 
             return null;
-
         }
-
-        private onIMGLoadComplete( e : away.events.Event ) : void
-        {
-
-            this._loadedImageCounter ++;
-
-            if ( this._loadedImageCounter == 6 )
-            {
-                this.createCubeTexture();
-            }
-
-        }
-
-		/**
-		 * @inheritDoc
-		 */
-		public _pProceedParsing() : boolean
-		{
-
-            switch ( this._state )
-            {
-
-                case this.STATE_PARSE_DATA:
-
-                    this.parseJson();
-                    return away.loaders.ParserBase.MORE_TO_PARSE;
-
-                    break;
-
-                case this.STATE_LOAD_IMAGES:
-
-                    // Async load image process
-                    //return away.loaders.ParserBase.MORE_TO_PARSE;
-
-                    break;
-
-                case this.STATE_COMPLETE:
-
-                    return away.loaders.ParserBase.PARSING_DONE;
-
-                    break;
-
-            }
-
-		}
 
 	}
 }
