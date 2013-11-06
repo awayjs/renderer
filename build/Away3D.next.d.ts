@@ -5884,6 +5884,7 @@ declare module away.loaders {
         private parsePrimitves(blockID);
         private parseContainer(blockID);
         private parseMeshInstance(blockID);
+        private parseSkyBoxInstance(blockID);
         private parseLight(blockID);
         private parseCamera(blockID);
         private parseLightPicker(blockID);

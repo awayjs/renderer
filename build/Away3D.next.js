@@ -20395,7 +20395,7 @@ var away;
             function AWDParser() {
                 _super.call(this, away.loaders.ParserDataFormat.BINARY);
                 //set to "true" to have some traces in the Console
-                this._debug = true;
+                this._debug = false;
                 this._startedParsing = false;
                 this._texture_users = {};
                 this._parsed_header = false;
@@ -20724,6 +20724,8 @@ var away;
                             isParsed = true;
                             break;
                         case 31:
+                            this.parseSkyBoxInstance(this._cur_block_id);
+                            isParsed = true;
                             break;
                         case 41:
                             this.parseLight(this._cur_block_id);
@@ -21166,6 +21168,24 @@ var away;
                 if (this._debug) {
                     console.log("Parsed a Mesh: Name = '" + name + "' | Parent-Name = " + parentName + "| Geometry-Name = " + geom.name + " | SubMeshes = " + mesh.subMeshes.length + " | Mat-Names = " + materialNames.toString());
                 }
+            };
+
+            //Block ID 31
+            AWDParser.prototype.parseSkyBoxInstance = function (blockID) {
+                var name = this.parseVarStr();
+                var cubeTexAddr = this._newBlockBytes.readUnsignedInt();
+
+                var returnedArrayCubeTex = this.getAssetByID(cubeTexAddr, [away.library.AssetType.TEXTURE], "CubeTexture");
+                if ((!returnedArrayCubeTex[0]) && (cubeTexAddr != 0))
+                    this._blocks[blockID].addError("Could not find the Cubetexture (ID = " + cubeTexAddr + " ) for this SkyBox");
+                var asset = new away.entities.SkyBox(returnedArrayCubeTex[1]);
+
+                this.parseProperties(null);
+                asset.extra = this.parseUserAttributes();
+                this._pFinalizeAsset(asset, name);
+                this._blocks[blockID].data = asset;
+                if (this._debug)
+                    console.log("Parsed a SkyBox: Name = '" + name + "' | CubeTexture-Name = " + (returnedArrayCubeTex[1]).name);
             };
 
             //Block ID = 41
@@ -21719,7 +21739,8 @@ else
                         data = new away.utils.ByteArray();
 
                         this._newBlockBytes.readBytes(data, 0, data_len);
-                        this._pAddDependency(this._cur_block_id.toString() + "#" + i, null, false, data, true);
+
+                        this._pAddDependency(this._cur_block_id.toString() + "#" + i, null, false, away.loaders.ParserUtil.byteArrayToImage(data), true);
                     }
                 }
 
@@ -21900,7 +21921,25 @@ else
                 var props = this.parseProperties({ 1: AWDParser.BADDR, 2: AWDParser.BADDR, 3: AWDParser.BADDR, 101: this._propsNrType, 102: this._propsNrType, 103: this._propsNrType, 104: this._propsNrType, 105: this._propsNrType, 106: this._propsNrType, 107: this._propsNrType, 201: AWDParser.UINT32, 202: AWDParser.UINT32, 301: AWDParser.UINT16, 302: AWDParser.UINT16, 401: AWDParser.UINT8, 402: AWDParser.UINT8, 601: AWDParser.COLOR, 602: AWDParser.COLOR, 701: AWDParser.BOOL, 702: AWDParser.BOOL });
                 var targetID;
                 var returnedArray;
+
                 switch (methodType) {
+                    case 403:
+                        targetID = props.get(1, 0);
+                        console.log('ENV MAP', targetID);
+
+                        returnedArray = this.getAssetByID(targetID, [away.library.AssetType.TEXTURE], "CubeTexture");
+                        if (!returnedArray[0])
+                            this._blocks[blockID].addError("Could not find the EnvMap (ID = " + targetID + " ) for this EnvMapMethod");
+                        effectMethodReturn = new away.materials.EnvMapMethod(returnedArray[1], props.get(101, 1));
+                        targetID = props.get(2, 0);
+                        if (targetID > 0) {
+                            returnedArray = this.getAssetByID(targetID, [away.library.AssetType.TEXTURE]);
+                            if (!returnedArray[0])
+                                this._blocks[blockID].addError("Could not find the Mask-texture (ID = " + targetID + " ) for this EnvMapMethod");
+                            // Todo: test mask with EnvMapMethod
+                            //(<away.materials.EnvMapMethod> effectMethodReturn).mask = <away.textures.Texture2DBase> returnedArray[1];
+                        }
+                        break;
                 }
                 this.parseUserAttributes();
                 return effectMethodReturn;
@@ -26398,18 +26437,19 @@ var away;
                     var vertString = vertCompiler.compile(away.display3D.Context3DProgramType.VERTEX, vertexCode);
                     var fragString = fragCompiler.compile(away.display3D.Context3DProgramType.FRAGMENT, fragmentCode);
 
-                    console.log('===GLSL=========================================================');
-                    console.log('vertString');
-                    console.log(vertString);
-                    console.log('fragString');
-                    console.log(fragString);
-
-                    console.log('===AGAL=========================================================');
-                    console.log('vertexCode');
-                    console.log(vertexCode);
-                    console.log('fragmentCode');
-                    console.log(fragmentCode);
-
+                    /*
+                    console.log( '===GLSL=========================================================');
+                    console.log( 'vertString' );
+                    console.log( vertString );
+                    console.log( 'fragString' );
+                    console.log( fragString );
+                    
+                    console.log( '===AGAL=========================================================');
+                    console.log( 'vertexCode' );
+                    console.log( vertexCode );
+                    console.log( 'fragmentCode' );
+                    console.log( fragmentCode );
+                    */
                     program.upload(vertString, fragString);
 
                     /*
