@@ -16786,7 +16786,10 @@ var away;
                 if (typeof retrieveAsRawData === "undefined") { retrieveAsRawData = false; }
                 if (typeof data === "undefined") { data = null; }
                 if (typeof suppressErrorEvents === "undefined") { suppressErrorEvents = false; }
-                this._dependencies.push(new away.loaders.ResourceDependency(id, req, data, this, retrieveAsRawData, suppressErrorEvents));
+                var dependency = new away.loaders.ResourceDependency(id, req, data, this, retrieveAsRawData, suppressErrorEvents);
+                this._dependencies.push(dependency);
+
+                return dependency;
             };
 
             ParserBase.prototype._pPauseAndRetrieveDependencies = function () {
@@ -18519,6 +18522,143 @@ var away;
 })(away || (away = {}));
 var away;
 (function (away) {
+    ///<reference path="../../../../src/away/_definitions.ts" />
+    (function (loaders) {
+        /**
+        * CubeTextureParser provides a "parser" for natively supported image types (jpg, png). While it simply loads bytes into
+        * a loader object, it wraps it in a BitmapDataResource so resource management can happen consistently without
+        * exception cases.
+        */
+        var CubeTextureParser = (function (_super) {
+            __extends(CubeTextureParser, _super);
+            /**
+            * Creates a new CubeTextureParser object.
+            * @param uri The url or id of the data or file to be parsed.
+            * @param extra The holder for extra contextual data that the parser might need.
+            */
+            function CubeTextureParser() {
+                _super.call(this, away.loaders.ParserDataFormat.PLAIN_TEXT, away.loaders.ParserLoaderType.URL_LOADER);
+            }
+            CubeTextureParser.supportsType = /**
+            * Indicates whether or not a given file extension is supported by the parser.
+            * @param extension The file extension of a potential file to be parsed.
+            * @return Whether or not the given file type is supported.
+            */
+            function (extension) {
+                extension = extension.toLowerCase();
+                return extension == "cube";
+            };
+
+            CubeTextureParser.supportsData = /**
+            * Tests whether a data block can be parsed by the parser.
+            * @param data The data block to potentially be parsed.
+            * @return Whether or not the given data is supported.
+            */
+            function (data) {
+                try  {
+                    var obj = JSON.parse(data);
+
+                    if (obj) {
+                        return true;
+                    }
+                    return false;
+                } catch (e) {
+                    return false;
+                }
+
+                return false;
+            };
+
+            /**
+            * @inheritDoc
+            */
+            CubeTextureParser.prototype._iResolveDependency = function (resourceDependency) {
+            };
+
+            /**
+            * @inheritDoc
+            */
+            CubeTextureParser.prototype._iResolveDependencyFailure = function (resourceDependency) {
+            };
+
+            /**
+            * @inheritDoc
+            */
+            CubeTextureParser.prototype._pProceedParsing = function () {
+                if (this._imgDependencyDictionary != null) {
+                    var asset = new away.textures.HTMLImageElementCubeTexture(this._getHTMLImageElement(CubeTextureParser.posX), this._getHTMLImageElement(CubeTextureParser.negX), this._getHTMLImageElement(CubeTextureParser.posY), this._getHTMLImageElement(CubeTextureParser.negY), this._getHTMLImageElement(CubeTextureParser.posZ), this._getHTMLImageElement(CubeTextureParser.negZ));
+
+                    //clear dictionary
+                    this._imgDependencyDictionary = null;
+
+                    asset.name = this._iFileName;
+
+                    this._pFinalizeAsset(asset, this._iFileName);
+
+                    return away.loaders.ParserBase.PARSING_DONE;
+                }
+
+                try  {
+                    var json = JSON.parse(this.data);
+                    var data = json.data;
+                    var rec;
+
+                    if (data.length != 6) {
+                        this._pDieWithError('CubeTextureParser: Error - cube texture should have exactly 6 images');
+                    }
+
+                    if (json) {
+                        this._imgDependencyDictionary = new Object();
+
+                        for (var c = 0; c < data.length; c++) {
+                            rec = data[c];
+                            this._imgDependencyDictionary[rec.id] = this._pAddDependency(rec.id, new away.net.URLRequest(rec.image), true);
+                        }
+
+                        if (!this._validateCubeData()) {
+                            this._pDieWithError("CubeTextureParser: JSON data error - cubes require id of:   \n" + CubeTextureParser.posX + ', ' + CubeTextureParser.negX + ',  \n' + CubeTextureParser.posY + ', ' + CubeTextureParser.negY + ',  \n' + CubeTextureParser.posZ + ', ' + CubeTextureParser.negZ);
+
+                            return away.loaders.ParserBase.PARSING_DONE;
+                        }
+
+                        this._pPauseAndRetrieveDependencies();
+
+                        return away.loaders.ParserBase.MORE_TO_PARSE;
+                    }
+                } catch (e) {
+                    this._pDieWithError('CubeTexturePaser Error parsing JSON');
+                }
+
+                return away.loaders.ParserBase.PARSING_DONE;
+            };
+
+            CubeTextureParser.prototype._validateCubeData = function () {
+                return (this._imgDependencyDictionary[CubeTextureParser.posX] != null && this._imgDependencyDictionary[CubeTextureParser.negX] != null && this._imgDependencyDictionary[CubeTextureParser.posY] != null && this._imgDependencyDictionary[CubeTextureParser.negY] != null && this._imgDependencyDictionary[CubeTextureParser.posZ] != null && this._imgDependencyDictionary[CubeTextureParser.negZ] != null);
+            };
+
+            CubeTextureParser.prototype._getHTMLImageElement = function (name) {
+                var dependency = this._imgDependencyDictionary[name];
+
+                if (dependency) {
+                    return dependency.data;
+                }
+
+                return null;
+            };
+            CubeTextureParser.posX = 'posX';
+            CubeTextureParser.negX = 'negX';
+            CubeTextureParser.posY = 'posY';
+            CubeTextureParser.negY = 'negY';
+            CubeTextureParser.posZ = 'posZ';
+            CubeTextureParser.negZ = 'negZ';
+            return CubeTextureParser;
+        })(away.loaders.ParserBase);
+        loaders.CubeTextureParser = CubeTextureParser;
+    })(away.loaders || (away.loaders = {}));
+    var loaders = away.loaders;
+})(away || (away = {}));
+var away;
+(function (away) {
     ///<reference path="../../_definitions.ts"/>
     (function (loaders) {
         /**
@@ -18603,8 +18743,9 @@ var away;
                 this.decomposeFilename(this._req.url);
 
                 if (this._loadAsRawData) {
-                    // Always use binary for raw data loading
+                    // Always use binary and IMGLoader for raw data loading
                     dataFormat = away.net.URLLoaderDataFormat.BINARY;
+                    loaderType = away.loaders.ParserLoaderType.IMG_LOADER;
                 } else {
                     if (parser) {
                         this._parser = parser;
@@ -18886,7 +19027,7 @@ var away;
                 this._parser.removeEventListener(away.events.AssetEvent.SKELETON_COMPLETE, this.onAssetComplete, this);
                 this._parser.removeEventListener(away.events.AssetEvent.SKELETON_POSE_COMPLETE, this.onAssetComplete, this);
             };
-            SingleFileLoader._parsers = new Array(away.loaders.ImageParser);
+            SingleFileLoader._parsers = new Array(away.loaders.ImageParser, away.loaders.CubeTextureParser);
             return SingleFileLoader;
         })(away.events.EventDispatcher);
         loaders.SingleFileLoader = SingleFileLoader;
@@ -20237,192 +20378,6 @@ var Vertex = (function () {
     };
     return Vertex;
 })();
-var away;
-(function (away) {
-    ///<reference path="../../../../src/away/_definitions.ts" />
-    (function (loaders) {
-        /**
-        * ImageParser provides a "parser" for natively supported image types (jpg, png). While it simply loads bytes into
-        * a loader object, it wraps it in a BitmapDataResource so resource management can happen consistently without
-        * exception cases.
-        */
-        var CubeTextureParser = (function (_super) {
-            __extends(CubeTextureParser, _super);
-            /**
-            * Creates a new ImageParser object.
-            * @param uri The url or id of the data or file to be parsed.
-            * @param extra The holder for extra contextual data that the parser might need.
-            */
-            function CubeTextureParser() {
-                _super.call(this, away.loaders.ParserDataFormat.PLAIN_TEXT, away.loaders.ParserLoaderType.URL_LOADER);
-                this.STATE_PARSE_DATA = 0;
-                this.STATE_LOAD_IMAGES = 1;
-                this.STATE_COMPLETE = 2;
-                this._state = -1;
-                this._dependencyCount = 0;
-                this._totalImages = 0;
-                this._loadedImageCounter = 0;
-
-                this._loadedTextures = new Array();
-                this._state = this.STATE_PARSE_DATA;
-            }
-            CubeTextureParser.supportsType = /**
-            * Indicates whether or not a given file extension is supported by the parser.
-            * @param extension The file extension of a potential file to be parsed.
-            * @return Whether or not the given file type is supported.
-            */
-            function (extension) {
-                extension = extension.toLowerCase();
-                return extension == "cube";
-            };
-
-            CubeTextureParser.supportsData = /**
-            * Tests whether a data block can be parsed by the parser.
-            * @param data The data block to potentially be parsed.
-            * @return Whether or not the given data is supported.
-            */
-            function (data) {
-                try  {
-                    var obj = JSON.parse(data);
-
-                    if (obj) {
-                        return true;
-                    }
-                    return false;
-                } catch (e) {
-                    return false;
-                }
-
-                return false;
-            };
-
-            /**
-            * @inheritDoc
-            */
-            CubeTextureParser.prototype._iResolveDependency = function (resourceDependency) {
-            };
-
-            /**
-            * @inheritDoc
-            */
-            CubeTextureParser.prototype._iResolveDependencyFailure = function (resourceDependency) {
-            };
-
-            CubeTextureParser.prototype.parseJson = function () {
-                if (CubeTextureParser.supportsData(this.data)) {
-                    try  {
-                        this._imgLoaderDictionary = new Object();
-
-                        var json = JSON.parse(this.data);
-                        var data = json.data;
-                        var rec;
-                        var rq;
-
-                        for (var c = 0; c < data.length; c++) {
-                            rec = data[c];
-
-                            var uri = rec.image;
-                            var id = rec.id;
-
-                            rq = new away.net.URLRequest(uri);
-
-                            // Note: Not loading dependencies as we want these to be CubeTexture ( loader will automatically convert to Texture2d ) ;
-                            var imgLoader = new away.net.IMGLoader();
-
-                            imgLoader.name = rec.id;
-                            imgLoader.load(rq);
-                            imgLoader.addEventListener(away.events.Event.COMPLETE, this.onIMGLoadComplete, this);
-
-                            this._imgLoaderDictionary[imgLoader.name] = imgLoader;
-                        }
-
-                        if (data.length != 6) {
-                            this._pDieWithError('CubeTextureParser: Error - cube texture should have exactly 6 images');
-                            this._state = this.STATE_COMPLETE;
-
-                            return;
-                        }
-
-                        if (!this.validateCubeData()) {
-                            this._pDieWithError("CubeTextureParser: JSON data error - cubes require id of:   \n" + CubeTextureParser.posX + ', ' + CubeTextureParser.negX + ',  \n' + CubeTextureParser.posY + ', ' + CubeTextureParser.negY + ',  \n' + CubeTextureParser.posZ + ', ' + CubeTextureParser.negZ);
-
-                            this._state = this.STATE_COMPLETE;
-
-                            return;
-                        }
-
-                        this._state = this.STATE_LOAD_IMAGES;
-                    } catch (e) {
-                        this._pDieWithError('CubeTexturePaser Error parsing JSON');
-                        this._state = this.STATE_COMPLETE;
-                    }
-                }
-            };
-
-            CubeTextureParser.prototype.createCubeTexture = function () {
-                var asset = new away.textures.HTMLImageElementCubeTexture(this.getHTMLImageElement(CubeTextureParser.posX), this.getHTMLImageElement(CubeTextureParser.negX), this.getHTMLImageElement(CubeTextureParser.posY), this.getHTMLImageElement(CubeTextureParser.negY), this.getHTMLImageElement(CubeTextureParser.posZ), this.getHTMLImageElement(CubeTextureParser.negZ));
-
-                asset.name = this._iFileName;
-
-                this._pFinalizeAsset(asset, this._iFileName);
-
-                this._state = this.STATE_COMPLETE;
-            };
-
-            CubeTextureParser.prototype.validateCubeData = function () {
-                return (this.getHTMLImageElement(CubeTextureParser.posX) != null && this.getHTMLImageElement(CubeTextureParser.negX) != null && this.getHTMLImageElement(CubeTextureParser.posY) != null && this.getHTMLImageElement(CubeTextureParser.negY) != null && this.getHTMLImageElement(CubeTextureParser.posZ) != null && this.getHTMLImageElement(CubeTextureParser.negZ) != null);
-            };
-
-            CubeTextureParser.prototype.getHTMLImageElement = function (name) {
-                var imgLoader = this._imgLoaderDictionary[name];
-
-                if (imgLoader) {
-                    return imgLoader.image;
-                }
-
-                return null;
-            };
-
-            CubeTextureParser.prototype.onIMGLoadComplete = function (e) {
-                this._loadedImageCounter++;
-
-                if (this._loadedImageCounter == 6) {
-                    this.createCubeTexture();
-                }
-            };
-
-            /**
-            * @inheritDoc
-            */
-            CubeTextureParser.prototype._pProceedParsing = function () {
-                switch (this._state) {
-                    case this.STATE_PARSE_DATA:
-                        this.parseJson();
-                        return away.loaders.ParserBase.MORE_TO_PARSE;
-
-                        break;
-
-                    case this.STATE_LOAD_IMAGES:
-                        break;
-
-                    case this.STATE_COMPLETE:
-                        return away.loaders.ParserBase.PARSING_DONE;
-
-                        break;
-                }
-            };
-            CubeTextureParser.posX = 'posX';
-            CubeTextureParser.negX = 'negX';
-            CubeTextureParser.posY = 'posY';
-            CubeTextureParser.negY = 'negY';
-            CubeTextureParser.posZ = 'posZ';
-            CubeTextureParser.negZ = 'negZ';
-            return CubeTextureParser;
-        })(away.loaders.ParserBase);
-        loaders.CubeTextureParser = CubeTextureParser;
-    })(away.loaders || (away.loaders = {}));
-    var loaders = away.loaders;
-})(away || (away = {}));
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>

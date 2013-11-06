@@ -4601,7 +4601,7 @@ declare module away.loaders {
         */
         public _pProceedParsing(): boolean;
         public _pDieWithError(message?: string): void;
-        public _pAddDependency(id: string, req: away.net.URLRequest, retrieveAsRawData?: boolean, data?: any, suppressErrorEvents?: boolean): void;
+        public _pAddDependency(id: string, req: away.net.URLRequest, retrieveAsRawData?: boolean, data?: any, suppressErrorEvents?: boolean): loaders.ResourceDependency;
         public _pPauseAndRetrieveDependencies(): void;
         /**
         * Tests whether or not there is still time left for parsing within the maximum allowed time frame per session.
@@ -5279,6 +5279,54 @@ declare module away.loaders {
 }
 declare module away.loaders {
     /**
+    * CubeTextureParser provides a "parser" for natively supported image types (jpg, png). While it simply loads bytes into
+    * a loader object, it wraps it in a BitmapDataResource so resource management can happen consistently without
+    * exception cases.
+    */
+    class CubeTextureParser extends loaders.ParserBase {
+        private static posX;
+        private static negX;
+        private static posY;
+        private static negY;
+        private static posZ;
+        private static negZ;
+        private _imgDependencyDictionary;
+        /**
+        * Creates a new CubeTextureParser object.
+        * @param uri The url or id of the data or file to be parsed.
+        * @param extra The holder for extra contextual data that the parser might need.
+        */
+        constructor();
+        /**
+        * Indicates whether or not a given file extension is supported by the parser.
+        * @param extension The file extension of a potential file to be parsed.
+        * @return Whether or not the given file type is supported.
+        */
+        static supportsType(extension: string): boolean;
+        /**
+        * Tests whether a data block can be parsed by the parser.
+        * @param data The data block to potentially be parsed.
+        * @return Whether or not the given data is supported.
+        */
+        static supportsData(data: any): boolean;
+        /**
+        * @inheritDoc
+        */
+        public _iResolveDependency(resourceDependency: loaders.ResourceDependency): void;
+        /**
+        * @inheritDoc
+        */
+        public _iResolveDependencyFailure(resourceDependency: loaders.ResourceDependency): void;
+        /**
+        * @inheritDoc
+        */
+        public _pProceedParsing(): boolean;
+        private _validateCubeData();
+        private _getHTMLImageElement(name);
+    }
+}
+declare module away.loaders {
+    /**
     * The SingleFileLoader is used to load a single file, as part of a resource.
     *
     * While SingleFileLoader can be used directly, e.g. to create a third-party asset
@@ -5739,65 +5787,6 @@ declare class Vertex {
     */
     public clone(): Vertex;
     public FaceData(): void;
-}
-declare module away.loaders {
-    /**
-    * ImageParser provides a "parser" for natively supported image types (jpg, png). While it simply loads bytes into
-    * a loader object, it wraps it in a BitmapDataResource so resource management can happen consistently without
-    * exception cases.
-    */
-    class CubeTextureParser extends loaders.ParserBase {
-        private static posX;
-        private static negX;
-        private static posY;
-        private static negY;
-        private static posZ;
-        private static negZ;
-        private STATE_PARSE_DATA;
-        private STATE_LOAD_IMAGES;
-        private STATE_COMPLETE;
-        private _state;
-        private _dependencyCount;
-        private _loadedTextures;
-        private _imgLoaderDictionary;
-        private _totalImages;
-        private _loadedImageCounter;
-        /**
-        * Creates a new ImageParser object.
-        * @param uri The url or id of the data or file to be parsed.
-        * @param extra The holder for extra contextual data that the parser might need.
-        */
-        constructor();
-        /**
-        * Indicates whether or not a given file extension is supported by the parser.
-        * @param extension The file extension of a potential file to be parsed.
-        * @return Whether or not the given file type is supported.
-        */
-        static supportsType(extension: string): boolean;
-        /**
-        * Tests whether a data block can be parsed by the parser.
-        * @param data The data block to potentially be parsed.
-        * @return Whether or not the given data is supported.
-        */
-        static supportsData(data: any): boolean;
-        /**
-        * @inheritDoc
-        */
-        public _iResolveDependency(resourceDependency: loaders.ResourceDependency): void;
-        /**
-        * @inheritDoc
-        */
-        public _iResolveDependencyFailure(resourceDependency: loaders.ResourceDependency): void;
-        private parseJson();
-        private createCubeTexture();
-        private validateCubeData();
-        private getHTMLImageElement(name);
-        private onIMGLoadComplete(e);
-        /**
-        * @inheritDoc
-        */
-        public _pProceedParsing(): boolean;
-    }
 }
 declare module away.loaders {
     /**
