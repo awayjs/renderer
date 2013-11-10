@@ -4511,6 +4511,33 @@ var away;
                 }
             };
 
+            BitmapData.prototype.colorTransform = function (rect, colorTransform) {
+                if (!this._locked) {
+                    this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
+                }
+
+                if (this._imageData) {
+                    var data = this._imageData.data;
+
+                    var i/*uint*/ , j, index;
+                    for (i = 0; i < rect.width; ++i) {
+                        for (j = 0; j < rect.height; ++j) {
+                            index = (i + rect.x + (j + rect.y) * this.width) * 4;
+
+                            data[index] = data[index] * colorTransform.redMultiplier + colorTransform.redOffset;
+                            data[index + 1] = data[index + 1] * colorTransform.greenMultiplier + colorTransform.greenOffset;
+                            data[index + 2] = data[index + 2] * colorTransform.blueMultiplier + colorTransform.blueOffset;
+                            data[index + 3] = data[index + 3] * colorTransform.alphaMultiplier + colorTransform.alphaOffset;
+                        }
+                    }
+                }
+
+                if (!this._locked) {
+                    this._context.putImageData(this._imageData, 0, 0);
+                    this._imageData = null;
+                }
+            };
+
 
             Object.defineProperty(BitmapData.prototype, "imageData", {
                 get: /**

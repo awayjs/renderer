@@ -1494,6 +1494,7 @@ declare module away.display {
         public draw(source: HTMLImageElement, matrix?: away.geom.Matrix);
         private _draw(source, matrix);
         public copyChannel(sourceBitmap: BitmapData, sourceRect: away.geom.Rectangle, destPoint: away.geom.Point, sourceChannel: number, destChannel: number): void;
+        public colorTransform(rect: away.geom.Rectangle, colorTransform: away.geom.ColorTransform): void;
         /**
         *
         * @returns {ImageData}
