@@ -131,8 +131,6 @@ module examples
             this._timer = new away.utils.RequestAnimationFrame(this.onEnterFrame, this);
             this._timer.start();
 
-            //away.library.AssetLibrary.enableParser( away.loaders.CubeTextureParser );
-
             away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete, this);
 
             //setup the url map for textures in the cubemap file
@@ -157,6 +155,7 @@ module examples
             this._view.camera.moveBackward(600);
             this._view.render();
         }
+
         /**
          * Listener function for resource complete event on asset library
          */
