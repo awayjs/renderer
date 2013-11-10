@@ -1490,9 +1490,10 @@ declare module away.display {
         * @param source
         * @param matrix
         */
-        public draw(source: BitmapData, matrix: away.geom.Matrix);
-        public draw(source: HTMLImageElement, matrix: away.geom.Matrix);
+        public draw(source: BitmapData, matrix?: away.geom.Matrix);
+        public draw(source: HTMLImageElement, matrix?: away.geom.Matrix);
         private _draw(source, matrix);
+        public copyChannel(sourceBitmap: BitmapData, sourceRect: away.geom.Rectangle, destPoint: away.geom.Point, sourceChannel: number, destChannel: number): void;
         /**
         *
         * @returns {ImageData}
@@ -1539,6 +1540,14 @@ declare module away.display {
         * convert decimal value to Hex
         */
         private hexToRGBACSS(d);
+    }
+}
+declare module away.display {
+    class BitmapDataChannel {
+        static ALPHA: number;
+        static BLUE: number;
+        static GREEN: number;
+        static RED: number;
     }
 }
 declare module away.display3D {
@@ -13042,11 +13051,11 @@ declare module away.materials {
     * version of Phong specularity).
     */
     class BasicSpecularMethod extends materials.LightingMethodBase {
-        private _useTexture;
-        private _totalLightColorReg;
-        private _specularTextureRegister;
-        private _specularTexData;
-        private _specularDataRegister;
+        public _pUseTexture: boolean;
+        public _pTotalLightColorReg: materials.ShaderRegisterElement;
+        public _pSpecularTextureRegister: materials.ShaderRegisterElement;
+        public _pSpecularTexData: materials.ShaderRegisterElement;
+        public _pSpecularDataRegister: materials.ShaderRegisterElement;
         private _texture;
         private _gloss;
         private _specular;
@@ -13055,7 +13064,7 @@ declare module away.materials {
         public _iSpecularG: number;
         public _iSpecularB: number;
         private _shadowRegister;
-        private _isFirstLight;
+        public _pIsFirstLight: boolean;
         /**
         * Creates a new BasicSpecularMethod object.
         */
@@ -13148,6 +13157,21 @@ declare module away.materials {
 }
 declare module away.materials {
     /**
+    * PhongSpecularMethod provides a specular method that provides Phong highlights.
+    */
+    class PhongSpecularMethod extends materials.BasicSpecularMethod {
+        /**
+        * Creates a new PhongSpecularMethod object.
+        */
+        constructor();
+        /**
+        * @inheritDoc
+        */
+        public iGetFragmentCodePerLight(vo: materials.MethodVO, lightDirReg: materials.ShaderRegisterElement, lightColReg: materials.ShaderRegisterElement, regCache: materials.ShaderRegisterCache): string;
+    }
+}
+declare module away.materials {
+    /**
     * CompositeDiffuseMethod provides a base class for diffuse methods that wrap a diffuse method to alter the
     * calculated diffuse reflection strength.
     */
@@ -13158,7 +13182,8 @@ declare module away.materials {
         * @param modulateMethod The method which will add the code to alter the base method's strength. It needs to have the signature clampDiffuse(t : ShaderRegisterElement, regCache : ShaderRegisterCache) : string, in which t.w will contain the diffuse strength.
         * @param baseDiffuseMethod The base diffuse method on which this method's shading is based.
         */
-        constructor(modulateMethod?: Function, baseDiffuseMethod?: materials.BasicDiffuseMethod);
+        constructor(scope: Object, modulateMethod?: Function, baseDiffuseMethod?: materials.BasicDiffuseMethod);
+        public _pInitCompositeDiffuseMethod(scope: Object, modulateMethod: Function, baseDiffuseMethod?: materials.BasicDiffuseMethod): void;
         /**
         * The base diffuse method on which this method's shading is based.
         */
@@ -13263,8 +13288,8 @@ declare module away.materials {
         * @param modulateMethod The method which will add the code to alter the base method's strength. It needs to have the signature modSpecular(t : ShaderRegisterElement, regCache : ShaderRegisterCache) : string, in which t.w will contain the specular strength and t.xyz will contain the half-vector or the reflection vector.
         * @param baseSpecularMethod The base specular method on which this method's shading is based.
         */
-        constructor();
-        public initCompositeSpecularMethod(scope: Object, modulateMethod: Function, baseSpecularMethod?: materials.BasicSpecularMethod): void;
+        constructor(scope: Object, modulateMethod: Function, baseSpecularMethod?: materials.BasicSpecularMethod);
+        public _pInitCompositeSpecularMethod(scope: Object, modulateMethod: Function, baseSpecularMethod?: materials.BasicSpecularMethod): void;
         /**
         * @inheritDoc
         */
@@ -14043,6 +14068,30 @@ declare module away.utils {
         public toFloatBits(x: number): number;
         public readFloat(b: number): number;
         public fromFloatBits(x: number): number;
+    }
+}
+declare module away.utils {
+    /**
+    * Helper class for casting assets to usable objects
+    */
+    class Cast {
+        private static _colorNames;
+        private static _hexChars;
+        private static _notClasses;
+        private static _classes;
+        static string(data: any): string;
+        static byteArray(data: any): utils.ByteArray;
+        private static isHex(str);
+        static tryColor(data: any): number;
+        static color(data: any): number;
+        static tryClass(name: string): any;
+        static bitmapData(data: any): away.display.BitmapData;
+        static bitmapTexture(data: any): away.textures.BitmapTexture;
+    }
+}
+declare module away.errors {
+    class CastError extends errors.Error {
+        constructor(message: string);
     }
 }
 declare module aglsl {
