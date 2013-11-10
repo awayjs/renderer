@@ -16,28 +16,20 @@ module away.materials
 		 * @param modulateMethod The method which will add the code to alter the base method's strength. It needs to have the signature modSpecular(t : ShaderRegisterElement, regCache : ShaderRegisterCache) : string, in which t.w will contain the specular strength and t.xyz will contain the half-vector or the reflection vector.
 		 * @param baseSpecularMethod The base specular method on which this method's shading is based.
 		 */
-		constructor ()
-		{
-			super();
-
-            /*
-			this._baseMethod = baseSpecularMethod || new away.materials.BasicSpecularMethod();
-
-
-			this._baseMethod._iModulateMethod = modulateMethod;
-            this._baseMethod.addEventListener(away.events.ShadingMethodEvent.SHADER_INVALIDATED, this.onShaderInvalidated , this );
-            */
-
-		}
-
-        public initCompositeSpecularMethod( scope : Object , modulateMethod:Function, baseSpecularMethod:away.materials.BasicSpecularMethod = null)
+		constructor( scope : Object , modulateMethod:Function, baseSpecularMethod:away.materials.BasicSpecularMethod = null)
         {
+            super();
 
+            if (scope != null && modulateMethod != null)
+                this._pInitCompositeSpecularMethod(scope, modulateMethod, baseSpecularMethod);
+        }
+
+        public _pInitCompositeSpecularMethod( scope : Object , modulateMethod:Function, baseSpecularMethod:away.materials.BasicSpecularMethod = null)
+        {
             this._baseMethod = baseSpecularMethod || new away.materials.BasicSpecularMethod();
             this._baseMethod._iModulateMethod = modulateMethod;
             this._baseMethod._iModulateMethodScope = scope;
             this._baseMethod.addEventListener(away.events.ShadingMethodEvent.SHADER_INVALIDATED, this.onShaderInvalidated , this );
-
         }
 
 		/**

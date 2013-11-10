@@ -15,13 +15,19 @@ module away.materials
 		 * @param modulateMethod The method which will add the code to alter the base method's strength. It needs to have the signature clampDiffuse(t : ShaderRegisterElement, regCache : ShaderRegisterCache) : string, in which t.w will contain the diffuse strength.
 		 * @param baseDiffuseMethod The base diffuse method on which this method's shading is based.
 		 */
-		constructor(modulateMethod:Function = null, baseDiffuseMethod:away.materials.BasicDiffuseMethod = null)
+		constructor(scope : Object , modulateMethod:Function = null, baseDiffuseMethod:away.materials.BasicDiffuseMethod = null)
 		{
-
             super();
 
+            if (scope != null && modulateMethod != null)
+                this._pInitCompositeDiffuseMethod(scope, modulateMethod, baseDiffuseMethod);
+        }
+
+        public _pInitCompositeDiffuseMethod( scope : Object , modulateMethod:Function, baseDiffuseMethod:away.materials.BasicDiffuseMethod = null)
+        {
 			this.pBaseMethod = baseDiffuseMethod || new away.materials.BasicDiffuseMethod();
             this.pBaseMethod._iModulateMethod = modulateMethod;
+            this.pBaseMethod._iModulateMethodScope = scope;
             this.pBaseMethod.addEventListener(away.events.ShadingMethodEvent.SHADER_INVALIDATED, this.onShaderInvalidated , this );
 		}
 

@@ -104,7 +104,7 @@ module away.materials
             this._pDepthPass.addEventListener(away.events.Event.CHANGE, this.onDepthPassChange, this );
             this._pDistancePass.addEventListener(away.events.Event.CHANGE, this.onDistancePassChange , this);
 
-            this.alphaPremultiplied= true;
+            this.alphaPremultiplied = false; //TODO: work out why this is different for WebGL
 
             this._iUniqueId = away.materials.MaterialBase.MATERIAL_ID_COUNT++;
 

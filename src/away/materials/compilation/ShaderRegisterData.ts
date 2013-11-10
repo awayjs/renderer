@@ -7,25 +7,25 @@ module away.materials
 	 */
 	export class ShaderRegisterData
 	{
-		public normalVarying:away.materials.ShaderRegisterElement;
-		public tangentVarying:away.materials.ShaderRegisterElement;
-		public bitangentVarying:away.materials.ShaderRegisterElement;
-		public uvVarying:away.materials.ShaderRegisterElement;
-		public secondaryUVVarying:away.materials.ShaderRegisterElement;
-		public viewDirVarying:away.materials.ShaderRegisterElement;
-		public shadedTarget:away.materials.ShaderRegisterElement;
-		public globalPositionVertex:away.materials.ShaderRegisterElement;
-		public globalPositionVarying:away.materials.ShaderRegisterElement;
-		public localPosition:away.materials.ShaderRegisterElement;
-		public normalInput:away.materials.ShaderRegisterElement;
-		public tangentInput:away.materials.ShaderRegisterElement;
-		public animatedNormal:away.materials.ShaderRegisterElement;
-		public animatedTangent:away.materials.ShaderRegisterElement;
-		public commons:away.materials.ShaderRegisterElement;
-		public projectionFragment:away.materials.ShaderRegisterElement;
-		public normalFragment:away.materials.ShaderRegisterElement;
-		public viewDirFragment:away.materials.ShaderRegisterElement;
-		public bitangent:away.materials.ShaderRegisterElement;
+		public normalVarying:ShaderRegisterElement;
+		public tangentVarying:ShaderRegisterElement;
+		public bitangentVarying:ShaderRegisterElement;
+		public uvVarying:ShaderRegisterElement;
+		public secondaryUVVarying:ShaderRegisterElement;
+		public viewDirVarying:ShaderRegisterElement;
+		public shadedTarget:ShaderRegisterElement;
+		public globalPositionVertex:ShaderRegisterElement;
+		public globalPositionVarying:ShaderRegisterElement;
+		public localPosition:ShaderRegisterElement;
+		public normalInput:ShaderRegisterElement;
+		public tangentInput:ShaderRegisterElement;
+		public animatedNormal:ShaderRegisterElement;
+		public animatedTangent:ShaderRegisterElement;
+		public commons:ShaderRegisterElement;
+		public projectionFragment:ShaderRegisterElement;
+		public normalFragment:ShaderRegisterElement;
+		public viewDirFragment:ShaderRegisterElement;
+		public bitangent:ShaderRegisterElement;
 		
 		constructor()
 		{

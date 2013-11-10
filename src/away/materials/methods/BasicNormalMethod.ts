@@ -95,7 +95,7 @@ module away.materials
                 (value && this._texture && (value.hasMipMaps != this._texture.hasMipMaps || value.format != this._texture.format))) {
                 this.iInvalidateShaderProgram();//invalidateShaderProgram();
             }
-            this._useTexture = Boolean(value);
+            this._useTexture = b;
             this._texture = value;
 
         }
@@ -154,8 +154,8 @@ module away.materials
             // TODO: AGAL <> GLSL
 
 			return this.pGetTex2DSampleCode(vo, targetReg, this._pNormalTextureRegister, this._texture) +
-				"sub " + targetReg.toString() + ".xyz, " + targetReg.toString() + ".xyz, " + this._sharedRegisters.commons.toString() + ".xxx	\n" +
-				"nrm " + targetReg.toString() + ".xyz, " + targetReg.toString() + ".xyz							\n";
+				"sub " + targetReg + ".xyz, " + targetReg + ".xyz, " + this._sharedRegisters.commons + ".xxx\n" +
+				"nrm " + targetReg + ".xyz, " + targetReg + "\n";
 
 		}
 	}

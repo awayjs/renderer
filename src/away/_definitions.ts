@@ -50,6 +50,7 @@
 ///<reference path="core/display3D/TextureBase.ts"/>
 ///<reference path="core/geom/Matrix.ts" />
 ///<reference path="core/display/BitmapData.ts"/>
+///<reference path="core/display/BitmapDataChannel.ts"/>
 ///<reference path="core/display3D/Texture.ts" />
 ///<reference path="core/display3D/CubeTexture.ts" />
 ///<reference path="core/display3D/Context3DTriangleFace.ts"/>
@@ -305,6 +306,7 @@
 ///<reference path="materials/methods/BasicNormalMethod.ts"/>
 ///<reference path="materials/methods/BasicSpecularMethod.ts"/>
 ///<reference path="materials/methods/ColorTransformMethod.ts"/>
+///<reference path="materials/methods/PhongSpecularMethod.ts"/>
 
 ///<reference path="materials/methods/CompositeDiffuseMethod.ts"/>
 ///<reference path="materials/methods/CompositeSpecularMethod.ts"/>
@@ -329,6 +331,8 @@
 ///<reference path="utils/ByteArrayBase.ts"/>
 ///<reference path="utils/ByteArray.ts"/>
 ///<reference path="utils/ByteArrayBuffer.ts"/>
+///<reference path="utils/Cast.ts"/>
+///<reference path="errors/CastError.ts"/>
 ///<reference path="../aglsl/Sampler.ts"/>
 ///<reference path="../aglsl/Token.ts"/>
 ///<reference path="../aglsl/Header.ts"/>

@@ -237,29 +237,35 @@ module away.materials
             //TODO: AGAL <> GLSL
 
             //*
-			code += "dp3 " + t + ".x, " + lightDirReg.toString() + ", " + this._sharedRegisters.normalFragment.toString() + "\n" +
-				"max " + t.toString() + ".w, " + t.toString() + ".x, " + this._sharedRegisters.commons.toString() + ".y\n";
+			code += "dp3 " + t + ".x, " + lightDirReg + ", " + this._sharedRegisters.normalFragment + "\n" +
+				"max " + t + ".w, " + t + ".x, " + this._sharedRegisters.commons + ".y\n";
 			
 			if (vo.useLightFallOff)
             {
 
-                code += "mul " + t.toString() + ".w, " + t.toString() + ".w, " + lightDirReg.toString() + ".w\n";
+                code += "mul " + t + ".w, " + t + ".w, " + lightDirReg + ".w\n";
 
             }
 
-			
+
 			if (this._iModulateMethod != null)
             {
-
-                code += this._iModulateMethod(vo, t, regCache, this._sharedRegisters);
+                if (  this._iModulateMethodScope != null )
+                {
+                    code += this._iModulateMethod.apply( this._iModulateMethodScope, [vo, t, regCache, this._sharedRegisters] );
+                }
+                else
+                {
+                    throw "Modulated methods needs a scope";
+                }
 
             }
 
 			
-			code += "mul " + t.toString() + ", " + t.toString() + ".w, " + lightColReg.toString() + "\n";
+			code += "mul " + t + ", " + t + ".w, " + lightColReg + "\n";
 			
 			if (!this._isFirstLight) {
-				code += "add " + this.pTotalLightColorReg.toString() + ".xyz, " + this.pTotalLightColorReg.toString() + ", " + t.toString() + "\n";
+				code += "add " + this.pTotalLightColorReg + ".xyz, " + this.pTotalLightColorReg + ", " + t + "\n";
 				regCache.removeFragmentTempUsage(t);
 			}
 			//*/
@@ -294,13 +300,20 @@ module away.materials
             // TODO: AGAL <> GLSL
 
 
-			code += "tex " + t.toString() + ", " + this._sharedRegisters.normalFragment.toString() + ", " + cubeMapReg.toString() + " <cube,linear,miplinear>\n" +
-				"mul " + t.toString() + ".xyz, " + t.toString() + ".xyz, " + weightRegister + "\n";
+			code += "tex " + t + ", " + this._sharedRegisters.normalFragment + ", " + cubeMapReg + " <cube,linear,miplinear>\n" +
+				"mul " + t + ".xyz, " + t + ".xyz, " + weightRegister + "\n";
 			
 			if (this._iModulateMethod!= null)
             {
 
-                code += this._iModulateMethod(vo, t, regCache, this._sharedRegisters);
+                if (  this._iModulateMethodScope != null )
+                {
+                    code += this._iModulateMethod.apply( this._iModulateMethodScope, [vo, t, regCache, this._sharedRegisters] );
+                }
+                else
+                {
+                    throw "Modulated methods needs a scope";
+                }
 
             }
 
@@ -308,7 +321,7 @@ module away.materials
 			if (!this._isFirstLight)
             {
 
-				code += "add " + this.pTotalLightColorReg + ".xyz, " + this.pTotalLightColorReg + ", " + t.toString() + "\n";
+				code += "add " + this.pTotalLightColorReg + ".xyz, " + this.pTotalLightColorReg + ", " + t + "\n";
 				regCache.removeFragmentTempUsage(t);
 
 			}
@@ -364,9 +377,9 @@ module away.materials
 					cutOffReg = regCache.getFreeFragmentConstant();
 					vo.fragmentConstantsIndex = cutOffReg.index*4;
 
-					code += "sub " + albedo.toString() + ".w, " + albedo.toString() + ".w, " + cutOffReg.toString() + ".x\n" +
-						"kil " + albedo.toString() + ".w\n" +
-						"add " + albedo.toString() + ".w, " + albedo.toString() + ".w, " + cutOffReg.toString() + ".x\n";
+					code += "sub " + albedo + ".w, " + albedo + ".w, " + cutOffReg + ".x\n" +
+						"kil " + albedo + ".w\n" +
+						"add " + albedo + ".w, " + albedo + ".w, " + cutOffReg + ".x\n";
 
 				}
 
@@ -380,7 +393,7 @@ module away.materials
 
 				vo.fragmentConstantsIndex = this._diffuseInputRegister.index*4;
 
-				code += "mov " + albedo.toString() + ", " + this._diffuseInputRegister.toString() + "\n";
+				code += "mov " + albedo + ", " + this._diffuseInputRegister + "\n";
 
 
 			}
@@ -389,17 +402,17 @@ module away.materials
 				return code;
 
             //TODO: AGAL <> GLSL
-			code += "sat " + this.pTotalLightColorReg.toString() + ", " + this.pTotalLightColorReg.toString() + "\n";
+			code += "sat " + this.pTotalLightColorReg + ", " + this.pTotalLightColorReg + "\n";
 			
 			if (this._useAmbientTexture)
             {
 
                 //TODO: AGAL <> GLSL
 
-				code += "mul " + albedo.toString() + ".xyz, " + albedo.toString() + ", " + this.pTotalLightColorReg.toString() + "\n" +
-					"mul " + this.pTotalLightColorReg.toString() + ".xyz, " + targetReg.toString() + ", " + this.pTotalLightColorReg.toString() + "\n" +
-					"sub " + targetReg.toString() + ".xyz, " + targetReg.toString() + ", " + this.pTotalLightColorReg.toString() + "\n" +
-					"add " + targetReg.toString() + ".xyz, " + albedo.toString() + ", " + targetReg.toString() + "\n";
+				code += "mul " + albedo + ".xyz, " + albedo + ", " + this.pTotalLightColorReg + "\n" +
+					"mul " + this.pTotalLightColorReg + ".xyz, " + targetReg + ", " + this.pTotalLightColorReg + "\n" +
+					"sub " + targetReg + ".xyz, " + targetReg + ", " + this.pTotalLightColorReg + "\n" +
+					"add " + targetReg + ".xyz, " + albedo + ", " + targetReg + "\n";
 
 
 			}
@@ -408,20 +421,20 @@ module away.materials
 
                 //TODO: AGAL <> GLSL
 
-				code += "add " + targetReg.toString() + ".xyz, " + this.pTotalLightColorReg.toString() + ", " + targetReg.toString() + "\n";
+				code += "add " + targetReg + ".xyz, " + this.pTotalLightColorReg + ", " + targetReg + "\n";
 
 				if (this._useTexture)
                 {
 
-					code += "mul " + targetReg.toString() + ".xyz, " + albedo.toString() + ", " + targetReg.toString() + "\n" +
+					code += "mul " + targetReg + ".xyz, " + albedo + ", " + targetReg + "\n" +
 						"mov " + targetReg + ".w, " + albedo + ".w\n";
 
 				}
                 else
                 {
 
-					code += "mul " + targetReg.toString() + ".xyz, " + this._diffuseInputRegister.toString() + ", " + targetReg.toString() + "\n" +
-						"mov " + targetReg.toString() + ".w, " + this._diffuseInputRegister.toString() + ".w\n";
+					code += "mul " + targetReg + ".xyz, " + this._diffuseInputRegister + ", " + targetReg + "\n" +
+						"mov " + targetReg + ".w, " + this._diffuseInputRegister + ".w\n";
 
 				}
 
@@ -442,7 +455,7 @@ module away.materials
 		{
 
             //TODO: AGAL <> GLSL
-			return "mul " + this.pTotalLightColorReg.toString() + ".xyz, " + this.pTotalLightColorReg.toString() + ", " + this._shadowRegister.toString() + ".w\n";
+			return "mul " + this.pTotalLightColorReg + ".xyz, " + this.pTotalLightColorReg + ", " + this._shadowRegister + ".w\n";
 
 		}
 		

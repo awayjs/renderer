@@ -46,6 +46,7 @@ module away.display3D
 		public uploadFromHTMLImageElement( image:HTMLImageElement, miplevel:number = 0 )
 		{
 			this._gl.bindTexture( this._gl.TEXTURE_2D, this._glTexture );
+            //this._gl.pixelStorei( this._gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this._gl.ZERO );
 			this._gl.texImage2D( this._gl.TEXTURE_2D, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, image );
 			this._gl.bindTexture( this._gl.TEXTURE_2D, null );
 		}
@@ -53,6 +54,7 @@ module away.display3D
 		public uploadFromBitmapData( data:away.display.BitmapData, miplevel:number = 0 )
 		{
 			this._gl.bindTexture( this._gl.TEXTURE_2D, this._glTexture );
+            //this._gl.pixelStorei( this._gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this._gl.ZERO );
 			this._gl.texImage2D( this._gl.TEXTURE_2D, miplevel, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, data.imageData );
 			this._gl.bindTexture( this._gl.TEXTURE_2D, null );
 		}

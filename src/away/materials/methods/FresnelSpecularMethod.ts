@@ -6,7 +6,7 @@ module away.materials
 	/**
 	 * FresnelSpecularMethod provides a specular shading method that causes stronger highlights on grazing view angles.
 	 */
-	export class FresnelSpecularMethod extends away.materials.CompositeSpecularMethod
+	export class FresnelSpecularMethod extends CompositeSpecularMethod
 	{
 		private _dataReg:away.materials.ShaderRegisterElement;
 		private _incidentLight:boolean;
@@ -21,9 +21,10 @@ module away.materials
 		constructor(basedOnSurface:boolean  = true, baseSpecularMethod:away.materials.BasicSpecularMethod = null)
 		{
 			// may want to offer diff speculars
-			super();
+			super(null, null);
 
-            this.initCompositeSpecularMethod( this , this.modulateSpecular, baseSpecularMethod);
+            this._pInitCompositeSpecularMethod( this , this.modulateSpecular, baseSpecularMethod);
+
 			this._incidentLight = !basedOnSurface;
 		}
 

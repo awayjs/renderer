@@ -141,7 +141,7 @@ module away.materials
 				vo.texturesIndex = this._ambientInputRegister.index;
 
                 // TODO: AGAL <> GLSL
-				code += this.pGetTex2DSampleCode(vo, targetReg, this._ambientInputRegister, this._texture) + "div " + targetReg.toString() + ".xyz, " + targetReg.toString() + ".xyz, " + targetReg.toString() + ".w\n"; // apparently, still needs to un-premultiply :s
+				code += this.pGetTex2DSampleCode(vo, targetReg, this._ambientInputRegister, this._texture) + "div " + targetReg + ".xyz, " + targetReg + ".xyz, " + targetReg + ".w\n"; // apparently, still needs to un-premultiply :s
 
 			}
             else
@@ -150,7 +150,7 @@ module away.materials
 				this._ambientInputRegister = regCache.getFreeFragmentConstant();
 				vo.fragmentConstantsIndex = this._ambientInputRegister.index*4;
 
-				code += "mov " + targetReg.toString() + ", " + this._ambientInputRegister.toString() + "\n";
+				code += "mov " + targetReg + ", " + this._ambientInputRegister + "\n";
 
 			}
 			

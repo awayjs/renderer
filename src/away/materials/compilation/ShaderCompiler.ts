@@ -334,9 +334,9 @@ module away.materials
 
                 // TODO: AGAL <> GLSL
 
-                this._pVertexCode += "dp4 " + varying.toString() + ".x, " + uvAttributeReg.toString() + ", " + uvTransform1.toString() + "\n" +
-					"dp4 " + varying.toString() + ".y, " + uvAttributeReg.toString() + ", " + uvTransform2.toString() + "\n" +
-					"mov " + varying.toString() + ".zw, " + uvAttributeReg.toString() + ".zw \n";
+                this._pVertexCode += "dp4 " + varying + ".x, " + uvAttributeReg + ", " + uvTransform1 + "\n" +
+					"dp4 " + varying + ".y, " + uvAttributeReg + ", " + uvTransform2 + "\n" +
+					"mov " + varying + ".zw, " + uvAttributeReg + ".zw \n";
 
 			}
             else
@@ -360,7 +360,7 @@ module away.materials
 			var uvAttributeReg:ShaderRegisterElement = this._pRegisterCache.getFreeVertexAttribute();
             this._secondaryUVBufferIndex = uvAttributeReg.index;
             this._pSharedRegisters.secondaryUVVarying = this._pRegisterCache.getFreeVarying();
-            this._pVertexCode += "mov " + this._pSharedRegisters.secondaryUVVarying.toString() + ", " + uvAttributeReg.toString() + "\n";
+            this._pVertexCode += "mov " + this._pSharedRegisters.secondaryUVVarying + ", " + uvAttributeReg + "\n";
 		}
 
 		/**
@@ -379,13 +379,13 @@ module away.materials
             this._pRegisterCache.getFreeVertexConstant();
             this._sceneMatrixIndex = positionMatrixReg.index*4;
 
-            this._pVertexCode += "m44 " + this._pSharedRegisters.globalPositionVertex.toString() + ", " + this._pSharedRegisters.localPosition.toString() + ", " + positionMatrixReg.toString() + "\n";
+            this._pVertexCode += "m44 " + this._pSharedRegisters.globalPositionVertex + ", " + this._pSharedRegisters.localPosition + ", " + positionMatrixReg + "\n";
 
 			if (this._pDependencyCounter.usesGlobalPosFragment)
             {
 
                 this._pSharedRegisters.globalPositionVarying = this._pRegisterCache.getFreeVarying();
-                this._pVertexCode += "mov " + this._pSharedRegisters.globalPositionVarying.toString() + ", " + this._pSharedRegisters.globalPositionVertex.toString() + "\n";
+                this._pVertexCode += "mov " + this._pSharedRegisters.globalPositionVarying + ", " + this._pSharedRegisters.globalPositionVertex + "\n";
 
 			}
 		}
@@ -395,7 +395,7 @@ module away.materials
 		 */
 		private compileProjectionCode()
 		{
-			var pos:string = this._pDependencyCounter.globalPosDependencies > 0 || this._forceSeperateMVP? this._pSharedRegisters.globalPositionVertex.toString() : this._pAnimationTargetRegisters[0];
+			var pos:string = (this._pDependencyCounter.globalPosDependencies > 0 || this._forceSeperateMVP)? this._pSharedRegisters.globalPositionVertex.toString() : this._pAnimationTargetRegisters[0];
 			var code:string;
 
             // TODO: AGAL <> GLSL
@@ -406,7 +406,7 @@ module away.materials
                 this._pSharedRegisters.projectionFragment = this._pRegisterCache.getFreeVarying();
 
 				code = "m44 vt5, " + pos + ", vc0		\n" +
-					"mov " + this._pSharedRegisters.projectionFragment.toString() + ", vt5\n" +
+					"mov " + this._pSharedRegisters.projectionFragment + ", vt5\n" +
 					"mov op, vt5\n";
 			}
             else
@@ -428,7 +428,7 @@ module away.materials
 		{
             // TODO: AGAL <> GLSL
 
-			this._pFragmentCode += "mov " + this._pRegisterCache.fragmentOutputRegister.toString() + ", " + this._pSharedRegisters.shadedTarget.toString() + "\n";
+			this._pFragmentCode += "mov " + this._pRegisterCache.fragmentOutputRegister + ", " + this._pSharedRegisters.shadedTarget + "\n";
             this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.shadedTarget);
 		}
 
@@ -979,7 +979,7 @@ module away.materials
             {
 				alphaReg = this._pRegisterCache.getFreeFragmentSingleTemp();
                 this._pRegisterCache.addFragmentTempUsages(alphaReg, 1);
-                this._pFragmentCode += "mov " + alphaReg.toString() + ", " + this._pSharedRegisters.shadedTarget.toString() + ".w\n";
+                this._pFragmentCode += "mov " + alphaReg + ", " + this._pSharedRegisters.shadedTarget + ".w\n";
 			}
 
 			for (var i:number = 0; i < numMethods; ++i)
@@ -1005,7 +1005,7 @@ module away.materials
 			if (this._preserveAlpha)
             {
 
-                this._pFragmentCode += "mov " + this._pSharedRegisters.shadedTarget.toString() + ".w, " + alphaReg.toString() + "\n";
+                this._pFragmentCode += "mov " + this._pSharedRegisters.shadedTarget + ".w, " + alphaReg + "\n";
 
                 this._pRegisterCache.removeFragmentTempUsage(alphaReg);
 

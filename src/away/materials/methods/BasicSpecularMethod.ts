@@ -15,11 +15,11 @@ module away.materials
 	 */
 	export class BasicSpecularMethod extends away.materials.LightingMethodBase
 	{
-		private _useTexture:boolean;
-		private _totalLightColorReg:away.materials.ShaderRegisterElement;
-		private _specularTextureRegister:away.materials.ShaderRegisterElement;
-		private _specularTexData:away.materials.ShaderRegisterElement;
-		private _specularDataRegister:away.materials.ShaderRegisterElement;
+		public _pUseTexture:boolean;
+		public _pTotalLightColorReg:away.materials.ShaderRegisterElement;
+		public _pSpecularTextureRegister:away.materials.ShaderRegisterElement;
+        public _pSpecularTexData:away.materials.ShaderRegisterElement;
+        public _pSpecularDataRegister:away.materials.ShaderRegisterElement;
 		
 		private _texture:away.textures.Texture2DBase;
 		
@@ -30,7 +30,7 @@ module away.materials
         public _iSpecularG:number = 1;
         public _iSpecularB:number = 1;
 		private _shadowRegister:away.materials.ShaderRegisterElement;
-		private _isFirstLight:boolean;
+		public _pIsFirstLight:boolean;
 		
 		/**
 		 * Creates a new BasicSpecularMethod object.
@@ -45,7 +45,7 @@ module away.materials
 		 */
 		public iInitVO(vo:away.materials.MethodVO)
 		{
-			vo.needsUV = this._useTexture;
+			vo.needsUV = this._pUseTexture;
 			vo.needsNormals = vo.numLights > 0;
 			vo.needsView = vo.numLights > 0;
 		}
@@ -116,11 +116,11 @@ module away.materials
 
             var b : boolean =  ( value != null );
 
-			if ( b != this._useTexture ||
+			if ( b != this._pUseTexture ||
 				(value && this._texture && (value.hasMipMaps != this._texture.hasMipMaps || value.format != this._texture.format))) {
 				this.iInvalidateShaderProgram();
 			}
-			this._useTexture = b;//Boolean(value);
+			this._pUseTexture = b;//Boolean(value);
 			this._texture = value;
 
 		}
@@ -148,10 +148,10 @@ module away.materials
 		{
 			super.iCleanCompilationData();
 			this._shadowRegister = null;
-            this._totalLightColorReg = null;
-            this._specularTextureRegister = null;
-            this._specularTexData = null;
-            this._specularDataRegister = null;
+            this._pTotalLightColorReg = null;
+            this._pSpecularTextureRegister = null;
+            this._pSpecularTexData = null;
+            this._pSpecularDataRegister = null;
 		}
 		
 		/**
@@ -161,33 +161,33 @@ module away.materials
 		{
 			var code:string = "";
 			
-			this._isFirstLight = true;
+			this._pIsFirstLight = true;
 			
 			if (vo.numLights > 0)
             {
 
-				this._specularDataRegister = regCache.getFreeFragmentConstant();
-				vo.fragmentConstantsIndex = this._specularDataRegister.index*4;
+				this._pSpecularDataRegister = regCache.getFreeFragmentConstant();
+				vo.fragmentConstantsIndex = this._pSpecularDataRegister.index*4;
 				
-				if (this._useTexture)
+				if (this._pUseTexture)
                 {
 
-					this._specularTexData = regCache.getFreeFragmentVectorTemp();
-					regCache.addFragmentTempUsages(this._specularTexData, 1);
-					this._specularTextureRegister = regCache.getFreeTextureReg();
-					vo.texturesIndex = this._specularTextureRegister.index;
-					code = this.pGetTex2DSampleCode( vo, this._specularTexData, this._specularTextureRegister, this._texture );
+					this._pSpecularTexData = regCache.getFreeFragmentVectorTemp();
+					regCache.addFragmentTempUsages(this._pSpecularTexData, 1);
+					this._pSpecularTextureRegister = regCache.getFreeTextureReg();
+					vo.texturesIndex = this._pSpecularTextureRegister.index;
+					code = this.pGetTex2DSampleCode( vo, this._pSpecularTexData, this._pSpecularTextureRegister, this._texture );
 
 				}
                 else
                 {
 
-                    this._specularTextureRegister = null;
+                    this._pSpecularTextureRegister = null;
                 }
 
 				
-				this._totalLightColorReg = regCache.getFreeFragmentVectorTemp();
-				regCache.addFragmentTempUsages(this._totalLightColorReg, 1);
+				this._pTotalLightColorReg = regCache.getFreeFragmentVectorTemp();
+				regCache.addFragmentTempUsages(this._pTotalLightColorReg, 1);
 			}
 			
 			return code;
@@ -201,10 +201,10 @@ module away.materials
 			var code:string = "";
 			var t:away.materials.ShaderRegisterElement;
 			
-			if (this._isFirstLight)
+			if (this._pIsFirstLight)
             {
 
-                t = this._totalLightColorReg;
+                t = this._pTotalLightColorReg;
 
             }
 			else
@@ -222,20 +222,20 @@ module away.materials
 
             //TODO: AGAL <> GLSL
 
-			code += "add " + t.toString() + ", " + lightDirReg.toString() + ", " + viewDirReg.toString() + "\n" +
-				"nrm " + t.toString() + ".xyz, " + t.toString() + "\n" +
-				"dp3 " + t.toString() + ".w, " + normalReg.toString() + ", " + t.toString() + "\n" +
-				"sat " + t.toString() + ".w, " + t.toString() + ".w\n";
+			code += "add " + t + ", " + lightDirReg + ", " + viewDirReg + "\n" +
+				"nrm " + t + ".xyz, " + t + "\n" +
+				"dp3 " + t + ".w, " + normalReg + ", " + t + "\n" +
+				"sat " + t + ".w, " + t + ".w\n";
 
 
-			if (this._useTexture)
+			if (this._pUseTexture)
             {
 
                 //TODO: AGAL <> GLSL
 
 				// apply gloss modulation from texture
-				code += "mul " + this._specularTexData.toString() + ".w, " + this._specularTexData.toString() + ".y, " + this._specularDataRegister.toString() + ".w\n" +
-					"pow " + t + ".w, " + t + ".w, " + this._specularTexData.toString() + ".w\n";
+				code += "mul " + this._pSpecularTexData + ".w, " + this._pSpecularTexData + ".y, " + this._pSpecularDataRegister + ".w\n" +
+					"pow " + t + ".w, " + t + ".w, " + this._pSpecularTexData + ".w\n";
 
 
 			}
@@ -244,7 +244,7 @@ module away.materials
 
                 //TODO: AGAL <> GLSL
 
-                code += "pow " + t.toString() + ".w, " + t.toString() + ".w, " + this._specularDataRegister.toString() + ".w\n";
+                code += "pow " + t + ".w, " + t + ".w, " + this._pSpecularDataRegister + ".w\n";
 
 
             }
@@ -255,7 +255,7 @@ module away.materials
             {
 
                 //TODO: AGAL <> GLSL
-                code += "mul " + t.toString() + ".w, " + t.toString() + ".w, " + lightDirReg.toString() + ".w\n";
+                code += "mul " + t + ".w, " + t + ".w, " + lightDirReg + ".w\n";
 
 
             }
@@ -281,18 +281,18 @@ module away.materials
 
 
             //TODO: AGAL <> GLSL
-			code += "mul " + t.toString() + ".xyz, " + lightColReg.toString() + ", " + t.toString() + ".w\n";
+			code += "mul " + t + ".xyz, " + lightColReg + ", " + t + ".w\n";
 			
-			if (! this._isFirstLight)
+			if (! this._pIsFirstLight)
             {
                 //TODO: AGAL <> GLSL
-				code += "add " + this._totalLightColorReg.toString() + ".xyz, " + this._totalLightColorReg.toString() + ", " + t.toString() + "\n";
+				code += "add " + this._pTotalLightColorReg + ".xyz, " + this._pTotalLightColorReg + ", " + t + "\n";
 
 				regCache.removeFragmentTempUsage(t);
 
 			}
 			
-			this._isFirstLight = false;
+			this._pIsFirstLight = false;
 			
 			return code;
 		}
@@ -306,10 +306,10 @@ module away.materials
 			var t:away.materials.ShaderRegisterElement;
 			
 			// write in temporary if not first light, so we can add to total diffuse colour
-			if (this._isFirstLight)
+			if (this._pIsFirstLight)
             {
 
-                t = this._totalLightColorReg;
+                t = this._pTotalLightColorReg;
 
             }
 			else
@@ -325,12 +325,12 @@ module away.materials
 
             //TODO: AGAL <> GLSL
 
-			code += "dp3 " + t.toString() + ".w, " + normalReg.toString() + ", " + viewDirReg.toString() + "\n" +
-				"add " + t.toString() + ".w, " + t.toString() + ".w, " + t.toString() + ".w\n" +
-				"mul " + t.toString() + ", " + t.toString() + ".w, " + normalReg.toString() + "\n" +
-				"sub " + t.toString() + ", " + t.toString() + ", " + viewDirReg.toString() + "\n" +
-				"tex " + t.toString() + ", " + t.toString() + ", " + cubeMapReg.toString() + " <cube," + (vo.useSmoothTextures? "linear" : "nearest") + ",miplinear>\n" +
-				"mul " + t.toString() + ".xyz, " + t.toString() + ", " + weightRegister.toString() + "\n";
+			code += "dp3 " + t + ".w, " + normalReg + ", " + viewDirReg + "\n" +
+				"add " + t + ".w, " + t + ".w, " + t + ".w\n" +
+				"mul " + t + ", " + t + ".w, " + normalReg + "\n" +
+				"sub " + t + ", " + t + ", " + viewDirReg + "\n" +
+				"tex " + t + ", " + t + ", " + cubeMapReg + " <cube," + (vo.useSmoothTextures? "linear" : "nearest") + ",miplinear>\n" +
+				"mul " + t + ".xyz, " + t + ", " + weightRegister + "\n";
 
 
             if (this._iModulateMethod != null)
@@ -361,17 +361,17 @@ module away.materials
             }
             */
 
-			if (!this._isFirstLight)
+			if (!this._pIsFirstLight)
             {
 
                 //TODO: AGAL <> GLSL
-				code += "add " + this._totalLightColorReg.toString() + ".xyz, " + this._totalLightColorReg.toString() + ", " + t.toString() + "\n";
+				code += "add " + this._pTotalLightColorReg + ".xyz, " + this._pTotalLightColorReg + ", " + t + "\n";
 
 				regCache.removeFragmentTempUsage(t);
 
 			}
 			
-			this._isFirstLight = false;
+			this._pIsFirstLight = false;
 			
 			return code;
 		}
@@ -390,20 +390,20 @@ module away.materials
             {
 
                 //TODO: AGAL <> GLSL
-                code += "mul " + this._totalLightColorReg.toString() + ".xyz, " + this._totalLightColorReg.toString() + ", " + this._shadowRegister.toString() + ".w\n";
+                code += "mul " + this._pTotalLightColorReg + ".xyz, " + this._pTotalLightColorReg + ", " + this._shadowRegister + ".w\n";
 
             }
 
 			
-			if (this._useTexture)
+			if (this._pUseTexture)
             {
 
 				// apply strength modulation from texture
 
                 //TODO: AGAL <> GLSL
-				code += "mul " + this._totalLightColorReg.toString() + ".xyz, " + this._totalLightColorReg.toString() + ", " + this._specularTexData.toString() + ".x\n";
+				code += "mul " + this._pTotalLightColorReg + ".xyz, " + this._pTotalLightColorReg + ", " + this._pSpecularTexData + ".x\n";
 
-				regCache.removeFragmentTempUsage(this._specularTexData);
+				regCache.removeFragmentTempUsage(this._pSpecularTexData);
 
 
 			}
@@ -412,10 +412,10 @@ module away.materials
 
             //TODO: AGAL <> GLSL
 
-			code += "mul " + this._totalLightColorReg.toString() + ".xyz, " + this._totalLightColorReg.toString() + ", " + this._specularDataRegister.toString() + "\n" +
-				"add " + targetReg.toString() + ".xyz, " + targetReg.toString() + ", " + this._totalLightColorReg.toString() + "\n";
+			code += "mul " + this._pTotalLightColorReg + ".xyz, " + this._pTotalLightColorReg + ", " + this._pSpecularDataRegister + "\n" +
+				"add " + targetReg + ".xyz, " + targetReg + ", " + this._pTotalLightColorReg + "\n";
 
-			regCache.removeFragmentTempUsage( this._totalLightColorReg );
+			regCache.removeFragmentTempUsage( this._pTotalLightColorReg );
 			
 			return code;
 		}
@@ -430,7 +430,7 @@ module away.materials
 			if (vo.numLights == 0)
 				return;
 			
-			if (this._useTexture)
+			if (this._pUseTexture)
             {
 
                stage3DProxy._iContext3D.setSamplerStateAt( vo.texturesIndex ,
