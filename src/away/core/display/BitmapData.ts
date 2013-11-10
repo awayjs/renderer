@@ -220,7 +220,7 @@ module away.display {
                 var i:number /*uint*/, j:number /*uint*/, index : number /*uint*/, argb : number[] /*uint*/;
                 for (i = 0; i < rect.width; ++i) {
                     for (j = 0; j < rect.height; ++j) {
-                        argb = away.utils.ColorUtils.float32ColorToARGB( i + j*rect.width );
+                        argb = away.utils.ColorUtils.float32ColorToARGB( inputVector[i + j*rect.width] );
                         index = (i + rect.x + (j + rect.y)*this._imageCanvas.width) * 4;
 
                         this._imageData.data[index+0] = argb[1];
@@ -390,9 +390,9 @@ module away.display {
          * @param source
          * @param matrix
          */
-        public draw (source : BitmapData , matrix : away.geom.Matrix )
-        public draw (source : HTMLImageElement , matrix : away.geom.Matrix )
-        public draw (source : any , matrix : away.geom.Matrix ) : void
+        public draw (source : BitmapData , matrix? : away.geom.Matrix )
+        public draw (source : HTMLImageElement , matrix? : away.geom.Matrix )
+        public draw (source : any , matrix? : away.geom.Matrix ) : void
         {
 
             if ( this._locked )
@@ -430,7 +430,10 @@ module away.display {
             if ( source instanceof away.display.BitmapData )
             {
                 this._context.save();
-                this._context.setTransform(matrix.a, matrix.b, matrix.c, matrix.d, matrix.tx, matrix.ty);
+
+                if (matrix != null)
+                    this._context.setTransform(matrix.a, matrix.b, matrix.c, matrix.d, matrix.tx, matrix.ty);
+
                 this._context.drawImage(source.canvas, 0, 0)
                 this._context.restore();
 
@@ -438,14 +441,50 @@ module away.display {
             else if ( source instanceof HTMLImageElement )
             {
                 this._context.save();
-                this._context.setTransform(matrix.a, matrix.b, matrix.c, matrix.d, matrix.tx, matrix.ty);
+
+                if (matrix != null)
+                    this._context.setTransform(matrix.a, matrix.b, matrix.c, matrix.d, matrix.tx, matrix.ty);
+
                 this._context.drawImage(source, 0, 0)
                 this._context.restore();
             }
 
         }
 
-        // Get / Set
+        public copyChannel(sourceBitmap: BitmapData, sourceRect: away.geom.Rectangle, destPoint: away.geom.Point, sourceChannel: number, destChannel: number) : void
+        {
+            var imageData:ImageData = sourceBitmap.imageData;
+
+            if ( ! this._locked )
+            {
+                this._imageData = this._context.getImageData(0,0,this._rect.width,this._rect.height);
+            }
+
+            if ( this._imageData )
+            {
+                var sourceData:number[] = sourceBitmap.imageData.data;
+                var destData:number[] = this._imageData.data;
+
+                var sourceOffset:number = Math.round(Math.log(sourceChannel)/Math.log(2));
+                var destOffset:number = Math.round(Math.log(destChannel)/Math.log(2));
+
+                var i:number /*uint*/, j:number /*uint*/, sourceIndex : number /*uint*/, destIndex : number /*uint*/;
+                for (i = 0; i < sourceRect.width; ++i) {
+                    for (j = 0; j < sourceRect.height; ++j) {
+                        sourceIndex = (i + sourceRect.x + (j + sourceRect.y)*sourceBitmap.width) * 4;
+                        destIndex = (i + destPoint.x + (j + destPoint.y)*this.width) * 4;
+
+                        destData[destIndex + destOffset] = sourceData[sourceIndex + sourceOffset];
+                    }
+                }
+            }
+
+            if ( ! this._locked )
+            {
+                this._context.putImageData( this._imageData, 0, 0);
+                this._imageData = null;
+            }
+        }
 
         /**
          *
