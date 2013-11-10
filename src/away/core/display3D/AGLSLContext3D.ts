@@ -57,6 +57,8 @@ module away.display3D
 		//@override
 		public setCulling( triangleFaceToCull:string )
 		{
+            super.setCulling(triangleFaceToCull);
+
 			switch( triangleFaceToCull )
 			{
 				case Context3DTriangleFace.FRONT:

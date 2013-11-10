@@ -34,10 +34,10 @@ module away.display3D
 		{
 			try
 			{
-				this._gl = <WebGLRenderingContext> canvas.getContext("experimental-webgl");
+				this._gl = <WebGLRenderingContext> canvas.getContext("experimental-webgl", { premultipliedAlpha: false, alpha:false });
 				if( !this._gl )
 				{
-					this._gl = <WebGLRenderingContext> canvas.getContext("webgl");
+					this._gl = <WebGLRenderingContext> canvas.getContext("webgl", { premultipliedAlpha: false, alpha: false });
 				}
 			}
 			catch(e)
@@ -331,10 +331,10 @@ module away.display3D
 				switch( triangleFaceToCull )
 				{
 					case Context3DTriangleFace.FRONT:
-							this._gl.cullFace( this._gl.FRONT );
+							this._gl.cullFace( this._gl.BACK );
 						break
 					case Context3DTriangleFace.BACK:
-							this._gl.cullFace( this._gl.BACK );
+							this._gl.cullFace( this._gl.FRONT );
 						break;
 					case Context3DTriangleFace.FRONT_AND_BACK:
 							this._gl.cullFace( this._gl.FRONT_AND_BACK );
