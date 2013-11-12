@@ -516,7 +516,7 @@ module away.display3D
 
                 if( samplerState.wrap != this._currentWrap )
                 {
-                    this._currentWrap = samplerState.wrap;
+                    //this._currentWrap = samplerState.wrap;
                     this._gl.texParameteri( this._gl.TEXTURE_2D, this._gl.TEXTURE_WRAP_S, samplerState.wrap );
                     this._gl.texParameteri( this._gl.TEXTURE_2D, this._gl.TEXTURE_WRAP_T, samplerState.wrap );
                 }
@@ -526,6 +526,13 @@ module away.display3D
                     //this._currentFilter = samplerState.filter;
                     this._gl.texParameteri( this._gl.TEXTURE_2D, this._gl.TEXTURE_MIN_FILTER, samplerState.filter );
                     this._gl.texParameteri( this._gl.TEXTURE_2D, this._gl.TEXTURE_MAG_FILTER, samplerState.filter );
+                }
+
+                if( samplerState.mipfilter != this._currentMipFilter )
+                {
+                    //this._currentMipFilter = samplerState.mipfilter;
+                    this._gl.texParameteri( this._gl.TEXTURE_2D, this._gl.TEXTURE_MIN_FILTER, samplerState.mipfilter );
+                    this._gl.texParameteri( this._gl.TEXTURE_2D, this._gl.TEXTURE_MAG_FILTER, samplerState.mipfilter );
                 }
 
 				//this._gl.bindTexture( this._gl.TEXTURE_2D, null );
@@ -539,18 +546,24 @@ module away.display3D
 
                 if( samplerState.wrap != this._currentWrap )
                 {
-                    this._currentWrap = samplerState.wrap;
+                    //this._currentWrap = samplerState.wrap;
                     this._gl.texParameteri( this._gl.TEXTURE_CUBE_MAP, this._gl.TEXTURE_WRAP_S, samplerState.wrap );
                     this._gl.texParameteri( this._gl.TEXTURE_CUBE_MAP, this._gl.TEXTURE_WRAP_T, samplerState.wrap );
                 }
 
                 if( samplerState.filter != this._currentFilter )
                 {
-                    this._currentFilter = samplerState.filter;
+                    //this._currentFilter = samplerState.filter;
                     this._gl.texParameteri( this._gl.TEXTURE_CUBE_MAP, this._gl.TEXTURE_MIN_FILTER, samplerState.filter );
                     this._gl.texParameteri( this._gl.TEXTURE_CUBE_MAP, this._gl.TEXTURE_MAG_FILTER, samplerState.filter );
                 }
 
+                if( samplerState.mipfilter != this._currentMipFilter )
+                {
+                    //this._currentMipFilter = samplerState.mipfilter;
+                    this._gl.texParameteri( this._gl.TEXTURE_2D, this._gl.TEXTURE_MIN_FILTER, samplerState.mipfilter );
+                    this._gl.texParameteri( this._gl.TEXTURE_2D, this._gl.TEXTURE_MAG_FILTER, samplerState.mipfilter );
+                }
                 //this._gl.bindTexture( this._gl.TEXTURE_CUBE_MAP, null );
 			}
 
