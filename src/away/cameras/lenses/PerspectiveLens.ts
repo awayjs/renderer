@@ -62,9 +62,12 @@ module away.cameras
 			
 			v.x *= sZ;
 			v.y *= sZ;
-			v.z = sZ;
+
 			v = this.unprojectionMatrix.transformVector( v );
-			
+
+            //z is unaffected by transform
+            v.z = sZ;
+
 			return v;
 		}
 		
