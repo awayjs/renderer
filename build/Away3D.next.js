@@ -5480,7 +5480,7 @@ var away;
                     var samplerState = this._samplerStates[textureIndex];
 
                     if (samplerState.wrap != this._currentWrap) {
-                        this._currentWrap = samplerState.wrap;
+                        //this._currentWrap = samplerState.wrap;
                         this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_WRAP_S, samplerState.wrap);
                         this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_WRAP_T, samplerState.wrap);
                     }
@@ -5490,6 +5490,12 @@ var away;
                         this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MIN_FILTER, samplerState.filter);
                         this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MAG_FILTER, samplerState.filter);
                     }
+
+                    if (samplerState.mipfilter != this._currentMipFilter) {
+                        //this._currentMipFilter = samplerState.mipfilter;
+                        this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MIN_FILTER, samplerState.mipfilter);
+                        this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MAG_FILTER, samplerState.mipfilter);
+                    }
                     //this._gl.bindTexture( this._gl.TEXTURE_2D, null );
                 } else if (texture.textureType == "textureCube") {
                     this._gl.bindTexture(this._gl.TEXTURE_CUBE_MAP, (texture).glTexture);
@@ -5497,15 +5503,21 @@ var away;
                     var samplerState = this._samplerStates[textureIndex];
 
                     if (samplerState.wrap != this._currentWrap) {
-                        this._currentWrap = samplerState.wrap;
+                        //this._currentWrap = samplerState.wrap;
                         this._gl.texParameteri(this._gl.TEXTURE_CUBE_MAP, this._gl.TEXTURE_WRAP_S, samplerState.wrap);
                         this._gl.texParameteri(this._gl.TEXTURE_CUBE_MAP, this._gl.TEXTURE_WRAP_T, samplerState.wrap);
                     }
 
                     if (samplerState.filter != this._currentFilter) {
-                        this._currentFilter = samplerState.filter;
+                        //this._currentFilter = samplerState.filter;
                         this._gl.texParameteri(this._gl.TEXTURE_CUBE_MAP, this._gl.TEXTURE_MIN_FILTER, samplerState.filter);
                         this._gl.texParameteri(this._gl.TEXTURE_CUBE_MAP, this._gl.TEXTURE_MAG_FILTER, samplerState.filter);
+                    }
+
+                    if (samplerState.mipfilter != this._currentMipFilter) {
+                        //this._currentMipFilter = samplerState.mipfilter;
+                        this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MIN_FILTER, samplerState.mipfilter);
+                        this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_MAG_FILTER, samplerState.mipfilter);
                     }
                     //this._gl.bindTexture( this._gl.TEXTURE_CUBE_MAP, null );
                 }
@@ -7071,8 +7083,11 @@ var away;
 
                 v.x *= sZ;
                 v.y *= sZ;
-                v.z = sZ;
+
                 v = this.unprojectionMatrix.transformVector(v);
+
+                //z is unaffected by transform
+                v.z = sZ;
 
                 return v;
             };
@@ -23748,7 +23763,7 @@ var away;
             function TextureProxyBase() {
                 _super.call(this);
                 this._format = away.display3D.Context3DTextureFormat.BGRA;
-                this._hasMipmaps = true;
+                this._hasMipmaps = false;
 
                 this._textures = new Array(8);
                 this._dirty = new Array(8);
@@ -31386,6 +31401,8 @@ var away;
             });
 
             EntityCollector.prototype.clear = function () {
+                this._iEntryPoint = this._pCamera.scenePosition;
+                this._pCameraForward = this._pCamera.forwardVector;
                 this._cullPlanes = this._customCullPlanes ? this._customCullPlanes : (this._pCamera ? this._pCamera.frustumPlanes : null);
                 this._numCullPlanes = this._cullPlanes ? this._cullPlanes.length : 0;
                 this._pNumTriangles = this._pNumMouseEnableds = 0;
