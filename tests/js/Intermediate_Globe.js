@@ -50,6 +50,7 @@ var examples;
     var Sprite3D = away.entities.Sprite3D;
     var SkyBox = away.entities.SkyBox;
     var LoaderEvent = away.events.LoaderEvent;
+    var ColorTransform = away.geom.ColorTransform;
     var Vector3D = away.geom.Vector3D;
     var Point = away.geom.Point;
     var PointLight = away.lights.PointLight;
@@ -78,6 +79,7 @@ var examples;
         * Constructor
         */
         function Intermediate_Globe() {
+            this.flares = new Array(12);
             this._time = 0;
             this.move = false;
             this.mouseLockX = 0;
@@ -113,6 +115,7 @@ var examples;
 
             //setup controller to be used on the camera
             this.cameraController = new HoverController(this.camera, null, 0, 0, 600, -90, 90);
+            this.cameraController.autoUpdate = false;
             this.cameraController.yFactor = 1;
         };
 
@@ -283,6 +286,17 @@ var examples;
             away.library.AssetLibrary.load(new away.net.URLRequest("assets/demos/globe/EarthNormal.png"));
             away.library.AssetLibrary.load(new away.net.URLRequest("assets/demos/globe/land_lights_16384.jpg"));
             away.library.AssetLibrary.load(new away.net.URLRequest("assets/demos/globe/land_ocean_ice_2048_match.jpg"));
+
+            //flare textures
+            away.library.AssetLibrary.load(new away.net.URLRequest("assets/demos/lensflare/flare2.jpg"));
+            away.library.AssetLibrary.load(new away.net.URLRequest("assets/demos/lensflare/flare3.jpg"));
+            away.library.AssetLibrary.load(new away.net.URLRequest("assets/demos/lensflare/flare4.jpg"));
+            away.library.AssetLibrary.load(new away.net.URLRequest("assets/demos/lensflare/flare6.jpg"));
+            away.library.AssetLibrary.load(new away.net.URLRequest("assets/demos/lensflare/flare7.jpg"));
+            away.library.AssetLibrary.load(new away.net.URLRequest("assets/demos/lensflare/flare8.jpg"));
+            away.library.AssetLibrary.load(new away.net.URLRequest("assets/demos/lensflare/flare10.jpg"));
+            away.library.AssetLibrary.load(new away.net.URLRequest("assets/demos/lensflare/flare11.jpg"));
+            away.library.AssetLibrary.load(new away.net.URLRequest("assets/demos/lensflare/flare12.jpg"));
         };
 
         /**
@@ -295,43 +309,44 @@ var examples;
             this.clouds.rotationY += 0.21;
             this.orbitContainer.rotationY += 0.02;
 
+            this.cameraController.update();
+
+            this.updateFlares();
+
             this.view.render();
-            //updateFlares();
         };
 
-        //        private updateFlares():void
-        //        {
-        //            var flareVisibleOld:Boolean = flareVisible;
-        //
-        //            var sunScreenPosition:Vector3D = view.project(sun.scenePosition);
-        //            var xOffset:Number = sunScreenPosition.x - stage.stageWidth/2;
-        //            var yOffset:Number = sunScreenPosition.y - stage.stageHeight/2;
-        //
-        //            var earthScreenPosition:Vector3D = view.project(earth.scenePosition);
-        //            var earthRadius:Number = 190*stage.stageHeight/earthScreenPosition.z;
-        //            var flareObject:FlareObject;
-        //
-        //            flareVisible = (sunScreenPosition.x > 0 && sunScreenPosition.x < stage.stageWidth && sunScreenPosition.y > 0 && sunScreenPosition.y  < stage.stageHeight && sunScreenPosition.z > 0 && Math.sqrt(xOffset*xOffset + yOffset*yOffset) > earthRadius)? true : false;
-        //
-        //            //update flare visibility
-        //            if (flareVisible != flareVisibleOld) {
-        //                for each (flareObject in flares) {
-        //                    if (flareVisible)
-        //                        addChild(flareObject.sprite);
-        //                    else
-        //                        removeChild(flareObject.sprite);
-        //                }
-        //            }
-        //
-        //            //update flare position
-        //            if (flareVisible) {
-        //                var flareDirection:Point = new Point(xOffset, yOffset);
-        //                for each (flareObject in flares) {
-        //                    flareObject.sprite.x = sunScreenPosition.x - flareDirection.x*flareObject.position - flareObject.sprite.width/2;
-        //                    flareObject.sprite.y = sunScreenPosition.y - flareDirection.y*flareObject.position - flareObject.sprite.height/2;
-        //                }
-        //            }
-        //        }
+        Intermediate_Globe.prototype.updateFlares = function () {
+            var flareVisibleOld = this.flareVisible;
+
+            var sunScreenPosition = this.view.project(this.sun.scenePosition);
+            var xOffset = sunScreenPosition.x - window.innerWidth / 2;
+            var yOffset = sunScreenPosition.y - window.innerHeight / 2;
+
+            var earthScreenPosition = this.view.project(this.earth.scenePosition);
+            var earthRadius = 190 * window.innerHeight / earthScreenPosition.z;
+            var flareObject;
+
+            this.flareVisible = (sunScreenPosition.x > 0 && sunScreenPosition.x < window.innerWidth && sunScreenPosition.y > 0 && sunScreenPosition.y < window.innerHeight && sunScreenPosition.z > 0 && Math.sqrt(xOffset * xOffset + yOffset * yOffset) > earthRadius);
+
+            if (this.flareVisible != flareVisibleOld) {
+                for (var i = 0; i < this.flares.length; i++) {
+                    flareObject = this.flares[i];
+                    if (flareObject)
+                        flareObject.sprite.visible = this.flareVisible;
+                }
+            }
+
+            if (this.flareVisible) {
+                var flareDirection = new Point(xOffset, yOffset);
+                for (var i = 0; i < this.flares.length; i++) {
+                    flareObject = this.flares[i];
+                    if (flareObject)
+                        flareObject.sprite.position = this.view.unproject(sunScreenPosition.x - flareDirection.x * flareObject.position, sunScreenPosition.y - flareDirection.y * flareObject.position, 100 - i);
+                }
+            }
+        };
+
         /**
         * Listener function for resource complete event on asset library
         */
@@ -351,6 +366,9 @@ var examples;
                     this.cloudMaterial.texture = new BitmapTexture(cloudBitmapData, false);
                     break;
                 case "assets/demos/globe/earth_specular_2048.jpg":
+                    var specBitmapData = Cast.bitmapData(event.assets[0]);
+                    specBitmapData.colorTransform(specBitmapData.rect, new ColorTransform(1, 1, 1, 1, 64, 64, 64));
+                    this.groundMaterial.specularMap = new BitmapTexture(specBitmapData, false);
                     break;
                 case "assets/demos/globe/EarthNormal.png":
                     this.groundMaterial.normalMap = event.assets[0];
@@ -360,6 +378,38 @@ var examples;
                     break;
                 case "assets/demos/globe/land_ocean_ice_2048_match.jpg":
                     this.groundMaterial.texture = event.assets[0];
+                    break;
+
+                case "assets/demos/lensflare/flare2.jpg":
+                    this.flares[6] = new FlareObject(Cast.bitmapData(event.assets[0]), 1.25, 1.1, 48.45, this.scene);
+                    break;
+                case "assets/demos/lensflare/flare3.jpg":
+                    this.flares[7] = new FlareObject(Cast.bitmapData(event.assets[0]), 1.75, 1.37, 7.65, this.scene);
+                    break;
+                case "assets/demos/lensflare/flare4.jpg":
+                    this.flares[8] = new FlareObject(Cast.bitmapData(event.assets[0]), 2.75, 1.85, 12.75, this.scene);
+                    break;
+                case "assets/demos/lensflare/flare6.jpg":
+                    this.flares[5] = new FlareObject(Cast.bitmapData(event.assets[0]), 1, 0.68, 20.4, this.scene);
+                    this.flares[10] = new FlareObject(Cast.bitmapData(event.assets[0]), 4, 2.5, 10.4, this.scene);
+                    break;
+                case "assets/demos/lensflare/flare7.jpg":
+                    this.flares[2] = new FlareObject(Cast.bitmapData(event.assets[0]), 2, 0, 25.5, this.scene);
+                    this.flares[3] = new FlareObject(Cast.bitmapData(event.assets[0]), 4, 0, 17.85, this.scene);
+                    this.flares[11] = new FlareObject(Cast.bitmapData(event.assets[0]), 10, 2.66, 50, this.scene);
+                    break;
+                case "assets/demos/lensflare/flare8.jpg":
+                    this.flares[9] = new FlareObject(Cast.bitmapData(event.assets[0]), 0.5, 2.21, 33.15, this.scene);
+                    break;
+                case "assets/demos/lensflare/flare10.jpg":
+                    this.sunMaterial.texture = event.assets[0];
+                    this.flares[0] = new FlareObject(Cast.bitmapData(event.assets[0]), 3.2, -0.01, 100, this.scene);
+                    break;
+                case "assets/demos/lensflare/flare11.jpg":
+                    this.flares[1] = new FlareObject(Cast.bitmapData(event.assets[0]), 6, 0, 30.6, this.scene);
+                    break;
+                case "assets/demos/lensflare/flare12.jpg":
+                    this.flares[4] = new FlareObject(Cast.bitmapData(event.assets[0]), 0.4, 0.32, 22.95, this.scene);
                     break;
             }
         };
@@ -397,10 +447,15 @@ var examples;
         */
         Intermediate_Globe.prototype.onMouseWheel = function (event) {
             if (event.wheelDelta > 0) {
-                this.cameraController.distance += 20;
-            } else {
                 this.cameraController.distance -= 20;
+            } else {
+                this.cameraController.distance += 20;
             }
+
+            if (this.cameraController.distance < 400)
+                this.cameraController.distance = 400;
+else if (this.cameraController.distance > 10000)
+                this.cameraController.distance = 10000;
         };
 
         /**
@@ -438,4 +493,39 @@ var examples;
     })();
     examples.Intermediate_Globe = Intermediate_Globe;
 })(examples || (examples = {}));
+
+var Scene3D = away.containers.Scene3D;
+var BitmapData = away.display.BitmapData;
+var BitmapDataChannel = away.display.BitmapDataChannel;
+var BlendMode = away.display.BlendMode;
+var Sprite3D = away.entities.Sprite3D;
+var Point = away.geom.Point;
+var TextureMaterial = away.materials.TextureMaterial;
+var BitmapTexture = away.textures.BitmapTexture;
+var Cast = away.utils.Cast;
+
+var FlareObject = (function () {
+    /**
+    * Constructor
+    */
+    function FlareObject(bitmapData, size, position, opacity, scene) {
+        this.flareSize = 14.4;
+        var bd = new BitmapData(bitmapData.width, bitmapData.height, true, 0xFFFFFFFF);
+        bd.copyChannel(bitmapData, bitmapData.rect, new Point(), BitmapDataChannel.RED, BitmapDataChannel.ALPHA);
+
+        var spriteMaterial = new TextureMaterial(new BitmapTexture(bd, false));
+        spriteMaterial.alpha = opacity / 100;
+        spriteMaterial.alphaBlending = true;
+
+        //spriteMaterial.blendMode = BlendMode.LAYER;
+        this.sprite = new Sprite3D(spriteMaterial, size * this.flareSize, size * this.flareSize);
+        this.sprite.visible = false;
+        this.size = size;
+        this.position = position;
+        this.opacity = opacity;
+
+        scene.addChild(this.sprite);
+    }
+    return FlareObject;
+})();
 //# sourceMappingURL=Intermediate_Globe.js.map
