@@ -8,7 +8,7 @@ module away.textures
 	export class TextureProxyBase extends away.library.NamedAssetBase implements away.library.IAsset
 	{
 		private _format         : string = away.display3D.Context3DTextureFormat.BGRA;
-		private _hasMipmaps     : boolean = true;
+		private _hasMipmaps     : boolean = false;
 
 		private _textures       : away.display3D.TextureBase[];
 		private _dirty          : away.display3D.Context3D[];
