@@ -123,6 +123,8 @@ module away.traverse
 		
 		public clear()
 		{
+            this._iEntryPoint = this._pCamera.scenePosition;
+            this._pCameraForward = this._pCamera.forwardVector;
 			this._cullPlanes = this._customCullPlanes ? this._customCullPlanes : ( this._pCamera ? this._pCamera.frustumPlanes : null );
 			this._numCullPlanes = this._cullPlanes ? this._cullPlanes.length : 0;
 			this._pNumTriangles = this._pNumMouseEnableds = 0;
