@@ -108,7 +108,7 @@ module away.entities
 			throw new away.errors.AbstractMethodError("Unsupported method!");
 		}
 		
-		public get assetType():String
+		public get assetType():string
 		{
 			return away.library.AssetType.SKYBOX;
 		}
