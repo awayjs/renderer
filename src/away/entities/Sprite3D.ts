@@ -25,7 +25,7 @@ module away.entities
 		
 		private _width:number;
 		private _height:number;
-		private _shadowCaster:boolean = false;
+        private _castsShadows:boolean = true;
 		
 		constructor(material:away.materials.MaterialBase, width:number, height:number)
 		{
@@ -144,11 +144,19 @@ module away.entities
 		{
 			return this._animator;
 		}
-		
-		public get castsShadows():boolean
-		{
-			return this._shadowCaster;
-		}
+
+        /**
+         * Indicates whether or not the Mesh can cast shadows. Default value is <code>true</code>.
+         */
+        public get castsShadows():boolean
+        {
+            return this._castsShadows;
+        }
+
+        public set castsShadows(value:boolean)
+        {
+            this._castsShadows = value;
+        }
 		
 		public pGetDefaultBoundingVolume():away.bounds.BoundingVolumeBase
 		{

@@ -39,6 +39,11 @@ module away.partition
 
 			}
 		}
+
+        public isCastingShadow():boolean
+        {
+            return this._renderable.castsShadows;
+        }
 	
 	}
 }
