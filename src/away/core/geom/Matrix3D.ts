@@ -21,7 +21,7 @@ module away.geom
 			if( v != null && v.length == 16 )
 			{
 
-				this.rawData = v;
+				this.rawData = v.concat();
 			}
 			else
 			{
