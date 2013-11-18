@@ -11,7 +11,7 @@ module away.pick
 	export class RaycastPicker implements away.pick.IPicker
 	{
 		private _findClosestCollision:boolean;
-		private _raycastCollector:away.traverse.RaycastCollector = new away.traverse.RaycastCollector ();
+		private _raycastCollector:away.traverse.RaycastCollector;
 		private _ignoredEntities = [];
 		private _onlyMouseEnabled:boolean = true;
 		
@@ -40,7 +40,8 @@ module away.pick
 		 */
 		constructor(findClosestCollision:boolean)
 		{
-			
+            this._raycastCollector = new away.traverse.RaycastCollector();
+
 			this._findClosestCollision = findClosestCollision;
             this._entities = new Array<away.entities.Entity>();//Vector.<Entity>();
 		}
