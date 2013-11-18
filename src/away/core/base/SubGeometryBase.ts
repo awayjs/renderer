@@ -9,6 +9,8 @@ module away.base
      */
 	export class SubGeometryBase
 	{
+        public static SUBGEOM_ID_COUNT:number = 0;
+
 		public _parentGeometry:away.base.Geometry;
         public _vertexData:number[];
 
@@ -34,9 +36,17 @@ module away.base
         public _scaleU:number = 1;
         public _scaleV:number = 1;
         public _uvsDirty:boolean = true;
-		
+
+        /**
+         * An id for this material pass, used to identify material passes when using animation sets.
+         *
+         * @private
+         */
+        public _iUniqueId:number;//Arcane
+
 		constructor()
 		{
+            this._iUniqueId = away.base.SubGeometryBase.SUBGEOM_ID_COUNT++;
 		}
 		
 		/**

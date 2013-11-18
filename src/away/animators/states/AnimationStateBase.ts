@@ -7,12 +7,12 @@ module away.animators
 	 */
 	export class AnimationStateBase implements IAnimationState
 	{
-		private _animationNode:away.animators.AnimationNodeBase;
-		private _rootDelta:away.geom.Vector3D = new away.geom.Vector3D();
-		private _positionDeltaDirty:boolean = true;
+		public _pAnimationNode:away.animators.AnimationNodeBase;
+        public _pRootDelta:away.geom.Vector3D = new away.geom.Vector3D();
+        public _pPositionDeltaDirty:boolean = true;
 		
 		public _pTime:number;
-		public _pStartTime:number;
+		public _pStartTime:number = 0;
 		public _pAnimator:away.animators.IAnimator;
 		
 		/**
@@ -20,20 +20,20 @@ module away.animators
 		 */
 		public get positionDelta():away.geom.Vector3D
 		{
-			if (this._positionDeltaDirty)
+			if (this._pPositionDeltaDirty)
             {
 
                 this._pUpdatePositionDelta();
             }
 
-			return this._rootDelta;
+			return this._pRootDelta;
 
 		}
 		
 		constructor (animator:away.animators.IAnimator, animationNode:away.animators.AnimationNodeBase)
 		{
 			this._pAnimator = animator;
-            this._animationNode = animationNode;
+            this._pAnimationNode = animationNode;
 		}
 		
 		/**
@@ -45,7 +45,7 @@ module away.animators
 		{
             this._pStartTime = startTime;
 
-            this._positionDeltaDirty = true;
+            this._pPositionDeltaDirty = true;
 		}
 		
 		/**
@@ -87,7 +87,7 @@ module away.animators
 		{
 			this._pTime = time - this._pStartTime;
 			
-			this._positionDeltaDirty = true;
+			this._pPositionDeltaDirty = true;
 		}
 		
 		/**

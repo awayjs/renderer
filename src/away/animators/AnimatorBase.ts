@@ -51,7 +51,7 @@ module away.animators
         /**
          * Enables translation of the animated mesh from data returned per frame via the positionDelta property of the active animation node. Defaults to true.
          *
-         * @see away.animators.states.IAnimationState#positionDelta
+         * @see away.animators.IAnimationState#positionDelta
          */
         public updatePosition:Boolean = true;
 

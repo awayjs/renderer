@@ -44,9 +44,9 @@ module away.animators
 		 */
 		removeOwner(mesh:away.entities.Mesh)
 		
-		getAnimationState(node:AnimationNodeBase):AnimationStateBase;
+		getAnimationState(node:AnimationNodeBase):IAnimationState;
 		
-		getAnimationStateByName(name:string):AnimationStateBase;
+		getAnimationStateByName(name:string):IAnimationState;
 		
 		/**
 		 * Returns a shallow clone (re-using the same IAnimationSet) of this IAnimator.
