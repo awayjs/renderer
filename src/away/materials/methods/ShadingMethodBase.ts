@@ -11,11 +11,11 @@ module away.materials
 	//import away3d.materials.compilation.*;
 	//import away3d.materials.passes.*;
 	//import away3d.textures.*;
-	
+
 	//import flash.display3D.*;
-	
+
 	//use namespace arcane;
-	
+
 	/**
 	 * ShadingMethodBase provides an abstract base method for shading methods, used by compiled passes to compile
 	 * the final shading program.
@@ -24,15 +24,15 @@ module away.materials
 	{
 		public _sharedRegisters:away.materials.ShaderRegisterData; // should be protected
 		private _passes:away.materials.MaterialPassBase[];//Vector.<MaterialPassBase>;
-		
+
 		/**
 		 * Create a new ShadingMethodBase object.
 		 * @param needsNormals Defines whether or not the method requires normals.
 		 * @param needsView Defines whether or not the method requires the view direction.
 		 */
-		constructor() // needsNormals : boolean, needsView : boolean, needsGlobalPos : boolean
+			constructor() // needsNormals : boolean, needsView : boolean, needsGlobalPos : boolean
 		{
-            super();
+			super();
 		}
 
 		/**
@@ -41,7 +41,7 @@ module away.materials
 		 */
 		public iInitVO(vo:away.materials.MethodVO)
 		{
-		
+
 		}
 
 		/**
@@ -50,7 +50,6 @@ module away.materials
 		 */
 		public iInitConstants(vo:away.materials.MethodVO)
 		{
-
 
 
 		}
@@ -63,16 +62,16 @@ module away.materials
 			return this._sharedRegisters;
 		}
 
-        public set iSharedRegisters(value:away.materials.ShaderRegisterData)
-        {
-            this._sharedRegisters = value;
-        }
+		public set iSharedRegisters(value:away.materials.ShaderRegisterData)
+		{
+			this._sharedRegisters = value;
+		}
 
-        public setISharedRegisters(value:away.materials.ShaderRegisterData)
-        {
-            this._sharedRegisters = value;
-        }
-		
+		public setISharedRegisters(value:away.materials.ShaderRegisterData)
+		{
+			this._sharedRegisters = value;
+		}
+
 		/**
 		 * Any passes required that render to a texture used by this method.
 		 */
@@ -80,15 +79,15 @@ module away.materials
 		{
 			return this._passes;
 		}
-		
+
 		/**
 		 * Cleans up any resources used by the current object.
 		 */
 		public dispose()
 		{
-		
+
 		}
-		
+
 		/**
 		 * Creates a data container that contains material-dependent data. Provided as a factory method so a custom subtype can be overridden when needed.
 		 */
@@ -104,7 +103,7 @@ module away.materials
 		{
 			this.iCleanCompilationData();
 		}
-		
+
 		/**
 		 * Resets the method's state for compilation.
 		 * @private
@@ -112,7 +111,7 @@ module away.materials
 		public iCleanCompilationData()
 		{
 		}
-		
+
 		/**
 		 * Get the vertex shader code for this method.
 		 * @param vo The MethodVO object linking this method with the pass currently being compiled.
@@ -123,7 +122,7 @@ module away.materials
 		{
 			return "";
 		}
-		
+
 		/**
 		 * Sets the render state for this method.
 		 *
@@ -133,9 +132,9 @@ module away.materials
 		 */
 		public iActivate(vo:away.materials.MethodVO, stage3DProxy:away.managers.Stage3DProxy)
 		{
-		
+
 		}
-		
+
 		/**
 		 * Sets the render state for a single renderable.
 		 *
@@ -146,9 +145,9 @@ module away.materials
 		 */
 		public iSetRenderState(vo:away.materials.MethodVO, renderable:away.base.IRenderable, stage3DProxy:away.managers.Stage3DProxy, camera:away.cameras.Camera3D)
 		{
-		
+
 		}
-		
+
 		/**
 		 * Clears the render state for this method.
 		 * @param vo The MethodVO object linking this method with the pass currently being compiled.
@@ -156,9 +155,9 @@ module away.materials
 		 */
 		public iDeactivate(vo:away.materials.MethodVO, stage3DProxy:away.managers.Stage3DProxy)
 		{
-		
+
 		}
-		
+
 		/**
 		 * A helper method that generates standard code for sampling from a texture using the normal uv coordinates.
 		 * @param vo The MethodVO object linking this method with the pass currently being compiled.
@@ -176,19 +175,17 @@ module away.materials
 
 			var format:string = this.getFormatStringForTexture(texture);
 			var enableMipMaps:boolean = vo.useMipmapping && texture.hasMipMaps;
-			
+
 			if (vo.useSmoothTextures)
-				filter = enableMipMaps? "linear,miplinear" : "linear";
-			else
+				filter = enableMipMaps? "linear,miplinear" : "linear"; else
 				filter = enableMipMaps? "nearest,mipnearest" : "nearest";
 
-            //uvReg ||= _sharedRegisters.uvVarying;
-            if ( uvReg == null )
-            {
+			//uvReg ||= _sharedRegisters.uvVarying;
+			if (uvReg == null) {
 
-                uvReg = this._sharedRegisters.uvVarying;
+				uvReg = this._sharedRegisters.uvVarying;
 
-            }
+			}
 
 			return "tex " + targetReg + ", " + uvReg + ", " + inputReg + " <2d," + filter + "," + format + wrap + ">\n";
 
@@ -207,12 +204,11 @@ module away.materials
 			var filter:string;
 			var format:string = this.getFormatStringForTexture(texture);
 			var enableMipMaps:boolean = vo.useMipmapping && texture.hasMipMaps;
-			
+
 			if (vo.useSmoothTextures)
-				filter = enableMipMaps? "linear,miplinear" : "linear";
-			else
+				filter = enableMipMaps? "linear,miplinear" : "linear"; else
 				filter = enableMipMaps? "nearest,mipnearest" : "nearest";
-			
+
 			return "tex " + targetReg + ", " + uvReg + ", " + inputReg + " <cube," + format + filter + ">\n";
 		}
 
@@ -234,7 +230,7 @@ module away.materials
 					return "";
 			}
 		}
-		
+
 		/**
 		 * Marks the shader program as invalid, so it will be recompiled before the next render.
 		 */
@@ -242,7 +238,7 @@ module away.materials
 		{
 			this.dispatchEvent(new away.events.ShadingMethodEvent(away.events.ShadingMethodEvent.SHADER_INVALIDATED));
 		}
-		
+
 		/**
 		 * Copies the state from a ShadingMethodBase object into the current object.
 		 */

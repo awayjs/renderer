@@ -5,21 +5,21 @@
  */
 module away.events
 {
-    /**
-     * @class away.events.CameraEvent
-     */
+	/**
+	 * @class away.events.CameraEvent
+	 */
 	export class CameraEvent extends away.events.Event
 	{
 		public static LENS_CHANGED:string = "lensChanged";
-		
+
 		private _camera:away.cameras.Camera3D;
-		
-		constructor( type:string, camera:away.cameras.Camera3D )
+
+		constructor(type:string, camera:away.cameras.Camera3D)
 		{
-			super( type );
+			super(type);
 			this._camera = camera;
 		}
-		
+
 		public get camera():away.cameras.Camera3D
 		{
 			return this._camera;

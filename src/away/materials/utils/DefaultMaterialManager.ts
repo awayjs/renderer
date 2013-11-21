@@ -5,89 +5,83 @@ module away.materials
 
 	export class DefaultMaterialManager
 	{
-		private static _defaultTextureBitmapData : away.display.BitmapData;
-		private static _defaultMaterial : away.materials.TextureMaterial;
-		private static _defaultTexture : away.textures.BitmapTexture;
+		private static _defaultTextureBitmapData:away.display.BitmapData;
+		private static _defaultMaterial:away.materials.TextureMaterial;
+		private static _defaultTexture:away.textures.BitmapTexture;
 
-		public static getDefaultMaterial( renderable : away.base.IMaterialOwner = null ) :  away.materials.TextureMaterial
+		public static getDefaultMaterial(renderable:away.base.IMaterialOwner = null):away.materials.TextureMaterial
 		{
-			if (!DefaultMaterialManager._defaultTexture)
-            {
-                DefaultMaterialManager.createDefaultTexture();
-            }
+			if (!DefaultMaterialManager._defaultTexture) {
+				DefaultMaterialManager.createDefaultTexture();
+			}
 
-			
-			if (!DefaultMaterialManager._defaultMaterial)
-            {
-                DefaultMaterialManager.createDefaultMaterial();
-            }
+
+			if (!DefaultMaterialManager._defaultMaterial) {
+				DefaultMaterialManager.createDefaultMaterial();
+			}
 
 			return DefaultMaterialManager._defaultMaterial;
 
 		}
-		
-		public static getDefaultTexture( renderable : away.base.IMaterialOwner= null ):away.textures.BitmapTexture
-		{
-			if (!DefaultMaterialManager._defaultTexture)
-            {
-                DefaultMaterialManager.createDefaultTexture();
 
-            }
+		public static getDefaultTexture(renderable:away.base.IMaterialOwner = null):away.textures.BitmapTexture
+		{
+			if (!DefaultMaterialManager._defaultTexture) {
+				DefaultMaterialManager.createDefaultTexture();
+
+			}
 
 			return DefaultMaterialManager._defaultTexture;
 
 		}
-		
+
 		private static createDefaultTexture()
 		{
-            DefaultMaterialManager._defaultTextureBitmapData = DefaultMaterialManager.createCheckeredBitmapData();//new away.display.BitmapData(8, 8, false, 0x000000);
-			
-			//create chekerboard
-            /*
-			var i:number, j:number;
-			for (i = 0; i < 8; i++)
-            {
-				for (j = 0; j < 8; j++)
-                {
-					if ((j & 1) ^ (i & 1))
-                    {
-                        DefaultMaterialManager._defaultTextureBitmapData.setPixel(i, j, 0XFFFFFF);
-                    }
-				}
-			}
-            */
+			DefaultMaterialManager._defaultTextureBitmapData = DefaultMaterialManager.createCheckeredBitmapData();//new away.display.BitmapData(8, 8, false, 0x000000);
 
-            DefaultMaterialManager._defaultTexture = new away.textures.BitmapTexture( DefaultMaterialManager._defaultTextureBitmapData , false );
-            DefaultMaterialManager._defaultTexture.name = "defaultTexture";
+			//create chekerboard
+			/*
+			 var i:number, j:number;
+			 for (i = 0; i < 8; i++)
+			 {
+			 for (j = 0; j < 8; j++)
+			 {
+			 if ((j & 1) ^ (i & 1))
+			 {
+			 DefaultMaterialManager._defaultTextureBitmapData.setPixel(i, j, 0XFFFFFF);
+			 }
+			 }
+			 }
+			 */
+
+			DefaultMaterialManager._defaultTexture = new away.textures.BitmapTexture(DefaultMaterialManager._defaultTextureBitmapData, false);
+			DefaultMaterialManager._defaultTexture.name = "defaultTexture";
 		}
 
-        public static createCheckeredBitmapData() : away.display.BitmapData
-        {
-            var b : away.display.BitmapData = new away.display.BitmapData(8, 8, false, 0x000000);
+		public static createCheckeredBitmapData():away.display.BitmapData
+		{
+			var b:away.display.BitmapData = new away.display.BitmapData(8, 8, false, 0x000000);
 
-            //create chekerboard
-            var i:number, j:number;
-            for (i = 0; i < 8; i++)
-            {
-                for (j = 0; j < 8; j++)
-                {
-                    if ((j & 1) ^ (i & 1))
-                    {
-                        b.setPixel(i, j, 0XFFFFFF);
-                    }
-                }
-            }
+			//create chekerboard
+			var i:number, j:number;
+			for (i = 0; i < 8; i++) {
+				for (j = 0; j < 8; j++) {
+					if ((j & 1) ^ (i & 1)) {
+						b.setPixel(i, j, 0XFFFFFF);
+					}
+				}
+			}
 
-            return b;
+			return b;
 
-        }
-		
+		}
+
 		private static createDefaultMaterial()
 		{
-            DefaultMaterialManager._defaultMaterial         = new away.materials.TextureMaterial( DefaultMaterialManager._defaultTexture );
-            DefaultMaterialManager._defaultMaterial.mipmap  = false;
-            DefaultMaterialManager._defaultMaterial.smooth  = false;
-            DefaultMaterialManager._defaultMaterial.name    = "defaultMaterial";
+			DefaultMaterialManager._defaultMaterial = new away.materials.TextureMaterial(DefaultMaterialManager._defaultTexture);
+			DefaultMaterialManager._defaultMaterial.mipmap = false;
+			DefaultMaterialManager._defaultMaterial.smooth = false;
+			DefaultMaterialManager._defaultMaterial.name = "defaultMaterial";
 
 		}
 	}

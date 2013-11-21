@@ -4,13 +4,13 @@ module away.data
 {
 	export class EntityListItem
 	{
-		
+
 		public entity:away.entities.Entity;
 		public next:away.data.EntityListItem;
-		
+
 		constructor()
 		{
-			
+
 		}
 	}
 }

@@ -11,10 +11,10 @@ module away.materials
 	 */
 	export class ShaderCompiler
 	{
-        public _pSharedRegisters:away.materials.ShaderRegisterData;// PROTECTED
-        public _pRegisterCache:away.materials.ShaderRegisterCache;// PROTECTED
+		public _pSharedRegisters:away.materials.ShaderRegisterData;// PROTECTED
+		public _pRegisterCache:away.materials.ShaderRegisterCache;// PROTECTED
 		public _pDependencyCounter:away.materials.MethodDependencyCounter; // PROTECTED
-        public _pMethodSetup:away.materials.ShaderMethodSetup;// PROTECTED
+		public _pMethodSetup:away.materials.ShaderMethodSetup;// PROTECTED
 
 		private _smooth:boolean;
 		private _repeat:boolean;
@@ -27,7 +27,7 @@ module away.materials
 		private _fragmentConstantData:number[];
 
 		public _pVertexCode:string = ''; // Changed to emtpy string- AwayTS
-        public _pFragmentCode:string = '';// Changed to emtpy string - AwayTS
+		public _pFragmentCode:string = '';// Changed to emtpy string - AwayTS
 		private _fragmentLightCode:string;
 		private _fragmentPostLightCode:string;
 		private _commonsDataIndex:number = -1;
@@ -36,7 +36,7 @@ module away.materials
 		public _pAnimationTargetRegisters:string[]; // PROTECTED
 
 		public _pLightProbeDiffuseIndices:number[] /*uint*/;
-        public _pLightProbeSpecularIndices:number[] /*uint*/;
+		public _pLightProbeSpecularIndices:number[] /*uint*/;
 		private _uvBufferIndex:number = -1;
 		private _uvTransformIndex:number = -1;
 		private _secondaryUVBufferIndex:number = -1;
@@ -73,12 +73,12 @@ module away.materials
 		 * Creates a new ShaderCompiler object.
 		 * @param profile The compatibility profile of the renderer.
 		 */
-		constructor(profile:string)
+			constructor(profile:string)
 		{
 			this._pSharedRegisters = new away.materials.ShaderRegisterData();
-            this._pDependencyCounter = new away.materials.MethodDependencyCounter();
-            this._pProfile = profile;
-            this.initRegisterCache(profile);
+			this._pDependencyCounter = new away.materials.MethodDependencyCounter();
+			this._pProfile = profile;
+			this.initRegisterCache(profile);
 		}
 
 		/**
@@ -92,7 +92,7 @@ module away.materials
 
 		public set enableLightFallOff(value:boolean)
 		{
-            this._pEnableLightFallOff = value;
+			this._pEnableLightFallOff = value;
 		}
 
 		/**
@@ -131,7 +131,7 @@ module away.materials
 
 		public set forceSeperateMVP(value:boolean)
 		{
-            this._forceSeperateMVP = value;
+			this._forceSeperateMVP = value;
 		}
 
 		/**
@@ -140,9 +140,9 @@ module away.materials
 		 */
 		private initRegisterCache(profile:string)
 		{
-            this._pRegisterCache = new away.materials.ShaderRegisterCache(profile);
-            this._pRegisterCache.vertexAttributesOffset = 1;
-            this._pRegisterCache.reset();
+			this._pRegisterCache = new away.materials.ShaderRegisterCache(profile);
+			this._pRegisterCache.vertexAttributesOffset = 1;
+			this._pRegisterCache.reset();
 		}
 
 		/**
@@ -155,7 +155,7 @@ module away.materials
 
 		public set animateUVs(value:boolean)
 		{
-            this._animateUVs = value;
+			this._animateUVs = value;
 		}
 
 		/**
@@ -169,7 +169,7 @@ module away.materials
 
 		public set alphaPremultiplied(value:boolean)
 		{
-            this._pAlphaPremultiplied = value;
+			this._pAlphaPremultiplied = value;
 		}
 
 		/**
@@ -182,7 +182,7 @@ module away.materials
 
 		public set preserveAlpha(value:boolean)
 		{
-            this._preserveAlpha = value;
+			this._preserveAlpha = value;
 		}
 
 		/**
@@ -193,9 +193,9 @@ module away.materials
 		 */
 		public setTextureSampling(smooth:boolean, repeat:boolean, mipmap:boolean)
 		{
-            this._smooth = smooth;
-            this._repeat = repeat;
-            this._mipmap = mipmap;
+			this._smooth = smooth;
+			this._repeat = repeat;
+			this._mipmap = mipmap;
 		}
 
 		/**
@@ -205,8 +205,8 @@ module away.materials
 		 */
 		public setConstantDataBuffers(vertexConstantData:number[], fragmentConstantData:number[])
 		{
-            this._vertexConstantData = vertexConstantData;
-            this._fragmentConstantData = fragmentConstantData;
+			this._vertexConstantData = vertexConstantData;
+			this._fragmentConstantData = fragmentConstantData;
 		}
 
 		/**
@@ -219,7 +219,7 @@ module away.materials
 
 		public set methodSetup(value:away.materials.ShaderMethodSetup)
 		{
-            this._pMethodSetup = value;
+			this._pMethodSetup = value;
 		}
 
 		/**
@@ -230,30 +230,30 @@ module away.materials
 			this.pInitRegisterIndices();
 			this.pInitLightData();
 
-			this._pAnimatableAttributes = new Array<string>( "va0" );//Vector.<String>(["va0"]);
-            this._pAnimationTargetRegisters = new Array<string>( "vt0" );//Vector.<String>(["vt0"]);
-            this._pVertexCode = "";
-            this._pFragmentCode = "";
+			this._pAnimatableAttributes = new Array<string>("va0");//Vector.<String>(["va0"]);
+			this._pAnimationTargetRegisters = new Array<string>("vt0");//Vector.<String>(["vt0"]);
+			this._pVertexCode = "";
+			this._pFragmentCode = "";
 
-            this._pSharedRegisters.localPosition = this._pRegisterCache.getFreeVertexVectorTemp();
-            this._pRegisterCache.addVertexTempUsages( this._pSharedRegisters.localPosition, 1);
+			this._pSharedRegisters.localPosition = this._pRegisterCache.getFreeVertexVectorTemp();
+			this._pRegisterCache.addVertexTempUsages(this._pSharedRegisters.localPosition, 1);
 
-            this.createCommons();
-            this.pCalculateDependencies();
-            this.updateMethodRegisters();
+			this.createCommons();
+			this.pCalculateDependencies();
+			this.updateMethodRegisters();
 
 			for (var i:number = 0; i < 4; ++i)
-                this._pRegisterCache.getFreeVertexConstant();
+				this._pRegisterCache.getFreeVertexConstant();
 
-            this.pCreateNormalRegisters();
+			this.pCreateNormalRegisters();
 
 			if (this._pDependencyCounter.globalPosDependencies > 0 || this._forceSeperateMVP)
-                this.pCompileGlobalPositionCode();
+				this.pCompileGlobalPositionCode();
 
-            this.compileProjectionCode();
-            this.pCompileMethodsCode();
-            this.compileFragmentOutput();
-            this._fragmentPostLightCode = this.fragmentCode;
+			this.compileProjectionCode();
+			this.pCompileMethodsCode();
+			this.compileFragmentOutput();
+			this._fragmentPostLightCode = this.fragmentCode;
 		}
 
 		/**
@@ -270,21 +270,21 @@ module away.materials
 		public pCompileMethodsCode()
 		{
 			if (this._pDependencyCounter.uvDependencies > 0)
-                this.compileUVCode();
+				this.compileUVCode();
 
 			if (this._pDependencyCounter.secondaryUVDependencies > 0)
-                this.compileSecondaryUVCode();
+				this.compileSecondaryUVCode();
 
 			if (this._pDependencyCounter.normalDependencies > 0)
-                this.pCompileNormalCode();
+				this.pCompileNormalCode();
 
 			if (this._pDependencyCounter.viewDirDependencies > 0)
-                this.pCompileViewDirCode();
+				this.pCompileViewDirCode();
 
-            this.pCompileLightingCode();
-            this._fragmentLightCode = this._pFragmentCode;
-            this._pFragmentCode = "";
-            this.pCompileMethods();
+			this.pCompileLightingCode();
+			this._fragmentLightCode = this._pFragmentCode;
+			this._pFragmentCode = "";
+			this.pCompileMethods();
 		}
 
 		/**
@@ -323,29 +323,24 @@ module away.materials
 
 			this._pSharedRegisters.uvVarying = varying;
 
-			if (this.animateUVs)
-            {
+			if (this.animateUVs) {
 
 				// a, b, 0, tx
 				// c, d, 0, ty
 				var uvTransform1:ShaderRegisterElement = this._pRegisterCache.getFreeVertexConstant();
 				var uvTransform2:ShaderRegisterElement = this._pRegisterCache.getFreeVertexConstant();
-                this._uvTransformIndex = uvTransform1.index*4;
+				this._uvTransformIndex = uvTransform1.index*4;
 
-                // TODO: AGAL <> GLSL
+				// TODO: AGAL <> GLSL
 
-                this._pVertexCode += "dp4 " + varying + ".x, " + uvAttributeReg + ", " + uvTransform1 + "\n" +
-					"dp4 " + varying + ".y, " + uvAttributeReg + ", " + uvTransform2 + "\n" +
-					"mov " + varying + ".zw, " + uvAttributeReg + ".zw \n";
+				this._pVertexCode += "dp4 " + varying + ".x, " + uvAttributeReg + ", " + uvTransform1 + "\n" + "dp4 " + varying + ".y, " + uvAttributeReg + ", " + uvTransform2 + "\n" + "mov " + varying + ".zw, " + uvAttributeReg + ".zw \n";
 
-			}
-            else
-            {
+			} else {
 
 				this._uvTransformIndex = -1;
-                this._needUVAnimation = true;
-                this._UVTarget = varying.toString();
-                this._UVSource = uvAttributeReg.toString();
+				this._needUVAnimation = true;
+				this._UVTarget = varying.toString();
+				this._UVSource = uvAttributeReg.toString();
 
 			}
 		}
@@ -355,12 +350,12 @@ module away.materials
 		 */
 		private compileSecondaryUVCode()
 		{
-            // TODO: AGAL <> GLSL
+			// TODO: AGAL <> GLSL
 
 			var uvAttributeReg:ShaderRegisterElement = this._pRegisterCache.getFreeVertexAttribute();
-            this._secondaryUVBufferIndex = uvAttributeReg.index;
-            this._pSharedRegisters.secondaryUVVarying = this._pRegisterCache.getFreeVarying();
-            this._pVertexCode += "mov " + this._pSharedRegisters.secondaryUVVarying + ", " + uvAttributeReg + "\n";
+			this._secondaryUVBufferIndex = uvAttributeReg.index;
+			this._pSharedRegisters.secondaryUVVarying = this._pRegisterCache.getFreeVarying();
+			this._pVertexCode += "mov " + this._pSharedRegisters.secondaryUVVarying + ", " + uvAttributeReg + "\n";
 		}
 
 		/**
@@ -369,23 +364,22 @@ module away.materials
 		public pCompileGlobalPositionCode()
 		{
 
-            // TODO: AGAL <> GLSL
+			// TODO: AGAL <> GLSL
 
 			this._pSharedRegisters.globalPositionVertex = this._pRegisterCache.getFreeVertexVectorTemp();
-            this._pRegisterCache.addVertexTempUsages(this._pSharedRegisters.globalPositionVertex, this._pDependencyCounter.globalPosDependencies);
+			this._pRegisterCache.addVertexTempUsages(this._pSharedRegisters.globalPositionVertex, this._pDependencyCounter.globalPosDependencies);
 			var positionMatrixReg:ShaderRegisterElement = this._pRegisterCache.getFreeVertexConstant();
-            this._pRegisterCache.getFreeVertexConstant();
-            this._pRegisterCache.getFreeVertexConstant();
-            this._pRegisterCache.getFreeVertexConstant();
-            this._sceneMatrixIndex = positionMatrixReg.index*4;
+			this._pRegisterCache.getFreeVertexConstant();
+			this._pRegisterCache.getFreeVertexConstant();
+			this._pRegisterCache.getFreeVertexConstant();
+			this._sceneMatrixIndex = positionMatrixReg.index*4;
 
-            this._pVertexCode += "m44 " + this._pSharedRegisters.globalPositionVertex + ", " + this._pSharedRegisters.localPosition + ", " + positionMatrixReg + "\n";
+			this._pVertexCode += "m44 " + this._pSharedRegisters.globalPositionVertex + ", " + this._pSharedRegisters.localPosition + ", " + positionMatrixReg + "\n";
 
-			if (this._pDependencyCounter.usesGlobalPosFragment)
-            {
+			if (this._pDependencyCounter.usesGlobalPosFragment) {
 
-                this._pSharedRegisters.globalPositionVarying = this._pRegisterCache.getFreeVarying();
-                this._pVertexCode += "mov " + this._pSharedRegisters.globalPositionVarying + ", " + this._pSharedRegisters.globalPositionVertex + "\n";
+				this._pSharedRegisters.globalPositionVarying = this._pRegisterCache.getFreeVarying();
+				this._pVertexCode += "mov " + this._pSharedRegisters.globalPositionVarying + ", " + this._pSharedRegisters.globalPositionVertex + "\n";
 
 			}
 		}
@@ -398,26 +392,21 @@ module away.materials
 			var pos:string = (this._pDependencyCounter.globalPosDependencies > 0 || this._forceSeperateMVP)? this._pSharedRegisters.globalPositionVertex.toString() : this._pAnimationTargetRegisters[0];
 			var code:string;
 
-            // TODO: AGAL <> GLSL
+			// TODO: AGAL <> GLSL
 
-			if (this._pDependencyCounter.projectionDependencies > 0)
-            {
+			if (this._pDependencyCounter.projectionDependencies > 0) {
 
-                this._pSharedRegisters.projectionFragment = this._pRegisterCache.getFreeVarying();
+				this._pSharedRegisters.projectionFragment = this._pRegisterCache.getFreeVarying();
 
-				code = "m44 vt5, " + pos + ", vc0		\n" +
-					"mov " + this._pSharedRegisters.projectionFragment + ", vt5\n" +
-					"mov op, vt5\n";
+				code = "m44 vt5, " + pos + ", vc0		\n" + "mov " + this._pSharedRegisters.projectionFragment + ", vt5\n" + "mov op, vt5\n";
+			} else {
+
+				code = "m44 op, " + pos + ", vc0		\n";
+
 			}
-            else
-            {
-
-                code = "m44 op, " + pos + ", vc0		\n";
-
-            }
 
 
-            this._pVertexCode += code;
+			this._pVertexCode += code;
 
 		}
 
@@ -426,10 +415,10 @@ module away.materials
 		 */
 		private compileFragmentOutput()
 		{
-            // TODO: AGAL <> GLSL
+			// TODO: AGAL <> GLSL
 
 			this._pFragmentCode += "mov " + this._pRegisterCache.fragmentOutputRegister + ", " + this._pSharedRegisters.shadedTarget + "\n";
-            this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.shadedTarget);
+			this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.shadedTarget);
 		}
 
 		/**
@@ -438,16 +427,16 @@ module away.materials
 		public pInitRegisterIndices()
 		{
 			this._commonsDataIndex = -1;
-            this._pCameraPositionIndex = -1;
-            this._uvBufferIndex = -1;
-            this._uvTransformIndex = -1;
-            this._secondaryUVBufferIndex = -1;
-            this._pNormalBufferIndex = -1;
-            this._pTangentBufferIndex = -1;
-            this._pLightFragmentConstantIndex = -1;
-            this._sceneMatrixIndex = -1;
-            this._pSceneNormalMatrixIndex = -1;
-            this._pProbeWeightsIndex = -1;
+			this._pCameraPositionIndex = -1;
+			this._uvBufferIndex = -1;
+			this._uvTransformIndex = -1;
+			this._secondaryUVBufferIndex = -1;
+			this._pNormalBufferIndex = -1;
+			this._pTangentBufferIndex = -1;
+			this._pLightFragmentConstantIndex = -1;
+			this._sceneMatrixIndex = -1;
+			this._pSceneNormalMatrixIndex = -1;
+			this._pProbeWeightsIndex = -1;
 
 		}
 
@@ -456,26 +445,22 @@ module away.materials
 		 */
 		public pInitLightData()
 		{
-            this._pNumLights = this._pNumPointLights + this._pNumDirectionalLights;
-            this._pNumProbeRegisters = Math.ceil(this._pNumLightProbes/4);
+			this._pNumLights = this._pNumPointLights + this._pNumDirectionalLights;
+			this._pNumProbeRegisters = Math.ceil(this._pNumLightProbes/4);
 
 
-			if (this._pMethodSetup._iSpecularMethod)
-            {
+			if (this._pMethodSetup._iSpecularMethod) {
 
-                this._combinedLightSources = this._specularLightSources | this._diffuseLightSources;
+				this._combinedLightSources = this._specularLightSources | this._diffuseLightSources;
 
-            }
-			else
-            {
+			} else {
 
-                this._combinedLightSources = this._diffuseLightSources;
+				this._combinedLightSources = this._diffuseLightSources;
 
-            }
+			}
 
-            this._usingSpecularMethod = Boolean(this._pMethodSetup._iSpecularMethod && (
-                this.pUsesLightsForSpecular() ||
-                this.pUsesProbesForSpecular()));
+			this._usingSpecularMethod = Boolean(this._pMethodSetup._iSpecularMethod && (
+				this.pUsesLightsForSpecular() || this.pUsesProbesForSpecular()));
 
 		}
 
@@ -485,7 +470,7 @@ module away.materials
 		private createCommons()
 		{
 			this._pSharedRegisters.commons = this._pRegisterCache.getFreeFragmentConstant();
-            this._commonsDataIndex = this._pSharedRegisters.commons.index*4;
+			this._commonsDataIndex = this._pSharedRegisters.commons.index*4;
 		}
 
 		/**
@@ -493,8 +478,7 @@ module away.materials
 		 */
 		public pCalculateDependencies()
 		{
-            this._pDependencyCounter.reset();
-
+			this._pDependencyCounter.reset();
 
 
 			var methods:away.materials.MethodVOSet[] = this._pMethodSetup._iMethods;//Vector.<MethodVOSet>
@@ -571,31 +555,30 @@ module away.materials
 		 */
 		private updateMethodRegisters()
 		{
-			this._pMethodSetup._iNormalMethod.iSharedRegisters= this._pSharedRegisters;
-            this._pMethodSetup._iDiffuseMethod.iSharedRegisters = this._pSharedRegisters;
+			this._pMethodSetup._iNormalMethod.iSharedRegisters = this._pSharedRegisters;
+			this._pMethodSetup._iDiffuseMethod.iSharedRegisters = this._pSharedRegisters;
 
 			if (this._pMethodSetup._iShadowMethod)
-                this._pMethodSetup._iShadowMethod.iSharedRegisters = this._pSharedRegisters;
+				this._pMethodSetup._iShadowMethod.iSharedRegisters = this._pSharedRegisters;
 
-            this._pMethodSetup._iAmbientMethod.iSharedRegisters = this._pSharedRegisters;
+			this._pMethodSetup._iAmbientMethod.iSharedRegisters = this._pSharedRegisters;
 
 			if (this._pMethodSetup._iSpecularMethod)
-                this._pMethodSetup._iSpecularMethod.iSharedRegisters = this._pSharedRegisters;
+				this._pMethodSetup._iSpecularMethod.iSharedRegisters = this._pSharedRegisters;
 
 			if (this._pMethodSetup._iColorTransformMethod)
-                this._pMethodSetup._iColorTransformMethod.iSharedRegisters = this._pSharedRegisters;
+				this._pMethodSetup._iColorTransformMethod.iSharedRegisters = this._pSharedRegisters;
 
 
-            var methods : away.materials.MethodVOSet[] = this._pMethodSetup._iMethods;//var methods:Vector.<MethodVOSet> = _pMethodSetup._methods;
+			var methods:away.materials.MethodVOSet[] = this._pMethodSetup._iMethods;//var methods:Vector.<MethodVOSet> = _pMethodSetup._methods;
 
 			var len:number = methods.length;
 
-			for (var i:number = 0; i < len; ++i)
-            {
+			for (var i:number = 0; i < len; ++i) {
 
-                methods[i].method.iSharedRegisters = this._pSharedRegisters;
+				methods[i].method.iSharedRegisters = this._pSharedRegisters;
 
-            }
+			}
 
 
 		}
@@ -676,33 +659,32 @@ module away.materials
 		private cleanUpMethods()
 		{
 			if (this._pMethodSetup._iNormalMethod)
-                this._pMethodSetup._iNormalMethod.iCleanCompilationData();
+				this._pMethodSetup._iNormalMethod.iCleanCompilationData();
 
 			if (this._pMethodSetup._iDiffuseMethod)
-                this._pMethodSetup._iDiffuseMethod.iCleanCompilationData();
+				this._pMethodSetup._iDiffuseMethod.iCleanCompilationData();
 
 			if (this._pMethodSetup._iAmbientMethod)
-                this._pMethodSetup._iAmbientMethod.iCleanCompilationData();
+				this._pMethodSetup._iAmbientMethod.iCleanCompilationData();
 
 			if (this._pMethodSetup._iSpecularMethod)
-                this._pMethodSetup._iSpecularMethod.iCleanCompilationData();
+				this._pMethodSetup._iSpecularMethod.iCleanCompilationData();
 
 			if (this._pMethodSetup._iShadowMethod)
-                this._pMethodSetup._iShadowMethod.iCleanCompilationData();
+				this._pMethodSetup._iShadowMethod.iCleanCompilationData();
 
 			if (this._pMethodSetup._iColorTransformMethod)
-                this._pMethodSetup._iColorTransformMethod.iCleanCompilationData();
+				this._pMethodSetup._iColorTransformMethod.iCleanCompilationData();
 
-            var methods:away.materials.MethodVOSet[]= this._pMethodSetup._iMethods;//var methods:Vector.<MethodVOSet> = _pMethodSetup._methods;
+			var methods:away.materials.MethodVOSet[] = this._pMethodSetup._iMethods;//var methods:Vector.<MethodVOSet> = _pMethodSetup._methods;
 
 			var len:number = methods.length;
 
-			for (var i:number = 0; i < len; ++i)
-            {
+			for (var i:number = 0; i < len; ++i) {
 
-                methods[i].method.iCleanCompilationData();
+				methods[i].method.iCleanCompilationData();
 
-            }
+			}
 
 		}
 
@@ -719,7 +701,7 @@ module away.materials
 
 		public set specularLightSources(value:number)
 		{
-            this._specularLightSources = value;
+			this._specularLightSources = value;
 		}
 
 		/**
@@ -892,7 +874,7 @@ module away.materials
 
 		public set numPointLights(numPointLights:number)
 		{
-            this._pNumPointLights = numPointLights;
+			this._pNumPointLights = numPointLights;
 		}
 
 		/**
@@ -905,7 +887,7 @@ module away.materials
 
 		public set numDirectionalLights(value:number)
 		{
-            this._pNumDirectionalLights = value;
+			this._pNumDirectionalLights = value;
 		}
 
 		/**
@@ -918,7 +900,7 @@ module away.materials
 
 		public set numLightProbes(value:number)
 		{
-            this._pNumLightProbes = value;
+			this._pNumLightProbes = value;
 		}
 
 		/**
@@ -966,56 +948,52 @@ module away.materials
 		 */
 		public pCompileMethods()
 		{
-            var methods:away.materials.MethodVOSet[] = this._pMethodSetup._iMethods;//var methods:Vector.<MethodVOSet> = this._pMethodSetup._iMethods;
+			var methods:away.materials.MethodVOSet[] = this._pMethodSetup._iMethods;//var methods:Vector.<MethodVOSet> = this._pMethodSetup._iMethods;
 
 			var numMethods:number = methods.length;
 			var method:EffectMethodBase;
 			var data:MethodVO;
 			var alphaReg:ShaderRegisterElement;
 
-            // TODO: AGAL <> GLSL
+			// TODO: AGAL <> GLSL
 
-			if (this._preserveAlpha)
-            {
+			if (this._preserveAlpha) {
 				alphaReg = this._pRegisterCache.getFreeFragmentSingleTemp();
-                this._pRegisterCache.addFragmentTempUsages(alphaReg, 1);
-                this._pFragmentCode += "mov " + alphaReg + ", " + this._pSharedRegisters.shadedTarget + ".w\n";
+				this._pRegisterCache.addFragmentTempUsages(alphaReg, 1);
+				this._pFragmentCode += "mov " + alphaReg + ", " + this._pSharedRegisters.shadedTarget + ".w\n";
 			}
 
-			for (var i:number = 0; i < numMethods; ++i)
-            {
+			for (var i:number = 0; i < numMethods; ++i) {
 
 				method = methods[i].method;
 				data = methods[i].data;
 
-				this._pVertexCode += method.iGetVertexCode( data, this._pRegisterCache);
+				this._pVertexCode += method.iGetVertexCode(data, this._pRegisterCache);
 
 				if (data.needsGlobalVertexPos || data.needsGlobalFragmentPos)
-                    this._pRegisterCache.removeVertexTempUsage(this._pSharedRegisters.globalPositionVertex);
+					this._pRegisterCache.removeVertexTempUsage(this._pSharedRegisters.globalPositionVertex);
 
-                this._pFragmentCode += method.iGetFragmentCode(data, this._pRegisterCache, this._pSharedRegisters.shadedTarget);
+				this._pFragmentCode += method.iGetFragmentCode(data, this._pRegisterCache, this._pSharedRegisters.shadedTarget);
 
 				if (data.needsNormals)
 					this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.normalFragment);
 
 				if (data.needsView)
-                    this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.viewDirFragment);
+					this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.viewDirFragment);
 			}
 
-			if (this._preserveAlpha)
-            {
+			if (this._preserveAlpha) {
 
-                this._pFragmentCode += "mov " + this._pSharedRegisters.shadedTarget + ".w, " + alphaReg + "\n";
+				this._pFragmentCode += "mov " + this._pSharedRegisters.shadedTarget + ".w, " + alphaReg + "\n";
 
-                this._pRegisterCache.removeFragmentTempUsage(alphaReg);
+				this._pRegisterCache.removeFragmentTempUsage(alphaReg);
 
 			}
 
-			if (this._pMethodSetup._iColorTransformMethod)
-            {
+			if (this._pMethodSetup._iColorTransformMethod) {
 
-                this._pVertexCode += this._pMethodSetup._iColorTransformMethod.iGetVertexCode(this._pMethodSetup._iColorTransformMethodVO, this._pRegisterCache);
-                this._pFragmentCode += this._pMethodSetup._iColorTransformMethod.iGetFragmentCode(this._pMethodSetup._iColorTransformMethodVO, this._pRegisterCache, this._pSharedRegisters.shadedTarget);
+				this._pVertexCode += this._pMethodSetup._iColorTransformMethod.iGetVertexCode(this._pMethodSetup._iColorTransformMethodVO, this._pRegisterCache);
+				this._pFragmentCode += this._pMethodSetup._iColorTransformMethod.iGetFragmentCode(this._pMethodSetup._iColorTransformMethodVO, this._pRegisterCache, this._pSharedRegisters.shadedTarget);
 
 			}
 		}

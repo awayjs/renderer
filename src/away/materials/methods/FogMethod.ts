@@ -2,7 +2,7 @@
 
 module away.materials
 {
-    import Stage3DProxy = away.managers.Stage3DProxy;
+	import Stage3DProxy = away.managers.Stage3DProxy;
 	/**
 	 * FogMethod provides a method to add distance-based fog to a material.
 	 */
@@ -21,7 +21,7 @@ module away.materials
 		 * @param maxDistance The distance at which the fog is densest.
 		 * @param fogColor The colour of the fog.
 		 */
-		constructor(minDistance:number, maxDistance:number, fogColor:number /*uint*/ = 0x808080)
+			constructor(minDistance:number, maxDistance:number, fogColor:number /*uint*/ = 0x808080)
 		{
 			super();
 			this.minDistance = minDistance;
@@ -56,10 +56,10 @@ module away.materials
 		{
 			return this._minDistance;
 		}
-		
+
 		public set minDistance(value:number)
 		{
-            this._minDistance = value;
+			this._minDistance = value;
 		}
 
 		/**
@@ -69,10 +69,10 @@ module away.materials
 		{
 			return this._maxDistance;
 		}
-		
+
 		public set maxDistance(value:number)
 		{
-            this._maxDistance = value;
+			this._maxDistance = value;
 		}
 
 		/**
@@ -82,13 +82,13 @@ module away.materials
 		{
 			return this._fogColor;
 		}
-		
+
 		public set fogColor(value:number/*uint*/)
 		{
-            this._fogColor = value;
-            this._fogR = ((value >> 16) & 0xff)/0xff;
-            this._fogG = ((value >> 8) & 0xff)/0xff;
-            this._fogB = (value & 0xff)/0xff;
+			this._fogColor = value;
+			this._fogR = ((value >> 16) & 0xff)/0xff;
+			this._fogG = ((value >> 8) & 0xff)/0xff;
+			this._fogB = (value & 0xff)/0xff;
 		}
 
 		/**
@@ -117,16 +117,13 @@ module away.materials
 			var temp2:ShaderRegisterElement = regCache.getFreeFragmentVectorTemp();
 			var code:string = "";
 			vo.fragmentConstantsIndex = fogColor.index*4;
-			
-			code += "sub " + temp2 + ".w, " + this._sharedRegisters.projectionFragment + ".z, " + fogData + ".x          \n" +
-				"mul " + temp2 + ".w, " + temp2 + ".w, " + fogData + ".y					\n" +
-				"sat " + temp2 + ".w, " + temp2 + ".w										\n" +
-				"sub " + temp + ", " + fogColor + ", " + targetReg + "\n" + 			// (fogColor- col)
+
+			code += "sub " + temp2 + ".w, " + this._sharedRegisters.projectionFragment + ".z, " + fogData + ".x          \n" + "mul " + temp2 + ".w, " + temp2 + ".w, " + fogData + ".y					\n" + "sat " + temp2 + ".w, " + temp2 + ".w										\n" + "sub " + temp + ", " + fogColor + ", " + targetReg + "\n" + 			// (fogColor- col)
 				"mul " + temp + ", " + temp + ", " + temp2 + ".w					\n" +			// (fogColor- col)*fogRatio
 				"add " + targetReg + ", " + targetReg + ", " + temp + "\n"; // fogRatio*(fogColor- col) + col
-			
+
 			regCache.removeFragmentTempUsage(temp);
-			
+
 			return code;
 		}
 	}

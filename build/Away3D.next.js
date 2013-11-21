@@ -3364,6 +3364,7 @@ var away;
             Object3D.prototype.roll = function (angle) {
                 this.rotate(away.geom.Vector3D.Z_AXIS, angle);
             };
+
             Object3D.prototype.clone = function () {
                 var clone = new away.base.Object3D();
                 clone.pivotPoint = this.pivotPoint;
@@ -5591,6 +5592,7 @@ var away;
                 enumerable: true,
                 configurable: true
             });
+
             Geometry.prototype.getSubGeometries = function () {
                 return this._subGeometries;
             };
@@ -9282,24 +9284,7 @@ var away;
                 if (v != null && v.length == 16) {
                     this.rawData = v.concat();
                 } else {
-                    this.rawData = [
-                        1,
-                        0,
-                        0,
-                        0,
-                        0,
-                        1,
-                        0,
-                        0,
-                        0,
-                        0,
-                        1,
-                        0,
-                        0,
-                        0,
-                        0,
-                        1
-                    ];
+                    this.rawData = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
                 }
             }
             /**
@@ -16133,6 +16118,7 @@ var away;
                 configurable: true
             });
 
+
             Object.defineProperty(View3D.prototype, "canvas", {
                 get: function () {
                     return this._pStage3DProxy.canvas;
@@ -22833,51 +22819,9 @@ var away;
                 var v2 = (1 - y) * .5;
 
                 // last element contains indices for data per vertex that can be passed to the vertex shader if necessary (ie: frustum corners for deferred rendering)
-                textureVerts = [
-                    -x,
-                    -y,
-                    u1,
-                    v1,
-                    0,
-                    x,
-                    -y,
-                    u2,
-                    v1,
-                    1,
-                    x,
-                    y,
-                    u2,
-                    v2,
-                    2,
-                    -x,
-                    y,
-                    u1,
-                    v2,
-                    3
-                ];
+                textureVerts = [-x, -y, u1, v1, 0, x, -y, u2, v1, 1, x, y, u2, v2, 2, -x, y, u1, v2, 3];
 
-                screenVerts = [
-                    -1,
-                    -1,
-                    u1,
-                    v1,
-                    0,
-                    1,
-                    -1,
-                    u2,
-                    v1,
-                    1,
-                    1,
-                    1,
-                    u2,
-                    v2,
-                    2,
-                    -1,
-                    1,
-                    u1,
-                    v2,
-                    3
-                ];
+                screenVerts = [-1, -1, u1, v1, 0, 1, -1, u2, v1, 1, 1, 1, u2, v2, 2, -1, 1, u1, v2, 3];
 
                 this._renderToTextureVertexBuffer.uploadFromArray(textureVerts, 0, 4);
                 this._renderToScreenVertexBuffer.uploadFromArray(screenVerts, 0, 4);
@@ -23189,6 +23133,7 @@ var away;
                 configurable: true
             });
 
+
             Object.defineProperty(Stage3DProxy.prototype, "stage3DIndex", {
                 get: /**
                 * The index of the Stage3D which is managed by this instance of Stage3DProxy.
@@ -23254,6 +23199,7 @@ var away;
                 configurable: true
             });
 
+
             Object.defineProperty(Stage3DProxy.prototype, "y", {
                 get: /**
                 * The y position of the Stage3D.
@@ -23272,6 +23218,7 @@ var away;
                 enumerable: true,
                 configurable: true
             });
+
 
             Object.defineProperty(Stage3DProxy.prototype, "canvas", {
                 get: /**
@@ -23305,6 +23252,7 @@ var away;
                 configurable: true
             });
 
+
             Object.defineProperty(Stage3DProxy.prototype, "height", {
                 get: /**
                 * The height of the Stage3D.
@@ -23325,6 +23273,7 @@ var away;
                 configurable: true
             });
 
+
             Object.defineProperty(Stage3DProxy.prototype, "antiAlias", {
                 get: /**
                 * The antiAliasing of the Stage3D.
@@ -23339,6 +23288,7 @@ var away;
                 enumerable: true,
                 configurable: true
             });
+
 
             Object.defineProperty(Stage3DProxy.prototype, "viewPort", {
                 get: /**
@@ -23382,6 +23332,7 @@ var away;
                 configurable: true
             });
 
+
             Object.defineProperty(Stage3DProxy.prototype, "bufferClear", {
                 get: /**
                 * The freshly cleared state of the backbuffer before any rendering
@@ -23395,6 +23346,7 @@ var away;
                 enumerable: true,
                 configurable: true
             });
+
 
             Object.defineProperty(Stage3DProxy.prototype, "mouse3DManager", {
                 get: /*
@@ -31046,6 +30998,7 @@ var away;
                 enumerable: true,
                 configurable: true
             });
+
             CompositeSpecularMethod.prototype.setISharedRegisters = function (value) {
                 _super.prototype.setISharedRegisters.call(this, value);
                 this._baseMethod.setISharedRegisters(value);
@@ -41394,36 +41347,47 @@ var away;
             ByteArrayBase.prototype.writeByte = function (b) {
                 throw "Virtual method";
             };
+
             ByteArrayBase.prototype.readByte = function () {
                 throw "Virtual method";
             };
+
             ByteArrayBase.prototype.writeUnsignedByte = function (b) {
                 throw "Virtual method";
             };
+
             ByteArrayBase.prototype.readUnsignedByte = function () {
                 throw "Virtual method";
             };
+
             ByteArrayBase.prototype.writeUnsignedShort = function (b) {
                 throw "Virtual method";
             };
+
             ByteArrayBase.prototype.readUnsignedShort = function () {
                 throw "Virtual method";
             };
+
             ByteArrayBase.prototype.writeUnsignedInt = function (b) {
                 throw "Virtual method";
             };
+
             ByteArrayBase.prototype.readUnsignedInt = function () {
                 throw "Virtual method";
             };
+
             ByteArrayBase.prototype.writeFloat = function (b) {
                 throw "Virtual method";
             };
+
             ByteArrayBase.prototype.toFloatBits = function (x) {
                 throw "Virtual method";
             };
+
             ByteArrayBase.prototype.readFloat = function (b) {
                 throw "Virtual method";
             };
+
             ByteArrayBase.prototype.fromFloatBits = function (x) {
                 throw "Virtual method";
             };
@@ -41469,6 +41433,7 @@ var away;
                 var oldpos = this.position;
                 this.position = 0;
                 var nstep = 8;
+
                 function asHexString(x, digits) {
                     var lut = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"];
                     var sh = "";
@@ -42708,24 +42673,7 @@ var away;
             PerspectiveMatrix3D.prototype.perspectiveFieldOfViewLH = function (fieldOfViewY, aspectRatio, zNear, zFar) {
                 var yScale = 1 / Math.tan(fieldOfViewY / 2);
                 var xScale = yScale / aspectRatio;
-                this.copyRawDataFrom([
-                    xScale,
-                    0.0,
-                    0.0,
-                    0.0,
-                    0.0,
-                    yScale,
-                    0.0,
-                    0.0,
-                    0.0,
-                    0.0,
-                    zFar / (zFar - zNear),
-                    1.0,
-                    0.0,
-                    0.0,
-                    (zNear * zFar) / (zNear - zFar),
-                    0.0
-                ]);
+                this.copyRawDataFrom([xScale, 0.0, 0.0, 0.0, 0.0, yScale, 0.0, 0.0, 0.0, 0.0, zFar / (zFar - zNear), 1.0, 0.0, 0.0, (zNear * zFar) / (zNear - zFar), 0.0]);
             };
             return PerspectiveMatrix3D;
         })(away.geom.Matrix3D);
@@ -43384,6 +43332,7 @@ var away;
                 this._pStitchFinalFrame = false;
                 this._pNumFrames = 0;
                 this._pDurations = new Array();
+                /*uint*/
                 this._pTotalDelta = new away.geom.Vector3D();
                 this.fixedFrameRate = true;
             }
@@ -47657,6 +47606,7 @@ var away;
         */
         var ParserBase = (function (_super) {
             __extends(ParserBase, _super);
+            /* Protected */
             /**
             * Creates a new ParserBase object
             * @param format The data format of the file data to be parsed. Can be either <code>ParserDataFormat.BINARY</code> or <code>ParserDataFormat.PLAIN_TEXT</code>, and should be provided by the concrete subtype.
@@ -49164,6 +49114,7 @@ var away;
                 configurable: true
             });
 
+
             // Private
             /**
             *
@@ -49264,6 +49215,7 @@ var away;
                 enumerable: true,
                 configurable: true
             });
+
 
             // Private
             /**
@@ -50446,8 +50398,8 @@ var UV = (function () {
     /**
     * Creates a new <code>UV</code> object.
     *
-    * @param	u		[optional]	The horizontal coordinate of the texture value. Defaults to 0.
-    * @param	v		[optional]	The vertical coordinate of the texture value. Defaults to 0.
+    * @param    u        [optional]    The horizontal coordinate of the texture value. Defaults to 0.
+    * @param    v        [optional]    The vertical coordinate of the texture value. Defaults to 0.
     */
     function UV(u, v) {
         if (typeof u === "undefined") { u = 0; }
@@ -50468,6 +50420,7 @@ var UV = (function () {
         enumerable: true,
         configurable: true
     });
+
 
     Object.defineProperty(UV.prototype, "u", {
         get: /**
@@ -50504,10 +50457,10 @@ var Vertex = (function () {
     /**
     * Creates a new <code>Vertex</code> value object.
     *
-    * @param	x			[optional]	The x value. Defaults to 0.
-    * @param	y			[optional]	The y value. Defaults to 0.
-    * @param	z			[optional]	The z value. Defaults to 0.
-    * @param	index		[optional]	The index value. Defaults is NaN.
+    * @param    x            [optional]    The x value. Defaults to 0.
+    * @param    y            [optional]    The y value. Defaults to 0.
+    * @param    z            [optional]    The z value. Defaults to 0.
+    * @param    index        [optional]    The index value. Defaults is NaN.
     */
     function Vertex(x, y, z, index) {
         if (typeof x === "undefined") { x = 0; }
@@ -50519,13 +50472,14 @@ var Vertex = (function () {
         this._z = z;
         this._index = index;
     }
+
     Object.defineProperty(Vertex.prototype, "index", {
         get: function () {
             return this._index;
         },
         set: /**
         * To define/store the index of value object
-        * @param	ind		The index
+        * @param    ind        The index
         */
         function (ind) {
             this._index = ind;
@@ -50537,7 +50491,7 @@ var Vertex = (function () {
     Object.defineProperty(Vertex.prototype, "x", {
         get: /**
         * To define/store the x value of the value object
-        * @param	value		The x value
+        * @param    value        The x value
         */
         function () {
             return this._x;
@@ -50549,10 +50503,11 @@ var Vertex = (function () {
         configurable: true
     });
 
+
     Object.defineProperty(Vertex.prototype, "y", {
         get: /**
         * To define/store the y value of the value object
-        * @param	value		The y value
+        * @param    value        The y value
         */
         function () {
             return this._y;
@@ -50564,10 +50519,11 @@ var Vertex = (function () {
         configurable: true
     });
 
+
     Object.defineProperty(Vertex.prototype, "z", {
         get: /**
         * To define/store the z value of the value object
-        * @param	value		The z value
+        * @param    value        The z value
         */
         function () {
             return this._z;
@@ -55149,8 +55105,24 @@ var aglsl;
 (function (aglsl) {
     var Description = (function () {
         function Description() {
-            this.regread = [[], [], [], [], [], [], []];
-            this.regwrite = [[], [], [], [], [], [], []];
+            this.regread = [
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                []
+            ];
+            this.regwrite = [
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                []
+            ];
             this.hasindirect = false;
             this.writedepth = false;
             this.hasmatrix = false;
@@ -56065,6 +56037,7 @@ var aglsl;
                 var lutentry = aglsl.Mapping.agal2glsllut[desc.tokens[i].opcode];
                 if (!lutentry) {
                     throw "Opcode not valid or not implemented yet: ";
+                    /*+token.opcode;*/
                 }
                 var sublines = lutentry.matrixheight || 1;
 

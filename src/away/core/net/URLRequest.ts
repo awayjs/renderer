@@ -1,94 +1,95 @@
 ///<reference path="../../_definitions.ts"/>
-module away.net {
+module away.net
+{
 
-    /**
-     *
-     */
-    export class URLRequest
-    {
+	/**
+	 *
+	 */
+	export class URLRequest
+	{
 
-        //public authenticate     : boolean = false;
-        //public cacheResponse    : boolean = true;
-        //public idleTimeout      : number;
-        //public requestHeader    : Array;
-        //public userAgent        : string;
+		//public authenticate     : boolean = false;
+		//public cacheResponse    : boolean = true;
+		//public idleTimeout      : number;
+		//public requestHeader    : Array;
+		//public userAgent        : string;
 
-        /*
-         * The MIME content type of the content in the the data property.
-         * @type {string}
-         */
-        //public contentType      : string = 'application/x-www-form-urlencoded'; //Note: Not used for now.
+		/*
+		 * The MIME content type of the content in the the data property.
+		 * @type {string}
+		 */
+		//public contentType      : string = 'application/x-www-form-urlencoded'; //Note: Not used for now.
 
-        /**
-         * Object containing data to be transmited with URL Request ( URL Variables / binary / string )
-         *
-         */
-        public data             : any;
+		/**
+		 * Object containing data to be transmited with URL Request ( URL Variables / binary / string )
+		 *
+		 */
+		public data:any;
 
-        /**
-         *
-         * away.net.URLRequestMethod.GET
-         * away.net.URLRequestMethod.POST
-         *
-         * @type {string}
-         */
-        public method           : string = away.net.URLRequestMethod.GET;
+		/**
+		 *
+		 * away.net.URLRequestMethod.GET
+		 * away.net.URLRequestMethod.POST
+		 *
+		 * @type {string}
+		 */
+		public method:string = away.net.URLRequestMethod.GET;
 
-        /**
-         * Use asynchronous XMLHttpRequest
-         * @type {boolean}
-         */
-        public async            : boolean = true;
+		/**
+		 * Use asynchronous XMLHttpRequest
+		 * @type {boolean}
+		 */
+		public async:boolean = true;
 
-        /**
-         *
-         */
-        private _url            : string;
+		/**
+		 *
+		 */
+		private _url:string;
 
-        /**
+		/**
 
-         * @param url
-         */
-        constructor( url : string = null )
-        {
+		 * @param url
+		 */
+			constructor(url:string = null)
+		{
 
-            this._url = url;
+			this._url = url;
 
-        }
+		}
 
-        /**
-         *
-         * @returns {string}
-         */
-        public get url() : string
-        {
+		/**
+		 *
+		 * @returns {string}
+		 */
+		public get url():string
+		{
 
-            return this._url;
+			return this._url;
 
-        }
+		}
 
-        /**
-         *
-         * @param value
-         */
-        public set url( value : string )
-        {
+		/**
+		 *
+		 * @param value
+		 */
+		public set url(value:string)
+		{
 
-            this._url = value;
+			this._url = value;
 
-        }
+		}
 
-        /**
-         * dispose
-         */
-        public dispose() : void
-        {
+		/**
+		 * dispose
+		 */
+		public dispose():void
+		{
 
-            this.data   = null;
-            this._url   = null;
-            this.method = null;
-            this.async  = null;
+			this.data = null;
+			this._url = null;
+			this.method = null;
+			this.async = null;
 
-        }
-    }
+		}
+	}
 }

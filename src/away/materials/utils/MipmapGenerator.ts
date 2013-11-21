@@ -1,5 +1,3 @@
-
-
 ///<reference path="../../_definitions.ts"/>
 
 module away.materials
@@ -15,34 +13,34 @@ module away.materials
 	 */
 	export class MipmapGenerator
 	{
-		private static _matrix  : away.geom.Matrix          = new away.geom.Matrix();
-        private static _rect    : away.geom.Rectangle       = new away.geom.Rectangle();
-        private static _source  : away.display.BitmapData;//= new away.display.BitmapData();
+		private static _matrix:away.geom.Matrix = new away.geom.Matrix();
+		private static _rect:away.geom.Rectangle = new away.geom.Rectangle();
+		private static _source:away.display.BitmapData;//= new away.display.BitmapData();
 
-        /**
-         * Uploads a BitmapData with mip maps to a target Texture object.
-         * @param source
-         * @param target The target Texture to upload to.
-         * @param mipmap An optional mip map holder to avoids creating new instances for fe animated materials.
-         * @param alpha Indicate whether or not the uploaded bitmapData is transparent.
-         */
-        public static generateHTMLImageElementMipMaps( source : HTMLImageElement , target : away.display3D.TextureBase , mipmap : away.display.BitmapData = null, alpha:boolean = false, side:number = -1)
-        {
+		/**
+		 * Uploads a BitmapData with mip maps to a target Texture object.
+		 * @param source
+		 * @param target The target Texture to upload to.
+		 * @param mipmap An optional mip map holder to avoids creating new instances for fe animated materials.
+		 * @param alpha Indicate whether or not the uploaded bitmapData is transparent.
+		 */
+		public static generateHTMLImageElementMipMaps(source:HTMLImageElement, target:away.display3D.TextureBase, mipmap:away.display.BitmapData = null, alpha:boolean = false, side:number = -1)
+		{
 
-            MipmapGenerator._rect.width     = source.width;
-            MipmapGenerator._rect.height    = source.height;
+			MipmapGenerator._rect.width = source.width;
+			MipmapGenerator._rect.height = source.height;
 
-            MipmapGenerator._source = new away.display.BitmapData( source.width , source.height , alpha );
-            MipmapGenerator._source.drawImage( source , MipmapGenerator._rect , MipmapGenerator._rect );
+			MipmapGenerator._source = new away.display.BitmapData(source.width, source.height, alpha);
+			MipmapGenerator._source.drawImage(source, MipmapGenerator._rect, MipmapGenerator._rect);
 
-            MipmapGenerator.generateMipMaps( MipmapGenerator._source , target , mipmap );
+			MipmapGenerator.generateMipMaps(MipmapGenerator._source, target, mipmap);
 
-            MipmapGenerator._source.dispose();
-            MipmapGenerator._source = null;
+			MipmapGenerator._source.dispose();
+			MipmapGenerator._source = null;
 
 
+		}
 
-        }
 		/**
 		 * Uploads a BitmapData with mip maps to a target Texture object.
 		 * @param source The source BitmapData to upload.
@@ -50,68 +48,63 @@ module away.materials
 		 * @param mipmap An optional mip map holder to avoids creating new instances for fe animated materials.
 		 * @param alpha Indicate whether or not the uploaded bitmapData is transparent.
 		 */
-		public static generateMipMaps( source : away.display.BitmapData , target : away.display3D.TextureBase , mipmap : away.display.BitmapData = null, alpha:boolean = false, side:number = -1)
+		public static generateMipMaps(source:away.display.BitmapData, target:away.display3D.TextureBase, mipmap:away.display.BitmapData = null, alpha:boolean = false, side:number = -1)
 		{
-			var w       : number    = source.width;
-		    var h       : number    = source.height;
-            var regen   : boolean   = mipmap != null;
-			var i       : number;
+			var w:number = source.width;
+			var h:number = source.height;
+			var regen:boolean = mipmap != null;
+			var i:number;
 
-            if ( ! mipmap )
-            {
+			if (!mipmap) {
 
-                mipmap = new away.display.BitmapData(w, h, alpha);
+				mipmap = new away.display.BitmapData(w, h, alpha);
 
 
-            }
+			}
 
-            MipmapGenerator._rect.width = w;
-            MipmapGenerator._rect.height = h;
+			MipmapGenerator._rect.width = w;
+			MipmapGenerator._rect.height = h;
 
-            var tx : away.display3D.Texture;
-			
+			var tx:away.display3D.Texture;
+
 			while (w >= 1 || h >= 1) {
 
-				if (alpha){
+				if (alpha) {
 
 					mipmap.fillRect(MipmapGenerator._rect, 0);
 
-                }
+				}
 
-                MipmapGenerator._matrix.a   = MipmapGenerator._rect.width / source.width;
-                MipmapGenerator._matrix.d   = MipmapGenerator._rect.height / source.height;
+				MipmapGenerator._matrix.a = MipmapGenerator._rect.width/source.width;
+				MipmapGenerator._matrix.d = MipmapGenerator._rect.height/source.height;
 
-                mipmap.width                = MipmapGenerator._rect.width;
-                mipmap.height               = MipmapGenerator._rect.height;
-                mipmap.copyPixels( source , source.rect , MipmapGenerator._rect );
+				mipmap.width = MipmapGenerator._rect.width;
+				mipmap.height = MipmapGenerator._rect.height;
+				mipmap.copyPixels(source, source.rect, MipmapGenerator._rect);
 
-                //console.log( target instanceof away.display3D.Texture , mipmap.width , mipmap.height );
+				//console.log( target instanceof away.display3D.Texture , mipmap.width , mipmap.height );
 
-                if ( target instanceof away.display3D.Texture)
-                {
-                    tx = <away.display3D.Texture> target;
-                    tx.uploadFromBitmapData(mipmap, i++);
-                }
-                else
-                {
-                    away.Debug.throwPIR( 'MipMapGenerator' , 'generateMipMaps' , 'Dependency: CubeTexture');
-                    // TODO: implement cube texture upload;
-                    //CubeTexture(target).uploadFromBitmapData(mipmap, side, i++);
-                }
+				if (target instanceof away.display3D.Texture) {
+					tx = <away.display3D.Texture> target;
+					tx.uploadFromBitmapData(mipmap, i++);
+				} else {
+					away.Debug.throwPIR('MipMapGenerator', 'generateMipMaps', 'Dependency: CubeTexture');
+					// TODO: implement cube texture upload;
+					//CubeTexture(target).uploadFromBitmapData(mipmap, side, i++);
+				}
 
 				w >>= 1;
 				h >>= 1;
 
-                MipmapGenerator._rect.width = w > 1? w : 1;
-                MipmapGenerator._rect.height = h > 1? h : 1;
+				MipmapGenerator._rect.width = w > 1? w : 1;
+				MipmapGenerator._rect.height = h > 1? h : 1;
 			}
-			
-			if ( ! regen )
-            {
 
-                mipmap.dispose();
+			if (!regen) {
 
-            }
+				mipmap.dispose();
+
+			}
 
 		}
 	}

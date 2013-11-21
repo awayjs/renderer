@@ -1,6 +1,6 @@
 module away.materials
 {
-	
+
 	/**
 	 * Enumeration class for defining which lighting types affect the specific material
 	 * lighting component (diffuse and specular). This can be useful if, for example, you
@@ -19,13 +19,13 @@ module away.materials
 		 * component.
 		 */
 		public static LIGHTS:number = 0x01;
-		
+
 		/**
 		 * Defines that global lighting probes are to be used as the source for the
 		 * lighting component.
 		 */
 		public static PROBES:number = 0x02;
-		
+
 		/**
 		 * Defines that both normal and global lighting probes  are to be used as the
 		 * source for the lighting component. This is equivalent to LightSources.LIGHTS | LightSources.PROBES.

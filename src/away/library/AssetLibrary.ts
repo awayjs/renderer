@@ -1,5 +1,3 @@
-
-
 ///<reference path="../_definitions.ts"/>
 
 module away.library
@@ -13,17 +11,18 @@ module away.library
 	export class AssetLibrary
 	{
 		public static _iInstances:Object = {};
-		
+
 		/**
 		 * Creates a new <code>AssetLibrary</code> object.
 		 *
 		 * @param se A singleton enforcer for the AssetLibrary ensuring it cannnot be instanced.
 		 */
-        //*
-		constructor(se:AssetLibrarySingletonEnforcer)
+			//*
+			constructor(se:AssetLibrarySingletonEnforcer)
 		{
 			se = se;
 		}
+
 		//*/
 		/**
 		 * Returns an AssetLibrary bundle instance. If no key is given, returns the default bundle (which is
@@ -38,7 +37,7 @@ module away.library
 		{
 			return away.library.AssetLibraryBundle.getInstance(key);
 		}
-		
+
 		/**
 		 *
 		 */
@@ -46,15 +45,15 @@ module away.library
 		{
 			away.loaders.SingleFileLoader.enableParser(parserClass);
 		}
-		
+
 		/**
 		 *
 		 */
-		public static enableParsers( parserClasses: Object[] )
+		public static enableParsers(parserClasses:Object[])
 		{
-            away.loaders.SingleFileLoader.enableParsers(parserClasses);
+			away.loaders.SingleFileLoader.enableParsers(parserClasses);
 		}
-		
+
 		/**
 		 * Short-hand for conflictStrategy property on default asset library bundle.
 		 *
@@ -64,12 +63,12 @@ module away.library
 		{
 			return away.library.AssetLibrary.getBundle().conflictStrategy;
 		}
-		
+
 		public static set conflictStrategy(val:away.library.ConflictStrategyBase)
 		{
-            away.library.AssetLibrary.getBundle().conflictStrategy = val;
+			away.library.AssetLibrary.getBundle().conflictStrategy = val;
 		}
-		
+
 		/**
 		 * Short-hand for conflictPrecedence property on default asset library bundle.
 		 *
@@ -79,12 +78,12 @@ module away.library
 		{
 			return away.library.AssetLibrary.getBundle().conflictPrecedence;
 		}
-		
+
 		public static set conflictPrecedence(val:string)
 		{
-            away.library.AssetLibrary.getBundle().conflictPrecedence = val;
+			away.library.AssetLibrary.getBundle().conflictPrecedence = val;
 		}
-		
+
 		/**
 		 * Short-hand for createIterator() method on default asset library bundle.
 		 *
@@ -94,7 +93,7 @@ module away.library
 		{
 			return away.library.AssetLibrary.getBundle().createIterator(assetTypeFilter, namespaceFilter, filterFunc);
 		}
-		
+
 		/**
 		 * Short-hand for load() method on default asset library bundle.
 		 *
@@ -104,22 +103,22 @@ module away.library
 		{
 			return away.library.AssetLibrary.getBundle().load(req, context, ns, parser);
 		}
-		
+
 		/**
 		 * Short-hand for loadData() method on default asset library bundle.
 		 *
 		 * @see away3d.library.AssetLibraryBundle.loadData()
 		 */
-		public static loadData(data: any , context:away.loaders.AssetLoaderContext = null, ns:string = null, parser:away.loaders.ParserBase = null):away.loaders.AssetLoaderToken
+		public static loadData(data:any, context:away.loaders.AssetLoaderContext = null, ns:string = null, parser:away.loaders.ParserBase = null):away.loaders.AssetLoaderToken
 		{
 			return away.library.AssetLibrary.getBundle().loadData(data, context, ns, parser);
 		}
-		
+
 		public static stopLoad()
 		{
-            away.library.AssetLibrary.getBundle().stopAllLoadingSessions();
+			away.library.AssetLibrary.getBundle().stopAllLoadingSessions();
 		}
-		
+
 		/**
 		 * Short-hand for getAsset() method on default asset library bundle.
 		 *
@@ -129,36 +128,36 @@ module away.library
 		{
 			return away.library.AssetLibrary.getBundle().getAsset(name, ns);
 		}
-		
+
 		/**
 		 * Short-hand for addEventListener() method on default asset library bundle.
 		 */
-		public static addEventListener( type : string , listener : Function , target : Object  )
+		public static addEventListener(type:string, listener:Function, target:Object)
 		{
-            away.library.AssetLibrary.getBundle().addEventListener(type, listener, target );
+			away.library.AssetLibrary.getBundle().addEventListener(type, listener, target);
 		}
-		
+
 		/**
 		 * Short-hand for removeEventListener() method on default asset library bundle.
 		 */
-		public static removeEventListener(type : string , listener : Function , target : Object  )
+		public static removeEventListener(type:string, listener:Function, target:Object)
 		{
-            away.library.AssetLibrary.getBundle().removeEventListener(type , listener , target );
+			away.library.AssetLibrary.getBundle().removeEventListener(type, listener, target);
 		}
-		
+
 		/**
 		 * Short-hand for hasEventListener() method on default asset library bundle.
 
-		public static hasEventListener(type:string):boolean
-		{
+		 public static hasEventListener(type:string):boolean
+		 {
 			return away.library.AssetLibrary.getBundle().hasEventListener(type);
 		}
 
-		public static willTrigger(type:string):boolean
-		{
+		 public static willTrigger(type:string):boolean
+		 {
 			return getBundle().willTrigger(type);
 		}
-        */
+		 */
 
 		/**
 		 * Short-hand for addAsset() method on default asset library bundle.
@@ -169,7 +168,7 @@ module away.library
 		{
 			away.library.AssetLibrary.getBundle().addAsset(asset);
 		}
-		
+
 		/**
 		 * Short-hand for removeAsset() method on default asset library bundle.
 		 *
@@ -180,9 +179,9 @@ module away.library
 		 */
 		public static removeAsset(asset:IAsset, dispose:boolean = true)
 		{
-            away.library.AssetLibrary.getBundle().removeAsset(asset, dispose);
+			away.library.AssetLibrary.getBundle().removeAsset(asset, dispose);
 		}
-		
+
 		/**
 		 * Short-hand for removeAssetByName() method on default asset library bundle.
 		 *
@@ -196,7 +195,7 @@ module away.library
 		{
 			return away.library.AssetLibrary.getBundle().removeAssetByName(name, ns, dispose);
 		}
-		
+
 		/**
 		 * Short-hand for removeAllAssets() method on default asset library bundle.
 		 *
@@ -206,9 +205,9 @@ module away.library
 		 */
 		public static removeAllAssets(dispose:boolean = true)
 		{
-            away.library.AssetLibrary.getBundle().removeAllAssets(dispose);
+			away.library.AssetLibrary.getBundle().removeAllAssets(dispose);
 		}
-		
+
 		/**
 		 * Short-hand for removeNamespaceAssets() method on default asset library bundle.
 		 *
@@ -216,7 +215,7 @@ module away.library
 		 */
 		public static removeNamespaceAssets(ns:string = null, dispose:boolean = true)
 		{
-            away.library.AssetLibrary.getBundle().removeNamespaceAssets(ns, dispose);
+			away.library.AssetLibrary.getBundle().removeNamespaceAssets(ns, dispose);
 		}
 	}
 }

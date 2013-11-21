@@ -5,14 +5,14 @@
 module away.base
 {
 
-    /**
-     *
+	/**
+	 *
 	 * SkinnedSubGeometry provides a SubGeometry extension that contains data needed to skin vertices. In particular,
 	 * it provides joint indices and weights.
 	 * Important! Joint indices need to be pre-multiplied by 3, since they index the matrix array (and each matrix has 3 float4 elements)
-     *
-     * @class away.base.SkinnedSubGeometry
-     *
+	 *
+	 * @class away.base.SkinnedSubGeometry
+	 *
 	 */
 	export class SkinnedSubGeometry extends CompactSubGeometry
 	{
@@ -25,25 +25,25 @@ module away.base
 		private _jointWeightsInvalid:boolean[] = new Array<boolean>(8);
 		private _jointIndicesInvalid:boolean[] = new Array<boolean>(8);
 		private _jointWeightContext:away.display3D.Context3D[] = new Array<away.display3D.Context3D>(8);
-		private _jointIndexContext:away.display3D.Context3D[]  = new Array<away.display3D.Context3D>(8);
+		private _jointIndexContext:away.display3D.Context3D[] = new Array<away.display3D.Context3D>(8);
 		private _jointsPerVertex:number;
-		
+
 		private _condensedJointIndexData:number[];
 		private _condensedIndexLookUp:number[] /*uint*/; // used for linking condensed indices to the real ones
 		private _numCondensedJoints:number;
-		
+
 		/**
 		 * Creates a new SkinnedSubGeometry object.
 		 * @param jointsPerVertex The amount of joints that can be assigned per vertex.
 		 */
-		constructor(jointsPerVertex:number)
+			constructor(jointsPerVertex:number)
 		{
 			super();
 
 			this._jointsPerVertex = jointsPerVertex;
-            this._bufferFormat = "float" + this._jointsPerVertex;
+			this._bufferFormat = "float" + this._jointsPerVertex;
 		}
-		
+
 		/**
 		 * If indices have been condensed, this will contain the original index for each condensed index.
 		 */
@@ -51,7 +51,7 @@ module away.base
 		{
 			return this._condensedIndexLookUp;
 		}
-		
+
 		/**
 		 * The amount of joints used when joint indices have been condensed.
 		 */
@@ -59,21 +59,21 @@ module away.base
 		{
 			return this._numCondensedJoints;
 		}
-		
+
 		/**
 		 * The animated vertex positions when set explicitly if the skinning transformations couldn't be performed on GPU.
 		 */
 		public get animatedData():number[]
 		{
-			return this._animatedData ||this._vertexData.concat();
+			return this._animatedData || this._vertexData.concat();
 		}
-		
+
 		public updateAnimatedData(value:number[])
 		{
-            this._animatedData = value;
-            this.pInvalidateBuffers( this._pVertexDataInvalid );
+			this._animatedData = value;
+			this.pInvalidateBuffers(this._pVertexDataInvalid);
 		}
-		
+
 		/**
 		 * Assigns the attribute stream for joint weights
 		 * @param index The attribute stream index for the vertex shader
@@ -84,17 +84,17 @@ module away.base
 			var contextIndex:number = stage3DProxy._iStage3DIndex;
 			var context:away.display3D.Context3D = stage3DProxy._iContext3D;
 			if (this._jointWeightContext[contextIndex] != context || !this._jointWeightsBuffer[contextIndex]) {
-                this._jointWeightsBuffer[contextIndex] = context.createVertexBuffer(this._pNumVertices, this._jointsPerVertex);
-                this._jointWeightContext[contextIndex] = context;
-                this._jointWeightsInvalid[contextIndex] = true;
+				this._jointWeightsBuffer[contextIndex] = context.createVertexBuffer(this._pNumVertices, this._jointsPerVertex);
+				this._jointWeightContext[contextIndex] = context;
+				this._jointWeightsInvalid[contextIndex] = true;
 			}
 			if (this._jointWeightsInvalid[contextIndex]) {
-                this._jointWeightsBuffer[contextIndex].uploadFromArray(this._jointWeightsData, 0, this._jointWeightsData.length/this._jointsPerVertex);
-                this._jointWeightsInvalid[contextIndex] = false;
+				this._jointWeightsBuffer[contextIndex].uploadFromArray(this._jointWeightsData, 0, this._jointWeightsData.length/this._jointsPerVertex);
+				this._jointWeightsInvalid[contextIndex] = false;
 			}
 			context.setVertexBufferAt(index, this._jointWeightsBuffer[contextIndex], 0, this._bufferFormat);
 		}
-		
+
 		/**
 		 * Assigns the attribute stream for joint indices
 		 * @param index The attribute stream index for the vertex shader
@@ -104,31 +104,29 @@ module away.base
 		{
 			var contextIndex:number = stage3DProxy._iStage3DIndex;
 			var context:away.display3D.Context3D = stage3DProxy._iContext3D;
-			
+
 			if (this._jointIndexContext[contextIndex] != context || !this._jointIndexBuffer[contextIndex]) {
-                this._jointIndexBuffer[contextIndex] = context.createVertexBuffer(this._pNumVertices, this._jointsPerVertex);
-                this._jointIndexContext[contextIndex] = context;
-                this._jointIndicesInvalid[contextIndex] = true;
+				this._jointIndexBuffer[contextIndex] = context.createVertexBuffer(this._pNumVertices, this._jointsPerVertex);
+				this._jointIndexContext[contextIndex] = context;
+				this._jointIndicesInvalid[contextIndex] = true;
 			}
 			if (this._jointIndicesInvalid[contextIndex]) {
-                this._jointIndexBuffer[contextIndex].uploadFromArray(this._numCondensedJoints > 0? this._condensedJointIndexData : this._jointIndexData, 0, this._jointIndexData.length/this._jointsPerVertex);
-                this._jointIndicesInvalid[contextIndex] = false;
+				this._jointIndexBuffer[contextIndex].uploadFromArray(this._numCondensedJoints > 0? this._condensedJointIndexData : this._jointIndexData, 0, this._jointIndexData.length/this._jointsPerVertex);
+				this._jointIndicesInvalid[contextIndex] = false;
 			}
 			context.setVertexBufferAt(index, this._jointIndexBuffer[contextIndex], 0, this._bufferFormat);
 		}
-		
+
 		public pUploadData(contextIndex:number)
 		{
 			if (this._animatedData) {
-                this._pActiveBuffer.uploadFromArray(this._animatedData, 0, this._pNumVertices);
-                this._pVertexDataInvalid[contextIndex] = this._pActiveDataInvalid = false;
-			}
-            else
-            {
+				this._pActiveBuffer.uploadFromArray(this._animatedData, 0, this._pNumVertices);
+				this._pVertexDataInvalid[contextIndex] = this._pActiveDataInvalid = false;
+			} else {
 				super.pUploadData(contextIndex);
-            }
+			}
 		}
-		
+
 		/**
 		 * Clones the current object.
 		 * @return An exact duplicate of the current object.
@@ -149,17 +147,17 @@ module away.base
 
 			return clone;
 		}
-		
+
 		/**
 		 * Cleans up any resources used by this object.
 		 */
 		public dispose()
 		{
 			super.dispose();
-            this.pDisposeVertexBuffers(this._jointWeightsBuffer);
-            this.pDisposeVertexBuffers(this._jointIndexBuffer);
+			this.pDisposeVertexBuffers(this._jointWeightsBuffer);
+			this.pDisposeVertexBuffers(this._jointIndexBuffer);
 		}
-		
+
 		/**
 		 */
 		public iCondenseIndexData()
@@ -169,26 +167,26 @@ module away.base
 			var newIndex:number = 0;
 			var dic:Object = new Object();
 
-            this._condensedJointIndexData = new Array<number>(len);
-            this._condensedIndexLookUp = new Array<number>();
-			
+			this._condensedJointIndexData = new Array<number>(len);
+			this._condensedIndexLookUp = new Array<number>();
+
 			for (var i:number = 0; i < len; ++i) {
 				oldIndex = this._jointIndexData[i];
-				
+
 				// if we encounter a new index, assign it a new condensed index
 				if (dic[oldIndex] == undefined) {
 					dic[oldIndex] = newIndex;
-                    this._condensedIndexLookUp[newIndex++] = oldIndex;
-                    this._condensedIndexLookUp[newIndex++] = oldIndex + 1;
-                    this._condensedIndexLookUp[newIndex++] = oldIndex + 2;
+					this._condensedIndexLookUp[newIndex++] = oldIndex;
+					this._condensedIndexLookUp[newIndex++] = oldIndex + 1;
+					this._condensedIndexLookUp[newIndex++] = oldIndex + 2;
 				}
-                this._condensedJointIndexData[i] = dic[oldIndex];
+				this._condensedJointIndexData[i] = dic[oldIndex];
 			}
-            this._numCondensedJoints = newIndex/3;
+			this._numCondensedJoints = newIndex/3;
 
-            this.pInvalidateBuffers(this._jointIndicesInvalid);
+			this.pInvalidateBuffers(this._jointIndicesInvalid);
 		}
-		
+
 		/**
 		 * The raw joint weights data.
 		 */
@@ -196,18 +194,18 @@ module away.base
 		{
 			return this._jointWeightsData;
 		}
-		
+
 		public iUpdateJointWeightsData(value:number[])
 		{
 			// invalidate condensed stuff
-            this._numCondensedJoints = 0;
-            this._condensedIndexLookUp = null;
-            this._condensedJointIndexData = null;
+			this._numCondensedJoints = 0;
+			this._condensedIndexLookUp = null;
+			this._condensedJointIndexData = null;
 
-            this._jointWeightsData = value;
-            this.pInvalidateBuffers(this._jointWeightsInvalid);
+			this._jointWeightsData = value;
+			this.pInvalidateBuffers(this._jointWeightsInvalid);
 		}
-		
+
 		/**
 		 * The raw joint index data.
 		 */
@@ -215,10 +213,10 @@ module away.base
 		{
 			return this._jointIndexData;
 		}
-		
+
 		public iUpdateJointIndexData(value:number[])
 		{
-            this._jointIndexData = value;
+			this._jointIndexData = value;
 			this.pInvalidateBuffers(this._jointIndicesInvalid);
 		}
 	}

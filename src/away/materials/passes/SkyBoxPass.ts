@@ -1,4 +1,3 @@
-
 ///<reference path="../../_definitions.ts"/>
 
 module away.materials
@@ -11,18 +10,18 @@ module away.materials
 	{
 		private _cubeTexture:away.textures.CubeTextureBase;
 		private _vertexData:number[];
-		
+
 		/**
 		 * Creates a new SkyBoxPass object.
 		 */
-		constructor()
+			constructor()
 		{
 			super();
 			this.mipmap = false;
 			this._pNumUsedTextures = 1;
-            this._vertexData = new Array<number>( 0, 0, 0, 0, 1, 1, 1, 1 );
+			this._vertexData = new Array<number>(0, 0, 0, 0, 1, 1, 1, 1);
 		}
-		
+
 		/**
 		 * The cube texture to use as the skybox.
 		 */
@@ -30,23 +29,20 @@ module away.materials
 		{
 			return this._cubeTexture;
 		}
-		
+
 		public set cubeTexture(value:away.textures.CubeTextureBase)
 		{
 			this._cubeTexture = value;
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
 		public iGetVertexCode():string
 		{
-			return "mul vt0, va0, vc5		\n" +
-				"add vt0, vt0, vc4		\n" +
-				"m44 op, vt0, vc0		\n" +
-				"mov v0, va0\n";
+			return "mul vt0, va0, vc5		\n" + "add vt0, vt0, vc4		\n" + "m44 op, vt0, vc0		\n" + "mov v0, va0\n";
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
@@ -66,12 +62,10 @@ module away.materials
 
 			var mip:string = ",mipnone";
 
-			if (this._cubeTexture.hasMipMaps)
-            {
+			if (this._cubeTexture.hasMipMaps) {
 				mip = ",miplinear";
-            }
-			return "tex ft0, v0, fs0 <cube," + format + "linear,clamp" + mip + ">	\n" +
-				"mov oc, ft0							\n";
+			}
+			return "tex ft0, v0, fs0 <cube," + format + "linear,clamp" + mip + ">	\n" + "mov oc, ft0							\n";
 		}
 
 		/**
@@ -82,15 +76,15 @@ module away.materials
 			var context:away.display3D.Context3D = stage3DProxy._iContext3D;
 			var pos:away.geom.Vector3D = camera.scenePosition;
 			this._vertexData[0] = pos.x;
-            this._vertexData[1] = pos.y;
-            this._vertexData[2] = pos.z;
-            this._vertexData[4] = this._vertexData[5] = this._vertexData[6] = camera.lens.far/Math.sqrt(3);
+			this._vertexData[1] = pos.y;
+			this._vertexData[2] = pos.z;
+			this._vertexData[4] = this._vertexData[5] = this._vertexData[6] = camera.lens.far/Math.sqrt(3);
 			context.setProgramConstantsFromMatrix(away.display3D.Context3DProgramType.VERTEX, 0, viewProjection, true);
 			context.setProgramConstantsFromArray(away.display3D.Context3DProgramType.VERTEX, 4, this._vertexData, 2);
 			renderable.activateVertexBuffer(0, stage3DProxy);
 			context.drawTriangles(renderable.getIndexBuffer(stage3DProxy), 0, renderable.numTriangles);
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
@@ -98,7 +92,7 @@ module away.materials
 		{
 			super.iActivate(stage3DProxy, camera);
 			var context:away.display3D.Context3D = stage3DProxy._iContext3D;
-            context.setSamplerStateAt( 0 , away.display3D.Context3DWrapMode.CLAMP, away.display3D.Context3DTextureFilter.LINEAR, this._cubeTexture.hasMipMaps ? away.display3D.Context3DMipFilter.MIPLINEAR : away.display3D.Context3DMipFilter.MIPNONE );
+			context.setSamplerStateAt(0, away.display3D.Context3DWrapMode.CLAMP, away.display3D.Context3DTextureFilter.LINEAR, this._cubeTexture.hasMipMaps? away.display3D.Context3DMipFilter.MIPLINEAR : away.display3D.Context3DMipFilter.MIPNONE);
 			context.setDepthTest(false, away.display3D.Context3DCompareMode.LESS);
 			context.setTextureAt(0, this._cubeTexture.getTextureForStage3D(stage3DProxy));
 		}

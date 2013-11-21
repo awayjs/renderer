@@ -13,13 +13,13 @@ module away.materials
 	{
 		private _includeCasters:boolean = true;
 		private _ignoreLights:boolean;
-		
+
 		/**
 		 * Creates a new SuperShaderPass objects.
 		 *
 		 * @param material The material to which this material belongs.
 		 */
-		constructor(material:away.materials.MaterialBase)
+			constructor(material:away.materials.MaterialBase)
 		{
 			super(material);
 			this._pNeedFragmentAnimation = true;
@@ -40,13 +40,13 @@ module away.materials
 		{
 			return this._includeCasters;
 		}
-		
+
 		public set includeCasters(value:boolean)
 		{
 			if (this._includeCasters == value)
 				return;
-            this._includeCasters = value;
-            this.iInvalidateShaderProgram();//invalidateShaderProgram();
+			this._includeCasters = value;
+			this.iInvalidateShaderProgram();//invalidateShaderProgram();
 		}
 
 		/**
@@ -56,35 +56,30 @@ module away.materials
 		{
 
 
-            return this._pMethodSetup._iColorTransformMethod ? this._pMethodSetup._iColorTransformMethod.colorTransform : null;
+			return this._pMethodSetup._iColorTransformMethod? this._pMethodSetup._iColorTransformMethod.colorTransform : null;
 		}
 
 		public set colorTransform(value:away.geom.ColorTransform)
 		{
-			if (value)
-            {
+			if (value) {
 
-                //colorTransformMethod ||= new away.geom.ColorTransform();
-                if ( this.colorTransformMethod == null )
-                {
+				//colorTransformMethod ||= new away.geom.ColorTransform();
+				if (this.colorTransformMethod == null) {
 
 
-                    this.colorTransformMethod = new away.materials.ColorTransformMethod();
+					this.colorTransformMethod = new away.materials.ColorTransformMethod();
 
-                }
+				}
 
 				this._pMethodSetup._iColorTransformMethod.colorTransform = value;
 
-			}
-            else if (!value)
-            {
+			} else if (!value) {
 
-				if (this._pMethodSetup._iColorTransformMethod)
-                {
+				if (this._pMethodSetup._iColorTransformMethod) {
 
-                    this.colorTransformMethod = null;
+					this.colorTransformMethod = null;
 
-                }
+				}
 
 				this.colorTransformMethod = this._pMethodSetup._iColorTransformMethod = null;
 			}
@@ -98,7 +93,7 @@ module away.materials
 
 			return this._pMethodSetup._iColorTransformMethod;
 		}
-		
+
 		public set colorTransformMethod(value:away.materials.ColorTransformMethod)
 		{
 			this._pMethodSetup.iColorTransformMethod = value;
@@ -159,7 +154,7 @@ module away.materials
 		 */
 		public removeMethod(method:away.materials.EffectMethodBase)
 		{
-            this._pMethodSetup.removeMethod(method);
+			this._pMethodSetup.removeMethod(method);
 		}
 
 		/**
@@ -168,64 +163,58 @@ module away.materials
 		public pUpdateLights()
 		{
 
-			if (this._pLightPicker && !this._ignoreLights)
-            {
+			if (this._pLightPicker && !this._ignoreLights) {
 
 				this._pNumPointLights = this._pLightPicker.numPointLights;
-                this._pNumDirectionalLights = this._pLightPicker.numDirectionalLights;
-                this._pNumLightProbes = this._pLightPicker.numLightProbes;
+				this._pNumDirectionalLights = this._pLightPicker.numDirectionalLights;
+				this._pNumLightProbes = this._pLightPicker.numLightProbes;
 
-				if (this._includeCasters)
-                {
+				if (this._includeCasters) {
 					this._pNumPointLights += this._pLightPicker.numCastingPointLights;
 					this._pNumDirectionalLights += this._pLightPicker.numCastingDirectionalLights;
 				}
 
-			}
-            else
-            {
+			} else {
 				this._pNumPointLights = 0;
-                this._pNumDirectionalLights = 0;
-                this._pNumLightProbes = 0;
+				this._pNumDirectionalLights = 0;
+				this._pNumLightProbes = 0;
 			}
 
-            this.iInvalidateShaderProgram();//invalidateShaderProgram();
+			this.iInvalidateShaderProgram();//invalidateShaderProgram();
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate( stage3DProxy : away.managers.Stage3DProxy , camera:away.cameras.Camera3D )
+		public iActivate(stage3DProxy:away.managers.Stage3DProxy, camera:away.cameras.Camera3D)
 		{
 			super.iActivate(stage3DProxy, camera);
 
 			if (this._pMethodSetup._iColorTransformMethod)
-                this._pMethodSetup._iColorTransformMethod.iActivate(this._pMethodSetup._iColorTransformMethodVO, stage3DProxy);
+				this._pMethodSetup._iColorTransformMethod.iActivate(this._pMethodSetup._iColorTransformMethodVO, stage3DProxy);
 
 			var methods:away.materials.MethodVOSet[] = this._pMethodSetup._iMethods;
 			var len:number = methods.length;
 
-			for (var i:number = 0; i < len; ++i)
-            {
+			for (var i:number = 0; i < len; ++i) {
 
 				var aset:away.materials.MethodVOSet = methods[i];
-                aset.method.iActivate( aset.data, stage3DProxy );
+				aset.method.iActivate(aset.data, stage3DProxy);
 
 			}
 
 
-			if (this._pCameraPositionIndex >= 0)
-            {
+			if (this._pCameraPositionIndex >= 0) {
 
-				var pos : away.geom.Vector3D = camera.scenePosition;
+				var pos:away.geom.Vector3D = camera.scenePosition;
 
 				this._pVertexConstantData[this._pCameraPositionIndex] = pos.x;
-                this._pVertexConstantData[this._pCameraPositionIndex + 1] = pos.y;
-                this._pVertexConstantData[this._pCameraPositionIndex + 2] = pos.z;
+				this._pVertexConstantData[this._pCameraPositionIndex + 1] = pos.y;
+				this._pVertexConstantData[this._pCameraPositionIndex + 2] = pos.z;
 
 			}
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
@@ -233,21 +222,19 @@ module away.materials
 		{
 			super.iDeactivate(stage3DProxy);
 
-			if (this._pMethodSetup._iColorTransformMethod)
-            {
+			if (this._pMethodSetup._iColorTransformMethod) {
 
-                this._pMethodSetup._iColorTransformMethod.iDeactivate(this._pMethodSetup._iColorTransformMethodVO, stage3DProxy);
+				this._pMethodSetup._iColorTransformMethod.iDeactivate(this._pMethodSetup._iColorTransformMethodVO, stage3DProxy);
 
-            }
+			}
 
 			var aset:away.materials.MethodVOSet;
-			var methods:away.materials.MethodVOSet[] =  this._pMethodSetup._iMethods;
+			var methods:away.materials.MethodVOSet[] = this._pMethodSetup._iMethods;
 			var len:number = methods.length;
 
-			for (var i:number = 0; i < len; ++i)
-            {
-                aset = methods[i];
-                aset.method.iDeactivate(aset.data, stage3DProxy);
+			for (var i:number = 0; i < len; ++i) {
+				aset = methods[i];
+				aset.method.iDeactivate(aset.data, stage3DProxy);
 			}
 
 		}
@@ -258,21 +245,19 @@ module away.materials
 		public pAddPassesFromMethods()
 		{
 			super.pAddPassesFromMethods();
-			
-			if (this._pMethodSetup._iColorTransformMethod)
-            {
 
-                this.pAddPasses( this._pMethodSetup._iColorTransformMethod.passes );
+			if (this._pMethodSetup._iColorTransformMethod) {
 
-            }
+				this.pAddPasses(this._pMethodSetup._iColorTransformMethod.passes);
+
+			}
 			var methods:away.materials.MethodVOSet[] = this._pMethodSetup._iMethods;
 
-			for (var i:number = 0; i < methods.length; ++i)
-            {
+			for (var i:number = 0; i < methods.length; ++i) {
 
-                this.pAddPasses(methods[i].method.passes);
+				this.pAddPasses(methods[i].method.passes);
 
-            }
+			}
 
 
 		}
@@ -304,23 +289,20 @@ module away.materials
 
 			super.pUpdateMethodConstants();
 
-			if (this._pMethodSetup._iColorTransformMethod)
-            {
+			if (this._pMethodSetup._iColorTransformMethod) {
 
-                this._pMethodSetup._iColorTransformMethod.iInitConstants(this._pMethodSetup._iColorTransformMethodVO);
+				this._pMethodSetup._iColorTransformMethod.iInitConstants(this._pMethodSetup._iColorTransformMethodVO);
 
-            }
+			}
 
 			var methods:away.materials.MethodVOSet[] = this._pMethodSetup._iMethods;
 			var len:number = methods.length;
 
-			for (var i:number = 0; i < len; ++i)
-            {
+			for (var i:number = 0; i < len; ++i) {
 
-                methods[i].method.iInitConstants(methods[i].data);
+				methods[i].method.iInitConstants(methods[i].data);
 
-            }
-
+			}
 
 
 		}
@@ -345,103 +327,95 @@ module away.materials
 			var total:number = 0;
 
 			var numLightTypes:number = this._includeCasters? 2 : 1;
-			
+
 			k = this._pLightFragmentConstantIndex;
-			
-			for (var cast:number = 0; cast < numLightTypes; ++cast)
-            {
+
+			for (var cast:number = 0; cast < numLightTypes; ++cast) {
 
 				var dirLights:away.lights.DirectionalLight[] = cast? this._pLightPicker.castingDirectionalLights : this._pLightPicker.directionalLights;
 				len = dirLights.length;
 				total += len;
-				
-				for (i = 0; i < len; ++i)
-                {
+
+				for (i = 0; i < len; ++i) {
 
 					dirLight = dirLights[i];
 					dirPos = dirLight.sceneDirection;
-					
+
 					this._pAmbientLightR += dirLight._iAmbientR;
-                    this._pAmbientLightG += dirLight._iAmbientG;
-                    this._pAmbientLightB += dirLight._iAmbientB;
+					this._pAmbientLightG += dirLight._iAmbientG;
+					this._pAmbientLightB += dirLight._iAmbientB;
 
-                    this._pFragmentConstantData[k++] = -dirPos.x;
-                    this._pFragmentConstantData[k++] = -dirPos.y;
-                    this._pFragmentConstantData[k++] = -dirPos.z;
-                    this._pFragmentConstantData[k++] = 1;
+					this._pFragmentConstantData[k++] = -dirPos.x;
+					this._pFragmentConstantData[k++] = -dirPos.y;
+					this._pFragmentConstantData[k++] = -dirPos.z;
+					this._pFragmentConstantData[k++] = 1;
 
-                    this._pFragmentConstantData[k++] = dirLight._iDiffuseR;
-                    this._pFragmentConstantData[k++] = dirLight._iDiffuseG;
-                    this._pFragmentConstantData[k++] = dirLight._iDiffuseB;
-                    this._pFragmentConstantData[k++] = 1;
+					this._pFragmentConstantData[k++] = dirLight._iDiffuseR;
+					this._pFragmentConstantData[k++] = dirLight._iDiffuseG;
+					this._pFragmentConstantData[k++] = dirLight._iDiffuseB;
+					this._pFragmentConstantData[k++] = 1;
 
-                    this._pFragmentConstantData[k++] = dirLight._iSpecularR;
-                    this._pFragmentConstantData[k++] = dirLight._iSpecularG;
-                    this._pFragmentConstantData[k++] = dirLight._iSpecularB;
-                    this._pFragmentConstantData[k++] = 1;
+					this._pFragmentConstantData[k++] = dirLight._iSpecularR;
+					this._pFragmentConstantData[k++] = dirLight._iSpecularG;
+					this._pFragmentConstantData[k++] = dirLight._iSpecularB;
+					this._pFragmentConstantData[k++] = 1;
 				}
 			}
-			
+
 			// more directional supported than currently picked, need to clamp all to 0
-			if (this._pNumDirectionalLights > total)
-            {
+			if (this._pNumDirectionalLights > total) {
 				i = k + (this._pNumDirectionalLights - total)*12;
 
-				while (k < i)
-                {
+				while (k < i) {
 
-                    this._pFragmentConstantData[k++] = 0;
+					this._pFragmentConstantData[k++] = 0;
 
-                }
+				}
 
 			}
-			
-			total = 0;
-			for (cast = 0; cast < numLightTypes; ++cast)
-            {
 
-				var pointLights:away.lights.PointLight[]= cast? this._pLightPicker.castingPointLights : this._pLightPicker.pointLights;
+			total = 0;
+			for (cast = 0; cast < numLightTypes; ++cast) {
+
+				var pointLights:away.lights.PointLight[] = cast? this._pLightPicker.castingPointLights : this._pLightPicker.pointLights;
 
 				len = pointLights.length;
 
-				for (i = 0; i < len; ++i)
-                {
+				for (i = 0; i < len; ++i) {
 					pointLight = pointLights[i];
 					dirPos = pointLight.scenePosition;
-					
+
 					this._pAmbientLightR += pointLight._iAmbientR;
-                    this._pAmbientLightG += pointLight._iAmbientG;
-                    this._pAmbientLightB += pointLight._iAmbientB;
+					this._pAmbientLightG += pointLight._iAmbientG;
+					this._pAmbientLightB += pointLight._iAmbientB;
 
-                    this._pFragmentConstantData[k++] = dirPos.x;
-                    this._pFragmentConstantData[k++] = dirPos.y;
-                    this._pFragmentConstantData[k++] = dirPos.z;
-                    this._pFragmentConstantData[k++] = 1;
+					this._pFragmentConstantData[k++] = dirPos.x;
+					this._pFragmentConstantData[k++] = dirPos.y;
+					this._pFragmentConstantData[k++] = dirPos.z;
+					this._pFragmentConstantData[k++] = 1;
 
-                    this._pFragmentConstantData[k++] = pointLight._iDiffuseR;
-                    this._pFragmentConstantData[k++] = pointLight._iDiffuseG;
-                    this._pFragmentConstantData[k++] = pointLight._iDiffuseB;
-                    this._pFragmentConstantData[k++] = pointLight._pRadius*pointLight._pRadius;
+					this._pFragmentConstantData[k++] = pointLight._iDiffuseR;
+					this._pFragmentConstantData[k++] = pointLight._iDiffuseG;
+					this._pFragmentConstantData[k++] = pointLight._iDiffuseB;
+					this._pFragmentConstantData[k++] = pointLight._pRadius*pointLight._pRadius;
 
-                    this._pFragmentConstantData[k++] = pointLight._iSpecularR;
-                    this._pFragmentConstantData[k++] = pointLight._iSpecularG;
-                    this._pFragmentConstantData[k++] = pointLight._iSpecularB;
-                    this._pFragmentConstantData[k++] = pointLight._pFallOffFactor;
+					this._pFragmentConstantData[k++] = pointLight._iSpecularR;
+					this._pFragmentConstantData[k++] = pointLight._iSpecularG;
+					this._pFragmentConstantData[k++] = pointLight._iSpecularB;
+					this._pFragmentConstantData[k++] = pointLight._pFallOffFactor;
 				}
 			}
-			
+
 			// more directional supported than currently picked, need to clamp all to 0
-			if (this._pNumPointLights > total)
-            {
+			if (this._pNumPointLights > total) {
 
 				i = k + (total - this._pNumPointLights )*12;
 
-				for (; k < i; ++k)
-                {
+				for (; k < i; ++k) {
 
-                    this._pFragmentConstantData[k] = 0;
+					this._pFragmentConstantData[k] = 0;
 
-                }
+				}
 
 			}
 
@@ -450,7 +424,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public pUpdateProbes(stage3DProxy : away.managers.Stage3DProxy )
+		public pUpdateProbes(stage3DProxy:away.managers.Stage3DProxy)
 		{
 
 			var probe:away.lights.LightProbe;
@@ -460,41 +434,37 @@ module away.materials
 			var addDiff:boolean = this.usesProbesForDiffuse();
 			var addSpec:boolean = <boolean> (this._pMethodSetup._iSpecularMethod && this.usesProbesForSpecular());
 			var context:away.display3D.Context3D = stage3DProxy._iContext3D;
-			
-			if (!(addDiff || addSpec))
-            {
 
-                return;
+			if (!(addDiff || addSpec)) {
 
-            }
+				return;
 
-			for (var i:number = 0; i < len; ++i)
-            {
+			}
+
+			for (var i:number = 0; i < len; ++i) {
 
 				probe = lightProbes[i];
 
-                //away.Debug.throwPIR( 'SuperShaderPass' , 'pUpdateProbes' , 'context.setGLSLTextureAt - Parameters not matching');
+				//away.Debug.throwPIR( 'SuperShaderPass' , 'pUpdateProbes' , 'context.setGLSLTextureAt - Parameters not matching');
 
-				if (addDiff)
-                {
+				if (addDiff) {
 
-                    context.setTextureAt(this._pLightProbeSpecularIndices[i], probe.diffuseMap.getTextureForStage3D(stage3DProxy));//<------ TODO: implement
+					context.setTextureAt(this._pLightProbeSpecularIndices[i], probe.diffuseMap.getTextureForStage3D(stage3DProxy));//<------ TODO: implement
 
-                }
+				}
 
-				if (addSpec)
-                {
+				if (addSpec) {
 
-                    context.setTextureAt(this._pLightProbeSpecularIndices[i], probe.specularMap.getTextureForStage3D(stage3DProxy));//<------ TODO: implement
+					context.setTextureAt(this._pLightProbeSpecularIndices[i], probe.specularMap.getTextureForStage3D(stage3DProxy));//<------ TODO: implement
 
-                }
+				}
 
 			}
-			
+
 			this._pFragmentConstantData[this._pProbeWeightsIndex] = weights[0];
-            this._pFragmentConstantData[this._pProbeWeightsIndex + 1] = weights[1];
-            this._pFragmentConstantData[this._pProbeWeightsIndex + 2] = weights[2];
-            this._pFragmentConstantData[this._pProbeWeightsIndex + 3] = weights[3];
+			this._pFragmentConstantData[this._pProbeWeightsIndex + 1] = weights[1];
+			this._pFragmentConstantData[this._pProbeWeightsIndex + 2] = weights[2];
+			this._pFragmentConstantData[this._pProbeWeightsIndex + 3] = weights[3];
 
 		}
 
@@ -506,7 +476,7 @@ module away.materials
 		{
 			this._ignoreLights = ignoreLights;
 		}
-		
+
 		public get iIgnoreLights():boolean
 		{
 			return this._ignoreLights;

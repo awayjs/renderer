@@ -8,93 +8,93 @@ module away.materials
 	 */
 	export class MaterialPassBase extends away.events.EventDispatcher
 	{
-        public static MATERIALPASS_ID_COUNT:number = 0;
+		public static MATERIALPASS_ID_COUNT:number = 0;
 
-        /**
-         * An id for this material pass, used to identify material passes when using animation sets.
-         *
-         * @private
-         */
-        public _iUniqueId:number;//Arcane
+		/**
+		 * An id for this material pass, used to identify material passes when using animation sets.
+		 *
+		 * @private
+		 */
+		public _iUniqueId:number;//Arcane
 
-        public _pMaterial:away.materials.MaterialBase;
+		public _pMaterial:away.materials.MaterialBase;
 		private _animationSet:away.animators.IAnimationSet;
 
-        public _iProgram3Ds:away.display3D.Program3D[] = new Array<away.display3D.Program3D>( 8 ) //Vector.<Program3D> = new Vector.<Program3D>(8);
-        public _iProgram3Dids:number[] = new Array<number>(-1, -1, -1, -1, -1, -1, -1, -1);//Vector.<int> = Vector.<int>([-1, -1, -1, -1, -1, -1, -1, -1]);
-		private _context3Ds:away.display3D.Context3D[] = new Array<away.display3D.Context3D>( 8 );//Vector.<Context3D> = new Vector.<Context3D>(8);
-		
+		public _iProgram3Ds:away.display3D.Program3D[] = new Array<away.display3D.Program3D>(8) //Vector.<Program3D> = new Vector.<Program3D>(8);
+		public _iProgram3Dids:number[] = new Array<number>(-1, -1, -1, -1, -1, -1, -1, -1);//Vector.<int> = Vector.<int>([-1, -1, -1, -1, -1, -1, -1, -1]);
+		private _context3Ds:away.display3D.Context3D[] = new Array<away.display3D.Context3D>(8);//Vector.<Context3D> = new Vector.<Context3D>(8);
+
 		// agal props. these NEED to be set by subclasses!
 		// todo: can we perhaps figure these out manually by checking read operations in the bytecode, so other sources can be safely updated?
-        public _pNumUsedStreams:number;
-        public _pNumUsedTextures:number;
-        public _pNumUsedVertexConstants:number;
-        public _pNumUsedFragmentConstants:number;
-        public _pNumUsedVaryings:number;
+		public _pNumUsedStreams:number;
+		public _pNumUsedTextures:number;
+		public _pNumUsedVertexConstants:number;
+		public _pNumUsedFragmentConstants:number;
+		public _pNumUsedVaryings:number;
 
-        public _pSmooth:boolean = true;
-        public _pRepeat:boolean = false;
-        public _pMipmap:boolean = true;
+		public _pSmooth:boolean = true;
+		public _pRepeat:boolean = false;
+		public _pMipmap:boolean = true;
 		private _depthCompareMode:string = away.display3D.Context3DCompareMode.LESS_EQUAL;
-		
+
 		private _blendFactorSource:string = away.display3D.Context3DBlendFactor.ONE;
 		private _blendFactorDest:string = away.display3D.Context3DBlendFactor.ZERO;
 
-        public _pEnableBlending:boolean = false;
-		
+		public _pEnableBlending:boolean = false;
+
 		public _pBothSides:boolean;
-		
+
 		public  _pLightPicker:away.materials.LightPickerBase;
 
-        // TODO: AGAL conversion
-        public _pAnimatableAttributes:string[] = new Array<string>( "va0");
+		// TODO: AGAL conversion
+		public _pAnimatableAttributes:string[] = new Array<string>("va0");
 
-        // TODO: AGAL conversion
-        public _pAnimationTargetRegisters:string[] = new Array<string>( "vt0" );
+		// TODO: AGAL conversion
+		public _pAnimationTargetRegisters:string[] = new Array<string>("vt0");
 
-        // TODO: AGAL conversion
-        public _pShadedTarget:string = "ft0";
-		
+		// TODO: AGAL conversion
+		public _pShadedTarget:string = "ft0";
+
 		// keep track of previously rendered usage for faster cleanup of old vertex buffer streams and textures
 		private static _previousUsedStreams:number[] = new Array<number>(0, 0, 0, 0, 0, 0, 0, 0);//Vector.<int> = Vector.<int>([0, 0, 0, 0, 0, 0, 0, 0]);
 		private static _previousUsedTexs:number[] = new Array<number>(0, 0, 0, 0, 0, 0, 0, 0);//Vector.<int> = Vector.<int>([0, 0, 0, 0, 0, 0, 0, 0]);
 		private _defaultCulling:string = away.display3D.Context3DTriangleFace.BACK;
-		
+
 		private _renderToTexture:boolean;
-		
+
 		// render state mementos for render-to-texture passes
 		private _oldTarget:away.display3D.TextureBase;
 		private _oldSurface:number;
 		private _oldDepthStencil:boolean;
 		private _oldRect:away.geom.Rectangle;
 
-        public  _pAlphaPremultiplied:boolean = false;
-        public _pNeedFragmentAnimation:boolean;
-        public  _pNeedUVAnimation:boolean;
-        public _pUVTarget:string;
-        public _pUVSource:string;
-		
+		public  _pAlphaPremultiplied:boolean = false;
+		public _pNeedFragmentAnimation:boolean;
+		public  _pNeedUVAnimation:boolean;
+		public _pUVTarget:string;
+		public _pUVSource:string;
+
 		private _writeDepth:boolean = true;
-		
+
 		//public animationRegisterCache:AnimationRegisterCache; TODO: implement dependency AnimationRegisterCache
-		
+
 		/**
 		 * Creates a new MaterialPassBase object.
 		 *
 		 * @param renderToTexture Indicates whether this pass is a render-to-texture pass.
 		 */
-		constructor(renderToTexture:boolean = false)
+			constructor(renderToTexture:boolean = false)
 		{
 
-            super();
+			super();
 
 			this._renderToTexture = renderToTexture;
-            this._pNumUsedStreams = 1;
-            this._pNumUsedVertexConstants = 5;
+			this._pNumUsedStreams = 1;
+			this._pNumUsedVertexConstants = 5;
 
-            this._iUniqueId = away.materials.MaterialPassBase.MATERIALPASS_ID_COUNT++;
+			this._iUniqueId = away.materials.MaterialPassBase.MATERIALPASS_ID_COUNT++;
 		}
-		
+
 		/**
 		 * The material to which this pass belongs.
 		 */
@@ -102,12 +102,12 @@ module away.materials
 		{
 			return this._pMaterial;
 		}
-		
+
 		public set material(value:away.materials.MaterialBase)
 		{
 			this._pMaterial = value;
 		}
-		
+
 		/**
 		 * Indicate whether this pass should write to the depth buffer or not. Ignored when blending is enabled.
 		 */
@@ -115,12 +115,12 @@ module away.materials
 		{
 			return this._writeDepth;
 		}
-		
+
 		public set writeDepth(value:boolean)
 		{
 			this._writeDepth = value;
 		}
-		
+
 		/**
 		 * Defines whether any used textures should use mipmapping.
 		 */
@@ -128,28 +128,28 @@ module away.materials
 		{
 			return this._pMipmap;
 		}
-		
+
 		public set mipmap(value:boolean)
 		{
 
-            this.setMipMap( value );
+			this.setMipMap(value);
 
 		}
 
-        public setMipMap( value : boolean ) : void
-        {
+		public setMipMap(value:boolean):void
+		{
 
-            if (this._pMipmap == value)
-            {
+			if (this._pMipmap == value) {
 
-                return;
+				return;
 
-            }
+			}
 
-            this._pMipmap = value;
-            this.iInvalidateShaderProgram( );
+			this._pMipmap = value;
+			this.iInvalidateShaderProgram();
 
-        }
+		}
+
 		/**
 		 * Defines whether smoothing should be applied to any used textures.
 		 */
@@ -157,20 +157,19 @@ module away.materials
 		{
 			return this._pSmooth;
 		}
-		
+
 		public set smooth(value:boolean)
 		{
-			if (this._pSmooth == value)
-            {
+			if (this._pSmooth == value) {
 
-                return;
+				return;
 
-            }
+			}
 
 			this._pSmooth = value;
-            this.iInvalidateShaderProgram( );
+			this.iInvalidateShaderProgram();
 		}
-		
+
 		/**
 		 * Defines whether textures should be tiled.
 		 */
@@ -178,20 +177,19 @@ module away.materials
 		{
 			return this._pRepeat;
 		}
-		
+
 		public set repeat(value:boolean)
 		{
-			if (this._pRepeat == value)
-            {
+			if (this._pRepeat == value) {
 
-                return;
+				return;
 
-            }
+			}
 
 			this._pRepeat = value;
-            this.iInvalidateShaderProgram( );
+			this.iInvalidateShaderProgram();
 		}
-		
+
 		/**
 		 * Defines whether or not the material should perform backface culling.
 		 */
@@ -199,10 +197,10 @@ module away.materials
 		{
 			return this._pBothSides;
 		}
-		
+
 		public set bothSides(value:boolean)
 		{
-            this._pBothSides = value;
+			this._pBothSides = value;
 		}
 
 		/**
@@ -214,10 +212,10 @@ module away.materials
 		{
 			return this._depthCompareMode;
 		}
-		
+
 		public set depthCompareMode(value:string)
 		{
-            this._depthCompareMode = value;
+			this._depthCompareMode = value;
 		}
 
 		/**
@@ -227,22 +225,21 @@ module away.materials
 		{
 			return this._animationSet;
 		}
-		
+
 		public set animationSet(value:away.animators.IAnimationSet)
 		{
-			if (this._animationSet == value)
-            {
+			if (this._animationSet == value) {
 
-                return;
+				return;
 
-            }
+			}
 
-			
+
 			this._animationSet = value;
 
-            this.iInvalidateShaderProgram( );
+			this.iInvalidateShaderProgram();
 		}
-		
+
 		/**
 		 * Specifies whether this pass renders to texture
 		 */
@@ -250,35 +247,32 @@ module away.materials
 		{
 			return this._renderToTexture;
 		}
-		
+
 		/**
 		 * Cleans up any resources used by the current object.
 		 * @param deep Indicates whether other resources should be cleaned up, that could potentially be shared across different instances.
 		 */
 		public dispose()
 		{
-			if (this._pLightPicker)
-            {
+			if (this._pLightPicker) {
 
-                this._pLightPicker.removeEventListener(away.events.Event.CHANGE, this.onLightsChange , this );
+				this._pLightPicker.removeEventListener(away.events.Event.CHANGE, this.onLightsChange, this);
 
-            }
+			}
 
-			
-			for (var i:number = 0; i < 8; ++i)
-            {
 
-				if (this._iProgram3Ds[i])
-                {
+			for (var i:number = 0; i < 8; ++i) {
 
-                    //away.Debug.throwPIR( 'away.materials.MaterialPassBase' , 'dispose' , 'required dependency: AGALProgram3DCache');
+				if (this._iProgram3Ds[i]) {
+
+					//away.Debug.throwPIR( 'away.materials.MaterialPassBase' , 'dispose' , 'required dependency: AGALProgram3DCache');
 					away.managers.AGALProgram3DCache.getInstanceFromIndex(i).freeProgram3D(this._iProgram3Dids[i]);
 					this._iProgram3Ds[i] = null;
 
 				}
 			}
 		}
-		
+
 		/**
 		 * The amount of used vertex streams in the vertex code. Used by the animation code generation to know from which index on streams are available.
 		 */
@@ -286,7 +280,7 @@ module away.materials
 		{
 			return this._pNumUsedStreams;
 		}
-		
+
 		/**
 		 * The amount of used vertex constants in the vertex code. Used by the animation code generation to know from which index on registers are available.
 		 */
@@ -294,7 +288,7 @@ module away.materials
 		{
 			return this._pNumUsedVertexConstants;
 		}
-		
+
 		public get numUsedVaryings():number
 		{
 			return this._pNumUsedVaryings;
@@ -307,7 +301,7 @@ module away.materials
 		{
 			return this._pNumUsedFragmentConstants;
 		}
-		
+
 		public get needFragmentAnimation():boolean
 		{
 			return this._pNeedFragmentAnimation;
@@ -320,7 +314,7 @@ module away.materials
 		{
 			return this._pNeedUVAnimation;
 		}
-		
+
 		/**
 		 * Sets up the animation state. This needs to be called before render()
 		 *
@@ -330,7 +324,7 @@ module away.materials
 		{
 			renderable.animator.setRenderState(stage3DProxy, renderable, this._pNumUsedVertexConstants, this._pNumUsedStreams, camera);
 		}
-		
+
 		/**
 		 * Renders an object to the current render target.
 		 *
@@ -346,7 +340,7 @@ module away.materials
 		 */
 		public iGetVertexCode():string
 		{
-            throw new away.errors.AbstractMethodError();
+			throw new away.errors.AbstractMethodError();
 		}
 
 		/**
@@ -354,7 +348,7 @@ module away.materials
 		 */
 		public iGetFragmentCode(fragmentAnimatorCode:string):string
 		{
-            throw new away.errors.AbstractMethodError();
+			throw new away.errors.AbstractMethodError();
 		}
 
 		/**
@@ -369,8 +363,7 @@ module away.materials
 		 */
 		public setBlendMode(value:string)
 		{
-			switch (value)
-            {
+			switch (value) {
 
 				case away.display.BlendMode.NORMAL:
 
@@ -383,24 +376,24 @@ module away.materials
 				case away.display.BlendMode.LAYER:
 
 					this._blendFactorSource = away.display3D.Context3DBlendFactor.SOURCE_ALPHA;
-                    this._blendFactorDest = away.display3D.Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA;
-                    this._pEnableBlending = true;
+					this._blendFactorDest = away.display3D.Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA;
+					this._pEnableBlending = true;
 
 					break;
 
 				case away.display.BlendMode.MULTIPLY:
 
 					this._blendFactorSource = away.display3D.Context3DBlendFactor.ZERO;
-                    this._blendFactorDest = away.display3D.Context3DBlendFactor.SOURCE_COLOR;
-                    this._pEnableBlending = true;
+					this._blendFactorDest = away.display3D.Context3DBlendFactor.SOURCE_COLOR;
+					this._pEnableBlending = true;
 
 					break;
 
 				case away.display.BlendMode.ADD:
 
 					this._blendFactorSource = away.display3D.Context3DBlendFactor.SOURCE_ALPHA;
-                    this._blendFactorDest =  away.display3D.Context3DBlendFactor.ONE;
-                    this._pEnableBlending = true;
+					this._blendFactorDest = away.display3D.Context3DBlendFactor.ONE;
+					this._pEnableBlending = true;
 
 					break;
 
@@ -431,21 +424,19 @@ module away.materials
 			var contextIndex:number = stage3DProxy._iStage3DIndex;//_stage3DIndex;
 			var context:away.display3D.Context3D = stage3DProxy._iContext3D;
 
-			context.setDepthTest( ( this._writeDepth && ! this._pEnableBlending ) , this._depthCompareMode);
+			context.setDepthTest(( this._writeDepth && !this._pEnableBlending ), this._depthCompareMode);
 
-			if (this._pEnableBlending)
-            {
+			if (this._pEnableBlending) {
 
-                context.setBlendFactors( this._blendFactorSource, this._blendFactorDest);
+				context.setBlendFactors(this._blendFactorSource, this._blendFactorDest);
 
-            }
+			}
 
-			if ( this._context3Ds[contextIndex] != context || ! this._iProgram3Ds[contextIndex])
-            {
+			if (this._context3Ds[contextIndex] != context || !this._iProgram3Ds[contextIndex]) {
 
 				this._context3Ds[contextIndex] = context;
 
-                this.iUpdateProgram( stage3DProxy );
+				this.iUpdateProgram(stage3DProxy);
 				this.dispatchEvent(new away.events.Event(away.events.Event.CHANGE));
 
 			}
@@ -453,42 +444,38 @@ module away.materials
 			var prevUsed:number = MaterialPassBase._previousUsedStreams[contextIndex];
 			var i:number;
 
-			for (i = this._pNumUsedStreams; i < prevUsed; ++i)
-            {
+			for (i = this._pNumUsedStreams; i < prevUsed; ++i) {
 
-                context.setVertexBufferAt(i, null);
+				context.setVertexBufferAt(i, null);
 
-            }
+			}
 
-			
+
 			prevUsed = MaterialPassBase._previousUsedTexs[contextIndex];
-			
-			for (i = this._pNumUsedTextures; i < prevUsed; ++i)
-            {
 
-                context.setTextureAt(i, null);
+			for (i = this._pNumUsedTextures; i < prevUsed; ++i) {
 
-            }
+				context.setTextureAt(i, null);
 
-			
-			if ( this._animationSet && ! this._animationSet.usesCPU)
-            {
+			}
 
-                this._animationSet.activate(stage3DProxy, this);
 
-            }
+			if (this._animationSet && !this._animationSet.usesCPU) {
+
+				this._animationSet.activate(stage3DProxy, this);
+
+			}
 
 
 			context.setProgram(this._iProgram3Ds[contextIndex]);
-			
+
 			context.setCulling(this._pBothSides? away.display3D.Context3DTriangleFace.NONE : this._defaultCulling);
-			
-			if (this._renderToTexture)
-            {
+
+			if (this._renderToTexture) {
 				this._oldTarget = stage3DProxy.renderTarget;
-                this._oldSurface = stage3DProxy.renderSurfaceSelector;
-                this._oldDepthStencil = stage3DProxy.enableDepthAndStencil;
-                this._oldRect = stage3DProxy.scissorRect;
+				this._oldSurface = stage3DProxy.renderSurfaceSelector;
+				this._oldDepthStencil = stage3DProxy.enableDepthAndStencil;
+				this._oldRect = stage3DProxy.scissorRect;
 			}
 		}
 
@@ -503,18 +490,16 @@ module away.materials
 
 			var index:number = stage3DProxy._iStage3DIndex;//_stage3DIndex;
 			MaterialPassBase._previousUsedStreams[index] = this._pNumUsedStreams;
-            MaterialPassBase._previousUsedTexs[index] = this._pNumUsedTextures;
-			
-			if (this._animationSet && !this._animationSet.usesCPU)
-            {
+			MaterialPassBase._previousUsedTexs[index] = this._pNumUsedTextures;
 
-                this._animationSet.deactivate(stage3DProxy, this);
+			if (this._animationSet && !this._animationSet.usesCPU) {
 
-            }
+				this._animationSet.deactivate(stage3DProxy, this);
 
-			
-			if ( this._renderToTexture)
-            {
+			}
+
+
+			if (this._renderToTexture) {
 
 				// kindly restore state
 				stage3DProxy.setRenderTarget(this._oldTarget, this._oldDepthStencil, this._oldSurface);
@@ -524,7 +509,7 @@ module away.materials
 
 			stage3DProxy._iContext3D.setDepthTest(true, away.display3D.Context3DCompareMode.LESS_EQUAL); // TODO : imeplement
 		}
-		
+
 		/**
 		 * Marks the shader program as invalid, so it will be recompiled before the next render.
 		 *
@@ -532,23 +517,21 @@ module away.materials
 		 */
 		public iInvalidateShaderProgram(updateMaterial:boolean = true)
 		{
-			for (var i:number = 0; i < 8; ++i)
-            {
+			for (var i:number = 0; i < 8; ++i) {
 
-                this._iProgram3Ds[i] = null;
+				this._iProgram3Ds[i] = null;
 
-            }
+			}
 
-			
-			if (this._pMaterial && updateMaterial)
-            {
 
-                this._pMaterial.iInvalidatePasses(this);
+			if (this._pMaterial && updateMaterial) {
 
-            }
+				this._pMaterial.iInvalidatePasses(this);
+
+			}
 
 		}
-		
+
 		/**
 		 * Compiles the shader program.
 		 * @param polyOffsetReg An optional register that contains an amount by which to inflate the model (used in single object depth map rendering).
@@ -559,67 +542,60 @@ module away.materials
 			var UVAnimatorCode:string = "";
 			var fragmentAnimatorCode:string = "";
 			var vertexCode:string = this.iGetVertexCode();//getVertexCode();
-			
-			if ( this._animationSet && ! this._animationSet.usesCPU)
-            {
+
+			if (this._animationSet && !this._animationSet.usesCPU) {
 
 				animatorCode = this._animationSet.getAGALVertexCode(this, this._pAnimatableAttributes, this._pAnimationTargetRegisters, stage3DProxy.profile);
 
-				if (this._pNeedFragmentAnimation)
-                {
+				if (this._pNeedFragmentAnimation) {
 
-                    fragmentAnimatorCode = this._animationSet.getAGALFragmentCode(this, this._pShadedTarget, stage3DProxy.profile);
+					fragmentAnimatorCode = this._animationSet.getAGALFragmentCode(this, this._pShadedTarget, stage3DProxy.profile);
 
-                }
+				}
 
-				if ( this._pNeedUVAnimation)
-                {
+				if (this._pNeedUVAnimation) {
 
-                    UVAnimatorCode = this._animationSet.getAGALUVCode(this, this._pUVSource, this._pUVTarget);
+					UVAnimatorCode = this._animationSet.getAGALUVCode(this, this._pUVSource, this._pUVTarget);
 
-                }
+				}
 
 				this._animationSet.doneAGALCode(this);
 
-			}
-            else
-            {
+			} else {
 				var len:number = this._pAnimatableAttributes.length;
-				
+
 				// simply write attributes to targets, do not animate them
 				// projection will pick up on targets[0] to do the projection
-				for (var i:number = 0; i < len; ++i)
-                {
-                    // TODO: AGAL <> GLSL conversion:
-                    //away.Debug.throwPIR( 'away.materials.MaterialPassBase' , 'iUpdateProgram' , 'AGAL <> GLSL Conversion');
-                    animatorCode += "mov " + this._pAnimationTargetRegisters[i] + ", " + this._pAnimatableAttributes[i] + "\n";
+				for (var i:number = 0; i < len; ++i) {
+					// TODO: AGAL <> GLSL conversion:
+					//away.Debug.throwPIR( 'away.materials.MaterialPassBase' , 'iUpdateProgram' , 'AGAL <> GLSL Conversion');
+					animatorCode += "mov " + this._pAnimationTargetRegisters[i] + ", " + this._pAnimatableAttributes[i] + "\n";
 
-                }
+				}
 
-				if (this._pNeedUVAnimation)
-                {
+				if (this._pNeedUVAnimation) {
 
-                    //away.Debug.throwPIR( 'away.materials.MaterialPassBase' , 'iUpdateProgram' , 'AGAL <> GLSL Conversion');
-                    // TODO: AGAL <> GLSL conversion
-                    UVAnimatorCode = "mov " + this._pUVTarget+ "," + this._pUVSource + "\n";
+					//away.Debug.throwPIR( 'away.materials.MaterialPassBase' , 'iUpdateProgram' , 'AGAL <> GLSL Conversion');
+					// TODO: AGAL <> GLSL conversion
+					UVAnimatorCode = "mov " + this._pUVTarget + "," + this._pUVSource + "\n";
 
-                }
+				}
 
 			}
-			
+
 			vertexCode = animatorCode + UVAnimatorCode + vertexCode;
-			
-			var fragmentCode:string = this.iGetFragmentCode( fragmentAnimatorCode );
 
-            /*
-			if (this.Debug.active) {
-				trace("Compiling AGAL Code:");
-				trace("--------------------");
-				trace(vertexCode);
-				trace("--------------------");
-				trace(fragmentCode);
-			}
-			*/
+			var fragmentCode:string = this.iGetFragmentCode(fragmentAnimatorCode);
+
+			/*
+			 if (this.Debug.active) {
+			 trace("Compiling AGAL Code:");
+			 trace("--------------------");
+			 trace(vertexCode);
+			 trace("--------------------");
+			 trace(fragmentCode);
+			 }
+			 */
 
 			away.managers.AGALProgram3DCache.getInstance(stage3DProxy).setProgram3D(this, vertexCode, fragmentCode);
 
@@ -635,26 +611,24 @@ module away.materials
 		{
 			return this._pLightPicker;
 		}
-		
+
 		public set lightPicker(value:away.materials.LightPickerBase)
 		{
-			if ( this._pLightPicker)
-            {
+			if (this._pLightPicker) {
 
-                this._pLightPicker.removeEventListener(away.events.Event.CHANGE, this.onLightsChange , this );
+				this._pLightPicker.removeEventListener(away.events.Event.CHANGE, this.onLightsChange, this);
 
-            }
+			}
 
 			this._pLightPicker = value;
 
-			if (this._pLightPicker)
-            {
+			if (this._pLightPicker) {
 
-                this._pLightPicker.addEventListener(away.events.Event.CHANGE, this.onLightsChange , this );
+				this._pLightPicker.addEventListener(away.events.Event.CHANGE, this.onLightsChange, this);
 
-            }
+			}
 
-            this.pUpdateLights();
+			this.pUpdateLights();
 
 		}
 
@@ -663,7 +637,7 @@ module away.materials
 		 */
 		private onLightsChange(event:Event)
 		{
-            this.pUpdateLights();
+			this.pUpdateLights();
 
 		}
 
@@ -672,7 +646,7 @@ module away.materials
 		 */
 		public pUpdateLights()
 		{
-		
+
 		}
 
 		/**
@@ -684,11 +658,11 @@ module away.materials
 		{
 			return this._pAlphaPremultiplied;
 		}
-		
+
 		public set alphaPremultiplied(value:boolean)
 		{
-            this._pAlphaPremultiplied = value;
-            this.iInvalidateShaderProgram( false );
+			this._pAlphaPremultiplied = value;
+			this.iInvalidateShaderProgram(false);
 		}
 	}
 }

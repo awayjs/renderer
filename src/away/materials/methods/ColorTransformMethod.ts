@@ -5,11 +5,11 @@ module away.materials
 	//import away3d.managers.Stage3DProxy;
 	//import away3d.materials.compilation.ShaderRegisterCache;
 	//import away3d.materials.compilation.ShaderRegisterElement;
-	
+
 	//import flash.geom.ColorTransform;
-	
+
 	//use namespace arcane;
-	
+
 	/**
 	 * ColorTransformMethod provides a shading method that changes the colour of a material analogous to a
 	 * ColorTransform object.
@@ -17,15 +17,15 @@ module away.materials
 	export class ColorTransformMethod extends away.materials.EffectMethodBase
 	{
 		private _colorTransform:away.geom.ColorTransform;
-		
+
 		/**
 		 * Creates a new ColorTransformMethod.
 		 */
-		constructor()
+			constructor()
 		{
 			super();
 		}
-		
+
 		/**
 		 * The ColorTransform object to transform the colour of the material with.
 		 */
@@ -33,12 +33,12 @@ module away.materials
 		{
 			return this._colorTransform;
 		}
-		
+
 		public set colorTransform(value:away.geom.ColorTransform)
 		{
-            this._colorTransform = value;
+			this._colorTransform = value;
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
@@ -50,14 +50,13 @@ module away.materials
 
 			vo.fragmentConstantsIndex = colorMultReg.index*4;
 
-            //TODO: AGAL <> GLSL
+			//TODO: AGAL <> GLSL
 
-			code += "mul " + targetReg + ", " + targetReg + ", " + colorMultReg + "\n" +
-				"add " + targetReg + ", " + targetReg + ", " + colorOffsReg + "\n";
+			code += "mul " + targetReg + ", " + targetReg + ", " + colorMultReg + "\n" + "add " + targetReg + ", " + targetReg + ", " + colorOffsReg + "\n";
 
 			return code;
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */

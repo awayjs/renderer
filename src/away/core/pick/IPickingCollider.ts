@@ -2,9 +2,9 @@
 module away.pick
 {
 	//import away3d.core.base.SubMesh;
-	
+
 	//import flash.geom.Vector3D;
-	
+
 	/**
 	 * Provides an interface for picking colliders that can be assigned to individual entities in a scene for specific picking behaviour.
 	 * Used with the <code>RaycastPicker</code> picking object.
@@ -21,7 +21,7 @@ module away.pick
 		 * @param localPosition The direction vector in local coordinates
 		 */
 		setLocalRay(localPosition:away.geom.Vector3D, localDirection:away.geom.Vector3D);
-		
+
 		/**
 		 * Tests a <code>SubMesh</code> object for a collision with the picking ray.
 		 *
@@ -29,7 +29,7 @@ module away.pick
 		 * @param pickingCollisionVO The collision object used to store the collision results
 		 * @param shortestCollisionDistance The current value of the shortest distance to a detected collision along the ray.
 		 */
-        // TODO: SubMesh - Implement & Integrate
+		// TODO: SubMesh - Implement & Integrate
 		testSubMeshCollision(subMesh:away.base.SubMesh, pickingCollisionVO:away.pick.PickingCollisionVO, shortestCollisionDistance:number):boolean
 	}
 }

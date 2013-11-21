@@ -3,11 +3,11 @@
 module away.loaders
 {
 	import JointPose                    = away.animators.JointPose;
-    import SkeletonPose                 = away.animators.SkeletonPose;
+	import SkeletonPose                 = away.animators.SkeletonPose;
 	import SkeletonClipNode             = away.animators.SkeletonClipNode;
 	import Quaternion                   = away.math.Quaternion;
 	import Vector3D                     = away.geom.Vector3D;
-	
+
 	/**
 	 * MD5AnimParser provides a parser for the md5anim data type, providing an animation sequence for the md5 format.
 	 *
@@ -23,14 +23,14 @@ module away.loaders
 		public static NUM_JOINTS_TOKEN:string = "numJoints";
 		public static FRAME_RATE_TOKEN:string = "frameRate";
 		public static NUM_ANIMATED_COMPONENTS_TOKEN:string = "numAnimatedComponents";
-		
+
 		public static HIERARCHY_TOKEN:string = "hierarchy";
 		public static BOUNDS_TOKEN:string = "bounds";
 		public static BASE_FRAME_TOKEN:string = "baseframe";
 		public static FRAME_TOKEN:string = "frame";
-		
+
 		public static COMMENT_TOKEN:string = "//";
-		
+
 		private _parseIndex:number /*int*/ = 0;
 		private _reachedEOF:boolean;
 		private _line:number /*int*/ = 0;
@@ -40,21 +40,21 @@ module away.loaders
 		private _numFrames:number /*int*/;
 		private _numJoints:number /*int*/;
 		private _numAnimatedComponents:number /*int*/;
-		
+
 		private _hierarchy:Array<HierarchyData>;
 		private _bounds:Array<BoundsData>;
 		private _frameData:Array<FrameData>;
 		private _baseFrameData:Array<BaseFrameData>;
-		
+
 		private _rotationQuat:Quaternion;
 		private _clip:SkeletonClipNode;
-		
+
 		/**
 		 * Creates a new MD5AnimParser object.
 		 * @param uri The url or id of the data or file to be parsed.
 		 * @param extra The holder for extra contextual data that the parser might need.
 		 */
-		constructor(additionalRotationAxis:Vector3D = null, additionalRotationRadians:number = 0)
+			constructor(additionalRotationAxis:Vector3D = null, additionalRotationRadians:number = 0)
 		{
 			super(ParserDataFormat.PLAIN_TEXT);
 			this._rotationQuat = new Quaternion();
@@ -102,8 +102,8 @@ module away.loaders
 			var token:string;
 
 			if (!this._startedParsing) {
-                this._textData = this._pGetTextData();
-                this._startedParsing = true;
+				this._textData = this._pGetTextData();
+				this._startedParsing = true;
 			}
 
 			while (this._pHasTime()) {
@@ -121,45 +121,45 @@ module away.loaders
 							throw new Error("Unknown version number encountered!");
 						break;
 					case MD5AnimParser.COMMAND_LINE_TOKEN:
-                        this.parseCMD();
+						this.parseCMD();
 						break;
 					case MD5AnimParser.NUM_FRAMES_TOKEN:
-                        this._numFrames = this.getNextInt();
-                        this._bounds = new Array<BoundsData>();
-                        this._frameData = new Array<FrameData>();
+						this._numFrames = this.getNextInt();
+						this._bounds = new Array<BoundsData>();
+						this._frameData = new Array<FrameData>();
 						break;
 					case MD5AnimParser.NUM_JOINTS_TOKEN:
-                        this._numJoints = this.getNextInt();
-                        this._hierarchy = new Array<HierarchyData>(this._numJoints);
-                        this._baseFrameData = new Array<BaseFrameData>(this._numJoints);
+						this._numJoints = this.getNextInt();
+						this._hierarchy = new Array<HierarchyData>(this._numJoints);
+						this._baseFrameData = new Array<BaseFrameData>(this._numJoints);
 						break;
 					case MD5AnimParser.FRAME_RATE_TOKEN:
-                        this._frameRate = this.getNextInt();
+						this._frameRate = this.getNextInt();
 						break;
 					case MD5AnimParser.NUM_ANIMATED_COMPONENTS_TOKEN:
-                        this._numAnimatedComponents = this.getNextInt();
+						this._numAnimatedComponents = this.getNextInt();
 						break;
 					case MD5AnimParser.HIERARCHY_TOKEN:
-                        this.parseHierarchy();
+						this.parseHierarchy();
 						break;
 					case MD5AnimParser.BOUNDS_TOKEN:
-                        this.parseBounds();
+						this.parseBounds();
 						break;
 					case MD5AnimParser.BASE_FRAME_TOKEN:
-                        this.parseBaseFrame();
+						this.parseBaseFrame();
 						break;
 					case MD5AnimParser.FRAME_TOKEN:
-                        this.parseFrame();
+						this.parseFrame();
 						break;
 					default:
 						if (!this._reachedEOF)
-                            this.sendUnknownKeywordError();
+							this.sendUnknownKeywordError();
 				}
 
 				if (this._reachedEOF) {
-                    this._clip = new SkeletonClipNode();
-                    this.translateClip();
-                    this._pFinalizeAsset(this._clip);
+					this._clip = new SkeletonClipNode();
+					this.translateClip();
+					this._pFinalizeAsset(this._clip);
 					return ParserBase.PARSING_DONE;
 				}
 			}
@@ -252,30 +252,30 @@ module away.loaders
 			var i:number /*int*/ = 0;
 
 			if (token != "{")
-                this.sendUnknownKeywordError();
+				this.sendUnknownKeywordError();
 
 			do {
 				if (this._reachedEOF)
-                    this.sendEOFError();
+					this.sendEOFError();
 				data = new HierarchyData();
 				data.name = this.parseLiteralstring();
 				data.parentIndex = this.getNextInt();
 				data.flags = this.getNextInt();
 				data.startIndex = this.getNextInt();
-                this._hierarchy[i++] = data;
+				this._hierarchy[i++] = data;
 
 				ch = this.getNextChar();
 
 				if (ch == "/") {
-                    this.putBack();
+					this.putBack();
 					ch = this.getNextToken();
 					if (ch == MD5AnimParser.COMMENT_TOKEN)
-                        this.ignoreLine();
+						this.ignoreLine();
 					ch = this.getNextChar();
 				}
 
 				if (ch != "}")
-                    this.putBack();
+					this.putBack();
 
 			} while (ch != "}");
 		}
@@ -291,28 +291,28 @@ module away.loaders
 			var i:number /*int*/ = 0;
 
 			if (token != "{")
-                this.sendUnknownKeywordError();
+				this.sendUnknownKeywordError();
 
 			do {
 				if (this._reachedEOF)
-                    this.sendEOFError();
+					this.sendEOFError();
 				data = new BoundsData();
 				data.min = this.parseVector3D();
 				data.max = this.parseVector3D();
-                this._bounds[i++] = data;
+				this._bounds[i++] = data;
 
 				ch = this.getNextChar();
 
 				if (ch == "/") {
-                    this.putBack();
+					this.putBack();
 					ch = this.getNextToken();
 					if (ch == MD5AnimParser.COMMENT_TOKEN)
-                        this.ignoreLine();
+						this.ignoreLine();
 					ch = this.getNextChar();
 				}
 
 				if (ch != "}")
-                    this.putBack();
+					this.putBack();
 
 			} while (ch != "}");
 		}
@@ -328,28 +328,28 @@ module away.loaders
 			var i:number /*int*/ = 0;
 
 			if (token != "{")
-                this.sendUnknownKeywordError();
+				this.sendUnknownKeywordError();
 
 			do {
 				if (this._reachedEOF)
-                    this.sendEOFError();
+					this.sendEOFError();
 				data = new BaseFrameData();
 				data.position = this.parseVector3D();
 				data.orientation = this.parseQuaternion();
-                this._baseFrameData[i++] = data;
+				this._baseFrameData[i++] = data;
 
 				ch = this.getNextChar();
 
 				if (ch == "/") {
-                    this.putBack();
+					this.putBack();
 					ch = this.getNextToken();
 					if (ch == MD5AnimParser.COMMENT_TOKEN)
-                        this.ignoreLine();
+						this.ignoreLine();
 					ch = this.getNextChar();
 				}
 
 				if (ch != "}")
-                    this.putBack();
+					this.putBack();
 
 			} while (ch != "}");
 		}
@@ -368,31 +368,31 @@ module away.loaders
 
 			token = this.getNextToken();
 			if (token != "{")
-                this.sendUnknownKeywordError();
+				this.sendUnknownKeywordError();
 
 			do {
 				if (this._reachedEOF)
-                    this.sendEOFError();
+					this.sendEOFError();
 				data = new FrameData();
 				data.components = new Array<number>(this._numAnimatedComponents);
 
 				for (var i:number /*int*/ = 0; i < this._numAnimatedComponents; ++i)
 					data.components[i] = this.getNextNumber();
 
-                this._frameData[frameIndex] = data;
+				this._frameData[frameIndex] = data;
 
 				ch = this.getNextChar();
 
 				if (ch == "/") {
-                    this.putBack();
+					this.putBack();
 					ch = this.getNextToken();
 					if (ch == MD5AnimParser.COMMENT_TOKEN)
-                        this.ignoreLine();
+						this.ignoreLine();
 					ch = this.getNextChar();
 				}
 
 				if (ch != "}")
-                    this.putBack();
+					this.putBack();
 
 			} while (ch != "}");
 		}
@@ -402,9 +402,9 @@ module away.loaders
 		 */
 		private putBack():void
 		{
-            this._parseIndex--;
-            this._charLineIndex--;
-            this._reachedEOF = this._parseIndex >= this._textData.length;
+			this._parseIndex--;
+			this._charLineIndex--;
+			this._reachedEOF = this._parseIndex >= this._textData.length;
 		}
 
 		/**
@@ -419,7 +419,7 @@ module away.loaders
 				ch = this.getNextChar();
 				if (ch == " " || ch == "\r" || ch == "\n" || ch == "\t") {
 					if (token != MD5AnimParser.COMMENT_TOKEN)
-                        this.skipWhiteSpace();
+						this.skipWhiteSpace();
 					if (token != "")
 						return token;
 				} else
@@ -440,10 +440,9 @@ module away.loaders
 			var ch:string;
 
 			do
-				ch = this.getNextChar();
-			while (ch == "\n" || ch == " " || ch == "\r" || ch == "\t");
+				ch = this.getNextChar(); while (ch == "\n" || ch == " " || ch == "\r" || ch == "\t");
 
-            this.putBack();
+			this.putBack();
 		}
 
 		/**
@@ -465,12 +464,12 @@ module away.loaders
 
 			if (ch == "\n") {
 				++this._line;
-                this._charLineIndex = 0;
+				this._charLineIndex = 0;
 			} else if (ch != "\r")
 				++this._charLineIndex;
 
 			if (this._parseIndex == this._textData.length)
-                this._reachedEOF = true;
+				this._reachedEOF = true;
 
 			return ch;
 		}
@@ -482,7 +481,7 @@ module away.loaders
 		{
 			var i:number = parseInt(this.getNextToken());
 			if (isNaN(i))
-                this.sendParseError("int type");
+				this.sendParseError("int type");
 			return i;
 		}
 
@@ -493,7 +492,7 @@ module away.loaders
 		{
 			var f:number = parseFloat(this.getNextToken());
 			if (isNaN(f))
-                this.sendParseError("float type");
+				this.sendParseError("float type");
 			return f;
 		}
 
@@ -506,13 +505,13 @@ module away.loaders
 			var ch:string = this.getNextToken();
 
 			if (ch != "(")
-                this.sendParseError("(");
+				this.sendParseError("(");
 			vec.x = this.getNextNumber();
 			vec.y = this.getNextNumber();
 			vec.z = this.getNextNumber();
 
 			if (this.getNextToken() != ")")
-                this.sendParseError(")");
+				this.sendParseError(")");
 
 			return vec;
 		}
@@ -526,7 +525,7 @@ module away.loaders
 			var ch:string = this.getNextToken();
 
 			if (ch != "(")
-                this.sendParseError("(");
+				this.sendParseError("(");
 			quat.x = this.getNextNumber();
 			quat.y = this.getNextNumber();
 			quat.z = this.getNextNumber();
@@ -536,7 +535,7 @@ module away.loaders
 			quat.w = t < 0? 0 : -Math.sqrt(t);
 
 			if (this.getNextToken() != ")")
-                this.sendParseError(")");
+				this.sendParseError(")");
 
 			return quat;
 		}
@@ -547,7 +546,7 @@ module away.loaders
 		private parseCMD():void
 		{
 			// just ignore the command line property
-            this.parseLiteralstring();
+			this.parseLiteralstring();
 		}
 
 		/**
@@ -556,17 +555,17 @@ module away.loaders
 		 */
 		private parseLiteralstring():string
 		{
-            this.skipWhiteSpace();
+			this.skipWhiteSpace();
 
 			var ch:string = this.getNextChar();
 			var str:string = "";
 
 			if (ch != "\"")
-                this.sendParseError("\"");
+				this.sendParseError("\"");
 
 			do {
 				if (this._reachedEOF)
-                    this.sendEOFError();
+					this.sendEOFError();
 				ch = this.getNextChar();
 				if (ch != "\"")
 					str += ch;
@@ -640,7 +639,7 @@ class FrameData
 {
 	public index:number /*int*/;
 	public components:Array<number>;
-	
+
 	public FrameData()
 	{
 	}

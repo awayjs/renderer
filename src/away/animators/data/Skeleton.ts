@@ -2,8 +2,8 @@
 
 module away.animators
 {
-    import AssetType = away.library.AssetType;
-	
+	import AssetType = away.library.AssetType;
+
 	/**
 	 * A Skeleton object is a hierarchical grouping of joint objects that can be used for skeletal animation.
 	 *
@@ -17,7 +17,7 @@ module away.animators
 		 * A child joint should always have a higher index than its parent.
 		 */
 		public joints:Array<SkeletonJoint>;
-		
+
 		/**
 		 * The total number of joints in the skeleton.
 		 */
@@ -25,18 +25,18 @@ module away.animators
 		{
 			return this.joints.length;
 		}
-		
+
 		/**
 		 * Creates a new <code>Skeleton</code> object
 		 */
-		constructor()
+			constructor()
 		{
-            super();
+			super();
 
 			// in the long run, it might be a better idea to not store Joint objects, but keep all data in Vectors, that we can upload easily?
 			this.joints = new Array<SkeletonJoint>();
 		}
-		
+
 		/**
 		 * Returns the joint object in the skeleton with the given name, otherwise returns a null object.
 		 *
@@ -49,11 +49,10 @@ module away.animators
 		{
 			var jointIndex:number /*int*/ = this.jointIndexFromName(jointName);
 			if (jointIndex != -1)
-				return this.joints[jointIndex];
-			else
+				return this.joints[jointIndex]; else
 				return null;
 		}
-		
+
 		/**
 		 * Returns the joint index, given the joint name. -1 is returned if the joint name is not found.
 		 *
@@ -71,17 +70,17 @@ module away.animators
 			// c) maintaining a dictionary (for safety) would dictate an interface to access SkeletonJoints,
 			//    rather than direct array access.  this would be sub-optimal.
 			var jointIndex:number /*int*/;
-            var joint:SkeletonJoint;
+			var joint:SkeletonJoint;
 			for (var i:number /*int*/; i < this.joints.length; i++) {
-                joint = this.joints[i];
+				joint = this.joints[i];
 				if (joint.name == jointName)
 					return jointIndex;
 				jointIndex++;
 			}
-			
+
 			return -1;
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
@@ -89,7 +88,7 @@ module away.animators
 		{
 			this.joints.length = 0;
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */

@@ -8,7 +8,7 @@ module away.materials
 	//import away3d.lights.*;
 	//import away3d.lights.shadowmaps.*;
 	//import away3d.materials.compilation.*;
-	
+
 	//use namespace arcane;
 
 	/**
@@ -18,7 +18,7 @@ module away.materials
 	{
 		public _pCastingLight:away.lights.LightBase;
 		public _pShadowMapper:away.lights.ShadowMapperBase;
-		
+
 		public _pEpsilon:number = .02;
 		public _pAlpha:number = 1;
 
@@ -26,12 +26,12 @@ module away.materials
 		 * Creates a new ShadowMapMethodBase object.
 		 * @param castingLight The light used to cast shadows.
 		 */
-		constructor(castingLight:away.lights.LightBase)
+			constructor(castingLight:away.lights.LightBase)
 		{
 			super();
 			this._pCastingLight = castingLight;
 			castingLight.castsShadows = true;
-            this._pShadowMapper = castingLight.shadowMapper;
+			this._pShadowMapper = castingLight.shadowMapper;
 
 		}
 
@@ -50,10 +50,10 @@ module away.materials
 		{
 			return this._pAlpha;
 		}
-		
+
 		public set alpha(value:number)
 		{
-            this._pAlpha = value;
+			this._pAlpha = value;
 		}
 
 		/**
@@ -72,10 +72,10 @@ module away.materials
 		{
 			return this._pEpsilon;
 		}
-		
+
 		public set epsilon(value:number)
 		{
-            this._pEpsilon = value;
+			this._pEpsilon = value;
 		}
 
 		/**

@@ -26,7 +26,7 @@ module away.materials
 		 * Creates a new MethodVOSet object.
 		 * @param method The method for which we need to store a MethodVO object.
 		 */
-		constructor(method:away.materials.EffectMethodBase)
+			constructor(method:away.materials.EffectMethodBase)
 		{
 			this.method = method;
 			this.data = method.iCreateMethodVO();

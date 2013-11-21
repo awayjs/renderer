@@ -11,22 +11,22 @@ module away.animators
 		public _iInputs:Array<AnimationNodeBase> = new Array<AnimationNodeBase>();
 
 		private _numInputs:number /*uint*/;
-		
+
 		public get numInputs():number /*uint*/
 		{
 			return this._numInputs;
 		}
-		
+
 		/**
 		 * Creates a new <code>SkeletonNaryLERPNode</code> object.
 		 */
-		constructor()
+			constructor()
 		{
-            super();
+			super();
 
-            this._pStateClass = SkeletonNaryLERPState;
+			this._pStateClass = SkeletonNaryLERPState;
 		}
-		
+
 		/**
 		 * Returns an integer representing the input index of the given skeleton animation node.
 		 *
@@ -36,7 +36,7 @@ module away.animators
 		{
 			return this._iInputs.indexOf(input);
 		}
-		
+
 		/**
 		 * Returns the skeleton animation node object that resides at the given input index.
 		 *
@@ -46,15 +46,15 @@ module away.animators
 		{
 			return this._iInputs[index];
 		}
-		
+
 		/**
 		 * Adds a new skeleton animation node input to the animation node.
 		 */
 		public addInput(input:AnimationNodeBase):void
 		{
-            this._iInputs[this._numInputs++] = input;
+			this._iInputs[this._numInputs++] = input;
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */

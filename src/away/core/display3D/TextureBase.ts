@@ -7,8 +7,8 @@ module away.display3D
 
 		public textureType:string = "";
 		public _gl:WebGLRenderingContext;
-		
-		constructor( gl:WebGLRenderingContext )
+
+		constructor(gl:WebGLRenderingContext)
 		{
 			this._gl = gl;
 		}

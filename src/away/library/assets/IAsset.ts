@@ -12,9 +12,9 @@ module away.library
 		assetNamespace : string;
 		assetType : string;
 		assetFullPath : Array<string>;
-		
-		assetPathEquals(name : string, ns : string) : boolean;
-		resetAssetPath(name : string, ns : string , overrideOriginal ? : boolean ) : void;
+
+		assetPathEquals(name:string, ns:string) : boolean;
+		resetAssetPath(name:string, ns:string, overrideOriginal ?:boolean) : void;
 		dispose() : void;
 
 	}

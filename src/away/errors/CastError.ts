@@ -3,11 +3,11 @@
 module away.errors
 {
 
-    export class CastError extends Error
-    {
-        constructor(message:string)
-        {
-            super(message);
-        }
-    }
+	export class CastError extends Error
+	{
+		constructor(message:string)
+		{
+			super(message);
+		}
+	}
 }

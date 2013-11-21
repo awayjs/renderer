@@ -1,136 +1,127 @@
-
-
 ///<reference path="../_definitions.ts"/>
 
 module away.utils
 {
 
 
-    //[native(cls="TimerClass", gc="exact", instance="TimerObject", methods="auto")]
-    //[Event(name="timerComplete", type="flash.events.TimerEvent")]
-    //[Event(name="timer", type="flash.events.TimerEvent")]
+	//[native(cls="TimerClass", gc="exact", instance="TimerObject", methods="auto")]
+	//[Event(name="timerComplete", type="flash.events.TimerEvent")]
+	//[Event(name="timer", type="flash.events.TimerEvent")]
 
-    export class Timer extends away.events.EventDispatcher
-    {
+	export class Timer extends away.events.EventDispatcher
+	{
 
-        private _delay          : number ;
-        private _repeatCount    : number = 0;
-        private _currentCount   : number = 0;
-        private _iid            : number ;
-        private _running        : boolean = false;
+		private _delay:number;
+		private _repeatCount:number = 0;
+		private _currentCount:number = 0;
+		private _iid:number;
+		private _running:boolean = false;
 
-        constructor (delay : number , repeatCount : number = 0)
-        {
+		constructor(delay:number, repeatCount:number = 0)
+		{
 
-            super();
+			super();
 
 
+			this._delay = delay;
+			this._repeatCount = repeatCount;
 
-            this._delay = delay;
-            this._repeatCount = repeatCount;
+			if (isNaN(delay) || delay < 0) {
+				throw new away.errors.Error("Delay is negative or not a number");
+			}
 
-            if (isNaN(delay) || delay < 0)
-            {
-                throw new away.errors.Error("Delay is negative or not a number");
-            }
+		}
 
-        }
+		public get currentCount():number
+		{
 
-        public get currentCount() : number
-        {
+			return this._currentCount;
 
-            return this._currentCount;
+		}
 
-        }
+		public get delay():number
+		{
 
-        public get delay() : number
-        {
+			return this._delay;
 
-            return this._delay;
+		}
 
-        }
+		public set delay(value:number)
+		{
 
-        public set delay(value : number )
-        {
+			this._delay = value;
 
-            this._delay = value;
+			if (this._running) {
+				this.stop();
+				this.start();
+			}
 
-            if (this._running)
-            {
-                this.stop();
-                this.start();
-            }
+		}
 
-        }
+		public get repeatCount():number
+		{
 
-        public get repeatCount() : number
-        {
+			return this._repeatCount;
+		}
 
-            return this._repeatCount;
-        }
+		public set repeatCount(value:number)
+		{
 
-        public set repeatCount(value : number )
-        {
+			this._repeatCount = value;
+		}
 
-            this._repeatCount = value;
-        }
+		public reset():void
+		{
 
-        public reset() : void
-        {
+			if (this._running) {
+				this.stop();
+			}
 
-            if (this._running)
-            {
-                this.stop();
-            }
+			this._currentCount = 0;
 
-            this._currentCount = 0;
+		}
 
-        }
+		public get running():boolean
+		{
 
-        public get running() : boolean
-        {
+			return this._running;
 
-            return this._running;
+		}
 
-        }
+		public start():void
+		{
 
-        public start() : void
-        {
+			this._running = true;
+			clearInterval(this._iid);
+			this._iid = setInterval(() => this.tick(), this._delay);
 
-            this._running = true;
-            clearInterval( this._iid );
-            this._iid = setInterval( () => this.tick() , this._delay );
+		}
 
-        }
+		public stop():void
+		{
 
-        public stop() : void
-        {
+			this._running = false;
+			clearInterval(this._iid);
 
-            this._running = false;
-            clearInterval( this._iid );
+		}
 
-        }
+		private tick():void
+		{
 
-        private tick() : void
-        {
+			this._currentCount++;
 
-            this._currentCount ++;
+			if (( this._repeatCount > 0 ) && this._currentCount >= this._repeatCount) {
 
-            if ( ( this._repeatCount > 0 ) && this._currentCount >= this._repeatCount)
-            {
+				this.stop();
+				this.dispatchEvent(new away.events.TimerEvent(away.events.TimerEvent.TIMER));
+				this.dispatchEvent(new away.events.TimerEvent(away.events.TimerEvent.TIMER_COMPLETE));
 
-                this.stop();
-                this.dispatchEvent( new away.events.TimerEvent( away.events.TimerEvent.TIMER ) );
-                this.dispatchEvent( new away.events.TimerEvent( away.events.TimerEvent.TIMER_COMPLETE ) );
+			} else {
 
-            }
-            else
-            {
+				this.dispatchEvent(new away.events.TimerEvent(away.events.TimerEvent.TIMER));
 
-                this.dispatchEvent( new away.events.TimerEvent( away.events.TimerEvent.TIMER ) );
+			}
 
-            }
-
-        }
-    }
+		}
+	}
 }

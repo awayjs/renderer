@@ -11,22 +11,22 @@ module away.pick
 	export class AS3PickingCollider extends away.pick.PickingColliderBase implements away.pick.IPickingCollider
 	{
 		private _findClosestCollision:boolean;
-		
+
 		/**
 		 * Creates a new <code>AS3PickingCollider</code> object.
 		 *
 		 * @param findClosestCollision Determines whether the picking collider searches for the closest collision along the ray. Defaults to false.
 		 */
-		constructor(findClosestCollision:boolean = false)
+			constructor(findClosestCollision:boolean = false)
 		{
-            super();
+			super();
 			this._findClosestCollision = findClosestCollision;
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
-        //* TODO: Implement & Integrate Dependencies: SubMesh
+			//* TODO: Implement & Integrate Dependencies: SubMesh
 		public testSubMeshCollision(subMesh:away.base.SubMesh, pickingCollisionVO:away.pick.PickingCollisionVO, shortestCollisionDistance:number):boolean
 		{
 			var t:number;
@@ -42,24 +42,24 @@ module away.pick
 			var s1x:number, s1y:number, s1z:number;
 			var nl:number, nDotV:number, D:number, disToPlane:number;
 			var Q1Q2:number, Q1Q1:number, Q2Q2:number, RQ1:number, RQ2:number;
-			var indexData:number[]  = subMesh.indexData;//uint
+			var indexData:number[] = subMesh.indexData;//uint
 			var vertexData:number[] = subMesh.vertexData;
 			var uvData:number[] = subMesh.UVData;
 			var collisionTriangleIndex:number = -1;
 			var bothSides:boolean = subMesh.material.bothSides;
-			
+
 			var vertexStride:number = subMesh.vertexStride;
 			var vertexOffset:number = subMesh.vertexOffset;
 			var uvStride:number = subMesh.UVStride;
 			var uvOffset:number = subMesh.UVOffset;
 			var numIndices:number = indexData.length;
-			
+
 			for (var index:number = 0; index < numIndices; index += 3) { // sweep all triangles
 				// evaluate triangle indices
 				i0 = vertexOffset + indexData[ index ]*vertexStride;
 				i1 = vertexOffset + indexData[ (index + 1) ]*vertexStride;
 				i2 = vertexOffset + indexData[ (index + 2) ]*vertexStride;
-				
+
 				// evaluate triangle vertices
 				p0x = vertexData[ i0 ];
 				p0y = vertexData[ (i0 + 1) ];
@@ -70,7 +70,7 @@ module away.pick
 				p2x = vertexData[ i2 ];
 				p2y = vertexData[ (i2 + 1) ];
 				p2z = vertexData[ (i2 + 2) ];
-				
+
 				// evaluate sides and triangle normal
 				s0x = p1x - p0x; // s0 = p1 - p0
 				s0y = p1y - p0y;
@@ -85,7 +85,7 @@ module away.pick
 				nx *= nl;
 				ny *= nl;
 				nz *= nl;
-				
+
 				// -- plane intersection test --
 				nDotV = nx*this.rayDirection.x + ny* +this.rayDirection.y + nz*this.rayDirection.z; // rayDirection . normal
 				if (( !bothSides && nDotV < 0.0 ) || ( bothSides && nDotV != 0.0 )) { // an intersection must exist
@@ -123,7 +123,7 @@ module away.pick
 						pickingCollisionVO.uv = this._pGetCollisionUV(indexData, uvData, index, v, w, u, uvOffset, uvStride);
 						pickingCollisionVO.index = index;
 						pickingCollisionVO.subGeometryIndex = this.pGetMeshSubMeshIndex(subMesh);
-						
+
 						// if not looking for best hit, first found will do...
 						if (!this._findClosestCollision)
 							return true;
@@ -132,12 +132,12 @@ module away.pick
 			}
 
 
-
 			if (collisionTriangleIndex >= 0)
 				return true;
-			
+
 			return false;
 		}
-        //*/
+
+		//*/
 	}
 }

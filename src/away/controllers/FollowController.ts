@@ -11,20 +11,19 @@ module away.controllers
 	 */
 	export class FollowController extends away.controllers.HoverController
 	{
-		constructor(targetObject:away.entities.Entity = null,
-                    lookAtObject:away.containers.ObjectContainer3D = null, tiltAngle:number = 45, distance:number = 700)
+		constructor(targetObject:away.entities.Entity = null, lookAtObject:away.containers.ObjectContainer3D = null, tiltAngle:number = 45, distance:number = 700)
 		{
 			super(targetObject, lookAtObject, 0, tiltAngle, distance);
 		}
-		
+
 		public update(interpolate:boolean = true)
 		{
 			interpolate = interpolate; // unused: prevents warning
-			
+
 			if (!this.lookAtObject)
 				return;
 
-            this.panAngle = this._pLookAtObject.rotationY - 180;
+			this.panAngle = this._pLookAtObject.rotationY - 180;
 			super.update();
 		}
 	}

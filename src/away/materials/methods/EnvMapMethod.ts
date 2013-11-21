@@ -17,11 +17,11 @@ module away.materials
 		 * @param envMap The environment map containing the reflected scene.
 		 * @param alpha The reflectivity of the surface.
 		 */
-		constructor(envMap:away.textures.CubeTextureBase, alpha:number = 1)
+			constructor(envMap:away.textures.CubeTextureBase, alpha:number = 1)
 		{
 			super();
 			this._cubeTexture = envMap;
-            this._alpha = alpha;
+			this._alpha = alpha;
 
 		}
 
@@ -32,21 +32,20 @@ module away.materials
 		{
 			return this._mask;
 		}
-		
+
 		public set mask(value:away.textures.Texture2DBase)
 		{
-            if ( value != this._mask ||
-                (value && this._mask && (value.hasMipMaps != this._mask.hasMipMaps || value.format != this._mask.format))) {
+			if (value != this._mask || (value && this._mask && (value.hasMipMaps != this._mask.hasMipMaps || value.format != this._mask.format))) {
 
-                this.iInvalidateShaderProgram();
-            }
-
-            /*
-			if (Boolean(value) != Boolean(_mask) ||
-				(value && _mask && (value.hasMipMaps != _mask.hasMipMaps || value.format != _mask.format))) {
-				invalidateShaderProgram();
+				this.iInvalidateShaderProgram();
 			}
-			*/
+
+			/*
+			 if (Boolean(value) != Boolean(_mask) ||
+			 (value && _mask && (value.hasMipMaps != _mask.hasMipMaps || value.format != _mask.format))) {
+			 invalidateShaderProgram();
+			 }
+			 */
 
 			this._mask = value;
 		}
@@ -60,7 +59,7 @@ module away.materials
 			vo.needsView = true;
 			vo.needsUV = this._mask != null;
 		}
-		
+
 		/**
 		 * The cubic environment map containing the reflected scene.
 		 */
@@ -68,19 +67,19 @@ module away.materials
 		{
 			return this._cubeTexture;
 		}
-		
+
 		public set envMap(value:away.textures.CubeTextureBase)
 		{
-            this._cubeTexture = value;
+			this._cubeTexture = value;
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
 		public dispose():void
 		{
 		}
-		
+
 		/**
 		 * The reflectivity of the surface.
 		 */
@@ -88,7 +87,7 @@ module away.materials
 		{
 			return this._alpha;
 		}
-		
+
 		public set alpha(value:number)
 		{
 			this._alpha = value;
@@ -103,10 +102,9 @@ module away.materials
 			vo.fragmentData[vo.fragmentConstantsIndex] = this._alpha;
 
 			context.setTextureAt(vo.texturesIndex, this._cubeTexture.getTextureForStage3D(stage3DProxy));
-			if (this._mask)
-            {
+			if (this._mask) {
 				context.setTextureAt(vo.texturesIndex + 1, this._mask.getTextureForStage3D(stage3DProxy));
-            }
+			}
 		}
 
 		/**
@@ -119,32 +117,25 @@ module away.materials
 			var code:string = "";
 			var cubeMapReg:ShaderRegisterElement = regCache.getFreeTextureReg();
 
-			    vo.texturesIndex = cubeMapReg.index;
+			vo.texturesIndex = cubeMapReg.index;
 			vo.fragmentConstantsIndex = dataRegister.index*4;
-			
+
 			regCache.addFragmentTempUsages(temp, 1);
 			var temp2:ShaderRegisterElement = regCache.getFreeFragmentVectorTemp();
-			
+
 			// r = I - 2(I.N)*N
-			code += "dp3 " + temp + ".w, " + this._sharedRegisters.viewDirFragment + ".xyz, " + this._sharedRegisters.normalFragment + ".xyz		\n" +
-				"add " + temp + ".w, " + temp + ".w, " + temp + ".w											\n" +
-				"mul " + temp + ".xyz, " + this._sharedRegisters.normalFragment + ".xyz, " + temp + ".w						\n" +
-				"sub " + temp + ".xyz, " + temp + ".xyz, " + this._sharedRegisters.viewDirFragment + ".xyz					\n" +
-                this.pGetTexCubeSampleCode(vo, temp, cubeMapReg, this._cubeTexture, temp) +
-				"sub " + temp2 + ".w, " + temp + ".w, fc0.x									\n" +               	// -.5
+			code += "dp3 " + temp + ".w, " + this._sharedRegisters.viewDirFragment + ".xyz, " + this._sharedRegisters.normalFragment + ".xyz		\n" + "add " + temp + ".w, " + temp + ".w, " + temp + ".w											\n" + "mul " + temp + ".xyz, " + this._sharedRegisters.normalFragment + ".xyz, " + temp + ".w						\n" + "sub " + temp + ".xyz, " + temp + ".xyz, " + this._sharedRegisters.viewDirFragment + ".xyz					\n" + this.pGetTexCubeSampleCode(vo, temp, cubeMapReg, this._cubeTexture, temp) + "sub " + temp2 + ".w, " + temp + ".w, fc0.x									\n" +               	// -.5
 				"kil " + temp2 + ".w\n" +	// used for real time reflection mapping - if alpha is not 1 (mock texture) kil output
 				"sub " + temp + ", " + temp + ", " + targetReg + "											\n";
-			
+
 			if (this._mask) {
 				var maskReg:away.materials.ShaderRegisterElement = regCache.getFreeTextureReg();
-				code += this.pGetTex2DSampleCode(vo, temp2, maskReg, this._mask, this._sharedRegisters.uvVarying) +
-					"mul " + temp + ", " + temp2 + ", " + temp + "\n";
+				code += this.pGetTex2DSampleCode(vo, temp2, maskReg, this._mask, this._sharedRegisters.uvVarying) + "mul " + temp + ", " + temp2 + ", " + temp + "\n";
 			}
-			code += "mul " + temp + ", " + temp + ", " + dataRegister + ".x										\n" +
-				"add " + targetReg + ", " + targetReg + ", " + temp + "										\n";
-			
+			code += "mul " + temp + ", " + temp + ", " + dataRegister + ".x										\n" + "add " + targetReg + ", " + targetReg + ", " + temp + "										\n";
+
 			regCache.removeFragmentTempUsage(temp);
-			
+
 			return code;
 		}
 	}

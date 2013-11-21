@@ -10,7 +10,7 @@ module away.materials
 	{
 		public vertexData:number[];
 		public fragmentData:number[];
-		
+
 		// public register indices
 		public texturesIndex:number;
 		public secondaryTexturesIndex:number; // sometimes needed for composites
@@ -18,11 +18,11 @@ module away.materials
 		public secondaryVertexConstantsIndex:number; // sometimes needed for composites
 		public fragmentConstantsIndex:number;
 		public secondaryFragmentConstantsIndex:number; // sometimes needed for composites
-		
+
 		public useMipmapping:boolean;
 		public useSmoothTextures:boolean;
 		public repeatTextures:boolean;
-		
+
 		// internal stuff for the material to know before assembling code
 		public needsProjection:boolean;
 		public needsView:boolean;
@@ -32,16 +32,16 @@ module away.materials
 		public needsSecondaryUV:boolean;
 		public needsGlobalVertexPos:boolean;
 		public needsGlobalFragmentPos:boolean;
-		
+
 		public numLights:number;
 		public useLightFallOff:boolean = true;
 
 		/**
 		 * Creates a new MethodVO object.
 		 */
-		constructor()
+			constructor()
 		{
-		
+
 		}
 
 		/**
@@ -50,24 +50,24 @@ module away.materials
 		public reset()
 		{
 			this.texturesIndex = -1;
-            this.vertexConstantsIndex = -1;
-            this.fragmentConstantsIndex = -1;
+			this.vertexConstantsIndex = -1;
+			this.fragmentConstantsIndex = -1;
 
-            this.useMipmapping = true;
-            this.useSmoothTextures = true;
-            this.repeatTextures = false;
+			this.useMipmapping = true;
+			this.useSmoothTextures = true;
+			this.repeatTextures = false;
 
-            this.needsProjection = false;
-            this.needsView = false;
-            this.needsNormals = false;
-            this.needsTangents = false;
-            this.needsUV = false;
-            this.needsSecondaryUV = false;
-            this.needsGlobalVertexPos = false;
-            this.needsGlobalFragmentPos = false;
+			this.needsProjection = false;
+			this.needsView = false;
+			this.needsNormals = false;
+			this.needsTangents = false;
+			this.needsUV = false;
+			this.needsSecondaryUV = false;
+			this.needsGlobalVertexPos = false;
+			this.needsGlobalFragmentPos = false;
 
-            this.numLights = 0;
-            this.useLightFallOff = true;
+			this.numLights = 0;
+			this.useLightFallOff = true;
 		}
 	}
 }

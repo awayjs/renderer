@@ -8,13 +8,13 @@ module away.pick
 	export class PickingColliderBase
 	{
 		public rayPosition:away.geom.Vector3D;
-        public rayDirection:away.geom.Vector3D;
-		
+		public rayDirection:away.geom.Vector3D;
+
 		constructor()
 		{
-		
+
 		}
-		
+
 		public _pPetCollisionNormal(indexData:number[] /*uint*/, vertexData:number[], triangleIndex:number):away.geom.Vector3D // PROTECTED
 		{
 			var normal:away.geom.Vector3D = new away.geom.Vector3D();
@@ -30,7 +30,7 @@ module away.pick
 			normal.normalize();
 			return normal;
 		}
-		
+
 		public _pGetCollisionUV(indexData:number[] /*uint*/, uvData:number[], triangleIndex:number, v:number, w:number, u:number, uvOffset:number, uvStride:number):away.geom.Point // PROTECTED
 		{
 			var uv:away.geom.Point = new away.geom.Point();
@@ -49,21 +49,23 @@ module away.pick
 		public pGetMeshSubgeometryIndex(subGeometry:away.base.SubGeometry):number
 		{
 
-            away.Debug.throwPIR( 'away.pick.PickingColliderBase' , 'pGetMeshSubMeshIndex' , 'GeometryUtils.getMeshSubMeshIndex'  );
-            return 0;
+			away.Debug.throwPIR('away.pick.PickingColliderBase', 'pGetMeshSubMeshIndex', 'GeometryUtils.getMeshSubMeshIndex');
+			return 0;
 			//return GeometryUtils.getMeshSubgeometryIndex(subGeometry);
 		}
+
 		//*/
 
-        //* TODO: implement & integrate
+		//* TODO: implement & integrate
 		public pGetMeshSubMeshIndex(subMesh:away.base.SubMesh):number
 		{
 
-            away.Debug.throwPIR( 'away.pick.PickingColliderBase' , 'pGetMeshSubMeshIndex' , 'GeometryUtils.getMeshSubMeshIndex'  );
+			away.Debug.throwPIR('away.pick.PickingColliderBase', 'pGetMeshSubMeshIndex', 'GeometryUtils.getMeshSubMeshIndex');
 
-            return 0;
+			return 0;
 			//return GeometryUtils.getMeshSubMeshIndex(subMesh);
 		}
+
 		//*/
 
 		/**
@@ -72,7 +74,7 @@ module away.pick
 		public setLocalRay(localPosition:away.geom.Vector3D, localDirection:away.geom.Vector3D)
 		{
 			this.rayPosition = localPosition;
-            this.rayDirection = localDirection;
+			this.rayDirection = localDirection;
 		}
 	}
 }

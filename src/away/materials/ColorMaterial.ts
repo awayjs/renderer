@@ -9,13 +9,13 @@ module away.materials
 	export class ColorMaterial extends away.materials.SinglePassMaterialBase
 	{
 		private _diffuseAlpha:number = 1;
-		
+
 		/**
 		 * Creates a new ColorMaterial object.
 		 * @param color The material's diffuse surface color.
 		 * @param alpha The material's surface alpha.
 		 */
-		constructor(color:number = 0xcccccc, alpha:number = 1)
+			constructor(color:number = 0xcccccc, alpha:number = 1)
 		{
 
 			super();
@@ -24,7 +24,7 @@ module away.materials
 			this.alpha = alpha;
 
 		}
-		
+
 		/**
 		 * The alpha of the surface.
 		 */
@@ -32,26 +32,23 @@ module away.materials
 		{
 			return this._pScreenPass.diffuseMethod.diffuseAlpha;
 		}
-		
+
 		public set alpha(value:number)
 		{
-			if (value > 1)
-            {
+			if (value > 1) {
 
-                value = 1;
+				value = 1;
 
-            }
-			else if (value < 0)
-            {
+			} else if (value < 0) {
 
-                value = 0;
-            }
+				value = 0;
+			}
 
 			this._pScreenPass.diffuseMethod.diffuseAlpha = this._diffuseAlpha = value;
-            this._pScreenPass.preserveAlpha = this.requiresBlending;
-            this._pScreenPass.setBlendMode( this.getBlendMode() == away.display.BlendMode.NORMAL && this.requiresBlending? away.display.BlendMode.LAYER : this.getBlendMode());
+			this._pScreenPass.preserveAlpha = this.requiresBlending;
+			this._pScreenPass.setBlendMode(this.getBlendMode() == away.display.BlendMode.NORMAL && this.requiresBlending? away.display.BlendMode.LAYER : this.getBlendMode());
 		}
-		
+
 		/**
 		 * The diffuse reflectivity color of the surface.
 		 */
@@ -59,12 +56,12 @@ module away.materials
 		{
 			return this._pScreenPass.diffuseMethod.diffuseColor;
 		}
-		
+
 		public set color(value:number)
 		{
-            this._pScreenPass.diffuseMethod.diffuseColor = value;
+			this._pScreenPass.diffuseMethod.diffuseColor = value;
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */

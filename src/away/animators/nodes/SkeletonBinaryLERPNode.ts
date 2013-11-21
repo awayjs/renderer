@@ -11,22 +11,22 @@ module away.animators
 		 * Defines input node A to use for the blended output.
 		 */
 		public inputA:AnimationNodeBase;
-		
+
 		/**
 		 * Defines input node B to use for the blended output.
 		 */
 		public inputB:AnimationNodeBase;
-		
+
 		/**
 		 * Creates a new <code>SkeletonBinaryLERPNode</code> object.
 		 */
-		constructor()
+			constructor()
 		{
-            super();
+			super();
 
 			this._pStateClass = SkeletonBinaryLERPState;
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */

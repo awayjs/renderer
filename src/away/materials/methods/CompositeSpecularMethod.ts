@@ -2,7 +2,7 @@
 
 module away.materials
 {
-	
+
 	/**
 	 * CompositeSpecularMethod provides a base class for specular methods that wrap a specular method to alter the
 	 * calculated specular reflection strength.
@@ -10,27 +10,27 @@ module away.materials
 	export class CompositeSpecularMethod extends away.materials.BasicSpecularMethod
 	{
 		private _baseMethod:away.materials.BasicSpecularMethod;
-		
+
 		/**
 		 * Creates a new WrapSpecularMethod object.
 		 * @param modulateMethod The method which will add the code to alter the base method's strength. It needs to have the signature modSpecular(t : ShaderRegisterElement, regCache : ShaderRegisterCache) : string, in which t.w will contain the specular strength and t.xyz will contain the half-vector or the reflection vector.
 		 * @param baseSpecularMethod The base specular method on which this method's shading is based.
 		 */
-		constructor( scope : Object , modulateMethod:Function, baseSpecularMethod:away.materials.BasicSpecularMethod = null)
-        {
-            super();
+			constructor(scope:Object, modulateMethod:Function, baseSpecularMethod:away.materials.BasicSpecularMethod = null)
+		{
+			super();
 
-            if (scope != null && modulateMethod != null)
-                this._pInitCompositeSpecularMethod(scope, modulateMethod, baseSpecularMethod);
-        }
+			if (scope != null && modulateMethod != null)
+				this._pInitCompositeSpecularMethod(scope, modulateMethod, baseSpecularMethod);
+		}
 
-        public _pInitCompositeSpecularMethod( scope : Object , modulateMethod:Function, baseSpecularMethod:away.materials.BasicSpecularMethod = null)
-        {
-            this._baseMethod = baseSpecularMethod || new away.materials.BasicSpecularMethod();
-            this._baseMethod._iModulateMethod = modulateMethod;
-            this._baseMethod._iModulateMethodScope = scope;
-            this._baseMethod.addEventListener(away.events.ShadingMethodEvent.SHADER_INVALIDATED, this.onShaderInvalidated , this );
-        }
+		public _pInitCompositeSpecularMethod(scope:Object, modulateMethod:Function, baseSpecularMethod:away.materials.BasicSpecularMethod = null)
+		{
+			this._baseMethod = baseSpecularMethod || new away.materials.BasicSpecularMethod();
+			this._baseMethod._iModulateMethod = modulateMethod;
+			this._baseMethod._iModulateMethodScope = scope;
+			this._baseMethod.addEventListener(away.events.ShadingMethodEvent.SHADER_INVALIDATED, this.onShaderInvalidated, this);
+		}
 
 		/**
 		 * @inheritDoc
@@ -47,7 +47,7 @@ module away.materials
 		{
 			this._baseMethod.iInitConstants(vo);
 		}
-		
+
 		/**
 		 * The base specular method on which this method's shading is based.
 		 */
@@ -55,17 +55,17 @@ module away.materials
 		{
 			return this._baseMethod;
 		}
-		
+
 		public set baseMethod(value:away.materials.BasicSpecularMethod)
 		{
 			if (this._baseMethod == value)
 				return;
-            this._baseMethod.removeEventListener(away.events.ShadingMethodEvent.SHADER_INVALIDATED, this.onShaderInvalidated , this );
-            this._baseMethod = value;
-            this._baseMethod.addEventListener(away.events.ShadingMethodEvent.SHADER_INVALIDATED, this.onShaderInvalidated, this);
-            this.iInvalidateShaderProgram();
+			this._baseMethod.removeEventListener(away.events.ShadingMethodEvent.SHADER_INVALIDATED, this.onShaderInvalidated, this);
+			this._baseMethod = value;
+			this._baseMethod.addEventListener(away.events.ShadingMethodEvent.SHADER_INVALIDATED, this.onShaderInvalidated, this);
+			this.iInvalidateShaderProgram();
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
@@ -73,12 +73,12 @@ module away.materials
 		{
 			return this._baseMethod.gloss;
 		}
-		
+
 		public set gloss(value:number)
 		{
 			this._baseMethod.gloss = value;
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
@@ -86,12 +86,12 @@ module away.materials
 		{
 			return this._baseMethod.specular;
 		}
-		
+
 		public set specular(value:number)
 		{
 			this._baseMethod.specular = value;
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
@@ -99,16 +99,16 @@ module away.materials
 		{
 			return this._baseMethod.passes;
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
 		public dispose():void
 		{
-			this._baseMethod.removeEventListener(away.events.ShadingMethodEvent.SHADER_INVALIDATED, this.onShaderInvalidated , this );
+			this._baseMethod.removeEventListener(away.events.ShadingMethodEvent.SHADER_INVALIDATED, this.onShaderInvalidated, this);
 			this._baseMethod.dispose();
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
@@ -116,12 +116,12 @@ module away.materials
 		{
 			return this._baseMethod.texture;
 		}
-		
+
 		public set texture(value:away.textures.Texture2DBase)
 		{
 			this._baseMethod.texture = value;
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
@@ -137,21 +137,22 @@ module away.materials
 		{
 			this._baseMethod.iDeactivate(vo, stage3DProxy);
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
-        public set iSharedRegisters(value:away.materials.ShaderRegisterData)
-        {
-            super.setISharedRegisters( value );
-            this._baseMethod.setISharedRegisters(value );
-        }
-        public setISharedRegisters(value:away.materials.ShaderRegisterData)
-        {
-            super.setISharedRegisters( value );
-            this._baseMethod.setISharedRegisters(value );
-        }
-		
+		public set iSharedRegisters(value:away.materials.ShaderRegisterData)
+		{
+			super.setISharedRegisters(value);
+			this._baseMethod.setISharedRegisters(value);
+		}
+
+		public setISharedRegisters(value:away.materials.ShaderRegisterData)
+		{
+			super.setISharedRegisters(value);
+			this._baseMethod.setISharedRegisters(value);
+		}
+
 		/**
 		 * @inheritDoc
 		 */
@@ -159,7 +160,7 @@ module away.materials
 		{
 			return this._baseMethod.iGetVertexCode(vo, regCache);
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
@@ -167,7 +168,7 @@ module away.materials
 		{
 			return this._baseMethod.iGetFragmentPreLightingCode(vo, regCache);
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
@@ -175,7 +176,7 @@ module away.materials
 		{
 			return this._baseMethod.iGetFragmentCodePerLight(vo, lightDirReg, lightColReg, regCache);
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 * @return
@@ -184,7 +185,7 @@ module away.materials
 		{
 			return this._baseMethod.iGetFragmentCodePerProbe(vo, cubeMapReg, weightRegister, regCache);
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
@@ -192,13 +193,13 @@ module away.materials
 		{
 			return this._baseMethod.iGetFragmentPostLightingCode(vo, regCache, targetReg);
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
 		public iReset():void
 		{
-            this._baseMethod.iReset();
+			this._baseMethod.iReset();
 		}
 
 		/**
@@ -216,8 +217,8 @@ module away.materials
 		public set iShadowRegister(value:away.materials.ShaderRegisterElement)
 		{
 
-			this.setIShadowRegister( value );
-			this._baseMethod.setIShadowRegister( value );
+			this.setIShadowRegister(value);
+			this._baseMethod.setIShadowRegister(value);
 		}
 
 		/**

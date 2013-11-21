@@ -4,19 +4,19 @@ module aglsl.assembler
 {
 	export class Opcode
 	{
-		
-		public dest: string;
+
+		public dest:string;
 		public a:aglsl.assembler.FS;
 		public b:aglsl.assembler.FS;
 		public opcode:number;
 		public flags:aglsl.assembler.Flags;
-		
-		constructor( dest: string, aformat:string, asize:number, bformat:string, bsize:number, opcode:number, simple:boolean, horizontal:boolean, fragonly:boolean, matrix:boolean )
+
+		constructor(dest:string, aformat:string, asize:number, bformat:string, bsize:number, opcode:number, simple:boolean, horizontal:boolean, fragonly:boolean, matrix:boolean)
 		{
 			this.a = new aglsl.assembler.FS();
 			this.b = new aglsl.assembler.FS();
 			this.flags = new aglsl.assembler.Flags();
-			
+
 			this.dest = dest;
 			this.a.format = aformat;
 			this.a.size = asize;
@@ -29,13 +29,13 @@ module aglsl.assembler
 			this.flags.matrix = matrix;
 		}
 	}
-	
+
 	export class FS
 	{
 		public format:string;
 		public size:number;
 	}
-	
+
 	export class Flags
 	{
 		public simple:boolean;

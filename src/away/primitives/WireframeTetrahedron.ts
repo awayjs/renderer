@@ -2,23 +2,23 @@
 module away.primitives
 {
 	//import flash.geom.Vector3D;
-	
+
 	//import away3d.primitives.WireframePrimitiveBase;
-	
+
 	/**
 	 * A WireframeTetrahedron primitive mesh
 	 */
 	export class WireframeTetrahedron extends away.primitives.WireframePrimitiveBase
 	{
-		
+
 		public static ORIENTATION_YZ:string = "yz";
 		public static ORIENTATION_XY:string = "xy";
 		public static ORIENTATION_XZ:string = "xz";
-		
+
 		private _width:number;
 		private _height:number;
 		private _orientation:string;
-		
+
 		/**
 		 * Creates a new WireframeTetrahedron object.
 		 * @param width The size of the tetrahedron buttom size.
@@ -26,16 +26,16 @@ module away.primitives
 		 * @param color The color of the wireframe lines.
 		 * @param thickness The thickness of the wireframe lines.
 		 */
-		constructor(width:number, height:number, color:number = 0xffffff, thickness:number = 1, orientation:string = "yz")
+			constructor(width:number, height:number, color:number = 0xffffff, thickness:number = 1, orientation:string = "yz")
 		{
 			super(color, thickness);
-			
-			this._width = width;
-            this._height = height;
 
-            this._orientation = orientation;
+			this._width = width;
+			this._height = height;
+
+			this._orientation = orientation;
 		}
-		
+
 		/**
 		 * The orientation in which the plane lies
 		 */
@@ -43,13 +43,13 @@ module away.primitives
 		{
 			return this._orientation;
 		}
-		
+
 		public set orientation(value:string)
 		{
-            this._orientation = value;
-            this.pInvalidateGeometry();
+			this._orientation = value;
+			this.pInvalidateGeometry();
 		}
-		
+
 		/**
 		 * The size of the tetrahedron bottom.
 		 */
@@ -57,15 +57,15 @@ module away.primitives
 		{
 			return this._width;
 		}
-		
+
 		public set width(value:number)
 		{
 			if (value <= 0)
 				throw new Error("Value needs to be greater than 0");
-            this._width = value;
+			this._width = value;
 			this.pInvalidateGeometry();
 		}
-		
+
 		/**
 		 * The size of the tetrahedron height.
 		 */
@@ -73,21 +73,21 @@ module away.primitives
 		{
 			return this._height;
 		}
-		
+
 		public set height(value:number)
 		{
 			if (value <= 0)
 				throw new Error("Value needs to be greater than 0");
-            this._height = value;
-            this.pInvalidateGeometry();
+			this._height = value;
+			this.pInvalidateGeometry();
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
 		public pBuildGeometry()
 		{
-			
+
 			var bv0:away.geom.Vector3D;
 			var bv1:away.geom.Vector3D;
 			var bv2:away.geom.Vector3D;
@@ -95,9 +95,8 @@ module away.primitives
 			var top:away.geom.Vector3D;
 
 			var hw:number = this._width*0.5;
-			
-			switch (this._orientation)
-            {
+
+			switch (this._orientation) {
 				case WireframeTetrahedron.ORIENTATION_XY:
 
 					bv0 = new away.geom.Vector3D(-hw, hw, 0);
@@ -123,14 +122,14 @@ module away.primitives
 			}
 			//bottom
 			this.pUpdateOrAddSegment(0, bv0, bv1);
-            this.pUpdateOrAddSegment(1, bv1, bv2);
-            this.pUpdateOrAddSegment(2, bv2, bv3);
-            this.pUpdateOrAddSegment(3, bv3, bv0);
+			this.pUpdateOrAddSegment(1, bv1, bv2);
+			this.pUpdateOrAddSegment(2, bv2, bv3);
+			this.pUpdateOrAddSegment(3, bv3, bv0);
 			//bottom to top
-            this.pUpdateOrAddSegment(4, bv0, top);
-            this.pUpdateOrAddSegment(5, bv1, top);
-            this.pUpdateOrAddSegment(6, bv2, top);
-            this.pUpdateOrAddSegment(7, bv3, top);
+			this.pUpdateOrAddSegment(4, bv0, top);
+			this.pUpdateOrAddSegment(5, bv1, top);
+			this.pUpdateOrAddSegment(6, bv2, top);
+			this.pUpdateOrAddSegment(7, bv3, top);
 		}
 	}
 }

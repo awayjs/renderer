@@ -2,488 +2,457 @@
 module away.geom
 {
 
-    export class Matrix {
+	export class Matrix
+	{
 
-        public a    : number;
-        public b    : number;
-        public c    : number;
-        public d    : number;
-        public tx   : number;
-        public ty   : number;
+		public a:number;
+		public b:number;
+		public c:number;
+		public d:number;
+		public tx:number;
+		public ty:number;
 
-        constructor ( a : number = 1 , b : number = 0 , c : number = 0 , d : number = 1 , tx : number = 0 , ty : number = 0 )
-        {
+		constructor(a:number = 1, b:number = 0, c:number = 0, d:number = 1, tx:number = 0, ty:number = 0)
+		{
 
-            this.a      = a;
-            this.b      = b;
-            this.c      = c;
-            this.d      = d;
-            this.tx     = tx;
-            this.ty     = ty;
+			this.a = a;
+			this.b = b;
+			this.c = c;
+			this.d = d;
+			this.tx = tx;
+			this.ty = ty;
 
-        }
+		}
 
-        /**
-         *
-         * @returns {away.geom.Matrix}
-         */
-        public clone() : Matrix
-        {
+		/**
+		 *
+		 * @returns {away.geom.Matrix}
+		 */
+		public clone():Matrix
+		{
 
-            return new Matrix ( this.a , this.b , this.c , this.d , this.tx , this.ty );
+			return new Matrix(this.a, this.b, this.c, this.d, this.tx, this.ty);
 
-        }
+		}
 
-        /**
-         *
-         * @param m
-         */
-        public concat ( m : Matrix ) : void
-        {
+		/**
+		 *
+		 * @param m
+		 */
+		public concat(m:Matrix):void
+		{
 
-            var a1 = this.a * m.a + this.b * m.c;
-            this.b = this.a * m.b + this.b * m.d;
-            this.a = a1;
+			var a1 = this.a*m.a + this.b*m.c;
+			this.b = this.a*m.b + this.b*m.d;
+			this.a = a1;
 
-            var c1 = this.c * m.a + this.d * m.c;
-            this.d = this.c * m.b + this.d * m.d;
+			var c1 = this.c*m.a + this.d*m.c;
+			this.d = this.c*m.b + this.d*m.d;
 
-            this.c = c1;
+			this.c = c1;
 
-            var tx1 = this.tx * m.a + this.ty * m.c + m.tx;
-            this.ty = this.tx * m.b + this.ty * m.d + m.ty;
-            this.tx = tx1;
+			var tx1 = this.tx*m.a + this.ty*m.c + m.tx;
+			this.ty = this.tx*m.b + this.ty*m.d + m.ty;
+			this.tx = tx1;
 
-        }
+		}
 
-        /**
-         *
-         * @param column
-         * @param vector3D
-         */
-        public copyColumnFrom (column : number , vector3D : Vector3D ) : void
-        {
+		/**
+		 *
+		 * @param column
+		 * @param vector3D
+		 */
+		public copyColumnFrom(column:number, vector3D:Vector3D):void
+		{
 
-            if (column > 2)
-            {
+			if (column > 2) {
 
-                throw "Column " + column + " out of bounds (2)";
+				throw "Column " + column + " out of bounds (2)";
 
-            }
-            else if (column == 0)
-            {
+			} else if (column == 0) {
 
-                this.a = vector3D.x;
-                this.c = vector3D.y;
+				this.a = vector3D.x;
+				this.c = vector3D.y;
 
-            }
-            else if (column == 1)
-            {
+			} else if (column == 1) {
 
-                this.b = vector3D.x;
-                this.d = vector3D.y;
+				this.b = vector3D.x;
+				this.d = vector3D.y;
 
-            }
-            else
-            {
+			} else {
 
-                this.tx = vector3D.x;
-                this.ty = vector3D.y;
+				this.tx = vector3D.x;
+				this.ty = vector3D.y;
 
-            }
+			}
 
-        }
+		}
 
-        /**
-         *
-         * @param column
-         * @param vector3D
-         */
-        public copyColumnTo ( column : number , vector3D : away.geom.Vector3D ) : void
-        {
+		/**
+		 *
+		 * @param column
+		 * @param vector3D
+		 */
+		public copyColumnTo(column:number, vector3D:away.geom.Vector3D):void
+		{
 
-            if (column > 2)
-            {
+			if (column > 2) {
 
-                throw new away.errors.ArgumentError( "ArgumentError, Column " + column + " out of bounds [0, ..., 2]");
+				throw new away.errors.ArgumentError("ArgumentError, Column " + column + " out of bounds [0, ..., 2]");
 
-            }
-            else if (column == 0)
-            {
+			} else if (column == 0) {
 
-                vector3D.x = this.a;
-                vector3D.y = this.c;
-                vector3D.z = 0;
+				vector3D.x = this.a;
+				vector3D.y = this.c;
+				vector3D.z = 0;
 
-            }
-            else if (column == 1)
-            {
+			} else if (column == 1) {
 
-                vector3D.x = this.b;
-                vector3D.y = this.d;
-                vector3D.z = 0;
+				vector3D.x = this.b;
+				vector3D.y = this.d;
+				vector3D.z = 0;
 
-            }
-            else
-            {
+			} else {
 
-                vector3D.x = this.tx;
-                vector3D.y = this.ty;
-                vector3D.z = 1;
+				vector3D.x = this.tx;
+				vector3D.y = this.ty;
+				vector3D.z = 1;
 
-            }
+			}
 
-        }
+		}
 
-        /**
-         *
-         * @param other
-         */
-        public copyFrom ( other : away.geom.Matrix ) : void
-        {
+		/**
+		 *
+		 * @param other
+		 */
+		public copyFrom(other:away.geom.Matrix):void
+		{
 
-            this.a  = other.a;
-            this.b  = other.b;
-            this.c  = other.c;
-            this.d  = other.d;
-            this.tx = other.tx;
-            this.ty = other.ty;
+			this.a = other.a;
+			this.b = other.b;
+			this.c = other.c;
+			this.d = other.d;
+			this.tx = other.tx;
+			this.ty = other.ty;
 
-        }
+		}
 
-        /**
-         *
-         * @param row
-         * @param vector3D
-         */
-        public copyRowFrom ( row : number , vector3D : away.geom.Vector3D) : void {
+		/**
+		 *
+		 * @param row
+		 * @param vector3D
+		 */
+		public copyRowFrom(row:number, vector3D:away.geom.Vector3D):void
+		{
 
-            if (row > 2)
-            {
+			if (row > 2) {
 
-                throw new away.errors.ArgumentError( "ArgumentError, Row " + row + " out of bounds [0, ..., 2]");
+				throw new away.errors.ArgumentError("ArgumentError, Row " + row + " out of bounds [0, ..., 2]");
 
-            }
-            else if (row == 0)
-            {
+			} else if (row == 0) {
 
-                this.a = vector3D.x;
-                this.c = vector3D.y;
+				this.a = vector3D.x;
+				this.c = vector3D.y;
 
-            }
-            else if (row == 1)
-            {
+			} else if (row == 1) {
 
-                this.b = vector3D.x;
-                this.d = vector3D.y;
+				this.b = vector3D.x;
+				this.d = vector3D.y;
 
-            }
-            else
-            {
+			} else {
 
-                this.tx = vector3D.x;
-                this.ty = vector3D.y;
+				this.tx = vector3D.x;
+				this.ty = vector3D.y;
 
-            }
+			}
 
-        }
+		}
 
-        /**
-         *
-         * @param row
-         * @param vector3D
-         */
-        public copyRowTo (row : number , vector3D : away.geom.Vector3D ) : void
-        {
+		/**
+		 *
+		 * @param row
+		 * @param vector3D
+		 */
+		public copyRowTo(row:number, vector3D:away.geom.Vector3D):void
+		{
 
-            if ( row > 2 )
-            {
+			if (row > 2) {
 
-                throw new away.errors.ArgumentError( "ArgumentError, Row " + row + " out of bounds [0, ..., 2]");
+				throw new away.errors.ArgumentError("ArgumentError, Row " + row + " out of bounds [0, ..., 2]");
 
-            }
-            else if (row == 0)
-            {
+			} else if (row == 0) {
 
-                vector3D.x = this.a;
-                vector3D.y = this.b;
-                vector3D.z = this.tx;
+				vector3D.x = this.a;
+				vector3D.y = this.b;
+				vector3D.z = this.tx;
 
-            }
-            else if (row == 1)
-            {
+			} else if (row == 1) {
 
-                vector3D.x = this.c;
-                vector3D.y = this.d;
-                vector3D.z = this.ty;
+				vector3D.x = this.c;
+				vector3D.y = this.d;
+				vector3D.z = this.ty;
 
-            }
-            else
-            {
+			} else {
 
-                vector3D.setTo (0, 0, 1);
+				vector3D.setTo(0, 0, 1);
 
-            }
+			}
 
-        }
+		}
 
-        /**
-         *
-         * @param scaleX
-         * @param scaleY
-         * @param rotation
-         * @param tx
-         * @param ty
-         */
-        public createBox ( scaleX : number , scaleY : number, rotation : number = 0 , tx : number = 0 , ty : number = 0 ) : void
-        {
+		/**
+		 *
+		 * @param scaleX
+		 * @param scaleY
+		 * @param rotation
+		 * @param tx
+		 * @param ty
+		 */
+		public createBox(scaleX:number, scaleY:number, rotation:number = 0, tx:number = 0, ty:number = 0):void
+		{
 
-            this.a = scaleX;
-            this.d = scaleY;
-            this.b = rotation;
-            this.tx = tx;
-            this.ty = ty;
+			this.a = scaleX;
+			this.d = scaleY;
+			this.b = rotation;
+			this.tx = tx;
+			this.ty = ty;
 
-        }
+		}
 
-        /**
-         *
-         * @param width
-         * @param height
-         * @param rotation
-         * @param tx
-         * @param ty
-         */
-        public createGradientBox ( width : number , height : number , rotation : number = 0 , tx : number = 0 , ty : number = 0 ) : void
-        {
+		/**
+		 *
+		 * @param width
+		 * @param height
+		 * @param rotation
+		 * @param tx
+		 * @param ty
+		 */
+		public createGradientBox(width:number, height:number, rotation:number = 0, tx:number = 0, ty:number = 0):void
+		{
 
-            this.a = width / 1638.4;
-            this.d = height / 1638.4;
+			this.a = width/1638.4;
+			this.d = height/1638.4;
 
-            if (rotation != 0.0)
-            {
+			if (rotation != 0.0) {
 
-                var cos = Math.cos (rotation);
-                var sin = Math.sin (rotation);
+				var cos = Math.cos(rotation);
+				var sin = Math.sin(rotation);
 
-                this.b = sin * this.d;
-                this.c = -sin * this.a;
-                this.a *= cos;
-                this.d *= cos;
+				this.b = sin*this.d;
+				this.c = -sin*this.a;
+				this.a *= cos;
+				this.d *= cos;
 
-            }
-            else
-            {
+			} else {
 
-                this.b = this.c = 0;
+				this.b = this.c = 0;
 
-            }
+			}
 
-            this.tx = tx + width / 2;
-            this.ty = ty + height / 2;
+			this.tx = tx + width/2;
+			this.ty = ty + height/2;
 
-        }
+		}
 
-        /**
-         *
-         * @param point
-         * @returns {away.geom.Point}
-         */
-        public deltaTransformPoint ( point : away.geom.Point ) : away.geom.Point
-        {
+		/**
+		 *
+		 * @param point
+		 * @returns {away.geom.Point}
+		 */
+		public deltaTransformPoint(point:away.geom.Point):away.geom.Point
+		{
 
-            return new away.geom.Point ( point.x * this.a + point.y * this.c, point.x * this.b + point.y * this.d );
+			return new away.geom.Point(point.x*this.a + point.y*this.c, point.x*this.b + point.y*this.d);
 
-        }
+		}
 
-        /**
-         *
-         */
-        public identity () : void
-        {
+		/**
+		 *
+		 */
+		public identity():void
+		{
 
-            this.a = 1;
-            this.b = 0;
-            this.c = 0;
-            this.d = 1;
-            this.tx = 0;
-            this.ty = 0;
+			this.a = 1;
+			this.b = 0;
+			this.c = 0;
+			this.d = 1;
+			this.tx = 0;
+			this.ty = 0;
 
-        }
+		}
 
-        /**
-         *
-         * @returns {away.geom.Matrix}
-         */
-        public invert () : Matrix {
+		/**
+		 *
+		 * @returns {away.geom.Matrix}
+		 */
+		public invert():Matrix
+		{
 
-            var norm = this.a * this.d - this.b * this.c;
+			var norm = this.a*this.d - this.b*this.c;
 
-            if (norm == 0)
-            {
+			if (norm == 0) {
 
-                this.a = this.b = this.c = this.d = 0;
-                this.tx = -this.tx;
-                this.ty = -this.ty;
+				this.a = this.b = this.c = this.d = 0;
+				this.tx = -this.tx;
+				this.ty = -this.ty;
 
-            }
-            else
-            {
+			} else {
 
-                norm = 1.0 / norm;
-                var a1 = this.d * norm;
-                this.d = this.a * norm;
-                this.a = a1;
-                this.b *= -norm;
-                this.c *= -norm;
+				norm = 1.0/norm;
+				var a1 = this.d*norm;
+				this.d = this.a*norm;
+				this.a = a1;
+				this.b *= -norm;
+				this.c *= -norm;
 
-                var tx1 = - this.a * this.tx - this.c * this.ty;
-                this.ty = - this.b * this.tx - this.d * this.ty;
-                this.tx = tx1;
+				var tx1 = -this.a*this.tx - this.c*this.ty;
+				this.ty = -this.b*this.tx - this.d*this.ty;
+				this.tx = tx1;
 
-            }
+			}
 
-            return this;
-
-        }
+			return this;
 
-        /**
-         *
-         * @param m
-         * @returns {away.geom.Matrix}
-         */
-        public mult ( m : Matrix) : Matrix
-        {
-
-            var result = new Matrix ();
-
-                result.a = this.a * m.a + this.b * m.c;
-                result.b = this.a * m.b + this.b * m.d;
-                result.c = this.c * m.a + this.d * m.c;
-                result.d = this.c * m.b + this.d * m.d;
+		}
 
-                result.tx = this.tx * m.a + this.ty * m.c + m.tx;
-                result.ty = this.tx * m.b + this.ty * m.d + m.ty;
-
-            return result;
-
-        }
-
-        /**
-         *
-         * @param angle
-         */
-        public rotate ( angle : number ) : void
-        {
-
-            var cos = Math.cos (angle);
-            var sin = Math.sin (angle);
-
-            var a1 = this.a * cos - this.b * sin;
-            this.b = this.a * sin + this.b * cos;
-            this.a = a1;
+		/**
+		 *
+		 * @param m
+		 * @returns {away.geom.Matrix}
+		 */
+		public mult(m:Matrix):Matrix
+		{
 
-            var c1 = this.c * cos - this.d * sin;
-            this.d = this.c * sin + this.d * cos;
-            this.c = c1;
+			var result = new Matrix();
 
-            var tx1 = this.tx * cos - this.ty * sin;
-            this.ty = this.tx * sin + this.ty * cos;
-            this.tx = tx1;
+			result.a = this.a*m.a + this.b*m.c;
+			result.b = this.a*m.b + this.b*m.d;
+			result.c = this.c*m.a + this.d*m.c;
+			result.d = this.c*m.b + this.d*m.d;
 
-        }
+			result.tx = this.tx*m.a + this.ty*m.c + m.tx;
+			result.ty = this.tx*m.b + this.ty*m.d + m.ty;
 
-        /**
-         *
-         * @param x
-         * @param y
-         */
-        public scale ( x : number , y : number ) : void
-        {
+			return result;
 
-            this.a *= x;
-            this.b *= y;
+		}
 
-            this.c *= x;
-            this.d *= y;
+		/**
+		 *
+		 * @param angle
+		 */
+		public rotate(angle:number):void
+		{
 
-            this.tx *= x;
-            this.ty *= y;
+			var cos = Math.cos(angle);
+			var sin = Math.sin(angle);
 
-        }
+			var a1 = this.a*cos - this.b*sin;
+			this.b = this.a*sin + this.b*cos;
+			this.a = a1;
 
-        /**
-         *
-         * @param angle
-         * @param scale
-         */
-        public setRotation ( angle : number , scale : number = 1 ) : void
-        {
+			var c1 = this.c*cos - this.d*sin;
+			this.d = this.c*sin + this.d*cos;
+			this.c = c1;
 
-            this.a = Math.cos (angle) * scale;
-            this.c = Math.sin (angle) * scale;
-            this.b = -this.c;
-            this.d = this.a;
+			var tx1 = this.tx*cos - this.ty*sin;
+			this.ty = this.tx*sin + this.ty*cos;
+			this.tx = tx1;
 
-        }
+		}
 
-        /**
-         *
-         * @param a
-         * @param b
-         * @param c
-         * @param d
-         * @param tx
-         * @param ty
-         */
-        public setTo ( a : number , b : number , c : number , d : number , tx : number , ty : number ) : void
-        {
+		/**
+		 *
+		 * @param x
+		 * @param y
+		 */
+		public scale(x:number, y:number):void
+		{
 
-            this.a = a;
-            this.b = b;
-            this.c = c;
-            this.d = d;
-            this.tx = tx;
-            this.ty = ty;
+			this.a *= x;
+			this.b *= y;
 
-        }
+			this.c *= x;
+			this.d *= y;
 
-        /**
-         *
-         * @returns {string}
-         */
-        public toString () : string
-        {
+			this.tx *= x;
+			this.ty *= y;
 
-            return "[Matrix] (a=" + this.a + ", b=" + this.b + ", c=" + this.c + ", d=" + this.d + ", tx=" + this.tx + ", ty=" + this.ty + ")";
+		}
 
-        }
+		/**
+		 *
+		 * @param angle
+		 * @param scale
+		 */
+		public setRotation(angle:number, scale:number = 1):void
+		{
 
-        /**
-         *
-         * @param point
-         * @returns {away.geom.Point}
-         */
-        public transformPoint ( point : Point ) : away.geom.Point
-        {
+			this.a = Math.cos(angle)*scale;
+			this.c = Math.sin(angle)*scale;
+			this.b = -this.c;
+			this.d = this.a;
 
-            return new away.geom.Point ( point.x * this.a + point.y * this.c + this.tx, point.x * this.b + point.y * this.d + this.ty );
+		}
 
-        }
+		/**
+		 *
+		 * @param a
+		 * @param b
+		 * @param c
+		 * @param d
+		 * @param tx
+		 * @param ty
+		 */
+		public setTo(a:number, b:number, c:number, d:number, tx:number, ty:number):void
+		{
 
-        /**
-         *
-         * @param x
-         * @param y
-         */
-        public translate (x : number , y : number ):void
-        {
+			this.a = a;
+			this.b = b;
+			this.c = c;
+			this.d = d;
+			this.tx = tx;
+			this.ty = ty;
 
-            this.tx += x;
-            this.ty += y;
+		}
 
-        }
+		/**
+		 *
+		 * @returns {string}
+		 */
+		public toString():string
+		{
 
+			return "[Matrix] (a=" + this.a + ", b=" + this.b + ", c=" + this.c + ", d=" + this.d + ", tx=" + this.tx + ", ty=" + this.ty + ")";
 
-    }
+		}
+
+		/**
+		 *
+		 * @param point
+		 * @returns {away.geom.Point}
+		 */
+		public transformPoint(point:Point):away.geom.Point
+		{
+
+			return new away.geom.Point(point.x*this.a + point.y*this.c + this.tx, point.x*this.b + point.y*this.d + this.ty);
+
+		}
+
+		/**
+		 *
+		 * @param x
+		 * @param y
+		 */
+		public translate(x:number, y:number):void
+		{
+
+			this.tx += x;
+			this.ty += y;
+
+		}
+
+
+	}
 }

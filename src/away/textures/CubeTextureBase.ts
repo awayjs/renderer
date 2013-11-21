@@ -8,17 +8,17 @@ module away.textures
 		{
 			super();
 		}
-		
+
 		public get size():number
 		{
 			//TODO replace this with this._pWidth (requires change in super class to reflect the protected declaration)
 			return this.width;
 		}
-		
+
 		//@override
-		public pCreateTexture( context:away.display3D.Context3D ):away.display3D.TextureBase
+		public pCreateTexture(context:away.display3D.Context3D):away.display3D.TextureBase
 		{
-			return context.createCubeTexture( this.width, away.display3D.Context3DTextureFormat.BGRA, false );
+			return context.createCubeTexture(this.width, away.display3D.Context3DTextureFormat.BGRA, false);
 		}
 	}
 }

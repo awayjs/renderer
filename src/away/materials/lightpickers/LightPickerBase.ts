@@ -12,27 +12,27 @@ module away.materials
 	 */
 	export class LightPickerBase extends away.library.NamedAssetBase implements away.library.IAsset
 	{
-        public _pNumPointLights:number = 0;
-        public _pNumDirectionalLights:number = 0;
-        public _pNumCastingPointLights:number =0;
-        public _pNumCastingDirectionalLights:number = 0;
+		public _pNumPointLights:number = 0;
+		public _pNumDirectionalLights:number = 0;
+		public _pNumCastingPointLights:number = 0;
+		public _pNumCastingDirectionalLights:number = 0;
 		public _pNumLightProbes:number = 0;
 
 		public _pAllPickedLights:away.lights.LightBase[];//Vector.<LightBase>;
-        public _pPointLights:away.lights.PointLight[];//Vector.<PointLight>;
-        public _pCastingPointLights:away.lights.PointLight[];//Vector.<PointLight>;
-        public _pDirectionalLights:away.lights.DirectionalLight[];//Vector.<DirectionalLight>;
-        public _pCastingDirectionalLights:away.lights.DirectionalLight[];//Vector.<DirectionalLight>;
-        public _pLightProbes:away.lights.LightProbe[];//Vector.<LightProbe>;
-        public _pLightProbeWeights:number[];
+		public _pPointLights:away.lights.PointLight[];//Vector.<PointLight>;
+		public _pCastingPointLights:away.lights.PointLight[];//Vector.<PointLight>;
+		public _pDirectionalLights:away.lights.DirectionalLight[];//Vector.<DirectionalLight>;
+		public _pCastingDirectionalLights:away.lights.DirectionalLight[];//Vector.<DirectionalLight>;
+		public _pLightProbes:away.lights.LightProbe[];//Vector.<LightProbe>;
+		public _pLightProbeWeights:number[];
 
 		/**
 		 * Creates a new LightPickerBase object.
 		 */
-		constructor()
+			constructor()
 		{
 
-            super();
+			super();
 
 		}
 
@@ -50,7 +50,7 @@ module away.materials
 		{
 			return away.library.AssetType.LIGHT_PICKER;
 		}
-		
+
 		/**
 		 * The maximum amount of directional lights that will be provided.
 		 */
@@ -58,7 +58,7 @@ module away.materials
 		{
 			return this._pNumDirectionalLights;
 		}
-		
+
 		/**
 		 * The maximum amount of point lights that will be provided.
 		 */
@@ -66,7 +66,7 @@ module away.materials
 		{
 			return this._pNumPointLights;
 		}
-		
+
 		/**
 		 * The maximum amount of directional lights that cast shadows.
 		 */
@@ -74,7 +74,7 @@ module away.materials
 		{
 			return this._pNumCastingDirectionalLights;
 		}
-		
+
 		/**
 		 * The amount of point lights that cast shadows.
 		 */
@@ -82,7 +82,7 @@ module away.materials
 		{
 			return this._pNumCastingPointLights;
 		}
-		
+
 		/**
 		 * The maximum amount of light probes that will be provided.
 		 */
@@ -146,13 +146,13 @@ module away.materials
 		{
 			return this._pAllPickedLights;
 		}
-		
+
 		/**
 		 * Updates set of lights for a given renderable and EntityCollector. Always call super.collectLights() after custom overridden code.
 		 */
 		public collectLights(renderable:away.base.IRenderable, entityCollector:away.traverse.EntityCollector)
 		{
-            this.updateProbeWeights(renderable);
+			this.updateProbeWeights(renderable);
 		}
 
 		/**
@@ -169,10 +169,9 @@ module away.materials
 			var dx:number, dy:number, dz:number;
 			var w:number, total:number = 0;
 			var i:number;
-			
+
 			// calculates weights for probes
-			for (i = 0; i < this._pNumLightProbes; ++i)
-            {
+			for (i = 0; i < this._pNumLightProbes; ++i) {
 
 				lightPos = this._pLightProbes[i].scenePosition;
 				dx = rx - lightPos.x;
@@ -180,24 +179,23 @@ module away.materials
 				dz = rz - lightPos.z;
 				// weight is inversely proportional to square of distance
 				w = dx*dx + dy*dy + dz*dz;
-				
+
 				// just... huge if at the same spot
 				w = w > .00001? 1/w : 50000000;
 				this._pLightProbeWeights[i] = w;
 				total += w;
 			}
-			
+
 			// normalize
 			total = 1/total;
 
-			for (i = 0; i < this._pNumLightProbes; ++i)
-            {
+			for (i = 0; i < this._pNumLightProbes; ++i) {
 
-                this._pLightProbeWeights[i] *= total;
+				this._pLightProbeWeights[i] *= total;
 
-            }
+			}
 
 		}
-	
+
 	}
 }

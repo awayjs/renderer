@@ -12,18 +12,18 @@ module away.materials
 		private _incidentLight:boolean;
 		private _fresnelPower:number = 5;
 		private _normalReflectance:number = .028; // default value for skin
-		
+
 		/**
 		 * Creates a new FresnelSpecularMethod object.
 		 * @param basedOnSurface Defines whether the fresnel effect should be based on the view angle on the surface (if true), or on the angle between the light and the view.
 		 * @param baseSpecularMethod The specular method to which the fresnel equation. Defaults to BasicSpecularMethod.
 		 */
-		constructor(basedOnSurface:boolean  = true, baseSpecularMethod:away.materials.BasicSpecularMethod = null)
+			constructor(basedOnSurface:boolean = true, baseSpecularMethod:away.materials.BasicSpecularMethod = null)
 		{
 			// may want to offer diff speculars
 			super(null, null);
 
-            this._pInitCompositeSpecularMethod( this , this.modulateSpecular, baseSpecularMethod);
+			this._pInitCompositeSpecularMethod(this, this.modulateSpecular, baseSpecularMethod);
 
 			this._incidentLight = !basedOnSurface;
 		}
@@ -33,12 +33,12 @@ module away.materials
 		 */
 		public iInitConstants(vo:away.materials.MethodVO):void
 		{
-            
+
 			var index:number = vo.secondaryFragmentConstantsIndex;
 			vo.fragmentData[index + 2] = 1;
 			vo.fragmentData[index + 3] = 0;
 		}
-		
+
 		/**
 		 * Defines whether the fresnel effect should be based on the view angle on the surface (if true), or on the angle between the light and the view.
 		 */
@@ -46,15 +46,15 @@ module away.materials
 		{
 			return !this._incidentLight;
 		}
-		
+
 		public set basedOnSurface(value:boolean)
 		{
 			if (this._incidentLight != value)
 				return;
-			
+
 			this._incidentLight = !value;
 
-            this.iInvalidateShaderProgram();
+			this.iInvalidateShaderProgram();
 		}
 
 		/**
@@ -64,7 +64,7 @@ module away.materials
 		{
 			return this._fresnelPower;
 		}
-		
+
 		public set fresnelPower(value:number)
 		{
 			this._fresnelPower = value;
@@ -78,7 +78,7 @@ module away.materials
 			super.iCleanCompilationData();
 			this._dataReg = null;
 		}
-		
+
 		/**
 		 * The minimum amount of reflectance, ie the reflectance when the view direction is normal to the surface or light direction.
 		 */
@@ -86,12 +86,12 @@ module away.materials
 		{
 			return this._normalReflectance;
 		}
-		
+
 		public set normalReflectance(value:number)
 		{
 			this._normalReflectance = value;
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
@@ -104,7 +104,7 @@ module away.materials
 			fragmentData[index] = this._normalReflectance;
 			fragmentData[index + 1] = this._fresnelPower;
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
@@ -112,12 +112,12 @@ module away.materials
 		{
 			this._dataReg = regCache.getFreeFragmentConstant();
 
-            console.log( 'FresnelSpecularMethod' , 'iGetFragmentPreLightingCode' , this._dataReg ) ;
+			console.log('FresnelSpecularMethod', 'iGetFragmentPreLightingCode', this._dataReg);
 
 			vo.secondaryFragmentConstantsIndex = this._dataReg.index*4;
 			return super.iGetFragmentPreLightingCode(vo, regCache);
 		}
-		
+
 		/**
 		 * Applies the fresnel effect to the specular strength.
 		 *
@@ -130,7 +130,7 @@ module away.materials
 		private modulateSpecular(vo:away.materials.MethodVO, target:away.materials.ShaderRegisterElement, regCache:away.materials.ShaderRegisterCache, sharedRegisters:away.materials.ShaderRegisterData):string
 		{
 			var code:string;
-			
+
 			code = "dp3 " + target + ".y, " + sharedRegisters.viewDirFragment + ".xyz, " + (this._incidentLight? target + ".xyz\n" : sharedRegisters.normalFragment + ".xyz\n") +   // dot(V, H)
 				"sub " + target + ".y, " + this._dataReg + ".z, " + target + ".y\n" +             // base = 1-dot(V, H)
 				"pow " + target + ".x, " + target + ".y, " + this._dataReg + ".y\n" +             // exp = pow(base, 5)
@@ -140,10 +140,10 @@ module away.materials
 				"mul " + target + ".w, " + target + ".w, " + target + ".y\n";
 
 
-            console.log( 'FresnelSpecularMethod' , 'modulateSpecular' , code );
+			console.log('FresnelSpecularMethod', 'modulateSpecular', code);
 
 			return code;
 		}
-	
+
 	}
 }

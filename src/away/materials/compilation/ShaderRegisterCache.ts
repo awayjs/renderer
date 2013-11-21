@@ -2,7 +2,7 @@
 
 module away.materials
 {
-	
+
 	/**
 	 * ShaderRegister Cache provides the usage management system for all registers during shading compilation.
 	 */
@@ -19,7 +19,7 @@ module away.materials
 		private _vertexAttributesOffset:number;//TODO: check if this should be initialised to 0
 		private _varyingsOffset:number;//TODO: check if this should be initialised to 0
 		private _fragmentConstantOffset:number;//TODO: check if this should be initialised to 0
-		
+
 		private _fragmentOutputRegister:away.materials.ShaderRegisterElement;
 		private _vertexOutputRegister:away.materials.ShaderRegisterElement;
 		private _numUsedVertexConstants:number = 0;
@@ -28,56 +28,56 @@ module away.materials
 		private _numUsedTextures:number = 0;
 		private _numUsedVaryings:number = 0;
 		private _profile:string;
-		
+
 		/**
 		 * Create a new ShaderRegisterCache object.
 		 *
 		 * @param profile The compatibility profile used by the renderer.
 		 */
-		constructor(profile:string)
+			constructor(profile:string)
 		{
 
 			this._profile = profile;
 
 		}
-		
+
 		/**
 		 * Resets all registers.
 		 */
 		public reset()
 		{
 
-            //TODO: AGAL <> GLSL Conversion
+			//TODO: AGAL <> GLSL Conversion
 
 			this._fragmentTempCache = new RegisterPool("ft", 8, false);
-            this._vertexTempCache = new RegisterPool("vt", 8, false);
-            this._varyingCache = new RegisterPool("v", 8);
-            this._textureCache = new RegisterPool("fs", 8);
-            this._vertexAttributesCache = new RegisterPool("va", 8);
-            this._fragmentConstantsCache = new RegisterPool("fc", 28);
-            this._vertexConstantsCache = new RegisterPool("vc", 128);
-            this._fragmentOutputRegister = new ShaderRegisterElement("oc", -1);
-            this._vertexOutputRegister = new ShaderRegisterElement("op", -1);
-            this._numUsedVertexConstants = 0;
-            this._numUsedStreams = 0;
-            this._numUsedTextures = 0;
-            this._numUsedVaryings = 0;
-            this._numUsedFragmentConstants = 0;
+			this._vertexTempCache = new RegisterPool("vt", 8, false);
+			this._varyingCache = new RegisterPool("v", 8);
+			this._textureCache = new RegisterPool("fs", 8);
+			this._vertexAttributesCache = new RegisterPool("va", 8);
+			this._fragmentConstantsCache = new RegisterPool("fc", 28);
+			this._vertexConstantsCache = new RegisterPool("vc", 128);
+			this._fragmentOutputRegister = new ShaderRegisterElement("oc", -1);
+			this._vertexOutputRegister = new ShaderRegisterElement("op", -1);
+			this._numUsedVertexConstants = 0;
+			this._numUsedStreams = 0;
+			this._numUsedTextures = 0;
+			this._numUsedVaryings = 0;
+			this._numUsedFragmentConstants = 0;
 
 			var i:number;
 
 			for (i = 0; i < this._vertexAttributesOffset; ++i)
-                this.getFreeVertexAttribute();
+				this.getFreeVertexAttribute();
 
 			for (i = 0; i < this._vertexConstantOffset; ++i)
-                this.getFreeVertexConstant();
+				this.getFreeVertexConstant();
 
 			for (i = 0; i < this._varyingsOffset; ++i)
-                this.getFreeVarying();
+				this.getFreeVarying();
 
 			for (i = 0; i < this._fragmentConstantOffset; ++i)
-                this.getFreeFragmentConstant();
-		
+				this.getFreeFragmentConstant();
+
 		}
 
 		/**
@@ -87,21 +87,21 @@ module away.materials
 		{
 
 			this._fragmentTempCache.dispose();
-            this._vertexTempCache.dispose();
-            this._varyingCache.dispose();
-            this._fragmentConstantsCache.dispose();
-            this._vertexAttributesCache.dispose();
+			this._vertexTempCache.dispose();
+			this._varyingCache.dispose();
+			this._fragmentConstantsCache.dispose();
+			this._vertexAttributesCache.dispose();
 
-            this._fragmentTempCache = null;
-            this._vertexTempCache = null;
-            this._varyingCache = null;
-            this._fragmentConstantsCache = null;
-            this._vertexAttributesCache = null;
-            this._fragmentOutputRegister = null;
-            this._vertexOutputRegister = null;
+			this._fragmentTempCache = null;
+			this._vertexTempCache = null;
+			this._varyingCache = null;
+			this._fragmentConstantsCache = null;
+			this._vertexAttributesCache = null;
+			this._fragmentOutputRegister = null;
+			this._vertexOutputRegister = null;
 
 		}
-		
+
 		/**
 		 * Marks a fragment temporary register as used, so it cannot be retrieved. The register won't be able to be used until removeUsage
 		 * has been called usageCount times again.
@@ -112,16 +112,16 @@ module away.materials
 		{
 			this._fragmentTempCache.addUsage(register, usageCount);
 		}
-		
+
 		/**
 		 * Removes a usage from a fragment temporary register. When usages reach 0, the register is freed again.
 		 * @param register The register for which to remove a usage.
 		 */
 		public removeFragmentTempUsage(register:away.materials.ShaderRegisterElement)
 		{
-            this._fragmentTempCache.removeUsage(register);
+			this._fragmentTempCache.removeUsage(register);
 		}
-		
+
 		/**
 		 * Marks a vertex temporary register as used, so it cannot be retrieved. The register won't be able to be used
 		 * until removeUsage has been called usageCount times again.
@@ -132,7 +132,7 @@ module away.materials
 		{
 			this._vertexTempCache.addUsage(register, usageCount);
 		}
-		
+
 		/**
 		 * Removes a usage from a vertex temporary register. When usages reach 0, the register is freed again.
 		 * @param register The register for which to remove a usage.
@@ -141,7 +141,7 @@ module away.materials
 		{
 			this._vertexTempCache.removeUsage(register);
 		}
-		
+
 		/**
 		 * Retrieve an entire fragment temporary register that's still available. The register won't be able to be used until removeUsage
 		 * has been called usageCount times again.
@@ -150,7 +150,7 @@ module away.materials
 		{
 			return this._fragmentTempCache.requestFreeVectorReg();
 		}
-		
+
 		/**
 		 * Retrieve a single component from a fragment temporary register that's still available.
 		 */
@@ -158,7 +158,7 @@ module away.materials
 		{
 			return this._fragmentTempCache.requestFreeRegComponent();
 		}
-		
+
 		/**
 		 * Retrieve an available varying register
 		 */
@@ -167,7 +167,7 @@ module away.materials
 			++this._numUsedVaryings;
 			return this._varyingCache.requestFreeVectorReg();
 		}
-		
+
 		/**
 		 * Retrieve an available fragment constant register
 		 */
@@ -177,7 +177,7 @@ module away.materials
 			return this._fragmentConstantsCache.requestFreeVectorReg();
 
 		}
-		
+
 		/**
 		 * Retrieve an available vertex constant register
 		 */
@@ -186,7 +186,7 @@ module away.materials
 			++this._numUsedVertexConstants;
 			return this._vertexConstantsCache.requestFreeVectorReg();
 		}
-		
+
 		/**
 		 * Retrieve an entire vertex temporary register that's still available.
 		 */
@@ -194,7 +194,7 @@ module away.materials
 		{
 			return this._vertexTempCache.requestFreeVectorReg();
 		}
-		
+
 		/**
 		 * Retrieve a single component from a vertex temporary register that's still available.
 		 */
@@ -202,7 +202,7 @@ module away.materials
 		{
 			return this._vertexTempCache.requestFreeRegComponent();
 		}
-		
+
 		/**
 		 * Retrieve an available vertex attribute register
 		 */
@@ -211,7 +211,7 @@ module away.materials
 			++this._numUsedStreams;
 			return this._vertexAttributesCache.requestFreeVectorReg();
 		}
-		
+
 		/**
 		 * Retrieve an available texture register
 		 */
@@ -220,7 +220,7 @@ module away.materials
 			++this._numUsedTextures;
 			return this._textureCache.requestFreeVectorReg();
 		}
-		
+
 		/**
 		 * Indicates the start index from which to retrieve vertex constants.
 		 */
@@ -228,12 +228,12 @@ module away.materials
 		{
 			return this._vertexConstantOffset;
 		}
-		
+
 		public set vertexConstantOffset(vertexConstantOffset:number)
 		{
 			this._vertexConstantOffset = vertexConstantOffset;
 		}
-		
+
 		/**
 		 * Indicates the start index from which to retrieve vertex attributes.
 		 */
@@ -241,7 +241,7 @@ module away.materials
 		{
 			return this._vertexAttributesOffset;
 		}
-		
+
 		public set vertexAttributesOffset(value:number)
 		{
 			this._vertexAttributesOffset = value;
@@ -254,10 +254,10 @@ module away.materials
 		{
 			return this._varyingsOffset;
 		}
-		
+
 		public set varyingsOffset(value:number)
 		{
-            this._varyingsOffset = value;
+			this._varyingsOffset = value;
 		}
 
 		/**
@@ -267,12 +267,12 @@ module away.materials
 		{
 			return this._fragmentConstantOffset;
 		}
-		
+
 		public set fragmentConstantOffset(value:number)
 		{
-            this._fragmentConstantOffset = value;
+			this._fragmentConstantOffset = value;
 		}
-		
+
 		/**
 		 * The fragment output register.
 		 */
@@ -280,7 +280,7 @@ module away.materials
 		{
 			return this._fragmentOutputRegister;
 		}
-		
+
 		/**
 		 * The amount of used vertex constant registers.
 		 */
@@ -288,7 +288,7 @@ module away.materials
 		{
 			return this._numUsedVertexConstants;
 		}
-		
+
 		/**
 		 * The amount of used fragment constant registers.
 		 */
@@ -296,7 +296,7 @@ module away.materials
 		{
 			return this._numUsedFragmentConstants;
 		}
-		
+
 		/**
 		 * The amount of used vertex streams.
 		 */

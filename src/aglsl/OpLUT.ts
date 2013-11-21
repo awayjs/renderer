@@ -4,7 +4,7 @@ module aglsl
 {
 	export class OpLUT
 	{
-		
+
 		public s:string;
 		public flags:number;
 		public dest:boolean;
@@ -16,10 +16,8 @@ module aglsl
 		public scalar:boolean;
 		public dm:boolean;
 		public lod:boolean;
-		
-		constructor( s:string, flags:number, dest:boolean, a:boolean, b:boolean,
-					 matrixwidth:number, matrixheight:number, ndwm:boolean,
-					 scaler:boolean, dm:boolean, lod:boolean )
+
+		constructor(s:string, flags:number, dest:boolean, a:boolean, b:boolean, matrixwidth:number, matrixheight:number, ndwm:boolean, scaler:boolean, dm:boolean, lod:boolean)
 		{
 			this.s = s;
 			this.flags = flags;

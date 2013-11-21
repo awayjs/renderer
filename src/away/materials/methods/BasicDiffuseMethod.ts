@@ -7,38 +7,38 @@ module away.materials
 	//import away3d.materials.compilation.ShaderRegisterCache;
 	//import away3d.materials.compilation.ShaderRegisterElement;
 	//import away3d.textures.Texture2DBase;
-	
+
 	//use namespace arcane;
-	
+
 	/**
 	 * BasicDiffuseMethod provides the default shading method for Lambert (dot3) diffuse lighting.
 	 */
 	export class BasicDiffuseMethod extends away.materials.LightingMethodBase
 	{
 		private _useAmbientTexture:boolean;
-		
+
 		private _useTexture:boolean;
 		public pTotalLightColorReg:away.materials.ShaderRegisterElement;
-		
+
 		// TODO: are these registers at all necessary to be members?
 		private _diffuseInputRegister:away.materials.ShaderRegisterElement;
-		
+
 		private _texture:away.textures.Texture2DBase;
 		private _diffuseColor:number = 0xffffff;
 		private _diffuseR:number = 1;
-        private _diffuseG:number = 1;
-        private _diffuseB:number = 1;
-        private _diffuseA:number = 1;
+		private _diffuseG:number = 1;
+		private _diffuseB:number = 1;
+		private _diffuseA:number = 1;
 
 		private _shadowRegister:away.materials.ShaderRegisterElement;
-		
+
 		private _alphaThreshold:number = 0;
 		private _isFirstLight:boolean;
-		
+
 		/**
 		 * Creates a new BasicDiffuseMethod object.
 		 */
-		constructor()
+			constructor()
 		{
 			super();
 		}
@@ -61,7 +61,7 @@ module away.materials
 			this.iInvalidateShaderProgram();
 
 		}
-		
+
 		public iInitVO(vo:away.materials.MethodVO)
 		{
 
@@ -87,12 +87,12 @@ module away.materials
 		{
 			return this._diffuseA;
 		}
-		
+
 		public set diffuseAlpha(value:number)
 		{
 			this._diffuseA = value;
 		}
-		
+
 		/**
 		 * The color of the diffuse reflection when not using a texture.
 		 */
@@ -100,14 +100,14 @@ module away.materials
 		{
 			return this._diffuseColor;
 		}
-		
+
 		public set diffuseColor(diffuseColor:number)
 		{
 			this._diffuseColor = diffuseColor;
 			this.updateDiffuse();
 
 		}
-		
+
 		/**
 		 * The bitmapData to use to define the diffuse reflection color per texel.
 		 */
@@ -115,24 +115,23 @@ module away.materials
 		{
 			return this._texture;
 		}
-		
+
 		public set texture(value:away.textures.Texture2DBase)
 		{
 
-            var b : boolean =  ( value != null );
+			var b:boolean = ( value != null );
 
-			if ( b != this._useTexture ||
-				(value && this._texture && (value.hasMipMaps != this._texture.hasMipMaps || value.format != this._texture.format))) {
+			if (b != this._useTexture || (value && this._texture && (value.hasMipMaps != this._texture.hasMipMaps || value.format != this._texture.format))) {
 
 				this.iInvalidateShaderProgram();
 
 			}
-			
+
 			this._useTexture = b;
-            this._texture = value;
+			this._texture = value;
 
 		}
-		
+
 		/**
 		 * The minimum alpha value for which pixels should be drawn. This is used for transparency that is either
 		 * invisible or entirely opaque, often used with textures for foliage, etc.
@@ -142,22 +141,21 @@ module away.materials
 		{
 			return this._alphaThreshold;
 		}
-		
+
 		public set alphaThreshold(value:number)
 		{
 			if (value < 0)
-				value = 0;
-			else if (value > 1)
+				value = 0; else if (value > 1)
 				value = 1;
 			if (value == this._alphaThreshold)
 				return;
-			
+
 			if (value == 0 || this._alphaThreshold == 0)
 				this.iInvalidateShaderProgram();//invalidateShaderProgram();
-			
+
 			this._alphaThreshold = value;
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
@@ -165,22 +163,22 @@ module away.materials
 		{
 			this._texture = null;
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
 		public copyFrom(method:away.materials.ShadingMethodBase)
 		{
 
-            var m : any = method;
+			var m:any = method;
 
 			var diff:BasicDiffuseMethod = <BasicDiffuseMethod> m;
 
 			this.alphaThreshold = diff.alphaThreshold;
-            this.texture = diff.texture;
-            this.iUseAmbientTexture = diff.iUseAmbientTexture;
-            this.diffuseAlpha = diff.diffuseAlpha;
-            this.diffuseColor = diff.diffuseColor;
+			this.texture = diff.texture;
+			this.iUseAmbientTexture = diff.iUseAmbientTexture;
+			this.diffuseAlpha = diff.diffuseAlpha;
+			this.diffuseColor = diff.diffuseColor;
 		}
 
 		/**
@@ -191,28 +189,27 @@ module away.materials
 			super.iCleanCompilationData();
 
 			this._shadowRegister = null;
-            this.pTotalLightColorReg = null;
-            this._diffuseInputRegister = null;
+			this.pTotalLightColorReg = null;
+			this._diffuseInputRegister = null;
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
 		public iGetFragmentPreLightingCode(vo:away.materials.MethodVO, regCache:away.materials.ShaderRegisterCache):string
 		{
 			var code:string = "";
-			
+
 			this._isFirstLight = true;
-			
-			if (vo.numLights > 0)
-            {
+
+			if (vo.numLights > 0) {
 				this.pTotalLightColorReg = regCache.getFreeFragmentVectorTemp();
 				regCache.addFragmentTempUsages(this.pTotalLightColorReg, 1);
 			}
-			
+
 			return code;
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
@@ -220,60 +217,51 @@ module away.materials
 		{
 			var code:string = "";
 			var t:away.materials.ShaderRegisterElement;
-			
+
 			// write in temporary if not first light, so we can add to total diffuse colour
-			if (this._isFirstLight)
-            {
-                t = this.pTotalLightColorReg;
-            }
-			else
-            {
+			if (this._isFirstLight) {
+				t = this.pTotalLightColorReg;
+			} else {
 
 				t = regCache.getFreeFragmentVectorTemp();
 				regCache.addFragmentTempUsages(t, 1);
 
 			}
 
-            //TODO: AGAL <> GLSL
+			//TODO: AGAL <> GLSL
 
-            //*
-			code += "dp3 " + t + ".x, " + lightDirReg + ", " + this._sharedRegisters.normalFragment + "\n" +
-				"max " + t + ".w, " + t + ".x, " + this._sharedRegisters.commons + ".y\n";
-			
-			if (vo.useLightFallOff)
-            {
+			//*
+			code += "dp3 " + t + ".x, " + lightDirReg + ", " + this._sharedRegisters.normalFragment + "\n" + "max " + t + ".w, " + t + ".x, " + this._sharedRegisters.commons + ".y\n";
 
-                code += "mul " + t + ".w, " + t + ".w, " + lightDirReg + ".w\n";
+			if (vo.useLightFallOff) {
 
-            }
+				code += "mul " + t + ".w, " + t + ".w, " + lightDirReg + ".w\n";
+
+			}
 
 
-			if (this._iModulateMethod != null)
-            {
-                if (  this._iModulateMethodScope != null )
-                {
-                    code += this._iModulateMethod.apply( this._iModulateMethodScope, [vo, t, regCache, this._sharedRegisters] );
-                }
-                else
-                {
-                    throw "Modulated methods needs a scope";
-                }
+			if (this._iModulateMethod != null) {
+				if (this._iModulateMethodScope != null) {
+					code += this._iModulateMethod.apply(this._iModulateMethodScope, [vo, t, regCache, this._sharedRegisters]);
+				} else {
+					throw "Modulated methods needs a scope";
+				}
 
-            }
+			}
 
-			
+
 			code += "mul " + t + ", " + t + ".w, " + lightColReg + "\n";
-			
+
 			if (!this._isFirstLight) {
 				code += "add " + this.pTotalLightColorReg + ".xyz, " + this.pTotalLightColorReg + ", " + t + "\n";
 				regCache.removeFragmentTempUsage(t);
 			}
 			//*/
 			this._isFirstLight = false;
-			
+
 			return code;
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
@@ -281,45 +269,36 @@ module away.materials
 		{
 			var code:string = "";
 			var t:away.materials.ShaderRegisterElement;
-			
+
 			// write in temporary if not first light, so we can add to total diffuse colour
-			if (this._isFirstLight)
-            {
+			if (this._isFirstLight) {
 
-                t = this.pTotalLightColorReg;
+				t = this.pTotalLightColorReg;
 
-            }
-			else
-            {
+			} else {
 
 				t = regCache.getFreeFragmentVectorTemp();
 				regCache.addFragmentTempUsages(t, 1);
 
 			}
 
-            // TODO: AGAL <> GLSL
+			// TODO: AGAL <> GLSL
 
 
-			code += "tex " + t + ", " + this._sharedRegisters.normalFragment + ", " + cubeMapReg + " <cube,linear,miplinear>\n" +
-				"mul " + t + ".xyz, " + t + ".xyz, " + weightRegister + "\n";
-			
-			if (this._iModulateMethod!= null)
-            {
+			code += "tex " + t + ", " + this._sharedRegisters.normalFragment + ", " + cubeMapReg + " <cube,linear,miplinear>\n" + "mul " + t + ".xyz, " + t + ".xyz, " + weightRegister + "\n";
 
-                if (  this._iModulateMethodScope != null )
-                {
-                    code += this._iModulateMethod.apply( this._iModulateMethodScope, [vo, t, regCache, this._sharedRegisters] );
-                }
-                else
-                {
-                    throw "Modulated methods needs a scope";
-                }
+			if (this._iModulateMethod != null) {
 
-            }
+				if (this._iModulateMethodScope != null) {
+					code += this._iModulateMethod.apply(this._iModulateMethodScope, [vo, t, regCache, this._sharedRegisters]);
+				} else {
+					throw "Modulated methods needs a scope";
+				}
 
-			
-			if (!this._isFirstLight)
-            {
+			}
+
+
+			if (!this._isFirstLight) {
 
 				code += "add " + this.pTotalLightColorReg + ".xyz, " + this.pTotalLightColorReg + ", " + t + "\n";
 				regCache.removeFragmentTempUsage(t);
@@ -327,10 +306,10 @@ module away.materials
 			}
 
 			this._isFirstLight = false;
-			
+
 			return code;
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
@@ -339,10 +318,9 @@ module away.materials
 			var code:string = "";
 			var albedo:away.materials.ShaderRegisterElement;
 			var cutOffReg:away.materials.ShaderRegisterElement;
-			
+
 			// incorporate input from ambient
-			if (vo.numLights > 0)
-            {
+			if (vo.numLights > 0) {
 
 				if (this._shadowRegister)
 					code += this.pApplyShadow(vo, regCache);
@@ -350,17 +328,14 @@ module away.materials
 				albedo = regCache.getFreeFragmentVectorTemp();
 				regCache.addFragmentTempUsages(albedo, 1);
 
+			} else {
+
+				albedo = targetReg;
+
 			}
-            else
-            {
 
-                albedo = targetReg;
 
-            }
-
-			
-			if (this._useTexture)
-            {
+			if (this._useTexture) {
 
 				this._diffuseInputRegister = regCache.getFreeTextureReg();
 
@@ -369,25 +344,20 @@ module away.materials
 
 				code += this.pGetTex2DSampleCode(vo, albedo, this._diffuseInputRegister, this._texture);
 
-				if (this._alphaThreshold > 0)
-                {
+				if (this._alphaThreshold > 0) {
 
-                    //TODO: AGAL <> GLSL
+					//TODO: AGAL <> GLSL
 
 					cutOffReg = regCache.getFreeFragmentConstant();
 					vo.fragmentConstantsIndex = cutOffReg.index*4;
 
-					code += "sub " + albedo + ".w, " + albedo + ".w, " + cutOffReg + ".x\n" +
-						"kil " + albedo + ".w\n" +
-						"add " + albedo + ".w, " + albedo + ".w, " + cutOffReg + ".x\n";
+					code += "sub " + albedo + ".w, " + albedo + ".w, " + cutOffReg + ".x\n" + "kil " + albedo + ".w\n" + "add " + albedo + ".w, " + albedo + ".w, " + cutOffReg + ".x\n";
 
 				}
 
-			}
-            else
-            {
+			} else {
 
-                //TODO: AGAL <> GLSL
+				//TODO: AGAL <> GLSL
 
 				this._diffuseInputRegister = regCache.getFreeFragmentConstant();
 
@@ -397,52 +367,41 @@ module away.materials
 
 
 			}
-			
+
 			if (vo.numLights == 0)
 				return code;
 
-            //TODO: AGAL <> GLSL
+			//TODO: AGAL <> GLSL
 			code += "sat " + this.pTotalLightColorReg + ", " + this.pTotalLightColorReg + "\n";
-			
-			if (this._useAmbientTexture)
-            {
 
-                //TODO: AGAL <> GLSL
+			if (this._useAmbientTexture) {
 
-				code += "mul " + albedo + ".xyz, " + albedo + ", " + this.pTotalLightColorReg + "\n" +
-					"mul " + this.pTotalLightColorReg + ".xyz, " + targetReg + ", " + this.pTotalLightColorReg + "\n" +
-					"sub " + targetReg + ".xyz, " + targetReg + ", " + this.pTotalLightColorReg + "\n" +
-					"add " + targetReg + ".xyz, " + albedo + ", " + targetReg + "\n";
+				//TODO: AGAL <> GLSL
+
+				code += "mul " + albedo + ".xyz, " + albedo + ", " + this.pTotalLightColorReg + "\n" + "mul " + this.pTotalLightColorReg + ".xyz, " + targetReg + ", " + this.pTotalLightColorReg + "\n" + "sub " + targetReg + ".xyz, " + targetReg + ", " + this.pTotalLightColorReg + "\n" + "add " + targetReg + ".xyz, " + albedo + ", " + targetReg + "\n";
 
 
-			}
-            else
-            {
+			} else {
 
-                //TODO: AGAL <> GLSL
+				//TODO: AGAL <> GLSL
 
 				code += "add " + targetReg + ".xyz, " + this.pTotalLightColorReg + ", " + targetReg + "\n";
 
-				if (this._useTexture)
-                {
+				if (this._useTexture) {
 
-					code += "mul " + targetReg + ".xyz, " + albedo + ", " + targetReg + "\n" +
-						"mov " + targetReg + ".w, " + albedo + ".w\n";
+					code += "mul " + targetReg + ".xyz, " + albedo + ", " + targetReg + "\n" + "mov " + targetReg + ".w, " + albedo + ".w\n";
 
-				}
-                else
-                {
+				} else {
 
-					code += "mul " + targetReg + ".xyz, " + this._diffuseInputRegister + ", " + targetReg + "\n" +
-						"mov " + targetReg + ".w, " + this._diffuseInputRegister + ".w\n";
+					code += "mul " + targetReg + ".xyz, " + this._diffuseInputRegister + ", " + targetReg + "\n" + "mov " + targetReg + ".w, " + this._diffuseInputRegister + ".w\n";
 
 				}
 
 			}
-			
+
 			regCache.removeFragmentTempUsage(this.pTotalLightColorReg);
 			regCache.removeFragmentTempUsage(albedo);
-			
+
 			return code;
 		}
 
@@ -454,31 +413,25 @@ module away.materials
 		public pApplyShadow(vo:away.materials.MethodVO, regCache:away.materials.ShaderRegisterCache):string
 		{
 
-            //TODO: AGAL <> GLSL
+			//TODO: AGAL <> GLSL
 			return "mul " + this.pTotalLightColorReg + ".xyz, " + this.pTotalLightColorReg + ", " + this._shadowRegister + ".w\n";
 
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
 		public iActivate(vo:away.materials.MethodVO, stage3DProxy:away.managers.Stage3DProxy)
 		{
-			if (this._useTexture)
-            {
-                stage3DProxy._iContext3D.setSamplerStateAt( vo.texturesIndex ,
-                    vo.repeatTextures ?  away.display3D.Context3DWrapMode.REPEAT :  away.display3D.Context3DWrapMode.CLAMP,
-                    vo.useSmoothTextures ? away.display3D.Context3DTextureFilter.LINEAR : away.display3D.Context3DTextureFilter.NEAREST ,
-                    vo.useMipmapping ? away.display3D.Context3DMipFilter.MIPLINEAR : away.display3D.Context3DMipFilter.MIPNONE );
+			if (this._useTexture) {
+				stage3DProxy._iContext3D.setSamplerStateAt(vo.texturesIndex, vo.repeatTextures? away.display3D.Context3DWrapMode.REPEAT : away.display3D.Context3DWrapMode.CLAMP, vo.useSmoothTextures? away.display3D.Context3DTextureFilter.LINEAR : away.display3D.Context3DTextureFilter.NEAREST, vo.useMipmapping? away.display3D.Context3DMipFilter.MIPLINEAR : away.display3D.Context3DMipFilter.MIPNONE);
 
-                stage3DProxy._iContext3D.setTextureAt(vo.texturesIndex, this._texture.getTextureForStage3D(stage3DProxy));
+				stage3DProxy._iContext3D.setTextureAt(vo.texturesIndex, this._texture.getTextureForStage3D(stage3DProxy));
 
 				if (this._alphaThreshold > 0)
 					vo.fragmentData[vo.fragmentConstantsIndex] = this._alphaThreshold;
 
-			}
-            else
-            {
+			} else {
 
 				var index:number = vo.fragmentConstantsIndex;
 				var data:number[] = vo.fragmentData;
@@ -489,28 +442,28 @@ module away.materials
 
 			}
 		}
-		
+
 		/**
 		 * Updates the diffuse color data used by the render state.
 		 */
 		private updateDiffuse()
 		{
 			this._diffuseR = ((this._diffuseColor >> 16) & 0xff)/0xff;
-            this._diffuseG = ((this._diffuseColor >> 8) & 0xff)/0xff;
-            this._diffuseB = (this._diffuseColor & 0xff)/0xff;
+			this._diffuseG = ((this._diffuseColor >> 8) & 0xff)/0xff;
+			this._diffuseB = (this._diffuseColor & 0xff)/0xff;
 		}
 
 		/**
 		 * Set internally by the compiler, so the method knows the register containing the shadow calculation.
 		 */
-        public set iShadowRegister(value:away.materials.ShaderRegisterElement)
-        {
-            this._shadowRegister = value;
-        }
+		public set iShadowRegister(value:away.materials.ShaderRegisterElement)
+		{
+			this._shadowRegister = value;
+		}
 
-        public setIShadowRegister(value:away.materials.ShaderRegisterElement)
-        {
-            this._shadowRegister = value;
-        }
+		public setIShadowRegister(value:away.materials.ShaderRegisterElement)
+		{
+			this._shadowRegister = value;
+		}
 	}
 }

@@ -1,8 +1,7 @@
-
-
 ///<reference path="../../_definitions.ts"/>
 
-module away.loaders {
+module away.loaders
+{
 
 	/**
 	 * <code>ParserBase</code> provides an abstract base class for objects that convert blocks of data to data structures
@@ -26,96 +25,96 @@ module away.loaders {
 	 */
 	export class ParserBase extends away.events.EventDispatcher
 	{
-		public _iFileName       : string; // ARCANE
-		private _dataFormat     : string;
-		private _data           : any;
-		private _frameLimit     : number;
-		private _lastFrameTime  : number;
+		public _iFileName:string; // ARCANE
+		private _dataFormat:string;
+		private _data:any;
+		private _frameLimit:number;
+		private _lastFrameTime:number;
 
-        //----------------------------------------------------------------------------------------------------------------------------------------------------------------
-        // TODO: add error checking for the following ( could cause a problem if this function is not implemented )
-        //----------------------------------------------------------------------------------------------------------------------------------------------------------------
-        // Needs to be implemented in all Parsers (
-        //<code>public static supportsType(extension : string) : boolean</code>
-        //* Indicates whether or not a given file extension is supported by the parser.
-        //----------------------------------------------------------------------------------------------------------------------------------------------------------------
+		//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+		// TODO: add error checking for the following ( could cause a problem if this function is not implemented )
+		//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+		// Needs to be implemented in all Parsers (
+		//<code>public static supportsType(extension : string) : boolean</code>
+		//* Indicates whether or not a given file extension is supported by the parser.
+		//----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-        public static supportsType(extension:string):boolean
-        {
-
-            throw new away.errors.AbstractMethodError();
-            return false;
-
-        }
-
-        /* TODO: Implement ParserUtil;
-		public _pGetTextData():string
+		public static supportsType(extension:string):boolean
 		{
-			return ParserUtil.toString(_data);
+
+			throw new away.errors.AbstractMethodError();
+			return false;
+
 		}
-		
-		public _pGetByteData():ByteArray
-		{
-			return ParserUtil.toByteArray(_data);
-		}
-		*/
-		private _dependencies       : away.loaders.ResourceDependency[];//Vector.<ResourceDependency>;
-        private _loaderType         : string = away.loaders.ParserLoaderType.URL_LOADER; // Default loader is URLLoader
-		private _parsingPaused      : boolean;
-		private _parsingComplete    : boolean;
-		private _parsingFailure     : boolean;
-		private _timer              : away.utils.Timer;
-		private _materialMode       : number;
-		
+
+		/* TODO: Implement ParserUtil;
+		 public _pGetTextData():string
+		 {
+		 return ParserUtil.toString(_data);
+		 }
+
+		 public _pGetByteData():ByteArray
+		 {
+		 return ParserUtil.toByteArray(_data);
+		 }
+		 */
+		private _dependencies:away.loaders.ResourceDependency[];//Vector.<ResourceDependency>;
+		private _loaderType:string = away.loaders.ParserLoaderType.URL_LOADER; // Default loader is URLLoader
+		private _parsingPaused:boolean;
+		private _parsingComplete:boolean;
+		private _parsingFailure:boolean;
+		private _timer:away.utils.Timer;
+		private _materialMode:number;
+
 		/**
 		 * Returned by <code>proceedParsing</code> to indicate no more parsing is needed.
 		 */
-		public static PARSING_DONE : boolean = true; /* Protected */
-		
+		public static PARSING_DONE:boolean = true;
+		/* Protected */
+
 		/**
 		 * Returned by <code>proceedParsing</code> to indicate more parsing is needed, allowing asynchronous parsing.
 		 */
-        public static MORE_TO_PARSE : boolean = false; /* Protected */
-		
-		
+		public static MORE_TO_PARSE:boolean = false;
+		/* Protected */
+
+
 		/**
 		 * Creates a new ParserBase object
 		 * @param format The data format of the file data to be parsed. Can be either <code>ParserDataFormat.BINARY</code> or <code>ParserDataFormat.PLAIN_TEXT</code>, and should be provided by the concrete subtype.
-         * @param loaderType The type of loader required by the parser
+		 * @param loaderType The type of loader required by the parser
 		 *
 		 * @see away3d.loading.parsers.ParserDataFormat
 		 */
-		constructor(format : string , loaderType : string = null )
+			constructor(format:string, loaderType:string = null)
 		{
 
-            super();
+			super();
 
-            if ( loaderType )
-            {
+			if (loaderType) {
 
-                this._loaderType = loaderType;
+				this._loaderType = loaderType;
 
-            }
+			}
 
-			this._materialMode=0;
-			this._dataFormat    = format;
-			this._dependencies  = new Array<away.loaders.ResourceDependency>();
+			this._materialMode = 0;
+			this._dataFormat = format;
+			this._dependencies = new Array<away.loaders.ResourceDependency>();
 		}
-		
+
 		/**
-		 * Validates a bitmapData loaded before assigning to a default BitmapMaterial 
+		 * Validates a bitmapData loaded before assigning to a default BitmapMaterial
 		 */
 
-		public isBitmapDataValid(bitmapData: away.display.BitmapData) : boolean
+		public isBitmapDataValid(bitmapData:away.display.BitmapData):boolean
 		{
-			var isValid : boolean = away.utils.TextureUtils.isBitmapDataValid( bitmapData );
+			var isValid:boolean = away.utils.TextureUtils.isBitmapDataValid(bitmapData);
 
-			if( ! isValid )
-            {
+			if (!isValid) {
 
-                console.log (">> Bitmap loaded is not having power of 2 dimensions or is higher than 2048");
-            }
-			
+				console.log(">> Bitmap loaded is not having power of 2 dimensions or is higher than 2048");
+			}
+
 			return isValid;
 		}
 
@@ -124,60 +123,60 @@ module away.loaders {
 			this._parsingFailure = b;
 		}
 
-		public get parsingFailure() : boolean
+		public get parsingFailure():boolean
 		{
 			return this._parsingFailure;
 		}
 
-		public get parsingPaused() : boolean
+		public get parsingPaused():boolean
 		{
 			return this._parsingPaused;
 		}
 
-		public get parsingComplete() : boolean
+		public get parsingComplete():boolean
 		{
 			return this._parsingComplete;
 		}
-		
+
 		public set materialMode(newMaterialMode:number)
 		{
-            this._materialMode=newMaterialMode;
+			this._materialMode = newMaterialMode;
 		}
-		
-		public get materialMode() : number
+
+		public get materialMode():number
 		{
 			return this._materialMode;
 		}
 
-        public get loaderType() : string
-        {
+		public get loaderType():string
+		{
 
-            return this._loaderType;
+			return this._loaderType;
 
-        }
+		}
 
-        public set loaderType( value : string )
-        {
+		public set loaderType(value:string)
+		{
 
-            this._loaderType = value;
+			this._loaderType = value;
 
-        }
+		}
 
-        public get data() : any
-        {
+		public get data():any
+		{
 
-            return this._data;
+			return this._data;
 
-        }
+		}
 
 		/**
 		 * The data format of the file data to be parsed. Can be either <code>ParserDataFormat.BINARY</code> or <code>ParserDataFormat.PLAIN_TEXT</code>.
 		 */
-		public get dataFormat() : string
+		public get dataFormat():string
 		{
 			return this._dataFormat;
 		}
-		
+
 		/**
 		 * Parse data (possibly containing bytearry, plain text or BitmapAsset) asynchronously, meaning that
 		 * the parser will periodically stop parsing so that the AVM may proceed to the
@@ -188,20 +187,20 @@ module away.loaders {
 		 * actual time spent on a frame can exceed this number since time-checks can
 		 * only be performed between logical sections of the parsing procedure.
 		 */
-		public parseAsync(data : any, frameLimit : number = 30) : void
+		public parseAsync(data:any, frameLimit:number = 30):void
 		{
-            this._data = data;
-            this.startParsing(frameLimit);
+			this._data = data;
+			this.startParsing(frameLimit);
 		}
-		
+
 		/**
 		 * A list of dependencies that need to be loaded and resolved for the object being parsed.
 		 */
-		public get dependencies() : away.loaders.ResourceDependency[]
+		public get dependencies():away.loaders.ResourceDependency[]
 		{
 			return this._dependencies;
 		}
-		
+
 		/**
 		 * Resolve a dependency when it's loaded. For example, a dependency containing an ImageResource would be assigned
 		 * to a Mesh instance as a BitmapMaterial, a scene graph object would be added to its intended parent. The
@@ -209,21 +208,21 @@ module away.loaders {
 		 *
 		 * @param resourceDependency The dependency to be resolved.
 		 */
-		public _iResolveDependency(resourceDependency : ResourceDependency) : void
+		public _iResolveDependency(resourceDependency:ResourceDependency):void
 		{
 
-            throw new away.errors.AbstractMethodError();
+			throw new away.errors.AbstractMethodError();
 
 		}
-		
+
 		/**
 		 * Resolve a dependency loading failure. Used by parser to eventually provide a default map
 		 *
 		 * @param resourceDependency The dependency to be resolved.
 		 */
-		public _iResolveDependencyFailure(resourceDependency : ResourceDependency) : void
+		public _iResolveDependencyFailure(resourceDependency:ResourceDependency):void
 		{
-            throw new away.errors.AbstractMethodError();
+			throw new away.errors.AbstractMethodError();
 		}
 
 		/**
@@ -231,32 +230,32 @@ module away.loaders {
 		 *
 		 * @param resourceDependency The dependency to be resolved.
 		 */
-		public _iResolveDependencyName(resourceDependency : ResourceDependency, asset:away.library.IAsset) : string
+		public _iResolveDependencyName(resourceDependency:ResourceDependency, asset:away.library.IAsset):string
 		{
 			return asset.name;
 		}
-		
-		public _iResumeParsingAfterDependencies() : void
+
+		public _iResumeParsingAfterDependencies():void
 		{
 			this._parsingPaused = false;
 
-			if (this._timer){
+			if (this._timer) {
 
-                this._timer.start();
+				this._timer.start();
 
-            }
+			}
 		}
-		
-		public _pFinalizeAsset( asset : away.library.IAsset, name : string=null) : void
+
+		public _pFinalizeAsset(asset:away.library.IAsset, name:string = null):void
 		{
-			var type_event : string;
-			var type_name : string;
-			
-			if (name != null){
+			var type_event:string;
+			var type_name:string;
 
-                asset.name = name;
+			if (name != null) {
 
-            }
+				asset.name = name;
+
+			}
 
 			switch (asset.assetType) {
 				case away.library.AssetType.LIGHT_PICKER:
@@ -343,100 +342,99 @@ module away.loaders {
 					type_name = 'effectsMethod';
 					type_event = away.events.AssetEvent.SHADOWMAPMETHOD_COMPLETE;
 					break;
-                default:
-                    throw new away.errors.Error('Unhandled asset type '+asset.assetType+'. Report as bug!');
+				default:
+					throw new away.errors.Error('Unhandled asset type ' + asset.assetType + '. Report as bug!');
 					break;
-			};
+			}
+			;
 
-            //console.log( 'ParserBase' , '_pFinalizeAsset.type_event: ' ,  type_event );
+			//console.log( 'ParserBase' , '_pFinalizeAsset.type_event: ' ,  type_event );
 
 			// If the asset has no name, give it
 			// a per-type default name.
 			if (!asset.name)
 				asset.name = type_name;
-			
+
 			this.dispatchEvent(new away.events.AssetEvent(away.events.AssetEvent.ASSET_COMPLETE, asset));
-            this.dispatchEvent(new away.events.AssetEvent(type_event, asset));
+			this.dispatchEvent(new away.events.AssetEvent(type_event, asset));
 		}
-		
+
 		/**
 		 * Parse the next block of data.
 		 * @return Whether or not more data needs to be parsed. Can be <code>ParserBase.ParserBase.PARSING_DONE</code> or
 		 * <code>ParserBase.ParserBase.MORE_TO_PARSE</code>.
 		 */
-		public _pProceedParsing() : boolean
+		public _pProceedParsing():boolean
 		{
 
-            throw new away.errors.AbstractMethodError();
+			throw new away.errors.AbstractMethodError();
 			return true;
 		}
 
-		public _pDieWithError(message : string = 'Unknown parsing error') : void
+		public _pDieWithError(message:string = 'Unknown parsing error'):void
 		{
-            if(this._timer)
-            {
-			    this._timer.removeEventListener(away.events.TimerEvent.TIMER, this._pOnInterval , this );
-                this._timer.stop();
-                this._timer = null;
-            }
+			if (this._timer) {
+				this._timer.removeEventListener(away.events.TimerEvent.TIMER, this._pOnInterval, this);
+				this._timer.stop();
+				this._timer = null;
+			}
 
 			this.dispatchEvent(new away.events.ParserEvent(away.events.ParserEvent.PARSE_ERROR, message));
 		}
 
-		public _pAddDependency(id : string, req : away.net.URLRequest, retrieveAsRawData : boolean = false, data : any = null, suppressErrorEvents : boolean = false) : away.loaders.ResourceDependency
+		public _pAddDependency(id:string, req:away.net.URLRequest, retrieveAsRawData:boolean = false, data:any = null, suppressErrorEvents:boolean = false):away.loaders.ResourceDependency
 		{
-            var dependency:away.loaders.ResourceDependency = new away.loaders.ResourceDependency(id, req, data, this, retrieveAsRawData, suppressErrorEvents);
+			var dependency:away.loaders.ResourceDependency = new away.loaders.ResourceDependency(id, req, data, this, retrieveAsRawData, suppressErrorEvents);
 			this._dependencies.push(dependency);
 
-            return dependency;
+			return dependency;
 		}
 
-		public _pPauseAndRetrieveDependencies() : void
+		public _pPauseAndRetrieveDependencies():void
 		{
-            if(this._timer)
-            {
-                this._timer.stop();
-            }
+			if (this._timer) {
+				this._timer.stop();
+			}
 
 			this._parsingPaused = true;
 			this.dispatchEvent(new away.events.ParserEvent(away.events.ParserEvent.READY_FOR_DEPENDENCIES));
 		}
-		
+
 		/**
 		 * Tests whether or not there is still time left for parsing within the maximum allowed time frame per session.
 		 * @return True if there is still time left, false if the maximum allotted time was exceeded and parsing should be interrupted.
 		 */
-		public _pHasTime() : boolean
+		public _pHasTime():boolean
 		{
 
 			return ((away.utils.getTimer() - this._lastFrameTime) < this._frameLimit);
 
 		}
-		
+
 		/**
 		 * Called when the parsing pause interval has passed and parsing can proceed.
 		 */
-		public _pOnInterval(event : away.events.TimerEvent = null) : void
+		public _pOnInterval(event:away.events.TimerEvent = null):void
 		{
 			this._lastFrameTime = away.utils.getTimer();
 
-			if (this._pProceedParsing() && !this._parsingFailure){
+			if (this._pProceedParsing() && !this._parsingFailure) {
 
 				this._pFinishParsing();
 
-            }
+			}
 		}
-		
+
 		/**
 		 * Initializes the parsing of data.
 		 * @param frameLimit The maximum duration of a parsing session.
 		 */
-		private startParsing(frameLimit : number) : void
+		private startParsing(frameLimit:number):void
 		{
 
 			this._frameLimit = frameLimit;
 			this._timer = new away.utils.Timer(this._frameLimit, 0);
-			this._timer.addEventListener(away.events.TimerEvent.TIMER, this._pOnInterval , this );
+			this._timer.addEventListener(away.events.TimerEvent.TIMER, this._pOnInterval, this);
 			this._timer.start();
 
 		}
@@ -444,16 +442,15 @@ module away.loaders {
 		/**
 		 * Finish parsing the data.
 		 */
-		public _pFinishParsing() : void
+		public _pFinishParsing():void
 		{
 
-            //console.log( 'ParserBase._pFinishParsing');
+			//console.log( 'ParserBase._pFinishParsing');
 
-            if(this._timer)
-            {
-			    this._timer.removeEventListener(away.events.TimerEvent.TIMER, this._pOnInterval , this );
-			    this._timer.stop();
-            }
+			if (this._timer) {
+				this._timer.removeEventListener(away.events.TimerEvent.TIMER, this._pOnInterval, this);
+				this._timer.stop();
+			}
 
 			this._timer = null;
 			this._parsingComplete = true;
@@ -462,27 +459,27 @@ module away.loaders {
 
 		}
 
-        /**
-         *
-         * @returns {string}
-         * @private
-         */
-        public _pGetTextData():string
-        {
-            return away.loaders.ParserUtil.toString( this._data);
-        }
+		/**
+		 *
+		 * @returns {string}
+		 * @private
+		 */
+		public _pGetTextData():string
+		{
+			return away.loaders.ParserUtil.toString(this._data);
+		}
 
-        /**
-         *
-         * @returns {string}
-         * @private
-         */
-        public _pGetByteData():away.utils.ByteArray
-        {
+		/**
+		 *
+		 * @returns {string}
+		 * @private
+		 */
+		public _pGetByteData():away.utils.ByteArray
+		{
 
-            return away.loaders.ParserUtil.toByteArray( this._data );
+			return away.loaders.ParserUtil.toByteArray(this._data);
 
-        }
+		}
 
 	}
 

@@ -3,7 +3,7 @@
 module away.animators
 {
 	import AssetType = away.library.AssetType;
-	
+
 	/**
 	 * A collection of pose objects, determining the pose for an entire skeleton.
 	 * The <code>jointPoses</code> vector object corresponds to a skeleton's <code>joints</code> vector object, however, there is no
@@ -21,7 +21,7 @@ module away.animators
 		 * @see away.animators.Skeleton#joints
 		 */
 		public jointPoses:Array<JointPose>;
-		
+
 		/**
 		 * The total number of joint poses in the skeleton pose.
 		 */
@@ -29,17 +29,17 @@ module away.animators
 		{
 			return this.jointPoses.length;
 		}
-		
+
 		/**
 		 * Creates a new <code>SkeletonPose</code> object.
 		 */
-		constructor()
+			constructor()
 		{
-            super();
+			super();
 
 			this.jointPoses = new Array<JointPose>();
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
@@ -47,7 +47,7 @@ module away.animators
 		{
 			return AssetType.SKELETON_POSE;
 		}
-		
+
 		/**
 		 * Returns the joint pose object with the given joint name, otherwise returns a null object.
 		 *
@@ -58,11 +58,10 @@ module away.animators
 		{
 			var jointPoseIndex:number /*int*/ = this.jointPoseIndexFromName(jointName);
 			if (jointPoseIndex != -1)
-				return this.jointPoses[jointPoseIndex];
-			else
+				return this.jointPoses[jointPoseIndex]; else
 				return null;
 		}
-		
+
 		/**
 		 * Returns the pose index, given the joint name. -1 is returned if the joint name is not found in the pose.
 		 *
@@ -80,17 +79,17 @@ module away.animators
 			// c) maintaining a dictionary (for safety) would dictate an interface to access JointPoses,
 			//    rather than direct array access.  this would be sub-optimal.
 			var jointPoseIndex:number /*int*/;
-            var jointPose:JointPose;
+			var jointPose:JointPose;
 			for (var i:number /*uint*/; i < this.jointPoses.length; i++) {
-                jointPose = this.jointPoses[i];
+				jointPose = this.jointPoses[i];
 				if (jointPose.name == jointName)
 					return jointPoseIndex;
 				jointPoseIndex++;
 			}
-			
+
 			return -1;
 		}
-		
+
 		/**
 		 * Creates a copy of the <code>SkeletonPose</code> object, with a dulpicate of its component joint poses.
 		 *
@@ -109,7 +108,7 @@ module away.animators
 			}
 			return clone;
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */

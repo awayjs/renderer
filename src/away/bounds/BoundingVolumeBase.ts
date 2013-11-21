@@ -4,201 +4,178 @@ module away.bounds
 {
 	export class BoundingVolumeBase
 	{
-		
+
 		public _pMin:away.geom.Vector3D;
 		public _pMax:away.geom.Vector3D;
 		public _pAabbPoints:number[] = [];
 		public _pAabbPointsDirty:boolean = true;
 		public _pBoundingRenderable:away.primitives.WireframePrimitiveBase;
-		
+
 		constructor()
 		{
 			this._pMin = new away.geom.Vector3D();
 			this._pMax = new away.geom.Vector3D();
 		}
-		
+
 		public get max():away.geom.Vector3D
 		{
 			return this._pMax;
 		}
-		
+
 		public get min():away.geom.Vector3D
 		{
 			return this._pMin;
 		}
-		
+
 		public get aabbPoints():number[]
 		{
-			if( this._pAabbPointsDirty )
-			{
+			if (this._pAabbPointsDirty) {
 				this.pUpdateAABBPoints();
 			}
 			return this._pAabbPoints;
 		}
-		
+
 		public get boundingRenderable():away.primitives.WireframePrimitiveBase
 		{
-			if( !this._pBoundingRenderable )
-			{
+			if (!this._pBoundingRenderable) {
 				this._pBoundingRenderable = this.pCreateBoundingRenderable();
 				this.pUpdateBoundingRenderable();
 			}
 			return this._pBoundingRenderable;
 		}
-		
+
 		public nullify()
 		{
 			this._pMin.x = this._pMin.y = this._pMin.z = 0;
 			this._pMax.x = this._pMax.y = this._pMax.z = 0;
 			this._pAabbPointsDirty = true;
-			
-			if( this._pBoundingRenderable )
-			{
+
+			if (this._pBoundingRenderable) {
 				this.pUpdateBoundingRenderable();
 			}
 		}
-		
+
 		public disposeRenderable()
 		{
-			if( this._pBoundingRenderable )
-			{
+			if (this._pBoundingRenderable) {
 				this._pBoundingRenderable.dispose();
 			}
 			this._pBoundingRenderable = null;
 		}
-		
-		public fromVertices( vertices:number[] )
+
+		public fromVertices(vertices:number[])
 		{
 			var i:number;
 			var len:number = vertices.length;
 			var minX:number, minY:number, minZ:number;
 			var maxX:number, maxY:number, maxZ:number;
-			
-			if( len == 0 )
-			{
+
+			if (len == 0) {
 				this.nullify();
 				return;
 			}
-			
+
 			var v:number;
-			
+
 			minX = maxX = vertices[i++];
 			minY = maxY = vertices[i++];
 			minZ = maxZ = vertices[i++];
-			
-			while( i < len )
-			{
+
+			while (i < len) {
 				v = vertices[i++];
 				if (v < minX)
-					minX = v;
-				else if (v > maxX)
+					minX = v; else if (v > maxX)
 					maxX = v;
 				v = vertices[i++];
 				if (v < minY)
-					minY = v;
-				else if (v > maxY)
+					minY = v; else if (v > maxY)
 					maxY = v;
 				v = vertices[i++];
 				if (v < minZ)
-					minZ = v;
-				else if (v > maxZ)
+					minZ = v; else if (v > maxZ)
 					maxZ = v;
 			}
-			
-			this.fromExtremes( minX, minY, minZ, maxX, maxY, maxZ );
+
+			this.fromExtremes(minX, minY, minZ, maxX, maxY, maxZ);
 		}
-		
+
 		public fromGeometry(geometry:away.base.Geometry):void
 		{
 
-            var subGeoms:away.base.ISubGeometry[] = geometry.subGeometries; //var subGeoms:Vector.<away.base.ISubGeometry> = geometry.subGeometries;
+			var subGeoms:away.base.ISubGeometry[] = geometry.subGeometries; //var subGeoms:Vector.<away.base.ISubGeometry> = geometry.subGeometries;
 			var numSubGeoms:number = subGeoms.length;
 			var minX:number, minY:number, minZ:number;
 			var maxX:number, maxY:number, maxZ:number;
-			
-			if (numSubGeoms > 0)
-            {
+
+			if (numSubGeoms > 0) {
 
 				var j:number = 0;
 
 				minX = minY = minZ = Number.POSITIVE_INFINITY;
 				maxX = maxY = maxZ = Number.NEGATIVE_INFINITY;
-				
-				while (j < numSubGeoms)
-                {
+
+				while (j < numSubGeoms) {
 
 					var subGeom:away.base.ISubGeometry = subGeoms[j++];
-                    var vertices:number[] = subGeom.vertexData;//var vertices:Vector.<Number> = subGeom.vertexData;
+					var vertices:number[] = subGeom.vertexData;//var vertices:Vector.<Number> = subGeom.vertexData;
 					var vertexDataLen:number = vertices.length;
 					var i:number = subGeom.vertexOffset;
 					var stride:number = subGeom.vertexStride;
-					
-					while (i < vertexDataLen)
-                    {
+
+					while (i < vertexDataLen) {
 						var v:number = vertices[i];
-						if (v < minX)
-                        {
-                            minX = v;
-                        }
-						else if (v > maxX)
-                        {
+						if (v < minX) {
+							minX = v;
+						} else if (v > maxX) {
 
-                            maxX = v;
+							maxX = v;
 
-                        }
+						}
 
 
 						v = vertices[i + 1];
 
-						if (v < minY)
-                        {
+						if (v < minY) {
 
-                            minY = v;
+							minY = v;
 
-                        }
-						else if (v > maxY)
-                        {
+						} else if (v > maxY) {
 
-                            maxY = v;
+							maxY = v;
 
-                        }
+						}
 
 						v = vertices[i + 2];
 
-						if (v < minZ)
-                        {
+						if (v < minZ) {
 
-                            minZ = v;
+							minZ = v;
 
-                        }
-						else if (v > maxZ)
-                        {
+						} else if (v > maxZ) {
 
-                            maxZ = v;
+							maxZ = v;
 
-                        }
+						}
 
 						i += stride;
 					}
 				}
-				
+
 				this.fromExtremes(minX, minY, minZ, maxX, maxY, maxZ);
+			} else {
+
+				this.fromExtremes(0, 0, 0, 0, 0, 0);
+
 			}
-            else
-            {
-
-                this.fromExtremes(0, 0, 0, 0, 0, 0);
-
-            }
 
 		}
 
-		public fromSphere( center:away.geom.Vector3D, radius:number)
+		public fromSphere(center:away.geom.Vector3D, radius:number)
 		{
-			this.fromExtremes( center.x - radius, center.y - radius, center.z - radius, center.x + radius, center.y + radius, center.z + radius );
+			this.fromExtremes(center.x - radius, center.y - radius, center.z - radius, center.x + radius, center.y + radius, center.z + radius);
 		}
-		
-		public fromExtremes( minX:number, minY:number, minZ:number, maxX:number, maxY:number, maxZ:number )
+
+		public fromExtremes(minX:number, minY:number, minZ:number, maxX:number, maxY:number, maxZ:number)
 		{
 			this._pMin.x = minX;
 			this._pMin.y = minY;
@@ -207,49 +184,43 @@ module away.bounds
 			this._pMax.y = maxY;
 			this._pMax.z = maxZ;
 			this._pAabbPointsDirty = true;
-			
-			if( this._pBoundingRenderable )
-			{
+
+			if (this._pBoundingRenderable) {
 				this.pUpdateBoundingRenderable();
 			}
 		}
-		
-		public isInFrustum( planes:away.math.Plane3D[], numPlanes:number ):boolean
+
+		public isInFrustum(planes:away.math.Plane3D[], numPlanes:number):boolean
 		{
 			throw new away.errors.AbstractMethodError();
 		}
-		
-		public overlaps( bounds:away.bounds.BoundingVolumeBase ):boolean
+
+		public overlaps(bounds:away.bounds.BoundingVolumeBase):boolean
 		{
 			var min:away.geom.Vector3D = bounds._pMin;
 			var max:away.geom.Vector3D = bounds._pMax;
-			return this._pMax.x > min.x &&
-				this._pMin.x < max.x &&
-				this._pMax.y > min.y &&
-				this._pMin.y < max.y &&
-				this._pMax.z > min.z &&
-				this._pMin.z < max.z;
+			return this._pMax.x > min.x && this._pMin.x < max.x && this._pMax.y > min.y && this._pMin.y < max.y && this._pMax.z > min.z && this._pMin.z < max.z;
 		}
-		
+
 		public clone():away.bounds.BoundingVolumeBase
 		{
 			throw new away.errors.AbstractMethodError();
 		}
-		
-		public rayIntersection( position:away.geom.Vector3D, direction:away.geom.Vector3D, targetNormal:away.geom.Vector3D ):number
+
+		public rayIntersection(position:away.geom.Vector3D, direction:away.geom.Vector3D, targetNormal:away.geom.Vector3D):number
 		{
 			position = position;
 			direction = direction;
 			targetNormal = targetNormal;
 			return -1;
 		}
-		
-		public containsPoint( position:away.geom.Vector3D ):boolean
+
+		public containsPoint(position:away.geom.Vector3D):boolean
 		{
 			position = position;
 			return false;
 		}
-		
+
 		public pUpdateAABBPoints()
 		{
 			var maxX:number = this._pMax.x;
@@ -258,7 +229,7 @@ module away.bounds
 			var minX:number = this._pMin.x;
 			var minY:number = this._pMin.y;
 			var minZ:number = this._pMin.z;
-			
+
 			this._pAabbPoints[0] = minX;
 			this._pAabbPoints[1] = minY;
 			this._pAabbPoints[2] = minZ;
@@ -285,23 +256,23 @@ module away.bounds
 			this._pAabbPoints[23] = maxZ;
 			this._pAabbPointsDirty = false;
 		}
-		
+
 		public pUpdateBoundingRenderable()
 		{
 			throw new away.errors.AbstractMethodError();
 		}
-		
+
 		public pCreateBoundingRenderable():away.primitives.WireframePrimitiveBase
 		{
 			throw new away.errors.AbstractMethodError();
 		}
-		
+
 		public classifyToPlane(plane:away.math.Plane3D):number
 		{
 			throw new away.errors.AbstractMethodError();
 		}
-		
-		public transformFrom( bounds:away.bounds.BoundingVolumeBase, matrix:away.geom.Matrix3D )
+
+		public transformFrom(bounds:away.bounds.BoundingVolumeBase, matrix:away.geom.Matrix3D)
 		{
 			throw new away.errors.AbstractMethodError();
 		}

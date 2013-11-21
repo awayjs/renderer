@@ -1,6 +1,6 @@
 module away.library
 {
-	
+
 	/**
 	 * Enumaration class for precedence when resolving naming conflicts in the library.
 	 *
@@ -16,7 +16,7 @@ module away.library
 		 * is reverted to a non-conflicting name.
 		 */
 		public static FAVOR_OLD:string = 'favorOld';
-		
+
 		/**
 		 * Signales that in a conflict, the newly renamed asset is favored (and keeps
 		 * it's newly defined name) and that the previous owner of that name gets

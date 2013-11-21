@@ -12,28 +12,28 @@ module away.materials
 		private _casterLightPass:away.materials.ShadowCasterPass;
 		private _nonCasterLightPasses:Array<away.materials.LightingPass>;
 		public _pEffectsPass:away.materials.SuperShaderPass;
-		
+
 		private _alphaThreshold:number = 0;
 		private _specularLightSources:number = 0x01;
 		private _diffuseLightSources:number = 0x03;
-		
+
 		private _ambientMethod:BasicAmbientMethod = new away.materials.BasicAmbientMethod();
 		private _shadowMethod:ShadowMapMethodBase;
 		private _diffuseMethod:BasicDiffuseMethod = new away.materials.BasicDiffuseMethod();
 		private _normalMethod:BasicNormalMethod = new away.materials.BasicNormalMethod();
 		private _specularMethod:BasicSpecularMethod = new away.materials.BasicSpecularMethod();
-		
+
 		private _screenPassesInvalid:boolean = true;
 		private _enableLightFallOff:boolean = true;
-		
+
 		/**
 		 * Creates a new MultiPassMaterialBase object.
 		 */
-		constructor()
+			constructor()
 		{
 			super();
 		}
-		
+
 		/**
 		 * Whether or not to use fallOff and radius properties for lights. This can be used to improve performance and
 		 * compatibility for constrained mode.
@@ -42,16 +42,16 @@ module away.materials
 		{
 			return this._enableLightFallOff;
 		}
-		
+
 		public set enableLightFallOff(value:boolean)
 		{
 
 			if (this._enableLightFallOff != value)
 				this.pInvalidateScreenPasses();
-            this._enableLightFallOff = value;
+			this._enableLightFallOff = value;
 
 		}
-		
+
 		/**
 		 * The minimum alpha value for which pixels should be drawn. This is used for transparency that is either
 		 * invisible or entirely opaque, often used with textures for foliage, etc.
@@ -61,13 +61,13 @@ module away.materials
 		{
 			return this._alphaThreshold;
 		}
-		
+
 		public set alphaThreshold(value:number)
 		{
-            this._alphaThreshold = value;
-            this._diffuseMethod.alphaThreshold = value;
-            this._pDepthPass.alphaThreshold = value;
-            this._pDistancePass.alphaThreshold = value;
+			this._alphaThreshold = value;
+			this._diffuseMethod.alphaThreshold = value;
+			this._pDepthPass.alphaThreshold = value;
+			this._pDistancePass.alphaThreshold = value;
 		}
 
 		/**
@@ -75,7 +75,7 @@ module away.materials
 		 */
 		public set depthCompareMode(value:string)
 		{
-			super.setDepthCompareMode( value );
+			super.setDepthCompareMode(value);
 			this.pInvalidateScreenPasses();
 		}
 
@@ -84,7 +84,7 @@ module away.materials
 		 */
 		public set blendMode(value:string)
 		{
-			super.setBlendMode( value );
+			super.setBlendMode(value);
 			this.pInvalidateScreenPasses();
 		}
 
@@ -93,15 +93,12 @@ module away.materials
 		 */
 		public iActivateForDepth(stage3DProxy:away.managers.Stage3DProxy, camera:away.cameras.Camera3D, distanceBased:boolean = false)
 		{
-			if (distanceBased)
-            {
+			if (distanceBased) {
 				this._pDistancePass.alphaMask = this._diffuseMethod.texture;
 
-            }
-			else
-            {
+			} else {
 				this._pDepthPass.alphaMask = this._diffuseMethod.texture;
-            }
+			}
 
 			super.iActivateForDepth(stage3DProxy, camera, distanceBased);
 		}
@@ -116,10 +113,10 @@ module away.materials
 		{
 			return this._specularLightSources;
 		}
-		
+
 		public set specularLightSources(value:number)
 		{
-            this._specularLightSources = value;
+			this._specularLightSources = value;
 		}
 
 		/**
@@ -132,10 +129,10 @@ module away.materials
 		{
 			return this._diffuseLightSources;
 		}
-		
+
 		public set diffuseLightSources(value:number)
 		{
-            this._diffuseLightSources = value;
+			this._diffuseLightSources = value;
 		}
 
 		/**
@@ -144,15 +141,15 @@ module away.materials
 		public set lightPicker(value:LightPickerBase)
 		{
 			if (this._pLightPicker)
-				this._pLightPicker.removeEventListener(away.events.Event.CHANGE, this.onLightsChange , this );
+				this._pLightPicker.removeEventListener(away.events.Event.CHANGE, this.onLightsChange, this);
 
-            super.setLightPicker( value );
+			super.setLightPicker(value);
 
 			if (this._pLightPicker)
-				this._pLightPicker.addEventListener(away.events.Event.CHANGE, this.onLightsChange , this );
+				this._pLightPicker.addEventListener(away.events.Event.CHANGE, this.onLightsChange, this);
 			this.pInvalidateScreenPasses();
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
@@ -160,7 +157,7 @@ module away.materials
 		{
 			return false;
 		}
-		
+
 		/**
 		 * The method that provides the ambient lighting contribution. Defaults to BasicAmbientMethod.
 		 */
@@ -168,14 +165,14 @@ module away.materials
 		{
 			return this._ambientMethod;
 		}
-		
+
 		public set ambientMethod(value:away.materials.BasicAmbientMethod)
 		{
 			value.copyFrom(this._ambientMethod);
 			this._ambientMethod = value;
 			this.pInvalidateScreenPasses();
 		}
-		
+
 		/**
 		 * The method used to render shadows cast on this surface, or null if no shadows are to be rendered. Defaults to null.
 		 */
@@ -183,15 +180,15 @@ module away.materials
 		{
 			return this._shadowMethod;
 		}
-		
+
 		public set shadowMethod(value:away.materials.ShadowMapMethodBase)
 		{
 			if (value && this._shadowMethod)
 				value.copyFrom(this._shadowMethod);
-            this._shadowMethod = value;
-            this.pInvalidateScreenPasses();
+			this._shadowMethod = value;
+			this.pInvalidateScreenPasses();
 		}
-		
+
 		/**
 		 * The method that provides the diffuse lighting contribution. Defaults to BasicDiffuseMethod.
 		 */
@@ -199,11 +196,11 @@ module away.materials
 		{
 			return this._diffuseMethod;
 		}
-		
+
 		public set diffuseMethod(value:away.materials.BasicDiffuseMethod)
 		{
 			value.copyFrom(this._diffuseMethod);
-            this._diffuseMethod = value;
+			this._diffuseMethod = value;
 			this.pInvalidateScreenPasses();
 		}
 
@@ -222,7 +219,7 @@ module away.materials
 			this._specularMethod = value;
 			this.pInvalidateScreenPasses();
 		}
-		
+
 		/**
 		 * The method used to generate the per-pixel normals. Defaults to BasicNormalMethod.
 		 */
@@ -230,14 +227,14 @@ module away.materials
 		{
 			return this._normalMethod;
 		}
-		
+
 		public set normalMethod(value:away.materials.BasicNormalMethod)
 		{
 			value.copyFrom(this._normalMethod);
 			this._normalMethod = value;
 			this.pInvalidateScreenPasses();
 		}
-		
+
 		/**
 		 * Appends an "effect" shading method to the shader. Effect methods are those that do not influence the lighting
 		 * but modulate the shaded colour, used for fog, outlines, etc. The method will be applied to the result of the
@@ -246,11 +243,10 @@ module away.materials
 		public addMethod(method:away.materials.EffectMethodBase)
 		{
 
-            if ( this._pEffectsPass == null )
-            {
-                this._pEffectsPass = new away.materials.SuperShaderPass( this );
+			if (this._pEffectsPass == null) {
+				this._pEffectsPass = new away.materials.SuperShaderPass(this);
 
-            }
+			}
 
 			this._pEffectsPass.addMethod(method);
 			this.pInvalidateScreenPasses();
@@ -284,7 +280,7 @@ module away.materials
 		{
 			return this._pEffectsPass.getMethodAt(index);
 		}
-		
+
 		/**
 		 * Adds an effect method at the specified index amongst the methods already added to the material. Effect
 		 * methods are those that do not influence the lighting but modulate the shaded colour, used for fog, outlines,
@@ -293,11 +289,10 @@ module away.materials
 		public addMethodAt(method:EffectMethodBase, index:number)
 		{
 
-            if ( this._pEffectsPass == null )
-            {
-                this._pEffectsPass = new away.materials.SuperShaderPass( this );
+			if (this._pEffectsPass == null) {
+				this._pEffectsPass = new away.materials.SuperShaderPass(this);
 
-            }
+			}
 
 			this._pEffectsPass.addMethodAt(method, index);
 			this.pInvalidateScreenPasses();
@@ -313,12 +308,12 @@ module away.materials
 			if (this._pEffectsPass)
 				return;
 			this._pEffectsPass.removeMethod(method);
-			
+
 			// reconsider
 			if (this._pEffectsPass.numMethods == 0)
 				this.pInvalidateScreenPasses();
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
@@ -327,10 +322,10 @@ module away.materials
 			if (this._pMipmap == value)
 				return;
 
-			super.setMipMap( value );
+			super.setMipMap(value);
 
 		}
-		
+
 		/**
 		 * The normal map to modulate the direction of the surface for each texel. The default normal method expects
 		 * tangent-space normal maps, but others could expect object-space maps.
@@ -339,12 +334,12 @@ module away.materials
 		{
 			return this._normalMethod.normalMap;
 		}
-		
+
 		public set normalMap(value:away.textures.Texture2DBase)
 		{
 			this._normalMethod.normalMap = value;
 		}
-		
+
 		/**
 		 * A specular map that defines the strength of specular reflections for each texel in the red channel,
 		 * and the gloss factor in the green channel. You can use SpecularBitmapTexture if you want to easily set
@@ -354,15 +349,14 @@ module away.materials
 		{
 			return this._specularMethod.texture;
 		}
-		
+
 		public set specularMap(value:away.textures.Texture2DBase)
 		{
 			if (this._specularMethod)
-				this._specularMethod.texture = value;
-			else
+				this._specularMethod.texture = value; else
 				throw new Error("No specular method was set to assign the specularGlossMap to");
 		}
-		
+
 		/**
 		 * The glossiness of the material (sharpness of the specular highlight).
 		 */
@@ -370,13 +364,13 @@ module away.materials
 		{
 			return this._specularMethod? this._specularMethod.gloss : 0;
 		}
-		
+
 		public set gloss(value:number)
 		{
 			if (this._specularMethod)
 				this._specularMethod.gloss = value;
 		}
-		
+
 		/**
 		 * The strength of the ambient reflection.
 		 */
@@ -384,12 +378,12 @@ module away.materials
 		{
 			return this._ambientMethod.ambient;
 		}
-		
+
 		public set ambient(value:number)
 		{
-            this._ambientMethod.ambient = value;
+			this._ambientMethod.ambient = value;
 		}
-		
+
 		/**
 		 * The overall strength of the specular reflection.
 		 */
@@ -397,13 +391,13 @@ module away.materials
 		{
 			return this._specularMethod? this._specularMethod.specular : 0;
 		}
-		
+
 		public set specular(value:number)
 		{
 			if (this._specularMethod)
-                this._specularMethod.specular = value;
+				this._specularMethod.specular = value;
 		}
-		
+
 		/**
 		 * The colour of the ambient reflection.
 		 */
@@ -411,12 +405,12 @@ module away.materials
 		{
 			return this._ambientMethod.ambientColor;
 		}
-		
+
 		public set ambientColor(value:number)
 		{
-            this._ambientMethod.ambientColor = value;
+			this._ambientMethod.ambientColor = value;
 		}
-		
+
 		/**
 		 * The colour of the specular reflection.
 		 */
@@ -424,27 +418,27 @@ module away.materials
 		{
 			return this._specularMethod.specularColor;
 		}
-		
+
 		public set specularColor(value:number)
 		{
-            this._specularMethod.specularColor = value;
+			this._specularMethod.specularColor = value;
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
 		public iUpdateMaterial(context:away.display3D.Context3D)
 		{
 			var passesInvalid:boolean;
-			
+
 			if (this._screenPassesInvalid) {
 				this.pUpdateScreenPasses();
 				passesInvalid = true;
 			}
-			
+
 			if (passesInvalid || this.isAnyScreenPassInvalid()) {
 				this.pClearPasses();
-				
+
 				this.addChildPassesFor(this._casterLightPass);
 
 				if (this._nonCasterLightPasses) {
@@ -453,16 +447,14 @@ module away.materials
 				}
 
 				this.addChildPassesFor(this._pEffectsPass);
-				
+
 				this.addScreenPass(this._casterLightPass);
 
-				if (this._nonCasterLightPasses)
-                {
+				if (this._nonCasterLightPasses) {
 
-					for (i = 0; i < this._nonCasterLightPasses.length; ++i)
-                    {
+					for (i = 0; i < this._nonCasterLightPasses.length; ++i) {
 						this.addScreenPass(this._nonCasterLightPasses[i]);
-                    }
+					}
 
 				}
 
@@ -476,8 +468,7 @@ module away.materials
 		 */
 		private addScreenPass(pass:away.materials.CompiledPass)
 		{
-			if (pass)
-            {
+			if (pass) {
 
 				this.pAddPass(pass);
 				pass._iPassesDirty = false;
@@ -491,22 +482,19 @@ module away.materials
 		 */
 		private isAnyScreenPassInvalid():boolean
 		{
-			if ((this._casterLightPass && this._casterLightPass._iPassesDirty) ||
-				(this._pEffectsPass && this._pEffectsPass._iPassesDirty))
-            {
+			if ((this._casterLightPass && this._casterLightPass._iPassesDirty) || (this._pEffectsPass && this._pEffectsPass._iPassesDirty)) {
 
 				return true;
 
 			}
-			
+
 			if (this._nonCasterLightPasses) {
-				for (var i:number = 0; i < this._nonCasterLightPasses.length; ++i)
-                {
+				for (var i:number = 0; i < this._nonCasterLightPasses.length; ++i) {
 					if (this._nonCasterLightPasses[i]._iPassesDirty)
 						return true;
 				}
 			}
-			
+
 			return false;
 		}
 
@@ -518,15 +506,13 @@ module away.materials
 		{
 			if (!pass)
 				return;
-			
-			if (pass._iPasses)
-            {
+
+			if (pass._iPasses) {
 				var len:number = pass._iPasses.length;
 
-				for (var i:number = 0; i < len; ++i)
-                {
+				for (var i:number = 0; i < len; ++i) {
 					this.pAddPass(pass._iPasses[i]);
-                }
+				}
 			}
 		}
 
@@ -535,10 +521,9 @@ module away.materials
 		 */
 		public iActivatePass(index:number, stage3DProxy:away.managers.Stage3DProxy, camera:away.cameras.Camera3D)
 		{
-			if (index == 0)
-            {
+			if (index == 0) {
 				stage3DProxy._iContext3D.setBlendFactors(away.display3D.Context3DBlendFactor.ONE, away.display3D.Context3DBlendFactor.ZERO);
-            }
+			}
 			super.iActivatePass(index, stage3DProxy, camera);
 		}
 
@@ -558,7 +543,7 @@ module away.materials
 		{
 			this.initPasses();
 			this.setBlendAndCompareModes();
-			
+
 			this._screenPassesInvalid = false;
 		}
 
@@ -569,30 +554,23 @@ module away.materials
 		{
 			// let the effects pass handle everything if there are no lights,
 			// or when there are effect methods applied after shading.
-			if (this.numLights == 0 || this.numMethods > 0)
-            {
-                this.initEffectsPass();
-            }
-			else if (this._pEffectsPass && this.numMethods == 0)
-            {
+			if (this.numLights == 0 || this.numMethods > 0) {
+				this.initEffectsPass();
+			} else if (this._pEffectsPass && this.numMethods == 0) {
 				this.removeEffectsPass();
-            }
+			}
 
 			// only use a caster light pass if shadows need to be rendered
-			if (this._shadowMethod)
-            {
-                this.initCasterLightPass();
-            }
-			else
-            {
+			if (this._shadowMethod) {
+				this.initCasterLightPass();
+			} else {
 				this.removeCasterLightPass();
-            }
+			}
 
 			// only use non caster light passes if there are lights that don't cast
 			if (this.numNonCasters > 0)
-				this.initNonCasterLightPasses();
-			else
-                this.removeNonCasterLightPasses();
+				this.initNonCasterLightPasses(); else
+				this.removeNonCasterLightPasses();
 		}
 
 		/**
@@ -603,15 +581,13 @@ module away.materials
 			var forceSeparateMVP:boolean = <boolean> ( this._casterLightPass || this._pEffectsPass);
 
 			// caster light pass is always first if it exists, hence it uses normal blending
-			if ( this._casterLightPass)
-            {
+			if (this._casterLightPass) {
 				this._casterLightPass.setBlendMode(away.display.BlendMode.NORMAL);
-                this._casterLightPass.depthCompareMode = this._pDepthCompareMode;
-                this._casterLightPass.forceSeparateMVP = forceSeparateMVP;
+				this._casterLightPass.depthCompareMode = this._pDepthCompareMode;
+				this._casterLightPass.forceSeparateMVP = forceSeparateMVP;
 			}
 
-			if (this._nonCasterLightPasses)
-            {
+			if (this._nonCasterLightPasses) {
 				var firstAdditiveIndex:number = 0;
 
 				// if there's no caster light pass, the first non caster light pass will be the first
@@ -626,72 +602,67 @@ module away.materials
 				// all lighting passes following the first light pass should use additive blending
 				for (var i:number = firstAdditiveIndex; i < this._nonCasterLightPasses.length; ++i) {
 					this._nonCasterLightPasses[i].forceSeparateMVP = forceSeparateMVP;
-                    this._nonCasterLightPasses[i].setBlendMode(away.display.BlendMode.ADD);
-                    this._nonCasterLightPasses[i].depthCompareMode = away.display3D.Context3DCompareMode.LESS_EQUAL;
+					this._nonCasterLightPasses[i].setBlendMode(away.display.BlendMode.ADD);
+					this._nonCasterLightPasses[i].depthCompareMode = away.display3D.Context3DCompareMode.LESS_EQUAL;
 				}
 			}
 
-			if (this._casterLightPass || this._nonCasterLightPasses)
-            {
+			if (this._casterLightPass || this._nonCasterLightPasses) {
 
 				// there are light passes, so this should be blended in
-				if (this._pEffectsPass)
-                {
-                    this._pEffectsPass.iIgnoreLights= true;
-                    this._pEffectsPass.depthCompareMode = away.display3D.Context3DCompareMode.LESS_EQUAL;
-                    this._pEffectsPass.setBlendMode(away.display.BlendMode.LAYER);
-                    this._pEffectsPass.forceSeparateMVP = forceSeparateMVP;
+				if (this._pEffectsPass) {
+					this._pEffectsPass.iIgnoreLights = true;
+					this._pEffectsPass.depthCompareMode = away.display3D.Context3DCompareMode.LESS_EQUAL;
+					this._pEffectsPass.setBlendMode(away.display.BlendMode.LAYER);
+					this._pEffectsPass.forceSeparateMVP = forceSeparateMVP;
 				}
 
-			}
-            else if (this._pEffectsPass)
-            {
+			} else if (this._pEffectsPass) {
 				// effects pass is the only pass, so it should just blend normally
 				this._pEffectsPass.iIgnoreLights = false;
-                this._pEffectsPass.depthCompareMode = this._pDepthCompareMode;
+				this._pEffectsPass.depthCompareMode = this._pDepthCompareMode;
 
-                this.depthCompareMode
+				this.depthCompareMode
 
-                this._pEffectsPass.setBlendMode(away.display.BlendMode.NORMAL);
-                this._pEffectsPass.forceSeparateMVP = false;
+				this._pEffectsPass.setBlendMode(away.display.BlendMode.NORMAL);
+				this._pEffectsPass.forceSeparateMVP = false;
 			}
 		}
 
 		private initCasterLightPass()
 		{
 
-            if ( this._casterLightPass == null )
-            {
+			if (this._casterLightPass == null) {
 
-                this._casterLightPass = new away.materials.ShadowCasterPass(this);
+				this._casterLightPass = new away.materials.ShadowCasterPass(this);
 
-            }
+			}
 
 			this._casterLightPass.diffuseMethod = null;
-            this._casterLightPass.ambientMethod = null;
-            this._casterLightPass.normalMethod = null;
-            this._casterLightPass.specularMethod = null;
-            this._casterLightPass.shadowMethod = null;
-            this._casterLightPass.enableLightFallOff = this._enableLightFallOff;
-            this._casterLightPass.lightPicker = new away.materials.StaticLightPicker([this._shadowMethod.castingLight]);
-            this._casterLightPass.shadowMethod = this._shadowMethod;
-            this._casterLightPass.diffuseMethod = this._diffuseMethod;
-            this._casterLightPass.ambientMethod = this._ambientMethod;
-            this._casterLightPass.normalMethod = this._normalMethod;
-            this._casterLightPass.specularMethod = this._specularMethod;
-            this._casterLightPass.diffuseLightSources = this._diffuseLightSources;
-            this._casterLightPass.specularLightSources = this._specularLightSources;
+			this._casterLightPass.ambientMethod = null;
+			this._casterLightPass.normalMethod = null;
+			this._casterLightPass.specularMethod = null;
+			this._casterLightPass.shadowMethod = null;
+			this._casterLightPass.enableLightFallOff = this._enableLightFallOff;
+			this._casterLightPass.lightPicker = new away.materials.StaticLightPicker([this._shadowMethod.castingLight]);
+			this._casterLightPass.shadowMethod = this._shadowMethod;
+			this._casterLightPass.diffuseMethod = this._diffuseMethod;
+			this._casterLightPass.ambientMethod = this._ambientMethod;
+			this._casterLightPass.normalMethod = this._normalMethod;
+			this._casterLightPass.specularMethod = this._specularMethod;
+			this._casterLightPass.diffuseLightSources = this._diffuseLightSources;
+			this._casterLightPass.specularLightSources = this._specularLightSources;
 		}
-		
+
 		private removeCasterLightPass()
 		{
 			if (!this._casterLightPass)
 				return;
-            this._casterLightPass.dispose();
-            this.pRemovePass(this._casterLightPass);
-            this._casterLightPass = null;
+			this._casterLightPass.dispose();
+			this.pRemovePass(this._casterLightPass);
+			this._casterLightPass = null;
 		}
-		
+
 		private initNonCasterLightPasses()
 		{
 			this.removeNonCasterLightPasses();
@@ -702,16 +673,15 @@ module away.materials
 			var dirLightOffset:number = 0;
 			var pointLightOffset:number = 0;
 			var probeOffset:number = 0;
-			
-			if (! this._casterLightPass) {
+
+			if (!this._casterLightPass) {
 				numDirLights += this._pLightPicker.numCastingDirectionalLights;
 				numPointLights += this._pLightPicker.numCastingPointLights;
 			}
-			
+
 			this._nonCasterLightPasses = new Array<away.materials.LightingPass>();
 
-			while (dirLightOffset < numDirLights || pointLightOffset < numPointLights || probeOffset < numLightProbes)
-            {
+			while (dirLightOffset < numDirLights || pointLightOffset < numPointLights || probeOffset < numLightProbes) {
 				pass = new LightingPass(this);
 				pass.enableLightFallOff = this._enableLightFallOff;
 				pass.includeCasters = this._shadowMethod == null;
@@ -729,66 +699,61 @@ module away.materials
 				pass.specularMethod = this._specularMethod;
 				pass.diffuseLightSources = this._diffuseLightSources;
 				pass.specularLightSources = this._specularLightSources;
-                this._nonCasterLightPasses.push(pass);
-				
+				this._nonCasterLightPasses.push(pass);
+
 				dirLightOffset += pass.iNumDirectionalLights;
 				pointLightOffset += pass.iNumPointLights;
 				probeOffset += pass.iNumLightProbes;
 			}
 		}
-		
+
 		private removeNonCasterLightPasses()
 		{
-			if (! this._nonCasterLightPasses)
+			if (!this._nonCasterLightPasses)
 				return;
 
-			for (var i:number = 0; i < this._nonCasterLightPasses.length; ++i)
-            {
-                this.pRemovePass(this._nonCasterLightPasses[i]);
+			for (var i:number = 0; i < this._nonCasterLightPasses.length; ++i) {
+				this.pRemovePass(this._nonCasterLightPasses[i]);
 				this._nonCasterLightPasses[i].dispose();
 			}
 			this._nonCasterLightPasses = null;
 		}
-		
+
 		private removeEffectsPass()
 		{
 			if (this._pEffectsPass.diffuseMethod != this._diffuseMethod)
-                this._pEffectsPass.diffuseMethod.dispose();
+				this._pEffectsPass.diffuseMethod.dispose();
 
-            this.pRemovePass(this._pEffectsPass);
-            this._pEffectsPass.dispose();
-            this._pEffectsPass = null;
+			this.pRemovePass(this._pEffectsPass);
+			this._pEffectsPass.dispose();
+			this._pEffectsPass = null;
 		}
-		
+
 		private initEffectsPass():SuperShaderPass
 		{
 
-            if ( this._pEffectsPass == null )
-            {
+			if (this._pEffectsPass == null) {
 
-                this._pEffectsPass = new away.materials.SuperShaderPass(this);
+				this._pEffectsPass = new away.materials.SuperShaderPass(this);
 
-            }
+			}
 
 			this._pEffectsPass.enableLightFallOff = this._enableLightFallOff;
-			if (this.numLights == 0)
-            {
+			if (this.numLights == 0) {
 				this._pEffectsPass.diffuseMethod = null;
-                this._pEffectsPass.diffuseMethod = this._diffuseMethod;
+				this._pEffectsPass.diffuseMethod = this._diffuseMethod;
 
-			}
-            else
-            {
+			} else {
 				this._pEffectsPass.diffuseMethod = null;
-                this._pEffectsPass.diffuseMethod = new away.materials.BasicDiffuseMethod();
-                this._pEffectsPass.diffuseMethod.diffuseColor = 0x000000;
-                this._pEffectsPass.diffuseMethod.diffuseAlpha = 0;
+				this._pEffectsPass.diffuseMethod = new away.materials.BasicDiffuseMethod();
+				this._pEffectsPass.diffuseMethod.diffuseColor = 0x000000;
+				this._pEffectsPass.diffuseMethod.diffuseAlpha = 0;
 			}
 
-            this._pEffectsPass.preserveAlpha = false;
-            this._pEffectsPass.normalMethod = null;
-            this._pEffectsPass.normalMethod = this._normalMethod;
-			
+			this._pEffectsPass.preserveAlpha = false;
+			this._pEffectsPass.normalMethod = null;
+			this._pEffectsPass.normalMethod = this._normalMethod;
+
 			return this._pEffectsPass;
 		}
 
@@ -797,8 +762,7 @@ module away.materials
 		 */
 		private get numLights():number
 		{
-			return this._pLightPicker? this._pLightPicker.numLightProbes + this._pLightPicker.numDirectionalLights + this._pLightPicker.numPointLights +
-				this._pLightPicker.numCastingDirectionalLights + this._pLightPicker.numCastingPointLights : 0;
+			return this._pLightPicker? this._pLightPicker.numLightProbes + this._pLightPicker.numDirectionalLights + this._pLightPicker.numPointLights + this._pLightPicker.numCastingDirectionalLights + this._pLightPicker.numCastingPointLights : 0;
 		}
 
 		/**

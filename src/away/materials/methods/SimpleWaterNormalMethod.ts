@@ -21,11 +21,11 @@ module away.materials
 		 * @param waveMap1 A normal map containing one layer of a wave structure.
 		 * @param waveMap2 A normal map containing a second layer of a wave structure.
 		 */
-		constructor(waveMap1:away.textures.Texture2DBase, waveMap2:away.textures.Texture2DBase)
+			constructor(waveMap1:away.textures.Texture2DBase, waveMap2:away.textures.Texture2DBase)
 		{
 			super();
 			this.normalMap = waveMap1;
-            this.secondaryNormalMap = waveMap2;
+			this.secondaryNormalMap = waveMap2;
 		}
 
 		/**
@@ -46,7 +46,7 @@ module away.materials
 		public iInitVO(vo:away.materials.MethodVO):void
 		{
 			super.iInitVO(vo);
-			
+
 			this._useSecondNormalMap = this.normalMap != this.secondaryNormalMap;
 		}
 
@@ -57,7 +57,7 @@ module away.materials
 		{
 			return this._water1OffsetX;
 		}
-		
+
 		public set water1OffsetX(value:number)
 		{
 			this._water1OffsetX = value;
@@ -70,7 +70,7 @@ module away.materials
 		{
 			return this._water1OffsetY;
 		}
-		
+
 		public set water1OffsetY(value:number)
 		{
 			this._water1OffsetY = value;
@@ -83,7 +83,7 @@ module away.materials
 		{
 			return this._water2OffsetX;
 		}
-		
+
 		public set water2OffsetX(value:number)
 		{
 			this._water2OffsetX = value;
@@ -96,7 +96,7 @@ module away.materials
 		{
 			return this._water2OffsetY;
 		}
-		
+
 		public set water2OffsetY(value:number)
 		{
 			this._water2OffsetY = value;
@@ -107,11 +107,10 @@ module away.materials
 		 */
 		public set normalMap(value:away.textures.Texture2DBase)
 		{
-			if (!value)
-            {
+			if (!value) {
 				return;
-            }
-			this.setNormalMap( value );
+			}
+			this.setNormalMap(value);
 		}
 
 		/**
@@ -121,10 +120,10 @@ module away.materials
 		{
 			return this._texture2;
 		}
-		
+
 		public set secondaryNormalMap(value:away.textures.Texture2DBase)
 		{
-            this._texture2 = value;
+			this._texture2 = value;
 		}
 
 		/**
@@ -151,17 +150,17 @@ module away.materials
 		public iActivate(vo:away.materials.MethodVO, stage3DProxy:away.managers.Stage3DProxy):void
 		{
 			super.iActivate(vo, stage3DProxy);
-			
+
 			var data:Array<number> = vo.fragmentData;
 			var index:number = vo.fragmentConstantsIndex;
-			
+
 			data[index + 4] = this._water1OffsetX;
 			data[index + 5] = this._water1OffsetY;
 			data[index + 6] = this._water2OffsetX;
 			data[index + 7] = this._water2OffsetY;
-			
+
 			//if (this._useSecondNormalMap >= 0)
-            if (this._useSecondNormalMap )
+			if (this._useSecondNormalMap)
 				stage3DProxy._iContext3D.setTextureAt(vo.texturesIndex + 1, this._texture2.getTextureForStage3D(stage3DProxy));
 		}
 
@@ -174,19 +173,12 @@ module away.materials
 			var dataReg:ShaderRegisterElement = regCache.getFreeFragmentConstant();
 			var dataReg2:ShaderRegisterElement = regCache.getFreeFragmentConstant();
 			this._pNormalTextureRegister = regCache.getFreeTextureReg();
-            this._normalTextureRegister2 = this._useSecondNormalMap? regCache.getFreeTextureReg() : this._pNormalTextureRegister;
+			this._normalTextureRegister2 = this._useSecondNormalMap? regCache.getFreeTextureReg() : this._pNormalTextureRegister;
 			vo.texturesIndex = this._pNormalTextureRegister.index;
-			
+
 			vo.fragmentConstantsIndex = dataReg.index*4;
-			return "add " + temp + ", " + this._sharedRegisters.uvVarying + ", " + dataReg2 + ".xyxy\n" +
-				this.pGetTex2DSampleCode(vo, targetReg, this._pNormalTextureRegister, this.normalMap, temp) +
-				"add " + temp + ", " + this._sharedRegisters.uvVarying + ", " + dataReg2 + ".zwzw\n" +
-				this.pGetTex2DSampleCode(vo, temp, this._normalTextureRegister2, this._texture2, temp) +
-				"add " + targetReg + ", " + targetReg + ", " + temp + "		\n" +
-				"mul " + targetReg + ", " + targetReg + ", " + dataReg + ".x	\n" +
-				"sub " + targetReg + ".xyz, " + targetReg + ".xyz, " + this._sharedRegisters.commons + ".xxx	\n" +
-				"nrm " + targetReg + ".xyz, " + targetReg + ".xyz							\n";
-		
+			return "add " + temp + ", " + this._sharedRegisters.uvVarying + ", " + dataReg2 + ".xyxy\n" + this.pGetTex2DSampleCode(vo, targetReg, this._pNormalTextureRegister, this.normalMap, temp) + "add " + temp + ", " + this._sharedRegisters.uvVarying + ", " + dataReg2 + ".zwzw\n" + this.pGetTex2DSampleCode(vo, temp, this._normalTextureRegister2, this._texture2, temp) + "add " + targetReg + ", " + targetReg + ", " + temp + "		\n" + "mul " + targetReg + ", " + targetReg + ", " + dataReg + ".x	\n" + "sub " + targetReg + ".xyz, " + targetReg + ".xyz, " + this._sharedRegisters.commons + ".xxx	\n" + "nrm " + targetReg + ".xyz, " + targetReg + ".xyz							\n";
+
 		}
 	}
 }

@@ -4,23 +4,16 @@ module away.utils
 {
 	export class PerspectiveMatrix3D extends away.geom.Matrix3D
 	{
-		constructor( v: number[] = null )
+		constructor(v:number[] = null)
 		{
-			super( v );
+			super(v);
 		}
-		
-		public perspectiveFieldOfViewLH( fieldOfViewY:number,
-										 aspectRatio:number,
-										 zNear:number,
-										 zFar: number)
+
+		public perspectiveFieldOfViewLH(fieldOfViewY:number, aspectRatio:number, zNear:number, zFar:number)
 		{
-			var yScale:number = 1/Math.tan( fieldOfViewY/2 );
-			var xScale:number = yScale / aspectRatio;
-			this.copyRawDataFrom( [xScale, 0.0, 0.0, 0.0,
-				0.0, yScale, 0.0, 0.0,
-				0.0, 0.0, zFar/(zFar-zNear), 1.0,
-				0.0, 0.0, (zNear*zFar)/(zNear-zFar), 0.0]
-				);
+			var yScale:number = 1/Math.tan(fieldOfViewY/2);
+			var xScale:number = yScale/aspectRatio;
+			this.copyRawDataFrom([xScale, 0.0, 0.0, 0.0, 0.0, yScale, 0.0, 0.0, 0.0, 0.0, zFar/(zFar - zNear), 1.0, 0.0, 0.0, (zNear*zFar)/(zNear - zFar), 0.0]);
 		}
 	}
 }

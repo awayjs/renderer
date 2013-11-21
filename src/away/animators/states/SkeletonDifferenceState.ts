@@ -3,8 +3,8 @@
 module away.animators
 {
 	import Vector3D = away.geom.Vector3D;
-    import Quaternion = away.math.Quaternion;
-	
+	import Quaternion = away.math.Quaternion;
+
 	/**
 	 *
 	 */
@@ -17,7 +17,7 @@ module away.animators
 		private _skeletonPoseDirty:boolean = true;
 		private _baseInput:ISkeletonAnimationState;
 		private _differenceInput:ISkeletonAnimationState;
-		
+
 		/**
 		 * Defines a fractional value between 0 and 1 representing the blending ratio between the base input (0) and difference input (1),
 		 * used to produce the skeleton pose output.
@@ -29,25 +29,25 @@ module away.animators
 		{
 			return this._blendWeight;
 		}
-		
+
 		public set blendWeight(value:number)
 		{
 			this._blendWeight = value;
 
-            this._pPositionDeltaDirty = true;
-            this._skeletonPoseDirty = true;
+			this._pPositionDeltaDirty = true;
+			this._skeletonPoseDirty = true;
 		}
-		
+
 		constructor(animator:IAnimator, skeletonAnimationNode:SkeletonDifferenceNode)
 		{
 			super(animator, skeletonAnimationNode);
 
-            this._skeletonAnimationNode = skeletonAnimationNode;
+			this._skeletonAnimationNode = skeletonAnimationNode;
 
-            this._baseInput = <ISkeletonAnimationState> animator.getAnimationState(this._skeletonAnimationNode.baseInput);
-            this._differenceInput = <ISkeletonAnimationState> animator.getAnimationState(this._skeletonAnimationNode.differenceInput);
+			this._baseInput = <ISkeletonAnimationState> animator.getAnimationState(this._skeletonAnimationNode.baseInput);
+			this._differenceInput = <ISkeletonAnimationState> animator.getAnimationState(this._skeletonAnimationNode.differenceInput);
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
@@ -55,51 +55,51 @@ module away.animators
 		{
 			this._skeletonPoseDirty = true;
 
-            this._pPositionDeltaDirty = true;
+			this._pPositionDeltaDirty = true;
 
-            this._baseInput.phase(value);
-            this._baseInput.phase(value);
+			this._baseInput.phase(value);
+			this._baseInput.phase(value);
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
 		public _pUpdateTime(time:number /*int*/)
 		{
-            this._skeletonPoseDirty = true;
+			this._skeletonPoseDirty = true;
 
-            this._baseInput.update(time);
-            this._differenceInput.update(time);
-			
+			this._baseInput.update(time);
+			this._differenceInput.update(time);
+
 			super._pUpdateTime(time);
 		}
-		
+
 		/**
 		 * Returns the current skeleton pose of the animation in the clip based on the internal playhead position.
 		 */
 		public getSkeletonPose(skeleton:Skeleton):SkeletonPose
 		{
 			if (this._skeletonPoseDirty)
-                this.updateSkeletonPose(skeleton);
-			
+				this.updateSkeletonPose(skeleton);
+
 			return this._skeletonPose;
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
 		public _pUpdatePositionDelta():void
 		{
-            this._pPositionDeltaDirty = false;
-			
+			this._pPositionDeltaDirty = false;
+
 			var deltA:Vector3D = this._baseInput.positionDelta;
 			var deltB:Vector3D = this._differenceInput.positionDelta;
 
-            this.positionDelta.x = deltA.x + this._blendWeight*deltB.x;
-            this.positionDelta.y = deltA.y + this._blendWeight*deltB.y;
-            this.positionDelta.z = deltA.z + this._blendWeight*deltB.z;
+			this.positionDelta.x = deltA.x + this._blendWeight*deltB.x;
+			this.positionDelta.y = deltA.y + this._blendWeight*deltB.y;
+			this.positionDelta.z = deltA.z + this._blendWeight*deltB.z;
 		}
-		
+
 		/**
 		 * Updates the output skeleton pose of the node based on the blendWeight value between base input and difference input nodes.
 		 *
@@ -107,8 +107,8 @@ module away.animators
 		 */
 		private updateSkeletonPose(skeleton:Skeleton):void
 		{
-            this._skeletonPoseDirty = false;
-			
+			this._skeletonPoseDirty = false;
+
 			var endPose:JointPose;
 			var endPoses:Array<JointPose> = this._skeletonPose.jointPoses;
 			var basePoses:Array<JointPose> = this._baseInput.getSkeletonPose(skeleton).jointPoses;
@@ -117,25 +117,25 @@ module away.animators
 			var basePos:Vector3D, diffPos:Vector3D;
 			var tr:Vector3D;
 			var numJoints:number /*uint*/ = skeleton.numJoints;
-			
+
 			// :s
 			if (endPoses.length != numJoints)
 				endPoses.length = numJoints;
-			
+
 			for (var i:number /*uint*/ = 0; i < numJoints; ++i) {
 				endPose = endPoses[i];
 
-                if (endPose == null)
-                    endPose = endPoses[i] = new JointPose();
+				if (endPose == null)
+					endPose = endPoses[i] = new JointPose();
 
 				base = basePoses[i];
 				diff = diffPoses[i];
 				basePos = base.translation;
 				diffPos = diff.translation;
 
-                SkeletonDifferenceState._tempQuat.multiply(diff.orientation, base.orientation);
+				SkeletonDifferenceState._tempQuat.multiply(diff.orientation, base.orientation);
 				endPose.orientation.lerp(base.orientation, SkeletonDifferenceState._tempQuat, this._blendWeight);
-				
+
 				tr = endPose.translation;
 				tr.x = basePos.x + this._blendWeight*diffPos.x;
 				tr.y = basePos.y + this._blendWeight*diffPos.y;

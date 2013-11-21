@@ -1,4 +1,3 @@
-
 ///<reference path="../away/_definitions.ts" />
 
 module aglsl
@@ -8,10 +7,10 @@ module aglsl
 		public progid:number = 0;
 		public version:number = 0;
 		public type:string = "";
-		
+
 		constructor()
 		{
 		}
 	}
-	
+
 }

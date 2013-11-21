@@ -15,20 +15,20 @@ module away.materials
 		 * @param modulateMethod The method which will add the code to alter the base method's strength. It needs to have the signature clampDiffuse(t : ShaderRegisterElement, regCache : ShaderRegisterCache) : string, in which t.w will contain the diffuse strength.
 		 * @param baseDiffuseMethod The base diffuse method on which this method's shading is based.
 		 */
-		constructor(scope : Object , modulateMethod:Function = null, baseDiffuseMethod:away.materials.BasicDiffuseMethod = null)
+			constructor(scope:Object, modulateMethod:Function = null, baseDiffuseMethod:away.materials.BasicDiffuseMethod = null)
 		{
-            super();
+			super();
 
-            if (scope != null && modulateMethod != null)
-                this._pInitCompositeDiffuseMethod(scope, modulateMethod, baseDiffuseMethod);
-        }
+			if (scope != null && modulateMethod != null)
+				this._pInitCompositeDiffuseMethod(scope, modulateMethod, baseDiffuseMethod);
+		}
 
-        public _pInitCompositeDiffuseMethod( scope : Object , modulateMethod:Function, baseDiffuseMethod:away.materials.BasicDiffuseMethod = null)
-        {
+		public _pInitCompositeDiffuseMethod(scope:Object, modulateMethod:Function, baseDiffuseMethod:away.materials.BasicDiffuseMethod = null)
+		{
 			this.pBaseMethod = baseDiffuseMethod || new away.materials.BasicDiffuseMethod();
-            this.pBaseMethod._iModulateMethod = modulateMethod;
-            this.pBaseMethod._iModulateMethodScope = scope;
-            this.pBaseMethod.addEventListener(away.events.ShadingMethodEvent.SHADER_INVALIDATED, this.onShaderInvalidated , this );
+			this.pBaseMethod._iModulateMethod = modulateMethod;
+			this.pBaseMethod._iModulateMethodScope = scope;
+			this.pBaseMethod.addEventListener(away.events.ShadingMethodEvent.SHADER_INVALIDATED, this.onShaderInvalidated, this);
 		}
 
 		/**
@@ -43,9 +43,9 @@ module away.materials
 		{
 			if (this.pBaseMethod == value)
 				return;
-            this.pBaseMethod.removeEventListener(away.events.ShadingMethodEvent.SHADER_INVALIDATED, this.onShaderInvalidated , this );
-            this.pBaseMethod = value;
-            this.pBaseMethod.addEventListener(away.events.ShadingMethodEvent.SHADER_INVALIDATED, this.onShaderInvalidated, this );
+			this.pBaseMethod.removeEventListener(away.events.ShadingMethodEvent.SHADER_INVALIDATED, this.onShaderInvalidated, this);
+			this.pBaseMethod = value;
+			this.pBaseMethod.addEventListener(away.events.ShadingMethodEvent.SHADER_INVALIDATED, this.onShaderInvalidated, this);
 			this.iInvalidateShaderProgram();//invalidateShaderProgram();
 		}
 
@@ -54,7 +54,7 @@ module away.materials
 		 */
 		public iInitVO(vo:MethodVO):void
 		{
-            this.pBaseMethod.iInitVO(vo);
+			this.pBaseMethod.iInitVO(vo);
 		}
 
 		/**
@@ -62,16 +62,16 @@ module away.materials
 		 */
 		public iInitConstants(vo:MethodVO):void
 		{
-            this.pBaseMethod.iInitConstants(vo);
+			this.pBaseMethod.iInitConstants(vo);
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
 		public dispose():void
 		{
-            this.pBaseMethod.removeEventListener(away.events.ShadingMethodEvent.SHADER_INVALIDATED, this.onShaderInvalidated , this );
-            this.pBaseMethod.dispose();
+			this.pBaseMethod.removeEventListener(away.events.ShadingMethodEvent.SHADER_INVALIDATED, this.onShaderInvalidated, this);
+			this.pBaseMethod.dispose();
 		}
 
 		/**
@@ -81,12 +81,12 @@ module away.materials
 		{
 			return this.pBaseMethod.alphaThreshold;
 		}
-		
+
 		public set alphaThreshold(value:number)
 		{
-            this.pBaseMethod.alphaThreshold = value;
+			this.pBaseMethod.alphaThreshold = value;
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
@@ -94,15 +94,15 @@ module away.materials
 		{
 			return this.pBaseMethod.texture;
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
 		public set texture(value:away.textures.Texture2DBase)
 		{
-            this.pBaseMethod.texture = value;
+			this.pBaseMethod.texture = value;
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
@@ -110,7 +110,7 @@ module away.materials
 		{
 			return this.pBaseMethod.diffuseAlpha;
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
@@ -118,23 +118,23 @@ module away.materials
 		{
 			return this.pBaseMethod.diffuseColor;
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
 		public set diffuseColor(diffuseColor:number)
 		{
-            this.pBaseMethod.diffuseColor = diffuseColor;
+			this.pBaseMethod.diffuseColor = diffuseColor;
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
 		public set diffuseAlpha(value:number)
 		{
-            this.pBaseMethod.diffuseAlpha = value;
+			this.pBaseMethod.diffuseAlpha = value;
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
@@ -142,7 +142,7 @@ module away.materials
 		{
 			return this.pBaseMethod.iGetFragmentPreLightingCode(vo, regCache);
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
@@ -152,7 +152,7 @@ module away.materials
 			this.pTotalLightColorReg = this.pBaseMethod.pTotalLightColorReg;
 			return code;
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
@@ -162,13 +162,13 @@ module away.materials
 			this.pTotalLightColorReg = this.pBaseMethod.pTotalLightColorReg;
 			return code;
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
 		public iActivate(vo:away.materials.MethodVO, stage3DProxy:away.managers.Stage3DProxy):void
 		{
-            this.pBaseMethod.iActivate(vo, stage3DProxy);
+			this.pBaseMethod.iActivate(vo, stage3DProxy);
 		}
 
 		/**
@@ -176,9 +176,9 @@ module away.materials
 		 */
 		public iDeactivate(vo:away.materials.MethodVO, stage3DProxy:away.managers.Stage3DProxy):void
 		{
-            this.pBaseMethod.iDeactivate(vo, stage3DProxy);
+			this.pBaseMethod.iDeactivate(vo, stage3DProxy);
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
@@ -186,7 +186,7 @@ module away.materials
 		{
 			return this.pBaseMethod.iGetVertexCode(vo, regCache);
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
@@ -194,13 +194,13 @@ module away.materials
 		{
 			return this.pBaseMethod.iGetFragmentPostLightingCode(vo, regCache, targetReg);
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
 		public iReset():void
 		{
-            this.pBaseMethod.iReset();
+			this.pBaseMethod.iReset();
 		}
 
 		/**
@@ -209,34 +209,34 @@ module away.materials
 		public iCleanCompilationData():void
 		{
 			super.iCleanCompilationData();
-            this.pBaseMethod.iCleanCompilationData();
+			this.pBaseMethod.iCleanCompilationData();
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
 
-        public set iSharedRegisters(value:away.materials.ShaderRegisterData)
-        {
-            this.pBaseMethod.setISharedRegisters( value );
-            super.setISharedRegisters( value ) ;
+		public set iSharedRegisters(value:away.materials.ShaderRegisterData)
+		{
+			this.pBaseMethod.setISharedRegisters(value);
+			super.setISharedRegisters(value);
 
-        }
+		}
 
-        public setISharedRegisters(value:away.materials.ShaderRegisterData)
-        {
-            this.pBaseMethod.setISharedRegisters( value );
-            super.setISharedRegisters( value ) ;
+		public setISharedRegisters(value:away.materials.ShaderRegisterData)
+		{
+			this.pBaseMethod.setISharedRegisters(value);
+			super.setISharedRegisters(value);
 
-        }
+		}
 
 		/**
 		 * @inheritDoc
 		 */
 		public set iShadowRegister(value:away.materials.ShaderRegisterElement)
 		{
-			super.setIShadowRegister( value );
-            this.pBaseMethod.setIShadowRegister( value );
+			super.setIShadowRegister(value);
+			this.pBaseMethod.setIShadowRegister(value);
 		}
 
 		/**

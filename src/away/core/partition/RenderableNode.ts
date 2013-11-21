@@ -10,28 +10,27 @@ module away.partition
 	export class RenderableNode extends EntityNode
 	{
 		private _renderable:away.base.IRenderable;
-		
+
 		/**
 		 * Creates a new RenderableNode object.
 		 * @param mesh The mesh to be contained in the node.
 		 */
-		constructor(renderable:away.base.IRenderable)
+			constructor(renderable:away.base.IRenderable)
 		{
 
-            var e : any = renderable;
+			var e:any = renderable;
 
-			super( <away.entities.Entity> e );
+			super(<away.entities.Entity> e);
 
 			this._renderable = renderable; // also keep a stronger typed reference
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
 		public acceptTraverser(traverser:away.traverse.PartitionTraverser)
 		{
-			if (traverser.enterNode(this))
-            {
+			if (traverser.enterNode(this)) {
 
 				super.acceptTraverser(traverser);
 
@@ -40,10 +39,10 @@ module away.partition
 			}
 		}
 
-        public isCastingShadow():boolean
-        {
-            return this._renderable.castsShadows;
-        }
-	
+		public isCastingShadow():boolean
+		{
+			return this._renderable.castsShadows;
+		}
+
 	}
 }

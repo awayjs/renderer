@@ -14,11 +14,11 @@ module away.pick
 		private _raycastCollector:away.traverse.RaycastCollector;
 		private _ignoredEntities = [];
 		private _onlyMouseEnabled:boolean = true;
-		
+
 		private _entities:away.entities.Entity[];//Vector.<Entity>;
 		private _numEntities:number = 0;
 		private _hasCollisions:boolean;
-		
+
 		/**
 		 * @inheritDoc
 		 */
@@ -26,26 +26,26 @@ module away.pick
 		{
 			return this._onlyMouseEnabled;
 		}
-		
+
 		public set onlyMouseEnabled(value:boolean)
 		{
 			this._onlyMouseEnabled = value;
 		}
-		
+
 		/**
 		 * Creates a new <code>RaycastPicker</code> object.
 		 *
 		 * @param findClosestCollision Determines whether the picker searches for the closest bounds collision along the ray,
 		 * or simply returns the first collision encountered Defaults to false.
 		 */
-		constructor(findClosestCollision:boolean)
+			constructor(findClosestCollision:boolean)
 		{
-            this._raycastCollector = new away.traverse.RaycastCollector();
+			this._raycastCollector = new away.traverse.RaycastCollector();
 
 			this._findClosestCollision = findClosestCollision;
-            this._entities = new Array<away.entities.Entity>();//Vector.<Entity>();
+			this._entities = new Array<away.entities.Entity>();//Vector.<Entity>();
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
@@ -56,89 +56,88 @@ module away.pick
 			//cast ray through the collection of entities on the view
 			var collector:away.traverse.EntityCollector = view.iEntityCollector;
 			//var i:number;
-			
+
 			if (collector.numMouseEnableds == 0)
 				return null;
-			
+
 			//update ray
 			var rayPosition:away.geom.Vector3D = view.unproject(x, y, 0);
 			var rayDirection:away.geom.Vector3D = view.unproject(x, y, 1);
 			rayDirection = rayDirection.subtract(rayPosition);
-			
+
 			// Perform ray-bounds collision checks.
 			this._numEntities = 0;
 			var node:away.data.EntityListItem = collector.entityHead;
 			var entity:away.entities.Entity;
-			while (node)
-            {
+			while (node) {
 				entity = node.entity;
-				
+
 				if (this.isIgnored(entity)) {
 					node = node.next;
 					continue;
 				}
-				
+
 				// If collision detected, store in new data set.
 				if (entity._iIsVisible && entity.isIntersectingRay(rayPosition, rayDirection))
 					this._entities[this._numEntities++] = entity;
-				
+
 				node = node.next;
 			}
-			
+
 			//early out if no collisions detected
 			if (!this._numEntities)
 				return null;
-			
+
 			return this.getPickingCollisionVO();
 
 		}
+
 		//*/
 		/**
 		 * @inheritDoc
 		 */
 
-        //* TODO Implement Dependency: EntityListItem, EntityCollector, RaycastCollector
+			//* TODO Implement Dependency: EntityListItem, EntityCollector, RaycastCollector
 		public getSceneCollision(position:away.geom.Vector3D, direction:away.geom.Vector3D, scene:away.containers.Scene3D):away.pick.PickingCollisionVO
 		{
 
 			//clear collector
 			this._raycastCollector.clear();
-			
+
 			//setup ray vectors
-            this._raycastCollector.rayPosition = position;
-            this._raycastCollector.rayDirection = direction;
-			
+			this._raycastCollector.rayPosition = position;
+			this._raycastCollector.rayDirection = direction;
+
 			// collect entities to test
 			scene.traversePartitions(this._raycastCollector);
 
-            this._numEntities = 0;
+			this._numEntities = 0;
 			var node:away.data.EntityListItem = this._raycastCollector.entityHead;
 			var entity:away.entities.Entity;
 
-			while (node)
-            {
+			while (node) {
 				entity = node.entity;
-				
-				if (this.isIgnored(entity))
-                {
+
+				if (this.isIgnored(entity)) {
 					node = node.next;
 					continue;
 				}
-				
+
 				this._entities[this._numEntities++] = entity;
-				
+
 				node = node.next;
 			}
-			
+
 			//early out if no collisions detected
 			if (!this._numEntities)
 				return null;
-			
+
 			return this.getPickingCollisionVO();
 
 		}
+
 		//*/
-		public getEntityCollision(position:away.geom.Vector3D, direction:away.geom.Vector3D, entities:away.entities.Entity[] ):away.pick.PickingCollisionVO
+		public getEntityCollision(position:away.geom.Vector3D, direction:away.geom.Vector3D, entities:away.entities.Entity[]):away.pick.PickingCollisionVO
 		{
 
 
@@ -146,91 +145,87 @@ module away.pick
 			direction = direction;
 
 			this._numEntities = 0;
-			
+
 			var entity:away.entities.Entity;
-            var l : number = entities.length;
+			var l:number = entities.length;
 
 
-            for ( var c : number = 0 ; c < l ; c ++ )
-            {
+			for (var c:number = 0; c < l; c++) {
 
-                entity = entities[c];
+				entity = entities[c];
 
-                if (entity.isIntersectingRay(position, direction))
-                {
+				if (entity.isIntersectingRay(position, direction)) {
 
-                    this._entities[this._numEntities++] = entity;
+					this._entities[this._numEntities++] = entity;
 
-                }
+				}
 
 
-            }
+			}
 
 			return this.getPickingCollisionVO();
 
 		}
+
 		//*/
 		public setIgnoreList(entities)
 		{
 			this._ignoredEntities = entities;
 		}
-		
+
 		private isIgnored(entity:away.entities.Entity):boolean
 		{
-			if (this._onlyMouseEnabled && (!entity._iAncestorsAllowMouseEnabled || !entity.mouseEnabled))
-            {
+			if (this._onlyMouseEnabled && (!entity._iAncestorsAllowMouseEnabled || !entity.mouseEnabled)) {
 
-                return true;
+				return true;
 
-            }
+			}
 
-			
+
 			var ignoredEntity:away.entities.Entity;
 
-            var l : number = this._ignoredEntities.length;
+			var l:number = this._ignoredEntities.length;
 
-            for ( var c : number = 0 ; c < l ; c ++ )
-            {
+			for (var c:number = 0; c < l; c++) {
 
-                ignoredEntity = this._ignoredEntities[ c ];
+				ignoredEntity = this._ignoredEntities[ c ];
 
-                if (ignoredEntity == entity)
-                {
+				if (ignoredEntity == entity) {
 
-                    return true;
+					return true;
 
-                }
+				}
 
-            }
+			}
 
 			return false;
 
 		}
-		
+
 		private sortOnNearT(entity1:away.entities.Entity, entity2:away.entities.Entity):number
 		{
 			return entity1.pickingCollisionVO.rayEntryDistance > entity2.pickingCollisionVO.rayEntryDistance? 1 : -1;
 		}
-		
+
 		private getPickingCollisionVO():PickingCollisionVO
 		{
 			// trim before sorting
 			this._entities.length = this._numEntities;
-			
+
 			// Sort entities from closest to furthest.
 			this._entities = this._entities.sort(this.sortOnNearT); // TODO - test sort filter in JS
-			
+
 			// ---------------------------------------------------------------------
 			// Evaluate triangle collisions when needed.
 			// Replaces collision data provided by bounds collider with more precise data.
 			// ---------------------------------------------------------------------
-			
+
 			var shortestCollisionDistance:number = Number.MAX_VALUE;
 			var bestCollisionVO:PickingCollisionVO;
 			var pickingCollisionVO:PickingCollisionVO;
 			var entity:away.entities.Entity;
 			var i:number;
-			
+
 			for (i = 0; i < this._numEntities; ++i) {
 				entity = this._entities[i];
 				pickingCollisionVO = entity._iPickingCollisionVO;
@@ -255,15 +250,15 @@ module away.pick
 					}
 				}
 			}
-			
+
 			return bestCollisionVO;
 		}
-		
+
 		private updateLocalPosition(pickingCollisionVO:PickingCollisionVO)
 		{
 
-            var collisionPos:away.geom.Vector3D = ( pickingCollisionVO.localPosition == null ) ? new away.geom.Vector3D() : pickingCollisionVO.localPosition;
-            //var collisionPos:away.geom.Vector3D = pickingCollisionVO.localPosition ||= new away.geom.Vector3D();
+			var collisionPos:away.geom.Vector3D = ( pickingCollisionVO.localPosition == null )? new away.geom.Vector3D() : pickingCollisionVO.localPosition;
+			//var collisionPos:away.geom.Vector3D = pickingCollisionVO.localPosition ||= new away.geom.Vector3D();
 
 			var rayDir:away.geom.Vector3D = pickingCollisionVO.localRayDirection;
 			var rayPos:away.geom.Vector3D = pickingCollisionVO.localRayPosition;
@@ -272,7 +267,7 @@ module away.pick
 			collisionPos.y = rayPos.y + t*rayDir.y;
 			collisionPos.z = rayPos.z + t*rayDir.z;
 		}
-		
+
 		public dispose()
 		{
 		}

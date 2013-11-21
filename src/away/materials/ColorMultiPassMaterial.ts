@@ -13,12 +13,12 @@ module away.materials
 		 *
 		 * @param color The material's diffuse surface color.
 		 */
-		constructor(color:number = 0xcccccc)
+			constructor(color:number = 0xcccccc)
 		{
 			super();
 			this.color = color;
 		}
-		
+
 		/**
 		 * The diffuse reflectivity color of the surface.
 		 */
@@ -26,7 +26,7 @@ module away.materials
 		{
 			return this.diffuseMethod.diffuseColor;
 		}
-		
+
 		public set color(value:number)
 		{
 			this.diffuseMethod.diffuseColor = value;

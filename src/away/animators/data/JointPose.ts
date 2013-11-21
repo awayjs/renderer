@@ -2,11 +2,11 @@
 
 module away.animators
 {
-    import Vector3D = away.geom.Vector3D;
+	import Vector3D = away.geom.Vector3D;
 	import Matrix3D = away.geom.Matrix3D;
-    import Quaternion = away.math.Quaternion;
-	
-	
+	import Quaternion = away.math.Quaternion;
+
+
 	/**
 	 * Contains transformation data for a skeleton joint, used for skeleton animation.
 	 *
@@ -21,22 +21,22 @@ module away.animators
 		 * The name of the joint to which the pose is associated
 		 */
 		public name:string; // intention is that this should be used only at load time, not in the main loop
-		
+
 		/**
 		 * The rotation of the pose stored as a quaternion
 		 */
 		public orientation:Quaternion = new Quaternion();
-		
+
 		/**
 		 * The translation of the pose
 		 */
 		public translation:Vector3D = new Vector3D();
-		
+
 		public constructor()
 		{
-		
+
 		}
-		
+
 		/**
 		 * Converts the transformation to a Matrix3D representation.
 		 *
@@ -45,14 +45,14 @@ module away.animators
 		 */
 		public toMatrix3D(target:Matrix3D = null):Matrix3D
 		{
-            if (target == null)
-			    target = new Matrix3D();
-            
+			if (target == null)
+				target = new Matrix3D();
+
 			this.orientation.toMatrix3D(target);
 			target.appendTranslation(this.translation.x, this.translation.y, this.translation.z);
 			return target;
 		}
-		
+
 		/**
 		 * Copies the transformation data from a source pose object into the existing pose object.
 		 *
@@ -62,13 +62,13 @@ module away.animators
 		{
 			var or:Quaternion = pose.orientation;
 			var tr:Vector3D = pose.translation;
-            this.orientation.x = or.x;
-            this.orientation.y = or.y;
-            this.orientation.z = or.z;
-            this.orientation.w = or.w;
-            this.translation.x = tr.x;
-            this.translation.y = tr.y;
-            this.translation.z = tr.z;
+			this.orientation.x = or.x;
+			this.orientation.y = or.y;
+			this.orientation.z = or.z;
+			this.orientation.w = or.w;
+			this.translation.x = tr.x;
+			this.translation.y = tr.y;
+			this.translation.z = tr.z;
 		}
 	}
 }

@@ -4,6 +4,6 @@ module away.sort
 {
 	export interface IEntitySorter
 	{
-		sort( collector:away.traverse.EntityCollector );
+		sort(collector:away.traverse.EntityCollector);
 	}
 }

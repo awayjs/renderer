@@ -5,9 +5,9 @@ module away.materials
 	//import away3d.arcane;
 	//import away3d.materials.compilation.ShaderRegisterCache;
 	//import away3d.materials.compilation.ShaderRegisterElement;
-	
+
 	//use namespace arcane;
-	
+
 	/**
 	 * LightingMethodBase provides an abstract base method for shading methods that uses lights.
 	 * Used for diffuse and specular shaders only.
@@ -17,17 +17,17 @@ module away.materials
 		/**
 		 * A method that is exposed to wrappers in case the strength needs to be controlled
 		 */
-        public _iModulateMethod;
-        public _iModulateMethodScope : Object;
+		public _iModulateMethod;
+		public _iModulateMethodScope:Object;
 
 		/**
 		 * Creates a new LightingMethodBase.
 		 */
-		constructor()
+			constructor()
 		{
 			super();
 		}
-		
+
 		/**
 		 * Get the fragment shader code that will be needed before any per-light code is added.
 		 * @param vo The MethodVO object containing the method data for the currently compiled material pass.
@@ -38,7 +38,7 @@ module away.materials
 		{
 			return "";
 		}
-		
+
 		/**
 		 * Get the fragment shader code that will generate the code relevant to a single light.
 		 *
@@ -51,7 +51,7 @@ module away.materials
 		{
 			return "";
 		}
-		
+
 		/**
 		 * Get the fragment shader code that will generate the code relevant to a single light probe object.
 		 *
@@ -64,7 +64,7 @@ module away.materials
 		{
 			return "";
 		}
-		
+
 		/**
 		 * Get the fragment shader code that should be added after all per-light code. Usually composits everything to the target register.
 		 *

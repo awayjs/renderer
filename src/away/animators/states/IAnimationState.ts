@@ -2,7 +2,7 @@
 
 module away.animators
 {
-    import Vector3D = away.geom.Vector3D;
+	import Vector3D = away.geom.Vector3D;
 
 	export interface IAnimationState
 	{
@@ -12,7 +12,7 @@ module away.animators
 		offset(startTime:number);
 
 		update(time:number);
-		
+
 		/**
 		 * Sets the animation phase of the node.
 		 *

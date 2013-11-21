@@ -8,17 +8,17 @@ module away.loaders
 		/**
 		 * Describes the format of a binary file.
 		 */
-		public static BINARY : string = "binary";
+		public static BINARY:string = "binary";
 
-        /**
-         * Describes the format of a plain text file.
-         */
-        public static PLAIN_TEXT : string = "plainText";
+		/**
+		 * Describes the format of a plain text file.
+		 */
+		public static PLAIN_TEXT:string = "plainText";
 
-        /**
-         * Describes the format of an image file
-         */
-        public static IMAGE : string = "image";
+		/**
+		 * Describes the format of an image file
+		 */
+		public static IMAGE:string = "image";
 
 	}
 }

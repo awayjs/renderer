@@ -1,4 +1,3 @@
-
 ///<reference path="../../away/_definitions.ts" />
 
 module aglsl.assembler
@@ -8,8 +7,8 @@ module aglsl.assembler
 		public name:string = "";
 		public version:number = 0;
 		public data:away.utils.ByteArray;
-		
-		constructor( name:string = null, version:number = null )
+
+		constructor(name:string = null, version:number = null)
 		{
 			this.name = name;
 			this.version = version;

@@ -8,39 +8,39 @@ module away.animators
 	 */
 	export class AnimationNodeBase extends away.library.NamedAssetBase implements away.library.IAsset
 	{
-        public static ANIMATIONNODE_ID_COUNT:number = 0;
+		public static ANIMATIONNODE_ID_COUNT:number = 0;
 
-        /**
-         * An id for this animation node, used to identify animations when using animation states.
-         *
-         * @private
-         */
-        public _iUniqueId:number;//Arcane
+		/**
+		 * An id for this animation node, used to identify animations when using animation states.
+		 *
+		 * @private
+		 */
+		public _iUniqueId:number;//Arcane
 
 		public _pStateClass:any;
-		
+
 		public get stateClass():any
 		{
 			return this._pStateClass;
 		}
-		
+
 		/**
 		 * Creates a new <code>AnimationNodeBase</code> object.
 		 */
-		constructor()
+			constructor()
 		{
-            super();
+			super();
 
-            this._iUniqueId = away.animators.AnimationNodeBase.ANIMATIONNODE_ID_COUNT++;
+			this._iUniqueId = away.animators.AnimationNodeBase.ANIMATIONNODE_ID_COUNT++;
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
 		public dispose()
 		{
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */

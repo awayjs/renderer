@@ -11,7 +11,7 @@ module aglsl
 		public wrap:number = 0;
 		public mipmap:number = 0;
 		public filter:number = 0;
-		
+
 		constructor()
 		{
 		}

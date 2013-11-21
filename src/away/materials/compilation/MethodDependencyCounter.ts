@@ -28,7 +28,7 @@ module away.materials
 		/**
 		 * Creates a new MethodDependencyCounter object.
 		 */
-		constructor()
+			constructor()
 		{
 		}
 
@@ -38,13 +38,13 @@ module away.materials
 		public reset()
 		{
 			this._projectionDependencies = 0;
-            this._normalDependencies = 0;
-            this._viewDirDependencies = 0;
-            this._uvDependencies = 0;
-            this._secondaryUVDependencies = 0;
-            this._globalPosDependencies = 0;
-            this._tangentDependencies = 0;
-            this._usesGlobalPosFragment = false;
+			this._normalDependencies = 0;
+			this._viewDirDependencies = 0;
+			this._uvDependencies = 0;
+			this._secondaryUVDependencies = 0;
+			this._globalPosDependencies = 0;
+			this._tangentDependencies = 0;
+			this._usesGlobalPosFragment = false;
 		}
 
 		/**
@@ -54,8 +54,8 @@ module away.materials
 		 */
 		public setPositionedLights(numPointLights:number, lightSourceMask:number)
 		{
-            this._numPointLights = numPointLights;
-            this._lightSourceMask = lightSourceMask;
+			this._numPointLights = numPointLights;
+			this._lightSourceMask = lightSourceMask;
 		}
 
 		/**
@@ -64,67 +64,58 @@ module away.materials
 		 */
 		public includeMethodVO(methodVO:away.materials.MethodVO)
 		{
-			if (methodVO.needsProjection){
+			if (methodVO.needsProjection) {
 
-                ++this._projectionDependencies;
-
-            }
-
-			if (methodVO.needsGlobalVertexPos)
-            {
-
-				++this._globalPosDependencies;
-
-				if (methodVO.needsGlobalFragmentPos)
-                {
-
-                    this._usesGlobalPosFragment = true;
-
-                }
-
-			}
-            else if (methodVO.needsGlobalFragmentPos)
-            {
-
-				++this._globalPosDependencies;
-                this._usesGlobalPosFragment = true;
+				++this._projectionDependencies;
 
 			}
 
-			if (methodVO.needsNormals)
-            {
+			if (methodVO.needsGlobalVertexPos) {
 
-                ++this._normalDependencies;
+				++this._globalPosDependencies;
 
-            }
+				if (methodVO.needsGlobalFragmentPos) {
 
-			if (methodVO.needsTangents)
-            {
+					this._usesGlobalPosFragment = true;
 
-                ++this._tangentDependencies;
+				}
 
-            }
+			} else if (methodVO.needsGlobalFragmentPos) {
 
-			if (methodVO.needsView)
-            {
+				++this._globalPosDependencies;
+				this._usesGlobalPosFragment = true;
 
-                ++this._viewDirDependencies;
+			}
 
-            }
+			if (methodVO.needsNormals) {
 
-			if (methodVO.needsUV)
-            {
+				++this._normalDependencies;
 
-                ++this._uvDependencies;
+			}
 
-            }
+			if (methodVO.needsTangents) {
 
-			if (methodVO.needsSecondaryUV)
-            {
+				++this._tangentDependencies;
 
-                ++this._secondaryUVDependencies;
+			}
 
-            }
+			if (methodVO.needsView) {
+
+				++this._viewDirDependencies;
+
+			}
+
+			if (methodVO.needsUV) {
+
+				++this._uvDependencies;
+
+			}
+
+			if (methodVO.needsSecondaryUV) {
+
+				++this._secondaryUVDependencies;
+
+			}
 
 		}
 
@@ -198,24 +189,21 @@ module away.materials
 		 */
 		public addWorldSpaceDependencies(fragmentLights:boolean)
 		{
-			if (this._viewDirDependencies > 0)
-            {
+			if (this._viewDirDependencies > 0) {
 
-                ++this._globalPosDependencies;
-
-            }
-
-			
-			if (this._numPointLights > 0 && (this._lightSourceMask & away.materials.LightSources.LIGHTS))
-            {
 				++this._globalPosDependencies;
 
-				if (fragmentLights)
-                {
+			}
 
-                    this._usesGlobalPosFragment = true;
 
-                }
+			if (this._numPointLights > 0 && (this._lightSourceMask & away.materials.LightSources.LIGHTS)) {
+				++this._globalPosDependencies;
+
+				if (fragmentLights) {
+
+					this._usesGlobalPosFragment = true;
+
+				}
 
 			}
 		}

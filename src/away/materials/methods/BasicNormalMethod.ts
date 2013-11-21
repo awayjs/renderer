@@ -15,7 +15,7 @@ module away.materials
 		/**
 		 * Creates a new BasicNormalMethod object.
 		 */
-		constructor()
+			constructor()
 		{
 			super();
 		}
@@ -25,18 +25,15 @@ module away.materials
 		 */
 		public iInitVO(vo:away.materials.MethodVO)
 		{
-            if ( this._texture )
-            {
+			if (this._texture) {
 
-                vo.needsUV = true;
+				vo.needsUV = true;
 
-            }
-            else
-            {
+			} else {
 
-                vo.needsUV = false;
+				vo.needsUV = false;
 
-            }
+			}
 
 			//vo.needsUV = Boolean(_texture);
 		}
@@ -48,7 +45,7 @@ module away.materials
 		{
 			return true;
 		}
-		
+
 		/**
 		 * Indicates if the normal method output is not based on a texture (if not, it will usually always return true)
 		 * Override if subclasses are different.
@@ -64,10 +61,10 @@ module away.materials
 		public copyFrom(method:ShadingMethodBase)
 		{
 
-            var s : any = method;
-            var bnm : BasicNormalMethod = <BasicNormalMethod> method;
+			var s:any = method;
+			var bnm:BasicNormalMethod = <BasicNormalMethod> method;
 
-            this.normalMap = bnm.normalMap;
+			this.normalMap = bnm.normalMap;
 
 		}
 
@@ -78,27 +75,26 @@ module away.materials
 		{
 			return this._texture;
 		}
-		
+
 		public set normalMap(value:away.textures.Texture2DBase)
 		{
 
-            this.setNormalMap( value );
+			this.setNormalMap(value);
 
 		}
 
-        public setNormalMap(value:away.textures.Texture2DBase)
-        {
+		public setNormalMap(value:away.textures.Texture2DBase)
+		{
 
-            var b : boolean =  ( value != null );
+			var b:boolean = ( value != null );
 
-            if ( b != this._useTexture ||
-                (value && this._texture && (value.hasMipMaps != this._texture.hasMipMaps || value.format != this._texture.format))) {
-                this.iInvalidateShaderProgram();//invalidateShaderProgram();
-            }
-            this._useTexture = b;
-            this._texture = value;
+			if (b != this._useTexture || (value && this._texture && (value.hasMipMaps != this._texture.hasMipMaps || value.format != this._texture.format))) {
+				this.iInvalidateShaderProgram();//invalidateShaderProgram();
+			}
+			this._useTexture = b;
+			this._texture = value;
 
-        }
+		}
 
 		/**
 		 * @inheritDoc
@@ -114,12 +110,11 @@ module away.materials
 		 */
 		public dispose()
 		{
-			if (this._texture)
-            {
+			if (this._texture) {
 
-                this._texture = null;
+				this._texture = null;
 
-            }
+			}
 
 		}
 
@@ -129,16 +124,12 @@ module away.materials
 		 */
 		public iActivate(vo:away.materials.MethodVO, stage3DProxy:away.managers.Stage3DProxy)
 		{
-			if (vo.texturesIndex >= 0)
-            {
+			if (vo.texturesIndex >= 0) {
 
-                stage3DProxy._iContext3D.setSamplerStateAt( vo.texturesIndex ,
-                        vo.repeatTextures ?  away.display3D.Context3DWrapMode.REPEAT :  away.display3D.Context3DWrapMode.CLAMP,
-                        vo.useSmoothTextures ? away.display3D.Context3DTextureFilter.LINEAR : away.display3D.Context3DTextureFilter.NEAREST ,
-                        vo.useMipmapping ? away.display3D.Context3DMipFilter.MIPLINEAR : away.display3D.Context3DMipFilter.MIPNONE );
-                stage3DProxy._iContext3D.setTextureAt( vo.texturesIndex, this._texture.getTextureForStage3D(stage3DProxy));
+				stage3DProxy._iContext3D.setSamplerStateAt(vo.texturesIndex, vo.repeatTextures? away.display3D.Context3DWrapMode.REPEAT : away.display3D.Context3DWrapMode.CLAMP, vo.useSmoothTextures? away.display3D.Context3DTextureFilter.LINEAR : away.display3D.Context3DTextureFilter.NEAREST, vo.useMipmapping? away.display3D.Context3DMipFilter.MIPLINEAR : away.display3D.Context3DMipFilter.MIPNONE);
+				stage3DProxy._iContext3D.setTextureAt(vo.texturesIndex, this._texture.getTextureForStage3D(stage3DProxy));
 
-            }
+			}
 
 		}
 
@@ -151,11 +142,9 @@ module away.materials
 
 			vo.texturesIndex = this._pNormalTextureRegister.index;
 
-            // TODO: AGAL <> GLSL
+			// TODO: AGAL <> GLSL
 
-			return this.pGetTex2DSampleCode(vo, targetReg, this._pNormalTextureRegister, this._texture) +
-				"sub " + targetReg + ".xyz, " + targetReg + ".xyz, " + this._sharedRegisters.commons + ".xxx\n" +
-				"nrm " + targetReg + ".xyz, " + targetReg + "\n";
+			return this.pGetTex2DSampleCode(vo, targetReg, this._pNormalTextureRegister, this._texture) + "sub " + targetReg + ".xyz, " + targetReg + ".xyz, " + this._sharedRegisters.commons + ".xxx\n" + "nrm " + targetReg + ".xyz, " + targetReg + "\n";
 
 		}
 	}

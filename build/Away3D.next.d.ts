@@ -15276,8 +15276,8 @@ declare class UV {
     /**
     * Creates a new <code>UV</code> object.
     *
-    * @param	u		[optional]	The horizontal coordinate of the texture value. Defaults to 0.
-    * @param	v		[optional]	The vertical coordinate of the texture value. Defaults to 0.
+    * @param    u        [optional]    The horizontal coordinate of the texture value. Defaults to 0.
+    * @param    v        [optional]    The vertical coordinate of the texture value. Defaults to 0.
     */
     constructor(u?: number, v?: number);
     /**
@@ -15305,30 +15305,30 @@ declare class Vertex {
     /**
     * Creates a new <code>Vertex</code> value object.
     *
-    * @param	x			[optional]	The x value. Defaults to 0.
-    * @param	y			[optional]	The y value. Defaults to 0.
-    * @param	z			[optional]	The z value. Defaults to 0.
-    * @param	index		[optional]	The index value. Defaults is NaN.
+    * @param    x            [optional]    The x value. Defaults to 0.
+    * @param    y            [optional]    The y value. Defaults to 0.
+    * @param    z            [optional]    The z value. Defaults to 0.
+    * @param    index        [optional]    The index value. Defaults is NaN.
     */
     constructor(x?: number, y?: number, z?: number, index?: number);
     /**
     * To define/store the index of value object
-    * @param	ind		The index
+    * @param    ind        The index
     */
     public index : number;
     /**
     * To define/store the x value of the value object
-    * @param	value		The x value
+    * @param    value        The x value
     */
     public x : number;
     /**
     * To define/store the y value of the value object
-    * @param	value		The y value
+    * @param    value        The y value
     */
     public y : number;
     /**
     * To define/store the z value of the value object
-    * @param	value		The z value
+    * @param    value        The z value
     */
     public z : number;
     /**

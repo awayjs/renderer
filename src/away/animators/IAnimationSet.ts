@@ -16,21 +16,21 @@ module away.animators
 		 * @param stateName The name of the animation state object to be checked.
 		 */
 		hasAnimation(name:string):boolean;
-		
+
 		/**
 		 * Retrieves the animation state object registered in the animation data set under the given name.
 		 *
 		 * @param stateName The name of the animation state object to be retrieved.
 		 */
 		getAnimation(name:string):AnimationNodeBase;
-		
+
 		/**
 		 * Indicates whether the properties of the animation data contained within the set combined with
 		 * the vertex registers aslready in use on shading materials allows the animation data to utilise
 		 * GPU calls.
 		 */
-		usesCPU:boolean; // GET
-		
+			usesCPU:boolean; // GET
+
 		/**
 		 * Called by the material to reset the GPU indicator before testing whether register space in the shader
 		 * is available for running GPU-based animation code.
@@ -38,7 +38,7 @@ module away.animators
 		 * @private
 		 */
 		resetGPUCompatibility();
-		
+
 		/**
 		 * Called by the animator to void the GPU indicator when register space in the shader
 		 * is no longer available for running GPU-based animation code.
@@ -46,7 +46,7 @@ module away.animators
 		 * @private
 		 */
 		cancelGPUCompatibility();
-		
+
 		/**
 		 * Generates the AGAL Vertex code for the animation, tailored to the material pass's requirements.
 		 *
@@ -58,7 +58,7 @@ module away.animators
 		 * @private
 		 */
 		getAGALVertexCode(pass:away.materials.MaterialPassBase, sourceRegisters:string[], targetRegisters:string[], profile:string):string;
-		
+
 		/**
 		 * Generates the AGAL Fragment code for the animation, tailored to the material pass's requirements.
 		 *
@@ -68,7 +68,7 @@ module away.animators
 		 * @private
 		 */
 		getAGALFragmentCode(pass:away.materials.MaterialPassBase, shadedTarget:string, profile:string):string;
-		
+
 		/**
 		 * Generates the extra AGAL Fragment code for the animation when UVs are required, tailored to the material pass's requirements.
 		 *
@@ -80,7 +80,7 @@ module away.animators
 		 * @private
 		 */
 		getAGALUVCode(pass:away.materials.MaterialPassBase, UVSource:string, UVTarget:string):string;
-		
+
 		/**
 		 * Resets any constants used in the creation of AGAL for the vertex and fragment shaders.
 		 *
@@ -89,7 +89,7 @@ module away.animators
 		 * @private
 		 */
 		doneAGALCode(pass:away.materials.MaterialPassBase);
-		
+
 		/**
 		 * Sets the GPU render state required by the animation that is independent of the rendered mesh.
 		 *
@@ -99,7 +99,7 @@ module away.animators
 		 * @private
 		 */
 		activate(stage3DProxy:away.managers.Stage3DProxy, pass:away.materials.MaterialPassBase)
-		
+
 		/**
 		 * Clears the GPU render state that has been set by the current animation.
 		 *

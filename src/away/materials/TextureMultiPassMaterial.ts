@@ -17,7 +17,7 @@ module away.materials
 		 * @param repeat Indicates whether the texture should be tiled when sampled. Defaults to true.
 		 * @param mipmap Indicates whether or not any used textures should use mipmapping. Defaults to true.
 		 */
-		constructor(texture:away.textures.Texture2DBase = null, smooth:boolean = true, repeat:boolean = false, mipmap:boolean = true)
+			constructor(texture:away.textures.Texture2DBase = null, smooth:boolean = true, repeat:boolean = false, mipmap:boolean = true)
 		{
 			super();
 			this.texture = texture;
@@ -33,12 +33,12 @@ module away.materials
 		{
 			return this._animateUVs;
 		}
-		
+
 		public set animateUVs(value:boolean)
 		{
 			this._animateUVs = value;
 		}
-		
+
 		/**
 		 * The texture object to use for the albedo colour.
 		 */
@@ -46,12 +46,12 @@ module away.materials
 		{
 			return this.diffuseMethod.texture;
 		}
-		
+
 		public set texture(value:away.textures.Texture2DBase)
 		{
 			this.diffuseMethod.texture = value;
 		}
-		
+
 		/**
 		 * The texture object to use for the ambient colour.
 		 */
@@ -59,19 +59,19 @@ module away.materials
 		{
 			return this.ambientMethod.texture;
 		}
-		
+
 		public set ambientTexture(value:away.textures.Texture2DBase)
 		{
 			this.ambientMethod.texture = value;
-            this.diffuseMethod.iUseAmbientTexture = (value != null );
+			this.diffuseMethod.iUseAmbientTexture = (value != null );
 		}
-		
+
 		public pUpdateScreenPasses()
 		{
 			super.pUpdateScreenPasses();
 
 			if (this._pEffectsPass)
-                this._pEffectsPass.animateUVs = this._animateUVs;
+				this._pEffectsPass.animateUVs = this._animateUVs;
 		}
 	}
 }

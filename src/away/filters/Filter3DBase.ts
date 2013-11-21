@@ -9,82 +9,79 @@ module away.filters
 		private _requireDepthRender:boolean;
 		private _textureWidth:number;
 		private _textureHeight:number;
-		
+
 		constructor()
 		{
 			this._tasks = new Array<away.filters.Filter3DTaskBase>();
 		}
-		
+
 		public get requireDepthRender():boolean
 		{
 			return this._requireDepthRender;
 		}
-		
+
 		public pAddTask(filter:Filter3DTaskBase)
 		{
-            this._tasks.push(filter);
+			this._tasks.push(filter);
 
-            if ( this._requireDepthRender == null )
-            {
+			if (this._requireDepthRender == null) {
 
-                this._requireDepthRender = filter.requireDepthRender;
+				this._requireDepthRender = filter.requireDepthRender;
 
-            }
+			}
 
 		}
-		
+
 		public get tasks():away.filters.Filter3DTaskBase[]
 		{
 
 			return this._tasks;
 
 		}
-		
+
 		public getMainInputTexture(stage3DProxy:away.managers.Stage3DProxy):away.display3D.Texture
 		{
 
 			return this._tasks[0].getMainInputTexture(stage3DProxy);
 
 		}
-		
+
 		public get textureWidth():number
 		{
 			return this._textureWidth;
 		}
-		
+
 		public set textureWidth(value:number)
 		{
-            this._textureWidth = value;
-			
-			for (var i:number = 0; i < this._tasks.length; ++i)
-            {
+			this._textureWidth = value;
 
-                this._tasks[i].textureWidth = value;
+			for (var i:number = 0; i < this._tasks.length; ++i) {
 
-            }
+				this._tasks[i].textureWidth = value;
+
+			}
 
 		}
-		
+
 		public get textureHeight():number
 		{
 
 			return this._textureHeight;
 
 		}
-		
+
 		public set textureHeight(value:number)
 		{
 			this._textureHeight = value;
 
-			for (var i:number = 0; i < this._tasks.length; ++i)
-            {
+			for (var i:number = 0; i < this._tasks.length; ++i) {
 
-                this._tasks[i].textureHeight = value;
+				this._tasks[i].textureHeight = value;
 
-            }
+			}
 
 		}
-		
+
 		// link up the filters correctly with the next filter
 		public setRenderTargets(mainTarget:away.display3D.Texture, stage3DProxy:away.managers.Stage3DProxy)
 		{
@@ -92,22 +89,21 @@ module away.filters
 			this._tasks[this._tasks.length - 1].target = mainTarget;
 
 		}
-		
+
 		public dispose()
 		{
 
-			for (var i:number = 0; i < this._tasks.length; ++i)
-            {
+			for (var i:number = 0; i < this._tasks.length; ++i) {
 
-                this._tasks[i].dispose();
+				this._tasks[i].dispose();
 
-            }
+			}
 
 		}
-		
-		public update( stage : away.managers.Stage3DProxy , camera : away.cameras.Camera3D )
+
+		public update(stage:away.managers.Stage3DProxy, camera:away.cameras.Camera3D)
 		{
-		
+
 		}
 	}
 }

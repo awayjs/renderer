@@ -1,5 +1,3 @@
-
-
 ///<reference path="../_definitions.ts"/>
 /**
  * @module away.events
@@ -14,12 +12,12 @@ module away.events
 		public static POSITION_CHANGED:string = "positionChanged";
 		public static ROTATION_CHANGED:string = "rotationChanged";
 		public static SCALE_CHANGED:string = "scaleChanged";
-		
+
 		public object:away.base.Object3D;
-		
-		constructor( type:string, object:away.base.Object3D )
+
+		constructor(type:string, object:away.base.Object3D)
 		{
-			super( type );
+			super(type);
 			this.object = object;
 		}
 	}

@@ -13,7 +13,7 @@ module away.primitives
 		private _width:number;
 		private _height:number;
 		private _doubleSided:boolean;
-		
+
 		/**
 		 * Creates a new Plane object.
 		 * @param width The width of the plane.
@@ -23,20 +23,20 @@ module away.primitives
 		 * @param yUp Defines whether the normal vector of the plane should point along the Y-axis (true) or Z-axis (false).
 		 * @param doubleSided Defines whether the plane will be visible from both sides, with correct vertex normals.
 		 */
-		constructor(width:number = 100, height:number = 100, segmentsW:number = 1, segmentsH:number = 1, yUp:boolean = true, doubleSided:boolean = false)
+			constructor(width:number = 100, height:number = 100, segmentsW:number = 1, segmentsH:number = 1, yUp:boolean = true, doubleSided:boolean = false)
 		{
 
 			super();
-			
+
 			this._segmentsW = segmentsW;
-            this._segmentsH = segmentsH;
-            this._yUp = yUp;
-            this._width = width;
-            this._height = height;
-            this._doubleSided = doubleSided;
+			this._segmentsH = segmentsH;
+			this._yUp = yUp;
+			this._width = width;
+			this._height = height;
+			this._doubleSided = doubleSided;
 
 		}
-		
+
 		/**
 		 * The number of segments that make up the plane along the X-axis. Defaults to 1.
 		 */
@@ -44,17 +44,17 @@ module away.primitives
 		{
 			return this._segmentsW;
 		}
-		
+
 		public set segmentsW(value:number)
 		{
 
-            this._segmentsW = value;
+			this._segmentsW = value;
 
-            this.pInvalidateGeometry();
-            this.pInvalidateUVs();
+			this.pInvalidateGeometry();
+			this.pInvalidateUVs();
 
 		}
-		
+
 		/**
 		 * The number of segments that make up the plane along the Y or Z-axis, depending on whether yUp is true or
 		 * false, respectively. Defaults to 1.
@@ -63,17 +63,17 @@ module away.primitives
 		{
 			return this._segmentsH;
 		}
-		
+
 		public set segmentsH(value:number)
 		{
 
-            this._segmentsH = value;
+			this._segmentsH = value;
 
-            this.pInvalidateGeometry();
-            this.pInvalidateUVs();
+			this.pInvalidateGeometry();
+			this.pInvalidateUVs();
 
 		}
-		
+
 		/**
 		 *  Defines whether the normal vector of the plane should point along the Y-axis (true) or Z-axis (false). Defaults to true.
 		 */
@@ -81,13 +81,13 @@ module away.primitives
 		{
 			return this._yUp;
 		}
-		
+
 		public set yUp(value:boolean)
 		{
-            this._yUp = value;
-            this.pInvalidateGeometry();
+			this._yUp = value;
+			this.pInvalidateGeometry();
 		}
-		
+
 		/**
 		 * Defines whether the plane will be visible from both sides, with correct vertex normals (as opposed to bothSides on Material). Defaults to false.
 		 */
@@ -95,13 +95,13 @@ module away.primitives
 		{
 			return this._doubleSided;
 		}
-		
+
 		public set doubleSided(value:boolean)
 		{
-            this._doubleSided = value;
-            this.pInvalidateGeometry();
+			this._doubleSided = value;
+			this.pInvalidateGeometry();
 		}
-		
+
 		/**
 		 * The width of the plane.
 		 */
@@ -109,13 +109,13 @@ module away.primitives
 		{
 			return this._width;
 		}
-		
+
 		public set width(value:number)
 		{
 			this._width = value;
-            this.pInvalidateGeometry();
+			this.pInvalidateGeometry();
 		}
-		
+
 		/**
 		 * The height of the plane.
 		 */
@@ -123,13 +123,13 @@ module away.primitives
 		{
 			return this._height;
 		}
-		
+
 		public set height(value:number)
 		{
 			this._height = value;
-            this.pInvalidateGeometry();//invalidateGeometry();
+			this.pInvalidateGeometry();//invalidateGeometry();
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
@@ -147,95 +147,77 @@ module away.primitives
 
 			if (this._doubleSided)
 				numVertices *= 2;
-			
+
 			numIndices = this._segmentsH*this._segmentsW*6;
 
 			if (this._doubleSided)
 				numIndices <<= 1;
-			
-			if (numVertices == target.numVertices)
-            {
 
-                data = target.vertexData;
+			if (numVertices == target.numVertices) {
 
-                if ( indices == null )
-                {
-                    indices = new Array<number>( numIndices );
-                }
-                else
-                {
-                    indices = target.indexData;
-                }
+				data = target.vertexData;
+
+				if (indices == null) {
+					indices = new Array<number>(numIndices);
+				} else {
+					indices = target.indexData;
+				}
+			} else {
+				data = new Array<number>(numVertices*stride);//new Vector.<Number>(numVertices*stride, true);
+				indices = new Array<number>(numIndices);//new Vector.<uint>(numIndices, true);
+
+				this.pInvalidateUVs();//invalidateUVs();
 			}
-            else
-            {
-				data = new Array<number>( numVertices*stride );//new Vector.<Number>(numVertices*stride, true);
-				indices = new Array<number>( numIndices );//new Vector.<uint>(numIndices, true);
 
-                this.pInvalidateUVs();//invalidateUVs();
-			}
-			
 			numIndices = 0;
 
 			var index:number = target.vertexOffset;
 
-			for (var yi:number = 0; yi <= this._segmentsH; ++yi)
-            {
+			for (var yi:number = 0; yi <= this._segmentsH; ++yi) {
 
-				for (var xi:number = 0; xi <= this._segmentsW; ++xi)
-                {
+				for (var xi:number = 0; xi <= this._segmentsW; ++xi) {
 					x = (xi/this._segmentsW - .5)*this._width;
 					y = (yi/this._segmentsH - .5)*this._height;
-					
+
 					data[index++] = x;
-					if (this._yUp)
-                    {
+					if (this._yUp) {
 						data[index++] = 0;
 						data[index++] = y;
-					}
-                    else
-                    {
+					} else {
 						data[index++] = y;
 						data[index++] = 0;
 					}
-					
+
 					data[index++] = 0;
 
-					if (this._yUp)
-                    {
+					if (this._yUp) {
 						data[index++] = 1;
 						data[index++] = 0;
-					}
-                    else
-                    {
+					} else {
 						data[index++] = 0;
 						data[index++] = -1;
 					}
-					
+
 					data[index++] = 1;
 					data[index++] = 0;
 					data[index++] = 0;
-					
-					index += skip;
-					
-					// add vertex with same position, but with inverted normal & tangent
-					if (this._doubleSided)
-                    {
 
-						for (var i:number = 0; i < 3; ++i)
-                        {
+					index += skip;
+
+					// add vertex with same position, but with inverted normal & tangent
+					if (this._doubleSided) {
+
+						for (var i:number = 0; i < 3; ++i) {
 							data[index] = data[index - stride];
 							++index;
 						}
 
-						for (i = 0; i < 3; ++i)
-                        {
+						for (i = 0; i < 3; ++i) {
 							data[index] = -data[index - stride];
 							++index;
 						}
 
-						for (i = 0; i < 3; ++i)
-                        {
+						for (i = 0; i < 3; ++i) {
 							data[index] = -data[index - stride];
 							++index;
 						}
@@ -243,22 +225,20 @@ module away.primitives
 						index += skip;
 
 					}
-					
-					if (xi != this._segmentsW && yi != this._segmentsH)
-                    {
+
+					if (xi != this._segmentsW && yi != this._segmentsH) {
 
 						base = xi + yi*tw;
 						var mult:number = this._doubleSided? 2 : 1;
-						
+
 						indices[numIndices++] = base*mult;
 						indices[numIndices++] = (base + tw)*mult;
 						indices[numIndices++] = (base + tw + 1)*mult;
 						indices[numIndices++] = base*mult;
 						indices[numIndices++] = (base + tw + 1)*mult;
 						indices[numIndices++] = (base + 1)*mult;
-						
-						if (this._doubleSided)
-                        {
+
+						if (this._doubleSided) {
 
 							indices[numIndices++] = (base + tw + 1)*mult + 1;
 							indices[numIndices++] = (base + tw)*mult + 1;
@@ -276,7 +256,7 @@ module away.primitives
 			target.updateIndexData(indices);
 
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
@@ -284,45 +264,38 @@ module away.primitives
 		{
 			var data:number[];
 			var stride:number = target.UVStride;
-			var numUvs:number = ( this._segmentsH + 1 )*( this._segmentsW + 1 ) * stride;
+			var numUvs:number = ( this._segmentsH + 1 )*( this._segmentsW + 1 )*stride;
 			var skip:number = stride - 2;
-			
-			if (this._doubleSided)
-            {
-                numUvs *= 2;
-            }
 
-			
-			if (target.UVData && numUvs == target.UVData.length)
-            {
-                data = target.UVData;
-            }
-			else
-            {
-				data = new Array<number>( numUvs );//Vector.<Number>(numUvs, true);
-                this.pInvalidateGeometry()
+			if (this._doubleSided) {
+				numUvs *= 2;
 			}
-			
-			var index:number = target.UVOffset;
-			
-			for (var yi:number = 0; yi <= this._segmentsH; ++yi)
-            {
 
-				for (var xi:number = 0; xi <= this._segmentsW; ++xi)
-                {
+
+			if (target.UVData && numUvs == target.UVData.length) {
+				data = target.UVData;
+			} else {
+				data = new Array<number>(numUvs);//Vector.<Number>(numUvs, true);
+				this.pInvalidateGeometry()
+			}
+
+			var index:number = target.UVOffset;
+
+			for (var yi:number = 0; yi <= this._segmentsH; ++yi) {
+
+				for (var xi:number = 0; xi <= this._segmentsW; ++xi) {
 					data[index++] = (xi/this._segmentsW)*target.scaleU;
 					data[index++] = (1 - yi/this._segmentsH)*target.scaleV;
 					index += skip;
-					
-					if (this._doubleSided)
-                    {
-						data[index++] = (xi/this._segmentsW)*target.scaleU ;
+
+					if (this._doubleSided) {
+						data[index++] = (xi/this._segmentsW)*target.scaleU;
 						data[index++] = (1 - yi/this._segmentsH)*target.scaleV;
 						index += skip;
 					}
 				}
 			}
-			
+
 			target.updateData(data);
 		}
 	}

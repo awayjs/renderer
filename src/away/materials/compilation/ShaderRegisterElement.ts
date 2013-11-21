@@ -2,7 +2,7 @@
 
 module away.materials
 {
-	
+
 	/**
 	 * A single register element (an entire register or a single register's component) used by the RegisterPool.
 	 */
@@ -11,41 +11,39 @@ module away.materials
 		private _regName:string;
 		private _index:number;
 		private _toStr:string;
-		
+
 		private static COMPONENTS = ["x", "y", "z", "w"];
-		
+
 		public _component:number;
-		
+
 		/**
 		 * Creates a new ShaderRegisterElement object.
 		 * @param regName The name of the register.
 		 * @param index The index of the register.
 		 * @param component The register's component, if not the entire register is represented.
 		 */
-		constructor(regName:string, index:number, component:number = -1)
+			constructor(regName:string, index:number, component:number = -1)
 		{
 			this._component = component;
 			this._regName = regName;
-            this._index = index;
+			this._index = index;
 
-            this._toStr = this._regName;
-			
-			if (this._index >= 0)
-            {
+			this._toStr = this._regName;
 
-                this._toStr += this._index;
+			if (this._index >= 0) {
 
-            }
+				this._toStr += this._index;
 
-			if (component > -1)
-            {
+			}
 
-                this._toStr += "." + ShaderRegisterElement.COMPONENTS[component];
+			if (component > -1) {
 
-            }
+				this._toStr += "." + ShaderRegisterElement.COMPONENTS[component];
+
+			}
 
 		}
-		
+
 		/**
 		 * Converts the register or the components AGAL string representation.
 		 */
@@ -53,7 +51,7 @@ module away.materials
 		{
 			return this._toStr;
 		}
-		
+
 		/**
 		 * The register's name.
 		 */
@@ -61,7 +59,7 @@ module away.materials
 		{
 			return this._regName;
 		}
-		
+
 		/**
 		 * The register's index.
 		 */

@@ -26,10 +26,10 @@ module away.materials
 		public normalFragment:ShaderRegisterElement;
 		public viewDirFragment:ShaderRegisterElement;
 		public bitangent:ShaderRegisterElement;
-		
+
 		constructor()
 		{
-		
+
 		}
 	}
 }

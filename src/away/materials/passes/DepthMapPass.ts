@@ -18,17 +18,15 @@ module away.materials
 		/**
 		 * Creates a new DepthMapPass object.
 		 */
-		constructor()
+			constructor()
 		{
 			super();
 
 
-			this._data = new Array<number>(     1.0, 255.0, 65025.0, 16581375.0,
-			                	                1.0/255.0, 1.0/255.0, 1.0/255.0, 0.0,
-				                                0.0, 0.0, 0.0, 0.0);
+			this._data = new Array<number>(1.0, 255.0, 65025.0, 16581375.0, 1.0/255.0, 1.0/255.0, 1.0/255.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 
 		}
-		
+
 		/**
 		 * The minimum alpha value for which pixels should be drawn. This is used for transparency that is either
 		 * invisible or entirely opaque, often used with textures for foliage, etc.
@@ -38,40 +36,35 @@ module away.materials
 		{
 			return this._alphaThreshold;
 		}
-		
+
 		public set alphaThreshold(value:number)
 		{
-			if (value < 0)
-            {
+			if (value < 0) {
 
-                value = 0;
+				value = 0;
 
-            }
-			else if (value > 1)
-            {
+			} else if (value > 1) {
 
-                value = 1;
+				value = 1;
 
-            }
+			}
 
-			if (value == this._alphaThreshold)
-            {
+			if (value == this._alphaThreshold) {
 
-                return;
+				return;
 
-            }
+			}
 
-			
-			if (value == 0 || this._alphaThreshold == 0)
-            {
 
-                this.iInvalidateShaderProgram();
+			if (value == 0 || this._alphaThreshold == 0) {
 
-            }
+				this.iInvalidateShaderProgram();
 
-			
+			}
+
+
 			this._alphaThreshold = value;
-            this._data[8] = this._alphaThreshold;
+			this._data[8] = this._alphaThreshold;
 
 		}
 
@@ -83,12 +76,12 @@ module away.materials
 		{
 			return this._alphaMask;
 		}
-		
+
 		public set alphaMask(value:away.textures.Texture2DBase)
 		{
 			this._alphaMask = value;
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
@@ -97,71 +90,58 @@ module away.materials
 			var code:string = "";
 			// project
 
-            //TODO: AGAL <> GLSL conversion
+			//TODO: AGAL <> GLSL conversion
 
-			code = "m44 vt1, vt0, vc0		\n" +
-				"mov op, vt1	\n";
-			
-			if (this._alphaThreshold > 0)
-            {
-                this._pNumUsedTextures = 1;
-                this._pNumUsedStreams = 2;
-				code += "mov v0, vt1\n" +
-					"mov v1, va1\n";
-				
-			}
-            else
-            {
+			code = "m44 vt1, vt0, vc0		\n" + "mov op, vt1	\n";
 
-                this._pNumUsedTextures = 0;
-                this._pNumUsedStreams = 1;
+			if (this._alphaThreshold > 0) {
+				this._pNumUsedTextures = 1;
+				this._pNumUsedStreams = 2;
+				code += "mov v0, vt1\n" + "mov v1, va1\n";
+
+			} else {
+
+				this._pNumUsedTextures = 0;
+				this._pNumUsedStreams = 1;
 				code += "mov v0, vt1\n";
 
 			}
 
 			return code;
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
 		public iGetFragmentCode(code:string):string
 		{
-			
+
 			var wrap:string = this._pRepeat? "wrap" : "clamp";
 			var filter:string;
-			
-			if (this._pSmooth){
 
-                filter = this._pMipmap? "linear,miplinear" : "linear";
+			if (this._pSmooth) {
 
-            }
-			else
-            {
+				filter = this._pMipmap? "linear,miplinear" : "linear";
 
-                filter = this._pMipmap? "nearest,mipnearest" : "nearest";
+			} else {
 
-            }
+				filter = this._pMipmap? "nearest,mipnearest" : "nearest";
 
-            // TODO: AGAL<>GLSL
-			
-			var codeF:string =
-				"div ft2, v0, v0.w		\n" +
-                //"sub ft2.z, fc0.x, ft2.z\n" +    //invert
-				"mul ft0, fc0, ft2.z	\n" +
-				"frc ft0, ft0			\n" +
-				"mul ft1, ft0.yzww, fc1	\n";
+			}
 
-            //codeF += "mov ft1.w, fc1.w	\n" +
-            //    "mov ft0.w, fc0.x	\n";
-			
-			if (this._alphaThreshold > 0)
-            {
+			// TODO: AGAL<>GLSL
+
+			var codeF:string = "div ft2, v0, v0.w		\n" + //"sub ft2.z, fc0.x, ft2.z\n" +    //invert
+				"mul ft0, fc0, ft2.z	\n" + "frc ft0, ft0			\n" + "mul ft1, ft0.yzww, fc1	\n";
+
+			//codeF += "mov ft1.w, fc1.w	\n" +
+			//    "mov ft0.w, fc0.x	\n";
+
+			if (this._alphaThreshold > 0) {
 
 				var format:string;
 
-				switch (this._alphaMask.format)
-                {
+				switch (this._alphaMask.format) {
 
 					case away.display3D.Context3DTextureFormat.COMPRESSED:
 						format = "dxt1,";
@@ -176,29 +156,26 @@ module away.materials
 
 				}
 
-				codeF += "tex ft3, v1, fs0 <2d," + filter + "," + format + wrap + ">\n" +
-					"sub ft3.w, ft3.w, fc2.x\n" +
-					"kil ft3.w\n";
+				codeF += "tex ft3, v1, fs0 <2d," + filter + "," + format + wrap + ">\n" + "sub ft3.w, ft3.w, fc2.x\n" + "kil ft3.w\n";
 			}
-			
+
 			codeF += "sub oc, ft0, ft1		\n";
-			
+
 			return codeF;
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
 		public iRender(renderable:away.base.IRenderable, stage3DProxy:away.managers.Stage3DProxy, camera:away.cameras.Camera3D, viewProjection:away.geom.Matrix3D)
 		{
-			if (this._alphaThreshold > 0)
-            {
+			if (this._alphaThreshold > 0) {
 
-                renderable.activateUVBuffer(1, stage3DProxy);
+				renderable.activateUVBuffer(1, stage3DProxy);
 
-            }
+			}
 
-			
+
 			var context:away.display3D.Context3D = stage3DProxy._iContext3D;
 			var matrix:away.geom.Matrix3D = away.math.Matrix3DUtils.CALCULATION_MATRIX;
 
@@ -209,7 +186,7 @@ module away.materials
 			context.drawTriangles(renderable.getIndexBuffer(stage3DProxy), 0, renderable.numTriangles);
 
 		}
-		
+
 		/**
 		 * @inheritDoc
 		 */
@@ -219,19 +196,16 @@ module away.materials
 			var context:away.display3D.Context3D = stage3DProxy._iContext3D;
 
 			super.iActivate(stage3DProxy, camera);
-			
-			if ( this._alphaThreshold > 0)
-            {
 
-                context.setTextureAt(0, this._alphaMask.getTextureForStage3D(stage3DProxy));
-                context.setProgramConstantsFromArray(away.display3D.Context3DProgramType.FRAGMENT, 0, this._data, 3);
+			if (this._alphaThreshold > 0) {
 
+				context.setTextureAt(0, this._alphaMask.getTextureForStage3D(stage3DProxy));
+				context.setProgramConstantsFromArray(away.display3D.Context3DProgramType.FRAGMENT, 0, this._data, 3);
+
+			} else {
+
+				context.setProgramConstantsFromArray(away.display3D.Context3DProgramType.FRAGMENT, 0, this._data, 2);
 			}
-            else
-            {
-
-                context.setProgramConstantsFromArray(away.display3D.Context3DProgramType.FRAGMENT, 0, this._data, 2);
-            }
 
 		}
 	}
