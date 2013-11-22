@@ -15528,10 +15528,13 @@ var away;
                 return child;
             };
 
-            ObjectContainer3D.prototype.addChildren = function (childarray) {
-                for (var child in childarray) {
-                    this.addChild(child);
+            ObjectContainer3D.prototype.addChildren = function () {
+                var childarray = [];
+                for (var _i = 0; _i < (arguments.length - 0); _i++) {
+                    childarray[_i] = arguments[_i + 0];
                 }
+                for (var i = 0; i < childarray.length; i++)
+                    this.addChild(childarray[i]);
             };
 
             ObjectContainer3D.prototype.removeChild = function (child) {

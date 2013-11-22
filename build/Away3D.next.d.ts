@@ -5681,7 +5681,7 @@ declare module away.containers {
         public parent : ObjectContainer3D;
         public contains(child: ObjectContainer3D): boolean;
         public addChild(child: ObjectContainer3D): ObjectContainer3D;
-        public addChildren(childarray: ObjectContainer3D): void;
+        public addChildren(...childarray: ObjectContainer3D[]): void;
         public removeChild(child: ObjectContainer3D): void;
         public removeChildAt(index: number): void;
         private removeChildInternal(childIndex, child);

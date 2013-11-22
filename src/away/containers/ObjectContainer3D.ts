@@ -501,7 +501,7 @@ module away.containers
 
 		public addChildren(...childarray:Array<away.containers.ObjectContainer3D>)
 		{
-			for (var i:number; i <  childarray.length; i++)
+			for (var i:number = 0; i <  childarray.length; i++)
 				this.addChild(childarray[i]);
 		}
 
