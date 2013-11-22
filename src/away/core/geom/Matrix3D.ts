@@ -16,7 +16,7 @@ module away.geom
 		/**
 		 * Creates a Matrix3D object.
 		 */
-			constructor(v:number[] = null)
+		constructor(v:number[] = null)
 		{
 			if (v != null && v.length == 16) {
 
@@ -337,8 +337,9 @@ module away.geom
 		/**
 		 * Returns the transformation matrix's translation, rotation, and scale settings as a Vector of three Vector3D objects.
 		 */
-		public decompose():Vector3D[]
+		public decompose(orientationStyle:string = "eulerAngles"):Vector3D[]
 		{
+			var q:away.math.Quaternion;
 
 			// Initial Tests - Not OK
 
@@ -372,16 +373,42 @@ module away.geom
 			mr[10] /= scale.z;
 
 			var rot = new Vector3D();
-			rot.y = Math.asin(-mr[2]);
 
-			//var cos:number = Math.cos(rot.y);
+			switch (orientationStyle) {
+				case Orientation3D.AXIS_ANGLE:
 
-			if (mr[2] != 1 && mr[2] != -1) {
-				rot.x = Math.atan2(mr[6], mr[10]);
-				rot.z = Math.atan2(mr[1], mr[0]);
-			} else {
-				rot.z = 0;
-				rot.x = Math.atan2(mr[4], mr[5]);
+					rot.w = Math.acos((mr[0] + mr[5] + mr[10] - 1)/2);
+
+					var len:number = Math.sqrt((mr[6] - mr[9])*(mr[6] - mr[9]) + (mr[8] - mr[2])*(mr[8] - mr[2]) + (mr[1] - mr[4])*(mr[1] - mr[4]));
+					rot.x = (mr[6] - mr[9])/len;
+					rot.y = (mr[8] - mr[2])/len;
+					rot.z = (mr[1] - mr[4])/len;
+
+					break;
+				case Orientation3D.QUATERNION:
+
+					rot.w = Math.sqrt(1 + mr[0] + mr[5] + mr[10])/2;
+
+					rot.x = (mr[6] - mr[9])/(4*rot.w);
+					rot.y = (mr[8] - mr[2])/(4*rot.w);
+					rot.z = (mr[1] - mr[4])/(4*rot.w);
+
+					break;
+				case Orientation3D.EULER_ANGLES:
+
+					rot.y = Math.asin(-mr[2]);
+
+					//var cos:number = Math.cos(rot.y);
+
+					if (mr[2] != 1 && mr[2] != -1) {
+						rot.x = Math.atan2(mr[6], mr[10]);
+						rot.z = Math.atan2(mr[1], mr[0]);
+					} else {
+						rot.z = 0;
+						rot.x = Math.atan2(mr[4], mr[5]);
+					}
+
+					break;
 			}
 
 			vec.push(pos);
@@ -657,28 +684,28 @@ module away.geom
 
 			var m:Matrix3D = new Matrix3D();
 
-			var a1:Vector3D = new Vector3D(x, y, z);
-			var rad = -degrees*( Math.PI/180 );
+			var rad = degrees*( Math.PI/180 );
 			var c:number = Math.cos(rad);
 			var s:number = Math.sin(rad);
-			var t:number = 1.0 - c;
+			var t:number = 1 - c;
+			var tmp1:number, tmp2:number;
 
-			m.rawData[0] = c + a1.x*a1.x*t;
-			m.rawData[5] = c + a1.y*a1.y*t;
-			m.rawData[10] = c + a1.z*a1.z*t;
+			m.rawData[0] = c + x*x*t;
+			m.rawData[5] = c + y*y*t;
+			m.rawData[10] = c + z*z*t;
 
-			var tmp1 = a1.x*a1.y*t;
-			var tmp2 = a1.z*s;
-			m.rawData[4] = tmp1 + tmp2;
-			m.rawData[1] = tmp1 - tmp2;
-			tmp1 = a1.x*a1.z*t;
-			tmp2 = a1.y*s;
-			m.rawData[8] = tmp1 - tmp2;
-			m.rawData[2] = tmp1 + tmp2;
-			tmp1 = a1.y*a1.z*t;
-			tmp2 = a1.x*s;
-			m.rawData[9] = tmp1 + tmp2;
-			m.rawData[6] = tmp1 - tmp2;
+			tmp1 = x*y*t;
+			tmp2 = z*s;
+			m.rawData[1] = tmp1 + tmp2;
+			m.rawData[4] = tmp1 - tmp2;
+			tmp1 = x*z*t;
+			tmp2 = y*s;
+			m.rawData[8] = tmp1 + tmp2;
+			m.rawData[2] = tmp1 - tmp2;
+			tmp1 = y*z*t;
+			tmp2 = x*s;
+			m.rawData[9] = tmp1 - tmp2;
+			m.rawData[6] = tmp1 + tmp2;
 
 			return m;
 		}

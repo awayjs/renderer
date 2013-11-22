@@ -1,5 +1,6 @@
 ///<reference path="../../_definitions.ts"/>
-module away3d.geom
+
+module away.geom
 {
 	/**
 	 * A Quaternion object which can be used to represent rotations.
