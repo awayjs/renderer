@@ -122,34 +122,28 @@ module away.materials
 		public pUpdateLights()
 		{
 			super.pUpdateLights();
-			var numDirectionalLights:number;
-			var numPointLights:number = 0;
-			var numLightProbes:number = 0;
+			var numDirectionalLightsOld:number = this._pNumDirectionalLights;
+			var numPointLightsOld:number = this._pNumPointLights;
+			var numLightProbesOld:number = this._pNumLightProbes;
 
 			if (this._pLightPicker) {
-				numDirectionalLights = this.calculateNumDirectionalLights(this._pLightPicker.numDirectionalLights);
-				numPointLights = this.calculateNumPointLights(this._pLightPicker.numPointLights);
-				numLightProbes = this.calculateNumProbes(this._pLightPicker.numLightProbes);
+				this._pNumDirectionalLights = this.calculateNumDirectionalLights(this._pLightPicker.numDirectionalLights);
+				this._pNumPointLights = this.calculateNumPointLights(this._pLightPicker.numPointLights);
+				this._pNumLightProbes = this.calculateNumProbes(this._pLightPicker.numLightProbes);
 
 				if (this._includeCasters) {
-					numPointLights += this._pLightPicker.numCastingPointLights;
-					numDirectionalLights += this._pLightPicker.numCastingDirectionalLights;
+					this._pNumDirectionalLights += this._pLightPicker.numCastingDirectionalLights;
+					this._pNumPointLights += this._pLightPicker.numCastingPointLights;
 				}
 
 			} else {
-				numDirectionalLights = 0;
-				numPointLights = 0;
-				numLightProbes = 0;
+				this._pNumDirectionalLights = 0;
+				this._pNumPointLights = 0;
+				this._pNumLightProbes = 0;
 			}
 
-
-			if (numPointLights != this._pNumPointLights || numDirectionalLights != this._pNumDirectionalLights || numLightProbes != this._pNumLightProbes) {
-				this._pNumPointLights = numPointLights;
-				this._pNumDirectionalLights = numDirectionalLights;
-				this._pNumLightProbes = numLightProbes;
+			if (numDirectionalLightsOld != this._pNumDirectionalLights || numPointLightsOld != this._pNumPointLights || numLightProbesOld != this._pNumLightProbes)
 				this.iInvalidateShaderProgram();
-			}
-
 		}
 
 		/**

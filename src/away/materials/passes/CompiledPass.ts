@@ -48,9 +48,9 @@ module away.materials
 		public _preserveAlpha:boolean = true;
 		private _animateUVs:boolean = false;
 
-		public _pNumPointLights:number;
-		public _pNumDirectionalLights:number;
-		public _pNumLightProbes:number;
+		public _pNumPointLights:number = 0;
+		public _pNumDirectionalLights:number = 0;
+		public _pNumLightProbes:number = 0;
 
 		private _enableLightFallOff:boolean = true;
 
