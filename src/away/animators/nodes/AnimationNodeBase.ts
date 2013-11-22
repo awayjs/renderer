@@ -27,7 +27,7 @@ module away.animators
 		/**
 		 * Creates a new <code>AnimationNodeBase</code> object.
 		 */
-			constructor()
+		constructor()
 		{
 			super();
 

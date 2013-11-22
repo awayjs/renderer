@@ -112,7 +112,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public dispose():void
+		public dispose()
 		{
 			this.jointPoses.length = 0;
 		}

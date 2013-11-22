@@ -68,6 +68,7 @@
 ///<reference path="core/base/CompactSubGeometry.ts"/>
 ///<reference path="core/base/SkinnedSubGeometry.ts"/>
 ///<reference path="core/base/Geometry.ts"/>
+///<reference path="core/base/ParticleGeometry.ts"/>
 ///<reference path="core/base/SubGeometry.ts"/>
 
 ///<reference path="core/data/RenderableListItem.ts"/>
@@ -111,6 +112,7 @@
 ///<reference path="core/geom/ColorTransform.ts"/>
 ///<reference path="core/geom/Matrix.ts" />
 ///<reference path="core/geom/Matrix3D.ts" />
+///<reference path="core/geom/Orientation3D.ts" />
 ///<reference path="core/geom/Point.ts" />
 ///<reference path="core/geom/Rectangle.ts" />
 ///<reference path="core/geom/Vector3D.ts" />
@@ -326,7 +328,14 @@
 ///<reference path="utils/TextureUtils.ts" />
 ///<reference path="utils/Timer.ts" />
 
+///<reference path="animators/data/AnimationRegisterCache.ts"/>
+///<reference path="animators/data/AnimationSubGeometry.ts"/>
+///<reference path="animators/data/ColorSegmentPoint.ts"/>
 ///<reference path="animators/data/JointPose.ts"/>
+///<reference path="animators/data/ParticleAnimationData.ts"/>
+///<reference path="animators/data/ParticleData.ts"/>
+///<reference path="animators/data/ParticleProperties.ts"/>
+///<reference path="animators/data/ParticlePropertiesMode.ts"/>
 ///<reference path="animators/data/Skeleton.ts"/>
 ///<reference path="animators/data/VertexAnimationMode.ts"/>
 ///<reference path="animators/data/SkeletonJoint.ts"/>
@@ -335,6 +344,25 @@
 
 ///<reference path="animators/nodes/AnimationNodeBase.ts"/>
 ///<reference path="animators/nodes/AnimationClipNodeBase.ts"/>
+///<reference path="animators/nodes/ParticleNodeBase.ts"/>
+///<reference path="animators/nodes/ParticleAccelerationNode.ts"/>
+///<reference path="animators/nodes/ParticleBezierCurveNode.ts"/>
+///<reference path="animators/nodes/ParticleBillboardNode.ts"/>
+///<reference path="animators/nodes/ParticleColorNode.ts"/>
+///<reference path="animators/nodes/ParticleFollowNode.ts"/>
+///<reference path="animators/nodes/ParticleInitialColorNode.ts"/>
+///<reference path="animators/nodes/ParticleOrbitNode.ts"/>
+///<reference path="animators/nodes/ParticleOscillatorNode.ts"/>
+///<reference path="animators/nodes/ParticlePositionNode.ts"/>
+///<reference path="animators/nodes/ParticleRotateToHeadingNode.ts"/>
+///<reference path="animators/nodes/ParticleRotateToPositionNode.ts"/>
+///<reference path="animators/nodes/ParticleRotationalVelocityNode.ts"/>
+///<reference path="animators/nodes/ParticleScaleNode.ts"/>
+///<reference path="animators/nodes/ParticleSegmentedColorNode.ts"/>
+///<reference path="animators/nodes/ParticleSpriteSheetNode.ts"/>
+///<reference path="animators/nodes/ParticleTimeNode.ts"/>
+///<reference path="animators/nodes/ParticleUVNode.ts"/>
+///<reference path="animators/nodes/ParticleVelocityNode.ts"/>
 ///<reference path="animators/nodes/SkeletonBinaryLERPNode.ts"/>
 ///<reference path="animators/nodes/SkeletonClipNode.ts"/>
 ///<reference path="animators/nodes/SkeletonDifferenceNode.ts"/>
@@ -346,6 +374,25 @@
 ///<reference path="animators/states/ISkeletonAnimationState.ts"/>
 ///<reference path="animators/states/IVertexAnimationState.ts"/>
 ///<reference path="animators/states/AnimationStateBase.ts"/>
+///<reference path="animators/states/ParticleStateBase.ts"/>
+///<reference path="animators/states/ParticleAccelerationState.ts"/>
+///<reference path="animators/states/ParticleBezierCurveState.ts"/>
+///<reference path="animators/states/ParticleBillboardState.ts"/>
+///<reference path="animators/states/ParticleColorState.ts"/>
+///<reference path="animators/states/ParticleFollowState.ts"/>
+///<reference path="animators/states/ParticleInitialColorState.ts"/>
+///<reference path="animators/states/ParticleOrbitState.ts"/>
+///<reference path="animators/states/ParticleOscillatorState.ts"/>
+///<reference path="animators/states/ParticlePositionState.ts"/>
+///<reference path="animators/states/ParticleRotateToHeadingState.ts"/>
+///<reference path="animators/states/ParticleRotateToPositionState.ts"/>
+///<reference path="animators/states/ParticleRotationalVelocityState.ts"/>
+///<reference path="animators/states/ParticleScaleState.ts"/>
+///<reference path="animators/states/ParticleSegmentedColorState.ts"/>
+///<reference path="animators/states/ParticleSpriteSheetState.ts"/>
+///<reference path="animators/states/ParticleTimeState.ts"/>
+///<reference path="animators/states/ParticleUVState.ts"/>
+///<reference path="animators/states/ParticleVelocityState.ts"/>
 ///<reference path="animators/states/AnimationClipState.ts"/>
 ///<reference path="animators/states/SkeletonBinaryLERPState.ts"/>
 ///<reference path="animators/states/SkeletonClipState.ts"/>
@@ -363,6 +410,8 @@
 ///<reference path="animators/AnimatorBase.ts"/>
 ///<reference path="animators/IAnimationSet.ts"/>
 ///<reference path="animators/IAnimator.ts"/>
+///<reference path="animators/ParticleAnimationSet.ts"/>
+///<reference path="animators/ParticleAnimator.ts"/>
 ///<reference path="animators/SkeletonAnimator.ts"/>
 ///<reference path="animators/SkeletonAnimationSet.ts"/>
 ///<reference path="animators/VertexAnimationSet.ts"/>
@@ -390,6 +439,9 @@
 ///<reference path="loaders/parsers/MD5AnimParser.ts"/>
 ///<reference path="loaders/parsers/MD5MeshParser.ts"/>
 ///<reference path="loaders/parsers/Parsers.ts"/>
+
+///<reference path="tools/data/ParticleGeometryTransform.ts"/>
+///<reference path="tools/helpers/ParticleGeometryHelper.ts"/>
 
 ///<reference path="../aglsl/Sampler.ts"/>
 ///<reference path="../aglsl/Token.ts"/>

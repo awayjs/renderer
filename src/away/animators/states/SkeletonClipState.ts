@@ -13,7 +13,7 @@ module away.animators
 		private _frames:Array<SkeletonPose>;
 		private _skeletonClipNode:SkeletonClipNode;
 		private _skeletonPose:SkeletonPose = new SkeletonPose();
-		private _skeletonPoseDirty:Boolean = true;
+		private _skeletonPoseDirty:boolean = true;
 		private _currentPose:SkeletonPose;
 		private _nextPose:SkeletonPose;
 
@@ -61,7 +61,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public _pUpdateTime(time:number /*int*/):void
+		public _pUpdateTime(time:number /*int*/)
 		{
 			this._skeletonPoseDirty = true;
 
@@ -71,7 +71,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public _pUpdateFrames():void
+		public _pUpdateFrames()
 		{
 			super._pUpdateFrames();
 
@@ -89,7 +89,7 @@ module away.animators
 		 *
 		 * @param skeleton The skeleton used by the animator requesting the ouput pose.
 		 */
-		private updateSkeletonPose(skeleton:Skeleton):void
+		private updateSkeletonPose(skeleton:Skeleton)
 		{
 			this._skeletonPoseDirty = false;
 
@@ -142,7 +142,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public _pUpdatePositionDelta():void
+		public _pUpdatePositionDelta()
 		{
 			this._pPositionDeltaDirty = false;
 

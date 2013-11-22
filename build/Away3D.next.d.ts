@@ -704,7 +704,7 @@ declare module away.library {
         assetFullPath: string[];
         assetPathEquals(name: string, ns: string): boolean;
         resetAssetPath(name: string, ns: string, overrideOriginal?: boolean): void;
-        dispose(): void;
+        dispose();
     }
 }
 declare module away.library {
@@ -1558,6 +1558,8 @@ declare module away.base {
         private _scaleV;
         private _offsetU;
         private _offsetV;
+        public animationSubGeometry: away.animators.AnimationSubGeometry;
+        public animatorSubGeometry: away.animators.AnimationSubGeometry;
         /**
         * Creates a new SubMesh object
         * @param subGeometry The SubGeometry object which provides the geometry data for this SubMesh.
@@ -1822,7 +1824,7 @@ declare module away.base {
         public _scaleV: number;
         public _uvsDirty: boolean;
         /**
-        * An id for this material pass, used to identify material passes when using animation sets.
+        * An id for this subgeometry, used to identify subgeometries when using animation sets.
         *
         * @private
         */
@@ -1847,6 +1849,10 @@ declare module away.base {
         * The total amount of triangles in the SubGeometry.
         */
         public numTriangles : number;
+        /**
+        * Unique identifier for a subgeometry
+        */
+        public uniqueId : number;
         /**
         * Retrieves the VertexBuffer3D object that contains triangle indices.
         * @param context The Context3D for which we request the buffer
@@ -1983,6 +1989,10 @@ declare module away.base {
         * The distance between two secondary UV elements
         */
         secondaryUVStride: number;
+        /**
+        * Unique identifier for a subgeometry
+        */
+        uniqueId: number;
         /**
         * Assigns the attribute stream for vertex positions.
         * @param index The attribute stream index for the vertex shader
@@ -2299,6 +2309,15 @@ declare module away.base {
         public convertToSeparateBuffers(): void;
         public iValidate(): void;
         public iInvalidateBounds(subGeom: base.ISubGeometry): void;
+    }
+}
+declare module away.base {
+    /**
+    * ...
+    */
+    class ParticleGeometry extends base.Geometry {
+        public particles: away.animators.ParticleData[];
+        public numParticles: number;
     }
 }
 /**
@@ -3277,7 +3296,7 @@ declare module away.geom {
         /**
         * Returns the transformation matrix's translation, rotation, and scale settings as a Vector of three Vector3D objects.
         */
-        public decompose(): geom.Vector3D[];
+        public decompose(orientationStyle?: string): geom.Vector3D[];
         /**
         * Uses the transformation matrix without its translation elements to transform a Vector3D object from one space
         * coordinate to another.
@@ -3338,6 +3357,16 @@ declare module away.geom {
         * transformation's frame of reference.
         */
         public position : geom.Vector3D;
+    }
+}
+declare module away.geom {
+    /**
+    * A Quaternion object which can be used to represent rotations.
+    */
+    class Orientation3D {
+        static AXIS_ANGLE: string;
+        static EULER_ANGLES: string;
+        static QUATERNION: string;
     }
 }
 declare module away.geom {
@@ -7448,6 +7477,7 @@ declare module away.materials {
         public _pUVTarget: string;
         public _pUVSource: string;
         private _writeDepth;
+        public animationRegisterCache: away.animators.AnimationRegisterCache;
         /**
         * Creates a new MaterialPassBase object.
         *
@@ -12749,6 +12779,102 @@ declare module away.utils {
 }
 declare module away.animators {
     /**
+    * ...
+    */
+    class AnimationRegisterCache extends away.materials.ShaderRegisterCache {
+        public positionAttribute: away.materials.ShaderRegisterElement;
+        public uvAttribute: away.materials.ShaderRegisterElement;
+        public positionTarget: away.materials.ShaderRegisterElement;
+        public scaleAndRotateTarget: away.materials.ShaderRegisterElement;
+        public velocityTarget: away.materials.ShaderRegisterElement;
+        public vertexTime: away.materials.ShaderRegisterElement;
+        public vertexLife: away.materials.ShaderRegisterElement;
+        public vertexZeroConst: away.materials.ShaderRegisterElement;
+        public vertexOneConst: away.materials.ShaderRegisterElement;
+        public vertexTwoConst: away.materials.ShaderRegisterElement;
+        public uvTarget: away.materials.ShaderRegisterElement;
+        public colorAddTarget: away.materials.ShaderRegisterElement;
+        public colorMulTarget: away.materials.ShaderRegisterElement;
+        public colorAddVary: away.materials.ShaderRegisterElement;
+        public colorMulVary: away.materials.ShaderRegisterElement;
+        public uvVar: away.materials.ShaderRegisterElement;
+        public rotationRegisters: away.materials.ShaderRegisterElement[];
+        public needFragmentAnimation: boolean;
+        public needUVAnimation: boolean;
+        public sourceRegisters: string[];
+        public targetRegisters: string[];
+        private indexDictionary;
+        public hasUVNode: boolean;
+        public needVelocity: boolean;
+        public hasBillboard: boolean;
+        public hasColorMulNode: boolean;
+        public hasColorAddNode: boolean;
+        constructor(profile: string);
+        public reset(): void;
+        public setUVSourceAndTarget(UVAttribute: string, UVVaring: string): void;
+        public setRegisterIndex(node: animators.AnimationNodeBase, parameterIndex: number, registerIndex: number): void;
+        public getRegisterIndex(node: animators.AnimationNodeBase, parameterIndex: number): number;
+        public getInitCode(): string;
+        public getCombinationCode(): string;
+        public initColorRegisters(): string;
+        public getColorPassCode(): string;
+        public getColorCombinationCode(shadedTarget: string): string;
+        private getRegisterFromString(code);
+        public vertexConstantData: number[];
+        public fragmentConstantData: number[];
+        private _numVertexConstant;
+        private _numFragmentConstant;
+        public numVertexConstant : number;
+        public numFragmentConstant : number;
+        public setDataLength(): void;
+        public setVertexConst(index: number, x?: number, y?: number, z?: number, w?: number): void;
+        public setVertexConstFromArray(index: number, data: number[]): void;
+        public setVertexConstFromMatrix(index: number, matrix: away.geom.Matrix3D): void;
+        public setFragmentConst(index: number, x?: number, y?: number, z?: number, w?: number): void;
+    }
+}
+declare module away.animators {
+    /**
+    * ...
+    */
+    class AnimationSubGeometry {
+        static SUBGEOM_ID_COUNT: number;
+        public _pVertexData: number[];
+        public _pVertexBuffer: away.display3D.VertexBuffer3D[];
+        public _pBufferContext: away.display3D.Context3D[];
+        public _pBufferDirty: Boolean[];
+        private _numVertices;
+        private _totalLenOfOneVertex;
+        public numProcessedVertices: number;
+        public previousTime: number;
+        public animationParticles: animators.ParticleAnimationData[];
+        /**
+        * An id for this animation subgeometry, used to identify animation subgeometries when using animation sets.
+        *
+        * @private
+        */
+        public _iUniqueId: number;
+        constructor();
+        public createVertexData(numVertices: number, totalLenOfOneVertex: number): void;
+        public activateVertexBuffer(index: number, bufferOffset: number, stage3DProxy: away.managers.Stage3DProxy, format: string): void;
+        public dispose(): void;
+        public invalidateBuffer(): void;
+        public vertexData : number[];
+        public numVertices : number;
+        public totalLenOfOneVertex : number;
+    }
+}
+declare module away.animators {
+    class ColorSegmentPoint {
+        private _color;
+        private _life;
+        constructor(life: number, color: away.geom.ColorTransform);
+        public color : away.geom.ColorTransform;
+        public life : number;
+    }
+}
+declare module away.animators {
+    /**
     * Contains transformation data for a skeleton joint, used for skeleton animation.
     *
     * @see away.animation.Skeleton
@@ -12783,6 +12909,80 @@ declare module away.animators {
         * @param pose The source pose to copy from.
         */
         public copyFrom(pose: JointPose): void;
+    }
+}
+declare module away.animators {
+    /**
+    * ...
+    */
+    class ParticleAnimationData {
+        public index: number;
+        public startTime: number;
+        public totalTime: number;
+        public duration: number;
+        public delay: number;
+        public startVertexIndex: number;
+        public numVertices: number;
+        constructor(index: number, startTime: number, duration: number, delay: number, particle: animators.ParticleData);
+    }
+}
+declare module away.animators {
+    class ParticleData {
+        public particleIndex: number;
+        public numVertices: number;
+        public startVertexIndex: number;
+        public subGeometry: away.base.CompactSubGeometry;
+    }
+}
+declare module away.animators {
+    /**
+    * Dynamic class for holding the local properties of a particle, used for processing the static properties
+    * of particles in the particle animation set before beginning upload to the GPU.
+    */
+    class ParticleProperties {
+        /**
+        * The index of the current particle being set.
+        */
+        public index: number;
+        /**
+        * The total number of particles being processed by the particle animation set.
+        */
+        public total: number;
+        /**
+        * The start time of the particle.
+        */
+        public startTime: number;
+        /**
+        * The duration of the particle, an optional value used when the particle aniamtion set settings for <code>useDuration</code> are enabled in the constructor.
+        *
+        * @see away.animators.ParticleAnimationSet
+        */
+        public duration: number;
+        /**
+        * The delay between cycles of the particle, an optional value used when the particle aniamtion set settings for <code>useLooping</code> and  <code>useDelay</code> are enabled in the constructor.
+        *
+        * @see away.animators.ParticleAnimationSet
+        */
+        public delay: number;
+    }
+}
+declare module away.animators {
+    /**
+    * Options for setting the properties mode of a particle animation node.
+    */
+    class ParticlePropertiesMode {
+        /**
+        * Mode that defines the particle node as acting on global properties (ie. the properties set in the node constructor or the corresponding animation state).
+        */
+        static GLOBAL: number;
+        /**
+        * Mode that defines the particle node as acting on local static properties (ie. the properties of particles set in the initialising on the animation set).
+        */
+        static LOCAL_STATIC: number;
+        /**
+        * Mode that defines the particle node as acting on local dynamic properties (ie. the properties of the particles set in the corresponding animation state).
+        */
+        static LOCAL_DYNAMIC: number;
     }
 }
 declare module away.animators {
@@ -12844,11 +13044,11 @@ declare module away.animators {
         /**
         * Animation mode that adds all outputs from active vertex animation state to form the current vertex animation pose.
         */
-        static ADDITIVE: String;
+        static ADDITIVE: string;
         /**
         * Animation mode that picks the output from a single vertex animation state to form the current vertex animation pose.
         */
-        static ABSOLUTE: String;
+        static ABSOLUTE: string;
     }
 }
 declare module away.animators {
@@ -13007,6 +13207,823 @@ declare module away.animators {
 }
 declare module away.animators {
     /**
+    * Provides an abstract base class for particle animation nodes.
+    */
+    class ParticleNodeBase extends animators.AnimationNodeBase {
+        private _priority;
+        public _pMode: number;
+        public _pDataLength: number;
+        public _pOneData: number[];
+        public _iDataOffset: number;
+        private static GLOBAL;
+        private static LOCAL_STATIC;
+        private static LOCAL_DYNAMIC;
+        private static MODES;
+        /**
+        * Returns the property mode of the particle animation node. Typically set in the node constructor
+        *
+        * @see away.animators.ParticlePropertiesMode
+        */
+        public mode : number;
+        /**
+        * Returns the priority of the particle animation node, used to order the agal generated in a particle animation set. Set automatically on instantiation.
+        *
+        * @see away.animators.ParticleAnimationSet
+        * @see #getAGALVertexCode
+        */
+        public priority : number;
+        /**
+        * Returns the length of the data used by the node when in <code>LOCAL_STATIC</code> mode. Used to generate the local static data of the particle animation set.
+        *
+        * @see away.animators.ParticleAnimationSet
+        * @see #getAGALVertexCode
+        */
+        public dataLength : number;
+        /**
+        * Returns the generated data vector of the node after one particle pass during the generation of all local static data of the particle animation set.
+        *
+        * @see away.animators.ParticleAnimationSet
+        * @see #generatePropertyOfOneParticle
+        */
+        public oneData : number[];
+        /**
+        * Creates a new <code>ParticleNodeBase</code> object.
+        *
+        * @param               name            Defines the generic name of the particle animation node.
+        * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
+        * @param               dataLength      Defines the length of the data used by the node when in <code>LOCAL_STATIC</code> mode.
+        * @param    [optional] priority        the priority of the particle animation node, used to order the agal generated in a particle animation set. Defaults to 1.
+        */
+        constructor(name: string, mode: number, dataLength: number, priority?: number);
+        /**
+        * Returns the AGAL code of the particle animation node for use in the vertex shader.
+        */
+        public getAGALVertexCode(pass: away.materials.MaterialPassBase, animationRegisterCache: animators.AnimationRegisterCache): string;
+        /**
+        * Returns the AGAL code of the particle animation node for use in the fragment shader.
+        */
+        public getAGALFragmentCode(pass: away.materials.MaterialPassBase, animationRegisterCache: animators.AnimationRegisterCache): string;
+        /**
+        * Returns the AGAL code of the particle animation node for use in the fragment shader when UV coordinates are required.
+        */
+        public getAGALUVCode(pass: away.materials.MaterialPassBase, animationRegisterCache: animators.AnimationRegisterCache): string;
+        /**
+        * Called internally by the particle animation set when assigning the set of static properties originally defined by the initParticleFunc of the set.
+        *
+        * @see away.animators.ParticleAnimationSet#initParticleFunc
+        */
+        public _iGeneratePropertyOfOneParticle(param: animators.ParticleProperties): void;
+        /**
+        * Called internally by the particle animation set when determining the requirements of the particle animation node AGAL.
+        */
+        public _iProcessAnimationSetting(particleAnimationSet: animators.ParticleAnimationSet): void;
+    }
+}
+declare module away.animators {
+    /**
+    * A particle animation node used to apply a constant acceleration vector to the motion of a particle.
+    */
+    class ParticleAccelerationNode extends animators.ParticleNodeBase {
+        /** @private */
+        static ACCELERATION_INDEX: number;
+        /** @private */
+        public _acceleration: away.geom.Vector3D;
+        /**
+        * Reference for acceleration node properties on a single particle (when in local property mode).
+        * Expects a <code>Vector3D</code> object representing the direction of acceleration on the particle.
+        */
+        static ACCELERATION_VECTOR3D: string;
+        /**
+        * Creates a new <code>ParticleAccelerationNode</code>
+        *
+        * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
+        * @param    [optional] acceleration    Defines the default acceleration vector of the node, used when in global mode.
+        */
+        constructor(mode: number, acceleration?: away.geom.Vector3D);
+        /**
+        * @inheritDoc
+        */
+        public pGetAGALVertexCode(pass: away.materials.MaterialPassBase, animationRegisterCache: animators.AnimationRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
+        public getAnimationState(animator: animators.IAnimator): animators.ParticleAccelerationState;
+        /**
+        * @inheritDoc
+        */
+        public _iGeneratePropertyOfOneParticle(param: animators.ParticleProperties): void;
+    }
+}
+declare module away.animators {
+    /**
+    * A particle animation node used to control the position of a particle over time along a bezier curve.
+    */
+    class ParticleBezierCurveNode extends animators.ParticleNodeBase {
+        /** @private */
+        static BEZIER_CONTROL_INDEX: number;
+        /** @private */
+        static BEZIER_END_INDEX: number;
+        /** @private */
+        public _iControlPoint: away.geom.Vector3D;
+        /** @private */
+        public _iEndPoint: away.geom.Vector3D;
+        /**
+        * Reference for bezier curve node properties on a single particle (when in local property mode).
+        * Expects a <code>Vector3D</code> object representing the control point position (0, 1, 2) of the curve.
+        */
+        static BEZIER_CONTROL_VECTOR3D: string;
+        /**
+        * Reference for bezier curve node properties on a single particle (when in local property mode).
+        * Expects a <code>Vector3D</code> object representing the end point position (0, 1, 2) of the curve.
+        */
+        static BEZIER_END_VECTOR3D: string;
+        /**
+        * Creates a new <code>ParticleBezierCurveNode</code>
+        *
+        * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
+        * @param    [optional] controlPoint    Defines the default control point of the node, used when in global mode.
+        * @param    [optional] endPoint        Defines the default end point of the node, used when in global mode.
+        */
+        constructor(mode: number, controlPoint?: away.geom.Vector3D, endPoint?: away.geom.Vector3D);
+        /**
+        * @inheritDoc
+        */
+        public getAGALVertexCode(pass: away.materials.MaterialPassBase, animationRegisterCache: animators.AnimationRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
+        public getAnimationState(animator: animators.IAnimator): animators.ParticleBezierCurveState;
+        /**
+        * @inheritDoc
+        */
+        public _iGeneratePropertyOfOneParticle(param: animators.ParticleProperties): void;
+    }
+}
+declare module away.animators {
+    /**
+    * A particle animation node that controls the rotation of a particle to always face the camera.
+    */
+    class ParticleBillboardNode extends animators.ParticleNodeBase {
+        /** @private */
+        static MATRIX_INDEX: number;
+        /** @private */
+        public _iBillboardAxis: away.geom.Vector3D;
+        /**
+        * Creates a new <code>ParticleBillboardNode</code>
+        */
+        constructor(billboardAxis?: away.geom.Vector3D);
+        /**
+        * @inheritDoc
+        */
+        public getAGALVertexCode(pass: away.materials.MaterialPassBase, animationRegisterCache: animators.AnimationRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
+        public getAnimationState(animator: animators.IAnimator): animators.ParticleBillboardState;
+        /**
+        * @inheritDoc
+        */
+        public _iProcessAnimationSetting(particleAnimationSet: animators.ParticleAnimationSet): void;
+    }
+}
+declare module away.animators {
+    /**
+    * A particle animation node used to control the color variation of a particle over time.
+    */
+    class ParticleColorNode extends animators.ParticleNodeBase {
+        /** @private */
+        static START_MULTIPLIER_INDEX: number;
+        /** @private */
+        static DELTA_MULTIPLIER_INDEX: number;
+        /** @private */
+        static START_OFFSET_INDEX: number;
+        /** @private */
+        static DELTA_OFFSET_INDEX: number;
+        /** @private */
+        static CYCLE_INDEX: number;
+        /** @private */
+        public _iUsesMultiplier: boolean;
+        /** @private */
+        public _iUsesOffset: boolean;
+        /** @private */
+        public _iUsesCycle: boolean;
+        /** @private */
+        public _iUsesPhase: boolean;
+        /** @private */
+        public _iStartColor: away.geom.ColorTransform;
+        /** @private */
+        public _iEndColor: away.geom.ColorTransform;
+        /** @private */
+        public _iCycleDuration: number;
+        /** @private */
+        public _iCyclePhase: number;
+        /**
+        * Reference for color node properties on a single particle (when in local property mode).
+        * Expects a <code>ColorTransform</code> object representing the start color transform applied to the particle.
+        */
+        static COLOR_START_COLORTRANSFORM: string;
+        /**
+        * Reference for color node properties on a single particle (when in local property mode).
+        * Expects a <code>ColorTransform</code> object representing the end color transform applied to the particle.
+        */
+        static COLOR_END_COLORTRANSFORM: string;
+        /**
+        * Creates a new <code>ParticleColorNode</code>
+        *
+        * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
+        * @param    [optional] usesMultiplier  Defines whether the node uses multiplier data in the shader for its color transformations. Defaults to true.
+        * @param    [optional] usesOffset      Defines whether the node uses offset data in the shader for its color transformations. Defaults to true.
+        * @param    [optional] usesCycle       Defines whether the node uses the <code>cycleDuration</code> property in the shader to calculate the period of the animation independent of particle duration. Defaults to false.
+        * @param    [optional] usesPhase       Defines whether the node uses the <code>cyclePhase</code> property in the shader to calculate a starting offset to the cycle rotation of the particle. Defaults to false.
+        * @param    [optional] startColor      Defines the default start color transform of the node, when in global mode.
+        * @param    [optional] endColor        Defines the default end color transform of the node, when in global mode.
+        * @param    [optional] cycleDuration   Defines the duration of the animation in seconds, used as a period independent of particle duration when in global mode. Defaults to 1.
+        * @param    [optional] cyclePhase      Defines the phase of the cycle in degrees, used as the starting offset of the cycle when in global mode. Defaults to 0.
+        */
+        constructor(mode: number, usesMultiplier?: boolean, usesOffset?: boolean, usesCycle?: boolean, usesPhase?: boolean, startColor?: away.geom.ColorTransform, endColor?: away.geom.ColorTransform, cycleDuration?: number, cyclePhase?: number);
+        /**
+        * @inheritDoc
+        */
+        public getAGALVertexCode(pass: away.materials.MaterialPassBase, animationRegisterCache: animators.AnimationRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
+        public getAnimationState(animator: animators.IAnimator): animators.ParticleColorState;
+        /**
+        * @inheritDoc
+        */
+        public _iProcessAnimationSetting(particleAnimationSet: animators.ParticleAnimationSet): void;
+        /**
+        * @inheritDoc
+        */
+        public _iGeneratePropertyOfOneParticle(param: animators.ParticleProperties): void;
+    }
+}
+declare module away.animators {
+    /**
+    * A particle animation node used to create a follow behaviour on a particle system.
+    */
+    class ParticleFollowNode extends animators.ParticleNodeBase {
+        /** @private */
+        static FOLLOW_POSITION_INDEX: number;
+        /** @private */
+        static FOLLOW_ROTATION_INDEX: number;
+        /** @private */
+        public _iUsesPosition: boolean;
+        /** @private */
+        public _iUsesRotation: boolean;
+        /** @private */
+        public _iSmooth: boolean;
+        /**
+        * Creates a new <code>ParticleFollowNode</code>
+        *
+        * @param    [optional] usesPosition     Defines wehether the individual particle reacts to the position of the target.
+        * @param    [optional] usesRotation     Defines wehether the individual particle reacts to the rotation of the target.
+        * @param    [optional] smooth     Defines wehether the state calculate the interpolated value.
+        */
+        constructor(usesPosition?: boolean, usesRotation?: boolean, smooth?: boolean);
+        /**
+        * @inheritDoc
+        */
+        public getAGALVertexCode(pass: away.materials.MaterialPassBase, animationRegisterCache: animators.AnimationRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
+        public getAnimationState(animator: animators.IAnimator): animators.ParticleFollowState;
+    }
+}
+declare module away.animators {
+    class ParticleInitialColorNode extends animators.ParticleNodeBase {
+        /** @private */
+        static MULTIPLIER_INDEX: number;
+        /** @private */
+        static OFFSET_INDEX: number;
+        /** @private */
+        public _iUsesMultiplier: boolean;
+        /** @private */
+        public _iUsesOffset: boolean;
+        /** @private */
+        public _iInitialColor: away.geom.ColorTransform;
+        /**
+        * Reference for color node properties on a single particle (when in local property mode).
+        * Expects a <code>ColorTransform</code> object representing the color transform applied to the particle.
+        */
+        static COLOR_INITIAL_COLORTRANSFORM: string;
+        constructor(mode: number, usesMultiplier?: boolean, usesOffset?: boolean, initialColor?: away.geom.ColorTransform);
+        /**
+        * @inheritDoc
+        */
+        public getAGALVertexCode(pass: away.materials.MaterialPassBase, animationRegisterCache: animators.AnimationRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
+        public _iProcessAnimationSetting(particleAnimationSet: animators.ParticleAnimationSet): void;
+        /**
+        * @inheritDoc
+        */
+        public _iGeneratePropertyOfOneParticle(param: animators.ParticleProperties): void;
+    }
+}
+declare module away.animators {
+    /**
+    * A particle animation node used to control the position of a particle over time around a circular orbit.
+    */
+    class ParticleOrbitNode extends animators.ParticleNodeBase {
+        /** @private */
+        static ORBIT_INDEX: number;
+        /** @private */
+        static EULERS_INDEX: number;
+        /** @private */
+        public _iUsesEulers: boolean;
+        /** @private */
+        public _iUsesCycle: boolean;
+        /** @private */
+        public _iUsesPhase: boolean;
+        /** @private */
+        public _iRadius: number;
+        /** @private */
+        public _iCycleDuration: number;
+        /** @private */
+        public _iCyclePhase: number;
+        /** @private */
+        public _iEulers: away.geom.Vector3D;
+        /**
+        * Reference for orbit node properties on a single particle (when in local property mode).
+        * Expects a <code>Vector3D</code> object representing the radius (x), cycle speed (y) and cycle phase (z) of the motion on the particle.
+        */
+        static ORBIT_VECTOR3D: string;
+        /**
+        * Creates a new <code>ParticleOrbitNode</code> object.
+        *
+        * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
+        * @param    [optional] usesEulers      Defines whether the node uses the <code>eulers</code> property in the shader to calculate a rotation on the orbit. Defaults to true.
+        * @param    [optional] usesCycle       Defines whether the node uses the <code>cycleDuration</code> property in the shader to calculate the period of the orbit independent of particle duration. Defaults to false.
+        * @param    [optional] usesPhase       Defines whether the node uses the <code>cyclePhase</code> property in the shader to calculate a starting offset to the cycle rotation of the particle. Defaults to false.
+        * @param    [optional] radius          Defines the radius of the orbit when in global mode. Defaults to 100.
+        * @param    [optional] cycleDuration   Defines the duration of the orbit in seconds, used as a period independent of particle duration when in global mode. Defaults to 1.
+        * @param    [optional] cyclePhase      Defines the phase of the orbit in degrees, used as the starting offset of the cycle when in global mode. Defaults to 0.
+        * @param    [optional] eulers          Defines the euler rotation in degrees, applied to the orientation of the orbit when in global mode.
+        */
+        constructor(mode: number, usesEulers?: boolean, usesCycle?: boolean, usesPhase?: boolean, radius?: number, cycleDuration?: number, cyclePhase?: number, eulers?: away.geom.Vector3D);
+        /**
+        * @inheritDoc
+        */
+        public getAGALVertexCode(pass: away.materials.MaterialPassBase, animationRegisterCache: animators.AnimationRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
+        public getAnimationState(animator: animators.IAnimator): animators.ParticleOrbitState;
+        /**
+        * @inheritDoc
+        */
+        public _iGeneratePropertyOfOneParticle(param: animators.ParticleProperties): void;
+    }
+}
+declare module away.animators {
+    /**
+    * A particle animation node used to control the position of a particle over time using simple harmonic motion.
+    */
+    class ParticleOscillatorNode extends animators.ParticleNodeBase {
+        /** @private */
+        static OSCILLATOR_INDEX: number;
+        /** @private */
+        public _iOscillator: away.geom.Vector3D;
+        /**
+        * Reference for ocsillator node properties on a single particle (when in local property mode).
+        * Expects a <code>Vector3D</code> object representing the axis (x,y,z) and cycle speed (w) of the motion on the particle.
+        */
+        static OSCILLATOR_VECTOR3D: string;
+        /**
+        * Creates a new <code>ParticleOscillatorNode</code>
+        *
+        * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
+        * @param    [optional] oscillator      Defines the default oscillator axis (x, y, z) and cycleDuration (w) of the node, used when in global mode.
+        */
+        constructor(mode: number, oscillator?: away.geom.Vector3D);
+        /**
+        * @inheritDoc
+        */
+        public getAGALVertexCode(pass: away.materials.MaterialPassBase, animationRegisterCache: animators.AnimationRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
+        public getAnimationState(animator: animators.IAnimator): animators.ParticleOscillatorState;
+        /**
+        * @inheritDoc
+        */
+        public _iGeneratePropertyOfOneParticle(param: animators.ParticleProperties): void;
+    }
+}
+declare module away.animators {
+    /**
+    * A particle animation node used to set the starting position of a particle.
+    */
+    class ParticlePositionNode extends animators.ParticleNodeBase {
+        /** @private */
+        static POSITION_INDEX: number;
+        /** @private */
+        public _iPosition: away.geom.Vector3D;
+        /**
+        * Reference for position node properties on a single particle (when in local property mode).
+        * Expects a <code>Vector3D</code> object representing position of the particle.
+        */
+        static POSITION_VECTOR3D: string;
+        /**
+        * Creates a new <code>ParticlePositionNode</code>
+        *
+        * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
+        * @param    [optional] position        Defines the default position of the particle when in global mode. Defaults to 0,0,0.
+        */
+        constructor(mode: number, position?: away.geom.Vector3D);
+        /**
+        * @inheritDoc
+        */
+        public getAGALVertexCode(pass: away.materials.MaterialPassBase, animationRegisterCache: animators.AnimationRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
+        public getAnimationState(animator: animators.IAnimator): animators.ParticlePositionState;
+        /**
+        * @inheritDoc
+        */
+        public _iGeneratePropertyOfOneParticle(param: animators.ParticleProperties): void;
+    }
+}
+declare module away.animators {
+    /**
+    * A particle animation node used to control the rotation of a particle to match its heading vector.
+    */
+    class ParticleRotateToHeadingNode extends animators.ParticleNodeBase {
+        /** @private */
+        static MATRIX_INDEX: number;
+        /**
+        * Creates a new <code>ParticleBillboardNode</code>
+        */
+        constructor();
+        /**
+        * @inheritDoc
+        */
+        public getAGALVertexCode(pass: away.materials.MaterialPassBase, animationRegisterCache: animators.AnimationRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
+        public getAnimationState(animator: animators.IAnimator): animators.ParticleRotateToHeadingState;
+        /**
+        * @inheritDoc
+        */
+        public _iProcessAnimationSetting(particleAnimationSet: animators.ParticleAnimationSet): void;
+    }
+}
+declare module away.animators {
+    /**
+    * A particle animation node used to control the rotation of a particle to face to a position
+    */
+    class ParticleRotateToPositionNode extends animators.ParticleNodeBase {
+        /** @private */
+        static MATRIX_INDEX: number;
+        /** @private */
+        static POSITION_INDEX: number;
+        /** @private */
+        public _iPosition: away.geom.Vector3D;
+        /**
+        * Reference for the position the particle will rotate to face for a single particle (when in local property mode).
+        * Expects a <code>Vector3D</code> object representing the position that the particle must face.
+        */
+        static POSITION_VECTOR3D: string;
+        /**
+        * Creates a new <code>ParticleRotateToPositionNode</code>
+        */
+        constructor(mode: number, position?: away.geom.Vector3D);
+        /**
+        * @inheritDoc
+        */
+        public getAGALVertexCode(pass: away.materials.MaterialPassBase, animationRegisterCache: animators.AnimationRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
+        public getAnimationState(animator: animators.IAnimator): animators.ParticleRotateToPositionState;
+        /**
+        * @inheritDoc
+        */
+        public _iGeneratePropertyOfOneParticle(param: animators.ParticleProperties): void;
+    }
+}
+declare module away.animators {
+    /**
+    * A particle animation node used to set the starting rotational velocity of a particle.
+    */
+    class ParticleRotationalVelocityNode extends animators.ParticleNodeBase {
+        /** @private */
+        static ROTATIONALVELOCITY_INDEX: number;
+        /** @private */
+        public _iRotationalVelocity: away.geom.Vector3D;
+        /**
+        * Reference for rotational velocity node properties on a single particle (when in local property mode).
+        * Expects a <code>Vector3D</code> object representing the rotational velocity around an axis of the particle.
+        */
+        static ROTATIONALVELOCITY_VECTOR3D: string;
+        /**
+        * Creates a new <code>ParticleRotationalVelocityNode</code>
+        *
+        * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
+        */
+        constructor(mode: number, rotationalVelocity?: away.geom.Vector3D);
+        /**
+        * @inheritDoc
+        */
+        public getAGALVertexCode(pass: away.materials.MaterialPassBase, animationRegisterCache: animators.AnimationRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
+        public getAnimationState(animator: animators.IAnimator): animators.ParticleRotationalVelocityState;
+        /**
+        * @inheritDoc
+        */
+        public _iGeneratePropertyOfOneParticle(param: animators.ParticleProperties): void;
+    }
+}
+declare module away.animators {
+    /**
+    * A particle animation node used to control the scale variation of a particle over time.
+    */
+    class ParticleScaleNode extends animators.ParticleNodeBase {
+        /** @private */
+        static SCALE_INDEX: number;
+        /** @private */
+        public _iUsesCycle: boolean;
+        /** @private */
+        public _iUsesPhase: boolean;
+        /** @private */
+        public _iMinScale: number;
+        /** @private */
+        public _iMaxScale: number;
+        /** @private */
+        public _iCycleDuration: number;
+        /** @private */
+        public _iCyclePhase: number;
+        /**
+        * Reference for scale node properties on a single particle (when in local property mode).
+        * Expects a <code>Vector3D</code> representing the min scale (x), max scale(y), optional cycle speed (z) and phase offset (w) applied to the particle.
+        */
+        static SCALE_VECTOR3D: string;
+        /**
+        * Creates a new <code>ParticleScaleNode</code>
+        *
+        * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
+        * @param    [optional] usesCycle       Defines whether the node uses the <code>cycleDuration</code> property in the shader to calculate the period of animation independent of particle duration. Defaults to false.
+        * @param    [optional] usesPhase       Defines whether the node uses the <code>cyclePhase</code> property in the shader to calculate a starting offset to the animation cycle. Defaults to false.
+        * @param    [optional] minScale        Defines the default min scale transform of the node, when in global mode. Defaults to 1.
+        * @param    [optional] maxScale        Defines the default max color transform of the node, when in global mode. Defaults to 1.
+        * @param    [optional] cycleDuration   Defines the default duration of the animation in seconds, used as a period independent of particle duration when in global mode. Defaults to 1.
+        * @param    [optional] cyclePhase      Defines the default phase of the cycle in degrees, used as the starting offset of the cycle when in global mode. Defaults to 0.
+        */
+        constructor(mode: number, usesCycle: boolean, usesPhase: boolean, minScale?: number, maxScale?: number, cycleDuration?: number, cyclePhase?: number);
+        /**
+        * @inheritDoc
+        */
+        public getAGALVertexCode(pass: away.materials.MaterialPassBase, animationRegisterCache: animators.AnimationRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
+        public getAnimationState(animator: animators.IAnimator): animators.ParticleScaleState;
+        /**
+        * @inheritDoc
+        */
+        public _iGeneratePropertyOfOneParticle(param: animators.ParticleProperties): void;
+    }
+}
+declare module away.animators {
+    class ParticleSegmentedColorNode extends animators.ParticleNodeBase {
+        /** @private */
+        static START_MULTIPLIER_INDEX: number;
+        /** @private */
+        static START_OFFSET_INDEX: number;
+        /** @private */
+        static TIME_DATA_INDEX: number;
+        /** @private */
+        public _iUsesMultiplier: boolean;
+        /** @private */
+        public _iUsesOffset: boolean;
+        /** @private */
+        public _iStartColor: away.geom.ColorTransform;
+        /** @private */
+        public _iEndColor: away.geom.ColorTransform;
+        /** @private */
+        public _iNumSegmentPoint: number;
+        /** @private */
+        public _iSegmentPoints: animators.ColorSegmentPoint[];
+        constructor(usesMultiplier: boolean, usesOffset: boolean, numSegmentPoint: number, startColor: away.geom.ColorTransform, endColor: away.geom.ColorTransform, segmentPoints: animators.ColorSegmentPoint[]);
+        /**
+        * @inheritDoc
+        */
+        public _iProcessAnimationSetting(particleAnimationSet: animators.ParticleAnimationSet): void;
+        /**
+        * @inheritDoc
+        */
+        public getAGALVertexCode(pass: away.materials.MaterialPassBase, animationRegisterCache: animators.AnimationRegisterCache): string;
+    }
+}
+declare module away.animators {
+    /**
+    * A particle animation node used when a spritesheet texture is required to animate the particle.
+    * NB: to enable use of this node, the <code>repeat</code> property on the material has to be set to true.
+    */
+    class ParticleSpriteSheetNode extends animators.ParticleNodeBase {
+        /** @private */
+        static UV_INDEX_0: number;
+        /** @private */
+        static UV_INDEX_1: number;
+        /** @private */
+        public _iUsesCycle: boolean;
+        /** @private */
+        public _iUsesPhase: boolean;
+        /** @private */
+        public _iTotalFrames: number;
+        /** @private */
+        public _iNumColumns: number;
+        /** @private */
+        public _iNumRows: number;
+        /** @private */
+        public _iCycleDuration: number;
+        /** @private */
+        public _iCyclePhase: number;
+        /**
+        * Reference for spritesheet node properties on a single particle (when in local property mode).
+        * Expects a <code>Vector3D</code> representing the cycleDuration (x), optional phaseTime (y).
+        */
+        static UV_VECTOR3D: string;
+        /**
+        * Defines the number of columns in the spritesheet, when in global mode. Defaults to 1. Read only.
+        */
+        public numColumns : number;
+        /**
+        * Defines the number of rows in the spritesheet, when in global mode. Defaults to 1. Read only.
+        */
+        public numRows : number;
+        /**
+        * Defines the total number of frames used by the spritesheet, when in global mode. Defaults to the number defined by numColumns and numRows. Read only.
+        */
+        public totalFrames : number;
+        /**
+        * Creates a new <code>ParticleSpriteSheetNode</code>
+        *
+        * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
+        * @param    [optional] numColumns      Defines the number of columns in the spritesheet, when in global mode. Defaults to 1.
+        * @param    [optional] numRows         Defines the number of rows in the spritesheet, when in global mode. Defaults to 1.
+        * @param    [optional] cycleDuration   Defines the default cycle duration in seconds, when in global mode. Defaults to 1.
+        * @param    [optional] cyclePhase      Defines the default cycle phase, when in global mode. Defaults to 0.
+        * @param    [optional] totalFrames     Defines the total number of frames used by the spritesheet, when in global mode. Defaults to the number defined by numColumns and numRows.
+        * @param    [optional] looping         Defines whether the spritesheet animation is set to loop indefinitely. Defaults to true.
+        */
+        constructor(mode: number, usesCycle: boolean, usesPhase: boolean, numColumns?: number, numRows?: number, cycleDuration?: number, cyclePhase?: number, totalFrames?: number);
+        /**
+        * @inheritDoc
+        */
+        public getAGALUVCode(pass: away.materials.MaterialPassBase, animationRegisterCache: animators.AnimationRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
+        public getAnimationState(animator: animators.IAnimator): animators.ParticleSpriteSheetState;
+        /**
+        * @inheritDoc
+        */
+        public _iProcessAnimationSetting(particleAnimationSet: animators.ParticleAnimationSet): void;
+        /**
+        * @inheritDoc
+        */
+        public _iGeneratePropertyOfOneParticle(param: animators.ParticleProperties): void;
+    }
+}
+declare module away.animators {
+    /**
+    * A particle animation node used as the base node for timekeeping inside a particle. Automatically added to a particle animation set on instatiation.
+    */
+    class ParticleTimeNode extends animators.ParticleNodeBase {
+        /** @private */
+        static TIME_STREAM_INDEX: number;
+        /** @private */
+        static TIME_CONSTANT_INDEX: number;
+        /** @private */
+        public _iUsesDuration: boolean;
+        /** @private */
+        public _iUsesDelay: boolean;
+        /** @private */
+        public _iUsesLooping: boolean;
+        /**
+        * Creates a new <code>ParticleTimeNode</code>
+        *
+        * @param    [optional] usesDuration    Defines whether the node uses the <code>duration</code> data in the static properties to determine how long a particle is visible for. Defaults to false.
+        * @param    [optional] usesDelay       Defines whether the node uses the <code>delay</code> data in the static properties to determine how long a particle is hidden for. Defaults to false. Requires <code>usesDuration</code> to be true.
+        * @param    [optional] usesLooping     Defines whether the node creates a looping timeframe for each particle determined by the <code>startTime</code>, <code>duration</code> and <code>delay</code> data in the static properties function. Defaults to false. Requires <code>usesLooping</code> to be true.
+        */
+        constructor(usesDuration?: boolean, usesLooping?: boolean, usesDelay?: boolean);
+        /**
+        * @inheritDoc
+        */
+        public getAGALVertexCode(pass: away.materials.MaterialPassBase, animationRegisterCache: animators.AnimationRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
+        public getAnimationState(animator: animators.IAnimator): animators.ParticleTimeState;
+        /**
+        * @inheritDoc
+        */
+        public _iGeneratePropertyOfOneParticle(param: animators.ParticleProperties): void;
+    }
+}
+declare module away.animators {
+    /**
+    * A particle animation node used to control the UV offset and scale of a particle over time.
+    */
+    class ParticleUVNode extends animators.ParticleNodeBase {
+        /** @private */
+        static UV_INDEX: number;
+        /** @private */
+        public _iUvData: away.geom.Vector3D;
+        /**
+        *
+        */
+        static U_AXIS: string;
+        /**
+        *
+        */
+        static V_AXIS: string;
+        private _cycle;
+        private _scale;
+        private _axis;
+        /**
+        * Creates a new <code>ParticleTimeNode</code>
+        *
+        * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
+        * @param    [optional] cycle           Defines whether the time track is in loop mode. Defaults to false.
+        * @param    [optional] scale           Defines whether the time track is in loop mode. Defaults to false.
+        * @param    [optional] axis            Defines whether the time track is in loop mode. Defaults to false.
+        */
+        constructor(mode: number, cycle?: number, scale?: number, axis?: string);
+        /**
+        *
+        */
+        public cycle : number;
+        /**
+        *
+        */
+        public scale : number;
+        /**
+        *
+        */
+        public axis : string;
+        /**
+        * @inheritDoc
+        */
+        public getAGALUVCode(pass: away.materials.MaterialPassBase, animationRegisterCache: animators.AnimationRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
+        public getAnimationState(animator: animators.IAnimator): animators.ParticleUVState;
+        private updateUVData();
+        /**
+        * @inheritDoc
+        */
+        public _iProcessAnimationSetting(particleAnimationSet: animators.ParticleAnimationSet): void;
+    }
+}
+declare module away.animators {
+    /**
+    * A particle animation node used to set the starting velocity of a particle.
+    */
+    class ParticleVelocityNode extends animators.ParticleNodeBase {
+        /** @private */
+        static VELOCITY_INDEX: number;
+        /** @private */
+        public _iVelocity: away.geom.Vector3D;
+        /**
+        * Reference for velocity node properties on a single particle (when in local property mode).
+        * Expects a <code>Vector3D</code> object representing the direction of movement on the particle.
+        */
+        static VELOCITY_VECTOR3D: string;
+        /**
+        * Creates a new <code>ParticleVelocityNode</code>
+        *
+        * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
+        * @param    [optional] velocity        Defines the default velocity vector of the node, used when in global mode.
+        */
+        constructor(mode: number, velocity?: away.geom.Vector3D);
+        /**
+        * @inheritDoc
+        */
+        public getAGALVertexCode(pass: away.materials.MaterialPassBase, animationRegisterCache: animators.AnimationRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
+        public getAnimationState(animator: animators.IAnimator): animators.ParticleVelocityState;
+        /**
+        * @inheritDoc
+        */
+        public _iGeneratePropertyOfOneParticle(param: animators.ParticleProperties): void;
+    }
+}
+declare module away.animators {
+    /**
     * A skeleton animation node that uses two animation node inputs to blend a lineraly interpolated output of a skeleton pose.
     */
     class SkeletonBinaryLERPNode extends animators.AnimationNodeBase {
@@ -13038,7 +14055,7 @@ declare module away.animators {
         * Determines whether to use SLERP equations (true) or LERP equations (false) in the calculation
         * of the output skeleton pose. Defaults to false.
         */
-        public highQuality: Boolean;
+        public highQuality: boolean;
         /**
         * Returns a vector of skeleton poses representing the pose of each animation frame in the clip.
         */
@@ -13267,6 +14284,432 @@ declare module away.animators {
         * Updates the node's root delta position
         */
         public _pUpdatePositionDelta(): void;
+    }
+}
+declare module away.animators {
+    /**
+    * ...
+    */
+    class ParticleStateBase extends animators.AnimationStateBase {
+        private _particleNode;
+        public _pDynamicProperties: away.geom.Vector3D[];
+        public _pDynamicPropertiesDirty: Object;
+        public _pNeedUpdateTime: boolean;
+        constructor(animator: animators.ParticleAnimator, particleNode: animators.ParticleNodeBase, needUpdateTime?: boolean);
+        public needUpdateTime : boolean;
+        public setRenderState(stage3DProxy: away.managers.Stage3DProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        public _pUpdateDynamicProperties(animationSubGeometry: animators.AnimationSubGeometry): void;
+    }
+}
+declare module away.animators {
+    /**
+    * ...
+    */
+    class ParticleAccelerationState extends animators.ParticleStateBase {
+        private _particleAccelerationNode;
+        private _acceleration;
+        private _halfAcceleration;
+        /**
+        * Defines the acceleration vector of the state, used when in global mode.
+        */
+        public acceleration : away.geom.Vector3D;
+        constructor(animator: animators.ParticleAnimator, particleAccelerationNode: animators.ParticleAccelerationNode);
+        /**
+        * @inheritDoc
+        */
+        public setRenderState(stage3DProxy: away.managers.Stage3DProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        private updateAccelerationData();
+    }
+}
+declare module away.animators {
+    /**
+    * ...
+    */
+    class ParticleBezierCurveState extends animators.ParticleStateBase {
+        private _particleBezierCurveNode;
+        private _controlPoint;
+        private _endPoint;
+        /**
+        * Defines the default control point of the node, used when in global mode.
+        */
+        public controlPoint : away.geom.Vector3D;
+        /**
+        * Defines the default end point of the node, used when in global mode.
+        */
+        public endPoint : away.geom.Vector3D;
+        constructor(animator: animators.ParticleAnimator, particleBezierCurveNode: animators.ParticleBezierCurveNode);
+        public setRenderState(stage3DProxy: away.managers.Stage3DProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+    }
+}
+declare module away.animators {
+    /**
+    * ...
+    */
+    class ParticleBillboardState extends animators.ParticleStateBase {
+        private _matrix;
+        private _billboardAxis;
+        /**
+        *
+        */
+        constructor(animator: animators.ParticleAnimator, particleNode: animators.ParticleBillboardNode);
+        public setRenderState(stage3DProxy: away.managers.Stage3DProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        /**
+        * Defines the billboard axis.
+        */
+        public billboardAxis : away.geom.Vector3D;
+    }
+}
+declare module away.animators {
+    /**
+    * ...
+    * @author ...
+    */
+    class ParticleColorState extends animators.ParticleStateBase {
+        private _particleColorNode;
+        private _usesMultiplier;
+        private _usesOffset;
+        private _usesCycle;
+        private _usesPhase;
+        private _startColor;
+        private _endColor;
+        private _cycleDuration;
+        private _cyclePhase;
+        private _cycleData;
+        private _startMultiplierData;
+        private _deltaMultiplierData;
+        private _startOffsetData;
+        private _deltaOffsetData;
+        /**
+        * Defines the start color transform of the state, when in global mode.
+        */
+        public startColor : away.geom.ColorTransform;
+        /**
+        * Defines the end color transform of the state, when in global mode.
+        */
+        public endColor : away.geom.ColorTransform;
+        /**
+        * Defines the duration of the animation in seconds, used as a period independent of particle duration when in global mode. Defaults to 1.
+        */
+        public cycleDuration : number;
+        /**
+        * Defines the phase of the cycle in degrees, used as the starting offset of the cycle when in global mode. Defaults to 0.
+        */
+        public cyclePhase : number;
+        constructor(animator: animators.ParticleAnimator, particleColorNode: animators.ParticleColorNode);
+        public setRenderState(stage3DProxy: away.managers.Stage3DProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        private updateColorData();
+    }
+}
+declare module away.animators {
+    /**
+    * ...
+    */
+    class ParticleFollowState extends animators.ParticleStateBase {
+        private _particleFollowNode;
+        private _followTarget;
+        private _targetPos;
+        private _targetEuler;
+        private _prePos;
+        private _preEuler;
+        private _smooth;
+        private _temp;
+        constructor(animator: animators.ParticleAnimator, particleFollowNode: animators.ParticleFollowNode);
+        public followTarget : away.base.Object3D;
+        public smooth : boolean;
+        /**
+        * @inheritDoc
+        */
+        public setRenderState(stage3DProxy: away.managers.Stage3DProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        private processPosition(currentTime, deltaTime, animationSubGeometry);
+        private precessRotation(currentTime, deltaTime, animationSubGeometry);
+        private processPositionAndRotation(currentTime, deltaTime, animationSubGeometry);
+    }
+}
+declare module away.animators {
+    class ParticleInitialColorState extends animators.ParticleStateBase {
+        private _particleInitialColorNode;
+        private _usesMultiplier;
+        private _usesOffset;
+        private _initialColor;
+        private _multiplierData;
+        private _offsetData;
+        constructor(animator: animators.ParticleAnimator, particleInitialColorNode: animators.ParticleInitialColorNode);
+        /**
+        * Defines the initial color transform of the state, when in global mode.
+        */
+        public initialColor : away.geom.ColorTransform;
+        /**
+        * @inheritDoc
+        */
+        public setRenderState(stage3DProxy: away.managers.Stage3DProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        private updateColorData();
+    }
+}
+declare module away.animators {
+    /**
+    * ...
+    */
+    class ParticleOrbitState extends animators.ParticleStateBase {
+        private _particleOrbitNode;
+        private _usesEulers;
+        private _usesCycle;
+        private _usesPhase;
+        private _radius;
+        private _cycleDuration;
+        private _cyclePhase;
+        private _eulers;
+        private _orbitData;
+        private _eulersMatrix;
+        /**
+        * Defines the radius of the orbit when in global mode. Defaults to 100.
+        */
+        public radius : number;
+        /**
+        * Defines the duration of the orbit in seconds, used as a period independent of particle duration when in global mode. Defaults to 1.
+        */
+        public cycleDuration : number;
+        /**
+        * Defines the phase of the orbit in degrees, used as the starting offset of the cycle when in global mode. Defaults to 0.
+        */
+        public cyclePhase : number;
+        /**
+        * Defines the euler rotation in degrees, applied to the orientation of the orbit when in global mode.
+        */
+        public eulers : away.geom.Vector3D;
+        constructor(animator: animators.ParticleAnimator, particleOrbitNode: animators.ParticleOrbitNode);
+        public setRenderState(stage3DProxy: away.managers.Stage3DProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        private updateOrbitData();
+    }
+}
+declare module away.animators {
+    /**
+    * ...
+    */
+    class ParticleOscillatorState extends animators.ParticleStateBase {
+        private _particleOscillatorNode;
+        private _oscillator;
+        private _oscillatorData;
+        /**
+        * Defines the default oscillator axis (x, y, z) and cycleDuration (w) of the state, used when in global mode.
+        */
+        public oscillator : away.geom.Vector3D;
+        constructor(animator: animators.ParticleAnimator, particleOscillatorNode: animators.ParticleOscillatorNode);
+        /**
+        * @inheritDoc
+        */
+        public setRenderState(stage3DProxy: away.managers.Stage3DProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        private updateOscillatorData();
+    }
+}
+declare module away.animators {
+    /**
+    * ...
+    * @author ...
+    */
+    class ParticlePositionState extends animators.ParticleStateBase {
+        private _particlePositionNode;
+        private _position;
+        /**
+        * Defines the position of the particle when in global mode. Defaults to 0,0,0.
+        */
+        public position : away.geom.Vector3D;
+        /**
+        *
+        */
+        public getPositions(): away.geom.Vector3D[];
+        public setPositions(value: away.geom.Vector3D[]): void;
+        constructor(animator: animators.ParticleAnimator, particlePositionNode: animators.ParticlePositionNode);
+        /**
+        * @inheritDoc
+        */
+        public setRenderState(stage3DProxy: away.managers.Stage3DProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+    }
+}
+declare module away.animators {
+    /**
+    * ...
+    */
+    class ParticleRotateToHeadingState extends animators.ParticleStateBase {
+        private _matrix;
+        constructor(animator: animators.ParticleAnimator, particleNode: animators.ParticleNodeBase);
+        public setRenderState(stage3DProxy: away.managers.Stage3DProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+    }
+}
+declare module away.animators {
+    /**
+    * ...
+    */
+    class ParticleRotateToPositionState extends animators.ParticleStateBase {
+        private _particleRotateToPositionNode;
+        private _position;
+        private _matrix;
+        private _offset;
+        /**
+        * Defines the position of the point the particle will rotate to face when in global mode. Defaults to 0,0,0.
+        */
+        public position : away.geom.Vector3D;
+        constructor(animator: animators.ParticleAnimator, particleRotateToPositionNode: animators.ParticleRotateToPositionNode);
+        public setRenderState(stage3DProxy: away.managers.Stage3DProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+    }
+}
+declare module away.animators {
+    /**
+    * ...
+    */
+    class ParticleRotationalVelocityState extends animators.ParticleStateBase {
+        private _particleRotationalVelocityNode;
+        private _rotationalVelocityData;
+        private _rotationalVelocity;
+        /**
+        * Defines the default rotationalVelocity of the state, used when in global mode.
+        */
+        public rotationalVelocity : away.geom.Vector3D;
+        /**
+        *
+        */
+        public getRotationalVelocities(): away.geom.Vector3D[];
+        public setRotationalVelocities(value: away.geom.Vector3D[]): void;
+        constructor(animator: animators.ParticleAnimator, particleRotationNode: animators.ParticleRotationalVelocityNode);
+        /**
+        * @inheritDoc
+        */
+        public setRenderState(stage3DProxy: away.managers.Stage3DProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        private updateRotationalVelocityData();
+    }
+}
+declare module away.animators {
+    /**
+    * ...
+    */
+    class ParticleScaleState extends animators.ParticleStateBase {
+        private _particleScaleNode;
+        private _usesCycle;
+        private _usesPhase;
+        private _minScale;
+        private _maxScale;
+        private _cycleDuration;
+        private _cyclePhase;
+        private _scaleData;
+        /**
+        * Defines the end scale of the state, when in global mode. Defaults to 1.
+        */
+        public minScale : number;
+        /**
+        * Defines the end scale of the state, when in global mode. Defaults to 1.
+        */
+        public maxScale : number;
+        /**
+        * Defines the duration of the animation in seconds, used as a period independent of particle duration when in global mode. Defaults to 1.
+        */
+        public cycleDuration : number;
+        /**
+        * Defines the phase of the cycle in degrees, used as the starting offset of the cycle when in global mode. Defaults to 0.
+        */
+        public cyclePhase : number;
+        constructor(animator: animators.ParticleAnimator, particleScaleNode: animators.ParticleScaleNode);
+        public setRenderState(stage3DProxy: away.managers.Stage3DProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        private updateScaleData();
+    }
+}
+declare module away.animators {
+    class ParticleSegmentedColorState extends animators.ParticleStateBase {
+        private _usesMultiplier;
+        private _usesOffset;
+        private _startColor;
+        private _endColor;
+        private _segmentPoints;
+        private _numSegmentPoint;
+        private _timeLifeData;
+        private _multiplierData;
+        private _offsetData;
+        /**
+        * Defines the start color transform of the state, when in global mode.
+        */
+        public startColor : away.geom.ColorTransform;
+        /**
+        * Defines the end color transform of the state, when in global mode.
+        */
+        public endColor : away.geom.ColorTransform;
+        /**
+        * Defines the number of segments.
+        */
+        public numSegmentPoint : number;
+        /**
+        * Defines the key points of color
+        */
+        public segmentPoints : animators.ColorSegmentPoint[];
+        public usesMultiplier : boolean;
+        public usesOffset : boolean;
+        constructor(animator: animators.ParticleAnimator, particleSegmentedColorNode: animators.ParticleSegmentedColorNode);
+        public setRenderState(stage3DProxy: away.managers.Stage3DProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        private updateColorData();
+    }
+}
+declare module away.animators {
+    /**
+    * ...
+    */
+    class ParticleSpriteSheetState extends animators.ParticleStateBase {
+        private _particleSpriteSheetNode;
+        private _usesCycle;
+        private _usesPhase;
+        private _totalFrames;
+        private _numColumns;
+        private _numRows;
+        private _cycleDuration;
+        private _cyclePhase;
+        private _spriteSheetData;
+        /**
+        * Defines the cycle phase, when in global mode. Defaults to zero.
+        */
+        public cyclePhase : number;
+        /**
+        * Defines the cycle duration in seconds, when in global mode. Defaults to 1.
+        */
+        public cycleDuration : number;
+        constructor(animator: animators.ParticleAnimator, particleSpriteSheetNode: animators.ParticleSpriteSheetNode);
+        public setRenderState(stage3DProxy: away.managers.Stage3DProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        private updateSpriteSheetData();
+    }
+}
+declare module away.animators {
+    /**
+    * ...
+    */
+    class ParticleTimeState extends animators.ParticleStateBase {
+        private _particleTimeNode;
+        constructor(animator: animators.ParticleAnimator, particleTimeNode: animators.ParticleTimeNode);
+        public setRenderState(stage3DProxy: away.managers.Stage3DProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+    }
+}
+declare module away.animators {
+    /**
+    * ...
+    */
+    class ParticleUVState extends animators.ParticleStateBase {
+        private _particleUVNode;
+        constructor(animator: animators.ParticleAnimator, particleUVNode: animators.ParticleUVNode);
+        public setRenderState(stage3DProxy: away.managers.Stage3DProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+    }
+}
+declare module away.animators {
+    /**
+    * ...
+    */
+    class ParticleVelocityState extends animators.ParticleStateBase {
+        private _particleVelocityNode;
+        private _velocity;
+        /**
+        * Defines the default velocity vector of the state, used when in global mode.
+        */
+        public velocity : away.geom.Vector3D;
+        /**
+        *
+        */
+        public getVelocities(): away.geom.Vector3D[];
+        public setVelocities(value: away.geom.Vector3D[]): void;
+        constructor(animator: animators.ParticleAnimator, particleVelocityNode: animators.ParticleVelocityNode);
+        public setRenderState(stage3DProxy: away.managers.Stage3DProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
     }
 }
 declare module away.animators {
@@ -13722,7 +15165,7 @@ declare module away.animators {
         *
         * @see away.animators.IAnimationState#positionDelta
         */
-        public updatePosition: Boolean;
+        public updatePosition: boolean;
         public getAnimationState(node: animators.AnimationNodeBase): animators.AnimationStateBase;
         public getAnimationStateByName(name: string): animators.AnimationStateBase;
         /**
@@ -13756,7 +15199,7 @@ declare module away.animators {
         * @see #time
         * @see #update()
         */
-        public autoUpdate : Boolean;
+        public autoUpdate : boolean;
         /**
         * Gets and sets the internal time clock of the animator.
         */
@@ -13979,6 +15422,154 @@ declare module away.animators {
         */
         clone(): IAnimator;
         dispose();
+    }
+}
+declare module away.animators {
+    /**
+    * The animation data set used by particle-based animators, containing particle animation data.
+    *
+    * @see away.animators.ParticleAnimator
+    */
+    class ParticleAnimationSet extends animators.AnimationSetBase implements animators.IAnimationSet {
+        /** @private */
+        public _iAnimationRegisterCache: animators.AnimationRegisterCache;
+        private _timeNode;
+        /**
+        * Property used by particle nodes that require compilation at the end of the shader
+        */
+        static POST_PRIORITY: number;
+        /**
+        * Property used by particle nodes that require color compilation
+        */
+        static COLOR_PRIORITY: number;
+        private _animationSubGeometries;
+        private _particleNodes;
+        private _localDynamicNodes;
+        private _localStaticNodes;
+        private _totalLenOfOneVertex;
+        public hasUVNode: boolean;
+        public needVelocity: boolean;
+        public hasBillboard: boolean;
+        public hasColorMulNode: boolean;
+        public hasColorAddNode: boolean;
+        /**
+        * Initialiser function for static particle properties. Needs to reference a with teh following format
+        *
+        * <code>
+        * initParticleFunc(prop:ParticleProperties)
+        * {
+        * 		//code for settings local properties
+        * }
+        * </code>
+        *
+        * Aside from setting any properties required in particle animation nodes using local static properties, the initParticleFunc function
+        * is required to time node requirements as they may be needed. These properties on the ParticleProperties object can include
+        * <code>startTime</code>, <code>duration</code> and <code>delay</code>. The use of these properties is determined by the setting
+        * arguments passed in the constructor of the particle animation set. By default, only the <code>startTime</code> property is required.
+        */
+        public initParticleFunc: Function;
+        /**
+        * Creates a new <code>ParticleAnimationSet</code>
+        *
+        * @param    [optional] usesDuration    Defines whether the animation set uses the <code>duration</code> data in its static properties to determine how long a particle is visible for. Defaults to false.
+        * @param    [optional] usesLooping     Defines whether the animation set uses a looping timeframe for each particle determined by the <code>startTime</code>, <code>duration</code> and <code>delay</code> data in its static properties function. Defaults to false. Requires <code>usesDuration</code> to be true.
+        * @param    [optional] usesDelay       Defines whether the animation set uses the <code>delay</code> data in its static properties to determine how long a particle is hidden for. Defaults to false. Requires <code>usesLooping</code> to be true.
+        */
+        constructor(usesDuration?: boolean, usesLooping?: boolean, usesDelay?: boolean);
+        /**
+        * Returns a vector of the particle animation nodes contained within the set.
+        */
+        public particleNodes : animators.ParticleNodeBase[];
+        /**
+        * @inheritDoc
+        */
+        public addAnimation(node: animators.AnimationNodeBase): void;
+        /**
+        * @inheritDoc
+        */
+        public activate(stage3DProxy: away.managers.Stage3DProxy, pass: away.materials.MaterialPassBase): void;
+        /**
+        * @inheritDoc
+        */
+        public deactivate(stage3DProxy: away.managers.Stage3DProxy, pass: away.materials.MaterialPassBase): void;
+        /**
+        * @inheritDoc
+        */
+        public getAGALVertexCode(pass: away.materials.MaterialPassBase, sourceRegisters: string[], targetRegisters: string[], profile: string): string;
+        /**
+        * @inheritDoc
+        */
+        public getAGALUVCode(pass: away.materials.MaterialPassBase, UVSource: string, UVTarget: string): string;
+        /**
+        * @inheritDoc
+        */
+        public getAGALFragmentCode(pass: away.materials.MaterialPassBase, shadedTarget: string, profile: string): string;
+        /**
+        * @inheritDoc
+        */
+        public doneAGALCode(pass: away.materials.MaterialPassBase): void;
+        /**
+        * @inheritDoc
+        */
+        public usesCPU : boolean;
+        /**
+        * @inheritDoc
+        */
+        public cancelGPUCompatibility(): void;
+        public dispose(): void;
+        /** @private */
+        public _iGenerateAnimationSubGeometries(mesh: away.entities.Mesh): void;
+    }
+}
+declare module away.animators {
+    /**
+    * Provides an interface for assigning paricle-based animation data sets to mesh-based entity objects
+    * and controlling the various available states of animation through an interative playhead that can be
+    * automatically updated or manually triggered.
+    *
+    * Requires that the containing geometry of the parent mesh is particle geometry
+    *
+    * @see away.base.ParticleGeometry
+    */
+    class ParticleAnimator extends animators.AnimatorBase implements animators.IAnimator {
+        private _particleAnimationSet;
+        private _animationParticleStates;
+        private _animatorParticleStates;
+        private _timeParticleStates;
+        private _totalLenOfOneVertex;
+        private _animatorSubGeometries;
+        /**
+        * Creates a new <code>ParticleAnimator</code> object.
+        *
+        * @param particleAnimationSet The animation data set containing the particle animations used by the animator.
+        */
+        constructor(particleAnimationSet: animators.ParticleAnimationSet);
+        /**
+        * @inheritDoc
+        */
+        public clone(): animators.IAnimator;
+        /**
+        * @inheritDoc
+        */
+        public setRenderState(stage3DProxy: away.managers.Stage3DProxy, renderable: away.base.IRenderable, vertexConstantOffset: number, vertexStreamOffset: number, camera: away.cameras.Camera3D): void;
+        /**
+        * @inheritDoc
+        */
+        public testGPUCompatibility(pass: away.materials.MaterialPassBase): void;
+        /**
+        * @inheritDoc
+        */
+        public start(): void;
+        /**
+        * @inheritDoc
+        */
+        public _pUpdateDeltaTime(dt: number): void;
+        /**
+        * @inheritDoc
+        */
+        public resetTime(offset?: number): void;
+        public dispose(): void;
+        private generateAnimatorSubGeometry(subMesh);
     }
 }
 declare module away.animators {
@@ -16100,6 +17691,28 @@ declare module away.loaders {
         * @see away3d.loaders.parsers.Parsers.ALL_BUNDLED
         */
         static enableAllBundled(): void;
+    }
+}
+declare module away.tools {
+    /**
+    * ...
+    */
+    class ParticleGeometryTransform {
+        private _defaultVertexTransform;
+        private _defaultInvVertexTransform;
+        private _defaultUVTransform;
+        public UVTransform : away.geom.Matrix;
+        public vertexTransform : away.geom.Matrix3D;
+        public invVertexTransform : away.geom.Matrix3D;
+    }
+}
+declare module away.tools {
+    /**
+    * ...
+    */
+    class ParticleGeometryHelper {
+        static MAX_VERTEX: number;
+        static generateGeometry(geometries: away.base.Geometry[], transforms?: tools.ParticleGeometryTransform[]): away.base.ParticleGeometry;
     }
 }
 declare module aglsl {

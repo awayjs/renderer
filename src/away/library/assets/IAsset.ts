@@ -15,7 +15,7 @@ module away.library
 
 		assetPathEquals(name:string, ns:string) : boolean;
 		resetAssetPath(name:string, ns:string, overrideOriginal ?:boolean) : void;
-		dispose() : void;
+		dispose();
 
 	}
 }

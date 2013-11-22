@@ -12,7 +12,7 @@ module away.animators
 	{
 		private _skeletonAnimationNode:SkeletonNaryLERPNode;
 		private _skeletonPose:SkeletonPose = new SkeletonPose();
-		private _skeletonPoseDirty:Boolean = true;
+		private _skeletonPoseDirty:boolean = true;
 		private _blendWeights:Array<number> = new Array<number>();
 		private _inputs:Array<ISkeletonAnimationState> = new Array<ISkeletonAnimationState>();
 
@@ -31,7 +31,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public phase(value:number):void
+		public phase(value:number)
 		{
 			this._skeletonPoseDirty = true;
 
@@ -46,7 +46,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public _pUdateTime(time:number /*int*/):void
+		public _pUdateTime(time:number /*int*/)
 		{
 			for (var j:number /*uint*/ = 0; j < this._skeletonAnimationNode.numInputs; ++j) {
 				if (this._blendWeights[j])
@@ -83,7 +83,7 @@ module away.animators
 		 * @param index The input index on which the skeleton animation node blend weight is to be set.
 		 * @param blendWeight The blend weight value to use for the given skeleton animation node index.
 		 */
-		public setBlendWeightAt(index:number /*uint*/, blendWeight:number):void
+		public setBlendWeightAt(index:number /*uint*/, blendWeight:number)
 		{
 			this._blendWeights[index] = blendWeight;
 
@@ -94,7 +94,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public _pUpdatePositionDelta():void
+		public _pUpdatePositionDelta()
 		{
 			this._pPositionDeltaDirty = false;
 
@@ -122,7 +122,7 @@ module away.animators
 		 *
 		 * @param skeleton The skeleton used by the animator requesting the ouput pose.
 		 */
-		private updateSkeletonPose(skeleton:Skeleton):void
+		private updateSkeletonPose(skeleton:Skeleton)
 		{
 			this._skeletonPoseDirty = false;
 

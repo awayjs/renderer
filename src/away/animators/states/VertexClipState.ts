@@ -45,7 +45,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public _pUpdateFrames():void
+		public _pUpdateFrames()
 		{
 			super._pUpdateFrames();
 
@@ -61,7 +61,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public _pUpdatePositionDelta():void
+		public _pUpdatePositionDelta()
 		{
 			//TODO:implement positiondelta functionality for vertex animations
 		}

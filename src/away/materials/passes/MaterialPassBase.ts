@@ -76,7 +76,7 @@ module away.materials
 
 		private _writeDepth:boolean = true;
 
-		//public animationRegisterCache:AnimationRegisterCache; TODO: implement dependency AnimationRegisterCache
+		public animationRegisterCache:away.animators.AnimationRegisterCache;
 
 		/**
 		 * Creates a new MaterialPassBase object.

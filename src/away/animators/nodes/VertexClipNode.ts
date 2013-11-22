@@ -35,7 +35,7 @@ module away.animators
 		 * @param duration The specified duration of the frame in milliseconds.
 		 * @param translation The absolute translation of the frame, used in root delta calculations for mesh movement.
 		 */
-		public addFrame(geometry:away.base.Geometry, duration:number /*uint*/, translation:away.geom.Vector3D = null):void
+		public addFrame(geometry:away.base.Geometry, duration:number /*uint*/, translation:away.geom.Vector3D = null)
 		{
 			this._frames.push(geometry);
 			this._pDurations.push(duration);
@@ -49,7 +49,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public _pUpdateStitch():void
+		public _pUpdateStitch()
 		{
 			super._pUpdateStitch();
 

@@ -34,7 +34,7 @@ module away.materials
 		 *
 		 * @param profile The compatibility profile used by the renderer.
 		 */
-			constructor(profile:string)
+		constructor(profile:string)
 		{
 
 			this._profile = profile;

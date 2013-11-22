@@ -63,7 +63,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public update(time:number /*int*/):void
+		public update(time:number /*int*/)
 		{
 			if (!this._animationClipNode.looping) {
 				if (time > this._pStartTime + this._animationClipNode.totalDuration)
@@ -80,7 +80,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public phase(value:number):void
+		public phase(value:number)
 		{
 			var time:number /*int*/ = value*this._animationClipNode.totalDuration + this._pStartTime;
 
@@ -93,7 +93,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public _pUpdateTime(time:number /*int*/):void
+		public _pUpdateTime(time:number /*int*/)
 		{
 			this._pFramesDirty = true;
 
@@ -109,7 +109,7 @@ module away.animators
 		 * @see #nextFrame
 		 * @see #blendWeight
 		 */
-		public _pUpdateFrames():void
+		public _pUpdateFrames()
 		{
 			this._pFramesDirty = false;
 
@@ -161,7 +161,7 @@ module away.animators
 			}
 		}
 
-		private notifyPlaybackComplete():void
+		private notifyPlaybackComplete()
 		{
 			if (this._animationStatePlaybackComplete == null)
 				this._animationStatePlaybackComplete = new away.events.AnimationStateEvent(away.events.AnimationStateEvent.PLAYBACK_COMPLETE, this._pAnimator, this, this._animationClipNode);

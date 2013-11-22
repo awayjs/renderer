@@ -40,7 +40,7 @@ module away.partition
 		/**
 		 * @inheritDoc
 		 */
-		public acceptTraverser(traverser:away.traverse.PartitionTraverser):void
+		public acceptTraverser(traverser:away.traverse.PartitionTraverser)
 		{
 			traverser.applyEntity(this._entity);
 		}

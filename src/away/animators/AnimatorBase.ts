@@ -31,8 +31,8 @@ module away.animators
 	export class AnimatorBase extends away.library.NamedAssetBase implements away.library.IAsset
 	{
 		private _broadcaster:away.utils.RequestAnimationFrame;
-		private _isPlaying:Boolean;
-		private _autoUpdate:Boolean = true;
+		private _isPlaying:boolean;
+		private _autoUpdate:boolean = true;
 		private _startEvent:away.events.AnimatorEvent;
 		private _stopEvent:away.events.AnimatorEvent;
 		private _cycleEvent:away.events.AnimatorEvent;
@@ -53,7 +53,7 @@ module away.animators
 		 *
 		 * @see away.animators.IAnimationState#positionDelta
 		 */
-		public updatePosition:Boolean = true;
+		public updatePosition:boolean = true;
 
 		public getAnimationState(node:AnimationNodeBase):AnimationStateBase
 		{
@@ -122,12 +122,12 @@ module away.animators
 		 * @see #time
 		 * @see #update()
 		 */
-		public get autoUpdate():Boolean
+		public get autoUpdate():boolean
 		{
 			return this._autoUpdate;
 		}
 
-		public set autoUpdate(value:Boolean)
+		public set autoUpdate(value:boolean)
 		{
 			if (this._autoUpdate == value)
 				return;
@@ -160,7 +160,7 @@ module away.animators
 		 *
 		 * @param value The phase value to use. 0 represents the beginning of an animation clip, 1 represents the end.
 		 */
-		public phase(value:number):void
+		public phase(value:number)
 		{
 			this._pActiveState.phase(value);
 		}
@@ -195,7 +195,7 @@ module away.animators
 		/**
 		 * Resumes the automatic playback clock controling the active state of the animator.
 		 */
-		public start():void
+		public start()
 		{
 			if (this._isPlaying || !this._autoUpdate)
 				return;
@@ -222,7 +222,7 @@ module away.animators
 		 * @see #time
 		 * @see #update()
 		 */
-		public stop():void
+		public stop()
 		{
 			if (!this._isPlaying)
 				return;
@@ -247,7 +247,7 @@ module away.animators
 		 * @see #stop()
 		 * @see #autoUpdate
 		 */
-		public update(time:number /*int*/):void
+		public update(time:number /*int*/)
 		{
 			var dt:number = (time - this._time)*this.playbackSpeed;
 
@@ -256,7 +256,7 @@ module away.animators
 			this._time = time;
 		}
 
-		public reset(name:string, offset:number = 0):void
+		public reset(name:string, offset:number = 0)
 		{
 			this.getAnimationState(this._pAnimationSet.getAnimation(name)).offset(offset + this._pAbsoluteTime);
 		}
@@ -266,7 +266,7 @@ module away.animators
 		 *
 		 * @private
 		 */
-		public addOwner(mesh:away.entities.Mesh):void
+		public addOwner(mesh:away.entities.Mesh)
 		{
 			this._pOwners.push(mesh);
 		}
@@ -276,7 +276,7 @@ module away.animators
 		 *
 		 * @private
 		 */
-		public removeOwner(mesh:away.entities.Mesh):void
+		public removeOwner(mesh:away.entities.Mesh)
 		{
 			this._pOwners.splice(this._pOwners.indexOf(mesh), 1);
 		}
@@ -286,7 +286,7 @@ module away.animators
 		 *
 		 * @private
 		 */
-		public _pUpdateDeltaTime(dt:number):void
+		public _pUpdateDeltaTime(dt:number)
 		{
 			this._pAbsoluteTime += dt;
 
@@ -299,12 +299,12 @@ module away.animators
 		/**
 		 * Enter frame event handler for automatically updating the active state of the animator.
 		 */
-		private onEnterFrame(event:Event = null):void
+		private onEnterFrame(event:Event = null)
 		{
 			this.update(away.utils.getTimer());
 		}
 
-		private applyPositionDelta():void
+		private applyPositionDelta()
 		{
 			var delta:away.geom.Vector3D = this._pActiveState.positionDelta;
 			var dist:number = delta.length;
@@ -321,7 +321,7 @@ module away.animators
 		 *
 		 * @private
 		 */
-		public dispatchCycleEvent():void
+		public dispatchCycleEvent()
 		{
 			if (this.hasEventListener(away.events.AnimatorEvent.CYCLE_COMPLETE)) {
 				if (this._cycleEvent == null)
@@ -334,7 +334,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public dispose():void
+		public dispose()
 		{
 		}
 

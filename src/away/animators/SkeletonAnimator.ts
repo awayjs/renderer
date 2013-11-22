@@ -144,7 +144,7 @@ module away.animators
 		 * @param transition An optional transition object that determines how the animator will transition from the currently active animation state.
 		 * @param offset An option offset time (in milliseconds) that resets the state's internal clock to the absolute time of the animator plus the offset value. Required for non-looping animation states.
 		 */
-		public play(name:string, transition:IAnimationTransition = null, offset:number = NaN):void
+		public play(name:string, transition:IAnimationTransition = null, offset:number = NaN)
 		{
 			if (this._pActiveAnimationName == name)
 				return;
@@ -181,7 +181,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public setRenderState(stage3DProxy:Stage3DProxy, renderable:IRenderable, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/, camera:Camera3D):void
+		public setRenderState(stage3DProxy:Stage3DProxy, renderable:IRenderable, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/, camera:Camera3D)
 		{
 			// do on request of globalProperties
 			if (this._globalPropertiesDirty)
@@ -222,7 +222,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public testGPUCompatibility(pass:MaterialPassBase):void
+		public testGPUCompatibility(pass:MaterialPassBase)
 		{
 			if (!this._useCondensedIndices && (this._forceCPU || this._jointsPerVertex > 4 || pass.numUsedVertexConstants + this._numJoints*3 > 128))
 				this._pAnimationSet.cancelGPUCompatibility();
@@ -231,7 +231,7 @@ module away.animators
 		/**
 		 * Applies the calculated time delta to the active animation state node or state transition object.
 		 */
-		public _pUpdateDeltaTime(dt:number):void
+		public _pUpdateDeltaTime(dt:number)
 		{
 			super._pUpdateDeltaTime(dt);
 
@@ -242,7 +242,7 @@ module away.animators
 				(<SubGeomAnimationState> this._subGeomAnimationStates[key]).dirty = true;
 		}
 
-		private updateCondensedMatrices(condensedIndexLookUp:Array<number> /*uint*/, numJoints:number /*uint*/):void
+		private updateCondensedMatrices(condensedIndexLookUp:Array<number> /*uint*/, numJoints:number /*uint*/)
 		{
 			var i:number /*uint*/ = 0, j:number /*uint*/ = 0;
 			var len:number /*uint*/;
@@ -259,7 +259,7 @@ module away.animators
 			} while (++i < numJoints);
 		}
 
-		private updateGlobalProperties():void
+		private updateGlobalProperties()
 		{
 			this._globalPropertiesDirty = false;
 
@@ -356,7 +356,7 @@ module away.animators
 		 * @param subGeom The subgeometry containing the weights and joint index data per vertex.
 		 * @param pass The material pass for which we need to transform the vertices
 		 */
-		private morphGeometry(state:SubGeomAnimationState, subGeom:SkinnedSubGeometry):void
+		private morphGeometry(state:SubGeomAnimationState, subGeom:SkinnedSubGeometry)
 		{
 			var vertexData:Array<number> = subGeom.vertexData;
 			var targetData:Array<number> = state.animatedVertexData;
@@ -449,7 +449,7 @@ module away.animators
 		 * @param targetPose The SkeletonPose object that will contain the global pose.
 		 * @param skeleton The skeleton containing the joints, and as such, the hierarchical data to transform to global poses.
 		 */
-		private localToGlobalPose(sourcePose:SkeletonPose, targetPose:SkeletonPose, skeleton:Skeleton):void
+		private localToGlobalPose(sourcePose:SkeletonPose, targetPose:SkeletonPose, skeleton:Skeleton)
 		{
 			var globalPoses:Array<JointPose> = targetPose.jointPoses;
 			var globalJointPose:JointPose;
@@ -541,7 +541,7 @@ module away.animators
 			}
 		}
 
-		private onTransitionComplete(event:AnimationStateEvent):void
+		private onTransitionComplete(event:AnimationStateEvent)
 		{
 			if (event.type == AnimationStateEvent.TRANSITION_COMPLETE) {
 				event.animationNode.removeEventListener(AnimationStateEvent.TRANSITION_COMPLETE, this.onTransitionComplete, this);

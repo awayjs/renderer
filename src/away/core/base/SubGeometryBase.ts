@@ -38,7 +38,7 @@ module away.base
 		public _uvsDirty:boolean = true;
 
 		/**
-		 * An id for this material pass, used to identify material passes when using animation sets.
+		 * An id for this subgeometry, used to identify subgeometries when using animation sets.
 		 *
 		 * @private
 		 */
@@ -46,7 +46,7 @@ module away.base
 
 		constructor()
 		{
-			this._iUniqueId = away.base.SubGeometryBase.SUBGEOM_ID_COUNT++;
+			this._iUniqueId = SubGeometryBase.SUBGEOM_ID_COUNT++;
 		}
 
 		/**
@@ -111,6 +111,14 @@ module away.base
 		public get numTriangles():number
 		{
 			return this._numTriangles;
+		}
+
+		/**
+		 * Unique identifier for a subgeometry
+		 */
+		public get uniqueId():number
+		{
+			return this._iUniqueId;
 		}
 
 		/**

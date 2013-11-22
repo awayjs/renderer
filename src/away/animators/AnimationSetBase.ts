@@ -58,12 +58,12 @@ module away.animators
 		 *
 		 * @private
 		 */
-		public resetGPUCompatibility():void
+		public resetGPUCompatibility()
 		{
 			this._usesCPU = false;
 		}
 
-		public cancelGPUCompatibility():void
+		public cancelGPUCompatibility()
 		{
 			this._usesCPU = true;
 		}
@@ -118,7 +118,7 @@ module away.animators
 		 * @param stateName The name under which the animation state object will be stored.
 		 * @param animationState The animation state object to be staored in the set.
 		 */
-		public addAnimation(node:AnimationNodeBase):void
+		public addAnimation(node:AnimationNodeBase)
 		{
 			if (this._animationDictionary[node.name])
 				throw new away.errors.AnimationSetError("root node name '" + node.name + "' already exists in the set");
@@ -133,7 +133,7 @@ module away.animators
 		/**
 		 * Cleans up any resources used by the current object.
 		 */
-		public dispose():void
+		public dispose()
 		{
 		}
 	}

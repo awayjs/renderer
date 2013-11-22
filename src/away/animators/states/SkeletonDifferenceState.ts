@@ -51,7 +51,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public phase(value:number):void
+		public phase(value:number)
 		{
 			this._skeletonPoseDirty = true;
 
@@ -88,7 +88,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public _pUpdatePositionDelta():void
+		public _pUpdatePositionDelta()
 		{
 			this._pPositionDeltaDirty = false;
 
@@ -105,7 +105,7 @@ module away.animators
 		 *
 		 * @param skeleton The skeleton used by the animator requesting the ouput pose.
 		 */
-		private updateSkeletonPose(skeleton:Skeleton):void
+		private updateSkeletonPose(skeleton:Skeleton)
 		{
 			this._skeletonPoseDirty = false;
 

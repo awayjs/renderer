@@ -17,40 +17,45 @@ module away.base
 		/**
 		 * The total amount of vertices in the SubGeometry.
 		 */
-			numVertices:number;//GET
+		numVertices:number;//GET
 
 		/**
 		 * The amount of triangles that comprise the IRenderable geometry.
 		 */
-			numTriangles:number;//GET
+		numTriangles:number;//GET
 
 		/**
 		 * The distance between two consecutive vertex, normal or tangent elements
 		 * This always applies to vertices, normals and tangents.
 		 */
-			vertexStride:number;//GET
+		vertexStride:number;//GET
 
 		/**
 		 * The distance between two consecutive normal elements
 		 * This always applies to vertices, normals and tangents.
 		 */
-			vertexNormalStride:number;//GET
+		vertexNormalStride:number;//GET
 
 		/**
 		 * The distance between two consecutive tangent elements
 		 * This always applies to vertices, normals and tangents.
 		 */
-			vertexTangentStride:number;//GET
+		vertexTangentStride:number;//GET
 
 		/**
 		 * The distance between two consecutive UV elements
 		 */
-			UVStride:number;//GET
+		UVStride:number;//GET
 
 		/**
 		 * The distance between two secondary UV elements
 		 */
-			secondaryUVStride:number;//GET
+		secondaryUVStride:number;//GET
+
+		/**
+		 * Unique identifier for a subgeometry
+		 */
+		uniqueId:number;//GET
 
 		/**
 		 * Assigns the attribute stream for vertex positions.

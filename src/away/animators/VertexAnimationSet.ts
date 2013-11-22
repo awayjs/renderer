@@ -70,7 +70,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public activate(stage3DProxy:away.managers.Stage3DProxy, pass:away.materials.MaterialPassBase):void
+		public activate(stage3DProxy:away.managers.Stage3DProxy, pass:away.materials.MaterialPassBase)
 		{
 			var uID:number = pass._iUniqueId;
 			this._uploadNormals = <boolean> this._useNormals[uID];
@@ -80,7 +80,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public deactivate(stage3DProxy:away.managers.Stage3DProxy, pass:away.materials.MaterialPassBase):void
+		public deactivate(stage3DProxy:away.managers.Stage3DProxy, pass:away.materials.MaterialPassBase)
 		{
 			var uID:number = pass._iUniqueId;
 			var index:number /*uint*/ = this._streamIndices[uID];
@@ -111,7 +111,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public doneAGALCode(pass:away.materials.MaterialPassBase):void
+		public doneAGALCode(pass:away.materials.MaterialPassBase)
 		{
 
 		}

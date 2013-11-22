@@ -58,7 +58,7 @@ module away.animators
 		 *
 		 * @param pose The source pose to copy from.
 		 */
-		public copyFrom(pose:JointPose):void
+		public copyFrom(pose:JointPose)
 		{
 			var or:Quaternion = pose.orientation;
 			var tr:Vector3D = pose.translation;

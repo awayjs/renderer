@@ -28,8 +28,8 @@ module away.base
 		private _offsetU:number = 0;
 		private _offsetV:number = 0;
 
-		//public animationSubGeometry:AnimationSubGeometry;// TODO: implement dependencies AnimationSubGeometry
-		//public animatorSubGeometry:AnimationSubGeometry;// TODO: implement dependencies AnimationSubGeometry
+		public animationSubGeometry:away.animators.AnimationSubGeometry;
+		public animatorSubGeometry:away.animators.AnimationSubGeometry;
 
 		/**
 		 * Creates a new SubMesh object
@@ -37,7 +37,7 @@ module away.base
 		 * @param parentMesh The Mesh object to which this SubMesh belongs.
 		 * @param material An optional material used to render this SubMesh.
 		 */
-			constructor(subGeometry:away.base.ISubGeometry, parentMesh:away.entities.Mesh, material:away.materials.MaterialBase = null)
+		constructor(subGeometry:away.base.ISubGeometry, parentMesh:away.entities.Mesh, material:away.materials.MaterialBase = null)
 		{
 			this._parentMesh = parentMesh;
 			this._subGeometry = subGeometry;

@@ -78,14 +78,14 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public activate(stage3DProxy:Stage3DProxy, pass:MaterialPassBase):void
+		public activate(stage3DProxy:Stage3DProxy, pass:MaterialPassBase)
 		{
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public deactivate(stage3DProxy:Stage3DProxy, pass:MaterialPassBase):void
+		public deactivate(stage3DProxy:Stage3DProxy, pass:MaterialPassBase)
 		{
 			var streamOffset:number /*uint*/ = pass.numUsedStreams;
 			var context:Context3D = stage3DProxy._iContext3D;
@@ -112,7 +112,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public doneAGALCode(pass:MaterialPassBase):void
+		public doneAGALCode(pass:MaterialPassBase)
 		{
 
 		}

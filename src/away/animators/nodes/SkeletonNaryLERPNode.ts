@@ -50,7 +50,7 @@ module away.animators
 		/**
 		 * Adds a new skeleton animation node input to the animation node.
 		 */
-		public addInput(input:AnimationNodeBase):void
+		public addInput(input:AnimationNodeBase)
 		{
 			this._iInputs[this._numInputs++] = input;
 		}

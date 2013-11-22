@@ -15,7 +15,7 @@ module away.animators
 		 * Determines whether to use SLERP equations (true) or LERP equations (false) in the calculation
 		 * of the output skeleton pose. Defaults to false.
 		 */
-		public highQuality:Boolean = false;
+		public highQuality:boolean = false;
 
 		/**
 		 * Returns a vector of skeleton poses representing the pose of each animation frame in the clip.
@@ -41,7 +41,7 @@ module away.animators
 		 * @param skeletonPose The skeleton pose object to add to the timeline of the node.
 		 * @param duration The specified duration of the frame in milliseconds.
 		 */
-		public addFrame(skeletonPose:SkeletonPose, duration:number /*number /*uint*/):void
+		public addFrame(skeletonPose:SkeletonPose, duration:number /*number /*uint*/)
 		{
 			this._frames.push(skeletonPose);
 			this._pDurations.push(duration);
@@ -62,7 +62,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public _pUpdateStitch():void
+		public _pUpdateStitch()
 		{
 			super._pUpdateStitch();
 

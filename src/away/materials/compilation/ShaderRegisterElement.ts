@@ -22,7 +22,7 @@ module away.materials
 		 * @param index The index of the register.
 		 * @param component The register's component, if not the entire register is represented.
 		 */
-			constructor(regName:string, index:number, component:number = -1)
+		constructor(regName:string, index:number, component:number = -1)
 		{
 			this._component = component;
 			this._regName = regName;

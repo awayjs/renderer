@@ -42,7 +42,7 @@ module away.animators
 		 * Plays a sequence with a given name. If the sequence is not found, it may not be loaded yet, and it will retry every frame.
 		 * @param sequenceName The name of the clip to be played.
 		 */
-		public play(name:string, transition:IAnimationTransition = null, offset:number = NaN):void
+		public play(name:string, transition:IAnimationTransition = null, offset:number = NaN)
 		{
 			if (this._pActiveAnimationName == name)
 				return;
@@ -76,7 +76,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public _pUpdateDeltaTime(dt:number):void
+		public _pUpdateDeltaTime(dt:number)
 		{
 			super._pUpdateDeltaTime(dt);
 
@@ -88,7 +88,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public setRenderState(stage3DProxy:away.managers.Stage3DProxy, renderable:away.base.IRenderable, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/, camera:away.cameras.Camera3D):void
+		public setRenderState(stage3DProxy:away.managers.Stage3DProxy, renderable:away.base.IRenderable, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/, camera:away.cameras.Camera3D)
 		{
 			// todo: add code for when running on cpu
 
@@ -126,7 +126,7 @@ module away.animators
 			}
 		}
 
-		private setNullPose(stage3DProxy:away.managers.Stage3DProxy, renderable:away.base.IRenderable, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/):void
+		private setNullPose(stage3DProxy:away.managers.Stage3DProxy, renderable:away.base.IRenderable, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/)
 		{
 			stage3DProxy._iContext3D.setProgramConstantsFromArray(away.display3D.Context3DProgramType.VERTEX, vertexConstantOffset, this._weights, 1);
 
@@ -146,7 +146,7 @@ module away.animators
 		 * Verifies if the animation will be used on cpu. Needs to be true for all passes for a material to be able to use it on gpu.
 		 * Needs to be called if gpu code is potentially required.
 		 */
-		public testGPUCompatibility(pass:away.materials.MaterialPassBase):void
+		public testGPUCompatibility(pass:away.materials.MaterialPassBase)
 		{
 		}
 	}

@@ -103,7 +103,7 @@ module away.animators
 		 *
 		 * @see #stitchFinalFrame
 		 */
-		public _pUpdateStitch():void
+		public _pUpdateStitch()
 		{
 			this._pStitchDirty = false;
 

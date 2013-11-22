@@ -59,7 +59,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public phase(value:number):void
+		public phase(value:number)
 		{
 			if (this._blendDirty)
 				this.updateBlend();
@@ -75,7 +75,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public _pUdateTime(time:number /*int*/):void
+		public _pUdateTime(time:number /*int*/)
 		{
 			if (this._blendDirty)
 				this.updateBlend();
@@ -102,7 +102,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public _pUpdatePositionDelta():void
+		public _pUpdatePositionDelta()
 		{
 			this._pPositionDeltaDirty = false;
 
@@ -122,7 +122,7 @@ module away.animators
 		 *
 		 * @param skeleton The skeleton used by the animator requesting the ouput pose.
 		 */
-		private updateSkeletonPose(skeleton:Skeleton):void
+		private updateSkeletonPose(skeleton:Skeleton)
 		{
 			this._skeletonPoseDirty = false;
 
@@ -167,7 +167,7 @@ module away.animators
 		 *
 		 * @private
 		 */
-		private updateBlend():void
+		private updateBlend()
 		{
 			this._blendDirty = false;
 
