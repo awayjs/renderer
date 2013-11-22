@@ -228,6 +228,16 @@ var examples;
 
             this.timer = new away.utils.RequestAnimationFrame(this.onEnterFrame, this);
             this.timer.start();
+
+            away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete, this);
+
+            //plane textures
+            away.library.AssetLibrary.load(new away.net.URLRequest("assets/demos/floor_diffuse.jpg"));
+            away.library.AssetLibrary.load(new away.net.URLRequest("assets/demos/floor_normal.jpg"));
+            away.library.AssetLibrary.load(new away.net.URLRequest("assets/demos/floor_specular.jpg"));
+
+            //particle texture
+            away.library.AssetLibrary.load(new away.net.URLRequest("assets/demos/blue.png"));
         };
 
         /**
@@ -310,6 +320,36 @@ var examples;
             }
 
             this.view.render();
+        };
+
+        /**
+        * Listener function for resource complete event on asset library
+        */
+        Basic_Fire.prototype.onResourceComplete = function (event) {
+            var assets = event.assets;
+            var length = assets.length;
+
+            for (var c = 0; c < length; c++) {
+                var asset = assets[c];
+
+                console.log(asset.name, event.url);
+
+                switch (event.url) {
+                    case "assets/demos/floor_diffuse.jpg":
+                        this.planeMaterial.texture = away.library.AssetLibrary.getAsset(asset.name);
+                        break;
+                    case "assets/demos/floor_normal.jpg":
+                        this.planeMaterial.normalMap = away.library.AssetLibrary.getAsset(asset.name);
+                        break;
+                    case "assets/demos/floor_specular.jpg":
+                        this.planeMaterial.specularMap = away.library.AssetLibrary.getAsset(asset.name);
+                        break;
+
+                    case "assets/demos/blue.png":
+                        this.particleMaterial.texture = away.library.AssetLibrary.getAsset(asset.name);
+                        break;
+                }
+            }
         };
 
         /**

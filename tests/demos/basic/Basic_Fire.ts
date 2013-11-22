@@ -264,6 +264,16 @@ module examples
 
 			this.timer = new away.utils.RequestAnimationFrame(this.onEnterFrame, this);
 			this.timer.start();
+
+			away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete, this);
+
+			//plane textures
+			away.library.AssetLibrary.load(new away.net.URLRequest("assets/demos/floor_diffuse.jpg"));
+			away.library.AssetLibrary.load(new away.net.URLRequest("assets/demos/floor_normal.jpg"));
+			away.library.AssetLibrary.load(new away.net.URLRequest("assets/demos/floor_specular.jpg"));
+
+			//particle texture
+			away.library.AssetLibrary.load(new away.net.URLRequest("assets/demos/blue.png"));
 		}
 		
 		/**
@@ -350,6 +360,41 @@ module examples
 			}
 			
 			this.view.render();
+		}
+
+		/**
+		 * Listener function for resource complete event on asset library
+		 */
+		private onResourceComplete (event:away.events.LoaderEvent)
+		{
+			var assets:away.library.IAsset[] = event.assets;
+			var length:number = assets.length;
+
+			for ( var c : number = 0 ; c < length ; c ++ )
+			{
+				var asset:away.library.IAsset = assets[c];
+
+				console.log(asset.name, event.url);
+
+				switch (event.url)
+				{
+					//plane textures
+					case "assets/demos/floor_diffuse.jpg" :
+						this.planeMaterial.texture = <away.textures.Texture2DBase> away.library.AssetLibrary.getAsset(asset.name);
+						break;
+					case "assets/demos/floor_normal.jpg" :
+						this.planeMaterial.normalMap = <away.textures.Texture2DBase> away.library.AssetLibrary.getAsset(asset.name);
+						break;
+					case "assets/demos/floor_specular.jpg" :
+						this.planeMaterial.specularMap = <away.textures.Texture2DBase> away.library.AssetLibrary.getAsset(asset.name);
+						break;
+
+					//particle texture
+					case "assets/demos/blue.png" :
+						this.particleMaterial.texture = <away.textures.Texture2DBase> away.library.AssetLibrary.getAsset(asset.name);
+						break;
+				}
+			}
 		}
 
 		 /**
