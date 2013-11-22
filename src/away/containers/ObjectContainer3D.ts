@@ -499,11 +499,10 @@ module away.containers
 			return child;
 		}
 
-		public addChildren(childarray:away.containers.ObjectContainer3D)
+		public addChildren(...childarray:Array<away.containers.ObjectContainer3D>)
 		{
-			for (var child in childarray) {
-				this.addChild(child);
-			}
+			for (var i:number; i <  childarray.length; i++)
+				this.addChild(childarray[i]);
 		}
 
 		public removeChild(child:away.containers.ObjectContainer3D)
