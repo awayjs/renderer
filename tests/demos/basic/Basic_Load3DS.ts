@@ -266,6 +266,7 @@ module examples
                 this._cameraController.tiltAngle = 0.3*(event.clientY - this._lastMouseY) + this._lastTiltAngle;
             }
         }
+
         /**
          * stage listener for resize events
          */
