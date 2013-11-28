@@ -61407,7 +61407,7 @@ var aglsl;
             var header = "";
             var body = "";
 
-            header += "precision mediump float;\n";
+            header += "precision highp float;\n";
             var tag = desc.header.type[0];
 
             if (desc.header.type == "vertex") {
