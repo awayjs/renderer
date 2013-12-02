@@ -66,7 +66,12 @@ module away.animators
 		 * arguments passed in the constructor of the particle animation set. By default, only the <code>startTime</code> property is required.
 		 */
 		public initParticleFunc:Function;
-		
+
+		/**
+		 * Initialiser function scope for static particle properties
+		 */
+		public initParticleScope:Object;
+
 		/**
 		 * Creates a new <code>ParticleAnimationSet</code>
 		 *
@@ -328,7 +333,7 @@ module away.animators
 				particleProperties.index = i;
 				
 				//call the init on the particle parameters
-				this.initParticleFunc(particleProperties);
+				this.initParticleFunc.call(this.initParticleScope, particleProperties);
 				
 				//create the next set of node properties for the particle
 				for (k = 0; k < this._localStaticNodes.length; k++)
