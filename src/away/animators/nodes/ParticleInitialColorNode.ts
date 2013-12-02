@@ -85,7 +85,7 @@ module away.animators
 			if (!initialColor)
 				throw(new Error("there is no " + ParticleInitialColorNode.COLOR_INITIAL_COLORTRANSFORM + " in param!"));
 			
-			var i:number /*uint*/;
+			var i:number /*uint*/ = 0;
 			
 			//multiplier
 			if (this._iUsesMultiplier) {

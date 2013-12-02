@@ -172,7 +172,7 @@ module away.animators
 			if (!endColor)
 				throw(new Error("there is no " + ParticleColorNode.COLOR_END_COLORTRANSFORM + " in param!"));
 			
-			var i:number /*uint*/;
+			var i:number /*uint*/ = 0;
 			
 			if (!this._iUsesCycle) {
 				//multiplier
