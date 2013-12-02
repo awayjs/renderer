@@ -6946,21 +6946,18 @@ var away;
                 var b;
                 var a;
 
-                var index = (x + y * this._imageCanvas.width) * 4;
-
                 if (!this._locked) {
-                    this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
+                    var pixelData = this._context.getImageData(x, y, 1, 1);
 
-                    r = this._imageData.data[index + 0];
-                    g = this._imageData.data[index + 1];
-                    b = this._imageData.data[index + 2];
-                    a = this._imageData.data[index + 3];
+                    r = pixelData.data[0];
+                    g = pixelData.data[1];
+                    b = pixelData.data[2];
+                    a = pixelData.data[3];
                 } else {
-                    if (this._imageData) {
-                        this._context.putImageData(this._imageData, 0, 0);
-                    }
+                    var index = (x + y * this._imageCanvas.width) * 4;
 
-                    this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
+                    if (!this._imageData)
+                        this._imageData = this._context.getImageData(0, 0, this._rect.width, this._rect.height);
 
                     r = this._imageData.data[index + 0];
                     g = this._imageData.data[index + 1];
