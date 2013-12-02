@@ -8728,7 +8728,7 @@ var away;
                 if (typeof bufferOffset === "undefined") { bufferOffset = 0; }
                 if (typeof format === "undefined") { format = null; }
                 //if ( buffer == null )return;
-                var location = this._gl.getAttribLocation(this._currentProgram.glProgram, locationName);
+                var location = this._currentProgram ? this._gl.getAttribLocation(this._currentProgram.glProgram, locationName) : -1;
                 if (!buffer) {
                     if (location > -1) {
                         this._gl.disableVertexAttribArray(location);
@@ -44468,7 +44468,7 @@ var away;
                 if (!endColor)
                     throw (new Error("there is no " + ParticleColorNode.COLOR_END_COLORTRANSFORM + " in param!"));
 
-                var i/*uint*/ ;
+                var i = 0;
 
                 if (!this._iUsesCycle) {
                     if (this._iUsesMultiplier) {
@@ -44743,7 +44743,7 @@ var away;
                 if (!initialColor)
                     throw (new Error("there is no " + ParticleInitialColorNode.COLOR_INITIAL_COLORTRANSFORM + " in param!"));
 
-                var i/*uint*/ ;
+                var i = 0;
 
                 if (this._iUsesMultiplier) {
                     this._pOneData[i++] = initialColor.redMultiplier;
@@ -49941,6 +49941,7 @@ var away;
             function AnimatorBase(animationSet) {
                 _super.call(this);
                 this._autoUpdate = true;
+                this._time = 0;
                 this._playbackSpeed = 1;
                 this._pOwners = new Array();
                 this._pAbsoluteTime = 0;
@@ -50532,7 +50533,7 @@ var away;
                     particleProperties.index = i;
 
                     //call the init on the particle parameters
-                    this.initParticleFunc(particleProperties);
+                    this.initParticleFunc.call(this.initParticleScope, particleProperties);
 
                     for (k = 0; k < this._localStaticNodes.length; k++)
                         this._localStaticNodes[k]._iGeneratePropertyOfOneParticle(particleProperties);

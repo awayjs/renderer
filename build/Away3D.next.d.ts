@@ -15469,6 +15469,10 @@ declare module away.animators {
         */
         public initParticleFunc: Function;
         /**
+        * Initialiser function scope for static particle properties
+        */
+        public initParticleScope: Object;
+        /**
         * Creates a new <code>ParticleAnimationSet</code>
         *
         * @param    [optional] usesDuration    Defines whether the animation set uses the <code>duration</code> data in its static properties to determine how long a particle is visible for. Defaults to false.
