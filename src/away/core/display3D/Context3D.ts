@@ -592,7 +592,7 @@ module away.display3D
 
 			//if ( buffer == null )return;
 
-			var location:number = this._gl.getAttribLocation(this._currentProgram.glProgram, locationName);
+			var location:number = this._currentProgram? this._gl.getAttribLocation(this._currentProgram.glProgram, locationName) : -1;
 			if (!buffer) {
 
 				if (location > -1) {

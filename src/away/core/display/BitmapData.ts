@@ -25,7 +25,7 @@ module away.display
 		 * @param transparent
 		 * @param fillColor
 		 */
-			constructor(width:number, height:number, transparent:boolean = true, fillColor:number = null)
+		constructor(width:number, height:number, transparent:boolean = true, fillColor:number = null)
 		{
 
 			this._transparent = transparent;
