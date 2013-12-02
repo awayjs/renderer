@@ -36,7 +36,7 @@ module away.animators
 		private _startEvent:away.events.AnimatorEvent;
 		private _stopEvent:away.events.AnimatorEvent;
 		private _cycleEvent:away.events.AnimatorEvent;
-		private _time:number /*int*/;
+		private _time:number /*int*/ = 0;
 		private _playbackSpeed:number = 1;
 
 		public _pAnimationSet:IAnimationSet;
