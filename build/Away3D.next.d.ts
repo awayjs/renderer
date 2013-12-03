@@ -17042,11 +17042,18 @@ declare module away.loaders {
         private parseMetaData(blockID);
         private parseNameSpace(blockID);
         private parseShadowMethodList(light, blockID);
+        private parseSkeleton(blockID);
+        private parseSkeletonPose(blockID);
+        private parseSkeletonAnimation(blockID);
+        private parseMeshPoseAnimation(blockID, poseOnly?);
+        private parseVertexAnimationSet(blockID);
+        private parseAnimatorSet(blockID);
         private parseSharedMethodList(blockID);
         private parseUserAttributes();
         private parseProperties(expected);
         private parseAttrValue(type, len);
         private parseHeader();
+        private getUVForVertexAnimation(meshID);
         private parseVarStr();
         private getAssetByID(assetID, assetTypesToGet, extraTypeInfo?);
         private getDefaultAsset(assetType, extraTypeInfo);
