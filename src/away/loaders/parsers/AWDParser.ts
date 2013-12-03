@@ -2,13 +2,41 @@
 
 module away.loaders
 {
-
+	import AnimationSetBase					= away.animators.AnimationSetBase;
+	import AnimatorBase						= away.animators.AnimatorBase;
+	import JointPose						= away.animators.JointPose;
+	import Skeleton							= away.animators.Skeleton;
+	import SkeletonAnimationSet				= away.animators.SkeletonAnimationSet;
+	import SkeletonAnimator					= away.animators.SkeletonAnimator;
+	import SkeletonClipNode					= away.animators.SkeletonClipNode;
+	import SkeletonPose						= away.animators.SkeletonPose;
+	import SkeletonJoint					= away.animators.SkeletonJoint;
+	import VertexAnimationSet				= away.animators.VertexAnimationSet;
+	import VertexAnimator					= away.animators.VertexAnimator;
+	import VertexClipNode					= away.animators.VertexClipNode;
+	import CompactSubGeometry				= away.base.CompactSubGeometry;
+	import Geometry							= away.base.Geometry;
+	import BlendMode						= away.display.BlendMode;
+	import Mesh								= away.entities.Mesh;
+	import Matrix3D							= away.geom.Matrix3D;
+	import AssetType						= away.library.AssetType;
+	import DitheredShadowMapMethod			= away.materials.DitheredShadowMapMethod;
+	import FilteredShadowMapMethod			= away.materials.FilteredShadowMapMethod;
+	import FresnelSpecularMethod			= away.materials.FresnelSpecularMethod;
+	import HardShadowMapMethod				= away.materials.HardShadowMapMethod;
+	import PhongSpecularMethod				= away.materials.PhongSpecularMethod;
+	import MultiPassMaterialBase			= away.materials.MultiPassMaterialBase;
+	import NearShadowMapMethod				= away.materials.NearShadowMapMethod;
+	import SimpleShadowMapMethodBase		= away.materials.SimpleShadowMapMethodBase;
+	import SinglePassMaterialBase			= away.materials.SinglePassMaterialBase;
+	import SoftShadowMapMethod				= away.materials.SoftShadowMapMethod;
+	
 	/**
 	 * AWDParser provides a parser for the AWD data type.
 	 */
 	export class AWDParser extends away.loaders.ParserBase
 	{
-		//set to "true" to have some traces in the Console
+		//set to "true" to have some console.logs in the Console
 		private _debug:boolean = false;
 		private _byteData:away.utils.ByteArray;
 		private _startedParsing:boolean = false;
@@ -68,29 +96,29 @@ module away.loaders
 		 */
 		constructor()
 		{
-			super(away.loaders.ParserDataFormat.BINARY);
+			super(ParserDataFormat.BINARY);
 
 			this._blocks = new Array<AWDBlock>();
 			this._blocks[0] = new AWDBlock();
 			this._blocks[0].data = null; // Zero address means null in AWD
 
 			this.blendModeDic = new Array<string>(); // used to translate ints to blendMode-strings
-			this.blendModeDic.push(away.display.BlendMode.NORMAL);
-			this.blendModeDic.push(away.display.BlendMode.ADD);
-			this.blendModeDic.push(away.display.BlendMode.ALPHA);
-			this.blendModeDic.push(away.display.BlendMode.DARKEN);
-			this.blendModeDic.push(away.display.BlendMode.DIFFERENCE);
-			this.blendModeDic.push(away.display.BlendMode.ERASE);
-			this.blendModeDic.push(away.display.BlendMode.HARDLIGHT);
-			this.blendModeDic.push(away.display.BlendMode.INVERT);
-			this.blendModeDic.push(away.display.BlendMode.LAYER);
-			this.blendModeDic.push(away.display.BlendMode.LIGHTEN);
-			this.blendModeDic.push(away.display.BlendMode.MULTIPLY);
-			this.blendModeDic.push(away.display.BlendMode.NORMAL);
-			this.blendModeDic.push(away.display.BlendMode.OVERLAY);
-			this.blendModeDic.push(away.display.BlendMode.SCREEN);
-			this.blendModeDic.push(away.display.BlendMode.SHADER);
-			this.blendModeDic.push(away.display.BlendMode.OVERLAY);
+			this.blendModeDic.push(BlendMode.NORMAL);
+			this.blendModeDic.push(BlendMode.ADD);
+			this.blendModeDic.push(BlendMode.ALPHA);
+			this.blendModeDic.push(BlendMode.DARKEN);
+			this.blendModeDic.push(BlendMode.DIFFERENCE);
+			this.blendModeDic.push(BlendMode.ERASE);
+			this.blendModeDic.push(BlendMode.HARDLIGHT);
+			this.blendModeDic.push(BlendMode.INVERT);
+			this.blendModeDic.push(BlendMode.LAYER);
+			this.blendModeDic.push(BlendMode.LIGHTEN);
+			this.blendModeDic.push(BlendMode.MULTIPLY);
+			this.blendModeDic.push(BlendMode.NORMAL);
+			this.blendModeDic.push(BlendMode.OVERLAY);
+			this.blendModeDic.push(BlendMode.SCREEN);
+			this.blendModeDic.push(BlendMode.SHADER);
+			this.blendModeDic.push(BlendMode.OVERLAY);
 
 			this._depthSizeDic = new Array<number>(); // used to translate ints to depthSize-values
 			this._depthSizeDic.push(256);
@@ -126,7 +154,7 @@ module away.loaders
 		 */
 		public _iResolveDependency(resourceDependency:away.loaders.ResourceDependency):void
 		{
-			// this function will be called when Dependency has finished loading.
+			// this will be called when Dependency has finished loading.
 			// the Assets waiting for this Bitmap, can be Texture or CubeTexture.
 			// if the Bitmap is awaited by a CubeTexture, we need to check if its the last Bitmap of the CubeTexture,
 			// so we know if we have to finalize the Asset (CubeTexture) or not.
@@ -497,40 +525,20 @@ module away.loaders
 						isParsed = true;
 						break;
 					case 111:
-
-						//------------------------------------------------------------------
-						// Not yet supported - animation packages are not yet implemented
-						//------------------------------------------------------------------
-
-						//this.parseMeshPoseAnimation(this._cur_block_id, true);
-						//isParsed = true;
+						this.parseMeshPoseAnimation(this._cur_block_id, true);
+						isParsed = true;
 						break;
 					case 112:
-
-						//------------------------------------------------------------------
-						// Not yet supported - animation packages are not yet implemented
-						//------------------------------------------------------------------
-
-						//this.parseMeshPoseAnimation(this._cur_block_id);
-						//isParsed = true;
+						this.parseMeshPoseAnimation(this._cur_block_id);
+						isParsed = true;
 						break;
 					case 113:
-
-						//------------------------------------------------------------------
-						// Not yet supported - animation packages are not yet implemented
-						//------------------------------------------------------------------
-
-						//this.parseVertexAnimationSet(this._cur_block_id);
-						//isParsed = true;
+						this.parseVertexAnimationSet(this._cur_block_id);
+						isParsed = true;
 						break;
 					case 122:
-
-						//------------------------------------------------------------------
-						// Not yet supported - animation packages are not yet implemented
-						//------------------------------------------------------------------
-
-						//this.parseAnimatorSet(this._cur_block_id);
-						//isParsed = true;
+						this.parseAnimatorSet(this._cur_block_id);
+						isParsed = true;
 						break;
 					case 253:
 						this.parseCommand(this._cur_block_id);
@@ -559,38 +567,17 @@ module away.loaders
 						this.parseTexture(this._cur_block_id);
 						break;
 					case 101:
-
-						//------------------------------------------------------------------
-						// Not yet supported - animation packages are not yet implemented
-						//------------------------------------------------------------------
-
-						//this.parseSkeleton(this._cur_block_id);
-
+						this.parseSkeleton(this._cur_block_id);
 						break;
 					case 102:
-
-						//------------------------------------------------------------------
-						// Not yet supported - animation packages are not yet implemented
-						//------------------------------------------------------------------
-
-						//this.parseSkeletonPose(this._cur_block_id);
+						this.parseSkeletonPose(this._cur_block_id);
 						break;
 					case 103:
-
-						//------------------------------------------------------------------
-						// Not yet supported - animation packages are not yet implemented
-						//------------------------------------------------------------------
-
-						//this.parseSkeletonAnimation(this._cur_block_id);
+						this.parseSkeletonAnimation(this._cur_block_id);
 						break;
 					case 121:
-
-						//------------------------------------------------------------------
-						// Not yet supported - animation packages are not yet implemented
-						//------------------------------------------------------------------
-
 						//this.parseUVAnimation(this._cur_block_id);
-						break;
+						//break;
 					case 254:
 						this.parseNameSpace(this._cur_block_id);
 						break;
@@ -782,7 +769,7 @@ module away.loaders
 			var primType:number;
 			var subs_parsed:number;
 			var props:AWDProperties;
-			var bsm:away.geom.Matrix3D;
+			var bsm:Matrix3D;
 
 			// Read name and sub count
 			name = this.parseVarStr();
@@ -858,7 +845,7 @@ module away.loaders
 		{
 			var name:string;
 			var par_id:number;
-			var mtx:away.geom.Matrix3D;
+			var mtx:Matrix3D;
 			var ctr:away.containers.ObjectContainer3D;
 			var parent:away.containers.ObjectContainer3D;
 
@@ -870,7 +857,7 @@ module away.loaders
 			ctr = new away.containers.ObjectContainer3D();
 			ctr.transform = mtx;
 
-			var returnedArray:Array<any> = this.getAssetByID(par_id, [away.library.AssetType.CONTAINER, away.library.AssetType.LIGHT, away.library.AssetType.MESH, away.library.AssetType.ENTITY, away.library.AssetType.SEGMENT_SET]);
+			var returnedArray:Array<any> = this.getAssetByID(par_id, [AssetType.CONTAINER, AssetType.LIGHT, AssetType.MESH, AssetType.ENTITY, AssetType.SEGMENT_SET]);
 
 			if (returnedArray[0]) {
 				var obj:away.containers.ObjectContainer3D = ( <away.containers.ObjectContainer3D> returnedArray[1] ).addChild(ctr);
@@ -907,12 +894,12 @@ module away.loaders
 			var materials_parsed:number;
 			var parent:away.containers.ObjectContainer3D;
 			var par_id:number = this._newBlockBytes.readUnsignedInt();
-			var mtx:away.geom.Matrix3D = this.parseMatrix3D();
+			var mtx:Matrix3D = this.parseMatrix3D();
 			var name:string = this.parseVarStr();
 			var parentName:string = "Root (TopLevel)";
 			var data_id:number = this._newBlockBytes.readUnsignedInt();
 			var geom:away.base.Geometry;
-			var returnedArrayGeometry:Array<any> = this.getAssetByID(data_id, [away.library.AssetType.GEOMETRY])
+			var returnedArrayGeometry:Array<any> = this.getAssetByID(data_id, [AssetType.GEOMETRY])
 
 			if (returnedArrayGeometry[0]) {
 				geom = <away.base.Geometry> returnedArrayGeometry[1];
@@ -933,7 +920,7 @@ module away.loaders
 			while (materials_parsed < num_materials) {
 				var mat_id:number;
 				mat_id = this._newBlockBytes.readUnsignedInt();
-				returnedArrayMaterial = this.getAssetByID(mat_id, [away.library.AssetType.MATERIAL])
+				returnedArrayMaterial = this.getAssetByID(mat_id, [AssetType.MATERIAL])
 				if ((!returnedArrayMaterial[0]) && (mat_id > 0)) {
 					this._blocks[blockID].addError("Could not find Material Nr " + materials_parsed + " (ID = " + mat_id + " ) for this Mesh");
 				}
@@ -946,10 +933,10 @@ module away.loaders
 				materials_parsed++;
 			}
 
-			var mesh:away.entities.Mesh = new away.entities.Mesh(geom, null);
+			var mesh:Mesh = new Mesh(geom, null);
 			mesh.transform = mtx;
 
-			var returnedArrayParent:Array<any> = this.getAssetByID(par_id, [away.library.AssetType.CONTAINER, away.library.AssetType.LIGHT, away.library.AssetType.MESH, away.library.AssetType.ENTITY, away.library.AssetType.SEGMENT_SET])
+			var returnedArrayParent:Array<any> = this.getAssetByID(par_id, [AssetType.CONTAINER, AssetType.LIGHT, AssetType.MESH, AssetType.ENTITY, AssetType.SEGMENT_SET])
 
 			if (returnedArrayParent[0]) {
 				var objC:away.containers.ObjectContainer3D = <away.containers.ObjectContainer3D> returnedArrayParent[1];
@@ -995,7 +982,7 @@ module away.loaders
 			var name:string = this.parseVarStr();
 			var cubeTexAddr:number = this._newBlockBytes.readUnsignedInt();
 
-			var returnedArrayCubeTex:Array<any> = this.getAssetByID(cubeTexAddr, [away.library.AssetType.TEXTURE], "CubeTexture");
+			var returnedArrayCubeTex:Array<any> = this.getAssetByID(cubeTexAddr, [AssetType.TEXTURE], "CubeTexture");
 			if ((!returnedArrayCubeTex[0]) && (cubeTexAddr != 0))
 				this._blocks[blockID].addError("Could not find the Cubetexture (ID = " + cubeTexAddr + " ) for this SkyBox");
 			var asset:away.entities.SkyBox = new away.entities.SkyBox(<away.textures.HTMLImageElementCubeTexture> returnedArrayCubeTex[1]);
@@ -1016,7 +1003,7 @@ module away.loaders
 			var newShadowMapper:away.lights.ShadowMapperBase;
 
 			var par_id:number = this._newBlockBytes.readUnsignedInt();
-			var mtx:away.geom.Matrix3D = this.parseMatrix3D();
+			var mtx:Matrix3D = this.parseMatrix3D();
 			var name:string = this.parseVarStr();
 			var lightType:number = this._newBlockBytes.readUnsignedByte();
 			var props:AWDProperties = this.parseProperties({1:this._propsNrType, 2:this._propsNrType, 3:AWDParser.COLOR, 4:this._propsNrType, 5:this._propsNrType, 6:AWDParser.BOOL, 7:AWDParser.COLOR, 8:this._propsNrType, 9:AWDParser.UINT8, 10:AWDParser.UINT8, 11:this._propsNrType, 12:AWDParser.UINT16, 21:this._matrixNrType, 22:this._matrixNrType, 23:this._matrixNrType});
@@ -1082,7 +1069,7 @@ module away.loaders
 
 			if (par_id != 0) {
 
-				var returnedArrayParent:Array<any> = this.getAssetByID(par_id, [away.library.AssetType.CONTAINER, away.library.AssetType.LIGHT, away.library.AssetType.MESH, away.library.AssetType.ENTITY, away.library.AssetType.SEGMENT_SET])
+				var returnedArrayParent:Array<any> = this.getAssetByID(par_id, [AssetType.CONTAINER, AssetType.LIGHT, AssetType.MESH, AssetType.ENTITY, AssetType.SEGMENT_SET])
 
 				if (returnedArrayParent[0]) {
 					(<away.containers.ObjectContainer3D> returnedArrayParent[1]).addChild(light);
@@ -1108,7 +1095,7 @@ module away.loaders
 		{
 
 			var par_id:number = this._newBlockBytes.readUnsignedInt();
-			var mtx:away.geom.Matrix3D = this.parseMatrix3D();
+			var mtx:Matrix3D = this.parseMatrix3D();
 			var name:string = this.parseVarStr();
 			var parentName:string = "Root (TopLevel)";
 			var lens:away.cameras.LensBase;
@@ -1137,7 +1124,7 @@ module away.loaders
 			var camera:away.cameras.Camera3D = new away.cameras.Camera3D(lens);
 			camera.transform = mtx;
 
-			var returnedArrayParent:Array<any> = this.getAssetByID(par_id, [away.library.AssetType.CONTAINER, away.library.AssetType.LIGHT, away.library.AssetType.MESH, away.library.AssetType.ENTITY, away.library.AssetType.SEGMENT_SET])
+			var returnedArrayParent:Array<any> = this.getAssetByID(par_id, [AssetType.CONTAINER, AssetType.LIGHT, AssetType.MESH, AssetType.ENTITY, AssetType.SEGMENT_SET])
 
 			if (returnedArrayParent[0]) {
 
@@ -1179,7 +1166,7 @@ module away.loaders
 
 			for (k = 0; k < numLights; k++) {
 				lightID = this._newBlockBytes.readUnsignedInt();
-				returnedArrayLight = this.getAssetByID(lightID, [away.library.AssetType.LIGHT])
+				returnedArrayLight = this.getAssetByID(lightID, [AssetType.LIGHT])
 
 				if (returnedArrayLight[0]) {
 					lightsArray.push(<away.lights.LightBase> returnedArrayLight[1]);
@@ -1253,7 +1240,7 @@ module away.loaders
 			} else if (type === 2) {
 				var tex_addr:number = props.get(2, 0);
 
-				returnedArray = this.getAssetByID(tex_addr, [away.library.AssetType.TEXTURE])
+				returnedArray = this.getAssetByID(tex_addr, [AssetType.TEXTURE])
 				if ((!returnedArray[0]) && (tex_addr > 0)) {
 					this._blocks[blockID].addError("Could not find the DiffsueTexture (ID = " + tex_addr + " ) for this Material");
 				}
@@ -1341,7 +1328,7 @@ module away.loaders
 				{
 
 					var tex_addr:number = props.get(2, 0);
-					returnedArray = this.getAssetByID(tex_addr, [away.library.AssetType.TEXTURE]);
+					returnedArray = this.getAssetByID(tex_addr, [AssetType.TEXTURE]);
 
 					if ((!returnedArray[0]) && (tex_addr > 0)) {
 						this._blocks[blockID].addError("Could not find the DiffuseTexture (ID = " + tex_addr + " ) for this TextureMaterial");
@@ -1350,7 +1337,7 @@ module away.loaders
 					var ambientTexture:away.textures.Texture2DBase;
 					var ambientTex_addr:number = props.get(17, 0);
 
-					returnedArray = this.getAssetByID(ambientTex_addr, [away.library.AssetType.TEXTURE]);
+					returnedArray = this.getAssetByID(ambientTex_addr, [AssetType.TEXTURE]);
 
 					if ((!returnedArray[0]) && (ambientTex_addr != 0)) {
 						this._blocks[blockID].addError("Could not find the AmbientTexture (ID = " + ambientTex_addr + " ) for this TextureMaterial");
@@ -1387,7 +1374,7 @@ module away.loaders
 
 				var normalTex_addr:number = props.get(3, 0);
 
-				returnedArray = this.getAssetByID(normalTex_addr, [away.library.AssetType.TEXTURE]);
+				returnedArray = this.getAssetByID(normalTex_addr, [AssetType.TEXTURE]);
 
 				if ((!returnedArray[0]) && (normalTex_addr != 0)) {
 					this._blocks[blockID].addError("Could not find the NormalTexture (ID = " + normalTex_addr + " ) for this TextureMaterial");
@@ -1399,7 +1386,7 @@ module away.loaders
 				}
 
 				var specTex_addr:number = props.get(21, 0);
-				returnedArray = this.getAssetByID(specTex_addr, [away.library.AssetType.TEXTURE]);
+				returnedArray = this.getAssetByID(specTex_addr, [AssetType.TEXTURE]);
 
 				if ((!returnedArray[0]) && (specTex_addr != 0)) {
 					this._blocks[blockID].addError("Could not find the SpecularTexture (ID = " + specTex_addr + " ) for this TextureMaterial");
@@ -1410,7 +1397,7 @@ module away.loaders
 				}
 
 				var lightPickerAddr:number = props.get(22, 0);
-				returnedArray = this.getAssetByID(lightPickerAddr, [away.library.AssetType.LIGHT_PICKER])
+				returnedArray = this.getAssetByID(lightPickerAddr, [AssetType.LIGHT_PICKER])
 
 				if ((!returnedArray[0]) && (lightPickerAddr)) {
 					this._blocks[blockID].addError("Could not find the LightPicker (ID = " + lightPickerAddr + " ) for this TextureMaterial");
@@ -1472,7 +1459,7 @@ module away.loaders
 						case 999: //wrapper-Methods that will load a previous parsed EffektMethod returned
 
 							targetID = props.get(1, 0);
-							returnedArray = this.getAssetByID(targetID, [away.library.AssetType.EFFECTS_METHOD]);
+							returnedArray = this.getAssetByID(targetID, [AssetType.EFFECTS_METHOD]);
 
 							if (!returnedArray[0]) {
 								this._blocks[blockID].addError("Could not find the EffectMethod (ID = " + targetID + " ) for this Material");
@@ -1492,7 +1479,7 @@ module away.loaders
 						case 998: //wrapper-Methods that will load a previous parsed ShadowMapMethod
 
 							targetID = props.get(1, 0);
-							returnedArray = this.getAssetByID(targetID, [away.library.AssetType.SHADOW_MAP_METHOD]);
+							returnedArray = this.getAssetByID(targetID, [AssetType.SHADOW_MAP_METHOD]);
 
 							if (!returnedArray[0]) {
 								this._blocks[blockID].addError("Could not find the ShadowMethod (ID = " + targetID + " ) for this Material");
@@ -1593,13 +1580,13 @@ module away.loaders
 						//								MultiPassMaterialBase(mat).specularMethod = new AnisotropicSpecularMethod();
 						//							debugString += " | AnisotropicSpecularMethod";
 						//							break;
-						//						case 102: //PhongSpecularMethod
-						//							if (spezialType == 0)
-						//								SinglePassMaterialBase(mat).specularMethod = new PhongSpecularMethod();
-						//							if (spezialType == 1)
-						//								MultiPassMaterialBase(mat).specularMethod = new PhongSpecularMethod();
-						//							debugString += " | PhongSpecularMethod";
-						//							break;
+						case 102: //PhongSpecularMethod
+							if (spezialType == 0)
+								(<SinglePassMaterialBase> mat).specularMethod = new PhongSpecularMethod();
+							if (spezialType == 1)
+								(<MultiPassMaterialBase> mat).specularMethod = new PhongSpecularMethod();
+							debugString += " | PhongSpecularMethod";
+							break;
 						//						case 103: //CellSpecularMethod
 						//							if (spezialType == 0) {
 						//								SinglePassMaterialBase(mat).specularMethod = new CelSpecularMethod(props.get(101, 0.5), SinglePassMaterialBase(mat).specularMethod);
@@ -1611,19 +1598,19 @@ module away.loaders
 						//							}
 						//							debugString += " | CellSpecularMethod";
 						//							break;
-						//						case 104: //FresnelSpecularMethod
-						//							if (spezialType == 0) {
-						//								SinglePassMaterialBase(mat).specularMethod = new FresnelSpecularMethod(props.get(701, true), SinglePassMaterialBase(mat).specularMethod);
-						//								FresnelSpecularMethod(SinglePassMaterialBase(mat).specularMethod).fresnelPower = props.get(101, 5);
-						//								FresnelSpecularMethod(SinglePassMaterialBase(mat).specularMethod).normalReflectance = props.get(102, 0.1);
-						//							}
-						//							if (spezialType == 1) {
-						//								MultiPassMaterialBase(mat).specularMethod = new FresnelSpecularMethod(props.get(701, true), MultiPassMaterialBase(mat).specularMethod);
-						//								FresnelSpecularMethod(MultiPassMaterialBase(mat).specularMethod).fresnelPower = props.get(101, 5);
-						//								FresnelSpecularMethod(MultiPassMaterialBase(mat).specularMethod).normalReflectance = props.get(102, 0.1);
-						//							}
-						//							debugString += " | FresnelSpecularMethod";
-						//							break;
+						case 104: //FresnelSpecularMethod
+							if (spezialType == 0) {
+								(<SinglePassMaterialBase> mat).specularMethod = new FresnelSpecularMethod(props.get(701, true), (<SinglePassMaterialBase> mat).specularMethod);
+								(<FresnelSpecularMethod> (<SinglePassMaterialBase> mat).specularMethod).fresnelPower = props.get(101, 5);
+								(<FresnelSpecularMethod> (<SinglePassMaterialBase> mat).specularMethod).normalReflectance = props.get(102, 0.1);
+							}
+							if (spezialType == 1) {
+								(<MultiPassMaterialBase> mat).specularMethod = new FresnelSpecularMethod(props.get(701, true), (<MultiPassMaterialBase> mat).specularMethod);
+								(<FresnelSpecularMethod> (<MultiPassMaterialBase> mat).specularMethod).fresnelPower = props.get(101, 5);
+								(<FresnelSpecularMethod> (<MultiPassMaterialBase> mat).specularMethod).normalReflectance = props.get(102, 0.1);
+							}
+							debugString += " | FresnelSpecularMethod";
+							break;
 						//						//case 151://HeightMapNormalMethod - thios is not implemented for now, but might appear later
 						//						//break;
 						//						case 152: //SimpleWaterNormalMethod
@@ -1787,7 +1774,7 @@ module away.loaders
 			this._blocks[blockID].name = this.parseVarStr();
 
 			shadowLightID = this._newBlockBytes.readUnsignedInt();
-			var returnedArray:Array<any> = this.getAssetByID(shadowLightID, [away.library.AssetType.LIGHT]);
+			var returnedArray:Array<any> = this.getAssetByID(shadowLightID, [AssetType.LIGHT]);
 
 			if (!returnedArray[0]) {
 				this._blocks[blockID].addError("Could not find the TargetLight (ID = " + shadowLightID + " ) for this ShadowMethod - ShadowMethod not created");
@@ -1814,13 +1801,13 @@ module away.loaders
 		{
 			var hasBlocks:boolean = ( this._newBlockBytes.readUnsignedByte() == 1 );
 			var par_id:number = this._newBlockBytes.readUnsignedInt();
-			var mtx:away.geom.Matrix3D = this.parseMatrix3D();
+			var mtx:Matrix3D = this.parseMatrix3D();
 			var name:string = this.parseVarStr();
 
 			var parentObject:away.containers.ObjectContainer3D;
 			var targetObject:away.containers.ObjectContainer3D;
 
-			var returnedArray:Array<any> = this.getAssetByID(par_id, [away.library.AssetType.CONTAINER, away.library.AssetType.LIGHT, away.library.AssetType.MESH, away.library.AssetType.ENTITY, away.library.AssetType.SEGMENT_SET]);
+			var returnedArray:Array<any> = this.getAssetByID(par_id, [AssetType.CONTAINER, AssetType.LIGHT, AssetType.MESH, AssetType.ENTITY, AssetType.SEGMENT_SET]);
 
 			if (returnedArray[0]) {
 				parentObject = <away.containers.ObjectContainer3D> returnedArray[1];
@@ -1835,7 +1822,7 @@ module away.loaders
 				case 1:
 
 					var targetID:number = props.get(1, 0);
-					var returnedArrayTarget:Array<any> = this.getAssetByID(targetID, [away.library.AssetType.LIGHT, away.library.AssetType.TEXTURE_PROJECTOR]); //for no only light is requested!!!!
+					var returnedArrayTarget:Array<any> = this.getAssetByID(targetID, [AssetType.LIGHT, AssetType.TEXTURE_PROJECTOR]); //for no only light is requested!!!!
 
 					if ((!returnedArrayTarget[0]) && (targetID != 0)) {
 						this._blocks[blockID].addError("Could not find the light (ID = " + targetID + " ( for this CommandBock!");
@@ -1902,7 +1889,7 @@ module away.loaders
 			var props:AWDProperties = this.parseProperties({1:AWDParser.BADDR, 2:AWDParser.BADDR, 3:AWDParser.BADDR, 101:this._propsNrType, 102:this._propsNrType, 103:this._propsNrType, 201:AWDParser.UINT32, 202:AWDParser.UINT32, 301:AWDParser.UINT16, 302:AWDParser.UINT16, 401:AWDParser.UINT8, 402:AWDParser.UINT8, 601:AWDParser.COLOR, 602:AWDParser.COLOR, 701:AWDParser.BOOL, 702:AWDParser.BOOL, 801:AWDParser.MTX4x4});
 
 			var targetID:number;
-			var returnedArray:Array
+			var returnedArray:Array<any>
 			switch (methodType) {
 				//				case 1001: //CascadeShadowMapMethod
 				//					targetID = props.get(1, 0);
@@ -1913,50 +1900,361 @@ module away.loaders
 				//					}
 				//					shadowMethod = new CascadeShadowMapMethod(returnedArray[1]);
 				//					break;
-				//				case 1002: //NearShadowMapMethod
-				//					targetID = props.get(1, 0);
-				//					returnedArray = getAssetByID(targetID, [AssetType.SHADOW_MAP_METHOD]);
-				//					if (!returnedArray[0]) {
-				//						_blocks[blockID].addError("Could not find the ShadowBaseMethod (ID = " + targetID + " ) for this NearShadowMapMethod - ShadowMethod not created");
-				//						return shadowMethod;
-				//					}
-				//					shadowMethod = new NearShadowMapMethod(returnedArray[1]);
-				//					break;
+				case 1002: //NearShadowMapMethod
+					targetID = props.get(1, 0);
+					returnedArray = this.getAssetByID(targetID, [AssetType.SHADOW_MAP_METHOD]);
+					if (!returnedArray[0]) {
+						this._blocks[blockID].addError("Could not find the ShadowBaseMethod (ID = " + targetID + " ) for this NearShadowMapMethod - ShadowMethod not created");
+						return shadowMethod;
+					}
+					shadowMethod = new NearShadowMapMethod(<SimpleShadowMapMethodBase> returnedArray[1]);
+					break;
 				case 1101: //FilteredShadowMapMethod
 
-					shadowMethod = new away.materials.FilteredShadowMapMethod(<away.lights.DirectionalLight> light);
-					( <away.materials.FilteredShadowMapMethod> shadowMethod).alpha = props.get(101, 1);
-					( <away.materials.FilteredShadowMapMethod> shadowMethod).epsilon = props.get(102, 0.002);
+					shadowMethod = new FilteredShadowMapMethod(<away.lights.DirectionalLight> light);
+					(<FilteredShadowMapMethod> shadowMethod).alpha = props.get(101, 1);
+					(<FilteredShadowMapMethod> shadowMethod).epsilon = props.get(102, 0.002);
 					break;
 
 				case 1102: //DitheredShadowMapMethod
 
 
-					shadowMethod = new away.materials.DitheredShadowMapMethod(<away.lights.DirectionalLight> light, <number> props.get(201, 5));
-					( <away.materials.DitheredShadowMapMethod> shadowMethod).alpha = props.get(101, 1);
-					( <away.materials.DitheredShadowMapMethod> shadowMethod).epsilon = props.get(102, 0.002);
-					( <away.materials.DitheredShadowMapMethod> shadowMethod).range = props.get(103, 1);
+					shadowMethod = new DitheredShadowMapMethod(<away.lights.DirectionalLight> light, <number> props.get(201, 5));
+					(<DitheredShadowMapMethod> shadowMethod).alpha = props.get(101, 1);
+					(<DitheredShadowMapMethod> shadowMethod).epsilon = props.get(102, 0.002);
+					(<DitheredShadowMapMethod> shadowMethod).range = props.get(103, 1);
 
 					break;
 				case 1103: //SoftShadowMapMethod
 
-					shadowMethod = new away.materials.SoftShadowMapMethod(<away.lights.DirectionalLight> light, <number> props.get(201, 5));
-					( <away.materials.SoftShadowMapMethod> shadowMethod).alpha = props.get(101, 1);
-					( <away.materials.SoftShadowMapMethod> shadowMethod).epsilon = props.get(102, 0.002);
-					( <away.materials.SoftShadowMapMethod> shadowMethod).range = props.get(103, 1);
+					shadowMethod = new SoftShadowMapMethod(<away.lights.DirectionalLight> light, <number> props.get(201, 5));
+					(<SoftShadowMapMethod> shadowMethod).alpha = props.get(101, 1);
+					(<SoftShadowMapMethod> shadowMethod).epsilon = props.get(102, 0.002);
+					(<SoftShadowMapMethod> shadowMethod).range = props.get(103, 1);
 
 					break;
-				//				case 1104: //HardShadowMapMethod
-				//					shadowMethod = new HardShadowMapMethod(light);
-				//					HardShadowMapMethod(shadowMethod).alpha = props.get(101, 1);
-				//					HardShadowMapMethod(shadowMethod).epsilon = props.get(102, 0.002);
-				//					break;
+				case 1104: //HardShadowMapMethod
+					shadowMethod = new HardShadowMapMethod(light);
+					(<HardShadowMapMethod> shadowMethod).alpha = props.get(101, 1);
+					(<HardShadowMapMethod> shadowMethod).epsilon = props.get(102, 0.002);
+					break;
 
 			}
 			this.parseUserAttributes();
 			return shadowMethod;
 		}
 
+		//Block ID 101
+		private parseSkeleton(blockID:number /*uint*/):void
+		{
+			var name:string = this.parseVarStr();
+			var num_joints:number /*uint*/ = this._newBlockBytes.readUnsignedShort();
+			var skeleton:Skeleton = new Skeleton();
+			this.parseProperties(null); // Discard properties for now		
+	
+			var joints_parsed:number /*uint*/ = 0;
+			while (joints_parsed < num_joints) {
+				var joint:SkeletonJoint;
+				var ibp:Matrix3D;
+				// Ignore joint id
+				this._newBlockBytes.readUnsignedShort();
+				joint = new SkeletonJoint();
+				joint.parentIndex = this._newBlockBytes.readUnsignedShort() - 1; // 0=null in AWD
+				joint.name = this.parseVarStr();
+	
+				ibp = this.parseMatrix3D();
+				joint.inverseBindPose = ibp.rawData;
+				// Ignore joint props/attributes for now
+				this.parseProperties(null);
+				this.parseUserAttributes();
+				skeleton.joints.push(joint);
+				joints_parsed++;
+			}
+	
+			// Discard attributes for now
+			this.parseUserAttributes();
+			this._pFinalizeAsset(skeleton, name);
+			this._blocks[blockID].data = skeleton;
+			if (this._debug)
+				console.log("Parsed a Skeleton: Name = " + skeleton.name + " | Number of Joints = " + joints_parsed);
+		}
+
+		//Block ID = 102
+		private parseSkeletonPose(blockID:number /*uint*/):void
+		{
+			var name:string = this.parseVarStr();
+			var num_joints:number /*uint*/ = this._newBlockBytes.readUnsignedShort();
+			this.parseProperties(null); // Ignore properties for now
+
+			var pose:SkeletonPose = new SkeletonPose();
+
+			var joints_parsed:number /*uint*/ = 0;
+			while (joints_parsed < num_joints) {
+				var joint_pose:JointPose;
+				var has_transform:number /*uint*/;
+				joint_pose = new JointPose();
+				has_transform = this._newBlockBytes.readUnsignedByte();
+				if (has_transform == 1) {
+					var mtx_data:Array<number> = this.parseMatrix43RawData();
+
+					var mtx:Matrix3D = new Matrix3D(mtx_data);
+					joint_pose.orientation.fromMatrix(mtx);
+					joint_pose.translation.copyFrom(mtx.position);
+
+					pose.jointPoses[joints_parsed] = joint_pose;
+				}
+				joints_parsed++;
+			}
+			// Skip attributes for now
+			this.parseUserAttributes();
+			this._pFinalizeAsset(pose, name);
+			this._blocks[blockID].data = pose;
+			if (this._debug)
+				console.log("Parsed a SkeletonPose: Name = " + pose.name + " | Number of Joints = " + joints_parsed);
+		}
+
+		//blockID 103
+		private parseSkeletonAnimation(blockID:number /*uint*/):void
+		{
+			var frame_dur:number;
+			var pose_addr:number /*uint*/;
+			var name:string = this.parseVarStr();
+			var clip:SkeletonClipNode = new SkeletonClipNode();
+			var num_frames:number /*uint*/ = this._newBlockBytes.readUnsignedShort();
+			this.parseProperties(null); // Ignore properties for now
+
+			var frames_parsed:number /*uint*/ = 0;
+			var returnedArray:Array<any>;
+			while (frames_parsed < num_frames) {
+				pose_addr = this._newBlockBytes.readUnsignedInt();
+				frame_dur = this._newBlockBytes.readUnsignedShort();
+				returnedArray = this.getAssetByID(pose_addr, [AssetType.SKELETON_POSE]);
+				if (!returnedArray[0])
+					this._blocks[blockID].addError("Could not find the SkeletonPose Frame # " + frames_parsed + " (ID = " + pose_addr + " ) for this SkeletonClipNode");
+				else
+					clip.addFrame(<SkeletonPose> this._blocks[pose_addr].data, frame_dur);
+				frames_parsed++;
+			}
+			if (clip.frames.length == 0) {
+				this._blocks[blockID].addError("Could not this SkeletonClipNode, because no Frames where set.");
+				return;
+			}
+			// Ignore attributes for now
+			this.parseUserAttributes();
+			this._pFinalizeAsset(clip, name);
+			this._blocks[blockID].data = clip;
+			if (this._debug)
+				console.log("Parsed a SkeletonClipNode: Name = " + clip.name + " | Number of Frames = " + clip.frames.length);
+		}
+
+		//Block ID = 111 /  Block ID = 112
+		private parseMeshPoseAnimation(blockID:number /*uint*/, poseOnly:boolean = false):void
+		{
+			var num_frames:number /*uint*/ = 1;
+			var num_submeshes:number /*uint*/;
+			var frames_parsed:number /*uint*/;
+			var subMeshParsed:number /*uint*/;
+			var frame_dur:number;
+			var x:number;
+			var y:number;
+			var z:number;
+			var str_len:number;
+			var str_end:number;
+			var geometry:Geometry;
+			var subGeom:CompactSubGeometry;
+			var idx:number /*int*/ = 0;
+			var clip:VertexClipNode = new VertexClipNode();
+			var indices:Array<number> /*uint*/;
+			var verts:Array<number>;
+			var num_Streams:number /*int*/ = 0;
+			var streamsParsed:number /*int*/ = 0;
+			var streamtypes:Array<number> /*int*/ = new Array<number>() /*int*/;
+			var props:AWDProperties;
+			var thisGeo:Geometry;
+			var name:string = this.parseVarStr();
+			var geoAdress:number /*int*/ = this._newBlockBytes.readUnsignedInt();
+			var returnedArray:Array<any> = this.getAssetByID(geoAdress, [AssetType.GEOMETRY]);
+			if (!returnedArray[0]) {
+				this._blocks[blockID].addError("Could not find the target-Geometry-Object " + geoAdress + " ) for this VertexClipNode");
+				return;
+			}
+			var uvs:Array<Array<number>> = this.getUVForVertexAnimation(geoAdress);
+			if (!poseOnly)
+				num_frames = this._newBlockBytes.readUnsignedShort();
+	
+			num_submeshes = this._newBlockBytes.readUnsignedShort();
+			num_Streams = this._newBlockBytes.readUnsignedShort();
+			streamsParsed = 0;
+			while (streamsParsed < num_Streams) {
+				streamtypes.push(this._newBlockBytes.readUnsignedShort());
+				streamsParsed++;
+			}
+			props = this.parseProperties({1:AWDParser.BOOL, 2:AWDParser.BOOL});
+	
+			clip.looping = props.get(1, true);
+			clip.stitchFinalFrame = props.get(2, false);
+	
+			frames_parsed = 0;
+			while (frames_parsed < num_frames) {
+				frame_dur = this._newBlockBytes.readUnsignedShort();
+				geometry = new Geometry();
+				subMeshParsed = 0;
+				while (subMeshParsed < num_submeshes) {
+					streamsParsed = 0;
+					str_len = this._newBlockBytes.readUnsignedInt();
+					str_end = this._newBlockBytes.position + str_len;
+					while (streamsParsed < num_Streams) {
+						if (streamtypes[streamsParsed] == 1) {
+							indices = (<Geometry> returnedArray[1]).subGeometries[subMeshParsed].indexData;
+							verts = new Array<number>();
+							idx = 0;
+							while (this._newBlockBytes.position < str_end) {
+								x = this.readNumber(this._accuracyGeo)
+								y = this.readNumber(this._accuracyGeo)
+								z = this.readNumber(this._accuracyGeo)
+								verts[idx++] = x;
+								verts[idx++] = y;
+								verts[idx++] = z;
+							}
+							subGeom = new CompactSubGeometry();
+							subGeom.fromVectors(verts, uvs[subMeshParsed], null, null);
+							subGeom.updateIndexData(indices);
+							subGeom.vertexNormalData;
+							subGeom.vertexTangentData;
+							subGeom.autoDeriveVertexNormals = false;
+							subGeom.autoDeriveVertexTangents = false;
+							subMeshParsed++;
+							geometry.addSubGeometry(subGeom)
+						} else
+							this._newBlockBytes.position = str_end;
+						streamsParsed++;
+					}
+				}
+				clip.addFrame(geometry, frame_dur);
+				frames_parsed++;
+			}
+			this.parseUserAttributes();
+			this._pFinalizeAsset(clip, name);
+	
+			this._blocks[blockID].data = clip;
+			if (this._debug)
+				console.log("Parsed a VertexClipNode: Name = " + clip.name + " | Target-Geometry-Name = " + (<Geometry> returnedArray[1]).name + " | Number of Frames = " + clip.frames.length);
+		}
+
+		//BlockID 113
+		private parseVertexAnimationSet(blockID:number /*uint*/):void
+		{
+			var poseBlockAdress:number /*int*/
+			var outputString:string = "";
+			var name:string = this.parseVarStr();
+			var num_frames:number /*uint*/ = this._newBlockBytes.readUnsignedShort();
+			var props:AWDProperties = this.parseProperties({1:AWDParser.UINT16});
+			var frames_parsed:number /*uint*/ = 0;
+			var skeletonFrames:Array<SkeletonClipNode> = new Array<SkeletonClipNode>();
+			var vertexFrames:Array<VertexClipNode> = new Array<VertexClipNode>();
+			while (frames_parsed < num_frames) {
+				poseBlockAdress = this._newBlockBytes.readUnsignedInt();
+				var returnedArray:Array<any> = this.getAssetByID(poseBlockAdress, [AssetType.ANIMATION_NODE]);
+				if (!returnedArray[0])
+					this._blocks[blockID].addError("Could not find the AnimationClipNode Nr " + frames_parsed + " ( " + poseBlockAdress + " ) for this AnimationSet");
+				else {
+					if (returnedArray[1] instanceof VertexClipNode)
+					vertexFrames.push(returnedArray[1])
+					if (returnedArray[1] instanceof SkeletonClipNode)
+					skeletonFrames.push(returnedArray[1])
+				}
+				frames_parsed++;
+			}
+			if ((vertexFrames.length == 0) && (skeletonFrames.length == 0)) {
+				this._blocks[blockID].addError("Could not create this AnimationSet, because it contains no animations");
+				return;
+			}
+			this.parseUserAttributes();
+			if (vertexFrames.length > 0) {
+				var newVertexAnimationSet:VertexAnimationSet = new VertexAnimationSet();
+				for (var i:number /*int*/ = 0; i < vertexFrames.length; i++)
+					newVertexAnimationSet.addAnimation(vertexFrames[i]);
+				this._pFinalizeAsset(newVertexAnimationSet, name);
+				this._blocks[blockID].data = newVertexAnimationSet;
+				if (this._debug)
+					console.log("Parsed a VertexAnimationSet: Name = " + name + " | Animations = " + newVertexAnimationSet.animations.length + " | Animation-Names = " + newVertexAnimationSet.animationNames.toString());
+	
+			} else if (skeletonFrames.length > 0) {
+				returnedArray = this.getAssetByID(poseBlockAdress, [AssetType.ANIMATION_NODE]);
+				var newSkeletonAnimationSet:SkeletonAnimationSet = new SkeletonAnimationSet(props.get(1, 4)); //props.get(1,4));
+				for (var i:number /*int*/ = 0; i < skeletonFrames.length; i++)
+					newSkeletonAnimationSet.addAnimation(skeletonFrames[i]);
+				this._pFinalizeAsset(newSkeletonAnimationSet, name);
+				this._blocks[blockID].data = newSkeletonAnimationSet;
+				if (this._debug)
+					console.log("Parsed a SkeletonAnimationSet: Name = " + name + " | Animations = " + newSkeletonAnimationSet.animations.length + " | Animation-Names = " + newSkeletonAnimationSet.animationNames.toString());
+	
+			}
+		}
+
+		//BlockID 122
+		private parseAnimatorSet(blockID:number /*uint*/):void
+		{
+			var targetMesh:Mesh;
+			var animSetBlockAdress:number /*int*/
+			var targetAnimationSet:AnimationSetBase;
+			var outputString:string = "";
+			var name:string = this.parseVarStr();
+			var type:number /*uint*/ = this._newBlockBytes.readUnsignedShort();
+	
+			var props:AWDProperties = this.parseProperties({1:AWDParser.BADDR});
+	
+			animSetBlockAdress = this._newBlockBytes.readUnsignedInt();
+			var targetMeshLength:number /*uint*/ = this._newBlockBytes.readUnsignedShort();
+			var meshAdresses:Array<number> /*uint*/ = new Array<number>() /*uint*/;
+			for (var i:number /*int*/ = 0; i < targetMeshLength; i++)
+				meshAdresses.push(this._newBlockBytes.readUnsignedInt());
+	
+			var activeState:number /*uint*/ = this._newBlockBytes.readUnsignedShort();
+			var autoplay:boolean = ( this._newBlockBytes.readUnsignedByte() == 1 );
+			this.parseUserAttributes();
+			this.parseUserAttributes();
+	
+			var returnedArray:Array<any>;
+			var targetMeshes:Array<Mesh> = new Array<Mesh>();
+	
+			for (i = 0; i < meshAdresses.length; i++) {
+				returnedArray = this.getAssetByID(meshAdresses[i], [AssetType.MESH]);
+				if (returnedArray[0])
+					targetMeshes.push(<Mesh> returnedArray[1]);
+			}
+			returnedArray = this.getAssetByID(animSetBlockAdress, [AssetType.ANIMATION_SET]);
+			if (!returnedArray[0]) {
+				this._blocks[blockID].addError("Could not find the AnimationSet ( " + animSetBlockAdress + " ) for this Animator");;
+				return
+			}
+			targetAnimationSet = <AnimationSetBase> returnedArray[1];
+			var thisAnimator:AnimatorBase;
+			if (type == 1) {
+	
+				returnedArray = this.getAssetByID(props.get(1, 0), [AssetType.SKELETON]);
+				if (!returnedArray[0]) {
+					this._blocks[blockID].addError("Could not find the Skeleton ( " + props.get(1, 0) + " ) for this Animator");
+					return
+				}
+				thisAnimator = new SkeletonAnimator(<SkeletonAnimationSet> targetAnimationSet, <Skeleton> returnedArray[1]);
+	
+			} else if (type == 2)
+				thisAnimator = new VertexAnimator(<VertexAnimationSet> targetAnimationSet);
+
+			this._pFinalizeAsset(thisAnimator, name);
+			this._blocks[blockID].data = thisAnimator;
+			for (i = 0; i < targetMeshes.length; i++) {
+				if (type == 1)
+					targetMeshes[i].animator = (<SkeletonAnimator> thisAnimator);
+				if (type == 2)
+					targetMeshes[i].animator = (<VertexAnimator> thisAnimator);
+	
+			}
+			if (this._debug)
+				console.log("Parsed a Animator: Name = " + name);
+		}
+		
 		// this functions reads and creates a EffectMethod
 		private parseSharedMethodList(blockID:number):away.materials.EffectMethodBase
 		{
@@ -1975,7 +2273,7 @@ module away.loaders
 				//					break;
 				//				case 402: //ColorTransform
 				//					effectMethodReturn = new ColorTransformMethod();
-				//					var offCol:uint = props.get(601, 0x00000000);
+				//					var offCol:number /*uint*/ = props.get(601, 0x00000000);
 				//					var newColorTransform:ColorTransform = new ColorTransform(props.get(102, 1), props.get(103, 1), props.get(104, 1), props.get(101, 1), ((offCol >> 16) & 0xFF), ((offCol >> 8) & 0xFF), (offCol & 0xFF), ((offCol >> 24) & 0xFF));
 				//					ColorTransformMethod(effectMethodReturn).colorTransform = newColorTransform;
 				//					break;
@@ -1985,13 +2283,13 @@ module away.loaders
 					console.log('ENV MAP', targetID);
 
 
-					returnedArray = this.getAssetByID(targetID, [ away.library.AssetType.TEXTURE ], "CubeTexture");
+					returnedArray = this.getAssetByID(targetID, [ AssetType.TEXTURE ], "CubeTexture");
 					if (!returnedArray[0])
 						this._blocks[blockID].addError("Could not find the EnvMap (ID = " + targetID + " ) for this EnvMapMethod");
 					effectMethodReturn = new away.materials.EnvMapMethod(<away.textures.CubeTextureBase> returnedArray[1], <number> props.get(101, 1));
 					targetID = props.get(2, 0);
 					if (targetID > 0) {
-						returnedArray = this.getAssetByID(targetID, [away.library.AssetType.TEXTURE]);
+						returnedArray = this.getAssetByID(targetID, [AssetType.TEXTURE]);
 						if (!returnedArray[0])
 							this._blocks[blockID].addError("Could not find the Mask-texture (ID = " + targetID + " ) for this EnvMapMethod");
 
@@ -2317,7 +2615,38 @@ module away.loaders
 			}
 
 		}
-
+		// Helper - functions
+		private getUVForVertexAnimation(meshID:number /*uint*/):Array<Array<number>>
+		{
+			if (this._blocks[meshID].data instanceof Mesh)
+			meshID = this._blocks[meshID].geoID;
+			if (this._blocks[meshID].uvsForVertexAnimation)
+				return this._blocks[meshID].uvsForVertexAnimation;
+			var geometry:Geometry = (<Geometry> this._blocks[meshID].data);
+			var geoCnt:number /*int*/ = 0;
+			var ud:Array<number>;
+			var uStride:number /*uint*/;
+			var uOffs:number /*uint*/;
+			var numPoints:number /*uint*/;
+			var i:number /*int*/;
+			var newUvs:Array<number>;
+			this._blocks[meshID].uvsForVertexAnimation = new Array<Array<number>>();
+			while (geoCnt < geometry.subGeometries.length) {
+				newUvs = new Array<number>();
+				numPoints = geometry.subGeometries[geoCnt].numVertices;
+				ud = geometry.subGeometries[geoCnt].UVData;
+				uStride = geometry.subGeometries[geoCnt].UVStride;
+				uOffs = geometry.subGeometries[geoCnt].UVOffset;
+				for (i = 0; i < numPoints; i++) {
+					newUvs.push(ud[uOffs + i*uStride + 0]);
+					newUvs.push(ud[uOffs + i*uStride + 1]);
+				}
+				this._blocks[meshID].uvsForVertexAnimation.push(newUvs);
+				geoCnt++;
+			}
+			return this._blocks[meshID].uvsForVertexAnimation;
+		}
+		
 		private parseVarStr():string
 		{
 
@@ -2327,7 +2656,7 @@ module away.loaders
 
 		private getAssetByID(assetID:number, assetTypesToGet:Array<string>, extraTypeInfo:string = "SingleTexture"):Array<any>
 		{
-			var returnArray:Array<any> = new Array();
+			var returnArray:Array<any> = new Array<any>();
 			var typeCnt:number = 0;
 			if (assetID > 0) {
 				if (this._blocks[assetID]) {
@@ -2338,14 +2667,14 @@ module away.loaders
 
 							if (iasset.assetType == assetTypesToGet[typeCnt]) {
 								//if the right assetType was found
-								if ((assetTypesToGet[typeCnt] == away.library.AssetType.TEXTURE) && (extraTypeInfo == "CubeTexture")) {
+								if ((assetTypesToGet[typeCnt] == AssetType.TEXTURE) && (extraTypeInfo == "CubeTexture")) {
 									if (this._blocks[assetID].data instanceof away.textures.HTMLImageElementCubeTexture) {
 										returnArray.push(true);
 										returnArray.push(this._blocks[assetID].data);
 										return returnArray;
 									}
 								}
-								if ((assetTypesToGet[typeCnt] == away.library.AssetType.TEXTURE) && (extraTypeInfo == "SingleTexture")) {
+								if ((assetTypesToGet[typeCnt] == AssetType.TEXTURE) && (extraTypeInfo == "SingleTexture")) {
 									if (this._blocks[assetID].data instanceof away.textures.HTMLImageElementTexture) {
 										returnArray.push(true);
 										returnArray.push(this._blocks[assetID].data);
@@ -2358,10 +2687,10 @@ module away.loaders
 
 								}
 							}
-							//if ((assetTypesToGet[typeCnt] == away.library.AssetType.GEOMETRY) && (IAsset(_blocks[assetID].data).assetType == AssetType.MESH)) {
-							if ((assetTypesToGet[typeCnt] == away.library.AssetType.GEOMETRY) && (iasset.assetType == away.library.AssetType.MESH)) {
+							//if ((assetTypesToGet[typeCnt] == AssetType.GEOMETRY) && (IAsset(_blocks[assetID].data).assetType == AssetType.MESH)) {
+							if ((assetTypesToGet[typeCnt] == AssetType.GEOMETRY) && (iasset.assetType == AssetType.MESH)) {
 
-								var mesh:away.entities.Mesh = <away.entities.Mesh> this._blocks[assetID].data
+								var mesh:Mesh = <Mesh> this._blocks[assetID].data
 
 								returnArray.push(true);
 								returnArray.push(mesh.geometry);
@@ -2374,7 +2703,7 @@ module away.loaders
 					}
 				}
 			}
-			// if the function has not returned anything yet, the asset is not found, or the found asset is not the right type.
+			// if the has not returned anything yet, the asset is not found, or the found asset is not the right type.
 			returnArray.push(false);
 			returnArray.push(this.getDefaultAsset(assetTypesToGet[0], extraTypeInfo));
 			return returnArray;
@@ -2384,7 +2713,7 @@ module away.loaders
 		{
 			switch (true) {
 
-				case (assetType == away.library.AssetType.TEXTURE):
+				case (assetType == AssetType.TEXTURE):
 
 					if (extraTypeInfo == "CubeTexture")
 						return this.getDefaultCubeTexture();
@@ -2392,7 +2721,7 @@ module away.loaders
 						return this.getDefaultTexture();
 					break;
 
-				case (assetType == away.library.AssetType.MATERIAL):
+				case (assetType == AssetType.MATERIAL):
 
 					return this.getDefaultMaterial()
 					break;
@@ -2445,9 +2774,9 @@ module away.loaders
 
 		}
 
-		private parseMatrix3D():away.geom.Matrix3D
+		private parseMatrix3D():Matrix3D
 		{
-			return new away.geom.Matrix3D(this.parseMatrix43RawData());
+			return new Matrix3D(this.parseMatrix43RawData());
 		}
 
 		private parseMatrix32RawData():Array<number>

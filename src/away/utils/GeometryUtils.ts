@@ -186,19 +186,12 @@ module away.utils
 				// If there were weights and joint indices defined, this
 				// is a skinned mesh and needs to be built from skinned
 				// sub-geometries.
-
-				//TODO: implement dependency: SkinnedSubGeometry
-				away.Debug.throwPIR('GeometryUtils', 'constructSubGeometry', 'Dependency: SkinnedSubGeometry');
-
-				//*
 				sub = new away.base.SkinnedSubGeometry(weights.length/(verts.length/3));
 
 				var ssg:away.base.SkinnedSubGeometry = <away.base.SkinnedSubGeometry> sub;
 
-				//ssg.updateJointWeightsData(weights);
-				//ssg.updateJointWeightsData(weights);
-				//ssg.updateJointIndexData(jointIndices);
-				//*/
+				ssg.iUpdateJointWeightsData(weights);
+				ssg.iUpdateJointIndexData(jointIndices);
 
 			} else {
 				sub = new away.base.CompactSubGeometry();
