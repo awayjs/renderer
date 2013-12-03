@@ -23,7 +23,7 @@ module away.render
 		 * @param antiAlias The amount of anti-aliasing to use.
 		 * @param renderMode The render mode to use.
 		 */
-			constructor()
+		constructor()
 		{
 			super();
 

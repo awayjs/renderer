@@ -29,7 +29,7 @@ module away.materials
 		/**
 		 * Creates a new MultiPassMaterialBase object.
 		 */
-			constructor()
+		constructor()
 		{
 			super();
 		}

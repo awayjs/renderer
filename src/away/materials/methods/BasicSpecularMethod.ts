@@ -35,7 +35,7 @@ module away.materials
 		/**
 		 * Creates a new BasicSpecularMethod object.
 		 */
-			constructor()
+		constructor()
 		{
 			super();
 		}

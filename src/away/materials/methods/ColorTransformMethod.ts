@@ -21,7 +21,7 @@ module away.materials
 		/**
 		 * Creates a new ColorTransformMethod.
 		 */
-			constructor()
+		constructor()
 		{
 			super();
 		}

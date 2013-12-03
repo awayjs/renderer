@@ -21,7 +21,7 @@ module away.animators
 		/**
 		 * Creates a new <code>VertexClipNode</code> object.
 		 */
-			constructor()
+		constructor()
 		{
 			super();
 

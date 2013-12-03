@@ -38,7 +38,7 @@ module away.materials
 		/**
 		 * Creates a new BasicDiffuseMethod object.
 		 */
-			constructor()
+		constructor()
 		{
 			super();
 		}

@@ -15,7 +15,7 @@ module away.materials
 		/**
 		 * Creates a new SinglePassMaterialBase object.
 		 */
-			constructor()
+		constructor()
 		{
 			super();
 

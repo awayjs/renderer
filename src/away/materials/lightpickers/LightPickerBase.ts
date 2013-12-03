@@ -29,7 +29,7 @@ module away.materials
 		/**
 		 * Creates a new LightPickerBase object.
 		 */
-			constructor()
+		constructor()
 		{
 
 			super();

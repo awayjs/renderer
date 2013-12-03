@@ -10,7 +10,7 @@ module away.materials
 		/**
 		 * Creates a new PhongSpecularMethod object.
 		 */
-			constructor()
+		constructor()
 		{
 			super();
 		}

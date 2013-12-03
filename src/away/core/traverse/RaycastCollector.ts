@@ -18,7 +18,7 @@ module away.traverse
 		/**
 		 * Creates a new RaycastCollector object.
 		 */
-			constructor()
+		constructor()
 		{
 
 			super();

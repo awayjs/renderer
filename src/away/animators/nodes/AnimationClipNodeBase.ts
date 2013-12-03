@@ -93,7 +93,7 @@ module away.animators
 		/**
 		 * Creates a new <code>AnimationClipNodeBase</code> object.
 		 */
-			constructor()
+		constructor()
 		{
 			super();
 		}

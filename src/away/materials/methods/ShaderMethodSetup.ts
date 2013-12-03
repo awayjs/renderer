@@ -24,7 +24,7 @@ module away.materials
 		/**
 		 * Creates a new ShaderMethodSetup object.
 		 */
-			constructor()
+		constructor()
 		{
 
 			super();

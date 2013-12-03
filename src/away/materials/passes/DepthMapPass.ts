@@ -18,7 +18,7 @@ module away.materials
 		/**
 		 * Creates a new DepthMapPass object.
 		 */
-			constructor()
+		constructor()
 		{
 			super();
 

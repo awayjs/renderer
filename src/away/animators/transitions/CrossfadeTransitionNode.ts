@@ -15,7 +15,7 @@ module away.animators
 		/**
 		 * Creates a new <code>CrossfadeTransitionNode</code> object.
 		 */
-			constructor()
+		constructor()
 		{
 			super();
 

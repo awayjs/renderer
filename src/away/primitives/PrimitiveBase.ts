@@ -26,7 +26,7 @@ module away.primitives
 		 * Creates a new PrimitiveBase object.
 		 * @param material The material with which to render the object
 		 */
-			constructor()
+		constructor()
 		{
 			super();
 

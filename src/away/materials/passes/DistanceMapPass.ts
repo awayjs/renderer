@@ -29,7 +29,7 @@ module away.materials
 		/**
 		 * Creates a new DistanceMapPass object.
 		 */
-			constructor()
+		constructor()
 		{
 
 			super();

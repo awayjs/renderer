@@ -30,7 +30,7 @@ module away.materials
 		 * @param needsNormals Defines whether or not the method requires normals.
 		 * @param needsView Defines whether or not the method requires the view direction.
 		 */
-			constructor() // needsNormals : boolean, needsView : boolean, needsGlobalPos : boolean
+		constructor() // needsNormals : boolean, needsView : boolean, needsGlobalPos : boolean
 		{
 			super();
 		}

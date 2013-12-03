@@ -39,7 +39,7 @@ module away.materials
 		/**
 		 * Creates a new MethodVO object.
 		 */
-			constructor()
+		constructor()
 		{
 
 		}

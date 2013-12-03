@@ -33,7 +33,7 @@ module away.animators
 		/**
 		 * Creates a new <code>SkeletonPose</code> object.
 		 */
-			constructor()
+		constructor()
 		{
 			super();
 

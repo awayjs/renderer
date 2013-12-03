@@ -62,7 +62,7 @@ module away.managers
 		/**
 		 * Creates a new <code>Mouse3DManager</code> object.
 		 */
-			constructor()
+		constructor()
 		{
 
 			if (!Mouse3DManager._view3Ds) {

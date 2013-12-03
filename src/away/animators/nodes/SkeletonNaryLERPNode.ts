@@ -20,7 +20,7 @@ module away.animators
 		/**
 		 * Creates a new <code>SkeletonNaryLERPNode</code> object.
 		 */
-			constructor()
+		constructor()
 		{
 			super();
 

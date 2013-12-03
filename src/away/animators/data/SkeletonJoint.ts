@@ -30,7 +30,7 @@ module away.animators
 		/**
 		 * Creates a new <code>SkeletonJoint</code> object
 		 */
-			constructor()
+		constructor()
 		{
 		}
 	}

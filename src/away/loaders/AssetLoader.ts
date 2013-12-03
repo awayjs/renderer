@@ -241,7 +241,7 @@ module away.loaders
 		/**
 		 * Create a new ResourceLoadSession object.
 		 */
-			constructor()
+		constructor()
 		{
 			super();
 

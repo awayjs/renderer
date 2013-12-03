@@ -62,7 +62,7 @@ module away.pick
 		/**
 		 * Creates a new <code>ShaderPicker</code> object.
 		 */
-			constructor()
+		constructor()
 		{
 			this._id = new Array<number>(4);//new Vector.<Number>(4, true);
 			this._viewportData = new Array<number>(4);//new Vector.<Number>(4, true); // first 2 contain scale, last 2 translation

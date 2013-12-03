@@ -29,7 +29,7 @@ module away.animators
 		/**
 		 * Creates a new <code>Skeleton</code> object
 		 */
-			constructor()
+		constructor()
 		{
 			super();
 

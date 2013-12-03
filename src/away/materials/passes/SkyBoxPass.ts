@@ -14,7 +14,7 @@ module away.materials
 		/**
 		 * Creates a new SkyBoxPass object.
 		 */
-			constructor()
+		constructor()
 		{
 			super();
 			this.mipmap = false;

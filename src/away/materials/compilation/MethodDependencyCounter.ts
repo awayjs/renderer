@@ -28,7 +28,7 @@ module away.materials
 		/**
 		 * Creates a new MethodDependencyCounter object.
 		 */
-			constructor()
+		constructor()
 		{
 		}
 

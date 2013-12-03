@@ -27,7 +27,7 @@ module away.bounds
 		/**
 		 * Creates a new <code>AxisAlignedBoundingBox</code> object.
 		 */
-			constructor()
+		constructor()
 		{
 
 			super();

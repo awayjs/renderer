@@ -28,7 +28,7 @@ module away.animators
 		/**
 		 * Creates a new <code>SkeletonClipNode</code> object.
 		 */
-			constructor()
+		constructor()
 		{
 			super();
 

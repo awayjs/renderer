@@ -15,7 +15,7 @@ module away.materials
 		/**
 		 * Creates a new BasicNormalMethod object.
 		 */
-			constructor()
+		constructor()
 		{
 			super();
 		}

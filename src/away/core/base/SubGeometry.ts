@@ -58,7 +58,7 @@ module away.base
 		/**
 		 * Creates a new SubGeometry object.
 		 */
-			constructor()
+		constructor()
 		{
 			super();
 		}

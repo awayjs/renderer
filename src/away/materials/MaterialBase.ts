@@ -89,7 +89,7 @@ module away.materials
 		/**
 		 * Creates a new MaterialBase object.
 		 */
-			constructor()
+		constructor()
 		{
 
 			super();

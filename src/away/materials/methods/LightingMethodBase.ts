@@ -23,7 +23,7 @@ module away.materials
 		/**
 		 * Creates a new LightingMethodBase.
 		 */
-			constructor()
+		constructor()
 		{
 			super();
 		}

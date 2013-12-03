@@ -49,7 +49,7 @@ module away.base
 		/**
 		 * Creates a new Geometry object.
 		 */
-			constructor()
+		constructor()
 		{
 			super();
 

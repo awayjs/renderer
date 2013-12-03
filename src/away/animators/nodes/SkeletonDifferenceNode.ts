@@ -20,7 +20,7 @@ module away.animators
 		/**
 		 * Creates a new <code>SkeletonAdditiveNode</code> object.
 		 */
-			constructor()
+		constructor()
 		{
 			super();
 

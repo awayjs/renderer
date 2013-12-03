@@ -631,7 +631,7 @@ module away.base
 		/**
 		 * Creates an Object3D object.
 		 */
-			constructor()
+		constructor()
 		{
 
 			super();

@@ -28,7 +28,7 @@ module away.materials
 		/**
 		 * Creates a new BasicAmbientMethod object.
 		 */
-			constructor()
+		constructor()
 		{
 			super();
 		}
