@@ -295,10 +295,7 @@ module away.math
 		 */
 		public fromMatrix(matrix:away.geom.Matrix3D)
 		{
-			// todo: this isn't right, doesn't take into account transforms
-			//var v:away.geom.Vector3D = matrix.decompose(Orientation3D.QUATERNION)[1];
-
-			var v:away.geom.Vector3D = matrix.decompose()[1];
+			var v:away.geom.Vector3D = matrix.decompose(away.geom.Orientation3D.QUATERNION)[1];
 			this.x = v.x;
 			this.y = v.y;
 			this.z = v.z;
