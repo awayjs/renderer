@@ -170,7 +170,7 @@ module away.loaders
 					asset = <away.textures.Texture2DBase> resourceDependency.assets[0];
 					if (asset) {
 						var mat:away.materials.TextureMaterial;
-						var users:Array;
+						var users:Array<string>;
 
 						block = this._blocks[ resourceDependency.id ];
 						block.data = asset; // Store finished asset
@@ -1691,7 +1691,7 @@ module away.loaders
 			this._blocks[blockID].data = asset;
 
 			if (this._debug) {
-				var textureStylesNames:Array = ["external", "embed"]
+				var textureStylesNames:Array<string> = ["external", "embed"]
 				console.log("Start parsing a " + textureStylesNames[type] + " Bitmap for Texture");
 			}
 
@@ -1742,7 +1742,7 @@ module away.loaders
 			this._blocks[blockID].data = asset;
 
 			if (this._debug) {
-				var textureStylesNames:Array = ["external", "embed"]
+				var textureStylesNames:Array<string> = ["external", "embed"]
 				console.log("Start parsing 6 " + textureStylesNames[type] + " Bitmaps for CubeTexture");
 			}
 		}

@@ -426,8 +426,8 @@ module away.display
 			}
 
 			if (this._imageData) {
-				var sourceData:number[] = sourceBitmap.imageData.data;
-				var destData:number[] = this._imageData.data;
+				var sourceData:Uint8Array = sourceBitmap.imageData.data;
+				var destData:Uint8Array = this._imageData.data;
 
 				var sourceOffset:number = Math.round(Math.log(sourceChannel)/Math.log(2));
 				var destOffset:number = Math.round(Math.log(destChannel)/Math.log(2));
@@ -456,7 +456,7 @@ module away.display
 			}
 
 			if (this._imageData) {
-				var data:number[] = this._imageData.data;
+				var data:Uint8Array = this._imageData.data;
 
 				var i:number /*uint*/, j:number /*uint*/, index:number /*uint*/;
 				for (i = 0; i < rect.width; ++i) {

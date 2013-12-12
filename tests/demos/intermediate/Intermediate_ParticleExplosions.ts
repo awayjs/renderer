@@ -71,7 +71,7 @@ module examples
 
 	export class Intermediate_ParticleExplosions
 	{
-		private static PARTICLE_SIZE:number /*uint*/ = 3;
+		private static PARTICLE_SIZE:number /*uint*/ = 1;
 		private static NUM_ANIMATORS:number /*uint*/ = 4;
 		
 		//engine variables

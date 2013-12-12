@@ -48,8 +48,8 @@ module away.animators
 			var indexOffset2:number /*uint*/ = indexOffset0 + 2;
 			var indexStream:string = "va" + pass.numUsedStreams;
 			var weightStream:string = "va" + (pass.numUsedStreams + 1);
-			var indices:Array = [ indexStream + ".x", indexStream + ".y", indexStream + ".z", indexStream + ".w" ];
-			var weights:Array = [ weightStream + ".x", weightStream + ".y", weightStream + ".z", weightStream + ".w" ];
+			var indices:Array<string> = [ indexStream + ".x", indexStream + ".y", indexStream + ".z", indexStream + ".w" ];
+			var weights:Array<string> = [ weightStream + ".x", weightStream + ".y", weightStream + ".z", weightStream + ".w" ];
 			var temp1:string = this._pFindTempReg(targetRegisters);
 			var temp2:string = this._pFindTempReg(targetRegisters, temp1);
 			var dot:string = "dp4";

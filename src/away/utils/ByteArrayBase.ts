@@ -121,7 +121,7 @@ module away.utils
 
 			function asHexString(x, digits)
 			{
-				var lut:Array = [ "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f" ];
+				var lut:Array<string> = [ "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f" ];
 				var sh:string = "";
 				for (var d:number = 0; d < digits; d++) {
 					sh = lut[(x >> (d << 2)) & 0xf] + sh;

@@ -103,7 +103,7 @@ module away.loaders
 
 			try {
 				var json:any = JSON.parse(this.data);
-				var data:Array = <Array> json.data;
+				var data:Array<Object> = <Array<Object>> json.data;
 				var rec:any;
 
 				if (data.length != 6) {

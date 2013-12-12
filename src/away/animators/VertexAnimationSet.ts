@@ -165,7 +165,7 @@ module away.animators
 			var code:string = "";
 			var uID:number = pass._iUniqueId;
 			var len:number /*uint*/ = sourceRegisters.length;
-			var regs:Array = ["x", "y", "z", "w"];
+			var regs:Array<string> = ["x", "y", "z", "w"];
 			var temp1:string = this._pFindTempReg(targetRegisters);
 			var k:number /*uint*/;
 			var useTangents:boolean = this._useTangents[uID] = <boolean> (len > 2);

@@ -50,7 +50,7 @@ module aglsl
 			}
 
 			// declare samplers
-			var samptype:Array = ["2D", "Cube", "3D", ""];
+			var samptype:Array<string> = ["2D", "Cube", "3D", ""];
 			for (var i:number = 0; i < desc.samplers.length; i++) {
 				if (desc.samplers[i]) {
 					header += "uniform sampler" + samptype[ desc.samplers[i].dim & 3 ] + " fs" + i + ";\n";
