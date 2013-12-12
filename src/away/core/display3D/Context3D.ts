@@ -80,8 +80,8 @@ module away.display3D
 				this._gl.enable(this._gl.DEPTH_TEST);
 			}
 
-			this._gl.viewport.width = width;
-			this._gl.viewport.height = height;
+			this._gl.viewport['width'] = width;
+			this._gl.viewport['height'] = height;
 
 			this._gl.viewport(0, 0, width, height);
 		}
@@ -642,8 +642,8 @@ module away.display3D
 				this._gl.enable(this._gl.DEPTH_TEST);
 			}
 
-			this._gl.viewport.width = frameBuffer.width;
-			this._gl.viewport.height = frameBuffer.height;
+			this._gl.viewport['width'] = frameBuffer.width;
+			this._gl.viewport['height'] = frameBuffer.height;
 
 			this._gl.viewport(0, 0, frameBuffer.width, frameBuffer.height);
 		}
