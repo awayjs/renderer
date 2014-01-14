@@ -1,10 +1,15 @@
 ///<reference path="../../_definitions.ts"/>
+
+/**
+ * @module away.render
+ */
 module away.render
 {
-
 	/**
 	 * RendererBase forms an abstract base class for classes that are used in the rendering pipeline to render geometry
 	 * to the back buffer or a texture.
+	 *
+	 * @class away.render.RendererBase
 	 */
 	export class RendererBase
 	{

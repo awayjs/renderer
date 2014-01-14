@@ -1,20 +1,10 @@
 ///<reference path="../../_definitions.ts"/>
+
 /**
  * @module away.base
  */
 module away.base
 {
-	//import away3d.arcane;
-	//import away3d.controllers.*;
-	//import away3d.core.geom.*;
-	//import away3d.events.*;
-	//import away3d.library.assets.*;
-
-	//import flash.geom.Matrix3D;
-	//import flash.geom.Vector3D;
-
-	//use namespace arcane;
-
 	/**
 	 * Dispatched when the position of the 3d object changes.
 	 *
@@ -842,7 +832,7 @@ module away.base
 
 		public clone():Object3D
 		{
-			var clone:away.base.Object3D = new away.base.Object3D();
+			var clone:Object3D = new Object3D();
 			clone.pivotPoint = this.pivotPoint;
 			clone.transform = this.transform;
 			clone.name = name;
@@ -1008,5 +998,4 @@ module away.base
 			this._zOffset = value;
 		}
 	}
-
 }

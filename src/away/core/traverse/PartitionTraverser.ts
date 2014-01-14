@@ -1,7 +1,13 @@
 ///<reference path="../../_definitions.ts"/>
 
+/**
+ * @module away.traverse
+ */
 module away.traverse
 {
+	/**
+	 * @class away.traverse.PartitionTraverser
+	 */
 	export class PartitionTraverser
 	{
 		public scene:away.containers.Scene3D;

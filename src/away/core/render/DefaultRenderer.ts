@@ -1,25 +1,30 @@
 ///<reference path="../../_definitions.ts"/>
 
+/**
+ * @module away.render
+ */
 module away.render
 {
-
 	/**
 	 * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the
 	 * materials assigned to them.
+	 *
+	 * @class away.render.DefaultRenderer
 	 */
-	export class DefaultRenderer extends away.render.RendererBase
+	export class DefaultRenderer extends RendererBase
 	{
 		private static RTT_PASSES:number = 1;
 		private static SCREEN_PASSES:number = 2;
 		private static ALL_PASSES:number = 3;
 
 		private _activeMaterial:away.materials.MaterialBase;
-		private _pDistanceRenderer:away.render.DepthRenderer;
-		private _pDepthRenderer:away.render.DepthRenderer;
+		private _pDistanceRenderer:DepthRenderer;
+		private _pDepthRenderer:DepthRenderer;
 		private _skyboxProjection:away.geom.Matrix3D = new away.geom.Matrix3D();
 
 		/**
 		 * Creates a new DefaultRenderer object.
+		 *
 		 * @param antiAlias The amount of anti-aliasing to use.
 		 * @param renderMode The render mode to use.
 		 */
@@ -27,8 +32,8 @@ module away.render
 		{
 			super();
 
-			this._pDepthRenderer = new away.render.DepthRenderer();
-			this._pDistanceRenderer = new away.render.DepthRenderer(false, true);
+			this._pDepthRenderer = new DepthRenderer();
+			this._pDistanceRenderer = new DepthRenderer(false, true);
 
 		}
 

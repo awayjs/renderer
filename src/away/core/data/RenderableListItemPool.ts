@@ -1,11 +1,17 @@
 ///<reference path="../../_definitions.ts"/>
 
+/**
+ * @module away.data
+ */
 module away.data
 {
+	/**
+	 * @class away.data.RenderableListItemPool
+	 */
 	export class RenderableListItemPool
 	{
 
-		private _pool:away.data.RenderableListItem[];
+		private _pool:RenderableListItem[];
 		private _index:number = 0;
 		private _poolSize:number = 0;
 
@@ -14,10 +20,10 @@ module away.data
 			this._pool = [];
 		}
 
-		public getItem():away.data.RenderableListItem
+		public getItem():RenderableListItem
 		{
 			if (this._index == this._poolSize) {
-				var item:away.data.RenderableListItem = new away.data.RenderableListItem();
+				var item:RenderableListItem = new RenderableListItem();
 				this._pool[this._index++] = item;
 				++this._poolSize;
 				return item;

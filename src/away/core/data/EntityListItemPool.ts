@@ -1,11 +1,17 @@
 ///<reference path="../../_definitions.ts"/>
 
+/**
+ * @module away.data
+ */
 module away.data
 {
+	/**
+	 * @class away.data.EntityListItemPool
+	 */
 	export class EntityListItemPool
 	{
 
-		private _pool:away.data.EntityListItem[];
+		private _pool:EntityListItem[];
 		private _index:number = 0;
 		private _poolSize:number = 0;
 
@@ -14,11 +20,11 @@ module away.data
 			this._pool = [];
 		}
 
-		public getItem():away.data.EntityListItem
+		public getItem():EntityListItem
 		{
-			var item:away.data.EntityListItem;
+			var item:EntityListItem;
 			if (this._index == this._poolSize) {
-				item = new away.data.EntityListItem();
+				item = new EntityListItem();
 				this._pool[this._index++] = item;
 				++this._poolSize;
 			} else {

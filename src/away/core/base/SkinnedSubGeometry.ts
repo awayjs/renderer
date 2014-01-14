@@ -1,12 +1,11 @@
 ///<reference path="../../_definitions.ts"/>
+
 /**
  * @module away.base
  */
 module away.base
 {
-
 	/**
-	 *
 	 * SkinnedSubGeometry provides a SubGeometry extension that contains data needed to skin vertices. In particular,
 	 * it provides joint indices and weights.
 	 * Important! Joint indices need to be pre-multiplied by 3, since they index the matrix array (and each matrix has 3 float4 elements)
@@ -131,7 +130,7 @@ module away.base
 		 * Clones the current object.
 		 * @return An exact duplicate of the current object.
 		 */
-		public clone():away.base.ISubGeometry
+		public clone():ISubGeometry
 		{
 			var clone:SkinnedSubGeometry = new SkinnedSubGeometry(this._jointsPerVertex);
 

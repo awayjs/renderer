@@ -1,8 +1,14 @@
 ///<reference path="../../_definitions.ts"/>
 
+/**
+ * @module away.partition
+ */
 module away.partition
 {
-	export class CameraNode extends away.partition.EntityNode
+	/**
+	 * @class away.partition.CameraNode
+	 */
+	export class CameraNode extends EntityNode
 	{
 		constructor(camera:away.cameras.Camera3D)
 		{

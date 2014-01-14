@@ -530,14 +530,6 @@ var away;
     * @module away.base
     */
     (function (base) {
-        //import away3d.arcane;
-        //import away3d.controllers.*;
-        //import away3d.core.geom.*;
-        //import away3d.events.*;
-        //import away3d.library.assets.*;
-        //import flash.geom.Matrix3D;
-        //import flash.geom.Vector3D;
-        //use namespace arcane;
         /**
         * Dispatched when the position of the 3d object changes.
         *
@@ -1293,7 +1285,7 @@ var away;
             };
 
             Object3D.prototype.clone = function () {
-                var clone = new away.base.Object3D();
+                var clone = new Object3D();
                 clone.pivotPoint = this.pivotPoint;
                 clone.transform = this.transform;
                 clone.name = name;
@@ -1467,10 +1459,10 @@ var away;
         * SubMesh wraps a SubGeometry as a scene graph instantiation. A SubMesh is owned by a Mesh object.
         *
         *
-        * @see away3d.core.base.SubGeometry
-        * @see away3d.scenegraph.Mesh
+        * @see away.base.SubGeometry
+        * @see away.entities.Mesh
         *
-        * @class away.base.SubGeometryBase
+        * @class away.base.SubMesh
         */
         var SubMesh = (function () {
             /**
@@ -2751,9 +2743,12 @@ var away;
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
+    /**
+    * @module away.base
+    */
     (function (base) {
         /**
-        * @class away.base.Geometry
+        * @class away.base.CompactSubGeometry
         */
         var CompactSubGeometry = (function (_super) {
             __extends(CompactSubGeometry, _super);
@@ -3013,7 +3008,7 @@ var away;
             };
 
             CompactSubGeometry.prototype.clone = function () {
-                var clone = new away.base.CompactSubGeometry();
+                var clone = new CompactSubGeometry();
 
                 clone._autoDeriveVertexNormals = this._autoDeriveVertexNormals;
                 clone._autoDeriveVertexTangents = this._autoDeriveVertexTangents;
@@ -3129,7 +3124,7 @@ var away;
             };
 
             CompactSubGeometry.prototype.cloneWithSeperateBuffers = function () {
-                var clone = new away.base.SubGeometry();
+                var clone = new base.SubGeometry();
 
                 clone.updateVertexData(this._isolatedVertexPositionData ? this._isolatedVertexPositionData : this._isolatedVertexPositionData = this.stripBuffer(0, 3));
                 clone.autoDeriveVertexNormals = this._autoDeriveVertexNormals;
@@ -3254,7 +3249,7 @@ var away;
                 this.updateData(data);
             };
             return CompactSubGeometry;
-        })(away.base.SubGeometryBase);
+        })(base.SubGeometryBase);
         base.CompactSubGeometry = CompactSubGeometry;
     })(away.base || (away.base = {}));
     var base = away.base;
@@ -3267,7 +3262,6 @@ var away;
     */
     (function (base) {
         /**
-        *
         * SkinnedSubGeometry provides a SubGeometry extension that contains data needed to skin vertices. In particular,
         * it provides joint indices and weights.
         * Important! Joint indices need to be pre-multiplied by 3, since they index the matrix array (and each matrix has 3 float4 elements)
@@ -3495,8 +3489,8 @@ var away;
         *
         *
         *
-        * @see away3d.core.base.SubGeometry
-        * @see away3d.scenegraph.Mesh
+        * @see away.core.base.SubGeometry
+        * @see away.entities.Mesh
         *
         * @class away.base.Geometry
         */
@@ -3674,9 +3668,12 @@ var away;
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
+    /**
+    * @module away.base
+    */
     (function (base) {
         /**
-        * ...
+        * @class away.base.ParticleGeometry
         */
         var ParticleGeometry = (function (_super) {
             __extends(ParticleGeometry, _super);
@@ -3696,21 +3693,14 @@ var away;
     * @module away.base
     */
     (function (base) {
-        //import away3d.arcane;
-        //import away3d.managers.StageGLProxy;
-        //import flash.displayGL.ContextGL;
-        //import flash.displayGL.ContextGLVertexBufferFormat;
-        //import flash.displayGL.VertexBuffer;
-        //import flash.geom.Matrix3D;
-        //use namespace arcane;
         /**
         * The SubGeometry class is a collections of geometric data that describes a triangle mesh. It is owned by a
         * Geometry instance, and wrapped by a SubMesh in the scene graph.
         * Several SubGeometries are grouped so they can be rendered with different materials, but still represent a single
         * object.
         *
-        * @see away3d.core.base.Geometry
-        * @see away3d.core.base.SubMesh
+        * @see away.base.Geometry
+        * @see away.base.SubMesh
         *
         * @class away.base.SubGeometry
         */
@@ -3883,7 +3873,7 @@ var away;
             * @return An exact duplicate of the current object.
             */
             SubGeometry.prototype.clone = function () {
-                var clone = new away.base.SubGeometry();
+                var clone = new SubGeometry();
                 clone.updateVertexData(this._vertexData.concat());
                 clone.updateUVData(this._uvs.concat());
                 clone.updateIndexData(this._indices.concat());
@@ -4234,7 +4224,7 @@ var away;
                 return obj;
             };
             return SubGeometry;
-        })(away.base.SubGeometryBase);
+        })(base.SubGeometryBase);
         base.SubGeometry = SubGeometry;
     })(away.base || (away.base = {}));
     var base = away.base;
@@ -4242,7 +4232,13 @@ var away;
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
+    /**
+    * @module away.data
+    */
     (function (data) {
+        /**
+        * @class away.data.RenderableListItem
+        */
         var RenderableListItem = (function () {
             function RenderableListItem() {
             }
@@ -4255,7 +4251,13 @@ var away;
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
+    /**
+    * @module away.data
+    */
     (function (data) {
+        /**
+        * @class away.data.EntityListItem
+        */
         var EntityListItem = (function () {
             function EntityListItem() {
             }
@@ -4268,7 +4270,13 @@ var away;
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
+    /**
+    * @module away.data
+    */
     (function (data) {
+        /**
+        * @class away.data.EntityListItemPool
+        */
         var EntityListItemPool = (function () {
             function EntityListItemPool() {
                 this._index = 0;
@@ -4278,7 +4286,7 @@ var away;
             EntityListItemPool.prototype.getItem = function () {
                 var item;
                 if (this._index == this._poolSize) {
-                    item = new away.data.EntityListItem();
+                    item = new data.EntityListItem();
                     this._pool[this._index++] = item;
                     ++this._poolSize;
                 } else {
@@ -4303,7 +4311,13 @@ var away;
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
+    /**
+    * @module away.data
+    */
     (function (data) {
+        /**
+        * @class away.data.RenderableListItemPool
+        */
         var RenderableListItemPool = (function () {
             function RenderableListItemPool() {
                 this._index = 0;
@@ -4312,7 +4326,7 @@ var away;
             }
             RenderableListItemPool.prototype.getItem = function () {
                 if (this._index == this._poolSize) {
-                    var item = new away.data.RenderableListItem();
+                    var item = new data.RenderableListItem();
                     this._pool[this._index++] = item;
                     ++this._poolSize;
                     return item;
@@ -4337,7 +4351,13 @@ var away;
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
+    /**
+    * @module away.traverse
+    */
     (function (traverse) {
+        /**
+        * @class away.traverse.PartitionTraverser
+        */
         var PartitionTraverser = (function () {
             function PartitionTraverser() {
             }
@@ -4391,7 +4411,13 @@ var away;
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
+    /**
+    * @module away.traverse
+    */
     (function (traverse) {
+        /**
+        * @class away.traverse.EntityCollector
+        */
         var EntityCollector = (function (_super) {
             __extends(EntityCollector, _super);
             function EntityCollector() {
@@ -4550,9 +4576,9 @@ var away;
 
             //@override
             EntityCollector.prototype.enterNode = function (node) {
-                var enter = away.traverse.PartitionTraverser._iCollectionMark != node._iCollectionMark && node.isInFrustum(this._cullPlanes, this._numCullPlanes);
+                var enter = traverse.PartitionTraverser._iCollectionMark != node._iCollectionMark && node.isInFrustum(this._cullPlanes, this._numCullPlanes);
 
-                node._iCollectionMark = away.traverse.PartitionTraverser._iCollectionMark;
+                node._iCollectionMark = traverse.PartitionTraverser._iCollectionMark;
 
                 return enter;
             };
@@ -4636,7 +4662,7 @@ var away;
             EntityCollector.prototype.cleanUp = function () {
             };
             return EntityCollector;
-        })(away.traverse.PartitionTraverser);
+        })(traverse.PartitionTraverser);
         traverse.EntityCollector = EntityCollector;
     })(away.traverse || (away.traverse = {}));
     var traverse = away.traverse;
@@ -4644,7 +4670,13 @@ var away;
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
+    /**
+    * @module away.traverse
+    */
     (function (traverse) {
+        /**
+        * @class away.traverse.ShadowCasterCollector
+        */
         var ShadowCasterCollector = (function (_super) {
             __extends(ShadowCasterCollector, _super);
             function ShadowCasterCollector() {
@@ -4692,10 +4724,10 @@ var away;
 
             //@override
             ShadowCasterCollector.prototype.enterNode = function (node) {
-                var enter = away.traverse.PartitionTraverser._iCollectionMark != node._iCollectionMark && node.isCastingShadow();
+                var enter = traverse.PartitionTraverser._iCollectionMark != node._iCollectionMark && node.isCastingShadow();
 
                 if (!enter) {
-                    node._iCollectionMark = away.traverse.PartitionTraverser._iCollectionMark;
+                    node._iCollectionMark = traverse.PartitionTraverser._iCollectionMark;
 
                     return false;
                 }
@@ -4703,7 +4735,7 @@ var away;
                 return _super.prototype.enterNode.call(this, node);
             };
             return ShadowCasterCollector;
-        })(away.traverse.EntityCollector);
+        })(traverse.EntityCollector);
         traverse.ShadowCasterCollector = ShadowCasterCollector;
     })(away.traverse || (away.traverse = {}));
     var traverse = away.traverse;
@@ -4711,13 +4743,18 @@ var away;
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
+    /**
+    * @module away.traverse
+    */
     (function (traverse) {
         /**
         * The RaycastCollector class is a traverser for scene partitions that collects all scene graph entities that are
         * considered intersecting with the defined ray.
         *
-        * @see away3d.partition.Partition3D
-        * @see away3d.partition.Entity
+        * @see away.partition.Partition3D
+        * @see away.partition.Entity
+        *
+        * @class away.traverse.RaycastCollector
         */
         var RaycastCollector = (function (_super) {
             __extends(RaycastCollector, _super);
@@ -4787,7 +4824,7 @@ var away;
             RaycastCollector.prototype.applyUnknownLight = function (light) {
             };
             return RaycastCollector;
-        })(away.traverse.EntityCollector);
+        })(traverse.EntityCollector);
         traverse.RaycastCollector = RaycastCollector;
     })(away.traverse || (away.traverse = {}));
     var traverse = away.traverse;
@@ -4795,7 +4832,13 @@ var away;
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
+    /**
+    * @module away.partition
+    */
     (function (partition) {
+        /**
+        * @class away.partition.NodeBase
+        */
         var NodeBase = (function () {
             function NodeBase() {
                 this._pNumChildNodes = 0;
@@ -4939,7 +4982,13 @@ var away;
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
+    /**
+    * @module away.partition
+    */
     (function (partition) {
+        /**
+        * @class away.partition.NullNode
+        */
         var NullNode = (function () {
             function NullNode() {
             }
@@ -4952,11 +5001,17 @@ var away;
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
+    /**
+    * @module away.partition
+    */
     (function (partition) {
+        /**
+        * @class away.partition.Partition3D
+        */
         var Partition3D = (function () {
             function Partition3D(rootNode) {
                 this._updatesMade = false;
-                this._rootNode = rootNode || new away.partition.NullNode();
+                this._rootNode = rootNode || new partition.NullNode();
             }
             Object.defineProperty(Partition3D.prototype, "showDebugBounds", {
                 get: function () {
@@ -5051,7 +5106,13 @@ var away;
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
+    /**
+    * @module away.partition
+    */
     (function (partition) {
+        /**
+        * @class away.partition.EntityNode
+        */
         var EntityNode = (function (_super) {
             __extends(EntityNode, _super);
             function EntityNode(entity) {
@@ -5107,7 +5168,13 @@ var away;
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
+    /**
+    * @module away.partition
+    */
     (function (partition) {
+        /**
+        * @class away.partition.CameraNode
+        */
         var CameraNode = (function (_super) {
             __extends(CameraNode, _super);
             function CameraNode(camera) {
@@ -5118,7 +5185,7 @@ var away;
                 // todo: dead end for now, if it has a debug mesh, then sure accept that
             };
             return CameraNode;
-        })(away.partition.EntityNode);
+        })(partition.EntityNode);
         partition.CameraNode = CameraNode;
     })(away.partition || (away.partition = {}));
     var partition = away.partition;
@@ -5126,7 +5193,13 @@ var away;
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
+    /**
+    * @module away.partition
+    */
     (function (partition) {
+        /**
+        * @class away.partition.LightNode
+        */
         var LightNode = (function (_super) {
             __extends(LightNode, _super);
             function LightNode(light) {
@@ -5149,7 +5222,7 @@ var away;
                 }
             };
             return LightNode;
-        })(away.partition.EntityNode);
+        })(partition.EntityNode);
         partition.LightNode = LightNode;
     })(away.partition || (away.partition = {}));
     var partition = away.partition;
@@ -5157,7 +5230,13 @@ var away;
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
+    /**
+    * @module away.partition
+    */
     (function (partition) {
+        /**
+        * @class away.partition.DirectionalLightNode
+        */
         var DirectionalLightNode = (function (_super) {
             __extends(DirectionalLightNode, _super);
             function DirectionalLightNode(light) {
@@ -5184,7 +5263,7 @@ var away;
                 return false;
             };
             return DirectionalLightNode;
-        })(away.partition.EntityNode);
+        })(partition.EntityNode);
         partition.DirectionalLightNode = DirectionalLightNode;
     })(away.partition || (away.partition = {}));
     var partition = away.partition;
@@ -5192,7 +5271,13 @@ var away;
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
+    /**
+    * @module away.partition
+    */
     (function (partition) {
+        /**
+        * @class away.partition.PointLightNode
+        */
         var PointLightNode = (function (_super) {
             __extends(PointLightNode, _super);
             function PointLightNode(light) {
@@ -5218,7 +5303,7 @@ var away;
                 return false;
             };
             return PointLightNode;
-        })(away.partition.EntityNode);
+        })(partition.EntityNode);
         partition.PointLightNode = PointLightNode;
     })(away.partition || (away.partition = {}));
     var partition = away.partition;
@@ -5226,7 +5311,13 @@ var away;
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
+    /**
+    * @module away.partition
+    */
     (function (partition) {
+        /**
+        * @class away.partition.LightProbeNode
+        */
         var LightProbeNode = (function (_super) {
             __extends(LightProbeNode, _super);
             function LightProbeNode(light) {
@@ -5249,7 +5340,7 @@ var away;
                 }
             };
             return LightProbeNode;
-        })(away.partition.EntityNode);
+        })(partition.EntityNode);
         partition.LightProbeNode = LightProbeNode;
     })(away.partition || (away.partition = {}));
     var partition = away.partition;
@@ -5257,12 +5348,14 @@ var away;
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
+    /**
+    * @module away.partition
+    */
     (function (partition) {
-        //import away3d.core.base.SubMesh;
-        //import away3d.core.traverse.PartitionTraverser;
-        //import away3d.entities.Mesh;
         /**
         * MeshNode is a space partitioning leaf node that contains a Mesh object.
+        *
+        * @class away.partition.MeshNode
         */
         var MeshNode = (function (_super) {
             __extends(MeshNode, _super);
@@ -5305,7 +5398,7 @@ var away;
                 return this._mesh.castsShadows;
             };
             return MeshNode;
-        })(away.partition.EntityNode);
+        })(partition.EntityNode);
         partition.MeshNode = MeshNode;
     })(away.partition || (away.partition = {}));
     var partition = away.partition;
@@ -5313,9 +5406,14 @@ var away;
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
+    /**
+    * @module away.partition
+    */
     (function (partition) {
         /**
         * SkyBoxNode is a space partitioning leaf node that contains a SkyBox object.
+        *
+        * @class away.partition.SkyBoxNode
         */
         var SkyBoxNode = (function (_super) {
             __extends(SkyBoxNode, _super);
@@ -5352,10 +5450,16 @@ var away;
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
+    /**
+    * @module away.partition
+    */
     (function (partition) {
         /**
         * RenderableNode is a space partitioning leaf node that contains any Entity that is itself a IRenderable
         * object. This excludes Mesh (since the renderable objects are its SubMesh children).
+        *
+        *
+        * @class away.partition.RenderableNode
         */
         var RenderableNode = (function (_super) {
             __extends(RenderableNode, _super);
@@ -5393,9 +5497,14 @@ var away;
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
+    /**
+    * @module away.pick
+    */
     (function (pick) {
         /**
         * An abstract base class for all picking collider classes. It should not be instantiated directly.
+        *
+        * @class away.pick.PickingColliderBase
         */
         var PickingColliderBase = (function () {
             function PickingColliderBase() {
@@ -5428,23 +5537,17 @@ var away;
                 return uv;
             };
 
-            //* TODO: implement & integrate GeometryUtils, SubGeometry, SubMesh
-            PickingColliderBase.prototype.pGetMeshSubgeometryIndex = function (subGeometry) {
+            PickingColliderBase.prototype.pGetMeshSubGeometryIndex = function (subGeometry) {
                 away.Debug.throwPIR('away.pick.PickingColliderBase', 'pGetMeshSubMeshIndex', 'GeometryUtils.getMeshSubMeshIndex');
-                return 0;
-                //return GeometryUtils.getMeshSubgeometryIndex(subGeometry);
-            };
 
-            //*/
-            //* TODO: implement & integrate
+                return away.utils.GeometryUtils.getMeshSubGeometryIndex(subGeometry);
+            };
             PickingColliderBase.prototype.pGetMeshSubMeshIndex = function (subMesh) {
                 away.Debug.throwPIR('away.pick.PickingColliderBase', 'pGetMeshSubMeshIndex', 'GeometryUtils.getMeshSubMeshIndex');
 
-                return 0;
-                //return GeometryUtils.getMeshSubMeshIndex(subMesh);
+                return away.utils.GeometryUtils.getMeshSubMeshIndex(subMesh);
             };
 
-            //*/
             /**
             * @inheritDoc
             */
@@ -5461,12 +5564,17 @@ var away;
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
+    /**
+    * @module away.pick
+    */
     (function (pick) {
         /**
         * Value object for a picking collision returned by a picking collider. Created as unique objects on entities
         *
         * @see away3d.entities.Entity#pickingCollisionVO
         * @see away3d.core.pick.IPickingCollider
+        *
+        * @class away.pick.PickingCollisionVO
         */
         var PickingCollisionVO = (function () {
             /**
@@ -5486,12 +5594,17 @@ var away;
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
+    /**
+    * @module away.pick
+    */
     (function (pick) {
         /**
         * Pure AS3 picking collider for entity objects. Used with the <code>RaycastPicker</code> picking object.
         *
-        * @see away3d.entities.Entity#pickingCollider
-        * @see away3d.core.pick.RaycastPicker
+        * @see away.entities.Entity#pickingCollider
+        * @see away.pick.RaycastPicker
+        *
+        * @class away.pick.AS3PickingCollider
         */
         var AS3PickingCollider = (function (_super) {
             __extends(AS3PickingCollider, _super);
@@ -5508,7 +5621,6 @@ var away;
             /**
             * @inheritDoc
             */
-            //* TODO: Implement & Integrate Dependencies: SubMesh
             AS3PickingCollider.prototype.testSubMeshCollision = function (subMesh, pickingCollisionVO, shortestCollisionDistance) {
                 var t;
                 var i0, i1, i2;
@@ -5619,7 +5731,7 @@ var away;
                 return false;
             };
             return AS3PickingCollider;
-        })(away.pick.PickingColliderBase);
+        })(pick.PickingColliderBase);
         pick.AS3PickingCollider = AS3PickingCollider;
     })(away.pick || (away.pick = {}));
     var pick = away.pick;
@@ -5627,21 +5739,26 @@ var away;
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
+    /**
+    * @module away.pick
+    */
     (function (pick) {
         /**
         * Options for setting a picking collider for entity objects. Used with the <code>RaycastPicker</code> picking object.
         *
-        * @see away3d.entities.Entity#pickingCollider
-        * @see away3d.core.pick.RaycastPicker
+        * @see away.entities.Entity#pickingCollider
+        * @see away.pick.RaycastPicker
+        *
+        * @class away.pick.PickingColliderType
         */
         var PickingColliderType = (function () {
             function PickingColliderType() {
             }
             PickingColliderType.BOUNDS_ONLY = null;
 
-            PickingColliderType.AS3_FIRST_ENCOUNTERED = new away.pick.AS3PickingCollider(false);
+            PickingColliderType.AS3_FIRST_ENCOUNTERED = new pick.AS3PickingCollider(false);
 
-            PickingColliderType.AS3_BEST_HIT = new away.pick.AS3PickingCollider(true);
+            PickingColliderType.AS3_BEST_HIT = new pick.AS3PickingCollider(true);
             return PickingColliderType;
         })();
         pick.PickingColliderType = PickingColliderType;
@@ -5651,6 +5768,9 @@ var away;
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
+    /**
+    * @module away.pick
+    */
     (function (pick) {
         /**
         * Picks a 3d object from a view or scene by performing a separate render pass on the scene around the area being picked using key color values,
@@ -5659,9 +5779,10 @@ var away;
         *
         * A read-back operation from any GPU is not a very efficient process, and the amount of processing used can vary significantly between different hardware.
         *
-        * @see away3d.entities.Entity#shaderPickingDetails
+        * @see away.entities.Entity#shaderPickingDetails
+        *
+        * @class away.pick.ShaderPicker
         */
-        // TODO: Dependencies needed to before implementing IPicker - EntityCollector
         var ShaderPicker = (function () {
             /**
             * Creates a new <code>ShaderPicker</code> object.
@@ -5765,7 +5886,6 @@ var away;
                 }
 
                 return _collisionVO;
-                //*/
             };
 
             //*/
@@ -6123,11 +6243,16 @@ var away;
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
+    /**
+    * @module away.pick
+    */
     (function (pick) {
         /**
         * Picks a 3d object from a view or scene by 3D raycast calculations.
         * Performs an initial coarse boundary calculation to return a subset of entities whose bounding volumes intersect with the specified ray,
         * then triggers an optional picking collider on individual entity objects to further determine the precise values of the picking ray collision.
+        *
+        * @class away.pick.RaycastPicker
         */
         var RaycastPicker = (function () {
             /**
@@ -6238,7 +6363,6 @@ var away;
                 return this.getPickingCollisionVO();
             };
 
-            //*/
             RaycastPicker.prototype.getEntityCollision = function (position, direction, entities) {
                 position = position;
                 direction = direction;
@@ -6259,7 +6383,6 @@ var away;
                 return this.getPickingCollisionVO();
             };
 
-            //*/
             RaycastPicker.prototype.setIgnoreList = function (entities) {
                 this._ignoredEntities = entities;
             };
@@ -6351,20 +6474,25 @@ var away;
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
+    /**
+    * @module away.pick
+    */
     (function (pick) {
         /**
         * Options for the different 3D object picking approaches available in Away3D. Can be used for automatic mouse picking on the view.
         *
         * @see away3d.containers.View3D#mousePicker
+        *
+        * @class away.pick.PickingType
         */
         var PickingType = (function () {
             function PickingType() {
             }
-            PickingType.SHADER = new away.pick.ShaderPicker();
+            PickingType.SHADER = new pick.ShaderPicker();
 
-            PickingType.RAYCAST_FIRST_ENCOUNTERED = new away.pick.RaycastPicker(false);
+            PickingType.RAYCAST_FIRST_ENCOUNTERED = new pick.RaycastPicker(false);
 
-            PickingType.RAYCAST_BEST_HIT = new away.pick.RaycastPicker(true);
+            PickingType.RAYCAST_BEST_HIT = new pick.RaycastPicker(true);
             return PickingType;
         })();
         pick.PickingType = PickingType;
@@ -6374,10 +6502,15 @@ var away;
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
+    /**
+    * @module away.render
+    */
     (function (render) {
         /**
         * RendererBase forms an abstract base class for classes that are used in the rendering pipeline to render geometry
         * to the back buffer or a texture.
+        *
+        * @class away.render.RendererBase
         */
         var RendererBase = (function () {
             /**
@@ -6778,9 +6911,14 @@ var away;
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
+    /**
+    * @module away.render
+    */
     (function (render) {
         /**
         * The DepthRenderer class renders 32-bit depth information encoded as RGBA
+        *
+        * @class away.render.DepthRenderer
         */
         var DepthRenderer = (function (_super) {
             __extends(DepthRenderer, _super);
@@ -6938,7 +7076,7 @@ var away;
                 }
             };
             return DepthRenderer;
-        })(away.render.RendererBase);
+        })(render.RendererBase);
         render.DepthRenderer = DepthRenderer;
     })(away.render || (away.render = {}));
     var render = away.render;
@@ -6946,15 +7084,21 @@ var away;
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
+    /**
+    * @module away.render
+    */
     (function (render) {
         /**
         * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the
         * materials assigned to them.
+        *
+        * @class away.render.DefaultRenderer
         */
         var DefaultRenderer = (function (_super) {
             __extends(DefaultRenderer, _super);
             /**
             * Creates a new DefaultRenderer object.
+            *
             * @param antiAlias The amount of anti-aliasing to use.
             * @param renderMode The render mode to use.
             */
@@ -6962,8 +7106,8 @@ var away;
                 _super.call(this);
                 this._skyboxProjection = new away.geom.Matrix3D();
 
-                this._pDepthRenderer = new away.render.DepthRenderer();
-                this._pDistanceRenderer = new away.render.DepthRenderer(false, true);
+                this._pDepthRenderer = new render.DepthRenderer();
+                this._pDistanceRenderer = new render.DepthRenderer(false, true);
             }
             Object.defineProperty(DefaultRenderer.prototype, "iStageGLProxy", {
                 set: function (value) {
@@ -7160,7 +7304,7 @@ var away;
             DefaultRenderer.SCREEN_PASSES = 2;
             DefaultRenderer.ALL_PASSES = 3;
             return DefaultRenderer;
-        })(away.render.RendererBase);
+        })(render.RendererBase);
         render.DefaultRenderer = DefaultRenderer;
     })(away.render || (away.render = {}));
     var render = away.render;
@@ -7168,7 +7312,13 @@ var away;
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
+    /**
+    * @module away.render
+    */
     (function (render) {
+        /**
+        * @class away.render.Filter3DRenderer
+        */
         var Filter3DRenderer = (function () {
             function Filter3DRenderer(stageGLProxy) {
                 this._filterSizesInvalid = true;
@@ -7346,7 +7496,13 @@ var away;
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
+    /**
+    * @module away.sort
+    */
     (function (sort) {
+        /**
+        * @class away.sort.RenderableMergeSort
+        */
         var RenderableMergeSort = (function () {
             function RenderableMergeSort() {
             }
@@ -32786,7 +32942,7 @@ var away;
                 return interleavedBuffer;
             };
 
-            GeometryUtils.getMeshSubgeometryIndex = /*
+            GeometryUtils.getMeshSubGeometryIndex = /*
             * returns the subGeometry index in its parent mesh subgeometries vector
             */
             function (subGeometry) {

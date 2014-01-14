@@ -1,7 +1,14 @@
 ///<reference path="../../_definitions.ts"/>
+
+/**
+ * @module away.traverse
+ */
 module away.traverse
 {
-	export class EntityCollector extends away.traverse.PartitionTraverser
+	/**
+	 * @class away.traverse.EntityCollector
+	 */
+	export class EntityCollector extends PartitionTraverser
 	{
 
 		public _pSkyBox:away.base.IRenderable;
@@ -152,9 +159,9 @@ module away.traverse
 		public enterNode(node:away.partition.NodeBase):boolean
 		{
 
-			var enter:boolean = away.traverse.PartitionTraverser._iCollectionMark != node._iCollectionMark && node.isInFrustum(this._cullPlanes, this._numCullPlanes);
+			var enter:boolean = PartitionTraverser._iCollectionMark != node._iCollectionMark && node.isInFrustum(this._cullPlanes, this._numCullPlanes);
 
-			node._iCollectionMark = away.traverse.PartitionTraverser._iCollectionMark;
+			node._iCollectionMark = PartitionTraverser._iCollectionMark;
 
 			return enter;
 		}

@@ -1,7 +1,10 @@
 ///<reference path="../../_definitions.ts"/>
+
+/**
+ * @module away.pick
+ */
 module away.pick
 {
-
 	/**
 	 * Picks a 3d object from a view or scene by performing a separate render pass on the scene around the area being picked using key color values,
 	 * then reading back the color value of the pixel in the render representing the picking ray. Requires multiple passes and readbacks for retriving details
@@ -9,11 +12,11 @@ module away.pick
 	 *
 	 * A read-back operation from any GPU is not a very efficient process, and the amount of processing used can vary significantly between different hardware.
 	 *
-	 * @see away3d.entities.Entity#shaderPickingDetails
+	 * @see away.entities.Entity#shaderPickingDetails
+	 *
+	 * @class away.pick.ShaderPicker
 	 */
-
-		// TODO: Dependencies needed to before implementing IPicker - EntityCollector
-	export class ShaderPicker implements away.pick.IPicker
+	export class ShaderPicker implements IPicker
 	{
 		private _stageGLProxy:away.managers.StageGLProxy;
 		private _context:away.displayGL.ContextGL;
@@ -26,7 +29,7 @@ module away.pick
 		private _boundOffsetScale:number[];
 		private _id:number[];
 
-		private _interactives:away.base.IRenderable[] = new Array<away.base.IRenderable>();//Vector.<IRenderable> = new Vector.<IRenderable>();
+		private _interactives:away.base.IRenderable[] = new Array<away.base.IRenderable>();
 		private _interactiveId:number;
 		private _hitColor:number;
 		private _projX:number;
@@ -76,7 +79,7 @@ module away.pick
 		 */
 			// TODO implement dependency : EntityCollector
 			// TODO: GLSL implementation / conversion
-		public getViewCollision(x:number, y:number, view:away.containers.View3D):away.pick.PickingCollisionVO
+		public getViewCollision(x:number, y:number, view:away.containers.View3D):PickingCollisionVO
 		{
 
 			away.Debug.throwPIR('ShaderPicker', 'getViewCollision', 'implement');
@@ -145,14 +148,13 @@ module away.pick
 			}
 
 			return _collisionVO;
-			//*/
 		}
 
 		//*/
 		/**
 		 * @inheritDoc
 		 */
-		public getSceneCollision(position:away.geom.Vector3D, direction:away.geom.Vector3D, scene:away.containers.Scene3D):away.pick.PickingCollisionVO
+		public getSceneCollision(position:away.geom.Vector3D, direction:away.geom.Vector3D, scene:away.containers.Scene3D):PickingCollisionVO
 		{
 			return null;
 		}

@@ -1,14 +1,18 @@
 ///<reference path="../../_definitions.ts"/>
+
+/**
+ * @module away.pick
+ */
 module away.pick
 {
-
 	/**
 	 * Picks a 3d object from a view or scene by 3D raycast calculations.
 	 * Performs an initial coarse boundary calculation to return a subset of entities whose bounding volumes intersect with the specified ray,
 	 * then triggers an optional picking collider on individual entity objects to further determine the precise values of the picking ray collision.
+	 *
+	 * @class away.pick.RaycastPicker
 	 */
-
-	export class RaycastPicker implements away.pick.IPicker
+	export class RaycastPicker implements IPicker
 	{
 		private _findClosestCollision:boolean;
 		private _raycastCollector:away.traverse.RaycastCollector;
@@ -50,7 +54,7 @@ module away.pick
 		 * @inheritDoc
 		 */
 
-		public getViewCollision(x:number, y:number, view:away.containers.View3D):away.pick.PickingCollisionVO
+		public getViewCollision(x:number, y:number, view:away.containers.View3D):PickingCollisionVO
 		{
 
 			//cast ray through the collection of entities on the view
@@ -98,7 +102,7 @@ module away.pick
 		 */
 
 			//* TODO Implement Dependency: EntityListItem, EntityCollector, RaycastCollector
-		public getSceneCollision(position:away.geom.Vector3D, direction:away.geom.Vector3D, scene:away.containers.Scene3D):away.pick.PickingCollisionVO
+		public getSceneCollision(position:away.geom.Vector3D, direction:away.geom.Vector3D, scene:away.containers.Scene3D):PickingCollisionVO
 		{
 
 			//clear collector
@@ -136,8 +140,7 @@ module away.pick
 
 		}
 
-		//*/
-		public getEntityCollision(position:away.geom.Vector3D, direction:away.geom.Vector3D, entities:away.entities.Entity[]):away.pick.PickingCollisionVO
+		public getEntityCollision(position:away.geom.Vector3D, direction:away.geom.Vector3D, entities:away.entities.Entity[]):PickingCollisionVO
 		{
 
 
@@ -167,7 +170,6 @@ module away.pick
 
 		}
 
-		//*/
 		public setIgnoreList(entities)
 		{
 			this._ignoredEntities = entities;

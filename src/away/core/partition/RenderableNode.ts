@@ -1,11 +1,16 @@
 ///<reference path="../../_definitions.ts"/>
 
+/**
+ * @module away.partition
+ */
 module away.partition
 {
-
 	/**
 	 * RenderableNode is a space partitioning leaf node that contains any Entity that is itself a IRenderable
 	 * object. This excludes Mesh (since the renderable objects are its SubMesh children).
+	 *
+	 *
+	 * @class away.partition.RenderableNode
 	 */
 	export class RenderableNode extends EntityNode
 	{

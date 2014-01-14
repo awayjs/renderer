@@ -1,31 +1,22 @@
 ﻿///<reference path="../../_definitions.ts"/>
+
 /**
  * @module away.base
  */
 module away.base
 {
-	//import away3d.arcane;
-	//import away3d.managers.StageGLProxy;
-
-	//import flash.displayGL.ContextGL;
-	//import flash.displayGL.ContextGLVertexBufferFormat;
-	//import flash.displayGL.VertexBuffer;
-	//import flash.geom.Matrix3D;
-
-	//use namespace arcane;
-
 	/**
 	 * The SubGeometry class is a collections of geometric data that describes a triangle mesh. It is owned by a
 	 * Geometry instance, and wrapped by a SubMesh in the scene graph.
 	 * Several SubGeometries are grouped so they can be rendered with different materials, but still represent a single
 	 * object.
 	 *
-	 * @see away3d.core.base.Geometry
-	 * @see away3d.core.base.SubMesh
+	 * @see away.base.Geometry
+	 * @see away.base.SubMesh
 	 *
 	 * @class away.base.SubGeometry
 	 */
-	export class SubGeometry extends away.base.SubGeometryBase implements away.base.ISubGeometry
+	export class SubGeometry extends SubGeometryBase implements ISubGeometry
 	{
 		// raw data:
 		private _uvs:number[];
@@ -211,9 +202,9 @@ module away.base
 		 * Clones the current object
 		 * @return An exact duplicate of the current object.
 		 */
-		public clone():away.base.ISubGeometry
+		public clone():ISubGeometry
 		{
-			var clone:away.base.SubGeometry = new away.base.SubGeometry();
+			var clone:SubGeometry = new SubGeometry();
 			clone.updateVertexData(this._vertexData.concat());
 			clone.updateUVData(this._uvs.concat());
 			clone.updateIndexData(this._indices.concat());
@@ -525,10 +516,10 @@ module away.base
 			return 0;
 		}
 
-		public cloneWithSeperateBuffers():away.base.SubGeometry
+		public cloneWithSeperateBuffers():SubGeometry
 		{
 			var obj:any = this.clone();
-			return <away.base.SubGeometry> obj;
+			return <SubGeometry> obj;
 		}
 	}
 }

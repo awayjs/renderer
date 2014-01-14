@@ -1,7 +1,13 @@
 ///<reference path="../../_definitions.ts"/>
+
+/**
+ * @module away.render
+ */
 module away.render
 {
-
+	/**
+	 * @class away.render.Filter3DRenderer
+	 */
 	export class Filter3DRenderer
 	{
 		private _filters:away.filters.Filter3DBase[]; // TODO: check / changed to strongly typed array

@@ -1,11 +1,17 @@
 ///<reference path="../../_definitions.ts"/>
 
+/**
+ * @module away.data
+ */
 module away.data
 {
+	/**
+	 * @class away.data.RenderableListItem
+	 */
 	export class RenderableListItem
 	{
 
-		public next:away.data.RenderableListItem;
+		public next:RenderableListItem;
 		public renderable:away.base.IRenderable;
 
 		public materialId:number;

@@ -1,4 +1,5 @@
 ///<reference path="../../_definitions.ts"/>
+
 /**
  * @module away.base
  */
@@ -13,8 +14,8 @@ module away.base
 	 *
 	 *
 	 *
-	 * @see away3d.core.base.SubGeometry
-	 * @see away3d.scenegraph.Mesh
+	 * @see away.core.base.SubGeometry
+	 * @see away.entities.Mesh
 	 *
 	 * @class away.base.Geometry
 	 */

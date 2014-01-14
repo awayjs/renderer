@@ -1,11 +1,11 @@
 ///<reference path="../../_definitions.ts"/>
+
 /**
  * @module away.base
  */
 module away.base
 {
 	/**
-	 *
 	 * IMaterialOwner provides an interface for objects that can use materials.
 	 *
 	 * @interface away.base.IMaterialOwner

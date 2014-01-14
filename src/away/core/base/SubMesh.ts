@@ -1,24 +1,24 @@
 ///<reference path="../../_definitions.ts"/>
+
 /**
  * @module away.base
  */
 module away.base
 {
-
 	/**
 	 * SubMesh wraps a SubGeometry as a scene graph instantiation. A SubMesh is owned by a Mesh object.
 	 *
 	 *
-	 * @see away3d.core.base.SubGeometry
-	 * @see away3d.scenegraph.Mesh
+	 * @see away.base.SubGeometry
+	 * @see away.entities.Mesh
 	 *
-	 * @class away.base.SubGeometryBase
+	 * @class away.base.SubMesh
 	 */
-	export class SubMesh implements away.base.IRenderable
+	export class SubMesh implements IRenderable
 	{
 		public _iMaterial:away.materials.MaterialBase;
 		private _parentMesh:away.entities.Mesh;
-		private _subGeometry:away.base.ISubGeometry;
+		private _subGeometry:ISubGeometry;
 		public _iIndex:number = 0;
 		private _uvTransform:away.geom.Matrix;
 		private _uvTransformDirty:boolean;
@@ -37,7 +37,7 @@ module away.base
 		 * @param parentMesh The Mesh object to which this SubMesh belongs.
 		 * @param material An optional material used to render this SubMesh.
 		 */
-		constructor(subGeometry:away.base.ISubGeometry, parentMesh:away.entities.Mesh, material:away.materials.MaterialBase = null)
+		constructor(subGeometry:ISubGeometry, parentMesh:away.entities.Mesh, material:away.materials.MaterialBase = null)
 		{
 			this._parentMesh = parentMesh;
 			this._subGeometry = subGeometry;
@@ -147,12 +147,12 @@ module away.base
 		/**
 		 * The SubGeometry object which provides the geometry data for this SubMesh.
 		 */
-		public get subGeometry():away.base.ISubGeometry
+		public get subGeometry():ISubGeometry
 		{
 			return this._subGeometry;
 		}
 
-		public set subGeometry(value:away.base.ISubGeometry)
+		public set subGeometry(value:ISubGeometry)
 		{
 			this._subGeometry = value;
 		}
@@ -168,7 +168,7 @@ module away.base
 		public set material(value:away.materials.MaterialBase)
 		{
 
-			//away.Debug.throwPIR( 'away.base.Submesh' , 'set material' , 'away.base.MaterialBase _iRemoveOwner , _iAddOwner');
+			//away.Debug.throwPIR( 'Submesh' , 'set material' , 'MaterialBase _iRemoveOwner , _iAddOwner');
 			//*
 			if (this._iMaterial) {
 

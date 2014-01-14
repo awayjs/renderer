@@ -1,16 +1,18 @@
 ///<reference path="../../_definitions.ts"/>
+
+/**
+ * @module away.pick
+ */
 module away.pick
 {
-	//import away3d.core.base.SubMesh;
-
-	//import flash.geom.Vector3D;
-
 	/**
 	 * Provides an interface for picking colliders that can be assigned to individual entities in a scene for specific picking behaviour.
 	 * Used with the <code>RaycastPicker</code> picking object.
 	 *
-	 * @see away3d.entities.Entity#pickingCollider
-	 * @see away3d.core.pick.RaycastPicker
+	 * @see away.entities.Entity#pickingCollider
+	 * @see away.pick.RaycastPicker
+	 *
+	 * @interface away.pick.IPickingCollider
 	 */
 	export interface IPickingCollider
 	{
@@ -30,6 +32,6 @@ module away.pick
 		 * @param shortestCollisionDistance The current value of the shortest distance to a detected collision along the ray.
 		 */
 		// TODO: SubMesh - Implement & Integrate
-		testSubMeshCollision(subMesh:away.base.SubMesh, pickingCollisionVO:away.pick.PickingCollisionVO, shortestCollisionDistance:number):boolean
+		testSubMeshCollision(subMesh:away.base.SubMesh, pickingCollisionVO:PickingCollisionVO, shortestCollisionDistance:number):boolean
 	}
 }

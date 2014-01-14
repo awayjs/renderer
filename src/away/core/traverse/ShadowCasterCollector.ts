@@ -1,8 +1,14 @@
 ///<reference path="../../_definitions.ts"/>
 
+/**
+ * @module away.traverse
+ */
 module away.traverse
 {
-	export class ShadowCasterCollector extends away.traverse.EntityCollector
+	/**
+	 * @class away.traverse.ShadowCasterCollector
+	 */
+	export class ShadowCasterCollector extends EntityCollector
 	{
 		constructor()
 		{
@@ -61,10 +67,10 @@ module away.traverse
 		//@override
 		public enterNode(node:away.partition.NodeBase):boolean
 		{
-			var enter:boolean = away.traverse.PartitionTraverser._iCollectionMark != node._iCollectionMark && node.isCastingShadow();
+			var enter:boolean = PartitionTraverser._iCollectionMark != node._iCollectionMark && node.isCastingShadow();
 
 			if (!enter) {
-				node._iCollectionMark = away.traverse.PartitionTraverser._iCollectionMark
+				node._iCollectionMark = PartitionTraverser._iCollectionMark
 
 				return false;
 			}

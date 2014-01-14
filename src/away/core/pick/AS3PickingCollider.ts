@@ -1,14 +1,20 @@
 ///<reference path="../../_definitions.ts"/>
+
+/**
+ * @module away.pick
+ */
 module away.pick
 {
 
 	/**
 	 * Pure AS3 picking collider for entity objects. Used with the <code>RaycastPicker</code> picking object.
 	 *
-	 * @see away3d.entities.Entity#pickingCollider
-	 * @see away3d.core.pick.RaycastPicker
+	 * @see away.entities.Entity#pickingCollider
+	 * @see away.pick.RaycastPicker
+	 *
+	 * @class away.pick.AS3PickingCollider
 	 */
-	export class AS3PickingCollider extends away.pick.PickingColliderBase implements away.pick.IPickingCollider
+	export class AS3PickingCollider extends PickingColliderBase implements IPickingCollider
 	{
 		private _findClosestCollision:boolean;
 
@@ -26,8 +32,7 @@ module away.pick
 		/**
 		 * @inheritDoc
 		 */
-			//* TODO: Implement & Integrate Dependencies: SubMesh
-		public testSubMeshCollision(subMesh:away.base.SubMesh, pickingCollisionVO:away.pick.PickingCollisionVO, shortestCollisionDistance:number):boolean
+		public testSubMeshCollision(subMesh:away.base.SubMesh, pickingCollisionVO:PickingCollisionVO, shortestCollisionDistance:number):boolean
 		{
 			var t:number;
 			var i0:number, i1:number, i2:number;

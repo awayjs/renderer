@@ -1,9 +1,14 @@
 ///<reference path="../../_definitions.ts"/>
+
+/**
+ * @module away.pick
+ */
 module away.pick
 {
-
 	/**
 	 * An abstract base class for all picking collider classes. It should not be instantiated directly.
+	 *
+	 * @class away.pick.PickingColliderBase
 	 */
 	export class PickingColliderBase
 	{
@@ -45,28 +50,20 @@ module away.pick
 			return uv;
 		}
 
-		//* TODO: implement & integrate GeometryUtils, SubGeometry, SubMesh
-		public pGetMeshSubgeometryIndex(subGeometry:away.base.SubGeometry):number
+		public pGetMeshSubGeometryIndex(subGeometry:away.base.SubGeometry):number
 		{
 
 			away.Debug.throwPIR('away.pick.PickingColliderBase', 'pGetMeshSubMeshIndex', 'GeometryUtils.getMeshSubMeshIndex');
-			return 0;
-			//return GeometryUtils.getMeshSubgeometryIndex(subGeometry);
+
+			return away.utils.GeometryUtils.getMeshSubGeometryIndex(subGeometry);
 		}
-
-		//*/
-
-		//* TODO: implement & integrate
 		public pGetMeshSubMeshIndex(subMesh:away.base.SubMesh):number
 		{
 
 			away.Debug.throwPIR('away.pick.PickingColliderBase', 'pGetMeshSubMeshIndex', 'GeometryUtils.getMeshSubMeshIndex');
 
-			return 0;
-			//return GeometryUtils.getMeshSubMeshIndex(subMesh);
+			return away.utils.GeometryUtils.getMeshSubMeshIndex(subMesh);
 		}
-
-		//*/
 
 		/**
 		 * @inheritDoc

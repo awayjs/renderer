@@ -1,4 +1,7 @@
 ///<reference path="../../_definitions.ts"/>
+/**
+ * @module away.pick
+ */
 module away.pick
 {
 
@@ -7,6 +10,8 @@ module away.pick
 	 *
 	 * @see away3d.entities.Entity#pickingCollisionVO
 	 * @see away3d.core.pick.IPickingCollider
+	 *
+	 * @class away.pick.PickingCollisionVO
 	 */
 	export class PickingCollisionVO
 	{

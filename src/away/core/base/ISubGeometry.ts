@@ -1,14 +1,10 @@
 ///<reference path="../../_definitions.ts"/>
+
 /**
  * @module away.base
  */
 module away.base
 {
-	//import away3d.managers.StageGLProxy;
-
-	//import flash.displayGL.IndexBuffer;
-	//import flash.geom.Matrix3D;
-
 	/**
 	 * @interface away.base.ISubGeometry
 	 */
@@ -103,53 +99,52 @@ module away.base
 		/**
 		 * Retrieves the object's vertices as a Number array.
 		 */
-			vertexData:number[];//GET
+		vertexData:number[];//GET
 
 		/**
 		 * Retrieves the object's normals as a Number array.
 		 */
-			vertexNormalData:number[];//GET
+		vertexNormalData:number[];//GET
 
 		/**
 		 * Retrieves the object's tangents as a Number array.
 		 */
-			vertexTangentData:number[];//GET
+		vertexTangentData:number[];//GET
 
 		/**
 		 * The offset into vertexData where the vertices are placed
 		 */
-			vertexOffset:number;//GET
+		vertexOffset:number;//GET
 
 		/**
 		 * The offset into vertexNormalData where the normals are placed
 		 */
-			vertexNormalOffset:number;//GET
+		vertexNormalOffset:number;//GET
 
 		/**
 		 * The offset into vertexTangentData where the tangents are placed
 		 */
-			vertexTangentOffset:number;//GET
+		vertexTangentOffset:number;//GET
 
 		/**
 		 * The offset into UVData vector where the UVs are placed
 		 */
-			UVOffset:number;//GET
+		UVOffset:number;//GET
 
 		/**
 		 * The offset into SecondaryUVData vector where the UVs are placed
 		 */
-			secondaryUVOffset:number;//GET
+		secondaryUVOffset:number;//GET
 
 		/**
 		 * Retrieves the object's indices as a uint array.
 		 */
-			indexData:number[] /*uint*/
-		;//GET
+		indexData:number[] /*uint*/;//GET
 
 		/**
 		 * Retrieves the object's uvs as a Number array.
 		 */
-			UVData:number[];//GET
+		UVData:number[];//GET
 
 		applyTransformation(transform:away.geom.Matrix3D);
 

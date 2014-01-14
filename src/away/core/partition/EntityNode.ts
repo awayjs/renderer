@@ -1,7 +1,13 @@
 ///<reference path="../../_definitions.ts"/>
 
+/**
+ * @module away.partition
+ */
 module away.partition
 {
+	/**
+	 * @class away.partition.EntityNode
+	 */
 	export class EntityNode extends NodeBase
 	{
 

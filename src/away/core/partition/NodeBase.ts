@@ -1,8 +1,14 @@
 ///<reference path="../../_definitions.ts"/>
 
 
+/**
+ * @module away.partition
+ */
 module away.partition
 {
+	/**
+	 * @class away.partition.NodeBase
+	 */
 	export class NodeBase
 	{
 

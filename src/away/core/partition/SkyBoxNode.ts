@@ -1,9 +1,14 @@
 ///<reference path="../../_definitions.ts"/>
+
+/**
+ * @module away.partition
+ */
 module away.partition
 {
-
 	/**
 	 * SkyBoxNode is a space partitioning leaf node that contains a SkyBox object.
+	 *
+	 * @class away.partition.SkyBoxNode
 	 */
 	export class SkyBoxNode extends EntityNode
 	{

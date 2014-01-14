@@ -1,11 +1,16 @@
 ///<reference path="../../_definitions.ts"/>
+
+/**
+ * @module away.render
+ */
 module away.render
 {
-
 	/**
 	 * The DepthRenderer class renders 32-bit depth information encoded as RGBA
+	 *
+	 * @class away.render.DepthRenderer
 	 */
-	export class DepthRenderer extends away.render.RendererBase
+	export class DepthRenderer extends RendererBase
 	{
 		private _activeMaterial:away.materials.MaterialBase;
 		private _renderBlended:boolean;

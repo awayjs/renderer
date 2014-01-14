@@ -1,10 +1,14 @@
 ///<reference path="../../_definitions.ts"/>
+
+/**
+ * @module away.base
+ */
 module away.base
 {
 	/**
-	 * @class away.base.Geometry
+	 * @class away.base.CompactSubGeometry
 	 */
-	export class CompactSubGeometry extends away.base.SubGeometryBase implements away.base.ISubGeometry
+	export class CompactSubGeometry extends SubGeometryBase implements ISubGeometry
 	{
 		public _pVertexDataInvalid:boolean[] = Array<boolean>(8);//new Vector.<Boolean>(8, true);
 		private _vertexBuffer:away.displayGL.VertexBuffer[] = new Array<away.displayGL.VertexBuffer>(8);//Vector.<VertexBuffer> = new Vector.<VertexBuffer>(8);
@@ -279,9 +283,9 @@ module away.base
 			this.pInvalidateBuffers(this._pVertexDataInvalid);
 		}
 
-		public clone():away.base.ISubGeometry
+		public clone():ISubGeometry
 		{
-			var clone:away.base.CompactSubGeometry = new away.base.CompactSubGeometry();
+			var clone:CompactSubGeometry = new CompactSubGeometry();
 
 			clone._autoDeriveVertexNormals = this._autoDeriveVertexNormals;
 			clone._autoDeriveVertexTangents = this._autoDeriveVertexTangents;
@@ -372,9 +376,9 @@ module away.base
 			this._pActiveDataInvalid = true;
 		}
 
-		public cloneWithSeperateBuffers():away.base.SubGeometry
+		public cloneWithSeperateBuffers():SubGeometry
 		{
-			var clone:away.base.SubGeometry = new away.base.SubGeometry();
+			var clone:SubGeometry = new SubGeometry();
 
 			clone.updateVertexData(this._isolatedVertexPositionData? this._isolatedVertexPositionData : this._isolatedVertexPositionData = this.stripBuffer(0, 3));
 			clone.autoDeriveVertexNormals = this._autoDeriveVertexNormals;

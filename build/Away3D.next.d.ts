@@ -638,10 +638,10 @@ declare module away.base {
     * SubMesh wraps a SubGeometry as a scene graph instantiation. A SubMesh is owned by a Mesh object.
     *
     *
-    * @see away3d.core.base.SubGeometry
-    * @see away3d.scenegraph.Mesh
+    * @see away.base.SubGeometry
+    * @see away.entities.Mesh
     *
-    * @class away.base.SubGeometryBase
+    * @class away.base.SubMesh
     */
     class SubMesh implements base.IRenderable {
         public _iMaterial: away.materials.MaterialBase;
@@ -758,11 +758,9 @@ declare module away.base {
 */
 declare module away.base {
     /**
-    * @interface away.base.IRenderable
-    */
-    /**
-    *
     * IRenderable provides an interface for objects that can be rendered in the rendering pipeline.
+    *
+    * @interface away.base.IRenderable
     */
     interface IRenderable extends base.IMaterialOwner {
         /**
@@ -873,7 +871,6 @@ declare module away.base {
 */
 declare module away.base {
     /**
-    *
     * IMaterialOwner provides an interface for objects that can use materials.
     *
     * @interface away.base.IMaterialOwner
@@ -1182,9 +1179,12 @@ declare module away.base {
         vertexPositionData: number[];
     }
 }
+/**
+* @module away.base
+*/
 declare module away.base {
     /**
-    * @class away.base.Geometry
+    * @class away.base.CompactSubGeometry
     */
     class CompactSubGeometry extends base.SubGeometryBase implements base.ISubGeometry {
         public _pVertexDataInvalid: boolean[];
@@ -1260,7 +1260,6 @@ declare module away.base {
 */
 declare module away.base {
     /**
-    *
     * SkinnedSubGeometry provides a SubGeometry extension that contains data needed to skin vertices. In particular,
     * it provides joint indices and weights.
     * Important! Joint indices need to be pre-multiplied by 3, since they index the matrix array (and each matrix has 3 float4 elements)
@@ -1351,8 +1350,8 @@ declare module away.base {
     *
     *
     *
-    * @see away3d.core.base.SubGeometry
-    * @see away3d.scenegraph.Mesh
+    * @see away.core.base.SubGeometry
+    * @see away.entities.Mesh
     *
     * @class away.base.Geometry
     */
@@ -1408,9 +1407,12 @@ declare module away.base {
         public iInvalidateBounds(subGeom: base.ISubGeometry): void;
     }
 }
+/**
+* @module away.base
+*/
 declare module away.base {
     /**
-    * ...
+    * @class away.base.ParticleGeometry
     */
     class ParticleGeometry extends base.Geometry {
         public particles: away.animators.ParticleData[];
@@ -1427,8 +1429,8 @@ declare module away.base {
     * Several SubGeometries are grouped so they can be rendered with different materials, but still represent a single
     * object.
     *
-    * @see away3d.core.base.Geometry
-    * @see away3d.core.base.SubMesh
+    * @see away.base.Geometry
+    * @see away.base.SubMesh
     *
     * @class away.base.SubGeometry
     */
@@ -1565,7 +1567,13 @@ declare module away.base {
         public cloneWithSeperateBuffers(): SubGeometry;
     }
 }
+/**
+* @module away.data
+*/
 declare module away.data {
+    /**
+    * @class away.data.RenderableListItem
+    */
     class RenderableListItem {
         public next: RenderableListItem;
         public renderable: away.base.IRenderable;
@@ -1577,14 +1585,26 @@ declare module away.data {
         constructor();
     }
 }
+/**
+* @module away.data
+*/
 declare module away.data {
+    /**
+    * @class away.data.EntityListItem
+    */
     class EntityListItem {
         public entity: away.entities.Entity;
         public next: EntityListItem;
         constructor();
     }
 }
+/**
+* @module away.data
+*/
 declare module away.data {
+    /**
+    * @class away.data.EntityListItemPool
+    */
     class EntityListItemPool {
         private _pool;
         private _index;
@@ -1595,7 +1615,13 @@ declare module away.data {
         public dispose(): void;
     }
 }
+/**
+* @module away.data
+*/
 declare module away.data {
+    /**
+    * @class away.data.RenderableListItemPool
+    */
     class RenderableListItemPool {
         private _pool;
         private _index;
@@ -1606,7 +1632,13 @@ declare module away.data {
         public dispose(): void;
     }
 }
+/**
+* @module away.traverse
+*/
 declare module away.traverse {
+    /**
+    * @class away.traverse.PartitionTraverser
+    */
     class PartitionTraverser {
         public scene: away.containers.Scene3D;
         public _iEntryPoint: away.geom.Vector3D;
@@ -1623,7 +1655,13 @@ declare module away.traverse {
         public entryPoint : away.geom.Vector3D;
     }
 }
+/**
+* @module away.traverse
+*/
 declare module away.traverse {
+    /**
+    * @class away.traverse.EntityCollector
+    */
     class EntityCollector extends traverse.PartitionTraverser {
         public _pSkyBox: away.base.IRenderable;
         public _pOpaqueRenderableHead: away.data.RenderableListItem;
@@ -1675,7 +1713,13 @@ declare module away.traverse {
         public cleanUp(): void;
     }
 }
+/**
+* @module away.traverse
+*/
 declare module away.traverse {
+    /**
+    * @class away.traverse.ShadowCasterCollector
+    */
     class ShadowCasterCollector extends traverse.EntityCollector {
         constructor();
         public applyRenderable(renderable: away.base.IRenderable): void;
@@ -1687,13 +1731,18 @@ declare module away.traverse {
         public enterNode(node: away.partition.NodeBase): boolean;
     }
 }
+/**
+* @module away.traverse
+*/
 declare module away.traverse {
     /**
     * The RaycastCollector class is a traverser for scene partitions that collects all scene graph entities that are
     * considered intersecting with the defined ray.
     *
-    * @see away3d.partition.Partition3D
-    * @see away3d.partition.Entity
+    * @see away.partition.Partition3D
+    * @see away.partition.Entity
+    *
+    * @class away.traverse.RaycastCollector
     */
     class RaycastCollector extends traverse.EntityCollector {
         private _rayPosition;
@@ -1731,7 +1780,13 @@ declare module away.traverse {
         public applyUnknownLight(light: away.lights.LightBase): void;
     }
 }
+/**
+* @module away.partition
+*/
 declare module away.partition {
+    /**
+    * @class away.partition.NodeBase
+    */
     class NodeBase {
         public _iParent: NodeBase;
         public _pChildNodes: NodeBase[];
@@ -1754,12 +1809,24 @@ declare module away.partition {
         public _pUpdateNumEntities(value: number): void;
     }
 }
+/**
+* @module away.partition
+*/
 declare module away.partition {
+    /**
+    * @class away.partition.NullNode
+    */
     class NullNode {
         constructor();
     }
 }
+/**
+* @module away.partition
+*/
 declare module away.partition {
+    /**
+    * @class away.partition.Partition3D
+    */
     class Partition3D {
         public _rootNode: partition.NodeBase;
         private _updatesMade;
@@ -1772,7 +1839,13 @@ declare module away.partition {
         private updateEntities();
     }
 }
+/**
+* @module away.partition
+*/
 declare module away.partition {
+    /**
+    * @class away.partition.EntityNode
+    */
     class EntityNode extends partition.NodeBase {
         private _entity;
         public _iUpdateQueueNext: EntityNode;
@@ -1790,13 +1863,25 @@ declare module away.partition {
         public isIntersectingRay(rayPosition: away.geom.Vector3D, rayDirection: away.geom.Vector3D): boolean;
     }
 }
+/**
+* @module away.partition
+*/
 declare module away.partition {
+    /**
+    * @class away.partition.CameraNode
+    */
     class CameraNode extends partition.EntityNode {
         constructor(camera: away.cameras.Camera3D);
         public acceptTraverser(traverser: away.traverse.PartitionTraverser): void;
     }
 }
+/**
+* @module away.partition
+*/
 declare module away.partition {
+    /**
+    * @class away.partition.LightNode
+    */
     class LightNode extends partition.EntityNode {
         private _light;
         constructor(light: away.lights.LightBase);
@@ -1804,7 +1889,13 @@ declare module away.partition {
         public acceptTraverser(traverser: away.traverse.PartitionTraverser): void;
     }
 }
+/**
+* @module away.partition
+*/
 declare module away.partition {
+    /**
+    * @class away.partition.DirectionalLightNode
+    */
     class DirectionalLightNode extends partition.EntityNode {
         private _light;
         constructor(light: away.lights.DirectionalLight);
@@ -1813,7 +1904,13 @@ declare module away.partition {
         public isCastingShadow(): boolean;
     }
 }
+/**
+* @module away.partition
+*/
 declare module away.partition {
+    /**
+    * @class away.partition.PointLightNode
+    */
     class PointLightNode extends partition.EntityNode {
         private _light;
         constructor(light: away.lights.PointLight);
@@ -1822,7 +1919,13 @@ declare module away.partition {
         public isCastingShadow(): boolean;
     }
 }
+/**
+* @module away.partition
+*/
 declare module away.partition {
+    /**
+    * @class away.partition.LightProbeNode
+    */
     class LightProbeNode extends partition.EntityNode {
         private _light;
         constructor(light: away.lights.LightProbe);
@@ -1830,9 +1933,14 @@ declare module away.partition {
         public acceptTraverser(traverser: away.traverse.PartitionTraverser): void;
     }
 }
+/**
+* @module away.partition
+*/
 declare module away.partition {
     /**
     * MeshNode is a space partitioning leaf node that contains a Mesh object.
+    *
+    * @class away.partition.MeshNode
     */
     class MeshNode extends partition.EntityNode {
         private _mesh;
@@ -1852,9 +1960,14 @@ declare module away.partition {
         public isCastingShadow(): boolean;
     }
 }
+/**
+* @module away.partition
+*/
 declare module away.partition {
     /**
     * SkyBoxNode is a space partitioning leaf node that contains a SkyBox object.
+    *
+    * @class away.partition.SkyBoxNode
     */
     class SkyBoxNode extends partition.EntityNode {
         private _skyBox;
@@ -1870,10 +1983,16 @@ declare module away.partition {
         public isInFrustum(planes: away.geom.Plane3D[], numPlanes: number): boolean;
     }
 }
+/**
+* @module away.partition
+*/
 declare module away.partition {
     /**
     * RenderableNode is a space partitioning leaf node that contains any Entity that is itself a IRenderable
     * object. This excludes Mesh (since the renderable objects are its SubMesh children).
+    *
+    *
+    * @class away.partition.RenderableNode
     */
     class RenderableNode extends partition.EntityNode {
         private _renderable;
@@ -1889,13 +2008,18 @@ declare module away.partition {
         public isCastingShadow(): boolean;
     }
 }
+/**
+* @module away.pick
+*/
 declare module away.pick {
     /**
     * Provides an interface for picking colliders that can be assigned to individual entities in a scene for specific picking behaviour.
     * Used with the <code>RaycastPicker</code> picking object.
     *
-    * @see away3d.entities.Entity#pickingCollider
-    * @see away3d.core.pick.RaycastPicker
+    * @see away.entities.Entity#pickingCollider
+    * @see away.pick.RaycastPicker
+    *
+    * @interface away.pick.IPickingCollider
     */
     interface IPickingCollider {
         /**
@@ -1908,9 +2032,14 @@ declare module away.pick {
         testSubMeshCollision(subMesh: away.base.SubMesh, pickingCollisionVO: pick.PickingCollisionVO, shortestCollisionDistance: number): boolean;
     }
 }
+/**
+* @module away.pick
+*/
 declare module away.pick {
     /**
     * An abstract base class for all picking collider classes. It should not be instantiated directly.
+    *
+    * @class away.pick.PickingColliderBase
     */
     class PickingColliderBase {
         public rayPosition: away.geom.Vector3D;
@@ -1918,7 +2047,7 @@ declare module away.pick {
         constructor();
         public _pPetCollisionNormal(indexData: number[], vertexData: number[], triangleIndex: number): away.geom.Vector3D;
         public _pGetCollisionUV(indexData: number[], uvData: number[], triangleIndex: number, v: number, w: number, u: number, uvOffset: number, uvStride: number): away.geom.Point;
-        public pGetMeshSubgeometryIndex(subGeometry: away.base.SubGeometry): number;
+        public pGetMeshSubGeometryIndex(subGeometry: away.base.SubGeometry): number;
         public pGetMeshSubMeshIndex(subMesh: away.base.SubMesh): number;
         /**
         * @inheritDoc
@@ -1926,12 +2055,17 @@ declare module away.pick {
         public setLocalRay(localPosition: away.geom.Vector3D, localDirection: away.geom.Vector3D): void;
     }
 }
+/**
+* @module away.pick
+*/
 declare module away.pick {
     /**
     * Value object for a picking collision returned by a picking collider. Created as unique objects on entities
     *
     * @see away3d.entities.Entity#pickingCollisionVO
     * @see away3d.core.pick.IPickingCollider
+    *
+    * @class away.pick.PickingCollisionVO
     */
     class PickingCollisionVO {
         /**
@@ -1996,12 +2130,17 @@ declare module away.pick {
         constructor(entity: away.entities.Entity);
     }
 }
+/**
+* @module away.pick
+*/
 declare module away.pick {
     /**
     * Pure AS3 picking collider for entity objects. Used with the <code>RaycastPicker</code> picking object.
     *
-    * @see away3d.entities.Entity#pickingCollider
-    * @see away3d.core.pick.RaycastPicker
+    * @see away.entities.Entity#pickingCollider
+    * @see away.pick.RaycastPicker
+    *
+    * @class away.pick.AS3PickingCollider
     */
     class AS3PickingCollider extends pick.PickingColliderBase implements pick.IPickingCollider {
         private _findClosestCollision;
@@ -2011,15 +2150,23 @@ declare module away.pick {
         * @param findClosestCollision Determines whether the picking collider searches for the closest collision along the ray. Defaults to false.
         */
         constructor(findClosestCollision?: boolean);
+        /**
+        * @inheritDoc
+        */
         public testSubMeshCollision(subMesh: away.base.SubMesh, pickingCollisionVO: pick.PickingCollisionVO, shortestCollisionDistance: number): boolean;
     }
 }
+/**
+* @module away.pick
+*/
 declare module away.pick {
     /**
     * Options for setting a picking collider for entity objects. Used with the <code>RaycastPicker</code> picking object.
     *
-    * @see away3d.entities.Entity#pickingCollider
-    * @see away3d.core.pick.RaycastPicker
+    * @see away.entities.Entity#pickingCollider
+    * @see away.pick.RaycastPicker
+    *
+    * @class away.pick.PickingColliderType
     */
     class PickingColliderType {
         /**
@@ -2029,20 +2176,25 @@ declare module away.pick {
         /**
         * Pure AS3 picking collider that returns the first encountered hit on an Entity. Useful for low poly meshes and applying to many mesh instances.
         *
-        * @see away3d.core.pick.AS3PickingCollider
+        * @see away.pick.AS3PickingCollider
         */
         static AS3_FIRST_ENCOUNTERED: pick.IPickingCollider;
         /**
         * Pure AS3 picking collider that returns the best (closest) hit on an Entity. Useful for low poly meshes and applying to many mesh instances.
         *
-        * @see away3d.core.pick.AS3PickingCollider
+        * @see away.pick.AS3PickingCollider
         */
         static AS3_BEST_HIT: pick.IPickingCollider;
     }
 }
+/**
+* @module away.pick
+*/
 declare module away.pick {
     /**
     * Provides an interface for picking objects that can pick 3d objects from a view or scene.
+    *
+    * @interface away.pick.IPicker
     */
     interface IPicker {
         /**
@@ -2071,7 +2223,21 @@ declare module away.pick {
         dispose();
     }
 }
+/**
+* @module away.pick
+*/
 declare module away.pick {
+    /**
+    * Picks a 3d object from a view or scene by performing a separate render pass on the scene around the area being picked using key color values,
+    * then reading back the color value of the pixel in the render representing the picking ray. Requires multiple passes and readbacks for retriving details
+    * on an entity that has its shaderPickingDetails property set to true.
+    *
+    * A read-back operation from any GPU is not a very efficient process, and the amount of processing used can vary significantly between different hardware.
+    *
+    * @see away.entities.Entity#shaderPickingDetails
+    *
+    * @class away.pick.ShaderPicker
+    */
     class ShaderPicker implements pick.IPicker {
         private _stageGLProxy;
         private _context;
@@ -2159,11 +2325,16 @@ declare module away.pick {
         public dispose(): void;
     }
 }
+/**
+* @module away.pick
+*/
 declare module away.pick {
     /**
     * Picks a 3d object from a view or scene by 3D raycast calculations.
     * Performs an initial coarse boundary calculation to return a subset of entities whose bounding volumes intersect with the specified ray,
     * then triggers an optional picking collider on individual entity objects to further determine the precise values of the picking ray collision.
+    *
+    * @class away.pick.RaycastPicker
     */
     class RaycastPicker implements pick.IPicker {
         private _findClosestCollision;
@@ -2198,11 +2369,16 @@ declare module away.pick {
         public dispose(): void;
     }
 }
+/**
+* @module away.pick
+*/
 declare module away.pick {
     /**
     * Options for the different 3D object picking approaches available in Away3D. Can be used for automatic mouse picking on the view.
     *
     * @see away3d.containers.View3D#mousePicker
+    *
+    * @class away.pick.PickingType
     */
     class PickingType {
         /**
@@ -2220,10 +2396,15 @@ declare module away.pick {
         static RAYCAST_BEST_HIT: pick.IPicker;
     }
 }
+/**
+* @module away.render
+*/
 declare module away.render {
     /**
     * RendererBase forms an abstract base class for classes that are used in the rendering pipeline to render geometry
     * to the back buffer or a texture.
+    *
+    * @class away.render.RendererBase
     */
     class RendererBase {
         public _pContext: away.displayGL.ContextGL;
@@ -2327,9 +2508,14 @@ declare module away.render {
         public iTextureRatioY : number;
     }
 }
+/**
+* @module away.render
+*/
 declare module away.render {
     /**
     * The DepthRenderer class renders 32-bit depth information encoded as RGBA
+    *
+    * @class away.render.DepthRenderer
     */
     class DepthRenderer extends render.RendererBase {
         private _activeMaterial;
@@ -2357,10 +2543,15 @@ declare module away.render {
         private drawRenderables(item, entityCollector);
     }
 }
+/**
+* @module away.render
+*/
 declare module away.render {
     /**
     * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the
     * materials assigned to them.
+    *
+    * @class away.render.DefaultRenderer
     */
     class DefaultRenderer extends render.RendererBase {
         private static RTT_PASSES;
@@ -2372,6 +2563,7 @@ declare module away.render {
         private _skyboxProjection;
         /**
         * Creates a new DefaultRenderer object.
+        *
         * @param antiAlias The amount of anti-aliasing to use.
         * @param renderMode The render mode to use.
         */
@@ -2398,7 +2590,13 @@ declare module away.render {
         public iDispose(): void;
     }
 }
+/**
+* @module away.render
+*/
 declare module away.render {
+    /**
+    * @class away.render.Filter3DRenderer
+    */
     class Filter3DRenderer {
         private _filters;
         private _tasks;
@@ -2419,12 +2617,24 @@ declare module away.render {
         public dispose(): void;
     }
 }
+/**
+* @module away.sort
+*/
 declare module away.sort {
+    /**
+    * @interface away.sort.IEntitySorter
+    */
     interface IEntitySorter {
         sort(collector: away.traverse.EntityCollector);
     }
 }
+/**
+* @module away.sort
+*/
 declare module away.sort {
+    /**
+    * @class away.sort.RenderableMergeSort
+    */
     class RenderableMergeSort implements sort.IEntitySorter {
         constructor();
         public sort(collector: away.traverse.EntityCollector): void;
@@ -8986,7 +9196,7 @@ declare module away.utils {
         */
         static constructSubGeometry(verts: number[], indices: number[], uvs: number[], normals: number[], tangents: number[], weights: number[], jointIndices: number[], triangleOffset: number): away.base.CompactSubGeometry;
         static interleaveBuffers(numVertices: number, vertices?: number[], normals?: number[], tangents?: number[], uvs?: number[], suvs?: number[]): number[];
-        static getMeshSubgeometryIndex(subGeometry: away.base.ISubGeometry): number;
+        static getMeshSubGeometryIndex(subGeometry: away.base.ISubGeometry): number;
         static getMeshSubMeshIndex(subMesh: away.base.SubMesh): number;
     }
 }

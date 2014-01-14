@@ -1,7 +1,14 @@
 ///<reference path="../../_definitions.ts"/>
+
+/**
+ * @module away.partition
+ */
 module away.partition
 {
-	export class DirectionalLightNode extends away.partition.EntityNode
+	/**
+	 * @class away.partition.DirectionalLightNode
+	 */
+	export class DirectionalLightNode extends EntityNode
 	{
 
 		private _light:away.lights.DirectionalLight;

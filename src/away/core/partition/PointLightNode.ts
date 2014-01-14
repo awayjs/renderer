@@ -1,8 +1,14 @@
 ///<reference path="../../_definitions.ts"/>
 
+/**
+ * @module away.partition
+ */
 module away.partition
 {
-	export class PointLightNode extends away.partition.EntityNode
+	/**
+	 * @class away.partition.PointLightNode
+	 */
+	export class PointLightNode extends EntityNode
 	{
 
 		private _light:away.lights.PointLight;
@@ -20,7 +26,7 @@ module away.partition
 
 		public acceptTraverser(traverser:away.traverse.PartitionTraverser)
 		{
-			if (traverser.enterNode(<away.partition.NodeBase> this)) {
+			if (traverser.enterNode(<NodeBase> this)) {
 				super.acceptTraverser(traverser);
 				traverser.applyPointLight(this._light);
 			}

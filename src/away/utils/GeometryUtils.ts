@@ -251,7 +251,7 @@ module away.utils
 		/*
 		 * returns the subGeometry index in its parent mesh subgeometries vector
 		 */
-		public static getMeshSubgeometryIndex(subGeometry:away.base.ISubGeometry):number
+		public static getMeshSubGeometryIndex(subGeometry:away.base.ISubGeometry):number
 		{
 			var index:number;
 			var subGeometries:Array<away.base.ISubGeometry> = subGeometry.parentGeometry.subGeometries;

@@ -1,8 +1,14 @@
 ///<reference path="../../_definitions.ts"/>
 
+/**
+ * @module away.sort
+ */
 module away.sort
 {
-	export class RenderableMergeSort implements away.sort.IEntitySorter
+	/**
+	 * @class away.sort.RenderableMergeSort
+	 */
+	export class RenderableMergeSort implements IEntitySorter
 	{
 		constructor()
 		{

@@ -1,7 +1,13 @@
 ///<reference path="../../_definitions.ts"/>
+
+/**
+ * @module away.partition
+ */
 module away.partition
 {
-
+	/**
+	 * @class away.partition.Partition3D
+	 */
 	export class Partition3D
 	{
 
@@ -9,9 +15,9 @@ module away.partition
 		private _updatesMade:Boolean = false;
 		private _updateQueue:EntityNode;
 
-		constructor(rootNode:away.partition.NodeBase)
+		constructor(rootNode:NodeBase)
 		{
-			this._rootNode = rootNode || <NodeBase> new away.partition.NullNode();
+			this._rootNode = rootNode || <NodeBase> new NullNode();
 		}
 
 		public get showDebugBounds():boolean
@@ -54,7 +60,7 @@ module away.partition
 
 		public iRemoveEntity(entity:away.entities.Entity)
 		{
-			var node:away.partition.EntityNode = entity.getEntityPartitionNode();
+			var node:EntityNode = entity.getEntityPartitionNode();
 			var t:EntityNode;
 
 			node.removeFromParent();
@@ -82,9 +88,9 @@ module away.partition
 		{
 
 
-			var node:away.partition.EntityNode = this._updateQueue;
-			var targetNode:away.partition.NodeBase;
-			var t:away.partition.EntityNode;
+			var node:EntityNode = this._updateQueue;
+			var targetNode:NodeBase;
+			var t:EntityNode;
 			this._updateQueue = null;
 			this._updatesMade = false;
 

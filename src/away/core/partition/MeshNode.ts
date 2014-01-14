@@ -1,14 +1,16 @@
 ///<reference path="../../_definitions.ts"/>
+
+/**
+ * @module away.partition
+ */
 module away.partition
 {
-	//import away3d.core.base.SubMesh;
-	//import away3d.core.traverse.PartitionTraverser;
-	//import away3d.entities.Mesh;
-
 	/**
 	 * MeshNode is a space partitioning leaf node that contains a Mesh object.
+	 *
+	 * @class away.partition.MeshNode
 	 */
-	export class MeshNode extends away.partition.EntityNode
+	export class MeshNode extends EntityNode
 	{
 		private _mesh:away.entities.Mesh;
 
