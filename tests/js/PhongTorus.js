@@ -1,4 +1,5 @@
 ///<reference path="../../build/Away3D.next.d.ts" />
+//<reference path="../../src/Away3D.ts" />
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -37,22 +38,22 @@ var scene;
             var imageLoader = e.target;
             this._image = imageLoader.image;
 
-            this._stage.stage3Ds[0].addEventListener(away.events.Event.CONTEXT3D_CREATE, this.onContext3DCreateHandler, this);
-            this._stage.stage3Ds[0].requestContext();
+            this._stage.stageGLs[0].addEventListener(away.events.Event.CONTEXTGL_CREATE, this.onContextGLCreateHandler, this);
+            this._stage.stageGLs[0].requestContext();
         };
 
-        PhongTorus.prototype.onContext3DCreateHandler = function (e) {
-            this._stage.stage3Ds[0].removeEventListener(away.events.Event.CONTEXT3D_CREATE, this.onContext3DCreateHandler, this);
+        PhongTorus.prototype.onContextGLCreateHandler = function (e) {
+            this._stage.stageGLs[0].removeEventListener(away.events.Event.CONTEXTGL_CREATE, this.onContextGLCreateHandler, this);
 
-            var stage3D = e.target;
-            this._context3D = stage3D.context3D;
+            var stageGL = e.target;
+            this._contextGL = stageGL.contextGL;
 
-            //this._texture = this._context3D.createTexture( 512, 512, away.display3D.Context3DTextureFormat.BGRA, true );
+            //this._texture = this._contextGL.createTexture( 512, 512, away.displayGL.ContextGLTextureFormat.BGRA, true );
             //this._texture.uploadFromHTMLImageElement( this._image );
-            //var bitmapData: away.display.BitmapData = new away.display.BitmapData( 512, 512, true, 0x02C3D4 );
+            //var bitmapData: away.display.BitmapData = new away.display.BitmapData( 512, 512, true, 0x02CGL4 );
             //this._texture.uploadFromBitmapData( bitmapData );
-            this._context3D.configureBackBuffer(800, 600, 0, true);
-            this._context3D.setColorMask(true, true, true, true);
+            this._contextGL.configureBackBuffer(800, 600, 0, true);
+            this._contextGL.setColorMask(true, true, true, true);
 
             var torus = new away.primitives.TorusGeometry(1, 0.5, 32, 16, false);
             torus.iValidate();
@@ -70,21 +71,21 @@ var scene;
             */
             var stride = 13;
             var numVertices = vertices.length / stride;
-            var vBuffer = this._context3D.createVertexBuffer(numVertices, stride);
+            var vBuffer = this._contextGL.createVertexBuffer(numVertices, stride);
             vBuffer.uploadFromArray(vertices, 0, numVertices);
 
             var numIndices = indices.length;
-            this._iBuffer = this._context3D.createIndexBuffer(numIndices);
+            this._iBuffer = this._contextGL.createIndexBuffer(numIndices);
             this._iBuffer.uploadFromArray(indices, 0, numIndices);
 
-            this._program = this._context3D.createProgram();
+            this._program = this._contextGL.createProgram();
 
             var vProgram = "attribute vec3 aVertexPosition;\n" + "attribute vec2 aTextureCoord;\n" + "attribute vec3 aVertexNormal;\n" + "uniform mat4 uPMatrix;\n" + "uniform mat4 uMVMatrix;\n" + "uniform mat4 uNormalMatrix;\n" + "varying vec3 vNormalInterp;\n" + "varying vec3 vVertPos;\n" + "void main(){\n" + "	gl_Position = uPMatrix * uMVMatrix * vec4( aVertexPosition, 1.0 );\n" + "	vec4 vertPos4 = uMVMatrix * vec4( aVertexPosition, 1.0 );\n" + "	vVertPos = vec3( vertPos4 ) / vertPos4.w;\n" + "	vNormalInterp = vec3( uNormalMatrix * vec4( aVertexNormal, 0.0 ) );\n" + "}\n";
 
             var fProgram = "precision mediump float;\n" + "varying vec3 vNormalInterp;\n" + "varying vec3 vVertPos;\n" + "const vec3 lightPos = vec3( 1.0,1.0,1.0 );\n" + "const vec3 diffuseColor = vec3( 0.3, 0.6, 0.9 );\n" + "const vec3 specColor = vec3( 1.0, 1.0, 1.0 );\n" + "void main() {\n" + "	vec3 normal = normalize( vNormalInterp );\n" + "	vec3 lightDir = normalize( lightPos - vVertPos );\n" + "	float lambertian = max( dot( lightDir,normal ), 0.0 );\n" + "	float specular = 0.0;\n" + "	if( lambertian > 0.0 ) {\n" + "		vec3 reflectDir = reflect( -lightDir, normal );\n" + "		vec3 viewDir = normalize( -vVertPos );\n" + "		float specAngle = max( dot( reflectDir, viewDir ), 0.0 );\n" + "		specular = pow( specAngle, 4.0 );\n" + "		specular *= lambertian;\n" + "	}\n" + "	gl_FragColor = vec4( lambertian * diffuseColor + specular * specColor, 1.0 );\n" + "}\n";
 
             this._program.upload(vProgram, fProgram);
-            this._context3D.setProgram(this._program);
+            this._contextGL.setProgram(this._program);
 
             this._pMatrix = new away.utils.PerspectiveMatrix3D();
             this._pMatrix.perspectiveFieldOfViewLH(45, 800 / 600, 0.1, 1000);
@@ -96,8 +97,8 @@ var scene;
             this._normalMatrix.invert();
             this._normalMatrix.transpose();
 
-            this._context3D.setGLSLVertexBufferAt("aVertexPosition", vBuffer, 0, away.display3D.Context3DVertexBufferFormat.FLOAT_3);
-            this._context3D.setGLSLVertexBufferAt("aVertexNormal", vBuffer, 3, away.display3D.Context3DVertexBufferFormat.FLOAT_3);
+            this._contextGL.setGLSLVertexBufferAt("aVertexPosition", vBuffer, 0, away.displayGL.ContextGLVertexBufferFormat.FLOAT_3);
+            this._contextGL.setGLSLVertexBufferAt("aVertexNormal", vBuffer, 3, away.displayGL.ContextGLVertexBufferFormat.FLOAT_3);
 
             this._requestAnimationFrameTimer = new away.utils.RequestAnimationFrame(this.tick, this);
             this._requestAnimationFrameTimer.start();
@@ -105,14 +106,14 @@ var scene;
 
         PhongTorus.prototype.tick = function (dt) {
             this._mvMatrix.appendRotation(dt * 0.05, new away.geom.Vector3D(0, 1, 0));
-            this._context3D.setProgram(this._program);
-            this._context3D.setGLSLProgramConstantsFromMatrix("uNormalMatrix", this._normalMatrix, true);
-            this._context3D.setGLSLProgramConstantsFromMatrix("uMVMatrix", this._mvMatrix, true);
-            this._context3D.setGLSLProgramConstantsFromMatrix("uPMatrix", this._pMatrix, true);
+            this._contextGL.setProgram(this._program);
+            this._contextGL.setGLSLProgramConstantsFromMatrix("uNormalMatrix", this._normalMatrix, true);
+            this._contextGL.setGLSLProgramConstantsFromMatrix("uMVMatrix", this._mvMatrix, true);
+            this._contextGL.setGLSLProgramConstantsFromMatrix("uPMatrix", this._pMatrix, true);
 
-            this._context3D.clear(0.16, 0.16, 0.16, 1);
-            this._context3D.drawTriangles(this._iBuffer, 0, this._iBuffer.numIndices / 3);
-            this._context3D.present();
+            this._contextGL.clear(0.16, 0.16, 0.16, 1);
+            this._contextGL.drawTriangles(this._iBuffer, 0, this._iBuffer.numIndices / 3);
+            this._contextGL.present();
         };
         return PhongTorus;
     })(away.events.EventDispatcher);

@@ -17,7 +17,7 @@ module away.materials
 		 * @param envMap The environment map containing the reflected scene.
 		 * @param alpha The reflectivity of the surface.
 		 */
-			constructor(envMap:away.textures.CubeTextureBase, alpha:number = 1)
+		constructor(envMap:away.textures.CubeTextureBase, alpha:number = 1)
 		{
 			super();
 			this._cubeTexture = envMap;
@@ -96,14 +96,14 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:away.materials.MethodVO, stage3DProxy:away.managers.Stage3DProxy):void
+		public iActivate(vo:away.materials.MethodVO, stageGLProxy:away.managers.StageGLProxy):void
 		{
-			var context:away.display3D.Context3D = stage3DProxy._iContext3D;
+			var context:away.displayGL.ContextGL = stageGLProxy._iContextGL;
 			vo.fragmentData[vo.fragmentConstantsIndex] = this._alpha;
 
-			context.setTextureAt(vo.texturesIndex, this._cubeTexture.getTextureForStage3D(stage3DProxy));
+			context.setTextureAt(vo.texturesIndex, this._cubeTexture.getTextureForStageGL(stageGLProxy));
 			if (this._mask) {
-				context.setTextureAt(vo.texturesIndex + 1, this._mask.getTextureForStage3D(stage3DProxy));
+				context.setTextureAt(vo.texturesIndex + 1, this._mask.getTextureForStageGL(stageGLProxy));
 			}
 		}
 

@@ -1,7 +1,5 @@
-//<reference path="../../../src/Away3D.ts" />
 ///<reference path="../../../build/Away3D.next.d.ts" />
-
-// tests.display.BitmapDataReflectionTest
+//<reference path="../../../src/Away3D.ts" />
 
 module tests.display {
 
@@ -18,9 +16,9 @@ module tests.display {
 			this.view   = new away.containers.View3D();
 			this.raf    = new away.utils.RequestAnimationFrame( this.render , this );
 
-			away.library.AssetLibrary.enableParser( away.loaders.ImageParser );
+			away.library.AssetLibrary.enableParser( away.parsers.ImageParser );
 
-			var token : away.loaders.AssetLoaderToken = away.library.AssetLibrary.load( new away.net.URLRequest('assets/dots.png'));
+			var token : away.net.AssetLoaderToken = away.library.AssetLibrary.load( new away.net.URLRequest('assets/dots.png'));
 				token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE , this.onResourceComplete , this );
 
 			window.onresize = () => this.resize();
@@ -31,7 +29,7 @@ module tests.display {
 		private onResourceComplete( e : away.events.LoaderEvent) : void
 		{
 			//var loader : AssetLoader = e.target as AssetLoader;
-			var loader : away.loaders.AssetLoader   = <away.loaders.AssetLoader> e.target;
+			var loader : away.net.AssetLoader   = <away.net.AssetLoader> e.target;
 			var l       : number                    = loader.baseDependency.assets.length;
 
 			for ( var c : number = 0 ; c < l ; c ++ )

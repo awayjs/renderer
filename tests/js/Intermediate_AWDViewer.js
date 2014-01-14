@@ -1,30 +1,22 @@
 ///<reference path="../../../build/Away3D.next.d.ts" />
+//<reference path="../../../src/Away3D.ts" />
 /*
-
 AWD file loading example in Away3d
-
 Demonstrates:
-
 How to use the Loader3D object to load an embedded internal awd model.
-
 Code by Rob Bateman
 rob@infiniteturtles.co.uk
 http://www.infiniteturtles.co.uk
-
 This code is distributed under the MIT License
-
 Copyright (c) The Away Foundation http://www.theawayfoundation.org
-
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the “Software”), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
-
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
-
 THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -32,7 +24,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
-
 */
 var examples;
 (function (examples) {
@@ -47,8 +38,8 @@ var examples;
     var Vector3D = away.geom.Vector3D;
     var AssetLibrary = away.library.AssetLibrary;
     var AssetType = away.library.AssetType;
-    var Loader3D = away.loaders.Loader3D;
-    var AWD2Parser = away.loaders.AWDParser;
+    var Loader3D = away.containers.Loader3D;
+    var AWD2Parser = away.parsers.AWDParser;
     var URLRequest = away.net.URLRequest;
     var Keyboard = away.ui.Keyboard;
     var RequestAnimationFrame = away.utils.RequestAnimationFrame;
@@ -239,7 +230,7 @@ var examples;
 
             if (this._cameraController.distance < 100)
                 this._cameraController.distance = 100;
-else if (this._cameraController.distance > 2000)
+            else if (this._cameraController.distance > 2000)
                 this._cameraController.distance = 2000;
         };
 

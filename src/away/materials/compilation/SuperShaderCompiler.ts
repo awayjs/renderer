@@ -17,7 +17,7 @@ module away.materials
 		 * Creates a new SuperShaderCompiler object.
 		 * @param profile The compatibility profile used by the renderer.
 		 */
-			constructor(profile:string)
+		constructor(profile:string)
 		{
 			super(profile);
 		}

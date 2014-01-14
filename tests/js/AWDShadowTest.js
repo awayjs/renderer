@@ -1,6 +1,7 @@
+///<reference path="../../../build/Away3D.next.d.ts" />
+//<reference path="../../../src/Away3D.ts" />
 var demos;
 (function (demos) {
-    ///<reference path="../../../build/Away3D.next.d.ts" />
     (function (parsers) {
         var AWDShadowTest = (function () {
             function AWDShadowTest() {
@@ -10,7 +11,7 @@ var demos;
                 away.Debug.LOG_PI_ERRORS = true;
                 away.Debug.THROW_ERRORS = false;
 
-                away.library.AssetLibrary.enableParser(away.loaders.AWDParser);
+                away.library.AssetLibrary.enableParser(away.parsers.AWDParser);
 
                 this._token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/awd/ShadowTest.awd'));
 
@@ -130,7 +131,7 @@ var demos;
 
                 if (this._cameraController.distance < 100)
                     this._cameraController.distance = 100;
-else if (this._cameraController.distance > 2000)
+                else if (this._cameraController.distance > 2000)
                     this._cameraController.distance = 2000;
             };
             return AWDShadowTest;

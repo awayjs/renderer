@@ -15,7 +15,7 @@ module away.partition
 		 * Creates a new RenderableNode object.
 		 * @param mesh The mesh to be contained in the node.
 		 */
-			constructor(renderable:away.base.IRenderable)
+		constructor(renderable:away.base.IRenderable)
 		{
 
 			var e:any = renderable;

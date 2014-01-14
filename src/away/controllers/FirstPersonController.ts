@@ -149,7 +149,7 @@ module away.controllers
 		/**
 		 * Creates a new <code>HoverController</code> object.
 		 */
-			constructor(targetObject:away.entities.Entity = null, panAngle:number = 0, tiltAngle:number = 90, minTiltAngle:number = -90, maxTiltAngle:number = 90, steps:number = 8, wrapPanAngle:boolean = false)
+		constructor(targetObject:away.entities.Entity = null, panAngle:number = 0, tiltAngle:number = 90, minTiltAngle:number = -90, maxTiltAngle:number = 90, steps:number = 8, wrapPanAngle:boolean = false)
 		{
 			super(targetObject);
 
@@ -219,8 +219,8 @@ module away.controllers
 			if (this._walkIncrement) {
 				if (this.fly)
 					this.targetObject.moveForward(this._walkIncrement); else {
-					this.targetObject.x += this._walkIncrement*Math.sin(this._panAngle*away.math.MathConsts.DEGREES_TO_RADIANS);
-					this.targetObject.z += this._walkIncrement*Math.cos(this._panAngle*away.math.MathConsts.DEGREES_TO_RADIANS);
+					this.targetObject.x += this._walkIncrement*Math.sin(this._panAngle*away.geom.MathConsts.DEGREES_TO_RADIANS);
+					this.targetObject.z += this._walkIncrement*Math.cos(this._panAngle*away.geom.MathConsts.DEGREES_TO_RADIANS);
 				}
 				this._walkIncrement = 0;
 			}

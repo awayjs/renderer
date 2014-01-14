@@ -2,7 +2,7 @@
 
 module away.materials
 {
-	import Stage3DProxy = away.managers.Stage3DProxy;
+	import StageGLProxy = away.managers.StageGLProxy;
 	/**
 	 * FogMethod provides a method to add distance-based fog to a material.
 	 */
@@ -21,7 +21,7 @@ module away.materials
 		 * @param maxDistance The distance at which the fog is densest.
 		 * @param fogColor The colour of the fog.
 		 */
-			constructor(minDistance:number, maxDistance:number, fogColor:number /*uint*/ = 0x808080)
+		constructor(minDistance:number, maxDistance:number, fogColor:number /*uint*/ = 0x808080)
 		{
 			super();
 			this.minDistance = minDistance;
@@ -94,7 +94,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stage3DProxy:Stage3DProxy):void
+		public iActivate(vo:MethodVO, stageGLProxy:StageGLProxy):void
 		{
 			var data:Array<number> = vo.fragmentData;
 			var index:number /*int*/ = vo.fragmentConstantsIndex;

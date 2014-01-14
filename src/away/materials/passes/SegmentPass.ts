@@ -20,7 +20,7 @@ module away.materials
 		 *
 		 * @param thickness the thickness of the segments to be drawn.
 		 */
-			constructor(thickness:number)
+		constructor(thickness:number)
 		{
 
 			super();
@@ -110,9 +110,9 @@ module away.materials
 		 * @inheritDoc
 		 * todo: keep maps in dictionary per renderable
 		 */
-		public iRender(renderable:away.base.IRenderable, stage3DProxy:away.managers.Stage3DProxy, camera:away.cameras.Camera3D, viewProjection:away.geom.Matrix3D)
+		public iRender(renderable:away.base.IRenderable, stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D, viewProjection:away.geom.Matrix3D)
 		{
-			var context:away.display3D.Context3D = stage3DProxy._iContext3D;
+			var context:away.displayGL.ContextGL = stageGLProxy._iContextGL;
 			this._calcMatrix.copyFrom(renderable.sourceEntity.sceneTransform);
 			this._calcMatrix.append(camera.inverseSceneTransform);
 
@@ -122,9 +122,9 @@ module away.materials
 
 			if (ss.hasData) {
 				for (var i:number = 0; i < subSetCount; ++i) {
-					renderable.activateVertexBuffer(i, stage3DProxy);
-					context.setProgramConstantsFromMatrix(away.display3D.Context3DProgramType.VERTEX, 8, this._calcMatrix, true);
-					context.drawTriangles(renderable.getIndexBuffer(stage3DProxy), 0, renderable.numTriangles);
+					renderable.activateVertexBuffer(i, stageGLProxy);
+					context.setProgramConstantsFromMatrix(away.displayGL.ContextGLProgramType.VERTEX, 8, this._calcMatrix, true);
+					context.drawTriangles(renderable.getIndexBuffer(stageGLProxy), 0, renderable.numTriangles);
 				}
 			}
 		}
@@ -132,32 +132,32 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(stage3DProxy:away.managers.Stage3DProxy, camera:away.cameras.Camera3D)
+		public iActivate(stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D)
 		{
-			var context:away.display3D.Context3D = stage3DProxy._iContext3D;
-			super.iActivate(stage3DProxy, camera);
+			var context:away.displayGL.ContextGL = stageGLProxy._iContextGL;
+			super.iActivate(stageGLProxy, camera);
 
-			if (stage3DProxy.scissorRect)
-				this._constants[0] = this._thickness/Math.min(stage3DProxy.scissorRect.width, stage3DProxy.scissorRect.height); else
-				this._constants[0] = this._thickness/Math.min(stage3DProxy.width, stage3DProxy.height);
+			if (stageGLProxy.scissorRect)
+				this._constants[0] = this._thickness/Math.min(stageGLProxy.scissorRect.width, stageGLProxy.scissorRect.height); else
+				this._constants[0] = this._thickness/Math.min(stageGLProxy.width, stageGLProxy.height);
 
 			// value to convert distance from camera to model length per pixel width
 			this._constants[2] = camera.lens.near;
 
-			context.setProgramConstantsFromArray(away.display3D.Context3DProgramType.VERTEX, 5, SegmentPass.pONE_VECTOR, 1);
-			context.setProgramConstantsFromArray(away.display3D.Context3DProgramType.VERTEX, 6, SegmentPass.pFRONT_VECTOR, 1);
-			context.setProgramConstantsFromArray(away.display3D.Context3DProgramType.VERTEX, 7, this._constants, 1);
+			context.setProgramConstantsFromArray(away.displayGL.ContextGLProgramType.VERTEX, 5, SegmentPass.pONE_VECTOR, 1);
+			context.setProgramConstantsFromArray(away.displayGL.ContextGLProgramType.VERTEX, 6, SegmentPass.pFRONT_VECTOR, 1);
+			context.setProgramConstantsFromArray(away.displayGL.ContextGLProgramType.VERTEX, 7, this._constants, 1);
 
 			// projection matrix
-			context.setProgramConstantsFromMatrix(away.display3D.Context3DProgramType.VERTEX, 0, camera.lens.matrix, true);
+			context.setProgramConstantsFromMatrix(away.displayGL.ContextGLProgramType.VERTEX, 0, camera.lens.matrix, true);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public pDeactivate(stage3DProxy:away.managers.Stage3DProxy)
+		public pDeactivate(stageGLProxy:away.managers.StageGLProxy)
 		{
-			var context:away.display3D.Context3D = stage3DProxy._iContext3D;
+			var context:away.displayGL.ContextGL = stageGLProxy._iContextGL;
 			context.setVertexBufferAt(0, null);
 			context.setVertexBufferAt(1, null);
 			context.setVertexBufferAt(2, null);

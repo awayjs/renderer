@@ -1,7 +1,5 @@
-///<reference path="../../src/away/library/utils/AssetLibraryIterator.ts" />
-///<reference path="../src/away/display/BitmapData.ts" />
-///<reference path="../src/def/webgl.d.ts" />
-///<reference path="../src/def/js.d.ts" />
+///<reference path="../../build/Away3D.next.d.ts" />
+//<reference path="../../src/Away3D.ts" />
 
 //------------------------------------------------------------------------------------------------
 // Web / PHP Storm arguments string

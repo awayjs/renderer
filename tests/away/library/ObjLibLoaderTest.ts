@@ -8,7 +8,7 @@ module tests.library {
 
         private height : number = 0;
 
-        private token   : away.loaders.AssetLoaderToken;
+        private token   : away.net.AssetLoaderToken;
         private view    : away.containers.View3D;
         private raf     : away.utils.RequestAnimationFrame;
         private mesh    : away.entities.Mesh;
@@ -23,7 +23,7 @@ module tests.library {
             this.view                  = new away.containers.View3D( );
             this.raf                    = new away.utils.RequestAnimationFrame( this.render , this );
 
-            away.library.AssetLibrary.enableParser( away.loaders.OBJParser ) ;
+            away.library.AssetLibrary.enableParser( away.parsers.OBJParser ) ;
 
             this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/t800.obj') );
             this.token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE , this.onResourceComplete , this );
@@ -81,7 +81,7 @@ module tests.library {
         public onResourceComplete ( e : away.events.LoaderEvent )
         {
 
-            var loader : away.loaders.AssetLoader = <away.loaders.AssetLoader> e.target;
+            var loader : away.net.AssetLoader = <away.net.AssetLoader> e.target;
 
             console.log( '------------------------------------------------------------------------------');
             console.log( 'away.events.LoaderEvent.RESOURCE_COMPLETE' , e  );

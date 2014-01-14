@@ -20,7 +20,7 @@ module away.primitives
 		 * @param color The colour of the wireframe lines
 		 * @param thickness The thickness of the wireframe lines
 		 */
-			constructor(radius:number = 50, segmentsW:number = 16, segmentsH:number = 12, color:number = 0xFFFFFF, thickness:number = 1)
+		constructor(radius:number = 50, segmentsW:number = 16, segmentsH:number = 12, color:number = 0xFFFFFF, thickness:number = 1)
 		{
 			super(color, thickness);
 

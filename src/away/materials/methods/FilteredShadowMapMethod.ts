@@ -13,7 +13,7 @@ module away.materials
 		 *
 		 * @param castingLight The light casting the shadow
 		 */
-			constructor(castingLight:away.lights.DirectionalLight)
+		constructor(castingLight:away.lights.DirectionalLight)
 		{
 			super(castingLight);
 		}
@@ -85,7 +85,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivateForCascade(vo:MethodVO, stage3DProxy:away.managers.Stage3DProxy):void
+		public iActivateForCascade(vo:MethodVO, stageGLProxy:away.managers.StageGLProxy):void
 		{
 			var size:number /*int*/ = this.castingLight.shadowMapper.depthMapSize;
 			var index:number /*int*/ = vo.secondaryFragmentConstantsIndex;

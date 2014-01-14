@@ -91,7 +91,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivateForDepth(stage3DProxy:away.managers.Stage3DProxy, camera:away.cameras.Camera3D, distanceBased:boolean = false)
+		public iActivateForDepth(stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D, distanceBased:boolean = false)
 		{
 			if (distanceBased) {
 				this._pDistancePass.alphaMask = this._diffuseMethod.texture;
@@ -100,7 +100,7 @@ module away.materials
 				this._pDepthPass.alphaMask = this._diffuseMethod.texture;
 			}
 
-			super.iActivateForDepth(stage3DProxy, camera, distanceBased);
+			super.iActivateForDepth(stageGLProxy, camera, distanceBased);
 		}
 
 		/**
@@ -427,7 +427,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iUpdateMaterial(context:away.display3D.Context3D)
+		public iUpdateMaterial(context:away.displayGL.ContextGL)
 		{
 			var passesInvalid:boolean;
 
@@ -519,21 +519,21 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivatePass(index:number, stage3DProxy:away.managers.Stage3DProxy, camera:away.cameras.Camera3D)
+		public iActivatePass(index:number, stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D)
 		{
 			if (index == 0) {
-				stage3DProxy._iContext3D.setBlendFactors(away.display3D.Context3DBlendFactor.ONE, away.display3D.Context3DBlendFactor.ZERO);
+				stageGLProxy._iContextGL.setBlendFactors(away.displayGL.ContextGLBlendFactor.ONE, away.displayGL.ContextGLBlendFactor.ZERO);
 			}
-			super.iActivatePass(index, stage3DProxy, camera);
+			super.iActivatePass(index, stageGLProxy, camera);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iDeactivate(stage3DProxy:away.managers.Stage3DProxy)
+		public iDeactivate(stageGLProxy:away.managers.StageGLProxy)
 		{
-			super.iDeactivate(stage3DProxy);
-			stage3DProxy._iContext3D.setBlendFactors(away.display3D.Context3DBlendFactor.ONE, away.display3D.Context3DBlendFactor.ZERO);
+			super.iDeactivate(stageGLProxy);
+			stageGLProxy._iContextGL.setBlendFactors(away.displayGL.ContextGLBlendFactor.ONE, away.displayGL.ContextGLBlendFactor.ZERO);
 		}
 
 		/**
@@ -603,7 +603,7 @@ module away.materials
 				for (var i:number = firstAdditiveIndex; i < this._nonCasterLightPasses.length; ++i) {
 					this._nonCasterLightPasses[i].forceSeparateMVP = forceSeparateMVP;
 					this._nonCasterLightPasses[i].setBlendMode(away.display.BlendMode.ADD);
-					this._nonCasterLightPasses[i].depthCompareMode = away.display3D.Context3DCompareMode.LESS_EQUAL;
+					this._nonCasterLightPasses[i].depthCompareMode = away.displayGL.ContextGLCompareMode.LESS_EQUAL;
 				}
 			}
 
@@ -612,7 +612,7 @@ module away.materials
 				// there are light passes, so this should be blended in
 				if (this._pEffectsPass) {
 					this._pEffectsPass.iIgnoreLights = true;
-					this._pEffectsPass.depthCompareMode = away.display3D.Context3DCompareMode.LESS_EQUAL;
+					this._pEffectsPass.depthCompareMode = away.displayGL.ContextGLCompareMode.LESS_EQUAL;
 					this._pEffectsPass.setBlendMode(away.display.BlendMode.LAYER);
 					this._pEffectsPass.forceSeparateMVP = forceSeparateMVP;
 				}

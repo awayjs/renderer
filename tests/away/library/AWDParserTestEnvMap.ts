@@ -6,7 +6,7 @@ module tests.library {
     {
 
         private _view       : away.containers.View3D;
-        private token       : away.loaders.AssetLoaderToken;
+        private token       : away.net.AssetLoaderToken;
         private _timer      : away.utils.RequestAnimationFrame;
         private _torus      : away.entities.Mesh;
 
@@ -16,7 +16,7 @@ module tests.library {
             away.Debug.LOG_PI_ERRORS = true;
             away.Debug.THROW_ERRORS = false;
 
-            away.library.AssetLibrary.enableParser( away.loaders.AWDParser ) ;
+            away.library.AssetLibrary.enableParser( away.parsers.AWDParser ) ;
 
             this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/awd/EnvMapTest.awd') );
             this.token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE , this.onResourceComplete , this );
@@ -67,7 +67,7 @@ module tests.library {
             console.log( 'away.events.LoaderEvent.RESOURCE_COMPLETE' , e  );
             console.log( '------------------------------------------------------------------------------');
 
-            var loader			: away.loaders.AssetLoader   	= <away.loaders.AssetLoader> e.target;
+            var loader			: away.net.AssetLoader   	= <away.net.AssetLoader> e.target;
             var numAssets		: number 						= loader.baseDependency.assets.length;
 
             for( var i : number = 0; i < numAssets; ++i )

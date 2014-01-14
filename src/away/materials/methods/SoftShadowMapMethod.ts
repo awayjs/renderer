@@ -17,7 +17,7 @@ module away.materials
 		 * @param castingLight The light casting the shadows
 		 * @param numSamples The amount of samples to take for dithering. Minimum 1, maximum 32.
 		 */
-			constructor(castingLight:away.lights.DirectionalLight, numSamples:number /*int*/ = 5, range:number = 1)
+		constructor(castingLight:away.lights.DirectionalLight, numSamples:number /*int*/ = 5, range:number = 1)
 		{
 			super(castingLight);
 
@@ -41,7 +41,7 @@ module away.materials
 				this._numSamples = 1; else if (this._numSamples > 32)
 				this._numSamples = 32;
 
-			this._offsets = away.math.PoissonLookup.getDistribution(this._numSamples);
+			this._offsets = away.geom.PoissonLookup.getDistribution(this._numSamples);
 			this.iInvalidateShaderProgram();
 		}
 
@@ -72,9 +72,9 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stage3DProxy:away.managers.Stage3DProxy):void
+		public iActivate(vo:MethodVO, stageGLProxy:away.managers.StageGLProxy):void
 		{
-			super.iActivate(vo, stage3DProxy);
+			super.iActivate(vo, stageGLProxy);
 			var texRange:number = .5*this._range/this._pCastingLight.shadowMapper.depthMapSize;
 			var data:Array<number> = vo.fragmentData;
 			var index:number /*uint*/ = vo.fragmentConstantsIndex + 10;
@@ -120,9 +120,9 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivateForCascade(vo:MethodVO, stage3DProxy:away.managers.Stage3DProxy):void
+		public iActivateForCascade(vo:MethodVO, stageGLProxy:away.managers.StageGLProxy):void
 		{
-			super.iActivate(vo, stage3DProxy);
+			super.iActivate(vo, stageGLProxy);
 			var texRange:number = this._range/this._pCastingLight.shadowMapper.depthMapSize;
 			var data:Array<number> = vo.fragmentData;
 			var index:number /*uint*/ = vo.secondaryFragmentConstantsIndex;

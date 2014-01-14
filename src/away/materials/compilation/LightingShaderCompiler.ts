@@ -22,7 +22,7 @@ module away.materials
 		 * Create a new LightingShaderCompiler object.
 		 * @param profile The compatibility profile of the renderer.
 		 */
-			constructor(profile:string)
+		constructor(profile:string)
 		{
 			super(profile);
 		}

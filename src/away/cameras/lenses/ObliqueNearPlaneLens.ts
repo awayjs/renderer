@@ -6,9 +6,9 @@ module away.cameras
 	{
 
 		private _baseLens:away.cameras.LensBase;
-		private _plane:away.math.Plane3D;
+		private _plane:away.geom.Plane3D;
 
-		constructor(baseLens:away.cameras.LensBase, plane:away.math.Plane3D)
+		constructor(baseLens:away.cameras.LensBase, plane:away.geom.Plane3D)
 		{
 			super();
 			this.baseLens = baseLens;
@@ -57,12 +57,12 @@ module away.cameras
 			this._baseLens.iAspectRatio = value;
 		}
 
-		public get plane():away.math.Plane3D
+		public get plane():away.geom.Plane3D
 		{
 			return this._plane;
 		}
 
-		public set plane(value:away.math.Plane3D)
+		public set plane(value:away.geom.Plane3D)
 		{
 			this._plane = value;
 			this.pInvalidateMatrix();

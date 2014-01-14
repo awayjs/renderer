@@ -8,8 +8,8 @@ module away.render
 	 */
 	export class RendererBase
 	{
-		public _pContext:away.display3D.Context3D;
-		public _pStage3DProxy:away.managers.Stage3DProxy;
+		public _pContext:away.displayGL.ContextGL;
+		public _pStageGLProxy:away.managers.StageGLProxy;
 
 		private _backgroundR:number = 0;
 		private _backgroundG:number = 0;
@@ -17,7 +17,7 @@ module away.render
 		private _backgroundAlpha:number = 1;
 		private _shareContext:boolean = false;
 
-		public _pRenderTarget:away.display3D.TextureBase;
+		public _pRenderTarget:away.displayGL.TextureBase;
 		public _pRenderTargetSurface:number;
 
 		// only used by renderers that need to render geometry to textures
@@ -44,7 +44,7 @@ module away.render
 		/**
 		 * Creates a new RendererBase object.
 		 */
-			constructor(renderToTexture:boolean = false)
+		constructor(renderToTexture:boolean = false)
 		{
 			this._pRenderableSorter = new away.sort.RenderableMergeSort();
 			this._renderToTexture = renderToTexture;
@@ -146,26 +146,26 @@ module away.render
 		}
 
 		/**
-		 * The Stage3DProxy that will provide the Context3D used for rendering.
+		 * The StageGLProxy that will provide the ContextGL used for rendering.
 		 *
 		 * @private
 		 */
-		public get iStage3DProxy():away.managers.Stage3DProxy
+		public get iStageGLProxy():away.managers.StageGLProxy
 		{
-			return this._pStage3DProxy;
+			return this._pStageGLProxy;
 		}
 
-		public set iStage3DProxy(value:away.managers.Stage3DProxy)
+		public set iStageGLProxy(value:away.managers.StageGLProxy)
 		{
 
-			this.iSetStage3DProxy(value);
+			this.iSetStageGLProxy(value);
 
 		}
 
-		public iSetStage3DProxy(value:away.managers.Stage3DProxy)
+		public iSetStageGLProxy(value:away.managers.StageGLProxy)
 		{
 
-			if (value == this._pStage3DProxy) {
+			if (value == this._pStageGLProxy) {
 
 				return;
 
@@ -174,37 +174,37 @@ module away.render
 
 			if (!value) {
 
-				if (this._pStage3DProxy) {
+				if (this._pStageGLProxy) {
 
-					this._pStage3DProxy.removeEventListener(away.events.Stage3DEvent.CONTEXT3D_CREATED, this.onContextUpdate, this);
-					this._pStage3DProxy.removeEventListener(away.events.Stage3DEvent.CONTEXT3D_RECREATED, this.onContextUpdate, this);
+					this._pStageGLProxy.removeEventListener(away.events.StageGLEvent.CONTEXTGL_CREATED, this.onContextUpdate, this);
+					this._pStageGLProxy.removeEventListener(away.events.StageGLEvent.CONTEXTGL_RECREATED, this.onContextUpdate, this);
 
 				}
 
-				this._pStage3DProxy = null;
+				this._pStageGLProxy = null;
 				this._pContext = null;
 
 				return;
 			}
 
-			//else if (_pStage3DProxy) throw new Error("A Stage3D instance was already assigned!");
+			//else if (_pStageGLProxy) throw new Error("A StageGL instance was already assigned!");
 
-			this._pStage3DProxy = value;
-			this._pStage3DProxy.addEventListener(away.events.Stage3DEvent.CONTEXT3D_CREATED, this.onContextUpdate, this);
-			this._pStage3DProxy.addEventListener(away.events.Stage3DEvent.CONTEXT3D_RECREATED, this.onContextUpdate, this);
+			this._pStageGLProxy = value;
+			this._pStageGLProxy.addEventListener(away.events.StageGLEvent.CONTEXTGL_CREATED, this.onContextUpdate, this);
+			this._pStageGLProxy.addEventListener(away.events.StageGLEvent.CONTEXTGL_RECREATED, this.onContextUpdate, this);
 
 			/*
 			 if (_backgroundImageRenderer)
-			 _backgroundImageRenderer.stage3DProxy = value;
+			 _backgroundImageRenderer.stageGLProxy = value;
 			 */
-			if (value.context3D)
-				this._pContext = value.context3D;
+			if (value.contextGL)
+				this._pContext = value.contextGL;
 
 		}
 
 		/**
-		 * Defers control of Context3D clear() and present() calls to Stage3DProxy, enabling multiple Stage3D frameworks
-		 * to share the same Context3D object.
+		 * Defers control of ContextGL clear() and present() calls to StageGLProxy, enabling multiple StageGL frameworks
+		 * to share the same ContextGL object.
 		 *
 		 * @private
 		 */
@@ -225,7 +225,7 @@ module away.render
 		 */
 		public iDispose()
 		{
-			this._pStage3DProxy = null;
+			this._pStageGLProxy = null;
 
 			/*
 			 if (_backgroundImageRenderer) {
@@ -242,9 +242,9 @@ module away.render
 		 * @param surfaceSelector The index of a CubeTexture's face to render to.
 		 * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
 		 */
-		public iRender(entityCollector:away.traverse.EntityCollector, target:away.display3D.TextureBase = null, scissorRect:away.geom.Rectangle = null, surfaceSelector:number = 0)
+		public iRender(entityCollector:away.traverse.EntityCollector, target:away.displayGL.TextureBase = null, scissorRect:away.geom.Rectangle = null, surfaceSelector:number = 0)
 		{
-			if (!this._pStage3DProxy || !this._pContext || !entityCollector.entityHead) {
+			if (!this._pStageGLProxy || !this._pContext || !entityCollector.entityHead) {
 
 				return;
 
@@ -259,7 +259,7 @@ module away.render
 
 			// generate mip maps on target (if target exists)
 			if (target) {
-				(<away.display3D.Texture>target).generateMipmaps();
+				(<away.displayGL.Texture>target).generateMipmaps();
 			}
 
 			// clear buffers
@@ -279,7 +279,7 @@ module away.render
 		 * @param surfaceSelector The index of a CubeTexture's face to render to.
 		 * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
 		 */
-		public pExecuteRender(entityCollector:away.traverse.EntityCollector, target:away.display3D.TextureBase = null, scissorRect:away.geom.Rectangle = null, surfaceSelector:number = 0)
+		public pExecuteRender(entityCollector:away.traverse.EntityCollector, target:away.displayGL.TextureBase = null, scissorRect:away.geom.Rectangle = null, surfaceSelector:number = 0)
 		{
 			this._pRenderTarget = target;
 			this._pRenderTargetSurface = surfaceSelector;
@@ -297,7 +297,7 @@ module away.render
 
 			}
 
-			this._pStage3DProxy.setRenderTarget(target, true, surfaceSelector);
+			this._pStageGLProxy.setRenderTarget(target, true, surfaceSelector);
 
 			if ((target || !this._shareContext) && this._clearOnRender) {
 
@@ -305,9 +305,9 @@ module away.render
 
 			}
 
-			this._pContext.setDepthTest(false, away.display3D.Context3DCompareMode.ALWAYS);
+			this._pContext.setDepthTest(false, away.displayGL.ContextGLCompareMode.ALWAYS);
 
-			this._pStage3DProxy.scissorRect = scissorRect;
+			this._pStageGLProxy.scissorRect = scissorRect;
 
 			/*
 			 if (_backgroundImageRenderer)
@@ -317,7 +317,7 @@ module away.render
 			this.pDraw(entityCollector, target);
 
 			//line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
-			//this._pContext.setDepthTest(false, away.display3D.Context3DCompareMode.LESS_EQUAL); //oopsie
+			//this._pContext.setDepthTest(false, away.displayGL.ContextGLCompareMode.LESS_EQUAL); //oopsie
 
 			if (!this._shareContext) {
 
@@ -329,7 +329,7 @@ module away.render
 				}
 
 			}
-			this._pStage3DProxy.scissorRect = null;
+			this._pStageGLProxy.scissorRect = null;
 		}
 
 		/*
@@ -350,7 +350,7 @@ module away.render
 		 * Performs the actual drawing of geometry to the target.
 		 * @param entityCollector The EntityCollector object containing the potentially visible geometry.
 		 */
-		public pDraw(entityCollector:away.traverse.EntityCollector, target:away.display3D.TextureBase)
+		public pDraw(entityCollector:away.traverse.EntityCollector, target:away.displayGL.TextureBase)
 		{
 			throw new away.errors.AbstractMethodError();
 		}
@@ -360,7 +360,7 @@ module away.render
 		 */
 		private onContextUpdate(event:Event)
 		{
-			this._pContext = this._pStage3DProxy.context3D;
+			this._pContext = this._pStageGLProxy.contextGL;
 		}
 
 		public get iBackgroundAlpha():number
@@ -391,7 +391,7 @@ module away.render
 		 if (!this._backgroundImageRenderer && value)
 		 {
 
-		 this._backgroundImageRenderer = new BackgroundImageRenderer(this._pStage3DProxy);
+		 this._backgroundImageRenderer = new BackgroundImageRenderer(this._pStageGLProxy);
 
 		 }
 

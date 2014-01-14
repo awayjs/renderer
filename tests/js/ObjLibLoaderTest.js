@@ -1,7 +1,7 @@
+///<reference path="../../../build/Away3D.next.d.ts" />
+//<reference path="../../../src/Away3D.ts" />
 var tests;
 (function (tests) {
-    ///<reference path="../../../build/Away3D.next.d.ts" />
-    //<reference path="../../../src/Away3D.ts" />
     (function (library) {
         var ObjLibLoaderTest = (function () {
             function ObjLibLoaderTest() {
@@ -12,7 +12,7 @@ var tests;
                 this.view = new away.containers.View3D();
                 this.raf = new away.utils.RequestAnimationFrame(this.render, this);
 
-                away.library.AssetLibrary.enableParser(away.loaders.OBJParser);
+                away.library.AssetLibrary.enableParser(away.parsers.OBJParser);
 
                 this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/t800.obj'));
                 this.token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete, this);
@@ -21,6 +21,7 @@ var tests;
             ObjLibLoaderTest.prototype.render = function () {
                 console.log('render');
 
+                //*
                 if (this.mesh) {
                     this.mesh.rotationY += 1;
                 }

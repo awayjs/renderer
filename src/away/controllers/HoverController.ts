@@ -228,7 +228,7 @@ module away.controllers
 		/**
 		 * Creates a new <code>HoverController</code> object.
 		 */
-			constructor(targetObject:away.entities.Entity = null, lookAtObject:away.containers.ObjectContainer3D = null, panAngle:number = 0, tiltAngle:number = 90, distance:number = 1000, minTiltAngle:number = -90, maxTiltAngle:number = 90, minPanAngle:number = null, maxPanAngle:number = null, steps:number = 8, yFactor:number = 2, wrapPanAngle:boolean = false)
+		constructor(targetObject:away.entities.Entity = null, lookAtObject:away.containers.ObjectContainer3D = null, panAngle:number = 0, tiltAngle:number = 90, distance:number = 1000, minTiltAngle:number = -90, maxTiltAngle:number = 90, minPanAngle:number = null, maxPanAngle:number = null, steps:number = 8, yFactor:number = 2, wrapPanAngle:boolean = false)
 		{
 			super(targetObject, lookAtObject);
 
@@ -297,9 +297,9 @@ module away.controllers
 			}
 
 			var pos:away.geom.Vector3D = (this.lookAtObject)? this.lookAtObject.position : (this.lookAtPosition)? this.lookAtPosition : this._pOrigin;
-			this.targetObject.x = pos.x + this.distance*Math.sin(this._iCurrentPanAngle*away.math.MathConsts.DEGREES_TO_RADIANS)*Math.cos(this._iCurrentTiltAngle*away.math.MathConsts.DEGREES_TO_RADIANS);
-			this.targetObject.z = pos.z + this.distance*Math.cos(this._iCurrentPanAngle*away.math.MathConsts.DEGREES_TO_RADIANS)*Math.cos(this._iCurrentTiltAngle*away.math.MathConsts.DEGREES_TO_RADIANS);
-			this.targetObject.y = pos.y + this.distance*Math.sin(this._iCurrentTiltAngle*away.math.MathConsts.DEGREES_TO_RADIANS)*this.yFactor;
+			this.targetObject.x = pos.x + this.distance*Math.sin(this._iCurrentPanAngle*away.geom.MathConsts.DEGREES_TO_RADIANS)*Math.cos(this._iCurrentTiltAngle*away.geom.MathConsts.DEGREES_TO_RADIANS);
+			this.targetObject.z = pos.z + this.distance*Math.cos(this._iCurrentPanAngle*away.geom.MathConsts.DEGREES_TO_RADIANS)*Math.cos(this._iCurrentTiltAngle*away.geom.MathConsts.DEGREES_TO_RADIANS);
+			this.targetObject.y = pos.y + this.distance*Math.sin(this._iCurrentTiltAngle*away.geom.MathConsts.DEGREES_TO_RADIANS)*this.yFactor;
 
 			super.update();
 		}

@@ -32,15 +32,15 @@ module away.render
 
 		}
 
-		public set iStage3DProxy(value:away.managers.Stage3DProxy)
+		public set iStageGLProxy(value:away.managers.StageGLProxy)
 		{
 
-			super.iSetStage3DProxy(value);
-			this._pDistanceRenderer.iStage3DProxy = this._pDepthRenderer.iStage3DProxy = value;
+			super.iSetStageGLProxy(value);
+			this._pDistanceRenderer.iStageGLProxy = this._pDepthRenderer.iStageGLProxy = value;
 
 		}
 
-		public pExecuteRender(entityCollector:away.traverse.EntityCollector, target:away.display3D.TextureBase = null, scissorRect:away.geom.Rectangle = null, surfaceSelector:number = 0)
+		public pExecuteRender(entityCollector:away.traverse.EntityCollector, target:away.displayGL.TextureBase = null, scissorRect:away.geom.Rectangle = null, surfaceSelector:number = 0)
 		{
 
 			this.updateLights(entityCollector);
@@ -75,7 +75,7 @@ module away.render
 
 				if (light.castsShadows && (shadowMapper.autoUpdateShadows || shadowMapper._iShadowsInvalid )) {
 
-					shadowMapper.iRenderDepthMap(this._pStage3DProxy, entityCollector, this._pDepthRenderer);
+					shadowMapper.iRenderDepthMap(this._pStageGLProxy, entityCollector, this._pDepthRenderer);
 
 				}
 
@@ -91,7 +91,7 @@ module away.render
 
 				if (light.castsShadows && (shadowMapper.autoUpdateShadows || shadowMapper._iShadowsInvalid)) {
 
-					shadowMapper.iRenderDepthMap(this._pStage3DProxy, entityCollector, this._pDistanceRenderer);
+					shadowMapper.iRenderDepthMap(this._pStageGLProxy, entityCollector, this._pDistanceRenderer);
 
 				}
 
@@ -101,37 +101,37 @@ module away.render
 		/**
 		 * @inheritDoc
 		 */
-		public pDraw(entityCollector:away.traverse.EntityCollector, target:away.display3D.TextureBase)
+		public pDraw(entityCollector:away.traverse.EntityCollector, target:away.displayGL.TextureBase)
 		{
 
-			this._pContext.setBlendFactors(away.display3D.Context3DBlendFactor.ONE, away.display3D.Context3DBlendFactor.ZERO);
+			this._pContext.setBlendFactors(away.displayGL.ContextGLBlendFactor.ONE, away.displayGL.ContextGLBlendFactor.ZERO);
 
 			if (entityCollector.skyBox) {
 				if (this._activeMaterial) {
 
-					this._activeMaterial.iDeactivate(this._pStage3DProxy);
+					this._activeMaterial.iDeactivate(this._pStageGLProxy);
 
 				}
 
 				this._activeMaterial = null;
 
-				this._pContext.setDepthTest(false, away.display3D.Context3DCompareMode.ALWAYS);
+				this._pContext.setDepthTest(false, away.displayGL.ContextGLCompareMode.ALWAYS);
 				this.drawSkyBox(entityCollector);
 
 			}
 
-			this._pContext.setDepthTest(true, away.display3D.Context3DCompareMode.LESS_EQUAL);
+			this._pContext.setDepthTest(true, away.displayGL.ContextGLCompareMode.LESS_EQUAL);
 
 			var which:number = target? DefaultRenderer.SCREEN_PASSES : DefaultRenderer.ALL_PASSES;
 
 			this.drawRenderables(entityCollector.opaqueRenderableHead, entityCollector, which);
 			this.drawRenderables(entityCollector.blendedRenderableHead, entityCollector, which);
 
-			this._pContext.setDepthTest(false, away.display3D.Context3DCompareMode.LESS_EQUAL);
+			this._pContext.setDepthTest(false, away.displayGL.ContextGLCompareMode.LESS_EQUAL);
 
 			if (this._activeMaterial) {
 
-				this._activeMaterial.iDeactivate(this._pStage3DProxy);
+				this._activeMaterial.iDeactivate(this._pStageGLProxy);
 
 			}
 
@@ -154,9 +154,9 @@ module away.render
 
 			this.updateSkyBoxProjection(camera);
 
-			material.iActivatePass(0, this._pStage3DProxy, camera);
-			material.iRenderPass(0, skyBox, this._pStage3DProxy, entityCollector, this._skyboxProjection);
-			material.iDeactivatePass(0, this._pStage3DProxy);
+			material.iActivatePass(0, this._pStageGLProxy, camera);
+			material.iRenderPass(0, skyBox, this._pStageGLProxy, entityCollector, this._skyboxProjection);
+			material.iDeactivatePass(0, this._pStageGLProxy);
 
 		}
 
@@ -223,16 +223,16 @@ module away.render
 					var rttMask:number = this._activeMaterial.iPassRendersToTexture(j)? 1 : 2;
 
 					if ((rttMask & which) != 0) {
-						this._activeMaterial.iActivatePass(j, this._pStage3DProxy, camera);
+						this._activeMaterial.iActivatePass(j, this._pStageGLProxy, camera);
 
 						do {
-							this._activeMaterial.iRenderPass(j, item2.renderable, this._pStage3DProxy, entityCollector, this._pRttViewProjectionMatrix);
+							this._activeMaterial.iRenderPass(j, item2.renderable, this._pStageGLProxy, entityCollector, this._pRttViewProjectionMatrix);
 
 							item2 = item2.next;
 
 						} while (item2 && item2.renderable.material == this._activeMaterial);
 
-						this._activeMaterial.iDeactivatePass(j, this._pStage3DProxy);
+						this._activeMaterial.iDeactivatePass(j, this._pStageGLProxy);
 
 					} else {
 

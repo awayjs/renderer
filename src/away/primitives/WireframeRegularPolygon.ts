@@ -25,7 +25,7 @@ module away.primitives
 		 * @param thickness The thickness of the wireframe lines
 		 * @param orientation The orientaion in which the plane lies.
 		 */
-			constructor(radius:number, sides:number, color:number = 0xFFFFFF, thickness:number = 1, orientation:string = "yz")
+		constructor(radius:number, sides:number, color:number = 0xFFFFFF, thickness:number = 1, orientation:string = "yz")
 		{
 			super(color, thickness);
 

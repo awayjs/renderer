@@ -73,7 +73,7 @@ module away.materials
 		 * Creates a new ShaderCompiler object.
 		 * @param profile The compatibility profile of the renderer.
 		 */
-			constructor(profile:string)
+		constructor(profile:string)
 		{
 			this._pSharedRegisters = new away.materials.ShaderRegisterData();
 			this._pDependencyCounter = new away.materials.MethodDependencyCounter();

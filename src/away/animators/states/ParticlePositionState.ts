@@ -4,9 +4,9 @@ module away.animators
 {
 	import IRenderable						= away.base.IRenderable;
 	import Camera3D							= away.cameras.Camera3D;
-	import Context3DVertexBufferFormat		= away.display3D.Context3DVertexBufferFormat
+	import ContextGLVertexBufferFormat		= away.displayGL.ContextGLVertexBufferFormat
 	import Vector3D							= away.geom.Vector3D;
-	import Stage3DProxy						= away.managers.Stage3DProxy;
+	import StageGLProxy						= away.managers.StageGLProxy;
 	
 	/**
 	 * ...
@@ -56,7 +56,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public setRenderState(stage3DProxy:Stage3DProxy, renderable:IRenderable, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera3D)
+		public setRenderState(stageGLProxy:StageGLProxy, renderable:IRenderable, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera3D)
 		{
 			if (this._particlePositionNode.mode == ParticlePropertiesMode.LOCAL_DYNAMIC && !this._pDynamicPropertiesDirty[animationSubGeometry._iUniqueId])
 				this._pUpdateDynamicProperties(animationSubGeometry);
@@ -66,7 +66,7 @@ module away.animators
 			if (this._particlePositionNode.mode == ParticlePropertiesMode.GLOBAL)
 				animationRegisterCache.setVertexConst(index, this._position.x, this._position.y, this._position.z);
 			else
-				animationSubGeometry.activateVertexBuffer(index, this._particlePositionNode._iDataOffset, stage3DProxy, Context3DVertexBufferFormat.FLOAT_3);
+				animationSubGeometry.activateVertexBuffer(index, this._particlePositionNode._iDataOffset, stageGLProxy, ContextGLVertexBufferFormat.FLOAT_3);
 		}
 	}
 }

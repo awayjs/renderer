@@ -18,7 +18,7 @@ module away.materials
 		 * @param basedOnSurface Defines whether the fresnel effect should be based on the view angle on the surface (if true), or on the angle between the light and the view.
 		 * @param baseSpecularMethod The specular method to which the fresnel equation. Defaults to BasicSpecularMethod.
 		 */
-			constructor(basedOnSurface:boolean = true, baseSpecularMethod:away.materials.BasicSpecularMethod = null)
+		constructor(basedOnSurface:boolean = true, baseSpecularMethod:away.materials.BasicSpecularMethod = null)
 		{
 			// may want to offer diff speculars
 			super(null, null);
@@ -95,9 +95,9 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:away.materials.MethodVO, stage3DProxy:away.managers.Stage3DProxy):void
+		public iActivate(vo:away.materials.MethodVO, stageGLProxy:away.managers.StageGLProxy):void
 		{
-			super.iActivate(vo, stage3DProxy);
+			super.iActivate(vo, stageGLProxy);
 			var fragmentData:Array<number> = vo.fragmentData;
 
 			var index:number = vo.secondaryFragmentConstantsIndex;

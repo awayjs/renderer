@@ -1,6 +1,7 @@
+///<reference path="../../../build/Away3D.next.d.ts" />
+//<reference path="../../../src/Away3D.ts" />
 var demos;
 (function (demos) {
-    ///<reference path="../../../build/Away3D.next.d.ts" />
     (function (parsers) {
         var AWDSuzanne = (function () {
             function AWDSuzanne() {
@@ -10,7 +11,7 @@ var demos;
                 away.Debug.LOG_PI_ERRORS = true;
                 away.Debug.THROW_ERRORS = false;
 
-                away.library.AssetLibrary.enableParser(away.loaders.AWDParser);
+                away.library.AssetLibrary.enableParser(away.parsers.AWDParser);
 
                 this._token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/suzanne.awd'));
                 this._token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete, this);
@@ -21,10 +22,10 @@ var demos;
                 this._timer = new away.utils.RequestAnimationFrame(this.render, this);
 
                 this._light = new away.lights.DirectionalLight();
-                this._light.color = 0x683019;
+                this._light.color = 0x683019; //683019;
                 this._light.direction = new away.geom.Vector3D(1, 0, 0);
-                this._light.ambient = 0.1;
-                this._light.ambientColor = 0x85b2cd;
+                this._light.ambient = 0.1; //0.05;//.4;
+                this._light.ambientColor = 0x85b2cd; //4F6877;//313D51;
                 this._light.diffuse = 2.8;
                 this._light.specular = 1.8;
                 this._view.scene.addChild(this._light);

@@ -1,34 +1,25 @@
 ///<reference path="../../../build/Away3D.next.d.ts" />
+//<reference path="../../../src/Away3D.ts" />
 /*
-
 Vertex animation example in Away3d using the MD2 format
-
 Demonstrates:
-
 How to use the AssetLibrary class to load an embedded internal md2 model.
 How to clone an asset from the AssetLibrary and apply different mateirals.
 How to load animations into an animation set and apply to individual meshes.
-
 Code by Rob Bateman
 rob@infiniteturtles.co.uk
 http://www.infiniteturtles.co.uk
-
 Perelith Knight, by James Green (no email given)
-
 This code is distributed under the MIT License
-
 Copyright (c) The Away Foundation http://www.theawayfoundation.org
-
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the “Software”), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
-
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
-
 THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -36,7 +27,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
-
 */
 var examples;
 (function (examples) {
@@ -103,7 +93,7 @@ var examples;
             away.library.AssetLibrary.load(new away.net.URLRequest("assets/demos/floor_diffuse.jpg"));
 
             //load perelith knight data
-            away.library.AssetLibrary.load(new away.net.URLRequest("assets/demos/pknight.md2"), null, null, new away.loaders.MD2Parser());
+            away.library.AssetLibrary.load(new away.net.URLRequest("assets/demos/pknight.md2"), null, null, new away.parsers.MD2Parser());
 
             //create a global shadow map method
             this._shadowMapMethod = new away.materials.FilteredShadowMapMethod(this._light);
@@ -354,7 +344,7 @@ var examples;
 
             if (this._cameraController.distance < 100)
                 this._cameraController.distance = 100;
-else if (this._cameraController.distance > 2000)
+            else if (this._cameraController.distance > 2000)
                 this._cameraController.distance = 2000;
         };
 

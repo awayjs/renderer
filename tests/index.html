@@ -53,13 +53,6 @@
             harness.addTest( '(GLSL) Scene.PhongTorus'     ,  'scene.PhongTorus'      , 'js/PhongTorus.js'     , 'scene/PhongTorus.ts'  );
 
             //---------------------------------------------------------------------------
-            // Test -
-            //---------------------------------------------------------------------------
-
-            harness.addSeperator( 'AGLSL' );
-            harness.addTest( 'AGLSL.AssemblerTest'     ,  'aglsl.AssemblerTest'      , 'js/AssemblerTest.js'     , 'aglsl/AssemblerTest.ts'  );
-
-            //---------------------------------------------------------------------------
             // Test - Utils
             //---------------------------------------------------------------------------
 
@@ -69,23 +62,10 @@
             harness.addTest( 'Parsers.AWDEnvMap / SkyBox'              , 'tests.library.AWDParserTestEnvMap'     , 'js/AWDParserTestEnvMap.js'  , 'demos/parsers/AWDParserTestEnvMap.ts'  );
 
             //---------------------------------------------------------------------------
-            // Test - Utils
-            //---------------------------------------------------------------------------
-
-            harness.addSeperator( 'Utils' );
-            harness.addTest( 'Utils.MipMapTest'                 , 'tests.utils.MipMapTest'                  , 'js/MipMapTest.js'                 , 'away/utils/MipMapTest.ts'  );
-            harness.addTest( '(Console) Utils.ByteArrayTest'    , 'tests.utils.ByteArrayTest'               , 'js/ByteArrayTest.js'              , 'away/utils/ByteArrayTest.ts'  );
-            harness.addTest( '(Console) Utils.IDUtilTest '      , 'tests.utils.IDUtilTest'                  , 'js/IDUtilTest.js'                 , 'away/utils/IDUtilTest.ts'  );
-            harness.addTest( '(Console) Utils.RAF '             , 'tests.utils.RequestAnimationFrameTest'   , 'js/RequestAnimationFrameTest.js'  , 'away/utils/RequestAnimationFrameTest.ts'  );
-            harness.addTest( '(Console) Utils.TimerTest'        , 'tests.utils.TimerTest'                   , 'js/TimerTest.js'                  , 'away/utils/TimerTest.ts'  );
-
-            //---------------------------------------------------------------------------
             // Test - Textures
             //---------------------------------------------------------------------------
 
             harness.addSeperator( 'Textures' );
-            harness.addTest( '(Console) Textures.BitmapTextureTest'                 , 'tests.textures.BitmapTextureTest'            , 'js/BitmapTextureTest.js'              , 'away/textures/BitmapTextureTest.ts'  );
-            harness.addTest( '(Console) Textures.HTMLImageElementTextureTest'       , 'tests.textures.HTMLImageElementTextureTest'  , 'js/HTMLImageElementTextureTest.js'    , 'away/textures/HTMLImageElementTextureTest.ts'  );
             harness.addTest( 'Textures.CubeTextures'       , 'tests.textures.CubeTextures'  , 'js/CubeTextures.js'    , 'away/textures/CubeTextures.ts'  );
 
             //---------------------------------------------------------------------------
@@ -103,13 +83,6 @@
             harness.addTest( '(Console) Pick.Test'       , 'tests.pick.PickingTests'  , 'js/PickingTests.js' , 'away/pick/PickingTests.ts'  );
 
             //---------------------------------------------------------------------------
-            // Test - Net
-            //---------------------------------------------------------------------------
-
-            harness.addSeperator( 'Net' );
-            harness.addTest( 'Net.URLLoader'       , 'tests.net.LoaderTest'  , 'js/URLLoaderTests.js' , 'away/net/URLLoaderTests.ts'  );
-
-            //---------------------------------------------------------------------------
             // Test - Materials
             //---------------------------------------------------------------------------
 
@@ -119,44 +92,12 @@
             harness.addTest( 'Materials.TextureMultiPassMatTest'        , 'tests.materials.TextureMultiPassMatTest'     , 'js/TextureMultiPassMatTest.js'    , 'away/materials/TextureMultiPassMatTest.ts'  );
 
             //---------------------------------------------------------------------------
-            // Test - Managers
-            //---------------------------------------------------------------------------
-
-            harness.addSeperator( 'Managers' );
-            harness.addTest( '(Console) tests.managers.ManagersTest' ,  'tests.managers.ManagersTest'  , 'js/ManagersTest.js' , 'away/managers/ManagersTest.ts'  );
-
-            //---------------------------------------------------------------------------
-            // Test - Loaders
-            //---------------------------------------------------------------------------
-
-            harness.addSeperator( 'Loaders' );
-            harness.addTest( '(Console) Loaders.AssetLoaderTest'    ,  'tests.loaders.AssetLoaderTest'  , 'js/AssetLoaderTest.js'    , 'away/loaders/AssetLoaderTest.ts'  );
-            harness.addTest( 'Loaders.IMGLoaderTest'                ,  'tests.loaders.IMGLoaderTest'    , 'js/IMGLoaderTest.js'      , 'away/loaders/IMGLoaderTest.ts'  );
-
-            //---------------------------------------------------------------------------
             // Test - Library
             //---------------------------------------------------------------------------
 
             harness.addSeperator( 'Library' );
-            harness.addTest( 'Library.AssetLibraryTest'     ,  'tests.library.AssetLibraryTest'  , 'js/AssetLibraryTest.js'  , 'away/library/AssetLibraryTest.ts'  );
             harness.addTest( 'Library.AWDParserTest'        ,  'tests.library.AWDParserTest'  , 'js/AWDParserTest.js'        , 'away/library/AWDParserTest.ts'  );
             harness.addTest( 'Library.ObjLibLoaderTest'     ,  'tests.library.ObjLibLoaderTest'  , 'js/ObjLibLoaderTest.js'  , 'away/library/ObjLibLoaderTest.ts'  );
-
-            //---------------------------------------------------------------------------
-            // Test - Geom
-            //---------------------------------------------------------------------------
-
-            harness.addSeperator( 'Geom' );
-            harness.addTest( '(Console) Geom.ColorUtils'          ,  'tests.geom.ColorUtils'      , 'js/ColorUtils.js'     , 'away/geom/ColorUtils.ts'  );
-            harness.addTest( '(Console) Geom.MatrixTest'          ,  'tests.geom.MatrixTest'      , 'js/MatrixTest.js'     , 'away/geom/MatrixTest.ts'  );
-            harness.addTest( '(Console) Geom.VextMat3DTests'      ,  'tests.geom.VextMat3DTests'  , 'js/VextMat3DTests.js' , 'away/geom/VextMat3DTests.ts'  );
-
-            //---------------------------------------------------------------------------
-            // Test - Events
-            //---------------------------------------------------------------------------
-
-            harness.addSeperator( 'Events' );
-            harness.addTest( '(Console) Events'      ,  'tests.events.EDTest'      , 'js/EDTest.js'     , 'away/events/EDTest.ts'  );
 
             //---------------------------------------------------------------------------
             // Test - Entities
@@ -172,7 +113,6 @@
             //---------------------------------------------------------------------------
 
             harness.addSeperator( 'Display' );
-            harness.addTest( 'Display.BitmapDataTest'  ,  'tests.display.BitmapDataTest'      , 'js/BitmapDataTest.js'     , 'away/display/BitmapDataTest.ts'  );
             harness.addTest( 'Display.BitmapDataTest 2'  ,  'tests.display.BitmapDataReflectionTest'      , 'js/BitmapDataReflectionTest.js'     , 'away/display/BitmapDataReflectionTest.ts'  );
 
             //---------------------------------------------------------------------------
@@ -195,13 +135,6 @@
 
             harness.addSeperator( 'Base' );
             harness.addTest( 'Base.View3DTest'  ,  'tests.base.Object3DTestV2'      , 'js/Object3DTest_v2.js'     , 'away/base/Object3DTest_v2.ts'  );
-
-            //---------------------------------------------------------------------------
-            // Test - Base
-            //---------------------------------------------------------------------------
-
-            harness.addSeperator( 'Units' );
-            harness.addTest( 'Units.TestSuite'  ,  'tests.unit.TestSuite'      , 'js/TestSuite.js'     , 'unit/TestSuite.ts'  );
 
             //---------------------------------------------------------------------------
             // Load a default

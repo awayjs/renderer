@@ -8,7 +8,7 @@ module away.cameras
 		private _viewProjection:away.geom.Matrix3D = new away.geom.Matrix3D();
 		private _viewProjectionDirty:Boolean = true;
 		private _lens:LensBase;
-		private _frustumPlanes:away.math.Plane3D[];
+		private _frustumPlanes:away.geom.Plane3D[];
 		private _frustumPlanesDirty:Boolean = true;
 
 		constructor(lens:LensBase = null)
@@ -21,7 +21,7 @@ module away.cameras
 			this._frustumPlanes = [];
 
 			for (var i:number = 0; i < 6; ++i) {
-				this._frustumPlanes[i] = new away.math.Plane3D();
+				this._frustumPlanes[i] = new away.geom.Plane3D();
 			}
 
 			this.z = -1000;
@@ -46,7 +46,7 @@ module away.cameras
 			this.dispatchEvent(event);
 		}
 
-		public get frustumPlanes():away.math.Plane3D[]
+		public get frustumPlanes():away.geom.Plane3D[]
 		{
 			if (this._frustumPlanesDirty) {
 				this.updateFrustum();
@@ -62,7 +62,7 @@ module away.cameras
 			var c21:number, c22:number, c23:number, c24:number;
 			var c31:number, c32:number, c33:number, c34:number;
 			var c41:number, c42:number, c43:number, c44:number;
-			var p:away.math.Plane3D;
+			var p:away.geom.Plane3D;
 			var raw:number[] = new Array<number>(16);
 			;//new Array(16 );away.utils.Matrix3DUtils.RAW_DATA_CONTAINER;//[];
 			var invLen:number;

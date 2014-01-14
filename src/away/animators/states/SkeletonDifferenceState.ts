@@ -3,7 +3,7 @@
 module away.animators
 {
 	import Vector3D = away.geom.Vector3D;
-	import Quaternion = away.math.Quaternion;
+	import Quaternion = away.geom.Quaternion;
 
 	/**
 	 *

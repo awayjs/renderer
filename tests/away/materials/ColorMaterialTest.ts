@@ -11,8 +11,8 @@ module tests.materials
 
         private cm          : away.materials.ColorMaterial;
         private stage       : away.display.Stage;
-        private sProxy      : away.managers.Stage3DProxy;
-        private sManager    : away.managers.Stage3DManager;
+        private sProxy      : away.managers.StageGLProxy;
+        private sManager    : away.managers.StageGLManager;
         private imgLoader   : away.net.IMGLoader;
         private imgTx       : away.textures.HTMLImageElementTexture;
         private matTx       : away.materials.TextureMaterial;
@@ -31,8 +31,8 @@ module tests.materials
 
             this.cm             = new away.materials.ColorMaterial();
             this.stage          = new away.display.Stage( 800, 600 );
-            this.sManager       = away.managers.Stage3DManager.getInstance( this.stage );
-            this.sProxy         = this.sManager.getStage3DProxy( 0 );
+            this.sManager       = away.managers.StageGLManager.getInstance( this.stage );
+            this.sProxy         = this.sManager.getStageGLProxy( 0 );
 
             this.cm.iInvalidatePasses( null );
 

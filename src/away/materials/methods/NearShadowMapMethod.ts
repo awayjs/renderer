@@ -4,7 +4,7 @@ module away.materials
 {
 	import Camera3D                         = away.cameras.Camera3D;
 	import IRenderable                      = away.base.IRenderable;
-	import Stage3DProxy                     = away.managers.Stage3DProxy;
+	import StageGLProxy                     = away.managers.StageGLProxy;
 	import ShadingMethodEvent               = away.events.ShadingMethodEvent;
 	import NearDirectionalShadowMapper      = away.lights.NearDirectionalShadowMapper;
 
@@ -27,7 +27,7 @@ module away.materials
 		 * @param baseMethod The shadow map sampling method used to sample individual cascades (fe: HardShadowMapMethod, SoftShadowMapMethod)
 		 * @param fadeRatio The amount of shadow fading to the outer shadow area. A value of 1 would mean the shadows start fading from the camera's near plane.
 		 */
-			constructor(baseMethod:SimpleShadowMapMethodBase, fadeRatio:number = .1)
+		constructor(baseMethod:SimpleShadowMapMethodBase, fadeRatio:number = .1)
 		{
 			super(baseMethod.castingLight);
 			this._baseMethod = baseMethod;
@@ -144,23 +144,23 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stage3DProxy:Stage3DProxy):void
+		public iActivate(vo:MethodVO, stageGLProxy:StageGLProxy):void
 		{
-			this._baseMethod.iActivate(vo, stage3DProxy);
+			this._baseMethod.iActivate(vo, stageGLProxy);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iDeactivate(vo:MethodVO, stage3DProxy:Stage3DProxy):void
+		public iDeactivate(vo:MethodVO, stageGLProxy:StageGLProxy):void
 		{
-			this._baseMethod.iDeactivate(vo, stage3DProxy);
+			this._baseMethod.iDeactivate(vo, stageGLProxy);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iSetRenderState(vo:MethodVO, renderable:IRenderable, stage3DProxy:Stage3DProxy, camera:Camera3D):void
+		public iSetRenderState(vo:MethodVO, renderable:IRenderable, stageGLProxy:StageGLProxy, camera:Camera3D):void
 		{
 			// todo: move this to activate (needs camera)
 			var near:number = camera.lens.near;
@@ -175,7 +175,7 @@ module away.materials
 			var index:number /*int*/ = vo.secondaryFragmentConstantsIndex;
 			fragmentData[index] = minDistance;
 			fragmentData[index + 1] = 1/(maxDistance - minDistance);
-			this._baseMethod.iSetRenderState(vo, renderable, stage3DProxy, camera);
+			this._baseMethod.iSetRenderState(vo, renderable, stageGLProxy, camera);
 		}
 
 		/**

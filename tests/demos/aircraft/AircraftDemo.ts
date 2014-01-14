@@ -1,4 +1,5 @@
 ///<reference path="../../../build/Away3D.next.d.ts" />
+//<reference path="../../../src/Away3D.ts" />
 
 module demos.aircraft
 {
@@ -59,14 +60,14 @@ module demos.aircraft
 		
         private loadAsset( path: string ):void
         {
-            var token:away.loaders.AssetLoaderToken = away.library.AssetLibrary.load( new away.net.URLRequest( path ) );
+            var token:away.net.AssetLoaderToken = away.library.AssetLibrary.load( new away.net.URLRequest( path ) );
             token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete, this );
         }
 		
         private initParsers():void
         {
-            away.library.AssetLibrary.enableParser( away.loaders.OBJParser );
-            away.library.AssetLibrary.enableParser( away.loaders.CubeTextureParser );
+            away.library.AssetLibrary.enableParser( away.parsers.OBJParser );
+            away.library.AssetLibrary.enableParser( away.parsers.CubeTextureParser );
         }
 		
         private initAnimation():void
@@ -154,7 +155,7 @@ module demos.aircraft
 		
         public onResourceComplete ( e: away.events.LoaderEvent )
         {
-            var loader			: away.loaders.AssetLoader   	= <away.loaders.AssetLoader> e.target;
+            var loader			: away.net.AssetLoader   	= <away.net.AssetLoader> e.target;
             var numAssets		: number 						= loader.baseDependency.assets.length;
             var i				: number						= 0;
 			

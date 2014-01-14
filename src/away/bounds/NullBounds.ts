@@ -31,7 +31,7 @@ module away.bounds
 		}
 
 		//@override
-		public isInFrustum(planes:away.math.Plane3D[], numPlanes:number):boolean
+		public isInFrustum(planes:away.geom.Plane3D[], numPlanes:number):boolean
 		{
 			planes = planes;
 			numPlanes = numPlanes;
@@ -53,10 +53,10 @@ module away.bounds
 		{
 		}
 
-		public classifyToPlane(plane:away.math.Plane3D):number
+		public classifyToPlane(plane:away.geom.Plane3D):number
 		{
 			plane = plane;
-			return away.math.PlaneClassification.INTERSECT;
+			return away.geom.PlaneClassification.INTERSECT;
 		}
 
 		//@override

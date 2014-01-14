@@ -13,7 +13,7 @@ module away.lights
 		public _pOverallDepthLens:away.cameras.FreeMatrixLens;
 		public _pSnap:number = 64;
 
-		public _pCullPlanes:away.math.Plane3D[];
+		public _pCullPlanes:away.geom.Plane3D[];
 		public _pMinZ:number;
 		public _pMaxZ:number;
 
@@ -60,7 +60,7 @@ module away.lights
 		}
 
 		//@override
-		public pDrawDepthMap(target:away.display3D.TextureBase, scene:away.containers.Scene3D, renderer:away.render.DepthRenderer)
+		public pDrawDepthMap(target:away.displayGL.TextureBase, scene:away.containers.Scene3D, renderer:away.render.DepthRenderer)
 		{
 			this._pCasterCollector.camera = this._pOverallDepthCamera;
 			this._pCasterCollector.cullPlanes = this._pCullPlanes;
@@ -73,8 +73,8 @@ module away.lights
 		//@protected
 		public pUpdateCullPlanes(viewCamera:away.cameras.Camera3D)
 		{
-			var lightFrustumPlanes:away.math.Plane3D[] = this._pOverallDepthCamera.frustumPlanes;
-			var viewFrustumPlanes:away.math.Plane3D[] = viewCamera.frustumPlanes;
+			var lightFrustumPlanes:away.geom.Plane3D[] = this._pOverallDepthCamera.frustumPlanes;
+			var viewFrustumPlanes:away.geom.Plane3D[] = viewCamera.frustumPlanes;
 			this._pCullPlanes.length = 4;
 
 			this._pCullPlanes[0] = lightFrustumPlanes[0];
@@ -89,7 +89,7 @@ module away.lights
 			var dirZ:number = dir.z;
 			var j:number = 4;
 			for (var i:number = 0; i < 6; ++i) {
-				var plane:away.math.Plane3D = viewFrustumPlanes[i];
+				var plane:away.geom.Plane3D = viewFrustumPlanes[i];
 				if (plane.a*dirX + plane.b*dirY + plane.c*dirZ < 0) {
 					this._pCullPlanes[j++] = plane;
 				}

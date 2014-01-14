@@ -1,32 +1,24 @@
 ///<reference path="../../../build/Away3D.next.d.ts" />
+//<reference path="../../../src/Away3D.ts" />
 /*
-
 Globe example in Away3d
-
 Demonstrates:
-
 How to create a textured sphere.
 How to use containers to rotate an object.
 How to use the PhongBitmapMaterial.
-
 Code by Rob Bateman
 rob@infiniteturtles.co.uk
 http://www.infiniteturtles.co.uk
-
 This code is distributed under the MIT License
-
 Copyright (c) The Away Foundation http://www.theawayfoundation.org
-
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the “Software”), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
-
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
-
 THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -34,7 +26,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
-
 */
 var examples;
 (function (examples) {
@@ -274,7 +265,7 @@ var examples;
             away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete, this);
 
             //setup the url map for textures in the cubemap file
-            var assetLoaderContext = new away.loaders.AssetLoaderContext();
+            var assetLoaderContext = new away.net.AssetLoaderContext();
             assetLoaderContext.dependencyBaseUrl = "assets/demos/skybox/";
 
             //environment texture
@@ -329,6 +320,7 @@ var examples;
 
             this.flareVisible = (sunScreenPosition.x > 0 && sunScreenPosition.x < window.innerWidth && sunScreenPosition.y > 0 && sunScreenPosition.y < window.innerHeight && sunScreenPosition.z > 0 && Math.sqrt(xOffset * xOffset + yOffset * yOffset) > earthRadius);
 
+            //update flare visibility
             if (this.flareVisible != flareVisibleOld) {
                 for (var i = 0; i < this.flares.length; i++) {
                     flareObject = this.flares[i];
@@ -337,6 +329,7 @@ var examples;
                 }
             }
 
+            //update flare position
             if (this.flareVisible) {
                 var flareDirection = new Point(xOffset, yOffset);
                 for (var i = 0; i < this.flares.length; i++) {
@@ -363,12 +356,12 @@ var examples;
                     var cloudBitmapData = new BitmapData(2048, 1024, true, 0xFFFFFFFF);
                     cloudBitmapData.copyChannel(Cast.bitmapData(event.assets[0]), cloudBitmapData.rect, new Point(), BitmapDataChannel.RED, BitmapDataChannel.ALPHA);
 
-                    this.cloudMaterial.texture = new BitmapTexture(cloudBitmapData, false);
+                    this.cloudMaterial.texture = new BitmapTexture(cloudBitmapData, false); //TODO: fix mipmaps for bitmapdata textures
                     break;
                 case "assets/demos/globe/earth_specular_2048.jpg":
                     var specBitmapData = Cast.bitmapData(event.assets[0]);
                     specBitmapData.colorTransform(specBitmapData.rect, new ColorTransform(1, 1, 1, 1, 64, 64, 64));
-                    this.groundMaterial.specularMap = new BitmapTexture(specBitmapData, false);
+                    this.groundMaterial.specularMap = new BitmapTexture(specBitmapData, false); //TODO: fix mipmaps for bitmapdata textures
                     break;
                 case "assets/demos/globe/EarthNormal.png":
                     this.groundMaterial.normalMap = event.assets[0];
@@ -436,6 +429,39 @@ var examples;
         * Mouse move listener for mouseLock
         */
         Intermediate_Globe.prototype.onMouseMove = function (event) {
+            //            if (stage.displayState == StageDisplayState.FULL_SCREEN) {
+            //
+            //                if (mouseLocked && (lastMouseX != 0 || lastMouseY != 0)) {
+            //                    e.movementX += lastMouseX;
+            //                    e.movementY += lastMouseY;
+            //                    lastMouseX = 0;
+            //                    lastMouseY = 0;
+            //                }
+            //
+            //                mouseLockX += e.movementX;
+            //                mouseLockY += e.movementY;
+            //
+            //                if (!stage.mouseLock) {
+            //                    stage.mouseLock = true;
+            //                    lastMouseX = stage.mouseX - stage.stageWidth/2;
+            //                    lastMouseY = stage.mouseY - stage.stageHeight/2;
+            //                } else if (!mouseLocked) {
+            //                    mouseLocked = true;
+            //                }
+            //
+            //                //ensure bounds for tiltAngle are not eceeded
+            //                if (mouseLockY > cameraController.maxTiltAngle/0.3)
+            //                    mouseLockY = cameraController.maxTiltAngle/0.3;
+            //                else if (mouseLockY < cameraController.minTiltAngle/0.3)
+            //                    mouseLockY = cameraController.minTiltAngle/0.3;
+            //            }
+            //            if (stage.mouseLock) {
+            //                cameraController.panAngle = 0.3*mouseLockX;
+            //                cameraController.tiltAngle = 0.3*mouseLockY;
+            //            } else if (move) {
+            //                cameraController.panAngle = 0.3*(stage.mouseX - lastMouseX) + lastPanAngle;
+            //                cameraController.tiltAngle = 0.3*(stage.mouseY - lastMouseY) + lastTiltAngle;
+            //            }
             if (this.move) {
                 this.cameraController.panAngle = 0.3 * (event.clientX - this.lastMouseX) + this.lastPanAngle;
                 this.cameraController.tiltAngle = 0.3 * (event.clientY - this.lastMouseY) + this.lastTiltAngle;
@@ -454,7 +480,7 @@ var examples;
 
             if (this.cameraController.distance < 400)
                 this.cameraController.distance = 400;
-else if (this.cameraController.distance > 10000)
+            else if (this.cameraController.distance > 10000)
                 this.cameraController.distance = 10000;
         };
 

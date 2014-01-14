@@ -205,49 +205,49 @@ module away.base
 		/**
 		 * @inheritDoc
 		 */
-		public activateVertexBuffer(index:number, stage3DProxy:away.managers.Stage3DProxy)
+		public activateVertexBuffer(index:number, stageGLProxy:away.managers.StageGLProxy)
 		{
-			this._subGeometry.activateVertexBuffer(index, stage3DProxy);
+			this._subGeometry.activateVertexBuffer(index, stageGLProxy);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public activateVertexNormalBuffer(index:number, stage3DProxy:away.managers.Stage3DProxy)
+		public activateVertexNormalBuffer(index:number, stageGLProxy:away.managers.StageGLProxy)
 		{
-			this._subGeometry.activateVertexNormalBuffer(index, stage3DProxy);
+			this._subGeometry.activateVertexNormalBuffer(index, stageGLProxy);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public activateVertexTangentBuffer(index:number, stage3DProxy:away.managers.Stage3DProxy)
+		public activateVertexTangentBuffer(index:number, stageGLProxy:away.managers.StageGLProxy)
 		{
-			this._subGeometry.activateVertexTangentBuffer(index, stage3DProxy);
+			this._subGeometry.activateVertexTangentBuffer(index, stageGLProxy);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public activateUVBuffer(index:number, stage3DProxy:away.managers.Stage3DProxy)
+		public activateUVBuffer(index:number, stageGLProxy:away.managers.StageGLProxy)
 		{
-			this._subGeometry.activateUVBuffer(index, stage3DProxy);
+			this._subGeometry.activateUVBuffer(index, stageGLProxy);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public activateSecondaryUVBuffer(index:number, stage3DProxy:away.managers.Stage3DProxy)
+		public activateSecondaryUVBuffer(index:number, stageGLProxy:away.managers.StageGLProxy)
 		{
-			this._subGeometry.activateSecondaryUVBuffer(index, stage3DProxy);
+			this._subGeometry.activateSecondaryUVBuffer(index, stageGLProxy);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public getIndexBuffer(stage3DProxy:away.managers.Stage3DProxy):away.display3D.IndexBuffer3D
+		public getIndexBuffer(stageGLProxy:away.managers.StageGLProxy):away.displayGL.IndexBuffer
 		{
-			return this._subGeometry.getIndexBuffer(stage3DProxy);
+			return this._subGeometry.getIndexBuffer(stageGLProxy);
 		}
 
 		/**

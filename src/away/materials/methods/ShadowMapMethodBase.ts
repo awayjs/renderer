@@ -26,7 +26,7 @@ module away.materials
 		 * Creates a new ShadowMapMethodBase object.
 		 * @param castingLight The light used to cast shadows.
 		 */
-			constructor(castingLight:away.lights.LightBase)
+		constructor(castingLight:away.lights.LightBase)
 		{
 			super();
 			this._pCastingLight = castingLight;

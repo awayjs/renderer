@@ -27,10 +27,10 @@ module away.bounds
 			this._radius = 0;
 		}
 
-		public isInFrustum(planes:away.math.Plane3D[], numPlanes:number):boolean
+		public isInFrustum(planes:away.geom.Plane3D[], numPlanes:number):boolean
 		{
 			for (var i:number = 0; i < numPlanes; ++i) {
-				var plane:away.math.Plane3D = planes[i];
+				var plane:away.geom.Plane3D = planes[i];
 				var flippedExtentX:number = plane.a < 0? -this._radius : this._radius;
 				var flippedExtentY:number = plane.b < 0? -this._radius : this._radius;
 				var flippedExtentZ:number = plane.c < 0? -this._radius : this._radius;
@@ -149,7 +149,7 @@ module away.bounds
 
 
 		//@override
-		public classifyToPlane(plane:away.math.Plane3D):number
+		public classifyToPlane(plane:away.geom.Plane3D):number
 		{
 			var a:number = plane.a;
 			var b:number = plane.b;
@@ -166,7 +166,7 @@ module away.bounds
 			}
 			var rr:Number = (a + b + c)*this._radius;
 
-			return dd > rr? away.math.PlaneClassification.FRONT : dd < -rr? away.math.PlaneClassification.BACK : away.math.PlaneClassification.INTERSECT;
+			return dd > rr? away.geom.PlaneClassification.FRONT : dd < -rr? away.geom.PlaneClassification.BACK : away.geom.PlaneClassification.INTERSECT;
 		}
 
 		public transformFrom(bounds:away.bounds.BoundingVolumeBase, matrix:away.geom.Matrix3D)

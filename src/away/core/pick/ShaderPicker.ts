@@ -15,12 +15,12 @@ module away.pick
 		// TODO: Dependencies needed to before implementing IPicker - EntityCollector
 	export class ShaderPicker implements away.pick.IPicker
 	{
-		private _stage3DProxy:away.managers.Stage3DProxy;
-		private _context:away.display3D.Context3D;
+		private _stageGLProxy:away.managers.StageGLProxy;
+		private _context:away.displayGL.ContextGL;
 		private _onlyMouseEnabled:boolean = true;
 
-		private _objectProgram3D:away.display3D.Program3D;
-		private _triangleProgram3D:away.display3D.Program3D;
+		private _objectProgram:away.displayGL.Program;
+		private _triangleProgram:away.displayGL.Program;
 		private _bitmapData:away.display.BitmapData;
 		private _viewportData:number[];
 		private _boundOffsetScale:number[];
@@ -86,12 +86,12 @@ module away.pick
 
 			var collector:away.traverse.EntityCollector = view.iEntityCollector;
 
-			this._stage3DProxy = view.stage3DProxy;
+			this._stageGLProxy = view.stageGLProxy;
 
-			if (!this._stage3DProxy)
+			if (!this._stageGLProxy)
 				return null;
 
-			this._context = this._stage3DProxy._iContext3D;
+			this._context = this._stageGLProxy._iContextGL;
 
 			this._viewportData[0] = view.width;
 			this._viewportData[1] = view.height;
@@ -161,26 +161,26 @@ module away.pick
 		 * @inheritDoc
 		 */
 			// TODO: GLSL implementation / conversion
-		public pDraw(entityCollector:away.traverse.EntityCollector, target:away.display3D.TextureBase)
+		public pDraw(entityCollector:away.traverse.EntityCollector, target:away.displayGL.TextureBase)
 		{
 
 			var camera:away.cameras.Camera3D = entityCollector.camera;
 
 			this._context.clear(0, 0, 0, 1);
-			this._stage3DProxy.scissorRect = ShaderPicker.MOUSE_SCISSOR_RECT;
+			this._stageGLProxy.scissorRect = ShaderPicker.MOUSE_SCISSOR_RECT;
 
 			this._interactives.length = this._interactiveId = 0;
 
-			if (!this._objectProgram3D) {
+			if (!this._objectProgram) {
 
-				this.initObjectProgram3D();
+				this.initObjectProgram();
 
 			}
 
-			this._context.setBlendFactors(away.display3D.Context3DBlendFactor.ONE, away.display3D.Context3DBlendFactor.ZERO);
-			this._context.setDepthTest(true, away.display3D.Context3DCompareMode.LESS);
-			this._context.setProgram(this._objectProgram3D);
-			this._context.setProgramConstantsFromArray(away.display3D.Context3DProgramType.VERTEX, 4, this._viewportData, 1);
+			this._context.setBlendFactors(away.displayGL.ContextGLBlendFactor.ONE, away.displayGL.ContextGLBlendFactor.ZERO);
+			this._context.setDepthTest(true, away.displayGL.ContextGLCompareMode.LESS);
+			this._context.setProgram(this._objectProgram);
+			this._context.setProgramConstantsFromArray(away.displayGL.ContextGLProgramType.VERTEX, 4, this._viewportData, 1);
 			this.drawRenderables(entityCollector.opaqueRenderableHead, camera);
 			this.drawRenderables(entityCollector.blendedRenderableHead, camera);
 
@@ -197,7 +197,7 @@ module away.pick
 			away.Debug.throwPIR('ShaderPicker', 'drawRenderables', 'implement');
 
 
-			var matrix:away.geom.Matrix3D = away.math.Matrix3DUtils.CALCULATION_MATRIX;
+			var matrix:away.geom.Matrix3D = away.geom.Matrix3DUtils.CALCULATION_MATRIX;
 			var renderable:away.base.IRenderable;
 			var viewProjection:away.geom.Matrix3D = camera.viewProjection;
 
@@ -212,7 +212,7 @@ module away.pick
 
 				this._potentialFound = true;
 
-				this._context.setCulling(renderable.material.bothSides? away.display3D.Context3DTriangleFace.NONE : away.display3D.Context3DTriangleFace.BACK);
+				this._context.setCulling(renderable.material.bothSides? away.displayGL.ContextGLTriangleFace.NONE : away.displayGL.ContextGLTriangleFace.BACK);
 
 				this._interactives[this._interactiveId++] = renderable;
 				// color code so that reading from bitmapdata will contain the correct value
@@ -221,10 +221,10 @@ module away.pick
 
 				matrix.copyFrom(renderable.getRenderSceneTransform(camera));
 				matrix.append(viewProjection);
-				this._context.setProgramConstantsFromMatrix(away.display3D.Context3DProgramType.VERTEX, 0, matrix, true);
-				this._context.setProgramConstantsFromArray(away.display3D.Context3DProgramType.FRAGMENT, 0, this._id, 1);
-				renderable.activateVertexBuffer(0, this._stage3DProxy);
-				this._context.drawTriangles(renderable.getIndexBuffer(this._stage3DProxy), 0, renderable.numTriangles);
+				this._context.setProgramConstantsFromMatrix(away.displayGL.ContextGLProgramType.VERTEX, 0, matrix, true);
+				this._context.setProgramConstantsFromArray(away.displayGL.ContextGLProgramType.FRAGMENT, 0, this._id, 1);
+				renderable.activateVertexBuffer(0, this._stageGLProxy);
+				this._context.drawTriangles(renderable.getIndexBuffer(this._stageGLProxy), 0, renderable.numTriangles);
 
 				item = item.next;
 			}
@@ -241,49 +241,49 @@ module away.pick
 		}
 
 		/**
-		 * Creates the Program3D that color-codes objects.
+		 * Creates the Program that color-codes objects.
 		 */
-		private initObjectProgram3D()
+		private initObjectProgram()
 		{
 			var vertexCode:string;
 			var fragmentCode:string;
 
-			this._objectProgram3D = this._context.createProgram();
+			this._objectProgram = this._context.createProgram();
 
 			vertexCode = "m44 vt0, va0, vc0			\n" + "mul vt1.xy, vt0.w, vc4.zw	\n" + "add vt0.xy, vt0.xy, vt1.xy	\n" + "mul vt0.xy, vt0.xy, vc4.xy	\n" + "mov op, vt0	\n";
 			fragmentCode = "mov oc, fc0"; // write identifier
 
-			away.Debug.throwPIR('ShaderPicker', 'initTriangleProgram3D', 'Dependency: initObjectProgram3D')
-			//_objectProgram3D.upload(new AGALMiniAssembler().assemble(Context3DProgramType.VERTEX, vertexCode),new AGALMiniAssembler().assemble(Context3DProgramType.FRAGMENT, fragmentCode));
+			away.Debug.throwPIR('ShaderPicker', 'initTriangleProgram', 'Dependency: initObjectProgram')
+			//_objectProgram.upload(new AGALMiniAssembler().assemble(ContextGLProgramType.VERTEX, vertexCode),new AGALMiniAssembler().assemble(ContextGLProgramType.FRAGMENT, fragmentCode));
 		}
 
 		/**
-		 * Creates the Program3D that renders positions.
+		 * Creates the Program that renders positions.
 		 */
 
-		private initTriangleProgram3D()
+		private initTriangleProgram()
 		{
 			var vertexCode:string;
 			var fragmentCode:string;
 
-			this._triangleProgram3D = this._context.createProgram();
+			this._triangleProgram = this._context.createProgram();
 
 			// todo: add animation code
 			vertexCode = "add vt0, va0, vc5 			\n" + "mul vt0, vt0, vc6 			\n" + "mov v0, vt0				\n" + "m44 vt0, va0, vc0			\n" + "mul vt1.xy, vt0.w, vc4.zw	\n" + "add vt0.xy, vt0.xy, vt1.xy	\n" + "mul vt0.xy, vt0.xy, vc4.xy	\n" + "mov op, vt0	\n";
 			fragmentCode = "mov oc, v0"; // write identifier
 
-			//away.Debug.throwPIR( 'ShaderPicker' , 'initTriangleProgram3D' , 'Dependency: AGALMiniAssembler')
+			//away.Debug.throwPIR( 'ShaderPicker' , 'initTriangleProgram' , 'Dependency: AGALMiniAssembler')
 
 
 			var vertCompiler:aglsl.AGLSLCompiler = new aglsl.AGLSLCompiler();
 			var fragCompiler:aglsl.AGLSLCompiler = new aglsl.AGLSLCompiler();
 
-			var vertString:string = vertCompiler.compile(away.display3D.Context3DProgramType.VERTEX, vertexCode);
-			var fragString:string = fragCompiler.compile(away.display3D.Context3DProgramType.FRAGMENT, fragmentCode);
+			var vertString:string = vertCompiler.compile(away.displayGL.ContextGLProgramType.VERTEX, vertexCode);
+			var fragString:string = fragCompiler.compile(away.displayGL.ContextGLProgramType.FRAGMENT, fragmentCode);
 
-			this._triangleProgram3D.upload(vertString, fragString);
+			this._triangleProgram.upload(vertString, fragString);
 
-			//this._triangleProgram3D.upload(new AGALMiniAssembler().assemble(Context3DProgramType.VERTEX, vertexCode), new AGALMiniAssembler().assemble(Context3DProgramType.FRAGMENT, fragmentCode));
+			//this._triangleProgram.upload(new AGALMiniAssembler().assemble(ContextGLProgramType.VERTEX, vertexCode), new AGALMiniAssembler().assemble(ContextGLProgramType.FRAGMENT, fragmentCode));
 		}
 
 		/**
@@ -307,12 +307,12 @@ module away.pick
 			var col:number;
 			var scX:number, scY:number, scZ:number;
 			var offsX:number, offsY:number, offsZ:number;
-			var localViewProjection:away.geom.Matrix3D = away.math.Matrix3DUtils.CALCULATION_MATRIX;
+			var localViewProjection:away.geom.Matrix3D = away.geom.Matrix3DUtils.CALCULATION_MATRIX;
 
 			localViewProjection.copyFrom(this._hitRenderable.getRenderSceneTransform(camera));
 			localViewProjection.append(camera.viewProjection);
-			if (!this._triangleProgram3D) {
-				this.initTriangleProgram3D();
+			if (!this._triangleProgram) {
+				this.initTriangleProgram();
 			}
 
 			this._boundOffsetScale[4] = 1/(scX = entity.maxX - entity.minX);
@@ -322,13 +322,13 @@ module away.pick
 			this._boundOffsetScale[1] = offsY = -entity.minY;
 			this._boundOffsetScale[2] = offsZ = -entity.minZ;
 
-			this._context.setProgram(this._triangleProgram3D);
-			this._context.clear(0, 0, 0, 0, 1, 0, away.display3D.Context3DClearMask.DEPTH);
+			this._context.setProgram(this._triangleProgram);
+			this._context.clear(0, 0, 0, 0, 1, 0, away.displayGL.ContextGLClearMask.DEPTH);
 			this._context.setScissorRectangle(ShaderPicker.MOUSE_SCISSOR_RECT);
-			this._context.setProgramConstantsFromMatrix(away.display3D.Context3DProgramType.VERTEX, 0, localViewProjection, true);
-			this._context.setProgramConstantsFromArray(away.display3D.Context3DProgramType.VERTEX, 5, this._boundOffsetScale, 2);
-			this._hitRenderable.activateVertexBuffer(0, this._stage3DProxy);
-			this._context.drawTriangles(this._hitRenderable.getIndexBuffer(this._stage3DProxy), 0, this._hitRenderable.numTriangles);
+			this._context.setProgramConstantsFromMatrix(away.displayGL.ContextGLProgramType.VERTEX, 0, localViewProjection, true);
+			this._context.setProgramConstantsFromArray(away.displayGL.ContextGLProgramType.VERTEX, 5, this._boundOffsetScale, 2);
+			this._hitRenderable.activateVertexBuffer(0, this._stageGLProxy);
+			this._context.drawTriangles(this._hitRenderable.getIndexBuffer(this._stageGLProxy), 0, this._hitRenderable.numTriangles);
 			this._context.drawToBitmapData(this._bitmapData);
 
 			col = this._bitmapData.getPixel(0, 0);
@@ -481,7 +481,7 @@ module away.pick
 			var rx:number, ry:number, rz:number;
 			var ox:number, oy:number, oz:number;
 			var t:number;
-			var raw:number[] = away.math.Matrix3DUtils.RAW_DATA_CONTAINER;
+			var raw:number[] = away.geom.Matrix3DUtils.RAW_DATA_CONTAINER;
 			var cx:number = this._rayPos.x, cy:number = this._rayPos.y, cz:number = this._rayPos.z;
 
 			// unprojected projection point, gives ray dir in cam space
@@ -510,20 +510,20 @@ module away.pick
 		public dispose()
 		{
 			this._bitmapData.dispose();
-			if (this._triangleProgram3D) {
+			if (this._triangleProgram) {
 
-				this._triangleProgram3D.dispose();
-
-			}
-
-			if (this._objectProgram3D) {
-
-				this._objectProgram3D.dispose();
+				this._triangleProgram.dispose();
 
 			}
 
-			this._triangleProgram3D = null;
-			this._objectProgram3D = null;
+			if (this._objectProgram) {
+
+				this._objectProgram.dispose();
+
+			}
+
+			this._triangleProgram = null;
+			this._objectProgram = null;
 			this._bitmapData = null;
 			this._hitRenderable = null;
 			this._hitEntity = null;

@@ -1,34 +1,26 @@
 ﻿///<reference path="../../../build/Away3D.next.d.ts" />
+//<reference path="../../../src/Away3D.ts" />
 /*
-
 MD5 animation loading and interaction example in Away3d
-
 Demonstrates:
-
 How to load MD5 mesh and anim files with bones animation from embedded resources.
 How to map animation data after loading in order to playback an animation sequence.
 How to control the movement of a game character using keys.
-
 Code by Rob Bateman & David Lenaerts
 rob@infiniteturtles.co.uk
 http://www.infiniteturtles.co.uk
 david.lenaerts@gmail.com
 http://www.derschmale.com
-
 This code is distributed under the MIT License
-
 Copyright (c) The Away Foundation http://www.theawayfoundation.org
-
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the “Software”), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
-
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
-
 THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -36,7 +28,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
-
 */
 var examples;
 (function (examples) {
@@ -61,8 +52,8 @@ var examples;
     var PointLight = away.lights.PointLight;
     var DirectionalLight = away.lights.DirectionalLight;
     var NearDirectionalShadowMapper = away.lights.NearDirectionalShadowMapper;
-    var MD5AnimParser = away.loaders.MD5AnimParser;
-    var MD5MeshParser = away.loaders.MD5MeshParser;
+    var MD5AnimParser = away.parsers.MD5AnimParser;
+    var MD5MeshParser = away.parsers.MD5MeshParser;
     var FogMethod = away.materials.FogMethod;
     var StaticLightPicker = away.materials.StaticLightPicker;
     var TextureMaterial = away.materials.TextureMaterial;
@@ -257,7 +248,7 @@ var examples;
             this._timer.start();
 
             //setup the url map for textures in the cubemap file
-            var assetLoaderContext = new away.loaders.AssetLoaderContext();
+            var assetLoaderContext = new away.net.AssetLoaderContext();
             assetLoaderContext.dependencyBaseUrl = "assets/demos/skybox/";
 
             //load hellknight mesh
@@ -292,6 +283,7 @@ var examples;
 
             this.cameraController.update();
 
+            //update character animation
             if (this.mesh) {
                 this.mesh.subMeshes[1].offsetV = this.mesh.subMeshes[2].offsetV = this.mesh.subMeshes[3].offsetV = (-this._time / 2000 % 1);
                 this.mesh.rotationY += this.currentRotationInc;
@@ -406,7 +398,7 @@ var examples;
             this.animator.playbackSpeed = this.isMoving ? this.movementDirection * (this.isRunning ? Intermediate_MD5Animation.RUN_SPEED : Intermediate_MD5Animation.WALK_SPEED) : Intermediate_MD5Animation.IDLE_SPEED;
         };
 
-        Intermediate_MD5Animation.prototype.playAction = function (val/*uint*/ ) {
+        Intermediate_MD5Animation.prototype.playAction = function (val /*uint*/ ) {
             this.onceAnim = Intermediate_MD5Animation.ANIM_NAMES[val + 2];
             this.animator.playbackSpeed = Intermediate_MD5Animation.ACTION_SPEED;
             this.animator.play(this.onceAnim, this.stateTransition, 0);

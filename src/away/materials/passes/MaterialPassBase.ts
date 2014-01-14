@@ -20,9 +20,9 @@ module away.materials
 		public _pMaterial:away.materials.MaterialBase;
 		private _animationSet:away.animators.IAnimationSet;
 
-		public _iProgram3Ds:away.display3D.Program3D[] = new Array<away.display3D.Program3D>(8) //Vector.<Program3D> = new Vector.<Program3D>(8);
-		public _iProgram3Dids:number[] = new Array<number>(-1, -1, -1, -1, -1, -1, -1, -1);//Vector.<int> = Vector.<int>([-1, -1, -1, -1, -1, -1, -1, -1]);
-		private _context3Ds:away.display3D.Context3D[] = new Array<away.display3D.Context3D>(8);//Vector.<Context3D> = new Vector.<Context3D>(8);
+		public _iPrograms:away.displayGL.Program[] = new Array<away.displayGL.Program>(8) //Vector.<Program> = new Vector.<Program>(8);
+		public _iProgramids:number[] = new Array<number>(-1, -1, -1, -1, -1, -1, -1, -1);//Vector.<int> = Vector.<int>([-1, -1, -1, -1, -1, -1, -1, -1]);
+		private _contextGLs:away.displayGL.ContextGL[] = new Array<away.displayGL.ContextGL>(8);//Vector.<ContextGL> = new Vector.<ContextGL>(8);
 
 		// agal props. these NEED to be set by subclasses!
 		// todo: can we perhaps figure these out manually by checking read operations in the bytecode, so other sources can be safely updated?
@@ -35,10 +35,10 @@ module away.materials
 		public _pSmooth:boolean = true;
 		public _pRepeat:boolean = false;
 		public _pMipmap:boolean = true;
-		private _depthCompareMode:string = away.display3D.Context3DCompareMode.LESS_EQUAL;
+		private _depthCompareMode:string = away.displayGL.ContextGLCompareMode.LESS_EQUAL;
 
-		private _blendFactorSource:string = away.display3D.Context3DBlendFactor.ONE;
-		private _blendFactorDest:string = away.display3D.Context3DBlendFactor.ZERO;
+		private _blendFactorSource:string = away.displayGL.ContextGLBlendFactor.ONE;
+		private _blendFactorDest:string = away.displayGL.ContextGLBlendFactor.ZERO;
 
 		public _pEnableBlending:boolean = false;
 
@@ -58,12 +58,12 @@ module away.materials
 		// keep track of previously rendered usage for faster cleanup of old vertex buffer streams and textures
 		private static _previousUsedStreams:number[] = new Array<number>(0, 0, 0, 0, 0, 0, 0, 0);//Vector.<int> = Vector.<int>([0, 0, 0, 0, 0, 0, 0, 0]);
 		private static _previousUsedTexs:number[] = new Array<number>(0, 0, 0, 0, 0, 0, 0, 0);//Vector.<int> = Vector.<int>([0, 0, 0, 0, 0, 0, 0, 0]);
-		private _defaultCulling:string = away.display3D.Context3DTriangleFace.BACK;
+		private _defaultCulling:string = away.displayGL.ContextGLTriangleFace.BACK;
 
 		private _renderToTexture:boolean;
 
 		// render state mementos for render-to-texture passes
-		private _oldTarget:away.display3D.TextureBase;
+		private _oldTarget:away.displayGL.TextureBase;
 		private _oldSurface:number;
 		private _oldDepthStencil:boolean;
 		private _oldRect:away.geom.Rectangle;
@@ -83,7 +83,7 @@ module away.materials
 		 *
 		 * @param renderToTexture Indicates whether this pass is a render-to-texture pass.
 		 */
-			constructor(renderToTexture:boolean = false)
+		constructor(renderToTexture:boolean = false)
 		{
 
 			super();
@@ -206,7 +206,7 @@ module away.materials
 		/**
 		 * The depth compare mode used to render the renderables using this material.
 		 *
-		 * @see flash.display3D.Context3DCompareMode
+		 * @see flash.displayGL.ContextGLCompareMode
 		 */
 		public get depthCompareMode():string
 		{
@@ -263,11 +263,11 @@ module away.materials
 
 			for (var i:number = 0; i < 8; ++i) {
 
-				if (this._iProgram3Ds[i]) {
+				if (this._iPrograms[i]) {
 
-					//away.Debug.throwPIR( 'away.materials.MaterialPassBase' , 'dispose' , 'required dependency: AGALProgram3DCache');
-					away.managers.AGALProgram3DCache.getInstanceFromIndex(i).freeProgram3D(this._iProgram3Dids[i]);
-					this._iProgram3Ds[i] = null;
+					//away.Debug.throwPIR( 'away.materials.MaterialPassBase' , 'dispose' , 'required dependency: AGALProgramCache');
+					away.managers.AGALProgramCache.getInstanceFromIndex(i).freeProgram(this._iProgramids[i]);
+					this._iPrograms[i] = null;
 
 				}
 			}
@@ -320,9 +320,9 @@ module away.materials
 		 *
 		 * @private
 		 */
-		public iUpdateAnimationState(renderable:away.base.IRenderable, stage3DProxy:away.managers.Stage3DProxy, camera:away.cameras.Camera3D)
+		public iUpdateAnimationState(renderable:away.base.IRenderable, stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D)
 		{
-			renderable.animator.setRenderState(stage3DProxy, renderable, this._pNumUsedVertexConstants, this._pNumUsedStreams, camera);
+			renderable.animator.setRenderState(stageGLProxy, renderable, this._pNumUsedVertexConstants, this._pNumUsedStreams, camera);
 		}
 
 		/**
@@ -330,7 +330,7 @@ module away.materials
 		 *
 		 * @private
 		 */
-		public iRender(renderable:away.base.IRenderable, stage3DProxy:away.managers.Stage3DProxy, camera:away.cameras.Camera3D, viewProjection:away.geom.Matrix3D)
+		public iRender(renderable:away.base.IRenderable, stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D, viewProjection:away.geom.Matrix3D)
 		{
 			throw new away.errors.AbstractMethodError();
 		}
@@ -367,40 +367,40 @@ module away.materials
 
 				case away.display.BlendMode.NORMAL:
 
-					this._blendFactorSource = away.display3D.Context3DBlendFactor.ONE;
-					this._blendFactorDest = away.display3D.Context3DBlendFactor.ZERO;
+					this._blendFactorSource = away.displayGL.ContextGLBlendFactor.ONE;
+					this._blendFactorDest = away.displayGL.ContextGLBlendFactor.ZERO;
 					this._pEnableBlending = false;
 
 					break;
 
 				case away.display.BlendMode.LAYER:
 
-					this._blendFactorSource = away.display3D.Context3DBlendFactor.SOURCE_ALPHA;
-					this._blendFactorDest = away.display3D.Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA;
+					this._blendFactorSource = away.displayGL.ContextGLBlendFactor.SOURCE_ALPHA;
+					this._blendFactorDest = away.displayGL.ContextGLBlendFactor.ONE_MINUS_SOURCE_ALPHA;
 					this._pEnableBlending = true;
 
 					break;
 
 				case away.display.BlendMode.MULTIPLY:
 
-					this._blendFactorSource = away.display3D.Context3DBlendFactor.ZERO;
-					this._blendFactorDest = away.display3D.Context3DBlendFactor.SOURCE_COLOR;
+					this._blendFactorSource = away.displayGL.ContextGLBlendFactor.ZERO;
+					this._blendFactorDest = away.displayGL.ContextGLBlendFactor.SOURCE_COLOR;
 					this._pEnableBlending = true;
 
 					break;
 
 				case away.display.BlendMode.ADD:
 
-					this._blendFactorSource = away.display3D.Context3DBlendFactor.SOURCE_ALPHA;
-					this._blendFactorDest = away.display3D.Context3DBlendFactor.ONE;
+					this._blendFactorSource = away.displayGL.ContextGLBlendFactor.SOURCE_ALPHA;
+					this._blendFactorDest = away.displayGL.ContextGLBlendFactor.ONE;
 					this._pEnableBlending = true;
 
 					break;
 
 				case away.display.BlendMode.ALPHA:
 
-					this._blendFactorSource = away.display3D.Context3DBlendFactor.ZERO;
-					this._blendFactorDest = away.display3D.Context3DBlendFactor.SOURCE_ALPHA;
+					this._blendFactorSource = away.displayGL.ContextGLBlendFactor.ZERO;
+					this._blendFactorDest = away.displayGL.ContextGLBlendFactor.SOURCE_ALPHA;
 					this._pEnableBlending = true;
 
 					break;
@@ -415,14 +415,14 @@ module away.materials
 		/**
 		 * Sets the render state for the pass that is independent of the rendered object. This needs to be called before
 		 * calling renderPass. Before activating a pass, the previously used pass needs to be deactivated.
-		 * @param stage3DProxy The Stage3DProxy object which is currently used for rendering.
+		 * @param stageGLProxy The StageGLProxy object which is currently used for rendering.
 		 * @param camera The camera from which the scene is viewed.
 		 * @private
 		 */
-		public iActivate(stage3DProxy:away.managers.Stage3DProxy, camera:away.cameras.Camera3D)
+		public iActivate(stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D)
 		{
-			var contextIndex:number = stage3DProxy._iStage3DIndex;//_stage3DIndex;
-			var context:away.display3D.Context3D = stage3DProxy._iContext3D;
+			var contextIndex:number = stageGLProxy._iStageGLIndex;//_stageGLIndex;
+			var context:away.displayGL.ContextGL = stageGLProxy._iContextGL;
 
 			context.setDepthTest(( this._writeDepth && !this._pEnableBlending ), this._depthCompareMode);
 
@@ -432,11 +432,11 @@ module away.materials
 
 			}
 
-			if (this._context3Ds[contextIndex] != context || !this._iProgram3Ds[contextIndex]) {
+			if (this._contextGLs[contextIndex] != context || !this._iPrograms[contextIndex]) {
 
-				this._context3Ds[contextIndex] = context;
+				this._contextGLs[contextIndex] = context;
 
-				this.iUpdateProgram(stage3DProxy);
+				this.iUpdateProgram(stageGLProxy);
 				this.dispatchEvent(new away.events.Event(away.events.Event.CHANGE));
 
 			}
@@ -462,39 +462,39 @@ module away.materials
 
 			if (this._animationSet && !this._animationSet.usesCPU) {
 
-				this._animationSet.activate(stage3DProxy, this);
+				this._animationSet.activate(stageGLProxy, this);
 
 			}
 
 
-			context.setProgram(this._iProgram3Ds[contextIndex]);
+			context.setProgram(this._iPrograms[contextIndex]);
 
-			context.setCulling(this._pBothSides? away.display3D.Context3DTriangleFace.NONE : this._defaultCulling);
+			context.setCulling(this._pBothSides? away.displayGL.ContextGLTriangleFace.NONE : this._defaultCulling);
 
 			if (this._renderToTexture) {
-				this._oldTarget = stage3DProxy.renderTarget;
-				this._oldSurface = stage3DProxy.renderSurfaceSelector;
-				this._oldDepthStencil = stage3DProxy.enableDepthAndStencil;
-				this._oldRect = stage3DProxy.scissorRect;
+				this._oldTarget = stageGLProxy.renderTarget;
+				this._oldSurface = stageGLProxy.renderSurfaceSelector;
+				this._oldDepthStencil = stageGLProxy.enableDepthAndStencil;
+				this._oldRect = stageGLProxy.scissorRect;
 			}
 		}
 
 		/**
 		 * Clears the render state for the pass. This needs to be called before activating another pass.
-		 * @param stage3DProxy The Stage3DProxy used for rendering
+		 * @param stageGLProxy The StageGLProxy used for rendering
 		 *
 		 * @private
 		 */
-		public iDeactivate(stage3DProxy:away.managers.Stage3DProxy)
+		public iDeactivate(stageGLProxy:away.managers.StageGLProxy)
 		{
 
-			var index:number = stage3DProxy._iStage3DIndex;//_stage3DIndex;
+			var index:number = stageGLProxy._iStageGLIndex;//_stageGLIndex;
 			MaterialPassBase._previousUsedStreams[index] = this._pNumUsedStreams;
 			MaterialPassBase._previousUsedTexs[index] = this._pNumUsedTextures;
 
 			if (this._animationSet && !this._animationSet.usesCPU) {
 
-				this._animationSet.deactivate(stage3DProxy, this);
+				this._animationSet.deactivate(stageGLProxy, this);
 
 			}
 
@@ -502,12 +502,12 @@ module away.materials
 			if (this._renderToTexture) {
 
 				// kindly restore state
-				stage3DProxy.setRenderTarget(this._oldTarget, this._oldDepthStencil, this._oldSurface);
-				stage3DProxy.scissorRect = this._oldRect;
+				stageGLProxy.setRenderTarget(this._oldTarget, this._oldDepthStencil, this._oldSurface);
+				stageGLProxy.scissorRect = this._oldRect;
 
 			}
 
-			stage3DProxy._iContext3D.setDepthTest(true, away.display3D.Context3DCompareMode.LESS_EQUAL); // TODO : imeplement
+			stageGLProxy._iContextGL.setDepthTest(true, away.displayGL.ContextGLCompareMode.LESS_EQUAL); // TODO : imeplement
 		}
 
 		/**
@@ -519,7 +519,7 @@ module away.materials
 		{
 			for (var i:number = 0; i < 8; ++i) {
 
-				this._iProgram3Ds[i] = null;
+				this._iPrograms[i] = null;
 
 			}
 
@@ -536,7 +536,7 @@ module away.materials
 		 * Compiles the shader program.
 		 * @param polyOffsetReg An optional register that contains an amount by which to inflate the model (used in single object depth map rendering).
 		 */
-		public iUpdateProgram(stage3DProxy:away.managers.Stage3DProxy)
+		public iUpdateProgram(stageGLProxy:away.managers.StageGLProxy)
 		{
 			var animatorCode:string = "";
 			var UVAnimatorCode:string = "";
@@ -545,11 +545,11 @@ module away.materials
 
 			if (this._animationSet && !this._animationSet.usesCPU) {
 
-				animatorCode = this._animationSet.getAGALVertexCode(this, this._pAnimatableAttributes, this._pAnimationTargetRegisters, stage3DProxy.profile);
+				animatorCode = this._animationSet.getAGALVertexCode(this, this._pAnimatableAttributes, this._pAnimationTargetRegisters, stageGLProxy.profile);
 
 				if (this._pNeedFragmentAnimation) {
 
-					fragmentAnimatorCode = this._animationSet.getAGALFragmentCode(this, this._pShadedTarget, stage3DProxy.profile);
+					fragmentAnimatorCode = this._animationSet.getAGALFragmentCode(this, this._pShadedTarget, stageGLProxy.profile);
 
 				}
 
@@ -597,7 +597,7 @@ module away.materials
 			 }
 			 */
 
-			away.managers.AGALProgram3DCache.getInstance(stage3DProxy).setProgram3D(this, vertexCode, fragmentCode);
+			away.managers.AGALProgramCache.getInstance(stageGLProxy).setProgram(this, vertexCode, fragmentCode);
 
 		}
 

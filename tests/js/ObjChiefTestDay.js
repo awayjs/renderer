@@ -1,6 +1,7 @@
+///<reference path="../../../build/Away3D.next.d.ts" />
+//<reference path="../../../src/Away3D.ts" />
 var demos;
 (function (demos) {
-    ///<reference path="../../../build/Away3D.next.d.ts" />
     (function (parsers) {
         var ObjChiefTestDay = (function () {
             function ObjChiefTestDay() {
@@ -24,10 +25,10 @@ var demos;
                 this.raf = new away.utils.RequestAnimationFrame(this.render, this);
 
                 this.light = new away.lights.DirectionalLight();
-                this.light.color = 0xc1582d;
+                this.light.color = 0xc1582d; //683019;
                 this.light.direction = new away.geom.Vector3D(1, 0, 0);
-                this.light.ambient = 0.4;
-                this.light.ambientColor = 0x85b2cd;
+                this.light.ambient = 0.4; //0.05;//.4;
+                this.light.ambientColor = 0x85b2cd; //4F6877;//313D51;
                 this.light.diffuse = 2.8;
                 this.light.specular = 1.8;
 
@@ -38,7 +39,7 @@ var demos;
 
                 this.view.scene.addChild(this.light);
 
-                away.library.AssetLibrary.enableParser(away.loaders.OBJParser);
+                away.library.AssetLibrary.enableParser(away.parsers.OBJParser);
 
                 this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/Halo_3_SPARTAN4.obj'));
                 this.token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete, this);

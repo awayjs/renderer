@@ -2,9 +2,9 @@
 
 module away.animators
 {
-	import Stage3DProxy = away.managers.Stage3DProxy;
-	import Context3D = away.display3D.Context3D;
-	import VertexBuffer3D = away.display3D.VertexBuffer3D;
+	import StageGLProxy = away.managers.StageGLProxy;
+	import ContextGL = away.displayGL.ContextGL;
+	import VertexBuffer = away.displayGL.VertexBuffer;
 	
 	/**
 	 * ...
@@ -15,8 +15,8 @@ module away.animators
 
 		public _pVertexData:Array<number>;
 		
-		public _pVertexBuffer:Array<VertexBuffer3D> = new Array<VertexBuffer3D>(8);
-		public _pBufferContext:Array<Context3D> = new Array<Context3D>(8);
+		public _pVertexBuffer:Array<VertexBuffer> = new Array<VertexBuffer>(8);
+		public _pBufferContext:Array<ContextGL> = new Array<ContextGL>(8);
 		public _pBufferDirty:Array<Boolean> = new Array<Boolean>(8);
 		
 		private _numVertices:number /*uint*/;
@@ -51,12 +51,12 @@ module away.animators
 			this._pVertexData = new Array<number>(numVertices*totalLenOfOneVertex);
 		}
 		
-		public activateVertexBuffer(index:number /*int*/, bufferOffset:number /*int*/, stage3DProxy:Stage3DProxy, format:string)
+		public activateVertexBuffer(index:number /*int*/, bufferOffset:number /*int*/, stageGLProxy:StageGLProxy, format:string)
 		{
-			var contextIndex:number /*int*/ = stage3DProxy.stage3DIndex;
-			var context:Context3D = stage3DProxy.context3D;
+			var contextIndex:number /*int*/ = stageGLProxy.stageGLIndex;
+			var context:ContextGL = stageGLProxy.contextGL;
 			
-			var buffer:VertexBuffer3D = this._pVertexBuffer[contextIndex];
+			var buffer:VertexBuffer = this._pVertexBuffer[contextIndex];
 			if (!buffer || this._pBufferContext[contextIndex] != context) {
 				buffer = this._pVertexBuffer[contextIndex] = context.createVertexBuffer(this._numVertices, this._totalLenOfOneVertex);
 				this._pBufferContext[contextIndex] = context;
@@ -72,7 +72,7 @@ module away.animators
 		public dispose()
 		{
 			while (this._pVertexBuffer.length) {
-				var vertexBuffer:VertexBuffer3D = this._pVertexBuffer.pop()
+				var vertexBuffer:VertexBuffer = this._pVertexBuffer.pop()
 				
 				if (vertexBuffer)
 					vertexBuffer.dispose();

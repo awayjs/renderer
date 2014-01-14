@@ -1,6 +1,7 @@
+///<reference path="../../../build/Away3D.next.d.ts" />
+//<reference path="../../../src/Away3D.ts" />
 var demos;
 (function (demos) {
-    ///<reference path="../../../build/Away3D.next.d.ts" />
     (function (materials) {
         var MaterialAlphaTest = (function () {
             function MaterialAlphaTest() {
@@ -19,7 +20,7 @@ var demos;
                 this.light = new away.lights.DirectionalLight();
                 this.light.color = 0xFFFFFF;
                 this.light.direction = new away.geom.Vector3D(1, 1, 0);
-                this.light.ambient = 0;
+                this.light.ambient = 0; //0.05;//.4;
                 this.light.ambientColor = 0xFFFFFF;
                 this.light.diffuse = 1;
                 this.light.specular = 1;
@@ -27,7 +28,7 @@ var demos;
                 this.lightB = new away.lights.DirectionalLight();
                 this.lightB.color = 0xFF0000;
                 this.lightB.direction = new away.geom.Vector3D(-1, 0, 1);
-                this.lightB.ambient = 0;
+                this.lightB.ambient = 0; //0.05;//.4;
                 this.lightB.ambientColor = 0xFFFFFF;
                 this.lightB.diffuse = 1;
                 this.lightB.specular = 1;
@@ -37,7 +38,7 @@ var demos;
 
                 this.view.backgroundColor = 0x222222;
 
-                away.library.AssetLibrary.enableParser(away.loaders.OBJParser);
+                away.library.AssetLibrary.enableParser(away.parsers.OBJParser);
 
                 this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/platonic.obj'));
                 this.token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete, this);

@@ -6,7 +6,7 @@ module away.base
 {
 	//import away3d.arcane;
 	//import away3d.controllers.*;
-	//import away3d.core.math.*;
+	//import away3d.core.geom.*;
 	//import away3d.events.*;
 	//import away3d.library.assets.*;
 
@@ -326,7 +326,7 @@ module away.base
 		 */
 		public get rotationX():number
 		{
-			return this._rotationX*away.math.MathConsts.RADIANS_TO_DEGREES;
+			return this._rotationX*away.geom.MathConsts.RADIANS_TO_DEGREES;
 		}
 
 		public set rotationX(val:number)
@@ -338,7 +338,7 @@ module away.base
 			}
 
 
-			this._rotationX = val*away.math.MathConsts.DEGREES_TO_RADIANS;
+			this._rotationX = val*away.geom.MathConsts.DEGREES_TO_RADIANS;
 			this.invalidateRotation();
 		}
 
@@ -347,7 +347,7 @@ module away.base
 		 */
 		public get rotationY():number
 		{
-			return this._rotationY*away.math.MathConsts.RADIANS_TO_DEGREES;
+			return this._rotationY*away.geom.MathConsts.RADIANS_TO_DEGREES;
 		}
 
 		public set rotationY(val:number)
@@ -358,7 +358,7 @@ module away.base
 
 			}
 
-			this._rotationY = val*away.math.MathConsts.DEGREES_TO_RADIANS;
+			this._rotationY = val*away.geom.MathConsts.DEGREES_TO_RADIANS;
 
 			this.invalidateRotation();
 		}
@@ -368,7 +368,7 @@ module away.base
 		 */
 		public get rotationZ():number
 		{
-			return this._rotationZ*away.math.MathConsts.RADIANS_TO_DEGREES;
+			return this._rotationZ*away.geom.MathConsts.RADIANS_TO_DEGREES;
 		}
 
 		public set rotationZ(val:number)
@@ -380,7 +380,7 @@ module away.base
 			}
 
 
-			this._rotationZ = val*away.math.MathConsts.DEGREES_TO_RADIANS;
+			this._rotationZ = val*away.geom.MathConsts.DEGREES_TO_RADIANS;
 
 			this.invalidateRotation();
 		}
@@ -454,18 +454,18 @@ module away.base
 		 */
 		public get eulers():away.geom.Vector3D
 		{
-			this._eulers.x = this._rotationX*away.math.MathConsts.RADIANS_TO_DEGREES;
-			this._eulers.y = this._rotationY*away.math.MathConsts.RADIANS_TO_DEGREES;
-			this._eulers.z = this._rotationZ*away.math.MathConsts.RADIANS_TO_DEGREES;
+			this._eulers.x = this._rotationX*away.geom.MathConsts.RADIANS_TO_DEGREES;
+			this._eulers.y = this._rotationY*away.geom.MathConsts.RADIANS_TO_DEGREES;
+			this._eulers.z = this._rotationZ*away.geom.MathConsts.RADIANS_TO_DEGREES;
 
 			return this._eulers;
 		}
 
 		public set eulers(value:away.geom.Vector3D)
 		{
-			this._rotationX = value.x*away.math.MathConsts.DEGREES_TO_RADIANS;
-			this._rotationY = value.y*away.math.MathConsts.DEGREES_TO_RADIANS;
-			this._rotationZ = value.z*away.math.MathConsts.DEGREES_TO_RADIANS;
+			this._rotationX = value.x*away.geom.MathConsts.DEGREES_TO_RADIANS;
+			this._rotationY = value.y*away.geom.MathConsts.DEGREES_TO_RADIANS;
+			this._rotationZ = value.z*away.geom.MathConsts.DEGREES_TO_RADIANS;
 
 			this.invalidateRotation();
 		}
@@ -494,7 +494,7 @@ module away.base
 			//*
 			if (!val.rawData[0]) {
 
-				var raw:number[] = away.math.Matrix3DUtils.RAW_DATA_CONTAINER;
+				var raw:number[] = away.geom.Matrix3DUtils.RAW_DATA_CONTAINER;
 				val.copyRawDataTo(raw);
 				raw[0] = this._smallestNumber;
 				val.copyRawDataFrom(raw);
@@ -576,7 +576,7 @@ module away.base
 		 */
 		public get forwardVector():away.geom.Vector3D
 		{
-			return away.math.Matrix3DUtils.getForward(this.transform);
+			return away.geom.Matrix3DUtils.getForward(this.transform);
 		}
 
 		/**
@@ -584,7 +584,7 @@ module away.base
 		 */
 		public get rightVector():away.geom.Vector3D
 		{
-			return away.math.Matrix3DUtils.getRight(this.transform);
+			return away.geom.Matrix3DUtils.getRight(this.transform);
 		}
 
 		/**
@@ -592,7 +592,7 @@ module away.base
 		 */
 		public get upVector():away.geom.Vector3D
 		{
-			return away.math.Matrix3DUtils.getUp(this.transform);
+			return away.geom.Matrix3DUtils.getUp(this.transform);
 		}
 
 		/**
@@ -600,7 +600,7 @@ module away.base
 		 */
 		public get backVector():away.geom.Vector3D
 		{
-			var director:away.geom.Vector3D = away.math.Matrix3DUtils.getForward(this.transform);
+			var director:away.geom.Vector3D = away.geom.Matrix3DUtils.getForward(this.transform);
 			director.negate();
 
 			return director;
@@ -611,7 +611,7 @@ module away.base
 		 */
 		public get leftVector():away.geom.Vector3D
 		{
-			var director:away.geom.Vector3D = away.math.Matrix3DUtils.getRight(this.transform);
+			var director:away.geom.Vector3D = away.geom.Matrix3DUtils.getRight(this.transform);
 			director.negate();
 
 			return director;
@@ -622,7 +622,7 @@ module away.base
 		 */
 		public get downVector():away.geom.Vector3D
 		{
-			var director:away.geom.Vector3D = away.math.Matrix3DUtils.getUp(this.transform);
+			var director:away.geom.Vector3D = away.geom.Matrix3DUtils.getUp(this.transform);
 			director.negate();
 
 			return director;
@@ -859,9 +859,9 @@ module away.base
 		 */
 		public rotateTo(ax:number, ay:number, az:number)
 		{
-			this._rotationX = ax*away.math.MathConsts.DEGREES_TO_RADIANS;
-			this._rotationY = ay*away.math.MathConsts.DEGREES_TO_RADIANS;
-			this._rotationZ = az*away.math.MathConsts.DEGREES_TO_RADIANS;
+			this._rotationX = ax*away.geom.MathConsts.DEGREES_TO_RADIANS;
+			this._rotationY = ay*away.geom.MathConsts.DEGREES_TO_RADIANS;
+			this._rotationZ = az*away.geom.MathConsts.DEGREES_TO_RADIANS;
 
 			this.invalidateRotation();
 		}
@@ -915,7 +915,7 @@ module away.base
 
 			yAxis = zAxis.crossProduct(xAxis);
 
-			raw = away.math.Matrix3DUtils.RAW_DATA_CONTAINER;
+			raw = away.geom.Matrix3DUtils.RAW_DATA_CONTAINER;
 
 			raw[0] = xAxis.x;
 			raw[1] = xAxis.y;

@@ -23,8 +23,8 @@ module away.traverse
 		private _numPointLights:number = 0;
 		private _numLightProbes:number = 0;
 		public _pCameraForward:away.geom.Vector3D;
-		private _customCullPlanes:away.math.Plane3D[];
-		private _cullPlanes:away.math.Plane3D[];
+		private _customCullPlanes:away.geom.Plane3D[];
+		private _cullPlanes:away.geom.Plane3D[];
 		private _numCullPlanes:number = 0;
 
 		constructor()
@@ -56,12 +56,12 @@ module away.traverse
 			this._cullPlanes = this._pCamera.frustumPlanes;
 		}
 
-		public get cullPlanes():away.math.Plane3D[]
+		public get cullPlanes():away.geom.Plane3D[]
 		{
 			return this._customCullPlanes;
 		}
 
-		public set cullPlanes(value:away.math.Plane3D[])
+		public set cullPlanes(value:away.geom.Plane3D[])
 		{
 			this._customCullPlanes = value;
 		}

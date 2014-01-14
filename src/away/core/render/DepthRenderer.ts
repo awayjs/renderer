@@ -17,7 +17,7 @@ module away.render
 		 * @param renderBlended Indicates whether semi-transparent objects should be rendered.
 		 * @param distanceBased Indicates whether the written depth value is distance-based or projected depth-based
 		 */
-			constructor(renderBlended:boolean = false, distanceBased:boolean = false)
+		constructor(renderBlended:boolean = false, distanceBased:boolean = false)
 		{
 			super();
 
@@ -39,7 +39,7 @@ module away.render
 			this._disableColor = value;
 		}
 
-		public iRenderCascades(entityCollector:away.traverse.EntityCollector, target:away.display3D.TextureBase, numCascades:number, scissorRects:away.geom.Rectangle[], cameras:away.cameras.Camera3D[])
+		public iRenderCascades(entityCollector:away.traverse.EntityCollector, target:away.displayGL.TextureBase, numCascades:number, scissorRects:away.geom.Rectangle[], cameras:away.cameras.Camera3D[])
 		{
 
 			this._pRenderTarget = target;
@@ -47,25 +47,25 @@ module away.render
 
 			this._pRenderableSorter.sort(entityCollector);
 
-			this._pStage3DProxy.setRenderTarget(target, true, 0);
+			this._pStageGLProxy.setRenderTarget(target, true, 0);
 			this._pContext.clear(1, 1, 1, 1, 1, 0);
 
-			this._pContext.setBlendFactors(away.display3D.Context3DBlendFactor.ONE, away.display3D.Context3DBlendFactor.ZERO);
-			this._pContext.setDepthTest(true, away.display3D.Context3DCompareMode.LESS);
+			this._pContext.setBlendFactors(away.displayGL.ContextGLBlendFactor.ONE, away.displayGL.ContextGLBlendFactor.ZERO);
+			this._pContext.setDepthTest(true, away.displayGL.ContextGLCompareMode.LESS);
 
 			var head:away.data.RenderableListItem = entityCollector.opaqueRenderableHead;
 
 			var first:boolean = true;
 
 			for (var i:number = numCascades - 1; i >= 0; --i) {
-				this._pStage3DProxy.scissorRect = scissorRects[i];
+				this._pStageGLProxy.scissorRect = scissorRects[i];
 				this.drawCascadeRenderables(head, cameras[i], first? null : cameras[i].frustumPlanes);
 				first = false;
 			}
 
 			if (this._activeMaterial) {
 
-				this._activeMaterial.iDeactivateForDepth(this._pStage3DProxy);
+				this._activeMaterial.iDeactivateForDepth(this._pStageGLProxy);
 
 			}
 
@@ -73,13 +73,13 @@ module away.render
 			this._activeMaterial = null;
 
 			//line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
-			this._pContext.setDepthTest(false, away.display3D.Context3DCompareMode.LESS_EQUAL);
+			this._pContext.setDepthTest(false, away.displayGL.ContextGLCompareMode.LESS_EQUAL);
 
-			this._pStage3DProxy.scissorRect = null;
+			this._pStageGLProxy.scissorRect = null;
 
 		}
 
-		private drawCascadeRenderables(item:away.data.RenderableListItem, camera:away.cameras.Camera3D, cullPlanes:away.math.Plane3D[])
+		private drawCascadeRenderables(item:away.data.RenderableListItem, camera:away.cameras.Camera3D, cullPlanes:away.geom.Plane3D[])
 		{
 			var material:away.materials.MaterialBase;
 
@@ -107,15 +107,15 @@ module away.render
 					if (this._activeMaterial != material) {
 						if (this._activeMaterial) {
 
-							this._activeMaterial.iDeactivateForDepth(this._pStage3DProxy);
+							this._activeMaterial.iDeactivateForDepth(this._pStageGLProxy);
 
 						}
 
 						this._activeMaterial = material;
-						this._activeMaterial.iActivateForDepth(this._pStage3DProxy, camera, false);
+						this._activeMaterial.iActivateForDepth(this._pStageGLProxy, camera, false);
 					}
 
-					this._activeMaterial.iRenderDepth(renderable, this._pStage3DProxy, camera, camera.viewProjection);
+					this._activeMaterial.iRenderDepth(renderable, this._pStageGLProxy, camera, camera.viewProjection);
 
 				} else {
 
@@ -131,12 +131,12 @@ module away.render
 		/**
 		 * @inheritDoc
 		 */
-		public pDraw(entityCollector:away.traverse.EntityCollector, target:away.display3D.TextureBase)
+		public pDraw(entityCollector:away.traverse.EntityCollector, target:away.displayGL.TextureBase)
 		{
 
-			this._pContext.setBlendFactors(away.display3D.Context3DBlendFactor.ONE, away.display3D.Context3DBlendFactor.ZERO);
+			this._pContext.setBlendFactors(away.displayGL.ContextGLBlendFactor.ONE, away.displayGL.ContextGLBlendFactor.ZERO);
 
-			this._pContext.setDepthTest(true, away.display3D.Context3DCompareMode.LESS);
+			this._pContext.setDepthTest(true, away.displayGL.ContextGLCompareMode.LESS);
 
 			this.drawRenderables(entityCollector.opaqueRenderableHead, entityCollector);
 
@@ -147,7 +147,7 @@ module away.render
 				this.drawRenderables(entityCollector.blendedRenderableHead, entityCollector);
 
 			if (this._activeMaterial)
-				this._activeMaterial.iDeactivateForDepth(this._pStage3DProxy);
+				this._activeMaterial.iDeactivateForDepth(this._pStageGLProxy);
 
 			if (this._disableColor)
 				this._pContext.setColorMask(true, true, true, true);
@@ -182,16 +182,16 @@ module away.render
 					} while (item2 && item2.renderable.material == this._activeMaterial);
 
 				} else {
-					this._activeMaterial.iActivateForDepth(this._pStage3DProxy, camera, this._distanceBased);
+					this._activeMaterial.iActivateForDepth(this._pStageGLProxy, camera, this._distanceBased);
 					item2 = item;
 					do {
 
-						this._activeMaterial.iRenderDepth(item2.renderable, this._pStage3DProxy, camera, this._pRttViewProjectionMatrix);
+						this._activeMaterial.iRenderDepth(item2.renderable, this._pStageGLProxy, camera, this._pRttViewProjectionMatrix);
 						item2 = item2.next;
 
 					} while (item2 && item2.renderable.material == this._activeMaterial);
 
-					this._activeMaterial.iDeactivateForDepth(this._pStage3DProxy);
+					this._activeMaterial.iDeactivateForDepth(this._pStageGLProxy);
 
 				}
 

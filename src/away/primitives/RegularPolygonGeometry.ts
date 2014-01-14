@@ -55,7 +55,7 @@ module away.primitives
 		 * @param sides Defines the number of sides of the regular polygon.
 		 * @param yUp Defines whether the regular polygon should lay on the Y-axis (true) or on the Z-axis (false).
 		 */
-			constructor(radius:number = 100, sides:number = 16, yUp:boolean = true)
+		constructor(radius:number = 100, sides:number = 16, yUp:boolean = true)
 		{
 			super(radius, 0, 0, sides, 1, true, false, false, yUp);
 		}

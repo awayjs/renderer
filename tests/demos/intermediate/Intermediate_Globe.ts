@@ -1,4 +1,5 @@
 ///<reference path="../../../build/Away3D.next.d.ts" />
+//<reference path="../../../src/Away3D.ts" />
 
 /*
 
@@ -317,7 +318,7 @@ module examples
             away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete, this);
 
             //setup the url map for textures in the cubemap file
-            var assetLoaderContext:away.loaders.AssetLoaderContext = new away.loaders.AssetLoaderContext();
+            var assetLoaderContext:away.net.AssetLoaderContext = new away.net.AssetLoaderContext();
             assetLoaderContext.dependencyBaseUrl = "assets/demos/skybox/";
 
             //environment texture

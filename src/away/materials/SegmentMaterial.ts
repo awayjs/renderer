@@ -17,7 +17,7 @@ module away.materials
 		 *
 		 * @param thickness The thickness of the wireframe lines.
 		 */
-			constructor(thickness:number = 1.25)
+		constructor(thickness:number = 1.25)
 		{
 			super();
 

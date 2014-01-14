@@ -38,7 +38,7 @@ module away.pick
 		 * @param findClosestCollision Determines whether the picker searches for the closest bounds collision along the ray,
 		 * or simply returns the first collision encountered Defaults to false.
 		 */
-			constructor(findClosestCollision:boolean)
+		constructor(findClosestCollision:boolean)
 		{
 			this._raycastCollector = new away.traverse.RaycastCollector();
 

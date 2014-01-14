@@ -49,7 +49,7 @@ module away.animators
 		 *
 		 * @see away3d.animators.data.VertexAnimationMode
 		 */
-			constructor(numPoses:number /*uint*/ = 2, blendMode:string = "absolute")
+		constructor(numPoses:number /*uint*/ = 2, blendMode:string = "absolute")
 		{
 			super();
 			this._numPoses = numPoses;
@@ -70,7 +70,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public activate(stage3DProxy:away.managers.Stage3DProxy, pass:away.materials.MaterialPassBase)
+		public activate(stageGLProxy:away.managers.StageGLProxy, pass:away.materials.MaterialPassBase)
 		{
 			var uID:number = pass._iUniqueId;
 			this._uploadNormals = <boolean> this._useNormals[uID];
@@ -80,11 +80,11 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public deactivate(stage3DProxy:away.managers.Stage3DProxy, pass:away.materials.MaterialPassBase)
+		public deactivate(stageGLProxy:away.managers.StageGLProxy, pass:away.materials.MaterialPassBase)
 		{
 			var uID:number = pass._iUniqueId;
 			var index:number /*uint*/ = this._streamIndices[uID];
-			var context:away.display3D.Context3D = stage3DProxy._iContext3D;
+			var context:away.displayGL.ContextGL = stageGLProxy._iContextGL;
 			context.setVertexBufferAt(index, null);
 			if (this._uploadNormals)
 				context.setVertexBufferAt(index + 1, null);

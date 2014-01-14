@@ -1,37 +1,6 @@
-/// <reference path="ref/webgl.d.ts" />
-/// <reference path="ref/js.d.ts" />
-declare module away.errors {
-    class Error {
-        private _errorID;
-        private _messsage;
-        private _name;
-        constructor(message?: string, id?: number, _name?: string);
-        public message : string;
-        public name : string;
-        public errorID : number;
-    }
-}
-declare module away.errors {
-    class ArgumentError extends errors.Error {
-        constructor(message?: string, id?: number);
-    }
-}
-declare module away.errors {
-    class PartialImplementationError extends errors.Error {
-        constructor(dependency?: string, id?: number);
-    }
-}
-declare module away.errors {
-    class AbstractMethodError extends errors.Error {
-        constructor(message?: string, id?: number);
-    }
-}
-declare module away.errors {
-    class DocumentError extends errors.Error {
-        static DOCUMENT_DOES_NOT_EXIST: string;
-        constructor(message?: string, id?: number);
-    }
-}
+/// <reference path="../libs/ref/webgl.d.ts" />
+/// <reference path="../libs/ref/js.d.ts" />
+/// <reference path="../libs/ame.next.d.ts" />
 declare module away.errors {
     class CastError extends errors.Error {
         constructor(message: string);
@@ -42,41 +11,9 @@ declare module away.errors {
         constructor(message: string);
     }
 }
-declare module away.events {
-    class Event {
-        static COMPLETE: string;
-        static OPEN: string;
-        static ENTER_FRAME: string;
-        static EXIT_FRAME: string;
-        static RESIZE: string;
-        static CONTEXT3D_CREATE: string;
-        static ERROR: string;
-        static CHANGE: string;
-        public type: string;
-        public target: Object;
-        constructor(type: string);
-        public clone(): Event;
-    }
-}
-declare module away.events {
-    class EventDispatcher {
-        private listeners;
-        private lFncLength;
-        public addEventListener(type: string, listener: Function, target: Object): void;
-        public removeEventListener(type: string, listener: Function, target: Object): void;
-        public dispatchEvent(event: events.Event): void;
-        private getEventListenerIndex(type, listener, target);
-        public hasEventListener(type: string, listener?: Function, target?: Object): boolean;
-    }
-}
-declare module away.events {
-    interface IEventDispatcher {
-        addEventListener(type: string, listener: Function, target: Object): any;
-        removeEventListener(type: string, listener: Function, target: Object): any;
-        dispatchEvent(event: events.Event): any;
-        hasEventListener(type: string, listener?: Function, target?: Object): boolean;
-    }
-}
+/**
+* @module away.events
+*/
 declare module away.events {
     class LightEvent extends events.Event {
         static CASTS_SHADOW_CHANGE: string;
@@ -84,46 +21,13 @@ declare module away.events {
         public clone(): events.Event;
     }
 }
+/**
+* @module away.events
+*/
 declare module away.events {
-    class IOErrorEvent extends events.Event {
-        static IO_ERROR: string;
-        constructor(type: string);
-    }
-}
-declare module away.events {
-    class HTTPStatusEvent extends events.Event {
-        static HTTP_STATUS: string;
-        public status: number;
-        constructor(type: string, status?: number);
-    }
-}
-declare module away.events {
-    class ProgressEvent extends events.Event {
-        static PROGRESS: string;
-        public bytesLoaded: number;
-        public bytesTotal: number;
-        constructor(type: string);
-    }
-}
-declare module away.events {
-    class LoaderEvent extends events.Event {
-        static LOAD_ERROR: string;
-        static RESOURCE_COMPLETE: string;
-        static DEPENDENCY_COMPLETE: string;
-        private _url;
-        private _assets;
-        private _message;
-        private _isDependency;
-        private _isDefaultPrevented;
-        constructor(type: string, url?: string, assets?: away.library.IAsset[], isDependency?: boolean, errmsg?: string);
-        public url : string;
-        public assets : away.library.IAsset[];
-        public message : string;
-        public isDependency : boolean;
-        public clone(): events.Event;
-    }
-}
-declare module away.events {
+    /**
+    * @class away.events.CameraEvent
+    */
     class CameraEvent extends events.Event {
         static LENS_CHANGED: string;
         private _camera;
@@ -131,69 +35,9 @@ declare module away.events {
         public camera : away.cameras.Camera3D;
     }
 }
-declare module away.events {
-    class AssetEvent extends events.Event {
-        static ASSET_COMPLETE: string;
-        static ENTITY_COMPLETE: string;
-        static SKYBOX_COMPLETE: string;
-        static CAMERA_COMPLETE: string;
-        static MESH_COMPLETE: string;
-        static GEOMETRY_COMPLETE: string;
-        static SKELETON_COMPLETE: string;
-        static SKELETON_POSE_COMPLETE: string;
-        static CONTAINER_COMPLETE: string;
-        static TEXTURE_COMPLETE: string;
-        static TEXTURE_PROJECTOR_COMPLETE: string;
-        static MATERIAL_COMPLETE: string;
-        static ANIMATOR_COMPLETE: string;
-        static ANIMATION_SET_COMPLETE: string;
-        static ANIMATION_STATE_COMPLETE: string;
-        static ANIMATION_NODE_COMPLETE: string;
-        static STATE_TRANSITION_COMPLETE: string;
-        static SEGMENT_SET_COMPLETE: string;
-        static LIGHT_COMPLETE: string;
-        static LIGHTPICKER_COMPLETE: string;
-        static EFFECTMETHOD_COMPLETE: string;
-        static SHADOWMAPMETHOD_COMPLETE: string;
-        static ASSET_RENAME: string;
-        static ASSET_CONFLICT_RESOLVED: string;
-        static TEXTURE_SIZE_ERROR: string;
-        private _asset;
-        private _prevName;
-        constructor(type: string, asset?: away.library.IAsset, prevName?: string);
-        public asset : away.library.IAsset;
-        public assetPrevName : string;
-        public clone(): events.Event;
-    }
-}
-declare module away.events {
-    class TimerEvent extends events.Event {
-        static TIMER: string;
-        static TIMER_COMPLETE: string;
-        constructor(type: string);
-    }
-}
-declare module away.events {
-    class ParserEvent extends events.Event {
-        private _message;
-        static PARSE_COMPLETE: string;
-        static PARSE_ERROR: string;
-        static READY_FOR_DEPENDENCIES: string;
-        constructor(type: string, message?: string);
-        public message : string;
-        public clone(): events.Event;
-    }
-}
-declare module away.events {
-    class Scene3DEvent extends events.Event {
-        static ADDED_TO_SCENE: string;
-        static REMOVED_FROM_SCENE: string;
-        static PARTITION_CHANGED: string;
-        public objectContainer3D: away.containers.ObjectContainer3D;
-        constructor(type: string, objectContainer: away.containers.ObjectContainer3D);
-        public target : Object;
-    }
-}
+/**
+* @module away.events
+*/
 declare module away.events {
     class Object3DEvent extends events.Event {
         static VISIBLITY_UPDATED: string;
@@ -206,42 +50,156 @@ declare module away.events {
         constructor(type: string, object: away.base.Object3D);
     }
 }
+/**
+* @module away.events
+*/
 declare module away.events {
+    /**
+    * A MouseEvent3D is dispatched when a mouse event occurs over a mouseEnabled object in View3D.
+    * todo: we don't have screenZ data, tho this should be easy to implement
+    */
     class MouseEvent3D extends events.Event {
         public _iAllowedToPropagate: boolean;
         public _iParentEvent: MouseEvent3D;
+        /**
+        * Defines the value of the type property of a mouseOver3d event object.
+        */
         static MOUSE_OVER: string;
+        /**
+        * Defines the value of the type property of a mouseOut3d event object.
+        */
         static MOUSE_OUT: string;
+        /**
+        * Defines the value of the type property of a mouseUp3d event object.
+        */
         static MOUSE_UP: string;
+        /**
+        * Defines the value of the type property of a mouseDown3d event object.
+        */
         static MOUSE_DOWN: string;
+        /**
+        * Defines the value of the type property of a mouseMove3d event object.
+        */
         static MOUSE_MOVE: string;
+        /**
+        * Defines the value of the type property of a click3d event object.
+        */
         static CLICK: string;
+        /**
+        * Defines the value of the type property of a doubleClick3d event object.
+        */
         static DOUBLE_CLICK: string;
+        /**
+        * Defines the value of the type property of a mouseWheel3d event object.
+        */
         static MOUSE_WHEEL: string;
+        /**
+        * The horizontal coordinate at which the event occurred in view coordinates.
+        */
         public screenX: number;
+        /**
+        * The vertical coordinate at which the event occurred in view coordinates.
+        */
         public screenY: number;
+        /**
+        * The view object inside which the event took place.
+        */
         public view: away.containers.View3D;
+        /**
+        * The 3d object inside which the event took place.
+        */
         public object: away.containers.ObjectContainer3D;
+        /**
+        * The renderable inside which the event took place.
+        */
         public renderable: away.base.IRenderable;
+        /**
+        * The material of the 3d element inside which the event took place.
+        */
         public material: away.materials.MaterialBase;
+        /**
+        * The uv coordinate inside the draw primitive where the event took place.
+        */
         public uv: away.geom.Point;
+        /**
+        * The index of the face where the event took place.
+        */
         public index: number;
+        /**
+        * The index of the subGeometry where the event took place.
+        */
         public subGeometryIndex: number;
+        /**
+        * The position in object space where the event took place
+        */
         public localPosition: away.geom.Vector3D;
+        /**
+        * The normal in object space where the event took place
+        */
         public localNormal: away.geom.Vector3D;
+        /**
+        * Indicates whether the Control key is active (true) or inactive (false).
+        */
         public ctrlKey: boolean;
+        /**
+        * Indicates whether the Alt key is active (true) or inactive (false).
+        */
         public altKey: boolean;
+        /**
+        * Indicates whether the Shift key is active (true) or inactive (false).
+        */
         public shiftKey: boolean;
+        /**
+        * Indicates how many lines should be scrolled for each unit the user rotates the mouse wheel.
+        */
         public delta: number;
+        /**
+        * Create a new MouseEvent3D object.
+        * @param type The type of the MouseEvent3D.
+        */
         constructor(type: string);
+        /**
+        * @inheritDoc
+        */
         public bubbles : boolean;
+        /**
+        * @inheritDoc
+        */
         public stopPropagation(): void;
+        /**
+        * @inheritDoc
+        */
         public stopImmediatePropagation(): void;
+        /**
+        * Creates a copy of the MouseEvent3D object and sets the value of each property to match that of the original.
+        */
         public clone(): events.Event;
+        /**
+        * The position in scene space where the event took place
+        */
         public scenePosition : away.geom.Vector3D;
+        /**
+        * The normal in scene space where the event took place
+        */
         public sceneNormal : away.geom.Vector3D;
     }
 }
+/**
+* @module away.events
+*/
+declare module away.events {
+    class Scene3DEvent extends events.Event {
+        static ADDED_TO_SCENE: string;
+        static REMOVED_FROM_SCENE: string;
+        static PARTITION_CHANGED: string;
+        public objectContainer3D: away.containers.ObjectContainer3D;
+        constructor(type: string, objectContainer: away.containers.ObjectContainer3D);
+        public target : Object;
+    }
+}
+/**
+* @module away.events
+*/
 declare module away.events {
     class LensEvent extends events.Event {
         static MATRIX_CHANGED: string;
@@ -251,30 +209,83 @@ declare module away.events {
     }
 }
 declare module away.events {
+    /**
+    * Dispatched to notify changes in an animation state's state.
+    */
     class AnimationStateEvent extends events.Event {
+        /**
+        * Dispatched when a non-looping clip node inside an animation state reaches the end of its timeline.
+        */
         static PLAYBACK_COMPLETE: string;
         static TRANSITION_COMPLETE: string;
         private _animator;
         private _animationState;
         private _animationNode;
+        /**
+        * Create a new <code>AnimatonStateEvent</code>
+        *
+        * @param type The event type.
+        * @param animator The animation state object that is the subject of this event.
+        * @param animationNode The animation node inside the animation state from which the event originated.
+        */
         constructor(type: string, animator: away.animators.IAnimator, animationState: away.animators.IAnimationState, animationNode: away.animators.AnimationNodeBase);
+        /**
+        * The animator object that is the subject of this event.
+        */
         public animator : away.animators.IAnimator;
+        /**
+        * The animation state object that is the subject of this event.
+        */
         public animationState : away.animators.IAnimationState;
+        /**
+        * The animation node inside the animation state from which the event originated.
+        */
         public animationNode : away.animators.AnimationNodeBase;
+        /**
+        * Clones the event.
+        *
+        * @return An exact duplicate of the current object.
+        */
         public clone(): events.Event;
     }
 }
 declare module away.events {
+    /**
+    * Dispatched to notify changes in an animator's state.
+    */
     class AnimatorEvent extends events.Event {
+        /**
+        * Defines the value of the type property of a start event object.
+        */
         static START: string;
+        /**
+        * Defines the value of the type property of a stop event object.
+        */
         static STOP: string;
+        /**
+        * Defines the value of the type property of a cycle complete event object.
+        */
         static CYCLE_COMPLETE: string;
         private _animator;
+        /**
+        * Create a new <code>AnimatorEvent</code> object.
+        *
+        * @param type The event type.
+        * @param animator The animator object that is the subject of this event.
+        */
         constructor(type: string, animator: away.animators.AnimatorBase);
         public animator : away.animators.AnimatorBase;
+        /**
+        * Clones the event.
+        *
+        * @return An exact duplicate of the current event object.
+        */
         public clone(): events.Event;
     }
 }
+/**
+* @module away.events
+*/
 declare module away.events {
     class ShadingMethodEvent extends events.Event {
         static SHADER_INVALIDATED: string;
@@ -282,219 +293,91 @@ declare module away.events {
     }
 }
 declare module away.events {
-    class Stage3DEvent extends events.Event {
-        static CONTEXT3D_CREATED: string;
-        static CONTEXT3D_DISPOSED: string;
-        static CONTEXT3D_RECREATED: string;
-        static VIEWPORT_UPDATED: string;
-        constructor(type: string);
-    }
-}
-declare module away.events {
+    /**
+    * Dispatched to notify changes in a geometry object's state.
+    *
+    * @class away.events.GeometryEvent
+    * @see away3d.core.base.Geometry
+    */
     class GeometryEvent extends events.Event {
+        /**
+        * Dispatched when a SubGeometry was added from the dispatching Geometry.
+        */
         static SUB_GEOMETRY_ADDED: string;
+        /**
+        * Dispatched when a SubGeometry was removed from the dispatching Geometry.
+        */
         static SUB_GEOMETRY_REMOVED: string;
         static BOUNDS_INVALID: string;
         private _subGeometry;
+        /**
+        * Create a new GeometryEvent
+        * @param type The event type.
+        * @param subGeometry An optional SubGeometry object that is the subject of this event.
+        */
         constructor(type: string, subGeometry?: away.base.ISubGeometry);
+        /**
+        * The SubGeometry object that is the subject of this event, if appropriate.
+        */
         public subGeometry : away.base.ISubGeometry;
+        /**
+        * Clones the event.
+        * @return An exact duplicate of the current object.
+        */
         public clone(): events.Event;
     }
 }
-declare module away.library {
-    interface IAsset extends away.events.IEventDispatcher {
-        name: string;
-        id: string;
-        assetNamespace: string;
-        assetType: string;
-        assetFullPath: string[];
-        assetPathEquals(name: string, ns: string): boolean;
-        resetAssetPath(name: string, ns: string, overrideOriginal?: boolean): void;
-        dispose(): any;
-    }
-}
-declare module away.library {
-    class NamedAssetBase extends away.events.EventDispatcher implements library.IAsset {
-        private _originalName;
-        private _namespace;
-        private _name;
-        private _id;
-        private _full_path;
-        private _assetType;
-        static DEFAULT_NAMESPACE: string;
-        constructor(name?: string);
-        public originalName : string;
-        public id : string;
-        public assetType : string;
-        public name : string;
-        public dispose(): void;
-        public assetNamespace : string;
-        public assetFullPath : string[];
-        public assetPathEquals(name: string, ns: string): boolean;
-        public resetAssetPath(name: string, ns?: string, overrideOriginal?: boolean): void;
-        private updateFullPath();
-    }
-}
-declare module away.library {
-    class AssetType {
-        static ENTITY: string;
-        static SKYBOX: string;
-        static CAMERA: string;
-        static SEGMENT_SET: string;
-        static MESH: string;
-        static GEOMETRY: string;
-        static SKELETON: string;
-        static SKELETON_POSE: string;
-        static CONTAINER: string;
-        static TEXTURE: string;
-        static TEXTURE_PROJECTOR: string;
-        static MATERIAL: string;
-        static ANIMATION_SET: string;
-        static ANIMATION_STATE: string;
-        static ANIMATION_NODE: string;
-        static ANIMATOR: string;
-        static STATE_TRANSITION: string;
-        static LIGHT: string;
-        static LIGHT_PICKER: string;
-        static SHADOW_MAP_METHOD: string;
-        static EFFECTS_METHOD: string;
-    }
-}
-declare module away.library {
-    class ConflictStrategyBase {
-        constructor();
-        public resolveConflict(changedAsset: library.IAsset, oldAsset: library.IAsset, assetsDictionary: Object, precedence: string): void;
-        public create(): ConflictStrategyBase;
-        public _pUpdateNames(ns: string, nonConflictingName: string, oldAsset: library.IAsset, newAsset: library.IAsset, assetsDictionary: Object, precedence: string): void;
-    }
-}
-declare module away.library {
-    class NumSuffixConflictStrategy extends library.ConflictStrategyBase {
-        private _separator;
-        private _next_suffix;
-        constructor(separator?: string);
-        public resolveConflict(changedAsset: library.IAsset, oldAsset: library.IAsset, assetsDictionary: Object, precedence: string): void;
-        public create(): library.ConflictStrategyBase;
-    }
-}
-declare module away.library {
-    class IgnoreConflictStrategy extends library.ConflictStrategyBase {
-        constructor();
-        public resolveConflict(changedAsset: library.IAsset, oldAsset: library.IAsset, assetsDictionary: Object, precedence: string): void;
-        public create(): library.ConflictStrategyBase;
-    }
-}
-declare module away.library {
-    class ErrorConflictStrategy extends library.ConflictStrategyBase {
-        constructor();
-        public resolveConflict(changedAsset: library.IAsset, oldAsset: library.IAsset, assetsDictionary: Object, precedence: string): void;
-        public create(): library.ConflictStrategyBase;
-    }
-}
-declare module away.library {
-    class ConflictPrecedence {
-        static FAVOR_OLD: string;
-        static FAVOR_NEW: string;
-    }
-}
-declare module away.library {
-    class ConflictStrategy {
-        static APPEND_NUM_SUFFIX: library.ConflictStrategyBase;
-        static IGNORE: library.ConflictStrategyBase;
-        static THROW_ERROR: library.ConflictStrategyBase;
-    }
-}
-declare module away.library {
-    class AssetLibraryIterator {
-        private _assets;
-        private _filtered;
-        private _idx;
-        constructor(assets: library.IAsset[], assetTypeFilter: string, namespaceFilter: string, filterFunc: any);
-        public currentAsset : library.IAsset;
-        public numAssets : number;
-        public next(): library.IAsset;
-        public reset(): void;
-        public setIndex(index: number): void;
-        private filter(assetTypeFilter, namespaceFilter, filterFunc);
-    }
-}
-declare module away.library {
-    class IDUtil {
-        private static ALPHA_CHAR_CODES;
-        static createUID(): string;
-    }
-}
-declare module away.library {
-    class AssetLibraryBundle extends away.events.EventDispatcher {
-        private _loadingSessions;
-        private _strategy;
-        private _strategyPreference;
-        private _assets;
-        private _assetDictionary;
-        private _assetDictDirty;
-        private _loadingSessionsGarbage;
-        private _gcTimeoutIID;
-        constructor(me: AssetLibraryBundleSingletonEnforcer);
-        static getInstance(key?: string): AssetLibraryBundle;
-        public enableParser(parserClass: Object): void;
-        public enableParsers(parserClasses: Object[]): void;
-        public conflictStrategy : library.ConflictStrategyBase;
-        public conflictPrecedence : string;
-        public createIterator(assetTypeFilter?: string, namespaceFilter?: string, filterFunc?: any): library.AssetLibraryIterator;
-        public load(req: away.net.URLRequest, context?: away.loaders.AssetLoaderContext, ns?: string, parser?: away.loaders.ParserBase): away.loaders.AssetLoaderToken;
-        public loadData(data: any, context?: away.loaders.AssetLoaderContext, ns?: string, parser?: away.loaders.ParserBase): away.loaders.AssetLoaderToken;
-        public getAsset(name: string, ns?: string): library.IAsset;
-        public addAsset(asset: library.IAsset): void;
-        public removeAsset(asset: library.IAsset, dispose?: boolean): void;
-        public removeAssetByName(name: string, ns?: string, dispose?: boolean): library.IAsset;
-        public removeAllAssets(dispose?: boolean): void;
-        public removeNamespaceAssets(ns?: string, dispose?: boolean): void;
-        private removeAssetFromDict(asset, autoRemoveEmptyNamespace?);
-        private loadResource(req, context?, ns?, parser?);
-        public stopAllLoadingSessions(): void;
-        private parseResource(data, context?, ns?, parser?);
-        private rehashAssetDict();
-        private onDependencyRetrieved(event);
-        private onDependencyRetrievingError(event);
-        private onDependencyRetrievingParseError(event);
-        private onAssetComplete(event);
-        private onTextureSizeError(event);
-        private onResourceRetrieved(event);
-        private loadingSessionGC();
-        private killLoadingSession(loader);
-        private onAssetRename(ev);
-        private onAssetConflictResolved(ev);
-    }
-}
-declare class AssetLibraryBundleSingletonEnforcer {
-}
-declare module away.library {
-    class AssetLibrary {
-        static _iInstances: Object;
-        constructor(se: AssetLibrarySingletonEnforcer);
-        static getBundle(key?: string): library.AssetLibraryBundle;
-        static enableParser(parserClass: any): void;
-        static enableParsers(parserClasses: Object[]): void;
-        static conflictStrategy : library.ConflictStrategyBase;
-        static conflictPrecedence : string;
-        static createIterator(assetTypeFilter?: string, namespaceFilter?: string, filterFunc?: any): library.AssetLibraryIterator;
-        static load(req: away.net.URLRequest, context?: away.loaders.AssetLoaderContext, ns?: string, parser?: away.loaders.ParserBase): away.loaders.AssetLoaderToken;
-        static loadData(data: any, context?: away.loaders.AssetLoaderContext, ns?: string, parser?: away.loaders.ParserBase): away.loaders.AssetLoaderToken;
-        static stopLoad(): void;
-        static getAsset(name: string, ns?: string): library.IAsset;
-        static addEventListener(type: string, listener: Function, target: Object): void;
-        static removeEventListener(type: string, listener: Function, target: Object): void;
-        static addAsset(asset: library.IAsset): void;
-        static removeAsset(asset: library.IAsset, dispose?: boolean): void;
-        static removeAssetByName(name: string, ns?: string, dispose?: boolean): library.IAsset;
-        static removeAllAssets(dispose?: boolean): void;
-        static removeNamespaceAssets(ns?: string, dispose?: boolean): void;
-    }
-}
-declare class AssetLibrarySingletonEnforcer {
-}
+/**
+* @module away.base
+*/
 declare module away.base {
+    /**
+    *
+    * Object3D provides a base class for any 3D object that has a (local) transformation.<br/><br/>
+    *
+    * Standard Transform:
+    * <ul>
+    *     <li> The standard order for transformation is [parent transform] * (Translate+Pivot) * (Rotate) * (-Pivot) * (Scale) * [child transform] </li>
+    *     <li> This is the order of matrix multiplications, left-to-right. </li>
+    *     <li> The order of transformation is right-to-left, however!
+    *          (Scale) happens before (-Pivot) happens before (Rotate) happens before (Translate+Pivot)
+    *          with no pivot, the above transform works out to [parent transform] * Translate * Rotate * Scale * [child transform]
+    *          (Scale) happens before (Rotate) happens before (Translate) </li>
+    *     <li> This is based on code in updateTransform and ObjectContainer3D.updateSceneTransform(). </li>
+    *     <li> Matrix3D prepend = operator on rhs - e.g. transform' = transform * rhs; </li>
+    *     <li> Matrix3D append =  operator on lhr - e.g. transform' = lhs * transform; </li>
+    * </ul>
+    *
+    * To affect Scale:
+    * <ul>
+    *     <li> set scaleX/Y/Z directly, or call scale(delta) </li>
+    * </ul>
+    *
+    * To affect Pivot:
+    * <ul>
+    *     <li> set pivotPoint directly, or call movePivot() </li>
+    * </ul>
+    *
+    * To affect Rotate:
+    * <ul>
+    *    <li> set rotationX/Y/Z individually (using degrees), set eulers [all 3 angles] (using radians), or call rotateTo()</li>
+    *    <li> call pitch()/yaw()/roll()/rotate() to add an additional rotation *before* the current transform.
+    *         rotationX/Y/Z will be reset based on these operations. </li>
+    * </ul>
+    *
+    * To affect Translate (post-rotate translate):
+    *
+    * <ul>
+    *    <li> set x/y/z/position or call moveTo(). </li>
+    *    <li> call translate(), which modifies x/y/z based on a delta vector. </li>
+    *    <li> call moveForward()/moveBackward()/moveLeft()/moveRight()/moveUp()/moveDown()/translateLocal() to add an
+    *         additional translate *before* the current transform. x/y/z will be reset based on these operations. </li>
+    * </ul>
+    *
+    * @class away.base.Object3D
+    */
     class Object3D extends away.library.NamedAssetBase {
+        /** @private */
         public _iController: away.controllers.ControllerBase;
         private _smallestNumber;
         private _transformDirty;
@@ -535,53 +418,231 @@ declare module away.base {
         private _rot;
         private _sca;
         private _transformComponents;
+        /**
+        * An object that can contain any extra data.
+        */
         public extra: Object;
+        /**
+        * Defines the x coordinate of the 3d object relative to the local coordinates of the parent <code>ObjectContainer3D</code>.
+        */
         public x : number;
+        /**
+        * Defines the y coordinate of the 3d object relative to the local coordinates of the parent <code>ObjectContainer3D</code>.
+        */
         public y : number;
+        /**
+        * Defines the z coordinate of the 3d object relative to the local coordinates of the parent <code>ObjectContainer3D</code>.
+        */
         public z : number;
+        /**
+        * Defines the euler angle of rotation of the 3d object around the x-axis, relative to the local coordinates of the parent <code>ObjectContainer3D</code>.
+        */
         public rotationX : number;
+        /**
+        * Defines the euler angle of rotation of the 3d object around the y-axis, relative to the local coordinates of the parent <code>ObjectContainer3D</code>.
+        */
         public rotationY : number;
+        /**
+        * Defines the euler angle of rotation of the 3d object around the z-axis, relative to the local coordinates of the parent <code>ObjectContainer3D</code>.
+        */
         public rotationZ : number;
+        /**
+        * Defines the scale of the 3d object along the x-axis, relative to local coordinates.
+        */
         public scaleX : number;
+        /**
+        * Defines the scale of the 3d object along the y-axis, relative to local coordinates.
+        */
         public scaleY : number;
+        /**
+        * Defines the scale of the 3d object along the z-axis, relative to local coordinates.
+        */
         public scaleZ : number;
+        /**
+        * Defines the rotation of the 3d object as a <code>Vector3D</code> object containing euler angles for rotation around x, y and z axis.
+        */
         public eulers : away.geom.Vector3D;
+        /**
+        * The transformation of the 3d object, relative to the local coordinates of the parent <code>ObjectContainer3D</code>.
+        */
         public transform : away.geom.Matrix3D;
+        /**
+        * Defines the local point around which the object rotates.
+        */
         public pivotPoint : away.geom.Vector3D;
+        /**
+        * Defines the position of the 3d object, relative to the local coordinates of the parent <code>ObjectContainer3D</code>.
+        */
         public position : away.geom.Vector3D;
+        /**
+        *
+        */
         public forwardVector : away.geom.Vector3D;
+        /**
+        *
+        */
         public rightVector : away.geom.Vector3D;
+        /**
+        *
+        */
         public upVector : away.geom.Vector3D;
+        /**
+        *
+        */
         public backVector : away.geom.Vector3D;
+        /**
+        *
+        */
         public leftVector : away.geom.Vector3D;
+        /**
+        *
+        */
         public downVector : away.geom.Vector3D;
+        /**
+        * Creates an Object3D object.
+        */
         constructor();
+        /**
+        * Appends a uniform scale to the current transformation.
+        * @param value The amount by which to scale.
+        */
         public scale(value: number): void;
+        /**
+        * Moves the 3d object forwards along it's local z axis
+        *
+        * @param    distance    The length of the movement
+        */
         public moveForward(distance: number): void;
+        /**
+        * Moves the 3d object backwards along it's local z axis
+        *
+        * @param    distance    The length of the movement
+        */
         public moveBackward(distance: number): void;
+        /**
+        * Moves the 3d object backwards along it's local x axis
+        *
+        * @param    distance    The length of the movement
+        */
         public moveLeft(distance: number): void;
+        /**
+        * Moves the 3d object forwards along it's local x axis
+        *
+        * @param    distance    The length of the movement
+        */
         public moveRight(distance: number): void;
+        /**
+        * Moves the 3d object forwards along it's local y axis
+        *
+        * @param    distance    The length of the movement
+        */
         public moveUp(distance: number): void;
+        /**
+        * Moves the 3d object backwards along it's local y axis
+        *
+        * @param    distance    The length of the movement
+        */
         public moveDown(distance: number): void;
+        /**
+        * Moves the 3d object directly to a point in space
+        *
+        * @param    dx        The amount of movement along the local x axis.
+        * @param    dy        The amount of movement along the local y axis.
+        * @param    dz        The amount of movement along the local z axis.
+        */
         public moveTo(dx: number, dy: number, dz: number): void;
+        /**
+        * Moves the local point around which the object rotates.
+        *
+        * @param    dx        The amount of movement along the local x axis.
+        * @param    dy        The amount of movement along the local y axis.
+        * @param    dz        The amount of movement along the local z axis.
+        */
         public movePivot(dx: number, dy: number, dz: number): void;
+        /**
+        * Moves the 3d object along a vector by a defined length
+        *
+        * @param    axis        The vector defining the axis of movement
+        * @param    distance    The length of the movement
+        */
         public translate(axis: away.geom.Vector3D, distance: number): void;
+        /**
+        * Moves the 3d object along a vector by a defined length
+        *
+        * @param    axis        The vector defining the axis of movement
+        * @param    distance    The length of the movement
+        */
         public translateLocal(axis: away.geom.Vector3D, distance: number): void;
+        /**
+        * Rotates the 3d object around it's local x-axis
+        *
+        * @param    angle        The amount of rotation in degrees
+        */
         public pitch(angle: number): void;
+        /**
+        * Rotates the 3d object around it's local y-axis
+        *
+        * @param    angle        The amount of rotation in degrees
+        */
         public yaw(angle: number): void;
+        /**
+        * Rotates the 3d object around it's local z-axis
+        *
+        * @param    angle        The amount of rotation in degrees
+        */
         public roll(angle: number): void;
         public clone(): Object3D;
+        /**
+        * Rotates the 3d object directly to a euler angle
+        *
+        * @param    ax        The angle in degrees of the rotation around the x axis.
+        * @param    ay        The angle in degrees of the rotation around the y axis.
+        * @param    az        The angle in degrees of the rotation around the z axis.
+        */
         public rotateTo(ax: number, ay: number, az: number): void;
+        /**
+        * Rotates the 3d object around an axis by a defined angle
+        *
+        * @param    axis        The vector defining the axis of rotation
+        * @param    angle        The amount of rotation in degrees
+        */
         public rotate(axis: away.geom.Vector3D, angle: number): void;
+        /**
+        * Rotates the 3d object around to face a point defined relative to the local coordinates of the parent <code>ObjectContainer3D</code>.
+        *
+        * @param    target        The vector defining the point to be looked at
+        * @param    upAxis        An optional vector used to define the desired up orientation of the 3d object after rotation has occurred
+        */
         public lookAt(target: away.geom.Vector3D, upAxis?: away.geom.Vector3D): void;
+        /**
+        * Cleans up any resources used by the current object.
+        */
         public dispose(): void;
+        /**
+        * @inheritDoc
+        */
         public disposeAsset(): void;
+        /**
+        * Invalidates the transformation matrix, causing it to be updated upon the next request
+        */
         public iInvalidateTransform(): void;
         public pUpdateTransform(): void;
         public zOffset : number;
     }
 }
+/**
+* @module away.base
+*/
 declare module away.base {
+    /**
+    * SubMesh wraps a SubGeometry as a scene graph instantiation. A SubMesh is owned by a Mesh object.
+    *
+    *
+    * @see away3d.core.base.SubGeometry
+    * @see away3d.scenegraph.Mesh
+    *
+    * @class away.base.SubGeometryBase
+    */
     class SubMesh implements base.IRenderable {
         public _iMaterial: away.materials.MaterialBase;
         private _parentMesh;
@@ -596,6 +657,12 @@ declare module away.base {
         private _offsetV;
         public animationSubGeometry: away.animators.AnimationSubGeometry;
         public animatorSubGeometry: away.animators.AnimationSubGeometry;
+        /**
+        * Creates a new SubMesh object
+        * @param subGeometry The SubGeometry object which provides the geometry data for this SubMesh.
+        * @param parentMesh The Mesh object to which this SubMesh belongs.
+        * @param material An optional material used to render this SubMesh.
+        */
         constructor(subGeometry: base.ISubGeometry, parentMesh: away.entities.Mesh, material?: away.materials.MaterialBase);
         public shaderPickingDetails : boolean;
         public offsetU : number;
@@ -603,21 +670,68 @@ declare module away.base {
         public scaleU : number;
         public scaleV : number;
         public uvRotation : number;
+        /**
+        * The entity that that initially provided the IRenderable to the render pipeline (ie: the owning Mesh object).
+        */
         public sourceEntity : away.entities.Entity;
+        /**
+        * The SubGeometry object which provides the geometry data for this SubMesh.
+        */
         public subGeometry : base.ISubGeometry;
+        /**
+        * The material used to render the current SubMesh. If set to null, its parent Mesh's material will be used instead.
+        */
         public material : away.materials.MaterialBase;
+        /**
+        * The scene transform object that transforms from model to world space.
+        */
         public sceneTransform : away.geom.Matrix3D;
+        /**
+        * The inverse scene transform object that transforms from world to model space.
+        */
         public inverseSceneTransform : away.geom.Matrix3D;
-        public activateVertexBuffer(index: number, stage3DProxy: away.managers.Stage3DProxy): void;
-        public activateVertexNormalBuffer(index: number, stage3DProxy: away.managers.Stage3DProxy): void;
-        public activateVertexTangentBuffer(index: number, stage3DProxy: away.managers.Stage3DProxy): void;
-        public activateUVBuffer(index: number, stage3DProxy: away.managers.Stage3DProxy): void;
-        public activateSecondaryUVBuffer(index: number, stage3DProxy: away.managers.Stage3DProxy): void;
-        public getIndexBuffer(stage3DProxy: away.managers.Stage3DProxy): away.display3D.IndexBuffer3D;
+        /**
+        * @inheritDoc
+        */
+        public activateVertexBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public activateVertexNormalBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public activateVertexTangentBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public activateUVBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public activateSecondaryUVBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public getIndexBuffer(stageGLProxy: away.managers.StageGLProxy): away.displayGL.IndexBuffer;
+        /**
+        * The amount of triangles that make up this SubMesh.
+        */
         public numTriangles : number;
+        /**
+        * The animator object that provides the state for the SubMesh's animation.
+        */
         public animator : away.animators.IAnimator;
+        /**
+        * Indicates whether the SubMesh should trigger mouse events, and hence should be rendered for hit testing.
+        */
         public mouseEnabled : boolean;
         public castsShadows : boolean;
+        /**
+        * A reference to the owning Mesh object
+        *
+        * @private
+        */
         public iParentMesh : away.entities.Mesh;
         public uvTransform : away.geom.Matrix;
         private updateUVTransform();
@@ -639,39 +753,149 @@ declare module away.base {
         public getRenderSceneTransform(camera: away.cameras.Camera3D): away.geom.Matrix3D;
     }
 }
+/**
+* @module away.base
+*/
 declare module away.base {
+    /**
+    * @interface away.base.IRenderable
+    */
+    /**
+    *
+    * IRenderable provides an interface for objects that can be rendered in the rendering pipeline.
+    */
     interface IRenderable extends base.IMaterialOwner {
+        /**
+        * The transformation matrix that transforms from model to world space.
+        */
         sceneTransform: away.geom.Matrix3D;
+        /**
+        * The transformation matrix that transforms from model to world space, adapted with any special operations needed to render.
+        * For example, assuring certain alignedness which is not inherent in the scene transform. By default, this would
+        * return the scene transform.
+        */
         getRenderSceneTransform(camera: away.cameras.Camera3D): away.geom.Matrix3D;
+        /**
+        * The inverse scene transform object that transforms from world to model space.
+        */
         inverseSceneTransform: away.geom.Matrix3D;
+        /**
+        * Indicates whether the IRenderable should trigger mouse events, and hence should be rendered for hit testing.
+        */
         mouseEnabled: boolean;
+        /**
+        * The entity that that initially provided the IRenderable to the render pipeline.
+        */
         sourceEntity: away.entities.Entity;
+        /**
+        * Indicates whether the renderable can cast shadows
+        */
         castsShadows: boolean;
+        /**
+        * Provides a Matrix object to transform the uv coordinates, if the material supports it.
+        * For TextureMaterial and TextureMultiPassMaterial, the animateUVs property should be set to true.
+        */
         uvTransform: away.geom.Matrix;
         shaderPickingDetails: boolean;
+        /**
+        * The total amount of vertices in the SubGeometry.
+        */
         numVertices: number;
+        /**
+        * The amount of triangles that comprise the IRenderable geometry.
+        */
         numTriangles: number;
+        /**
+        * The number of data elements in the buffers per vertex.
+        * This always applies to vertices, normals and tangents.
+        */
         vertexStride: number;
-        activateVertexBuffer(index: number, stage3DProxy: away.managers.Stage3DProxy): any;
-        activateUVBuffer(index: number, stage3DProxy: away.managers.Stage3DProxy): any;
-        activateSecondaryUVBuffer(index: number, stage3DProxy: away.managers.Stage3DProxy): any;
-        activateVertexNormalBuffer(index: number, stage3DProxy: away.managers.Stage3DProxy): any;
-        activateVertexTangentBuffer(index: number, stage3DProxy: away.managers.Stage3DProxy): any;
-        getIndexBuffer(stage3DProxy: away.managers.Stage3DProxy): away.display3D.IndexBuffer3D;
+        /**
+        * Assigns the attribute stream for vertex positions.
+        * @param index The attribute stream index for the vertex shader
+        * @param stageGLProxy The StageGLProxy to assign the stream to
+        */
+        activateVertexBuffer(index: number, stageGLProxy: away.managers.StageGLProxy);
+        /**
+        * Assigns the attribute stream for UV coordinates
+        * @param index The attribute stream index for the vertex shader
+        * @param stageGLProxy The StageGLProxy to assign the stream to
+        */
+        activateUVBuffer(index: number, stageGLProxy: away.managers.StageGLProxy);
+        /**
+        * Assigns the attribute stream for a secondary set of UV coordinates
+        * @param index The attribute stream index for the vertex shader
+        * @param stageGLProxy The StageGLProxy to assign the stream to
+        */
+        activateSecondaryUVBuffer(index: number, stageGLProxy: away.managers.StageGLProxy);
+        /**
+        * Assigns the attribute stream for vertex normals
+        * @param index The attribute stream index for the vertex shader
+        * @param stageGLProxy The StageGLProxy to assign the stream to
+        */
+        activateVertexNormalBuffer(index: number, stageGLProxy: away.managers.StageGLProxy);
+        /**
+        * Assigns the attribute stream for vertex tangents
+        * @param index The attribute stream index for the vertex shader
+        * @param stageGLProxy The StageGLProxy to assign the stream to
+        */
+        activateVertexTangentBuffer(index: number, stageGLProxy: away.managers.StageGLProxy);
+        /**
+        * Retrieves the IndexBuffer object that contains triangle indices.
+        * @param context The ContextGL for which we request the buffer
+        * @return The VertexBuffer object that contains triangle indices.
+        */
+        getIndexBuffer(stageGLProxy: away.managers.StageGLProxy): away.displayGL.IndexBuffer;
+        /**
+        * Retrieves the object's vertices as a Number array.
+        */
         vertexData: number[];
+        /**
+        * Retrieves the object's normals as a Number array.
+        */
         vertexNormalData: number[];
+        /**
+        * Retrieves the object's tangents as a Number array.
+        */
         vertexTangentData: number[];
+        /**
+        * Retrieves the object's indices as a uint array.
+        */
         indexData: number[];
+        /**
+        * Retrieves the object's uvs as a Number array.
+        */
         UVData: number[];
     }
 }
+/**
+* @module away.base
+*/
 declare module away.base {
+    /**
+    *
+    * IMaterialOwner provides an interface for objects that can use materials.
+    *
+    * @interface away.base.IMaterialOwner
+    */
     interface IMaterialOwner {
+        /**
+        * The material with which to render the object.
+        */
         material: away.materials.MaterialBase;
+        /**
+        * The animation used by the material to assemble the vertex code.
+        */
         animator: away.animators.IAnimator;
     }
 }
+/**
+* @module away.base
+*/
 declare module away.base {
+    /**
+    * @class away.base.SubGeometryBase
+    */
     class SubGeometryBase {
         static SUBGEOM_ID_COUNT: number;
         public _parentGeometry: base.Geometry;
@@ -680,9 +904,9 @@ declare module away.base {
         public _faceTangentsDirty: boolean;
         public _faceTangents: number[];
         public _indices: number[];
-        public _indexBuffer: away.display3D.IndexBuffer3D[];
+        public _indexBuffer: away.displayGL.IndexBuffer[];
         public _numIndices: number;
-        public _indexBufferContext: away.display3D.Context3D[];
+        public _indexBufferContext: away.displayGL.ContextGL[];
         public _indicesInvalid: boolean[];
         public _numTriangles: number;
         public _autoDeriveVertexNormals: boolean;
@@ -696,25 +920,95 @@ declare module away.base {
         public _scaleU: number;
         public _scaleV: number;
         public _uvsDirty: boolean;
+        /**
+        * An id for this subgeometry, used to identify subgeometries when using animation sets.
+        *
+        * @private
+        */
         public _iUniqueId: number;
         constructor();
+        /**
+        * Defines whether a UV buffer should be automatically generated to contain dummy UV coordinates.
+        * Set to true if a geometry lacks UV data but uses a material that requires it, or leave as false
+        * in cases where UV data is explicitly defined or the material does not require UV data.
+        */
         public autoGenerateDummyUVs : boolean;
+        /**
+        * True if the vertex normals should be derived from the geometry, false if the vertex normals are set
+        * explicitly.
+        */
         public autoDeriveVertexNormals : boolean;
+        /**
+        * Indicates whether or not to take the size of faces into account when auto-deriving vertex normals and tangents.
+        */
         public useFaceWeights : boolean;
+        /**
+        * The total amount of triangles in the SubGeometry.
+        */
         public numTriangles : number;
+        /**
+        * Unique identifier for a subgeometry
+        */
         public uniqueId : number;
-        public getIndexBuffer(stage3DProxy: away.managers.Stage3DProxy): away.display3D.IndexBuffer3D;
+        /**
+        * Retrieves the VertexBuffer object that contains triangle indices.
+        * @param context The ContextGL for which we request the buffer
+        * @return The VertexBuffer object that contains triangle indices.
+        */
+        public getIndexBuffer(stageGLProxy: away.managers.StageGLProxy): away.displayGL.IndexBuffer;
+        /**
+        * Updates the tangents for each face.
+        */
         public pUpdateFaceTangents(): void;
+        /**
+        * Updates the normals for each face.
+        */
         private updateFaceNormals();
+        /**
+        * Updates the vertex normals based on the geometry.
+        */
         public pUpdateVertexNormals(target: number[]): number[];
+        /**
+        * Updates the vertex tangents based on the geometry.
+        */
         public pUpdateVertexTangents(target: number[]): number[];
         public dispose(): void;
+        /**
+        * The raw index data that define the faces.
+        *
+        * @private
+        */
         public indexData : number[];
+        /**
+        * Updates the face indices of the SubGeometry.
+        * @param indices The face indices to upload.
+        */
         public updateIndexData(indices: number[]): void;
-        public pDisposeIndexBuffers(buffers: away.display3D.IndexBuffer3D[]): void;
-        public pDisposeVertexBuffers(buffers: away.display3D.VertexBuffer3D[]): void;
+        /**
+        * Disposes all buffers in a given vector.
+        * @param buffers The vector of buffers to dispose.
+        */
+        public pDisposeIndexBuffers(buffers: away.displayGL.IndexBuffer[]): void;
+        /**
+        * Disposes all buffers in a given vector.
+        * @param buffers The vector of buffers to dispose.
+        */
+        public pDisposeVertexBuffers(buffers: away.displayGL.VertexBuffer[]): void;
+        /**
+        * True if the vertex tangents should be derived from the geometry, false if the vertex normals are set
+        * explicitly.
+        */
         public autoDeriveVertexTangents : boolean;
+        /**
+        * The raw data of the face normals, in the same order as the faces are listed in the index list.
+        *
+        * @private
+        */
         public faceNormals : number[];
+        /**
+        * Invalidates all buffers in a vector, causing them the update when they are first requested.
+        * @param buffers The vector of buffers to invalidate.
+        */
         public pInvalidateBuffers(invalid: boolean[]): void;
         public UVStride : number;
         public vertexData : number[];
@@ -730,79 +1024,197 @@ declare module away.base {
         public vertexTangentOffset : number;
         public UVOffset : number;
         public pInvalidateBounds(): void;
+        /**
+        * The Geometry object that 'owns' this SubGeometry object.
+        *
+        * @private
+        */
         public parentGeometry : base.Geometry;
+        /**
+        * Scales the uv coordinates
+        * @param scaleU The amount by which to scale on the u axis. Default is 1;
+        * @param scaleV The amount by which to scale on the v axis. Default is 1;
+        */
         public scaleU : number;
         public scaleV : number;
         public scaleUV(scaleU?: number, scaleV?: number): void;
+        /**
+        * Scales the geometry.
+        * @param scale The amount by which to scale.
+        */
         public scale(scale: number): void;
         public applyTransformation(transform: away.geom.Matrix3D): void;
         public pUpdateDummyUVs(target: number[]): number[];
     }
 }
+/**
+* @module away.base
+*/
 declare module away.base {
+    /**
+    * @interface away.base.ISubGeometry
+    */
     interface ISubGeometry {
+        /**
+        * The total amount of vertices in the SubGeometry.
+        */
         numVertices: number;
+        /**
+        * The amount of triangles that comprise the IRenderable geometry.
+        */
         numTriangles: number;
+        /**
+        * The distance between two consecutive vertex, normal or tangent elements
+        * This always applies to vertices, normals and tangents.
+        */
         vertexStride: number;
+        /**
+        * The distance between two consecutive normal elements
+        * This always applies to vertices, normals and tangents.
+        */
         vertexNormalStride: number;
+        /**
+        * The distance between two consecutive tangent elements
+        * This always applies to vertices, normals and tangents.
+        */
         vertexTangentStride: number;
+        /**
+        * The distance between two consecutive UV elements
+        */
         UVStride: number;
+        /**
+        * The distance between two secondary UV elements
+        */
         secondaryUVStride: number;
+        /**
+        * Unique identifier for a subgeometry
+        */
         uniqueId: number;
-        activateVertexBuffer(index: number, stage3DProxy: away.managers.Stage3DProxy): any;
-        activateUVBuffer(index: number, stage3DProxy: away.managers.Stage3DProxy): any;
-        activateSecondaryUVBuffer(index: number, stage3DProxy: away.managers.Stage3DProxy): any;
-        activateVertexNormalBuffer(index: number, stage3DProxy: away.managers.Stage3DProxy): any;
-        activateVertexTangentBuffer(index: number, stage3DProxy: away.managers.Stage3DProxy): any;
-        getIndexBuffer(stage3DProxy: away.managers.Stage3DProxy): away.display3D.IndexBuffer3D;
+        /**
+        * Assigns the attribute stream for vertex positions.
+        * @param index The attribute stream index for the vertex shader
+        * @param stageGLProxy The StageGLProxy to assign the stream to
+        */
+        activateVertexBuffer(index: number, stageGLProxy: away.managers.StageGLProxy);
+        /**
+        * Assigns the attribute stream for UV coordinates
+        * @param index The attribute stream index for the vertex shader
+        * @param stageGLProxy The StageGLProxy to assign the stream to
+        */
+        activateUVBuffer(index: number, stageGLProxy: away.managers.StageGLProxy);
+        /**
+        * Assigns the attribute stream for a secondary set of UV coordinates
+        * @param index The attribute stream index for the vertex shader
+        * @param stageGLProxy The StageGLProxy to assign the stream to
+        */
+        activateSecondaryUVBuffer(index: number, stageGLProxy: away.managers.StageGLProxy);
+        /**
+        * Assigns the attribute stream for vertex normals
+        * @param index The attribute stream index for the vertex shader
+        * @param stageGLProxy The StageGLProxy to assign the stream to
+        */
+        activateVertexNormalBuffer(index: number, stageGLProxy: away.managers.StageGLProxy);
+        /**
+        * Assigns the attribute stream for vertex tangents
+        * @param index The attribute stream index for the vertex shader
+        * @param stageGLProxy The StageGLProxy to assign the stream to
+        */
+        activateVertexTangentBuffer(index: number, stageGLProxy: away.managers.StageGLProxy);
+        /**
+        * Retrieves the IndexBuffer object that contains triangle indices.
+        * @param context The ContextGL for which we request the buffer
+        * @return The VertexBuffer object that contains triangle indices.
+        */
+        getIndexBuffer(stageGLProxy: away.managers.StageGLProxy): away.displayGL.IndexBuffer;
+        /**
+        * Retrieves the object's vertices as a Number array.
+        */
         vertexData: number[];
+        /**
+        * Retrieves the object's normals as a Number array.
+        */
         vertexNormalData: number[];
+        /**
+        * Retrieves the object's tangents as a Number array.
+        */
         vertexTangentData: number[];
+        /**
+        * The offset into vertexData where the vertices are placed
+        */
         vertexOffset: number;
+        /**
+        * The offset into vertexNormalData where the normals are placed
+        */
         vertexNormalOffset: number;
+        /**
+        * The offset into vertexTangentData where the tangents are placed
+        */
         vertexTangentOffset: number;
+        /**
+        * The offset into UVData vector where the UVs are placed
+        */
         UVOffset: number;
+        /**
+        * The offset into SecondaryUVData vector where the UVs are placed
+        */
         secondaryUVOffset: number;
+        /**
+        * Retrieves the object's indices as a uint array.
+        */
         indexData: number[];
+        /**
+        * Retrieves the object's uvs as a Number array.
+        */
         UVData: number[];
-        applyTransformation(transform: away.geom.Matrix3D): any;
-        scale(scale: number): any;
-        dispose(): any;
+        applyTransformation(transform: away.geom.Matrix3D);
+        scale(scale: number);
+        dispose();
         clone(): ISubGeometry;
         scaleU: number;
         scaleV: number;
-        scaleUV(scaleU: number, scaleV: number): any;
+        scaleUV(scaleU: number, scaleV: number);
         parentGeometry: base.Geometry;
         faceNormals: number[];
         cloneWithSeperateBuffers(): base.SubGeometry;
         autoDeriveVertexNormals: boolean;
         autoDeriveVertexTangents: boolean;
-        fromVectors(vertices: number[], uvs: number[], normals: number[], tangents: number[]): any;
+        fromVectors(vertices: number[], uvs: number[], normals: number[], tangents: number[]);
         vertexPositionData: number[];
     }
 }
 declare module away.base {
+    /**
+    * @class away.base.Geometry
+    */
     class CompactSubGeometry extends base.SubGeometryBase implements base.ISubGeometry {
         public _pVertexDataInvalid: boolean[];
         private _vertexBuffer;
         private _bufferContext;
         public _pNumVertices: number;
         private _contextIndex;
-        public _pActiveBuffer: away.display3D.VertexBuffer3D;
+        public _pActiveBuffer: away.displayGL.VertexBuffer;
         private _activeContext;
         public _pActiveDataInvalid: boolean;
         private _isolatedVertexPositionData;
         private _isolatedVertexPositionDataDirty;
         constructor();
         public numVertices : number;
+        /**
+        * Updates the vertex data. All vertex properties are contained in a single Vector, and the order is as follows:
+        * 0 - 2: vertex position X, Y, Z
+        * 3 - 5: normal X, Y, Z
+        * 6 - 8: tangent X, Y, Z
+        * 9 - 10: U V
+        * 11 - 12: Secondary U V
+        */
         public updateData(data: number[]): void;
-        public activateVertexBuffer(index: number, stage3DProxy: away.managers.Stage3DProxy): void;
-        public activateUVBuffer(index: number, stage3DProxy: away.managers.Stage3DProxy): void;
-        public activateSecondaryUVBuffer(index: number, stage3DProxy: away.managers.Stage3DProxy): void;
+        public activateVertexBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        public activateUVBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        public activateSecondaryUVBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
         public pUploadData(contextIndex: number): void;
-        public activateVertexNormalBuffer(index: number, stage3DProxy: away.managers.Stage3DProxy): void;
-        public activateVertexTangentBuffer(index: number, stage3DProxy: away.managers.Stage3DProxy): void;
-        public pCreateBuffer(contextIndex: number, context: away.display3D.Context3D): void;
+        public activateVertexNormalBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        public activateVertexTangentBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        public pCreateBuffer(contextIndex: number, context: away.displayGL.ContextGL): void;
         public pUpdateActiveBuffer(contextIndex: number): void;
         public vertexData : number[];
         public pUpdateVertexNormals(target: number[]): number[];
@@ -825,16 +1237,37 @@ declare module away.base {
         public UVOffset : number;
         public secondaryUVOffset : number;
         public dispose(): void;
-        public pDisposeVertexBuffers(buffers: away.display3D.VertexBuffer3D[]): void;
+        public pDisposeVertexBuffers(buffers: away.displayGL.VertexBuffer[]): void;
         public pInvalidateBuffers(invalid: boolean[]): void;
         public cloneWithSeperateBuffers(): base.SubGeometry;
         public vertexPositionData : number[];
         public strippedUVData : number[];
+        /**
+        * Isolate and returns a Vector.Number of a specific buffer type
+        *
+        * - stripBuffer(0, 3), return only the vertices
+        * - stripBuffer(3, 3): return only the normals
+        * - stripBuffer(6, 3): return only the tangents
+        * - stripBuffer(9, 2): return only the uv's
+        * - stripBuffer(11, 2): return only the secondary uv's
+        */
         public stripBuffer(offset: number, numEntries: number): number[];
         public fromVectors(verts: number[], uvs: number[], normals: number[], tangents: number[]): void;
     }
 }
+/**
+* @module away.base
+*/
 declare module away.base {
+    /**
+    *
+    * SkinnedSubGeometry provides a SubGeometry extension that contains data needed to skin vertices. In particular,
+    * it provides joint indices and weights.
+    * Important! Joint indices need to be pre-multiplied by 3, since they index the matrix array (and each matrix has 3 float4 elements)
+    *
+    * @class away.base.SkinnedSubGeometry
+    *
+    */
     class SkinnedSubGeometry extends base.CompactSubGeometry {
         private _bufferFormat;
         private _jointWeightsData;
@@ -850,49 +1283,155 @@ declare module away.base {
         private _condensedJointIndexData;
         private _condensedIndexLookUp;
         private _numCondensedJoints;
+        /**
+        * Creates a new SkinnedSubGeometry object.
+        * @param jointsPerVertex The amount of joints that can be assigned per vertex.
+        */
         constructor(jointsPerVertex: number);
+        /**
+        * If indices have been condensed, this will contain the original index for each condensed index.
+        */
         public condensedIndexLookUp : number[];
+        /**
+        * The amount of joints used when joint indices have been condensed.
+        */
         public numCondensedJoints : number;
+        /**
+        * The animated vertex positions when set explicitly if the skinning transformations couldn't be performed on GPU.
+        */
         public animatedData : number[];
         public updateAnimatedData(value: number[]): void;
-        public activateJointWeightsBuffer(index: number, stage3DProxy: away.managers.Stage3DProxy): void;
-        public activateJointIndexBuffer(index: number, stage3DProxy: away.managers.Stage3DProxy): void;
+        /**
+        * Assigns the attribute stream for joint weights
+        * @param index The attribute stream index for the vertex shader
+        * @param stageGLProxy The StageGLProxy to assign the stream to
+        */
+        public activateJointWeightsBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * Assigns the attribute stream for joint indices
+        * @param index The attribute stream index for the vertex shader
+        * @param stageGLProxy The StageGLProxy to assign the stream to
+        */
+        public activateJointIndexBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
         public pUploadData(contextIndex: number): void;
+        /**
+        * Clones the current object.
+        * @return An exact duplicate of the current object.
+        */
         public clone(): base.ISubGeometry;
+        /**
+        * Cleans up any resources used by this object.
+        */
         public dispose(): void;
+        /**
+        */
         public iCondenseIndexData(): void;
+        /**
+        * The raw joint weights data.
+        */
         public iJointWeightsData : number[];
         public iUpdateJointWeightsData(value: number[]): void;
+        /**
+        * The raw joint index data.
+        */
         public iJointIndexData : number[];
         public iUpdateJointIndexData(value: number[]): void;
     }
 }
+/**
+* @module away.base
+*/
 declare module away.base {
+    /**
+    *
+    * Geometry is a collection of SubGeometries, each of which contain the actual geometrical data such as vertices,
+    * normals, uvs, etc. It also contains a reference to an animation class, which defines how the geometry moves.
+    * A Geometry object is assigned to a Mesh, a scene graph occurence of the geometry, which in turn assigns
+    * the SubGeometries to its respective SubMesh objects.
+    *
+    *
+    *
+    * @see away3d.core.base.SubGeometry
+    * @see away3d.scenegraph.Mesh
+    *
+    * @class away.base.Geometry
+    */
     class Geometry extends away.library.NamedAssetBase implements away.library.IAsset {
         private _subGeometries;
         public assetType : string;
+        /**
+        * A collection of SubGeometry objects, each of which contain geometrical data such as vertices, normals, etc.
+        */
         public subGeometries : base.ISubGeometry[];
         public getSubGeometries(): base.ISubGeometry[];
+        /**
+        * Creates a new Geometry object.
+        */
         constructor();
         public applyTransformation(transform: away.geom.Matrix3D): void;
+        /**
+        * Adds a new SubGeometry object to the list.
+        * @param subGeometry The SubGeometry object to be added.
+        */
         public addSubGeometry(subGeometry: base.ISubGeometry): void;
+        /**
+        * Removes a new SubGeometry object from the list.
+        * @param subGeometry The SubGeometry object to be removed.
+        */
         public removeSubGeometry(subGeometry: base.ISubGeometry): void;
+        /**
+        * Clones the geometry.
+        * @return An exact duplicate of the current Geometry object.
+        */
         public clone(): Geometry;
+        /**
+        * Scales the geometry.
+        * @param scale The amount by which to scale.
+        */
         public scale(scale: number): void;
+        /**
+        * Clears all resources used by the Geometry object, including SubGeometries.
+        */
         public dispose(): void;
+        /**
+        * Scales the uv coordinates (tiling)
+        * @param scaleU The amount by which to scale on the u axis. Default is 1;
+        * @param scaleV The amount by which to scale on the v axis. Default is 1;
+        */
         public scaleUV(scaleU?: number, scaleV?: number): void;
+        /**
+        * Updates the SubGeometries so all vertex data is represented in different buffers.
+        * Use this for compatibility with Pixel Bender and PBPickingCollider
+        */
         public convertToSeparateBuffers(): void;
         public iValidate(): void;
         public iInvalidateBounds(subGeom: base.ISubGeometry): void;
     }
 }
 declare module away.base {
+    /**
+    * ...
+    */
     class ParticleGeometry extends base.Geometry {
         public particles: away.animators.ParticleData[];
         public numParticles: number;
     }
 }
+/**
+* @module away.base
+*/
 declare module away.base {
+    /**
+    * The SubGeometry class is a collections of geometric data that describes a triangle mesh. It is owned by a
+    * Geometry instance, and wrapped by a SubMesh in the scene graph.
+    * Several SubGeometries are grouped so they can be rendered with different materials, but still represent a single
+    * object.
+    *
+    * @see away3d.core.base.Geometry
+    * @see away3d.core.base.SubMesh
+    *
+    * @class away.base.SubGeometry
+    */
     class SubGeometry extends base.SubGeometryBase implements base.ISubGeometry {
         private _uvs;
         private _secondaryUvs;
@@ -914,35 +1453,105 @@ declare module away.base {
         private _vertexNormalBufferContext;
         private _vertexTangentBufferContext;
         private _numVertices;
+        /**
+        * Creates a new SubGeometry object.
+        */
         constructor();
+        /**
+        * The total amount of vertices in the SubGeometry.
+        */
         public numVertices : number;
-        public activateVertexBuffer(index: number, stage3DProxy: away.managers.Stage3DProxy): void;
-        public activateUVBuffer(index: number, stage3DProxy: away.managers.Stage3DProxy): void;
-        public activateSecondaryUVBuffer(index: number, stage3DProxy: away.managers.Stage3DProxy): void;
-        public activateVertexNormalBuffer(index: number, stage3DProxy: away.managers.Stage3DProxy): void;
-        public activateVertexTangentBuffer(index: number, stage3DProxy: away.managers.Stage3DProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public activateVertexBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public activateUVBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public activateSecondaryUVBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * Retrieves the VertexBuffer object that contains vertex normals.
+        * @param context The ContextGL for which we request the buffer
+        * @return The VertexBuffer object that contains vertex normals.
+        */
+        public activateVertexNormalBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * Retrieves the VertexBuffer object that contains vertex tangents.
+        * @param context The ContextGL for which we request the buffer
+        * @return The VertexBuffer object that contains vertex tangents.
+        */
+        public activateVertexTangentBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
         public applyTransformation(transform: away.geom.Matrix3D): void;
+        /**
+        * Clones the current object
+        * @return An exact duplicate of the current object.
+        */
         public clone(): base.ISubGeometry;
+        /**
+        * @inheritDoc
+        */
         public scale(scale: number): void;
+        /**
+        * @inheritDoc
+        */
         public scaleUV(scaleU?: number, scaleV?: number): void;
+        /**
+        * Clears all resources used by the SubGeometry object.
+        */
         public dispose(): void;
         public pDisposeAllVertexBuffers(): void;
+        /**
+        * The raw vertex position data.
+        */
         public vertexData : number[];
         public vertexPositionData : number[];
+        /**
+        * Updates the vertex data of the SubGeometry.
+        * @param vertices The new vertex data to upload.
+        */
         public updateVertexData(vertices: number[]): void;
+        /**
+        * The raw texture coordinate data.
+        */
         public UVData : number[];
         public secondaryUVData : number[];
+        /**
+        * Updates the uv coordinates of the SubGeometry.
+        * @param uvs The uv coordinates to upload.
+        */
         public updateUVData(uvs: number[]): void;
         public updateSecondaryUVData(uvs: number[]): void;
+        /**
+        * The raw vertex normal data.
+        */
         public vertexNormalData : number[];
+        /**
+        * Updates the vertex normals of the SubGeometry. When updating the vertex normals like this,
+        * autoDeriveVertexNormals will be set to false and vertex normals will no longer be calculated automatically.
+        * @param vertexNormals The vertex normals to upload.
+        */
         public updateVertexNormalData(vertexNormals: number[]): void;
+        /**
+        * The raw vertex tangent data.
+        *
+        * @private
+        */
         public vertexTangentData : number[];
+        /**
+        * Updates the vertex tangents of the SubGeometry. When updating the vertex tangents like this,
+        * autoDeriveVertexTangents will be set to false and vertex tangents will no longer be calculated automatically.
+        * @param vertexTangents The vertex tangents to upload.
+        */
         public updateVertexTangentData(vertexTangents: number[]): void;
         public fromVectors(vertices: number[], uvs: number[], normals: number[], tangents: number[]): void;
         public pUpdateVertexNormals(target: number[]): number[];
         public pUpdateVertexTangents(target: number[]): number[];
         public pUpdateDummyUVs(target: number[]): number[];
-        public pDisposeForStage3D(stage3DProxy: away.managers.Stage3DProxy): void;
+        public pDisposeForStageGL(stageGLProxy: away.managers.StageGLProxy): void;
         public vertexStride : number;
         public vertexTangentStride : number;
         public vertexNormalStride : number;
@@ -1041,7 +1650,7 @@ declare module away.traverse {
         constructor();
         private init();
         public camera : away.cameras.Camera3D;
-        public cullPlanes : away.math.Plane3D[];
+        public cullPlanes : away.geom.Plane3D[];
         public numMouseEnableds : number;
         public skyBox : away.base.IRenderable;
         public opaqueRenderableHead : away.data.RenderableListItem;
@@ -1060,6 +1669,9 @@ declare module away.traverse {
         public applyDirectionalLight(light: away.lights.DirectionalLight): void;
         public applyPointLight(light: away.lights.PointLight): void;
         public applyLightProbe(light: away.lights.LightProbe): void;
+        /**
+        * Cleans up any data at the end of a frame.
+        */
         public cleanUp(): void;
     }
 }
@@ -1076,687 +1688,47 @@ declare module away.traverse {
     }
 }
 declare module away.traverse {
+    /**
+    * The RaycastCollector class is a traverser for scene partitions that collects all scene graph entities that are
+    * considered intersecting with the defined ray.
+    *
+    * @see away3d.partition.Partition3D
+    * @see away3d.partition.Entity
+    */
     class RaycastCollector extends traverse.EntityCollector {
         private _rayPosition;
         private _rayDirection;
+        /**
+        * Creates a new RaycastCollector object.
+        */
         constructor();
+        /**
+        * Provides the starting position of the ray.
+        */
         public rayPosition : away.geom.Vector3D;
+        /**
+        * Provides the direction vector of the ray.
+        */
         public rayDirection : away.geom.Vector3D;
+        /**
+        * Returns true if the current node is at least partly in the frustum. If so, the partition node knows to pass on the traverser to its children.
+        *
+        * @param node The Partition3DNode object to frustum-test.
+        */
         public enterNode(node: away.partition.NodeBase): boolean;
+        /**
+        * @inheritDoc
+        */
         public applySkyBox(renderable: away.base.IRenderable): void;
+        /**
+        * Adds an IRenderable object to the potentially visible objects.
+        * @param renderable The IRenderable object to add.
+        */
         public applyRenderable(renderable: away.base.IRenderable): void;
+        /**
+        * @inheritDoc
+        */
         public applyUnknownLight(light: away.lights.LightBase): void;
-    }
-}
-declare module away.display {
-    class BitmapData {
-        private _imageCanvas;
-        private _context;
-        private _imageData;
-        private _rect;
-        private _transparent;
-        private _alpha;
-        private _locked;
-        constructor(width: number, height: number, transparent?: boolean, fillColor?: number);
-        public dispose(): void;
-        public lock(): void;
-        public unlock(): void;
-        public getPixel(x: any, y: any): number;
-        public setPixel(x: any, y: any, color: number): void;
-        public setPixel32(x: any, y: any, color: number): void;
-        public setVector(rect: away.geom.Rectangle, inputVector: number[]): void;
-        public drawImage(img: BitmapData, sourceRect: away.geom.Rectangle, destRect: away.geom.Rectangle): any;
-        public drawImage(img: HTMLImageElement, sourceRect: away.geom.Rectangle, destRect: away.geom.Rectangle): any;
-        private _drawImage(img, sourceRect, destRect);
-        public copyPixels(bmpd: BitmapData, sourceRect: away.geom.Rectangle, destRect: away.geom.Rectangle): any;
-        public copyPixels(bmpd: HTMLImageElement, sourceRect: away.geom.Rectangle, destRect: away.geom.Rectangle): any;
-        private _copyPixels(bmpd, sourceRect, destRect);
-        public fillRect(rect: away.geom.Rectangle, color: number): void;
-        public draw(source: BitmapData, matrix?: away.geom.Matrix): any;
-        public draw(source: HTMLImageElement, matrix?: away.geom.Matrix): any;
-        private _draw(source, matrix);
-        public copyChannel(sourceBitmap: BitmapData, sourceRect: away.geom.Rectangle, destPoint: away.geom.Point, sourceChannel: number, destChannel: number): void;
-        public colorTransform(rect: away.geom.Rectangle, colorTransform: away.geom.ColorTransform): void;
-        public imageData : ImageData;
-        public width : number;
-        public height : number;
-        public rect : away.geom.Rectangle;
-        public canvas : HTMLCanvasElement;
-        public context : CanvasRenderingContext2D;
-        private hexToRGBACSS(d);
-    }
-}
-declare module away.display {
-    class BitmapDataChannel {
-        static ALPHA: number;
-        static BLUE: number;
-        static GREEN: number;
-        static RED: number;
-    }
-}
-declare module away.display {
-    class BlendMode {
-        static ADD: string;
-        static ALPHA: string;
-        static DARKEN: string;
-        static DIFFERENCE: string;
-        static ERASE: string;
-        static HARDLIGHT: string;
-        static INVERT: string;
-        static LAYER: string;
-        static LIGHTEN: string;
-        static MULTIPLY: string;
-        static NORMAL: string;
-        static OVERLAY: string;
-        static SCREEN: string;
-        static SHADER: string;
-        static SUBTRACT: string;
-    }
-}
-declare module away.display {
-    class Stage3D extends away.events.EventDispatcher {
-        private _context3D;
-        private _canvas;
-        private _width;
-        private _height;
-        private _x;
-        private _y;
-        constructor(canvas: HTMLCanvasElement);
-        public requestContext(aglslContext?: boolean): void;
-        public width : number;
-        public height : number;
-        public x : number;
-        public y : number;
-        public visible : boolean;
-        public canvas : HTMLCanvasElement;
-        public context3D : away.display3D.Context3D;
-    }
-}
-declare module away.display {
-    class Stage extends away.events.EventDispatcher {
-        private static STAGE3D_MAX_QUANTITY;
-        public stage3Ds: display.Stage3D[];
-        private _stageHeight;
-        private _stageWidth;
-        constructor(width?: number, height?: number);
-        public resize(width: number, height: number): void;
-        public getStage3DAt(index: number): display.Stage3D;
-        public initStage3DObjects(): void;
-        private onContextCreated(e);
-        private createHTMLCanvasElement();
-        private addChildHTMLElement(canvas);
-        public stageWidth : number;
-        public stageHeight : number;
-        public rect : away.geom.Rectangle;
-    }
-}
-declare module away.display3D {
-    class Context3DClearMask {
-        static COLOR: number;
-        static DEPTH: number;
-        static STENCIL: number;
-        static ALL: number;
-    }
-}
-declare module away.display3D {
-    class VertexBuffer3D {
-        private _gl;
-        private _numVertices;
-        private _data32PerVertex;
-        private _buffer;
-        constructor(gl: WebGLRenderingContext, numVertices: number, data32PerVertex: number);
-        public uploadFromArray(vertices: number[], startVertex: number, numVertices: number): void;
-        public numVertices : number;
-        public data32PerVertex : number;
-        public glBuffer : WebGLBuffer;
-        public dispose(): void;
-    }
-}
-declare module away.display3D {
-    class IndexBuffer3D {
-        private _gl;
-        private _numIndices;
-        private _buffer;
-        constructor(gl: WebGLRenderingContext, numIndices: number);
-        public uploadFromArray(data: number[], startOffset: number, count: number): void;
-        public dispose(): void;
-        public numIndices : number;
-        public glBuffer : WebGLBuffer;
-    }
-}
-declare module away.display3D {
-    class Program3D {
-        private _gl;
-        private _program;
-        private _vertexShader;
-        private _fragmentShader;
-        constructor(gl: WebGLRenderingContext);
-        public upload(vertexProgram: string, fragmentProgram: string): any;
-        public dispose(): void;
-        public focusProgram(): void;
-        public glProgram : WebGLProgram;
-    }
-}
-declare module away.display3D {
-    class SamplerState {
-        public wrap: number;
-        public filter: number;
-        public mipfilter: number;
-    }
-}
-declare module away.display3D {
-    class Context3DTextureFormat {
-        static BGRA: string;
-        static BGRA_PACKED: string;
-        static BGR_PACKED: string;
-        static COMPRESSED: string;
-        static COMPRESSED_ALPHA: string;
-    }
-}
-declare module away.display3D {
-    class TextureBase {
-        public textureType: string;
-        public _gl: WebGLRenderingContext;
-        constructor(gl: WebGLRenderingContext);
-        public dispose(): void;
-    }
-}
-declare module away.display3D {
-    class Texture extends display3D.TextureBase {
-        public textureType: string;
-        private _width;
-        private _height;
-        private _frameBuffer;
-        private _glTexture;
-        constructor(gl: WebGLRenderingContext, width: number, height: number);
-        public dispose(): void;
-        public width : number;
-        public height : number;
-        public frameBuffer : WebGLFramebuffer;
-        public uploadFromHTMLImageElement(image: HTMLImageElement, miplevel?: number): void;
-        public uploadFromBitmapData(data: away.display.BitmapData, miplevel?: number): void;
-        public glTexture : WebGLTexture;
-        public generateFromRenderBuffer(data: away.display.BitmapData): void;
-        public generateMipmaps(): void;
-    }
-}
-declare module away.display3D {
-    class CubeTexture extends display3D.TextureBase {
-        public textureType: string;
-        private _texture;
-        private _size;
-        constructor(gl: WebGLRenderingContext, size: number);
-        public dispose(): void;
-        public uploadFromHTMLImageElement(image: HTMLImageElement, side: number, miplevel?: number): void;
-        public uploadFromBitmapData(data: away.display.BitmapData, side: number, miplevel?: number): void;
-        public size : number;
-        public glTexture : WebGLTexture;
-    }
-}
-declare module away.display3D {
-    class Context3DTriangleFace {
-        static BACK: string;
-        static FRONT: string;
-        static FRONT_AND_BACK: string;
-        static NONE: string;
-    }
-}
-declare module away.display3D {
-    class Context3DVertexBufferFormat {
-        static BYTES_4: string;
-        static FLOAT_1: string;
-        static FLOAT_2: string;
-        static FLOAT_3: string;
-        static FLOAT_4: string;
-    }
-}
-declare module away.display3D {
-    class Context3DProgramType {
-        static FRAGMENT: string;
-        static VERTEX: string;
-    }
-}
-declare module away.display3D {
-    class Context3DBlendFactor {
-        static DESTINATION_ALPHA: string;
-        static DESTINATION_COLOR: string;
-        static ONE: string;
-        static ONE_MINUS_DESTINATION_ALPHA: string;
-        static ONE_MINUS_DESTINATION_COLOR: string;
-        static ONE_MINUS_SOURCE_ALPHA: string;
-        static ONE_MINUS_SOURCE_COLOR: string;
-        static SOURCE_ALPHA: string;
-        static SOURCE_COLOR: string;
-        static ZERO: string;
-    }
-}
-declare module away.display3D {
-    class Context3DCompareMode {
-        static ALWAYS: string;
-        static EQUAL: string;
-        static GREATER: string;
-        static GREATER_EQUAL: string;
-        static LESS: string;
-        static LESS_EQUAL: string;
-        static NEVER: string;
-        static NOT_EQUAL: string;
-    }
-}
-declare module away.display3D {
-    class Context3DMipFilter {
-        static MIPLINEAR: string;
-        static MIPNEAREST: string;
-        static MIPNONE: string;
-    }
-}
-declare module away.display3D {
-    class Context3DProfile {
-        static BASELINE: string;
-        static BASELINE_CONSTRAINED: string;
-        static BASELINE_EXTENDED: string;
-    }
-}
-declare module away.display3D {
-    class Context3DStencilAction {
-        static DECREMENT_SATURATE: string;
-        static DECREMENT_WRAP: string;
-        static INCREMENT_SATURATE: string;
-        static INCREMENT_WRAP: string;
-        static INVERT: string;
-        static KEEP: string;
-        static SET: string;
-        static ZERO: string;
-    }
-}
-declare module away.display3D {
-    class Context3DTextureFilter {
-        static LINEAR: string;
-        static NEAREST: string;
-    }
-}
-declare module away.display3D {
-    class Context3DWrapMode {
-        static CLAMP: string;
-        static REPEAT: string;
-    }
-}
-declare module away.display3D {
-    class Context3D {
-        private _drawing;
-        private _blendEnabled;
-        private _blendSourceFactor;
-        private _blendDestinationFactor;
-        private _currentWrap;
-        private _currentFilter;
-        private _currentMipFilter;
-        private _indexBufferList;
-        private _vertexBufferList;
-        private _textureList;
-        private _programList;
-        private _samplerStates;
-        static MAX_SAMPLERS: number;
-        public _gl: WebGLRenderingContext;
-        public _currentProgram: display3D.Program3D;
-        constructor(canvas: HTMLCanvasElement);
-        public gl(): WebGLRenderingContext;
-        public clear(red?: number, green?: number, blue?: number, alpha?: number, depth?: number, stencil?: number, mask?: number): void;
-        public configureBackBuffer(width: number, height: number, antiAlias: number, enableDepthAndStencil?: boolean): void;
-        public createCubeTexture(size: number, format: display3D.Context3DTextureFormat, optimizeForRenderToTexture: boolean, streamingLevels?: number): display3D.CubeTexture;
-        public createIndexBuffer(numIndices: number): display3D.IndexBuffer3D;
-        public createProgram(): display3D.Program3D;
-        public createTexture(width: number, height: number, format: string, optimizeForRenderToTexture: boolean, streamingLevels?: number): display3D.Texture;
-        public createVertexBuffer(numVertices: number, data32PerVertex: number): display3D.VertexBuffer3D;
-        public dispose(): void;
-        public drawToBitmapData(destination: away.display.BitmapData): void;
-        public drawTriangles(indexBuffer: display3D.IndexBuffer3D, firstIndex?: number, numTriangles?: number): void;
-        public present(): void;
-        public setBlendFactors(sourceFactor: string, destinationFactor: string): void;
-        public setColorMask(red: boolean, green: boolean, blue: boolean, alpha: boolean): void;
-        public setCulling(triangleFaceToCull: string): void;
-        public setDepthTest(depthMask: boolean, passCompareMode: string): void;
-        public setProgram(program3D: display3D.Program3D): void;
-        private getUniformLocationNameFromAgalRegisterIndex(programType, firstRegister);
-        public setProgramConstantsFromMatrix(programType: string, firstRegister: number, matrix: away.geom.Matrix3D, transposedMatrix?: boolean): void;
-        static modulo: number;
-        public setProgramConstantsFromArray(programType: string, firstRegister: number, data: number[], numRegisters?: number): void;
-        public setGLSLProgramConstantsFromMatrix(locationName: string, matrix: away.geom.Matrix3D, transposedMatrix?: boolean): void;
-        public setGLSLProgramConstantsFromArray(locationName: string, data: number[], startIndex?: number): void;
-        public setScissorRectangle(rectangle: away.geom.Rectangle): void;
-        public setTextureAt(sampler: number, texture: display3D.TextureBase): void;
-        public setGLSLTextureAt(locationName: string, texture: display3D.TextureBase, textureIndex: number): void;
-        public setSamplerStateAt(sampler: number, wrap: string, filter: string, mipfilter: string): void;
-        public setVertexBufferAt(index: number, buffer: display3D.VertexBuffer3D, bufferOffset?: number, format?: string): void;
-        public setGLSLVertexBufferAt(locationName: any, buffer: display3D.VertexBuffer3D, bufferOffset?: number, format?: string): void;
-        public setRenderToTexture(target: display3D.TextureBase, enableDepthAndStencil?: boolean, antiAlias?: number, surfaceSelector?: number): void;
-        public setRenderToBackBuffer(): void;
-        private updateBlendStatus();
-    }
-}
-declare module away.display3D {
-    class AGLSLContext3D extends display3D.Context3D {
-        private _yFlip;
-        constructor(canvas: HTMLCanvasElement);
-        public setProgramConstantsFromMatrix(programType: string, firstRegister: number, matrix: away.geom.Matrix3D, transposedMatrix?: boolean): void;
-        public drawTriangles(indexBuffer: display3D.IndexBuffer3D, firstIndex?: number, numTriangles?: number): void;
-        public setCulling(triangleFaceToCull: string): void;
-    }
-}
-declare module away.geom {
-    class ColorTransform {
-        public alphaMultiplier: number;
-        public alphaOffset: number;
-        public blueMultiplier: number;
-        public blueOffset: number;
-        public greenMultiplier: number;
-        public greenOffset: number;
-        public redMultiplier: number;
-        public redOffset: number;
-        constructor(inRedMultiplier?: number, inGreenMultiplier?: number, inBlueMultiplier?: number, inAlphaMultiplier?: number, inRedOffset?: number, inGreenOffset?: number, inBlueOffset?: number, inAlphaOffset?: number);
-        public concat(second: ColorTransform): void;
-        public color : number;
-    }
-}
-declare module away.geom {
-    class Matrix {
-        public a: number;
-        public b: number;
-        public c: number;
-        public d: number;
-        public tx: number;
-        public ty: number;
-        constructor(a?: number, b?: number, c?: number, d?: number, tx?: number, ty?: number);
-        public clone(): Matrix;
-        public concat(m: Matrix): void;
-        public copyColumnFrom(column: number, vector3D: geom.Vector3D): void;
-        public copyColumnTo(column: number, vector3D: geom.Vector3D): void;
-        public copyFrom(other: Matrix): void;
-        public copyRowFrom(row: number, vector3D: geom.Vector3D): void;
-        public copyRowTo(row: number, vector3D: geom.Vector3D): void;
-        public createBox(scaleX: number, scaleY: number, rotation?: number, tx?: number, ty?: number): void;
-        public createGradientBox(width: number, height: number, rotation?: number, tx?: number, ty?: number): void;
-        public deltaTransformPoint(point: geom.Point): geom.Point;
-        public identity(): void;
-        public invert(): Matrix;
-        public mult(m: Matrix): Matrix;
-        public rotate(angle: number): void;
-        public scale(x: number, y: number): void;
-        public setRotation(angle: number, scale?: number): void;
-        public setTo(a: number, b: number, c: number, d: number, tx: number, ty: number): void;
-        public toString(): string;
-        public transformPoint(point: geom.Point): geom.Point;
-        public translate(x: number, y: number): void;
-    }
-}
-declare module away.geom {
-    class Matrix3D {
-        public rawData: number[];
-        constructor(v?: number[]);
-        public append(lhs: Matrix3D): void;
-        public appendRotation(degrees: number, axis: geom.Vector3D): void;
-        public appendScale(xScale: number, yScale: number, zScale: number): void;
-        public appendTranslation(x: number, y: number, z: number): void;
-        public clone(): Matrix3D;
-        public copyColumnFrom(column: number, vector3D: geom.Vector3D): void;
-        public copyColumnTo(column: number, vector3D: geom.Vector3D): void;
-        public copyFrom(sourceMatrix3D: Matrix3D): void;
-        public copyRawDataFrom(vector: number[], index?: number, transpose?: boolean): void;
-        public copyRawDataTo(vector: number[], index?: number, transpose?: boolean): void;
-        public copyRowFrom(row: number, vector3D: geom.Vector3D): void;
-        public copyRowTo(row: number, vector3D: geom.Vector3D): void;
-        public copyToMatrix3D(dest: Matrix3D): void;
-        public decompose(orientationStyle?: string): geom.Vector3D[];
-        public deltaTransformVector(v: geom.Vector3D): geom.Vector3D;
-        public identity(): void;
-        static interpolate(thisMat: Matrix3D, toMat: Matrix3D, percent: number): Matrix3D;
-        public interpolateTo(toMat: Matrix3D, percent: number): void;
-        public invert(): boolean;
-        public prepend(rhs: Matrix3D): void;
-        public prependRotation(degrees: number, axis: geom.Vector3D): void;
-        public prependScale(xScale: number, yScale: number, zScale: number): void;
-        public prependTranslation(x: number, y: number, z: number): void;
-        public recompose(components: geom.Vector3D[]): boolean;
-        public transformVector(v: geom.Vector3D): geom.Vector3D;
-        public transformVectors(vin: number[], vout: number[]): void;
-        public transpose(): void;
-        static getAxisRotation(x: number, y: number, z: number, degrees: number): Matrix3D;
-        public determinant : number;
-        public position : geom.Vector3D;
-    }
-}
-declare module away.geom {
-    class Orientation3D {
-        static AXIS_ANGLE: string;
-        static EULER_ANGLES: string;
-        static QUATERNION: string;
-    }
-}
-declare module away.geom {
-    class Point {
-        public x: number;
-        public y: number;
-        constructor(x?: number, y?: number);
-    }
-}
-declare module away.geom {
-    class Rectangle {
-        public x: number;
-        public y: number;
-        public width: number;
-        public height: number;
-        constructor(x?: number, y?: number, width?: number, height?: number);
-        public left : number;
-        public right : number;
-        public top : number;
-        public bottom : number;
-        public topLeft : geom.Point;
-        public bottomRight : geom.Point;
-        public clone(): Rectangle;
-    }
-}
-declare module away.geom {
-    class Vector3D {
-        static X_AXIS: Vector3D;
-        static Y_AXIS: Vector3D;
-        static Z_AXIS: Vector3D;
-        public x: number;
-        public y: number;
-        public z: number;
-        public w: number;
-        constructor(x?: number, y?: number, z?: number, w?: number);
-        public length : number;
-        public lengthSquared : number;
-        public add(a: Vector3D): Vector3D;
-        static angleBetween(a: Vector3D, b: Vector3D): number;
-        public clone(): Vector3D;
-        public copyFrom(src: Vector3D): void;
-        public crossProduct(a: Vector3D): Vector3D;
-        public decrementBy(a: Vector3D): void;
-        static distance(pt1: Vector3D, pt2: Vector3D): number;
-        public dotProduct(a: Vector3D): number;
-        public equals(cmp: Vector3D, allFour?: boolean): boolean;
-        public incrementBy(a: Vector3D): void;
-        public nearEquals(cmp: Vector3D, epsilon: number, allFour?: boolean): boolean;
-        public negate(): void;
-        public normalize(): void;
-        public project(): void;
-        public scaleBy(s: number): void;
-        public setTo(xa: number, ya: number, za: number): void;
-        public subtract(a: Vector3D): Vector3D;
-        public toString(): string;
-    }
-}
-declare module away.math {
-    class MathConsts {
-        static RADIANS_TO_DEGREES: number;
-        static DEGREES_TO_RADIANS: number;
-    }
-}
-declare module away.math {
-    class Quaternion {
-        public x: number;
-        public y: number;
-        public z: number;
-        public w: number;
-        constructor(x?: number, y?: number, z?: number, w?: number);
-        public magnitude : number;
-        public multiply(qa: Quaternion, qb: Quaternion): void;
-        public multiplyVector(vector: away.geom.Vector3D, target?: Quaternion): Quaternion;
-        public fromAxisAngle(axis: away.geom.Vector3D, angle: number): void;
-        public slerp(qa: Quaternion, qb: Quaternion, t: number): void;
-        public lerp(qa: Quaternion, qb: Quaternion, t: number): void;
-        public fromEulerAngles(ax: number, ay: number, az: number): void;
-        public toEulerAngles(target?: away.geom.Vector3D): away.geom.Vector3D;
-        public normalize(val?: number): void;
-        public toString(): string;
-        public toMatrix3D(target?: away.geom.Matrix3D): away.geom.Matrix3D;
-        public fromMatrix(matrix: away.geom.Matrix3D): void;
-        public toRawData(target: number[], exclude4thRow?: boolean): void;
-        public clone(): Quaternion;
-        public rotatePoint(vector: away.geom.Vector3D, target?: away.geom.Vector3D): away.geom.Vector3D;
-        public copyFrom(q: Quaternion): void;
-    }
-}
-declare module away.math {
-    class PlaneClassification {
-        static BACK: number;
-        static FRONT: number;
-        static IN: number;
-        static OUT: number;
-        static INTERSECT: number;
-    }
-}
-declare module away.math {
-    class Plane3D {
-        public a: number;
-        public b: number;
-        public c: number;
-        public d: number;
-        public _iAlignment: number;
-        static ALIGN_ANY: number;
-        static ALIGN_XY_AXIS: number;
-        static ALIGN_YZ_AXIS: number;
-        static ALIGN_XZ_AXIS: number;
-        constructor(a?: number, b?: number, c?: number, d?: number);
-        public fromPoints(p0: away.geom.Vector3D, p1: away.geom.Vector3D, p2: away.geom.Vector3D): void;
-        public fromNormalAndPoint(normal: away.geom.Vector3D, point: away.geom.Vector3D): void;
-        public normalize(): Plane3D;
-        public distance(p: away.geom.Vector3D): number;
-        public classifyPoint(p: away.geom.Vector3D, epsilon?: number): number;
-        public toString(): string;
-    }
-}
-declare module away.math {
-    class Matrix3DUtils {
-        static RAW_DATA_CONTAINER: number[];
-        static CALCULATION_MATRIX: away.geom.Matrix3D;
-        static quaternion2matrix(quarternion: math.Quaternion, m?: away.geom.Matrix3D): away.geom.Matrix3D;
-        static getForward(m: away.geom.Matrix3D, v?: away.geom.Vector3D): away.geom.Vector3D;
-        static getUp(m: away.geom.Matrix3D, v?: away.geom.Vector3D): away.geom.Vector3D;
-        static getRight(m: away.geom.Matrix3D, v?: away.geom.Vector3D): away.geom.Vector3D;
-        static compare(m1: away.geom.Matrix3D, m2: away.geom.Matrix3D): boolean;
-        static lookAt(matrix: away.geom.Matrix3D, pos: away.geom.Vector3D, dir: away.geom.Vector3D, up: away.geom.Vector3D): void;
-        static reflection(plane: math.Plane3D, target?: away.geom.Matrix3D): away.geom.Matrix3D;
-    }
-}
-declare module away.math {
-    class PoissonLookup {
-        static _distributions: number[][];
-        static initDistributions(): void;
-        static getDistribution(n: number): number[];
-    }
-}
-declare module away.net {
-    class URLRequest {
-        public data: any;
-        public method: string;
-        public async: boolean;
-        private _url;
-        constructor(url?: string);
-        public url : string;
-        public dispose(): void;
-    }
-}
-declare module away.net {
-    class IMGLoader extends away.events.EventDispatcher {
-        private _image;
-        private _request;
-        private _name;
-        private _loaded;
-        private _crossOrigin;
-        constructor(imageName?: string);
-        public load(request: net.URLRequest): void;
-        public dispose(): void;
-        public image : HTMLImageElement;
-        public loaded : boolean;
-        public crossOrigin : string;
-        public width : number;
-        public height : number;
-        public request : net.URLRequest;
-        public name : string;
-        private initImage();
-        private onAbort(event);
-        private onError(event);
-        private onLoadComplete(event);
-    }
-}
-declare module away.net {
-    class URLLoaderDataFormat {
-        static TEXT: string;
-        static VARIABLES: string;
-        static BLOB: string;
-        static ARRAY_BUFFER: string;
-        static BINARY: string;
-    }
-}
-declare module away.net {
-    class URLRequestMethod {
-        static POST: string;
-        static GET: string;
-    }
-}
-declare module away.net {
-    class URLLoader extends away.events.EventDispatcher {
-        private _XHR;
-        private _bytesLoaded;
-        private _bytesTotal;
-        private _data;
-        private _dataFormat;
-        private _request;
-        private _loadError;
-        constructor();
-        public load(request: net.URLRequest): void;
-        public close(): void;
-        public dispose(): void;
-        public dataFormat : string;
-        public data : any;
-        public bytesLoaded : number;
-        public bytesTotal : number;
-        public request : net.URLRequest;
-        private setResponseType(xhr, responseType);
-        private getRequest(request);
-        private postRequest(request);
-        private handleXmlHttpRequestException(error);
-        private initXHR();
-        private disposeXHR();
-        public decodeURLVariables(source: string): Object;
-        private onReadyStateChange(event);
-        private onLoadEnd(event);
-        private onTimeOut(event);
-        private onAbort(event);
-        private onProgress(event);
-        private onLoadStart(event);
-        private onLoadComplete(event);
-        private onLoadError(event);
-    }
-}
-declare module away.net {
-    class URLVariables {
-        private _variables;
-        constructor(source?: string);
-        public decode(source: string): void;
-        public toString(): string;
-        public variables : Object;
-        public formData : FormData;
     }
 }
 declare module away.partition {
@@ -1772,7 +1744,7 @@ declare module away.partition {
         public parent : NodeBase;
         public iAddNode(node: NodeBase): void;
         public iRemoveNode(node: NodeBase): void;
-        public isInFrustum(planes: away.math.Plane3D[], numPlanes: number): boolean;
+        public isInFrustum(planes: away.geom.Plane3D[], numPlanes: number): boolean;
         public isIntersectingRay(rayPosition: away.geom.Vector3D, rayDirection: away.geom.Vector3D): boolean;
         public isCastingShadow(): boolean;
         public findPartitionForEntity(entity: away.entities.Entity): NodeBase;
@@ -1807,8 +1779,14 @@ declare module away.partition {
         constructor(entity: away.entities.Entity);
         public entity : away.entities.Entity;
         public removeFromParent(): void;
-        public isInFrustum(planes: away.math.Plane3D[], numPlanes: number): boolean;
+        public isInFrustum(planes: away.geom.Plane3D[], numPlanes: number): boolean;
+        /**
+        * @inheritDoc
+        */
         public acceptTraverser(traverser: away.traverse.PartitionTraverser): void;
+        /**
+        * @inheritDoc
+        */
         public isIntersectingRay(rayPosition: away.geom.Vector3D, rayDirection: away.geom.Vector3D): boolean;
     }
 }
@@ -1853,37 +1831,87 @@ declare module away.partition {
     }
 }
 declare module away.partition {
+    /**
+    * MeshNode is a space partitioning leaf node that contains a Mesh object.
+    */
     class MeshNode extends partition.EntityNode {
         private _mesh;
+        /**
+        * Creates a new MeshNode object.
+        * @param mesh The mesh to be contained in the node.
+        */
         constructor(mesh: away.entities.Mesh);
+        /**
+        * The mesh object contained in the partition node.
+        */
         public mesh : away.entities.Mesh;
+        /**
+        * @inheritDoc
+        */
         public acceptTraverser(traverser: away.traverse.PartitionTraverser): void;
         public isCastingShadow(): boolean;
     }
 }
 declare module away.partition {
+    /**
+    * SkyBoxNode is a space partitioning leaf node that contains a SkyBox object.
+    */
     class SkyBoxNode extends partition.EntityNode {
         private _skyBox;
+        /**
+        * Creates a new SkyBoxNode object.
+        * @param skyBox The SkyBox to be contained in the node.
+        */
         constructor(skyBox: away.entities.SkyBox);
+        /**
+        * @inheritDoc
+        */
         public acceptTraverser(traverser: away.traverse.PartitionTraverser): void;
-        public isInFrustum(planes: away.math.Plane3D[], numPlanes: number): boolean;
+        public isInFrustum(planes: away.geom.Plane3D[], numPlanes: number): boolean;
     }
 }
 declare module away.partition {
+    /**
+    * RenderableNode is a space partitioning leaf node that contains any Entity that is itself a IRenderable
+    * object. This excludes Mesh (since the renderable objects are its SubMesh children).
+    */
     class RenderableNode extends partition.EntityNode {
         private _renderable;
+        /**
+        * Creates a new RenderableNode object.
+        * @param mesh The mesh to be contained in the node.
+        */
         constructor(renderable: away.base.IRenderable);
+        /**
+        * @inheritDoc
+        */
         public acceptTraverser(traverser: away.traverse.PartitionTraverser): void;
         public isCastingShadow(): boolean;
     }
 }
 declare module away.pick {
+    /**
+    * Provides an interface for picking colliders that can be assigned to individual entities in a scene for specific picking behaviour.
+    * Used with the <code>RaycastPicker</code> picking object.
+    *
+    * @see away3d.entities.Entity#pickingCollider
+    * @see away3d.core.pick.RaycastPicker
+    */
     interface IPickingCollider {
-        setLocalRay(localPosition: away.geom.Vector3D, localDirection: away.geom.Vector3D): any;
+        /**
+        * Sets the position and direction of a picking ray in local coordinates to the entity.
+        *
+        * @param localDirection The position vector in local coordinates
+        * @param localPosition The direction vector in local coordinates
+        */
+        setLocalRay(localPosition: away.geom.Vector3D, localDirection: away.geom.Vector3D);
         testSubMeshCollision(subMesh: away.base.SubMesh, pickingCollisionVO: pick.PickingCollisionVO, shortestCollisionDistance: number): boolean;
     }
 }
 declare module away.pick {
+    /**
+    * An abstract base class for all picking collider classes. It should not be instantiated directly.
+    */
     class PickingColliderBase {
         public rayPosition: away.geom.Vector3D;
         public rayDirection: away.geom.Vector3D;
@@ -1892,56 +1920,164 @@ declare module away.pick {
         public _pGetCollisionUV(indexData: number[], uvData: number[], triangleIndex: number, v: number, w: number, u: number, uvOffset: number, uvStride: number): away.geom.Point;
         public pGetMeshSubgeometryIndex(subGeometry: away.base.SubGeometry): number;
         public pGetMeshSubMeshIndex(subMesh: away.base.SubMesh): number;
+        /**
+        * @inheritDoc
+        */
         public setLocalRay(localPosition: away.geom.Vector3D, localDirection: away.geom.Vector3D): void;
     }
 }
 declare module away.pick {
+    /**
+    * Value object for a picking collision returned by a picking collider. Created as unique objects on entities
+    *
+    * @see away3d.entities.Entity#pickingCollisionVO
+    * @see away3d.core.pick.IPickingCollider
+    */
     class PickingCollisionVO {
+        /**
+        * The entity to which this collision object belongs.
+        */
         public entity: away.entities.Entity;
+        /**
+        * The local position of the collision on the entity's surface.
+        */
         public localPosition: away.geom.Vector3D;
+        /**
+        * The local normal vector at the position of the collision.
+        */
         public localNormal: away.geom.Vector3D;
+        /**
+        * The uv coordinate at the position of the collision.
+        */
         public uv: away.geom.Point;
+        /**
+        * The index of the face where the event took pl ace.
+        */
         public index: number;
+        /**
+        * The index of the subGeometry where the event took place.
+        */
         public subGeometryIndex: number;
+        /**
+        * The starting position of the colliding ray in local coordinates.
+        */
         public localRayPosition: away.geom.Vector3D;
+        /**
+        * The direction of the colliding ray in local coordinates.
+        */
         public localRayDirection: away.geom.Vector3D;
+        /**
+        * The starting position of the colliding ray in scene coordinates.
+        */
         public rayPosition: away.geom.Vector3D;
+        /**
+        * The direction of the colliding ray in scene coordinates.
+        */
         public rayDirection: away.geom.Vector3D;
+        /**
+        * Determines if the ray position is contained within the entity bounds.
+        *
+        * @see away3d.entities.Entity#bounds
+        */
         public rayOriginIsInsideBounds: boolean;
+        /**
+        * The distance along the ray from the starting position to the calculated intersection entry point with the entity.
+        */
         public rayEntryDistance: number;
+        /**
+        * The IRenderable associated with a collision.
+        */
         public renderable: away.base.IRenderable;
+        /**
+        * Creates a new <code>PickingCollisionVO</code> object.
+        *
+        * @param entity The entity to which this collision object belongs.
+        */
         constructor(entity: away.entities.Entity);
     }
 }
 declare module away.pick {
+    /**
+    * Pure AS3 picking collider for entity objects. Used with the <code>RaycastPicker</code> picking object.
+    *
+    * @see away3d.entities.Entity#pickingCollider
+    * @see away3d.core.pick.RaycastPicker
+    */
     class AS3PickingCollider extends pick.PickingColliderBase implements pick.IPickingCollider {
         private _findClosestCollision;
+        /**
+        * Creates a new <code>AS3PickingCollider</code> object.
+        *
+        * @param findClosestCollision Determines whether the picking collider searches for the closest collision along the ray. Defaults to false.
+        */
         constructor(findClosestCollision?: boolean);
         public testSubMeshCollision(subMesh: away.base.SubMesh, pickingCollisionVO: pick.PickingCollisionVO, shortestCollisionDistance: number): boolean;
     }
 }
 declare module away.pick {
+    /**
+    * Options for setting a picking collider for entity objects. Used with the <code>RaycastPicker</code> picking object.
+    *
+    * @see away3d.entities.Entity#pickingCollider
+    * @see away3d.core.pick.RaycastPicker
+    */
     class PickingColliderType {
+        /**
+        * Default null collider that forces picker to only use entity bounds for hit calculations on an Entity
+        */
         static BOUNDS_ONLY: pick.IPickingCollider;
+        /**
+        * Pure AS3 picking collider that returns the first encountered hit on an Entity. Useful for low poly meshes and applying to many mesh instances.
+        *
+        * @see away3d.core.pick.AS3PickingCollider
+        */
         static AS3_FIRST_ENCOUNTERED: pick.IPickingCollider;
+        /**
+        * Pure AS3 picking collider that returns the best (closest) hit on an Entity. Useful for low poly meshes and applying to many mesh instances.
+        *
+        * @see away3d.core.pick.AS3PickingCollider
+        */
         static AS3_BEST_HIT: pick.IPickingCollider;
     }
 }
 declare module away.pick {
+    /**
+    * Provides an interface for picking objects that can pick 3d objects from a view or scene.
+    */
     interface IPicker {
+        /**
+        * Gets the collision object from the screen coordinates of the picking ray.
+        *
+        * @param x The x coordinate of the picking ray in screen-space.
+        * @param y The y coordinate of the picking ray in screen-space.
+        * @param view The view on which the picking object acts.
+        */
         getViewCollision(x: number, y: number, view: away.containers.View3D): pick.PickingCollisionVO;
+        /**
+        * Gets the collision object from the scene position and direction of the picking ray.
+        *
+        * @param position The position of the picking ray in scene-space.
+        * @param direction The direction of the picking ray in scene-space.
+        * @param scene The scene on which the picking object acts.
+        */
         getSceneCollision(position: away.geom.Vector3D, direction: away.geom.Vector3D, scene: away.containers.Scene3D): pick.PickingCollisionVO;
+        /**
+        * Determines whether the picker takes account of the mouseEnabled properties of entities. Defaults to true.
+        */
         onlyMouseEnabled: boolean;
-        dispose(): any;
+        /**
+        * Disposes memory used by the IPicker object
+        */
+        dispose();
     }
 }
 declare module away.pick {
     class ShaderPicker implements pick.IPicker {
-        private _stage3DProxy;
+        private _stageGLProxy;
         private _context;
         private _onlyMouseEnabled;
-        private _objectProgram3D;
-        private _triangleProgram3D;
+        private _objectProgram;
+        private _triangleProgram;
         private _bitmapData;
         private _viewportData;
         private _boundOffsetScale;
@@ -1962,23 +2098,73 @@ declare module away.pick {
         private _rayDir;
         private _potentialFound;
         private static MOUSE_SCISSOR_RECT;
+        /**
+        * @inheritDoc
+        */
         public onlyMouseEnabled : boolean;
+        /**
+        * Creates a new <code>ShaderPicker</code> object.
+        */
         constructor();
         public getViewCollision(x: number, y: number, view: away.containers.View3D): pick.PickingCollisionVO;
+        /**
+        * @inheritDoc
+        */
         public getSceneCollision(position: away.geom.Vector3D, direction: away.geom.Vector3D, scene: away.containers.Scene3D): pick.PickingCollisionVO;
-        public pDraw(entityCollector: away.traverse.EntityCollector, target: away.display3D.TextureBase): void;
+        public pDraw(entityCollector: away.traverse.EntityCollector, target: away.displayGL.TextureBase): void;
+        /**
+        * Draw a list of renderables.
+        * @param renderables The renderables to draw.
+        * @param camera The camera for which to render.
+        */
         private drawRenderables(item, camera);
         private updateRay(camera);
-        private initObjectProgram3D();
-        private initTriangleProgram3D();
+        /**
+        * Creates the Program that color-codes objects.
+        */
+        private initObjectProgram();
+        /**
+        * Creates the Program that renders positions.
+        */
+        private initTriangleProgram();
+        /**
+        * Gets more detailed information about the hir position, if required.
+        * @param camera The camera used to view the hit object.
+        */
         private getHitDetails(camera);
+        /**
+        * Finds a first-guess approximate position about the hit position.
+        * @param camera The camera used to view the hit object.
+        */
         private getApproximatePosition(camera);
+        /**
+        * Use the approximate position info to find the face under the mouse position from which we can derive the precise
+        * ray-face intersection point, then use barycentric coordinates to figure out the uv coordinates, etc.
+        * @param camera The camera used to view the hit object.
+        */
         private getPreciseDetails(camera);
+        /**
+        * Finds the precise hit position by unprojecting the screen coordinate back unto the hit face's plane and
+        * calculating the intersection point.
+        * @param camera The camera used to render the object.
+        * @param invSceneTransform The inverse scene transformation of the hit object.
+        * @param nx The x-coordinate of the face's plane normal.
+        * @param ny The y-coordinate of the face plane normal.
+        * @param nz The z-coordinate of the face plane normal.
+        * @param px The x-coordinate of a point on the face's plane (ie a face vertex)
+        * @param py The y-coordinate of a point on the face's plane (ie a face vertex)
+        * @param pz The z-coordinate of a point on the face's plane (ie a face vertex)
+        */
         private getPrecisePosition(invSceneTransform, nx, ny, nz, px, py, pz);
         public dispose(): void;
     }
 }
 declare module away.pick {
+    /**
+    * Picks a 3d object from a view or scene by 3D raycast calculations.
+    * Performs an initial coarse boundary calculation to return a subset of entities whose bounding volumes intersect with the specified ray,
+    * then triggers an optional picking collider on individual entity objects to further determine the precise values of the picking ray collision.
+    */
     class RaycastPicker implements pick.IPicker {
         private _findClosestCollision;
         private _raycastCollector;
@@ -1987,12 +2173,24 @@ declare module away.pick {
         private _entities;
         private _numEntities;
         private _hasCollisions;
+        /**
+        * @inheritDoc
+        */
         public onlyMouseEnabled : boolean;
+        /**
+        * Creates a new <code>RaycastPicker</code> object.
+        *
+        * @param findClosestCollision Determines whether the picker searches for the closest bounds collision along the ray,
+        * or simply returns the first collision encountered Defaults to false.
+        */
         constructor(findClosestCollision: boolean);
+        /**
+        * @inheritDoc
+        */
         public getViewCollision(x: number, y: number, view: away.containers.View3D): pick.PickingCollisionVO;
         public getSceneCollision(position: away.geom.Vector3D, direction: away.geom.Vector3D, scene: away.containers.Scene3D): pick.PickingCollisionVO;
         public getEntityCollision(position: away.geom.Vector3D, direction: away.geom.Vector3D, entities: away.entities.Entity[]): pick.PickingCollisionVO;
-        public setIgnoreList(entities: any): void;
+        public setIgnoreList(entities): void;
         private isIgnored(entity);
         private sortOnNearT(entity1, entity2);
         private getPickingCollisionVO();
@@ -2001,22 +2199,41 @@ declare module away.pick {
     }
 }
 declare module away.pick {
+    /**
+    * Options for the different 3D object picking approaches available in Away3D. Can be used for automatic mouse picking on the view.
+    *
+    * @see away3d.containers.View3D#mousePicker
+    */
     class PickingType {
+        /**
+        * Uses a render pass to pick objects based on a key color that is read back into the engine.
+        * Performance can be variable on some GPUs.
+        */
         static SHADER: pick.IPicker;
+        /**
+        * Uses AS3 and Pixel Bender to pick objects based on ray intersection. Returns the hit on the first encountered Entity.
+        */
         static RAYCAST_FIRST_ENCOUNTERED: pick.IPicker;
+        /**
+        * Uses AS3 and Pixel Bender to pick objects based on ray intersection. Returns the best (closest) hit on an Entity.
+        */
         static RAYCAST_BEST_HIT: pick.IPicker;
     }
 }
 declare module away.render {
+    /**
+    * RendererBase forms an abstract base class for classes that are used in the rendering pipeline to render geometry
+    * to the back buffer or a texture.
+    */
     class RendererBase {
-        public _pContext: away.display3D.Context3D;
-        public _pStage3DProxy: away.managers.Stage3DProxy;
+        public _pContext: away.displayGL.ContextGL;
+        public _pStageGLProxy: away.managers.StageGLProxy;
         private _backgroundR;
         private _backgroundG;
         private _backgroundB;
         private _backgroundAlpha;
         private _shareContext;
-        public _pRenderTarget: away.display3D.TextureBase;
+        public _pRenderTarget: away.displayGL.TextureBase;
         public _pRenderTargetSurface: number;
         private _viewWidth;
         private _viewHeight;
@@ -2029,6 +2246,9 @@ declare module away.render {
         private _snapshotRequired;
         private _clearOnRender;
         public _pRttViewProjectionMatrix: away.geom.Matrix3D;
+        /**
+        * Creates a new RendererBase object.
+        */
         constructor(renderToTexture?: boolean);
         public iCreateEntityCollector(): away.traverse.EntityCollector;
         public iViewWidth : number;
@@ -2036,18 +2256,70 @@ declare module away.render {
         public iRenderToTexture : boolean;
         public renderableSorter : away.sort.IEntitySorter;
         public iClearOnRender : boolean;
+        /**
+        * The background color's red component, used when clearing.
+        *
+        * @private
+        */
         public iBackgroundR : number;
+        /**
+        * The background color's green component, used when clearing.
+        *
+        * @private
+        */
         public iBackgroundG : number;
+        /**
+        * The background color's blue component, used when clearing.
+        *
+        * @private
+        */
         public iBackgroundB : number;
-        public iStage3DProxy : away.managers.Stage3DProxy;
-        public iSetStage3DProxy(value: away.managers.Stage3DProxy): void;
+        /**
+        * The StageGLProxy that will provide the ContextGL used for rendering.
+        *
+        * @private
+        */
+        public iStageGLProxy : away.managers.StageGLProxy;
+        public iSetStageGLProxy(value: away.managers.StageGLProxy): void;
+        /**
+        * Defers control of ContextGL clear() and present() calls to StageGLProxy, enabling multiple StageGL frameworks
+        * to share the same ContextGL object.
+        *
+        * @private
+        */
         public iShareContext : boolean;
+        /**
+        * Disposes the resources used by the RendererBase.
+        *
+        * @private
+        */
         public iDispose(): void;
-        public iRender(entityCollector: away.traverse.EntityCollector, target?: away.display3D.TextureBase, scissorRect?: away.geom.Rectangle, surfaceSelector?: number): void;
-        public pExecuteRender(entityCollector: away.traverse.EntityCollector, target?: away.display3D.TextureBase, scissorRect?: away.geom.Rectangle, surfaceSelector?: number): void;
+        /**
+        * Renders the potentially visible geometry to the back buffer or texture.
+        * @param entityCollector The EntityCollector object containing the potentially visible geometry.
+        * @param target An option target texture to render to.
+        * @param surfaceSelector The index of a CubeTexture's face to render to.
+        * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
+        */
+        public iRender(entityCollector: away.traverse.EntityCollector, target?: away.displayGL.TextureBase, scissorRect?: away.geom.Rectangle, surfaceSelector?: number): void;
+        /**
+        * Renders the potentially visible geometry to the back buffer or texture. Only executed if everything is set up.
+        * @param entityCollector The EntityCollector object containing the potentially visible geometry.
+        * @param target An option target texture to render to.
+        * @param surfaceSelector The index of a CubeTexture's face to render to.
+        * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
+        */
+        public pExecuteRender(entityCollector: away.traverse.EntityCollector, target?: away.displayGL.TextureBase, scissorRect?: away.geom.Rectangle, surfaceSelector?: number): void;
         public queueSnapshot(bmd: away.display.BitmapData): void;
         public pExecuteRenderToTexturePass(entityCollector: away.traverse.EntityCollector): void;
-        public pDraw(entityCollector: away.traverse.EntityCollector, target: away.display3D.TextureBase): void;
+        /**
+        * Performs the actual drawing of geometry to the target.
+        * @param entityCollector The EntityCollector object containing the potentially visible geometry.
+        */
+        public pDraw(entityCollector: away.traverse.EntityCollector, target: away.displayGL.TextureBase): void;
+        /**
+        * Assign the context once retrieved
+        */
         private onContextUpdate(event);
         public iBackgroundAlpha : number;
         public antiAlias : number;
@@ -2056,20 +2328,40 @@ declare module away.render {
     }
 }
 declare module away.render {
+    /**
+    * The DepthRenderer class renders 32-bit depth information encoded as RGBA
+    */
     class DepthRenderer extends render.RendererBase {
         private _activeMaterial;
         private _renderBlended;
         private _distanceBased;
         private _disableColor;
+        /**
+        * Creates a new DepthRenderer object.
+        * @param renderBlended Indicates whether semi-transparent objects should be rendered.
+        * @param distanceBased Indicates whether the written depth value is distance-based or projected depth-based
+        */
         constructor(renderBlended?: boolean, distanceBased?: boolean);
         public disableColor : boolean;
-        public iRenderCascades(entityCollector: away.traverse.EntityCollector, target: away.display3D.TextureBase, numCascades: number, scissorRects: away.geom.Rectangle[], cameras: away.cameras.Camera3D[]): void;
+        public iRenderCascades(entityCollector: away.traverse.EntityCollector, target: away.displayGL.TextureBase, numCascades: number, scissorRects: away.geom.Rectangle[], cameras: away.cameras.Camera3D[]): void;
         private drawCascadeRenderables(item, camera, cullPlanes);
-        public pDraw(entityCollector: away.traverse.EntityCollector, target: away.display3D.TextureBase): void;
+        /**
+        * @inheritDoc
+        */
+        public pDraw(entityCollector: away.traverse.EntityCollector, target: away.displayGL.TextureBase): void;
+        /**
+        * Draw a list of renderables.
+        * @param renderables The renderables to draw.
+        * @param entityCollector The EntityCollector containing all potentially visible information.
+        */
         private drawRenderables(item, entityCollector);
     }
 }
 declare module away.render {
+    /**
+    * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the
+    * materials assigned to them.
+    */
     class DefaultRenderer extends render.RendererBase {
         private static RTT_PASSES;
         private static SCREEN_PASSES;
@@ -2078,13 +2370,30 @@ declare module away.render {
         private _pDistanceRenderer;
         private _pDepthRenderer;
         private _skyboxProjection;
+        /**
+        * Creates a new DefaultRenderer object.
+        * @param antiAlias The amount of anti-aliasing to use.
+        * @param renderMode The render mode to use.
+        */
         constructor();
-        public iStage3DProxy : away.managers.Stage3DProxy;
-        public pExecuteRender(entityCollector: away.traverse.EntityCollector, target?: away.display3D.TextureBase, scissorRect?: away.geom.Rectangle, surfaceSelector?: number): void;
+        public iStageGLProxy : away.managers.StageGLProxy;
+        public pExecuteRender(entityCollector: away.traverse.EntityCollector, target?: away.displayGL.TextureBase, scissorRect?: away.geom.Rectangle, surfaceSelector?: number): void;
         private updateLights(entityCollector);
-        public pDraw(entityCollector: away.traverse.EntityCollector, target: away.display3D.TextureBase): void;
+        /**
+        * @inheritDoc
+        */
+        public pDraw(entityCollector: away.traverse.EntityCollector, target: away.displayGL.TextureBase): void;
+        /**
+        * Draw the skybox if present.
+        * @param entityCollector The EntityCollector containing all potentially visible information.
+        */
         private drawSkyBox(entityCollector);
         private updateSkyBoxProjection(camera);
+        /**
+        * Draw a list of renderables.
+        * @param renderables The renderables to draw.
+        * @param entityCollector The EntityCollector containing all potentially visible information.
+        */
         private drawRenderables(item, entityCollector, which);
         public iDispose(): void;
     }
@@ -2097,22 +2406,22 @@ declare module away.render {
         private _mainInputTexture;
         private _requireDepthRender;
         private _rttManager;
-        private _stage3DProxy;
+        private _stageGLProxy;
         private _filterSizesInvalid;
-        constructor(stage3DProxy: away.managers.Stage3DProxy);
+        constructor(stageGLProxy: away.managers.StageGLProxy);
         private onRTTResize(event);
         public requireDepthRender : boolean;
-        public getMainInputTexture(stage3DProxy: away.managers.Stage3DProxy): away.display3D.Texture;
+        public getMainInputTexture(stageGLProxy: away.managers.StageGLProxy): away.displayGL.Texture;
         public filters : away.filters.Filter3DBase[];
-        private updateFilterTasks(stage3DProxy);
-        public render(stage3DProxy: away.managers.Stage3DProxy, camera3D: away.cameras.Camera3D, depthTexture: away.display3D.Texture): void;
+        private updateFilterTasks(stageGLProxy);
+        public render(stageGLProxy: away.managers.StageGLProxy, camera3D: away.cameras.Camera3D, depthTexture: away.displayGL.Texture): void;
         private updateFilterSizes();
         public dispose(): void;
     }
 }
 declare module away.sort {
     interface IEntitySorter {
-        sort(collector: away.traverse.EntityCollector): any;
+        sort(collector: away.traverse.EntityCollector);
     }
 }
 declare module away.sort {
@@ -2121,214 +2430,6 @@ declare module away.sort {
         public sort(collector: away.traverse.EntityCollector): void;
         private mergeSortByDepth(head);
         private mergeSortByMaterial(head);
-    }
-}
-declare module away.ui {
-    class Keyboard {
-        static A: number;
-        static ALTERNATE: number;
-        static AUDIO: number;
-        static B: number;
-        static BACK: number;
-        static BACKQUOTE: number;
-        static BACKSLASH: number;
-        static BACKSPACE: number;
-        static BLUE: number;
-        static C: number;
-        static CAPS_LOCK: number;
-        static CHANNEL_DOWN: number;
-        static CHANNEL_UP: number;
-        static COMMA: number;
-        static COMMAND: number;
-        static CONTROL: number;
-        static CharCodeStrings: any[];
-        static D: number;
-        static DELETE: number;
-        static DOWN: number;
-        static DVR: number;
-        static E: number;
-        static END: number;
-        static ENTER: number;
-        static EQUAL: number;
-        static ESCAPE: number;
-        static EXIT: number;
-        static F: number;
-        static F1: number;
-        static F10: number;
-        static F11: number;
-        static F12: number;
-        static F13: number;
-        static F14: number;
-        static F15: number;
-        static F2: number;
-        static F3: number;
-        static F4: number;
-        static F5: number;
-        static F6: number;
-        static F7: number;
-        static F8: number;
-        static F9: number;
-        static FAST_FORWARD: number;
-        static G: number;
-        static GREEN: number;
-        static GUIDE: number;
-        static H: number;
-        static HELP: number;
-        static HOME: number;
-        static I: number;
-        static INFO: number;
-        static INPUT: number;
-        static INSERT: number;
-        static J: number;
-        static K: number;
-        static KEYNAME_BEGIN: string;
-        static KEYNAME_BREAK: string;
-        static KEYNAME_CLEARDISPLAY: string;
-        static KEYNAME_CLEARLINE: string;
-        static KEYNAME_DELETE: string;
-        static KEYNAME_DELETECHAR: string;
-        static KEYNAME_DELETELINE: string;
-        static KEYNAME_DOWNARROW: string;
-        static KEYNAME_END: string;
-        static KEYNAME_EXECUTE: string;
-        static KEYNAME_F1: string;
-        static KEYNAME_F10: string;
-        static KEYNAME_F11: string;
-        static KEYNAME_F12: string;
-        static KEYNAME_F13: string;
-        static KEYNAME_F14: string;
-        static KEYNAME_F15: string;
-        static KEYNAME_F16: string;
-        static KEYNAME_F17: string;
-        static KEYNAME_F18: string;
-        static KEYNAME_F19: string;
-        static KEYNAME_F2: string;
-        static KEYNAME_F20: string;
-        static KEYNAME_F21: string;
-        static KEYNAME_F22: string;
-        static KEYNAME_F23: string;
-        static KEYNAME_F24: string;
-        static KEYNAME_F25: string;
-        static KEYNAME_F26: string;
-        static KEYNAME_F27: string;
-        static KEYNAME_F28: string;
-        static KEYNAME_F29: string;
-        static KEYNAME_F3: string;
-        static KEYNAME_F30: string;
-        static KEYNAME_F31: string;
-        static KEYNAME_F32: string;
-        static KEYNAME_F33: string;
-        static KEYNAME_F34: string;
-        static KEYNAME_F35: string;
-        static KEYNAME_F4: string;
-        static KEYNAME_F5: string;
-        static KEYNAME_F6: string;
-        static KEYNAME_F7: string;
-        static KEYNAME_F8: string;
-        static KEYNAME_F9: string;
-        static KEYNAME_FIND: string;
-        static KEYNAME_HELP: string;
-        static KEYNAME_HOME: string;
-        static KEYNAME_INSERT: string;
-        static KEYNAME_INSERTCHAR: string;
-        static KEYNAME_INSERTLINE: string;
-        static KEYNAME_LEFTARROW: string;
-        static KEYNAME_MENU: string;
-        static KEYNAME_MODESWITCH: string;
-        static KEYNAME_NEXT: string;
-        static KEYNAME_PAGEDOWN: string;
-        static KEYNAME_PAGEUP: string;
-        static KEYNAME_PAUSE: string;
-        static KEYNAME_PREV: string;
-        static KEYNAME_PRINT: string;
-        static KEYNAME_PRINTSCREEN: string;
-        static KEYNAME_REDO: string;
-        static KEYNAME_RESET: string;
-        static KEYNAME_RIGHTARROW: string;
-        static KEYNAME_SCROLLLOCK: string;
-        static KEYNAME_SELECT: string;
-        static KEYNAME_STOP: string;
-        static KEYNAME_SYSREQ: string;
-        static KEYNAME_SYSTEM: string;
-        static KEYNAME_UNDO: string;
-        static KEYNAME_UPARROW: string;
-        static KEYNAME_USER: string;
-        static L: number;
-        static LAST: number;
-        static LEFT: number;
-        static LEFTBRACKET: number;
-        static LIVE: number;
-        static M: number;
-        static MASTER_SHELL: number;
-        static MENU: number;
-        static MINUS: number;
-        static N: number;
-        static NEXT: number;
-        static NUMBER_0: number;
-        static NUMBER_1: number;
-        static NUMBER_2: number;
-        static NUMBER_3: number;
-        static NUMBER_4: number;
-        static NUMBER_5: number;
-        static NUMBER_6: number;
-        static NUMBER_7: number;
-        static NUMBER_8: number;
-        static NUMBER_9: number;
-        static NUMPAD: number;
-        static NUMPAD_0: number;
-        static NUMPAD_1: number;
-        static NUMPAD_2: number;
-        static NUMPAD_3: number;
-        static NUMPAD_4: number;
-        static NUMPAD_5: number;
-        static NUMPAD_6: number;
-        static NUMPAD_7: number;
-        static NUMPAD_8: number;
-        static NUMPAD_9: number;
-        static NUMPAD_ADD: number;
-        static NUMPAD_DECIMAL: number;
-        static NUMPAD_DIVIDE: number;
-        static NUMPAD_ENTER: number;
-        static NUMPAD_MULTIPLY: number;
-        static NUMPAD_SUBTRACT: number;
-        static O: number;
-        static P: number;
-        static PAGE_DOWN: number;
-        static PAGE_UP: number;
-        static PAUSE: number;
-        static PERIOD: number;
-        static PLAY: number;
-        static PREVIOUS: number;
-        static Q: number;
-        static QUOTE: number;
-        static R: number;
-        static RECORD: number;
-        static RED: number;
-        static REWIND: number;
-        static RIGHT: number;
-        static RIGHTBRACKET: number;
-        static S: number;
-        static SEARCH: number;
-        static SEMICOLON: number;
-        static SETUP: number;
-        static SHIFT: number;
-        static SKIP_BACKWARD: number;
-        static SKIP_FORWARD: number;
-        static SLASH: number;
-        static SPACE: number;
-        static STOP: number;
-        static SUBTITLE: number;
-        static T: number;
-        static TAB: number;
-        static U: number;
-        static UP: number;
-        static V: number;
-        static VOD: number;
-        static W: number;
-        static X: number;
-        static Y: number;
-        static YELLOW: number;
-        static Z: number;
     }
 }
 declare module away.containers {
@@ -2367,6 +2468,9 @@ declare module away.containers {
         private notifySceneChange();
         public pUpdateMouseChildren(): void;
         public mouseEnabled : boolean;
+        /**
+        * @inheritDoc
+        */
         public iInvalidateTransform(): void;
         public pInvalidateSceneTransform(): void;
         public pUpdateSceneTransform(): void;
@@ -2404,6 +2508,86 @@ declare module away.containers {
     }
 }
 declare module away.containers {
+    /**
+    * Loader3D can load any file format that Away3D supports (or for which a third-party parser
+    * has been plugged in) and be added directly to the scene. As assets are encountered
+    * they are added to the Loader3D container. Assets that can not be displayed in the scene
+    * graph (e.g. unused bitmaps/materials/skeletons etc) will be ignored.
+    *
+    * This provides a fast and easy way to load models (no need for event listeners) but is not
+    * very versatile since many types of assets are ignored.
+    *
+    * Loader3D by default uses the AssetLibrary to load all assets, which means that they also
+    * ends up in the library. To circumvent this, Loader3D can be configured to not use the
+    * AssetLibrary in which case it will use the AssetLoader directly.
+    *
+    * @see away.net.AssetLoader
+    * @see away.library.AssetLibrary
+    */
+    class Loader3D extends containers.ObjectContainer3D {
+        private _loadingSessions;
+        private _useAssetLib;
+        private _assetLibId;
+        constructor(useAssetLibrary?: boolean, assetLibraryId?: string);
+        /**
+        * Loads a file and (optionally) all of its dependencies.
+        *
+        * @param req The URLRequest object containing the URL of the file to be loaded.
+        * @param context An optional context object providing additional parameters for loading
+        * @param ns An optional namespace string under which the file is to be loaded, allowing the differentiation of two resources with identical assets
+        * @param parser An optional parser object for translating the loaded data into a usable resource. If not provided, AssetLoader will attempt to auto-detect the file type.
+        */
+        public load(req: away.net.URLRequest, context?: away.net.AssetLoaderContext, ns?: string, parser?: away.parsers.ParserBase): away.net.AssetLoaderToken;
+        /**
+        * Loads a resource from already loaded data.
+        *
+        * @param data The data object containing all resource information.
+        * @param context An optional context object providing additional parameters for loading
+        * @param ns An optional namespace string under which the file is to be loaded, allowing the differentiation of two resources with identical assets
+        * @param parser An optional parser object for translating the loaded data into a usable resource. If not provided, AssetLoader will attempt to auto-detect the file type.
+        */
+        public loadData(data: any, context?: away.net.AssetLoaderContext, ns?: string, parser?: away.parsers.ParserBase): away.net.AssetLoaderToken;
+        /**
+        * Stop the current loading/parsing process.
+        */
+        public stopLoad(): void;
+        /**
+        * Enables a specific parser.
+        * When no specific parser is set for a loading/parsing opperation,
+        * loader3d can autoselect the correct parser to use.
+        * A parser must have been enabled, to be considered when autoselecting the parser.
+        *
+        * @param parserClass The parser class to enable.
+        * @see away3d.net.parsers.Parsers
+        */
+        static enableParser(parserClass: Object): void;
+        /**
+        * Enables a list of parsers.
+        * When no specific parser is set for a loading/parsing opperation,
+        * loader3d can autoselect the correct parser to use.
+        * A parser must have been enabled, to be considered when autoselecting the parser.
+        *
+        * @param parserClasses A Vector of parser classes to enable.
+        * @see away3d.net.parsers.Parsers
+        */
+        static enableParsers(parserClasses: Object[]): void;
+        private removeListeners(dispatcher);
+        private onAssetComplete(ev);
+        /**
+        * Called when a an error occurs during dependency retrieving.
+        */
+        private onDependencyRetrievingError(event);
+        /**
+        * Called when a an error occurs during parsing.
+        */
+        private onDependencyRetrievingParseError(event);
+        /**
+        * Called when the resource and all of its dependencies was retrieved.
+        */
+        private onResourceRetrieved(event);
+    }
+}
+declare module away.containers {
     class Scene3D extends away.events.EventDispatcher {
         public _iSceneGraphRoot: containers.ObjectContainer3D;
         private _partitions;
@@ -2433,8 +2617,8 @@ declare module away.containers {
         public _pEntityCollector: away.traverse.EntityCollector;
         public _pFilter3DRenderer: away.render.Filter3DRenderer;
         public _pRequireDepthRender: boolean;
-        public _pDepthRender: away.display3D.Texture;
-        public _pStage3DProxy: away.managers.Stage3DProxy;
+        public _pDepthRender: away.displayGL.Texture;
+        public _pStageGLProxy: away.managers.StageGLProxy;
         public _pBackBufferInvalid: boolean;
         public _pRttBufferManager: away.managers.RTTBufferManager;
         public _pShareContext: boolean;
@@ -2461,38 +2645,221 @@ declare module away.containers {
         private _profile;
         private _layeredView;
         constructor(scene?: containers.Scene3D, camera?: away.cameras.Camera3D, renderer?: away.render.RendererBase, forceSoftware?: boolean, profile?: string);
+        /**
+        *
+        * @param e
+        */
         private onScenePartitionChanged(e);
-        public stage3DProxy : away.managers.Stage3DProxy;
+        /**
+        *
+        * @returns {away.managers.StageGLProxy}
+        */
+        /**
+        *
+        * @param stageGLProxy
+        */
+        public stageGLProxy : away.managers.StageGLProxy;
+        /**
+        *
+        * @returns {boolean}
+        */
+        /**
+        *
+        * @param value
+        */
         public layeredView : boolean;
+        /**
+        *
+        * @returns {*}
+        */
+        /**
+        *
+        * @param value
+        */
         public filters3d : away.filters.Filter3DBase[];
+        /**
+        *
+        * @returns {away.render.RendererBase}
+        */
+        /**
+        *
+        * @param value
+        */
         public renderer : away.render.RendererBase;
+        /**
+        *
+        * @returns {number}
+        */
+        /**
+        *
+        * @param value
+        */
         public backgroundColor : number;
+        /**
+        *
+        * @returns {number}
+        */
+        /**
+        *
+        * @param value
+        */
         public backgroundAlpha : number;
+        /**
+        *
+        * @returns {away.cameras.Camera3D}
+        */
+        /**
+        * Set camera that's used to render the scene for this viewport
+        */
         public camera : away.cameras.Camera3D;
+        /**
+        *
+        * @returns {away.containers.Scene3D}
+        */
+        /**
+        * Set the scene that's used to render for this viewport
+        */
         public scene : containers.Scene3D;
+        /**
+        *
+        * @returns {number}
+        */
         public deltaTime : number;
+        /**
+        *
+        * @returns {number}
+        */
+        /**
+        *
+        * @param value
+        */
         public width : number;
+        /**
+        *
+        * @returns {number}
+        */
+        /**
+        *
+        * @param value
+        */
         public height : number;
+        /**
+        *
+        * @returns {number}
+        */
+        /**
+        *
+        * @param value
+        */
         public x : number;
+        /**
+        *
+        * @returns {number}
+        */
+        /**
+        *
+        * @param value
+        */
         public y : number;
+        /**
+        *
+        * @returns {boolean}
+        */
+        /**
+        *
+        * @param v
+        */
         public visible : boolean;
         public canvas : HTMLCanvasElement;
+        /**
+        *
+        * @returns {number}
+        */
+        /**
+        *
+        * @param value
+        */
         public antiAlias : number;
+        /**
+        *
+        * @returns {number}
+        */
         public renderedFacesCount : number;
+        /**
+        *
+        * @returns {boolean}
+        */
+        /**
+        *
+        * @param value
+        */
         public shareContext : boolean;
+        /**
+        * Updates the backbuffer dimensions.
+        */
         public pUpdateBackBuffer(): void;
+        /**
+        * Renders the view.
+        */
         public render(): void;
+        /**
+        *
+        */
         public pUpdateGlobalPos(): void;
+        /**
+        *
+        */
         public pUpdateTime(): void;
+        /**
+        *
+        */
         public pUpdateViewSizeData(): void;
+        /**
+        *
+        * @param entityCollector
+        */
         public pRenderDepthPrepass(entityCollector: away.traverse.EntityCollector): void;
+        /**
+        *
+        * @param entityCollector
+        */
         public pRenderSceneDepthToTexture(entityCollector: away.traverse.EntityCollector): void;
+        /**
+        *
+        * @param context
+        */
         private initDepthTexture(context);
+        /**
+        *
+        */
         public dispose(): void;
+        /**
+        *
+        * @returns {away.traverse.EntityCollector}
+        */
         public iEntityCollector : away.traverse.EntityCollector;
+        /**
+        *
+        * @param event
+        */
         private onLensChanged(event);
+        /**
+        *
+        * @param event
+        */
         private onViewportUpdated(event);
+        /**
+        *
+        * @returns {boolean}
+        */
+        /**
+        *
+        * @param value
+        */
         public depthPrepass : boolean;
+        /**
+        *
+        */
         private onAddedToStage();
         public project(point3d: away.geom.Vector3D): away.geom.Vector3D;
         public unproject(sX: number, sY: number, sZ: number): away.geom.Vector3D;
@@ -2572,12 +2939,12 @@ declare module away.entities {
         public iSubSetCount : number;
         public iUpdateSegment(segment: away.primitives.Segment): void;
         public hasData : boolean;
-        public getIndexBuffer(stage3DProxy: away.managers.Stage3DProxy): away.display3D.IndexBuffer3D;
-        public activateVertexBuffer(index: number, stage3DProxy: away.managers.Stage3DProxy): void;
-        public activateUVBuffer(index: number, stage3DProxy: away.managers.Stage3DProxy): void;
-        public activateVertexNormalBuffer(index: number, stage3DProxy: away.managers.Stage3DProxy): void;
-        public activateVertexTangentBuffer(index: number, stage3DProxy: away.managers.Stage3DProxy): void;
-        public activateSecondaryUVBuffer(index: number, stage3DProxy: away.managers.Stage3DProxy): void;
+        public getIndexBuffer(stageGLProxy: away.managers.StageGLProxy): away.displayGL.IndexBuffer;
+        public activateVertexBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        public activateUVBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        public activateVertexNormalBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        public activateVertexTangentBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        public activateSecondaryUVBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
         private reOrderIndices(subSetIndex, index);
         private addSubSet();
         public dispose(): void;
@@ -2606,6 +2973,11 @@ declare module away.entities {
     }
 }
 declare module away.entities {
+    /**
+    * Mesh is an instance of a Geometry, augmenting it with a presence in the scene graph, a material, and an animation
+    * state. It consists out of SubMeshes, which in turn correspond to SubGeometries. SubMeshes allow different parts
+    * of the geometry to be assigned different materials.
+    */
     class Mesh extends entities.Entity implements away.base.IMaterialOwner, away.library.IAsset {
         private _subMeshes;
         private _geometry;
@@ -2613,30 +2985,101 @@ declare module away.entities {
         private _animator;
         private _castsShadows;
         private _shareAnimationGeometry;
+        /**
+        * Create a new Mesh object.
+        *
+        * @param geometry                    The geometry used by the mesh that provides it with its shape.
+        * @param material    [optional]        The material with which to render the Mesh.
+        */
         constructor(geometry: away.base.Geometry, material?: away.materials.MaterialBase);
         public bakeTransformations(): void;
         public assetType : string;
         private onGeometryBoundsInvalid(event);
+        /**
+        * Indicates whether or not the Mesh can cast shadows. Default value is <code>true</code>.
+        */
         public castsShadows : boolean;
+        /**
+        * Defines the animator of the mesh. Act on the mesh's geometry.  Default value is <code>null</code>.
+        */
         public animator : away.animators.IAnimator;
+        /**
+        * The geometry used by the mesh that provides it with its shape.
+        */
         public geometry : away.base.Geometry;
+        /**
+        * The material with which to render the Mesh.
+        */
         public material : away.materials.MaterialBase;
+        /**
+        * The SubMeshes out of which the Mesh consists. Every SubMesh can be assigned a material to override the Mesh's
+        * material.
+        */
         public subMeshes : away.base.SubMesh[];
+        /**
+        * Indicates whether or not the mesh share the same animation geometry.
+        */
         public shareAnimationGeometry : boolean;
+        /**
+        * Clears the animation geometry of this mesh. It will cause animation to generate a new animation geometry. Work only when shareAnimationGeometry is false.
+        */
         public clearAnimationGeometry(): void;
+        /**
+        * @inheritDoc
+        */
         public dispose(): void;
+        /**
+        * Disposes mesh including the animator and children. This is a merely a convenience method.
+        * @return
+        */
         public disposeWithAnimatorAndChildren(): void;
+        /**
+        * Clones this Mesh instance along with all it's children, while re-using the same
+        * material, geometry and animation set. The returned result will be a copy of this mesh,
+        * containing copies of all of it's children.
+        *
+        * Properties that are re-used (i.e. not cloned) by the new copy include name,
+        * geometry, and material. Properties that are cloned or created anew for the copy
+        * include subMeshes, children of the mesh, and the animator.
+        *
+        * If you want to copy just the mesh, reusing it's geometry and material while not
+        * cloning it's children, the simplest way is to create a new mesh manually:
+        *
+        * <code>
+        * var clone : Mesh = new Mesh(original.geometry, original.material);
+        * </code>
+        */
         public clone(): Mesh;
+        /**
+        * @inheritDoc
+        */
         public pUpdateBounds(): void;
+        /**
+        * @inheritDoc
+        */
         public pCreateEntityPartitionNode(): away.partition.EntityNode;
+        /**
+        * Called when a SubGeometry was added to the Geometry.
+        */
         private onSubGeometryAdded(event);
+        /**
+        * Called when a SubGeometry was removed from the Geometry.
+        */
         private onSubGeometryRemoved(event);
+        /**
+        * Adds a SubMesh wrapping a SubGeometry.
+        */
         private addSubMesh(subGeometry);
         public getSubMeshForSubGeometry(subGeometry: away.base.SubGeometry): away.base.SubMesh;
         public iCollidesBefore(shortestCollisionDistance: number, findClosest: boolean): boolean;
     }
 }
 declare module away.entities {
+    /**
+    * A SkyBox class is used to render a sky in the scene. It's always considered static and 'at infinity', and as
+    * such it's always centered at the camera's position and sized to exactly fit within the camera's frustum, ensuring
+    * the sky box is always as large as possible without being clipped.
+    */
     class SkyBox extends entities.Entity implements away.base.IRenderable {
         private _geometry;
         private _material;
@@ -2644,20 +3087,60 @@ declare module away.entities {
         private _animator;
         public animator : away.animators.IAnimator;
         public pGetDefaultBoundingVolume(): away.bounds.BoundingVolumeBase;
+        /**
+        * Create a new SkyBox object.
+        * @param cubeMap The CubeMap to use for the sky box's texture.
+        */
         constructor(cubeMap: away.textures.CubeTextureBase);
-        public activateVertexBuffer(index: number, stage3DProxy: away.managers.Stage3DProxy): void;
-        public activateUVBuffer(index: number, stage3DProxy: away.managers.Stage3DProxy): void;
-        public activateVertexNormalBuffer(index: number, stage3DProxy: away.managers.Stage3DProxy): void;
-        public activateVertexTangentBuffer(index: number, stage3DProxy: away.managers.Stage3DProxy): void;
-        public activateSecondaryUVBuffer(index: number, stage3DProxy: away.managers.Stage3DProxy): void;
-        public getIndexBuffer(stage3DProxy: away.managers.Stage3DProxy): away.display3D.IndexBuffer3D;
+        /**
+        * @inheritDoc
+        */
+        public activateVertexBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public activateUVBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public activateVertexNormalBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public activateVertexTangentBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        public activateSecondaryUVBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public getIndexBuffer(stageGLProxy: away.managers.StageGLProxy): away.displayGL.IndexBuffer;
+        /**
+        * The amount of triangles that comprise the SkyBox geometry.
+        */
         public numTriangles : number;
+        /**
+        * The entity that that initially provided the IRenderable to the render pipeline.
+        */
         public sourceEntity : entities.Entity;
+        /**
+        * The material with which to render the object.
+        */
         public material : away.materials.MaterialBase;
         public assetType : string;
+        /**
+        * @inheritDoc
+        */
         public pInvalidateBounds(): void;
+        /**
+        * @inheritDoc
+        */
         public pCreateEntityPartitionNode(): away.partition.EntityNode;
+        /**
+        * @inheritDoc
+        */
         public pUpdateBounds(): void;
+        /**
+        * Builds the geometry that forms the SkyBox
+        */
         private buildGeometry(target);
         public castsShadows : boolean;
         public uvTransform : away.geom.Matrix;
@@ -2675,6 +3158,12 @@ declare module away.entities {
     }
 }
 declare module away.entities {
+    /**
+    * Sprite3D is a 3D billboard, a renderable rectangular area that is always aligned with the projection plane.
+    * As a result, no perspective transformation occurs on a Sprite3D object.
+    *
+    * todo: mvp generation or vertex shader code can be optimized
+    */
     class Sprite3D extends entities.Entity implements away.base.IRenderable {
         private static _geometry;
         private _material;
@@ -2690,16 +3179,22 @@ declare module away.entities {
         public pickingCollider : away.pick.IPickingCollider;
         public width : number;
         public height : number;
-        public activateVertexBuffer(index: number, stage3DProxy: away.managers.Stage3DProxy): void;
-        public activateUVBuffer(index: number, stage3DProxy: away.managers.Stage3DProxy): void;
-        public activateSecondaryUVBuffer(index: number, stage3DProxy: away.managers.Stage3DProxy): void;
-        public activateVertexNormalBuffer(index: number, stage3DProxy: away.managers.Stage3DProxy): void;
-        public activateVertexTangentBuffer(index: number, stage3DProxy: away.managers.Stage3DProxy): void;
-        public getIndexBuffer(stage3DProxy: away.managers.Stage3DProxy): away.display3D.IndexBuffer3D;
+        public activateVertexBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        public activateUVBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        public activateSecondaryUVBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        public activateVertexNormalBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        public activateVertexTangentBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        public getIndexBuffer(stageGLProxy: away.managers.StageGLProxy): away.displayGL.IndexBuffer;
         public numTriangles : number;
         public sourceEntity : entities.Entity;
         public material : away.materials.MaterialBase;
+        /**
+        * Defines the animator of the mesh. Act on the mesh's geometry. Defaults to null
+        */
         public animator : away.animators.IAnimator;
+        /**
+        * Indicates whether or not the Mesh can cast shadows. Default value is <code>true</code>.
+        */
         public castsShadows : boolean;
         public pGetDefaultBoundingVolume(): away.bounds.BoundingVolumeBase;
         public pUpdateBounds(): void;
@@ -2738,7 +3233,7 @@ declare module away.bounds {
         public fromGeometry(geometry: away.base.Geometry): void;
         public fromSphere(center: away.geom.Vector3D, radius: number): void;
         public fromExtremes(minX: number, minY: number, minZ: number, maxX: number, maxY: number, maxZ: number): void;
-        public isInFrustum(planes: away.math.Plane3D[], numPlanes: number): boolean;
+        public isInFrustum(planes: away.geom.Plane3D[], numPlanes: number): boolean;
         public overlaps(bounds: BoundingVolumeBase): boolean;
         public clone(): BoundingVolumeBase;
         public rayIntersection(position: away.geom.Vector3D, direction: away.geom.Vector3D, targetNormal: away.geom.Vector3D): number;
@@ -2746,7 +3241,7 @@ declare module away.bounds {
         public pUpdateAABBPoints(): void;
         public pUpdateBoundingRenderable(): void;
         public pCreateBoundingRenderable(): away.primitives.WireframePrimitiveBase;
-        public classifyToPlane(plane: away.math.Plane3D): number;
+        public classifyToPlane(plane: away.geom.Plane3D): number;
         public transformFrom(bounds: BoundingVolumeBase, matrix: away.geom.Matrix3D): void;
     }
 }
@@ -2757,11 +3252,11 @@ declare module away.bounds {
         constructor(alwaysIn?: boolean, renderable?: away.primitives.WireframePrimitiveBase);
         public clone(): bounds.BoundingVolumeBase;
         public pCreateBoundingRenderable(): away.primitives.WireframePrimitiveBase;
-        public isInFrustum(planes: away.math.Plane3D[], numPlanes: number): boolean;
+        public isInFrustum(planes: away.geom.Plane3D[], numPlanes: number): boolean;
         public fromGeometry(geometry: away.base.Geometry): void;
         public fromSphere(center: away.geom.Vector3D, radius: number): void;
         public fromExtremes(minX: number, minY: number, minZ: number, maxX: number, maxY: number, maxZ: number): void;
-        public classifyToPlane(plane: away.math.Plane3D): number;
+        public classifyToPlane(plane: away.geom.Plane3D): number;
         public transformFrom(bounds: bounds.BoundingVolumeBase, matrix: away.geom.Matrix3D): void;
     }
 }
@@ -2774,7 +3269,7 @@ declare module away.bounds {
         constructor();
         public radius : number;
         public nullify(): void;
-        public isInFrustum(planes: away.math.Plane3D[], numPlanes: number): boolean;
+        public isInFrustum(planes: away.geom.Plane3D[], numPlanes: number): boolean;
         public fromSphere(center: away.geom.Vector3D, radius: number): void;
         public fromExtremes(minX: number, minY: number, minZ: number, maxX: number, maxY: number, maxZ: number): void;
         public clone(): bounds.BoundingVolumeBase;
@@ -2782,11 +3277,15 @@ declare module away.bounds {
         public containsPoint(position: away.geom.Vector3D): boolean;
         public pUpdateBoundingRenderable(): void;
         public pCreateBoundingRenderable(): away.primitives.WireframePrimitiveBase;
-        public classifyToPlane(plane: away.math.Plane3D): number;
+        public classifyToPlane(plane: away.geom.Plane3D): number;
         public transformFrom(bounds: bounds.BoundingVolumeBase, matrix: away.geom.Matrix3D): void;
     }
 }
 declare module away.bounds {
+    /**
+    * AxisAlignedBoundingBox represents a bounding box volume that has its planes aligned to the local coordinate axes of the bounded object.
+    * This is useful for most meshes.
+    */
     class AxisAlignedBoundingBox extends bounds.BoundingVolumeBase {
         private _centerX;
         private _centerY;
@@ -2794,20 +3293,44 @@ declare module away.bounds {
         private _halfExtentsX;
         private _halfExtentsY;
         private _halfExtentsZ;
+        /**
+        * Creates a new <code>AxisAlignedBoundingBox</code> object.
+        */
         constructor();
+        /**
+        * @inheritDoc
+        */
         public nullify(): void;
-        public isInFrustum(planes: away.math.Plane3D[], numPlanes: number): boolean;
+        /**
+        * @inheritDoc
+        */
+        public isInFrustum(planes: away.geom.Plane3D[], numPlanes: number): boolean;
         public rayIntersection(position: away.geom.Vector3D, direction: away.geom.Vector3D, targetNormal: away.geom.Vector3D): number;
+        /**
+        * @inheritDoc
+        */
         public containsPoint(position: away.geom.Vector3D): boolean;
+        /**
+        * @inheritDoc
+        */
         public fromExtremes(minX: number, minY: number, minZ: number, maxX: number, maxY: number, maxZ: number): void;
+        /**
+        * @inheritDoc
+        */
         public clone(): bounds.BoundingVolumeBase;
         public halfExtentsX : number;
         public halfExtentsY : number;
         public halfExtentsZ : number;
+        /**
+        * Finds the closest point on the bounding volume to another given point. This can be used for maximum error calculations for content within a given bound.
+        * @param point The point for which to find the closest point on the bounding volume
+        * @param target An optional Vector3D to store the result to prevent creating a new object.
+        * @return
+        */
         public closestPointToPoint(point: away.geom.Vector3D, target?: away.geom.Vector3D): away.geom.Vector3D;
         public pUpdateBoundingRenderable(): void;
         public pCreateBoundingRenderable(): away.primitives.WireframePrimitiveBase;
-        public classifyToPlane(plane: away.math.Plane3D): number;
+        public classifyToPlane(plane: away.geom.Plane3D): number;
         public transformFrom(bounds: bounds.BoundingVolumeBase, matrix: away.geom.Matrix3D): void;
     }
 }
@@ -2920,12 +3443,12 @@ declare module away.cameras {
     class ObliqueNearPlaneLens extends cameras.LensBase {
         private _baseLens;
         private _plane;
-        constructor(baseLens: cameras.LensBase, plane: away.math.Plane3D);
+        constructor(baseLens: cameras.LensBase, plane: away.geom.Plane3D);
         public frustumCorners : number[];
         public near : number;
         public far : number;
         public iAspectRatio : number;
-        public plane : away.math.Plane3D;
+        public plane : away.geom.Plane3D;
         public baseLens : cameras.LensBase;
         private onLensMatrixChanged(event);
         public pUpdateMatrix(): void;
@@ -2942,15 +3465,37 @@ declare module away.cameras {
         public pGetDefaultBoundingVolume(): away.bounds.BoundingVolumeBase;
         public assetType : string;
         private onLensMatrixChanged(event);
-        public frustumPlanes : away.math.Plane3D[];
+        public frustumPlanes : away.geom.Plane3D[];
         private updateFrustum();
         public pInvalidateSceneTransform(): void;
         public pUpdateBounds(): void;
         public pCreateEntityPartitionNode(): away.partition.EntityNode;
         public lens : cameras.LensBase;
         public viewProjection : away.geom.Matrix3D;
+        /**
+        * Calculates the ray in scene space from the camera to the given normalized coordinates in screen space.
+        *
+        * @param nX The normalised x coordinate in screen space, -1 corresponds to the left edge of the viewport, 1 to the right.
+        * @param nY The normalised y coordinate in screen space, -1 corresponds to the top edge of the viewport, 1 to the bottom.
+        * @param sZ The z coordinate in screen space, representing the distance into the screen.
+        * @return The ray from the camera to the scene space position of the given screen coordinates.
+        */
         public getRay(nX: number, nY: number, sZ: number): away.geom.Vector3D;
+        /**
+        * Calculates the normalised position in screen space of the given scene position.
+        *
+        * @param point3d the position vector of the scene coordinates to be projected.
+        * @return The normalised screen position of the given scene coordinates.
+        */
         public project(point3d: away.geom.Vector3D): away.geom.Vector3D;
+        /**
+        * Calculates the scene position of the given normalized coordinates in screen space.
+        *
+        * @param nX The normalised x coordinate in screen space, -1 corresponds to the left edge of the viewport, 1 to the right.
+        * @param nY The normalised y coordinate in screen space, -1 corresponds to the top edge of the viewport, 1 to the bottom.
+        * @param sZ The z coordinate in screen space, representing the distance into the screen.
+        * @return The scene position of the given screen coordinates.
+        */
         public unproject(nX: number, nY: number, sZ: number): away.geom.Vector3D;
     }
 }
@@ -2978,6 +3523,11 @@ declare module away.controllers {
     }
 }
 declare module away.controllers {
+    /**
+    * Extended camera used to hover round a specified target object.
+    *
+    * @see    away3d.containers.View3D
+    */
     class HoverController extends controllers.LookAtController {
         public _iCurrentPanAngle: number;
         public _iCurrentTiltAngle: number;
@@ -2991,21 +3541,85 @@ declare module away.controllers {
         private _steps;
         private _yFactor;
         private _wrapPanAngle;
+        /**
+        * Fractional step taken each time the <code>hover()</code> method is called. Defaults to 8.
+        *
+        * Affects the speed at which the <code>tiltAngle</code> and <code>panAngle</code> resolve to their targets.
+        *
+        * @see    #tiltAngle
+        * @see    #panAngle
+        */
         public steps : number;
+        /**
+        * Rotation of the camera in degrees around the y axis. Defaults to 0.
+        */
         public panAngle : number;
+        /**
+        * Elevation angle of the camera in degrees. Defaults to 90.
+        */
         public tiltAngle : number;
+        /**
+        * Distance between the camera and the specified target. Defaults to 1000.
+        */
         public distance : number;
+        /**
+        * Minimum bounds for the <code>panAngle</code>. Defaults to -Infinity.
+        *
+        * @see    #panAngle
+        */
         public minPanAngle : number;
+        /**
+        * Maximum bounds for the <code>panAngle</code>. Defaults to Infinity.
+        *
+        * @see    #panAngle
+        */
         public maxPanAngle : number;
+        /**
+        * Minimum bounds for the <code>tiltAngle</code>. Defaults to -90.
+        *
+        * @see    #tiltAngle
+        */
         public minTiltAngle : number;
+        /**
+        * Maximum bounds for the <code>tiltAngle</code>. Defaults to 90.
+        *
+        * @see    #tiltAngle
+        */
         public maxTiltAngle : number;
+        /**
+        * Fractional difference in distance between the horizontal camera orientation and vertical camera orientation. Defaults to 2.
+        *
+        * @see    #distance
+        */
         public yFactor : number;
+        /**
+        * Defines whether the value of the pan angle wraps when over 360 degrees or under 0 degrees. Defaults to false.
+        */
         public wrapPanAngle : boolean;
+        /**
+        * Creates a new <code>HoverController</code> object.
+        */
         constructor(targetObject?: away.entities.Entity, lookAtObject?: away.containers.ObjectContainer3D, panAngle?: number, tiltAngle?: number, distance?: number, minTiltAngle?: number, maxTiltAngle?: number, minPanAngle?: number, maxPanAngle?: number, steps?: number, yFactor?: number, wrapPanAngle?: boolean);
+        /**
+        * Updates the current tilt angle and pan angle values.
+        *
+        * Values are calculated using the defined <code>tiltAngle</code>, <code>panAngle</code> and <code>steps</code> variables.
+        *
+        * @param interpolate   If the update to a target pan- or tiltAngle is interpolated. Default is true.
+        *
+        * @see    #tiltAngle
+        * @see    #panAngle
+        * @see    #steps
+        */
         public update(interpolate?: boolean): void;
     }
 }
 declare module away.controllers {
+    /**
+    * Extended camera used to hover round a specified target object.
+    *
+    * @see    away3d.containers.View3D
+    */
     class FirstPersonController extends controllers.ControllerBase {
         public _iCurrentPanAngle: number;
         public _iCurrentTiltAngle: number;
@@ -3018,25 +3632,77 @@ declare module away.controllers {
         private _strafeIncrement;
         private _wrapPanAngle;
         public fly: boolean;
+        /**
+        * Fractional step taken each time the <code>hover()</code> method is called. Defaults to 8.
+        *
+        * Affects the speed at which the <code>tiltAngle</code> and <code>panAngle</code> resolve to their targets.
+        *
+        * @see    #tiltAngle
+        * @see    #panAngle
+        */
         public steps : number;
+        /**
+        * Rotation of the camera in degrees around the y axis. Defaults to 0.
+        */
         public panAngle : number;
+        /**
+        * Elevation angle of the camera in degrees. Defaults to 90.
+        */
         public tiltAngle : number;
+        /**
+        * Minimum bounds for the <code>tiltAngle</code>. Defaults to -90.
+        *
+        * @see    #tiltAngle
+        */
         public minTiltAngle : number;
+        /**
+        * Maximum bounds for the <code>tiltAngle</code>. Defaults to 90.
+        *
+        * @see    #tiltAngle
+        */
         public maxTiltAngle : number;
+        /**
+        * Defines whether the value of the pan angle wraps when over 360 degrees or under 0 degrees. Defaults to false.
+        */
         public wrapPanAngle : boolean;
+        /**
+        * Creates a new <code>HoverController</code> object.
+        */
         constructor(targetObject?: away.entities.Entity, panAngle?: number, tiltAngle?: number, minTiltAngle?: number, maxTiltAngle?: number, steps?: number, wrapPanAngle?: boolean);
+        /**
+        * Updates the current tilt angle and pan angle values.
+        *
+        * Values are calculated using the defined <code>tiltAngle</code>, <code>panAngle</code> and <code>steps</code> variables.
+        *
+        * @param interpolate   If the update to a target pan- or tiltAngle is interpolated. Default is true.
+        *
+        * @see    #tiltAngle
+        * @see    #panAngle
+        * @see    #steps
+        */
         public update(interpolate?: boolean): void;
         public incrementWalk(val: number): void;
         public incrementStrafe(val: number): void;
     }
 }
 declare module away.controllers {
+    /**
+    * Controller used to follow behind an object on the XZ plane, with an optional
+    * elevation (tiltAngle).
+    *
+    * @see    away3d.containers.View3D
+    */
     class FollowController extends controllers.HoverController {
         constructor(targetObject?: away.entities.Entity, lookAtObject?: away.containers.ObjectContainer3D, tiltAngle?: number, distance?: number);
         public update(interpolate?: boolean): void;
     }
 }
 declare module away.controllers {
+    /**
+    * Uses spring physics to animate the target object towards a position that is
+    * defined as the lookAtTarget object's position plus the vector defined by the
+    * positionOffset property.
+    */
     class SpringController extends controllers.LookAtController {
         private _velocity;
         private _dv;
@@ -3044,9 +3710,23 @@ declare module away.controllers {
         private _force;
         private _acceleration;
         private _desiredPosition;
+        /**
+        * Stiffness of the spring, how hard is it to extend. The higher it is, the more "fixed" the cam will be.
+        * A number between 1 and 20 is recommended.
+        */
         public stiffness: number;
+        /**
+        * Damping is the spring internal friction, or how much it resists the "boinggggg" effect. Too high and you'll lose it!
+        * A number between 1 and 20 is recommended.
+        */
         public damping: number;
+        /**
+        * Mass of the camera, if over 120 and it'll be very heavy to move.
+        */
         public mass: number;
+        /**
+        * Offset of spring center from target in target object space, ie: Where the camera should ideally be in the target object space.
+        */
         public positionOffset: away.geom.Vector3D;
         constructor(targetObject?: away.entities.Entity, lookAtObject?: away.containers.ObjectContainer3D, stiffness?: number, mass?: number, damping?: number);
         public update(interpolate?: boolean): void;
@@ -3066,20 +3746,23 @@ declare module away.filters {
         private _requireDepthRender;
         private _textureScale;
         constructor(requireDepthRender?: boolean);
+        /**
+        * The texture scale for the input of this texture. This will define the output of the previous entry in the chain
+        */
         public textureScale : number;
-        public target : away.display3D.Texture;
+        public target : away.displayGL.Texture;
         public textureWidth : number;
         public textureHeight : number;
-        public getMainInputTexture(stage: away.managers.Stage3DProxy): away.display3D.Texture;
+        public getMainInputTexture(stage: away.managers.StageGLProxy): away.displayGL.Texture;
         public dispose(): void;
-        public pInvalidateProgram3D(): void;
-        public pUpdateProgram3D(stage: away.managers.Stage3DProxy): void;
+        public pInvalidateProgram(): void;
+        public pUpdateProgram(stage: away.managers.StageGLProxy): void;
         public pGetVertexCode(): string;
         public pGetFragmentCode(): string;
-        public pUpdateTextures(stage: away.managers.Stage3DProxy): void;
-        public getProgram3D(stage3DProxy: away.managers.Stage3DProxy): away.display3D.Program3D;
-        public activate(stage3DProxy: away.managers.Stage3DProxy, camera: away.cameras.Camera3D, depthTexture: away.display3D.Texture): void;
-        public deactivate(stage3DProxy: away.managers.Stage3DProxy): void;
+        public pUpdateTextures(stage: away.managers.StageGLProxy): void;
+        public getProgram(stageGLProxy: away.managers.StageGLProxy): away.displayGL.Program;
+        public activate(stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D, depthTexture: away.displayGL.Texture): void;
+        public deactivate(stageGLProxy: away.managers.StageGLProxy): void;
         public requireDepthRender : boolean;
     }
 }
@@ -3093,71 +3776,12 @@ declare module away.filters {
         public requireDepthRender : boolean;
         public pAddTask(filter: filters.Filter3DTaskBase): void;
         public tasks : filters.Filter3DTaskBase[];
-        public getMainInputTexture(stage3DProxy: away.managers.Stage3DProxy): away.display3D.Texture;
+        public getMainInputTexture(stageGLProxy: away.managers.StageGLProxy): away.displayGL.Texture;
         public textureWidth : number;
         public textureHeight : number;
-        public setRenderTargets(mainTarget: away.display3D.Texture, stage3DProxy: away.managers.Stage3DProxy): void;
+        public setRenderTargets(mainTarget: away.displayGL.Texture, stageGLProxy: away.managers.StageGLProxy): void;
         public dispose(): void;
-        public update(stage: away.managers.Stage3DProxy, camera: away.cameras.Camera3D): void;
-    }
-}
-declare module away.lights {
-    class ShadowMapperBase {
-        public _pCasterCollector: away.traverse.ShadowCasterCollector;
-        private _depthMap;
-        public _pDepthMapSize: number;
-        public _pLight: lights.LightBase;
-        private _explicitDepthMap;
-        private _autoUpdateShadows;
-        public _iShadowsInvalid: boolean;
-        constructor();
-        public pCreateCasterCollector(): away.traverse.ShadowCasterCollector;
-        public autoUpdateShadows : boolean;
-        public updateShadows(): void;
-        public iSetDepthMap(depthMap: away.textures.TextureProxyBase): void;
-        public light : lights.LightBase;
-        public depthMap : away.textures.TextureProxyBase;
-        public depthMapSize : number;
-        public dispose(): void;
-        public pCreateDepthTexture(): away.textures.TextureProxyBase;
-        public iRenderDepthMap(stage3DProxy: away.managers.Stage3DProxy, entityCollector: away.traverse.EntityCollector, renderer: away.render.DepthRenderer): void;
-        public pUpdateDepthProjection(viewCamera: away.cameras.Camera3D): void;
-        public pDrawDepthMap(target: away.display3D.TextureBase, scene: away.containers.Scene3D, renderer: away.render.DepthRenderer): void;
-    }
-}
-declare module away.lights {
-    class CubeMapShadowMapper extends lights.ShadowMapperBase {
-        private _depthCameras;
-        private _lenses;
-        private _needsRender;
-        constructor();
-        private initCameras();
-        private addCamera(rotationX, rotationY, rotationZ);
-        public pCreateDepthTexture(): away.textures.TextureProxyBase;
-        public pUpdateDepthProjection(viewCamera: away.cameras.Camera3D): void;
-        public pDrawDepthMap(target: away.display3D.TextureBase, scene: away.containers.Scene3D, renderer: away.render.DepthRenderer): void;
-    }
-}
-declare module away.lights {
-    class DirectionalShadowMapper extends lights.ShadowMapperBase {
-        public _pOverallDepthCamera: away.cameras.Camera3D;
-        public _pLocalFrustum: number[];
-        public _pLightOffset: number;
-        public _pMatrix: away.geom.Matrix3D;
-        public _pOverallDepthLens: away.cameras.FreeMatrixLens;
-        public _pSnap: number;
-        public _pCullPlanes: away.math.Plane3D[];
-        public _pMinZ: number;
-        public _pMaxZ: number;
-        constructor();
-        public snap : number;
-        public lightOffset : number;
-        public iDepthProjection : away.geom.Matrix3D;
-        public depth : number;
-        public pDrawDepthMap(target: away.display3D.TextureBase, scene: away.containers.Scene3D, renderer: away.render.DepthRenderer): void;
-        public pUpdateCullPlanes(viewCamera: away.cameras.Camera3D): void;
-        public pUpdateDepthProjection(viewCamera: away.cameras.Camera3D): void;
-        public pUpdateProjectionFromFrustumCorners(viewCamera: away.cameras.Camera3D, corners: number[], matrix: away.geom.Matrix3D): void;
+        public update(stage: away.managers.StageGLProxy, camera: away.cameras.Camera3D): void;
     }
 }
 declare module away.lights {
@@ -3199,6 +3823,19 @@ declare module away.lights {
     }
 }
 declare module away.lights {
+    class LightProbe extends lights.LightBase {
+        private _diffuseMap;
+        private _specularMap;
+        constructor(diffuseMap: away.textures.CubeTextureBase, specularMap?: away.textures.CubeTextureBase);
+        public pCreateEntityPartitionNode(): away.partition.EntityNode;
+        public diffuseMap : away.textures.CubeTextureBase;
+        public specularMap : away.textures.CubeTextureBase;
+        public pUpdateBounds(): void;
+        public pGetDefaultBoundingVolume(): away.bounds.BoundingVolumeBase;
+        public iGetObjectProjectionMatrix(renderable: away.base.IRenderable, target?: away.geom.Matrix3D): away.geom.Matrix3D;
+    }
+}
+declare module away.lights {
     class PointLight extends lights.LightBase {
         public _pRadius: number;
         public _pFallOff: number;
@@ -3232,132 +3869,80 @@ declare module away.lights {
     }
 }
 declare module away.lights {
-    class LightProbe extends lights.LightBase {
-        private _diffuseMap;
-        private _specularMap;
-        constructor(diffuseMap: away.textures.CubeTextureBase, specularMap?: away.textures.CubeTextureBase);
-        public pCreateEntityPartitionNode(): away.partition.EntityNode;
-        public diffuseMap : away.textures.CubeTextureBase;
-        public specularMap : away.textures.CubeTextureBase;
-        public pUpdateBounds(): void;
-        public pGetDefaultBoundingVolume(): away.bounds.BoundingVolumeBase;
-        public iGetObjectProjectionMatrix(renderable: away.base.IRenderable, target?: away.geom.Matrix3D): away.geom.Matrix3D;
+    class ShadowMapperBase {
+        public _pCasterCollector: away.traverse.ShadowCasterCollector;
+        private _depthMap;
+        public _pDepthMapSize: number;
+        public _pLight: lights.LightBase;
+        private _explicitDepthMap;
+        private _autoUpdateShadows;
+        public _iShadowsInvalid: boolean;
+        constructor();
+        public pCreateCasterCollector(): away.traverse.ShadowCasterCollector;
+        public autoUpdateShadows : boolean;
+        public updateShadows(): void;
+        public iSetDepthMap(depthMap: away.textures.TextureProxyBase): void;
+        public light : lights.LightBase;
+        public depthMap : away.textures.TextureProxyBase;
+        public depthMapSize : number;
+        public dispose(): void;
+        public pCreateDepthTexture(): away.textures.TextureProxyBase;
+        public iRenderDepthMap(stageGLProxy: away.managers.StageGLProxy, entityCollector: away.traverse.EntityCollector, renderer: away.render.DepthRenderer): void;
+        public pUpdateDepthProjection(viewCamera: away.cameras.Camera3D): void;
+        public pDrawDepthMap(target: away.displayGL.TextureBase, scene: away.containers.Scene3D, renderer: away.render.DepthRenderer): void;
+    }
+}
+declare module away.lights {
+    class CubeMapShadowMapper extends lights.ShadowMapperBase {
+        private _depthCameras;
+        private _lenses;
+        private _needsRender;
+        constructor();
+        private initCameras();
+        private addCamera(rotationX, rotationY, rotationZ);
+        public pCreateDepthTexture(): away.textures.TextureProxyBase;
+        public pUpdateDepthProjection(viewCamera: away.cameras.Camera3D): void;
+        public pDrawDepthMap(target: away.displayGL.TextureBase, scene: away.containers.Scene3D, renderer: away.render.DepthRenderer): void;
+    }
+}
+declare module away.lights {
+    class DirectionalShadowMapper extends lights.ShadowMapperBase {
+        public _pOverallDepthCamera: away.cameras.Camera3D;
+        public _pLocalFrustum: number[];
+        public _pLightOffset: number;
+        public _pMatrix: away.geom.Matrix3D;
+        public _pOverallDepthLens: away.cameras.FreeMatrixLens;
+        public _pSnap: number;
+        public _pCullPlanes: away.geom.Plane3D[];
+        public _pMinZ: number;
+        public _pMaxZ: number;
+        constructor();
+        public snap : number;
+        public lightOffset : number;
+        public iDepthProjection : away.geom.Matrix3D;
+        public depth : number;
+        public pDrawDepthMap(target: away.displayGL.TextureBase, scene: away.containers.Scene3D, renderer: away.render.DepthRenderer): void;
+        public pUpdateCullPlanes(viewCamera: away.cameras.Camera3D): void;
+        public pUpdateDepthProjection(viewCamera: away.cameras.Camera3D): void;
+        public pUpdateProjectionFromFrustumCorners(viewCamera: away.cameras.Camera3D, corners: number[], matrix: away.geom.Matrix3D): void;
     }
 }
 declare module away.lights {
     class NearDirectionalShadowMapper extends lights.DirectionalShadowMapper {
         private _coverageRatio;
         constructor(coverageRatio?: number);
+        /**
+        * A value between 0 and 1 to indicate the ratio of the view frustum that needs to be covered by the shadow map.
+        */
         public coverageRatio : number;
         public pUpdateDepthProjection(viewCamera: away.cameras.Camera3D): void;
     }
 }
 declare module away.managers {
-    class RTTBufferManager extends away.events.EventDispatcher {
-        private static _instances;
-        private _renderToTextureVertexBuffer;
-        private _renderToScreenVertexBuffer;
-        private _indexBuffer;
-        private _stage3DProxy;
-        private _viewWidth;
-        private _viewHeight;
-        private _textureWidth;
-        private _textureHeight;
-        private _renderToTextureRect;
-        private _buffersInvalid;
-        private _textureRatioX;
-        private _textureRatioY;
-        constructor(se: SingletonEnforcer, stage3DProxy: managers.Stage3DProxy);
-        static getInstance(stage3DProxy: managers.Stage3DProxy): RTTBufferManager;
-        private static getRTTBufferManagerFromStage3DProxy(stage3DProxy);
-        private static deleteRTTBufferManager(stage3DProxy);
-        public textureRatioX : number;
-        public textureRatioY : number;
-        public viewWidth : number;
-        public viewHeight : number;
-        public renderToTextureVertexBuffer : away.display3D.VertexBuffer3D;
-        public renderToScreenVertexBuffer : away.display3D.VertexBuffer3D;
-        public indexBuffer : away.display3D.IndexBuffer3D;
-        public renderToTextureRect : away.geom.Rectangle;
-        public textureWidth : number;
-        public textureHeight : number;
-        public dispose(): void;
-        private updateRTTBuffers();
-    }
-}
-declare class RTTBufferManagerVO {
-    constructor();
-    public stage3dProxy: away.managers.Stage3DProxy;
-    public rttbfm: away.managers.RTTBufferManager;
-}
-declare class SingletonEnforcer {
-}
-declare module away.managers {
-    class Stage3DProxy extends away.events.EventDispatcher {
-        public _iContext3D: away.display3D.Context3D;
-        public _iStage3DIndex: number;
-        private _usesSoftwareRendering;
-        private _profile;
-        private _stage3D;
-        private _activeProgram3D;
-        private _stage3DManager;
-        private _backBufferWidth;
-        private _backBufferHeight;
-        private _antiAlias;
-        private _enableDepthAndStencil;
-        private _contextRequested;
-        private _renderTarget;
-        private _renderSurfaceSelector;
-        private _scissorRect;
-        private _color;
-        private _backBufferDirty;
-        private _viewPort;
-        private _enterFrame;
-        private _exitFrame;
-        private _viewportUpdated;
-        private _viewportDirty;
-        private _bufferClear;
-        private _mouse3DManager;
-        private notifyViewportUpdated();
-        private notifyEnterFrame();
-        private notifyExitFrame();
-        constructor(stage3DIndex: number, stage3D: away.display.Stage3D, stage3DManager: managers.Stage3DManager, forceSoftware?: boolean, profile?: string);
-        public profile : string;
-        public dispose(): void;
-        public configureBackBuffer(backBufferWidth: number, backBufferHeight: number, antiAlias: number, enableDepthAndStencil: boolean): void;
-        public enableDepthAndStencil : boolean;
-        public renderTarget : away.display3D.TextureBase;
-        public renderSurfaceSelector : number;
-        public setRenderTarget(target: away.display3D.TextureBase, enableDepthAndStencil?: boolean, surfaceSelector?: number): void;
-        public clear(): void;
-        public present(): void;
-        public addEventListener(type: string, listener: Function, target: Object): void;
-        public removeEventListener(type: string, listener: Function, target: Object): void;
-        public scissorRect : away.geom.Rectangle;
-        public stage3DIndex : number;
-        public stage3D : away.display.Stage3D;
-        public context3D : away.display3D.Context3D;
-        public usesSoftwareRendering : boolean;
-        public x : number;
-        public y : number;
-        public canvas : HTMLCanvasElement;
-        public width : number;
-        public height : number;
-        public antiAlias : number;
-        public viewPort : away.geom.Rectangle;
-        public color : number;
-        public visible : boolean;
-        public bufferClear : boolean;
-        public mouse3DManager : managers.Mouse3DManager;
-        private freeContext3D();
-        private onContext3DUpdate(event);
-        private requestContext(forceSoftware?, profile?);
-        private onEnterFrame(event);
-        public recoverFromDisposal(): boolean;
-        public clearDepthBuffer(): void;
-    }
-}
-declare module away.managers {
+    /**
+    * Mouse3DManager enforces a singleton pattern and is not intended to be instanced.
+    * it provides a manager class for detecting 3D mouse hits on View3D objects and sending out 3D mouse events.
+    */
     class Mouse3DManager {
         private static _view3Ds;
         private static _view3DLookup;
@@ -3384,6 +3969,9 @@ declare module away.managers {
         private static _collidingView;
         private _collidingDownObject;
         private _collidingUpObject;
+        /**
+        * Creates a new <code>Mouse3DManager</code> object.
+        */
         constructor();
         public updateCollider(view: away.containers.View3D): void;
         public fireMouseEvents(): void;
@@ -3408,69 +3996,45 @@ declare module away.managers {
     }
 }
 declare module away.managers {
-    class Stage3DManager {
+    class AGALProgramCache {
         private static _instances;
-        private static _stageProxies;
-        private static _numStageProxies;
-        private _stage;
-        constructor(stage: away.display.Stage, Stage3DManagerSingletonEnforcer: Stage3DManagerSingletonEnforcer);
-        static getInstance(stage: away.display.Stage): Stage3DManager;
-        private static getStage3DManagerByStageRef(stage);
-        public getStage3DProxy(index: number, forceSoftware?: boolean, profile?: string): managers.Stage3DProxy;
-        public iRemoveStage3DProxy(stage3DProxy: managers.Stage3DProxy): void;
-        public getFreeStage3DProxy(forceSoftware?: boolean, profile?: string): managers.Stage3DProxy;
-        public hasFreeStage3DProxy : boolean;
-        public numProxySlotsFree : number;
-        public numProxySlotsUsed : number;
-        public numProxySlotsTotal : number;
-    }
-}
-declare class Stage3DManagerInstanceData {
-    public stage: away.display.Stage;
-    public stage3DManager: away.managers.Stage3DManager;
-}
-declare class Stage3DManagerSingletonEnforcer {
-}
-declare module away.managers {
-    class AGALProgram3DCache {
-        private static _instances;
-        private _stage3DProxy;
+        private _stageGLProxy;
         private _program3Ds;
         private _ids;
         private _usages;
         private _keys;
         private static _currentId;
-        constructor(stage3DProxy: managers.Stage3DProxy, agalProgram3DCacheSingletonEnforcer: AGALProgram3DCacheSingletonEnforcer);
-        static getInstance(stage3DProxy: managers.Stage3DProxy): AGALProgram3DCache;
-        static getInstanceFromIndex(index: number): AGALProgram3DCache;
-        private static onContext3DDisposed(event);
+        constructor(stageGLProxy: managers.StageGLProxy, agalProgramCacheSingletonEnforcer: AGALProgramCacheSingletonEnforcer);
+        static getInstance(stageGLProxy: managers.StageGLProxy): AGALProgramCache;
+        static getInstanceFromIndex(index: number): AGALProgramCache;
+        private static onContextGLDisposed(event);
         public dispose(): void;
-        public setProgram3D(pass: away.materials.MaterialPassBase, vertexCode: string, fragmentCode: string): void;
-        public freeProgram3D(programId: number): void;
+        public setProgram(pass: away.materials.MaterialPassBase, vertexCode: string, fragmentCode: string): void;
+        public freeProgram(programId: number): void;
         private destroyProgram(key);
         private getKey(vertexCode, fragmentCode);
     }
 }
-declare class AGALProgram3DCacheSingletonEnforcer {
+declare class AGALProgramCacheSingletonEnforcer {
 }
 declare module away.materials {
-    class MipmapGenerator {
-        private static _matrix;
-        private static _rect;
-        private static _source;
-        static generateHTMLImageElementMipMaps(source: HTMLImageElement, target: away.display3D.TextureBase, mipmap?: away.display.BitmapData, alpha?: boolean, side?: number): void;
-        static generateMipMaps(source: away.display.BitmapData, target: away.display3D.TextureBase, mipmap?: away.display.BitmapData, alpha?: boolean, side?: number): void;
-    }
-}
-declare module away.materials {
+    /**
+    * MaterialPassBase provides an abstract base class for material shader passes. A material pass constitutes at least
+    * a render call per required renderable.
+    */
     class MaterialPassBase extends away.events.EventDispatcher {
         static MATERIALPASS_ID_COUNT: number;
+        /**
+        * An id for this material pass, used to identify material passes when using animation sets.
+        *
+        * @private
+        */
         public _iUniqueId: number;
         public _pMaterial: materials.MaterialBase;
         private _animationSet;
-        public _iProgram3Ds: away.display3D.Program3D[];
-        public _iProgram3Dids: number[];
-        private _context3Ds;
+        public _iPrograms: away.displayGL.Program[];
+        public _iProgramids: number[];
+        private _contextGLs;
         public _pNumUsedStreams: number;
         public _pNumUsedTextures: number;
         public _pNumUsedVertexConstants: number;
@@ -3503,40 +4067,159 @@ declare module away.materials {
         public _pUVSource: string;
         private _writeDepth;
         public animationRegisterCache: away.animators.AnimationRegisterCache;
+        /**
+        * Creates a new MaterialPassBase object.
+        *
+        * @param renderToTexture Indicates whether this pass is a render-to-texture pass.
+        */
         constructor(renderToTexture?: boolean);
+        /**
+        * The material to which this pass belongs.
+        */
         public material : materials.MaterialBase;
+        /**
+        * Indicate whether this pass should write to the depth buffer or not. Ignored when blending is enabled.
+        */
         public writeDepth : boolean;
+        /**
+        * Defines whether any used textures should use mipmapping.
+        */
         public mipmap : boolean;
         public setMipMap(value: boolean): void;
+        /**
+        * Defines whether smoothing should be applied to any used textures.
+        */
         public smooth : boolean;
+        /**
+        * Defines whether textures should be tiled.
+        */
         public repeat : boolean;
+        /**
+        * Defines whether or not the material should perform backface culling.
+        */
         public bothSides : boolean;
+        /**
+        * The depth compare mode used to render the renderables using this material.
+        *
+        * @see flash.displayGL.ContextGLCompareMode
+        */
         public depthCompareMode : string;
+        /**
+        * Returns the animation data set adding animations to the material.
+        */
         public animationSet : away.animators.IAnimationSet;
+        /**
+        * Specifies whether this pass renders to texture
+        */
         public renderToTexture : boolean;
+        /**
+        * Cleans up any resources used by the current object.
+        * @param deep Indicates whether other resources should be cleaned up, that could potentially be shared across different instances.
+        */
         public dispose(): void;
+        /**
+        * The amount of used vertex streams in the vertex code. Used by the animation code generation to know from which index on streams are available.
+        */
         public numUsedStreams : number;
+        /**
+        * The amount of used vertex constants in the vertex code. Used by the animation code generation to know from which index on registers are available.
+        */
         public numUsedVertexConstants : number;
         public numUsedVaryings : number;
+        /**
+        * The amount of used fragment constants in the fragment code. Used by the animation code generation to know from which index on registers are available.
+        */
         public numUsedFragmentConstants : number;
         public needFragmentAnimation : boolean;
+        /**
+        * Indicates whether the pass requires any UV animatin code.
+        */
         public needUVAnimation : boolean;
-        public iUpdateAnimationState(renderable: away.base.IRenderable, stage3DProxy: away.managers.Stage3DProxy, camera: away.cameras.Camera3D): void;
-        public iRender(renderable: away.base.IRenderable, stage3DProxy: away.managers.Stage3DProxy, camera: away.cameras.Camera3D, viewProjection: away.geom.Matrix3D): void;
+        /**
+        * Sets up the animation state. This needs to be called before render()
+        *
+        * @private
+        */
+        public iUpdateAnimationState(renderable: away.base.IRenderable, stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D): void;
+        /**
+        * Renders an object to the current render target.
+        *
+        * @private
+        */
+        public iRender(renderable: away.base.IRenderable, stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D, viewProjection: away.geom.Matrix3D): void;
+        /**
+        * Returns the vertex AGAL code for the material.
+        */
         public iGetVertexCode(): string;
+        /**
+        * Returns the fragment AGAL code for the material.
+        */
         public iGetFragmentCode(fragmentAnimatorCode: string): string;
+        /**
+        * The blend mode to use when drawing this renderable. The following blend modes are supported:
+        * <ul>
+        * <li>BlendMode.NORMAL: No blending, unless the material inherently needs it</li>
+        * <li>BlendMode.LAYER: Force blending. This will draw the object the same as NORMAL, but without writing depth writes.</li>
+        * <li>BlendMode.MULTIPLY</li>
+        * <li>BlendMode.ADD</li>
+        * <li>BlendMode.ALPHA</li>
+        * </ul>
+        */
         public setBlendMode(value: string): void;
-        public iActivate(stage3DProxy: away.managers.Stage3DProxy, camera: away.cameras.Camera3D): void;
-        public iDeactivate(stage3DProxy: away.managers.Stage3DProxy): void;
+        /**
+        * Sets the render state for the pass that is independent of the rendered object. This needs to be called before
+        * calling renderPass. Before activating a pass, the previously used pass needs to be deactivated.
+        * @param stageGLProxy The StageGLProxy object which is currently used for rendering.
+        * @param camera The camera from which the scene is viewed.
+        * @private
+        */
+        public iActivate(stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D): void;
+        /**
+        * Clears the render state for the pass. This needs to be called before activating another pass.
+        * @param stageGLProxy The StageGLProxy used for rendering
+        *
+        * @private
+        */
+        public iDeactivate(stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * Marks the shader program as invalid, so it will be recompiled before the next render.
+        *
+        * @param updateMaterial Indicates whether the invalidation should be performed on the entire material. Should always pass "true" unless it's called from the material itself.
+        */
         public iInvalidateShaderProgram(updateMaterial?: boolean): void;
-        public iUpdateProgram(stage3DProxy: away.managers.Stage3DProxy): void;
+        /**
+        * Compiles the shader program.
+        * @param polyOffsetReg An optional register that contains an amount by which to inflate the model (used in single object depth map rendering).
+        */
+        public iUpdateProgram(stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * The light picker used by the material to provide lights to the material if it supports lighting.
+        *
+        * @see away3d.materials.lightpickers.LightPickerBase
+        * @see away3d.materials.lightpickers.StaticLightPicker
+        */
         public lightPicker : materials.LightPickerBase;
+        /**
+        * Called when the light picker's configuration changes.
+        */
         private onLightsChange(event);
+        /**
+        * Implemented by subclasses if the pass uses lights to update the shader.
+        */
         public pUpdateLights(): void;
+        /**
+        * Indicates whether visible textures (or other pixels) used by this material have
+        * already been premultiplied. Toggle this if you are seeing black halos around your
+        * blended alpha edges.
+        */
         public alphaPremultiplied : boolean;
     }
 }
 declare module away.materials {
+    /**
+    * CompiledPass forms an abstract base class for the default compiled pass materials provided by Away3D,
+    * using material methods to define their appearance.
+    */
     class CompiledPass extends materials.MaterialPassBase {
         public _iPasses: materials.MaterialPassBase[];
         public _iPassesDirty: boolean;
@@ -3574,109 +4257,402 @@ declare module away.materials {
         public _pNumLightProbes: number;
         private _enableLightFallOff;
         private _forceSeparateMVP;
+        /**
+        * Creates a new CompiledPass object.
+        * @param material The material to which this pass belongs.
+        */
         constructor(material: materials.MaterialBase);
+        /**
+        * Whether or not to use fallOff and radius properties for lights. This can be used to improve performance and
+        * compatibility for constrained mode.
+        */
         public enableLightFallOff : boolean;
+        /**
+        * Indicates whether the screen projection should be calculated by forcing a separate scene matrix and
+        * view-projection matrix. This is used to prevent rounding errors when using multiple passes with different
+        * projection code.
+        */
         public forceSeparateMVP : boolean;
+        /**
+        * The amount of point lights that need to be supported.
+        */
         public iNumPointLights : number;
+        /**
+        * The amount of directional lights that need to be supported.
+        */
         public iNumDirectionalLights : number;
+        /**
+        * The amount of light probes that need to be supported.
+        */
         public iNumLightProbes : number;
-        public iUpdateProgram(stage3DProxy: away.managers.Stage3DProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public iUpdateProgram(stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * Resets the compilation state.
+        *
+        * @param profile The compatibility profile used by the renderer.
+        */
         private reset(profile);
+        /**
+        * Updates the amount of used register indices.
+        */
         private updateUsedOffsets();
+        /**
+        * Initializes the unchanging constant data for this material.
+        */
         private initConstantData();
+        /**
+        * Initializes the compiler for this pass.
+        * @param profile The compatibility profile used by the renderer.
+        */
         public iInitCompiler(profile: string): void;
+        /**
+        * Factory method to create a concrete compiler object for this pass.
+        * @param profile The compatibility profile used by the renderer.
+        */
         public pCreateCompiler(profile: string): materials.ShaderCompiler;
+        /**
+        * Copies the shader's properties from the compiler.
+        */
         public pUpdateShaderProperties(): void;
+        /**
+        * Updates the indices for various registers.
+        */
         public pUpdateRegisterIndices(): void;
+        /**
+        * Indicates whether the output alpha value should remain unchanged compared to the material's original alpha.
+        */
         public preserveAlpha : boolean;
+        /**
+        * Indicate whether UV coordinates need to be animated using the renderable's transformUV matrix.
+        */
         public animateUVs : boolean;
+        /**
+        * @inheritDoc
+        */
         public mipmap : boolean;
+        /**
+        * The normal map to modulate the direction of the surface for each texel. The default normal method expects
+        * tangent-space normal maps, but others could expect object-space maps.
+        */
         public normalMap : away.textures.Texture2DBase;
+        /**
+        * The method used to generate the per-pixel normals. Defaults to BasicNormalMethod.
+        */
         public normalMethod : materials.BasicNormalMethod;
+        /**
+        * The method that provides the ambient lighting contribution. Defaults to BasicAmbientMethod.
+        */
         public ambientMethod : materials.BasicAmbientMethod;
+        /**
+        * The method used to render shadows cast on this surface, or null if no shadows are to be rendered. Defaults to null.
+        */
         public shadowMethod : materials.ShadowMapMethodBase;
+        /**
+        * The method that provides the diffuse lighting contribution. Defaults to BasicDiffuseMethod.
+        */
         public diffuseMethod : materials.BasicDiffuseMethod;
+        /**
+        * The method that provides the specular lighting contribution. Defaults to BasicSpecularMethod.
+        */
         public specularMethod : materials.BasicSpecularMethod;
+        /**
+        * Initializes the pass.
+        */
         private init();
+        /**
+        * @inheritDoc
+        */
         public dispose(): void;
+        /**
+        * @inheritDoc
+        */
         public iInvalidateShaderProgram(updateMaterial?: boolean): void;
+        /**
+        * Adds any possible passes needed by the used methods.
+        */
         public pAddPassesFromMethods(): void;
+        /**
+        * Adds internal passes to the material.
+        *
+        * @param passes The passes to add.
+        */
         public pAddPasses(passes: materials.MaterialPassBase[]): void;
+        /**
+        * Initializes the default UV transformation matrix.
+        */
         public pInitUVTransformData(): void;
+        /**
+        * Initializes commonly required constant values.
+        */
         public pInitCommonsData(): void;
+        /**
+        * Cleans up the after compiling.
+        */
         public pCleanUp(): void;
+        /**
+        * Updates method constants if they have changed.
+        */
         public pUpdateMethodConstants(): void;
+        /**
+        * Updates constant data render state used by the lights. This method is optional for subclasses to implement.
+        */
         public pUpdateLightConstants(): void;
-        public pUpdateProbes(stage3DProxy: away.managers.Stage3DProxy): void;
+        /**
+        * Updates constant data render state used by the light probes. This method is optional for subclasses to implement.
+        */
+        public pUpdateProbes(stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * Called when any method's shader code is invalidated.
+        */
         private onShaderInvalidated(event);
+        /**
+        * @inheritDoc
+        */
         public iGetVertexCode(): string;
+        /**
+        * @inheritDoc
+        */
         public iGetFragmentCode(animatorCode: string): string;
-        public iActivate(stage3DProxy: away.managers.Stage3DProxy, camera: away.cameras.Camera3D): void;
-        public iRender(renderable: away.base.IRenderable, stage3DProxy: away.managers.Stage3DProxy, camera: away.cameras.Camera3D, viewProjection: away.geom.Matrix3D): void;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D): void;
+        /**
+        * @inheritDoc
+        */
+        public iRender(renderable: away.base.IRenderable, stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D, viewProjection: away.geom.Matrix3D): void;
+        /**
+        * Indicates whether the shader uses any light probes.
+        */
         public pUsesProbes(): boolean;
+        /**
+        * Indicates whether the shader uses any lights.
+        */
         public pUsesLights(): boolean;
-        public iDeactivate(stage3DProxy: away.managers.Stage3DProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public iDeactivate(stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * Define which light source types to use for specular reflections. This allows choosing between regular lights
+        * and/or light probes for specular reflections.
+        *
+        * @see away3d.materials.LightSources
+        */
         public specularLightSources : number;
+        /**
+        * Define which light source types to use for diffuse reflections. This allows choosing between regular lights
+        * and/or light probes for diffuse reflections.
+        *
+        * @see away3d.materials.LightSources
+        */
         public diffuseLightSources : number;
     }
 }
 declare module away.materials {
+    /**
+    * SuperShaderPass is a shader pass that uses shader methods to compile a complete program. It includes all methods
+    * associated with a material.
+    *
+    * @see away3d.materials.methods.ShadingMethodBase
+    */
     class SuperShaderPass extends materials.CompiledPass {
         private _includeCasters;
         private _ignoreLights;
+        /**
+        * Creates a new SuperShaderPass objects.
+        *
+        * @param material The material to which this material belongs.
+        */
         constructor(material: materials.MaterialBase);
+        /**
+        * @inheritDoc
+        */
         public pCreateCompiler(profile: string): materials.ShaderCompiler;
+        /**
+        * Indicates whether lights that cast shadows should be included in the pass.
+        */
         public includeCasters : boolean;
+        /**
+        * The ColorTransform object to transform the colour of the material with. Defaults to null.
+        */
         public colorTransform : away.geom.ColorTransform;
+        /**
+        * The ColorTransformMethod object to transform the colour of the material with. Defaults to null.
+        */
         public colorTransformMethod : materials.ColorTransformMethod;
+        /**
+        * Appends an "effect" shading method to the shader. Effect methods are those that do not influence the lighting
+        * but modulate the shaded colour, used for fog, outlines, etc. The method will be applied to the result of the
+        * methods added prior.
+        */
         public addMethod(method: materials.EffectMethodBase): void;
+        /**
+        * The number of "effect" methods added to the material.
+        */
         public numMethods : number;
+        /**
+        * Queries whether a given effect method was added to the material.
+        *
+        * @param method The method to be queried.
+        * @return true if the method was added to the material, false otherwise.
+        */
         public hasMethod(method: materials.EffectMethodBase): boolean;
+        /**
+        * Returns the method added at the given index.
+        * @param index The index of the method to retrieve.
+        * @return The method at the given index.
+        */
         public getMethodAt(index: number): materials.EffectMethodBase;
+        /**
+        * Adds an effect method at the specified index amongst the methods already added to the material. Effect
+        * methods are those that do not influence the lighting but modulate the shaded colour, used for fog, outlines,
+        * etc. The method will be applied to the result of the methods with a lower index.
+        */
         public addMethodAt(method: materials.EffectMethodBase, index: number): void;
+        /**
+        * Removes an effect method from the material.
+        * @param method The method to be removed.
+        */
         public removeMethod(method: materials.EffectMethodBase): void;
+        /**
+        * @inheritDoc
+        */
         public pUpdateLights(): void;
-        public iActivate(stage3DProxy: away.managers.Stage3DProxy, camera: away.cameras.Camera3D): void;
-        public iDeactivate(stage3DProxy: away.managers.Stage3DProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D): void;
+        /**
+        * @inheritDoc
+        */
+        public iDeactivate(stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * @inheritDoc
+        */
         public pAddPassesFromMethods(): void;
+        /**
+        * Indicates whether any light probes are used to contribute to the specular shading.
+        */
         private usesProbesForSpecular();
+        /**
+        * Indicates whether any light probes are used to contribute to the diffuse shading.
+        */
         private usesProbesForDiffuse();
+        /**
+        * @inheritDoc
+        */
         public pUpdateMethodConstants(): void;
+        /**
+        * @inheritDoc
+        */
         public pUpdateLightConstants(): void;
-        public pUpdateProbes(stage3DProxy: away.managers.Stage3DProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public pUpdateProbes(stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * Indicates whether lights should be ignored in this pass. This is used when only effect methods are rendered in
+        * a multipass material.
+        */
         public iIgnoreLights : boolean;
     }
 }
 declare module away.materials {
+    /**
+    * DepthMapPass is a pass that writes depth values to a depth map as a 32-bit value exploded over the 4 texture channels.
+    * This is used to render shadow maps, depth maps, etc.
+    */
     class DepthMapPass extends materials.MaterialPassBase {
         private _data;
         private _alphaThreshold;
         private _alphaMask;
+        /**
+        * Creates a new DepthMapPass object.
+        */
         constructor();
+        /**
+        * The minimum alpha value for which pixels should be drawn. This is used for transparency that is either
+        * invisible or entirely opaque, often used with textures for foliage, etc.
+        * Recommended values are 0 to disable alpha, or 0.5 to create smooth edges. Default value is 0 (disabled).
+        */
         public alphaThreshold : number;
+        /**
+        * A texture providing alpha data to be able to prevent semi-transparent pixels to write to the alpha mask.
+        * Usually the diffuse texture when alphaThreshold is used.
+        */
         public alphaMask : away.textures.Texture2DBase;
+        /**
+        * @inheritDoc
+        */
         public iGetVertexCode(): string;
+        /**
+        * @inheritDoc
+        */
         public iGetFragmentCode(code: string): string;
-        public iRender(renderable: away.base.IRenderable, stage3DProxy: away.managers.Stage3DProxy, camera: away.cameras.Camera3D, viewProjection: away.geom.Matrix3D): void;
-        public iActivate(stage3DProxy: away.managers.Stage3DProxy, camera: away.cameras.Camera3D): void;
+        /**
+        * @inheritDoc
+        */
+        public iRender(renderable: away.base.IRenderable, stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D, viewProjection: away.geom.Matrix3D): void;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D): void;
     }
 }
 declare module away.materials {
+    /**
+    * DistanceMapPass is a pass that writes distance values to a depth map as a 32-bit value exploded over the 4 texture channels.
+    * This is used to render omnidirectional shadow maps.
+    */
     class DistanceMapPass extends materials.MaterialPassBase {
         private _fragmentData;
         private _vertexData;
         private _alphaThreshold;
         private _alphaMask;
+        /**
+        * Creates a new DistanceMapPass object.
+        */
         constructor();
+        /**
+        * The minimum alpha value for which pixels should be drawn. This is used for transparency that is either
+        * invisible or entirely opaque, often used with textures for foliage, etc.
+        * Recommended values are 0 to disable alpha, or 0.5 to create smooth edges. Default value is 0 (disabled).
+        */
         public alphaThreshold : number;
+        /**
+        * A texture providing alpha data to be able to prevent semi-transparent pixels to write to the alpha mask.
+        * Usually the diffuse texture when alphaThreshold is used.
+        */
         public alphaMask : away.textures.Texture2DBase;
+        /**
+        * @inheritDoc
+        */
         public iGetVertexCode(): string;
+        /**
+        * @inheritDoc
+        */
         public iGetFragmentCode(animationCode: string): string;
-        public iRender(renderable: away.base.IRenderable, stage3DProxy: away.managers.Stage3DProxy, camera: away.cameras.Camera3D, viewProjection: away.geom.Matrix3D): void;
-        public iActivate(stage3DProxy: away.managers.Stage3DProxy, camera: away.cameras.Camera3D): void;
+        /**
+        * @inheritDoc
+        */
+        public iRender(renderable: away.base.IRenderable, stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D, viewProjection: away.geom.Matrix3D): void;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D): void;
     }
 }
 declare module away.materials {
+    /**
+    * LightingPass is a shader pass that uses shader methods to compile a complete program. It only includes the lighting
+    * methods. It's used by multipass materials to accumulate lighting passes.
+    *
+    * @see away3d.materials.MultiPassMaterialBase
+    */
     class LightingPass extends materials.CompiledPass {
         private _includeCasters;
         private _tangentSpace;
@@ -3686,72 +4662,227 @@ declare module away.materials {
         private _pointLightsOffset;
         private _lightProbesOffset;
         private _maxLights;
+        /**
+        * Creates a new LightingPass objects.
+        *
+        * @param material The material to which this pass belongs.
+        */
         constructor(material: materials.MaterialBase);
+        /**
+        * Indicates the offset in the light picker's directional light vector for which to start including lights.
+        * This needs to be set before the light picker is assigned.
+        */
         public directionalLightsOffset : number;
+        /**
+        * Indicates the offset in the light picker's point light vector for which to start including lights.
+        * This needs to be set before the light picker is assigned.
+        */
         public pointLightsOffset : number;
+        /**
+        * Indicates the offset in the light picker's light probes vector for which to start including lights.
+        * This needs to be set before the light picker is assigned.
+        */
         public lightProbesOffset : number;
+        /**
+        * @inheritDoc
+        */
         public pCreateCompiler(profile: string): materials.ShaderCompiler;
+        /**
+        * Indicates whether or not shadow casting lights need to be included.
+        */
         public includeCasters : boolean;
+        /**
+        * @inheritDoc
+        */
         public pUpdateLights(): void;
+        /**
+        * Calculates the amount of directional lights this material will support.
+        * @param numDirectionalLights The maximum amount of directional lights to support.
+        * @return The amount of directional lights this material will support, bounded by the amount necessary.
+        */
         private calculateNumDirectionalLights(numDirectionalLights);
+        /**
+        * Calculates the amount of point lights this material will support.
+        * @param numDirectionalLights The maximum amount of point lights to support.
+        * @return The amount of point lights this material will support, bounded by the amount necessary.
+        */
         private calculateNumPointLights(numPointLights);
+        /**
+        * Calculates the amount of light probes this material will support.
+        * @param numDirectionalLights The maximum amount of light probes to support.
+        * @return The amount of light probes this material will support, bounded by the amount necessary.
+        */
         private calculateNumProbes(numLightProbes);
+        /**
+        * @inheritDoc
+        */
         public pUpdateShaderProperties(): void;
+        /**
+        * @inheritDoc
+        */
         public pUpdateRegisterIndices(): void;
-        public iRender(renderable: away.base.IRenderable, stage3DProxy: away.managers.Stage3DProxy, camera: away.cameras.Camera3D, viewProjection: away.geom.Matrix3D): void;
-        public iActivate(stage3DProxy: away.managers.Stage3DProxy, camera: away.cameras.Camera3D): void;
+        /**
+        * @inheritDoc
+        */
+        public iRender(renderable: away.base.IRenderable, stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D, viewProjection: away.geom.Matrix3D): void;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D): void;
+        /**
+        * Indicates whether any light probes are used to contribute to the specular shading.
+        */
         private usesProbesForSpecular();
+        /**
+        * Indicates whether any light probes are used to contribute to the diffuse shading.
+        */
         private usesProbesForDiffuse();
+        /**
+        * @inheritDoc
+        */
         public pUpdateLightConstants(): void;
-        public pUpdateProbes(stage3DProxy: away.managers.Stage3DProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public pUpdateProbes(stageGLProxy: away.managers.StageGLProxy): void;
     }
 }
 declare module away.materials {
+    /**
+    * ShadowCasterPass is a shader pass that uses shader methods to compile a complete program. It only draws the lighting
+    * contribution for a single shadow-casting light.
+    *
+    * @see away3d.materials.methods.ShadingMethodBase
+    */
     class ShadowCasterPass extends materials.CompiledPass {
         private _tangentSpace;
         private _lightVertexConstantIndex;
         private _inverseSceneMatrix;
+        /**
+        * Creates a new ShadowCasterPass objects.
+        *
+        * @param material The material to which this pass belongs.
+        */
         constructor(material: materials.MaterialBase);
+        /**
+        * @inheritDoc
+        */
         public pCreateCompiler(profile: string): materials.ShaderCompiler;
+        /**
+        * @inheritDoc
+        */
         public pUpdateLights(): void;
+        /**
+        * @inheritDoc
+        */
         public pUpdateShaderProperties(): void;
+        /**
+        * @inheritDoc
+        */
         public pUpdateRegisterIndices(): void;
-        public iRender(renderable: away.base.IRenderable, stage3DProxy: away.managers.Stage3DProxy, camera: away.cameras.Camera3D, viewProjection: away.geom.Matrix3D): void;
-        public iActivate(stage3DProxy: away.managers.Stage3DProxy, camera: away.cameras.Camera3D): void;
+        /**
+        * @inheritDoc
+        */
+        public iRender(renderable: away.base.IRenderable, stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D, viewProjection: away.geom.Matrix3D): void;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D): void;
+        /**
+        * @inheritDoc
+        */
         public pUpdateLightConstants(): void;
+        /**
+        * @inheritDoc
+        */
         public pUsesProbes(): boolean;
+        /**
+        * @inheritDoc
+        */
         public pUsesLights(): boolean;
-        public pUpdateProbes(stage3DProxy: away.managers.Stage3DProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public pUpdateProbes(stageGLProxy: away.managers.StageGLProxy): void;
     }
 }
 declare module away.materials {
+    /**
+    * SegmentPass is a material pass that draws wireframe segments.
+    */
     class SegmentPass extends materials.MaterialPassBase {
         static pONE_VECTOR: number[];
         static pFRONT_VECTOR: number[];
         private _constants;
         private _calcMatrix;
         private _thickness;
+        /**
+        * Creates a new SegmentPass object.
+        *
+        * @param thickness the thickness of the segments to be drawn.
+        */
         constructor(thickness: number);
+        /**
+        * @inheritDoc
+        */
         public iGetVertexCode(): string;
+        /**
+        * @inheritDoc
+        */
         public iGetFragmentCode(animationCode: string): string;
-        public iRender(renderable: away.base.IRenderable, stage3DProxy: away.managers.Stage3DProxy, camera: away.cameras.Camera3D, viewProjection: away.geom.Matrix3D): void;
-        public iActivate(stage3DProxy: away.managers.Stage3DProxy, camera: away.cameras.Camera3D): void;
-        public pDeactivate(stage3DProxy: away.managers.Stage3DProxy): void;
+        /**
+        * @inheritDoc
+        * todo: keep maps in dictionary per renderable
+        */
+        public iRender(renderable: away.base.IRenderable, stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D, viewProjection: away.geom.Matrix3D): void;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D): void;
+        /**
+        * @inheritDoc
+        */
+        public pDeactivate(stageGLProxy: away.managers.StageGLProxy): void;
     }
 }
 declare module away.materials {
+    /**
+    * SkyBoxPass provides a material pass exclusively used to render sky boxes from a cube texture.
+    */
     class SkyBoxPass extends materials.MaterialPassBase {
         private _cubeTexture;
         private _vertexData;
+        /**
+        * Creates a new SkyBoxPass object.
+        */
         constructor();
+        /**
+        * The cube texture to use as the skybox.
+        */
         public cubeTexture : away.textures.CubeTextureBase;
+        /**
+        * @inheritDoc
+        */
         public iGetVertexCode(): string;
+        /**
+        * @inheritDoc
+        */
         public iGetFragmentCode(animationCode: string): string;
-        public iRender(renderable: away.base.IRenderable, stage3DProxy: away.managers.Stage3DProxy, camera: away.cameras.Camera3D, viewProjection: away.geom.Matrix3D): void;
-        public iActivate(stage3DProxy: away.managers.Stage3DProxy, camera: away.cameras.Camera3D): void;
+        /**
+        * @inheritDoc
+        */
+        public iRender(renderable: away.base.IRenderable, stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D, viewProjection: away.geom.Matrix3D): void;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D): void;
     }
 }
 declare module away.materials {
+    /**
+    * MethodVO contains data for a given method for the use within a single material.
+    * This allows methods to be shared across materials while their non-public state differs.
+    */
     class MethodVO {
         public vertexData: number[];
         public fragmentData: number[];
@@ -3774,50 +4905,178 @@ declare module away.materials {
         public needsGlobalFragmentPos: boolean;
         public numLights: number;
         public useLightFallOff: boolean;
+        /**
+        * Creates a new MethodVO object.
+        */
         constructor();
+        /**
+        * Resets the values of the value object to their "unused" state.
+        */
         public reset(): void;
     }
 }
 declare module away.materials {
+    /**
+    * ShadingMethodBase provides an abstract base method for shading methods, used by compiled passes to compile
+    * the final shading program.
+    */
     class ShadingMethodBase extends away.library.NamedAssetBase {
         public _sharedRegisters: materials.ShaderRegisterData;
         private _passes;
+        /**
+        * Create a new ShadingMethodBase object.
+        * @param needsNormals Defines whether or not the method requires normals.
+        * @param needsView Defines whether or not the method requires the view direction.
+        */
         constructor();
+        /**
+        * Initializes the properties for a MethodVO, including register and texture indices.
+        * @param vo The MethodVO object linking this method with the pass currently being compiled.
+        */
         public iInitVO(vo: materials.MethodVO): void;
+        /**
+        * Initializes unchanging shader constants using the data from a MethodVO.
+        * @param vo The MethodVO object linking this method with the pass currently being compiled.
+        */
         public iInitConstants(vo: materials.MethodVO): void;
+        /**
+        * The shared registers created by the compiler and possibly used by methods.
+        */
         public iSharedRegisters : materials.ShaderRegisterData;
         public setISharedRegisters(value: materials.ShaderRegisterData): void;
+        /**
+        * Any passes required that render to a texture used by this method.
+        */
         public passes : materials.MaterialPassBase[];
+        /**
+        * Cleans up any resources used by the current object.
+        */
         public dispose(): void;
+        /**
+        * Creates a data container that contains material-dependent data. Provided as a factory method so a custom subtype can be overridden when needed.
+        */
         public iCreateMethodVO(): materials.MethodVO;
+        /**
+        * Resets the compilation state of the method.
+        */
         public iReset(): void;
+        /**
+        * Resets the method's state for compilation.
+        * @private
+        */
         public iCleanCompilationData(): void;
+        /**
+        * Get the vertex shader code for this method.
+        * @param vo The MethodVO object linking this method with the pass currently being compiled.
+        * @param regCache The register cache used during the compilation.
+        * @private
+        */
         public iGetVertexCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache): string;
-        public iActivate(vo: materials.MethodVO, stage3DProxy: away.managers.Stage3DProxy): void;
-        public iSetRenderState(vo: materials.MethodVO, renderable: away.base.IRenderable, stage3DProxy: away.managers.Stage3DProxy, camera: away.cameras.Camera3D): void;
-        public iDeactivate(vo: materials.MethodVO, stage3DProxy: away.managers.Stage3DProxy): void;
+        /**
+        * Sets the render state for this method.
+        *
+        * @param vo The MethodVO object linking this method with the pass currently being compiled.
+        * @param stageGLProxy The StageGLProxy object currently used for rendering.
+        * @private
+        */
+        public iActivate(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * Sets the render state for a single renderable.
+        *
+        * @param vo The MethodVO object linking this method with the pass currently being compiled.
+        * @param renderable The renderable currently being rendered.
+        * @param stageGLProxy The StageGLProxy object currently used for rendering.
+        * @param camera The camera from which the scene is currently rendered.
+        */
+        public iSetRenderState(vo: materials.MethodVO, renderable: away.base.IRenderable, stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D): void;
+        /**
+        * Clears the render state for this method.
+        * @param vo The MethodVO object linking this method with the pass currently being compiled.
+        * @param stageGLProxy The StageGLProxy object currently used for rendering.
+        */
+        public iDeactivate(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * A helper method that generates standard code for sampling from a texture using the normal uv coordinates.
+        * @param vo The MethodVO object linking this method with the pass currently being compiled.
+        * @param targetReg The register in which to store the sampled colour.
+        * @param inputReg The texture stream register.
+        * @param texture The texture which will be assigned to the given slot.
+        * @param uvReg An optional uv register if coordinates different from the primary uv coordinates are to be used.
+        * @param forceWrap If true, texture wrapping is enabled regardless of the material setting.
+        * @return The fragment code that performs the sampling.
+        */
         public pGetTex2DSampleCode(vo: materials.MethodVO, targetReg: materials.ShaderRegisterElement, inputReg: materials.ShaderRegisterElement, texture: away.textures.TextureProxyBase, uvReg?: materials.ShaderRegisterElement, forceWrap?: string): string;
+        /**
+        * A helper method that generates standard code for sampling from a cube texture.
+        * @param vo The MethodVO object linking this method with the pass currently being compiled.
+        * @param targetReg The register in which to store the sampled colour.
+        * @param inputReg The texture stream register.
+        * @param texture The cube map which will be assigned to the given slot.
+        * @param uvReg The direction vector with which to sample the cube map.
+        */
         public pGetTexCubeSampleCode(vo: materials.MethodVO, targetReg: materials.ShaderRegisterElement, inputReg: materials.ShaderRegisterElement, texture: away.textures.TextureProxyBase, uvReg: materials.ShaderRegisterElement): string;
+        /**
+        * Generates a texture format string for the sample instruction.
+        * @param texture The texture for which to get the format string.
+        * @return
+        */
         private getFormatStringForTexture(texture);
+        /**
+        * Marks the shader program as invalid, so it will be recompiled before the next render.
+        */
         public iInvalidateShaderProgram(): void;
+        /**
+        * Copies the state from a ShadingMethodBase object into the current object.
+        */
         public copyFrom(method: ShadingMethodBase): void;
     }
 }
 declare module away.materials {
+    /**
+    * EffectMethodBase forms an abstract base class for shader methods that are not dependent on light sources,
+    * and are in essence post-process effects on the materials.
+    */
     class EffectMethodBase extends materials.ShadingMethodBase implements away.library.IAsset {
         constructor();
+        /**
+        * @inheritDoc
+        */
         public assetType : string;
+        /**
+        * Get the fragment shader code that should be added after all per-light code. Usually composits everything to the target register.
+        * @param vo The MethodVO object containing the method data for the currently compiled material pass.
+        * @param regCache The register cache used during the compilation.
+        * @param targetReg The register that will be containing the method's output.
+        * @private
+        */
         public iGetFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
     }
 }
 declare module away.materials {
+    /**
+    * MethodVOSet provides a EffectMethodBase and MethodVO combination to be used by a material, allowing methods
+    * to be shared across different materials while their internal state changes.
+    */
     class MethodVOSet {
+        /**
+        * An instance of a concrete EffectMethodBase subclass.
+        */
         public method: materials.EffectMethodBase;
+        /**
+        * The MethodVO data for the given method containing the material-specific data for a given material/method combination.
+        */
         public data: materials.MethodVO;
+        /**
+        * Creates a new MethodVOSet object.
+        * @param method The method for which we need to store a MethodVO object.
+        */
         constructor(method: materials.EffectMethodBase);
     }
 }
 declare module away.materials {
+    /**
+    * ShaderMethodSetup contains the method configuration for an entire material.
+    */
     class ShaderMethodSetup extends away.events.EventDispatcher {
         public _iColorTransformMethod: materials.ColorTransformMethod;
         public _iColorTransformMethodVO: materials.MethodVO;
@@ -3832,82 +5091,299 @@ declare module away.materials {
         public _iSpecularMethod: materials.BasicSpecularMethod;
         public _iSpecularMethodVO: materials.MethodVO;
         public _iMethods: materials.MethodVOSet[];
+        /**
+        * Creates a new ShaderMethodSetup object.
+        */
         constructor();
+        /**
+        * Called when any method's code is invalidated.
+        */
         private onShaderInvalidated(event);
+        /**
+        * Invalidates the material's shader code.
+        */
         private invalidateShaderProgram();
+        /**
+        *  The method used to generate the per-pixel normals.
+        */
         public normalMethod : materials.BasicNormalMethod;
+        /**
+        * The method that provides the ambient lighting contribution.
+        */
         public ambientMethod : materials.BasicAmbientMethod;
+        /**
+        * The method used to render shadows cast on this surface, or null if no shadows are to be rendered.
+        */
         public shadowMethod : materials.ShadowMapMethodBase;
+        /**
+        * The method that provides the diffuse lighting contribution.
+        */
         public diffuseMethod : materials.BasicDiffuseMethod;
+        /**
+        * The method to perform specular shading.
+        */
         public specularMethod : materials.BasicSpecularMethod;
+        /**
+        * @private
+        */
         public iColorTransformMethod : materials.ColorTransformMethod;
+        /**
+        * Disposes the object.
+        */
         public dispose(): void;
+        /**
+        * Removes all listeners from a method.
+        */
         private clearListeners(method);
+        /**
+        * Adds a method to change the material after all lighting is performed.
+        * @param method The method to be added.
+        */
         public addMethod(method: materials.EffectMethodBase): void;
+        /**
+        * Queries whether a given effect method was added to the material.
+        *
+        * @param method The method to be queried.
+        * @return true if the method was added to the material, false otherwise.
+        */
         public hasMethod(method: materials.EffectMethodBase): boolean;
+        /**
+        * Inserts a method to change the material after all lighting is performed at the given index.
+        * @param method The method to be added.
+        * @param index The index of the method's occurrence
+        */
         public addMethodAt(method: materials.EffectMethodBase, index: number): void;
+        /**
+        * Returns the method added at the given index.
+        * @param index The index of the method to retrieve.
+        * @return The method at the given index.
+        */
         public getMethodAt(index: number): materials.EffectMethodBase;
+        /**
+        * The number of "effect" methods added to the material.
+        */
         public numMethods : number;
+        /**
+        * Removes a method from the pass.
+        * @param method The method to be removed.
+        */
         public removeMethod(method: materials.EffectMethodBase): void;
         private getMethodSetForMethod(method);
     }
 }
 declare module away.materials {
+    /**
+    * LightingMethodBase provides an abstract base method for shading methods that uses lights.
+    * Used for diffuse and specular shaders only.
+    */
     class LightingMethodBase extends materials.ShadingMethodBase {
-        public _iModulateMethod: any;
+        /**
+        * A method that is exposed to wrappers in case the strength needs to be controlled
+        */
+        public _iModulateMethod;
         public _iModulateMethodScope: Object;
+        /**
+        * Creates a new LightingMethodBase.
+        */
         constructor();
+        /**
+        * Get the fragment shader code that will be needed before any per-light code is added.
+        * @param vo The MethodVO object containing the method data for the currently compiled material pass.
+        * @param regCache The register cache used during the compilation.
+        * @private
+        */
         public iGetFragmentPreLightingCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache): string;
+        /**
+        * Get the fragment shader code that will generate the code relevant to a single light.
+        *
+        * @param vo The MethodVO object containing the method data for the currently compiled material pass.
+        * @param lightDirReg The register containing the light direction vector.
+        * @param lightColReg The register containing the light colour.
+        * @param regCache The register cache used during the compilation.
+        */
         public iGetFragmentCodePerLight(vo: materials.MethodVO, lightDirReg: materials.ShaderRegisterElement, lightColReg: materials.ShaderRegisterElement, regCache: materials.ShaderRegisterCache): string;
+        /**
+        * Get the fragment shader code that will generate the code relevant to a single light probe object.
+        *
+        * @param vo The MethodVO object containing the method data for the currently compiled material pass.
+        * @param cubeMapReg The register containing the cube map for the current probe
+        * @param weightRegister A string representation of the register + component containing the current weight
+        * @param regCache The register cache providing any necessary registers to the shader
+        */
         public iGetFragmentCodePerProbe(vo: materials.MethodVO, cubeMapReg: materials.ShaderRegisterElement, weightRegister: string, regCache: materials.ShaderRegisterCache): string;
+        /**
+        * Get the fragment shader code that should be added after all per-light code. Usually composits everything to the target register.
+        *
+        * @param vo The MethodVO object containing the method data for the currently compiled material pass.
+        * @param regCache The register cache used during the compilation.
+        * @param targetReg The register containing the final shading output.
+        * @private
+        */
         public iGetFragmentPostLightingCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
     }
 }
 declare module away.materials {
+    /**
+    * ShadowMapMethodBase provides an abstract base method for shadow map methods.
+    */
     class ShadowMapMethodBase extends materials.ShadingMethodBase implements away.library.IAsset {
         public _pCastingLight: away.lights.LightBase;
         public _pShadowMapper: away.lights.ShadowMapperBase;
         public _pEpsilon: number;
         public _pAlpha: number;
+        /**
+        * Creates a new ShadowMapMethodBase object.
+        * @param castingLight The light used to cast shadows.
+        */
         constructor(castingLight: away.lights.LightBase);
+        /**
+        * @inheritDoc
+        */
         public assetType : string;
+        /**
+        * The "transparency" of the shadows. This allows making shadows less strong.
+        */
         public alpha : number;
+        /**
+        * The light casting the shadows.
+        */
         public castingLight : away.lights.LightBase;
+        /**
+        * A small value to counter floating point precision errors when comparing values in the shadow map with the
+        * calculated depth value. Increase this if shadow banding occurs, decrease it if the shadow seems to be too detached.
+        */
         public epsilon : number;
+        /**
+        * @inheritDoc
+        */
         public iGetFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
     }
 }
 declare module away.materials {
+    /**
+    * SimpleShadowMapMethodBase provides an abstract method for simple (non-wrapping) shadow map methods.
+    */
     class SimpleShadowMapMethodBase extends materials.ShadowMapMethodBase {
         public _pDepthMapCoordReg: materials.ShaderRegisterElement;
         public _pUsePoint: boolean;
+        /**
+        * Creates a new SimpleShadowMapMethodBase object.
+        * @param castingLight The light used to cast shadows.
+        */
         constructor(castingLight: away.lights.LightBase);
+        /**
+        * @inheritDoc
+        */
         public iInitVO(vo: materials.MethodVO): void;
+        /**
+        * @inheritDoc
+        */
         public iInitConstants(vo: materials.MethodVO): void;
+        /**
+        * Wrappers that override the vertex shader need to set this explicitly
+        */
         public _iDepthMapCoordReg : materials.ShaderRegisterElement;
+        /**
+        * @inheritDoc
+        */
         public iCleanCompilationData(): void;
+        /**
+        * @inheritDoc
+        */
         public iGetVertexCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache): string;
+        /**
+        * Gets the vertex code for shadow mapping with a point light.
+        *
+        * @param vo The MethodVO object linking this method with the pass currently being compiled.
+        * @param regCache The register cache used during the compilation.
+        */
         public _pGetPointVertexCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache): string;
+        /**
+        * Gets the vertex code for shadow mapping with a planar shadow map (fe: directional lights).
+        *
+        * @param vo The MethodVO object linking this method with the pass currently being compiled.
+        * @param regCache The register cache used during the compilation.
+        */
         public pGetPlanarVertexCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
         public iGetFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+        /**
+        * Gets the fragment code for shadow mapping with a planar shadow map.
+        * @param vo The MethodVO object linking this method with the pass currently being compiled.
+        * @param regCache The register cache used during the compilation.
+        * @param targetReg The register to contain the shadow coverage
+        * @return
+        */
         public _pGetPlanarFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+        /**
+        * Gets the fragment code for shadow mapping with a point light.
+        * @param vo The MethodVO object linking this method with the pass currently being compiled.
+        * @param regCache The register cache used during the compilation.
+        * @param targetReg The register to contain the shadow coverage
+        * @return
+        */
         public _pGetPointFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
-        public iSetRenderState(vo: materials.MethodVO, renderable: away.base.IRenderable, stage3DProxy: away.managers.Stage3DProxy, camera: away.cameras.Camera3D): void;
+        /**
+        * @inheritDoc
+        */
+        public iSetRenderState(vo: materials.MethodVO, renderable: away.base.IRenderable, stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D): void;
+        /**
+        * Gets the fragment code for combining this method with a cascaded shadow map method.
+        * @param vo The MethodVO object linking this method with the pass currently being compiled.
+        * @param regCache The register cache used during the compilation.
+        * @param decodeRegister The register containing the data to decode the shadow map depth value.
+        * @param depthTexture The texture containing the shadow map.
+        * @param depthProjection The projection of the fragment relative to the light.
+        * @param targetRegister The register to contain the shadow coverage
+        * @return
+        */
         public _iGetCascadeFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, decodeRegister: materials.ShaderRegisterElement, depthTexture: materials.ShaderRegisterElement, depthProjection: materials.ShaderRegisterElement, targetRegister: materials.ShaderRegisterElement): string;
-        public iActivate(vo: materials.MethodVO, stage3DProxy: away.managers.Stage3DProxy): void;
-        public iActivateForCascade(vo: materials.MethodVO, stage3DProxy: away.managers.Stage3DProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * Sets the method state for cascade shadow mapping.
+        */
+        public iActivateForCascade(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
     }
 }
 declare module away.materials {
+    /**
+    * DitheredShadowMapMethod provides a softened shadowing technique by bilinearly interpolating shadow comparison
+    * results of neighbouring pixels.
+    */
     class FilteredShadowMapMethod extends materials.SimpleShadowMapMethodBase {
+        /**
+        * Creates a new BasicDiffuseMethod object.
+        *
+        * @param castingLight The light casting the shadow
+        */
         constructor(castingLight: away.lights.DirectionalLight);
+        /**
+        * @inheritDoc
+        */
         public iInitConstants(vo: materials.MethodVO): void;
+        /**
+        * @inheritDoc
+        */
         public _pGetPlanarFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
-        public iActivateForCascade(vo: materials.MethodVO, stage3DProxy: away.managers.Stage3DProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public iActivateForCascade(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * @inheritDoc
+        */
         public _iGetCascadeFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, decodeRegister: materials.ShaderRegisterElement, depthTexture: materials.ShaderRegisterElement, depthProjection: materials.ShaderRegisterElement, targetRegister: materials.ShaderRegisterElement): string;
     }
 }
 declare module away.materials {
+    /**
+    * FogMethod provides a method to add distance-based fog to a material.
+    */
     class FogMethod extends materials.EffectMethodBase {
         private _minDistance;
         private _maxDistance;
@@ -3915,43 +5391,139 @@ declare module away.materials {
         private _fogR;
         private _fogG;
         private _fogB;
+        /**
+        * Creates a new FogMethod object.
+        * @param minDistance The distance from which the fog starts appearing.
+        * @param maxDistance The distance at which the fog is densest.
+        * @param fogColor The colour of the fog.
+        */
         constructor(minDistance: number, maxDistance: number, fogColor?: number);
+        /**
+        * @inheritDoc
+        */
         public iInitVO(vo: materials.MethodVO): void;
+        /**
+        * @inheritDoc
+        */
         public iInitConstants(vo: materials.MethodVO): void;
+        /**
+        * The distance from which the fog starts appearing.
+        */
         public minDistance : number;
+        /**
+        * The distance at which the fog is densest.
+        */
         public maxDistance : number;
+        /**
+        * The colour of the fog.
+        */
         public fogColor : number;
-        public iActivate(vo: materials.MethodVO, stage3DProxy: away.managers.Stage3DProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * @inheritDoc
+        */
         public iGetFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
     }
 }
 declare module away.materials {
+    /**
+    * HardShadowMapMethod provides the cheapest shadow map method by using a single tap without any filtering.
+    */
     class HardShadowMapMethod extends materials.SimpleShadowMapMethodBase {
+        /**
+        * Creates a new HardShadowMapMethod object.
+        */
         constructor(castingLight: away.lights.LightBase);
+        /**
+        * @inheritDoc
+        */
         public _pGetPlanarFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+        /**
+        * @inheritDoc
+        */
         public _pGetPointFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+        /**
+        * @inheritDoc
+        */
         public _iGetCascadeFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, decodeRegister: materials.ShaderRegisterElement, depthTexture: materials.ShaderRegisterElement, depthProjection: materials.ShaderRegisterElement, targetRegister: materials.ShaderRegisterElement): string;
-        public iActivateForCascade(vo: materials.MethodVO, stage3DProxy: away.managers.Stage3DProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public iActivateForCascade(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
     }
 }
 declare module away.materials {
+    /**
+    * SoftShadowMapMethod provides a soft shadowing technique by randomly distributing sample points.
+    */
     class SoftShadowMapMethod extends materials.SimpleShadowMapMethodBase {
         private _range;
         private _numSamples;
         private _offsets;
+        /**
+        * Creates a new BasicDiffuseMethod object.
+        *
+        * @param castingLight The light casting the shadows
+        * @param numSamples The amount of samples to take for dithering. Minimum 1, maximum 32.
+        */
         constructor(castingLight: away.lights.DirectionalLight, numSamples?: number, range?: number);
+        /**
+        * The amount of samples to take for dithering. Minimum 1, maximum 32. The actual maximum may depend on the
+        * complexity of the shader.
+        */
         public numSamples : number;
+        /**
+        * The range in the shadow map in which to distribute the samples.
+        */
         public range : number;
+        /**
+        * @inheritDoc
+        */
         public iInitConstants(vo: materials.MethodVO): void;
-        public iActivate(vo: materials.MethodVO, stage3DProxy: away.managers.Stage3DProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * @inheritDoc
+        */
         public _pGetPlanarFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+        /**
+        * Adds the code for another tap to the shader code.
+        * @param uv The uv register for the tap.
+        * @param texture The texture register containing the depth map.
+        * @param decode The register containing the depth map decoding data.
+        * @param target The target register to add the tap comparison result.
+        * @param regCache The register cache managing the registers.
+        * @return
+        */
         private addSample(uv, texture, decode, target, regCache);
-        public iActivateForCascade(vo: materials.MethodVO, stage3DProxy: away.managers.Stage3DProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public iActivateForCascade(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * @inheritDoc
+        */
         public _iGetCascadeFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, decodeRegister: materials.ShaderRegisterElement, depthTexture: materials.ShaderRegisterElement, depthProjection: materials.ShaderRegisterElement, targetRegister: materials.ShaderRegisterElement): string;
+        /**
+        * Get the actual shader code for shadow mapping
+        * @param regCache The register cache managing the registers.
+        * @param depthTexture The texture register containing the depth map.
+        * @param decodeRegister The register containing the depth map decoding data.
+        * @param targetReg The target register to add the shadow coverage.
+        * @param dataReg The register containing additional data.
+        */
         private getSampleCode(regCache, depthTexture, decodeRegister, targetRegister, dataReg);
     }
 }
 declare module away.materials {
+    /**
+    * DitheredShadowMapMethod provides a soft shadowing technique by randomly distributing sample points differently for each fragment.
+    */
     class DitheredShadowMapMethod extends materials.SimpleShadowMapMethodBase {
         private static _grainTexture;
         private static _grainUsages;
@@ -3959,46 +5531,160 @@ declare module away.materials {
         private _depthMapSize;
         private _range;
         private _numSamples;
+        /**
+        * Creates a new DitheredShadowMapMethod object.
+        * @param castingLight The light casting the shadows
+        * @param numSamples The amount of samples to take for dithering. Minimum 1, maximum 24.
+        */
         constructor(castingLight: away.lights.DirectionalLight, numSamples?: number, range?: number);
+        /**
+        * The amount of samples to take for dithering. Minimum 1, maximum 24. The actual maximum may depend on the
+        * complexity of the shader.
+        */
         public numSamples : number;
+        /**
+        * @inheritDoc
+        */
         public iInitVO(vo: materials.MethodVO): void;
+        /**
+        * @inheritDoc
+        */
         public iInitConstants(vo: materials.MethodVO): void;
+        /**
+        * The range in the shadow map in which to distribute the samples.
+        */
         public range : number;
+        /**
+        * Creates a texture containing the dithering noise texture.
+        */
         private initGrainTexture();
+        /**
+        * @inheritDoc
+        */
         public dispose(): void;
-        public iActivate(vo: materials.MethodVO, stage3DProxy: away.managers.Stage3DProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * @inheritDoc
+        */
         public _pGetPlanarFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+        /**
+        * Get the actual shader code for shadow mapping
+        * @param regCache The register cache managing the registers.
+        * @param depthMapRegister The texture register containing the depth map.
+        * @param decReg The register containing the depth map decoding data.
+        * @param targetReg The target register to add the shadow coverage.
+        */
         private getSampleCode(regCache, customDataReg, depthMapRegister, decReg, targetReg);
+        /**
+        * Adds the code for another tap to the shader code.
+        * @param uvReg The uv register for the tap.
+        * @param depthMapRegister The texture register containing the depth map.
+        * @param decReg The register containing the depth map decoding data.
+        * @param targetReg The target register to add the tap comparison result.
+        * @param regCache The register cache managing the registers.
+        * @return
+        */
         private addSample(uvReg, depthMapRegister, decReg, targetReg, regCache);
-        public iActivateForCascade(vo: materials.MethodVO, stage3DProxy: away.managers.Stage3DProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public iActivateForCascade(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * @inheritDoc
+        */
         public _iGetCascadeFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, decodeRegister: materials.ShaderRegisterElement, depthTexture: materials.ShaderRegisterElement, depthProjection: materials.ShaderRegisterElement, targetRegister: materials.ShaderRegisterElement): string;
     }
 }
 declare module away.materials {
+    /**
+    * NearShadowMapMethod provides a shadow map method that restricts the shadowed area near the camera to optimize
+    * shadow map usage. This method needs to be used in conjunction with a NearDirectionalShadowMapper.
+    *
+    * @see away.lights.NearDirectionalShadowMapper
+    */
     class NearShadowMapMethod extends materials.SimpleShadowMapMethodBase {
         private _baseMethod;
         private _fadeRatio;
         private _nearShadowMapper;
+        /**
+        * Creates a new NearShadowMapMethod object.
+        * @param baseMethod The shadow map sampling method used to sample individual cascades (fe: HardShadowMapMethod, SoftShadowMapMethod)
+        * @param fadeRatio The amount of shadow fading to the outer shadow area. A value of 1 would mean the shadows start fading from the camera's near plane.
+        */
         constructor(baseMethod: materials.SimpleShadowMapMethodBase, fadeRatio?: number);
+        /**
+        * The base shadow map method on which this method's shading is based.
+        */
         public baseMethod : materials.SimpleShadowMapMethodBase;
+        /**
+        * @inheritDoc
+        */
         public iInitConstants(vo: materials.MethodVO): void;
+        /**
+        * @inheritDoc
+        */
         public iInitVO(vo: materials.MethodVO): void;
+        /**
+        * @inheritDoc
+        */
         public dispose(): void;
+        /**
+        * @inheritDoc
+        */
         public alpha : number;
+        /**
+        * @inheritDoc
+        */
         public epsilon : number;
+        /**
+        * The amount of shadow fading to the outer shadow area. A value of 1 would mean the shadows start fading from the camera's near plane.
+        */
         public fadeRatio : number;
+        /**
+        * @inheritDoc
+        */
         public iGetFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
-        public iActivate(vo: materials.MethodVO, stage3DProxy: away.managers.Stage3DProxy): void;
-        public iDeactivate(vo: materials.MethodVO, stage3DProxy: away.managers.Stage3DProxy): void;
-        public iSetRenderState(vo: materials.MethodVO, renderable: away.base.IRenderable, stage3DProxy: away.managers.Stage3DProxy, camera: away.cameras.Camera3D): void;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public iDeactivate(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public iSetRenderState(vo: materials.MethodVO, renderable: away.base.IRenderable, stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D): void;
+        /**
+        * @inheritDoc
+        */
         public iGetVertexCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
         public iReset(): void;
+        /**
+        * @inheritDoc
+        */
         public iCleanCompilationData(): void;
+        /**
+        * @inheritDoc
+        */
         public iSharedRegisters : materials.ShaderRegisterData;
+        /**
+        * Called when the base method's shader code is invalidated.
+        */
         private onShaderInvalidated(event);
     }
 }
 declare module away.materials {
+    /**
+    * BasicAmbientMethod provides the default shading method for uniform ambient lighting.
+    */
     class BasicAmbientMethod extends materials.ShadingMethodBase {
         private _useTexture;
         private _texture;
@@ -4011,21 +5697,60 @@ declare module away.materials {
         public _iLightAmbientR: number;
         public _iLightAmbientG: number;
         public _iLightAmbientB: number;
+        /**
+        * Creates a new BasicAmbientMethod object.
+        */
         constructor();
+        /**
+        * @inheritDoc
+        */
         public iInitVO(vo: materials.MethodVO): void;
+        /**
+        * @inheritDoc
+        */
         public iInitConstants(vo: materials.MethodVO): void;
+        /**
+        * The strength of the ambient reflection of the surface.
+        */
         public ambient : number;
+        /**
+        * The colour of the ambient reflection of the surface.
+        */
         public ambientColor : number;
+        /**
+        * The bitmapData to use to define the diffuse reflection color per texel.
+        */
         public texture : away.textures.Texture2DBase;
+        /**
+        * @inheritDoc
+        */
         public copyFrom(method: materials.ShadingMethodBase): void;
+        /**
+        * @inheritDoc
+        */
         public iCleanCompilationData(): void;
+        /**
+        * @inheritDoc
+        */
         public iGetFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
-        public iActivate(vo: materials.MethodVO, stage3DProxy: away.managers.Stage3DProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * Updates the ambient color data used by the render state.
+        */
         private updateAmbient();
-        public iSetRenderState(vo: materials.MethodVO, renderable: away.base.IRenderable, stage3DProxy: away.managers.Stage3DProxy, camera: away.cameras.Camera3D): void;
+        /**
+        * @inheritDoc
+        */
+        public iSetRenderState(vo: materials.MethodVO, renderable: away.base.IRenderable, stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D): void;
     }
 }
 declare module away.materials {
+    /**
+    * BasicDiffuseMethod provides the default shading method for Lambert (dot3) diffuse lighting.
+    */
     class BasicDiffuseMethod extends materials.LightingMethodBase {
         private _useAmbientTexture;
         private _useTexture;
@@ -4040,47 +5765,144 @@ declare module away.materials {
         private _shadowRegister;
         private _alphaThreshold;
         private _isFirstLight;
+        /**
+        * Creates a new BasicDiffuseMethod object.
+        */
         constructor();
+        /**
+        * Set internally if the ambient method uses a texture.
+        */
         public iUseAmbientTexture : boolean;
         public iInitVO(vo: materials.MethodVO): void;
-        public generateMip(stage3DProxy: away.managers.Stage3DProxy): void;
+        /**
+        * Forces the creation of the texture.
+        * @param stageGLProxy The StageGLProxy used by the renderer
+        */
+        public generateMip(stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * The alpha component of the diffuse reflection.
+        */
         public diffuseAlpha : number;
+        /**
+        * The color of the diffuse reflection when not using a texture.
+        */
         public diffuseColor : number;
+        /**
+        * The bitmapData to use to define the diffuse reflection color per texel.
+        */
         public texture : away.textures.Texture2DBase;
+        /**
+        * The minimum alpha value for which pixels should be drawn. This is used for transparency that is either
+        * invisible or entirely opaque, often used with textures for foliage, etc.
+        * Recommended values are 0 to disable alpha, or 0.5 to create smooth edges. Default value is 0 (disabled).
+        */
         public alphaThreshold : number;
+        /**
+        * @inheritDoc
+        */
         public dispose(): void;
+        /**
+        * @inheritDoc
+        */
         public copyFrom(method: materials.ShadingMethodBase): void;
+        /**
+        * @inheritDoc
+        */
         public iCleanCompilationData(): void;
+        /**
+        * @inheritDoc
+        */
         public iGetFragmentPreLightingCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
         public iGetFragmentCodePerLight(vo: materials.MethodVO, lightDirReg: materials.ShaderRegisterElement, lightColReg: materials.ShaderRegisterElement, regCache: materials.ShaderRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
         public iGetFragmentCodePerProbe(vo: materials.MethodVO, cubeMapReg: materials.ShaderRegisterElement, weightRegister: string, regCache: materials.ShaderRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
         public iGetFragmentPostLightingCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+        /**
+        * Generate the code that applies the calculated shadow to the diffuse light
+        * @param vo The MethodVO object for which the compilation is currently happening.
+        * @param regCache The register cache the compiler is currently using for the register management.
+        */
         public pApplyShadow(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache): string;
-        public iActivate(vo: materials.MethodVO, stage3DProxy: away.managers.Stage3DProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * Updates the diffuse color data used by the render state.
+        */
         private updateDiffuse();
+        /**
+        * Set internally by the compiler, so the method knows the register containing the shadow calculation.
+        */
         public iShadowRegister : materials.ShaderRegisterElement;
         public setIShadowRegister(value: materials.ShaderRegisterElement): void;
     }
 }
 declare module away.materials {
+    /**
+    * BasicNormalMethod is the default method for standard tangent-space normal mapping.
+    */
     class BasicNormalMethod extends materials.ShadingMethodBase {
         private _texture;
         private _useTexture;
         public _pNormalTextureRegister: materials.ShaderRegisterElement;
+        /**
+        * Creates a new BasicNormalMethod object.
+        */
         constructor();
+        /**
+        * @inheritDoc
+        */
         public iInitVO(vo: materials.MethodVO): void;
+        /**
+        * Indicates whether or not this method outputs normals in tangent space. Override for object-space normals.
+        */
         public iTangentSpace : boolean;
+        /**
+        * Indicates if the normal method output is not based on a texture (if not, it will usually always return true)
+        * Override if subclasses are different.
+        */
         public iHasOutput : boolean;
+        /**
+        * @inheritDoc
+        */
         public copyFrom(method: materials.ShadingMethodBase): void;
+        /**
+        * The texture containing the normals per pixel.
+        */
         public normalMap : away.textures.Texture2DBase;
         public setNormalMap(value: away.textures.Texture2DBase): void;
+        /**
+        * @inheritDoc
+        */
         public iCleanCompilationData(): void;
+        /**
+        * @inheritDoc
+        */
         public dispose(): void;
-        public iActivate(vo: materials.MethodVO, stage3DProxy: away.managers.Stage3DProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * @inheritDoc
+        */
         public iGetFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
     }
 }
 declare module away.materials {
+    /**
+    * BasicSpecularMethod provides the default shading method for Blinn-Phong specular highlights (an optimized but approximated
+    * version of Phong specularity).
+    */
     class BasicSpecularMethod extends materials.LightingMethodBase {
         public _pUseTexture: boolean;
         public _pTotalLightColorReg: materials.ShaderRegisterElement;
@@ -4096,128 +5918,418 @@ declare module away.materials {
         public _iSpecularB: number;
         private _shadowRegister;
         public _pIsFirstLight: boolean;
+        /**
+        * Creates a new BasicSpecularMethod object.
+        */
         constructor();
+        /**
+        * @inheritDoc
+        */
         public iInitVO(vo: materials.MethodVO): void;
+        /**
+        * The sharpness of the specular highlight.
+        */
         public gloss : number;
+        /**
+        * The overall strength of the specular highlights.
+        */
         public specular : number;
+        /**
+        * The colour of the specular reflection of the surface.
+        */
         public specularColor : number;
+        /**
+        * The bitmapData that encodes the specular highlight strength per texel in the red channel, and the sharpness
+        * in the green channel. You can use SpecularBitmapTexture if you want to easily set specular and gloss maps
+        * from grayscale images, but prepared images are preferred.
+        */
         public texture : away.textures.Texture2DBase;
+        /**
+        * @inheritDoc
+        */
         public copyFrom(method: materials.ShadingMethodBase): void;
+        /**
+        * @inheritDoc
+        */
         public iCleanCompilationData(): void;
+        /**
+        * @inheritDoc
+        */
         public iGetFragmentPreLightingCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
         public iGetFragmentCodePerLight(vo: materials.MethodVO, lightDirReg: materials.ShaderRegisterElement, lightColReg: materials.ShaderRegisterElement, regCache: materials.ShaderRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
         public iGetFragmentCodePerProbe(vo: materials.MethodVO, cubeMapReg: materials.ShaderRegisterElement, weightRegister: string, regCache: materials.ShaderRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
         public iGetFragmentPostLightingCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
-        public iActivate(vo: materials.MethodVO, stage3DProxy: away.managers.Stage3DProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * Updates the specular color data used by the render state.
+        */
         private updateSpecular();
+        /**
+        * Set internally by the compiler, so the method knows the register containing the shadow calculation.
+        */
         public iShadowRegister : materials.ShaderRegisterElement;
         public setIShadowRegister(shadowReg: materials.ShaderRegisterElement): void;
     }
 }
 declare module away.materials {
+    /**
+    * ColorTransformMethod provides a shading method that changes the colour of a material analogous to a
+    * ColorTransform object.
+    */
     class ColorTransformMethod extends materials.EffectMethodBase {
         private _colorTransform;
+        /**
+        * Creates a new ColorTransformMethod.
+        */
         constructor();
+        /**
+        * The ColorTransform object to transform the colour of the material with.
+        */
         public colorTransform : away.geom.ColorTransform;
+        /**
+        * @inheritDoc
+        */
         public iGetFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
-        public iActivate(vo: materials.MethodVO, stage3DProxy: away.managers.Stage3DProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
     }
 }
 declare module away.materials {
+    /**
+    * PhongSpecularMethod provides a specular method that provides Phong highlights.
+    */
     class PhongSpecularMethod extends materials.BasicSpecularMethod {
+        /**
+        * Creates a new PhongSpecularMethod object.
+        */
         constructor();
+        /**
+        * @inheritDoc
+        */
         public iGetFragmentCodePerLight(vo: materials.MethodVO, lightDirReg: materials.ShaderRegisterElement, lightColReg: materials.ShaderRegisterElement, regCache: materials.ShaderRegisterCache): string;
     }
 }
 declare module away.materials {
+    /**
+    * CompositeDiffuseMethod provides a base class for diffuse methods that wrap a diffuse method to alter the
+    * calculated diffuse reflection strength.
+    */
     class CompositeDiffuseMethod extends materials.BasicDiffuseMethod {
         public pBaseMethod: materials.BasicDiffuseMethod;
+        /**
+        * Creates a new WrapDiffuseMethod object.
+        * @param modulateMethod The method which will add the code to alter the base method's strength. It needs to have the signature clampDiffuse(t : ShaderRegisterElement, regCache : ShaderRegisterCache) : string, in which t.w will contain the diffuse strength.
+        * @param baseDiffuseMethod The base diffuse method on which this method's shading is based.
+        */
         constructor(scope: Object, modulateMethod?: Function, baseDiffuseMethod?: materials.BasicDiffuseMethod);
         public _pInitCompositeDiffuseMethod(scope: Object, modulateMethod: Function, baseDiffuseMethod?: materials.BasicDiffuseMethod): void;
+        /**
+        * The base diffuse method on which this method's shading is based.
+        */
         public baseMethod : materials.BasicDiffuseMethod;
+        /**
+        * @inheritDoc
+        */
         public iInitVO(vo: materials.MethodVO): void;
+        /**
+        * @inheritDoc
+        */
         public iInitConstants(vo: materials.MethodVO): void;
+        /**
+        * @inheritDoc
+        */
         public dispose(): void;
+        /**
+        * @inheritDoc
+        */
         public alphaThreshold : number;
+        /**
+        * @inheritDoc
+        */
+        /**
+        * @inheritDoc
+        */
         public texture : away.textures.Texture2DBase;
+        /**
+        * @inheritDoc
+        */
+        /**
+        * @inheritDoc
+        */
         public diffuseAlpha : number;
+        /**
+        * @inheritDoc
+        */
+        /**
+        * @inheritDoc
+        */
         public diffuseColor : number;
+        /**
+        * @inheritDoc
+        */
         public iGetFragmentPreLightingCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
         public iGetFragmentCodePerLight(vo: materials.MethodVO, lightDirReg: materials.ShaderRegisterElement, lightColReg: materials.ShaderRegisterElement, regCache: materials.ShaderRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
         public iGetFragmentCodePerProbe(vo: materials.MethodVO, cubeMapReg: materials.ShaderRegisterElement, weightRegister: string, regCache: materials.ShaderRegisterCache): string;
-        public iActivate(vo: materials.MethodVO, stage3DProxy: away.managers.Stage3DProxy): void;
-        public iDeactivate(vo: materials.MethodVO, stage3DProxy: away.managers.Stage3DProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public iDeactivate(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * @inheritDoc
+        */
         public iGetVertexCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
         public iGetFragmentPostLightingCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+        /**
+        * @inheritDoc
+        */
         public iReset(): void;
+        /**
+        * @inheritDoc
+        */
         public iCleanCompilationData(): void;
+        /**
+        * @inheritDoc
+        */
         public iSharedRegisters : materials.ShaderRegisterData;
         public setISharedRegisters(value: materials.ShaderRegisterData): void;
+        /**
+        * @inheritDoc
+        */
         public iShadowRegister : materials.ShaderRegisterElement;
+        /**
+        * Called when the base method's shader code is invalidated.
+        */
         private onShaderInvalidated(event);
     }
 }
 declare module away.materials {
+    /**
+    * CompositeSpecularMethod provides a base class for specular methods that wrap a specular method to alter the
+    * calculated specular reflection strength.
+    */
     class CompositeSpecularMethod extends materials.BasicSpecularMethod {
         private _baseMethod;
+        /**
+        * Creates a new WrapSpecularMethod object.
+        * @param modulateMethod The method which will add the code to alter the base method's strength. It needs to have the signature modSpecular(t : ShaderRegisterElement, regCache : ShaderRegisterCache) : string, in which t.w will contain the specular strength and t.xyz will contain the half-vector or the reflection vector.
+        * @param baseSpecularMethod The base specular method on which this method's shading is based.
+        */
         constructor(scope: Object, modulateMethod: Function, baseSpecularMethod?: materials.BasicSpecularMethod);
         public _pInitCompositeSpecularMethod(scope: Object, modulateMethod: Function, baseSpecularMethod?: materials.BasicSpecularMethod): void;
+        /**
+        * @inheritDoc
+        */
         public iInitVO(vo: materials.MethodVO): void;
+        /**
+        * @inheritDoc
+        */
         public iInitConstants(vo: materials.MethodVO): void;
+        /**
+        * The base specular method on which this method's shading is based.
+        */
         public baseMethod : materials.BasicSpecularMethod;
+        /**
+        * @inheritDoc
+        */
         public gloss : number;
+        /**
+        * @inheritDoc
+        */
         public specular : number;
+        /**
+        * @inheritDoc
+        */
         public passes : materials.MaterialPassBase[];
+        /**
+        * @inheritDoc
+        */
         public dispose(): void;
+        /**
+        * @inheritDoc
+        */
         public texture : away.textures.Texture2DBase;
-        public iActivate(vo: materials.MethodVO, stage3DProxy: away.managers.Stage3DProxy): void;
-        public iDeactivate(vo: materials.MethodVO, stage3DProxy: away.managers.Stage3DProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public iDeactivate(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * @inheritDoc
+        */
         public iSharedRegisters : materials.ShaderRegisterData;
         public setISharedRegisters(value: materials.ShaderRegisterData): void;
+        /**
+        * @inheritDoc
+        */
         public iGetVertexCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
         public iGetFragmentPreLightingCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
         public iGetFragmentCodePerLight(vo: materials.MethodVO, lightDirReg: materials.ShaderRegisterElement, lightColReg: materials.ShaderRegisterElement, regCache: materials.ShaderRegisterCache): string;
+        /**
+        * @inheritDoc
+        * @return
+        */
         public iGetFragmentCodePerProbe(vo: materials.MethodVO, cubeMapReg: materials.ShaderRegisterElement, weightRegister: string, regCache: materials.ShaderRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
         public iGetFragmentPostLightingCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+        /**
+        * @inheritDoc
+        */
         public iReset(): void;
+        /**
+        * @inheritDoc
+        */
         public iCleanCompilationData(): void;
+        /**
+        * @inheritDoc
+        */
         public iShadowRegister : materials.ShaderRegisterElement;
+        /**
+        * Called when the base method's shader code is invalidated.
+        */
         private onShaderInvalidated(event);
     }
 }
 declare module away.materials {
+    /**
+    * EnvMapMethod provides a material method to perform reflection mapping using cube maps.
+    */
     class EnvMapMethod extends materials.EffectMethodBase {
         private _cubeTexture;
         private _alpha;
         private _mask;
+        /**
+        * Creates an EnvMapMethod object.
+        * @param envMap The environment map containing the reflected scene.
+        * @param alpha The reflectivity of the surface.
+        */
         constructor(envMap: away.textures.CubeTextureBase, alpha?: number);
+        /**
+        * An optional texture to modulate the reflectivity of the surface.
+        */
         public mask : away.textures.Texture2DBase;
+        /**
+        * @inheritDoc
+        */
         public iInitVO(vo: materials.MethodVO): void;
+        /**
+        * The cubic environment map containing the reflected scene.
+        */
         public envMap : away.textures.CubeTextureBase;
+        /**
+        * @inheritDoc
+        */
         public dispose(): void;
+        /**
+        * The reflectivity of the surface.
+        */
         public alpha : number;
-        public iActivate(vo: materials.MethodVO, stage3DProxy: away.managers.Stage3DProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * @inheritDoc
+        */
         public iGetFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
     }
 }
 declare module away.materials {
+    /**
+    * FresnelSpecularMethod provides a specular shading method that causes stronger highlights on grazing view angles.
+    */
     class FresnelSpecularMethod extends materials.CompositeSpecularMethod {
         private _dataReg;
         private _incidentLight;
         private _fresnelPower;
         private _normalReflectance;
+        /**
+        * Creates a new FresnelSpecularMethod object.
+        * @param basedOnSurface Defines whether the fresnel effect should be based on the view angle on the surface (if true), or on the angle between the light and the view.
+        * @param baseSpecularMethod The specular method to which the fresnel equation. Defaults to BasicSpecularMethod.
+        */
         constructor(basedOnSurface?: boolean, baseSpecularMethod?: materials.BasicSpecularMethod);
+        /**
+        * @inheritDoc
+        */
         public iInitConstants(vo: materials.MethodVO): void;
+        /**
+        * Defines whether the fresnel effect should be based on the view angle on the surface (if true), or on the angle between the light and the view.
+        */
         public basedOnSurface : boolean;
+        /**
+        * The power used in the Fresnel equation. Higher values make the fresnel effect more pronounced. Defaults to 5.
+        */
         public fresnelPower : number;
+        /**
+        * @inheritDoc
+        */
         public iCleanCompilationData(): void;
+        /**
+        * The minimum amount of reflectance, ie the reflectance when the view direction is normal to the surface or light direction.
+        */
         public normalReflectance : number;
-        public iActivate(vo: materials.MethodVO, stage3DProxy: away.managers.Stage3DProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * @inheritDoc
+        */
         public iGetFragmentPreLightingCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache): string;
+        /**
+        * Applies the fresnel effect to the specular strength.
+        *
+        * @param vo The MethodVO object containing the method data for the currently compiled material pass.
+        * @param target The register containing the specular strength in the "w" component, and the half-vector/reflection vector in "xyz".
+        * @param regCache The register cache used for the shader compilation.
+        * @param sharedRegisters The shared registers created by the compiler.
+        * @return The AGAL fragment code for the method.
+        */
         private modulateSpecular(vo, target, regCache, sharedRegisters);
     }
 }
 declare module away.materials {
+    /**
+    * SimpleWaterNormalMethod provides a basic normal map method to create water ripples by translating two wave normal maps.
+    */
     class SimpleWaterNormalMethod extends materials.BasicNormalMethod {
         private _texture2;
         private _normalTextureRegister2;
@@ -4226,22 +6338,70 @@ declare module away.materials {
         private _water1OffsetY;
         private _water2OffsetX;
         private _water2OffsetY;
+        /**
+        * Creates a new SimpleWaterNormalMethod object.
+        * @param waveMap1 A normal map containing one layer of a wave structure.
+        * @param waveMap2 A normal map containing a second layer of a wave structure.
+        */
         constructor(waveMap1: away.textures.Texture2DBase, waveMap2: away.textures.Texture2DBase);
+        /**
+        * @inheritDoc
+        */
         public iInitConstants(vo: materials.MethodVO): void;
+        /**
+        * @inheritDoc
+        */
         public iInitVO(vo: materials.MethodVO): void;
+        /**
+        * The translation of the first wave layer along the X-axis.
+        */
         public water1OffsetX : number;
+        /**
+        * The translation of the first wave layer along the Y-axis.
+        */
         public water1OffsetY : number;
+        /**
+        * The translation of the second wave layer along the X-axis.
+        */
         public water2OffsetX : number;
+        /**
+        * The translation of the second wave layer along the Y-axis.
+        */
         public water2OffsetY : number;
+        /**
+        * @inheritDoc
+        */
         public normalMap : away.textures.Texture2DBase;
+        /**
+        * A second normal map that will be combined with the first to create a wave-like animation pattern.
+        */
         public secondaryNormalMap : away.textures.Texture2DBase;
+        /**
+        * @inheritDoc
+        */
         public iCleanCompilationData(): void;
+        /**
+        * @inheritDoc
+        */
         public dispose(): void;
-        public iActivate(vo: materials.MethodVO, stage3DProxy: away.managers.Stage3DProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * @inheritDoc
+        */
         public getFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
     }
 }
 declare module away.materials {
+    /**
+    * LightPickerBase provides an abstract base clase for light picker classes. These classes are responsible for
+    * feeding materials with relevant lights. Usually, StaticLightPicker can be used, but LightPickerBase can be
+    * extended to provide more application-specific dynamic selection of lights.
+    *
+    * @see StaticLightPicker
+    */
     class LightPickerBase extends away.library.NamedAssetBase implements away.library.IAsset {
         public _pNumPointLights: number;
         public _pNumDirectionalLights: number;
@@ -4255,37 +6415,116 @@ declare module away.materials {
         public _pCastingDirectionalLights: away.lights.DirectionalLight[];
         public _pLightProbes: away.lights.LightProbe[];
         public _pLightProbeWeights: number[];
+        /**
+        * Creates a new LightPickerBase object.
+        */
         constructor();
+        /**
+        * Disposes resources used by the light picker.
+        */
         public dispose(): void;
+        /**
+        * @inheritDoc
+        */
         public assetType : string;
+        /**
+        * The maximum amount of directional lights that will be provided.
+        */
         public numDirectionalLights : number;
+        /**
+        * The maximum amount of point lights that will be provided.
+        */
         public numPointLights : number;
+        /**
+        * The maximum amount of directional lights that cast shadows.
+        */
         public numCastingDirectionalLights : number;
+        /**
+        * The amount of point lights that cast shadows.
+        */
         public numCastingPointLights : number;
+        /**
+        * The maximum amount of light probes that will be provided.
+        */
         public numLightProbes : number;
+        /**
+        * The collected point lights to be used for shading.
+        */
         public pointLights : away.lights.PointLight[];
+        /**
+        * The collected directional lights to be used for shading.
+        */
         public directionalLights : away.lights.DirectionalLight[];
+        /**
+        * The collected point lights that cast shadows to be used for shading.
+        */
         public castingPointLights : away.lights.PointLight[];
+        /**
+        * The collected directional lights that cast shadows to be used for shading.
+        */
         public castingDirectionalLights : away.lights.DirectionalLight[];
+        /**
+        * The collected light probes to be used for shading.
+        */
         public lightProbes : away.lights.LightProbe[];
+        /**
+        * The weights for each light probe, defining their influence on the object.
+        */
         public lightProbeWeights : number[];
+        /**
+        * A collection of all the collected lights.
+        */
         public allPickedLights : away.lights.LightBase[];
+        /**
+        * Updates set of lights for a given renderable and EntityCollector. Always call super.collectLights() after custom overridden code.
+        */
         public collectLights(renderable: away.base.IRenderable, entityCollector: away.traverse.EntityCollector): void;
+        /**
+        * Updates the weights for the light probes, based on the renderable's position relative to them.
+        * @param renderable The renderble for which to calculate the light probes' influence.
+        */
         private updateProbeWeights(renderable);
     }
 }
 declare module away.materials {
+    /**
+    * StaticLightPicker is a light picker that provides a static set of lights. The lights can be reassigned, but
+    * if the configuration changes (number of directional lights, point lights, etc), a material recompilation may
+    * occur.
+    */
     class StaticLightPicker extends materials.LightPickerBase {
         private _lights;
-        constructor(lights: any);
+        /**
+        * Creates a new StaticLightPicker object.
+        * @param lights The lights to be used for shading.
+        */
+        constructor(lights);
+        /**
+        * The lights used for shading.
+        */
         public lights : any[];
+        /**
+        * Remove configuration change listeners on the lights.
+        */
         private clearListeners();
+        /**
+        * Notifies the material of a configuration change.
+        */
         private onCastShadowChange(event);
+        /**
+        * Called when a directional light's shadow casting configuration changes.
+        */
         private updateDirectionalCasting(light);
+        /**
+        * Called when a point light's shadow casting configuration changes.
+        */
         private updatePointCasting(light);
     }
 }
 declare module away.materials {
+    /**
+    * ShaderRegister Cache provides the usage management system for all registers during shading compilation.
+    */
     class ShaderRegisterCache {
         private _fragmentTempCache;
         private _vertexTempCache;
@@ -4306,48 +6545,158 @@ declare module away.materials {
         private _numUsedTextures;
         private _numUsedVaryings;
         private _profile;
+        /**
+        * Create a new ShaderRegisterCache object.
+        *
+        * @param profile The compatibility profile used by the renderer.
+        */
         constructor(profile: string);
+        /**
+        * Resets all registers.
+        */
         public reset(): void;
+        /**
+        * Disposes all resources used.
+        */
         public dispose(): void;
+        /**
+        * Marks a fragment temporary register as used, so it cannot be retrieved. The register won't be able to be used until removeUsage
+        * has been called usageCount times again.
+        * @param register The register to mark as used.
+        * @param usageCount The amount of usages to add.
+        */
         public addFragmentTempUsages(register: materials.ShaderRegisterElement, usageCount: number): void;
+        /**
+        * Removes a usage from a fragment temporary register. When usages reach 0, the register is freed again.
+        * @param register The register for which to remove a usage.
+        */
         public removeFragmentTempUsage(register: materials.ShaderRegisterElement): void;
+        /**
+        * Marks a vertex temporary register as used, so it cannot be retrieved. The register won't be able to be used
+        * until removeUsage has been called usageCount times again.
+        * @param register The register to mark as used.
+        * @param usageCount The amount of usages to add.
+        */
         public addVertexTempUsages(register: materials.ShaderRegisterElement, usageCount: number): void;
+        /**
+        * Removes a usage from a vertex temporary register. When usages reach 0, the register is freed again.
+        * @param register The register for which to remove a usage.
+        */
         public removeVertexTempUsage(register: materials.ShaderRegisterElement): void;
+        /**
+        * Retrieve an entire fragment temporary register that's still available. The register won't be able to be used until removeUsage
+        * has been called usageCount times again.
+        */
         public getFreeFragmentVectorTemp(): materials.ShaderRegisterElement;
+        /**
+        * Retrieve a single component from a fragment temporary register that's still available.
+        */
         public getFreeFragmentSingleTemp(): materials.ShaderRegisterElement;
+        /**
+        * Retrieve an available varying register
+        */
         public getFreeVarying(): materials.ShaderRegisterElement;
+        /**
+        * Retrieve an available fragment constant register
+        */
         public getFreeFragmentConstant(): materials.ShaderRegisterElement;
+        /**
+        * Retrieve an available vertex constant register
+        */
         public getFreeVertexConstant(): materials.ShaderRegisterElement;
+        /**
+        * Retrieve an entire vertex temporary register that's still available.
+        */
         public getFreeVertexVectorTemp(): materials.ShaderRegisterElement;
+        /**
+        * Retrieve a single component from a vertex temporary register that's still available.
+        */
         public getFreeVertexSingleTemp(): materials.ShaderRegisterElement;
+        /**
+        * Retrieve an available vertex attribute register
+        */
         public getFreeVertexAttribute(): materials.ShaderRegisterElement;
+        /**
+        * Retrieve an available texture register
+        */
         public getFreeTextureReg(): materials.ShaderRegisterElement;
+        /**
+        * Indicates the start index from which to retrieve vertex constants.
+        */
         public vertexConstantOffset : number;
+        /**
+        * Indicates the start index from which to retrieve vertex attributes.
+        */
         public vertexAttributesOffset : number;
+        /**
+        * Indicates the start index from which to retrieve varying registers.
+        */
         public varyingsOffset : number;
+        /**
+        * Indicates the start index from which to retrieve fragment constants.
+        */
         public fragmentConstantOffset : number;
+        /**
+        * The fragment output register.
+        */
         public fragmentOutputRegister : materials.ShaderRegisterElement;
+        /**
+        * The amount of used vertex constant registers.
+        */
         public numUsedVertexConstants : number;
+        /**
+        * The amount of used fragment constant registers.
+        */
         public numUsedFragmentConstants : number;
+        /**
+        * The amount of used vertex streams.
+        */
         public numUsedStreams : number;
+        /**
+        * The amount of used texture slots.
+        */
         public numUsedTextures : number;
+        /**
+        * The amount of used varying registers.
+        */
         public numUsedVaryings : number;
     }
 }
 declare module away.materials {
+    /**
+    * A single register element (an entire register or a single register's component) used by the RegisterPool.
+    */
     class ShaderRegisterElement {
         private _regName;
         private _index;
         private _toStr;
         private static COMPONENTS;
         public _component: number;
+        /**
+        * Creates a new ShaderRegisterElement object.
+        * @param regName The name of the register.
+        * @param index The index of the register.
+        * @param component The register's component, if not the entire register is represented.
+        */
         constructor(regName: string, index: number, component?: number);
+        /**
+        * Converts the register or the components AGAL string representation.
+        */
         public toString(): string;
+        /**
+        * The register's name.
+        */
         public regName : string;
+        /**
+        * The register's index.
+        */
         public index : number;
     }
 }
 declare module away.materials {
+    /**
+    * ShaderRegisterData contains the "named" registers, generated by the compiler and to be passed on to the methods.
+    */
     class ShaderRegisterData {
         public normalVarying: materials.ShaderRegisterElement;
         public tangentVarying: materials.ShaderRegisterElement;
@@ -4372,6 +6721,14 @@ declare module away.materials {
     }
 }
 declare module away.materials {
+    /**
+    * MethodDependencyCounter keeps track of the number of dependencies for "named registers" used across methods.
+    * Named registers are that are not necessarily limited to a single method. They are created by the compiler and
+    * passed on to methods. The compiler uses the results to reserve usages through RegisterPool, which can be removed
+    * each time a method has been compiled into the shader.
+    *
+    * @see RegisterPool.addUsage
+    */
     class MethodDependencyCounter {
         private _projectionDependencies;
         private _normalDependencies;
@@ -4383,22 +6740,73 @@ declare module away.materials {
         private _usesGlobalPosFragment;
         private _numPointLights;
         private _lightSourceMask;
+        /**
+        * Creates a new MethodDependencyCounter object.
+        */
         constructor();
+        /**
+        * Clears dependency counts for all registers. Called when recompiling a pass.
+        */
         public reset(): void;
+        /**
+        * Sets the amount of lights that have a position associated with them.
+        * @param numPointLights The amount of point lights.
+        * @param lightSourceMask The light source types used by the material.
+        */
         public setPositionedLights(numPointLights: number, lightSourceMask: number): void;
+        /**
+        * Increases dependency counters for the named registers listed as required by the given MethodVO.
+        * @param methodVO the MethodVO object for which to include dependencies.
+        */
         public includeMethodVO(methodVO: materials.MethodVO): void;
+        /**
+        * The amount of tangent vector dependencies (fragment shader).
+        */
         public tangentDependencies : number;
+        /**
+        * Indicates whether there are any dependencies on the world-space position vector.
+        */
         public usesGlobalPosFragment : boolean;
+        /**
+        * The amount of dependencies on the projected position.
+        */
         public projectionDependencies : number;
+        /**
+        * The amount of dependencies on the normal vector.
+        */
         public normalDependencies : number;
+        /**
+        * The amount of dependencies on the view direction.
+        */
         public viewDirDependencies : number;
+        /**
+        * The amount of dependencies on the primary UV coordinates.
+        */
         public uvDependencies : number;
+        /**
+        * The amount of dependencies on the secondary UV coordinates.
+        */
         public secondaryUVDependencies : number;
+        /**
+        * The amount of dependencies on the global position. This can be 0 while hasGlobalPosDependencies is true when
+        * the global position is used as a temporary value (fe to calculate the view direction)
+        */
         public globalPosDependencies : number;
+        /**
+        * Adds any external world space dependencies, used to force world space calculations.
+        */
         public addWorldSpaceDependencies(fragmentLights: boolean): void;
     }
 }
 declare module away.materials {
+    /**
+    * RegisterPool is used by the shader compilation process to keep track of which registers of a certain type are
+    * currently used and should not be allowed to be written to. Either entire registers can be requested and locked,
+    * or single components (x, y, z, w) of a single register.
+    * It is used by ShaderRegisterCache to track usages of individual register types.
+    *
+    * @see away3d.materials.compilation.ShaderRegisterCache
+    */
     class RegisterPool {
         private static _regPool;
         private static _regCompsPool;
@@ -4409,20 +6817,60 @@ declare module away.materials {
         private _usedVectorCount;
         private _regCount;
         private _persistent;
+        /**
+        * Creates a new RegisterPool object.
+        * @param regName The base name of the register type ("ft" for fragment temporaries, "vc" for vertex constants, etc)
+        * @param regCount The amount of available registers of this type.
+        * @param persistent Whether or not registers, once reserved, can be freed again. For example, temporaries are not persistent, but constants are.
+        */
         constructor(regName: string, regCount: number, persistent?: boolean);
+        /**
+        * Retrieve an entire vector register that's still available.
+        */
         public requestFreeVectorReg(): materials.ShaderRegisterElement;
+        /**
+        * Retrieve a single vector component that's still available.
+        */
         public requestFreeRegComponent(): materials.ShaderRegisterElement;
+        /**
+        * Marks a register as used, so it cannot be retrieved. The register won't be able to be used until removeUsage
+        * has been called usageCount times again.
+        * @param register The register to mark as used.
+        * @param usageCount The amount of usages to add.
+        */
         public addUsage(register: materials.ShaderRegisterElement, usageCount: number): void;
+        /**
+        * Removes a usage from a register. When usages reach 0, the register is freed again.
+        * @param register The register for which to remove a usage.
+        */
         public removeUsage(register: materials.ShaderRegisterElement): void;
+        /**
+        * Disposes any resources used by the current RegisterPool object.
+        */
         public dispose(): void;
+        /**
+        * Indicates whether or not any registers are in use.
+        */
         public hasRegisteredRegs(): boolean;
+        /**
+        * Initializes all registers.
+        */
         private initRegisters(regName, regCount);
         private static _initPool(regName, regCount);
+        /**
+        * Check if the temp register is either used for single or vector use
+        */
         private isRegisterUsed(index);
         private _initArray(a, val);
     }
 }
 declare module away.materials {
+    /**
+    * ShaderCompiler is an abstract base class for shader compilers that use modular shader methods to assemble a
+    * material. Concrete subclasses are used by the default materials.
+    *
+    * @see away3d.materials.methods.ShadingMethodBase
+    */
     class ShaderCompiler {
         public _pSharedRegisters: materials.ShaderRegisterData;
         public _pRegisterCache: materials.ShaderRegisterCache;
@@ -4470,93 +6918,367 @@ declare module away.materials {
         private _UVSource;
         public _pProfile: string;
         private _forceSeperateMVP;
+        /**
+        * Creates a new ShaderCompiler object.
+        * @param profile The compatibility profile of the renderer.
+        */
         constructor(profile: string);
+        /**
+        * Whether or not to use fallOff and radius properties for lights. This can be used to improve performance and
+        * compatibility for constrained mode.
+        */
         public enableLightFallOff : boolean;
+        /**
+        * Indicates whether the compiled code needs UV animation.
+        */
         public needUVAnimation : boolean;
+        /**
+        * The target register to place the animated UV coordinate.
+        */
         public UVTarget : string;
+        /**
+        * The souce register providing the UV coordinate to animate.
+        */
         public UVSource : string;
+        /**
+        * Indicates whether the screen projection should be calculated by forcing a separate scene matrix and
+        * view-projection matrix. This is used to prevent rounding errors when using multiple passes with different
+        * projection code.
+        */
         public forceSeperateMVP : boolean;
+        /**
+        * Initialized the register cache.
+        * @param profile The compatibility profile of the renderer.
+        */
         private initRegisterCache(profile);
+        /**
+        * Indicate whether UV coordinates need to be animated using the renderable's transformUV matrix.
+        */
         public animateUVs : boolean;
+        /**
+        * Indicates whether visible textures (or other pixels) used by this material have
+        * already been premultiplied.
+        */
         public alphaPremultiplied : boolean;
+        /**
+        * Indicates whether the output alpha value should remain unchanged compared to the material's original alpha.
+        */
         public preserveAlpha : boolean;
+        /**
+        * Sets the default texture sampling properties.
+        * @param smooth Indicates whether the texture should be filtered when sampled. Defaults to true.
+        * @param repeat Indicates whether the texture should be tiled when sampled. Defaults to true.
+        * @param mipmap Indicates whether or not any used textures should use mipmapping. Defaults to true.
+        */
         public setTextureSampling(smooth: boolean, repeat: boolean, mipmap: boolean): void;
+        /**
+        * Sets the constant buffers allocated by the material. This allows setting constant data during compilation.
+        * @param vertexConstantData The vertex constant data buffer.
+        * @param fragmentConstantData The fragment constant data buffer.
+        */
         public setConstantDataBuffers(vertexConstantData: number[], fragmentConstantData: number[]): void;
+        /**
+        * The shader method setup object containing the method configuration and their value objects for the material being compiled.
+        */
         public methodSetup : materials.ShaderMethodSetup;
+        /**
+        * Compiles the code after all setup on the compiler has finished.
+        */
         public compile(): void;
+        /**
+        * Creates the registers to contain the normal data.
+        */
         public pCreateNormalRegisters(): void;
+        /**
+        * Compile the code for the methods.
+        */
         public pCompileMethodsCode(): void;
+        /**
+        * Compile the lighting code.
+        */
         public pCompileLightingCode(): void;
+        /**
+        * Calculate the view direction.
+        */
         public pCompileViewDirCode(): void;
+        /**
+        * Calculate the normal.
+        */
         public pCompileNormalCode(): void;
+        /**
+        * Calculate the (possibly animated) UV coordinates.
+        */
         private compileUVCode();
+        /**
+        * Provide the secondary UV coordinates.
+        */
         private compileSecondaryUVCode();
+        /**
+        * Compile the world-space position.
+        */
         public pCompileGlobalPositionCode(): void;
+        /**
+        * Get the projection coordinates.
+        */
         private compileProjectionCode();
+        /**
+        * Assign the final output colour the the output register.
+        */
         private compileFragmentOutput();
+        /**
+        * Reset all the indices to "unused".
+        */
         public pInitRegisterIndices(): void;
+        /**
+        * Prepares the setup for the light code.
+        */
         public pInitLightData(): void;
+        /**
+        * Create the commonly shared constant register.
+        */
         private createCommons();
+        /**
+        * Figure out which named registers are required, and how often.
+        */
         public pCalculateDependencies(): void;
+        /**
+        * Counts the dependencies for a given method.
+        * @param method The method to count the dependencies for.
+        * @param methodVO The method's data for this material.
+        */
         private setupAndCountMethodDependencies(method, methodVO);
+        /**
+        * Assigns all prerequisite data for the methods, so we can calculate dependencies for them.
+        */
         private setupMethod(method, methodVO);
+        /**
+        * The index for the common data register.
+        */
         public commonsDataIndex : number;
+        /**
+        * Assigns the shared register data to all methods.
+        */
         private updateMethodRegisters();
+        /**
+        * The amount of vertex constants used by the material. Any animation code to be added can append its vertex
+        * constant data after this.
+        */
         public numUsedVertexConstants : number;
+        /**
+        * The amount of fragment constants used by the material. Any animation code to be added can append its vertex
+        * constant data after this.
+        */
         public numUsedFragmentConstants : number;
+        /**
+        * The amount of vertex attribute streams used by the material. Any animation code to be added can add its
+        * streams after this. Also used to automatically disable attribute slots on pass deactivation.
+        */
         public numUsedStreams : number;
+        /**
+        * The amount of textures used by the material. Used to automatically disable texture slots on pass deactivation.
+        */
         public numUsedTextures : number;
+        /**
+        * Number of used varyings. Any animation code to be added can add its used varyings after this.
+        */
         public numUsedVaryings : number;
+        /**
+        * Indicates whether lights are used for specular reflections.
+        */
         public pUsesLightsForSpecular(): boolean;
+        /**
+        * Indicates whether lights are used for diffuse reflections.
+        */
         public pUsesLightsForDiffuse(): boolean;
+        /**
+        * Disposes all resources used by the compiler.
+        */
         public dispose(): void;
+        /**
+        * Clean up method's compilation data after compilation finished.
+        */
         private cleanUpMethods();
+        /**
+        * Define which light source types to use for specular reflections. This allows choosing between regular lights
+        * and/or light probes for specular reflections.
+        *
+        * @see away3d.materials.LightSources
+        */
         public specularLightSources : number;
+        /**
+        * Define which light source types to use for diffuse reflections. This allows choosing between regular lights
+        * and/or light probes for diffuse reflections.
+        *
+        * @see away3d.materials.LightSources
+        */
         public diffuseLightSources : number;
+        /**
+        * Indicates whether light probes are being used for specular reflections.
+        */
         public pUsesProbesForSpecular(): boolean;
+        /**
+        * Indicates whether light probes are being used for diffuse reflections.
+        */
         public pUsesProbesForDiffuse(): boolean;
+        /**
+        * Indicates whether any light probes are used.
+        */
         public pUsesProbes(): boolean;
+        /**
+        * The index for the UV vertex attribute stream.
+        */
         public uvBufferIndex : number;
+        /**
+        * The index for the UV transformation matrix vertex constant.
+        */
         public uvTransformIndex : number;
+        /**
+        * The index for the secondary UV vertex attribute stream.
+        */
         public secondaryUVBufferIndex : number;
+        /**
+        * The index for the vertex normal attribute stream.
+        */
         public normalBufferIndex : number;
+        /**
+        * The index for the vertex tangent attribute stream.
+        */
         public tangentBufferIndex : number;
+        /**
+        * The first index for the fragment constants containing the light data.
+        */
         public lightFragmentConstantIndex : number;
+        /**
+        * The index of the vertex constant containing the camera position.
+        */
         public cameraPositionIndex : number;
+        /**
+        * The index of the vertex constant containing the scene matrix.
+        */
         public sceneMatrixIndex : number;
+        /**
+        * The index of the vertex constant containing the uniform scene matrix (the inverse transpose).
+        */
         public sceneNormalMatrixIndex : number;
+        /**
+        * The index of the fragment constant containing the weights for the light probes.
+        */
         public probeWeightsIndex : number;
+        /**
+        * The generated vertex code.
+        */
         public vertexCode : string;
+        /**
+        * The generated fragment code.
+        */
         public fragmentCode : string;
+        /**
+        * The code containing the lighting calculations.
+        */
         public fragmentLightCode : string;
+        /**
+        * The code containing the post-lighting calculations.
+        */
         public fragmentPostLightCode : string;
+        /**
+        * The register name containing the final shaded colour.
+        */
         public shadedTarget : string;
+        /**
+        * The amount of point lights that need to be supported.
+        */
         public numPointLights : number;
+        /**
+        * The amount of directional lights that need to be supported.
+        */
         public numDirectionalLights : number;
+        /**
+        * The amount of light probes that need to be supported.
+        */
         public numLightProbes : number;
+        /**
+        * Indicates whether the specular method is used.
+        */
         public usingSpecularMethod : boolean;
+        /**
+        * The attributes that need to be animated by animators.
+        */
         public animatableAttributes : string[];
+        /**
+        * The target registers for animated properties, written to by the animators.
+        */
         public animationTargetRegisters : string[];
+        /**
+        * Indicates whether the compiled shader uses normals.
+        */
         public usesNormals : boolean;
+        /**
+        * Indicates whether the compiled shader uses lights.
+        */
         public pUsesLights(): boolean;
+        /**
+        * Compiles the code for the methods.
+        */
         public pCompileMethods(): void;
+        /**
+        * Indices for the light probe diffuse textures.
+        */
         public lightProbeDiffuseIndices : number[];
+        /**
+        * Indices for the light probe specular textures.
+        */
         public lightProbeSpecularIndices : number[];
     }
 }
 declare module away.materials {
+    /**
+    * SuperShaderCompiler is a compiler that generates shaders that perform both lighting and "effects" through methods.
+    * This is used by the single-pass materials.
+    */
     class SuperShaderCompiler extends materials.ShaderCompiler {
         public _pointLightRegisters: materials.ShaderRegisterElement[];
         public _dirLightRegisters: materials.ShaderRegisterElement[];
+        /**
+        * Creates a new SuperShaderCompiler object.
+        * @param profile The compatibility profile used by the renderer.
+        */
         constructor(profile: string);
+        /**
+        * @inheritDoc
+        */
         public pInitLightData(): void;
+        /**
+        * @inheritDoc
+        */
         public pCalculateDependencies(): void;
+        /**
+        * @inheritDoc
+        */
         public pCompileNormalCode(): void;
+        /**
+        * @inheritDoc
+        */
         public pCreateNormalRegisters(): void;
+        /**
+        * Compiles the vertex shader code for tangent-space normal maps.
+        * @param matrix The register containing the scene transformation matrix for normals.
+        */
         private compileTangentVertexCode(matrix);
+        /**
+        * Compiles the fragment shader code for tangent-space normal maps.
+        */
         private compileTangentNormalMapFragmentCode();
+        /**
+        * @inheritDoc
+        */
         public pCompileViewDirCode(): void;
+        /**
+        * @inheritDoc
+        */
         public pCompileLightingCode(): void;
+        /**
+        * Initializes the registers containing the lighting data.
+        */
         private initLightRegisters();
         private compileDirectionalLightCode();
         private compilePointLightCode();
@@ -4564,22 +7286,89 @@ declare module away.materials {
     }
 }
 declare module away.materials {
+    /**
+    * Enumeration class for defining which lighting types affect the specific material
+    * lighting component (diffuse and specular). This can be useful if, for example, you
+    * want to use light probes for diffuse global lighting, but want specular reflections from
+    * traditional light sources without those affecting the diffuse light.
+    *
+    * @see away3d.materials.ColorMaterial.diffuseLightSources
+    * @see away3d.materials.ColorMaterial.specularLightSources
+    * @see away3d.materials.TextureMaterial.diffuseLightSources
+    * @see away3d.materials.TextureMaterial.specularLightSources
+    */
     class LightSources {
+        /**
+        * Defines normal lights are to be used as the source for the lighting
+        * component.
+        */
         static LIGHTS: number;
+        /**
+        * Defines that global lighting probes are to be used as the source for the
+        * lighting component.
+        */
         static PROBES: number;
+        /**
+        * Defines that both normal and global lighting probes  are to be used as the
+        * source for the lighting component. This is equivalent to LightSources.LIGHTS | LightSources.PROBES.
+        */
         static ALL: number;
     }
 }
 declare module away.materials {
+    /**
+    * MaterialBase forms an abstract base class for any material.
+    * A material consists of several passes, each of which constitutes at least one render call. Several passes could
+    * be used for special effects (render lighting for many lights in several passes, render an outline in a separate
+    * pass) or to provide additional render-to-texture passes (rendering diffuse light to texture for texture-space
+    * subsurface scattering, or rendering a depth map for specialized self-shadowing).
+    *
+    * Away3D provides default materials trough SinglePassMaterialBase and MultiPassMaterialBase, which use modular
+    * methods to build the shader code. MaterialBase can be extended to build specific and high-performant custom
+    * shaders, or entire new material frameworks.
+    */
     class MaterialBase extends away.library.NamedAssetBase implements away.library.IAsset {
+        /**
+        * A counter used to assign unique ids per material, which is used to sort per material while rendering.
+        * This reduces state changes.
+        */
         private static MATERIAL_ID_COUNT;
+        /**
+        * An object to contain any extra data.
+        */
         public extra: Object;
+        /**
+        * A value that can be used by materials that only work with a given type of renderer. The renderer can test the
+        * classification to choose which render path to use. For example, a deferred material could set this value so
+        * that the deferred renderer knows not to take the forward rendering path.
+        *
+        * @private
+        */
         public _iClassification: string;
+        /**
+        * An id for this material used to sort the renderables by material, which reduces render state changes across
+        * materials using the same Program.
+        *
+        * @private
+        */
         public _iUniqueId: number;
+        /**
+        * An id for this material used to sort the renderables by shader program, which reduces Program state changes.
+        *
+        * @private
+        */
         public _iRenderOrderId: number;
+        /**
+        * The same as _renderOrderId, but applied to the depth shader passes.
+        *
+        * @private
+        */
         public _iDepthPassId: number;
         private _bothSides;
         private _animationSet;
+        /**
+        * A list of material owners, renderables or custom Entities.
+        */
         private _owners;
         private _alphaPremultiplied;
         public _pBlendMode: string;
@@ -4593,89 +7382,398 @@ declare module away.materials {
         public _pLightPicker: materials.LightPickerBase;
         private _distanceBasedDepthRender;
         public _pDepthCompareMode: string;
+        /**
+        * Creates a new MaterialBase object.
+        */
         constructor();
+        /**
+        * @inheritDoc
+        */
         public assetType : string;
+        /**
+        * The light picker used by the material to provide lights to the material if it supports lighting.
+        *
+        * @see away3d.materials.lightpickers.LightPickerBase
+        * @see away3d.materials.lightpickers.StaticLightPicker
+        */
         public lightPicker : materials.LightPickerBase;
         public setLightPicker(value: materials.LightPickerBase): void;
+        /**
+        * Indicates whether or not any used textures should use mipmapping. Defaults to true.
+        */
         public mipmap : boolean;
         public setMipMap(value: boolean): void;
+        /**
+        * Indicates whether or not any used textures should use smoothing.
+        */
         public smooth : boolean;
+        /**
+        * The depth compare mode used to render the renderables using this material.
+        *
+        * @see flash.displayGL.ContextGLCompareMode
+        */
         public depthCompareMode : string;
         public setDepthCompareMode(value: string): void;
+        /**
+        * Indicates whether or not any used textures should be tiled. If set to false, texture samples are clamped to
+        * the texture's borders when the uv coordinates are outside the [0, 1] interval.
+        */
         public repeat : boolean;
+        /**
+        * Cleans up resources owned by the material, including passes. Textures are not owned by the material since they
+        * could be used by other materials and will not be disposed.
+        */
         public dispose(): void;
+        /**
+        * Defines whether or not the material should cull triangles facing away from the camera.
+        */
         public bothSides : boolean;
+        /**
+        * The blend mode to use when drawing this renderable. The following blend modes are supported:
+        * <ul>
+        * <li>BlendMode.NORMAL: No blending, unless the material inherently needs it</li>
+        * <li>BlendMode.LAYER: Force blending. This will draw the object the same as NORMAL, but without writing depth writes.</li>
+        * <li>BlendMode.MULTIPLY</li>
+        * <li>BlendMode.ADD</li>
+        * <li>BlendMode.ALPHA</li>
+        * </ul>
+        */
         public blendMode : string;
         public getBlendMode(): string;
         public setBlendMode(value: string): void;
+        /**
+        * Indicates whether visible textures (or other pixels) used by this material have
+        * already been premultiplied. Toggle this if you are seeing black halos around your
+        * blended alpha edges.
+        */
         public alphaPremultiplied : boolean;
+        /**
+        * Indicates whether or not the material requires alpha blending during rendering.
+        */
         public requiresBlending : boolean;
         public getRequiresBlending(): boolean;
+        /**
+        * An id for this material used to sort the renderables by material, which reduces render state changes across
+        * materials using the same Program.
+        */
         public uniqueId : number;
+        /**
+        * The amount of passes used by the material.
+        *
+        * @private
+        */
         public _iNumPasses : number;
+        /**
+        * Indicates that the depth pass uses transparency testing to discard pixels.
+        *
+        * @private
+        */
         public iHasDepthAlphaThreshold(): boolean;
-        public iActivateForDepth(stage3DProxy: away.managers.Stage3DProxy, camera: away.cameras.Camera3D, distanceBased?: boolean): void;
-        public iDeactivateForDepth(stage3DProxy: away.managers.Stage3DProxy): void;
-        public iRenderDepth(renderable: away.base.IRenderable, stage3DProxy: away.managers.Stage3DProxy, camera: away.cameras.Camera3D, viewProjection: away.geom.Matrix3D): void;
+        /**
+        * Sets the render state for the depth pass that is independent of the rendered object. Used when rendering
+        * depth or distances (fe: shadow maps, depth pre-pass).
+        *
+        * @param stageGLProxy The StageGLProxy used for rendering.
+        * @param camera The camera from which the scene is viewed.
+        * @param distanceBased Whether or not the depth pass or distance pass should be activated. The distance pass
+        * is required for shadow cube maps.
+        *
+        * @private
+        */
+        public iActivateForDepth(stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D, distanceBased?: boolean): void;
+        /**
+        * Clears the render state for the depth pass.
+        *
+        * @param stageGLProxy The StageGLProxy used for rendering.
+        *
+        * @private
+        */
+        public iDeactivateForDepth(stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * Renders a renderable using the depth pass.
+        *
+        * @param renderable The IRenderable instance that needs to be rendered.
+        * @param stageGLProxy The StageGLProxy used for rendering.
+        * @param camera The camera from which the scene is viewed.
+        * @param viewProjection The view-projection matrix used to project to the screen. This is not the same as
+        * camera.viewProjection as it includes the scaling factors when rendering to textures.
+        *
+        * @private
+        */
+        public iRenderDepth(renderable: away.base.IRenderable, stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D, viewProjection: away.geom.Matrix3D): void;
+        /**
+        * Indicates whether or not the pass with the given index renders to texture or not.
+        * @param index The index of the pass.
+        * @return True if the pass renders to texture, false otherwise.
+        *
+        * @private
+        */
         public iPassRendersToTexture(index: number): boolean;
-        public iActivatePass(index: number, stage3DProxy: away.managers.Stage3DProxy, camera: away.cameras.Camera3D): void;
-        public iDeactivatePass(index: number, stage3DProxy: away.managers.Stage3DProxy): void;
-        public iRenderPass(index: number, renderable: away.base.IRenderable, stage3DProxy: away.managers.Stage3DProxy, entityCollector: away.traverse.EntityCollector, viewProjection: away.geom.Matrix3D): void;
+        /**
+        * Sets the render state for a pass that is independent of the rendered object. This needs to be called before
+        * calling renderPass. Before activating a pass, the previously used pass needs to be deactivated.
+        * @param index The index of the pass to activate.
+        * @param stageGLProxy The StageGLProxy object which is currently used for rendering.
+        * @param camera The camera from which the scene is viewed.
+        * @private
+        */
+        public iActivatePass(index: number, stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D): void;
+        /**
+        * Clears the render state for a pass. This needs to be called before activating another pass.
+        * @param index The index of the pass to deactivate.
+        * @param stageGLProxy The StageGLProxy used for rendering
+        *
+        * @private
+        */
+        public iDeactivatePass(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * Renders the current pass. Before calling renderPass, activatePass needs to be called with the same index.
+        * @param index The index of the pass used to render the renderable.
+        * @param renderable The IRenderable object to draw.
+        * @param stageGLProxy The StageGLProxy object used for rendering.
+        * @param entityCollector The EntityCollector object that contains the visible scene data.
+        * @param viewProjection The view-projection matrix used to project to the screen. This is not the same as
+        * camera.viewProjection as it includes the scaling factors when rendering to textures.
+        */
+        public iRenderPass(index: number, renderable: away.base.IRenderable, stageGLProxy: away.managers.StageGLProxy, entityCollector: away.traverse.EntityCollector, viewProjection: away.geom.Matrix3D): void;
+        /**
+        * Mark an IMaterialOwner as owner of this material.
+        * Assures we're not using the same material across renderables with different animations, since the
+        * Programs depend on animation. This method needs to be called when a material is assigned.
+        *
+        * @param owner The IMaterialOwner that had this material assigned
+        *
+        * @private
+        */
         public iAddOwner(owner: away.base.IMaterialOwner): void;
+        /**
+        * Removes an IMaterialOwner as owner.
+        * @param owner
+        * @private
+        */
         public iRemoveOwner(owner: away.base.IMaterialOwner): void;
+        /**
+        * A list of the IMaterialOwners that use this material
+        *
+        * @private
+        */
         public iOwners : away.base.IMaterialOwner[];
-        public iUpdateMaterial(context: away.display3D.Context3D): void;
-        public iDeactivate(stage3DProxy: away.managers.Stage3DProxy): void;
+        /**
+        * Performs any processing that needs to occur before any of its passes are used.
+        *
+        * @private
+        */
+        public iUpdateMaterial(context: away.displayGL.ContextGL): void;
+        /**
+        * Deactivates the last pass of the material.
+        *
+        * @private
+        */
+        public iDeactivate(stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * Marks the shader programs for all passes as invalid, so they will be recompiled before the next use.
+        * @param triggerPass The pass triggering the invalidation, if any. This is passed to prevent invalidating the
+        * triggering pass, which would result in an infinite loop.
+        *
+        * @private
+        */
         public iInvalidatePasses(triggerPass: materials.MaterialPassBase): void;
+        /**
+        * Removes a pass from the material.
+        * @param pass The pass to be removed.
+        */
         public pRemovePass(pass: materials.MaterialPassBase): void;
+        /**
+        * Removes all passes from the material
+        */
         public pClearPasses(): void;
+        /**
+        * Adds a pass to the material
+        * @param pass
+        */
         public pAddPass(pass: materials.MaterialPassBase): void;
+        /**
+        * Listener for when a pass's shader code changes. It recalculates the render order id.
+        */
         private onPassChange(event);
+        /**
+        * Listener for when the distance pass's shader code changes. It recalculates the depth pass id.
+        */
         private onDistancePassChange(event);
+        /**
+        * Listener for when the depth pass's shader code changes. It recalculates the depth pass id.
+        */
         private onDepthPassChange(event);
     }
 }
 declare module away.materials {
+    /**
+    * SinglePassMaterialBase forms an abstract base class for the default single-pass materials provided by Away3D,
+    * using material methods to define their appearance.
+    */
     class SinglePassMaterialBase extends materials.MaterialBase {
         public _pScreenPass: materials.SuperShaderPass;
         private _alphaBlending;
+        /**
+        * Creates a new SinglePassMaterialBase object.
+        */
         constructor();
+        /**
+        * Whether or not to use fallOff and radius properties for lights. This can be used to improve performance and
+        * compatibility for constrained mode.
+        */
         public enableLightFallOff : boolean;
+        /**
+        * The minimum alpha value for which pixels should be drawn. This is used for transparency that is either
+        * invisible or entirely opaque, often used with textures for foliage, etc.
+        * Recommended values are 0 to disable alpha, or 0.5 to create smooth edges. Default value is 0 (disabled).
+        */
         public alphaThreshold : number;
+        /**
+        * @inheritDoc
+        */
         public blendMode : string;
+        /**
+        * @inheritDoc
+        */
         public depthCompareMode : string;
-        public iActivateForDepth(stage3DProxy: away.managers.Stage3DProxy, camera: away.cameras.Camera3D, distanceBased?: boolean): void;
+        /**
+        * @inheritDoc
+        */
+        public iActivateForDepth(stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D, distanceBased?: boolean): void;
+        /**
+        * Define which light source types to use for specular reflections. This allows choosing between regular lights
+        * and/or light probes for specular reflections.
+        *
+        * @see away3d.materials.LightSources
+        */
         public specularLightSources : number;
+        /**
+        * Define which light source types to use for diffuse reflections. This allows choosing between regular lights
+        * and/or light probes for diffuse reflections.
+        *
+        * @see away3d.materials.LightSources
+        */
         public diffuseLightSources : number;
+        /**
+        * @inheritDoc
+        */
         public requiresBlending : boolean;
         public getRequiresBlending(): boolean;
+        /**
+        * The ColorTransform object to transform the colour of the material with. Defaults to null.
+        */
         public colorTransform : away.geom.ColorTransform;
         public setColorTransform(value: away.geom.ColorTransform): void;
+        /**
+        * The method that provides the ambient lighting contribution. Defaults to BasicAmbientMethod.
+        */
         public ambientMethod : materials.BasicAmbientMethod;
+        /**
+        * The method used to render shadows cast on this surface, or null if no shadows are to be rendered. Defaults to null.
+        */
         public shadowMethod : materials.ShadowMapMethodBase;
+        /**
+        * The method that provides the diffuse lighting contribution. Defaults to BasicDiffuseMethod.
+        */
         public diffuseMethod : materials.BasicDiffuseMethod;
+        /**
+        * The method used to generate the per-pixel normals. Defaults to BasicNormalMethod.
+        */
         public normalMethod : materials.BasicNormalMethod;
+        /**
+        * The method that provides the specular lighting contribution. Defaults to BasicSpecularMethod.
+        */
         public specularMethod : materials.BasicSpecularMethod;
+        /**
+        * Appends an "effect" shading method to the shader. Effect methods are those that do not influence the lighting
+        * but modulate the shaded colour, used for fog, outlines, etc. The method will be applied to the result of the
+        * methods added prior.
+        */
         public addMethod(method: materials.EffectMethodBase): void;
+        /**
+        * The number of "effect" methods added to the material.
+        */
         public numMethods : number;
+        /**
+        * Queries whether a given effect method was added to the material.
+        *
+        * @param method The method to be queried.
+        * @return true if the method was added to the material, false otherwise.
+        */
         public hasMethod(method: materials.EffectMethodBase): boolean;
+        /**
+        * Returns the method added at the given index.
+        * @param index The index of the method to retrieve.
+        * @return The method at the given index.
+        */
         public getMethodAt(index: number): materials.EffectMethodBase;
+        /**
+        * Adds an effect method at the specified index amongst the methods already added to the material. Effect
+        * methods are those that do not influence the lighting but modulate the shaded colour, used for fog, outlines,
+        * etc. The method will be applied to the result of the methods with a lower index.
+        */
         public addMethodAt(method: materials.EffectMethodBase, index: number): void;
+        /**
+        * Removes an effect method from the material.
+        * @param method The method to be removed.
+        */
         public removeMethod(method: materials.EffectMethodBase): void;
+        /**
+        * @inheritDoc
+        */
         public mipmap : boolean;
+        /**
+        * The normal map to modulate the direction of the surface for each texel. The default normal method expects
+        * tangent-space normal maps, but others could expect object-space maps.
+        */
         public normalMap : away.textures.Texture2DBase;
+        /**
+        * A specular map that defines the strength of specular reflections for each texel in the red channel,
+        * and the gloss factor in the green channel. You can use SpecularBitmapTexture if you want to easily set
+        * specular and gloss maps from grayscale images, but correctly authored images are preferred.
+        */
         public specularMap : away.textures.Texture2DBase;
+        /**
+        * The glossiness of the material (sharpness of the specular highlight).
+        */
         public gloss : number;
+        /**
+        * The strength of the ambient reflection.
+        */
         public ambient : number;
+        /**
+        * The overall strength of the specular reflection.
+        */
         public specular : number;
+        /**
+        * The colour of the ambient reflection.
+        */
         public ambientColor : number;
+        /**
+        * The colour of the specular reflection.
+        */
         public specularColor : number;
+        /**
+        * Indicates whether or not the material has transparency. If binary transparency is sufficient, for
+        * example when using textures of foliage, consider using alphaThreshold instead.
+        */
         public alphaBlending : boolean;
-        public iUpdateMaterial(context: away.display3D.Context3D): void;
+        /**
+        * @inheritDoc
+        */
+        public iUpdateMaterial(context: away.displayGL.ContextGL): void;
+        /**
+        * @inheritDoc
+        */
         public lightPicker : materials.LightPickerBase;
     }
 }
 declare module away.materials {
+    /**
+    * MultiPassMaterialBase forms an abstract base class for the default multi-pass materials provided by Away3D,
+    * using material methods to define their appearance.
+    */
     class MultiPassMaterialBase extends materials.MaterialBase {
         private _casterLightPass;
         private _nonCasterLightPasses;
@@ -4690,43 +7788,182 @@ declare module away.materials {
         private _specularMethod;
         private _screenPassesInvalid;
         private _enableLightFallOff;
+        /**
+        * Creates a new MultiPassMaterialBase object.
+        */
         constructor();
+        /**
+        * Whether or not to use fallOff and radius properties for lights. This can be used to improve performance and
+        * compatibility for constrained mode.
+        */
         public enableLightFallOff : boolean;
+        /**
+        * The minimum alpha value for which pixels should be drawn. This is used for transparency that is either
+        * invisible or entirely opaque, often used with textures for foliage, etc.
+        * Recommended values are 0 to disable alpha, or 0.5 to create smooth edges. Default value is 0 (disabled).
+        */
         public alphaThreshold : number;
+        /**
+        * @inheritDoc
+        */
         public depthCompareMode : string;
+        /**
+        * @inheritDoc
+        */
         public blendMode : string;
-        public iActivateForDepth(stage3DProxy: away.managers.Stage3DProxy, camera: away.cameras.Camera3D, distanceBased?: boolean): void;
+        /**
+        * @inheritDoc
+        */
+        public iActivateForDepth(stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D, distanceBased?: boolean): void;
+        /**
+        * Define which light source types to use for specular reflections. This allows choosing between regular lights
+        * and/or light probes for specular reflections.
+        *
+        * @see away3d.materials.LightSources
+        */
         public specularLightSources : number;
+        /**
+        * Define which light source types to use for diffuse reflections. This allows choosing between regular lights
+        * and/or light probes for diffuse reflections.
+        *
+        * @see away3d.materials.LightSources
+        */
         public diffuseLightSources : number;
+        /**
+        * @inheritDoc
+        */
         public lightPicker : materials.LightPickerBase;
+        /**
+        * @inheritDoc
+        */
         public requiresBlending : boolean;
+        /**
+        * The method that provides the ambient lighting contribution. Defaults to BasicAmbientMethod.
+        */
         public ambientMethod : materials.BasicAmbientMethod;
+        /**
+        * The method used to render shadows cast on this surface, or null if no shadows are to be rendered. Defaults to null.
+        */
         public shadowMethod : materials.ShadowMapMethodBase;
+        /**
+        * The method that provides the diffuse lighting contribution. Defaults to BasicDiffuseMethod.
+        */
         public diffuseMethod : materials.BasicDiffuseMethod;
+        /**
+        * The method that provides the specular lighting contribution. Defaults to BasicSpecularMethod.
+        */
         public specularMethod : materials.BasicSpecularMethod;
+        /**
+        * The method used to generate the per-pixel normals. Defaults to BasicNormalMethod.
+        */
         public normalMethod : materials.BasicNormalMethod;
+        /**
+        * Appends an "effect" shading method to the shader. Effect methods are those that do not influence the lighting
+        * but modulate the shaded colour, used for fog, outlines, etc. The method will be applied to the result of the
+        * methods added prior.
+        */
         public addMethod(method: materials.EffectMethodBase): void;
+        /**
+        * The number of "effect" methods added to the material.
+        */
         public numMethods : number;
+        /**
+        * Queries whether a given effect method was added to the material.
+        *
+        * @param method The method to be queried.
+        * @return true if the method was added to the material, false otherwise.
+        */
         public hasMethod(method: materials.EffectMethodBase): boolean;
+        /**
+        * Returns the method added at the given index.
+        * @param index The index of the method to retrieve.
+        * @return The method at the given index.
+        */
         public getMethodAt(index: number): materials.EffectMethodBase;
+        /**
+        * Adds an effect method at the specified index amongst the methods already added to the material. Effect
+        * methods are those that do not influence the lighting but modulate the shaded colour, used for fog, outlines,
+        * etc. The method will be applied to the result of the methods with a lower index.
+        */
         public addMethodAt(method: materials.EffectMethodBase, index: number): void;
+        /**
+        * Removes an effect method from the material.
+        * @param method The method to be removed.
+        */
         public removeMethod(method: materials.EffectMethodBase): void;
+        /**
+        * @inheritDoc
+        */
         public mipmap : boolean;
+        /**
+        * The normal map to modulate the direction of the surface for each texel. The default normal method expects
+        * tangent-space normal maps, but others could expect object-space maps.
+        */
         public normalMap : away.textures.Texture2DBase;
+        /**
+        * A specular map that defines the strength of specular reflections for each texel in the red channel,
+        * and the gloss factor in the green channel. You can use SpecularBitmapTexture if you want to easily set
+        * specular and gloss maps from grayscale images, but correctly authored images are preferred.
+        */
         public specularMap : away.textures.Texture2DBase;
+        /**
+        * The glossiness of the material (sharpness of the specular highlight).
+        */
         public gloss : number;
+        /**
+        * The strength of the ambient reflection.
+        */
         public ambient : number;
+        /**
+        * The overall strength of the specular reflection.
+        */
         public specular : number;
+        /**
+        * The colour of the ambient reflection.
+        */
         public ambientColor : number;
+        /**
+        * The colour of the specular reflection.
+        */
         public specularColor : number;
-        public iUpdateMaterial(context: away.display3D.Context3D): void;
+        /**
+        * @inheritDoc
+        */
+        public iUpdateMaterial(context: away.displayGL.ContextGL): void;
+        /**
+        * Adds a compiled pass that renders to the screen.
+        * @param pass The pass to be added.
+        */
         private addScreenPass(pass);
+        /**
+        * Tests if any pass that renders to the screen is invalid. This would trigger a new setup of the multiple passes.
+        * @return
+        */
         private isAnyScreenPassInvalid();
+        /**
+        * Adds any additional passes on which the given pass is dependent.
+        * @param pass The pass that my need additional passes.
+        */
         private addChildPassesFor(pass);
-        public iActivatePass(index: number, stage3DProxy: away.managers.Stage3DProxy, camera: away.cameras.Camera3D): void;
-        public iDeactivate(stage3DProxy: away.managers.Stage3DProxy): void;
+        /**
+        * @inheritDoc
+        */
+        public iActivatePass(index: number, stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D): void;
+        /**
+        * @inheritDoc
+        */
+        public iDeactivate(stageGLProxy: away.managers.StageGLProxy): void;
+        /**
+        * Updates screen passes when they were found to be invalid.
+        */
         public pUpdateScreenPasses(): void;
+        /**
+        * Initializes all the passes and their dependent passes.
+        */
         private initPasses();
+        /**
+        * Sets up the various blending modes for all screen passes, based on whether or not there are previous passes.
+        */
         private setBlendAndCompareModes();
         private initCasterLightPass();
         private removeCasterLightPass();
@@ -4734,43 +7971,126 @@ declare module away.materials {
         private removeNonCasterLightPasses();
         private removeEffectsPass();
         private initEffectsPass();
+        /**
+        * The maximum total number of lights provided by the light picker.
+        */
         private numLights;
+        /**
+        * The amount of lights that don't cast shadows.
+        */
         private numNonCasters;
+        /**
+        * Flags that the screen passes have become invalid.
+        */
         public pInvalidateScreenPasses(): void;
+        /**
+        * Called when the light picker's configuration changed.
+        */
         private onLightsChange(event);
     }
 }
 declare module away.materials {
+    /**
+    * TextureMultiPassMaterial is a multi-pass material that uses a texture to define the surface's diffuse reflection colour (albedo).
+    */
     class TextureMultiPassMaterial extends materials.MultiPassMaterialBase {
         private _animateUVs;
+        /**
+        * Creates a new TextureMultiPassMaterial.
+        * @param texture The texture used for the material's albedo color.
+        * @param smooth Indicates whether the texture should be filtered when sampled. Defaults to true.
+        * @param repeat Indicates whether the texture should be tiled when sampled. Defaults to true.
+        * @param mipmap Indicates whether or not any used textures should use mipmapping. Defaults to true.
+        */
         constructor(texture?: away.textures.Texture2DBase, smooth?: boolean, repeat?: boolean, mipmap?: boolean);
+        /**
+        * Specifies whether or not the UV coordinates should be animated using a transformation matrix.
+        */
         public animateUVs : boolean;
+        /**
+        * The texture object to use for the albedo colour.
+        */
         public texture : away.textures.Texture2DBase;
+        /**
+        * The texture object to use for the ambient colour.
+        */
         public ambientTexture : away.textures.Texture2DBase;
         public pUpdateScreenPasses(): void;
     }
 }
 declare module away.materials {
+    /**
+    * ColorMultiPassMaterial is a multi-pass material that uses a flat color as the surface's diffuse reflection value.
+    */
     class ColorMultiPassMaterial extends materials.MultiPassMaterialBase {
+        /**
+        * Creates a new ColorMultiPassMaterial object.
+        *
+        * @param color The material's diffuse surface color.
+        */
         constructor(color?: number);
+        /**
+        * The diffuse reflectivity color of the surface.
+        */
         public color : number;
     }
 }
 declare module away.materials {
+    /**
+    * TextureMaterial is a single-pass material that uses a texture to define the surface's diffuse reflection colour (albedo).
+    */
     class TextureMaterial extends materials.SinglePassMaterialBase {
+        /**
+        * Creates a new TextureMaterial.
+        * @param texture The texture used for the material's albedo color.
+        * @param smooth Indicates whether the texture should be filtered when sampled. Defaults to true.
+        * @param repeat Indicates whether the texture should be tiled when sampled. Defaults to true.
+        * @param mipmap Indicates whether or not any used textures should use mipmapping. Defaults to true.
+        */
         constructor(texture?: away.textures.Texture2DBase, smooth?: boolean, repeat?: boolean, mipmap?: boolean);
+        /**
+        * Specifies whether or not the UV coordinates should be animated using IRenderable's uvTransform matrix.
+        *
+        * @see IRenderable.uvTransform
+        */
         public animateUVs : boolean;
+        /**
+        * The alpha of the surface.
+        */
         public alpha : number;
+        /**
+        * The texture object to use for the albedo colour.
+        */
         public texture : away.textures.Texture2DBase;
+        /**
+        * The texture object to use for the ambient colour.
+        */
         public ambientTexture : away.textures.Texture2DBase;
     }
 }
 declare module away.materials {
+    /**
+    * ColorMaterial is a single-pass material that uses a flat color as the surface's diffuse reflection value.
+    */
     class ColorMaterial extends materials.SinglePassMaterialBase {
         private _diffuseAlpha;
+        /**
+        * Creates a new ColorMaterial object.
+        * @param color The material's diffuse surface color.
+        * @param alpha The material's surface alpha.
+        */
         constructor(color?: number, alpha?: number);
+        /**
+        * The alpha of the surface.
+        */
         public alpha : number;
+        /**
+        * The diffuse reflectivity color of the surface.
+        */
         public color : number;
+        /**
+        * @inheritDoc
+        */
         public requiresBlending : boolean;
     }
 }
@@ -4787,6 +8107,9 @@ declare module away.materials {
     }
 }
 declare module away.materials {
+    /**
+    * LightingShaderCompiler is a ShaderCompiler that generates code for passes performing shading only (no effect passes)
+    */
     class LightingShaderCompiler extends materials.ShaderCompiler {
         public _pointLightFragmentConstants: materials.ShaderRegisterElement[];
         public _pointLightVertexConstants: materials.ShaderRegisterElement[];
@@ -4794,35 +8117,107 @@ declare module away.materials {
         public _dirLightVertexConstants: materials.ShaderRegisterElement[];
         private _lightVertexConstantIndex;
         private _shadowRegister;
+        /**
+        * Create a new LightingShaderCompiler object.
+        * @param profile The compatibility profile of the renderer.
+        */
         constructor(profile: string);
+        /**
+        * The starting index if the vertex constant to which light data needs to be uploaded.
+        */
         public lightVertexConstantIndex : number;
+        /**
+        * @inheritDoc
+        */
         public pInitRegisterIndices(): void;
+        /**
+        * @inheritDoc
+        */
         public pCreateNormalRegisters(): void;
+        /**
+        * Indicates whether or not lighting happens in tangent space. This is only the case if no world-space
+        * dependencies exist.
+        */
         public tangentSpace : boolean;
+        /**
+        * @inheritDoc
+        */
         public pInitLightData(): void;
+        /**
+        * @inheritDoc
+        */
         public pCalculateDependencies(): void;
+        /**
+        * @inheritDoc
+        */
         public pCompileNormalCode(): void;
+        /**
+        * Generates code to retrieve the tangent space normal from the normal map
+        */
         private compileTangentSpaceNormalMapCode();
+        /**
+        * @inheritDoc
+        */
         public pCompileViewDirCode(): void;
+        /**
+        * @inheritDoc
+        */
         public pCompileLightingCode(): void;
+        /**
+        * Provides the code to provide shadow mapping.
+        */
         private compileShadowCode();
+        /**
+        * Initializes constant registers to contain light data.
+        */
         private initLightRegisters();
+        /**
+        * Compiles the shading code for directional lights.
+        */
         private compileDirectionalLightCode();
+        /**
+        * Compiles the shading code for point lights.
+        */
         private compilePointLightCode();
+        /**
+        * Compiles shading code for light probes.
+        */
         private compileLightProbeCode();
     }
 }
 declare module away.materials {
+    /**
+    * SegmentMaterial is a material exclusively used to render wireframe objects
+    *
+    * @see away3d.entities.Lines
+    */
     class SegmentMaterial extends materials.MaterialBase {
         private _screenPass;
+        /**
+        * Creates a new SegmentMaterial object.
+        *
+        * @param thickness The thickness of the wireframe lines.
+        */
         constructor(thickness?: number);
     }
 }
 declare module away.materials {
+    /**
+    * SkyBoxMaterial is a material exclusively used to render skyboxes
+    *
+    * @see away3d.primitives.SkyBox
+    */
     class SkyBoxMaterial extends materials.MaterialBase {
         private _cubeMap;
         private _skyboxPass;
+        /**
+        * Creates a new SkyBoxMaterial object.
+        * @param cubeMap The CubeMap to use as the skybox.
+        */
         constructor(cubeMap: away.textures.CubeTextureBase);
+        /**
+        * The cube texture to use as the skybox.
+        */
         public cubeMap : away.textures.CubeTextureBase;
     }
 }
@@ -4857,21 +8252,63 @@ declare module away.primitives {
     }
 }
 declare module away.primitives {
+    /**
+    * PrimitiveBase is an abstract base class for mesh primitives, which are prebuilt simple meshes.
+    */
     class PrimitiveBase extends away.base.Geometry {
         private _geomDirty;
         private _uvDirty;
         private _subGeometry;
+        /**
+        * Creates a new PrimitiveBase object.
+        * @param material The material with which to render the object
+        */
         constructor();
+        /**
+        * @inheritDoc
+        */
         public subGeometries : away.base.ISubGeometry[];
+        /**
+        * @inheritDoc
+        */
         public clone(): away.base.Geometry;
+        /**
+        * @inheritDoc
+        */
         public scale(scale: number): void;
+        /**
+        * @inheritDoc
+        */
         public scaleUV(scaleU?: number, scaleV?: number): void;
+        /**
+        * @inheritDoc
+        */
         public applyTransformation(transform: away.geom.Matrix3D): void;
+        /**
+        * Builds the primitive's geometry when invalid. This method should not be called directly. The calling should
+        * be triggered by the invalidateGeometry method (and in turn by updateGeometry).
+        */
         public pBuildGeometry(target: away.base.CompactSubGeometry): void;
+        /**
+        * Builds the primitive's uv coordinates when invalid. This method should not be called directly. The calling
+        * should be triggered by the invalidateUVs method (and in turn by updateUVs).
+        */
         public pBuildUVs(target: away.base.CompactSubGeometry): void;
+        /**
+        * Invalidates the primitive's geometry, causing it to be updated when requested.
+        */
         public pInvalidateGeometry(): void;
+        /**
+        * Invalidates the primitive's uv coordinates, causing them to be updated when requested.
+        */
         public pInvalidateUVs(): void;
+        /**
+        * Updates the geometry when invalid.
+        */
         private updateGeometry();
+        /**
+        * Updates the uv coordinates when invalid.
+        */
         private updateUVs();
         public iValidate(): void;
     }
@@ -4883,6 +8320,9 @@ declare module away.primitives {
     }
 }
 declare module away.primitives {
+    /**
+    * A UV Cylinder primitive mesh.
+    */
     class TorusGeometry extends primitives.PrimitiveBase {
         private _radius;
         private _tubeRadius;
@@ -4899,17 +8339,49 @@ declare module away.primitives {
         private _vertexOffset;
         private addVertex(px, py, pz, nx, ny, nz, tx, ty, tz);
         private addTriangleClockWise(cwVertexIndex0, cwVertexIndex1, cwVertexIndex2);
+        /**
+        * @inheritDoc
+        */
         public pBuildGeometry(target: away.base.CompactSubGeometry): void;
+        /**
+        * @inheritDoc
+        */
         public pBuildUVs(target: away.base.CompactSubGeometry): void;
+        /**
+        * The radius of the torus.
+        */
         public radius : number;
+        /**
+        * The radius of the inner tube of the torus.
+        */
         public tubeRadius : number;
+        /**
+        * Defines the number of horizontal segments that make up the torus. Defaults to 16.
+        */
         public segmentsR : number;
+        /**
+        * Defines the number of vertical segments that make up the torus. Defaults to 8.
+        */
         public segmentsT : number;
+        /**
+        * Defines whether the torus poles should lay on the Y-axis (true) or on the Z-axis (false).
+        */
         public yUp : boolean;
+        /**
+        * Creates a new <code>Torus</code> object.
+        * @param radius The radius of the torus.
+        * @param tuebRadius The radius of the inner tube of the torus.
+        * @param segmentsR Defines the number of horizontal segments that make up the torus.
+        * @param segmentsT Defines the number of vertical segments that make up the torus.
+        * @param yUp Defines whether the torus poles should lay on the Y-axis (true) or on the Z-axis (false).
+        */
         constructor(radius?: number, tubeRadius?: number, segmentsR?: number, segmentsT?: number, yUp?: boolean);
     }
 }
 declare module away.primitives {
+    /**
+    * A Cube primitive mesh.
+    */
     class CubeGeometry extends primitives.PrimitiveBase {
         private _width;
         private _height;
@@ -4918,19 +8390,64 @@ declare module away.primitives {
         private _segmentsW;
         private _segmentsH;
         private _segmentsD;
+        /**
+        * Creates a new Cube object.
+        * @param width The size of the cube along its X-axis.
+        * @param height The size of the cube along its Y-axis.
+        * @param depth The size of the cube along its Z-axis.
+        * @param segmentsW The number of segments that make up the cube along the X-axis.
+        * @param segmentsH The number of segments that make up the cube along the Y-axis.
+        * @param segmentsD The number of segments that make up the cube along the Z-axis.
+        * @param tile6 The type of uv mapping to use. When true, a texture will be subdivided in a 2x3 grid, each used for a single face. When false, the entire image is mapped on each face.
+        */
         constructor(width?: number, height?: number, depth?: number, segmentsW?: number, segmentsH?: number, segmentsD?: number, tile6?: boolean);
+        /**
+        * The size of the cube along its X-axis.
+        */
         public width : number;
+        /**
+        * The size of the cube along its Y-axis.
+        */
         public height : number;
+        /**
+        * The size of the cube along its Z-axis.
+        */
         public depth : number;
+        /**
+        * The type of uv mapping to use. When false, the entire image is mapped on each face.
+        * When true, a texture will be subdivided in a 3x2 grid, each used for a single face.
+        * Reading the tiles from left to right, top to bottom they represent the faces of the
+        * cube in the following order: bottom, top, back, left, front, right. This creates
+        * several shared edges (between the top, front, left and right faces) which simplifies
+        * texture painting.
+        */
         public tile6 : boolean;
+        /**
+        * The number of segments that make up the cube along the X-axis. Defaults to 1.
+        */
         public segmentsW : number;
+        /**
+        * The number of segments that make up the cube along the Y-axis. Defaults to 1.
+        */
         public segmentsH : number;
+        /**
+        * The number of segments that make up the cube along the Z-axis. Defaults to 1.
+        */
         public segmentsD : number;
+        /**
+        * @inheritDoc
+        */
         public pBuildGeometry(target: away.base.CompactSubGeometry): void;
+        /**
+        * @inheritDoc
+        */
         public pBuildUVs(target: away.base.CompactSubGeometry): void;
     }
 }
 declare module away.primitives {
+    /**
+    * A Plane primitive mesh.
+    */
     class PlaneGeometry extends primitives.PrimitiveBase {
         private _segmentsW;
         private _segmentsH;
@@ -4938,35 +8455,104 @@ declare module away.primitives {
         private _width;
         private _height;
         private _doubleSided;
+        /**
+        * Creates a new Plane object.
+        * @param width The width of the plane.
+        * @param height The height of the plane.
+        * @param segmentsW The number of segments that make up the plane along the X-axis.
+        * @param segmentsH The number of segments that make up the plane along the Y or Z-axis.
+        * @param yUp Defines whether the normal vector of the plane should point along the Y-axis (true) or Z-axis (false).
+        * @param doubleSided Defines whether the plane will be visible from both sides, with correct vertex normals.
+        */
         constructor(width?: number, height?: number, segmentsW?: number, segmentsH?: number, yUp?: boolean, doubleSided?: boolean);
+        /**
+        * The number of segments that make up the plane along the X-axis. Defaults to 1.
+        */
         public segmentsW : number;
+        /**
+        * The number of segments that make up the plane along the Y or Z-axis, depending on whether yUp is true or
+        * false, respectively. Defaults to 1.
+        */
         public segmentsH : number;
+        /**
+        *  Defines whether the normal vector of the plane should point along the Y-axis (true) or Z-axis (false). Defaults to true.
+        */
         public yUp : boolean;
+        /**
+        * Defines whether the plane will be visible from both sides, with correct vertex normals (as opposed to bothSides on Material). Defaults to false.
+        */
         public doubleSided : boolean;
+        /**
+        * The width of the plane.
+        */
         public width : number;
+        /**
+        * The height of the plane.
+        */
         public height : number;
+        /**
+        * @inheritDoc
+        */
         public pBuildGeometry(target: away.base.CompactSubGeometry): void;
+        /**
+        * @inheritDoc
+        */
         public pBuildUVs(target: away.base.CompactSubGeometry): void;
     }
 }
 declare module away.primitives {
+    /**
+    * A Capsule primitive mesh.
+    */
     class CapsuleGeometry extends primitives.PrimitiveBase {
         private _radius;
         private _height;
         private _segmentsW;
         private _segmentsH;
         private _yUp;
+        /**
+        * Creates a new Capsule object.
+        * @param radius The radius of the capsule.
+        * @param height The height of the capsule.
+        * @param segmentsW Defines the number of horizontal segments that make up the capsule. Defaults to 16.
+        * @param segmentsH Defines the number of vertical segments that make up the capsule. Defaults to 15. Must be uneven value.
+        * @param yUp Defines whether the capsule poles should lay on the Y-axis (true) or on the Z-axis (false).
+        */
         constructor(radius?: number, height?: number, segmentsW?: number, segmentsH?: number, yUp?: boolean);
+        /**
+        * @inheritDoc
+        */
         public pBuildGeometry(target: away.base.CompactSubGeometry): void;
+        /**
+        * @inheritDoc
+        */
         public pBuildUVs(target: away.base.CompactSubGeometry): void;
+        /**
+        * The radius of the capsule.
+        */
         public radius : number;
+        /**
+        * The height of the capsule.
+        */
         public height : number;
+        /**
+        * Defines the number of horizontal segments that make up the capsule. Defaults to 16.
+        */
         public segmentsW : number;
+        /**
+        * Defines the number of vertical segments that make up the capsule. Defaults to 15. Must be uneven.
+        */
         public segmentsH : number;
+        /**
+        * Defines whether the capsule poles should lay on the Y-axis (true) or on the Z-axis (false).
+        */
         public yUp : boolean;
     }
 }
 declare module away.primitives {
+    /**
+    * A Cylinder primitive mesh.
+    */
     class CylinderGeometry extends primitives.PrimitiveBase {
         public _pBottomRadius: number;
         public _pSegmentsW: number;
@@ -4987,47 +8573,148 @@ declare module away.primitives {
         private _vertexOffset;
         private addVertex(px, py, pz, nx, ny, nz, tx, ty, tz);
         private addTriangleClockWise(cwVertexIndex0, cwVertexIndex1, cwVertexIndex2);
+        /**
+        * @inheritDoc
+        */
         public pBuildGeometry(target: away.base.CompactSubGeometry): void;
+        /**
+        * @inheritDoc
+        */
         public pBuildUVs(target: away.base.CompactSubGeometry): void;
+        /**
+        * The radius of the top end of the cylinder.
+        */
         public topRadius : number;
+        /**
+        * The radius of the bottom end of the cylinder.
+        */
         public bottomRadius : number;
+        /**
+        * The radius of the top end of the cylinder.
+        */
         public height : number;
+        /**
+        * Defines the number of horizontal segments that make up the cylinder. Defaults to 16.
+        */
         public segmentsW : number;
         public setSegmentsW(value: number): void;
+        /**
+        * Defines the number of vertical segments that make up the cylinder. Defaults to 1.
+        */
         public segmentsH : number;
         public setSegmentsH(value: number): void;
+        /**
+        * Defines whether the top end of the cylinder is closed (true) or open.
+        */
         public topClosed : boolean;
+        /**
+        * Defines whether the bottom end of the cylinder is closed (true) or open.
+        */
         public bottomClosed : boolean;
+        /**
+        * Defines whether the cylinder poles should lay on the Y-axis (true) or on the Z-axis (false).
+        */
         public yUp : boolean;
+        /**
+        * Creates a new Cylinder object.
+        * @param topRadius The radius of the top end of the cylinder.
+        * @param bottomRadius The radius of the bottom end of the cylinder
+        * @param height The radius of the bottom end of the cylinder
+        * @param segmentsW Defines the number of horizontal segments that make up the cylinder. Defaults to 16.
+        * @param segmentsH Defines the number of vertical segments that make up the cylinder. Defaults to 1.
+        * @param topClosed Defines whether the top end of the cylinder is closed (true) or open.
+        * @param bottomClosed Defines whether the bottom end of the cylinder is closed (true) or open.
+        * @param yUp Defines whether the cone poles should lay on the Y-axis (true) or on the Z-axis (false).
+        */
         constructor(topRadius?: number, bottomRadius?: number, height?: number, segmentsW?: number, segmentsH?: number, topClosed?: boolean, bottomClosed?: boolean, surfaceClosed?: boolean, yUp?: boolean);
     }
 }
 declare module away.primitives {
+    /**
+    * A UV Cone primitive mesh.
+    */
     class ConeGeometry extends primitives.CylinderGeometry {
+        /**
+        * The radius of the bottom end of the cone.
+        */
         public radius : number;
+        /**
+        * Creates a new Cone object.
+        * @param radius The radius of the bottom end of the cone
+        * @param height The height of the cone
+        * @param segmentsW Defines the number of horizontal segments that make up the cone. Defaults to 16.
+        * @param segmentsH Defines the number of vertical segments that make up the cone. Defaults to 1.
+        * @param yUp Defines whether the cone poles should lay on the Y-axis (true) or on the Z-axis (false).
+        */
         constructor(radius?: number, height?: number, segmentsW?: number, segmentsH?: number, closed?: boolean, yUp?: boolean);
     }
 }
 declare module away.primitives {
+    /**
+    * A UV RegularPolygon primitive mesh.
+    */
     class RegularPolygonGeometry extends primitives.CylinderGeometry {
+        /**
+        * The radius of the regular polygon.
+        */
         public radius : number;
+        /**
+        * The number of sides of the regular polygon.
+        */
         public sides : number;
+        /**
+        * The number of subdivisions from the edge to the center of the regular polygon.
+        */
         public subdivisions : number;
+        /**
+        * Creates a new RegularPolygon disc object.
+        * @param radius The radius of the regular polygon
+        * @param sides Defines the number of sides of the regular polygon.
+        * @param yUp Defines whether the regular polygon should lay on the Y-axis (true) or on the Z-axis (false).
+        */
         constructor(radius?: number, sides?: number, yUp?: boolean);
     }
 }
 declare module away.primitives {
+    /**
+    * A UV Sphere primitive mesh.
+    */
     class SphereGeometry extends primitives.PrimitiveBase {
         private _radius;
         private _segmentsW;
         private _segmentsH;
         private _yUp;
+        /**
+        * Creates a new Sphere object.
+        * @param radius The radius of the sphere.
+        * @param segmentsW Defines the number of horizontal segments that make up the sphere.
+        * @param segmentsH Defines the number of vertical segments that make up the sphere.
+        * @param yUp Defines whether the sphere poles should lay on the Y-axis (true) or on the Z-axis (false).
+        */
         constructor(radius?: number, segmentsW?: number, segmentsH?: number, yUp?: boolean);
+        /**
+        * @inheritDoc
+        */
         public pBuildGeometry(target: away.base.CompactSubGeometry): void;
+        /**
+        * @inheritDoc
+        */
         public pBuildUVs(target: away.base.CompactSubGeometry): void;
+        /**
+        * The radius of the sphere.
+        */
         public radius : number;
+        /**
+        * Defines the number of horizontal segments that make up the sphere. Defaults to 16.
+        */
         public segmentsW : number;
+        /**
+        * Defines the number of vertical segments that make up the sphere. Defaults to 12.
+        */
         public segmentsH : number;
+        /**
+        * Defines whether the sphere poles should lay on the Y-axis (true) or on the Z-axis (false).
+        */
         public yUp : boolean;
     }
 }
@@ -5049,27 +8736,67 @@ declare module away.primitives {
     }
 }
 declare module away.primitives {
+    /**
+    * A WireframeSphere primitive mesh
+    */
     class WireframeSphere extends primitives.WireframePrimitiveBase {
         private _segmentsW;
         private _segmentsH;
         private _radius;
+        /**
+        * Creates a new WireframeSphere object.
+        * @param radius The radius of the sphere.
+        * @param segmentsW Defines the number of horizontal segments that make up the sphere.
+        * @param segmentsH Defines the number of vertical segments that make up the sphere.
+        * @param color The colour of the wireframe lines
+        * @param thickness The thickness of the wireframe lines
+        */
         constructor(radius?: number, segmentsW?: number, segmentsH?: number, color?: number, thickness?: number);
+        /**
+        * @inheritDoc
+        */
         public pBuildGeometry(): void;
     }
 }
 declare module away.primitives {
+    /**
+    * A WirefameCube primitive mesh.
+    */
     class WireframeCube extends primitives.WireframePrimitiveBase {
         private _width;
         private _height;
         private _depth;
+        /**
+        * Creates a new WireframeCube object.
+        * @param width The size of the cube along its X-axis.
+        * @param height The size of the cube along its Y-axis.
+        * @param depth The size of the cube along its Z-axis.
+        * @param color The colour of the wireframe lines
+        * @param thickness The thickness of the wireframe lines
+        */
         constructor(width?: number, height?: number, depth?: number, color?: number, thickness?: number);
+        /**
+        * The size of the cube along its X-axis.
+        */
         public width : number;
+        /**
+        * The size of the cube along its Y-axis.
+        */
         public height : number;
+        /**
+        * The size of the cube along its Z-axis.
+        */
         public depth : number;
+        /**
+        * @inheritDoc
+        */
         public pBuildGeometry(): void;
     }
 }
 declare module away.primitives {
+    /**
+    * Generates a wireframd cylinder primitive.
+    */
     class WireframeCylinder extends primitives.WireframePrimitiveBase {
         private static TWO_PI;
         private _topRadius;
@@ -5077,14 +8804,36 @@ declare module away.primitives {
         private _height;
         private _segmentsW;
         private _segmentsH;
+        /**
+        * Creates a new WireframeCylinder instance
+        * @param topRadius Top radius of the cylinder
+        * @param bottomRadius Bottom radius of the cylinder
+        * @param height The height of the cylinder
+        * @param segmentsW Number of radial segments
+        * @param segmentsH Number of vertical segments
+        * @param color The color of the wireframe lines
+        * @param thickness The thickness of the wireframe lines
+        */
         constructor(topRadius?: number, bottomRadius?: number, height?: number, segmentsW?: number, segmentsH?: number, color?: number, thickness?: number);
         public pBuildGeometry(): void;
+        /**
+        * Top radius of the cylinder
+        */
         public topRadius : number;
+        /**
+        * Bottom radius of the cylinder
+        */
         public bottomRadius : number;
+        /**
+        * The height of the cylinder
+        */
         public height : number;
     }
 }
 declare module away.primitives {
+    /**
+    * A WireframePlane primitive mesh.
+    */
     class WireframePlane extends primitives.WireframePrimitiveBase {
         static ORIENTATION_YZ: string;
         static ORIENTATION_XY: string;
@@ -5094,16 +8843,47 @@ declare module away.primitives {
         private _segmentsW;
         private _segmentsH;
         private _orientation;
+        /**
+        * Creates a new WireframePlane object.
+        * @param width The size of the cube along its X-axis.
+        * @param height The size of the cube along its Y-axis.
+        * @param segmentsW The number of segments that make up the cube along the X-axis.
+        * @param segmentsH The number of segments that make up the cube along the Y-axis.
+        * @param color The colour of the wireframe lines
+        * @param thickness The thickness of the wireframe lines
+        * @param orientation The orientaion in which the plane lies.
+        */
         constructor(width: number, height: number, segmentsW?: number, segmentsH?: number, color?: number, thickness?: number, orientation?: string);
+        /**
+        * The orientaion in which the plane lies.
+        */
         public orientation : string;
+        /**
+        * The size of the cube along its X-axis.
+        */
         public width : number;
+        /**
+        * The size of the cube along its Y-axis.
+        */
         public height : number;
+        /**
+        * The number of segments that make up the plane along the X-axis.
+        */
         public segmentsW : number;
+        /**
+        * The number of segments that make up the plane along the Y-axis.
+        */
         public segmentsH : number;
+        /**
+        * @inheritDoc
+        */
         public pBuildGeometry(): void;
     }
 }
 declare module away.primitives {
+    /**
+    * A WireframeRegularPolygon primitive mesh.
+    */
     class WireframeRegularPolygon extends primitives.WireframePrimitiveBase {
         static ORIENTATION_YZ: string;
         static ORIENTATION_XY: string;
@@ -5111,14 +8891,37 @@ declare module away.primitives {
         private _radius;
         private _sides;
         private _orientation;
+        /**
+        * Creates a new WireframeRegularPolygon object.
+        * @param radius The radius of the polygon.
+        * @param sides The number of sides on the polygon.
+        * @param color The colour of the wireframe lines
+        * @param thickness The thickness of the wireframe lines
+        * @param orientation The orientaion in which the plane lies.
+        */
         constructor(radius: number, sides: number, color?: number, thickness?: number, orientation?: string);
+        /**
+        * The orientaion in which the polygon lies.
+        */
         public orientation : string;
+        /**
+        * The radius of the regular polygon.
+        */
         public radius : number;
+        /**
+        * The number of sides to the regular polygon.
+        */
         public sides : number;
+        /**
+        * @inheritDoc
+        */
         public pBuildGeometry(): void;
     }
 }
 declare module away.primitives {
+    /**
+    * A WireframeTetrahedron primitive mesh
+    */
     class WireframeTetrahedron extends primitives.WireframePrimitiveBase {
         static ORIENTATION_YZ: string;
         static ORIENTATION_XY: string;
@@ -5126,191 +8929,36 @@ declare module away.primitives {
         private _width;
         private _height;
         private _orientation;
+        /**
+        * Creates a new WireframeTetrahedron object.
+        * @param width The size of the tetrahedron buttom size.
+        * @param height The size of the tetranhedron height.
+        * @param color The color of the wireframe lines.
+        * @param thickness The thickness of the wireframe lines.
+        */
         constructor(width: number, height: number, color?: number, thickness?: number, orientation?: string);
+        /**
+        * The orientation in which the plane lies
+        */
         public orientation : string;
+        /**
+        * The size of the tetrahedron bottom.
+        */
         public width : number;
+        /**
+        * The size of the tetrahedron height.
+        */
         public height : number;
+        /**
+        * @inheritDoc
+        */
         public pBuildGeometry(): void;
     }
 }
-declare module away.textures {
-    class TextureProxyBase extends away.library.NamedAssetBase implements away.library.IAsset {
-        private _format;
-        private _hasMipmaps;
-        private _textures;
-        private _dirty;
-        public _pWidth: number;
-        public _pHeight: number;
-        constructor();
-        public hasMipMaps : boolean;
-        public format : string;
-        public assetType : string;
-        public width : number;
-        public height : number;
-        public getTextureForStage3D(stage3DProxy: away.managers.Stage3DProxy): away.display3D.TextureBase;
-        public pUploadContent(texture: away.display3D.TextureBase): void;
-        public pSetSize(width: number, height: number): void;
-        public invalidateContent(): void;
-        public pInvalidateSize(): void;
-        public pCreateTexture(context: away.display3D.Context3D): away.display3D.TextureBase;
-        public dispose(): void;
-    }
-}
-declare module away.textures {
-    class Texture2DBase extends textures.TextureProxyBase {
-        constructor();
-        public pCreateTexture(context: away.display3D.Context3D): away.display3D.TextureBase;
-    }
-}
-declare module away.textures {
-    class HTMLImageElementTexture extends textures.Texture2DBase {
-        private static _mipMaps;
-        private static _mipMapUses;
-        private _htmlImageElement;
-        private _generateMipmaps;
-        private _mipMapHolder;
-        constructor(htmlImageElement: HTMLImageElement, generateMipmaps?: boolean);
-        public htmlImageElement : HTMLImageElement;
-        public pUploadContent(texture: away.display3D.TextureBase): void;
-        private getMipMapHolder();
-        private freeMipMapHolder();
-        public dispose(): void;
-    }
-}
-declare module away.textures {
-    class BitmapTexture extends textures.Texture2DBase {
-        private static _mipMaps;
-        private static _mipMapUses;
-        private _bitmapData;
-        private _mipMapHolder;
-        private _generateMipmaps;
-        constructor(bitmapData: away.display.BitmapData, generateMipmaps?: boolean);
-        public bitmapData : away.display.BitmapData;
-        public pUploadContent(texture: away.display3D.TextureBase): void;
-        private getMipMapHolder();
-        private freeMipMapHolder();
-        public dispose(): void;
-    }
-}
-declare module away.textures {
-    class CubeTextureBase extends textures.TextureProxyBase {
-        constructor();
-        public size : number;
-        public pCreateTexture(context: away.display3D.Context3D): away.display3D.TextureBase;
-    }
-}
-declare module away.textures {
-    class RenderTexture extends textures.Texture2DBase {
-        constructor(width: number, height: number);
-        public width : number;
-        public height : number;
-        public pUploadContent(texture: away.display3D.TextureBase): void;
-        public pCreateTexture(context: away.display3D.Context3D): away.display3D.TextureBase;
-    }
-}
-declare module away.textures {
-    class HTMLImageElementCubeTexture extends textures.CubeTextureBase {
-        private _bitmapDatas;
-        private _useMipMaps;
-        constructor(posX: HTMLImageElement, negX: HTMLImageElement, posY: HTMLImageElement, negY: HTMLImageElement, posZ: HTMLImageElement, negZ: HTMLImageElement);
-        public positiveX : HTMLImageElement;
-        public negativeX : HTMLImageElement;
-        public positiveY : HTMLImageElement;
-        public negativeY : HTMLImageElement;
-        public positiveZ : HTMLImageElement;
-        public negativeZ : HTMLImageElement;
-        private testSize(value);
-        public pUploadContent(texture: away.display3D.TextureBase): void;
-    }
-}
-declare module away.textures {
-    class BitmapCubeTexture extends textures.CubeTextureBase {
-        private _bitmapDatas;
-        private _useMipMaps;
-        constructor(posX: away.display.BitmapData, negX: away.display.BitmapData, posY: away.display.BitmapData, negY: away.display.BitmapData, posZ: away.display.BitmapData, negZ: away.display.BitmapData);
-        public positiveX : away.display.BitmapData;
-        public negativeX : away.display.BitmapData;
-        public positiveY : away.display.BitmapData;
-        public negativeY : away.display.BitmapData;
-        public positiveZ : away.display.BitmapData;
-        public negativeZ : away.display.BitmapData;
-        private testSize(value);
-        public pUploadContent(texture: away.display3D.TextureBase): void;
-    }
-}
 declare module away.utils {
-    class ByteArrayBase {
-        public position: number;
-        public length: number;
-        public _mode: string;
-        public Base64Key: string;
-        constructor();
-        public writeByte(b: number): void;
-        public readByte(): number;
-        public writeUnsignedByte(b: number): void;
-        public readUnsignedByte(): number;
-        public writeUnsignedShort(b: number): void;
-        public readUnsignedShort(): number;
-        public writeUnsignedInt(b: number): void;
-        public readUnsignedInt(): number;
-        public writeFloat(b: number): void;
-        public toFloatBits(x: number): void;
-        public readFloat(b: number): void;
-        public fromFloatBits(x: number): void;
-        public getBytesAvailable(): number;
-        public toString(): string;
-        public compareEqual(other: any, count: any): boolean;
-        public writeBase64String(s: string): void;
-        public dumpToConsole(): void;
-        public internalGetBase64String(count: any, getUnsignedByteFunc: any, self: any): string;
-    }
-}
-declare module away.utils {
-    class ByteArray extends utils.ByteArrayBase {
-        public maxlength: number;
-        public arraybytes: any;
-        public unalignedarraybytestemp: any;
-        constructor();
-        public ensureWriteableSpace(n: number): void;
-        public setArrayBuffer(aBuffer: ArrayBuffer): void;
-        public getBytesAvailable(): number;
-        public ensureSpace(n: number): void;
-        public writeByte(b: number): void;
-        public readByte(): number;
-        public readBytes(bytes: ByteArray, offset?: number, length?: number): void;
-        public writeUnsignedByte(b: number): void;
-        public readUnsignedByte(): number;
-        public writeUnsignedShort(b: number): void;
-        public readUTFBytes(len: number): string;
-        public readInt(): number;
-        public readShort(): number;
-        public readDouble(): number;
-        public readUnsignedShort(): number;
-        public writeUnsignedInt(b: number): void;
-        public readUnsignedInt(): number;
-        public writeFloat(b: number): void;
-        public readFloat(): number;
-    }
-}
-declare module away.utils {
-    class ByteArrayBuffer extends utils.ByteArrayBase {
-        public _bytes: number[];
-        constructor();
-        public writeByte(b: number): void;
-        public readByte(): number;
-        public writeUnsignedByte(b: number): void;
-        public readUnsignedByte(): number;
-        public writeUnsignedShort(b: number): void;
-        public readUnsignedShort(): number;
-        public writeUnsignedInt(b: number): void;
-        public readUnsignedInt(): number;
-        public writeFloat(b: number): void;
-        public toFloatBits(x: number): number;
-        public readFloat(b: number): number;
-        public fromFloatBits(x: number): number;
-    }
-}
-declare module away.utils {
+    /**
+    * Helper class for casting assets to usable objects
+    */
     class Cast {
         private static _colorNames;
         private static _hexChars;
@@ -5327,42 +8975,15 @@ declare module away.utils {
     }
 }
 declare module away.utils {
-    class ColorUtils {
-        static float32ColorToARGB(float32Color: number): number[];
-        private static componentToHex(c);
-        static RGBToHexString(argb: number[]): string;
-        static ARGBToHexString(argb: number[]): string;
-    }
-}
-declare module away.utils {
-    class CSS {
-        static setCanvasSize(canvas: HTMLCanvasElement, width: number, height: number): void;
-        static setCanvasWidth(canvas: HTMLCanvasElement, width: number): void;
-        static setCanvasHeight(canvas: HTMLCanvasElement, height: number): void;
-        static setCanvasX(canvas: HTMLCanvasElement, x: number): void;
-        static setCanvasY(canvas: HTMLCanvasElement, y: number): void;
-        static getCanvasVisibility(canvas: HTMLCanvasElement): boolean;
-        static setCanvasVisibility(canvas: HTMLCanvasElement, visible: boolean): void;
-        static setCanvasAlpha(canvas: HTMLCanvasElement, alpha: number): void;
-        static setCanvasPosition(canvas: HTMLCanvasElement, x: number, y: number, absolute?: boolean): void;
-    }
-}
-declare module away {
-    class Debug {
-        static THROW_ERRORS: boolean;
-        static ENABLE_LOG: boolean;
-        static LOG_PI_ERRORS: boolean;
-        private static keyword;
-        static breakpoint(): void;
-        static throwPIROnKeyWordOnly(str: string, enable?: boolean): void;
-        static throwPIR(clss: string, fnc: string, msg: string): void;
-        private static logPIR(clss, fnc, msg?);
-        static log(...args: any[]): void;
-    }
-}
-declare module away.utils {
     class GeometryUtils {
+        /**
+        * Build a list of sub-geometries from raw data vectors, splitting them up in
+        * such a way that they won't exceed buffer length limits.
+        */
         static fromVectors(verts: number[], indices: number[], uvs: number[], normals: number[], tangents: number[], weights: number[], jointIndices: number[], triangleOffset?: number): away.base.ISubGeometry[];
+        /**
+        * Build a sub-geometry from data vectors.
+        */
         static constructSubGeometry(verts: number[], indices: number[], uvs: number[], normals: number[], tangents: number[], weights: number[], jointIndices: number[], triangleOffset: number): away.base.CompactSubGeometry;
         static interleaveBuffers(numVertices: number, vertices?: number[], normals?: number[], tangents?: number[], uvs?: number[], suvs?: number[]): number[];
         static getMeshSubgeometryIndex(subGeometry: away.base.ISubGeometry): number;
@@ -5370,62 +8991,15 @@ declare module away.utils {
     }
 }
 declare module away.utils {
-    function getTimer(): number;
-}
-declare module away.utils {
     class PerspectiveMatrix3D extends away.geom.Matrix3D {
         constructor(v?: number[]);
         public perspectiveFieldOfViewLH(fieldOfViewY: number, aspectRatio: number, zNear: number, zFar: number): void;
     }
 }
-declare module away.utils {
-    class RequestAnimationFrame {
-        private _callback;
-        private _callbackContext;
-        private _active;
-        private _rafUpdateFunction;
-        private _prevTime;
-        private _dt;
-        private _currentTime;
-        private _argsArray;
-        private _getTimer;
-        constructor(callback: Function, callbackContext: Object);
-        public setCallback(callback: Function, callbackContext: Object): void;
-        public start(): void;
-        public stop(): void;
-        public active : boolean;
-        private _tick();
-    }
-}
-declare module away.utils {
-    class TextureUtils {
-        private static MAX_SIZE;
-        static isBitmapDataValid(bitmapData: away.display.BitmapData): boolean;
-        static isHTMLImageElementValid(image: HTMLImageElement): boolean;
-        static isDimensionValid(d: number): boolean;
-        static isPowerOfTwo(value: number): boolean;
-        static getBestPowerOf2(value: number): number;
-    }
-}
-declare module away.utils {
-    class Timer extends away.events.EventDispatcher {
-        private _delay;
-        private _repeatCount;
-        private _currentCount;
-        private _iid;
-        private _running;
-        constructor(delay: number, repeatCount?: number);
-        public currentCount : number;
-        public delay : number;
-        public repeatCount : number;
-        public reset(): void;
-        public running : boolean;
-        public start(): void;
-        public stop(): void;
-        private tick();
-    }
-}
 declare module away.animators {
+    /**
+    * ...
+    */
     class AnimationRegisterCache extends away.materials.ShaderRegisterCache {
         public positionAttribute: away.materials.ShaderRegisterElement;
         public uvAttribute: away.materials.ShaderRegisterElement;
@@ -5479,21 +9053,29 @@ declare module away.animators {
     }
 }
 declare module away.animators {
+    /**
+    * ...
+    */
     class AnimationSubGeometry {
         static SUBGEOM_ID_COUNT: number;
         public _pVertexData: number[];
-        public _pVertexBuffer: away.display3D.VertexBuffer3D[];
-        public _pBufferContext: away.display3D.Context3D[];
+        public _pVertexBuffer: away.displayGL.VertexBuffer[];
+        public _pBufferContext: away.displayGL.ContextGL[];
         public _pBufferDirty: Boolean[];
         private _numVertices;
         private _totalLenOfOneVertex;
         public numProcessedVertices: number;
         public previousTime: number;
         public animationParticles: animators.ParticleAnimationData[];
+        /**
+        * An id for this animation subgeometry, used to identify animation subgeometries when using animation sets.
+        *
+        * @private
+        */
         public _iUniqueId: number;
         constructor();
         public createVertexData(numVertices: number, totalLenOfOneVertex: number): void;
-        public activateVertexBuffer(index: number, bufferOffset: number, stage3DProxy: away.managers.Stage3DProxy, format: string): void;
+        public activateVertexBuffer(index: number, bufferOffset: number, stageGLProxy: away.managers.StageGLProxy, format: string): void;
         public dispose(): void;
         public invalidateBuffer(): void;
         public vertexData : number[];
@@ -5511,16 +9093,47 @@ declare module away.animators {
     }
 }
 declare module away.animators {
+    /**
+    * Contains transformation data for a skeleton joint, used for skeleton animation.
+    *
+    * @see away.animation.Skeleton
+    * @see away.animation.SkeletonJoint
+    *
+    * todo: support (uniform) scale
+    */
     class JointPose {
+        /**
+        * The name of the joint to which the pose is associated
+        */
         public name: string;
-        public orientation: away.math.Quaternion;
+        /**
+        * The rotation of the pose stored as a quaternion
+        */
+        public orientation: away.geom.Quaternion;
+        /**
+        * The translation of the pose
+        */
         public translation: away.geom.Vector3D;
         constructor();
+        /**
+        * Converts the transformation to a Matrix3D representation.
+        *
+        * @param target An optional target matrix to store the transformation. If not provided, it will create a new instance.
+        * @return The transformation matrix of the pose.
+        */
         public toMatrix3D(target?: away.geom.Matrix3D): away.geom.Matrix3D;
+        /**
+        * Copies the transformation data from a source pose object into the existing pose object.
+        *
+        * @param pose The source pose to copy from.
+        */
         public copyFrom(pose: JointPose): void;
     }
 }
 declare module away.animators {
+    /**
+    * ...
+    */
     class ParticleAnimationData {
         public index: number;
         public startTime: number;
@@ -5541,70 +9154,238 @@ declare module away.animators {
     }
 }
 declare module away.animators {
+    /**
+    * Dynamic class for holding the local properties of a particle, used for processing the static properties
+    * of particles in the particle animation set before beginning upload to the GPU.
+    */
     class ParticleProperties {
+        /**
+        * The index of the current particle being set.
+        */
         public index: number;
+        /**
+        * The total number of particles being processed by the particle animation set.
+        */
         public total: number;
+        /**
+        * The start time of the particle.
+        */
         public startTime: number;
+        /**
+        * The duration of the particle, an optional value used when the particle aniamtion set settings for <code>useDuration</code> are enabled in the constructor.
+        *
+        * @see away.animators.ParticleAnimationSet
+        */
         public duration: number;
+        /**
+        * The delay between cycles of the particle, an optional value used when the particle aniamtion set settings for <code>useLooping</code> and  <code>useDelay</code> are enabled in the constructor.
+        *
+        * @see away.animators.ParticleAnimationSet
+        */
         public delay: number;
     }
 }
 declare module away.animators {
+    /**
+    * Options for setting the properties mode of a particle animation node.
+    */
     class ParticlePropertiesMode {
+        /**
+        * Mode that defines the particle node as acting on global properties (ie. the properties set in the node constructor or the corresponding animation state).
+        */
         static GLOBAL: number;
+        /**
+        * Mode that defines the particle node as acting on local static properties (ie. the properties of particles set in the initialising on the animation set).
+        */
         static LOCAL_STATIC: number;
+        /**
+        * Mode that defines the particle node as acting on local dynamic properties (ie. the properties of the particles set in the corresponding animation state).
+        */
         static LOCAL_DYNAMIC: number;
     }
 }
 declare module away.animators {
+    /**
+    * A Skeleton object is a hierarchical grouping of joint objects that can be used for skeletal animation.
+    *
+    * @see away.animators.SkeletonJoint
+    */
     class Skeleton extends away.library.NamedAssetBase implements away.library.IAsset {
+        /**
+        * A flat list of joint objects that comprise the skeleton. Every joint except for the root has a parentIndex
+        * property that is an index into this list.
+        * A child joint should always have a higher index than its parent.
+        */
         public joints: animators.SkeletonJoint[];
+        /**
+        * The total number of joints in the skeleton.
+        */
         public numJoints : number;
+        /**
+        * Creates a new <code>Skeleton</code> object
+        */
         constructor();
+        /**
+        * Returns the joint object in the skeleton with the given name, otherwise returns a null object.
+        *
+        * @param jointName The name of the joint object to be found.
+        * @return The joint object with the given name.
+        *
+        * @see #joints
+        */
         public jointFromName(jointName: string): animators.SkeletonJoint;
+        /**
+        * Returns the joint index, given the joint name. -1 is returned if the joint name is not found.
+        *
+        * @param jointName The name of the joint object to be found.
+        * @return The index of the joint object in the joints Array
+        *
+        * @see #joints
+        */
         public jointIndexFromName(jointName: string): number;
+        /**
+        * @inheritDoc
+        */
         public dispose(): void;
+        /**
+        * @inheritDoc
+        */
         public assetType : string;
     }
 }
 declare module away.animators {
+    /**
+    * Options for setting the animation mode of a vertex animator object.
+    *
+    * @see away.animators.VertexAnimator
+    */
     class VertexAnimationMode {
+        /**
+        * Animation mode that adds all outputs from active vertex animation state to form the current vertex animation pose.
+        */
         static ADDITIVE: string;
+        /**
+        * Animation mode that picks the output from a single vertex animation state to form the current vertex animation pose.
+        */
         static ABSOLUTE: string;
     }
 }
 declare module away.animators {
+    /**
+    * A value obect representing a single joint in a skeleton object.
+    *
+    * @see away.animators.Skeleton
+    */
     class SkeletonJoint {
+        /**
+        * The index of the parent joint in the skeleton's joints vector.
+        *
+        * @see away.animators.Skeleton#joints
+        */
         public parentIndex: number;
+        /**
+        * The name of the joint
+        */
         public name: string;
+        /**
+        * The inverse bind pose matrix, as raw data, used to transform vertices to bind joint space in preparation for transformation using the joint matrix.
+        */
         public inverseBindPose: number[];
+        /**
+        * Creates a new <code>SkeletonJoint</code> object
+        */
         constructor();
     }
 }
 declare module away.animators {
+    /**
+    * A collection of pose objects, determining the pose for an entire skeleton.
+    * The <code>jointPoses</code> vector object corresponds to a skeleton's <code>joints</code> vector object, however, there is no
+    * reference to a skeleton's instance, since several skeletons can be influenced by the same pose (eg: animation
+    * clips are added to any animator with a valid skeleton)
+    *
+    * @see away.animators.Skeleton
+    * @see away.animators.JointPose
+    */
     class SkeletonPose extends away.library.NamedAssetBase implements away.library.IAsset {
+        /**
+        * A flat list of pose objects that comprise the skeleton pose. The pose indices correspond to the target skeleton's joint indices.
+        *
+        * @see away.animators.Skeleton#joints
+        */
         public jointPoses: animators.JointPose[];
+        /**
+        * The total number of joint poses in the skeleton pose.
+        */
         public numJointPoses : number;
+        /**
+        * Creates a new <code>SkeletonPose</code> object.
+        */
         constructor();
+        /**
+        * @inheritDoc
+        */
         public assetType : string;
+        /**
+        * Returns the joint pose object with the given joint name, otherwise returns a null object.
+        *
+        * @param jointName The name of the joint object whose pose is to be found.
+        * @return The pose object with the given joint name.
+        */
         public jointPoseFromName(jointName: string): animators.JointPose;
+        /**
+        * Returns the pose index, given the joint name. -1 is returned if the joint name is not found in the pose.
+        *
+        * @param The name of the joint object whose pose is to be found.
+        * @return The index of the pose object in the jointPoses Array
+        *
+        * @see #jointPoses
+        */
         public jointPoseIndexFromName(jointName: string): number;
+        /**
+        * Creates a copy of the <code>SkeletonPose</code> object, with a dulpicate of its component joint poses.
+        *
+        * @return SkeletonPose
+        */
         public clone(): SkeletonPose;
+        /**
+        * @inheritDoc
+        */
         public dispose(): void;
     }
 }
 declare module away.animators {
+    /**
+    * Provides an abstract base class for nodes in an animation blend tree.
+    */
     class AnimationNodeBase extends away.library.NamedAssetBase implements away.library.IAsset {
         static ANIMATIONNODE_ID_COUNT: number;
+        /**
+        * An id for this animation node, used to identify animations when using animation states.
+        *
+        * @private
+        */
         public _iUniqueId: number;
         public _pStateClass: any;
         public stateClass : any;
+        /**
+        * Creates a new <code>AnimationNodeBase</code> object.
+        */
         constructor();
+        /**
+        * @inheritDoc
+        */
         public dispose(): void;
+        /**
+        * @inheritDoc
+        */
         public assetType : string;
     }
 }
 declare module away.animators {
+    /**
+    * Provides an abstract base class for nodes with time-based animation data in an animation blend tree.
+    */
     class AnimationClipNodeBase extends animators.AnimationNodeBase {
         public _pLooping: boolean;
         public _pTotalDuration: number;
@@ -5615,17 +9396,38 @@ declare module away.animators {
         public _pDurations: number[];
         public _pTotalDelta: away.geom.Vector3D;
         public fixedFrameRate: boolean;
+        /**
+        * Determines whether the contents of the animation node have looping characteristics enabled.
+        */
         public looping : boolean;
+        /**
+        * Defines if looping content blends the final frame of animation data with the first (true) or works on the
+        * assumption that both first and last frames are identical (false). Defaults to false.
+        */
         public stitchFinalFrame : boolean;
         public totalDuration : number;
         public totalDelta : away.geom.Vector3D;
         public lastFrame : number;
+        /**
+        * Returns a vector of time values representing the duration (in milliseconds) of each animation frame in the clip.
+        */
         public durations : number[];
+        /**
+        * Creates a new <code>AnimationClipNodeBase</code> object.
+        */
         constructor();
+        /**
+        * Updates the node's final frame stitch state.
+        *
+        * @see #stitchFinalFrame
+        */
         public _pUpdateStitch(): void;
     }
 }
 declare module away.animators {
+    /**
+    * Provides an abstract base class for particle animation nodes.
+    */
     class ParticleNodeBase extends animators.AnimationNodeBase {
         private _priority;
         public _pMode: number;
@@ -5636,352 +9438,1029 @@ declare module away.animators {
         private static LOCAL_STATIC;
         private static LOCAL_DYNAMIC;
         private static MODES;
+        /**
+        * Returns the property mode of the particle animation node. Typically set in the node constructor
+        *
+        * @see away.animators.ParticlePropertiesMode
+        */
         public mode : number;
+        /**
+        * Returns the priority of the particle animation node, used to order the agal generated in a particle animation set. Set automatically on instantiation.
+        *
+        * @see away.animators.ParticleAnimationSet
+        * @see #getAGALVertexCode
+        */
         public priority : number;
+        /**
+        * Returns the length of the data used by the node when in <code>LOCAL_STATIC</code> mode. Used to generate the local static data of the particle animation set.
+        *
+        * @see away.animators.ParticleAnimationSet
+        * @see #getAGALVertexCode
+        */
         public dataLength : number;
+        /**
+        * Returns the generated data vector of the node after one particle pass during the generation of all local static data of the particle animation set.
+        *
+        * @see away.animators.ParticleAnimationSet
+        * @see #generatePropertyOfOneParticle
+        */
         public oneData : number[];
+        /**
+        * Creates a new <code>ParticleNodeBase</code> object.
+        *
+        * @param               name            Defines the generic name of the particle animation node.
+        * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
+        * @param               dataLength      Defines the length of the data used by the node when in <code>LOCAL_STATIC</code> mode.
+        * @param    [optional] priority        the priority of the particle animation node, used to order the agal generated in a particle animation set. Defaults to 1.
+        */
         constructor(name: string, mode: number, dataLength: number, priority?: number);
+        /**
+        * Returns the AGAL code of the particle animation node for use in the vertex shader.
+        */
         public getAGALVertexCode(pass: away.materials.MaterialPassBase, animationRegisterCache: animators.AnimationRegisterCache): string;
+        /**
+        * Returns the AGAL code of the particle animation node for use in the fragment shader.
+        */
         public getAGALFragmentCode(pass: away.materials.MaterialPassBase, animationRegisterCache: animators.AnimationRegisterCache): string;
+        /**
+        * Returns the AGAL code of the particle animation node for use in the fragment shader when UV coordinates are required.
+        */
         public getAGALUVCode(pass: away.materials.MaterialPassBase, animationRegisterCache: animators.AnimationRegisterCache): string;
+        /**
+        * Called internally by the particle animation set when assigning the set of static properties originally defined by the initParticleFunc of the set.
+        *
+        * @see away.animators.ParticleAnimationSet#initParticleFunc
+        */
         public _iGeneratePropertyOfOneParticle(param: animators.ParticleProperties): void;
+        /**
+        * Called internally by the particle animation set when determining the requirements of the particle animation node AGAL.
+        */
         public _iProcessAnimationSetting(particleAnimationSet: animators.ParticleAnimationSet): void;
     }
 }
 declare module away.animators {
+    /**
+    * A particle animation node used to apply a constant acceleration vector to the motion of a particle.
+    */
     class ParticleAccelerationNode extends animators.ParticleNodeBase {
+        /** @private */
         static ACCELERATION_INDEX: number;
+        /** @private */
         public _acceleration: away.geom.Vector3D;
+        /**
+        * Reference for acceleration node properties on a single particle (when in local property mode).
+        * Expects a <code>Vector3D</code> object representing the direction of acceleration on the particle.
+        */
         static ACCELERATION_VECTOR3D: string;
+        /**
+        * Creates a new <code>ParticleAccelerationNode</code>
+        *
+        * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
+        * @param    [optional] acceleration    Defines the default acceleration vector of the node, used when in global mode.
+        */
         constructor(mode: number, acceleration?: away.geom.Vector3D);
+        /**
+        * @inheritDoc
+        */
         public pGetAGALVertexCode(pass: away.materials.MaterialPassBase, animationRegisterCache: animators.AnimationRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
         public getAnimationState(animator: animators.IAnimator): animators.ParticleAccelerationState;
+        /**
+        * @inheritDoc
+        */
         public _iGeneratePropertyOfOneParticle(param: animators.ParticleProperties): void;
     }
 }
 declare module away.animators {
+    /**
+    * A particle animation node used to control the position of a particle over time along a bezier curve.
+    */
     class ParticleBezierCurveNode extends animators.ParticleNodeBase {
+        /** @private */
         static BEZIER_CONTROL_INDEX: number;
+        /** @private */
         static BEZIER_END_INDEX: number;
+        /** @private */
         public _iControlPoint: away.geom.Vector3D;
+        /** @private */
         public _iEndPoint: away.geom.Vector3D;
+        /**
+        * Reference for bezier curve node properties on a single particle (when in local property mode).
+        * Expects a <code>Vector3D</code> object representing the control point position (0, 1, 2) of the curve.
+        */
         static BEZIER_CONTROL_VECTOR3D: string;
+        /**
+        * Reference for bezier curve node properties on a single particle (when in local property mode).
+        * Expects a <code>Vector3D</code> object representing the end point position (0, 1, 2) of the curve.
+        */
         static BEZIER_END_VECTOR3D: string;
+        /**
+        * Creates a new <code>ParticleBezierCurveNode</code>
+        *
+        * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
+        * @param    [optional] controlPoint    Defines the default control point of the node, used when in global mode.
+        * @param    [optional] endPoint        Defines the default end point of the node, used when in global mode.
+        */
         constructor(mode: number, controlPoint?: away.geom.Vector3D, endPoint?: away.geom.Vector3D);
+        /**
+        * @inheritDoc
+        */
         public getAGALVertexCode(pass: away.materials.MaterialPassBase, animationRegisterCache: animators.AnimationRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
         public getAnimationState(animator: animators.IAnimator): animators.ParticleBezierCurveState;
+        /**
+        * @inheritDoc
+        */
         public _iGeneratePropertyOfOneParticle(param: animators.ParticleProperties): void;
     }
 }
 declare module away.animators {
+    /**
+    * A particle animation node that controls the rotation of a particle to always face the camera.
+    */
     class ParticleBillboardNode extends animators.ParticleNodeBase {
+        /** @private */
         static MATRIX_INDEX: number;
+        /** @private */
         public _iBillboardAxis: away.geom.Vector3D;
+        /**
+        * Creates a new <code>ParticleBillboardNode</code>
+        */
         constructor(billboardAxis?: away.geom.Vector3D);
+        /**
+        * @inheritDoc
+        */
         public getAGALVertexCode(pass: away.materials.MaterialPassBase, animationRegisterCache: animators.AnimationRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
         public getAnimationState(animator: animators.IAnimator): animators.ParticleBillboardState;
+        /**
+        * @inheritDoc
+        */
         public _iProcessAnimationSetting(particleAnimationSet: animators.ParticleAnimationSet): void;
     }
 }
 declare module away.animators {
+    /**
+    * A particle animation node used to control the color variation of a particle over time.
+    */
     class ParticleColorNode extends animators.ParticleNodeBase {
+        /** @private */
         static START_MULTIPLIER_INDEX: number;
+        /** @private */
         static DELTA_MULTIPLIER_INDEX: number;
+        /** @private */
         static START_OFFSET_INDEX: number;
+        /** @private */
         static DELTA_OFFSET_INDEX: number;
+        /** @private */
         static CYCLE_INDEX: number;
+        /** @private */
         public _iUsesMultiplier: boolean;
+        /** @private */
         public _iUsesOffset: boolean;
+        /** @private */
         public _iUsesCycle: boolean;
+        /** @private */
         public _iUsesPhase: boolean;
+        /** @private */
         public _iStartColor: away.geom.ColorTransform;
+        /** @private */
         public _iEndColor: away.geom.ColorTransform;
+        /** @private */
         public _iCycleDuration: number;
+        /** @private */
         public _iCyclePhase: number;
+        /**
+        * Reference for color node properties on a single particle (when in local property mode).
+        * Expects a <code>ColorTransform</code> object representing the start color transform applied to the particle.
+        */
         static COLOR_START_COLORTRANSFORM: string;
+        /**
+        * Reference for color node properties on a single particle (when in local property mode).
+        * Expects a <code>ColorTransform</code> object representing the end color transform applied to the particle.
+        */
         static COLOR_END_COLORTRANSFORM: string;
+        /**
+        * Creates a new <code>ParticleColorNode</code>
+        *
+        * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
+        * @param    [optional] usesMultiplier  Defines whether the node uses multiplier data in the shader for its color transformations. Defaults to true.
+        * @param    [optional] usesOffset      Defines whether the node uses offset data in the shader for its color transformations. Defaults to true.
+        * @param    [optional] usesCycle       Defines whether the node uses the <code>cycleDuration</code> property in the shader to calculate the period of the animation independent of particle duration. Defaults to false.
+        * @param    [optional] usesPhase       Defines whether the node uses the <code>cyclePhase</code> property in the shader to calculate a starting offset to the cycle rotation of the particle. Defaults to false.
+        * @param    [optional] startColor      Defines the default start color transform of the node, when in global mode.
+        * @param    [optional] endColor        Defines the default end color transform of the node, when in global mode.
+        * @param    [optional] cycleDuration   Defines the duration of the animation in seconds, used as a period independent of particle duration when in global mode. Defaults to 1.
+        * @param    [optional] cyclePhase      Defines the phase of the cycle in degrees, used as the starting offset of the cycle when in global mode. Defaults to 0.
+        */
         constructor(mode: number, usesMultiplier?: boolean, usesOffset?: boolean, usesCycle?: boolean, usesPhase?: boolean, startColor?: away.geom.ColorTransform, endColor?: away.geom.ColorTransform, cycleDuration?: number, cyclePhase?: number);
+        /**
+        * @inheritDoc
+        */
         public getAGALVertexCode(pass: away.materials.MaterialPassBase, animationRegisterCache: animators.AnimationRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
         public getAnimationState(animator: animators.IAnimator): animators.ParticleColorState;
+        /**
+        * @inheritDoc
+        */
         public _iProcessAnimationSetting(particleAnimationSet: animators.ParticleAnimationSet): void;
+        /**
+        * @inheritDoc
+        */
         public _iGeneratePropertyOfOneParticle(param: animators.ParticleProperties): void;
     }
 }
 declare module away.animators {
+    /**
+    * A particle animation node used to create a follow behaviour on a particle system.
+    */
     class ParticleFollowNode extends animators.ParticleNodeBase {
+        /** @private */
         static FOLLOW_POSITION_INDEX: number;
+        /** @private */
         static FOLLOW_ROTATION_INDEX: number;
+        /** @private */
         public _iUsesPosition: boolean;
+        /** @private */
         public _iUsesRotation: boolean;
+        /** @private */
         public _iSmooth: boolean;
+        /**
+        * Creates a new <code>ParticleFollowNode</code>
+        *
+        * @param    [optional] usesPosition     Defines wehether the individual particle reacts to the position of the target.
+        * @param    [optional] usesRotation     Defines wehether the individual particle reacts to the rotation of the target.
+        * @param    [optional] smooth     Defines wehether the state calculate the interpolated value.
+        */
         constructor(usesPosition?: boolean, usesRotation?: boolean, smooth?: boolean);
+        /**
+        * @inheritDoc
+        */
         public getAGALVertexCode(pass: away.materials.MaterialPassBase, animationRegisterCache: animators.AnimationRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
         public getAnimationState(animator: animators.IAnimator): animators.ParticleFollowState;
     }
 }
 declare module away.animators {
     class ParticleInitialColorNode extends animators.ParticleNodeBase {
+        /** @private */
         static MULTIPLIER_INDEX: number;
+        /** @private */
         static OFFSET_INDEX: number;
+        /** @private */
         public _iUsesMultiplier: boolean;
+        /** @private */
         public _iUsesOffset: boolean;
+        /** @private */
         public _iInitialColor: away.geom.ColorTransform;
+        /**
+        * Reference for color node properties on a single particle (when in local property mode).
+        * Expects a <code>ColorTransform</code> object representing the color transform applied to the particle.
+        */
         static COLOR_INITIAL_COLORTRANSFORM: string;
         constructor(mode: number, usesMultiplier?: boolean, usesOffset?: boolean, initialColor?: away.geom.ColorTransform);
+        /**
+        * @inheritDoc
+        */
         public getAGALVertexCode(pass: away.materials.MaterialPassBase, animationRegisterCache: animators.AnimationRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
         public _iProcessAnimationSetting(particleAnimationSet: animators.ParticleAnimationSet): void;
+        /**
+        * @inheritDoc
+        */
         public _iGeneratePropertyOfOneParticle(param: animators.ParticleProperties): void;
     }
 }
 declare module away.animators {
+    /**
+    * A particle animation node used to control the position of a particle over time around a circular orbit.
+    */
     class ParticleOrbitNode extends animators.ParticleNodeBase {
+        /** @private */
         static ORBIT_INDEX: number;
+        /** @private */
         static EULERS_INDEX: number;
+        /** @private */
         public _iUsesEulers: boolean;
+        /** @private */
         public _iUsesCycle: boolean;
+        /** @private */
         public _iUsesPhase: boolean;
+        /** @private */
         public _iRadius: number;
+        /** @private */
         public _iCycleDuration: number;
+        /** @private */
         public _iCyclePhase: number;
+        /** @private */
         public _iEulers: away.geom.Vector3D;
+        /**
+        * Reference for orbit node properties on a single particle (when in local property mode).
+        * Expects a <code>Vector3D</code> object representing the radius (x), cycle speed (y) and cycle phase (z) of the motion on the particle.
+        */
         static ORBIT_VECTOR3D: string;
+        /**
+        * Creates a new <code>ParticleOrbitNode</code> object.
+        *
+        * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
+        * @param    [optional] usesEulers      Defines whether the node uses the <code>eulers</code> property in the shader to calculate a rotation on the orbit. Defaults to true.
+        * @param    [optional] usesCycle       Defines whether the node uses the <code>cycleDuration</code> property in the shader to calculate the period of the orbit independent of particle duration. Defaults to false.
+        * @param    [optional] usesPhase       Defines whether the node uses the <code>cyclePhase</code> property in the shader to calculate a starting offset to the cycle rotation of the particle. Defaults to false.
+        * @param    [optional] radius          Defines the radius of the orbit when in global mode. Defaults to 100.
+        * @param    [optional] cycleDuration   Defines the duration of the orbit in seconds, used as a period independent of particle duration when in global mode. Defaults to 1.
+        * @param    [optional] cyclePhase      Defines the phase of the orbit in degrees, used as the starting offset of the cycle when in global mode. Defaults to 0.
+        * @param    [optional] eulers          Defines the euler rotation in degrees, applied to the orientation of the orbit when in global mode.
+        */
         constructor(mode: number, usesEulers?: boolean, usesCycle?: boolean, usesPhase?: boolean, radius?: number, cycleDuration?: number, cyclePhase?: number, eulers?: away.geom.Vector3D);
+        /**
+        * @inheritDoc
+        */
         public getAGALVertexCode(pass: away.materials.MaterialPassBase, animationRegisterCache: animators.AnimationRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
         public getAnimationState(animator: animators.IAnimator): animators.ParticleOrbitState;
+        /**
+        * @inheritDoc
+        */
         public _iGeneratePropertyOfOneParticle(param: animators.ParticleProperties): void;
     }
 }
 declare module away.animators {
+    /**
+    * A particle animation node used to control the position of a particle over time using simple harmonic motion.
+    */
     class ParticleOscillatorNode extends animators.ParticleNodeBase {
+        /** @private */
         static OSCILLATOR_INDEX: number;
+        /** @private */
         public _iOscillator: away.geom.Vector3D;
+        /**
+        * Reference for ocsillator node properties on a single particle (when in local property mode).
+        * Expects a <code>Vector3D</code> object representing the axis (x,y,z) and cycle speed (w) of the motion on the particle.
+        */
         static OSCILLATOR_VECTOR3D: string;
+        /**
+        * Creates a new <code>ParticleOscillatorNode</code>
+        *
+        * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
+        * @param    [optional] oscillator      Defines the default oscillator axis (x, y, z) and cycleDuration (w) of the node, used when in global mode.
+        */
         constructor(mode: number, oscillator?: away.geom.Vector3D);
+        /**
+        * @inheritDoc
+        */
         public getAGALVertexCode(pass: away.materials.MaterialPassBase, animationRegisterCache: animators.AnimationRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
         public getAnimationState(animator: animators.IAnimator): animators.ParticleOscillatorState;
+        /**
+        * @inheritDoc
+        */
         public _iGeneratePropertyOfOneParticle(param: animators.ParticleProperties): void;
     }
 }
 declare module away.animators {
+    /**
+    * A particle animation node used to set the starting position of a particle.
+    */
     class ParticlePositionNode extends animators.ParticleNodeBase {
+        /** @private */
         static POSITION_INDEX: number;
+        /** @private */
         public _iPosition: away.geom.Vector3D;
+        /**
+        * Reference for position node properties on a single particle (when in local property mode).
+        * Expects a <code>Vector3D</code> object representing position of the particle.
+        */
         static POSITION_VECTOR3D: string;
+        /**
+        * Creates a new <code>ParticlePositionNode</code>
+        *
+        * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
+        * @param    [optional] position        Defines the default position of the particle when in global mode. Defaults to 0,0,0.
+        */
         constructor(mode: number, position?: away.geom.Vector3D);
+        /**
+        * @inheritDoc
+        */
         public getAGALVertexCode(pass: away.materials.MaterialPassBase, animationRegisterCache: animators.AnimationRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
         public getAnimationState(animator: animators.IAnimator): animators.ParticlePositionState;
+        /**
+        * @inheritDoc
+        */
         public _iGeneratePropertyOfOneParticle(param: animators.ParticleProperties): void;
     }
 }
 declare module away.animators {
+    /**
+    * A particle animation node used to control the rotation of a particle to match its heading vector.
+    */
     class ParticleRotateToHeadingNode extends animators.ParticleNodeBase {
+        /** @private */
         static MATRIX_INDEX: number;
+        /**
+        * Creates a new <code>ParticleBillboardNode</code>
+        */
         constructor();
+        /**
+        * @inheritDoc
+        */
         public getAGALVertexCode(pass: away.materials.MaterialPassBase, animationRegisterCache: animators.AnimationRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
         public getAnimationState(animator: animators.IAnimator): animators.ParticleRotateToHeadingState;
+        /**
+        * @inheritDoc
+        */
         public _iProcessAnimationSetting(particleAnimationSet: animators.ParticleAnimationSet): void;
     }
 }
 declare module away.animators {
+    /**
+    * A particle animation node used to control the rotation of a particle to face to a position
+    */
     class ParticleRotateToPositionNode extends animators.ParticleNodeBase {
+        /** @private */
         static MATRIX_INDEX: number;
+        /** @private */
         static POSITION_INDEX: number;
+        /** @private */
         public _iPosition: away.geom.Vector3D;
+        /**
+        * Reference for the position the particle will rotate to face for a single particle (when in local property mode).
+        * Expects a <code>Vector3D</code> object representing the position that the particle must face.
+        */
         static POSITION_VECTOR3D: string;
+        /**
+        * Creates a new <code>ParticleRotateToPositionNode</code>
+        */
         constructor(mode: number, position?: away.geom.Vector3D);
+        /**
+        * @inheritDoc
+        */
         public getAGALVertexCode(pass: away.materials.MaterialPassBase, animationRegisterCache: animators.AnimationRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
         public getAnimationState(animator: animators.IAnimator): animators.ParticleRotateToPositionState;
+        /**
+        * @inheritDoc
+        */
         public _iGeneratePropertyOfOneParticle(param: animators.ParticleProperties): void;
     }
 }
 declare module away.animators {
+    /**
+    * A particle animation node used to set the starting rotational velocity of a particle.
+    */
     class ParticleRotationalVelocityNode extends animators.ParticleNodeBase {
+        /** @private */
         static ROTATIONALVELOCITY_INDEX: number;
+        /** @private */
         public _iRotationalVelocity: away.geom.Vector3D;
+        /**
+        * Reference for rotational velocity node properties on a single particle (when in local property mode).
+        * Expects a <code>Vector3D</code> object representing the rotational velocity around an axis of the particle.
+        */
         static ROTATIONALVELOCITY_VECTOR3D: string;
+        /**
+        * Creates a new <code>ParticleRotationalVelocityNode</code>
+        *
+        * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
+        */
         constructor(mode: number, rotationalVelocity?: away.geom.Vector3D);
+        /**
+        * @inheritDoc
+        */
         public getAGALVertexCode(pass: away.materials.MaterialPassBase, animationRegisterCache: animators.AnimationRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
         public getAnimationState(animator: animators.IAnimator): animators.ParticleRotationalVelocityState;
+        /**
+        * @inheritDoc
+        */
         public _iGeneratePropertyOfOneParticle(param: animators.ParticleProperties): void;
     }
 }
 declare module away.animators {
+    /**
+    * A particle animation node used to control the scale variation of a particle over time.
+    */
     class ParticleScaleNode extends animators.ParticleNodeBase {
+        /** @private */
         static SCALE_INDEX: number;
+        /** @private */
         public _iUsesCycle: boolean;
+        /** @private */
         public _iUsesPhase: boolean;
+        /** @private */
         public _iMinScale: number;
+        /** @private */
         public _iMaxScale: number;
+        /** @private */
         public _iCycleDuration: number;
+        /** @private */
         public _iCyclePhase: number;
+        /**
+        * Reference for scale node properties on a single particle (when in local property mode).
+        * Expects a <code>Vector3D</code> representing the min scale (x), max scale(y), optional cycle speed (z) and phase offset (w) applied to the particle.
+        */
         static SCALE_VECTOR3D: string;
+        /**
+        * Creates a new <code>ParticleScaleNode</code>
+        *
+        * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
+        * @param    [optional] usesCycle       Defines whether the node uses the <code>cycleDuration</code> property in the shader to calculate the period of animation independent of particle duration. Defaults to false.
+        * @param    [optional] usesPhase       Defines whether the node uses the <code>cyclePhase</code> property in the shader to calculate a starting offset to the animation cycle. Defaults to false.
+        * @param    [optional] minScale        Defines the default min scale transform of the node, when in global mode. Defaults to 1.
+        * @param    [optional] maxScale        Defines the default max color transform of the node, when in global mode. Defaults to 1.
+        * @param    [optional] cycleDuration   Defines the default duration of the animation in seconds, used as a period independent of particle duration when in global mode. Defaults to 1.
+        * @param    [optional] cyclePhase      Defines the default phase of the cycle in degrees, used as the starting offset of the cycle when in global mode. Defaults to 0.
+        */
         constructor(mode: number, usesCycle: boolean, usesPhase: boolean, minScale?: number, maxScale?: number, cycleDuration?: number, cyclePhase?: number);
+        /**
+        * @inheritDoc
+        */
         public getAGALVertexCode(pass: away.materials.MaterialPassBase, animationRegisterCache: animators.AnimationRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
         public getAnimationState(animator: animators.IAnimator): animators.ParticleScaleState;
+        /**
+        * @inheritDoc
+        */
         public _iGeneratePropertyOfOneParticle(param: animators.ParticleProperties): void;
     }
 }
 declare module away.animators {
     class ParticleSegmentedColorNode extends animators.ParticleNodeBase {
+        /** @private */
         static START_MULTIPLIER_INDEX: number;
+        /** @private */
         static START_OFFSET_INDEX: number;
+        /** @private */
         static TIME_DATA_INDEX: number;
+        /** @private */
         public _iUsesMultiplier: boolean;
+        /** @private */
         public _iUsesOffset: boolean;
+        /** @private */
         public _iStartColor: away.geom.ColorTransform;
+        /** @private */
         public _iEndColor: away.geom.ColorTransform;
+        /** @private */
         public _iNumSegmentPoint: number;
+        /** @private */
         public _iSegmentPoints: animators.ColorSegmentPoint[];
         constructor(usesMultiplier: boolean, usesOffset: boolean, numSegmentPoint: number, startColor: away.geom.ColorTransform, endColor: away.geom.ColorTransform, segmentPoints: animators.ColorSegmentPoint[]);
+        /**
+        * @inheritDoc
+        */
         public _iProcessAnimationSetting(particleAnimationSet: animators.ParticleAnimationSet): void;
+        /**
+        * @inheritDoc
+        */
         public getAGALVertexCode(pass: away.materials.MaterialPassBase, animationRegisterCache: animators.AnimationRegisterCache): string;
     }
 }
 declare module away.animators {
+    /**
+    * A particle animation node used when a spritesheet texture is required to animate the particle.
+    * NB: to enable use of this node, the <code>repeat</code> property on the material has to be set to true.
+    */
     class ParticleSpriteSheetNode extends animators.ParticleNodeBase {
+        /** @private */
         static UV_INDEX_0: number;
+        /** @private */
         static UV_INDEX_1: number;
+        /** @private */
         public _iUsesCycle: boolean;
+        /** @private */
         public _iUsesPhase: boolean;
+        /** @private */
         public _iTotalFrames: number;
+        /** @private */
         public _iNumColumns: number;
+        /** @private */
         public _iNumRows: number;
+        /** @private */
         public _iCycleDuration: number;
+        /** @private */
         public _iCyclePhase: number;
+        /**
+        * Reference for spritesheet node properties on a single particle (when in local property mode).
+        * Expects a <code>Vector3D</code> representing the cycleDuration (x), optional phaseTime (y).
+        */
         static UV_VECTOR3D: string;
+        /**
+        * Defines the number of columns in the spritesheet, when in global mode. Defaults to 1. Read only.
+        */
         public numColumns : number;
+        /**
+        * Defines the number of rows in the spritesheet, when in global mode. Defaults to 1. Read only.
+        */
         public numRows : number;
+        /**
+        * Defines the total number of frames used by the spritesheet, when in global mode. Defaults to the number defined by numColumns and numRows. Read only.
+        */
         public totalFrames : number;
+        /**
+        * Creates a new <code>ParticleSpriteSheetNode</code>
+        *
+        * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
+        * @param    [optional] numColumns      Defines the number of columns in the spritesheet, when in global mode. Defaults to 1.
+        * @param    [optional] numRows         Defines the number of rows in the spritesheet, when in global mode. Defaults to 1.
+        * @param    [optional] cycleDuration   Defines the default cycle duration in seconds, when in global mode. Defaults to 1.
+        * @param    [optional] cyclePhase      Defines the default cycle phase, when in global mode. Defaults to 0.
+        * @param    [optional] totalFrames     Defines the total number of frames used by the spritesheet, when in global mode. Defaults to the number defined by numColumns and numRows.
+        * @param    [optional] looping         Defines whether the spritesheet animation is set to loop indefinitely. Defaults to true.
+        */
         constructor(mode: number, usesCycle: boolean, usesPhase: boolean, numColumns?: number, numRows?: number, cycleDuration?: number, cyclePhase?: number, totalFrames?: number);
+        /**
+        * @inheritDoc
+        */
         public getAGALUVCode(pass: away.materials.MaterialPassBase, animationRegisterCache: animators.AnimationRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
         public getAnimationState(animator: animators.IAnimator): animators.ParticleSpriteSheetState;
+        /**
+        * @inheritDoc
+        */
         public _iProcessAnimationSetting(particleAnimationSet: animators.ParticleAnimationSet): void;
+        /**
+        * @inheritDoc
+        */
         public _iGeneratePropertyOfOneParticle(param: animators.ParticleProperties): void;
     }
 }
 declare module away.animators {
+    /**
+    * A particle animation node used as the base node for timekeeping inside a particle. Automatically added to a particle animation set on instatiation.
+    */
     class ParticleTimeNode extends animators.ParticleNodeBase {
+        /** @private */
         static TIME_STREAM_INDEX: number;
+        /** @private */
         static TIME_CONSTANT_INDEX: number;
+        /** @private */
         public _iUsesDuration: boolean;
+        /** @private */
         public _iUsesDelay: boolean;
+        /** @private */
         public _iUsesLooping: boolean;
+        /**
+        * Creates a new <code>ParticleTimeNode</code>
+        *
+        * @param    [optional] usesDuration    Defines whether the node uses the <code>duration</code> data in the static properties to determine how long a particle is visible for. Defaults to false.
+        * @param    [optional] usesDelay       Defines whether the node uses the <code>delay</code> data in the static properties to determine how long a particle is hidden for. Defaults to false. Requires <code>usesDuration</code> to be true.
+        * @param    [optional] usesLooping     Defines whether the node creates a looping timeframe for each particle determined by the <code>startTime</code>, <code>duration</code> and <code>delay</code> data in the static properties function. Defaults to false. Requires <code>usesLooping</code> to be true.
+        */
         constructor(usesDuration?: boolean, usesLooping?: boolean, usesDelay?: boolean);
+        /**
+        * @inheritDoc
+        */
         public getAGALVertexCode(pass: away.materials.MaterialPassBase, animationRegisterCache: animators.AnimationRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
         public getAnimationState(animator: animators.IAnimator): animators.ParticleTimeState;
+        /**
+        * @inheritDoc
+        */
         public _iGeneratePropertyOfOneParticle(param: animators.ParticleProperties): void;
     }
 }
 declare module away.animators {
+    /**
+    * A particle animation node used to control the UV offset and scale of a particle over time.
+    */
     class ParticleUVNode extends animators.ParticleNodeBase {
+        /** @private */
         static UV_INDEX: number;
+        /** @private */
         public _iUvData: away.geom.Vector3D;
+        /**
+        *
+        */
         static U_AXIS: string;
+        /**
+        *
+        */
         static V_AXIS: string;
         private _cycle;
         private _scale;
         private _axis;
+        /**
+        * Creates a new <code>ParticleTimeNode</code>
+        *
+        * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
+        * @param    [optional] cycle           Defines whether the time track is in loop mode. Defaults to false.
+        * @param    [optional] scale           Defines whether the time track is in loop mode. Defaults to false.
+        * @param    [optional] axis            Defines whether the time track is in loop mode. Defaults to false.
+        */
         constructor(mode: number, cycle?: number, scale?: number, axis?: string);
+        /**
+        *
+        */
         public cycle : number;
+        /**
+        *
+        */
         public scale : number;
+        /**
+        *
+        */
         public axis : string;
+        /**
+        * @inheritDoc
+        */
         public getAGALUVCode(pass: away.materials.MaterialPassBase, animationRegisterCache: animators.AnimationRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
         public getAnimationState(animator: animators.IAnimator): animators.ParticleUVState;
         private updateUVData();
+        /**
+        * @inheritDoc
+        */
         public _iProcessAnimationSetting(particleAnimationSet: animators.ParticleAnimationSet): void;
     }
 }
 declare module away.animators {
+    /**
+    * A particle animation node used to set the starting velocity of a particle.
+    */
     class ParticleVelocityNode extends animators.ParticleNodeBase {
+        /** @private */
         static VELOCITY_INDEX: number;
+        /** @private */
         public _iVelocity: away.geom.Vector3D;
+        /**
+        * Reference for velocity node properties on a single particle (when in local property mode).
+        * Expects a <code>Vector3D</code> object representing the direction of movement on the particle.
+        */
         static VELOCITY_VECTOR3D: string;
+        /**
+        * Creates a new <code>ParticleVelocityNode</code>
+        *
+        * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
+        * @param    [optional] velocity        Defines the default velocity vector of the node, used when in global mode.
+        */
         constructor(mode: number, velocity?: away.geom.Vector3D);
+        /**
+        * @inheritDoc
+        */
         public getAGALVertexCode(pass: away.materials.MaterialPassBase, animationRegisterCache: animators.AnimationRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
         public getAnimationState(animator: animators.IAnimator): animators.ParticleVelocityState;
+        /**
+        * @inheritDoc
+        */
         public _iGeneratePropertyOfOneParticle(param: animators.ParticleProperties): void;
     }
 }
 declare module away.animators {
+    /**
+    * A skeleton animation node that uses two animation node inputs to blend a lineraly interpolated output of a skeleton pose.
+    */
     class SkeletonBinaryLERPNode extends animators.AnimationNodeBase {
+        /**
+        * Defines input node A to use for the blended output.
+        */
         public inputA: animators.AnimationNodeBase;
+        /**
+        * Defines input node B to use for the blended output.
+        */
         public inputB: animators.AnimationNodeBase;
+        /**
+        * Creates a new <code>SkeletonBinaryLERPNode</code> object.
+        */
         constructor();
+        /**
+        * @inheritDoc
+        */
         public getAnimationState(animator: animators.IAnimator): animators.SkeletonBinaryLERPState;
     }
 }
 declare module away.animators {
+    /**
+    * A skeleton animation node containing time-based animation data as individual skeleton poses.
+    */
     class SkeletonClipNode extends animators.AnimationClipNodeBase {
         private _frames;
+        /**
+        * Determines whether to use SLERP equations (true) or LERP equations (false) in the calculation
+        * of the output skeleton pose. Defaults to false.
+        */
         public highQuality: boolean;
+        /**
+        * Returns a vector of skeleton poses representing the pose of each animation frame in the clip.
+        */
         public frames : animators.SkeletonPose[];
+        /**
+        * Creates a new <code>SkeletonClipNode</code> object.
+        */
         constructor();
+        /**
+        * Adds a skeleton pose frame to the internal timeline of the animation node.
+        *
+        * @param skeletonPose The skeleton pose object to add to the timeline of the node.
+        * @param duration The specified duration of the frame in milliseconds.
+        */
         public addFrame(skeletonPose: animators.SkeletonPose, duration: number): void;
+        /**
+        * @inheritDoc
+        */
         public getAnimationState(animator: animators.IAnimator): animators.SkeletonClipState;
+        /**
+        * @inheritDoc
+        */
         public _pUpdateStitch(): void;
     }
 }
 declare module away.animators {
+    /**
+    * A skeleton animation node that uses a difference input pose with a base input pose to blend a linearly interpolated output of a skeleton pose.
+    */
     class SkeletonDifferenceNode extends animators.AnimationNodeBase {
+        /**
+        * Defines a base input node to use for the blended output.
+        */
         public baseInput: animators.AnimationNodeBase;
+        /**
+        * Defines a difference input node to use for the blended output.
+        */
         public differenceInput: animators.AnimationNodeBase;
+        /**
+        * Creates a new <code>SkeletonAdditiveNode</code> object.
+        */
         constructor();
+        /**
+        * @inheritDoc
+        */
         public getAnimationState(animator: animators.IAnimator): animators.SkeletonDifferenceState;
     }
 }
 declare module away.animators {
+    /**
+    * A skeleton animation node that uses four directional input poses with an input direction to blend a linearly interpolated output of a skeleton pose.
+    */
     class SkeletonDirectionalNode extends animators.AnimationNodeBase {
+        /**
+        * Defines the forward configured input node to use for the blended output.
+        */
         public forward: animators.AnimationNodeBase;
+        /**
+        * Defines the backwards configured input node to use for the blended output.
+        */
         public backward: animators.AnimationNodeBase;
+        /**
+        * Defines the left configured input node to use for the blended output.
+        */
         public left: animators.AnimationNodeBase;
+        /**
+        * Defines the right configured input node to use for the blended output.
+        */
         public right: animators.AnimationNodeBase;
         constructor();
+        /**
+        * @inheritDoc
+        */
         public getAnimationState(animator: animators.IAnimator): animators.SkeletonDirectionalState;
     }
 }
 declare module away.animators {
+    /**
+    * A skeleton animation node that uses an n-dimensional array of animation node inputs to blend a lineraly interpolated output of a skeleton pose.
+    */
     class SkeletonNaryLERPNode extends animators.AnimationNodeBase {
         public _iInputs: animators.AnimationNodeBase[];
         private _numInputs;
         public numInputs : number;
+        /**
+        * Creates a new <code>SkeletonNaryLERPNode</code> object.
+        */
         constructor();
+        /**
+        * Returns an integer representing the input index of the given skeleton animation node.
+        *
+        * @param input The skeleton animation node for with the input index is requested.
+        */
         public getInputIndex(input: animators.AnimationNodeBase): number;
+        /**
+        * Returns the skeleton animation node object that resides at the given input index.
+        *
+        * @param index The input index for which the skeleton animation node is requested.
+        */
         public getInputAt(index: number): animators.AnimationNodeBase;
+        /**
+        * Adds a new skeleton animation node input to the animation node.
+        */
         public addInput(input: animators.AnimationNodeBase): void;
+        /**
+        * @inheritDoc
+        */
         public getAnimationState(animator: animators.IAnimator): animators.SkeletonNaryLERPState;
     }
 }
 declare module away.animators {
+    /**
+    * A vertex animation node containing time-based animation data as individual geometry obejcts.
+    */
     class VertexClipNode extends animators.AnimationClipNodeBase {
         private _frames;
         private _translations;
+        /**
+        * Returns a vector of geometry frames representing the vertex values of each animation frame in the clip.
+        */
         public frames : away.base.Geometry[];
+        /**
+        * Creates a new <code>VertexClipNode</code> object.
+        */
         constructor();
+        /**
+        * Adds a geometry object to the internal timeline of the animation node.
+        *
+        * @param geometry The geometry object to add to the timeline of the node.
+        * @param duration The specified duration of the frame in milliseconds.
+        * @param translation The absolute translation of the frame, used in root delta calculations for mesh movement.
+        */
         public addFrame(geometry: away.base.Geometry, duration: number, translation?: away.geom.Vector3D): void;
+        /**
+        * @inheritDoc
+        */
         public _pUpdateStitch(): void;
     }
 }
 declare module away.animators {
     interface IAnimationState {
         positionDelta: away.geom.Vector3D;
-        offset(startTime: number): any;
-        update(time: number): any;
-        phase(value: number): any;
+        offset(startTime: number);
+        update(time: number);
+        /**
+        * Sets the animation phase of the node.
+        *
+        * @param value The phase value to use. 0 represents the beginning of an animation clip, 1 represents the end.
+        */
+        phase(value: number);
     }
 }
 declare module away.animators {
     interface ISkeletonAnimationState extends animators.IAnimationState {
+        /**
+        * Returns the output skeleton pose of the animation node.
+        */
         getSkeletonPose(skeleton: animators.Skeleton): animators.SkeletonPose;
     }
 }
 declare module away.animators {
+    /**
+    * Provides an interface for animation node classes that hold animation data for use in the Vertex animator class.
+    *
+    * @see away.animators.VertexAnimator
+    */
     interface IVertexAnimationState extends animators.IAnimationState {
+        /**
+        * Returns the current geometry frame of animation in the clip based on the internal playhead position.
+        */
         currentGeometry: away.base.Geometry;
+        /**
+        * Returns the current geometry frame of animation in the clip based on the internal playhead position.
+        */
         nextGeometry: away.base.Geometry;
+        /**
+        * Returns a fractional value between 0 and 1 representing the blending ratio of the current playhead position
+        * between the current geometry frame (0) and next geometry frame (1) of the animation.
+        */
         blendWeight: number;
     }
 }
 declare module away.animators {
+    /**
+    *
+    */
     class AnimationStateBase implements animators.IAnimationState {
         public _pAnimationNode: animators.AnimationNodeBase;
         public _pRootDelta: away.geom.Vector3D;
@@ -5989,16 +10468,47 @@ declare module away.animators {
         public _pTime: number;
         public _pStartTime: number;
         public _pAnimator: animators.IAnimator;
+        /**
+        * Returns a 3d vector representing the translation delta of the animating entity for the current timestep of animation
+        */
         public positionDelta : away.geom.Vector3D;
         constructor(animator: animators.IAnimator, animationNode: animators.AnimationNodeBase);
+        /**
+        * Resets the start time of the node to a  new value.
+        *
+        * @param startTime The absolute start time (in milliseconds) of the node's starting time.
+        */
         public offset(startTime: number): void;
+        /**
+        * Updates the configuration of the node to its current state.
+        *
+        * @param time The absolute time (in milliseconds) of the animator's play head position.
+        *
+        * @see away.animators.AnimatorBase#update()
+        */
         public update(time: number): void;
+        /**
+        * Sets the animation phase of the node.
+        *
+        * @param value The phase value to use. 0 represents the beginning of an animation clip, 1 represents the end.
+        */
         public phase(value: number): void;
+        /**
+        * Updates the node's internal playhead position.
+        *
+        * @param time The local time (in milliseconds) of the node's playhead position.
+        */
         public _pUpdateTime(time: number): void;
+        /**
+        * Updates the node's root delta position
+        */
         public _pUpdatePositionDelta(): void;
     }
 }
 declare module away.animators {
+    /**
+    * ...
+    */
     class ParticleStateBase extends animators.AnimationStateBase {
         private _particleNode;
         public _pDynamicProperties: away.geom.Vector3D[];
@@ -6006,42 +10516,73 @@ declare module away.animators {
         public _pNeedUpdateTime: boolean;
         constructor(animator: animators.ParticleAnimator, particleNode: animators.ParticleNodeBase, needUpdateTime?: boolean);
         public needUpdateTime : boolean;
-        public setRenderState(stage3DProxy: away.managers.Stage3DProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        public setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
         public _pUpdateDynamicProperties(animationSubGeometry: animators.AnimationSubGeometry): void;
     }
 }
 declare module away.animators {
+    /**
+    * ...
+    */
     class ParticleAccelerationState extends animators.ParticleStateBase {
         private _particleAccelerationNode;
         private _acceleration;
         private _halfAcceleration;
+        /**
+        * Defines the acceleration vector of the state, used when in global mode.
+        */
         public acceleration : away.geom.Vector3D;
         constructor(animator: animators.ParticleAnimator, particleAccelerationNode: animators.ParticleAccelerationNode);
-        public setRenderState(stage3DProxy: away.managers.Stage3DProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        /**
+        * @inheritDoc
+        */
+        public setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
         private updateAccelerationData();
     }
 }
 declare module away.animators {
+    /**
+    * ...
+    */
     class ParticleBezierCurveState extends animators.ParticleStateBase {
         private _particleBezierCurveNode;
         private _controlPoint;
         private _endPoint;
+        /**
+        * Defines the default control point of the node, used when in global mode.
+        */
         public controlPoint : away.geom.Vector3D;
+        /**
+        * Defines the default end point of the node, used when in global mode.
+        */
         public endPoint : away.geom.Vector3D;
         constructor(animator: animators.ParticleAnimator, particleBezierCurveNode: animators.ParticleBezierCurveNode);
-        public setRenderState(stage3DProxy: away.managers.Stage3DProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        public setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
     }
 }
 declare module away.animators {
+    /**
+    * ...
+    */
     class ParticleBillboardState extends animators.ParticleStateBase {
         private _matrix;
         private _billboardAxis;
+        /**
+        *
+        */
         constructor(animator: animators.ParticleAnimator, particleNode: animators.ParticleBillboardNode);
-        public setRenderState(stage3DProxy: away.managers.Stage3DProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        public setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        /**
+        * Defines the billboard axis.
+        */
         public billboardAxis : away.geom.Vector3D;
     }
 }
 declare module away.animators {
+    /**
+    * ...
+    * @author ...
+    */
     class ParticleColorState extends animators.ParticleStateBase {
         private _particleColorNode;
         private _usesMultiplier;
@@ -6057,16 +10598,31 @@ declare module away.animators {
         private _deltaMultiplierData;
         private _startOffsetData;
         private _deltaOffsetData;
+        /**
+        * Defines the start color transform of the state, when in global mode.
+        */
         public startColor : away.geom.ColorTransform;
+        /**
+        * Defines the end color transform of the state, when in global mode.
+        */
         public endColor : away.geom.ColorTransform;
+        /**
+        * Defines the duration of the animation in seconds, used as a period independent of particle duration when in global mode. Defaults to 1.
+        */
         public cycleDuration : number;
+        /**
+        * Defines the phase of the cycle in degrees, used as the starting offset of the cycle when in global mode. Defaults to 0.
+        */
         public cyclePhase : number;
         constructor(animator: animators.ParticleAnimator, particleColorNode: animators.ParticleColorNode);
-        public setRenderState(stage3DProxy: away.managers.Stage3DProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        public setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
         private updateColorData();
     }
 }
 declare module away.animators {
+    /**
+    * ...
+    */
     class ParticleFollowState extends animators.ParticleStateBase {
         private _particleFollowNode;
         private _followTarget;
@@ -6079,7 +10635,10 @@ declare module away.animators {
         constructor(animator: animators.ParticleAnimator, particleFollowNode: animators.ParticleFollowNode);
         public followTarget : away.base.Object3D;
         public smooth : boolean;
-        public setRenderState(stage3DProxy: away.managers.Stage3DProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        /**
+        * @inheritDoc
+        */
+        public setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
         private processPosition(currentTime, deltaTime, animationSubGeometry);
         private precessRotation(currentTime, deltaTime, animationSubGeometry);
         private processPositionAndRotation(currentTime, deltaTime, animationSubGeometry);
@@ -6094,12 +10653,21 @@ declare module away.animators {
         private _multiplierData;
         private _offsetData;
         constructor(animator: animators.ParticleAnimator, particleInitialColorNode: animators.ParticleInitialColorNode);
+        /**
+        * Defines the initial color transform of the state, when in global mode.
+        */
         public initialColor : away.geom.ColorTransform;
-        public setRenderState(stage3DProxy: away.managers.Stage3DProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        /**
+        * @inheritDoc
+        */
+        public setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
         private updateColorData();
     }
 }
 declare module away.animators {
+    /**
+    * ...
+    */
     class ParticleOrbitState extends animators.ParticleStateBase {
         private _particleOrbitNode;
         private _usesEulers;
@@ -6111,69 +10679,127 @@ declare module away.animators {
         private _eulers;
         private _orbitData;
         private _eulersMatrix;
+        /**
+        * Defines the radius of the orbit when in global mode. Defaults to 100.
+        */
         public radius : number;
+        /**
+        * Defines the duration of the orbit in seconds, used as a period independent of particle duration when in global mode. Defaults to 1.
+        */
         public cycleDuration : number;
+        /**
+        * Defines the phase of the orbit in degrees, used as the starting offset of the cycle when in global mode. Defaults to 0.
+        */
         public cyclePhase : number;
+        /**
+        * Defines the euler rotation in degrees, applied to the orientation of the orbit when in global mode.
+        */
         public eulers : away.geom.Vector3D;
         constructor(animator: animators.ParticleAnimator, particleOrbitNode: animators.ParticleOrbitNode);
-        public setRenderState(stage3DProxy: away.managers.Stage3DProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        public setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
         private updateOrbitData();
     }
 }
 declare module away.animators {
+    /**
+    * ...
+    */
     class ParticleOscillatorState extends animators.ParticleStateBase {
         private _particleOscillatorNode;
         private _oscillator;
         private _oscillatorData;
+        /**
+        * Defines the default oscillator axis (x, y, z) and cycleDuration (w) of the state, used when in global mode.
+        */
         public oscillator : away.geom.Vector3D;
         constructor(animator: animators.ParticleAnimator, particleOscillatorNode: animators.ParticleOscillatorNode);
-        public setRenderState(stage3DProxy: away.managers.Stage3DProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        /**
+        * @inheritDoc
+        */
+        public setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
         private updateOscillatorData();
     }
 }
 declare module away.animators {
+    /**
+    * ...
+    * @author ...
+    */
     class ParticlePositionState extends animators.ParticleStateBase {
         private _particlePositionNode;
         private _position;
+        /**
+        * Defines the position of the particle when in global mode. Defaults to 0,0,0.
+        */
         public position : away.geom.Vector3D;
+        /**
+        *
+        */
         public getPositions(): away.geom.Vector3D[];
         public setPositions(value: away.geom.Vector3D[]): void;
         constructor(animator: animators.ParticleAnimator, particlePositionNode: animators.ParticlePositionNode);
-        public setRenderState(stage3DProxy: away.managers.Stage3DProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        /**
+        * @inheritDoc
+        */
+        public setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
     }
 }
 declare module away.animators {
+    /**
+    * ...
+    */
     class ParticleRotateToHeadingState extends animators.ParticleStateBase {
         private _matrix;
         constructor(animator: animators.ParticleAnimator, particleNode: animators.ParticleNodeBase);
-        public setRenderState(stage3DProxy: away.managers.Stage3DProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        public setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
     }
 }
 declare module away.animators {
+    /**
+    * ...
+    */
     class ParticleRotateToPositionState extends animators.ParticleStateBase {
         private _particleRotateToPositionNode;
         private _position;
         private _matrix;
         private _offset;
+        /**
+        * Defines the position of the point the particle will rotate to face when in global mode. Defaults to 0,0,0.
+        */
         public position : away.geom.Vector3D;
         constructor(animator: animators.ParticleAnimator, particleRotateToPositionNode: animators.ParticleRotateToPositionNode);
-        public setRenderState(stage3DProxy: away.managers.Stage3DProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        public setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
     }
 }
 declare module away.animators {
+    /**
+    * ...
+    */
     class ParticleRotationalVelocityState extends animators.ParticleStateBase {
         private _particleRotationalVelocityNode;
         private _rotationalVelocityData;
         private _rotationalVelocity;
+        /**
+        * Defines the default rotationalVelocity of the state, used when in global mode.
+        */
         public rotationalVelocity : away.geom.Vector3D;
+        /**
+        *
+        */
         public getRotationalVelocities(): away.geom.Vector3D[];
         public setRotationalVelocities(value: away.geom.Vector3D[]): void;
         constructor(animator: animators.ParticleAnimator, particleRotationNode: animators.ParticleRotationalVelocityNode);
-        public setRenderState(stage3DProxy: away.managers.Stage3DProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        /**
+        * @inheritDoc
+        */
+        public setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
         private updateRotationalVelocityData();
     }
 }
 declare module away.animators {
+    /**
+    * ...
+    */
     class ParticleScaleState extends animators.ParticleStateBase {
         private _particleScaleNode;
         private _usesCycle;
@@ -6183,12 +10809,24 @@ declare module away.animators {
         private _cycleDuration;
         private _cyclePhase;
         private _scaleData;
+        /**
+        * Defines the end scale of the state, when in global mode. Defaults to 1.
+        */
         public minScale : number;
+        /**
+        * Defines the end scale of the state, when in global mode. Defaults to 1.
+        */
         public maxScale : number;
+        /**
+        * Defines the duration of the animation in seconds, used as a period independent of particle duration when in global mode. Defaults to 1.
+        */
         public cycleDuration : number;
+        /**
+        * Defines the phase of the cycle in degrees, used as the starting offset of the cycle when in global mode. Defaults to 0.
+        */
         public cyclePhase : number;
         constructor(animator: animators.ParticleAnimator, particleScaleNode: animators.ParticleScaleNode);
-        public setRenderState(stage3DProxy: away.managers.Stage3DProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        public setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
         private updateScaleData();
     }
 }
@@ -6203,18 +10841,33 @@ declare module away.animators {
         private _timeLifeData;
         private _multiplierData;
         private _offsetData;
+        /**
+        * Defines the start color transform of the state, when in global mode.
+        */
         public startColor : away.geom.ColorTransform;
+        /**
+        * Defines the end color transform of the state, when in global mode.
+        */
         public endColor : away.geom.ColorTransform;
+        /**
+        * Defines the number of segments.
+        */
         public numSegmentPoint : number;
+        /**
+        * Defines the key points of color
+        */
         public segmentPoints : animators.ColorSegmentPoint[];
         public usesMultiplier : boolean;
         public usesOffset : boolean;
         constructor(animator: animators.ParticleAnimator, particleSegmentedColorNode: animators.ParticleSegmentedColorNode);
-        public setRenderState(stage3DProxy: away.managers.Stage3DProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        public setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
         private updateColorData();
     }
 }
 declare module away.animators {
+    /**
+    * ...
+    */
     class ParticleSpriteSheetState extends animators.ParticleStateBase {
         private _particleSpriteSheetNode;
         private _usesCycle;
@@ -6225,39 +10878,63 @@ declare module away.animators {
         private _cycleDuration;
         private _cyclePhase;
         private _spriteSheetData;
+        /**
+        * Defines the cycle phase, when in global mode. Defaults to zero.
+        */
         public cyclePhase : number;
+        /**
+        * Defines the cycle duration in seconds, when in global mode. Defaults to 1.
+        */
         public cycleDuration : number;
         constructor(animator: animators.ParticleAnimator, particleSpriteSheetNode: animators.ParticleSpriteSheetNode);
-        public setRenderState(stage3DProxy: away.managers.Stage3DProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        public setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
         private updateSpriteSheetData();
     }
 }
 declare module away.animators {
+    /**
+    * ...
+    */
     class ParticleTimeState extends animators.ParticleStateBase {
         private _particleTimeNode;
         constructor(animator: animators.ParticleAnimator, particleTimeNode: animators.ParticleTimeNode);
-        public setRenderState(stage3DProxy: away.managers.Stage3DProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        public setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
     }
 }
 declare module away.animators {
+    /**
+    * ...
+    */
     class ParticleUVState extends animators.ParticleStateBase {
         private _particleUVNode;
         constructor(animator: animators.ParticleAnimator, particleUVNode: animators.ParticleUVNode);
-        public setRenderState(stage3DProxy: away.managers.Stage3DProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        public setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
     }
 }
 declare module away.animators {
+    /**
+    * ...
+    */
     class ParticleVelocityState extends animators.ParticleStateBase {
         private _particleVelocityNode;
         private _velocity;
+        /**
+        * Defines the default velocity vector of the state, used when in global mode.
+        */
         public velocity : away.geom.Vector3D;
+        /**
+        *
+        */
         public getVelocities(): away.geom.Vector3D[];
         public setVelocities(value: away.geom.Vector3D[]): void;
         constructor(animator: animators.ParticleAnimator, particleVelocityNode: animators.ParticleVelocityNode);
-        public setRenderState(stage3DProxy: away.managers.Stage3DProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        public setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
     }
 }
 declare module away.animators {
+    /**
+    *
+    */
     class AnimationClipState extends animators.AnimationStateBase {
         private _animationClipNode;
         private _animationStatePlaybackComplete;
@@ -6267,18 +10944,50 @@ declare module away.animators {
         public _pOldFrame: number;
         public _pTimeDir: number;
         public _pFramesDirty: boolean;
+        /**
+        * Returns a fractional value between 0 and 1 representing the blending ratio of the current playhead position
+        * between the current frame (0) and next frame (1) of the animation.
+        *
+        * @see #currentFrame
+        * @see #nextFrame
+        */
         public blendWeight : number;
+        /**
+        * Returns the current frame of animation in the clip based on the internal playhead position.
+        */
         public currentFrame : number;
+        /**
+        * Returns the next frame of animation in the clip based on the internal playhead position.
+        */
         public nextFrame : number;
         constructor(animator: animators.IAnimator, animationClipNode: animators.AnimationClipNodeBase);
+        /**
+        * @inheritDoc
+        */
         public update(time: number): void;
+        /**
+        * @inheritDoc
+        */
         public phase(value: number): void;
+        /**
+        * @inheritDoc
+        */
         public _pUpdateTime(time: number): void;
+        /**
+        * Updates the nodes internal playhead to determine the current and next animation frame, and the blendWeight between the two.
+        *
+        * @see #currentFrame
+        * @see #nextFrame
+        * @see #blendWeight
+        */
         public _pUpdateFrames(): void;
         private notifyPlaybackComplete();
     }
 }
 declare module away.animators {
+    /**
+    *
+    */
     class SkeletonBinaryLERPState extends animators.AnimationStateBase implements animators.ISkeletonAnimationState {
         private _blendWeight;
         private _skeletonAnimationNode;
@@ -6286,16 +10995,43 @@ declare module away.animators {
         private _skeletonPoseDirty;
         private _inputA;
         private _inputB;
+        /**
+        * Defines a fractional value between 0 and 1 representing the blending ratio between inputA (0) and inputB (1),
+        * used to produce the skeleton pose output.
+        *
+        * @see inputA
+        * @see inputB
+        */
         public blendWeight : number;
         constructor(animator: animators.IAnimator, skeletonAnimationNode: animators.SkeletonBinaryLERPNode);
+        /**
+        * @inheritDoc
+        */
         public phase(value: number): void;
+        /**
+        * @inheritDoc
+        */
         public _pUpdateTime(time: number): void;
+        /**
+        * Returns the current skeleton pose of the animation in the clip based on the internal playhead position.
+        */
         public getSkeletonPose(skeleton: animators.Skeleton): animators.SkeletonPose;
+        /**
+        * @inheritDoc
+        */
         public _pUpdatePositionDelta(): void;
+        /**
+        * Updates the output skeleton pose of the node based on the blendWeight value between input nodes.
+        *
+        * @param skeleton The skeleton used by the animator requesting the ouput pose.
+        */
         private updateSkeletonPose(skeleton);
     }
 }
 declare module away.animators {
+    /**
+    *
+    */
     class SkeletonClipState extends animators.AnimationClipState implements animators.ISkeletonAnimationState {
         private _rootPos;
         private _frames;
@@ -6304,17 +11040,43 @@ declare module away.animators {
         private _skeletonPoseDirty;
         private _currentPose;
         private _nextPose;
+        /**
+        * Returns the current skeleton pose frame of animation in the clip based on the internal playhead position.
+        */
         public currentPose : animators.SkeletonPose;
+        /**
+        * Returns the next skeleton pose frame of animation in the clip based on the internal playhead position.
+        */
         public nextPose : animators.SkeletonPose;
         constructor(animator: animators.IAnimator, skeletonClipNode: animators.SkeletonClipNode);
+        /**
+        * Returns the current skeleton pose of the animation in the clip based on the internal playhead position.
+        */
         public getSkeletonPose(skeleton: animators.Skeleton): animators.SkeletonPose;
+        /**
+        * @inheritDoc
+        */
         public _pUpdateTime(time: number): void;
+        /**
+        * @inheritDoc
+        */
         public _pUpdateFrames(): void;
+        /**
+        * Updates the output skeleton pose of the node based on the internal playhead position.
+        *
+        * @param skeleton The skeleton used by the animator requesting the ouput pose.
+        */
         private updateSkeletonPose(skeleton);
+        /**
+        * @inheritDoc
+        */
         public _pUpdatePositionDelta(): void;
     }
 }
 declare module away.animators {
+    /**
+    *
+    */
     class SkeletonDifferenceState extends animators.AnimationStateBase implements animators.ISkeletonAnimationState {
         private _blendWeight;
         private static _tempQuat;
@@ -6323,16 +11085,43 @@ declare module away.animators {
         private _skeletonPoseDirty;
         private _baseInput;
         private _differenceInput;
+        /**
+        * Defines a fractional value between 0 and 1 representing the blending ratio between the base input (0) and difference input (1),
+        * used to produce the skeleton pose output.
+        *
+        * @see #baseInput
+        * @see #differenceInput
+        */
         public blendWeight : number;
         constructor(animator: animators.IAnimator, skeletonAnimationNode: animators.SkeletonDifferenceNode);
+        /**
+        * @inheritDoc
+        */
         public phase(value: number): void;
+        /**
+        * @inheritDoc
+        */
         public _pUpdateTime(time: number): void;
+        /**
+        * Returns the current skeleton pose of the animation in the clip based on the internal playhead position.
+        */
         public getSkeletonPose(skeleton: animators.Skeleton): animators.SkeletonPose;
+        /**
+        * @inheritDoc
+        */
         public _pUpdatePositionDelta(): void;
+        /**
+        * Updates the output skeleton pose of the node based on the blendWeight value between base input and difference input nodes.
+        *
+        * @param skeleton The skeleton used by the animator requesting the ouput pose.
+        */
         private updateSkeletonPose(skeleton);
     }
 }
 declare module away.animators {
+    /**
+    *
+    */
     class SkeletonDirectionalState extends animators.AnimationStateBase implements animators.ISkeletonAnimationState {
         private _skeletonAnimationNode;
         private _skeletonPose;
@@ -6346,17 +11135,46 @@ declare module away.animators {
         private _backward;
         private _left;
         private _right;
+        /**
+        * Defines the direction in degrees of the aniamtion between the forwards (0), right(90) backwards (180) and left(270) input nodes,
+        * used to produce the skeleton pose output.
+        */
         public direction : number;
         constructor(animator: animators.IAnimator, skeletonAnimationNode: animators.SkeletonDirectionalNode);
+        /**
+        * @inheritDoc
+        */
         public phase(value: number): void;
+        /**
+        * @inheritDoc
+        */
         public _pUdateTime(time: number): void;
+        /**
+        * Returns the current skeleton pose of the animation in the clip based on the internal playhead position.
+        */
         public getSkeletonPose(skeleton: animators.Skeleton): animators.SkeletonPose;
+        /**
+        * @inheritDoc
+        */
         public _pUpdatePositionDelta(): void;
+        /**
+        * Updates the output skeleton pose of the node based on the direction value between forward, backwards, left and right input nodes.
+        *
+        * @param skeleton The skeleton used by the animator requesting the ouput pose.
+        */
         private updateSkeletonPose(skeleton);
+        /**
+        * Updates the blend value for the animation output based on the direction value between forward, backwards, left and right input nodes.
+        *
+        * @private
+        */
         private updateBlend();
     }
 }
 declare module away.animators {
+    /**
+    *
+    */
     class SkeletonNaryLERPState extends animators.AnimationStateBase implements animators.ISkeletonAnimationState {
         private _skeletonAnimationNode;
         private _skeletonPose;
@@ -6364,25 +11182,68 @@ declare module away.animators {
         private _blendWeights;
         private _inputs;
         constructor(animator: animators.IAnimator, skeletonAnimationNode: animators.SkeletonNaryLERPNode);
+        /**
+        * @inheritDoc
+        */
         public phase(value: number): void;
+        /**
+        * @inheritDoc
+        */
         public _pUdateTime(time: number): void;
+        /**
+        * Returns the current skeleton pose of the animation in the clip based on the internal playhead position.
+        */
         public getSkeletonPose(skeleton: animators.Skeleton): animators.SkeletonPose;
+        /**
+        * Returns the blend weight of the skeleton aniamtion node that resides at the given input index.
+        *
+        * @param index The input index for which the skeleton animation node blend weight is requested.
+        */
         public getBlendWeightAt(index: number): number;
+        /**
+        * Sets the blend weight of the skeleton aniamtion node that resides at the given input index.
+        *
+        * @param index The input index on which the skeleton animation node blend weight is to be set.
+        * @param blendWeight The blend weight value to use for the given skeleton animation node index.
+        */
         public setBlendWeightAt(index: number, blendWeight: number): void;
+        /**
+        * @inheritDoc
+        */
         public _pUpdatePositionDelta(): void;
+        /**
+        * Updates the output skeleton pose of the node based on the blend weight values given to the input nodes.
+        *
+        * @param skeleton The skeleton used by the animator requesting the ouput pose.
+        */
         private updateSkeletonPose(skeleton);
     }
 }
 declare module away.animators {
+    /**
+    *
+    */
     class VertexClipState extends animators.AnimationClipState implements animators.IVertexAnimationState {
         private _frames;
         private _vertexClipNode;
         private _currentGeometry;
         private _nextGeometry;
+        /**
+        * @inheritDoc
+        */
         public currentGeometry : away.base.Geometry;
+        /**
+        * @inheritDoc
+        */
         public nextGeometry : away.base.Geometry;
         constructor(animator: animators.IAnimator, vertexClipNode: animators.VertexClipNode);
+        /**
+        * @inheritDoc
+        */
         public _pUpdateFrames(): void;
+        /**
+        * @inheritDoc
+        */
         public _pUpdatePositionDelta(): void;
     }
 }
@@ -6399,41 +11260,109 @@ declare module away.animators {
     }
 }
 declare module away.animators {
+    /**
+    * A skeleton animation node that uses two animation node inputs to blend a lineraly interpolated output of a skeleton pose.
+    */
     class CrossfadeTransitionNode extends animators.SkeletonBinaryLERPNode {
         public blendSpeed: number;
         public startBlend: number;
+        /**
+        * Creates a new <code>CrossfadeTransitionNode</code> object.
+        */
         constructor();
     }
 }
 declare module away.animators {
+    /**
+    *
+    */
     class CrossfadeTransitionState extends animators.SkeletonBinaryLERPState {
         private _crossfadeTransitionNode;
         private _animationStateTransitionComplete;
         constructor(animator: animators.IAnimator, skeletonAnimationNode: animators.CrossfadeTransitionNode);
+        /**
+        * @inheritDoc
+        */
         public _pUpdateTime(time: number): void;
     }
 }
 declare module away.animators {
+    /**
+    * Provides an abstract base class for data set classes that hold animation data for use in animator classes.
+    *
+    * @see away.animators.AnimatorBase
+    */
     class AnimationSetBase extends away.library.NamedAssetBase implements away.library.IAsset {
         private _usesCPU;
         private _animations;
         private _animationNames;
         private _animationDictionary;
         constructor();
+        /**
+        * Retrieves a temporary GPU register that's still free.
+        *
+        * @param exclude An array of non-free temporary registers.
+        * @param excludeAnother An additional register that's not free.
+        * @return A temporary register that can be used.
+        */
         public _pFindTempReg(exclude: string[], excludeAnother?: string): string;
+        /**
+        * Indicates whether the properties of the animation data contained within the set combined with
+        * the vertex registers aslready in use on shading materials allows the animation data to utilise
+        * GPU calls.
+        */
         public usesCPU : boolean;
+        /**
+        * Called by the material to reset the GPU indicator before testing whether register space in the shader
+        * is available for running GPU-based animation code.
+        *
+        * @private
+        */
         public resetGPUCompatibility(): void;
         public cancelGPUCompatibility(): void;
+        /**
+        * @inheritDoc
+        */
         public assetType : string;
+        /**
+        * Returns a vector of animation state objects that make up the contents of the animation data set.
+        */
         public animations : animators.AnimationNodeBase[];
+        /**
+        * Returns a vector of animation state objects that make up the contents of the animation data set.
+        */
         public animationNames : string[];
+        /**
+        * Check to determine whether a state is registered in the animation set under the given name.
+        *
+        * @param stateName The name of the animation state object to be checked.
+        */
         public hasAnimation(name: string): boolean;
+        /**
+        * Retrieves the animation state object registered in the animation data set under the given name.
+        *
+        * @param stateName The name of the animation state object to be retrieved.
+        */
         public getAnimation(name: string): animators.AnimationNodeBase;
+        /**
+        * Adds an animation state object to the aniamtion data set under the given name.
+        *
+        * @param stateName The name under which the animation state object will be stored.
+        * @param animationState The animation state object to be staored in the set.
+        */
         public addAnimation(node: animators.AnimationNodeBase): void;
+        /**
+        * Cleans up any resources used by the current object.
+        */
         public dispose(): void;
     }
 }
 declare module away.animators {
+    /**
+    * Provides an abstract base class for animator classes that control animation output from a data set subtype of <code>AnimationSetBase</code>.
+    *
+    * @see away.animators.AnimationSetBase
+    */
     class AnimatorBase extends away.library.NamedAssetBase implements away.library.IAsset {
         private _broadcaster;
         private _isPlaying;
@@ -6450,66 +11379,287 @@ declare module away.animators {
         public _pActiveAnimationName: string;
         public _pAbsoluteTime: number;
         private _animationStates;
+        /**
+        * Enables translation of the animated mesh from data returned per frame via the positionDelta property of the active animation node. Defaults to true.
+        *
+        * @see away.animators.IAnimationState#positionDelta
+        */
         public updatePosition: boolean;
         public getAnimationState(node: animators.AnimationNodeBase): animators.AnimationStateBase;
         public getAnimationStateByName(name: string): animators.AnimationStateBase;
+        /**
+        * Returns the internal absolute time of the animator, calculated by the current time and the playback speed.
+        *
+        * @see #time
+        * @see #playbackSpeed
+        */
         public absoluteTime : number;
+        /**
+        * Returns the animation data set in use by the animator.
+        */
         public animationSet : animators.IAnimationSet;
+        /**
+        * Returns the current active animation state.
+        */
         public activeState : animators.IAnimationState;
+        /**
+        * Returns the current active animation node.
+        */
         public activeAnimation : animators.AnimationNodeBase;
+        /**
+        * Returns the current active animation node.
+        */
         public activeAnimationName : string;
+        /**
+        * Determines whether the animators internal update mechanisms are active. Used in cases
+        * where manual updates are required either via the <code>time</code> property or <code>update()</code> method.
+        * Defaults to true.
+        *
+        * @see #time
+        * @see #update()
+        */
         public autoUpdate : boolean;
+        /**
+        * Gets and sets the internal time clock of the animator.
+        */
         public time : number;
+        /**
+        * Sets the animation phase of the current active state's animation clip(s).
+        *
+        * @param value The phase value to use. 0 represents the beginning of an animation clip, 1 represents the end.
+        */
         public phase(value: number): void;
+        /**
+        * Creates a new <code>AnimatorBase</code> object.
+        *
+        * @param animationSet The animation data set to be used by the animator object.
+        */
         constructor(animationSet: animators.IAnimationSet);
+        /**
+        * The amount by which passed time should be scaled. Used to slow down or speed up animations. Defaults to 1.
+        */
         public playbackSpeed : number;
+        /**
+        * Resumes the automatic playback clock controling the active state of the animator.
+        */
         public start(): void;
+        /**
+        * Pauses the automatic playback clock of the animator, in case manual updates are required via the
+        * <code>time</code> property or <code>update()</code> method.
+        *
+        * @see #time
+        * @see #update()
+        */
         public stop(): void;
+        /**
+        * Provides a way to manually update the active state of the animator when automatic
+        * updates are disabled.
+        *
+        * @see #stop()
+        * @see #autoUpdate
+        */
         public update(time: number): void;
         public reset(name: string, offset?: number): void;
+        /**
+        * Used by the mesh object to which the animator is applied, registers the owner for internal use.
+        *
+        * @private
+        */
         public addOwner(mesh: away.entities.Mesh): void;
+        /**
+        * Used by the mesh object from which the animator is removed, unregisters the owner for internal use.
+        *
+        * @private
+        */
         public removeOwner(mesh: away.entities.Mesh): void;
+        /**
+        * Internal abstract method called when the time delta property of the animator's contents requires updating.
+        *
+        * @private
+        */
         public _pUpdateDeltaTime(dt: number): void;
+        /**
+        * Enter frame event handler for automatically updating the active state of the animator.
+        */
         private onEnterFrame(event?);
         private applyPositionDelta();
+        /**
+        *  for internal use.
+        *
+        * @private
+        */
         public dispatchCycleEvent(): void;
+        /**
+        * @inheritDoc
+        */
         public dispose(): void;
+        /**
+        * @inheritDoc
+        */
         public assetType : string;
     }
 }
 declare module away.animators {
+    /**
+    * Provides an interface for data set classes that hold animation data for use in animator classes.
+    *
+    * @see away3d.animators.IAnimator
+    */
     interface IAnimationSet {
+        /**
+        * Check to determine whether a state is registered in the animation set under the given name.
+        *
+        * @param stateName The name of the animation state object to be checked.
+        */
         hasAnimation(name: string): boolean;
+        /**
+        * Retrieves the animation state object registered in the animation data set under the given name.
+        *
+        * @param stateName The name of the animation state object to be retrieved.
+        */
         getAnimation(name: string): animators.AnimationNodeBase;
+        /**
+        * Indicates whether the properties of the animation data contained within the set combined with
+        * the vertex registers aslready in use on shading materials allows the animation data to utilise
+        * GPU calls.
+        */
         usesCPU: boolean;
-        resetGPUCompatibility(): any;
-        cancelGPUCompatibility(): any;
+        /**
+        * Called by the material to reset the GPU indicator before testing whether register space in the shader
+        * is available for running GPU-based animation code.
+        *
+        * @private
+        */
+        resetGPUCompatibility();
+        /**
+        * Called by the animator to void the GPU indicator when register space in the shader
+        * is no longer available for running GPU-based animation code.
+        *
+        * @private
+        */
+        cancelGPUCompatibility();
+        /**
+        * Generates the AGAL Vertex code for the animation, tailored to the material pass's requirements.
+        *
+        * @param pass The MaterialPassBase object to whose vertex code the animation's code will be prepended.
+        * @sourceRegisters The animatable attribute registers of the material pass.
+        * @targetRegisters The animatable target registers of the material pass.
+        * @return The AGAL Vertex code that animates the vertex data.
+        *
+        * @private
+        */
         getAGALVertexCode(pass: away.materials.MaterialPassBase, sourceRegisters: string[], targetRegisters: string[], profile: string): string;
+        /**
+        * Generates the AGAL Fragment code for the animation, tailored to the material pass's requirements.
+        *
+        * @param pass The MaterialPassBase object to whose vertex code the animation's code will be prepended.
+        * @return The AGAL Vertex code that animates the vertex data.
+        *
+        * @private
+        */
         getAGALFragmentCode(pass: away.materials.MaterialPassBase, shadedTarget: string, profile: string): string;
+        /**
+        * Generates the extra AGAL Fragment code for the animation when UVs are required, tailored to the material pass's requirements.
+        *
+        * @param pass The MaterialPassBase object to whose vertex code the animation's code will be prepended.
+        * @param UVSource String representing the UV source register.
+        * @param UVTarget String representing the UV target register.
+        * @return The AGAL UV code that animates the UV data.
+        *
+        * @private
+        */
         getAGALUVCode(pass: away.materials.MaterialPassBase, UVSource: string, UVTarget: string): string;
-        doneAGALCode(pass: away.materials.MaterialPassBase): any;
-        activate(stage3DProxy: away.managers.Stage3DProxy, pass: away.materials.MaterialPassBase): any;
-        deactivate(tage3DProxy: away.managers.Stage3DProxy, pass: away.materials.MaterialPassBase): any;
+        /**
+        * Resets any constants used in the creation of AGAL for the vertex and fragment shaders.
+        *
+        * @param pass The material pass currently being used to render the geometry.
+        *
+        * @private
+        */
+        doneAGALCode(pass: away.materials.MaterialPassBase);
+        /**
+        * Sets the GPU render state required by the animation that is independent of the rendered mesh.
+        *
+        * @param stageGLProxy The proxy currently performing the rendering.
+        * @param pass The material pass currently being used to render the geometry.
+        *
+        * @private
+        */
+        activate(stageGLProxy: away.managers.StageGLProxy, pass: away.materials.MaterialPassBase);
+        /**
+        * Clears the GPU render state that has been set by the current animation.
+        *
+        * @param stageGLProxy The proxy currently performing the rendering.
+        * @param pass The material pass currently being used to render the geometry.
+        *
+        * @private
+        */
+        deactivate(stageGLProxy: away.managers.StageGLProxy, pass: away.materials.MaterialPassBase);
     }
 }
 declare module away.animators {
+    /**
+    * Provides an interface for animator classes that control animation output from a data set subtype of <code>AnimationSetBase</code>.
+    *
+    * @see away3d.animators.IAnimationSet
+    */
     interface IAnimator {
+        /**
+        * Returns the animation data set in use by the animator.
+        */
         animationSet: animators.IAnimationSet;
-        setRenderState(stage3DProxy: away.managers.Stage3DProxy, renderable: away.base.IRenderable, vertexConstantOffset: number, vertexStreamOffset: number, camera: away.cameras.Camera3D): any;
-        testGPUCompatibility(pass: away.materials.MaterialPassBase): any;
-        addOwner(mesh: away.entities.Mesh): any;
-        removeOwner(mesh: away.entities.Mesh): any;
+        /**
+        * Sets the GPU render state required by the animation that is dependent of the rendered object.
+        *
+        * @param stageGLProxy The StageGLProxy object which is currently being used for rendering.
+        * @param renderable The object currently being rendered.
+        * @param vertexConstantOffset The first available vertex register to write data to if running on the gpu.
+        * @param vertexStreamOffset The first available vertex stream to write vertex data to if running on the gpu.
+        */
+        setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, vertexConstantOffset: number, vertexStreamOffset: number, camera: away.cameras.Camera3D);
+        /**
+        * Verifies if the animation will be used on cpu. Needs to be true for all passes for a material to be able to use it on gpu.
+        * Needs to be called if gpu code is potentially required.
+        */
+        testGPUCompatibility(pass: away.materials.MaterialPassBase);
+        /**
+        * Used by the mesh object to which the animator is applied, registers the owner for internal use.
+        *
+        * @private
+        */
+        addOwner(mesh: away.entities.Mesh);
+        /**
+        * Used by the mesh object from which the animator is removed, unregisters the owner for internal use.
+        *
+        * @private
+        */
+        removeOwner(mesh: away.entities.Mesh);
         getAnimationState(node: animators.AnimationNodeBase): animators.IAnimationState;
         getAnimationStateByName(name: string): animators.IAnimationState;
+        /**
+        * Returns a shallow clone (re-using the same IAnimationSet) of this IAnimator.
+        */
         clone(): IAnimator;
-        dispose(): any;
+        dispose();
     }
 }
 declare module away.animators {
+    /**
+    * The animation data set used by particle-based animators, containing particle animation data.
+    *
+    * @see away.animators.ParticleAnimator
+    */
     class ParticleAnimationSet extends animators.AnimationSetBase implements animators.IAnimationSet {
+        /** @private */
         public _iAnimationRegisterCache: animators.AnimationRegisterCache;
         private _timeNode;
+        /**
+        * Property used by particle nodes that require compilation at the end of the shader
+        */
         static POST_PRIORITY: number;
+        /**
+        * Property used by particle nodes that require color compilation
+        */
         static COLOR_PRIORITY: number;
         private _animationSubGeometries;
         private _particleNodes;
@@ -6521,24 +11671,89 @@ declare module away.animators {
         public hasBillboard: boolean;
         public hasColorMulNode: boolean;
         public hasColorAddNode: boolean;
+        /**
+        * Initialiser function for static particle properties. Needs to reference a with teh following format
+        *
+        * <code>
+        * initParticleFunc(prop:ParticleProperties)
+        * {
+        * 		//code for settings local properties
+        * }
+        * </code>
+        *
+        * Aside from setting any properties required in particle animation nodes using local static properties, the initParticleFunc function
+        * is required to time node requirements as they may be needed. These properties on the ParticleProperties object can include
+        * <code>startTime</code>, <code>duration</code> and <code>delay</code>. The use of these properties is determined by the setting
+        * arguments passed in the constructor of the particle animation set. By default, only the <code>startTime</code> property is required.
+        */
         public initParticleFunc: Function;
+        /**
+        * Initialiser function scope for static particle properties
+        */
         public initParticleScope: Object;
+        /**
+        * Creates a new <code>ParticleAnimationSet</code>
+        *
+        * @param    [optional] usesDuration    Defines whether the animation set uses the <code>duration</code> data in its static properties to determine how long a particle is visible for. Defaults to false.
+        * @param    [optional] usesLooping     Defines whether the animation set uses a looping timeframe for each particle determined by the <code>startTime</code>, <code>duration</code> and <code>delay</code> data in its static properties function. Defaults to false. Requires <code>usesDuration</code> to be true.
+        * @param    [optional] usesDelay       Defines whether the animation set uses the <code>delay</code> data in its static properties to determine how long a particle is hidden for. Defaults to false. Requires <code>usesLooping</code> to be true.
+        */
         constructor(usesDuration?: boolean, usesLooping?: boolean, usesDelay?: boolean);
+        /**
+        * Returns a vector of the particle animation nodes contained within the set.
+        */
         public particleNodes : animators.ParticleNodeBase[];
+        /**
+        * @inheritDoc
+        */
         public addAnimation(node: animators.AnimationNodeBase): void;
-        public activate(stage3DProxy: away.managers.Stage3DProxy, pass: away.materials.MaterialPassBase): void;
-        public deactivate(stage3DProxy: away.managers.Stage3DProxy, pass: away.materials.MaterialPassBase): void;
+        /**
+        * @inheritDoc
+        */
+        public activate(stageGLProxy: away.managers.StageGLProxy, pass: away.materials.MaterialPassBase): void;
+        /**
+        * @inheritDoc
+        */
+        public deactivate(stageGLProxy: away.managers.StageGLProxy, pass: away.materials.MaterialPassBase): void;
+        /**
+        * @inheritDoc
+        */
         public getAGALVertexCode(pass: away.materials.MaterialPassBase, sourceRegisters: string[], targetRegisters: string[], profile: string): string;
+        /**
+        * @inheritDoc
+        */
         public getAGALUVCode(pass: away.materials.MaterialPassBase, UVSource: string, UVTarget: string): string;
+        /**
+        * @inheritDoc
+        */
         public getAGALFragmentCode(pass: away.materials.MaterialPassBase, shadedTarget: string, profile: string): string;
+        /**
+        * @inheritDoc
+        */
         public doneAGALCode(pass: away.materials.MaterialPassBase): void;
+        /**
+        * @inheritDoc
+        */
         public usesCPU : boolean;
+        /**
+        * @inheritDoc
+        */
         public cancelGPUCompatibility(): void;
         public dispose(): void;
+        /** @private */
         public _iGenerateAnimationSubGeometries(mesh: away.entities.Mesh): void;
     }
 }
 declare module away.animators {
+    /**
+    * Provides an interface for assigning paricle-based animation data sets to mesh-based entity objects
+    * and controlling the various available states of animation through an interative playhead that can be
+    * automatically updated or manually triggered.
+    *
+    * Requires that the containing geometry of the parent mesh is particle geometry
+    *
+    * @see away.base.ParticleGeometry
+    */
     class ParticleAnimator extends animators.AnimatorBase implements animators.IAnimator {
         private _particleAnimationSet;
         private _animationParticleStates;
@@ -6546,18 +11761,46 @@ declare module away.animators {
         private _timeParticleStates;
         private _totalLenOfOneVertex;
         private _animatorSubGeometries;
+        /**
+        * Creates a new <code>ParticleAnimator</code> object.
+        *
+        * @param particleAnimationSet The animation data set containing the particle animations used by the animator.
+        */
         constructor(particleAnimationSet: animators.ParticleAnimationSet);
+        /**
+        * @inheritDoc
+        */
         public clone(): animators.IAnimator;
-        public setRenderState(stage3DProxy: away.managers.Stage3DProxy, renderable: away.base.IRenderable, vertexConstantOffset: number, vertexStreamOffset: number, camera: away.cameras.Camera3D): void;
+        /**
+        * @inheritDoc
+        */
+        public setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, vertexConstantOffset: number, vertexStreamOffset: number, camera: away.cameras.Camera3D): void;
+        /**
+        * @inheritDoc
+        */
         public testGPUCompatibility(pass: away.materials.MaterialPassBase): void;
+        /**
+        * @inheritDoc
+        */
         public start(): void;
+        /**
+        * @inheritDoc
+        */
         public _pUpdateDeltaTime(dt: number): void;
+        /**
+        * @inheritDoc
+        */
         public resetTime(offset?: number): void;
         public dispose(): void;
         private generateAnimatorSubGeometry(subMesh);
     }
 }
 declare module away.animators {
+    /**
+    * Provides an interface for assigning skeleton-based animation data sets to mesh-based entity objects
+    * and controlling the various available states of animation through an interative playhead that can be
+    * automatically updated or manually triggered.
+    */
     class SkeletonAnimator extends animators.AnimatorBase implements animators.IAnimator {
         private _globalMatrices;
         private _globalPose;
@@ -6570,20 +11813,79 @@ declare module away.animators {
         private _useCondensedIndices;
         private _jointsPerVertex;
         private _activeSkeletonState;
+        /**
+        * returns the calculated global matrices of the current skeleton pose.
+        *
+        * @see #globalPose
+        */
         public globalMatrices : number[];
+        /**
+        * returns the current skeleton pose output from the animator.
+        *
+        * @see away.animators.data.SkeletonPose
+        */
         public globalPose : animators.SkeletonPose;
+        /**
+        * Returns the skeleton object in use by the animator - this defines the number and heirarchy of joints used by the
+        * skinned geoemtry to which skeleon animator is applied.
+        */
         public skeleton : animators.Skeleton;
+        /**
+        * Indicates whether the skeleton animator is disabled by default for GPU rendering, something that allows the animator to perform calculation on the GPU.
+        * Defaults to false.
+        */
         public forceCPU : boolean;
+        /**
+        * Offers the option of enabling GPU accelerated animation on skeletons larger than 32 joints
+        * by condensing the number of joint index values required per mesh. Only applicable to
+        * skeleton animations that utilise more than one mesh object. Defaults to false.
+        */
         public useCondensedIndices : boolean;
+        /**
+        * Creates a new <code>SkeletonAnimator</code> object.
+        *
+        * @param skeletonAnimationSet The animation data set containing the skeleton animations used by the animator.
+        * @param skeleton The skeleton object used for calculating the resulting global matrices for transforming skinned mesh data.
+        * @param forceCPU Optional value that only allows the animator to perform calculation on the CPU. Defaults to false.
+        */
         constructor(animationSet: animators.SkeletonAnimationSet, skeleton: animators.Skeleton, forceCPU?: boolean);
+        /**
+        * @inheritDoc
+        */
         public clone(): animators.IAnimator;
+        /**
+        * Plays an animation state registered with the given name in the animation data set.
+        *
+        * @param name The data set name of the animation state to be played.
+        * @param transition An optional transition object that determines how the animator will transition from the currently active animation state.
+        * @param offset An option offset time (in milliseconds) that resets the state's internal clock to the absolute time of the animator plus the offset value. Required for non-looping animation states.
+        */
         public play(name: string, transition?: animators.IAnimationTransition, offset?: number): void;
-        public setRenderState(stage3DProxy: away.managers.Stage3DProxy, renderable: away.base.IRenderable, vertexConstantOffset: number, vertexStreamOffset: number, camera: away.cameras.Camera3D): void;
+        /**
+        * @inheritDoc
+        */
+        public setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, vertexConstantOffset: number, vertexStreamOffset: number, camera: away.cameras.Camera3D): void;
+        /**
+        * @inheritDoc
+        */
         public testGPUCompatibility(pass: away.materials.MaterialPassBase): void;
+        /**
+        * Applies the calculated time delta to the active animation state node or state transition object.
+        */
         public _pUpdateDeltaTime(dt: number): void;
         private updateCondensedMatrices(condensedIndexLookUp, numJoints);
         private updateGlobalProperties();
+        /**
+        * If the animation can't be performed on GPU, transform vertices manually
+        * @param subGeom The subgeometry containing the weights and joint index data per vertex.
+        * @param pass The material pass for which we need to transform the vertices
+        */
         private morphGeometry(state, subGeom);
+        /**
+        * Converts a local hierarchical skeleton pose to a global pose
+        * @param targetPose The SkeletonPose object that will contain the global pose.
+        * @param skeleton The skeleton containing the joints, and as such, the hierarchical data to transform to global poses.
+        */
         private localToGlobalPose(sourcePose, targetPose, skeleton);
         private onTransitionComplete(event);
     }
@@ -6594,19 +11896,56 @@ declare class SubGeomAnimationState {
     constructor(subGeom: away.base.CompactSubGeometry);
 }
 declare module away.animators {
+    /**
+    * The animation data set used by skeleton-based animators, containing skeleton animation data.
+    *
+    * @see away.animators.SkeletonAnimator
+    */
     class SkeletonAnimationSet extends animators.AnimationSetBase implements animators.IAnimationSet {
         private _jointsPerVertex;
+        /**
+        * Returns the amount of skeleton joints that can be linked to a single vertex via skinned weight values. For GPU-base animation, the
+        * maximum allowed value is 4.
+        */
         public jointsPerVertex : number;
+        /**
+        * Creates a new <code>SkeletonAnimationSet</code> object.
+        *
+        * @param jointsPerVertex Sets the amount of skeleton joints that can be linked to a single vertex via skinned weight values. For GPU-base animation, the maximum allowed value is 4. Defaults to 4.
+        */
         constructor(jointsPerVertex?: number);
+        /**
+        * @inheritDoc
+        */
         public getAGALVertexCode(pass: away.materials.MaterialPassBase, sourceRegisters: string[], targetRegisters: string[], profile: string): string;
-        public activate(stage3DProxy: away.managers.Stage3DProxy, pass: away.materials.MaterialPassBase): void;
-        public deactivate(stage3DProxy: away.managers.Stage3DProxy, pass: away.materials.MaterialPassBase): void;
+        /**
+        * @inheritDoc
+        */
+        public activate(stageGLProxy: away.managers.StageGLProxy, pass: away.materials.MaterialPassBase): void;
+        /**
+        * @inheritDoc
+        */
+        public deactivate(stageGLProxy: away.managers.StageGLProxy, pass: away.materials.MaterialPassBase): void;
+        /**
+        * @inheritDoc
+        */
         public getAGALFragmentCode(pass: away.materials.MaterialPassBase, shadedTarget: string, profile: string): string;
+        /**
+        * @inheritDoc
+        */
         public getAGALUVCode(pass: away.materials.MaterialPassBase, UVSource: string, UVTarget: string): string;
+        /**
+        * @inheritDoc
+        */
         public doneAGALCode(pass: away.materials.MaterialPassBase): void;
     }
 }
 declare module away.animators {
+    /**
+    * The animation data set used by vertex-based animators, containing vertex animation state data.
+    *
+    * @see away.animators.VertexAnimator
+    */
     class VertexAnimationSet extends animators.AnimationSetBase implements animators.IAnimationSet {
         private _numPoses;
         private _blendMode;
@@ -6615,21 +11954,67 @@ declare module away.animators {
         private _useTangents;
         private _uploadNormals;
         private _uploadTangents;
+        /**
+        * Returns the number of poses made available at once to the GPU animation code.
+        */
         public numPoses : number;
+        /**
+        * Returns the active blend mode of the vertex animator object.
+        */
         public blendMode : string;
+        /**
+        * Returns whether or not normal data is used in last set GPU pass of the vertex shader.
+        */
         public useNormals : boolean;
+        /**
+        * Creates a new <code>VertexAnimationSet</code> object.
+        *
+        * @param numPoses The number of poses made available at once to the GPU animation code.
+        * @param blendMode Optional value for setting the animation mode of the vertex animator object.
+        *
+        * @see away3d.animators.data.VertexAnimationMode
+        */
         constructor(numPoses?: number, blendMode?: string);
+        /**
+        * @inheritDoc
+        */
         public getAGALVertexCode(pass: away.materials.MaterialPassBase, sourceRegisters: string[], targetRegisters: string[], profile: string): string;
-        public activate(stage3DProxy: away.managers.Stage3DProxy, pass: away.materials.MaterialPassBase): void;
-        public deactivate(stage3DProxy: away.managers.Stage3DProxy, pass: away.materials.MaterialPassBase): void;
+        /**
+        * @inheritDoc
+        */
+        public activate(stageGLProxy: away.managers.StageGLProxy, pass: away.materials.MaterialPassBase): void;
+        /**
+        * @inheritDoc
+        */
+        public deactivate(stageGLProxy: away.managers.StageGLProxy, pass: away.materials.MaterialPassBase): void;
+        /**
+        * @inheritDoc
+        */
         public getAGALFragmentCode(pass: away.materials.MaterialPassBase, shadedTarget: string, profile: string): string;
+        /**
+        * @inheritDoc
+        */
         public getAGALUVCode(pass: away.materials.MaterialPassBase, UVSource: string, UVTarget: string): string;
+        /**
+        * @inheritDoc
+        */
         public doneAGALCode(pass: away.materials.MaterialPassBase): void;
+        /**
+        * Generates the vertex AGAL code for absolute blending.
+        */
         private getAbsoluteAGALCode(pass, sourceRegisters, targetRegisters);
+        /**
+        * Generates the vertex AGAL code for additive blending.
+        */
         private getAdditiveAGALCode(pass, sourceRegisters, targetRegisters);
     }
 }
 declare module away.animators {
+    /**
+    * Provides an interface for assigning vertex-based animation data sets to mesh-based entity objects
+    * and controlling the various available states of animation through an interative playhead that can be
+    * automatically updated or manually triggered.
+    */
     class VertexAnimator extends animators.AnimatorBase implements animators.IAnimator {
         private _vertexAnimationSet;
         private _poses;
@@ -6637,302 +12022,42 @@ declare module away.animators {
         private _numPoses;
         private _blendMode;
         private _activeVertexState;
+        /**
+        * Creates a new <code>VertexAnimator</code> object.
+        *
+        * @param vertexAnimationSet The animation data set containing the vertex animations used by the animator.
+        */
         constructor(vertexAnimationSet: animators.VertexAnimationSet);
+        /**
+        * @inheritDoc
+        */
         public clone(): animators.IAnimator;
+        /**
+        * Plays a sequence with a given name. If the sequence is not found, it may not be loaded yet, and it will retry every frame.
+        * @param sequenceName The name of the clip to be played.
+        */
         public play(name: string, transition?: animators.IAnimationTransition, offset?: number): void;
+        /**
+        * @inheritDoc
+        */
         public _pUpdateDeltaTime(dt: number): void;
-        public setRenderState(stage3DProxy: away.managers.Stage3DProxy, renderable: away.base.IRenderable, vertexConstantOffset: number, vertexStreamOffset: number, camera: away.cameras.Camera3D): void;
-        private setNullPose(stage3DProxy, renderable, vertexConstantOffset, vertexStreamOffset);
+        /**
+        * @inheritDoc
+        */
+        public setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, vertexConstantOffset: number, vertexStreamOffset: number, camera: away.cameras.Camera3D): void;
+        private setNullPose(stageGLProxy, renderable, vertexConstantOffset, vertexStreamOffset);
+        /**
+        * Verifies if the animation will be used on cpu. Needs to be true for all passes for a material to be able to use it on gpu.
+        * Needs to be called if gpu code is potentially required.
+        */
         public testGPUCompatibility(pass: away.materials.MaterialPassBase): void;
     }
 }
-declare module away.loaders {
-    class AssetLoaderContext {
-        static UNDEFINED: number;
-        static SINGLEPASS_MATERIALS: number;
-        static MULTIPASS_MATERIALS: number;
-        private _includeDependencies;
-        private _dependencyBaseUrl;
-        private _embeddedDataByUrl;
-        private _remappedUrls;
-        private _materialMode;
-        private _overrideAbsPath;
-        private _overrideFullUrls;
-        constructor(includeDependencies?: boolean, dependencyBaseUrl?: string);
-        public includeDependencies : boolean;
-        public materialMode : number;
-        public dependencyBaseUrl : string;
-        public overrideAbsolutePaths : boolean;
-        public overrideFullURLs : boolean;
-        public mapUrl(originalUrl: string, newUrl: string): void;
-        public mapUrlToData(originalUrl: string, data: any): void;
-        public _iHasDataForUrl(url: string): boolean;
-        public _iGetDataForUrl(url: string): any;
-        public _iHasMappingForUrl(url: string): boolean;
-        public _iGetRemappedUrl(originalUrl: string): string;
-    }
-}
-declare module away.loaders {
-    class AssetLoader extends away.events.EventDispatcher {
-        private _context;
-        private _token;
-        private _uri;
-        private _errorHandlers;
-        private _parseErrorHandlers;
-        private _stack;
-        private _baseDependency;
-        private _loadingDependency;
-        private _namespace;
-        public baseDependency : loaders.ResourceDependency;
-        constructor();
-        static enableParser(parserClass: any): void;
-        static enableParsers(parserClasses: Object[]): void;
-        public load(req: away.net.URLRequest, context?: loaders.AssetLoaderContext, ns?: string, parser?: loaders.ParserBase): loaders.AssetLoaderToken;
-        public loadData(data: any, id: string, context?: loaders.AssetLoaderContext, ns?: string, parser?: loaders.ParserBase): loaders.AssetLoaderToken;
-        private retrieveNext(parser?);
-        private retrieveDependency(dependency, parser?);
-        private joinUrl(base, end);
-        private resolveDependencyUrl(dependency);
-        private retrieveLoaderDependencies(loader);
-        private onRetrievalFailed(event);
-        private onParserError(event);
-        private onAssetComplete(event);
-        private onReadyForDependencies(event);
-        private onRetrievalComplete(event);
-        private onTextureSizeError(event);
-        private addEventListeners(loader);
-        private removeEventListeners(loader);
-        public stop(): void;
-        private dispose();
-        public _iAddParseErrorHandler(handler: any): void;
-        public _iAddErrorHandler(handler: any): void;
-    }
-}
-declare module away.loaders {
-    class AssetLoaderToken extends away.events.EventDispatcher {
-        public _iLoader: loaders.AssetLoader;
-        constructor(loader: loaders.AssetLoader);
-        public addEventListener(type: string, listener: Function, target: Object): void;
-        public removeEventListener(type: string, listener: Function, target: Object): void;
-        public hasEventListener(type: string, listener?: Function, target?: Object): boolean;
-    }
-}
-declare module away.loaders {
-    class ParserBase extends away.events.EventDispatcher {
-        public _iFileName: string;
-        private _dataFormat;
-        private _data;
-        private _frameLimit;
-        private _lastFrameTime;
-        static supportsType(extension: string): boolean;
-        private _dependencies;
-        private _loaderType;
-        private _parsingPaused;
-        private _parsingComplete;
-        private _parsingFailure;
-        private _timer;
-        private _materialMode;
-        static PARSING_DONE: boolean;
-        static MORE_TO_PARSE: boolean;
-        constructor(format: string, loaderType?: string);
-        public isBitmapDataValid(bitmapData: away.display.BitmapData): boolean;
-        public parsingFailure : boolean;
-        public parsingPaused : boolean;
-        public parsingComplete : boolean;
-        public materialMode : number;
-        public loaderType : string;
-        public data : any;
-        public dataFormat : string;
-        public parseAsync(data: any, frameLimit?: number): void;
-        public dependencies : loaders.ResourceDependency[];
-        public _iResolveDependency(resourceDependency: loaders.ResourceDependency): void;
-        public _iResolveDependencyFailure(resourceDependency: loaders.ResourceDependency): void;
-        public _iResolveDependencyName(resourceDependency: loaders.ResourceDependency, asset: away.library.IAsset): string;
-        public _iResumeParsingAfterDependencies(): void;
-        public _pFinalizeAsset(asset: away.library.IAsset, name?: string): void;
-        public _pProceedParsing(): boolean;
-        public _pDieWithError(message?: string): void;
-        public _pAddDependency(id: string, req: away.net.URLRequest, retrieveAsRawData?: boolean, data?: any, suppressErrorEvents?: boolean): loaders.ResourceDependency;
-        public _pPauseAndRetrieveDependencies(): void;
-        public _pHasTime(): boolean;
-        public _pOnInterval(event?: away.events.TimerEvent): void;
-        private startParsing(frameLimit);
-        public _pFinishParsing(): void;
-        public _pGetTextData(): string;
-        public _pGetByteData(): away.utils.ByteArray;
-    }
-}
-declare module away.loaders {
-    class Loader3D extends away.containers.ObjectContainer3D {
-        private _loadingSessions;
-        private _useAssetLib;
-        private _assetLibId;
-        constructor(useAssetLibrary?: boolean, assetLibraryId?: string);
-        public load(req: away.net.URLRequest, context?: loaders.AssetLoaderContext, ns?: string, parser?: loaders.ParserBase): loaders.AssetLoaderToken;
-        public loadData(data: any, context?: loaders.AssetLoaderContext, ns?: string, parser?: loaders.ParserBase): loaders.AssetLoaderToken;
-        public stopLoad(): void;
-        static enableParser(parserClass: Object): void;
-        static enableParsers(parserClasses: Object[]): void;
-        private removeListeners(dispatcher);
-        private onAssetComplete(ev);
-        private onDependencyRetrievingError(event);
-        private onDependencyRetrievingParseError(event);
-        private onResourceRetrieved(event);
-    }
-}
-declare module away.loaders {
-    interface ISingleFileTSLoader extends away.events.EventDispatcher {
-        data: any;
-        dataFormat: string;
-        load(rep: away.net.URLRequest): void;
-        dispose(): void;
-    }
-}
-declare module away.loaders {
-    class ParserDataFormat {
-        static BINARY: string;
-        static PLAIN_TEXT: string;
-        static IMAGE: string;
-    }
-}
-declare module away.loaders {
-    class ImageParser extends loaders.ParserBase {
-        private _startedParsing;
-        private _doneParsing;
-        constructor();
-        static supportsType(extension: string): boolean;
-        static supportsData(data: any): boolean;
-        public _pProceedParsing(): boolean;
-    }
-}
-declare module away.loaders {
-    class CubeTextureParser extends loaders.ParserBase {
-        private static posX;
-        private static negX;
-        private static posY;
-        private static negY;
-        private static posZ;
-        private static negZ;
-        private _imgDependencyDictionary;
-        constructor();
-        static supportsType(extension: string): boolean;
-        static supportsData(data: any): boolean;
-        public _iResolveDependency(resourceDependency: loaders.ResourceDependency): void;
-        public _iResolveDependencyFailure(resourceDependency: loaders.ResourceDependency): void;
-        public _pProceedParsing(): boolean;
-        private _validateCubeData();
-        private _getHTMLImageElement(name);
-    }
-}
-declare module away.loaders {
-    class SingleFileLoader extends away.events.EventDispatcher {
-        private _parser;
-        private _assets;
-        private _req;
-        private _fileExtension;
-        private _fileName;
-        private _loadAsRawData;
-        private _materialMode;
-        private _data;
-        private static _parsers;
-        static enableParser(parser: Object): void;
-        static enableParsers(parsers: Object[]): void;
-        constructor(materialMode?: number);
-        public url : string;
-        public data : any;
-        public loadAsRawData : boolean;
-        public load(urlRequest: away.net.URLRequest, parser?: loaders.ParserBase, loadAsRawData?: boolean): void;
-        public parseData(data: any, parser?: loaders.ParserBase, req?: away.net.URLRequest): void;
-        public parser : loaders.ParserBase;
-        public dependencies : loaders.ResourceDependency[];
-        private getLoader(loaderType);
-        private decomposeFilename(url);
-        private getParserFromSuffix();
-        private getParserFromData(data);
-        private removeListeners(urlLoader);
-        private handleUrlLoaderError(event);
-        private handleUrlLoaderComplete(event);
-        private parse(data);
-        private onParseError(event);
-        private onReadyForDependencies(event);
-        private onAssetComplete(event);
-        private onTextureSizeError(event);
-        private onParseComplete(event);
-    }
-}
-declare module away.loaders {
-    class SingleFileImageLoader extends away.events.EventDispatcher implements loaders.ISingleFileTSLoader {
-        private _loader;
-        private _data;
-        private _dataFormat;
-        constructor();
-        public load(req: away.net.URLRequest): void;
-        public dispose(): void;
-        public data : HTMLImageElement;
-        public dataFormat : string;
-        private initLoader();
-        private disposeLoader();
-        private onLoadComplete(event);
-        private onLoadError(event);
-    }
-}
-declare module away.loaders {
-    class SingleFileURLLoader extends away.events.EventDispatcher implements loaders.ISingleFileTSLoader {
-        private _loader;
-        private _data;
-        constructor();
-        public load(req: away.net.URLRequest): void;
-        public dispose(): void;
-        public data : HTMLImageElement;
-        public dataFormat : string;
-        private initLoader();
-        private disposeLoader();
-        private onLoadComplete(event);
-        private onLoadError(event);
-    }
-}
-declare module away.loaders {
-    class ResourceDependency {
-        private _id;
-        private _req;
-        private _assets;
-        private _parentParser;
-        private _data;
-        private _retrieveAsRawData;
-        private _suppressAssetEvents;
-        private _dependencies;
-        public _iLoader: loaders.SingleFileLoader;
-        public _iSuccess: boolean;
-        constructor(id: string, req: away.net.URLRequest, data: any, parentParser: loaders.ParserBase, retrieveAsRawData?: boolean, suppressAssetEvents?: boolean);
-        public id : string;
-        public assets : away.library.IAsset[];
-        public dependencies : ResourceDependency[];
-        public request : away.net.URLRequest;
-        public retrieveAsRawData : boolean;
-        public suppresAssetEvents : boolean;
-        public data : any;
-        public _iSetData(data: any): void;
-        public parentParser : loaders.ParserBase;
-        public resolve(): void;
-        public resolveFailure(): void;
-        public resolveName(asset: away.library.IAsset): string;
-    }
-}
-declare module away.loaders {
-    class ParserLoaderType {
-        static URL_LOADER: string;
-        static IMG_LOADER: string;
-    }
-}
-declare module away.loaders {
-    class ParserUtil {
-        static byteArrayToImage(data: away.utils.ByteArray): HTMLImageElement;
-        static toByteArray(data: any): away.utils.ByteArray;
-        static toString(data: any, length?: number): string;
-    }
-}
-declare module away.loaders {
-    class OBJParser extends loaders.ParserBase {
+declare module away.parsers {
+    /**
+    * OBJParser provides a parser for the OBJ data type.
+    */
+    class OBJParser extends parsers.ParserBase {
         private _textData;
         private _startedParsing;
         private _charIndex;
@@ -6957,24 +12082,94 @@ declare module away.loaders {
         private _mtlLib;
         private _mtlLibLoaded;
         private _activeMaterialID;
+        /**
+        * Creates a new OBJParser object.
+        * @param uri The url or id of the data or file to be parsed.
+        * @param extra The holder for extra contextual data that the parser might need.
+        */
         constructor(scale?: number);
+        /**
+        * Scaling factor applied directly to vertices data
+        * @param value The scaling factor.
+        */
         public scale : number;
+        /**
+        * Indicates whether or not a given file extension is supported by the parser.
+        * @param extension The file extension of a potential file to be parsed.
+        * @return Whether or not the given file type is supported.
+        */
         static supportsType(extension: string): boolean;
+        /**
+        * Tests whether a data block can be parsed by the parser.
+        * @param data The data block to potentially be parsed.
+        * @return Whether or not the given data is supported.
+        */
         static supportsData(data: any): boolean;
-        public _iResolveDependency(resourceDependency: loaders.ResourceDependency): void;
-        public _iResolveDependencyFailure(resourceDependency: loaders.ResourceDependency): void;
+        /**
+        * @inheritDoc
+        */
+        public _iResolveDependency(resourceDependency: parsers.ResourceDependency): void;
+        /**
+        * @inheritDoc
+        */
+        public _iResolveDependencyFailure(resourceDependency: parsers.ResourceDependency): void;
+        /**
+        * @inheritDoc
+        */
         public _pProceedParsing(): boolean;
+        /**
+        * Parses a single line in the OBJ file.
+        */
         private parseLine(trunk);
+        /**
+        * Converts the parsed data into an Away3D scenegraph structure
+        */
         private translate();
+        /**
+        * Translates an obj's material group to a subgeometry.
+        * @param materialGroup The material group data to convert.
+        * @param geometry The Geometry to contain the converted SubGeometry.
+        */
         private translateMaterialGroup(materialGroup, geometry);
         private translateVertexData(face, vertexIndex, vertices, uvs, indices, normals);
+        /**
+        * Creates a new object group.
+        * @param trunk The data block containing the object tag and its parameters
+        */
         private createObject(trunk);
+        /**
+        * Creates a new group.
+        * @param trunk The data block containing the group tag and its parameters
+        */
         private createGroup(trunk);
+        /**
+        * Creates a new material group.
+        * @param trunk The data block containing the material tag and its parameters
+        */
         private createMaterialGroup(trunk);
+        /**
+        * Reads the next vertex coordinates.
+        * @param trunk The data block containing the vertex tag and its parameters
+        */
         private parseVertex(trunk);
+        /**
+        * Reads the next uv coordinates.
+        * @param trunk The data block containing the uv tag and its parameters
+        */
         private parseUV(trunk);
+        /**
+        * Reads the next vertex normal coordinates.
+        * @param trunk The data block containing the vertex normal tag and its parameters
+        */
         private parseVertexNormal(trunk);
+        /**
+        * Reads the next face's indices.
+        * @param trunk The data block containing the face tag and its parameters
+        */
         private parseFace(trunk);
+        /**
+        * This is a hack around negative face coords
+        */
         private parseIndex(index, length);
         private parseMtl(data);
         private parseMapKdString(trunk);
@@ -7022,13 +12217,34 @@ declare class FaceData {
     public indexIds: string[];
     constructor();
 }
+/**
+* Texture coordinates value object.
+*/
 declare class UV {
     private _u;
     private _v;
+    /**
+    * Creates a new <code>UV</code> object.
+    *
+    * @param    u        [optional]    The horizontal coordinate of the texture value. Defaults to 0.
+    * @param    v        [optional]    The vertical coordinate of the texture value. Defaults to 0.
+    */
     constructor(u?: number, v?: number);
+    /**
+    * Defines the vertical coordinate of the texture value.
+    */
     public v : number;
+    /**
+    * Defines the horizontal coordinate of the texture value.
+    */
     public u : number;
+    /**
+    * returns a new UV value Object
+    */
     public clone(): UV;
+    /**
+    * returns the value object as a string for trace/debug purpose
+    */
     public toString(): string;
 }
 declare class Vertex {
@@ -7036,16 +12252,46 @@ declare class Vertex {
     private _y;
     private _z;
     private _index;
+    /**
+    * Creates a new <code>Vertex</code> value object.
+    *
+    * @param    x            [optional]    The x value. Defaults to 0.
+    * @param    y            [optional]    The y value. Defaults to 0.
+    * @param    z            [optional]    The z value. Defaults to 0.
+    * @param    index        [optional]    The index value. Defaults is NaN.
+    */
     constructor(x?: number, y?: number, z?: number, index?: number);
+    /**
+    * To define/store the index of value object
+    * @param    ind        The index
+    */
     public index : number;
+    /**
+    * To define/store the x value of the value object
+    * @param    value        The x value
+    */
     public x : number;
+    /**
+    * To define/store the y value of the value object
+    * @param    value        The y value
+    */
     public y : number;
+    /**
+    * To define/store the z value of the value object
+    * @param    value        The z value
+    */
     public z : number;
+    /**
+    * returns a new Vertex value Object
+    */
     public clone(): Vertex;
     public FaceData(): void;
 }
-declare module away.loaders {
-    class AWDParser extends loaders.ParserBase {
+declare module away.parsers {
+    /**
+    * AWDParser provides a parser for the AWD data type.
+    */
+    class AWDParser extends parsers.ParserBase {
         private _debug;
         private _byteData;
         private _startedParsing;
@@ -7095,12 +12341,41 @@ declare module away.loaders {
         static MTX4x4: number;
         private blendModeDic;
         private _depthSizeDic;
+        /**
+        * Creates a new AWDParser object.
+        * @param uri The url or id of the data or file to be parsed.
+        * @param extra The holder for extra contextual data that the parser might need.
+        */
         constructor();
+        /**
+        * Indicates whether or not a given file extension is supported by the parser.
+        * @param extension The file extension of a potential file to be parsed.
+        * @return Whether or not the given file type is supported.
+        */
         static supportsType(extension: string): boolean;
+        /**
+        * Tests whether a data block can be parsed by the parser.
+        * @param data The data block to potentially be parsed.
+        * @return Whether or not the given data is supported.
+        */
         static supportsData(data: any): boolean;
-        public _iResolveDependency(resourceDependency: loaders.ResourceDependency): void;
-        public _iResolveDependencyFailure(resourceDependency: loaders.ResourceDependency): void;
-        public _iResolveDependencyName(resourceDependency: loaders.ResourceDependency, asset: away.library.IAsset): string;
+        /**
+        * @inheritDoc
+        */
+        public _iResolveDependency(resourceDependency: parsers.ResourceDependency): void;
+        /**
+        * @inheritDoc
+        */
+        public _iResolveDependencyFailure(resourceDependency: parsers.ResourceDependency): void;
+        /**
+        * Resolve a dependency name
+        *
+        * @param resourceDependency The dependency to be resolved.
+        */
+        public _iResolveDependencyName(resourceDependency: parsers.ResourceDependency, asset: away.library.IAsset): string;
+        /**
+        * @inheritDoc
+        */
         public _pProceedParsing(): boolean;
         private dispose();
         private parseNextBlock();
@@ -7183,8 +12458,11 @@ declare class AWDProperties {
     public set(key: number, value: any): void;
     public get(key: number, fallback: any): any;
 }
-declare module away.loaders {
-    class Max3DSParser extends loaders.ParserBase {
+declare module away.parsers {
+    /**
+    * Max3DSParser provides a parser for the 3ds data type.
+    */
+    class Max3DSParser extends parsers.ParserBase {
         private _byteData;
         private _textures;
         private _materials;
@@ -7194,10 +12472,29 @@ declare module away.loaders {
         private _cur_mat_end;
         private _cur_mat;
         constructor();
+        /**
+        * Indicates whether or not a given file extension is supported by the parser.
+        * @param extension The file extension of a potential file to be parsed.
+        * @return Whether or not the given file type is supported.
+        */
         static supportsType(extension: string): boolean;
+        /**
+        * Tests whether a data block can be parsed by the parser.
+        * @param data The data block to potentially be parsed.
+        * @return Whether or not the given data is supported.
+        */
         static supportsData(data: any): boolean;
-        public _iResolveDependency(resourceDependency: loaders.ResourceDependency): void;
-        public _iResolveDependencyFailure(resourceDependency: loaders.ResourceDependency): void;
+        /**
+        * @inheritDoc
+        */
+        public _iResolveDependency(resourceDependency: parsers.ResourceDependency): void;
+        /**
+        * @inheritDoc
+        */
+        public _iResolveDependencyFailure(resourceDependency: parsers.ResourceDependency): void;
+        /**
+        * @inheritDoc
+        */
         public _pProceedParsing(): boolean;
         private parseMaterial();
         private parseTexture(end);
@@ -7264,8 +12561,11 @@ declare class FaceVO {
     public smoothGroup: number;
     public FaceVO(): void;
 }
-declare module away.loaders {
-    class MD2Parser extends loaders.ParserBase {
+declare module away.parsers {
+    /**
+    * MD2Parser provides a parser for the MD2 data type.
+    */
+    class MD2Parser extends parsers.ParserBase {
         static FPS: number;
         private _clipNodes;
         private _byteData;
@@ -7302,25 +12602,82 @@ declare module away.loaders {
         private _geometry;
         private materialFinal;
         private geoCreated;
+        /**
+        * Creates a new MD2Parser object.
+        * @param textureType The extension of the texture (e.g. jpg/png/...)
+        * @param ignoreTexturePath If true, the path of the texture is ignored
+        */
         constructor(textureType?: string, ignoreTexturePath?: boolean);
+        /**
+        * Indicates whether or not a given file extension is supported by the parser.
+        * @param extension The file extension of a potential file to be parsed.
+        * @return Whether or not the given file type is supported.
+        */
         static supportsType(extension: string): boolean;
+        /**
+        * Tests whether a data block can be parsed by the parser.
+        * @param data The data block to potentially be parsed.
+        * @return Whether or not the given data is supported.
+        */
         static supportsData(data: any): boolean;
-        public _iResolveDependency(resourceDependency: loaders.ResourceDependency): void;
-        public _iResolveDependencyFailure(resourceDependency: loaders.ResourceDependency): void;
+        /**
+        * @inheritDoc
+        */
+        public _iResolveDependency(resourceDependency: parsers.ResourceDependency): void;
+        /**
+        * @inheritDoc
+        */
+        public _iResolveDependencyFailure(resourceDependency: parsers.ResourceDependency): void;
+        /**
+        * @inheritDoc
+        */
         public _pProceedParsing(): boolean;
+        /**
+        * Reads in all that MD2 Header data that is declared as private variables.
+        * I know its a lot, and it looks ugly, but only way to do it in Flash
+        */
         private parseHeader();
+        /**
+        * Parses the file names for the materials.
+        */
         private parseMaterialNames();
+        /**
+        * Parses the uv data for the mesh.
+        */
         private parseUV();
+        /**
+        * Parses unique indices for the faces.
+        */
         private parseFaces();
+        /**
+        * Adds a face index to the list if it doesn't exist yet, based on vertexIndex and uvIndex, and adds the
+        * corresponding vertex and uv data in the correct location.
+        * @param vertexIndex The original index in the vertex list.
+        * @param uvIndex The original index in the uv list.
+        */
         private addIndex(vertexIndex, uvIndex);
+        /**
+        * Finds the final index corresponding to the original MD2's vertex and uv indices. Returns -1 if it wasn't added yet.
+        * @param vertexIndex The original index in the vertex list.
+        * @param uvIndex The original index in the uv list.
+        * @return The index of the final mesh corresponding to the original vertex and uv index. -1 if it doesn't exist yet.
+        */
         private findIndex(vertexIndex, uvIndex);
+        /**
+        * Parses all the frame geometries.
+        */
         private parseFrames();
         private readFrameName();
         private createDefaultSubGeometry();
     }
 }
-declare module away.loaders {
-    class MD5AnimParser extends loaders.ParserBase {
+declare module away.parsers {
+    /**
+    * MD5AnimParser provides a parser for the md5anim data type, providing an animation sequence for the md5 format.
+    *
+    * todo: optimize
+    */
+    class MD5AnimParser extends parsers.ParserBase {
         private _textData;
         private _startedParsing;
         static VERSION_TOKEN: string;
@@ -7349,29 +12706,111 @@ declare module away.loaders {
         private _baseFrameData;
         private _rotationQuat;
         private _clip;
+        /**
+        * Creates a new MD5AnimParser object.
+        * @param uri The url or id of the data or file to be parsed.
+        * @param extra The holder for extra contextual data that the parser might need.
+        */
         constructor(additionalRotationAxis?: away.geom.Vector3D, additionalRotationRadians?: number);
+        /**
+        * Indicates whether or not a given file extension is supported by the parser.
+        * @param extension The file extension of a potential file to be parsed.
+        * @return Whether or not the given file type is supported.
+        */
         static supportsType(extension: string): boolean;
+        /**
+        * Tests whether a data block can be parsed by the parser.
+        * @param data The data block to potentially be parsed.
+        * @return Whether or not the given data is supported.
+        */
         static supportsData(data: any): boolean;
+        /**
+        * @inheritDoc
+        */
         public _pProceedParsing(): boolean;
+        /**
+        * Converts all key frame data to an SkinnedAnimationSequence.
+        */
         private translateClip();
+        /**
+        * Converts a single key frame data to a SkeletonPose.
+        * @param frameData The actual frame data.
+        * @return A SkeletonPose containing the frame data's pose.
+        */
         private translatePose(frameData);
+        /**
+        * Parses the skeleton's hierarchy data.
+        */
         private parseHierarchy();
+        /**
+        * Parses frame bounds.
+        */
         private parseBounds();
+        /**
+        * Parses the base frame.
+        */
         private parseBaseFrame();
+        /**
+        * Parses a single frame.
+        */
         private parseFrame();
+        /**
+        * Puts back the last read character into the data stream.
+        */
         private putBack();
+        /**
+        * Gets the next token in the data stream.
+        */
         private getNextToken();
+        /**
+        * Skips all whitespace in the data stream.
+        */
         private skipWhiteSpace();
+        /**
+        * Skips to the next line.
+        */
         private ignoreLine();
+        /**
+        * Retrieves the next single character in the data stream.
+        */
         private getNextChar();
+        /**
+        * Retrieves the next integer in the data stream.
+        */
         private getNextInt();
+        /**
+        * Retrieves the next floating point number in the data stream.
+        */
         private getNextNumber();
+        /**
+        * Retrieves the next 3d vector in the data stream.
+        */
         private parseVector3D();
+        /**
+        * Retrieves the next quaternion in the data stream.
+        */
         private parseQuaternion();
+        /**
+        * Parses the command line data.
+        */
         private parseCMD();
+        /**
+        * Retrieves the next literal string in the data stream. A literal string is a sequence of characters bounded
+        * by double quotes.
+        */
         private parseLiteralstring();
+        /**
+        * Throws an end-of-file error when a premature end of file was encountered.
+        */
         private sendEOFError();
+        /**
+        * Throws an error when an unexpected token was encountered.
+        * @param expected The token type that was actually expected.
+        */
         private sendParseError(expected);
+        /**
+        * Throws an error when an unknown keyword was encountered.
+        */
         private sendUnknownKeywordError();
     }
 }
@@ -7389,7 +12828,7 @@ declare class BoundsData {
 }
 declare class BaseFrameData {
     public position: away.geom.Vector3D;
-    public orientation: away.math.Quaternion;
+    public orientation: away.geom.Quaternion;
     public BaseFrameData(): void;
 }
 declare class FrameData {
@@ -7397,8 +12836,13 @@ declare class FrameData {
     public components: number[];
     public FrameData(): void;
 }
-declare module away.loaders {
-    class MD5MeshParser extends loaders.ParserBase {
+declare module away.parsers {
+    /**
+    * MD5MeshParser provides a parser for the md5mesh data type, providing the geometry of the md5 format.
+    *
+    * todo: optimize
+    */
+    class MD5MeshParser extends parsers.ParserBase {
         private _textData;
         private _startedParsing;
         static VERSION_TOKEN: string;
@@ -7431,32 +12875,121 @@ declare module away.loaders {
         private _skeleton;
         private _animationSet;
         private _rotationQuat;
+        /**
+        * Creates a new MD5MeshParser object.
+        */
         constructor(additionalRotationAxis?: away.geom.Vector3D, additionalRotationRadians?: number);
+        /**
+        * Indicates whether or not a given file extension is supported by the parser.
+        * @param extension The file extension of a potential file to be parsed.
+        * @return Whether or not the given file type is supported.
+        */
         static supportsType(extension: string): boolean;
+        /**
+        * Tests whether a data block can be parsed by the parser.
+        * @param data The data block to potentially be parsed.
+        * @return Whether or not the given data is supported.
+        */
         static supportsData(data: any): boolean;
+        /**
+        * @inheritDoc
+        */
         public _pProceedParsing(): boolean;
         private calculateMaxJointCount();
         private countZeroWeightJoints(vertex, weights);
+        /**
+        * Parses the skeleton's joints.
+        */
         private parseJoints();
+        /**
+        * Puts back the last read character into the data stream.
+        */
         private putBack();
+        /**
+        * Parses the mesh geometry.
+        */
         private parseMesh();
+        /**
+        * Converts the mesh data to a SkinnedSub instance.
+        * @param vertexData The mesh's vertices.
+        * @param weights The joint weights per vertex.
+        * @param indices The indices for the faces.
+        * @return A SkinnedSubGeometry instance containing all geometrical data for the current mesh.
+        */
         private translateGeom(vertexData, weights, indices);
+        /**
+        * Retrieve the next triplet of vertex indices that form a face.
+        * @param indices The index list in which to store the read data.
+        */
         private parseTri(indices);
+        /**
+        * Reads a new joint data set for a single joint.
+        * @param weights the target list to contain the weight data.
+        */
         private parseJoint(weights);
+        /**
+        * Reads the data for a single vertex.
+        * @param vertexData The list to contain the vertex data.
+        */
         private parseVertex(vertexData);
+        /**
+        * Reads the next uv coordinate.
+        * @param vertexData The vertexData to contain the UV coordinates.
+        */
         private parseUV(vertexData);
+        /**
+        * Gets the next token in the data stream.
+        */
         private getNextToken();
+        /**
+        * Skips all whitespace in the data stream.
+        */
         private skipWhiteSpace();
+        /**
+        * Skips to the next line.
+        */
         private ignoreLine();
+        /**
+        * Retrieves the next single character in the data stream.
+        */
         private getNextChar();
+        /**
+        * Retrieves the next integer in the data stream.
+        */
         private getNextInt();
+        /**
+        * Retrieves the next floating point number in the data stream.
+        */
         private getNextNumber();
+        /**
+        * Retrieves the next 3d vector in the data stream.
+        */
         private parseVector3D();
+        /**
+        * Retrieves the next quaternion in the data stream.
+        */
         private parseQuaternion();
+        /**
+        * Parses the command line data.
+        */
         private parseCMD();
+        /**
+        * Retrieves the next literal string in the data stream. A literal string is a sequence of characters bounded
+        * by double quotes.
+        */
         private parseLiteralstring();
+        /**
+        * Throws an end-of-file error when a premature end of file was encountered.
+        */
         private sendEOFError();
+        /**
+        * Throws an error when an unexpected token was encountered.
+        * @param expected The token type that was actually expected.
+        */
         private sendParseError(expected);
+        /**
+        * Throws an error when an unknown keyword was encountered.
+        */
         private sendUnknownKeywordError();
     }
 }
@@ -7478,13 +13011,58 @@ declare class MeshData {
     public weightData: JointData[];
     public indices: number[];
 }
-declare module away.loaders {
+declare module away.parsers {
     class Parsers {
+        /**
+        * A list of all parsers that come bundled with Away3D. Use this to quickly
+        * enable support for all bundled parsers to the file format auto-detection
+        * feature, using any of the enableParsers() methods on loaders, e.g.:
+        *
+        * <code>AssetLibrary.enableParsers(Parsers.ALL_BUNDLED);</code>
+        *
+        * Beware however that this requires all parser classes to be included in the
+        * SWF file, which will add 50-100 kb to the file. When only a limited set of
+        * file formats are used, SWF file size can be saved by adding the parsers
+        * individually using AssetLibrary.enableParser()
+        *
+        * A third way is to specify a parser for each loaded file, thereby bypassing
+        * the auto-detection mechanisms altogether, while at the same time allowing
+        * any properties that are unique to that parser to be set for that load.
+        *
+        * The bundled parsers are:
+        *
+        * <ul>
+        * <li>AC3D (.ac)</li>
+        * <li>Away Data version 1 ASCII and version 2 binary (.awd). AWD1 BSP unsupported</li>
+        * <li>3DMax (.3ds)</li>
+        * <li>DXF (.dxf)</li>
+        * <li>Quake 2 MD2 models (.md2)</li>
+        * <li>Doom 3 MD5 animation clips (.md5anim)</li>
+        * <li>Doom 3 MD5 meshes (.md5mesh)</li>
+        * <li>Wavefront OBJ (.obj)</li>
+        * <li>Collada (.dae)</li>
+        * <li>Images (.jpg, .png)</li>
+        * </ul>
+        *
+        * @see away3d.loading.AssetLibrary.enableParser
+        */
         static ALL_BUNDLED: Object[];
+        /**
+        * Short-hand function to enable all bundled parsers for auto-detection. In practice,
+        * this is the same as invoking enableParsers(Parsers.ALL_BUNDLED) on any of the
+        * loader classes SingleFileLoader, AssetLoader, AssetLibrary or Loader3D.
+        *
+        * See notes about file size in the documentation for the ALL_BUNDLED constant.
+        *
+        * @see away.parsers.parsers.Parsers.ALL_BUNDLED
+        */
         static enableAllBundled(): void;
     }
 }
 declare module away.tools {
+    /**
+    * ...
+    */
     class ParticleGeometryTransform {
         private _defaultVertexTransform;
         private _defaultInvVertexTransform;
@@ -7495,194 +13073,12 @@ declare module away.tools {
     }
 }
 declare module away.tools {
+    /**
+    * ...
+    */
     class ParticleGeometryHelper {
         static MAX_VERTEX: number;
         static generateGeometry(geometries: away.base.Geometry[], transforms?: tools.ParticleGeometryTransform[]): away.base.ParticleGeometry;
-    }
-}
-declare module aglsl {
-    class Sampler {
-        public lodbias: number;
-        public dim: number;
-        public readmode: number;
-        public special: number;
-        public wrap: number;
-        public mipmap: number;
-        public filter: number;
-        constructor();
-    }
-}
-declare module aglsl {
-    class Token {
-        public dest: aglsl.Destination;
-        public opcode: number;
-        public a: aglsl.Destination;
-        public b: aglsl.Destination;
-        constructor();
-    }
-}
-declare module aglsl {
-    class Header {
-        public progid: number;
-        public version: number;
-        public type: string;
-        constructor();
-    }
-}
-declare module aglsl {
-    class OpLUT {
-        public s: string;
-        public flags: number;
-        public dest: boolean;
-        public a: boolean;
-        public b: boolean;
-        public matrixwidth: number;
-        public matrixheight: number;
-        public ndwm: boolean;
-        public scalar: boolean;
-        public dm: boolean;
-        public lod: boolean;
-        constructor(s: string, flags: number, dest: boolean, a: boolean, b: boolean, matrixwidth: number, matrixheight: number, ndwm: boolean, scaler: boolean, dm: boolean, lod: boolean);
-    }
-}
-declare module aglsl {
-    class Description {
-        public regread: any[];
-        public regwrite: any[];
-        public hasindirect: boolean;
-        public writedepth: boolean;
-        public hasmatrix: boolean;
-        public samplers: any[];
-        public tokens: aglsl.Token[];
-        public header: aglsl.Header;
-        constructor();
-    }
-}
-declare module aglsl {
-    class Destination {
-        public mask: number;
-        public regnum: number;
-        public regtype: number;
-        public dim: number;
-        constructor();
-    }
-}
-declare module aglsl {
-    class Context3D {
-        public enableErrorChecking: boolean;
-        public resources: any[];
-        public driverInfo: string;
-        static maxvertexconstants: number;
-        static maxfragconstants: number;
-        static maxtemp: number;
-        static maxstreams: number;
-        static maxtextures: number;
-        static defaultsampler: aglsl.Sampler;
-        constructor();
-    }
-}
-declare module aglsl {
-    class Mapping {
-        static agal2glsllut: aglsl.OpLUT[];
-    }
-}
-declare module aglsl.assembler {
-    class Opcode {
-        public dest: string;
-        public a: FS;
-        public b: FS;
-        public opcode: number;
-        public flags: Flags;
-        constructor(dest: string, aformat: string, asize: number, bformat: string, bsize: number, opcode: number, simple: boolean, horizontal: boolean, fragonly: boolean, matrix: boolean);
-    }
-    class FS {
-        public format: string;
-        public size: number;
-    }
-    class Flags {
-        public simple: boolean;
-        public horizontal: boolean;
-        public fragonly: boolean;
-        public matrix: boolean;
-    }
-}
-declare module aglsl.assembler {
-    class OpcodeMap {
-        private static _map;
-        static map : Object[];
-        constructor();
-    }
-}
-declare module aglsl.assembler {
-    class Part {
-        public name: string;
-        public version: number;
-        public data: away.utils.ByteArray;
-        constructor(name?: string, version?: number);
-    }
-}
-declare module aglsl.assembler {
-    class Reg {
-        public code: number;
-        public desc: string;
-        constructor(code: number, desc: string);
-    }
-    class RegMap {
-        private static _map;
-        static map : any[];
-        constructor();
-    }
-}
-declare module aglsl.assembler {
-    class Sampler {
-        public shift: number;
-        public mask: number;
-        public value: number;
-        constructor(shift: number, mask: number, value: number);
-    }
-    class SamplerMap {
-        private static _map;
-        static map : Object[];
-        constructor();
-    }
-}
-declare module aglsl.assembler {
-    class AGALMiniAssembler {
-        public r: Object;
-        public cur: assembler.Part;
-        constructor();
-        public assemble(source: string, ext_part?: any, ext_version?: any): Object;
-        private processLine(line, linenr);
-        public emitHeader(pr: assembler.Part): void;
-        public emitOpcode(pr: assembler.Part, opcode: any): void;
-        public emitZeroDword(pr: assembler.Part): void;
-        public emitZeroQword(pr: any): void;
-        public emitDest(pr: any, token: any, opdest: any): boolean;
-        public stringToMask(s: string): number;
-        public stringToSwizzle(s: any): number;
-        public emitSampler(pr: assembler.Part, token: any, opsrc: any, opts: any): boolean;
-        public emitSource(pr: any, token: any, opsrc: any): boolean;
-        public addHeader(partname: any, version: any): void;
-    }
-}
-declare module aglsl {
-    class AGALTokenizer {
-        constructor();
-        public decribeAGALByteArray(bytes: away.utils.ByteArray): aglsl.Description;
-        public readReg(s: any, mh: any, desc: any, bytes: any): void;
-    }
-}
-declare module aglsl {
-    class AGLSLParser {
-        public parse(desc: aglsl.Description): string;
-        public regtostring(regtype: number, regnum: number, desc: aglsl.Description, tag: any): string;
-        public sourcetostring(s: any, subline: any, dwm: any, isscalar: any, desc: any, tag: any): string;
-    }
-}
-declare module aglsl {
-    class AGLSLCompiler {
-        public glsl: string;
-        public compile(programType: string, source: string): string;
     }
 }
 declare module away {

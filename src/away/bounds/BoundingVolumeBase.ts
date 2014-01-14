@@ -190,7 +190,7 @@ module away.bounds
 			}
 		}
 
-		public isInFrustum(planes:away.math.Plane3D[], numPlanes:number):boolean
+		public isInFrustum(planes:away.geom.Plane3D[], numPlanes:number):boolean
 		{
 			throw new away.errors.AbstractMethodError();
 		}
@@ -267,7 +267,7 @@ module away.bounds
 			throw new away.errors.AbstractMethodError();
 		}
 
-		public classifyToPlane(plane:away.math.Plane3D):number
+		public classifyToPlane(plane:away.geom.Plane3D):number
 		{
 			throw new away.errors.AbstractMethodError();
 		}

@@ -1,6 +1,7 @@
+///<reference path="../../../build/Away3D.next.d.ts" />
+//<reference path="../../../src/Away3D.ts" />
 var demos;
 (function (demos) {
-    ///<reference path="../../../build/Away3D.next.d.ts" />
     (function (aircraft) {
         var AircraftDemo = (function () {
             //}
@@ -41,8 +42,8 @@ var demos;
             };
 
             AircraftDemo.prototype.initParsers = function () {
-                away.library.AssetLibrary.enableParser(away.loaders.OBJParser);
-                away.library.AssetLibrary.enableParser(away.loaders.CubeTextureParser);
+                away.library.AssetLibrary.enableParser(away.parsers.OBJParser);
+                away.library.AssetLibrary.enableParser(away.parsers.CubeTextureParser);
             };
 
             AircraftDemo.prototype.initAnimation = function () {
@@ -100,7 +101,7 @@ var demos;
             };
 
             AircraftDemo.prototype.initSea = function () {
-                this._seaMaterial = new away.materials.TextureMaterial(this._seaNormalTexture, true, true, false);
+                this._seaMaterial = new away.materials.TextureMaterial(this._seaNormalTexture, true, true, false); // will be the cubemap
                 this._waterMethod = new away.materials.SimpleWaterNormalMethod(this._seaNormalTexture, this._seaNormalTexture);
                 var fresnelMethod = new away.materials.FresnelSpecularMethod();
                 fresnelMethod.normalReflectance = .3;
@@ -118,6 +119,8 @@ var demos;
                 this._seaGeom = new away.primitives.PlaneGeometry(50000, 50000, 1, 1, true, false);
                 this._seaGeom.scaleUV(100, 100);
                 this._seaMesh = new away.entities.Mesh(this._seaGeom, this._seaMaterial);
+
+                //this._view.scene.addChild( new away.primitives.SkyBox( this._skyboxCubeTexture ));
                 this._view.scene.addChild(this._seaMesh);
             };
 
@@ -165,7 +168,7 @@ var demos;
                             this._loopIncrement += 0.05;
                             this._f14Geom.z += Math.cos(this._loopIncrement) * 20;
                             this._f14Geom.y += Math.sin(this._loopIncrement) * 20;
-                            this._f14Geom.rotationX += -1 * ((Math.PI / 180) * Math.atan2(this._f14Geom.z, this._f14Geom.y));
+                            this._f14Geom.rotationX += -1 * ((Math.PI / 180) * Math.atan2(this._f14Geom.z, this._f14Geom.y)); //* 20;
                             this._f14Geom.rotationZ = Math.sin(this._rollIncrement) * 25;
 
                             if (this._loopIncrement > (Math.PI * 2)) {

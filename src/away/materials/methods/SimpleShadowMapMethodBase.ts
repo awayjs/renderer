@@ -14,7 +14,7 @@ module away.materials
 		 * Creates a new SimpleShadowMapMethodBase object.
 		 * @param castingLight The light used to cast shadows.
 		 */
-			constructor(castingLight:away.lights.LightBase)
+		constructor(castingLight:away.lights.LightBase)
 		{
 			this._pUsePoint = (castingLight instanceof away.lights.PointLight);
 			super(castingLight);
@@ -171,7 +171,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iSetRenderState(vo:MethodVO, renderable:away.base.IRenderable, stage3DProxy:away.managers.Stage3DProxy, camera:away.cameras.Camera3D):void
+		public iSetRenderState(vo:MethodVO, renderable:away.base.IRenderable, stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D):void
 		{
 			if (!this._pUsePoint)
 				(<away.lights.DirectionalShadowMapper> this._pShadowMapper).iDepthProjection.copyRawDataTo(vo.vertexData, vo.vertexConstantsIndex + 4, true);
@@ -195,7 +195,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stage3DProxy:away.managers.Stage3DProxy):void
+		public iActivate(vo:MethodVO, stageGLProxy:away.managers.StageGLProxy):void
 		{
 			var fragmentData:Array<number> = vo.fragmentData;
 			var index:number /*int*/ = vo.fragmentConstantsIndex;
@@ -214,13 +214,13 @@ module away.materials
 				var f:number = (<away.lights.PointLight> this._pCastingLight).fallOff;
 				fragmentData[index + 11] = 1/(2*f*f);
 			}
-			stage3DProxy._iContext3D.setTextureAt(vo.texturesIndex, this._pCastingLight.shadowMapper.depthMap.getTextureForStage3D(stage3DProxy));
+			stageGLProxy._iContextGL.setTextureAt(vo.texturesIndex, this._pCastingLight.shadowMapper.depthMap.getTextureForStageGL(stageGLProxy));
 		}
 
 		/**
 		 * Sets the method state for cascade shadow mapping.
 		 */
-		public iActivateForCascade(vo:MethodVO, stage3DProxy:away.managers.Stage3DProxy):void
+		public iActivateForCascade(vo:MethodVO, stageGLProxy:away.managers.StageGLProxy):void
 		{
 			throw new Error("This shadow method is incompatible with cascade shadows");
 		}

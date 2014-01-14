@@ -19,7 +19,7 @@ module away.materials
 		 *
 		 * @param material The material to which this material belongs.
 		 */
-			constructor(material:away.materials.MaterialBase)
+		constructor(material:away.materials.MaterialBase)
 		{
 			super(material);
 			this._pNeedFragmentAnimation = true;
@@ -186,12 +186,12 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(stage3DProxy:away.managers.Stage3DProxy, camera:away.cameras.Camera3D)
+		public iActivate(stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D)
 		{
-			super.iActivate(stage3DProxy, camera);
+			super.iActivate(stageGLProxy, camera);
 
 			if (this._pMethodSetup._iColorTransformMethod)
-				this._pMethodSetup._iColorTransformMethod.iActivate(this._pMethodSetup._iColorTransformMethodVO, stage3DProxy);
+				this._pMethodSetup._iColorTransformMethod.iActivate(this._pMethodSetup._iColorTransformMethodVO, stageGLProxy);
 
 			var methods:away.materials.MethodVOSet[] = this._pMethodSetup._iMethods;
 			var len:number = methods.length;
@@ -199,7 +199,7 @@ module away.materials
 			for (var i:number = 0; i < len; ++i) {
 
 				var aset:away.materials.MethodVOSet = methods[i];
-				aset.method.iActivate(aset.data, stage3DProxy);
+				aset.method.iActivate(aset.data, stageGLProxy);
 
 			}
 
@@ -218,13 +218,13 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iDeactivate(stage3DProxy:away.managers.Stage3DProxy)
+		public iDeactivate(stageGLProxy:away.managers.StageGLProxy)
 		{
-			super.iDeactivate(stage3DProxy);
+			super.iDeactivate(stageGLProxy);
 
 			if (this._pMethodSetup._iColorTransformMethod) {
 
-				this._pMethodSetup._iColorTransformMethod.iDeactivate(this._pMethodSetup._iColorTransformMethodVO, stage3DProxy);
+				this._pMethodSetup._iColorTransformMethod.iDeactivate(this._pMethodSetup._iColorTransformMethodVO, stageGLProxy);
 
 			}
 
@@ -234,7 +234,7 @@ module away.materials
 
 			for (var i:number = 0; i < len; ++i) {
 				aset = methods[i];
-				aset.method.iDeactivate(aset.data, stage3DProxy);
+				aset.method.iDeactivate(aset.data, stageGLProxy);
 			}
 
 		}
@@ -424,7 +424,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public pUpdateProbes(stage3DProxy:away.managers.Stage3DProxy)
+		public pUpdateProbes(stageGLProxy:away.managers.StageGLProxy)
 		{
 
 			var probe:away.lights.LightProbe;
@@ -433,7 +433,7 @@ module away.materials
 			var len:number = lightProbes.length;
 			var addDiff:boolean = this.usesProbesForDiffuse();
 			var addSpec:boolean = <boolean> (this._pMethodSetup._iSpecularMethod && this.usesProbesForSpecular());
-			var context:away.display3D.Context3D = stage3DProxy._iContext3D;
+			var context:away.displayGL.ContextGL = stageGLProxy._iContextGL;
 
 			if (!(addDiff || addSpec)) {
 
@@ -449,13 +449,13 @@ module away.materials
 
 				if (addDiff) {
 
-					context.setTextureAt(this._pLightProbeSpecularIndices[i], probe.diffuseMap.getTextureForStage3D(stage3DProxy));//<------ TODO: implement
+					context.setTextureAt(this._pLightProbeSpecularIndices[i], probe.diffuseMap.getTextureForStageGL(stageGLProxy));//<------ TODO: implement
 
 				}
 
 				if (addSpec) {
 
-					context.setTextureAt(this._pLightProbeSpecularIndices[i], probe.specularMap.getTextureForStage3D(stage3DProxy));//<------ TODO: implement
+					context.setTextureAt(this._pLightProbeSpecularIndices[i], probe.specularMap.getTextureForStageGL(stageGLProxy));//<------ TODO: implement
 
 				}
 

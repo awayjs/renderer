@@ -1,32 +1,24 @@
 ///<reference path="../../../build/Away3D.next.d.ts" />
+//<reference path="../../../src/Away3D.ts" />
 /*
-
 3ds file loading example in Away3d
-
 Demonstrates:
-
 How to use the Loader3D object to load an embedded internal 3ds model.
 How to map an external asset reference inside a file to an internal embedded asset.
 How to extract material data and use it to set custom material properties on a model.
-
 Code by Rob Bateman
 rob@infiniteturtles.co.uk
 http://www.infiniteturtles.co.uk
-
 This code is distributed under the MIT License
-
 Copyright (c) The Away Foundation http://www.theawayfoundation.org
-
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the “Software”), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
-
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
-
 THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -34,7 +26,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
-
 */
 var examples;
 (function (examples) {
@@ -99,7 +90,7 @@ var examples;
         * Initialise the scene objects
         */
         Basic_Load3DS.prototype.initObjects = function () {
-            this._loader = new away.loaders.Loader3D();
+            this._loader = new away.containers.Loader3D();
             this._loader.scale(300);
             this._loader.z = -200;
             this._view.scene.addChild(this._loader);
@@ -130,10 +121,10 @@ var examples;
             this._timer.start();
 
             //setup parser to be used on Loader3D
-            away.loaders.Parsers.enableAllBundled();
+            away.parsers.Parsers.enableAllBundled();
 
             //setup the url map for textures in the 3ds file
-            var assetLoaderContext = new away.loaders.AssetLoaderContext();
+            var assetLoaderContext = new away.net.AssetLoaderContext();
             assetLoaderContext.mapUrl("texture.jpg", "assets/demos/soldier_ant.jpg");
 
             this._loader.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);

@@ -30,7 +30,7 @@ module away.events
 		 * @param type The event type.
 		 * @param animator The animator object that is the subject of this event.
 		 */
-			constructor(type:string, animator:away.animators.AnimatorBase)
+		constructor(type:string, animator:away.animators.AnimatorBase)
 		{
 			super(type);
 			this._animator = animator;

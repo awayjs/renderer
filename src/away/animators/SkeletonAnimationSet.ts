@@ -2,8 +2,8 @@
 
 module away.animators
 {
-	import Context3D = away.display3D.Context3D;
-	import Stage3DProxy = away.managers.Stage3DProxy;
+	import ContextGL = away.displayGL.ContextGL;
+	import StageGLProxy = away.managers.StageGLProxy;
 	import MaterialPassBase = away.materials.MaterialPassBase;
 
 	/**
@@ -29,7 +29,7 @@ module away.animators
 		 *
 		 * @param jointsPerVertex Sets the amount of skeleton joints that can be linked to a single vertex via skinned weight values. For GPU-base animation, the maximum allowed value is 4. Defaults to 4.
 		 */
-			constructor(jointsPerVertex:number /*uint*/ = 4)
+		constructor(jointsPerVertex:number /*uint*/ = 4)
 		{
 			super();
 
@@ -78,17 +78,17 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public activate(stage3DProxy:Stage3DProxy, pass:MaterialPassBase)
+		public activate(stageGLProxy:StageGLProxy, pass:MaterialPassBase)
 		{
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public deactivate(stage3DProxy:Stage3DProxy, pass:MaterialPassBase)
+		public deactivate(stageGLProxy:StageGLProxy, pass:MaterialPassBase)
 		{
 			var streamOffset:number /*uint*/ = pass.numUsedStreams;
-			var context:Context3D = stage3DProxy._iContext3D;
+			var context:ContextGL = stageGLProxy._iContextGL;
 			context.setVertexBufferAt(streamOffset, null);
 			context.setVertexBufferAt(streamOffset + 1, null);
 		}

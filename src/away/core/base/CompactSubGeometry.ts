@@ -7,12 +7,12 @@ module away.base
 	export class CompactSubGeometry extends away.base.SubGeometryBase implements away.base.ISubGeometry
 	{
 		public _pVertexDataInvalid:boolean[] = Array<boolean>(8);//new Vector.<Boolean>(8, true);
-		private _vertexBuffer:away.display3D.VertexBuffer3D[] = new Array<away.display3D.VertexBuffer3D>(8);//Vector.<VertexBuffer3D> = new Vector.<VertexBuffer3D>(8);
-		private _bufferContext:away.display3D.Context3D[] = new Array<away.display3D.Context3D>(8);//Vector.<Context3D> = new Vector.<Context3D>(8);
+		private _vertexBuffer:away.displayGL.VertexBuffer[] = new Array<away.displayGL.VertexBuffer>(8);//Vector.<VertexBuffer> = new Vector.<VertexBuffer>(8);
+		private _bufferContext:away.displayGL.ContextGL[] = new Array<away.displayGL.ContextGL>(8);//Vector.<ContextGL> = new Vector.<ContextGL>(8);
 		public _pNumVertices:number;
 		private _contextIndex:number;
-		public _pActiveBuffer:away.display3D.VertexBuffer3D;
-		private _activeContext:away.display3D.Context3D;
+		public _pActiveBuffer:away.displayGL.VertexBuffer;
+		private _activeContext:away.displayGL.ContextGL;
 		public _pActiveDataInvalid:boolean;
 		private _isolatedVertexPositionData:number[];
 		private _isolatedVertexPositionDataDirty:boolean;
@@ -70,10 +70,10 @@ module away.base
 
 		}
 
-		public activateVertexBuffer(index:number, stage3DProxy:away.managers.Stage3DProxy)
+		public activateVertexBuffer(index:number, stageGLProxy:away.managers.StageGLProxy)
 		{
-			var contextIndex:number = stage3DProxy._iStage3DIndex;
-			var context:away.display3D.Context3D = stage3DProxy._iContext3D;
+			var contextIndex:number = stageGLProxy._iStageGLIndex;
+			var context:away.displayGL.ContextGL = stageGLProxy._iContextGL;
 
 			if (contextIndex != this._contextIndex) {
 				this.pUpdateActiveBuffer(contextIndex);
@@ -87,14 +87,14 @@ module away.base
 				this.pUploadData(contextIndex);
 			}
 
-			context.setVertexBufferAt(index, this._pActiveBuffer, 0, away.display3D.Context3DVertexBufferFormat.FLOAT_3);
+			context.setVertexBufferAt(index, this._pActiveBuffer, 0, away.displayGL.ContextGLVertexBufferFormat.FLOAT_3);
 
 		}
 
-		public activateUVBuffer(index:number, stage3DProxy:away.managers.Stage3DProxy)
+		public activateUVBuffer(index:number, stageGLProxy:away.managers.StageGLProxy)
 		{
-			var contextIndex:number = stage3DProxy._iStage3DIndex;
-			var context:away.display3D.Context3D = stage3DProxy._iContext3D;
+			var contextIndex:number = stageGLProxy._iStageGLIndex;
+			var context:away.displayGL.ContextGL = stageGLProxy._iContextGL;
 
 			if (this._uvsDirty && this._autoGenerateUVs) {
 				this._vertexData = this.pUpdateDummyUVs(this._vertexData);
@@ -114,14 +114,14 @@ module away.base
 				this.pUploadData(contextIndex);
 			}
 
-			context.setVertexBufferAt(index, this._pActiveBuffer, 9, away.display3D.Context3DVertexBufferFormat.FLOAT_2);
+			context.setVertexBufferAt(index, this._pActiveBuffer, 9, away.displayGL.ContextGLVertexBufferFormat.FLOAT_2);
 
 		}
 
-		public activateSecondaryUVBuffer(index:number, stage3DProxy:away.managers.Stage3DProxy)
+		public activateSecondaryUVBuffer(index:number, stageGLProxy:away.managers.StageGLProxy)
 		{
-			var contextIndex:number = stage3DProxy._iStage3DIndex;
-			var context:away.display3D.Context3D = stage3DProxy._iContext3D;
+			var contextIndex:number = stageGLProxy._iStageGLIndex;
+			var context:away.displayGL.ContextGL = stageGLProxy._iContextGL;
 
 			if (contextIndex != this._contextIndex) {
 				this.pUpdateActiveBuffer(contextIndex);
@@ -135,7 +135,7 @@ module away.base
 				this.pUploadData(contextIndex);
 			}
 
-			context.setVertexBufferAt(index, this._pActiveBuffer, 11, away.display3D.Context3DVertexBufferFormat.FLOAT_2);
+			context.setVertexBufferAt(index, this._pActiveBuffer, 11, away.displayGL.ContextGLVertexBufferFormat.FLOAT_2);
 
 		}
 
@@ -145,10 +145,10 @@ module away.base
 			this._pVertexDataInvalid[contextIndex] = this._pActiveDataInvalid = false;
 		}
 
-		public activateVertexNormalBuffer(index:number, stage3DProxy:away.managers.Stage3DProxy)
+		public activateVertexNormalBuffer(index:number, stageGLProxy:away.managers.StageGLProxy)
 		{
-			var contextIndex:number = stage3DProxy._iStage3DIndex;
-			var context:away.display3D.Context3D = stage3DProxy._iContext3D;
+			var contextIndex:number = stageGLProxy._iStageGLIndex;
+			var context:away.displayGL.ContextGL = stageGLProxy._iContextGL;
 
 			if (contextIndex != this._contextIndex) {
 				this.pUpdateActiveBuffer(contextIndex);
@@ -162,14 +162,14 @@ module away.base
 				this.pUploadData(contextIndex);
 			}
 
-			context.setVertexBufferAt(index, this._pActiveBuffer, 3, away.display3D.Context3DVertexBufferFormat.FLOAT_3);
+			context.setVertexBufferAt(index, this._pActiveBuffer, 3, away.displayGL.ContextGLVertexBufferFormat.FLOAT_3);
 
 		}
 
-		public activateVertexTangentBuffer(index:number, stage3DProxy:away.managers.Stage3DProxy)
+		public activateVertexTangentBuffer(index:number, stageGLProxy:away.managers.StageGLProxy)
 		{
-			var contextIndex:number = stage3DProxy._iStage3DIndex;
-			var context:away.display3D.Context3D = stage3DProxy._iContext3D;
+			var contextIndex:number = stageGLProxy._iStageGLIndex;
+			var context:away.displayGL.ContextGL = stageGLProxy._iContextGL;
 
 			if (contextIndex != this._contextIndex) {
 				this.pUpdateActiveBuffer(contextIndex);
@@ -184,11 +184,11 @@ module away.base
 			}
 
 
-			context.setVertexBufferAt(index, this._pActiveBuffer, 6, away.display3D.Context3DVertexBufferFormat.FLOAT_3);
+			context.setVertexBufferAt(index, this._pActiveBuffer, 6, away.displayGL.ContextGLVertexBufferFormat.FLOAT_3);
 
 		}
 
-		public pCreateBuffer(contextIndex:number, context:away.display3D.Context3D)
+		public pCreateBuffer(contextIndex:number, context:away.displayGL.ContextGL)
 		{
 			this._vertexBuffer[contextIndex] = this._pActiveBuffer = context.createVertexBuffer(this._pNumVertices, 13);
 			this._bufferContext[contextIndex] = this._activeContext = context;
@@ -358,7 +358,7 @@ module away.base
 			this._vertexBuffer = null;
 		}
 
-		public pDisposeVertexBuffers(buffers:away.display3D.VertexBuffer3D[])
+		public pDisposeVertexBuffers(buffers:away.displayGL.VertexBuffer[])
 		{
 
 			super.pDisposeVertexBuffers(buffers);

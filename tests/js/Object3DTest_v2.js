@@ -1,7 +1,6 @@
+///<reference path="../../../build/Away3D.next.d.ts" />
 var tests;
 (function (tests) {
-    ///<reference path="../../../build/Away3D.next.d.ts" />
-    //<reference path="../../../src/Away3D.ts" />
     (function (base) {
         var Object3DTestV2 = (function () {
             function Object3DTestV2() {
@@ -70,6 +69,7 @@ var tests;
                     this.meshes[c].z = Math.sin(objPos + this.tPos) * this.radius;
                 }
 
+                //this.view.camera.y = Math.sin( this.tPos ) * 1500;
                 if (this.follow) {
                     this.view.camera.lookAt(this.meshes[0].position);
                 }

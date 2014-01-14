@@ -5,10 +5,10 @@
 module away.base
 {
 	//import away3d.cameras.Camera3D;
-	//import away3d.managers.Stage3DProxy;
+	//import away3d.managers.StageGLProxy;
 	//import away3d.entities.Entity;
 
-	//import flash.display3D.IndexBuffer3D;
+	//import flash.displayGL.IndexBuffer;
 	//import flash.geom.Matrix;
 	//import flash.geom.Matrix3D;
 
@@ -80,49 +80,49 @@ module away.base
 		/**
 		 * Assigns the attribute stream for vertex positions.
 		 * @param index The attribute stream index for the vertex shader
-		 * @param stage3DProxy The Stage3DProxy to assign the stream to
+		 * @param stageGLProxy The StageGLProxy to assign the stream to
 		 */
 
-		activateVertexBuffer(index:number, stage3DProxy:away.managers.Stage3DProxy);
+		activateVertexBuffer(index:number, stageGLProxy:away.managers.StageGLProxy);
 
 		/**
 		 * Assigns the attribute stream for UV coordinates
 		 * @param index The attribute stream index for the vertex shader
-		 * @param stage3DProxy The Stage3DProxy to assign the stream to
+		 * @param stageGLProxy The StageGLProxy to assign the stream to
 		 */
 
-		activateUVBuffer(index:number, stage3DProxy:away.managers.Stage3DProxy);
+		activateUVBuffer(index:number, stageGLProxy:away.managers.StageGLProxy);
 
 		/**
 		 * Assigns the attribute stream for a secondary set of UV coordinates
 		 * @param index The attribute stream index for the vertex shader
-		 * @param stage3DProxy The Stage3DProxy to assign the stream to
+		 * @param stageGLProxy The StageGLProxy to assign the stream to
 		 */
 
-		activateSecondaryUVBuffer(index:number, stage3DProxy:away.managers.Stage3DProxy);
+		activateSecondaryUVBuffer(index:number, stageGLProxy:away.managers.StageGLProxy);
 
 		/**
 		 * Assigns the attribute stream for vertex normals
 		 * @param index The attribute stream index for the vertex shader
-		 * @param stage3DProxy The Stage3DProxy to assign the stream to
+		 * @param stageGLProxy The StageGLProxy to assign the stream to
 		 */
 
-		activateVertexNormalBuffer(index:number, stage3DProxy:away.managers.Stage3DProxy);
+		activateVertexNormalBuffer(index:number, stageGLProxy:away.managers.StageGLProxy);
 
 		/**
 		 * Assigns the attribute stream for vertex tangents
 		 * @param index The attribute stream index for the vertex shader
-		 * @param stage3DProxy The Stage3DProxy to assign the stream to
+		 * @param stageGLProxy The StageGLProxy to assign the stream to
 		 */
 
-		activateVertexTangentBuffer(index:number, stage3DProxy:away.managers.Stage3DProxy);
+		activateVertexTangentBuffer(index:number, stageGLProxy:away.managers.StageGLProxy);
 
 		/**
-		 * Retrieves the IndexBuffer3D object that contains triangle indices.
-		 * @param context The Context3D for which we request the buffer
-		 * @return The VertexBuffer3D object that contains triangle indices.
+		 * Retrieves the IndexBuffer object that contains triangle indices.
+		 * @param context The ContextGL for which we request the buffer
+		 * @return The VertexBuffer object that contains triangle indices.
 		 */
-		getIndexBuffer(stage3DProxy:away.managers.Stage3DProxy):away.display3D.IndexBuffer3D;
+		getIndexBuffer(stageGLProxy:away.managers.StageGLProxy):away.displayGL.IndexBuffer;
 
 		/**
 		 * Retrieves the object's vertices as a Number array.

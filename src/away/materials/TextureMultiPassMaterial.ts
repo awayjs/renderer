@@ -17,7 +17,7 @@ module away.materials
 		 * @param repeat Indicates whether the texture should be tiled when sampled. Defaults to true.
 		 * @param mipmap Indicates whether or not any used textures should use mipmapping. Defaults to true.
 		 */
-			constructor(texture:away.textures.Texture2DBase = null, smooth:boolean = true, repeat:boolean = false, mipmap:boolean = true)
+		constructor(texture:away.textures.Texture2DBase = null, smooth:boolean = true, repeat:boolean = false, mipmap:boolean = true)
 		{
 			super();
 			this.texture = texture;

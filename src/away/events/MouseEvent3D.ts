@@ -155,7 +155,7 @@ module away.events
 		 * Create a new MouseEvent3D object.
 		 * @param type The type of the MouseEvent3D.
 		 */
-			constructor(type:string)
+		constructor(type:string)
 		{
 			super(type);//, true, true);
 		}

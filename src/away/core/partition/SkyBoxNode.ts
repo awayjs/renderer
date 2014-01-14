@@ -13,7 +13,7 @@ module away.partition
 		 * Creates a new SkyBoxNode object.
 		 * @param skyBox The SkyBox to be contained in the node.
 		 */
-			constructor(skyBox:away.entities.SkyBox)
+		constructor(skyBox:away.entities.SkyBox)
 		{
 			super(<away.entities.Entity > skyBox);
 			this._skyBox = skyBox;
@@ -30,7 +30,7 @@ module away.partition
 			}
 		}
 
-		public isInFrustum(planes:away.math.Plane3D[], numPlanes:number):boolean
+		public isInFrustum(planes:away.geom.Plane3D[], numPlanes:number):boolean
 		{
 
 			planes = planes;

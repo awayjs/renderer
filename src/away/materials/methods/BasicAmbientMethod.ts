@@ -156,13 +156,13 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:away.materials.MethodVO, stage3DProxy:away.managers.Stage3DProxy)
+		public iActivate(vo:away.materials.MethodVO, stageGLProxy:away.managers.StageGLProxy)
 		{
 			if (this._useTexture) {
 
-				stage3DProxy._iContext3D.setSamplerStateAt(vo.texturesIndex, vo.repeatTextures? away.display3D.Context3DWrapMode.REPEAT : away.display3D.Context3DWrapMode.CLAMP, vo.useSmoothTextures? away.display3D.Context3DTextureFilter.LINEAR : away.display3D.Context3DTextureFilter.NEAREST, vo.useMipmapping? away.display3D.Context3DMipFilter.MIPLINEAR : away.display3D.Context3DMipFilter.MIPNONE);
+				stageGLProxy._iContextGL.setSamplerStateAt(vo.texturesIndex, vo.repeatTextures? away.displayGL.ContextGLWrapMode.REPEAT : away.displayGL.ContextGLWrapMode.CLAMP, vo.useSmoothTextures? away.displayGL.ContextGLTextureFilter.LINEAR : away.displayGL.ContextGLTextureFilter.NEAREST, vo.useMipmapping? away.displayGL.ContextGLMipFilter.MIPLINEAR : away.displayGL.ContextGLMipFilter.MIPNONE);
 
-				stage3DProxy._iContext3D.setTextureAt(vo.texturesIndex, this._texture.getTextureForStage3D(stage3DProxy));
+				stageGLProxy._iContextGL.setTextureAt(vo.texturesIndex, this._texture.getTextureForStageGL(stageGLProxy));
 
 			}
 
@@ -181,7 +181,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iSetRenderState(vo:away.materials.MethodVO, renderable:away.base.IRenderable, stage3DProxy:away.managers.Stage3DProxy, camera:away.cameras.Camera3D)
+		public iSetRenderState(vo:away.materials.MethodVO, renderable:away.base.IRenderable, stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D)
 		{
 			this.updateAmbient();
 

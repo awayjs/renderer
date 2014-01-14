@@ -4,9 +4,9 @@ module away.animators
 {
 	import IRenderable						= away.base.IRenderable;
 	import Camera3D							= away.cameras.Camera3D;
-	import Context3DVertexBufferFormat		= away.display3D.Context3DVertexBufferFormat
+	import ContextGLVertexBufferFormat		= away.displayGL.ContextGLVertexBufferFormat
 	import Vector3D							= away.geom.Vector3D;
-	import Stage3DProxy						= away.managers.Stage3DProxy;
+	import StageGLProxy						= away.managers.StageGLProxy;
 	
 	/**
 	 * ...
@@ -33,7 +33,7 @@ module away.animators
 			return this._pNeedUpdateTime;
 		}
 		
-		public setRenderState(stage3DProxy:Stage3DProxy, renderable:IRenderable, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera3D)
+		public setRenderState(stageGLProxy:StageGLProxy, renderable:IRenderable, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera3D)
 		{
 		
 		}

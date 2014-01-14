@@ -21,7 +21,7 @@ module away.materials
 		 * @param waveMap1 A normal map containing one layer of a wave structure.
 		 * @param waveMap2 A normal map containing a second layer of a wave structure.
 		 */
-			constructor(waveMap1:away.textures.Texture2DBase, waveMap2:away.textures.Texture2DBase)
+		constructor(waveMap1:away.textures.Texture2DBase, waveMap2:away.textures.Texture2DBase)
 		{
 			super();
 			this.normalMap = waveMap1;
@@ -147,9 +147,9 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:away.materials.MethodVO, stage3DProxy:away.managers.Stage3DProxy):void
+		public iActivate(vo:away.materials.MethodVO, stageGLProxy:away.managers.StageGLProxy):void
 		{
-			super.iActivate(vo, stage3DProxy);
+			super.iActivate(vo, stageGLProxy);
 
 			var data:Array<number> = vo.fragmentData;
 			var index:number = vo.fragmentConstantsIndex;
@@ -161,7 +161,7 @@ module away.materials
 
 			//if (this._useSecondNormalMap >= 0)
 			if (this._useSecondNormalMap)
-				stage3DProxy._iContext3D.setTextureAt(vo.texturesIndex + 1, this._texture2.getTextureForStage3D(stage3DProxy));
+				stageGLProxy._iContextGL.setTextureAt(vo.texturesIndex + 1, this._texture2.getTextureForStageGL(stageGLProxy));
 		}
 
 		/**

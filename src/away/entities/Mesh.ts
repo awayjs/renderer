@@ -21,7 +21,7 @@ module away.entities
 		 * @param geometry                    The geometry used by the mesh that provides it with its shape.
 		 * @param material    [optional]        The material with which to render the Mesh.
 		 */
-			constructor(geometry:away.base.Geometry, material:away.materials.MaterialBase = null)
+		constructor(geometry:away.base.Geometry, material:away.materials.MaterialBase = null)
 		{
 			super();
 

@@ -3,7 +3,7 @@
 module away.materials
 {
 	//import away3d.arcane;
-	//import away3d.managers.Stage3DProxy;
+	//import away3d.managers.StageGLProxy;
 	//import away3d.materials.compilation.ShaderRegisterCache;
 	//import away3d.materials.compilation.ShaderRegisterElement;
 	//import away3d.textures.Texture2DBase;
@@ -72,12 +72,12 @@ module away.materials
 
 		/**
 		 * Forces the creation of the texture.
-		 * @param stage3DProxy The Stage3DProxy used by the renderer
+		 * @param stageGLProxy The StageGLProxy used by the renderer
 		 */
-		public generateMip(stage3DProxy:away.managers.Stage3DProxy)
+		public generateMip(stageGLProxy:away.managers.StageGLProxy)
 		{
 			if (this._useTexture)
-				this._texture.getTextureForStage3D(stage3DProxy);
+				this._texture.getTextureForStageGL(stageGLProxy);
 		}
 
 		/**
@@ -421,12 +421,12 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:away.materials.MethodVO, stage3DProxy:away.managers.Stage3DProxy)
+		public iActivate(vo:away.materials.MethodVO, stageGLProxy:away.managers.StageGLProxy)
 		{
 			if (this._useTexture) {
-				stage3DProxy._iContext3D.setSamplerStateAt(vo.texturesIndex, vo.repeatTextures? away.display3D.Context3DWrapMode.REPEAT : away.display3D.Context3DWrapMode.CLAMP, vo.useSmoothTextures? away.display3D.Context3DTextureFilter.LINEAR : away.display3D.Context3DTextureFilter.NEAREST, vo.useMipmapping? away.display3D.Context3DMipFilter.MIPLINEAR : away.display3D.Context3DMipFilter.MIPNONE);
+				stageGLProxy._iContextGL.setSamplerStateAt(vo.texturesIndex, vo.repeatTextures? away.displayGL.ContextGLWrapMode.REPEAT : away.displayGL.ContextGLWrapMode.CLAMP, vo.useSmoothTextures? away.displayGL.ContextGLTextureFilter.LINEAR : away.displayGL.ContextGLTextureFilter.NEAREST, vo.useMipmapping? away.displayGL.ContextGLMipFilter.MIPLINEAR : away.displayGL.ContextGLMipFilter.MIPNONE);
 
-				stage3DProxy._iContext3D.setTextureAt(vo.texturesIndex, this._texture.getTextureForStage3D(stage3DProxy));
+				stageGLProxy._iContextGL.setTextureAt(vo.texturesIndex, this._texture.getTextureForStageGL(stageGLProxy));
 
 				if (this._alphaThreshold > 0)
 					vo.fragmentData[vo.fragmentConstantsIndex] = this._alphaThreshold;

@@ -22,7 +22,7 @@ module away.materials
 		 *
 		 * @param material The material to which this pass belongs.
 		 */
-			constructor(material:away.materials.MaterialBase)
+		constructor(material:away.materials.MaterialBase)
 		{
 			super(material);
 		}
@@ -96,7 +96,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iRender(renderable:away.base.IRenderable, stage3DProxy:away.managers.Stage3DProxy, camera:away.cameras.Camera3D, viewProjection:away.geom.Matrix3D)
+		public iRender(renderable:away.base.IRenderable, stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D, viewProjection:away.geom.Matrix3D)
 		{
 			renderable.inverseSceneTransform.copyRawDataTo(this._inverseSceneMatrix);
 
@@ -111,15 +111,15 @@ module away.materials
 				this._pVertexConstantData[this._pCameraPositionIndex + 2] = this._inverseSceneMatrix[2]*x + this._inverseSceneMatrix[6]*y + this._inverseSceneMatrix[10]*z + this._inverseSceneMatrix[14];
 			}
 
-			super.iRender(renderable, stage3DProxy, camera, viewProjection);
+			super.iRender(renderable, stageGLProxy, camera, viewProjection);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(stage3DProxy:away.managers.Stage3DProxy, camera:away.cameras.Camera3D)
+		public iActivate(stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D)
 		{
-			super.iActivate(stage3DProxy, camera);
+			super.iActivate(stageGLProxy, camera);
 
 			if (!this._tangentSpace && this._pCameraPositionIndex >= 0) {
 				var pos:away.geom.Vector3D = camera.scenePosition;
@@ -236,7 +236,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public pUpdateProbes(stage3DProxy:away.managers.Stage3DProxy)
+		public pUpdateProbes(stageGLProxy:away.managers.StageGLProxy)
 		{
 		}
 	}

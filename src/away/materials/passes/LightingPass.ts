@@ -5,7 +5,7 @@ module away.materials
 	//import away3d.arcane;
 	//import away3d.cameras.Camera3D;
 	//import away3d.core.base.IRenderable;
-	//import away3d.managers.Stage3DProxy;
+	//import away3d.managers.StageGLProxy;
 	//import away3d.lights.DirectionalLight;
 	//import away3d.lights.LightProbe;
 	//import away3d.lights.PointLight;
@@ -14,7 +14,7 @@ module away.materials
 	//import away3d.materials.compilation.LightingShaderCompiler;
 	//import away3d.materials.compilation.ShaderCompiler;
 
-	//import flash.display3D.Context3D;
+	//import flash.displayGL.ContextGL;
 	//import flash.geom.Matrix3D;
 	//import flash.geom.Vector3D;
 
@@ -44,7 +44,7 @@ module away.materials
 		 *
 		 * @param material The material to which this pass belongs.
 		 */
-			constructor(material:MaterialBase)
+		constructor(material:MaterialBase)
 		{
 			super(material);
 		}
@@ -213,7 +213,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iRender(renderable:away.base.IRenderable, stage3DProxy:away.managers.Stage3DProxy, camera:away.cameras.Camera3D, viewProjection:away.geom.Matrix3D)
+		public iRender(renderable:away.base.IRenderable, stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D, viewProjection:away.geom.Matrix3D)
 		{
 			renderable.inverseSceneTransform.copyRawDataTo(this._inverseSceneMatrix);
 
@@ -228,15 +228,15 @@ module away.materials
 				this._pVertexConstantData[this._pCameraPositionIndex + 2] = this._inverseSceneMatrix[2]*x + this._inverseSceneMatrix[6]*y + this._inverseSceneMatrix[10]*z + this._inverseSceneMatrix[14];
 			}
 
-			super.iRender(renderable, stage3DProxy, camera, viewProjection);
+			super.iRender(renderable, stageGLProxy, camera, viewProjection);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(stage3DProxy:away.managers.Stage3DProxy, camera:away.cameras.Camera3D)
+		public iActivate(stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D)
 		{
-			super.iActivate(stage3DProxy, camera);
+			super.iActivate(stageGLProxy, camera);
 
 			if (!this._tangentSpace && this._pCameraPositionIndex >= 0) {
 				var pos:away.geom.Vector3D = camera.scenePosition;
@@ -429,9 +429,9 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public pUpdateProbes(stage3DProxy:away.managers.Stage3DProxy)
+		public pUpdateProbes(stageGLProxy:away.managers.StageGLProxy)
 		{
-			var context:away.display3D.Context3D = stage3DProxy._iContext3D;
+			var context:away.displayGL.ContextGL = stageGLProxy._iContextGL;
 			var probe:away.lights.LightProbe;
 			var lightProbes:Array<away.lights.LightProbe> = this._pLightPicker.lightProbes;
 			var weights:number[] = this._pLightPicker.lightProbeWeights;
@@ -450,10 +450,10 @@ module away.materials
 				probe = lightProbes[ this._lightProbesOffset + i];
 
 				if (addDiff) {
-					context.setTextureAt(this._pLightProbeDiffuseIndices[i], probe.diffuseMap.getTextureForStage3D(stage3DProxy));
+					context.setTextureAt(this._pLightProbeDiffuseIndices[i], probe.diffuseMap.getTextureForStageGL(stageGLProxy));
 				}
 				if (addSpec) {
-					context.setTextureAt(this._pLightProbeSpecularIndices[i], probe.specularMap.getTextureForStage3D(stage3DProxy));
+					context.setTextureAt(this._pLightProbeSpecularIndices[i], probe.specularMap.getTextureForStageGL(stageGLProxy));
 				}
 			}
 

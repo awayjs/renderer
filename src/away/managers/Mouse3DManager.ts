@@ -76,16 +76,16 @@ module away.managers
 		// Interface.
 		// ---------------------------------------------------------------------
 
-		// TODO: required dependency stage3DProxy
+		// TODO: required dependency stageGLProxy
 		public updateCollider(view:away.containers.View3D)
 		{
-			throw new away.errors.PartialImplementationError('stage3DProxy');
+			throw new away.errors.PartialImplementationError('stageGLProxy');
 			/*
 			 this._previousCollidingView = this._collidingView;
 
 			 if (view) {
 			 // Clear the current colliding objects for multiple views if backBuffer just cleared
-			 if (view.stage3DProxy.bufferClear)
+			 if (view.stageGLProxy.bufferClear)
 			 _collidingViewObjects = new Vector.<PickingCollisionVO>(_viewCount);
 
 			 if (!view.shareContext) {
@@ -209,14 +209,14 @@ module away.managers
 
 		public addViewLayer(view:away.containers.View3D)
 		{
-			throw new away.errors.PartialImplementationError('Stage3DProxy, Stage, DisplayObjectContainer ( as3 / native ) ');
+			throw new away.errors.PartialImplementationError('StageGLProxy, Stage, DisplayObjectContainer ( as3 / native ) ');
 
 			/*
 			 var stg:Stage = view.stage;
 
 			 // Add instance to mouse3dmanager to fire mouse events for multiple views
-			 if (!view.stage3DProxy.mouse3DManager)
-			 view.stage3DProxy.mouse3DManager = this;
+			 if (!view.stageGLProxy.mouse3DManager)
+			 view.stageGLProxy.mouse3DManager = this;
 
 			 if (!hasKey(view))
 			 _view3Ds[view] = 0;

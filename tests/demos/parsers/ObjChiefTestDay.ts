@@ -1,4 +1,5 @@
 ///<reference path="../../../build/Away3D.next.d.ts" />
+//<reference path="../../../src/Away3D.ts" />
 
 module demos.parsers
 {
@@ -8,7 +9,7 @@ module demos.parsers
 
         private height : number = 0;
 
-        private token   : away.loaders.AssetLoaderToken;
+        private token   : away.net.AssetLoaderToken;
         private view    : away.containers.View3D;
         private raf     : away.utils.RequestAnimationFrame;
         private mesh    : away.entities.Mesh;
@@ -54,7 +55,7 @@ module demos.parsers
 
             this.view.scene.addChild( this.light );
 
-            away.library.AssetLibrary.enableParser( away.loaders.OBJParser ) ;
+            away.library.AssetLibrary.enableParser( away.parsers.OBJParser ) ;
 
             this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/Halo_3_SPARTAN4.obj') );
             this.token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE , this.onResourceComplete , this );
@@ -101,7 +102,7 @@ module demos.parsers
         public onResourceComplete ( e : away.events.LoaderEvent )
         {
 
-            var loader  : away.loaders.AssetLoader   = <away.loaders.AssetLoader> e.target;
+            var loader  : away.net.AssetLoader   = <away.net.AssetLoader> e.target;
             var l       : number                     = loader.baseDependency.assets.length//dependencies.length;
 
 
@@ -111,7 +112,7 @@ module demos.parsers
 
 
             //*
-            var loader  : away.loaders.AssetLoader   = <away.loaders.AssetLoader> e.target;
+            var loader  : away.net.AssetLoader   = <away.net.AssetLoader> e.target;
             var l       : number                     = loader.baseDependency.assets.length//dependencies.length;
 
             for ( var c : number = 0 ; c < l ; c ++ )

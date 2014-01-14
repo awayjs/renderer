@@ -29,7 +29,7 @@ module away.events
 		 * @param type The event type.
 		 * @param subGeometry An optional SubGeometry object that is the subject of this event.
 		 */
-			constructor(type:string, subGeometry:away.base.ISubGeometry = null)
+		constructor(type:string, subGeometry:away.base.ISubGeometry = null)
 		{
 			super(type) //, false, false);
 			this._subGeometry = subGeometry;

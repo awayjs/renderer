@@ -19,7 +19,7 @@ module away.materials
 		 * @param castingLight The light casting the shadows
 		 * @param numSamples The amount of samples to take for dithering. Minimum 1, maximum 24.
 		 */
-			constructor(castingLight:away.lights.DirectionalLight, numSamples:number /*int*/ = 4, range:number = 1)
+		constructor(castingLight:away.lights.DirectionalLight, numSamples:number /*int*/ = 4, range:number = 1)
 		{
 			super(castingLight);
 
@@ -134,15 +134,15 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stage3DProxy:away.managers.Stage3DProxy):void
+		public iActivate(vo:MethodVO, stageGLProxy:away.managers.StageGLProxy):void
 		{
-			super.iActivate(vo, stage3DProxy);
+			super.iActivate(vo, stageGLProxy);
 			var data:Array<number> = vo.fragmentData;
 			var index:number /*uint*/ = vo.fragmentConstantsIndex;
-			data[index + 9] = (stage3DProxy.width - 1)/63;
-			data[index + 10] = (stage3DProxy.height - 1)/63;
+			data[index + 9] = (stageGLProxy.width - 1)/63;
+			data[index + 10] = (stageGLProxy.height - 1)/63;
 			data[index + 11] = 2*this._range/this._depthMapSize;
-			stage3DProxy._iContext3D.setTextureAt(vo.texturesIndex + 1, away.materials.DitheredShadowMapMethod._grainTexture.getTextureForStage3D(stage3DProxy));
+			stageGLProxy._iContextGL.setTextureAt(vo.texturesIndex + 1, away.materials.DitheredShadowMapMethod._grainTexture.getTextureForStageGL(stageGLProxy));
 		}
 
 		/**
@@ -256,15 +256,15 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivateForCascade(vo:MethodVO, stage3DProxy:away.managers.Stage3DProxy):void
+		public iActivateForCascade(vo:MethodVO, stageGLProxy:away.managers.StageGLProxy):void
 		{
 			var data:Array<number> = vo.fragmentData;
 			var index:number /*uint*/ = vo.secondaryFragmentConstantsIndex;
 			data[index] = 1/this._numSamples;
-			data[index + 1] = (stage3DProxy.width - 1)/63;
-			data[index + 2] = (stage3DProxy.height - 1)/63;
+			data[index + 1] = (stageGLProxy.width - 1)/63;
+			data[index + 2] = (stageGLProxy.height - 1)/63;
 			data[index + 3] = 2*this._range/this._depthMapSize;
-			stage3DProxy._iContext3D.setTextureAt(vo.texturesIndex + 1, away.materials.DitheredShadowMapMethod._grainTexture.getTextureForStage3D(stage3DProxy));
+			stageGLProxy._iContextGL.setTextureAt(vo.texturesIndex + 1, away.materials.DitheredShadowMapMethod._grainTexture.getTextureForStageGL(stageGLProxy));
 		}
 
 		/**

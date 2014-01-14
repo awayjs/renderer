@@ -84,7 +84,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivateForDepth(stage3DProxy:away.managers.Stage3DProxy, camera:away.cameras.Camera3D, distanceBased:boolean = false)
+		public iActivateForDepth(stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D, distanceBased:boolean = false)
 		{
 
 			if (distanceBased) {
@@ -97,7 +97,7 @@ module away.materials
 
 			}
 
-			super.iActivateForDepth(stage3DProxy, camera, distanceBased);
+			super.iActivateForDepth(stageGLProxy, camera, distanceBased);
 
 		}
 
@@ -446,7 +446,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iUpdateMaterial(context:away.display3D.Context3D)
+		public iUpdateMaterial(context:away.displayGL.ContextGL)
 		{
 			if (this._pScreenPass._iPassesDirty) {
 

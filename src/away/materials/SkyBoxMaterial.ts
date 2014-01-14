@@ -18,7 +18,7 @@ module away.materials
 		 * Creates a new SkyBoxMaterial object.
 		 * @param cubeMap The CubeMap to use as the skybox.
 		 */
-			constructor(cubeMap:away.textures.CubeTextureBase)
+		constructor(cubeMap:away.textures.CubeTextureBase)
 		{
 
 			super();

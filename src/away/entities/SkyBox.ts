@@ -29,7 +29,7 @@ module away.entities
 		 * Create a new SkyBox object.
 		 * @param cubeMap The CubeMap to use for the sky box's texture.
 		 */
-			constructor(cubeMap:away.textures.CubeTextureBase)
+		constructor(cubeMap:away.textures.CubeTextureBase)
 		{
 			super();
 			this._material = new away.materials.SkyBoxMaterial(cubeMap);
@@ -41,42 +41,42 @@ module away.entities
 		/**
 		 * @inheritDoc
 		 */
-		public activateVertexBuffer(index:number, stage3DProxy:away.managers.Stage3DProxy):void
+		public activateVertexBuffer(index:number, stageGLProxy:away.managers.StageGLProxy):void
 		{
-			this._geometry.activateVertexBuffer(index, stage3DProxy);
+			this._geometry.activateVertexBuffer(index, stageGLProxy);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public activateUVBuffer(index:number, stage3DProxy:away.managers.Stage3DProxy):void
-		{
-		}
-
-		/**
-		 * @inheritDoc
-		 */
-		public activateVertexNormalBuffer(index:number, stage3DProxy:away.managers.Stage3DProxy):void
+		public activateUVBuffer(index:number, stageGLProxy:away.managers.StageGLProxy):void
 		{
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public activateVertexTangentBuffer(index:number, stage3DProxy:away.managers.Stage3DProxy):void
-		{
-		}
-
-		public activateSecondaryUVBuffer(index:number, stage3DProxy:away.managers.Stage3DProxy):void
+		public activateVertexNormalBuffer(index:number, stageGLProxy:away.managers.StageGLProxy):void
 		{
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public getIndexBuffer(stage3DProxy:away.managers.Stage3DProxy):away.display3D.IndexBuffer3D
+		public activateVertexTangentBuffer(index:number, stageGLProxy:away.managers.StageGLProxy):void
 		{
-			return this._geometry.getIndexBuffer(stage3DProxy);
+		}
+
+		public activateSecondaryUVBuffer(index:number, stageGLProxy:away.managers.StageGLProxy):void
+		{
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public getIndexBuffer(stageGLProxy:away.managers.StageGLProxy):away.displayGL.IndexBuffer
+		{
+			return this._geometry.getIndexBuffer(stageGLProxy);
 		}
 
 		/**

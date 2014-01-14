@@ -81,7 +81,7 @@ module away.partition
 			} while ((node = node._iParent) != null);
 		}
 
-		public isInFrustum(planes:away.math.Plane3D[], numPlanes:number):boolean
+		public isInFrustum(planes:away.geom.Plane3D[], numPlanes:number):boolean
 		{
 			//console.log( 'NodeBase' , 'isInFrustum - should be true');
 

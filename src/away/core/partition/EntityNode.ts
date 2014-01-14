@@ -29,7 +29,7 @@ module away.partition
 		}
 
 		//@override
-		public isInFrustum(planes:away.math.Plane3D[], numPlanes:number):boolean
+		public isInFrustum(planes:away.geom.Plane3D[], numPlanes:number):boolean
 		{
 			if (!this._entity._iIsVisible) {
 				return false;

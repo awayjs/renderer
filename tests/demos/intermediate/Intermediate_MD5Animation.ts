@@ -1,4 +1,5 @@
 ﻿///<reference path="../../../build/Away3D.next.d.ts" />
+//<reference path="../../../src/Away3D.ts" />
 
 /*
 
@@ -63,8 +64,8 @@ module examples
 	import PointLight                           = away.lights.PointLight;
     import DirectionalLight                     = away.lights.DirectionalLight;
 	import NearDirectionalShadowMapper          = away.lights.NearDirectionalShadowMapper;
-	import MD5AnimParser                        = away.loaders.MD5AnimParser;
-    import MD5MeshParser                        = away.loaders.MD5MeshParser;
+	import MD5AnimParser                        = away.parsers.MD5AnimParser;
+    import MD5MeshParser                        = away.parsers.MD5MeshParser;
     import FogMethod                            = away.materials.FogMethod;
 	import StaticLightPicker                    = away.materials.StaticLightPicker;
     import TextureMaterial                      = away.materials.TextureMaterial;
@@ -312,7 +313,7 @@ module examples
             this._timer.start();
 
             //setup the url map for textures in the cubemap file
-            var assetLoaderContext:away.loaders.AssetLoaderContext = new away.loaders.AssetLoaderContext();
+            var assetLoaderContext:away.net.AssetLoaderContext = new away.net.AssetLoaderContext();
             assetLoaderContext.dependencyBaseUrl = "assets/demos/skybox/";
 
             //load hellknight mesh

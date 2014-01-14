@@ -1,7 +1,7 @@
+///<reference path="../../../build/Away3D.next.d.ts" />
+//<reference path="../../../src/Away3D.ts" />
 var tests;
 (function (tests) {
-    ///<reference path="../../../build/Away3D.next.d.ts" />
-    //<reference path="../../../src/Away3D.ts" />
     (function (controllers) {
         var HoverControllerTest = (function () {
             function HoverControllerTest() {
@@ -56,11 +56,10 @@ var tests;
             };
 
             HoverControllerTest.prototype.onMouseDownHandler = function (e) {
-                console.log('onMouseDownHandler');
                 this._lastPanAngle = this._hoverControl.panAngle;
                 this._lastTiltAngle = this._hoverControl.tiltAngle;
-                this._lastMouseX = e.clientX;
-                this._lastMouseY = e.clientY;
+                this._lastMouseX = e.clientX; //e.clientX;
+                this._lastMouseY = e.clientY; //e.clientX;
                 this._move = true;
             };
             return HoverControllerTest;

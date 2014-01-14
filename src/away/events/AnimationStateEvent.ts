@@ -25,7 +25,7 @@ module away.events
 		 * @param animator The animation state object that is the subject of this event.
 		 * @param animationNode The animation node inside the animation state from which the event originated.
 		 */
-			constructor(type:string, animator:away.animators.IAnimator, animationState:away.animators.IAnimationState, animationNode:away.animators.AnimationNodeBase)
+		constructor(type:string, animator:away.animators.IAnimator, animationState:away.animators.IAnimationState, animationNode:away.animators.AnimationNodeBase)
 		{
 			super(type);
 

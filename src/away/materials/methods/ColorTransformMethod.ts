@@ -2,7 +2,7 @@
 module away.materials
 {
 	//import away3d.arcane;
-	//import away3d.managers.Stage3DProxy;
+	//import away3d.managers.StageGLProxy;
 	//import away3d.materials.compilation.ShaderRegisterCache;
 	//import away3d.materials.compilation.ShaderRegisterElement;
 
@@ -60,7 +60,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:away.materials.MethodVO, stage3DProxy:away.managers.Stage3DProxy)
+		public iActivate(vo:away.materials.MethodVO, stageGLProxy:away.managers.StageGLProxy)
 		{
 			var inv:number = 1/0xff;
 			var index:number = vo.fragmentConstantsIndex;

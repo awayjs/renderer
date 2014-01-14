@@ -1,4 +1,5 @@
 ///<reference path="../../../build/Away3D.next.d.ts" />
+//<reference path="../../../src/Away3D.ts" />
 
 module demos.parsers {
 
@@ -6,7 +7,7 @@ module demos.parsers {
     {
 
         private _view           : away.containers.View3D;
-        private _token          : away.loaders.AssetLoaderToken;
+        private _token          : away.net.AssetLoaderToken;
         private _timer          : away.utils.RequestAnimationFrame;
         private _suzane         : away.entities.Mesh;
         private _lightPicker    : away.materials.StaticLightPicker;
@@ -19,7 +20,7 @@ module demos.parsers {
             away.Debug.LOG_PI_ERRORS = true;
             away.Debug.THROW_ERRORS = false;
 
-            away.library.AssetLibrary.enableParser( away.loaders.AWDParser ) ;
+            away.library.AssetLibrary.enableParser( away.parsers.AWDParser ) ;
 
             this._token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/awd/sponza/sponza_lights_textures_u.awd') );
 	        //
@@ -79,7 +80,7 @@ module demos.parsers {
             console.log( 'away.events.LoaderEvent.RESOURCE_COMPLETE' , e  );
             console.log( '------------------------------------------------------------------------------');
 
-            var loader			: away.loaders.AssetLoader   	= <away.loaders.AssetLoader> e.target;
+            var loader			: away.net.AssetLoader   	= <away.net.AssetLoader> e.target;
             var numAssets		: number 						= loader.baseDependency.assets.length;
 
             for( var i : number = 0; i < numAssets; ++i )

@@ -170,7 +170,7 @@ module away.animators
 		 *
 		 * @param animationSet The animation data set to be used by the animator object.
 		 */
-			constructor(animationSet:IAnimationSet)
+		constructor(animationSet:IAnimationSet)
 		{
 			super();
 

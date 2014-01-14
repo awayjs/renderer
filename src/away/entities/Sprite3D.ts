@@ -80,34 +80,34 @@ module away.entities
 			this.iInvalidateTransform();
 		}
 
-		public activateVertexBuffer(index:number, stage3DProxy:away.managers.Stage3DProxy)
+		public activateVertexBuffer(index:number, stageGLProxy:away.managers.StageGLProxy)
 		{
-			Sprite3D._geometry.activateVertexBuffer(index, stage3DProxy);
+			Sprite3D._geometry.activateVertexBuffer(index, stageGLProxy);
 		}
 
-		public activateUVBuffer(index:number, stage3DProxy:away.managers.Stage3DProxy)
+		public activateUVBuffer(index:number, stageGLProxy:away.managers.StageGLProxy)
 		{
-			Sprite3D._geometry.activateUVBuffer(index, stage3DProxy);
+			Sprite3D._geometry.activateUVBuffer(index, stageGLProxy);
 		}
 
-		public activateSecondaryUVBuffer(index:number, stage3DProxy:away.managers.Stage3DProxy)
+		public activateSecondaryUVBuffer(index:number, stageGLProxy:away.managers.StageGLProxy)
 		{
-			Sprite3D._geometry.activateSecondaryUVBuffer(index, stage3DProxy);
+			Sprite3D._geometry.activateSecondaryUVBuffer(index, stageGLProxy);
 		}
 
-		public activateVertexNormalBuffer(index:number, stage3DProxy:away.managers.Stage3DProxy)
+		public activateVertexNormalBuffer(index:number, stageGLProxy:away.managers.StageGLProxy)
 		{
-			Sprite3D._geometry.activateVertexNormalBuffer(index, stage3DProxy);
+			Sprite3D._geometry.activateVertexNormalBuffer(index, stageGLProxy);
 		}
 
-		public activateVertexTangentBuffer(index:number, stage3DProxy:away.managers.Stage3DProxy)
+		public activateVertexTangentBuffer(index:number, stageGLProxy:away.managers.StageGLProxy)
 		{
-			Sprite3D._geometry.activateVertexTangentBuffer(index, stage3DProxy);
+			Sprite3D._geometry.activateVertexTangentBuffer(index, stageGLProxy);
 		}
 
-		public getIndexBuffer(stage3DProxy:away.managers.Stage3DProxy):away.display3D.IndexBuffer3D
+		public getIndexBuffer(stageGLProxy:away.managers.StageGLProxy):away.displayGL.IndexBuffer
 		{
-			return Sprite3D._geometry.getIndexBuffer(stage3DProxy);
+			return Sprite3D._geometry.getIndexBuffer(stageGLProxy);
 		}
 
 		public get numTriangles():number
@@ -240,7 +240,7 @@ module away.entities
 
 			var viewTransform:away.geom.Matrix3D = this._camera.inverseSceneTransform.clone();
 			viewTransform.transpose();
-			var rawViewTransform:number[] = away.math.Matrix3DUtils.RAW_DATA_CONTAINER;
+			var rawViewTransform:number[] = away.geom.Matrix3DUtils.RAW_DATA_CONTAINER;
 			viewTransform.copyRawDataTo(rawViewTransform);
 			rawViewTransform[ 3  ] = 0;
 			rawViewTransform[ 7  ] = 0;

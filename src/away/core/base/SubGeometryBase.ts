@@ -18,9 +18,9 @@ module away.base
 		public _faceTangentsDirty:boolean = true;
 		public _faceTangents:number[];
 		public _indices:number[] /*uint*/;
-		public _indexBuffer:away.display3D.IndexBuffer3D[] = new Array<away.display3D.IndexBuffer3D>(8);//Vector.<IndexBuffer3D> = new Vector.<IndexBuffer3D>(8);
+		public _indexBuffer:away.displayGL.IndexBuffer[] = new Array<away.displayGL.IndexBuffer>(8);//Vector.<IndexBuffer> = new Vector.<IndexBuffer>(8);
 		public _numIndices:number;
-		public _indexBufferContext:away.display3D.Context3D[] = new Array<away.display3D.Context3D>(8);//Vector.<Context3D> = new Vector.<Context3D>(8);
+		public _indexBufferContext:away.displayGL.ContextGL[] = new Array<away.displayGL.ContextGL>(8);//Vector.<ContextGL> = new Vector.<ContextGL>(8);
 		public _indicesInvalid:boolean[] = new Array<boolean>(8);//new Vector.<Boolean>(8, true);
 		public _numTriangles:number;
 
@@ -122,14 +122,14 @@ module away.base
 		}
 
 		/**
-		 * Retrieves the VertexBuffer3D object that contains triangle indices.
-		 * @param context The Context3D for which we request the buffer
-		 * @return The VertexBuffer3D object that contains triangle indices.
+		 * Retrieves the VertexBuffer object that contains triangle indices.
+		 * @param context The ContextGL for which we request the buffer
+		 * @return The VertexBuffer object that contains triangle indices.
 		 */
-		public getIndexBuffer(stage3DProxy:away.managers.Stage3DProxy):away.display3D.IndexBuffer3D
+		public getIndexBuffer(stageGLProxy:away.managers.StageGLProxy):away.displayGL.IndexBuffer
 		{
-			var contextIndex:number = stage3DProxy._iStage3DIndex;//_stage3DIndex;
-			var context:away.display3D.Context3D = stage3DProxy._iContext3D;//_context3D;
+			var contextIndex:number = stageGLProxy._iStageGLIndex;//_stageGLIndex;
+			var context:away.displayGL.ContextGL = stageGLProxy._iContextGL;//_contextGL;
 
 			if (!this._indexBuffer[contextIndex] || this._indexBufferContext[contextIndex] != context) {
 				this._indexBuffer[contextIndex] = context.createIndexBuffer(this._numIndices);
@@ -499,7 +499,7 @@ module away.base
 		 * Disposes all buffers in a given vector.
 		 * @param buffers The vector of buffers to dispose.
 		 */
-		public pDisposeIndexBuffers(buffers:away.display3D.IndexBuffer3D[]):void //Vector.<IndexBuffer3D>)
+		public pDisposeIndexBuffers(buffers:away.displayGL.IndexBuffer[]):void //Vector.<IndexBuffer>)
 		{
 			for (var i:number = 0; i < 8; ++i) {
 				if (buffers[i]) {
@@ -513,7 +513,7 @@ module away.base
 		 * Disposes all buffers in a given vector.
 		 * @param buffers The vector of buffers to dispose.
 		 */
-		public pDisposeVertexBuffers(buffers:away.display3D.VertexBuffer3D []):void //Vector.<VertexBuffer3D>)
+		public pDisposeVertexBuffers(buffers:away.displayGL.VertexBuffer []):void //Vector.<VertexBuffer>)
 		{
 			for (var i:number = 0; i < 8; ++i) {
 				if (buffers[i]) {

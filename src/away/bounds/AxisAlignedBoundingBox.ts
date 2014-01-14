@@ -4,7 +4,7 @@ module away.bounds
 {
 
 	//import away3d.arcane;
-	//import away3d.core.math.*;
+	//import away3d.core.geom.*;
 	//import away3d.primitives.*;
 
 	//import flash.geom.*;
@@ -48,11 +48,11 @@ module away.bounds
 		/**
 		 * @inheritDoc
 		 */
-		public isInFrustum(planes:away.math.Plane3D[], numPlanes:number):boolean
+		public isInFrustum(planes:away.geom.Plane3D[], numPlanes:number):boolean
 		{
 			for (var i:number = 0; i < numPlanes; ++i) {
 
-				var plane:away.math.Plane3D = planes[i];
+				var plane:away.geom.Plane3D = planes[i];
 				var a:number = plane.a;
 				var b:number = plane.b;
 				var c:number = plane.c;
@@ -277,7 +277,7 @@ module away.bounds
 			return <away.primitives.WireframePrimitiveBase> new away.primitives.WireframeCube(1, 1, 1, 0xffffff, 0.5);
 		}
 
-		public classifyToPlane(plane:away.math.Plane3D):number
+		public classifyToPlane(plane:away.geom.Plane3D):number
 		{
 			var a:number = plane.a;
 			var b:number = plane.b;
@@ -295,7 +295,7 @@ module away.bounds
 
 			var boundOffset:number = a*this._halfExtentsX + b*this._halfExtentsY + c*this._halfExtentsZ;
 
-			return centerDistance > boundOffset? away.math.PlaneClassification.FRONT : centerDistance < -boundOffset? away.math.PlaneClassification.BACK : away.math.PlaneClassification.INTERSECT;
+			return centerDistance > boundOffset? away.geom.PlaneClassification.FRONT : centerDistance < -boundOffset? away.geom.PlaneClassification.BACK : away.geom.PlaneClassification.INTERSECT;
 		}
 
 		public transformFrom(bounds:BoundingVolumeBase, matrix:away.geom.Matrix3D)
@@ -304,7 +304,7 @@ module away.bounds
 			var cx:number = aabb._centerX;
 			var cy:number = aabb._centerY;
 			var cz:number = aabb._centerZ;
-			var raw:number[] = away.math.Matrix3DUtils.RAW_DATA_CONTAINER;
+			var raw:number[] = away.geom.Matrix3DUtils.RAW_DATA_CONTAINER;
 
 			matrix.copyRawDataTo(raw);
 

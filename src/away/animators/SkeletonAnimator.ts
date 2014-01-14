@@ -6,11 +6,11 @@ module away.animators
 	import SkinnedSubGeometry               = away.base.SkinnedSubGeometry;
 	import SubMesh                          = away.base.SubMesh;
 	import Camera3D                         = away.cameras.Camera3D;
-	import Context3DProgramType             = away.display3D.Context3DProgramType;
+	import ContextGLProgramType             = away.displayGL.ContextGLProgramType;
 	import AnimationStateEvent              = away.events.AnimationStateEvent;
 	import Vector3D                         = away.geom.Vector3D;
-	import Stage3DProxy                     = away.managers.Stage3DProxy;
-	import Quaternion                       = away.math.Quaternion;
+	import StageGLProxy                     = away.managers.StageGLProxy;
+	import Quaternion                       = away.geom.Quaternion;
 	import MaterialPassBase                 = away.materials.MaterialPassBase;
 
 	/**
@@ -99,7 +99,7 @@ module away.animators
 		 * @param skeleton The skeleton object used for calculating the resulting global matrices for transforming skinned mesh data.
 		 * @param forceCPU Optional value that only allows the animator to perform calculation on the CPU. Defaults to false.
 		 */
-			constructor(animationSet:SkeletonAnimationSet, skeleton:Skeleton, forceCPU:boolean = false)
+		constructor(animationSet:SkeletonAnimationSet, skeleton:Skeleton, forceCPU:boolean = false)
 		{
 			super(animationSet);
 
@@ -181,7 +181,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public setRenderState(stage3DProxy:Stage3DProxy, renderable:IRenderable, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/, camera:Camera3D)
+		public setRenderState(stageGLProxy:StageGLProxy, renderable:IRenderable, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/, camera:Camera3D)
 		{
 			// do on request of globalProperties
 			if (this._globalPropertiesDirty)
@@ -197,7 +197,7 @@ module away.animators
 					numCondensedJoints = skinnedGeom.numCondensedJoints;
 				}
 				this.updateCondensedMatrices(skinnedGeom.condensedIndexLookUp, numCondensedJoints);
-				stage3DProxy._iContext3D.setProgramConstantsFromArray(Context3DProgramType.VERTEX, vertexConstantOffset, this._condensedMatrices, numCondensedJoints*3);
+				stageGLProxy._iContextGL.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, vertexConstantOffset, this._condensedMatrices, numCondensedJoints*3);
 			} else {
 				if (this._pAnimationSet.usesCPU) {
 					var subGeomAnimState:SubGeomAnimationState = this._subGeomAnimationStates[skinnedGeom._iUniqueId];
@@ -212,11 +212,11 @@ module away.animators
 					skinnedGeom.updateAnimatedData(subGeomAnimState.animatedVertexData);
 					return;
 				}
-				stage3DProxy._iContext3D.setProgramConstantsFromArray(Context3DProgramType.VERTEX, vertexConstantOffset, this._globalMatrices, this._numJoints*3);
+				stageGLProxy._iContextGL.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, vertexConstantOffset, this._globalMatrices, this._numJoints*3);
 			}
 
-			skinnedGeom.activateJointIndexBuffer(vertexStreamOffset, stage3DProxy);
-			skinnedGeom.activateJointWeightsBuffer(vertexStreamOffset + 1, stage3DProxy);
+			skinnedGeom.activateJointIndexBuffer(vertexStreamOffset, stageGLProxy);
+			skinnedGeom.activateJointWeightsBuffer(vertexStreamOffset + 1, stageGLProxy);
 		}
 
 		/**

@@ -15,7 +15,7 @@ module away.materials
 		 * @param color The material's diffuse surface color.
 		 * @param alpha The material's surface alpha.
 		 */
-			constructor(color:number = 0xcccccc, alpha:number = 1)
+		constructor(color:number = 0xcccccc, alpha:number = 1)
 		{
 
 			super();

@@ -16,7 +16,7 @@ module away.materials
 		 * @param modulateMethod The method which will add the code to alter the base method's strength. It needs to have the signature modSpecular(t : ShaderRegisterElement, regCache : ShaderRegisterCache) : string, in which t.w will contain the specular strength and t.xyz will contain the half-vector or the reflection vector.
 		 * @param baseSpecularMethod The base specular method on which this method's shading is based.
 		 */
-			constructor(scope:Object, modulateMethod:Function, baseSpecularMethod:away.materials.BasicSpecularMethod = null)
+		constructor(scope:Object, modulateMethod:Function, baseSpecularMethod:away.materials.BasicSpecularMethod = null)
 		{
 			super();
 
@@ -125,17 +125,17 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:away.materials.MethodVO, stage3DProxy:away.managers.Stage3DProxy):void
+		public iActivate(vo:away.materials.MethodVO, stageGLProxy:away.managers.StageGLProxy):void
 		{
-			this._baseMethod.iActivate(vo, stage3DProxy);
+			this._baseMethod.iActivate(vo, stageGLProxy);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iDeactivate(vo:away.materials.MethodVO, stage3DProxy:away.managers.Stage3DProxy):void
+		public iDeactivate(vo:away.materials.MethodVO, stageGLProxy:away.managers.StageGLProxy):void
 		{
-			this._baseMethod.iDeactivate(vo, stage3DProxy);
+			this._baseMethod.iDeactivate(vo, stageGLProxy);
 		}
 
 		/**

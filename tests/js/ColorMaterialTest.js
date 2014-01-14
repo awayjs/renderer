@@ -1,7 +1,7 @@
+///<reference path="../../../build/Away3D.next.d.ts" />
+//<reference path="../../../src/Away3D.ts" />
 var tests;
 (function (tests) {
-    ///<reference path="../../../build/Away3D.next.d.ts" />
-    //<reference path="../../../src/Away3D.ts" />
     (function (materials) {
         var ColorMaterialTest = (function () {
             function ColorMaterialTest() {
@@ -15,8 +15,8 @@ var tests;
 
                 this.cm = new away.materials.ColorMaterial();
                 this.stage = new away.display.Stage(800, 600);
-                this.sManager = away.managers.Stage3DManager.getInstance(this.stage);
-                this.sProxy = this.sManager.getStage3DProxy(0);
+                this.sManager = away.managers.StageGLManager.getInstance(this.stage);
+                this.sProxy = this.sManager.getStageGLProxy(0);
 
                 this.cm.iInvalidatePasses(null);
 

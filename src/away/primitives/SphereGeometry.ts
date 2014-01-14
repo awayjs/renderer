@@ -21,7 +21,7 @@ module away.primitives
 		 * @param segmentsH Defines the number of vertical segments that make up the sphere.
 		 * @param yUp Defines whether the sphere poles should lay on the Y-axis (true) or on the Z-axis (false).
 		 */
-			constructor(radius:number = 50, segmentsW:number = 16, segmentsH:number = 12, yUp:boolean = true)
+		constructor(radius:number = 50, segmentsW:number = 16, segmentsH:number = 12, yUp:boolean = true)
 		{
 			super();
 

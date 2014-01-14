@@ -16,7 +16,7 @@ module away.partition
 		 * Creates a new MeshNode object.
 		 * @param mesh The mesh to be contained in the node.
 		 */
-			constructor(mesh:away.entities.Mesh)
+		constructor(mesh:away.entities.Mesh)
 		{
 			super(mesh);
 			this._mesh = mesh; // also keep a stronger typed reference

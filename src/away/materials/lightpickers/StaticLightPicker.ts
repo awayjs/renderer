@@ -23,7 +23,7 @@ module away.materials
 		 * Creates a new StaticLightPicker object.
 		 * @param lights The lights to be used for shading.
 		 */
-			constructor(lights)
+		constructor(lights)
 		{
 			super();
 			this.lights = lights;

@@ -82,7 +82,7 @@ module away.pick
 		 *
 		 * @param entity The entity to which this collision object belongs.
 		 */
-			constructor(entity:away.entities.Entity)
+		constructor(entity:away.entities.Entity)
 		{
 			this.entity = entity;
 		}

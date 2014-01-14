@@ -17,7 +17,7 @@ module away.pick
 		 *
 		 * @param findClosestCollision Determines whether the picking collider searches for the closest collision along the ray. Defaults to false.
 		 */
-			constructor(findClosestCollision:boolean = false)
+		constructor(findClosestCollision:boolean = false)
 		{
 			super();
 			this._findClosestCollision = findClosestCollision;

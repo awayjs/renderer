@@ -4,9 +4,9 @@ module away.animators
 {
 	import IRenderable						= away.base.IRenderable;
 	import Camera3D							= away.cameras.Camera3D;
-	import Context3DVertexBufferFormat		= away.display3D.Context3DVertexBufferFormat
+	import ContextGLVertexBufferFormat		= away.displayGL.ContextGLVertexBufferFormat
 	import Vector3D							= away.geom.Vector3D;
-	import Stage3DProxy						= away.managers.Stage3DProxy;
+	import StageGLProxy						= away.managers.StageGLProxy;
 	
 	/**
 	 * ...
@@ -52,14 +52,14 @@ module away.animators
 			this._endPoint = this._particleBezierCurveNode._iEndPoint;
 		}
 		
-		public setRenderState(stage3DProxy:Stage3DProxy, renderable:IRenderable, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera3D)
+		public setRenderState(stageGLProxy:StageGLProxy, renderable:IRenderable, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera3D)
 		{
 			var controlIndex:number /*int*/ = animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleBezierCurveNode.BEZIER_CONTROL_INDEX);
 			var endIndex:number /*int*/ = animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleBezierCurveNode.BEZIER_END_INDEX);
 			
 			if (this._particleBezierCurveNode.mode == ParticlePropertiesMode.LOCAL_STATIC) {
-				animationSubGeometry.activateVertexBuffer(controlIndex, this._particleBezierCurveNode._iDataOffset, stage3DProxy, Context3DVertexBufferFormat.FLOAT_3);
-				animationSubGeometry.activateVertexBuffer(endIndex, this._particleBezierCurveNode._iDataOffset + 3, stage3DProxy, Context3DVertexBufferFormat.FLOAT_3);
+				animationSubGeometry.activateVertexBuffer(controlIndex, this._particleBezierCurveNode._iDataOffset, stageGLProxy, ContextGLVertexBufferFormat.FLOAT_3);
+				animationSubGeometry.activateVertexBuffer(endIndex, this._particleBezierCurveNode._iDataOffset + 3, stageGLProxy, ContextGLVertexBufferFormat.FLOAT_3);
 			} else {
 				animationRegisterCache.setVertexConst(controlIndex, this._controlPoint.x, this._controlPoint.y, this._controlPoint.z);
 				animationRegisterCache.setVertexConst(endIndex, this._endPoint.x, this._endPoint.y, this._endPoint.z);

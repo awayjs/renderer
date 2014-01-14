@@ -281,7 +281,7 @@ module away.primitives
 		 * @param segmentsT Defines the number of vertical segments that make up the torus.
 		 * @param yUp Defines whether the torus poles should lay on the Y-axis (true) or on the Z-axis (false).
 		 */
-			constructor(radius:number = 50, tubeRadius:number = 50, segmentsR:number = 16, segmentsT:number = 8, yUp:boolean = true)
+		constructor(radius:number = 50, tubeRadius:number = 50, segmentsR:number = 16, segmentsT:number = 8, yUp:boolean = true)
 		{
 			super();
 

@@ -60,7 +60,7 @@ module away.materials
 		 * Creates a new CompiledPass object.
 		 * @param material The material to which this pass belongs.
 		 */
-			constructor(material:away.materials.MaterialBase)
+		constructor(material:away.materials.MaterialBase)
 		{
 
 			super();
@@ -134,10 +134,10 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iUpdateProgram(stage3DProxy:away.managers.Stage3DProxy)
+		public iUpdateProgram(stageGLProxy:away.managers.StageGLProxy)
 		{
-			this.reset(stage3DProxy.profile);
-			super.iUpdateProgram(stage3DProxy);
+			this.reset(stageGLProxy.profile);
+			super.iUpdateProgram(stageGLProxy);
 		}
 
 		/**
@@ -573,7 +573,7 @@ module away.materials
 		/**
 		 * Updates constant data render state used by the light probes. This method is optional for subclasses to implement.
 		 */
-		public pUpdateProbes(stage3DProxy:away.managers.Stage3DProxy)
+		public pUpdateProbes(stageGLProxy:away.managers.StageGLProxy)
 		{
 
 		}
@@ -609,29 +609,29 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(stage3DProxy:away.managers.Stage3DProxy, camera:away.cameras.Camera3D)
+		public iActivate(stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D)
 		{
-			super.iActivate(stage3DProxy, camera);
+			super.iActivate(stageGLProxy, camera);
 
 			if (this._usesNormals) {
 
-				this._pMethodSetup._iNormalMethod.iActivate(this._pMethodSetup._iNormalMethodVO, stage3DProxy);
+				this._pMethodSetup._iNormalMethod.iActivate(this._pMethodSetup._iNormalMethodVO, stageGLProxy);
 
 			}
 
-			this._pMethodSetup._iAmbientMethod.iActivate(this._pMethodSetup._iAmbientMethodVO, stage3DProxy);
+			this._pMethodSetup._iAmbientMethod.iActivate(this._pMethodSetup._iAmbientMethodVO, stageGLProxy);
 
 			if (this._pMethodSetup._iShadowMethod) {
 
-				this._pMethodSetup._iShadowMethod.iActivate(this._pMethodSetup._iShadowMethodVO, stage3DProxy);
+				this._pMethodSetup._iShadowMethod.iActivate(this._pMethodSetup._iShadowMethodVO, stageGLProxy);
 
 			}
 
-			this._pMethodSetup._iDiffuseMethod.iActivate(this._pMethodSetup._iDiffuseMethodVO, stage3DProxy);
+			this._pMethodSetup._iDiffuseMethod.iActivate(this._pMethodSetup._iDiffuseMethodVO, stageGLProxy);
 
 			if (this._usingSpecularMethod) {
 
-				this._pMethodSetup._iSpecularMethod.iActivate(this._pMethodSetup._iSpecularMethodVO, stage3DProxy);
+				this._pMethodSetup._iSpecularMethod.iActivate(this._pMethodSetup._iSpecularMethodVO, stageGLProxy);
 
 			}
 
@@ -640,21 +640,21 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iRender(renderable:away.base.IRenderable, stage3DProxy:away.managers.Stage3DProxy, camera:away.cameras.Camera3D, viewProjection:away.geom.Matrix3D)
+		public iRender(renderable:away.base.IRenderable, stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D, viewProjection:away.geom.Matrix3D)
 		{
 			var i:number;
-			var context:away.display3D.Context3D = stage3DProxy._iContext3D;
+			var context:away.displayGL.ContextGL = stageGLProxy._iContextGL;
 			if (this._uvBufferIndex >= 0)
-				renderable.activateUVBuffer(this._uvBufferIndex, stage3DProxy);
+				renderable.activateUVBuffer(this._uvBufferIndex, stageGLProxy);
 
 			if (this._secondaryUVBufferIndex >= 0)
-				renderable.activateSecondaryUVBuffer(this._secondaryUVBufferIndex, stage3DProxy);
+				renderable.activateSecondaryUVBuffer(this._secondaryUVBufferIndex, stageGLProxy);
 
 			if (this._normalBufferIndex >= 0)
-				renderable.activateVertexNormalBuffer(this._normalBufferIndex, stage3DProxy);
+				renderable.activateVertexNormalBuffer(this._normalBufferIndex, stageGLProxy);
 
 			if (this._tangentBufferIndex >= 0)
-				renderable.activateVertexTangentBuffer(this._tangentBufferIndex, stage3DProxy);
+				renderable.activateVertexTangentBuffer(this._tangentBufferIndex, stageGLProxy);
 
 
 			if (this._animateUVs) {
@@ -687,7 +687,7 @@ module away.materials
 
 			if (this.pUsesProbes()) {
 
-				this.pUpdateProbes(stage3DProxy);//this.updateProbes(stage3DProxy);
+				this.pUpdateProbes(stageGLProxy);//this.updateProbes(stageGLProxy);
 
 			}
 
@@ -702,7 +702,7 @@ module away.materials
 
 
 			} else {
-				var matrix3D:away.geom.Matrix3D = away.math.Matrix3DUtils.CALCULATION_MATRIX;
+				var matrix3D:away.geom.Matrix3D = away.geom.Matrix3DUtils.CALCULATION_MATRIX;
 
 				matrix3D.copyFrom(renderable.getRenderSceneTransform(camera));
 				matrix3D.append(viewProjection);
@@ -722,7 +722,7 @@ module away.materials
 
 			if (this._usesNormals) {
 
-				this._pMethodSetup._iNormalMethod.iSetRenderState(this._pMethodSetup._iNormalMethodVO, renderable, stage3DProxy, camera);
+				this._pMethodSetup._iNormalMethod.iSetRenderState(this._pMethodSetup._iNormalMethodVO, renderable, stageGLProxy, camera);
 
 			}
 
@@ -732,20 +732,20 @@ module away.materials
 			ambientMethod._iLightAmbientR = this._pAmbientLightR;
 			ambientMethod._iLightAmbientG = this._pAmbientLightG;
 			ambientMethod._iLightAmbientB = this._pAmbientLightB;
-			ambientMethod.iSetRenderState(this._pMethodSetup._iAmbientMethodVO, renderable, stage3DProxy, camera);
+			ambientMethod.iSetRenderState(this._pMethodSetup._iAmbientMethodVO, renderable, stageGLProxy, camera);
 
 
 			if (this._pMethodSetup._iShadowMethod)
-				this._pMethodSetup._iShadowMethod.iSetRenderState(this._pMethodSetup._iShadowMethodVO, renderable, stage3DProxy, camera);
+				this._pMethodSetup._iShadowMethod.iSetRenderState(this._pMethodSetup._iShadowMethodVO, renderable, stageGLProxy, camera);
 
-			this._pMethodSetup._iDiffuseMethod.iSetRenderState(this._pMethodSetup._iDiffuseMethodVO, renderable, stage3DProxy, camera);
+			this._pMethodSetup._iDiffuseMethod.iSetRenderState(this._pMethodSetup._iDiffuseMethodVO, renderable, stageGLProxy, camera);
 
 
 			if (this._usingSpecularMethod)
-				this._pMethodSetup._iSpecularMethod.iSetRenderState(this._pMethodSetup._iSpecularMethodVO, renderable, stage3DProxy, camera);
+				this._pMethodSetup._iSpecularMethod.iSetRenderState(this._pMethodSetup._iSpecularMethodVO, renderable, stageGLProxy, camera);
 
 			if (this._pMethodSetup._iColorTransformMethod)
-				this._pMethodSetup._iColorTransformMethod.iSetRenderState(this._pMethodSetup._iColorTransformMethodVO, renderable, stage3DProxy, camera);
+				this._pMethodSetup._iColorTransformMethod.iSetRenderState(this._pMethodSetup._iColorTransformMethodVO, renderable, stageGLProxy, camera);
 
 
 			//away.Debug.throwPIR( 'away.materials.CompiledPass' , 'iRender' , 'implement dependency: MethodVOSet');
@@ -758,15 +758,15 @@ module away.materials
 
 				var aset:MethodVOSet = methods[i];
 
-				aset.method.iSetRenderState(aset.data, renderable, stage3DProxy, camera);
+				aset.method.iSetRenderState(aset.data, renderable, stageGLProxy, camera);
 
 			}
 
-			context.setProgramConstantsFromArray(away.display3D.Context3DProgramType.VERTEX, 0, this._pVertexConstantData, this._pNumUsedVertexConstants);
-			context.setProgramConstantsFromArray(away.display3D.Context3DProgramType.FRAGMENT, 0, this._pFragmentConstantData, this._pNumUsedFragmentConstants);
+			context.setProgramConstantsFromArray(away.displayGL.ContextGLProgramType.VERTEX, 0, this._pVertexConstantData, this._pNumUsedVertexConstants);
+			context.setProgramConstantsFromArray(away.displayGL.ContextGLProgramType.FRAGMENT, 0, this._pFragmentConstantData, this._pNumUsedFragmentConstants);
 
-			renderable.activateVertexBuffer(0, stage3DProxy);
-			context.drawTriangles(renderable.getIndexBuffer(stage3DProxy), 0, renderable.numTriangles);
+			renderable.activateVertexBuffer(0, stageGLProxy);
+			context.drawTriangles(renderable.getIndexBuffer(stageGLProxy), 0, renderable.numTriangles);
 		}
 
 		/**
@@ -788,29 +788,29 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iDeactivate(stage3DProxy:away.managers.Stage3DProxy)
+		public iDeactivate(stageGLProxy:away.managers.StageGLProxy)
 		{
-			super.iDeactivate(stage3DProxy);
+			super.iDeactivate(stageGLProxy);
 
 			if (this._usesNormals) {
 
-				this._pMethodSetup._iNormalMethod.iDeactivate(this._pMethodSetup._iNormalMethodVO, stage3DProxy);
+				this._pMethodSetup._iNormalMethod.iDeactivate(this._pMethodSetup._iNormalMethodVO, stageGLProxy);
 
 			}
 
-			this._pMethodSetup._iAmbientMethod.iDeactivate(this._pMethodSetup._iAmbientMethodVO, stage3DProxy);
+			this._pMethodSetup._iAmbientMethod.iDeactivate(this._pMethodSetup._iAmbientMethodVO, stageGLProxy);
 
 			if (this._pMethodSetup._iShadowMethod) {
 
-				this._pMethodSetup._iShadowMethod.iDeactivate(this._pMethodSetup._iShadowMethodVO, stage3DProxy);
+				this._pMethodSetup._iShadowMethod.iDeactivate(this._pMethodSetup._iShadowMethodVO, stageGLProxy);
 
 			}
 
-			this._pMethodSetup._iDiffuseMethod.iDeactivate(this._pMethodSetup._iDiffuseMethodVO, stage3DProxy);
+			this._pMethodSetup._iDiffuseMethod.iDeactivate(this._pMethodSetup._iDiffuseMethodVO, stageGLProxy);
 
 			if (this._usingSpecularMethod) {
 
-				this._pMethodSetup._iSpecularMethod.iDeactivate(this._pMethodSetup._iSpecularMethodVO, stage3DProxy);
+				this._pMethodSetup._iSpecularMethod.iDeactivate(this._pMethodSetup._iSpecularMethodVO, stageGLProxy);
 
 			}
 

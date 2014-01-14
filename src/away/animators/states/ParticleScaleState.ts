@@ -4,9 +4,9 @@ module away.animators
 {
 	import IRenderable						= away.base.IRenderable;
 	import Camera3D							= away.cameras.Camera3D;
-	import Context3DVertexBufferFormat		= away.display3D.Context3DVertexBufferFormat
+	import ContextGLVertexBufferFormat		= away.displayGL.ContextGLVertexBufferFormat
 	import Vector3D							= away.geom.Vector3D;
-	import Stage3DProxy						= away.managers.Stage3DProxy;
+	import StageGLProxy						= away.managers.StageGLProxy;
 	
 	/**
 	 * ...
@@ -97,18 +97,18 @@ module away.animators
 			this.updateScaleData();
 		}
 		
-		public setRenderState(stage3DProxy:Stage3DProxy, renderable:IRenderable, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera3D)
+		public setRenderState(stageGLProxy:StageGLProxy, renderable:IRenderable, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera3D)
 		{
 			var index:number /*int*/ = animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleScaleNode.SCALE_INDEX);
 			
 			if (this._particleScaleNode.mode == ParticlePropertiesMode.LOCAL_STATIC) {
 				if (this._usesCycle) {
 					if (this._usesPhase)
-						animationSubGeometry.activateVertexBuffer(index, this._particleScaleNode._iDataOffset, stage3DProxy, Context3DVertexBufferFormat.FLOAT_4);
+						animationSubGeometry.activateVertexBuffer(index, this._particleScaleNode._iDataOffset, stageGLProxy, ContextGLVertexBufferFormat.FLOAT_4);
 					else
-						animationSubGeometry.activateVertexBuffer(index, this._particleScaleNode._iDataOffset, stage3DProxy, Context3DVertexBufferFormat.FLOAT_3);
+						animationSubGeometry.activateVertexBuffer(index, this._particleScaleNode._iDataOffset, stageGLProxy, ContextGLVertexBufferFormat.FLOAT_3);
 				} else
-					animationSubGeometry.activateVertexBuffer(index, this._particleScaleNode._iDataOffset, stage3DProxy, Context3DVertexBufferFormat.FLOAT_2);
+					animationSubGeometry.activateVertexBuffer(index, this._particleScaleNode._iDataOffset, stageGLProxy, ContextGLVertexBufferFormat.FLOAT_2);
 			} else
 				animationRegisterCache.setVertexConst(index, this._scaleData.x, this._scaleData.y, this._scaleData.z, this._scaleData.w);
 		}

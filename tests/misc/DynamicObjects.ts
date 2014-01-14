@@ -1,4 +1,5 @@
-///<reference path="../../src/away/utils/Timer.ts" />
+///<reference path="../../build/Away3D.next.d.ts" />
+//<reference path="../../src/Away3D.ts" />
 
 //------------------------------------------------------------------------------------------------
 // Web / PHP Storm arguments string

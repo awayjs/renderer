@@ -12,7 +12,7 @@ module away.materials
 	//import away3d.materials.passes.*;
 	//import away3d.textures.*;
 
-	//import flash.display3D.*;
+	//import flash.displayGL.*;
 
 	//use namespace arcane;
 
@@ -127,10 +127,10 @@ module away.materials
 		 * Sets the render state for this method.
 		 *
 		 * @param vo The MethodVO object linking this method with the pass currently being compiled.
-		 * @param stage3DProxy The Stage3DProxy object currently used for rendering.
+		 * @param stageGLProxy The StageGLProxy object currently used for rendering.
 		 * @private
 		 */
-		public iActivate(vo:away.materials.MethodVO, stage3DProxy:away.managers.Stage3DProxy)
+		public iActivate(vo:away.materials.MethodVO, stageGLProxy:away.managers.StageGLProxy)
 		{
 
 		}
@@ -140,10 +140,10 @@ module away.materials
 		 *
 		 * @param vo The MethodVO object linking this method with the pass currently being compiled.
 		 * @param renderable The renderable currently being rendered.
-		 * @param stage3DProxy The Stage3DProxy object currently used for rendering.
+		 * @param stageGLProxy The StageGLProxy object currently used for rendering.
 		 * @param camera The camera from which the scene is currently rendered.
 		 */
-		public iSetRenderState(vo:away.materials.MethodVO, renderable:away.base.IRenderable, stage3DProxy:away.managers.Stage3DProxy, camera:away.cameras.Camera3D)
+		public iSetRenderState(vo:away.materials.MethodVO, renderable:away.base.IRenderable, stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D)
 		{
 
 		}
@@ -151,9 +151,9 @@ module away.materials
 		/**
 		 * Clears the render state for this method.
 		 * @param vo The MethodVO object linking this method with the pass currently being compiled.
-		 * @param stage3DProxy The Stage3DProxy object currently used for rendering.
+		 * @param stageGLProxy The StageGLProxy object currently used for rendering.
 		 */
-		public iDeactivate(vo:away.materials.MethodVO, stage3DProxy:away.managers.Stage3DProxy)
+		public iDeactivate(vo:away.materials.MethodVO, stageGLProxy:away.managers.StageGLProxy)
 		{
 
 		}
@@ -220,7 +220,7 @@ module away.materials
 		private getFormatStringForTexture(texture:away.textures.TextureProxyBase):string
 		{
 			switch (texture.format) {
-				case away.display3D.Context3DTextureFormat.COMPRESSED:
+				case away.displayGL.ContextGLTextureFormat.COMPRESSED:
 					return "dxt1,";
 					break;
 				case "compressedAlpha":

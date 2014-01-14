@@ -1,5 +1,5 @@
-//<reference path="../../../build/Away3D.next.d.ts" />
-///<reference path="../../../src/Away3D.ts" />
+///<reference path="../../../build/Away3D.next.d.ts" />
+//<reference path="../../../src/Away3D.ts" />
 
 module tests.textures
 {
@@ -15,7 +15,7 @@ module tests.textures
         private _torusMesh          : away.entities.Mesh;
         private _cubeMaterial       : away.materials.SkyBoxMaterial;
 
-        private _skybox             : away.primitives.SkyBox;
+        private _skybox             : away.entities.SkyBox;
 
 
 
@@ -41,13 +41,13 @@ module tests.textures
 
 		private loadAsset( path: string ):void
 		{
-			var token:away.loaders.AssetLoaderToken = away.library.AssetLibrary.load( new away.net.URLRequest( path ) );
+			var token:away.net.AssetLoaderToken = away.library.AssetLibrary.load( new away.net.URLRequest( path ) );
 			token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete, this );
 		}
 
 		private initParsers():void
 		{
-			away.library.AssetLibrary.enableParser( away.loaders.CubeTextureParser );
+			away.library.AssetLibrary.enableParser( away.parsers.CubeTextureParser );
 		}
 
 		private initAnimation():void
@@ -83,7 +83,7 @@ module tests.textures
 
 		public onResourceComplete ( e: away.events.LoaderEvent )
 		{
-			var loader			: away.loaders.AssetLoader   	= <away.loaders.AssetLoader> e.target;
+			var loader			: away.net.AssetLoader   	= <away.net.AssetLoader> e.target;
 
 			switch( e.url )
 			{
@@ -98,7 +98,7 @@ module tests.textures
                     this._view.scene.addChild( this._torusMesh );
 
 
-                    this._skybox = new away.primitives.SkyBox( this._skyboxCubeTexture );
+                    this._skybox = new away.entities.SkyBox( this._skyboxCubeTexture );
                     this._view.scene.addChild( this._skybox );
 
 					break;

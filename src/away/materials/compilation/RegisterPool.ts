@@ -33,7 +33,7 @@ module away.materials
 		 * @param regCount The amount of available registers of this type.
 		 * @param persistent Whether or not registers, once reserved, can be freed again. For example, temporaries are not persistent, but constants are.
 		 */
-			constructor(regName:string, regCount:number, persistent:boolean = true)
+		constructor(regName:string, regCount:number, persistent:boolean = true)
 		{
 			this._regName = regName;
 			this._regCount = regCount;

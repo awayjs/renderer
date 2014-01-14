@@ -1,7 +1,7 @@
+///<reference path="../../../build/Away3D.next.d.ts" />
+//<reference path="../../../src/Away3D.ts" />
 var tests;
 (function (tests) {
-    ///<reference path="../../../build/Away3D.next.d.ts" />
-    //<reference path="../../../src/Away3D.ts" />
     (function (library) {
         var AWDParserTest = (function () {
             function AWDParserTest() {
@@ -9,7 +9,7 @@ var tests;
                 away.Debug.LOG_PI_ERRORS = true;
                 away.Debug.THROW_ERRORS = false;
 
-                away.library.AssetLibrary.enableParser(away.loaders.AWDParser);
+                away.library.AssetLibrary.enableParser(away.parsers.AWDParser);
 
                 this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/suzanne.awd'));
                 this.token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete, this);

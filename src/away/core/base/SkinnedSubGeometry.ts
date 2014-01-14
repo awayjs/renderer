@@ -20,12 +20,12 @@ module away.base
 		private _jointWeightsData:number[];
 		private _jointIndexData:number[];
 		private _animatedData:number[]; // used for cpu fallback
-		private _jointWeightsBuffer:away.display3D.VertexBuffer3D[] = new Array<away.display3D.VertexBuffer3D>(8);
-		private _jointIndexBuffer:away.display3D.VertexBuffer3D[] = new Array<away.display3D.VertexBuffer3D>(8);
+		private _jointWeightsBuffer:away.displayGL.VertexBuffer[] = new Array<away.displayGL.VertexBuffer>(8);
+		private _jointIndexBuffer:away.displayGL.VertexBuffer[] = new Array<away.displayGL.VertexBuffer>(8);
 		private _jointWeightsInvalid:boolean[] = new Array<boolean>(8);
 		private _jointIndicesInvalid:boolean[] = new Array<boolean>(8);
-		private _jointWeightContext:away.display3D.Context3D[] = new Array<away.display3D.Context3D>(8);
-		private _jointIndexContext:away.display3D.Context3D[] = new Array<away.display3D.Context3D>(8);
+		private _jointWeightContext:away.displayGL.ContextGL[] = new Array<away.displayGL.ContextGL>(8);
+		private _jointIndexContext:away.displayGL.ContextGL[] = new Array<away.displayGL.ContextGL>(8);
 		private _jointsPerVertex:number;
 
 		private _condensedJointIndexData:number[];
@@ -36,7 +36,7 @@ module away.base
 		 * Creates a new SkinnedSubGeometry object.
 		 * @param jointsPerVertex The amount of joints that can be assigned per vertex.
 		 */
-			constructor(jointsPerVertex:number)
+		constructor(jointsPerVertex:number)
 		{
 			super();
 
@@ -77,12 +77,12 @@ module away.base
 		/**
 		 * Assigns the attribute stream for joint weights
 		 * @param index The attribute stream index for the vertex shader
-		 * @param stage3DProxy The Stage3DProxy to assign the stream to
+		 * @param stageGLProxy The StageGLProxy to assign the stream to
 		 */
-		public activateJointWeightsBuffer(index:number, stage3DProxy:away.managers.Stage3DProxy)
+		public activateJointWeightsBuffer(index:number, stageGLProxy:away.managers.StageGLProxy)
 		{
-			var contextIndex:number = stage3DProxy._iStage3DIndex;
-			var context:away.display3D.Context3D = stage3DProxy._iContext3D;
+			var contextIndex:number = stageGLProxy._iStageGLIndex;
+			var context:away.displayGL.ContextGL = stageGLProxy._iContextGL;
 			if (this._jointWeightContext[contextIndex] != context || !this._jointWeightsBuffer[contextIndex]) {
 				this._jointWeightsBuffer[contextIndex] = context.createVertexBuffer(this._pNumVertices, this._jointsPerVertex);
 				this._jointWeightContext[contextIndex] = context;
@@ -98,12 +98,12 @@ module away.base
 		/**
 		 * Assigns the attribute stream for joint indices
 		 * @param index The attribute stream index for the vertex shader
-		 * @param stage3DProxy The Stage3DProxy to assign the stream to
+		 * @param stageGLProxy The StageGLProxy to assign the stream to
 		 */
-		public activateJointIndexBuffer(index:number, stage3DProxy:away.managers.Stage3DProxy)
+		public activateJointIndexBuffer(index:number, stageGLProxy:away.managers.StageGLProxy)
 		{
-			var contextIndex:number = stage3DProxy._iStage3DIndex;
-			var context:away.display3D.Context3D = stage3DProxy._iContext3D;
+			var contextIndex:number = stageGLProxy._iStageGLIndex;
+			var context:away.displayGL.ContextGL = stageGLProxy._iContextGL;
 
 			if (this._jointIndexContext[contextIndex] != context || !this._jointIndexBuffer[contextIndex]) {
 				this._jointIndexBuffer[contextIndex] = context.createVertexBuffer(this._pNumVertices, this._jointsPerVertex);

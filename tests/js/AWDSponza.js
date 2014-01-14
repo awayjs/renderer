@@ -1,6 +1,7 @@
+///<reference path="../../../build/Away3D.next.d.ts" />
+//<reference path="../../../src/Away3D.ts" />
 var demos;
 (function (demos) {
-    ///<reference path="../../../build/Away3D.next.d.ts" />
     (function (parsers) {
         var AWDSponza = (function () {
             function AWDSponza() {
@@ -10,7 +11,7 @@ var demos;
                 away.Debug.LOG_PI_ERRORS = true;
                 away.Debug.THROW_ERRORS = false;
 
-                away.library.AssetLibrary.enableParser(away.loaders.AWDParser);
+                away.library.AssetLibrary.enableParser(away.parsers.AWDParser);
 
                 this._token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/awd/sponza/sponza_lights_textures_u.awd'));
 
@@ -29,8 +30,8 @@ var demos;
                 };
             }
             AWDSponza.prototype.resize = function () {
-                this._view.width = 720;
-                this._view.height = 480;
+                this._view.width = 720; //window.innerWidth;
+                this._view.height = 480; //window.innerHeight;
 
                 this._view.x = (window.innerWidth - this._view.width) / 2;
                 this._view.y = (window.innerHeight - this._view.height) / 2;
@@ -65,18 +66,14 @@ var demos;
                 for (var i = 0; i < numAssets; ++i) {
                     var asset = loader.baseDependency.assets[i];
 
-                    console.log(asset.assetType);
                     switch (asset.assetType) {
                         case away.library.AssetType.MESH:
                             var mesh = asset;
-
                             this._view.scene.addChild(mesh);
 
                             break;
 
                         case away.library.AssetType.LIGHT:
-                            this._view.scene.addChild(asset);
-
                             break;
 
                         case away.library.AssetType.GEOMETRY:

@@ -1,4 +1,5 @@
 ///<reference path="../../../build/Away3D.next.d.ts" />
+//<reference path="../../../src/Away3D.ts" />
 
 /*
 
@@ -49,8 +50,8 @@ module examples
 	import Vector3D					= away.geom.Vector3D;
     import AssetLibrary				= away.library.AssetLibrary;
     import AssetType				= away.library.AssetType;
-    import Loader3D					= away.loaders.Loader3D;
-    import AWD2Parser				= away.loaders.AWDParser;
+    import Loader3D					= away.containers.Loader3D;
+    import AWD2Parser				= away.parsers.AWDParser;
 	import URLRequest				= away.net.URLRequest;
 	import Keyboard					= away.ui.Keyboard;
 	import RequestAnimationFrame	= away.utils.RequestAnimationFrame;

@@ -10,7 +10,7 @@ module away.materials
 		/**
 		 * Creates a new HardShadowMapMethod object.
 		 */
-			constructor(castingLight:away.lights.LightBase)
+		constructor(castingLight:away.lights.LightBase)
 		{
 			super(castingLight);
 		}
@@ -77,7 +77,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivateForCascade(vo:MethodVO, stage3DProxy:away.managers.Stage3DProxy):void
+		public iActivateForCascade(vo:MethodVO, stageGLProxy:away.managers.StageGLProxy):void
 		{
 		}
 	}

@@ -1,4 +1,5 @@
 ///<reference path="../../../build/Away3D.next.d.ts" />
+//<reference path="../../../src/Away3D.ts" />
 
 /*
 
@@ -56,7 +57,7 @@ module examples
         private _direction:away.geom.Vector3D;
 
         //scene objects
-        private _loader:away.loaders.Loader3D;
+        private _loader:away.containers.Loader3D;
         private _ground:away.entities.Mesh;
 
         //navigation variables
@@ -136,7 +137,7 @@ module examples
          */
         private initObjects():void
         {
-            this._loader = new away.loaders.Loader3D();
+            this._loader = new away.containers.Loader3D();
             this._loader.scale(300);
             this._loader.z = -200;
             this._view.scene.addChild(this._loader);
@@ -159,10 +160,10 @@ module examples
             this._timer.start();
 
             //setup parser to be used on Loader3D
-            away.loaders.Parsers.enableAllBundled();
+            away.parsers.Parsers.enableAllBundled();
 
             //setup the url map for textures in the 3ds file
-            var assetLoaderContext:away.loaders.AssetLoaderContext = new away.loaders.AssetLoaderContext();
+            var assetLoaderContext:away.net.AssetLoaderContext = new away.net.AssetLoaderContext();
             assetLoaderContext.mapUrl("texture.jpg", "assets/demos/soldier_ant.jpg");
 
             this._loader.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);

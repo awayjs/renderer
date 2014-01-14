@@ -1,4 +1,5 @@
 ///<reference path="../../build/Away3D.next.d.ts" />
+//<reference path="../../src/Away3D.ts" />
 
 module scene
 {
@@ -8,13 +9,13 @@ module scene
 
         private _requestAnimationFrameTimer:away.utils.RequestAnimationFrame;
         private _image:HTMLImageElement;
-        private _context3D:away.display3D.Context3D;
+        private _contextGL:away.displayGL.ContextGL;
 
-        private _iBuffer:away.display3D.IndexBuffer3D;
+        private _iBuffer:away.displayGL.IndexBuffer;
         private _mvMatrix:away.geom.Matrix3D;
         private _pMatrix:away.utils.PerspectiveMatrix3D;
-        private _texture:away.display3D.Texture;
-        private _program:away.display3D.Program3D;
+        private _texture:away.displayGL.Texture;
+        private _program:away.displayGL.Program;
 
         private _stage:away.display.Stage;
 
@@ -48,25 +49,25 @@ module scene
             var imageLoader:away.net.IMGLoader = <away.net.IMGLoader> e.target
             this._image = imageLoader.image;
 
-            this._stage.stage3Ds[0].addEventListener( away.events.Event.CONTEXT3D_CREATE, this.onContext3DCreateHandler, this );
-            this._stage.stage3Ds[0].requestContext();
+            this._stage.stageGLs[0].addEventListener( away.events.Event.CONTEXTGL_CREATE, this.onContextGLCreateHandler, this );
+            this._stage.stageGLs[0].requestContext();
         }
 
-        private onContext3DCreateHandler( e )
+        private onContextGLCreateHandler( e )
         {
-            this._stage.stage3Ds[0].removeEventListener( away.events.Event.CONTEXT3D_CREATE, this.onContext3DCreateHandler, this );
+            this._stage.stageGLs[0].removeEventListener( away.events.Event.CONTEXTGL_CREATE, this.onContextGLCreateHandler, this );
 
-            var stage3D: away.display.Stage3D = <away.display.Stage3D> e.target;
-            this._context3D = stage3D.context3D;
+            var stageGL: away.display.StageGL = <away.display.StageGL> e.target;
+            this._contextGL = stageGL.contextGL;
 
-            this._texture = this._context3D.createTexture( 512, 512, away.display3D.Context3DTextureFormat.BGRA, true );
+            this._texture = this._contextGL.createTexture( 512, 512, away.displayGL.ContextGLTextureFormat.BGRA, true );
             // this._texture.uploadFromHTMLImageElement( this._image );
 
             var bitmapData: away.display.BitmapData = new away.display.BitmapData( 512, 512, true, 0x02C3D4 );
             this._texture.uploadFromBitmapData( bitmapData );
 
-            this._context3D.configureBackBuffer( 800, 600, 0, true );
-            this._context3D.setColorMask( true, true, true, true );
+            this._contextGL.configureBackBuffer( 800, 600, 0, true );
+            this._contextGL.setColorMask( true, true, true, true );
 
             var torus: away.primitives.TorusGeometry = new away.primitives.TorusGeometry( 1, 0.5, 16, 8, false );
             torus.iValidate();
@@ -84,14 +85,14 @@ module scene
               */
             var stride:number = 13;
             var numVertices: number = vertices.length / stride;
-            var vBuffer: away.display3D.VertexBuffer3D = this._context3D.createVertexBuffer( numVertices, stride );
+            var vBuffer: away.displayGL.VertexBuffer = this._contextGL.createVertexBuffer( numVertices, stride );
             vBuffer.uploadFromArray( vertices, 0, numVertices );
 
             var numIndices:number = indices.length;
-            this._iBuffer = this._context3D.createIndexBuffer( numIndices );
+            this._iBuffer = this._contextGL.createIndexBuffer( numIndices );
             this._iBuffer.uploadFromArray( indices, 0, numIndices );
 
-            this._program = this._context3D.createProgram();
+            this._program = this._contextGL.createProgram();
 
             var vProgram:string = "uniform mat4 mvMatrix;\n" +
                                   "uniform mat4 pMatrix;\n" +
@@ -112,7 +113,7 @@ module scene
                                   "}\n";
 
             this._program.upload( vProgram, fProgram );
-            this._context3D.setProgram( this._program );
+            this._contextGL.setProgram( this._program );
 
             this._pMatrix = new away.utils.PerspectiveMatrix3D();
             this._pMatrix.perspectiveFieldOfViewLH( 45, 800/600, 0.1, 1000 );
@@ -120,8 +121,8 @@ module scene
             this._mvMatrix = new away.geom.Matrix3D();
             this._mvMatrix.appendTranslation( 0, 0, 5 );
 
-            this._context3D.setGLSLVertexBufferAt( "aVertexPosition", vBuffer, 0, away.display3D.Context3DVertexBufferFormat.FLOAT_3 );
-            this._context3D.setGLSLVertexBufferAt( "aTextureCoord", vBuffer, 9, away.display3D.Context3DVertexBufferFormat.FLOAT_2 );
+            this._contextGL.setGLSLVertexBufferAt( "aVertexPosition", vBuffer, 0, away.displayGL.ContextGLVertexBufferFormat.FLOAT_3 );
+            this._contextGL.setGLSLVertexBufferAt( "aTextureCoord", vBuffer, 9, away.displayGL.ContextGLVertexBufferFormat.FLOAT_2 );
 
             this._requestAnimationFrameTimer = new away.utils.RequestAnimationFrame( this.tick , this );
             this._requestAnimationFrameTimer.start();
@@ -130,15 +131,15 @@ module scene
         private tick( dt:number )
         {
             this._mvMatrix.appendRotation( dt * 0.1, new away.geom.Vector3D( 0, 1, 0 ) );
-            this._context3D.setProgram( this._program );
-            this._context3D.setGLSLProgramConstantsFromMatrix( "pMatrix", this._pMatrix, true );
-            this._context3D.setGLSLProgramConstantsFromMatrix( "mvMatrix", this._mvMatrix, true );
+            this._contextGL.setProgram( this._program );
+            this._contextGL.setGLSLProgramConstantsFromMatrix( "pMatrix", this._pMatrix, true );
+            this._contextGL.setGLSLProgramConstantsFromMatrix( "mvMatrix", this._mvMatrix, true );
 
-            this._context3D.setGLSLTextureAt( "uSampler", this._texture, 0 );
+            this._contextGL.setGLSLTextureAt( "uSampler", this._texture, 0 );
 
-            this._context3D.clear( 0.16, 0.16, 0.16, 1 );
-            this._context3D.drawTriangles( this._iBuffer, 0, this._iBuffer.numIndices/3 );
-            this._context3D.present();
+            this._contextGL.clear( 0.16, 0.16, 0.16, 1 );
+            this._contextGL.drawTriangles( this._iBuffer, 0, this._iBuffer.numIndices/3 );
+            this._contextGL.present();
         }
     }
 
