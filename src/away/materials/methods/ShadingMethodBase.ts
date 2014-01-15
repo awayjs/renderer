@@ -22,8 +22,8 @@ module away.materials
 	 */
 	export class ShadingMethodBase extends away.library.NamedAssetBase
 	{
-		public _sharedRegisters:away.materials.ShaderRegisterData; // should be protected
-		private _passes:away.materials.MaterialPassBase[];//Vector.<MaterialPassBase>;
+		public _sharedRegisters:ShaderRegisterData; // should be protected
+		private _passes:MaterialPassBase[];//Vector.<MaterialPassBase>;
 
 		/**
 		 * Create a new ShadingMethodBase object.
@@ -39,7 +39,7 @@ module away.materials
 		 * Initializes the properties for a MethodVO, including register and texture indices.
 		 * @param vo The MethodVO object linking this method with the pass currently being compiled.
 		 */
-		public iInitVO(vo:away.materials.MethodVO)
+		public iInitVO(vo:MethodVO)
 		{
 
 		}
@@ -48,7 +48,7 @@ module away.materials
 		 * Initializes unchanging shader constants using the data from a MethodVO.
 		 * @param vo The MethodVO object linking this method with the pass currently being compiled.
 		 */
-		public iInitConstants(vo:away.materials.MethodVO)
+		public iInitConstants(vo:MethodVO)
 		{
 
 
@@ -57,17 +57,17 @@ module away.materials
 		/**
 		 * The shared registers created by the compiler and possibly used by methods.
 		 */
-		public get iSharedRegisters():away.materials.ShaderRegisterData
+		public get iSharedRegisters():ShaderRegisterData
 		{
 			return this._sharedRegisters;
 		}
 
-		public set iSharedRegisters(value:away.materials.ShaderRegisterData)
+		public set iSharedRegisters(value:ShaderRegisterData)
 		{
 			this._sharedRegisters = value;
 		}
 
-		public setISharedRegisters(value:away.materials.ShaderRegisterData)
+		public setISharedRegisters(value:ShaderRegisterData)
 		{
 			this._sharedRegisters = value;
 		}
@@ -75,7 +75,7 @@ module away.materials
 		/**
 		 * Any passes required that render to a texture used by this method.
 		 */
-		public get passes():away.materials.MaterialPassBase[]//Vector.<MaterialPassBase>
+		public get passes():MaterialPassBase[]//Vector.<MaterialPassBase>
 		{
 			return this._passes;
 		}
@@ -91,9 +91,9 @@ module away.materials
 		/**
 		 * Creates a data container that contains material-dependent data. Provided as a factory method so a custom subtype can be overridden when needed.
 		 */
-		public iCreateMethodVO():away.materials.MethodVO
+		public iCreateMethodVO():MethodVO
 		{
-			return new away.materials.MethodVO();
+			return new MethodVO();
 		}
 
 		/**
@@ -118,7 +118,7 @@ module away.materials
 		 * @param regCache The register cache used during the compilation.
 		 * @private
 		 */
-		public iGetVertexCode(vo:away.materials.MethodVO, regCache:away.materials.ShaderRegisterCache):string
+		public iGetVertexCode(vo:MethodVO, regCache:ShaderRegisterCache):string
 		{
 			return "";
 		}
@@ -130,7 +130,7 @@ module away.materials
 		 * @param stageGLProxy The StageGLProxy object currently used for rendering.
 		 * @private
 		 */
-		public iActivate(vo:away.materials.MethodVO, stageGLProxy:away.managers.StageGLProxy)
+		public iActivate(vo:MethodVO, stageGLProxy:away.managers.StageGLProxy)
 		{
 
 		}
@@ -143,7 +143,7 @@ module away.materials
 		 * @param stageGLProxy The StageGLProxy object currently used for rendering.
 		 * @param camera The camera from which the scene is currently rendered.
 		 */
-		public iSetRenderState(vo:away.materials.MethodVO, renderable:away.base.IRenderable, stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D)
+		public iSetRenderState(vo:MethodVO, renderable:away.base.IRenderable, stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D)
 		{
 
 		}
@@ -153,7 +153,7 @@ module away.materials
 		 * @param vo The MethodVO object linking this method with the pass currently being compiled.
 		 * @param stageGLProxy The StageGLProxy object currently used for rendering.
 		 */
-		public iDeactivate(vo:away.materials.MethodVO, stageGLProxy:away.managers.StageGLProxy)
+		public iDeactivate(vo:MethodVO, stageGLProxy:away.managers.StageGLProxy)
 		{
 
 		}
@@ -168,7 +168,7 @@ module away.materials
 		 * @param forceWrap If true, texture wrapping is enabled regardless of the material setting.
 		 * @return The fragment code that performs the sampling.
 		 */
-		public pGetTex2DSampleCode(vo:away.materials.MethodVO, targetReg:away.materials.ShaderRegisterElement, inputReg:away.materials.ShaderRegisterElement, texture:away.textures.TextureProxyBase, uvReg:away.materials.ShaderRegisterElement = null, forceWrap:string = null):string
+		public pGetTex2DSampleCode(vo:MethodVO, targetReg:ShaderRegisterElement, inputReg:ShaderRegisterElement, texture:away.textures.TextureProxyBase, uvReg:ShaderRegisterElement = null, forceWrap:string = null):string
 		{
 			var wrap:string = forceWrap || (vo.repeatTextures? "wrap" : "clamp");
 			var filter:string;
@@ -199,7 +199,7 @@ module away.materials
 		 * @param texture The cube map which will be assigned to the given slot.
 		 * @param uvReg The direction vector with which to sample the cube map.
 		 */
-		public pGetTexCubeSampleCode(vo:MethodVO, targetReg:away.materials.ShaderRegisterElement, inputReg:away.materials.ShaderRegisterElement, texture:away.textures.TextureProxyBase, uvReg:away.materials.ShaderRegisterElement):string
+		public pGetTexCubeSampleCode(vo:MethodVO, targetReg:ShaderRegisterElement, inputReg:ShaderRegisterElement, texture:away.textures.TextureProxyBase, uvReg:ShaderRegisterElement):string
 		{
 			var filter:string;
 			var format:string = this.getFormatStringForTexture(texture);
@@ -242,7 +242,7 @@ module away.materials
 		/**
 		 * Copies the state from a ShadingMethodBase object into the current object.
 		 */
-		public copyFrom(method:away.materials.ShadingMethodBase)
+		public copyFrom(method:ShadingMethodBase)
 		{
 		}
 	}

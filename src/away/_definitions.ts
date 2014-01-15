@@ -84,22 +84,15 @@
 
 ///<reference path="core/sort/IEntitySorter.ts"/>
 ///<reference path="core/sort/RenderableMergeSort.ts"/>
+///<reference path="materials/utils/DefaultMaterialManager.ts"/>
 
 ///<reference path="containers/ObjectContainer3D.ts" />
-///<reference path="containers/Loader3D.ts" />
-///<reference path="containers/Scene3D.ts" />
-///<reference path="containers/View3D.ts"/>
 
 ///<reference path="entities/Entity.ts" />
 ///<reference path="entities/SegmentSet.ts" />
 ///<reference path="entities/Mesh.ts"/>
 ///<reference path="entities/SkyBox.ts" />
 ///<reference path="entities/Sprite3D.ts"/>
-
-///<reference path="bounds/BoundingVolumeBase.ts" />
-///<reference path="bounds/NullBounds.ts" />
-///<reference path="bounds/BoundingSphere.ts" />
-///<reference path="bounds/AxisAlignedBoundingBox.ts" />
 
 ///<reference path="cameras/lenses/LensBase.ts" />
 ///<reference path="cameras/lenses/PerspectiveLens.ts" />
@@ -109,6 +102,15 @@
 ///<reference path="cameras/lenses/PerspectiveOffCenterLens.ts" />
 ///<reference path="cameras/lenses/ObliqueNearPlaneLens.ts" />
 ///<reference path="cameras/Camera3D.ts" />
+
+///<reference path="containers/Loader3D.ts" />
+///<reference path="containers/Scene3D.ts" />
+///<reference path="containers/View3D.ts"/>
+
+///<reference path="bounds/BoundingVolumeBase.ts" />
+///<reference path="bounds/NullBounds.ts" />
+///<reference path="bounds/BoundingSphere.ts" />
+///<reference path="bounds/AxisAlignedBoundingBox.ts" />
 
 ///<reference path="controllers/ControllerBase.ts"/>
 ///<reference path="controllers/LookAtController.ts"/>
@@ -188,7 +190,6 @@
 ///<reference path="materials/ColorMultiPassMaterial.ts"/>
 ///<reference path="materials/TextureMaterial.ts"/>
 ///<reference path="materials/ColorMaterial.ts"/>
-///<reference path="materials/utils/DefaultMaterialManager.ts"/>
 ///<reference path="materials/compilation/LightingShaderCompiler.ts"/>
 ///<reference path="materials/SegmentMaterial.ts"/>
 ///<reference path="materials/SkyBoxMaterial.ts"/>

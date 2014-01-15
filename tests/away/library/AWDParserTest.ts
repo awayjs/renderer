@@ -22,8 +22,8 @@ module tests.library {
             away.library.AssetLibrary.enableParser( away.parsers.AWDParser ) ;
 
             this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/suzanne.awd') );
-            this.token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE , this.onResourceComplete , this );
-            this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE , this.onAssetComplete, this );
+            this.token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE , away.utils.Delegate.create(this, this.onResourceComplete) );
+            this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE , away.utils.Delegate.create(this, this.onAssetComplete) );
 
             this._view = new away.containers.View3D();
             this._timer = new away.utils.RequestAnimationFrame( this.render, this );

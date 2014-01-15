@@ -7,12 +7,12 @@ module away.materials
 	/**
 	 * LightingShaderCompiler is a ShaderCompiler that generates code for passes performing shading only (no effect passes)
 	 */
-	export class LightingShaderCompiler extends away.materials.ShaderCompiler
+	export class LightingShaderCompiler extends ShaderCompiler
 	{
-		public _pointLightFragmentConstants:away.materials.ShaderRegisterElement[];
-		public _pointLightVertexConstants:away.materials.ShaderRegisterElement[];
-		public _dirLightFragmentConstants:away.materials.ShaderRegisterElement[];
-		public _dirLightVertexConstants:away.materials.ShaderRegisterElement[];
+		public _pointLightFragmentConstants:ShaderRegisterElement[];
+		public _pointLightVertexConstants:ShaderRegisterElement[];
+		public _dirLightFragmentConstants:ShaderRegisterElement[];
+		public _dirLightVertexConstants:ShaderRegisterElement[];
 		private _lightVertexConstantIndex:number;
 		private _shadowRegister:ShaderRegisterElement;
 
@@ -90,14 +90,14 @@ module away.materials
 		{
 			super.pInitLightData();
 
-			this._pointLightVertexConstants = new Array<away.materials.ShaderRegisterElement>(this._pNumPointLights);
-			this._pointLightFragmentConstants = new Array<away.materials.ShaderRegisterElement>(this._pNumPointLights*2);
+			this._pointLightVertexConstants = new Array<ShaderRegisterElement>(this._pNumPointLights);
+			this._pointLightFragmentConstants = new Array<ShaderRegisterElement>(this._pNumPointLights*2);
 
 			if (this.tangentSpace) {
-				this._dirLightVertexConstants = new Array<away.materials.ShaderRegisterElement>(this._pNumDirectionalLights);
-				this._dirLightFragmentConstants = new Array<away.materials.ShaderRegisterElement>(this._pNumDirectionalLights*2);
+				this._dirLightVertexConstants = new Array<ShaderRegisterElement>(this._pNumDirectionalLights);
+				this._dirLightFragmentConstants = new Array<ShaderRegisterElement>(this._pNumDirectionalLights*2);
 			} else {
-				this._dirLightFragmentConstants = new Array<away.materials.ShaderRegisterElement>(this._pNumDirectionalLights*3);
+				this._dirLightFragmentConstants = new Array<ShaderRegisterElement>(this._pNumDirectionalLights*3);
 			}
 		}
 
@@ -133,7 +133,7 @@ module away.materials
 				this.compileTangentSpaceNormalMapCode();
 
 			} else {
-				var normalMatrix:Array<away.materials.ShaderRegisterElement> = new Array<away.materials.ShaderRegisterElement>(3);
+				var normalMatrix:Array<ShaderRegisterElement> = new Array<ShaderRegisterElement>(3);
 				normalMatrix[0] = this._pRegisterCache.getFreeVertexConstant();
 				normalMatrix[1] = this._pRegisterCache.getFreeVertexConstant();
 				normalMatrix[2] = this._pRegisterCache.getFreeVertexConstant();
@@ -342,8 +342,8 @@ module away.materials
 		 */
 		private compileDirectionalLightCode()
 		{
-			var diffuseColorReg:away.materials.ShaderRegisterElement;
-			var specularColorReg:away.materials.ShaderRegisterElement;
+			var diffuseColorReg:ShaderRegisterElement;
+			var specularColorReg:ShaderRegisterElement;
 			var lightDirReg:ShaderRegisterElement;
 			var vertexRegIndex:number = 0;
 			var fragmentRegIndex:number = 0;
@@ -358,7 +358,7 @@ module away.materials
 				if (this.tangentSpace) {
 					lightDirReg = this._dirLightVertexConstants[vertexRegIndex++];
 
-					var lightVarying:away.materials.ShaderRegisterElement = this._pRegisterCache.getFreeVarying();
+					var lightVarying:ShaderRegisterElement = this._pRegisterCache.getFreeVarying();
 
 					this._pVertexCode += "m33 " + lightVarying + ".xyz, " + lightDirReg + ", " + this._pSharedRegisters.animatedTangent + "\n" + "mov " + lightVarying + ".w, " + lightDirReg + ".w\n";
 
@@ -460,9 +460,9 @@ module away.materials
 		{
 			var weightReg:string;
 			var weightComponents = [ ".x", ".y", ".z", ".w" ];
-			var weightRegisters:Array<away.materials.ShaderRegisterElement> = new Array<away.materials.ShaderRegisterElement>();
+			var weightRegisters:Array<ShaderRegisterElement> = new Array<ShaderRegisterElement>();
 			var i:number;
-			var texReg:away.materials.ShaderRegisterElement;
+			var texReg:ShaderRegisterElement;
 			var addSpec:boolean = this._usingSpecularMethod && this.pUsesProbesForSpecular();
 			var addDiff:boolean = this.pUsesProbesForDiffuse();
 

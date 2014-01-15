@@ -241,18 +241,16 @@ var away;
             * @method addEventListener
             * @param {String} Name of event to add a listener for
             * @param {Function} Callback function
-            * @param {Object} Target object listener is added to
             */
-            EventDispatcher.prototype.addEventListener = function (type, listener, target) {
+            EventDispatcher.prototype.addEventListener = function (type, listener) {
                 if (this.listeners[type] === undefined) {
                     this.listeners[type] = new Array();
                 }
 
-                if (this.getEventListenerIndex(type, listener, target) === -1) {
+                if (this.getEventListenerIndex(type, listener) === -1) {
                     var d = new EventData();
                     d.listener = listener;
                     d.type = type;
-                    d.target = target;
 
                     this.listeners[type].push(d);
                 }
@@ -263,10 +261,9 @@ var away;
             * @method removeEventListener
             * @param {String} Name of event to remove a listener for
             * @param {Function} Callback function
-            * @param {Object} Target object listener is added to
             */
-            EventDispatcher.prototype.removeEventListener = function (type, listener, target) {
-                var index = this.getEventListenerIndex(type, listener, target);
+            EventDispatcher.prototype.removeEventListener = function (type, listener) {
+                var index = this.getEventListenerIndex(type, listener);
 
                 if (index !== -1) {
                     this.listeners[type].splice(index, 1);
@@ -289,7 +286,7 @@ var away;
 
                     for (var i = 0, l = this.lFncLength; i < l; i++) {
                         eventData = listenerArray[i];
-                        eventData.listener.call(eventData.target, event);
+                        eventData["listener"](event);
                     }
                 }
             };
@@ -299,9 +296,8 @@ var away;
             * @method getEventListenerIndex
             * @param {String} Name of event to remove a listener for
             * @param {Function} Callback function
-            * @param {Object} Target object listener is added to
             */
-            EventDispatcher.prototype.getEventListenerIndex = function (type, listener, target) {
+            EventDispatcher.prototype.getEventListenerIndex = function (type, listener) {
                 if (this.listeners[type] !== undefined) {
                     var a = this.listeners[type];
                     var l = a.length;
@@ -310,7 +306,7 @@ var away;
                     for (var c = 0; c < l; c++) {
                         d = a[c];
 
-                        if (target == d.target && listener == d.listener) {
+                        if (listener == d.listener) {
                             return c;
                         }
                     }
@@ -324,12 +320,10 @@ var away;
             * @method hasListener
             * @param {String} Name of event to remove a listener for
             * @param {Function} Callback function
-            * @param {Object} Target object listener is added to
             */
-            //todo: hasEventListener - relax check by not requiring target in param
-            EventDispatcher.prototype.hasEventListener = function (type, listener, target) {
-                if (this.listeners != null && target != null) {
-                    return (this.getEventListenerIndex(type, listener, target) !== -1);
+            EventDispatcher.prototype.hasEventListener = function (type, listener) {
+                if (this.listeners != null) {
+                    return (this.getEventListenerIndex(type, listener) !== -1);
                 } else {
                     if (this.listeners[type] !== undefined) {
                         var a = this.listeners[type];
@@ -686,6 +680,8 @@ var away;
                 this._materialMode = 0;
                 this._dataFormat = format;
                 this._dependencies = new Array();
+
+                this._pOnIntervalDelegate = away.utils.Delegate.create(this, this._pOnInterval);
             }
             //----------------------------------------------------------------------------------------------------------------------------------------------------------------
             // TODO: add error checking for the following ( could cause a problem if this function is not implemented )
@@ -948,7 +944,7 @@ var away;
             ParserBase.prototype._pDieWithError = function (message) {
                 if (typeof message === "undefined") { message = 'Unknown parsing error'; }
                 if (this._timer) {
-                    this._timer.removeEventListener(away.events.TimerEvent.TIMER, this._pOnInterval, this);
+                    this._timer.removeEventListener(away.events.TimerEvent.TIMER, this._pOnIntervalDelegate);
                     this._timer.stop();
                     this._timer = null;
                 }
@@ -1002,7 +998,7 @@ var away;
             ParserBase.prototype.startParsing = function (frameLimit) {
                 this._frameLimit = frameLimit;
                 this._timer = new away.utils.Timer(this._frameLimit, 0);
-                this._timer.addEventListener(away.events.TimerEvent.TIMER, this._pOnInterval, this);
+                this._timer.addEventListener(away.events.TimerEvent.TIMER, this._pOnIntervalDelegate);
                 this._timer.start();
             };
 
@@ -1012,7 +1008,7 @@ var away;
             ParserBase.prototype._pFinishParsing = function () {
                 //console.log( 'ParserBase._pFinishParsing');
                 if (this._timer) {
-                    this._timer.removeEventListener(away.events.TimerEvent.TIMER, this._pOnInterval, this);
+                    this._timer.removeEventListener(away.events.TimerEvent.TIMER, this._pOnIntervalDelegate);
                     this._timer.stop();
                 }
 
@@ -2147,6 +2143,15 @@ var away;
 
                 this.conflictStrategy = away.library.ConflictStrategy.IGNORE.create();
                 this.conflictPrecedence = away.library.ConflictPrecedence.FAVOR_NEW;
+
+                this._onAssetRenameDelegate = away.utils.Delegate.create(this, this.onAssetRename);
+                this._onAssetConflictResolvedDelegate = away.utils.Delegate.create(this, this.onAssetConflictResolved);
+                this._onResourceRetrievedDelegate = away.utils.Delegate.create(this, this.onResourceRetrieved);
+                this._onDependencyRetrievedDelegate = away.utils.Delegate.create(this, this.onDependencyRetrieved);
+                this._onTextureSizeErrorDelegate = away.utils.Delegate.create(this, this.onTextureSizeError);
+                this._onAssetCompleteDelegate = away.utils.Delegate.create(this, this.onAssetComplete);
+                this._onDependencyRetrievingErrorDelegate = away.utils.Delegate.create(this, this.onDependencyRetrievingError);
+                this._onDependencyRetrievingParseErrorDelegate = away.utils.Delegate.create(this, this.onDependencyRetrievingParseError);
             }
             /**
             * Returns an AssetLibraryBundle instance. If no key is given, returns the default bundle instance (which is
@@ -2340,8 +2345,8 @@ var away;
 
                 this._assetDictionary[ns][asset.name] = asset;
 
-                asset.addEventListener(away.events.AssetEvent.ASSET_RENAME, this.onAssetRename, this);
-                asset.addEventListener(away.events.AssetEvent.ASSET_CONFLICT_RESOLVED, this.onAssetConflictResolved, this);
+                asset.addEventListener(away.events.AssetEvent.ASSET_RENAME, this._onAssetRenameDelegate);
+                asset.addEventListener(away.events.AssetEvent.ASSET_CONFLICT_RESOLVED, this._onAssetConflictResolvedDelegate);
             };
 
             /**
@@ -2358,8 +2363,8 @@ var away;
 
                 this.removeAssetFromDict(asset);
 
-                asset.removeEventListener(away.events.AssetEvent.ASSET_RENAME, this.onAssetRename, this);
-                asset.removeEventListener(away.events.AssetEvent.ASSET_CONFLICT_RESOLVED, this.onAssetConflictResolved, this);
+                asset.removeEventListener(away.events.AssetEvent.ASSET_RENAME, this._onAssetRenameDelegate);
+                asset.removeEventListener(away.events.AssetEvent.ASSET_CONFLICT_RESOLVED, this._onAssetConflictResolvedDelegate);
 
                 idx = this._assets.indexOf(asset);
                 if (idx >= 0) {
@@ -2529,10 +2534,10 @@ var away;
 
                 this._loadingSessions.push(loader);
 
-                loader.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceRetrieved, this);
-                loader.addEventListener(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this.onDependencyRetrieved, this);
-                loader.addEventListener(away.events.AssetEvent.TEXTURE_SIZE_ERROR, this.onTextureSizeError, this);
-                loader.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this._onResourceRetrievedDelegate);
+                loader.addEventListener(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this._onDependencyRetrievedDelegate);
+                loader.addEventListener(away.events.AssetEvent.TEXTURE_SIZE_ERROR, this._onTextureSizeErrorDelegate);
+                loader.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this._onAssetCompleteDelegate);
 
                 // Error are handled separately (see documentation for addErrorHandler)
                 loader._iAddErrorHandler(this.onDependencyRetrievingError);
@@ -2577,10 +2582,10 @@ var away;
 
                 this._loadingSessions.push(loader);
 
-                loader.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceRetrieved, this);
-                loader.addEventListener(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this.onDependencyRetrieved, this);
-                loader.addEventListener(away.events.AssetEvent.TEXTURE_SIZE_ERROR, this.onTextureSizeError, this);
-                loader.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this._onResourceRetrievedDelegate);
+                loader.addEventListener(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this._onDependencyRetrievedDelegate);
+                loader.addEventListener(away.events.AssetEvent.TEXTURE_SIZE_ERROR, this._onTextureSizeErrorDelegate);
+                loader.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this._onAssetCompleteDelegate);
 
                 // Error are handled separately (see documentation for addErrorHandler)
                 loader._iAddErrorHandler(this.onDependencyRetrievingError);
@@ -2621,7 +2626,7 @@ var away;
             * Called when a an error occurs during dependency retrieving.
             */
             AssetLibraryBundle.prototype.onDependencyRetrievingError = function (event) {
-                if (this.hasEventListener(away.events.LoaderEvent.LOAD_ERROR, this.onDependencyRetrievingError, this)) {
+                if (this.hasEventListener(away.events.LoaderEvent.LOAD_ERROR, this._onDependencyRetrievingErrorDelegate)) {
                     this.dispatchEvent(event);
                     return true;
                 } else {
@@ -2633,7 +2638,7 @@ var away;
             * Called when a an error occurs during parsing.
             */
             AssetLibraryBundle.prototype.onDependencyRetrievingParseError = function (event) {
-                if (this.hasEventListener(away.events.ParserEvent.PARSE_ERROR, this.onDependencyRetrievingParseError, this)) {
+                if (this.hasEventListener(away.events.ParserEvent.PARSE_ERROR, this._onDependencyRetrievingParseErrorDelegate)) {
                     this.dispatchEvent(event);
                     return true;
                 } else {
@@ -2687,11 +2692,11 @@ var away;
             };
 
             AssetLibraryBundle.prototype.killLoadingSession = function (loader) {
-                loader.removeEventListener(away.events.LoaderEvent.LOAD_ERROR, this.onDependencyRetrievingError, this);
-                loader.removeEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceRetrieved, this);
-                loader.removeEventListener(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this.onDependencyRetrieved, this);
-                loader.removeEventListener(away.events.AssetEvent.TEXTURE_SIZE_ERROR, this.onTextureSizeError, this);
-                loader.removeEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+                loader.removeEventListener(away.events.LoaderEvent.LOAD_ERROR, this._onDependencyRetrievingErrorDelegate);
+                loader.removeEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this._onResourceRetrievedDelegate);
+                loader.removeEventListener(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this._onDependencyRetrievedDelegate);
+                loader.removeEventListener(away.events.AssetEvent.TEXTURE_SIZE_ERROR, this._onTextureSizeErrorDelegate);
+                loader.removeEventListener(away.events.AssetEvent.ASSET_COMPLETE, this._onAssetCompleteDelegate);
                 loader.stop();
             };
 
@@ -2879,15 +2884,15 @@ var away;
             /**
             * Short-hand for addEventListener() method on default asset library bundle.
             */
-            AssetLibrary.addEventListener = function (type, listener, target) {
-                away.library.AssetLibrary.getBundle().addEventListener(type, listener, target);
+            AssetLibrary.addEventListener = function (type, listener) {
+                away.library.AssetLibrary.getBundle().addEventListener(type, listener);
             };
 
             /**
             * Short-hand for removeEventListener() method on default asset library bundle.
             */
-            AssetLibrary.removeEventListener = function (type, listener, target) {
-                away.library.AssetLibrary.getBundle().removeEventListener(type, listener, target);
+            AssetLibrary.removeEventListener = function (type, listener) {
+                away.library.AssetLibrary.getBundle().removeEventListener(type, listener);
             };
 
             /**
@@ -3676,7 +3681,7 @@ var away;
                 for (var i = 0; i < Stage.STAGEGL_MAX_QUANTITY; ++i) {
                     var canvas = this.createHTMLCanvasElement();
                     var stageGL = new away.display.StageGL(canvas);
-                    stageGL.addEventListener(away.events.Event.CONTEXTGL_CREATE, this.onContextCreated, this);
+                    stageGL.addEventListener(away.events.Event.CONTEXTGL_CREATE, away.utils.Delegate.create(this, this.onContextCreated));
 
                     this.stageGLs.push(stageGL);
                 }
@@ -7615,6 +7620,13 @@ var away;
                 this._stack = new Array();
                 this._errorHandlers = new Array();
                 this._parseErrorHandlers = new Array();
+
+                this._onReadyForDependenciesDelegate = away.utils.Delegate.create(this, this.onReadyForDependencies);
+                this._onRetrievalCompleteDelegate = away.utils.Delegate.create(this, this.onRetrievalComplete);
+                this._onRetrievalFailedDelegate = away.utils.Delegate.create(this, this.onRetrievalFailed);
+                this._onTextureSizeErrorDelegate = away.utils.Delegate.create(this, this.onTextureSizeError);
+                this._onAssetCompleteDelegate = away.utils.Delegate.create(this, this.onAssetComplete);
+                this._onParserErrorDelegate = away.utils.Delegate.create(this, this.onParserError);
             }
             Object.defineProperty(AssetLoader.prototype, "baseDependency", {
                 /**
@@ -8023,23 +8035,23 @@ var away;
             };
 
             AssetLoader.prototype.addEventListeners = function (loader) {
-                loader.addEventListener(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this.onRetrievalComplete, this);
-                loader.addEventListener(away.events.LoaderEvent.LOAD_ERROR, this.onRetrievalFailed, this);
-                loader.addEventListener(away.events.AssetEvent.TEXTURE_SIZE_ERROR, this.onTextureSizeError, this);
-                loader.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+                loader.addEventListener(away.events.ParserEvent.READY_FOR_DEPENDENCIES, this._onReadyForDependenciesDelegate);
+                loader.addEventListener(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this._onRetrievalCompleteDelegate);
+                loader.addEventListener(away.events.LoaderEvent.LOAD_ERROR, this._onRetrievalFailedDelegate);
+                loader.addEventListener(away.events.AssetEvent.TEXTURE_SIZE_ERROR, this._onTextureSizeErrorDelegate);
+                loader.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this._onAssetCompleteDelegate);
 
-                loader.addEventListener(away.events.ParserEvent.READY_FOR_DEPENDENCIES, this.onReadyForDependencies, this);
-                loader.addEventListener(away.events.ParserEvent.PARSE_ERROR, this.onParserError, this);
+                loader.addEventListener(away.events.ParserEvent.PARSE_ERROR, this._onParserErrorDelegate);
             };
 
             AssetLoader.prototype.removeEventListeners = function (loader) {
-                loader.removeEventListener(away.events.ParserEvent.READY_FOR_DEPENDENCIES, this.onReadyForDependencies, this);
-                loader.removeEventListener(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this.onRetrievalComplete, this);
-                loader.removeEventListener(away.events.LoaderEvent.LOAD_ERROR, this.onRetrievalFailed, this);
-                loader.removeEventListener(away.events.AssetEvent.TEXTURE_SIZE_ERROR, this.onTextureSizeError, this);
-                loader.removeEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+                loader.removeEventListener(away.events.ParserEvent.READY_FOR_DEPENDENCIES, this._onReadyForDependenciesDelegate);
+                loader.removeEventListener(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this._onRetrievalCompleteDelegate);
+                loader.removeEventListener(away.events.LoaderEvent.LOAD_ERROR, this._onRetrievalFailedDelegate);
+                loader.removeEventListener(away.events.AssetEvent.TEXTURE_SIZE_ERROR, this._onTextureSizeErrorDelegate);
+                loader.removeEventListener(away.events.AssetEvent.ASSET_COMPLETE, this._onAssetCompleteDelegate);
 
-                loader.removeEventListener(away.events.ParserEvent.PARSE_ERROR, this.onParserError, this);
+                loader.removeEventListener(away.events.ParserEvent.PARSE_ERROR, this._onParserErrorDelegate);
             };
 
             AssetLoader.prototype.stop = function () {
@@ -8265,18 +8277,17 @@ var away;
 
                 this._iLoader = loader;
             }
-            AssetLoaderToken.prototype.addEventListener = function (type, listener, target) {
-                this._iLoader.addEventListener(type, listener, target);
+            AssetLoaderToken.prototype.addEventListener = function (type, listener) {
+                this._iLoader.addEventListener(type, listener);
             };
 
-            AssetLoaderToken.prototype.removeEventListener = function (type, listener, target) {
-                this._iLoader.removeEventListener(type, listener, target);
+            AssetLoaderToken.prototype.removeEventListener = function (type, listener) {
+                this._iLoader.removeEventListener(type, listener);
             };
 
-            AssetLoaderToken.prototype.hasEventListener = function (type, listener, target) {
+            AssetLoaderToken.prototype.hasEventListener = function (type, listener) {
                 if (typeof listener === "undefined") { listener = null; }
-                if (typeof target === "undefined") { target = null; }
-                return this._iLoader.hasEventListener(type, listener, target);
+                return this._iLoader.hasEventListener(type, listener);
             };
             return AssetLoaderToken;
         })(away.events.EventDispatcher);
@@ -8309,6 +8320,15 @@ var away;
                 _super.call(this);
                 this._materialMode = materialMode;
                 this._assets = new Array();
+
+                this._handleUrlLoaderCompleteDelegate = away.utils.Delegate.create(this, this.handleUrlLoaderComplete);
+                this._handleUrlLoaderErrorDelegate = away.utils.Delegate.create(this, this.handleUrlLoaderError);
+
+                this._onReadyForDependenciesDelegate = away.utils.Delegate.create(this, this.onReadyForDependencies);
+                this._onParseCompleteDelegate = away.utils.Delegate.create(this, this.onParseComplete);
+                this._onParseErrorDelegate = away.utils.Delegate.create(this, this.onParseError);
+                this._onTextureSizeErrorDelegate = away.utils.Delegate.create(this, this.onTextureSizeError);
+                this._onAssetCompleteDelegate = away.utils.Delegate.create(this, this.onAssetComplete);
             }
             SingleFileLoader.enableParser = function (parser) {
                 if (SingleFileLoader._parsers.indexOf(parser) < 0)
@@ -8406,8 +8426,8 @@ var away;
 
                 var loader = this.getLoader(loaderType);
                 loader.dataFormat = dataFormat;
-                loader.addEventListener(away.events.Event.COMPLETE, this.handleUrlLoaderComplete, this);
-                loader.addEventListener(away.events.IOErrorEvent.IO_ERROR, this.handleUrlLoaderError, this);
+                loader.addEventListener(away.events.Event.COMPLETE, this._handleUrlLoaderCompleteDelegate);
+                loader.addEventListener(away.events.IOErrorEvent.IO_ERROR, this._handleUrlLoaderErrorDelegate);
                 loader.load(urlRequest);
             };
 
@@ -8524,8 +8544,8 @@ var away;
             * Cleanups
             */
             SingleFileLoader.prototype.removeListeners = function (urlLoader) {
-                urlLoader.removeEventListener(away.events.Event.COMPLETE, this.handleUrlLoaderComplete, this);
-                urlLoader.removeEventListener(away.events.IOErrorEvent.IO_ERROR, this.handleUrlLoaderError, this);
+                urlLoader.removeEventListener(away.events.Event.COMPLETE, this._handleUrlLoaderCompleteDelegate);
+                urlLoader.removeEventListener(away.events.IOErrorEvent.IO_ERROR, this._handleUrlLoaderErrorDelegate);
             };
 
             // Events
@@ -8569,11 +8589,11 @@ var away;
                 }
 
                 if (this._parser) {
-                    this._parser.addEventListener(away.events.ParserEvent.READY_FOR_DEPENDENCIES, this.onReadyForDependencies, this);
-                    this._parser.addEventListener(away.events.ParserEvent.PARSE_ERROR, this.onParseError, this);
-                    this._parser.addEventListener(away.events.ParserEvent.PARSE_COMPLETE, this.onParseComplete, this);
-                    this._parser.addEventListener(away.events.AssetEvent.TEXTURE_SIZE_ERROR, this.onTextureSizeError, this);
-                    this._parser.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+                    this._parser.addEventListener(away.events.ParserEvent.READY_FOR_DEPENDENCIES, this._onReadyForDependenciesDelegate);
+                    this._parser.addEventListener(away.events.ParserEvent.PARSE_COMPLETE, this._onParseCompleteDelegate);
+                    this._parser.addEventListener(away.events.ParserEvent.PARSE_ERROR, this._onParseErrorDelegate);
+                    this._parser.addEventListener(away.events.AssetEvent.TEXTURE_SIZE_ERROR, this._onTextureSizeErrorDelegate);
+                    this._parser.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this._onAssetCompleteDelegate);
 
                     if (this._req && this._req.url) {
                         this._parser._iFileName = this._req.url;
@@ -8619,11 +8639,11 @@ var away;
             SingleFileLoader.prototype.onParseComplete = function (event) {
                 this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.DEPENDENCY_COMPLETE, this.url, this._assets)); //dispatch in front of removing listeners to allow any remaining asset events to propagate
 
-                this._parser.removeEventListener(away.events.ParserEvent.READY_FOR_DEPENDENCIES, this.onReadyForDependencies, this);
-                this._parser.removeEventListener(away.events.ParserEvent.PARSE_COMPLETE, this.onParseComplete, this);
-                this._parser.removeEventListener(away.events.ParserEvent.PARSE_ERROR, this.onParseError, this);
-                this._parser.removeEventListener(away.events.AssetEvent.TEXTURE_SIZE_ERROR, this.onTextureSizeError, this);
-                this._parser.removeEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+                this._parser.removeEventListener(away.events.ParserEvent.READY_FOR_DEPENDENCIES, this._onReadyForDependenciesDelegate);
+                this._parser.removeEventListener(away.events.ParserEvent.PARSE_COMPLETE, this._onParseCompleteDelegate);
+                this._parser.removeEventListener(away.events.ParserEvent.PARSE_ERROR, this._onParseErrorDelegate);
+                this._parser.removeEventListener(away.events.AssetEvent.TEXTURE_SIZE_ERROR, this._onTextureSizeErrorDelegate);
+                this._parser.removeEventListener(away.events.AssetEvent.ASSET_COMPLETE, this._onAssetCompleteDelegate);
             };
             SingleFileLoader._parsers = new Array(away.parsers.ImageParser, away.parsers.CubeTextureParser);
             return SingleFileLoader;
@@ -8640,6 +8660,10 @@ var away;
             __extends(SingleFileImageLoader, _super);
             function SingleFileImageLoader() {
                 _super.call(this);
+
+                this._onLoadCompleteDelegate = away.utils.Delegate.create(this, this.onLoadComplete);
+                this._onLoadErrorDelegate = away.utils.Delegate.create(this, this.onLoadError);
+
                 this.initLoader();
             }
             // Public
@@ -8695,8 +8719,8 @@ var away;
             SingleFileImageLoader.prototype.initLoader = function () {
                 if (!this._loader) {
                     this._loader = new away.net.IMGLoader();
-                    this._loader.addEventListener(away.events.Event.COMPLETE, this.onLoadComplete, this);
-                    this._loader.addEventListener(away.events.IOErrorEvent.IO_ERROR, this.onLoadError, this);
+                    this._loader.addEventListener(away.events.Event.COMPLETE, this._onLoadCompleteDelegate);
+                    this._loader.addEventListener(away.events.IOErrorEvent.IO_ERROR, this._onLoadErrorDelegate);
                 }
             };
 
@@ -8706,8 +8730,8 @@ var away;
             SingleFileImageLoader.prototype.disposeLoader = function () {
                 if (this._loader) {
                     this._loader.dispose();
-                    this._loader.removeEventListener(away.events.Event.COMPLETE, this.onLoadComplete, this);
-                    this._loader.removeEventListener(away.events.IOErrorEvent.IO_ERROR, this.onLoadError, this);
+                    this._loader.removeEventListener(away.events.Event.COMPLETE, this._onLoadCompleteDelegate);
+                    this._loader.removeEventListener(away.events.IOErrorEvent.IO_ERROR, this._onLoadErrorDelegate);
                     this._loader = null;
                 }
             };
@@ -8742,6 +8766,9 @@ var away;
             __extends(SingleFileURLLoader, _super);
             function SingleFileURLLoader() {
                 _super.call(this);
+
+                this._onLoadCompleteDelegate = away.utils.Delegate.create(this, this.onLoadComplete);
+                this._onLoadErrorDelegate = away.utils.Delegate.create(this, this.onLoadError);
                 this.initLoader();
             }
             // Public
@@ -8797,8 +8824,8 @@ var away;
             SingleFileURLLoader.prototype.initLoader = function () {
                 if (!this._loader) {
                     this._loader = new away.net.URLLoader();
-                    this._loader.addEventListener(away.events.Event.COMPLETE, this.onLoadComplete, this);
-                    this._loader.addEventListener(away.events.IOErrorEvent.IO_ERROR, this.onLoadError, this);
+                    this._loader.addEventListener(away.events.Event.COMPLETE, this._onLoadCompleteDelegate);
+                    this._loader.addEventListener(away.events.IOErrorEvent.IO_ERROR, this._onLoadErrorDelegate);
                 }
             };
 
@@ -8808,8 +8835,8 @@ var away;
             SingleFileURLLoader.prototype.disposeLoader = function () {
                 if (this._loader) {
                     this._loader.dispose();
-                    this._loader.removeEventListener(away.events.Event.COMPLETE, this.onLoadComplete, this);
-                    this._loader.removeEventListener(away.events.IOErrorEvent.IO_ERROR, this.onLoadError, this);
+                    this._loader.removeEventListener(away.events.Event.COMPLETE, this._onLoadCompleteDelegate);
+                    this._loader.removeEventListener(away.events.IOErrorEvent.IO_ERROR, this._onLoadErrorDelegate);
                     this._loader = null;
                 }
             };
@@ -10407,12 +10434,13 @@ var away;
                 this._viewPort = new away.geom.Rectangle();
                 this._enableDepthAndStencil = true;
 
+                //create the closure delegate for the context update listener
+                this._onContextGLUpdateDelegate = away.utils.Delegate.create(this, this.onContextGLUpdate);
+
                 // whatever happens, be sure this has highest priority
-                this._stageGL.addEventListener(away.events.Event.CONTEXTGL_CREATE, this.onContextGLUpdate, this); //, false, 1000, false);
+                this._stageGL.addEventListener(away.events.Event.CONTEXTGL_CREATE, this._onContextGLUpdateDelegate); //, false, 1000, false);
                 this.requestContext(forceSoftware, this.profile);
             }
-            //private _mouse3DManager:away.managers.Mouse3DManager;
-            //private _touch3DManager:Touch3DManager; //TODO: imeplement dependency Touch3DManager
             StageGLProxy.prototype.notifyViewportUpdated = function () {
                 if (this._viewportDirty) {
                     return;
@@ -10459,7 +10487,7 @@ var away;
             */
             StageGLProxy.prototype.dispose = function () {
                 this._stageGLManager.iRemoveStageGLProxy(this);
-                this._stageGL.removeEventListener(away.events.Event.CONTEXTGL_CREATE, this.onContextGLUpdate, this);
+                this._stageGL.removeEventListener(away.events.Event.CONTEXTGL_CREATE, this._onContextGLUpdateDelegate);
                 this.freeContextGL();
                 this._stageGL = null;
                 this._stageGLManager = null;
@@ -10586,8 +10614,8 @@ var away;
             * @param useWeakReference Determines whether the reference to the listener is strong or weak. A strong reference (the default) prevents your listener from being garbage-collected. A weak reference does not.
             */
             //public override function addEventListener(type:string, listener, useCapture:boolean = false, priority:number = 0, useWeakReference:boolean = false)
-            StageGLProxy.prototype.addEventListener = function (type, listener, target) {
-                _super.prototype.addEventListener.call(this, type, listener, target); //useCapture, priority, useWeakReference);
+            StageGLProxy.prototype.addEventListener = function (type, listener) {
+                _super.prototype.addEventListener.call(this, type, listener); //useCapture, priority, useWeakReference);
                 //away.Debug.throwPIR( 'StageGLProxy' , 'addEventListener' ,  'EnterFrame, ExitFrame');
                 //if ((type == away.events.Event.ENTER_FRAME || type == away.events.Event.EXIT_FRAME) ){//&& ! this._frameEventDriver.hasEventListener(Event.ENTER_FRAME)){
                 //_frameEventDriver.addEventListener(Event.ENTER_FRAME, onEnterFrame, useCapture, priority, useWeakReference);
@@ -10610,8 +10638,8 @@ var away;
             * @param listener The listener object to remove.
             * @param useCapture Specifies whether the listener was registered for the capture phase or the target and bubbling phases. If the listener was registered for both the capture phase and the target and bubbling phases, two calls to removeEventListener() are required to remove both, one call with useCapture() set to true, and another call with useCapture() set to false.
             */
-            StageGLProxy.prototype.removeEventListener = function (type, listener, target) {
-                _super.prototype.removeEventListener.call(this, type, listener, target);
+            StageGLProxy.prototype.removeEventListener = function (type, listener) {
+                _super.prototype.removeEventListener.call(this, type, listener);
                 //away.Debug.throwPIR( 'StageGLProxy' , 'removeEventListener' ,  'EnterFrame, ExitFrame');
                 /*
                 // Remove the main rendering listener if no EnterFrame listeners remain
@@ -12805,6 +12833,38 @@ var away;
         return Debug;
     })();
     away.Debug = Debug;
+})(away || (away = {}));
+///<reference path="../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (utils) {
+        var Delegate = (function () {
+            function Delegate(func) {
+                if (typeof func === "undefined") { func = null; }
+                this._func = func;
+            }
+            /**
+            Creates a functions wrapper for the original function so that it runs
+            in the provided context.
+            @parameter obj Context in which to run the function.
+            @paramater func Function to run.
+            */
+            Delegate.create = function (obj, func) {
+                var f = function () {
+                    return func.apply(obj, arguments);
+                };
+
+                return f;
+            };
+
+            Delegate.prototype.createDelegate = function (obj) {
+                return Delegate.create(obj, this._func);
+            };
+            return Delegate;
+        })();
+        utils.Delegate = Delegate;
+    })(away.utils || (away.utils = {}));
+    var utils = away.utils;
 })(away || (away = {}));
 ///<reference path="../_definitions.ts"/>
 var away;

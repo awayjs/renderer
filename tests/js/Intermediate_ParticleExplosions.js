@@ -1,33 +1,25 @@
 ﻿///<reference path="../../../build/Away3D.next.d.ts" />
+//<reference path="../../../src/Away3D.ts" />
 /*
-
 Particle explosions in Away3D using the Adobe AIR and Adobe Flash Player logos
-
 Demonstrates:
-
 How to split images into particles.
 How to share particle geometries and animation sets between meshes and animators.
 How to manually update the playhead of a particle animator using the update() function.
-
 Code by Rob Bateman & Liao Cheng
 rob@infiniteturtles.co.uk
 http://www.infiniteturtles.co.uk
 liaocheng210@126.com
-
 This code is distributed under the MIT License
-
 Copyright (c) The Away Foundation http://www.theawayfoundation.org
-
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the “Software”), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
-
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
-
 THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -35,7 +27,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
-
 */
 var examples;
 (function (examples) {
@@ -144,8 +135,8 @@ var examples;
         * Initialise the particles
         */
         Intermediate_ParticleExplosions.prototype.initParticles = function () {
-            var i/*int*/ ;
-            var j/*int*/ ;
+            var i;
+            var j;
             var point;
             var rgb;
             var color;
@@ -274,7 +265,7 @@ var examples;
             this.timer = new away.utils.RequestAnimationFrame(this.onEnterFrame, this);
             this.timer.start();
 
-            away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete, this);
+            away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, away.utils.Delegate.create(this, this.onResourceComplete));
 
             //image textures
             away.library.AssetLibrary.load(new away.net.URLRequest("assets/demos/firefox.png"));
@@ -295,11 +286,11 @@ var examples;
 
             if (properties.index < this.colorChromeSeparation)
                 properties[ParticleBezierCurveNode.BEZIER_END_VECTOR3D] = new Vector3D(300 * Intermediate_ParticleExplosions.PARTICLE_SIZE, 0, 0);
-else if (properties.index < this.colorFirefoxSeparation)
+            else if (properties.index < this.colorFirefoxSeparation)
                 properties[ParticleBezierCurveNode.BEZIER_END_VECTOR3D] = new Vector3D(-300 * Intermediate_ParticleExplosions.PARTICLE_SIZE, 0, 0);
-else if (properties.index < this.colorSafariSeparation)
+            else if (properties.index < this.colorSafariSeparation)
                 properties[ParticleBezierCurveNode.BEZIER_END_VECTOR3D] = new Vector3D(0, 0, 300 * Intermediate_ParticleExplosions.PARTICLE_SIZE);
-else
+            else
                 properties[ParticleBezierCurveNode.BEZIER_END_VECTOR3D] = new Vector3D(0, 0, -300 * Intermediate_ParticleExplosions.PARTICLE_SIZE);
 
             var rgb = this.colorValues[properties.index];
@@ -319,8 +310,8 @@ else
             this.cameraController.panAngle += 0.2;
 
             //update the particle animator playhead positions
-            var i/*uint*/ ;
-            var time/*uint*/ ;
+            var i;
+            var time;
 
             if (this.colorAnimators) {
                 for (i = 0; i < this.colorAnimators.length; i++) {
@@ -402,7 +393,7 @@ else
             this.view.width = window.innerWidth;
             this.view.height = window.innerHeight;
         };
-        Intermediate_ParticleExplosions.PARTICLE_SIZE = 3;
+        Intermediate_ParticleExplosions.PARTICLE_SIZE = 1;
         Intermediate_ParticleExplosions.NUM_ANIMATORS = 4;
         return Intermediate_ParticleExplosions;
     })();

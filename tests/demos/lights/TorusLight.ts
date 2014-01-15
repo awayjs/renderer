@@ -37,7 +37,7 @@ module demos.lights
 
 			var imgLoader:away.net.IMGLoader = new away.net.IMGLoader();
 
-			    imgLoader.addEventListener( away.events.Event.COMPLETE, this.imageCompleteHandler, this );
+			    imgLoader.addEventListener( away.events.Event.COMPLETE, away.utils.Delegate.create(this, this.imageCompleteHandler) );
 			    imgLoader.load( urlRequest );
 		}
 		

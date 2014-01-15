@@ -6,12 +6,12 @@ module away.materials
 	/**
 	 * BasicAmbientMethod provides the default shading method for uniform ambient lighting.
 	 */
-	export class BasicAmbientMethod extends away.materials.ShadingMethodBase
+	export class BasicAmbientMethod extends ShadingMethodBase
 	{
 		private _useTexture:boolean = false;
 		private _texture:away.textures.Texture2DBase;
 
-		private _ambientInputRegister:away.materials.ShaderRegisterElement;
+		private _ambientInputRegister:ShaderRegisterElement;
 
 		private _ambientColor:number = 0xffffff;
 
@@ -36,7 +36,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iInitVO(vo:away.materials.MethodVO)
+		public iInitVO(vo:MethodVO)
 		{
 			vo.needsUV = this._useTexture;
 		}
@@ -44,7 +44,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iInitConstants(vo:away.materials.MethodVO)
+		public iInitConstants(vo:MethodVO)
 		{
 			vo.fragmentData[vo.fragmentConstantsIndex + 3] = 1;
 		}
@@ -104,12 +104,12 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public copyFrom(method:away.materials.ShadingMethodBase)
+		public copyFrom(method:ShadingMethodBase)
 		{
 			var m:any = method;
-			var b:away.materials.BasicAmbientMethod = <away.materials.BasicAmbientMethod> m;
+			var b:BasicAmbientMethod = <BasicAmbientMethod> m;
 
-			var diff:away.materials.BasicAmbientMethod = b;//BasicAmbientMethod(method);
+			var diff:BasicAmbientMethod = b;//BasicAmbientMethod(method);
 
 			this.ambient = diff.ambient;
 			this.ambientColor = diff.ambientColor;
@@ -127,7 +127,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentCode(vo:away.materials.MethodVO, regCache:away.materials.ShaderRegisterCache, targetReg:away.materials.ShaderRegisterElement):string
+		public iGetFragmentCode(vo:MethodVO, regCache:ShaderRegisterCache, targetReg:ShaderRegisterElement):string
 		{
 
 			var code:string = "";
@@ -156,7 +156,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:away.materials.MethodVO, stageGLProxy:away.managers.StageGLProxy)
+		public iActivate(vo:MethodVO, stageGLProxy:away.managers.StageGLProxy)
 		{
 			if (this._useTexture) {
 
@@ -181,7 +181,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iSetRenderState(vo:away.materials.MethodVO, renderable:away.base.IRenderable, stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D)
+		public iSetRenderState(vo:MethodVO, renderable:away.base.IRenderable, stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D)
 		{
 			this.updateAmbient();
 

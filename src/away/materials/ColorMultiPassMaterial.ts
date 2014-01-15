@@ -6,7 +6,7 @@ module away.materials
 	/**
 	 * ColorMultiPassMaterial is a multi-pass material that uses a flat color as the surface's diffuse reflection value.
 	 */
-	export class ColorMultiPassMaterial extends away.materials.MultiPassMaterialBase
+	export class ColorMultiPassMaterial extends MultiPassMaterialBase
 	{
 		/**
 		 * Creates a new ColorMultiPassMaterial object.

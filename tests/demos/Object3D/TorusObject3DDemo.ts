@@ -3,165 +3,158 @@
 
 module demos.object3d
 {
+	import Event						= away.events.Event;
+	import IMGLoader					= away.net.IMGLoader;
+	import URLRequest					= away.net.URLRequest;
+	import RequestAnimationFrame		= away.utils.RequestAnimationFrame;
+	import Delegate						= away.utils.Delegate;
 
+	import PerspectiveLens				= away.cameras.PerspectiveLens;
+	import View3D						= away.containers.View3D;
+	import Mesh							= away.entities.Mesh;
+	import PointLight					= away.lights.PointLight;
+	import StaticLightPicker			= away.materials.StaticLightPicker;
+	import TextureMaterial				= away.materials.TextureMaterial;
+	import TorusGeometry				= away.primitives.TorusGeometry;
+	import HTMLImageElementTexture		= away.textures.HTMLImageElementTexture;
 
     export class TorusObject3DDemo
     {
 
-        private view        : away.containers.View3D;
-        private torus       : away.primitives.TorusGeometry;
+        private view:View3D;
+        private torus:TorusGeometry;
 
-        private light       : away.lights.PointLight;
-        private raf         : away.utils.RequestAnimationFrame;
-        private meshes      : away.entities.Mesh[];
+        private light:PointLight;
+        private raf:RequestAnimationFrame;
+        private meshes:Mesh[];
 
-        private t           : number = 0;
-        private tPos        : number = 0;
-        private radius      : number = 1000;
-        private follow      : boolean = true;
+        private t:number = 0;
+        private tPos:number = 0;
+        private radius:number = 1000;
+        private follow:boolean = true;
 
-        private pointLight : away.lights.PointLight;
-        private lightPicker : away.materials.StaticLightPicker;
+        private pointLight:PointLight;
+        private lightPicker:StaticLightPicker;
 
-        private _image		:HTMLImageElement;
+        private _image:HTMLImageElement;
 
         constructor()
         {
+            away.Debug.THROW_ERRORS = false;
+            away.Debug.LOG_PI_ERRORS = false;
 
-            away.Debug.THROW_ERRORS     = false;
-            away.Debug.LOG_PI_ERRORS    = false;
+            this.meshes = new Array<Mesh>();
+            this.light = new PointLight();
+            this.view = new View3D();
 
-            this.meshes                 = new Array<away.entities.Mesh>();
-            this.light                  = new away.lights.PointLight();
-            this.view                   = new away.containers.View3D();
+            this.pointLight = new PointLight();
+            this.lightPicker = new StaticLightPicker([this.pointLight])
 
-            this.pointLight             = new away.lights.PointLight();
-            this.lightPicker            = new away.materials.StaticLightPicker( [this.pointLight])
+            this.view.scene.addChild(this.pointLight);
 
-            this.view.scene.addChild( this.pointLight );
-
-            var perspectiveLens : away.cameras.PerspectiveLens = <away.cameras.PerspectiveLens> this.view.camera.lens;
+            var perspectiveLens:PerspectiveLens = <PerspectiveLens> this.view.camera.lens;
             perspectiveLens.fieldOfView = 75;
 
+            this.view.camera.z = 0;
+            this.view.backgroundColor = 0x000000;
+            this.view.backgroundAlpha = 1;
+            this.torus = new TorusGeometry(150 , 50 , 32 , 32 , false);
 
-            this.view.camera.z          = 0;
-            this.view.backgroundColor   = 0x000000;
-            this.view.backgroundAlpha   = 1;
-            this.torus                  = new away.primitives.TorusGeometry(150 , 50 , 32 , 32 , false );
+            var l:number = 10;
+            //var radius:number = 1000;
 
-            var l       : number        = 10;
-            //var radius  : number        = 1000;
-
-            for (var c : number = 0; c < l ; c++)
-            {
+            for (var c : number = 0; c < l ; c++) {
 
                 var t : number=Math.PI * 2 * c / l;
 
-                var m : away.entities.Mesh = new away.entities.Mesh( this.torus );
+                var m : Mesh = new Mesh(this.torus);
                     m.x = Math.cos(t)*this.radius;
                     m.y = 0;
                     m.z = Math.sin(t)*this.radius;
 
-                this.view.scene.addChild( m );
-                this.meshes.push( m );
+                this.view.scene.addChild(m);
+                this.meshes.push(m);
 
             }
 
-            this.view.scene.addChild( this.light );
+            this.view.scene.addChild(this.light);
 
-            this.raf = new away.utils.RequestAnimationFrame( this.tick , this );
+            this.raf = new RequestAnimationFrame(this.tick , this);
             this.raf.start();
-            this.resize( null );
+            this.resize(null);
 
-            document.onmousedown = ( e ) => this.followObject( e );
+            document.onmousedown = (e) => this.followObject(e);
 
             this.loadResources();
         }
 
         private loadResources()
         {
-            var urlRequest:away.net.URLRequest = new away.net.URLRequest( "assets/custom_uv_horizontal.png" );
-            var imgLoader:away.net.IMGLoader = new away.net.IMGLoader();
-            imgLoader.addEventListener( away.events.Event.COMPLETE, this.imageCompleteHandler, this );
-            imgLoader.load( urlRequest );
+            var urlRequest:URLRequest = new URLRequest("assets/custom_uv_horizontal.png");
+            var imgLoader:IMGLoader = new IMGLoader();
+            imgLoader.addEventListener(Event.COMPLETE, Delegate.create(this, this.imageCompleteHandler));
+            imgLoader.load(urlRequest);
         }
 
         private imageCompleteHandler(e)
         {
-            var imageLoader:away.net.IMGLoader = <away.net.IMGLoader> e.target
+            var imageLoader:IMGLoader = <IMGLoader> e.target
             this._image = imageLoader.image;
 
-            var ts : away.textures.HTMLImageElementTexture = new away.textures.HTMLImageElementTexture( this._image, false );
+            var ts : HTMLImageElementTexture = new HTMLImageElementTexture(this._image, false);
 
-            var matTx: away.materials.TextureMaterial = new away.materials.TextureMaterial( ts, true, true, false );
+            var matTx: TextureMaterial = new TextureMaterial(ts, true, true, false);
                 matTx.lightPicker =  this.lightPicker;
 
-            for ( var c : number = 0 ; c < this.meshes.length ; c ++ )
-            {
+            for (var c : number = 0 ; c < this.meshes.length ; c ++)
                 this.meshes[c].material = matTx;
-
-
-            }
-
         }
 
 
         private tick( e )
         {
-
             this.tPos += .02;
 
-            for ( var c : number = 0 ; c < this.meshes.length ; c ++ )
-            {
-
-                var objPos : number=Math.PI * 2 * c / this.meshes.length;
+            for (var c:number = 0 ; c < this.meshes.length ; c ++) {
+                var objPos:number=Math.PI*2*c/this.meshes.length;
 
                 this.t += .005;
-                var s : number = 1.2 + Math.sin( this.t + objPos );
+                var s:number = 1.2 + Math.sin(this.t + objPos);
 
-                this.meshes[c].rotationY    += 2 * ( c / this.meshes.length );
-                this.meshes[c].rotationX    += 2* ( c / this.meshes.length );
-                this.meshes[c].rotationZ    += 2* ( c / this.meshes.length );
-                this.meshes[c].scaleX       = this.meshes[c].scaleY = this.meshes[c].scaleZ = s
-                this.meshes[c].x            = Math.cos(objPos + this.tPos)*this.radius;
-                this.meshes[c].y            = Math.sin( this.t ) * 500;
-                this.meshes[c].z            = Math.sin(objPos + this.tPos)*this.radius;
-
+                this.meshes[c].rotationY += 2*(c/this.meshes.length);
+                this.meshes[c].rotationX += 2*(c/this.meshes.length);
+                this.meshes[c].rotationZ += 2*(c/this.meshes.length);
+                this.meshes[c].scaleX = this.meshes[c].scaleY = this.meshes[c].scaleZ = s;
+                this.meshes[c].x = Math.cos(objPos + this.tPos)*this.radius;
+                this.meshes[c].y = Math.sin(this.t)*500;
+                this.meshes[c].z = Math.sin(objPos + this.tPos)*this.radius;
             }
-
 
             //this.view.camera.y = Math.sin( this.tPos ) * 1500;
 
-            if ( this.follow )
-            {
-                this.view.camera.lookAt( this.meshes[0].position );
-            }
+            if (this.follow)
+                this.view.camera.lookAt(this.meshes[0].position);
 
-            this.view.camera.y = Math.sin( this.tPos ) * 1500;
+            this.view.camera.y = Math.sin(this.tPos) * 1500;
 
             this.view.render();
 
-            window.onresize = () => this.resize( null );
+            window.onresize = () => this.resize(null);
             this.resize(null);
-
         }
 
-        public resize( e )
+        public resize(e)
         {
-            this.view.y         = 0;
-            this.view.x         = 0;
+            this.view.y = 0;
+            this.view.x = 0;
 
-            this.view.width     = window.innerWidth;
-            this.view.height    = window.innerHeight;
+            this.view.width = window.innerWidth;
+            this.view.height = window.innerHeight;
         }
 
-        public followObject( e )
+        public followObject(e)
         {
-
             this.follow = !this.follow;
-
         }
-
     }
-
 }

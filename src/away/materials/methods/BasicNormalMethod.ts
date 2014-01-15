@@ -6,11 +6,11 @@ module away.materials
 	/**
 	 * BasicNormalMethod is the default method for standard tangent-space normal mapping.
 	 */
-	export class BasicNormalMethod extends away.materials.ShadingMethodBase
+	export class BasicNormalMethod extends ShadingMethodBase
 	{
 		private _texture:away.textures.Texture2DBase;
 		private _useTexture:boolean;
-		public _pNormalTextureRegister:away.materials.ShaderRegisterElement;
+		public _pNormalTextureRegister:ShaderRegisterElement;
 
 		/**
 		 * Creates a new BasicNormalMethod object.
@@ -23,7 +23,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iInitVO(vo:away.materials.MethodVO)
+		public iInitVO(vo:MethodVO)
 		{
 			if (this._texture) {
 
@@ -122,7 +122,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:away.materials.MethodVO, stageGLProxy:away.managers.StageGLProxy)
+		public iActivate(vo:MethodVO, stageGLProxy:away.managers.StageGLProxy)
 		{
 			if (vo.texturesIndex >= 0) {
 

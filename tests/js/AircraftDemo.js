@@ -38,7 +38,7 @@ var demos;
 
             AircraftDemo.prototype.loadAsset = function (path) {
                 var token = away.library.AssetLibrary.load(new away.net.URLRequest(path));
-                token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete, this);
+                token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, away.utils.Delegate.create(this, this.onResourceComplete));
             };
 
             AircraftDemo.prototype.initParsers = function () {

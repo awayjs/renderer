@@ -19,7 +19,7 @@ module tests.display {
 			away.library.AssetLibrary.enableParser( away.parsers.ImageParser );
 
 			var token : away.net.AssetLoaderToken = away.library.AssetLibrary.load( new away.net.URLRequest('assets/dots.png'));
-				token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE , this.onResourceComplete , this );
+				token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE , away.utils.Delegate.create(this, this.onResourceComplete) );
 
 			window.onresize = () => this.resize();
 

@@ -6,7 +6,7 @@ module away.materials
 	/**
 	 * SkyBoxPass provides a material pass exclusively used to render sky boxes from a cube texture.
 	 */
-	export class SkyBoxPass extends away.materials.MaterialPassBase
+	export class SkyBoxPass extends MaterialPassBase
 	{
 		private _cubeTexture:away.textures.CubeTextureBase;
 		private _vertexData:number[];

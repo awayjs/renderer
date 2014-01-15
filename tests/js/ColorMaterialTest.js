@@ -11,7 +11,7 @@ var tests;
 
                 this.imgLoader = new away.net.IMGLoader();
                 this.imgLoader.load(mipUrlRequest);
-                this.imgLoader.addEventListener(away.events.Event.COMPLETE, this.imgLoaded, this);
+                this.imgLoader.addEventListener(away.events.Event.COMPLETE, away.utils.Delegate.create(this, this.imgLoaded));
 
                 this.cm = new away.materials.ColorMaterial();
                 this.stage = new away.display.Stage(800, 600);

@@ -7,7 +7,7 @@ module away.materials
 	 * EffectMethodBase forms an abstract base class for shader methods that are not dependent on light sources,
 	 * and are in essence post-process effects on the materials.
 	 */
-	export class EffectMethodBase extends away.materials.ShadingMethodBase implements away.library.IAsset
+	export class EffectMethodBase extends ShadingMethodBase implements away.library.IAsset
 	{
 		constructor()
 		{
@@ -29,7 +29,7 @@ module away.materials
 		 * @param targetReg The register that will be containing the method's output.
 		 * @private
 		 */
-		public iGetFragmentCode(vo:away.materials.MethodVO, regCache:away.materials.ShaderRegisterCache, targetReg:away.materials.ShaderRegisterElement):string
+		public iGetFragmentCode(vo:MethodVO, regCache:ShaderRegisterCache, targetReg:ShaderRegisterElement):string
 		{
 			throw new away.errors.AbstractMethodError();
 			return "";

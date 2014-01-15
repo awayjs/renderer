@@ -136,9 +136,9 @@ module away.base
 		}
 
 
-		public addEventListener(type:string, listener:Function, target:Object)
+		public addEventListener(type:string, listener:Function)
 		{
-			super.addEventListener(type, listener, target);//, priority, useWeakReference);
+			super.addEventListener(type, listener);//, priority, useWeakReference);
 
 			switch (type) {
 				case away.events.Object3DEvent.POSITION_CHANGED:
@@ -153,11 +153,11 @@ module away.base
 			}
 		}
 
-		public removeEventListener(type:string, listener:Function, target:Object)
+		public removeEventListener(type:string, listener:Function)
 		{
-			super.removeEventListener(type, listener, target);
+			super.removeEventListener(type, listener);
 
-			if (this.hasEventListener(type, listener, target))
+			if (this.hasEventListener(type, listener))
 				return;
 
 			switch (type) {

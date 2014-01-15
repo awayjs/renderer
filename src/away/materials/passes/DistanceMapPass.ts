@@ -19,7 +19,7 @@ module away.materials
 	 * DistanceMapPass is a pass that writes distance values to a depth map as a 32-bit value exploded over the 4 texture channels.
 	 * This is used to render omnidirectional shadow maps.
 	 */
-	export class DistanceMapPass extends away.materials.MaterialPassBase
+	export class DistanceMapPass extends MaterialPassBase
 	{
 		private _fragmentData:number[];
 		private _vertexData:number[];

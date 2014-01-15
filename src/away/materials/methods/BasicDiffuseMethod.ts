@@ -13,15 +13,15 @@ module away.materials
 	/**
 	 * BasicDiffuseMethod provides the default shading method for Lambert (dot3) diffuse lighting.
 	 */
-	export class BasicDiffuseMethod extends away.materials.LightingMethodBase
+	export class BasicDiffuseMethod extends LightingMethodBase
 	{
 		private _useAmbientTexture:boolean;
 
 		private _useTexture:boolean;
-		public pTotalLightColorReg:away.materials.ShaderRegisterElement;
+		public pTotalLightColorReg:ShaderRegisterElement;
 
 		// TODO: are these registers at all necessary to be members?
-		private _diffuseInputRegister:away.materials.ShaderRegisterElement;
+		private _diffuseInputRegister:ShaderRegisterElement;
 
 		private _texture:away.textures.Texture2DBase;
 		private _diffuseColor:number = 0xffffff;
@@ -30,7 +30,7 @@ module away.materials
 		private _diffuseB:number = 1;
 		private _diffuseA:number = 1;
 
-		private _shadowRegister:away.materials.ShaderRegisterElement;
+		private _shadowRegister:ShaderRegisterElement;
 
 		private _alphaThreshold:number = 0;
 		private _isFirstLight:boolean;
@@ -62,7 +62,7 @@ module away.materials
 
 		}
 
-		public iInitVO(vo:away.materials.MethodVO)
+		public iInitVO(vo:MethodVO)
 		{
 
 			vo.needsUV = this._useTexture;
@@ -167,7 +167,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public copyFrom(method:away.materials.ShadingMethodBase)
+		public copyFrom(method:ShadingMethodBase)
 		{
 
 			var m:any = method;
@@ -196,7 +196,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentPreLightingCode(vo:away.materials.MethodVO, regCache:away.materials.ShaderRegisterCache):string
+		public iGetFragmentPreLightingCode(vo:MethodVO, regCache:ShaderRegisterCache):string
 		{
 			var code:string = "";
 
@@ -213,10 +213,10 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentCodePerLight(vo:away.materials.MethodVO, lightDirReg:away.materials.ShaderRegisterElement, lightColReg:away.materials.ShaderRegisterElement, regCache:away.materials.ShaderRegisterCache):string
+		public iGetFragmentCodePerLight(vo:MethodVO, lightDirReg:ShaderRegisterElement, lightColReg:ShaderRegisterElement, regCache:ShaderRegisterCache):string
 		{
 			var code:string = "";
-			var t:away.materials.ShaderRegisterElement;
+			var t:ShaderRegisterElement;
 
 			// write in temporary if not first light, so we can add to total diffuse colour
 			if (this._isFirstLight) {
@@ -265,10 +265,10 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentCodePerProbe(vo:away.materials.MethodVO, cubeMapReg:away.materials.ShaderRegisterElement, weightRegister:string, regCache:away.materials.ShaderRegisterCache):string
+		public iGetFragmentCodePerProbe(vo:MethodVO, cubeMapReg:ShaderRegisterElement, weightRegister:string, regCache:ShaderRegisterCache):string
 		{
 			var code:string = "";
-			var t:away.materials.ShaderRegisterElement;
+			var t:ShaderRegisterElement;
 
 			// write in temporary if not first light, so we can add to total diffuse colour
 			if (this._isFirstLight) {
@@ -313,11 +313,11 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentPostLightingCode(vo:away.materials.MethodVO, regCache:away.materials.ShaderRegisterCache, targetReg:away.materials.ShaderRegisterElement):string
+		public iGetFragmentPostLightingCode(vo:MethodVO, regCache:ShaderRegisterCache, targetReg:ShaderRegisterElement):string
 		{
 			var code:string = "";
-			var albedo:away.materials.ShaderRegisterElement;
-			var cutOffReg:away.materials.ShaderRegisterElement;
+			var albedo:ShaderRegisterElement;
+			var cutOffReg:ShaderRegisterElement;
 
 			// incorporate input from ambient
 			if (vo.numLights > 0) {
@@ -410,7 +410,7 @@ module away.materials
 		 * @param vo The MethodVO object for which the compilation is currently happening.
 		 * @param regCache The register cache the compiler is currently using for the register management.
 		 */
-		public pApplyShadow(vo:away.materials.MethodVO, regCache:away.materials.ShaderRegisterCache):string
+		public pApplyShadow(vo:MethodVO, regCache:ShaderRegisterCache):string
 		{
 
 			//TODO: AGAL <> GLSL
@@ -421,7 +421,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:away.materials.MethodVO, stageGLProxy:away.managers.StageGLProxy)
+		public iActivate(vo:MethodVO, stageGLProxy:away.managers.StageGLProxy)
 		{
 			if (this._useTexture) {
 				stageGLProxy._iContextGL.setSamplerStateAt(vo.texturesIndex, vo.repeatTextures? away.displayGL.ContextGLWrapMode.REPEAT : away.displayGL.ContextGLWrapMode.CLAMP, vo.useSmoothTextures? away.displayGL.ContextGLTextureFilter.LINEAR : away.displayGL.ContextGLTextureFilter.NEAREST, vo.useMipmapping? away.displayGL.ContextGLMipFilter.MIPLINEAR : away.displayGL.ContextGLMipFilter.MIPNONE);
@@ -456,12 +456,12 @@ module away.materials
 		/**
 		 * Set internally by the compiler, so the method knows the register containing the shadow calculation.
 		 */
-		public set iShadowRegister(value:away.materials.ShaderRegisterElement)
+		public set iShadowRegister(value:ShaderRegisterElement)
 		{
 			this._shadowRegister = value;
 		}
 
-		public setIShadowRegister(value:away.materials.ShaderRegisterElement)
+		public setIShadowRegister(value:ShaderRegisterElement)
 		{
 			this._shadowRegister = value;
 		}

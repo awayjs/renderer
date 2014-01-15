@@ -6,7 +6,7 @@ module away.materials
 	 * DitheredShadowMapMethod provides a softened shadowing technique by bilinearly interpolating shadow comparison
 	 * results of neighbouring pixels.
 	 */
-	export class FilteredShadowMapMethod extends away.materials.SimpleShadowMapMethodBase
+	export class FilteredShadowMapMethod extends SimpleShadowMapMethodBase
 	{
 		/**
 		 * Creates a new BasicDiffuseMethod object.
@@ -36,16 +36,16 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public _pGetPlanarFragmentCode(vo:MethodVO, regCache:away.materials.ShaderRegisterCache, targetReg:away.materials.ShaderRegisterElement):string
+		public _pGetPlanarFragmentCode(vo:MethodVO, regCache:ShaderRegisterCache, targetReg:ShaderRegisterElement):string
 		{
-			var depthMapRegister:away.materials.ShaderRegisterElement = regCache.getFreeTextureReg();
-			var decReg:away.materials.ShaderRegisterElement = regCache.getFreeFragmentConstant();
-			var dataReg:away.materials.ShaderRegisterElement = regCache.getFreeFragmentConstant();
+			var depthMapRegister:ShaderRegisterElement = regCache.getFreeTextureReg();
+			var decReg:ShaderRegisterElement = regCache.getFreeFragmentConstant();
+			var dataReg:ShaderRegisterElement = regCache.getFreeFragmentConstant();
 			// TODO: not used
 			dataReg = dataReg;
-			var customDataReg:away.materials.ShaderRegisterElement = regCache.getFreeFragmentConstant();
-			var depthCol:away.materials.ShaderRegisterElement = regCache.getFreeFragmentVectorTemp();
-			var uvReg:away.materials.ShaderRegisterElement;
+			var customDataReg:ShaderRegisterElement = regCache.getFreeFragmentConstant();
+			var depthCol:ShaderRegisterElement = regCache.getFreeFragmentVectorTemp();
+			var uvReg:ShaderRegisterElement;
 			var code:string = "";
 			vo.fragmentConstantsIndex = decReg.index*4;
 
@@ -97,14 +97,14 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public _iGetCascadeFragmentCode(vo:MethodVO, regCache:away.materials.ShaderRegisterCache, decodeRegister:away.materials.ShaderRegisterElement, depthTexture:away.materials.ShaderRegisterElement, depthProjection:away.materials.ShaderRegisterElement, targetRegister:away.materials.ShaderRegisterElement):string
+		public _iGetCascadeFragmentCode(vo:MethodVO, regCache:ShaderRegisterCache, decodeRegister:ShaderRegisterElement, depthTexture:ShaderRegisterElement, depthProjection:ShaderRegisterElement, targetRegister:ShaderRegisterElement):string
 		{
 			var code:string;
-			var dataReg:away.materials.ShaderRegisterElement = regCache.getFreeFragmentConstant();
+			var dataReg:ShaderRegisterElement = regCache.getFreeFragmentConstant();
 			vo.secondaryFragmentConstantsIndex = dataReg.index*4;
-			var temp:away.materials.ShaderRegisterElement = regCache.getFreeFragmentVectorTemp();
+			var temp:ShaderRegisterElement = regCache.getFreeFragmentVectorTemp();
 			regCache.addFragmentTempUsages(temp, 1);
-			var predicate:away.materials.ShaderRegisterElement = regCache.getFreeFragmentVectorTemp();
+			var predicate:ShaderRegisterElement = regCache.getFreeFragmentVectorTemp();
 			regCache.addFragmentTempUsages(predicate, 1);
 
 			code = "tex " + temp + ", " + depthProjection + ", " + depthTexture + " <2d, nearest, clamp>\n" + "dp4 " + temp + ".z, " + temp + ", " + decodeRegister + "\n" + "slt " + predicate + ".x, " + depthProjection + ".z, " + temp + ".z\n" +

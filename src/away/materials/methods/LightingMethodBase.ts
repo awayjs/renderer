@@ -12,7 +12,7 @@ module away.materials
 	 * LightingMethodBase provides an abstract base method for shading methods that uses lights.
 	 * Used for diffuse and specular shaders only.
 	 */
-	export class LightingMethodBase extends away.materials.ShadingMethodBase
+	export class LightingMethodBase extends ShadingMethodBase
 	{
 		/**
 		 * A method that is exposed to wrappers in case the strength needs to be controlled
@@ -34,7 +34,7 @@ module away.materials
 		 * @param regCache The register cache used during the compilation.
 		 * @private
 		 */
-		public iGetFragmentPreLightingCode(vo:away.materials.MethodVO, regCache:away.materials.ShaderRegisterCache):string
+		public iGetFragmentPreLightingCode(vo:MethodVO, regCache:ShaderRegisterCache):string
 		{
 			return "";
 		}
@@ -47,7 +47,7 @@ module away.materials
 		 * @param lightColReg The register containing the light colour.
 		 * @param regCache The register cache used during the compilation.
 		 */
-		public iGetFragmentCodePerLight(vo:away.materials.MethodVO, lightDirReg:away.materials.ShaderRegisterElement, lightColReg:away.materials.ShaderRegisterElement, regCache:away.materials.ShaderRegisterCache):string
+		public iGetFragmentCodePerLight(vo:MethodVO, lightDirReg:ShaderRegisterElement, lightColReg:ShaderRegisterElement, regCache:ShaderRegisterCache):string
 		{
 			return "";
 		}
@@ -60,7 +60,7 @@ module away.materials
 		 * @param weightRegister A string representation of the register + component containing the current weight
 		 * @param regCache The register cache providing any necessary registers to the shader
 		 */
-		public iGetFragmentCodePerProbe(vo:away.materials.MethodVO, cubeMapReg:away.materials.ShaderRegisterElement, weightRegister:string, regCache:away.materials.ShaderRegisterCache):string
+		public iGetFragmentCodePerProbe(vo:MethodVO, cubeMapReg:ShaderRegisterElement, weightRegister:string, regCache:ShaderRegisterCache):string
 		{
 			return "";
 		}
@@ -73,7 +73,7 @@ module away.materials
 		 * @param targetReg The register containing the final shading output.
 		 * @private
 		 */
-		public iGetFragmentPostLightingCode(vo:away.materials.MethodVO, regCache:away.materials.ShaderRegisterCache, targetReg:away.materials.ShaderRegisterElement):string
+		public iGetFragmentPostLightingCode(vo:MethodVO, regCache:ShaderRegisterCache, targetReg:ShaderRegisterElement):string
 		{
 			return "";
 		}

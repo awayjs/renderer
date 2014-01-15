@@ -6,7 +6,7 @@ module away.materials
 	/**
 	 * ColorMaterial is a single-pass material that uses a flat color as the surface's diffuse reflection value.
 	 */
-	export class ColorMaterial extends away.materials.SinglePassMaterialBase
+	export class ColorMaterial extends SinglePassMaterialBase
 	{
 		private _diffuseAlpha:number = 1;
 

@@ -246,7 +246,7 @@ module examples
 			
 			//setup timer for triggering each particle aniamtor
 			this.fireTimer = new Timer(1000, this.fireObjects.length);
-			this.fireTimer.addEventListener(TimerEvent.TIMER, this.onTimer, this);
+			this.fireTimer.addEventListener(TimerEvent.TIMER, away.utils.Delegate.create(this, this.onTimer));
 			this.fireTimer.start();
 		}
 		
@@ -266,7 +266,7 @@ module examples
 			this.timer = new away.utils.RequestAnimationFrame(this.onEnterFrame, this);
 			this.timer.start();
 
-			away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete, this);
+			away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, away.utils.Delegate.create(this, this.onResourceComplete));
 
 			//plane textures
 			away.library.AssetLibrary.load(new away.net.URLRequest("assets/demos/floor_diffuse.jpg"));
@@ -294,9 +294,9 @@ module examples
 		/**
 		 * Returns an array of active lights in the scene
 		 */
-		private getAllLights():Array
+		private getAllLights():Array<any>
 		{
-			var lights:Array = new Array();
+			var lights:Array<any> = new Array<any>();
 			
 			lights.push(this.directionalLight);
 

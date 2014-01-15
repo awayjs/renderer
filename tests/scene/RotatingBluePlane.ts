@@ -40,7 +40,7 @@ class RotatingBluePlane extends away.events.EventDispatcher
 	{
 		var urlRequest:away.net.URLRequest = new away.net.URLRequest( "130909wall_big.png" );
 		var imgLoader:away.net.IMGLoader = new away.net.IMGLoader();
-		imgLoader.addEventListener( away.events.Event.COMPLETE, this.imageCompleteHandler, this );
+		imgLoader.addEventListener( away.events.Event.COMPLETE, away.utils.Delegate.create(this, this.imageCompleteHandler) );
 		imgLoader.load( urlRequest );
 	}
 	
@@ -49,13 +49,13 @@ class RotatingBluePlane extends away.events.EventDispatcher
         var imageLoader:away.net.IMGLoader = <away.net.IMGLoader> e.target
 		this._image = imageLoader.image;
 		
-		this._stage.stageGLs[0].addEventListener( away.events.Event.CONTEXTGL_CREATE, this.onContextGLCreateHandler, this );
+		this._stage.stageGLs[0].addEventListener( away.events.Event.CONTEXTGL_CREATE, away.utils.Delegate.create(this, this.onContextGLCreateHandler) );
 		this._stage.stageGLs[0].requestContext();
 	}
 	
 	private onContextGLCreateHandler( e )
 	{
-		this._stage.stageGLs[0].removeEventListener( away.events.Event.CONTEXTGL_CREATE, this.onContextGLCreateHandler, this );
+		this._stage.stageGLs[0].removeEventListener( away.events.Event.CONTEXTGL_CREATE, away.utils.Delegate.create(this, this.onContextGLCreateHandler) );
 		
 		var stageGL: away.display.StageGL = <away.display.StageGL> e.target;
 		this._contextGL = stageGL.contextGL;

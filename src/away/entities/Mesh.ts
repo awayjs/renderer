@@ -1,19 +1,37 @@
 ﻿///<reference path="../_definitions.ts"/>
+
 module away.entities
 {
+	import Delegate						= away.utils.Delegate;
+
+	import IAnimator					= away.animators.IAnimator;
+	import ISubGeometry					= away.base.ISubGeometry;
+	import SubGeometry					= away.base.SubGeometry;
+	import SubMesh						= away.base.SubMesh;
+	import Geometry						= away.base.Geometry;
+	import GeometryEvent				= away.events.GeometryEvent;
+	import DefaultMaterialManager		= away.materials.DefaultMaterialManager;
+	import MaterialBase					= away.materials.MaterialBase;
+	import EntityNode					= away.partition.EntityNode;
+	import MeshNode						= away.partition.MeshNode;
+
 	/**
 	 * Mesh is an instance of a Geometry, augmenting it with a presence in the scene graph, a material, and an animation
 	 * state. It consists out of SubMeshes, which in turn correspond to SubGeometries. SubMeshes allow different parts
 	 * of the geometry to be assigned different materials.
 	 */
-	export class Mesh extends away.entities.Entity implements away.base.IMaterialOwner, away.library.IAsset
+	export class Mesh extends Entity implements away.base.IMaterialOwner, away.library.IAsset
 	{
-		private _subMeshes:away.base.SubMesh[];//:Vector.<SubMesh>;
-		private _geometry:away.base.Geometry;//Geometry;
-		private _material:away.materials.MaterialBase;
-		private _animator:away.animators.IAnimator;
+		private _subMeshes:Array<SubMesh>;
+		private _geometry:Geometry;
+		private _material:MaterialBase;
+		private _animator:IAnimator;
 		private _castsShadows:boolean = true;
 		private _shareAnimationGeometry:boolean = true;
+
+		private _onGeometryBoundsInvalidDelegate:Function;
+		private _onSubGeometryAddedDelegate:Function;
+		private _onSubGeometryRemovedDelegate:Function;
 
 		/**
 		 * Create a new Mesh object.
@@ -21,21 +39,25 @@ module away.entities
 		 * @param geometry                    The geometry used by the mesh that provides it with its shape.
 		 * @param material    [optional]        The material with which to render the Mesh.
 		 */
-		constructor(geometry:away.base.Geometry, material:away.materials.MaterialBase = null)
+		constructor(geometry:Geometry, material:MaterialBase = null)
 		{
 			super();
 
-			this._subMeshes = new Array<away.base.SubMesh>();//Vector.<SubMesh>();
+			this._subMeshes = new Array<SubMesh>();
 
-			//this.geometry = geometry || new Geometry(); //this should never happen, but if people insist on trying to create their meshes before they have geometry to fill it, it becomes necessary
+			this._onGeometryBoundsInvalidDelegate = Delegate.create(this, this.onGeometryBoundsInvalid);
+			this._onSubGeometryAddedDelegate = Delegate.create(this, this.onSubGeometryAdded);
+			this._onSubGeometryRemovedDelegate = Delegate.create(this, this.onSubGeometryRemoved);
+
+			//this should never happen, but if people insist on trying to create their meshes before they have geometry to fill it, it becomes necessary
 			if (geometry == null) {
-				this.geometry = new away.base.Geometry();
+				this.geometry = new Geometry();
 			} else {
 				this.geometry = geometry;
 			}
 
 			if (material == null) {
-				this.material = away.materials.DefaultMaterialManager.getDefaultMaterial(this);
+				this.material = DefaultMaterialManager.getDefaultMaterial(this);
 			} else {
 				this.material = material;
 			}
@@ -53,9 +75,9 @@ module away.entities
 			return away.library.AssetType.MESH;
 		}
 
-		private onGeometryBoundsInvalid(event:away.events.GeometryEvent)
+		private onGeometryBoundsInvalid(event:GeometryEvent)
 		{
-			this.pInvalidateBounds();//this.invalidateBounds();
+			this.pInvalidateBounds();
 
 		}
 
@@ -77,13 +99,13 @@ module away.entities
 		 */
 
 
-		public get animator():away.animators.IAnimator
+		public get animator():IAnimator
 		{
 			return this._animator;
 		}
 
 
-		public set animator(value:away.animators.IAnimator)
+		public set animator(value:IAnimator)
 		{
 			if (this._animator)
 				this._animator.removeOwner(this);
@@ -115,20 +137,20 @@ module away.entities
 		/**
 		 * The geometry used by the mesh that provides it with its shape.
 		 */
-		public get geometry():away.base.Geometry
+		public get geometry():Geometry
 		{
 			return this._geometry;
 		}
 
-		public set geometry(value:away.base.Geometry)
+		public set geometry(value:Geometry)
 		{
 			var i:number;
 
 			if (this._geometry) {
 
-				this._geometry.removeEventListener(away.events.GeometryEvent.BOUNDS_INVALID, this.onGeometryBoundsInvalid, this);
-				this._geometry.removeEventListener(away.events.GeometryEvent.SUB_GEOMETRY_ADDED, this.onSubGeometryAdded, this);
-				this._geometry.removeEventListener(away.events.GeometryEvent.SUB_GEOMETRY_REMOVED, this.onSubGeometryRemoved, this);
+				this._geometry.removeEventListener(GeometryEvent.BOUNDS_INVALID, this._onGeometryBoundsInvalidDelegate);
+				this._geometry.removeEventListener(GeometryEvent.SUB_GEOMETRY_ADDED, this._onSubGeometryAddedDelegate);
+				this._geometry.removeEventListener(GeometryEvent.SUB_GEOMETRY_REMOVED, this._onSubGeometryRemovedDelegate);
 
 				for (i = 0; i < this._subMeshes.length; ++i) {
 
@@ -143,12 +165,11 @@ module away.entities
 
 			if (this._geometry) {
 
-				this._geometry.addEventListener(away.events.GeometryEvent.BOUNDS_INVALID, this.onGeometryBoundsInvalid, this);
-				this._geometry.addEventListener(away.events.GeometryEvent.SUB_GEOMETRY_ADDED, this.onSubGeometryAdded, this);
-				this._geometry.addEventListener(away.events.GeometryEvent.SUB_GEOMETRY_REMOVED, this.onSubGeometryRemoved, this);
+				this._geometry.addEventListener(GeometryEvent.BOUNDS_INVALID, this._onGeometryBoundsInvalidDelegate);
+				this._geometry.addEventListener(GeometryEvent.SUB_GEOMETRY_ADDED, this._onSubGeometryAddedDelegate);
+				this._geometry.addEventListener(GeometryEvent.SUB_GEOMETRY_REMOVED, this._onSubGeometryRemovedDelegate);
 
-				//var subGeoms:Vector.<ISubGeometry> = _geometry.subGeometries;
-				var subGeoms:away.base.ISubGeometry[] = this._geometry.subGeometries;//
+				var subGeoms:Array<ISubGeometry> = this._geometry.subGeometries;
 
 				for (i = 0; i < subGeoms.length; ++i) {
 
@@ -203,7 +224,7 @@ module away.entities
 		 * The SubMeshes out of which the Mesh consists. Every SubMesh can be assigned a material to override the Mesh's
 		 * material.
 		 */
-		public get subMeshes():away.base.SubMesh[]//Vector.<SubMesh>
+		public get subMeshes():Array<SubMesh>
 		{
 			// Since this getter is invoked every iteration of the render loop, and
 			// the geometry construct could affect the sub-meshes, the geometry is
@@ -232,18 +253,9 @@ module away.entities
 		 */
 		public clearAnimationGeometry()
 		{
-
-			away.Debug.throwPIR("away.entities.Mesh", "away.entities.Mesh", "Missing Dependency: IAnimator");
-
-			/* TODO: Missing Dependency: IAnimator
 			 var len:number = this._subMeshes.length;
 			 for (var i:number = 0; i < len; ++i)
-			 {
-
-			 this._subMeshes[i].animationSubGeometry = null;
-
-			 }
-			 */
+				 this._subMeshes[i].animationSubGeometry = null;
 		}
 
 		/**
@@ -265,16 +277,8 @@ module away.entities
 		{
 			this.disposeWithChildren();
 
-			away.Debug.throwPIR("away.entities.Mesh", "away.entities.Mesh", "Missing Dependency: IAnimator");
-
-			/* TODO: Missing Dependency: IAnimator
 			 if (this._animator)
-			 {
-
-			 this._animator.dispose();
-
-			 }
-			 */
+			 	this._animator.dispose();
 		}
 
 		/**
@@ -293,9 +297,9 @@ module away.entities
 		 * var clone : Mesh = new Mesh(original.geometry, original.material);
 		 * </code>
 		 */
-		public clone():away.entities.Mesh
+		public clone():Mesh
 		{
-			var clone:away.entities.Mesh = new away.entities.Mesh(this._geometry, this._material);
+			var clone:Mesh = new Mesh(this._geometry, this._material);
 			clone.transform = this.transform;
 			clone.pivotPoint = this.pivotPoint;
 			clone.partition = this.partition;
@@ -342,21 +346,21 @@ module away.entities
 		public pUpdateBounds()
 		{
 			this._pBounds.fromGeometry(this._geometry);
-			this._pBoundsInvalid = false;//this._boundsInvalid = false;
+			this._pBoundsInvalid = false;
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public pCreateEntityPartitionNode():away.partition.EntityNode
+		public pCreateEntityPartitionNode():EntityNode
 		{
-			return new away.partition.MeshNode(this);
+			return new MeshNode(this);
 		}
 
 		/**
 		 * Called when a SubGeometry was added to the Geometry.
 		 */
-		private onSubGeometryAdded(event:away.events.GeometryEvent)
+		private onSubGeometryAdded(event:GeometryEvent)
 		{
 			this.addSubMesh(event.subGeometry);
 		}
@@ -364,10 +368,10 @@ module away.entities
 		/**
 		 * Called when a SubGeometry was removed from the Geometry.
 		 */
-		private onSubGeometryRemoved(event:away.events.GeometryEvent)
+		private onSubGeometryRemoved(event:GeometryEvent)
 		{
-			var subMesh:away.base.SubMesh;
-			var subGeom:away.base.ISubGeometry = event.subGeometry;
+			var subMesh:SubMesh;
+			var subGeom:ISubGeometry = event.subGeometry;
 			var len:number = this._subMeshes.length;
 			var i:number;
 
@@ -401,10 +405,10 @@ module away.entities
 		/**
 		 * Adds a SubMesh wrapping a SubGeometry.
 		 */
-		private addSubMesh(subGeometry:away.base.ISubGeometry)
+		private addSubMesh(subGeometry:ISubGeometry)
 		{
 
-			var subMesh:away.base.SubMesh = new away.base.SubMesh(subGeometry, this, null);
+			var subMesh:SubMesh = new SubMesh(subGeometry, this, null);
 			var len:number = this._subMeshes.length;
 
 			subMesh._iIndex = len;
@@ -414,7 +418,7 @@ module away.entities
 			this.pInvalidateBounds();
 		}
 
-		public getSubMeshForSubGeometry(subGeometry:away.base.SubGeometry):away.base.SubMesh
+		public getSubMeshForSubGeometry(subGeometry:SubGeometry):SubMesh
 		{
 			return this._subMeshes[this._geometry.subGeometries.indexOf(subGeometry)];
 		}
@@ -426,7 +430,7 @@ module away.entities
 			this._iPickingCollisionVO.renderable = null;
 			var len:number = this._subMeshes.length;
 			for (var i:number = 0; i < len; ++i) {
-				var subMesh:away.base.SubMesh = this._subMeshes[i];
+				var subMesh:SubMesh = this._subMeshes[i];
 
 				//var ignoreFacesLookingAway:boolean = _material ? !_material.bothSides : true;
 

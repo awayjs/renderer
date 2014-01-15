@@ -1,6 +1,7 @@
+///<reference path="../../../build/Away3D.next.d.ts" />
+//<reference path="../../../src/Away3D.ts" />
 var demos;
 (function (demos) {
-    ///<reference path="../../../build/Away3D.next.d.ts" />
     (function (lights) {
         var TorusLight = (function () {
             function TorusLight() {
@@ -20,7 +21,7 @@ var demos;
 
                 var imgLoader = new away.net.IMGLoader();
 
-                imgLoader.addEventListener(away.events.Event.COMPLETE, this.imageCompleteHandler, this);
+                imgLoader.addEventListener(away.events.Event.COMPLETE, away.utils.Delegate.create(this, this.imageCompleteHandler));
                 imgLoader.load(urlRequest);
             };
 

@@ -216,6 +216,8 @@ module away.containers
 		private _loadingSessions:Array<away.net.AssetLoader>;
 		private _useAssetLib:boolean;
 		private _assetLibId:string;
+		private _onResourceRetrievedDelegate:Function;
+		private _onAssetCompleteDelegate:Function;
 
 		constructor(useAssetLibrary:boolean = true, assetLibraryId:string = null)
 		{
@@ -224,6 +226,9 @@ module away.containers
 			this._loadingSessions = new Array<away.net.AssetLoader>();
 			this._useAssetLib = useAssetLibrary;
 			this._assetLibId = assetLibraryId;
+
+			this._onResourceRetrievedDelegate = away.utils.Delegate.create(this, this.onResourceRetrieved);
+			this._onAssetCompleteDelegate = away.utils.Delegate.create(this, this.onAssetComplete);
 		}
 
 		/**
@@ -248,8 +253,8 @@ module away.containers
 				token = loader.load(req, context, ns, parser);
 			}
 
-			token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceRetrieved, this);
-			token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+			token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this._onResourceRetrievedDelegate);
+			token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this._onAssetCompleteDelegate);
 
 			// Error are handled separately (see documentation for addErrorHandler)
 			token._iLoader._iAddErrorHandler(this.onDependencyRetrievingError);
@@ -280,8 +285,8 @@ module away.containers
 				token = loader.loadData(data, '', context, ns, parser);
 			}
 
-			token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceRetrieved, this);
-			token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+			token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this._onResourceRetrievedDelegate);
+			token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this._onAssetCompleteDelegate);
 
 			// Error are handled separately (see documentation for addErrorHandler)
 			token._iLoader._iAddErrorHandler(this.onDependencyRetrievingError);
@@ -342,8 +347,8 @@ module away.containers
 
 		private removeListeners(dispatcher:away.events.EventDispatcher):void
 		{
-			dispatcher.removeEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceRetrieved, this);
-			dispatcher.removeEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+			dispatcher.removeEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this._onResourceRetrievedDelegate);
+			dispatcher.removeEventListener(away.events.AssetEvent.ASSET_COMPLETE, this._onAssetCompleteDelegate);
 		}
 
 		private onAssetComplete(ev:away.events.AssetEvent):void
@@ -390,7 +395,7 @@ module away.containers
 		 */
 		private onDependencyRetrievingError(event:away.events.LoaderEvent):boolean
 		{
-			if (this.hasEventListener(away.events.LoaderEvent.LOAD_ERROR, this.onDependencyRetrievingError, this)) {
+			if (this.hasEventListener(away.events.LoaderEvent.LOAD_ERROR, this.onDependencyRetrievingError)) {
 
 				this.dispatchEvent(event);
 				return true;
@@ -408,7 +413,7 @@ module away.containers
 		 */
 		private onDependencyRetrievingParseError(event:away.events.ParserEvent):boolean
 		{
-			if (this.hasEventListener(away.events.ParserEvent.PARSE_ERROR, this.onDependencyRetrievingParseError, this)) {
+			if (this.hasEventListener(away.events.ParserEvent.PARSE_ERROR, this.onDependencyRetrievingParseError)) {
 
 				this.dispatchEvent(event);
 				return true;

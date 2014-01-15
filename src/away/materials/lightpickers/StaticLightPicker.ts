@@ -2,13 +2,13 @@
 
 module away.materials
 {
-	//import flash.events.Event;
+	import Delegate					= away.utils.Delegate;
 
-	//import away3d.events.LightEvent;
-	//import away3d.lights.DirectionalLight;
-	//import away3d.lights.LightBase;
-	//import away3d.lights.LightProbe;
-	//import away3d.lights.PointLight;
+	import LightEvent				= away.events.LightEvent;
+	import DirectionalLight			= away.lights.DirectionalLight;
+	import LightBase				= away.lights.LightBase;
+	import LightProbe				= away.lights.LightProbe;
+	import PointLight				= away.lights.PointLight;
 
 	/**
 	 * StaticLightPicker is a light picker that provides a static set of lights. The lights can be reassigned, but
@@ -17,7 +17,8 @@ module away.materials
 	 */
 	export class StaticLightPicker extends LightPickerBase
 	{
-		private _lights:any[]; // not typed in AS3 - should it be lightbase ?
+		private _lights:Array<any>;
+		private _onCastShadowChangeDelegate:Function;
 
 		/**
 		 * Creates a new StaticLightPicker object.
@@ -26,6 +27,9 @@ module away.materials
 		constructor(lights)
 		{
 			super();
+
+			this._onCastShadowChangeDelegate = Delegate.create(this, this.onCastShadowChange);
+
 			this.lights = lights;
 		}
 
@@ -37,44 +41,44 @@ module away.materials
 			return this._lights;
 		}
 
-		public set lights(value:any[])
+		public set lights(value:Array<any>)
 		{
 			var numPointLights:number = 0;
 			var numDirectionalLights:number = 0;
 			var numCastingPointLights:number = 0;
 			var numCastingDirectionalLights:number = 0;
 			var numLightProbes:number = 0;
-			var light:away.lights.LightBase;
+			var light:LightBase;
 
 			if (this._lights)
 				this.clearListeners();
 
 			this._lights = value;
 			this._pAllPickedLights = value;
-			this._pPointLights = new Array<away.lights.PointLight>();
-			this._pCastingPointLights = new Array<away.lights.PointLight>();
-			this._pDirectionalLights = new Array<away.lights.DirectionalLight>();
-			this._pCastingDirectionalLights = new Array<away.lights.DirectionalLight>();
-			this._pLightProbes = new Array<away.lights.LightProbe>();
+			this._pPointLights = new Array<PointLight>();
+			this._pCastingPointLights = new Array<PointLight>();
+			this._pDirectionalLights = new Array<DirectionalLight>();
+			this._pCastingDirectionalLights = new Array<DirectionalLight>();
+			this._pLightProbes = new Array<LightProbe>();
 
 			var len:number = value.length;
 
 			for (var i:number = 0; i < len; ++i) {
 				light = value[i];
-				light.addEventListener(away.events.LightEvent.CASTS_SHADOW_CHANGE, this.onCastShadowChange, this);
+				light.addEventListener(LightEvent.CASTS_SHADOW_CHANGE, this._onCastShadowChangeDelegate);
 
-				if (light instanceof away.lights.PointLight) {
+				if (light instanceof PointLight) {
 					if (light.castsShadows)
-						this._pCastingPointLights[numCastingPointLights++] = <away.lights.PointLight> light; else
-						this._pPointLights[numPointLights++] = <away.lights.PointLight> light;
+						this._pCastingPointLights[numCastingPointLights++] = <PointLight> light; else
+						this._pPointLights[numPointLights++] = <PointLight> light;
 
-				} else if (light instanceof away.lights.DirectionalLight) {
+				} else if (light instanceof DirectionalLight) {
 					if (light.castsShadows)
-						this._pCastingDirectionalLights[numCastingDirectionalLights++] = <away.lights.DirectionalLight> light; else
-						this._pDirectionalLights[numDirectionalLights++] = <away.lights.DirectionalLight> light;
+						this._pCastingDirectionalLights[numCastingDirectionalLights++] = <DirectionalLight> light; else
+						this._pDirectionalLights[numDirectionalLights++] = <DirectionalLight> light;
 
-				} else if (light instanceof away.lights.LightProbe) {
-					this._pLightProbes[numLightProbes++] = <away.lights.LightProbe> light;
+				} else if (light instanceof LightProbe) {
+					this._pLightProbes[numLightProbes++] = <LightProbe> light;
 
 				}
 			}
@@ -104,7 +108,7 @@ module away.materials
 		{
 			var len:number = this._lights.length;
 			for (var i:number = 0; i < len; ++i)
-				this._lights[i].removeEventListener(away.events.LightEvent.CASTS_SHADOW_CHANGE, this.onCastShadowChange, this);
+				this._lights[i].removeEventListener(away.events.LightEvent.CASTS_SHADOW_CHANGE, this._onCastShadowChangeDelegate);
 		}
 
 		/**
@@ -115,16 +119,16 @@ module away.materials
 			// TODO: Assign to special caster collections, just append it to the lights in SinglePass
 			// But keep seperated in multipass
 
-			var light:away.lights.LightBase = <away.lights.LightBase > event.target;
+			var light:LightBase = <LightBase> event.target;
 
-			if (light instanceof away.lights.PointLight) {
+			if (light instanceof PointLight) {
 
-				var pl:away.lights.PointLight = <away.lights.PointLight> light;
+				var pl:PointLight = <PointLight> light;
 				this.updatePointCasting(pl);
 
-			} else if (light instanceof away.lights.DirectionalLight) {
+			} else if (light instanceof DirectionalLight) {
 
-				var dl:away.lights.DirectionalLight = <away.lights.DirectionalLight> light;
+				var dl:DirectionalLight = <DirectionalLight> light;
 				this.updateDirectionalCasting(dl);
 
 			}
@@ -135,10 +139,10 @@ module away.materials
 		/**
 		 * Called when a directional light's shadow casting configuration changes.
 		 */
-		private updateDirectionalCasting(light:away.lights.DirectionalLight)
+		private updateDirectionalCasting(light:DirectionalLight)
 		{
 
-			var dl:away.lights.DirectionalLight = <away.lights.DirectionalLight> light;
+			var dl:DirectionalLight = <DirectionalLight> light;
 
 			if (light.castsShadows) {
 				--this._pNumDirectionalLights;
@@ -160,10 +164,10 @@ module away.materials
 		/**
 		 * Called when a point light's shadow casting configuration changes.
 		 */
-		private updatePointCasting(light:away.lights.PointLight)
+		private updatePointCasting(light:PointLight)
 		{
 
-			var pl:away.lights.PointLight = <away.lights.PointLight> light;
+			var pl:PointLight = <PointLight> light;
 
 			if (light.castsShadows) {
 

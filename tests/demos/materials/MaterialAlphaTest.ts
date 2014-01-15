@@ -56,10 +56,10 @@ module demos.materials
             away.library.AssetLibrary.enableParser( away.parsers.OBJParser ) ;
 
             this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/platonic.obj') );
-            this.token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE , this.onResourceComplete , this );
+            this.token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE , away.utils.Delegate.create(this, this.onResourceComplete) );
 
             this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/dots.png') );
-            this.token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE , this.onResourceComplete , this );
+            this.token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE , away.utils.Delegate.create(this, this.onResourceComplete) );
 
             window.onresize = () => this.resize();
 

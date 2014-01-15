@@ -32,6 +32,7 @@ module away.animators
 		private _useCondensedIndices:boolean;
 		private _jointsPerVertex:number /*uint*/;
 		private _activeSkeletonState:ISkeletonAnimationState;
+		private _onTransitionCompleteDelegate:Function;
 
 		/**
 		 * returns the calculated global matrices of the current skeleton pose.
@@ -125,6 +126,8 @@ module away.animators
 				this._globalMatrices[j++] = 1;
 				this._globalMatrices[j++] = 0;
 			}
+
+			this._onTransitionCompleteDelegate = away.utils.Delegate.create(this, this.onTransitionComplete);
 		}
 
 		/**
@@ -157,7 +160,7 @@ module away.animators
 			if (transition && this._pActiveNode) {
 				//setup the transition
 				this._pActiveNode = transition.getAnimationNode(this, this._pActiveNode, this._pAnimationSet.getAnimation(name), this._pAbsoluteTime);
-				this._pActiveNode.addEventListener(AnimationStateEvent.TRANSITION_COMPLETE, this.onTransitionComplete, this);
+				this._pActiveNode.addEventListener(AnimationStateEvent.TRANSITION_COMPLETE, this._onTransitionCompleteDelegate);
 			} else
 				this._pActiveNode = this._pAnimationSet.getAnimation(name);
 
@@ -544,7 +547,7 @@ module away.animators
 		private onTransitionComplete(event:AnimationStateEvent)
 		{
 			if (event.type == AnimationStateEvent.TRANSITION_COMPLETE) {
-				event.animationNode.removeEventListener(AnimationStateEvent.TRANSITION_COMPLETE, this.onTransitionComplete, this);
+				event.animationNode.removeEventListener(AnimationStateEvent.TRANSITION_COMPLETE, this._onTransitionCompleteDelegate);
 				//if this is the current active state transition, revert control to the active node
 				if (this._pActiveState == event.animationState) {
 					this._pActiveNode = this._pAnimationSet.getAnimation(this._pActiveAnimationName);

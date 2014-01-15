@@ -6,10 +6,10 @@ module away.materials
 	export class DefaultMaterialManager
 	{
 		private static _defaultTextureBitmapData:away.display.BitmapData;
-		private static _defaultMaterial:away.materials.TextureMaterial;
+		private static _defaultMaterial:TextureMaterial;
 		private static _defaultTexture:away.textures.BitmapTexture;
 
-		public static getDefaultMaterial(renderable:away.base.IMaterialOwner = null):away.materials.TextureMaterial
+		public static getDefaultMaterial(renderable:away.base.IMaterialOwner = null):TextureMaterial
 		{
 			if (!DefaultMaterialManager._defaultTexture) {
 				DefaultMaterialManager.createDefaultTexture();
@@ -78,7 +78,7 @@ module away.materials
 
 		private static createDefaultMaterial()
 		{
-			DefaultMaterialManager._defaultMaterial = new away.materials.TextureMaterial(DefaultMaterialManager._defaultTexture);
+			DefaultMaterialManager._defaultMaterial = new TextureMaterial(DefaultMaterialManager._defaultTexture);
 			DefaultMaterialManager._defaultMaterial.mipmap = false;
 			DefaultMaterialManager._defaultMaterial.smooth = false;
 			DefaultMaterialManager._defaultMaterial.name = "defaultMaterial";

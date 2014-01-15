@@ -11,10 +11,10 @@ module away.materials
 	 */
 	export class ShaderCompiler
 	{
-		public _pSharedRegisters:away.materials.ShaderRegisterData;// PROTECTED
-		public _pRegisterCache:away.materials.ShaderRegisterCache;// PROTECTED
-		public _pDependencyCounter:away.materials.MethodDependencyCounter; // PROTECTED
-		public _pMethodSetup:away.materials.ShaderMethodSetup;// PROTECTED
+		public _pSharedRegisters:ShaderRegisterData;// PROTECTED
+		public _pRegisterCache:ShaderRegisterCache;// PROTECTED
+		public _pDependencyCounter:MethodDependencyCounter; // PROTECTED
+		public _pMethodSetup:ShaderMethodSetup;// PROTECTED
 
 		private _smooth:boolean;
 		private _repeat:boolean;
@@ -75,8 +75,8 @@ module away.materials
 		 */
 		constructor(profile:string)
 		{
-			this._pSharedRegisters = new away.materials.ShaderRegisterData();
-			this._pDependencyCounter = new away.materials.MethodDependencyCounter();
+			this._pSharedRegisters = new ShaderRegisterData();
+			this._pDependencyCounter = new MethodDependencyCounter();
 			this._pProfile = profile;
 			this.initRegisterCache(profile);
 		}
@@ -140,7 +140,7 @@ module away.materials
 		 */
 		private initRegisterCache(profile:string)
 		{
-			this._pRegisterCache = new away.materials.ShaderRegisterCache(profile);
+			this._pRegisterCache = new ShaderRegisterCache(profile);
 			this._pRegisterCache.vertexAttributesOffset = 1;
 			this._pRegisterCache.reset();
 		}
@@ -212,12 +212,12 @@ module away.materials
 		/**
 		 * The shader method setup object containing the method configuration and their value objects for the material being compiled.
 		 */
-		public get methodSetup():away.materials.ShaderMethodSetup
+		public get methodSetup():ShaderMethodSetup
 		{
 			return this._pMethodSetup;
 		}
 
-		public set methodSetup(value:away.materials.ShaderMethodSetup)
+		public set methodSetup(value:ShaderMethodSetup)
 		{
 			this._pMethodSetup = value;
 		}
@@ -481,7 +481,7 @@ module away.materials
 			this._pDependencyCounter.reset();
 
 
-			var methods:away.materials.MethodVOSet[] = this._pMethodSetup._iMethods;//Vector.<MethodVOSet>
+			var methods:MethodVOSet[] = this._pMethodSetup._iMethods;//Vector.<MethodVOSet>
 			var len:number;
 
 			this.setupAndCountMethodDependencies(this._pMethodSetup._iDiffuseMethod, this._pMethodSetup._iDiffuseMethodVO);
@@ -517,7 +517,7 @@ module away.materials
 		 * @param method The method to count the dependencies for.
 		 * @param methodVO The method's data for this material.
 		 */
-		private setupAndCountMethodDependencies(method:away.materials.ShadingMethodBase, methodVO:away.materials.MethodVO)
+		private setupAndCountMethodDependencies(method:ShadingMethodBase, methodVO:MethodVO)
 		{
 			this.setupMethod(method, methodVO);
 			this._pDependencyCounter.includeMethodVO(methodVO);
@@ -526,7 +526,7 @@ module away.materials
 		/**
 		 * Assigns all prerequisite data for the methods, so we can calculate dependencies for them.
 		 */
-		private setupMethod(method:away.materials.ShadingMethodBase, methodVO:away.materials.MethodVO)
+		private setupMethod(method:ShadingMethodBase, methodVO:MethodVO)
 		{
 			method.iReset();
 			methodVO.reset();
@@ -570,7 +570,7 @@ module away.materials
 				this._pMethodSetup._iColorTransformMethod.iSharedRegisters = this._pSharedRegisters;
 
 
-			var methods:away.materials.MethodVOSet[] = this._pMethodSetup._iMethods;//var methods:Vector.<MethodVOSet> = _pMethodSetup._methods;
+			var methods:MethodVOSet[] = this._pMethodSetup._iMethods;//var methods:Vector.<MethodVOSet> = _pMethodSetup._methods;
 
 			var len:number = methods.length;
 
@@ -631,7 +631,7 @@ module away.materials
 		 */
 		public pUsesLightsForSpecular():boolean
 		{
-			return this._pNumLights > 0 && ( this._specularLightSources & away.materials.LightSources.LIGHTS) != 0;
+			return this._pNumLights > 0 && ( this._specularLightSources & LightSources.LIGHTS) != 0;
 		}
 
 		/**
@@ -639,7 +639,7 @@ module away.materials
 		 */
 		public pUsesLightsForDiffuse():boolean
 		{
-			return this._pNumLights > 0 && ( this._diffuseLightSources & away.materials.LightSources.LIGHTS) != 0;
+			return this._pNumLights > 0 && ( this._diffuseLightSources & LightSources.LIGHTS) != 0;
 		}
 
 		/**
@@ -676,7 +676,7 @@ module away.materials
 			if (this._pMethodSetup._iColorTransformMethod)
 				this._pMethodSetup._iColorTransformMethod.iCleanCompilationData();
 
-			var methods:away.materials.MethodVOSet[] = this._pMethodSetup._iMethods;//var methods:Vector.<MethodVOSet> = _pMethodSetup._methods;
+			var methods:MethodVOSet[] = this._pMethodSetup._iMethods;//var methods:Vector.<MethodVOSet> = _pMethodSetup._methods;
 
 			var len:number = methods.length;
 
@@ -725,7 +725,7 @@ module away.materials
 		 */
 		public pUsesProbesForSpecular():boolean
 		{
-			return this._pNumLightProbes > 0 && (this._specularLightSources & away.materials.LightSources.PROBES) != 0;
+			return this._pNumLightProbes > 0 && (this._specularLightSources & LightSources.PROBES) != 0;
 		}
 
 		/**
@@ -733,7 +733,7 @@ module away.materials
 		 */
 		public pUsesProbesForDiffuse():boolean
 		{
-			return this._pNumLightProbes > 0 && (this._diffuseLightSources & away.materials.LightSources.PROBES) != 0;
+			return this._pNumLightProbes > 0 && (this._diffuseLightSources & LightSources.PROBES) != 0;
 		}
 
 		/**
@@ -741,7 +741,7 @@ module away.materials
 		 */
 		public pUsesProbes():boolean
 		{
-			return this._pNumLightProbes > 0 && ((this._diffuseLightSources | this._specularLightSources) & away.materials.LightSources.PROBES) != 0;
+			return this._pNumLightProbes > 0 && ((this._diffuseLightSources | this._specularLightSources) & LightSources.PROBES) != 0;
 		}
 
 		/**
@@ -940,7 +940,7 @@ module away.materials
 		 */
 		public pUsesLights():boolean
 		{
-			return this._pNumLights > 0 && (this._combinedLightSources & away.materials.LightSources.LIGHTS) != 0;
+			return this._pNumLights > 0 && (this._combinedLightSources & LightSources.LIGHTS) != 0;
 		}
 
 		/**
@@ -948,7 +948,7 @@ module away.materials
 		 */
 		public pCompileMethods()
 		{
-			var methods:away.materials.MethodVOSet[] = this._pMethodSetup._iMethods;//var methods:Vector.<MethodVOSet> = this._pMethodSetup._iMethods;
+			var methods:MethodVOSet[] = this._pMethodSetup._iMethods;//var methods:Vector.<MethodVOSet> = this._pMethodSetup._iMethods;
 
 			var numMethods:number = methods.length;
 			var method:EffectMethodBase;

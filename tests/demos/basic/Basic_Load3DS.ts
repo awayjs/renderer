@@ -166,10 +166,10 @@ module examples
             var assetLoaderContext:away.net.AssetLoaderContext = new away.net.AssetLoaderContext();
             assetLoaderContext.mapUrl("texture.jpg", "assets/demos/soldier_ant.jpg");
 
-            this._loader.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+            this._loader.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, away.utils.Delegate.create(this, this.onAssetComplete));
             this._loader.load(new away.net.URLRequest("assets/demos/soldier_ant.3ds"), assetLoaderContext);
 
-            away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete, this);
+            away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, away.utils.Delegate.create(this, this.onResourceComplete));
             away.library.AssetLibrary.load(new away.net.URLRequest("assets/demos/CoarseRedSand.jpg"));
         }
 

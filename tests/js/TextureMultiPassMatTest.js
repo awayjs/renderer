@@ -1,7 +1,7 @@
+///<reference path="../../../build/Away3D.next.d.ts" />
+//<reference path="../../../src/Away3D.ts" />
 var tests;
 (function (tests) {
-    ///<reference path="../../../build/Away3D.next.d.ts" />
-    //<reference path="../../../src/Away3D.ts" />
     (function (materials) {
         var TextureMultiPassMatTest = (function () {
             function TextureMultiPassMatTest() {
@@ -11,7 +11,7 @@ var tests;
 
                 this.pngLoader = new away.net.IMGLoader();
                 this.pngLoader = new away.net.IMGLoader();
-                this.pngLoader.addEventListener(away.events.Event.COMPLETE, this.pngLoaderComplete, this);
+                this.pngLoader.addEventListener(away.events.Event.COMPLETE, away.utils.Delegate.create(this, this.pngLoaderComplete));
                 this.pngLoader.load(pngURLrq);
             }
             TextureMultiPassMatTest.prototype.pngLoaderComplete = function (e) {

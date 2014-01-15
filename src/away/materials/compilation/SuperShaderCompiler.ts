@@ -8,10 +8,10 @@ module away.materials
 	 * SuperShaderCompiler is a compiler that generates shaders that perform both lighting and "effects" through methods.
 	 * This is used by the single-pass materials.
 	 */
-	export class SuperShaderCompiler extends away.materials.ShaderCompiler
+	export class SuperShaderCompiler extends ShaderCompiler
 	{
-		public _pointLightRegisters:away.materials.ShaderRegisterElement[];//Vector.<ShaderRegisterElement>;
-		public _dirLightRegisters:away.materials.ShaderRegisterElement[];//Vector.<ShaderRegisterElement>;
+		public _pointLightRegisters:ShaderRegisterElement[];//Vector.<ShaderRegisterElement>;
+		public _dirLightRegisters:ShaderRegisterElement[];//Vector.<ShaderRegisterElement>;
 
 		/**
 		 * Creates a new SuperShaderCompiler object.
@@ -29,8 +29,8 @@ module away.materials
 		{
 			super.pInitLightData();
 
-			this._pointLightRegisters = new Array<away.materials.ShaderRegisterElement>(this._pNumPointLights*3);//Vector.<ShaderRegisterElement>(_numPointLights*3, true);
-			this._dirLightRegisters = new Array<away.materials.ShaderRegisterElement>(this._pNumDirectionalLights*3);//Vector.<ShaderRegisterElement>(_numDirectionalLights*3, true);
+			this._pointLightRegisters = new Array<ShaderRegisterElement>(this._pNumPointLights*3);//Vector.<ShaderRegisterElement>(_numPointLights*3, true);
+			this._dirLightRegisters = new Array<ShaderRegisterElement>(this._pNumDirectionalLights*3);//Vector.<ShaderRegisterElement>(_numDirectionalLights*3, true);
 
 
 		}
@@ -51,7 +51,7 @@ module away.materials
 		 */
 		public pCompileNormalCode()
 		{
-			var normalMatrix:away.materials.ShaderRegisterElement[] = new Array<away.materials.ShaderRegisterElement>(3);//Vector.<ShaderRegisterElement> = new Vector.<ShaderRegisterElement>(3, true);
+			var normalMatrix:ShaderRegisterElement[] = new Array<ShaderRegisterElement>(3);//Vector.<ShaderRegisterElement> = new Vector.<ShaderRegisterElement>(3, true);
 
 			this._pSharedRegisters.normalFragment = this._pRegisterCache.getFreeFragmentVectorTemp();
 			this._pRegisterCache.addFragmentTempUsages(this._pSharedRegisters.normalFragment, this._pDependencyCounter.normalDependencies);
@@ -137,11 +137,11 @@ module away.materials
 		 * Compiles the vertex shader code for tangent-space normal maps.
 		 * @param matrix The register containing the scene transformation matrix for normals.
 		 */
-		private compileTangentVertexCode(matrix:away.materials.ShaderRegisterElement[])//Vector.<ShaderRegisterElement>)
+		private compileTangentVertexCode(matrix:ShaderRegisterElement[])//Vector.<ShaderRegisterElement>)
 		{
 			this._pSharedRegisters.tangentVarying = this._pRegisterCache.getFreeVarying();
 			this._pSharedRegisters.bitangentVarying = this._pRegisterCache.getFreeVarying();
-			var temp:away.materials.ShaderRegisterElement = this._pRegisterCache.getFreeVertexVectorTemp();
+			var temp:ShaderRegisterElement = this._pRegisterCache.getFreeVertexVectorTemp();
 
 			//TODO: AGAL <> GLSL
 
@@ -161,9 +161,9 @@ module away.materials
 		 */
 		private compileTangentNormalMapFragmentCode()
 		{
-			var t:away.materials.ShaderRegisterElement;
-			var b:away.materials.ShaderRegisterElement;
-			var n:away.materials.ShaderRegisterElement;
+			var t:ShaderRegisterElement;
+			var b:ShaderRegisterElement;
+			var n:ShaderRegisterElement;
 
 			t = this._pRegisterCache.getFreeFragmentVectorTemp();
 			this._pRegisterCache.addFragmentTempUsages(t, 1);
@@ -212,7 +212,7 @@ module away.materials
 		 */
 		public pCompileViewDirCode()
 		{
-			var cameraPositionReg:away.materials.ShaderRegisterElement = this._pRegisterCache.getFreeVertexConstant();
+			var cameraPositionReg:ShaderRegisterElement = this._pRegisterCache.getFreeVertexConstant();
 
 			this._pSharedRegisters.viewDirVarying = this._pRegisterCache.getFreeVarying();
 			this._pSharedRegisters.viewDirFragment = this._pRegisterCache.getFreeFragmentVectorTemp();
@@ -233,7 +233,7 @@ module away.materials
 		 */
 		public pCompileLightingCode()
 		{
-			var shadowReg:away.materials.ShaderRegisterElement;
+			var shadowReg:ShaderRegisterElement;
 
 			this._pSharedRegisters.shadedTarget = this._pRegisterCache.getFreeFragmentVectorTemp();
 			this._pRegisterCache.addFragmentTempUsages(this._pSharedRegisters.shadedTarget, 1);
@@ -491,7 +491,7 @@ module away.materials
 		{
 			var weightReg:string;
 			var weightComponents = [ ".x", ".y", ".z", ".w" ];
-			var weightRegisters:away.materials.ShaderRegisterElement[] = new Array<away.materials.ShaderRegisterElement>();//Vector.<ShaderRegisterElement> = new Vector.<ShaderRegisterElement>();
+			var weightRegisters:ShaderRegisterElement[] = new Array<ShaderRegisterElement>();//Vector.<ShaderRegisterElement> = new Vector.<ShaderRegisterElement>();
 			var i:number;
 			var texReg:ShaderRegisterElement;
 			var addSpec:boolean = this._usingSpecularMethod && this.pUsesProbesForSpecular();

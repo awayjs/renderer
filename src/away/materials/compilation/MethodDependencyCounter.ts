@@ -62,7 +62,7 @@ module away.materials
 		 * Increases dependency counters for the named registers listed as required by the given MethodVO.
 		 * @param methodVO the MethodVO object for which to include dependencies.
 		 */
-		public includeMethodVO(methodVO:away.materials.MethodVO)
+		public includeMethodVO(methodVO:MethodVO)
 		{
 			if (methodVO.needsProjection) {
 
@@ -196,7 +196,7 @@ module away.materials
 			}
 
 
-			if (this._numPointLights > 0 && (this._lightSourceMask & away.materials.LightSources.LIGHTS)) {
+			if (this._numPointLights > 0 && (this._lightSourceMask & LightSources.LIGHTS)) {
 				++this._globalPosDependencies;
 
 				if (fragmentLights) {

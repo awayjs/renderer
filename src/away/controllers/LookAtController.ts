@@ -8,9 +8,14 @@ module away.controllers
 		public _pLookAtObject:away.containers.ObjectContainer3D;
 		public _pOrigin:away.geom.Vector3D = new away.geom.Vector3D(0.0, 0.0, 0.0);
 
+		private _onLookAtObjectChangedDelegate:Function;
+
 		constructor(targetObject:away.entities.Entity = null, lookAtObject:away.containers.ObjectContainer3D = null)
 		{
 			super(targetObject);
+
+			this._onLookAtObjectChangedDelegate = away.utils.Delegate.create(this, this.onLookAtObjectChanged);
+
 			if (lookAtObject) {
 				this.lookAtObject = lookAtObject;
 			} else {
@@ -26,7 +31,7 @@ module away.controllers
 		public set lookAtPosition(val:away.geom.Vector3D)
 		{
 			if (this._pLookAtObject) {
-				this._pLookAtObject.removeEventListener(away.events.Object3DEvent.SCENETRANSFORM_CHANGED, this.onLookAtObjectChanged, this);
+				this._pLookAtObject.removeEventListener(away.events.Object3DEvent.SCENETRANSFORM_CHANGED, this._onLookAtObjectChangedDelegate);
 				this._pLookAtObject = null;
 			}
 
@@ -50,12 +55,12 @@ module away.controllers
 			}
 
 			if (this._pLookAtObject) {
-				this._pLookAtObject.removeEventListener(away.events.Object3DEvent.SCENETRANSFORM_CHANGED, this.onLookAtObjectChanged, this);
+				this._pLookAtObject.removeEventListener(away.events.Object3DEvent.SCENETRANSFORM_CHANGED, this._onLookAtObjectChangedDelegate);
 			}
 			this._pLookAtObject = val;
 
 			if (this._pLookAtObject) {
-				this._pLookAtObject.addEventListener(away.events.Object3DEvent.SCENETRANSFORM_CHANGED, this.onLookAtObjectChanged, this);
+				this._pLookAtObject.addEventListener(away.events.Object3DEvent.SCENETRANSFORM_CHANGED, this._onLookAtObjectChangedDelegate);
 			}
 
 			this.pNotifyUpdate();

@@ -26,7 +26,7 @@ module tests.materials
 
             this.pngLoader = new away.net.IMGLoader();
             this.pngLoader          = new away.net.IMGLoader();
-            this.pngLoader.addEventListener( away.events.Event.COMPLETE , this.pngLoaderComplete , this );
+            this.pngLoader.addEventListener( away.events.Event.COMPLETE , away.utils.Delegate.create(this, this.pngLoaderComplete) );
             this.pngLoader.load( pngURLrq );
 
         }

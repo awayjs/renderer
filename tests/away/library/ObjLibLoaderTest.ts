@@ -26,8 +26,8 @@ module tests.library {
             away.library.AssetLibrary.enableParser( away.parsers.OBJParser ) ;
 
             this.token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/t800.obj') );
-            this.token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE , this.onResourceComplete , this );
-            this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE , this.onAssetComplete, this );
+            this.token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE , away.utils.Delegate.create(this, this.onResourceComplete) );
+            this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE , away.utils.Delegate.create(this, this.onAssetComplete) );
 
         }
 

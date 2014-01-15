@@ -1,6 +1,7 @@
+///<reference path="../../../build/Away3D.next.d.ts" />
+//<reference path="../../../src/Away3D.ts" />
 var demos;
 (function (demos) {
-    ///<reference path="../../../build/Away3D.next.d.ts" />
     (function (cubes) {
         var CubeDemo = (function () {
             function CubeDemo() {
@@ -24,7 +25,7 @@ var demos;
             CubeDemo.prototype.loadResources = function () {
                 var urlRequest = new away.net.URLRequest("assets/130909wall_big.png");
                 var imgLoader = new away.net.IMGLoader();
-                imgLoader.addEventListener(away.events.Event.COMPLETE, this.imageCompleteHandler, this);
+                imgLoader.addEventListener(away.events.Event.COMPLETE, away.utils.Delegate.create(this, this.imageCompleteHandler));
                 imgLoader.load(urlRequest);
             };
 

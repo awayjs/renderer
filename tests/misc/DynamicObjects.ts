@@ -21,7 +21,7 @@ class TimerTest
         this.oneSecondTimer = new IamATimerClass( );
 
         this.oneSecondTimer.delay = 1000;
-        this.oneSecondTimer.addEventListener(away.events.TimerEvent.TIMER , this.onSecTimerEvent , this );
+        this.oneSecondTimer.addEventListener(away.events.TimerEvent.TIMER , away.utils.Delegate.create(this, this.onSecTimerEvent) );
         this.oneSecondTimer.start();
 
 

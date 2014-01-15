@@ -6,7 +6,7 @@ module away.materials
 	/**
 	 * EnvMapMethod provides a material method to perform reflection mapping using cube maps.
 	 */
-	export class EnvMapMethod extends away.materials.EffectMethodBase
+	export class EnvMapMethod extends EffectMethodBase
 	{
 		private _cubeTexture:away.textures.CubeTextureBase;
 		private _alpha:number;
@@ -96,7 +96,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:away.materials.MethodVO, stageGLProxy:away.managers.StageGLProxy):void
+		public iActivate(vo:MethodVO, stageGLProxy:away.managers.StageGLProxy):void
 		{
 			var context:away.displayGL.ContextGL = stageGLProxy._iContextGL;
 			vo.fragmentData[vo.fragmentConstantsIndex] = this._alpha;
@@ -110,7 +110,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentCode(vo:away.materials.MethodVO, regCache:away.materials.ShaderRegisterCache, targetReg:away.materials.ShaderRegisterElement):string
+		public iGetFragmentCode(vo:MethodVO, regCache:ShaderRegisterCache, targetReg:ShaderRegisterElement):string
 		{
 			var dataRegister:ShaderRegisterElement = regCache.getFreeFragmentConstant();
 			var temp:ShaderRegisterElement = regCache.getFreeFragmentVectorTemp();
@@ -129,7 +129,7 @@ module away.materials
 				"sub " + temp + ", " + temp + ", " + targetReg + "											\n";
 
 			if (this._mask) {
-				var maskReg:away.materials.ShaderRegisterElement = regCache.getFreeTextureReg();
+				var maskReg:ShaderRegisterElement = regCache.getFreeTextureReg();
 				code += this.pGetTex2DSampleCode(vo, temp2, maskReg, this._mask, this._sharedRegisters.uvVarying) + "mul " + temp + ", " + temp2 + ", " + temp + "\n";
 			}
 			code += "mul " + temp + ", " + temp + ", " + dataRegister + ".x										\n" + "add " + targetReg + ", " + targetReg + ", " + temp + "										\n";

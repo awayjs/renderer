@@ -2,29 +2,34 @@
 
 module away.materials
 {
+	import Delegate						= away.utils.Delegate;
+
+	import Camera3D						= away.cameras.Camera3D;
+	import StageGLProxy					= away.managers.StageGLProxy;
 
 	/**
 	 * MultiPassMaterialBase forms an abstract base class for the default multi-pass materials provided by Away3D,
 	 * using material methods to define their appearance.
 	 */
-	export class MultiPassMaterialBase extends away.materials.MaterialBase
+	export class MultiPassMaterialBase extends MaterialBase
 	{
-		private _casterLightPass:away.materials.ShadowCasterPass;
-		private _nonCasterLightPasses:Array<away.materials.LightingPass>;
-		public _pEffectsPass:away.materials.SuperShaderPass;
+		private _casterLightPass:ShadowCasterPass;
+		private _nonCasterLightPasses:Array<LightingPass>;
+		public _pEffectsPass:SuperShaderPass;
 
 		private _alphaThreshold:number = 0;
 		private _specularLightSources:number = 0x01;
 		private _diffuseLightSources:number = 0x03;
 
-		private _ambientMethod:BasicAmbientMethod = new away.materials.BasicAmbientMethod();
+		private _ambientMethod:BasicAmbientMethod = new BasicAmbientMethod();
 		private _shadowMethod:ShadowMapMethodBase;
-		private _diffuseMethod:BasicDiffuseMethod = new away.materials.BasicDiffuseMethod();
-		private _normalMethod:BasicNormalMethod = new away.materials.BasicNormalMethod();
-		private _specularMethod:BasicSpecularMethod = new away.materials.BasicSpecularMethod();
+		private _diffuseMethod:BasicDiffuseMethod = new BasicDiffuseMethod();
+		private _normalMethod:BasicNormalMethod = new BasicNormalMethod();
+		private _specularMethod:BasicSpecularMethod = new BasicSpecularMethod();
 
 		private _screenPassesInvalid:boolean = true;
 		private _enableLightFallOff:boolean = true;
+		private _onLightChangeDelegate:Function;
 
 		/**
 		 * Creates a new MultiPassMaterialBase object.
@@ -32,6 +37,8 @@ module away.materials
 		constructor()
 		{
 			super();
+
+			this._onLightChangeDelegate = Delegate.create(this, this.onLightsChange)
 		}
 
 		/**
@@ -45,9 +52,9 @@ module away.materials
 
 		public set enableLightFallOff(value:boolean)
 		{
-
 			if (this._enableLightFallOff != value)
 				this.pInvalidateScreenPasses();
+
 			this._enableLightFallOff = value;
 
 		}
@@ -91,14 +98,12 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivateForDepth(stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D, distanceBased:boolean = false)
+		public iActivateForDepth(stageGLProxy:StageGLProxy, camera:Camera3D, distanceBased:boolean = false)
 		{
-			if (distanceBased) {
+			if (distanceBased)
 				this._pDistancePass.alphaMask = this._diffuseMethod.texture;
-
-			} else {
+			else
 				this._pDepthPass.alphaMask = this._diffuseMethod.texture;
-			}
 
 			super.iActivateForDepth(stageGLProxy, camera, distanceBased);
 		}
@@ -141,12 +146,13 @@ module away.materials
 		public set lightPicker(value:LightPickerBase)
 		{
 			if (this._pLightPicker)
-				this._pLightPicker.removeEventListener(away.events.Event.CHANGE, this.onLightsChange, this);
+				this._pLightPicker.removeEventListener(away.events.Event.CHANGE, this._onLightChangeDelegate);
 
 			super.setLightPicker(value);
 
 			if (this._pLightPicker)
-				this._pLightPicker.addEventListener(away.events.Event.CHANGE, this.onLightsChange, this);
+				this._pLightPicker.addEventListener(away.events.Event.CHANGE, this._onLightChangeDelegate);
+
 			this.pInvalidateScreenPasses();
 		}
 
@@ -161,12 +167,12 @@ module away.materials
 		/**
 		 * The method that provides the ambient lighting contribution. Defaults to BasicAmbientMethod.
 		 */
-		public get ambientMethod():away.materials.BasicAmbientMethod
+		public get ambientMethod():BasicAmbientMethod
 		{
 			return this._ambientMethod;
 		}
 
-		public set ambientMethod(value:away.materials.BasicAmbientMethod)
+		public set ambientMethod(value:BasicAmbientMethod)
 		{
 			value.copyFrom(this._ambientMethod);
 			this._ambientMethod = value;
@@ -176,15 +182,16 @@ module away.materials
 		/**
 		 * The method used to render shadows cast on this surface, or null if no shadows are to be rendered. Defaults to null.
 		 */
-		public get shadowMethod():away.materials.ShadowMapMethodBase
+		public get shadowMethod():ShadowMapMethodBase
 		{
 			return this._shadowMethod;
 		}
 
-		public set shadowMethod(value:away.materials.ShadowMapMethodBase)
+		public set shadowMethod(value:ShadowMapMethodBase)
 		{
 			if (value && this._shadowMethod)
 				value.copyFrom(this._shadowMethod);
+
 			this._shadowMethod = value;
 			this.pInvalidateScreenPasses();
 		}
@@ -192,12 +199,12 @@ module away.materials
 		/**
 		 * The method that provides the diffuse lighting contribution. Defaults to BasicDiffuseMethod.
 		 */
-		public get diffuseMethod():away.materials.BasicDiffuseMethod
+		public get diffuseMethod():BasicDiffuseMethod
 		{
 			return this._diffuseMethod;
 		}
 
-		public set diffuseMethod(value:away.materials.BasicDiffuseMethod)
+		public set diffuseMethod(value:BasicDiffuseMethod)
 		{
 			value.copyFrom(this._diffuseMethod);
 			this._diffuseMethod = value;
@@ -207,15 +214,16 @@ module away.materials
 		/**
 		 * The method that provides the specular lighting contribution. Defaults to BasicSpecularMethod.
 		 */
-		public get specularMethod():away.materials.BasicSpecularMethod
+		public get specularMethod():BasicSpecularMethod
 		{
 			return this._specularMethod;
 		}
 
-		public set specularMethod(value:away.materials.BasicSpecularMethod)
+		public set specularMethod(value:BasicSpecularMethod)
 		{
 			if (value && this._specularMethod)
 				value.copyFrom(this._specularMethod);
+
 			this._specularMethod = value;
 			this.pInvalidateScreenPasses();
 		}
@@ -223,12 +231,12 @@ module away.materials
 		/**
 		 * The method used to generate the per-pixel normals. Defaults to BasicNormalMethod.
 		 */
-		public get normalMethod():away.materials.BasicNormalMethod
+		public get normalMethod():BasicNormalMethod
 		{
 			return this._normalMethod;
 		}
 
-		public set normalMethod(value:away.materials.BasicNormalMethod)
+		public set normalMethod(value:BasicNormalMethod)
 		{
 			value.copyFrom(this._normalMethod);
 			this._normalMethod = value;
@@ -240,13 +248,10 @@ module away.materials
 		 * but modulate the shaded colour, used for fog, outlines, etc. The method will be applied to the result of the
 		 * methods added prior.
 		 */
-		public addMethod(method:away.materials.EffectMethodBase)
+		public addMethod(method:EffectMethodBase)
 		{
-
-			if (this._pEffectsPass == null) {
-				this._pEffectsPass = new away.materials.SuperShaderPass(this);
-
-			}
+			if (this._pEffectsPass == null)
+				this._pEffectsPass = new SuperShaderPass(this);
 
 			this._pEffectsPass.addMethod(method);
 			this.pInvalidateScreenPasses();
@@ -288,15 +293,11 @@ module away.materials
 		 */
 		public addMethodAt(method:EffectMethodBase, index:number)
 		{
-
-			if (this._pEffectsPass == null) {
-				this._pEffectsPass = new away.materials.SuperShaderPass(this);
-
-			}
+			if (this._pEffectsPass == null)
+				this._pEffectsPass = new SuperShaderPass(this);
 
 			this._pEffectsPass.addMethodAt(method, index);
 			this.pInvalidateScreenPasses();
-
 		}
 
 		/**
@@ -307,6 +308,7 @@ module away.materials
 		{
 			if (this._pEffectsPass)
 				return;
+
 			this._pEffectsPass.removeMethod(method);
 
 			// reconsider
@@ -466,13 +468,11 @@ module away.materials
 		 * Adds a compiled pass that renders to the screen.
 		 * @param pass The pass to be added.
 		 */
-		private addScreenPass(pass:away.materials.CompiledPass)
+		private addScreenPass(pass:CompiledPass)
 		{
 			if (pass) {
-
 				this.pAddPass(pass);
 				pass._iPassesDirty = false;
-
 			}
 		}
 
@@ -482,11 +482,8 @@ module away.materials
 		 */
 		private isAnyScreenPassInvalid():boolean
 		{
-			if ((this._casterLightPass && this._casterLightPass._iPassesDirty) || (this._pEffectsPass && this._pEffectsPass._iPassesDirty)) {
-
+			if ((this._casterLightPass && this._casterLightPass._iPassesDirty) || (this._pEffectsPass && this._pEffectsPass._iPassesDirty))
 				return true;
-
-			}
 
 			if (this._nonCasterLightPasses) {
 				for (var i:number = 0; i < this._nonCasterLightPasses.length; ++i) {
@@ -502,7 +499,7 @@ module away.materials
 		 * Adds any additional passes on which the given pass is dependent.
 		 * @param pass The pass that my need additional passes.
 		 */
-		private addChildPassesFor(pass:away.materials.CompiledPass)
+		private addChildPassesFor(pass:CompiledPass)
 		{
 			if (!pass)
 				return;
@@ -519,20 +516,21 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivatePass(index:number, stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D)
+		public iActivatePass(index:number, stageGLProxy:StageGLProxy, camera:Camera3D)
 		{
-			if (index == 0) {
+			if (index == 0)
 				stageGLProxy._iContextGL.setBlendFactors(away.displayGL.ContextGLBlendFactor.ONE, away.displayGL.ContextGLBlendFactor.ZERO);
-			}
+
 			super.iActivatePass(index, stageGLProxy, camera);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iDeactivate(stageGLProxy:away.managers.StageGLProxy)
+		public iDeactivate(stageGLProxy:StageGLProxy)
 		{
 			super.iDeactivate(stageGLProxy);
+
 			stageGLProxy._iContextGL.setBlendFactors(away.displayGL.ContextGLBlendFactor.ONE, away.displayGL.ContextGLBlendFactor.ZERO);
 		}
 
@@ -554,18 +552,16 @@ module away.materials
 		{
 			// let the effects pass handle everything if there are no lights,
 			// or when there are effect methods applied after shading.
-			if (this.numLights == 0 || this.numMethods > 0) {
+			if (this.numLights == 0 || this.numMethods > 0)
 				this.initEffectsPass();
-			} else if (this._pEffectsPass && this.numMethods == 0) {
+			else if (this._pEffectsPass && this.numMethods == 0)
 				this.removeEffectsPass();
-			}
 
 			// only use a caster light pass if shadows need to be rendered
-			if (this._shadowMethod) {
+			if (this._shadowMethod)
 				this.initCasterLightPass();
-			} else {
+			else
 				this.removeCasterLightPass();
-			}
 
 			// only use non caster light passes if there are lights that don't cast
 			if (this.numNonCasters > 0)
@@ -632,11 +628,8 @@ module away.materials
 		private initCasterLightPass()
 		{
 
-			if (this._casterLightPass == null) {
-
-				this._casterLightPass = new away.materials.ShadowCasterPass(this);
-
-			}
+			if (this._casterLightPass == null)
+				this._casterLightPass = new ShadowCasterPass(this);
 
 			this._casterLightPass.diffuseMethod = null;
 			this._casterLightPass.ambientMethod = null;
@@ -644,7 +637,7 @@ module away.materials
 			this._casterLightPass.specularMethod = null;
 			this._casterLightPass.shadowMethod = null;
 			this._casterLightPass.enableLightFallOff = this._enableLightFallOff;
-			this._casterLightPass.lightPicker = new away.materials.StaticLightPicker([this._shadowMethod.castingLight]);
+			this._casterLightPass.lightPicker = new StaticLightPicker([this._shadowMethod.castingLight]);
 			this._casterLightPass.shadowMethod = this._shadowMethod;
 			this._casterLightPass.diffuseMethod = this._diffuseMethod;
 			this._casterLightPass.ambientMethod = this._ambientMethod;
@@ -658,6 +651,7 @@ module away.materials
 		{
 			if (!this._casterLightPass)
 				return;
+
 			this._casterLightPass.dispose();
 			this.pRemovePass(this._casterLightPass);
 			this._casterLightPass = null;
@@ -679,7 +673,7 @@ module away.materials
 				numPointLights += this._pLightPicker.numCastingPointLights;
 			}
 
-			this._nonCasterLightPasses = new Array<away.materials.LightingPass>();
+			this._nonCasterLightPasses = new Array<LightingPass>();
 
 			while (dirLightOffset < numDirLights || pointLightOffset < numPointLights || probeOffset < numLightProbes) {
 				pass = new LightingPass(this);
@@ -731,12 +725,8 @@ module away.materials
 
 		private initEffectsPass():SuperShaderPass
 		{
-
-			if (this._pEffectsPass == null) {
-
-				this._pEffectsPass = new away.materials.SuperShaderPass(this);
-
-			}
+			if (this._pEffectsPass == null)
+				this._pEffectsPass = new SuperShaderPass(this);
 
 			this._pEffectsPass.enableLightFallOff = this._enableLightFallOff;
 			if (this.numLights == 0) {
@@ -745,7 +735,7 @@ module away.materials
 
 			} else {
 				this._pEffectsPass.diffuseMethod = null;
-				this._pEffectsPass.diffuseMethod = new away.materials.BasicDiffuseMethod();
+				this._pEffectsPass.diffuseMethod = new BasicDiffuseMethod();
 				this._pEffectsPass.diffuseMethod.diffuseColor = 0x000000;
 				this._pEffectsPass.diffuseMethod.diffuseAlpha = 0;
 			}
@@ -788,7 +778,5 @@ module away.materials
 		{
 			this.pInvalidateScreenPasses();
 		}
-
 	}
-
 }

@@ -2,25 +2,30 @@
 
 module away.managers
 {
+	import StageGLEvent						= away.events.StageGLEvent;
+
+	import AGALProgramCache					= away.managers.AGALProgramCache;
+	import StageGLProxy						= away.managers.StageGLProxy;
 
 	export class AGALProgramCache
 	{
-		private static _instances:away.managers.AGALProgramCache[];
+		private static _instances:AGALProgramCache[];
 
-		private _stageGLProxy:away.managers.StageGLProxy;
+		private _stageGLProxy:StageGLProxy;
 
 		private _program3Ds:Object;
 		private _ids:Object;
 		private _usages:Object;
 		private _keys:Object;
 
+		private _onContextGLDisposedDelegate:Function;
+
 		private static _currentId:number = 0;
 
-		constructor(stageGLProxy:away.managers.StageGLProxy, agalProgramCacheSingletonEnforcer:AGALProgramCacheSingletonEnforcer)
+		constructor(stageGLProxy:StageGLProxy, agalProgramCacheSingletonEnforcer:AGALProgramCacheSingletonEnforcer)
 		{
-			if (!agalProgramCacheSingletonEnforcer) {
+			if (!agalProgramCacheSingletonEnforcer)
 				throw new Error("This class is a multiton and cannot be instantiated manually. Use StageGLManager.getInstance instead.");
-			}
 
 			this._stageGLProxy = stageGLProxy;
 
@@ -28,62 +33,55 @@ module away.managers
 			this._ids = new Object();
 			this._usages = new Object();
 			this._keys = new Object();
-
 		}
 
-		public static getInstance(stageGLProxy:away.managers.StageGLProxy):away.managers.AGALProgramCache
+		public static getInstance(stageGLProxy:StageGLProxy):away.managers.AGALProgramCache
 		{
 			var index:number = stageGLProxy._iStageGLIndex;
 
-			if (AGALProgramCache._instances == null) {
-
-				AGALProgramCache._instances = new Array<away.managers.AGALProgramCache>(8);
-
-			}
+			if (AGALProgramCache._instances == null)
+				AGALProgramCache._instances = new Array<AGALProgramCache>(8);
 
 
 			if (!AGALProgramCache._instances[index]) {
-
 				AGALProgramCache._instances[index] = new AGALProgramCache(stageGLProxy, new AGALProgramCacheSingletonEnforcer());
 
-				stageGLProxy.addEventListener(away.events.StageGLEvent.CONTEXTGL_DISPOSED, AGALProgramCache.onContextGLDisposed, AGALProgramCache);
-				stageGLProxy.addEventListener(away.events.StageGLEvent.CONTEXTGL_CREATED, AGALProgramCache.onContextGLDisposed, AGALProgramCache);
-				stageGLProxy.addEventListener(away.events.StageGLEvent.CONTEXTGL_RECREATED, AGALProgramCache.onContextGLDisposed, AGALProgramCache);
+				stageGLProxy.addEventListener(StageGLEvent.CONTEXTGL_DISPOSED, AGALProgramCache.onContextGLDisposed);
+				stageGLProxy.addEventListener(StageGLEvent.CONTEXTGL_CREATED, AGALProgramCache.onContextGLDisposed);
+				stageGLProxy.addEventListener(StageGLEvent.CONTEXTGL_RECREATED, AGALProgramCache.onContextGLDisposed);
 			}
 
 			return AGALProgramCache._instances[index];
 
 		}
 
-		public static getInstanceFromIndex(index:number):AGALProgramCache
+		public static getInstanceFromIndex(index:number):away.managers.AGALProgramCache
 		{
-			if (!AGALProgramCache._instances[index]) {
+			if (!AGALProgramCache._instances[index])
 				throw new Error("Instance not created yet!");
-			}
+
 			return AGALProgramCache._instances[index];
 		}
 
-		private static onContextGLDisposed(event:away.events.StageGLEvent)
+		private static onContextGLDisposed(event:StageGLEvent)
 		{
-			var stageGLProxy:away.managers.StageGLProxy = <away.managers.StageGLProxy>event.target;
+			var stageGLProxy:StageGLProxy = <StageGLProxy> event.target;
 
 			var index:number = stageGLProxy._iStageGLIndex;
 
 			AGALProgramCache._instances[index].dispose();
 			AGALProgramCache._instances[index] = null;
 
-			stageGLProxy.removeEventListener(away.events.StageGLEvent.CONTEXTGL_DISPOSED, AGALProgramCache.onContextGLDisposed, AGALProgramCache);
-			stageGLProxy.removeEventListener(away.events.StageGLEvent.CONTEXTGL_CREATED, AGALProgramCache.onContextGLDisposed, AGALProgramCache);
-			stageGLProxy.removeEventListener(away.events.StageGLEvent.CONTEXTGL_RECREATED, AGALProgramCache.onContextGLDisposed, AGALProgramCache);
+			stageGLProxy.removeEventListener(StageGLEvent.CONTEXTGL_DISPOSED, AGALProgramCache.onContextGLDisposed);
+			stageGLProxy.removeEventListener(StageGLEvent.CONTEXTGL_CREATED, AGALProgramCache.onContextGLDisposed);
+			stageGLProxy.removeEventListener(StageGLEvent.CONTEXTGL_RECREATED, AGALProgramCache.onContextGLDisposed);
 
 		}
 
 		public dispose()
 		{
-			for (var key in this._program3Ds) {
-
+			for (var key in this._program3Ds)
 				this.destroyProgram(key);
-			}
 
 			this._keys = null;
 			this._program3Ds = null;
@@ -126,7 +124,6 @@ module away.managers
 				var vertString:string = vertCompiler.compile(away.displayGL.ContextGLProgramType.VERTEX, vertexCode);
 				var fragString:string = fragCompiler.compile(away.displayGL.ContextGLProgramType.FRAGMENT, fragmentCode);
 
-
 				console.log('===GLSL=========================================================');
 				console.log('vertString');
 				console.log(vertString);
@@ -156,41 +153,36 @@ module away.managers
 				this._program3Ds[key] = program;
 			}
 
-
 			var oldId:number = pass._iProgramids[stageIndex];
 			var newId:number = this._ids[key];
 
 			if (oldId != newId) {
-				if (oldId >= 0) {
+				if (oldId >= 0)
 					this.freeProgram(oldId);
-				}
 
 				this._usages[newId]++;
-
 			}
 
 			pass._iProgramids[stageIndex] = newId;
 			pass._iPrograms[stageIndex] = this._program3Ds[key];
-
 		}
 
 		public freeProgram(programId:number)
 		{
 			this._usages[programId]--;
 
-			if (this._usages[programId] == 0) {
+			if (this._usages[programId] == 0)
 				this.destroyProgram(this._keys[programId]);
-			}
-
 		}
 
 		private destroyProgram(key:string)
 		{
 			this._program3Ds[key].dispose();
 			this._program3Ds[key] = null;
-			delete this._program3Ds[key];
-			this._ids[key] = -1;
 
+			delete this._program3Ds[key];
+
+			this._ids[key] = -1;
 		}
 
 		private getKey(vertexCode:string, fragmentCode:string):string

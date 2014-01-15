@@ -6,7 +6,7 @@ module away.materials
 	/**
 	 * TextureMultiPassMaterial is a multi-pass material that uses a texture to define the surface's diffuse reflection colour (albedo).
 	 */
-	export class TextureMultiPassMaterial extends away.materials.MultiPassMaterialBase
+	export class TextureMultiPassMaterial extends MultiPassMaterialBase
 	{
 		private _animateUVs:boolean = false;
 

@@ -8,7 +8,7 @@ module away.materials
 	 */
 	export class FresnelSpecularMethod extends CompositeSpecularMethod
 	{
-		private _dataReg:away.materials.ShaderRegisterElement;
+		private _dataReg:ShaderRegisterElement;
 		private _incidentLight:boolean;
 		private _fresnelPower:number = 5;
 		private _normalReflectance:number = .028; // default value for skin
@@ -18,7 +18,7 @@ module away.materials
 		 * @param basedOnSurface Defines whether the fresnel effect should be based on the view angle on the surface (if true), or on the angle between the light and the view.
 		 * @param baseSpecularMethod The specular method to which the fresnel equation. Defaults to BasicSpecularMethod.
 		 */
-		constructor(basedOnSurface:boolean = true, baseSpecularMethod:away.materials.BasicSpecularMethod = null)
+		constructor(basedOnSurface:boolean = true, baseSpecularMethod:BasicSpecularMethod = null)
 		{
 			// may want to offer diff speculars
 			super(null, null);
@@ -31,7 +31,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iInitConstants(vo:away.materials.MethodVO):void
+		public iInitConstants(vo:MethodVO):void
 		{
 
 			var index:number = vo.secondaryFragmentConstantsIndex;
@@ -95,7 +95,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:away.materials.MethodVO, stageGLProxy:away.managers.StageGLProxy):void
+		public iActivate(vo:MethodVO, stageGLProxy:away.managers.StageGLProxy):void
 		{
 			super.iActivate(vo, stageGLProxy);
 			var fragmentData:Array<number> = vo.fragmentData;
@@ -108,7 +108,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentPreLightingCode(vo:away.materials.MethodVO, regCache:away.materials.ShaderRegisterCache):string
+		public iGetFragmentPreLightingCode(vo:MethodVO, regCache:ShaderRegisterCache):string
 		{
 			this._dataReg = regCache.getFreeFragmentConstant();
 
@@ -127,7 +127,7 @@ module away.materials
 		 * @param sharedRegisters The shared registers created by the compiler.
 		 * @return The AGAL fragment code for the method.
 		 */
-		private modulateSpecular(vo:away.materials.MethodVO, target:away.materials.ShaderRegisterElement, regCache:away.materials.ShaderRegisterCache, sharedRegisters:away.materials.ShaderRegisterData):string
+		private modulateSpecular(vo:MethodVO, target:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):string
 		{
 			var code:string;
 

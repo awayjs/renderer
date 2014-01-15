@@ -14,7 +14,7 @@ module away.materials
 	 * ColorTransformMethod provides a shading method that changes the colour of a material analogous to a
 	 * ColorTransform object.
 	 */
-	export class ColorTransformMethod extends away.materials.EffectMethodBase
+	export class ColorTransformMethod extends EffectMethodBase
 	{
 		private _colorTransform:away.geom.ColorTransform;
 
@@ -42,11 +42,11 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentCode(vo:away.materials.MethodVO, regCache:away.materials.ShaderRegisterCache, targetReg:away.materials.ShaderRegisterElement):string
+		public iGetFragmentCode(vo:MethodVO, regCache:ShaderRegisterCache, targetReg:ShaderRegisterElement):string
 		{
 			var code:string = "";
-			var colorMultReg:away.materials.ShaderRegisterElement = regCache.getFreeFragmentConstant();
-			var colorOffsReg:away.materials.ShaderRegisterElement = regCache.getFreeFragmentConstant();
+			var colorMultReg:ShaderRegisterElement = regCache.getFreeFragmentConstant();
+			var colorOffsReg:ShaderRegisterElement = regCache.getFreeFragmentConstant();
 
 			vo.fragmentConstantsIndex = colorMultReg.index*4;
 
@@ -60,7 +60,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:away.materials.MethodVO, stageGLProxy:away.managers.StageGLProxy)
+		public iActivate(vo:MethodVO, stageGLProxy:away.managers.StageGLProxy)
 		{
 			var inv:number = 1/0xff;
 			var index:number = vo.fragmentConstantsIndex;

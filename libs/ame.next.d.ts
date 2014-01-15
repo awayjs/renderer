@@ -131,17 +131,15 @@ declare module away.events {
         * @method addEventListener
         * @param {String} Name of event to add a listener for
         * @param {Function} Callback function
-        * @param {Object} Target object listener is added to
         */
-        public addEventListener(type: string, listener: Function, target: Object): void;
+        public addEventListener(type: string, listener: Function): void;
         /**
         * Remove an event listener
         * @method removeEventListener
         * @param {String} Name of event to remove a listener for
         * @param {Function} Callback function
-        * @param {Object} Target object listener is added to
         */
-        public removeEventListener(type: string, listener: Function, target: Object): void;
+        public removeEventListener(type: string, listener: Function): void;
         /**
         * Dispatch an event
         * @method dispatchEvent
@@ -153,10 +151,15 @@ declare module away.events {
         * @method getEventListenerIndex
         * @param {String} Name of event to remove a listener for
         * @param {Function} Callback function
-        * @param {Object} Target object listener is added to
         */
-        private getEventListenerIndex(type, listener, target);
-        public hasEventListener(type: string, listener?: Function, target?: Object): boolean;
+        private getEventListenerIndex(type, listener);
+        /**
+        * check if an object has an event listener assigned to it
+        * @method hasListener
+        * @param {String} Name of event to remove a listener for
+        * @param {Function} Callback function
+        */
+        public hasEventListener(type: string, listener?: Function): boolean;
     }
 }
 /**
@@ -175,24 +178,29 @@ declare module away.events {
         * @method addEventListener
         * @param {String} Name of event to add a listener for
         * @param {Function} Callback function
-        * @param {Object} Target object listener is added to
         */
-        addEventListener(type: string, listener: Function, target: Object): any;
+        addEventListener(type: string, listener: Function): any;
         /**
         * Remove an event listener
         * @method removeEventListener
         * @param {String} Name of event to remove a listener for
         * @param {Function} Callback function
-        * @param {Object} Target object listener is added to
         */
-        removeEventListener(type: string, listener: Function, target: Object): any;
+        removeEventListener(type: string, listener: Function): any;
         /**
         * Dispatch an event
         * @method dispatchEvent
         * @param {Event} Event to dispatch
         */
         dispatchEvent(event: events.Event): any;
-        hasEventListener(type: string, listener?: Function, target?: Object): boolean;
+        /**
+        * check if an object has an event listener assigned to it
+        * @method hasListener
+        * @param {String} Name of event to remove a listener for
+        * @param {Function} Callback function
+        * @param {Object} Target object listener is added to
+        */
+        hasEventListener(type: string, listener?: Function): boolean;
     }
 }
 /**
@@ -374,6 +382,7 @@ declare module away.parsers {
         private _data;
         private _frameLimit;
         private _lastFrameTime;
+        private _pOnIntervalDelegate;
         static supportsType(extension: string): boolean;
         private _dependencies;
         private _loaderType;
@@ -918,6 +927,14 @@ declare module away.library {
         private _assetDictDirty;
         private _loadingSessionsGarbage;
         private _gcTimeoutIID;
+        private _onAssetRenameDelegate;
+        private _onAssetConflictResolvedDelegate;
+        private _onResourceRetrievedDelegate;
+        private _onDependencyRetrievedDelegate;
+        private _onTextureSizeErrorDelegate;
+        private _onAssetCompleteDelegate;
+        private _onDependencyRetrievingErrorDelegate;
+        private _onDependencyRetrievingParseErrorDelegate;
         /**
         * Creates a new <code>AssetLibraryBundle</code> object.
         *
@@ -1155,11 +1172,11 @@ declare module away.library {
         /**
         * Short-hand for addEventListener() method on default asset library bundle.
         */
-        static addEventListener(type: string, listener: Function, target: Object): void;
+        static addEventListener(type: string, listener: Function): void;
         /**
         * Short-hand for removeEventListener() method on default asset library bundle.
         */
-        static removeEventListener(type: string, listener: Function, target: Object): void;
+        static removeEventListener(type: string, listener: Function): void;
         /**
         * Short-hand for hasEventListener() method on default asset library bundle.
         
@@ -2466,6 +2483,12 @@ declare module away.net {
         private _baseDependency;
         private _loadingDependency;
         private _namespace;
+        private _onReadyForDependenciesDelegate;
+        private _onRetrievalCompleteDelegate;
+        private _onRetrievalFailedDelegate;
+        private _onTextureSizeErrorDelegate;
+        private _onAssetCompleteDelegate;
+        private _onParserErrorDelegate;
         /**
         * Returns the base dependency of the loader
         */
@@ -2585,9 +2608,9 @@ declare module away.net {
     class AssetLoaderToken extends away.events.EventDispatcher {
         public _iLoader: net.AssetLoader;
         constructor(loader: net.AssetLoader);
-        public addEventListener(type: string, listener: Function, target: Object): void;
-        public removeEventListener(type: string, listener: Function, target: Object): void;
-        public hasEventListener(type: string, listener?: Function, target?: Object): boolean;
+        public addEventListener(type: string, listener: Function): void;
+        public removeEventListener(type: string, listener: Function): void;
+        public hasEventListener(type: string, listener?: Function): boolean;
     }
 }
 declare module away.net {
@@ -2630,6 +2653,13 @@ declare module away.net {
         private _loadAsRawData;
         private _materialMode;
         private _data;
+        private _handleUrlLoaderCompleteDelegate;
+        private _handleUrlLoaderErrorDelegate;
+        private _onReadyForDependenciesDelegate;
+        private _onParseCompleteDelegate;
+        private _onParseErrorDelegate;
+        private _onTextureSizeErrorDelegate;
+        private _onAssetCompleteDelegate;
         private static _parsers;
         static enableParser(parser: Object): void;
         static enableParsers(parsers: Object[]): void;
@@ -2716,6 +2746,8 @@ declare module away.net {
         private _loader;
         private _data;
         private _dataFormat;
+        private _onLoadCompleteDelegate;
+        private _onLoadErrorDelegate;
         constructor();
         /**
         *
@@ -2760,6 +2792,8 @@ declare module away.net {
     class SingleFileURLLoader extends away.events.EventDispatcher implements net.ISingleFileTSLoader {
         private _loader;
         private _data;
+        private _onLoadCompleteDelegate;
+        private _onLoadErrorDelegate;
         constructor();
         /**
         *
@@ -4026,6 +4060,7 @@ declare module away.managers {
         private _viewportUpdated;
         private _viewportDirty;
         private _bufferClear;
+        private _onContextGLUpdateDelegate;
         private notifyViewportUpdated();
         private notifyEnterFrame();
         private notifyExitFrame();
@@ -4057,7 +4092,7 @@ declare module away.managers {
         public setRenderTarget(target: away.displayGL.TextureBase, enableDepthAndStencil?: boolean, surfaceSelector?: number): void;
         public clear(): void;
         public present(): void;
-        public addEventListener(type: string, listener: Function, target: Object): void;
+        public addEventListener(type: string, listener: Function): void;
         /**
         * Removes a listener from the EventDispatcher object. Special case for enterframe and exitframe events - will switch StageGLProxy out of automatic render mode.
         * If there is no matching listener registered with the EventDispatcher object, a call to this method has no effect.
@@ -4066,7 +4101,7 @@ declare module away.managers {
         * @param listener The listener object to remove.
         * @param useCapture Specifies whether the listener was registered for the capture phase or the target and bubbling phases. If the listener was registered for both the capture phase and the target and bubbling phases, two calls to removeEventListener() are required to remove both, one call with useCapture() set to true, and another call with useCapture() set to false.
         */
-        public removeEventListener(type: string, listener: Function, target: Object): void;
+        public removeEventListener(type: string, listener: Function): void;
         public scissorRect : away.geom.Rectangle;
         /**
         * The index of the StageGL which is managed by this instance of StageGLProxy.
@@ -4550,6 +4585,20 @@ declare module away {
         static throwPIR(clss: string, fnc: string, msg: string): void;
         private static logPIR(clss, fnc, msg?);
         static log(...args: any[]): void;
+    }
+}
+declare module away.utils {
+    class Delegate {
+        private _func;
+        constructor(func?: Function);
+        /**
+        Creates a functions wrapper for the original function so that it runs
+        in the provided context.
+        @parameter obj Context in which to run the function.
+        @paramater func Function to run.
+        */
+        static create(obj: Object, func: Function): Function;
+        public createDelegate(obj: Object): Function;
     }
 }
 declare module away.utils {

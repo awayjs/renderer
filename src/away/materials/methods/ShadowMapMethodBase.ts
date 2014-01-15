@@ -14,7 +14,7 @@ module away.materials
 	/**
 	 * ShadowMapMethodBase provides an abstract base method for shadow map methods.
 	 */
-	export class ShadowMapMethodBase extends away.materials.ShadingMethodBase implements away.library.IAsset
+	export class ShadowMapMethodBase extends ShadingMethodBase implements away.library.IAsset
 	{
 		public _pCastingLight:away.lights.LightBase;
 		public _pShadowMapper:away.lights.ShadowMapperBase;
@@ -81,7 +81,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentCode(vo:MethodVO, regCache:away.materials.ShaderRegisterCache, targetReg:away.materials.ShaderRegisterElement):string
+		public iGetFragmentCode(vo:MethodVO, regCache:ShaderRegisterCache, targetReg:ShaderRegisterElement):string
 		{
 			throw new away.errors.AbstractMethodError();
 			return null;

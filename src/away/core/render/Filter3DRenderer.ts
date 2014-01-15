@@ -10,21 +10,23 @@ module away.render
 	 */
 	export class Filter3DRenderer
 	{
-		private _filters:away.filters.Filter3DBase[]; // TODO: check / changed to strongly typed array
-		private _tasks:away.filters.Filter3DTaskBase[];//Vector.<Filter3DTaskBase>;
+		private _filters:Array<away.filters.Filter3DBase>;
+		private _tasks:Array<away.filters.Filter3DTaskBase>;
 		private _filterTasksInvalid:boolean;
 		private _mainInputTexture:away.displayGL.Texture;
 		private _requireDepthRender:boolean;
 		private _rttManager:away.managers.RTTBufferManager;
 		private _stageGLProxy:away.managers.StageGLProxy;
 		private _filterSizesInvalid:boolean = true;
+		private _onRTTResizeDelegate:Function;
 
 		constructor(stageGLProxy:away.managers.StageGLProxy)
 		{
+			this._onRTTResizeDelegate = away.utils.Delegate.create(this, this.onRTTResize);
 
 			this._stageGLProxy = stageGLProxy;
 			this._rttManager = away.managers.RTTBufferManager.getInstance(stageGLProxy);
-			this._rttManager.addEventListener(away.events.Event.RESIZE, this.onRTTResize, this);
+			this._rttManager.addEventListener(away.events.Event.RESIZE, this._onRTTResizeDelegate);
 
 		}
 
@@ -204,7 +206,7 @@ module away.render
 
 		public dispose()
 		{
-			this._rttManager.removeEventListener(away.events.Event.RESIZE, this.onRTTResize, this);
+			this._rttManager.removeEventListener(away.events.Event.RESIZE, this._onRTTResizeDelegate);
 			this._rttManager = null;
 			this._stageGLProxy = null;
 		}

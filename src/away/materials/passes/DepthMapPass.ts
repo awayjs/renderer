@@ -9,7 +9,7 @@ module away.materials
 	 * DepthMapPass is a pass that writes depth values to a depth map as a 32-bit value exploded over the 4 texture channels.
 	 * This is used to render shadow maps, depth maps, etc.
 	 */
-	export class DepthMapPass extends away.materials.MaterialPassBase
+	export class DepthMapPass extends MaterialPassBase
 	{
 		private _data:number[];
 		private _alphaThreshold:number = 0;

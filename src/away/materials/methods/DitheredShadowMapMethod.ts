@@ -28,9 +28,9 @@ module away.materials
 			this.numSamples = numSamples;
 			this.range = range;
 
-			++away.materials.DitheredShadowMapMethod._grainUsages;
+			++DitheredShadowMapMethod._grainUsages;
 
-			if (!away.materials.DitheredShadowMapMethod._grainTexture)
+			if (!DitheredShadowMapMethod._grainTexture)
 				this.initGrainTexture();
 		}
 
@@ -91,7 +91,7 @@ module away.materials
 		 */
 		private initGrainTexture():void
 		{
-			away.materials.DitheredShadowMapMethod._grainBitmapData = new away.display.BitmapData(64, 64, false);
+			DitheredShadowMapMethod._grainBitmapData = new away.display.BitmapData(64, 64, false);
 			var vec:Array<number> /*uint*/ = new Array<number>();
 			var len:number /*uint*/ = 4096;
 			var step:number = 1/(this._depthMapSize*this._range);
@@ -115,8 +115,8 @@ module away.materials
 				vec[i] = (Math.floor((r*.5 + .5)*0xff) << 16) | (Math.floor((g*.5 + .5)*0xff) << 8);
 			}
 
-			away.materials.DitheredShadowMapMethod._grainBitmapData.setVector(away.materials.DitheredShadowMapMethod._grainBitmapData.rect, vec);
-			away.materials.DitheredShadowMapMethod._grainTexture = new away.textures.BitmapTexture(away.materials.DitheredShadowMapMethod._grainBitmapData);
+			DitheredShadowMapMethod._grainBitmapData.setVector(DitheredShadowMapMethod._grainBitmapData.rect, vec);
+			DitheredShadowMapMethod._grainTexture = new away.textures.BitmapTexture(DitheredShadowMapMethod._grainBitmapData);
 		}
 
 		/**
@@ -124,10 +124,10 @@ module away.materials
 		 */
 		public dispose():void
 		{
-			if (--away.materials.DitheredShadowMapMethod._grainUsages == 0) {
-				away.materials.DitheredShadowMapMethod._grainTexture.dispose();
-				away.materials.DitheredShadowMapMethod._grainBitmapData.dispose();
-				away.materials.DitheredShadowMapMethod._grainTexture = null;
+			if (--DitheredShadowMapMethod._grainUsages == 0) {
+				DitheredShadowMapMethod._grainTexture.dispose();
+				DitheredShadowMapMethod._grainBitmapData.dispose();
+				DitheredShadowMapMethod._grainTexture = null;
 			}
 		}
 
@@ -142,7 +142,7 @@ module away.materials
 			data[index + 9] = (stageGLProxy.width - 1)/63;
 			data[index + 10] = (stageGLProxy.height - 1)/63;
 			data[index + 11] = 2*this._range/this._depthMapSize;
-			stageGLProxy._iContextGL.setTextureAt(vo.texturesIndex + 1, away.materials.DitheredShadowMapMethod._grainTexture.getTextureForStageGL(stageGLProxy));
+			stageGLProxy._iContextGL.setTextureAt(vo.texturesIndex + 1, DitheredShadowMapMethod._grainTexture.getTextureForStageGL(stageGLProxy));
 		}
 
 		/**
@@ -264,7 +264,7 @@ module away.materials
 			data[index + 1] = (stageGLProxy.width - 1)/63;
 			data[index + 2] = (stageGLProxy.height - 1)/63;
 			data[index + 3] = 2*this._range/this._depthMapSize;
-			stageGLProxy._iContextGL.setTextureAt(vo.texturesIndex + 1, away.materials.DitheredShadowMapMethod._grainTexture.getTextureForStageGL(stageGLProxy));
+			stageGLProxy._iContextGL.setTextureAt(vo.texturesIndex + 1, DitheredShadowMapMethod._grainTexture.getTextureForStageGL(stageGLProxy));
 		}
 
 		/**

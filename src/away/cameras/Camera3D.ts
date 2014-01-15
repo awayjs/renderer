@@ -10,13 +10,16 @@ module away.cameras
 		private _lens:LensBase;
 		private _frustumPlanes:away.geom.Plane3D[];
 		private _frustumPlanesDirty:Boolean = true;
+		private _onLensMatrixChangedDelegate:Function;
 
 		constructor(lens:LensBase = null)
 		{
 			super();
 
+			this._onLensMatrixChangedDelegate = away.utils.Delegate.create(this, this.onLensMatrixChanged);
+
 			this._lens = lens || new away.cameras.PerspectiveLens();
-			this._lens.addEventListener(away.events.LensEvent.MATRIX_CHANGED, this.onLensMatrixChanged, this);
+			this._lens.addEventListener(away.events.LensEvent.MATRIX_CHANGED, this._onLensMatrixChangedDelegate);
 
 			this._frustumPlanes = [];
 
@@ -190,9 +193,9 @@ module away.cameras
 			if (!value) {
 				throw new Error("Lens cannot be null!");
 			}
-			this._lens.removeEventListener(away.events.LensEvent.MATRIX_CHANGED, this.onLensMatrixChanged, this);
+			this._lens.removeEventListener(away.events.LensEvent.MATRIX_CHANGED, this._onLensMatrixChangedDelegate);
 			this._lens = value;
-			this._lens.addEventListener(away.events.LensEvent.MATRIX_CHANGED, this.onLensMatrixChanged, this);
+			this._lens.addEventListener(away.events.LensEvent.MATRIX_CHANGED, this._onLensMatrixChangedDelegate);
 			this.dispatchEvent(new away.events.CameraEvent(away.events.CameraEvent.LENS_CHANGED, this));
 		}
 

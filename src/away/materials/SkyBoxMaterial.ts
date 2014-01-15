@@ -9,10 +9,10 @@ module away.materials
 	 *
 	 * @see away3d.primitives.SkyBox
 	 */
-	export class SkyBoxMaterial extends away.materials.MaterialBase
+	export class SkyBoxMaterial extends MaterialBase
 	{
 		private _cubeMap:away.textures.CubeTextureBase;
-		private _skyboxPass:away.materials.SkyBoxPass;
+		private _skyboxPass:SkyBoxPass;
 
 		/**
 		 * Creates a new SkyBoxMaterial object.
@@ -24,7 +24,7 @@ module away.materials
 			super();
 
 			this._cubeMap = cubeMap;
-			this.pAddPass(this._skyboxPass = new away.materials.SkyBoxPass());
+			this.pAddPass(this._skyboxPass = new SkyBoxPass());
 			this._skyboxPass.cubeTexture = this._cubeMap;
 		}
 

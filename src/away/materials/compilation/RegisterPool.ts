@@ -17,7 +17,7 @@ module away.materials
 		private static _regPool:Object = new Object();//= new Dictionary();
 		private static _regCompsPool:Object = new Object();//new Dictionary();
 
-		private _vectorRegisters:away.materials.ShaderRegisterElement[];//Vector.<ShaderRegisterElement>;
+		private _vectorRegisters:ShaderRegisterElement[];//Vector.<ShaderRegisterElement>;
 		private _registerComponents;
 
 		private _regName:string;
@@ -44,7 +44,7 @@ module away.materials
 		/**
 		 * Retrieve an entire vector register that's still available.
 		 */
-		public requestFreeVectorReg():away.materials.ShaderRegisterElement
+		public requestFreeVectorReg():ShaderRegisterElement
 		{
 			for (var i:number = 0; i < this._regCount; ++i) {
 
@@ -63,7 +63,7 @@ module away.materials
 		/**
 		 * Retrieve a single vector component that's still available.
 		 */
-		public requestFreeRegComponent():away.materials.ShaderRegisterElement
+		public requestFreeRegComponent():ShaderRegisterElement
 		{
 
 			//away.Debug.log( 'RegisterPool' , 'requestFreeRegComponent' , this._regCount);
@@ -100,7 +100,7 @@ module away.materials
 		 * @param register The register to mark as used.
 		 * @param usageCount The amount of usages to add.
 		 */
-		public addUsage(register:away.materials.ShaderRegisterElement, usageCount:number)
+		public addUsage(register:ShaderRegisterElement, usageCount:number)
 		{
 			if (register._component > -1) {
 
@@ -199,7 +199,7 @@ module away.materials
 
 			}
 
-			var vectorRegisters:away.materials.ShaderRegisterElement[] = new Array<away.materials.ShaderRegisterElement>(regCount);///Vector.<ShaderRegisterElement> = new Vector.<ShaderRegisterElement>(regCount, true);
+			var vectorRegisters:ShaderRegisterElement[] = new Array<ShaderRegisterElement>(regCount);///Vector.<ShaderRegisterElement> = new Vector.<ShaderRegisterElement>(regCount, true);
 			RegisterPool._regPool[hash] = vectorRegisters;
 
 			var registerComponents = [
@@ -212,11 +212,11 @@ module away.materials
 
 			for (var i:number = 0; i < regCount; ++i) {
 
-				vectorRegisters[i] = new away.materials.ShaderRegisterElement(regName, i);
+				vectorRegisters[i] = new ShaderRegisterElement(regName, i);
 
 				for (var j:number = 0; j < 4; ++j) {
 
-					registerComponents[j][i] = new away.materials.ShaderRegisterElement(regName, i, j);
+					registerComponents[j][i] = new ShaderRegisterElement(regName, i, j);
 
 				}
 

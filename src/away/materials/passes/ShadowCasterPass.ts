@@ -11,7 +11,7 @@ module away.materials
 	 * @see away3d.materials.methods.ShadingMethodBase
 	 */
 
-	export class ShadowCasterPass extends away.materials.CompiledPass
+	export class ShadowCasterPass extends CompiledPass
 	{
 		private _tangentSpace:boolean;
 		private _lightVertexConstantIndex:number;
@@ -22,7 +22,7 @@ module away.materials
 		 *
 		 * @param material The material to which this pass belongs.
 		 */
-		constructor(material:away.materials.MaterialBase)
+		constructor(material:MaterialBase)
 		{
 			super(material);
 		}
@@ -30,9 +30,9 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public pCreateCompiler(profile:string):away.materials.ShaderCompiler
+		public pCreateCompiler(profile:string):ShaderCompiler
 		{
-			return new away.materials.LightingShaderCompiler(profile);
+			return new LightingShaderCompiler(profile);
 		}
 
 		/**
@@ -75,7 +75,7 @@ module away.materials
 		{
 			super.pUpdateShaderProperties();
 
-			var c:away.materials.LightingShaderCompiler = <away.materials.LightingShaderCompiler> this._pCompiler;
+			var c:LightingShaderCompiler = <LightingShaderCompiler> this._pCompiler;
 			this._tangentSpace = c.tangentSpace;
 
 		}
@@ -87,7 +87,7 @@ module away.materials
 		{
 			super.pUpdateRegisterIndices();
 
-			var c:away.materials.LightingShaderCompiler = <away.materials.LightingShaderCompiler> this._pCompiler;
+			var c:LightingShaderCompiler = <LightingShaderCompiler> this._pCompiler;
 
 			this._lightVertexConstantIndex = c.lightVertexConstantIndex;
 

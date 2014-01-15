@@ -13,7 +13,7 @@ module away.materials
 	/**
 	 * TextureMaterial is a single-pass material that uses a texture to define the surface's diffuse reflection colour (albedo).
 	 */
-	export class TextureMaterial extends away.materials.SinglePassMaterialBase
+	export class TextureMaterial extends SinglePassMaterialBase
 	{
 		/**
 		 * Creates a new TextureMaterial.

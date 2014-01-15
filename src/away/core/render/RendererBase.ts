@@ -45,6 +45,7 @@ module away.render
 		private _clearOnRender:boolean = true;
 		public _pRttViewProjectionMatrix:away.geom.Matrix3D = new away.geom.Matrix3D();
 
+		private _onContextUpdateDelegate:Function;
 
 		/**
 		 * Creates a new RendererBase object.
@@ -53,6 +54,8 @@ module away.render
 		{
 			this._pRenderableSorter = new away.sort.RenderableMergeSort();
 			this._renderToTexture = renderToTexture;
+
+			this._onContextUpdateDelegate = away.utils.Delegate.create(this, this.onContextUpdate);
 		}
 
 		public iCreateEntityCollector():away.traverse.EntityCollector
@@ -181,8 +184,8 @@ module away.render
 
 				if (this._pStageGLProxy) {
 
-					this._pStageGLProxy.removeEventListener(away.events.StageGLEvent.CONTEXTGL_CREATED, this.onContextUpdate, this);
-					this._pStageGLProxy.removeEventListener(away.events.StageGLEvent.CONTEXTGL_RECREATED, this.onContextUpdate, this);
+					this._pStageGLProxy.removeEventListener(away.events.StageGLEvent.CONTEXTGL_CREATED, this._onContextUpdateDelegate);
+					this._pStageGLProxy.removeEventListener(away.events.StageGLEvent.CONTEXTGL_RECREATED, this._onContextUpdateDelegate);
 
 				}
 
@@ -195,8 +198,8 @@ module away.render
 			//else if (_pStageGLProxy) throw new Error("A StageGL instance was already assigned!");
 
 			this._pStageGLProxy = value;
-			this._pStageGLProxy.addEventListener(away.events.StageGLEvent.CONTEXTGL_CREATED, this.onContextUpdate, this);
-			this._pStageGLProxy.addEventListener(away.events.StageGLEvent.CONTEXTGL_RECREATED, this.onContextUpdate, this);
+			this._pStageGLProxy.addEventListener(away.events.StageGLEvent.CONTEXTGL_CREATED, this._onContextUpdateDelegate);
+			this._pStageGLProxy.addEventListener(away.events.StageGLEvent.CONTEXTGL_RECREATED, this._onContextUpdateDelegate);
 
 			/*
 			 if (_backgroundImageRenderer)

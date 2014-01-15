@@ -7,9 +7,9 @@ module away.materials
 	 * SinglePassMaterialBase forms an abstract base class for the default single-pass materials provided by Away3D,
 	 * using material methods to define their appearance.
 	 */
-	export class SinglePassMaterialBase extends away.materials.MaterialBase
+	export class SinglePassMaterialBase extends MaterialBase
 	{
-		public _pScreenPass:away.materials.SuperShaderPass;
+		public _pScreenPass:SuperShaderPass;
 		private _alphaBlending:boolean = false;
 
 		/**
@@ -19,7 +19,7 @@ module away.materials
 		{
 			super();
 
-			this.pAddPass(this._pScreenPass = new away.materials.SuperShaderPass(this));
+			this.pAddPass(this._pScreenPass = new SuperShaderPass(this));
 		}
 
 		/**
@@ -247,7 +247,7 @@ module away.materials
 		 * but modulate the shaded colour, used for fog, outlines, etc. The method will be applied to the result of the
 		 * methods added prior.
 		 */
-		public addMethod(method:away.materials.EffectMethodBase)
+		public addMethod(method:EffectMethodBase)
 		{
 			this._pScreenPass.addMethod(method);
 		}
@@ -267,7 +267,7 @@ module away.materials
 		 * @param method The method to be queried.
 		 * @return true if the method was added to the material, false otherwise.
 		 */
-		public hasMethod(method:away.materials.EffectMethodBase):boolean
+		public hasMethod(method:EffectMethodBase):boolean
 		{
 			return this._pScreenPass.hasMethod(method);
 		}
@@ -277,7 +277,7 @@ module away.materials
 		 * @param index The index of the method to retrieve.
 		 * @return The method at the given index.
 		 */
-		public getMethodAt(index:number):away.materials.EffectMethodBase
+		public getMethodAt(index:number):EffectMethodBase
 		{
 			return this._pScreenPass.getMethodAt(index);
 		}
@@ -287,7 +287,7 @@ module away.materials
 		 * methods are those that do not influence the lighting but modulate the shaded colour, used for fog, outlines,
 		 * etc. The method will be applied to the result of the methods with a lower index.
 		 */
-		public addMethodAt(method:away.materials.EffectMethodBase, index:number)
+		public addMethodAt(method:EffectMethodBase, index:number)
 		{
 			this._pScreenPass.addMethodAt(method, index);
 		}
@@ -296,7 +296,7 @@ module away.materials
 		 * Removes an effect method from the material.
 		 * @param method The method to be removed.
 		 */
-		public removeMethod(method:away.materials.EffectMethodBase)
+		public removeMethod(method:EffectMethodBase)
 		{
 			this._pScreenPass.removeMethod(method);
 		}
@@ -472,7 +472,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public set lightPicker(value:away.materials.LightPickerBase)
+		public set lightPicker(value:LightPickerBase)
 		{
 
 			super.setLightPicker(value);

@@ -1,7 +1,23 @@
+///<reference path="../../../build/Away3D.next.d.ts" />
+//<reference path="../../../src/Away3D.ts" />
 var demos;
 (function (demos) {
-    ///<reference path="../../../build/Away3D.next.d.ts" />
     (function (object3d) {
+        var Event = away.events.Event;
+        var IMGLoader = away.net.IMGLoader;
+        var URLRequest = away.net.URLRequest;
+        var RequestAnimationFrame = away.utils.RequestAnimationFrame;
+        var Delegate = away.utils.Delegate;
+
+        var PerspectiveLens = away.cameras.PerspectiveLens;
+        var View3D = away.containers.View3D;
+        var Mesh = away.entities.Mesh;
+        var PointLight = away.lights.PointLight;
+        var StaticLightPicker = away.materials.StaticLightPicker;
+        var TextureMaterial = away.materials.TextureMaterial;
+        var TorusGeometry = away.primitives.TorusGeometry;
+        var HTMLImageElementTexture = away.textures.HTMLImageElementTexture;
+
         var TorusObject3DDemo = (function () {
             function TorusObject3DDemo() {
                 var _this = this;
@@ -13,11 +29,11 @@ var demos;
                 away.Debug.LOG_PI_ERRORS = false;
 
                 this.meshes = new Array();
-                this.light = new away.lights.PointLight();
-                this.view = new away.containers.View3D();
+                this.light = new PointLight();
+                this.view = new View3D();
 
-                this.pointLight = new away.lights.PointLight();
-                this.lightPicker = new away.materials.StaticLightPicker([this.pointLight]);
+                this.pointLight = new PointLight();
+                this.lightPicker = new StaticLightPicker([this.pointLight]);
 
                 this.view.scene.addChild(this.pointLight);
 
@@ -27,14 +43,14 @@ var demos;
                 this.view.camera.z = 0;
                 this.view.backgroundColor = 0x000000;
                 this.view.backgroundAlpha = 1;
-                this.torus = new away.primitives.TorusGeometry(150, 50, 32, 32, false);
+                this.torus = new TorusGeometry(150, 50, 32, 32, false);
 
                 var l = 10;
 
                 for (var c = 0; c < l; c++) {
                     var t = Math.PI * 2 * c / l;
 
-                    var m = new away.entities.Mesh(this.torus);
+                    var m = new Mesh(this.torus);
                     m.x = Math.cos(t) * this.radius;
                     m.y = 0;
                     m.z = Math.sin(t) * this.radius;
@@ -45,7 +61,7 @@ var demos;
 
                 this.view.scene.addChild(this.light);
 
-                this.raf = new away.utils.RequestAnimationFrame(this.tick, this);
+                this.raf = new RequestAnimationFrame(this.tick, this);
                 this.raf.start();
                 this.resize(null);
 
@@ -56,9 +72,9 @@ var demos;
                 this.loadResources();
             }
             TorusObject3DDemo.prototype.loadResources = function () {
-                var urlRequest = new away.net.URLRequest("assets/custom_uv_horizontal.png");
-                var imgLoader = new away.net.IMGLoader();
-                imgLoader.addEventListener(away.events.Event.COMPLETE, this.imageCompleteHandler, this);
+                var urlRequest = new URLRequest("assets/custom_uv_horizontal.png");
+                var imgLoader = new IMGLoader();
+                imgLoader.addEventListener(Event.COMPLETE, Delegate.create(this, this.imageCompleteHandler));
                 imgLoader.load(urlRequest);
             };
 
@@ -66,14 +82,13 @@ var demos;
                 var imageLoader = e.target;
                 this._image = imageLoader.image;
 
-                var ts = new away.textures.HTMLImageElementTexture(this._image, false);
+                var ts = new HTMLImageElementTexture(this._image, false);
 
-                var matTx = new away.materials.TextureMaterial(ts, true, true, false);
+                var matTx = new TextureMaterial(ts, true, true, false);
                 matTx.lightPicker = this.lightPicker;
 
-                for (var c = 0; c < this.meshes.length; c++) {
+                for (var c = 0; c < this.meshes.length; c++)
                     this.meshes[c].material = matTx;
-                }
             };
 
             TorusObject3DDemo.prototype.tick = function (e) {
@@ -95,9 +110,9 @@ var demos;
                     this.meshes[c].z = Math.sin(objPos + this.tPos) * this.radius;
                 }
 
-                if (this.follow) {
+                //this.view.camera.y = Math.sin( this.tPos ) * 1500;
+                if (this.follow)
                     this.view.camera.lookAt(this.meshes[0].position);
-                }
 
                 this.view.camera.y = Math.sin(this.tPos) * 1500;
 

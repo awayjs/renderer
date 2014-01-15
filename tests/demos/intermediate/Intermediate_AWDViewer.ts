@@ -128,7 +128,7 @@ module examples
 
 			//kickoff asset loading
 			var loader:Loader3D = new Loader3D();
-			loader.addEventListener(AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
+			loader.addEventListener(AssetEvent.ASSET_COMPLETE, away.utils.Delegate.create(this, this.onAssetComplete));
 
 			loader.load(new URLRequest("assets/shambler.awd"));
 
@@ -171,7 +171,7 @@ module examples
 					node.looping = true;
 				} else {
 					node.looping = false;
-					node.addEventListener(AnimationStateEvent.PLAYBACK_COMPLETE, this.onPlaybackComplete, this);
+					node.addEventListener(AnimationStateEvent.PLAYBACK_COMPLETE, away.utils.Delegate.create(this, this.onPlaybackComplete));
 				}
 			}
 		}

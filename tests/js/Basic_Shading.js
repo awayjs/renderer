@@ -1,31 +1,23 @@
 ///<reference path="../../../build/Away3D.next.d.ts" />
+//<reference path="../../../src/Away3D.ts" />
 /*
-
 Shading example in Away3d
-
 Demonstrates:
-
 How to create multiple lightsources in a scene.
 How to apply specular maps, normals maps and diffuse texture maps to a material.
-
 Code by Rob Bateman
 rob@infiniteturtles.co.uk
 http://www.infiniteturtles.co.uk
-
 This code is distributed under the MIT License
-
 Copyright (c) The Away Foundation http://www.theawayfoundation.org
-
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the “Software”), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
-
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
-
 THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -33,7 +25,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
-
 */
 var examples;
 (function (examples) {
@@ -182,7 +173,7 @@ var examples;
             this._timer = new away.utils.RequestAnimationFrame(this.onEnterFrame, this);
             this._timer.start();
 
-            away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete, this);
+            away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, away.utils.Delegate.create(this, this.onResourceComplete));
 
             //plane textures
             away.library.AssetLibrary.load(new away.net.URLRequest("assets/demos/floor_diffuse.jpg"));
@@ -282,6 +273,9 @@ var examples;
             this._move = false;
         };
 
+        /**
+        * Mouse move listener for navigation
+        */
         Basic_Shading.prototype.onMouseMove = function (event) {
             if (this._move) {
                 this._cameraController.panAngle = 0.3 * (event.clientX - this._lastMouseX) + this._lastPanAngle;
@@ -289,6 +283,9 @@ var examples;
             }
         };
 
+        /**
+        * Mouse wheel listener for navigation
+        */
         Basic_Shading.prototype.onMouseWheel = function (event) {
             if (event.wheelDelta > 0) {
                 this._cameraController.distance += 20;
@@ -298,7 +295,7 @@ var examples;
         };
 
         /**
-        * stage listener for resize events
+        * window listener for resize events
         */
         Basic_Shading.prototype.onResize = function (event) {
             if (typeof event === "undefined") { event = null; }
@@ -311,8 +308,4 @@ var examples;
     })();
     examples.Basic_Shading = Basic_Shading;
 })(examples || (examples = {}));
-
-window.onload = function () {
-    new examples.Basic_Shading();
-};
 //# sourceMappingURL=Basic_Shading.js.map

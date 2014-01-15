@@ -27,7 +27,7 @@ module away.materials
 	 * @see away3d.materials.MultiPassMaterialBase
 	 */
 
-	export class LightingPass extends away.materials.CompiledPass
+	export class LightingPass extends CompiledPass
 	{
 		private _includeCasters:boolean = true;
 		private _tangentSpace:boolean;
@@ -94,10 +94,10 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public pCreateCompiler(profile:string):away.materials.ShaderCompiler
+		public pCreateCompiler(profile:string):ShaderCompiler
 		{
 			this._maxLights = profile == "baselineConstrained"? 1 : 3;
-			return new away.materials.LightingShaderCompiler(profile);
+			return new LightingShaderCompiler(profile);
 		}
 
 		/**
@@ -175,10 +175,10 @@ module away.materials
 		private calculateNumProbes(numLightProbes:number):number
 		{
 			var numChannels:number = 0;
-			if ((this._pSpecularLightSources & away.materials.LightSources.PROBES) != 0) {
+			if ((this._pSpecularLightSources & LightSources.PROBES) != 0) {
 				++numChannels;
 			}
-			if ((this._pDiffuseLightSources & away.materials.LightSources.PROBES) != 0)
+			if ((this._pDiffuseLightSources & LightSources.PROBES) != 0)
 				++numChannels;
 
 
@@ -193,7 +193,7 @@ module away.materials
 		{
 			super.pUpdateShaderProperties();
 
-			var compilerV:away.materials.LightingShaderCompiler = <away.materials.LightingShaderCompiler> this._pCompiler;
+			var compilerV:LightingShaderCompiler = <LightingShaderCompiler> this._pCompiler;
 			this._tangentSpace = compilerV.tangentSpace;
 
 		}
@@ -205,7 +205,7 @@ module away.materials
 		{
 			super.pUpdateRegisterIndices();
 
-			var compilerV:away.materials.LightingShaderCompiler = <away.materials.LightingShaderCompiler> this._pCompiler;
+			var compilerV:LightingShaderCompiler = <LightingShaderCompiler> this._pCompiler;
 			this._lightVertexConstantIndex = compilerV.lightVertexConstantIndex;
 
 		}
@@ -252,7 +252,7 @@ module away.materials
 		 */
 		private usesProbesForSpecular():boolean
 		{
-			return this._pNumLightProbes > 0 && (this._pSpecularLightSources & away.materials.LightSources.PROBES) != 0;
+			return this._pNumLightProbes > 0 && (this._pSpecularLightSources & LightSources.PROBES) != 0;
 		}
 
 		/**
@@ -260,7 +260,7 @@ module away.materials
 		 */
 		private usesProbesForDiffuse():boolean
 		{
-			return this._pNumLightProbes > 0 && (this._pDiffuseLightSources & away.materials.LightSources.PROBES) != 0;
+			return this._pNumLightProbes > 0 && (this._pDiffuseLightSources & LightSources.PROBES) != 0;
 		}
 
 		/**

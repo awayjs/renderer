@@ -8,9 +8,9 @@ module away.materials
 	 *
 	 * @see away3d.entities.Lines
 	 */
-	export class SegmentMaterial extends away.materials.MaterialBase
+	export class SegmentMaterial extends MaterialBase
 	{
-		private _screenPass:away.materials.SegmentPass;
+		private _screenPass:SegmentPass;
 
 		/**
 		 * Creates a new SegmentMaterial object.
@@ -22,7 +22,7 @@ module away.materials
 			super();
 
 			this.bothSides = true;
-			this.pAddPass(this._screenPass = new away.materials.SegmentPass(thickness));
+			this.pAddPass(this._screenPass = new SegmentPass(thickness));
 			this._screenPass.material = this;
 		}
 	}

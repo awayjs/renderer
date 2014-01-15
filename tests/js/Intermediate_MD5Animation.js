@@ -252,8 +252,8 @@ var examples;
             assetLoaderContext.dependencyBaseUrl = "assets/demos/skybox/";
 
             //load hellknight mesh
-            AssetLibrary.addEventListener(AssetEvent.ASSET_COMPLETE, this.onAssetComplete, this);
-            AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete, this);
+            AssetLibrary.addEventListener(AssetEvent.ASSET_COMPLETE, away.utils.Delegate.create(this, this.onAssetComplete));
+            AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, away.utils.Delegate.create(this, this.onResourceComplete));
             AssetLibrary.load(new URLRequest("assets/demos/hellknight/hellknight.md5mesh"), null, null, new MD5MeshParser());
 
             //load environment texture
@@ -316,7 +316,7 @@ var examples;
                     node.looping = true;
                 } else {
                     node.looping = false;
-                    node.addEventListener(AnimationStateEvent.PLAYBACK_COMPLETE, this.onPlaybackComplete, this);
+                    node.addEventListener(AnimationStateEvent.PLAYBACK_COMPLETE, away.utils.Delegate.create(this, this.onPlaybackComplete));
                 }
 
                 if (name == Intermediate_MD5Animation.IDLE_NAME)

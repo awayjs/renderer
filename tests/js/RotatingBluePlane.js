@@ -28,7 +28,7 @@ var RotatingBluePlane = (function (_super) {
     RotatingBluePlane.prototype.loadResources = function () {
         var urlRequest = new away.net.URLRequest("130909wall_big.png");
         var imgLoader = new away.net.IMGLoader();
-        imgLoader.addEventListener(away.events.Event.COMPLETE, this.imageCompleteHandler, this);
+        imgLoader.addEventListener(away.events.Event.COMPLETE, away.utils.Delegate.create(this, this.imageCompleteHandler));
         imgLoader.load(urlRequest);
     };
 
@@ -36,12 +36,12 @@ var RotatingBluePlane = (function (_super) {
         var imageLoader = e.target;
         this._image = imageLoader.image;
 
-        this._stage.stageGLs[0].addEventListener(away.events.Event.CONTEXTGL_CREATE, this.onContextGLCreateHandler, this);
+        this._stage.stageGLs[0].addEventListener(away.events.Event.CONTEXTGL_CREATE, away.utils.Delegate.create(this, this.onContextGLCreateHandler));
         this._stage.stageGLs[0].requestContext();
     };
 
     RotatingBluePlane.prototype.onContextGLCreateHandler = function (e) {
-        this._stage.stageGLs[0].removeEventListener(away.events.Event.CONTEXTGL_CREATE, this.onContextGLCreateHandler, this);
+        this._stage.stageGLs[0].removeEventListener(away.events.Event.CONTEXTGL_CREATE, away.utils.Delegate.create(this, this.onContextGLCreateHandler));
 
         var stageGL = e.target;
         this._contextGL = stageGL.contextGL;

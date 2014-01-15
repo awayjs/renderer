@@ -2,6 +2,23 @@
 
 module away.materials
 {
+	import IRenderable					= away.base.IRenderable;
+	import BlendMode					= away.display.BlendMode;
+	import ContextGL					= away.displayGL.ContextGL;
+	import ContextGLCompareMode			= away.displayGL.ContextGLCompareMode;
+	import Event						= away.events.Event;
+	import Matrix3D						= away.geom.Matrix3D;
+	import AssetType					= away.library.AssetType;
+	import Delegate						= away.utils.Delegate;
+
+	import IAnimationSet				= away.animators.IAnimationSet;
+	import IMaterialOwner				= away.base.IMaterialOwner;
+	import Camera3D						= away.cameras.Camera3D;
+	import StageGLProxy					= away.managers.StageGLProxy;
+	import DepthMapPass					= away.materials.DepthMapPass;
+	import DistanceMapPass				= away.materials.DistanceMapPass;
+	import MaterialPassBase				= away.materials.MaterialPassBase;
+	import EntityCollector				= away.traverse.EntityCollector;
 
 	/**
 	 * MaterialBase forms an abstract base class for any material.
@@ -34,7 +51,7 @@ module away.materials
 		 *
 		 * @private
 		 */
-		public _iClassification:string;//Arcane
+		public _iClassification:string;
 
 		/**
 		 * An id for this material used to sort the renderables by material, which reduces render state changes across
@@ -42,70 +59,74 @@ module away.materials
 		 *
 		 * @private
 		 */
-		public _iUniqueId:number;//Arcane
+		public _iUniqueId:number;
 
 		/**
 		 * An id for this material used to sort the renderables by shader program, which reduces Program state changes.
 		 *
 		 * @private
 		 */
-		public _iRenderOrderId:number = 0;//Arcane
+		public _iRenderOrderId:number = 0;
 
 		/**
 		 * The same as _renderOrderId, but applied to the depth shader passes.
 		 *
 		 * @private
 		 */
-		public _iDepthPassId:number;//Arcane
+		public _iDepthPassId:number;
 
 		private _bothSides:boolean = false; // update
-		private _animationSet:away.animators.IAnimationSet;
+		private _animationSet:IAnimationSet;
 
 		/**
 		 * A list of material owners, renderables or custom Entities.
 		 */
-
-
-		private _owners:away.base.IMaterialOwner[];//:Vector.<IMaterialOwner>;
+		private _owners:Array<IMaterialOwner>;
 
 		private _alphaPremultiplied:boolean;
 
-		public _pBlendMode:string = away.display.BlendMode.NORMAL;
+		public _pBlendMode:string = BlendMode.NORMAL;
 
 		private _numPasses:number = 0;
-		private _passes:away.materials.MaterialPassBase[];//Vector.<MaterialPassBase>;
+		private _passes:Array<MaterialPassBase>;
 
 		public _pMipmap:boolean = true;
 		private _smooth:boolean = true;
 		private _repeat:boolean = false; // Update
 
-		public _pDepthPass:away.materials.DepthMapPass;
-		public _pDistancePass:away.materials.DistanceMapPass;
-		public _pLightPicker:away.materials.LightPickerBase;
+		public _pDepthPass:DepthMapPass;
+		public _pDistancePass:DistanceMapPass;
+		public _pLightPicker:LightPickerBase;
 
 		private _distanceBasedDepthRender:boolean;
-		public _pDepthCompareMode:string = away.displayGL.ContextGLCompareMode.LESS_EQUAL;
+		public _pDepthCompareMode:string = ContextGLCompareMode.LESS_EQUAL;
+
+		private _onPassChangeDelegate:Function;
+		private _onDepthPassChangeDelegate:Function;
+		private _onDistancePassChangeDelegate:Function;
 
 		/**
 		 * Creates a new MaterialBase object.
 		 */
 		constructor()
 		{
-
 			super();
 
-			this._owners = new Array< away.base.IMaterialOwner>();
-			this._passes = new Array<away.materials.MaterialPassBase>();
-			this._pDepthPass = new away.materials.DepthMapPass();
-			this._pDistancePass = new away.materials.DistanceMapPass();
+			this._owners = new Array<IMaterialOwner>();
+			this._passes = new Array<MaterialPassBase>();
+			this._pDepthPass = new DepthMapPass();
+			this._pDistancePass = new DistanceMapPass();
 
-			this._pDepthPass.addEventListener(away.events.Event.CHANGE, this.onDepthPassChange, this);
-			this._pDistancePass.addEventListener(away.events.Event.CHANGE, this.onDistancePassChange, this);
+			this._onPassChangeDelegate = Delegate.create(this, this.onPassChange);
+			this._onDepthPassChangeDelegate = Delegate.create(this, this.onDepthPassChange);
+			this._onDistancePassChangeDelegate = Delegate.create(this, this.onDistancePassChange);
+
+			this._pDepthPass.addEventListener(Event.CHANGE, this._onDepthPassChangeDelegate);
+			this._pDistancePass.addEventListener(Event.CHANGE, this._onDistancePassChangeDelegate);
 
 			this.alphaPremultiplied = false; //TODO: work out why this is different for WebGL
 
-			this._iUniqueId = away.materials.MaterialBase.MATERIAL_ID_COUNT++;
-
+			this._iUniqueId = MaterialBase.MATERIAL_ID_COUNT++;
 		}
 
 		/**
@@ -113,43 +134,35 @@ module away.materials
 		 */
 		public get assetType():string
 		{
-			return away.library.AssetType.MATERIAL;
+			return AssetType.MATERIAL;
 		}
 
 		/**
 		 * The light picker used by the material to provide lights to the material if it supports lighting.
 		 *
-		 * @see away3d.materials.lightpickers.LightPickerBase
-		 * @see away3d.materials.lightpickers.StaticLightPicker
+		 * @see LightPickerBase
+		 * @see StaticLightPicker
 		 */
-		public get lightPicker():away.materials.LightPickerBase
+		public get lightPicker():LightPickerBase
 		{
 			return this._pLightPicker;
 		}
 
-		public set lightPicker(value:away.materials.LightPickerBase)
+		public set lightPicker(value:LightPickerBase)
 		{
-
 			this.setLightPicker(value);
-
 		}
 
-		public setLightPicker(value:away.materials.LightPickerBase)
+		public setLightPicker(value:LightPickerBase)
 		{
-
 			if (value != this._pLightPicker) {
 
 				this._pLightPicker = value;
 				var len:number = this._passes.length;
 
-				for (var i:number = 0; i < len; ++i) {
-
+				for (var i:number = 0; i < len; ++i)
 					this._passes[i].lightPicker = this._pLightPicker;
-
-				}
-
 			}
-
 		}
 
 		/**
@@ -169,15 +182,10 @@ module away.materials
 
 		public setMipMap(value:boolean)
 		{
-
 			this._pMipmap = value;
 
-			for (var i:number = 0; i < this._numPasses; ++i) {
-
+			for (var i:number = 0; i < this._numPasses; ++i)
 				this._passes[i].mipmap = value;
-
-			}
-
 		}
 
 		/**
@@ -192,19 +200,14 @@ module away.materials
 		{
 			this._smooth = value;
 
-			for (var i:number = 0; i < this._numPasses; ++i) {
-
+			for (var i:number = 0; i < this._numPasses; ++i)
 				this._passes[i].smooth = value;
-
-			}
-
-
 		}
 
 		/**
 		 * The depth compare mode used to render the renderables using this material.
 		 *
-		 * @see flash.displayGL.ContextGLCompareMode
+		 * @see away.displayGL.ContextGLCompareMode
 		 */
 
 		public get depthCompareMode():string
@@ -235,13 +238,8 @@ module away.materials
 		{
 			this._repeat = value;
 
-
-			for (var i:number = 0; i < this._numPasses; ++i) {
-
+			for (var i:number = 0; i < this._numPasses; ++i)
 				this._passes[i].repeat = value;
-
-			}
-
 		}
 
 		/**
@@ -252,15 +250,14 @@ module away.materials
 		{
 			var i:number;
 
-			for (i = 0; i < this._numPasses; ++i) {
+			for (i = 0; i < this._numPasses; ++i)
 				this._passes[i].dispose();
-			}
 
 			this._pDepthPass.dispose();
 			this._pDistancePass.dispose();
 
-			this._pDepthPass.removeEventListener(away.events.Event.CHANGE, this.onDepthPassChange, this);
-			this._pDistancePass.removeEventListener(away.events.Event.CHANGE, this.onDistancePassChange, this);
+			this._pDepthPass.removeEventListener(Event.CHANGE, this._onDepthPassChangeDelegate);
+			this._pDistancePass.removeEventListener(Event.CHANGE, this._onDistancePassChangeDelegate);
 
 		}
 
@@ -276,12 +273,8 @@ module away.materials
 		{
 			this._bothSides = value;
 
-
-			for (var i:number = 0; i < this._numPasses; ++i) {
-
+			for (var i:number = 0; i < this._numPasses; ++i)
 				this._passes[i].bothSides = value;
-
-			}
 
 			this._pDepthPass.bothSides = value;
 			this._pDistancePass.bothSides = value;
@@ -315,9 +308,7 @@ module away.materials
 
 		public setBlendMode(value:string)
 		{
-
 			this._pBlendMode = value;
-
 		}
 
 		/**
@@ -334,10 +325,8 @@ module away.materials
 		{
 			this._alphaPremultiplied = value;
 
-			for (var i:number = 0; i < this._numPasses; ++i) {
+			for (var i:number = 0; i < this._numPasses; ++i)
 				this._passes[i].alphaPremultiplied = value;
-			}
-
 		}
 
 		/**
@@ -345,16 +334,13 @@ module away.materials
 		 */
 		public get requiresBlending():boolean
 		{
-
 			return this.getRequiresBlending();
 
 		}
 
 		public getRequiresBlending():boolean
 		{
-
 			return this._pBlendMode != away.display.BlendMode.NORMAL;
-
 		}
 
 		/**
@@ -384,9 +370,7 @@ module away.materials
 
 		public iHasDepthAlphaThreshold():boolean
 		{
-
 			return this._pDepthPass.alphaThreshold > 0;
-
 		}
 
 		/**
@@ -400,22 +384,14 @@ module away.materials
 		 *
 		 * @private
 		 */
-		public iActivateForDepth(stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D, distanceBased:boolean = false) // ARCANE
+		public iActivateForDepth(stageGLProxy:StageGLProxy, camera:Camera3D, distanceBased:boolean = false) // ARCANE
 		{
-
-
 			this._distanceBasedDepthRender = distanceBased;
 
-			if (distanceBased) {
-
+			if (distanceBased)
 				this._pDistancePass.iActivate(stageGLProxy, camera);
-
-			} else {
-
+			else
 				this._pDepthPass.iActivate(stageGLProxy, camera);
-
-			}
-
 		}
 
 		/**
@@ -427,19 +403,10 @@ module away.materials
 		 */
 		public iDeactivateForDepth(stageGLProxy:away.managers.StageGLProxy)
 		{
-
-
-			if (this._distanceBasedDepthRender) {
-
+			if (this._distanceBasedDepthRender)
 				this._pDistancePass.iDeactivate(stageGLProxy);
-
-			} else {
-
+			else
 				this._pDepthPass.iDeactivate(stageGLProxy);
-
-			}
-
-
 		}
 
 		/**
@@ -453,33 +420,20 @@ module away.materials
 		 *
 		 * @private
 		 */
-		public iRenderDepth(renderable:away.base.IRenderable, stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D, viewProjection:away.geom.Matrix3D) // ARCANE
+		public iRenderDepth(renderable:IRenderable, stageGLProxy:StageGLProxy, camera:Camera3D, viewProjection:Matrix3D) // ARCANE
 		{
-
 			if (this._distanceBasedDepthRender) {
-
-				if (renderable.animator) {
-
+				if (renderable.animator)
 					this._pDistancePass.iUpdateAnimationState(renderable, stageGLProxy, camera);
-
-				}
-
 
 				this._pDistancePass.iRender(renderable, stageGLProxy, camera, viewProjection);
 
 			} else {
-				if (renderable.animator) {
-
+				if (renderable.animator)
 					this._pDepthPass.iUpdateAnimationState(renderable, stageGLProxy, camera);
 
-				}
-
-
 				this._pDepthPass.iRender(renderable, stageGLProxy, camera, viewProjection);
-
 			}
-
-
 		}
 
 		//*/
@@ -493,9 +447,7 @@ module away.materials
 
 		public iPassRendersToTexture(index:number):boolean
 		{
-
 			return this._passes[index].renderToTexture;
-
 		}
 
 		/**
@@ -507,10 +459,9 @@ module away.materials
 		 * @private
 		 */
 
-		public iActivatePass(index:number, stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D) // ARCANE
+		public iActivatePass(index:number, stageGLProxy:StageGLProxy, camera:Camera3D) // ARCANE
 		{
 			this._passes[index].iActivate(stageGLProxy, camera);
-
 		}
 
 		/**
@@ -521,7 +472,7 @@ module away.materials
 		 * @private
 		 */
 
-		public iDeactivatePass(index:number, stageGLProxy:away.managers.StageGLProxy) // ARCANE
+		public iDeactivatePass(index:number, stageGLProxy:StageGLProxy) // ARCANE
 		{
 			this._passes[index].iDeactivate(stageGLProxy);
 		}
@@ -535,22 +486,15 @@ module away.materials
 		 * @param viewProjection The view-projection matrix used to project to the screen. This is not the same as
 		 * camera.viewProjection as it includes the scaling factors when rendering to textures.
 		 */
-		public iRenderPass(index:number, renderable:away.base.IRenderable, stageGLProxy:away.managers.StageGLProxy, entityCollector:away.traverse.EntityCollector, viewProjection:away.geom.Matrix3D)
+		public iRenderPass(index:number, renderable:IRenderable, stageGLProxy:StageGLProxy, entityCollector:EntityCollector, viewProjection:Matrix3D)
 		{
-			if (this._pLightPicker) {
-
+			if (this._pLightPicker)
 				this._pLightPicker.collectLights(renderable, entityCollector);
 
-			}
+			var pass:MaterialPassBase = this._passes[index];
 
-			var pass:away.materials.MaterialPassBase = this._passes[index];
-
-			if (renderable.animator) {
-
+			if (renderable.animator)
 				pass.iUpdateAnimationState(renderable, stageGLProxy, entityCollector.camera);
-
-			}
-
 
 			pass.iRender(renderable, stageGLProxy, entityCollector.camera, viewProjection);
 
@@ -568,58 +512,44 @@ module away.materials
 		 *
 		 * @private
 		 */
-
-		public iAddOwner(owner:away.base.IMaterialOwner) // ARCANE
+		public iAddOwner(owner:away.base.IMaterialOwner)
 		{
 			this._owners.push(owner);
 
 			if (owner.animator) {
-
 				if (this._animationSet && owner.animator.animationSet != this._animationSet) {
-
 					throw new Error("A Material instance cannot be shared across renderables with different animator libraries");
-
 				} else {
-
 					if (this._animationSet != owner.animator.animationSet) {
 
 						this._animationSet = owner.animator.animationSet;
 
-						for (var i:number = 0; i < this._numPasses; ++i) {
-
+						for (var i:number = 0; i < this._numPasses; ++i)
 							this._passes[i].animationSet = this._animationSet;
-
-						}
 
 						this._pDepthPass.animationSet = this._animationSet;
 						this._pDistancePass.animationSet = this._animationSet;
 
-						this.iInvalidatePasses(null);//this.invalidatePasses(null);
-
+						this.iInvalidatePasses(null);
 					}
 				}
 			}
 		}
 
-		//*/
 		/**
 		 * Removes an IMaterialOwner as owner.
 		 * @param owner
 		 * @private
 		 */
-
-		public iRemoveOwner(owner:away.base.IMaterialOwner) // ARCANE
+		public iRemoveOwner(owner:away.base.IMaterialOwner)
 		{
 			this._owners.splice(this._owners.indexOf(owner), 1);
 
 			if (this._owners.length == 0) {
 				this._animationSet = null;
 
-				for (var i:number = 0; i < this._numPasses; ++i) {
-
+				for (var i:number = 0; i < this._numPasses; ++i)
 					this._passes[i].animationSet = this._animationSet;
-
-				}
 
 				this._pDepthPass.animationSet = this._animationSet;
 				this._pDistancePass.animationSet = this._animationSet;
@@ -627,13 +557,12 @@ module away.materials
 			}
 		}
 
-		//*/
 		/**
 		 * A list of the IMaterialOwners that use this material
 		 *
 		 * @private
 		 */
-		public get iOwners():away.base.IMaterialOwner[]//Vector.<IMaterialOwner> // ARCANE
+		public get iOwners():Array<IMaterialOwner>
 		{
 			return this._owners;
 		}
@@ -643,7 +572,7 @@ module away.materials
 		 *
 		 * @private
 		 */
-		public iUpdateMaterial(context:away.displayGL.ContextGL) // ARCANE
+		public iUpdateMaterial(context:ContextGL)
 		{
 			//throw new away.errors.AbstractMethodError();
 		}
@@ -653,11 +582,9 @@ module away.materials
 		 *
 		 * @private
 		 */
-		public iDeactivate(stageGLProxy:away.managers.StageGLProxy) // ARCANE
+		public iDeactivate(stageGLProxy:StageGLProxy)
 		{
-
 			this._passes[this._numPasses - 1].iDeactivate(stageGLProxy);
-
 		}
 
 		/**
@@ -667,7 +594,6 @@ module away.materials
 		 *
 		 * @private
 		 */
-
 		public iInvalidatePasses(triggerPass:MaterialPassBase)
 		{
 			var owner:away.base.IMaterialOwner;
@@ -683,56 +609,38 @@ module away.materials
 			// we should do everything on cpu (otherwise we have the cost of both gpu + cpu animations)
 
 			if (this._animationSet) {
-
 				this._animationSet.resetGPUCompatibility();
 
 				l = this._owners.length;
 
 				for (c = 0; c < l; c++) {
-
 					owner = this._owners[c];
 
 					if (owner.animator) {
-
 						owner.animator.testGPUCompatibility(this._pDepthPass);
 						owner.animator.testGPUCompatibility(this._pDistancePass);
-
 					}
-
 				}
-
 			}
 
 			for (var i:number = 0; i < this._numPasses; ++i) {
 				// only invalidate the pass if it wasn't the triggering pass
-				if (this._passes[i] != triggerPass) {
-
+				if (this._passes[i] != triggerPass)
 					this._passes[i].iInvalidateShaderProgram(false);
-
-				}
-
 
 				// test if animation will be able to run on gpu BEFORE compiling materials
 				// test if the pass supports animating the animation set in the vertex shader
 				// if any object using this material fails to support accelerated animations for any of the passes,
 				// we should do everything on cpu (otherwise we have the cost of both gpu + cpu animations)
 				if (this._animationSet) {
-
-
 					l = this._owners.length;
 
 					for (c = 0; c < l; c++) {
-
 						owner = this._owners[c];
 
-						if (owner.animator) {
-
+						if (owner.animator)
 							owner.animator.testGPUCompatibility(this._passes[i]);
-
-						}
-
 					}
-
 				}
 			}
 		}
@@ -741,8 +649,7 @@ module away.materials
 		 * Removes a pass from the material.
 		 * @param pass The pass to be removed.
 		 */
-
-		public pRemovePass(pass:MaterialPassBase) // protected
+		public pRemovePass(pass:MaterialPassBase)
 		{
 			this._passes.splice(this._passes.indexOf(pass), 1);
 			--this._numPasses;
@@ -751,15 +658,10 @@ module away.materials
 		/**
 		 * Removes all passes from the material
 		 */
-
 		public pClearPasses()
 		{
-			for (var i:number = 0; i < this._numPasses; ++i) {
-
-				this._passes[i].removeEventListener(away.events.Event.CHANGE, this.onPassChange, this);
-
-			}
-
+			for (var i:number = 0; i < this._numPasses; ++i)
+				this._passes[i].removeEventListener(Event.CHANGE, this._onPassChangeDelegate);
 
 			this._passes.length = 0;
 			this._numPasses = 0;
@@ -769,10 +671,10 @@ module away.materials
 		 * Adds a pass to the material
 		 * @param pass
 		 */
-
 		public pAddPass(pass:MaterialPassBase)
 		{
 			this._passes[this._numPasses++] = pass;
+
 			pass.animationSet = this._animationSet;
 			pass.alphaPremultiplied = this._alphaPremultiplied;
 			pass.mipmap = this._pMipmap;
@@ -780,16 +682,15 @@ module away.materials
 			pass.repeat = this._repeat;
 			pass.lightPicker = this._pLightPicker;
 			pass.bothSides = this._bothSides;
-			pass.addEventListener(away.events.Event.CHANGE, this.onPassChange, this);
-			this.iInvalidatePasses(null);
+			pass.addEventListener(Event.CHANGE, this._onPassChangeDelegate);
 
+			this.iInvalidatePasses(null);
 		}
 
 		/**
 		 * Listener for when a pass's shader code changes. It recalculates the render order id.
 		 */
-
-		private onPassChange(event:away.events.Event)
+		private onPassChange(event:Event)
 		{
 			var mult:number = 1;
 			var ids:number[];////Vector.<int>;
@@ -803,14 +704,10 @@ module away.materials
 				len = ids.length;
 
 				for (var j:number = 0; j < len; ++j) {
-
 					if (ids[j] != -1) {
-
 						this._iRenderOrderId += mult*ids[j];
 						j = len;
-
 					}
-
 				}
 
 				mult *= 1000;
@@ -820,9 +717,8 @@ module away.materials
 		/**
 		 * Listener for when the distance pass's shader code changes. It recalculates the depth pass id.
 		 */
-		private onDistancePassChange(event:away.events.Event)
+		private onDistancePassChange(event:Event)
 		{
-
 			var ids:number[] = this._pDistancePass._iProgramids;
 			var len:number = ids.length;
 
@@ -830,42 +726,29 @@ module away.materials
 
 			for (var j:number = 0; j < len; ++j) {
 				if (ids[j] != -1) {
-
 					this._iDepthPassId += ids[j];
 					j = len;
-
 				}
-
 			}
-
-
 		}
 
 		/**
 		 * Listener for when the depth pass's shader code changes. It recalculates the depth pass id.
 		 */
-
-		private onDepthPassChange(event:away.events.Event)
+		private onDepthPassChange(event:Event)
 		{
-
 			var ids:number[] = this._pDepthPass._iProgramids;
 			var len:number = ids.length;
 
 			this._iDepthPassId = 0;
 
 			for (var j:number = 0; j < len; ++j) {
-
 				if (ids[j] != -1) {
-
 					this._iDepthPassId += ids[j];
 					j = len;
 
 				}
-
 			}
-
-
 		}
-
 	}
 }

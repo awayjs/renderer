@@ -15,18 +15,18 @@ module away.materials
 		/**
 		 * An instance of a concrete EffectMethodBase subclass.
 		 */
-		public method:away.materials.EffectMethodBase;
+		public method:EffectMethodBase;
 
 		/**
 		 * The MethodVO data for the given method containing the material-specific data for a given material/method combination.
 		 */
-		public data:away.materials.MethodVO;
+		public data:MethodVO;
 
 		/**
 		 * Creates a new MethodVOSet object.
 		 * @param method The method for which we need to store a MethodVO object.
 		 */
-		constructor(method:away.materials.EffectMethodBase)
+		constructor(method:EffectMethodBase)
 		{
 			this.method = method;
 			this.data = method.iCreateMethodVO();

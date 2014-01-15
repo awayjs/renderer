@@ -5,9 +5,9 @@ module away.materials
 	/**
 	 * SimpleShadowMapMethodBase provides an abstract method for simple (non-wrapping) shadow map methods.
 	 */
-	export class SimpleShadowMapMethodBase extends away.materials.ShadowMapMethodBase
+	export class SimpleShadowMapMethodBase extends ShadowMapMethodBase
 	{
-		public _pDepthMapCoordReg:away.materials.ShaderRegisterElement;
+		public _pDepthMapCoordReg:ShaderRegisterElement;
 		public _pUsePoint:boolean;
 
 		/**
@@ -89,7 +89,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iGetVertexCode(vo:MethodVO, regCache:away.materials.ShaderRegisterCache):string
+		public iGetVertexCode(vo:MethodVO, regCache:ShaderRegisterCache):string
 		{
 			return this._pUsePoint? this._pGetPointVertexCode(vo, regCache) : this.pGetPlanarVertexCode(vo, regCache);
 		}
@@ -100,7 +100,7 @@ module away.materials
 		 * @param vo The MethodVO object linking this method with the pass currently being compiled.
 		 * @param regCache The register cache used during the compilation.
 		 */
-		public _pGetPointVertexCode(vo:MethodVO, regCache:away.materials.ShaderRegisterCache):string
+		public _pGetPointVertexCode(vo:MethodVO, regCache:ShaderRegisterCache):string
 		{
 			vo.vertexConstantsIndex = -1;
 			return "";
@@ -112,12 +112,12 @@ module away.materials
 		 * @param vo The MethodVO object linking this method with the pass currently being compiled.
 		 * @param regCache The register cache used during the compilation.
 		 */
-		public pGetPlanarVertexCode(vo:MethodVO, regCache:away.materials.ShaderRegisterCache):string
+		public pGetPlanarVertexCode(vo:MethodVO, regCache:ShaderRegisterCache):string
 		{
 			var code:string = "";
-			var temp:away.materials.ShaderRegisterElement = regCache.getFreeVertexVectorTemp();
-			var dataReg:away.materials.ShaderRegisterElement = regCache.getFreeVertexConstant();
-			var depthMapProj:away.materials.ShaderRegisterElement = regCache.getFreeVertexConstant();
+			var temp:ShaderRegisterElement = regCache.getFreeVertexVectorTemp();
+			var dataReg:ShaderRegisterElement = regCache.getFreeVertexConstant();
+			var depthMapProj:ShaderRegisterElement = regCache.getFreeVertexConstant();
 			regCache.getFreeVertexConstant();
 			regCache.getFreeVertexConstant();
 			regCache.getFreeVertexConstant();
@@ -135,7 +135,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentCode(vo:MethodVO, regCache:away.materials.ShaderRegisterCache, targetReg:away.materials.ShaderRegisterElement):string
+		public iGetFragmentCode(vo:MethodVO, regCache:ShaderRegisterCache, targetReg:ShaderRegisterElement):string
 		{
 			var code:string = this._pUsePoint? this._pGetPointFragmentCode(vo, regCache, targetReg) : this._pGetPlanarFragmentCode(vo, regCache, targetReg);
 			code += "add " + targetReg + ".w, " + targetReg + ".w, fc" + (vo.fragmentConstantsIndex/4 + 1) + ".y\n" + "sat " + targetReg + ".w, " + targetReg + ".w\n";
@@ -149,7 +149,7 @@ module away.materials
 		 * @param targetReg The register to contain the shadow coverage
 		 * @return
 		 */
-		public _pGetPlanarFragmentCode(vo:MethodVO, regCache:away.materials.ShaderRegisterCache, targetReg:away.materials.ShaderRegisterElement):string
+		public _pGetPlanarFragmentCode(vo:MethodVO, regCache:ShaderRegisterCache, targetReg:ShaderRegisterElement):string
 		{
 			throw new away.errors.AbstractMethodError();
 			return "";
@@ -162,7 +162,7 @@ module away.materials
 		 * @param targetReg The register to contain the shadow coverage
 		 * @return
 		 */
-		public _pGetPointFragmentCode(vo:MethodVO, regCache:away.materials.ShaderRegisterCache, targetReg:away.materials.ShaderRegisterElement):string
+		public _pGetPointFragmentCode(vo:MethodVO, regCache:ShaderRegisterCache, targetReg:ShaderRegisterElement):string
 		{
 			throw new away.errors.AbstractMethodError();
 			return "";
@@ -187,7 +187,7 @@ module away.materials
 		 * @param targetRegister The register to contain the shadow coverage
 		 * @return
 		 */
-		public _iGetCascadeFragmentCode(vo:MethodVO, regCache:away.materials.ShaderRegisterCache, decodeRegister:away.materials.ShaderRegisterElement, depthTexture:away.materials.ShaderRegisterElement, depthProjection:away.materials.ShaderRegisterElement, targetRegister:away.materials.ShaderRegisterElement):string
+		public _iGetCascadeFragmentCode(vo:MethodVO, regCache:ShaderRegisterCache, decodeRegister:ShaderRegisterElement, depthTexture:ShaderRegisterElement, depthProjection:ShaderRegisterElement, targetRegister:ShaderRegisterElement):string
 		{
 			throw new Error("This shadow method is incompatible with cascade shadows");
 		}

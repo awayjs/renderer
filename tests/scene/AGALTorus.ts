@@ -31,7 +31,7 @@ module scene
 			}
 			this._stage = new away.display.Stage( 800, 600 );
 			
-			this._stage.stageGLs[0].addEventListener( away.events.Event.CONTEXTGL_CREATE, this.onContextGLCreateHandler, this );
+			this._stage.stageGLs[0].addEventListener( away.events.Event.CONTEXTGL_CREATE, away.utils.Delegate.create(this, this.onContextGLCreateHandler) );
 			this._stage.stageGLs[0].requestContext( true );
 		}
 		
@@ -42,7 +42,7 @@ module scene
 		
 		private onContextGLCreateHandler( e )
 		{
-			this._stage.stageGLs[0].removeEventListener( away.events.Event.CONTEXTGL_CREATE, this.onContextGLCreateHandler, this );
+			this._stage.stageGLs[0].removeEventListener( away.events.Event.CONTEXTGL_CREATE, away.utils.Delegate.create(this, this.onContextGLCreateHandler) );
 			
 			var stageGL: away.display.StageGL = <away.display.StageGL> e.target;
 			this._contextGL = stageGL.contextGL;

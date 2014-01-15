@@ -42,7 +42,7 @@ module tests.textures
 		private loadAsset( path: string ):void
 		{
 			var token:away.net.AssetLoaderToken = away.library.AssetLibrary.load( new away.net.URLRequest( path ) );
-			token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete, this );
+			token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE, away.utils.Delegate.create(this, this.onResourceComplete) );
 		}
 
 		private initParsers():void

@@ -2,6 +2,17 @@
 
 module away.materials
 {
+	import ContextGL					= away.displayGL.ContextGL;
+	import ContextGLBlendFactor			= away.displayGL.ContextGLBlendFactor;
+	import ContextGLCompareMode			= away.displayGL.ContextGLCompareMode;
+	import ContextGLTriangleFace		= away.displayGL.ContextGLTriangleFace;
+	import Program						= away.displayGL.Program;
+	import TextureBase					= away.displayGL.TextureBase;
+	import Event						= away.events.Event;
+	import Rectangle					= away.geom.Rectangle;
+	import StageGLProxy					= away.managers.StageGLProxy;
+	import Delegate						= away.utils.Delegate;
+
 	/**
 	 * MaterialPassBase provides an abstract base class for material shader passes. A material pass constitutes at least
 	 * a render call per required renderable.
@@ -17,12 +28,12 @@ module away.materials
 		 */
 		public _iUniqueId:number;//Arcane
 
-		public _pMaterial:away.materials.MaterialBase;
+		public _pMaterial:MaterialBase;
 		private _animationSet:away.animators.IAnimationSet;
 
-		public _iPrograms:away.displayGL.Program[] = new Array<away.displayGL.Program>(8) //Vector.<Program> = new Vector.<Program>(8);
-		public _iProgramids:number[] = new Array<number>(-1, -1, -1, -1, -1, -1, -1, -1);//Vector.<int> = Vector.<int>([-1, -1, -1, -1, -1, -1, -1, -1]);
-		private _contextGLs:away.displayGL.ContextGL[] = new Array<away.displayGL.ContextGL>(8);//Vector.<ContextGL> = new Vector.<ContextGL>(8);
+		public _iPrograms:Program[] = new Array<Program>(8) //Vector.<Program> = new Vector.<Program>(8);
+		public _iProgramids:Array<number> = new Array<number>(-1, -1, -1, -1, -1, -1, -1, -1);//Vector.<int> = Vector.<int>([-1, -1, -1, -1, -1, -1, -1, -1]);
+		private _contextGLs:ContextGL[] = new Array<ContextGL>(8);//Vector.<ContextGL> = new Vector.<ContextGL>(8);
 
 		// agal props. these NEED to be set by subclasses!
 		// todo: can we perhaps figure these out manually by checking read operations in the bytecode, so other sources can be safely updated?
@@ -35,38 +46,38 @@ module away.materials
 		public _pSmooth:boolean = true;
 		public _pRepeat:boolean = false;
 		public _pMipmap:boolean = true;
-		private _depthCompareMode:string = away.displayGL.ContextGLCompareMode.LESS_EQUAL;
+		private _depthCompareMode:string = ContextGLCompareMode.LESS_EQUAL;
 
-		private _blendFactorSource:string = away.displayGL.ContextGLBlendFactor.ONE;
-		private _blendFactorDest:string = away.displayGL.ContextGLBlendFactor.ZERO;
+		private _blendFactorSource:string = ContextGLBlendFactor.ONE;
+		private _blendFactorDest:string = ContextGLBlendFactor.ZERO;
 
 		public _pEnableBlending:boolean = false;
 
 		public _pBothSides:boolean;
 
-		public  _pLightPicker:away.materials.LightPickerBase;
+		public  _pLightPicker:LightPickerBase;
 
 		// TODO: AGAL conversion
-		public _pAnimatableAttributes:string[] = new Array<string>("va0");
+		public _pAnimatableAttributes:Array<string> = new Array<string>("va0");
 
 		// TODO: AGAL conversion
-		public _pAnimationTargetRegisters:string[] = new Array<string>("vt0");
+		public _pAnimationTargetRegisters:Array<string> = new Array<string>("vt0");
 
 		// TODO: AGAL conversion
 		public _pShadedTarget:string = "ft0";
 
 		// keep track of previously rendered usage for faster cleanup of old vertex buffer streams and textures
-		private static _previousUsedStreams:number[] = new Array<number>(0, 0, 0, 0, 0, 0, 0, 0);//Vector.<int> = Vector.<int>([0, 0, 0, 0, 0, 0, 0, 0]);
-		private static _previousUsedTexs:number[] = new Array<number>(0, 0, 0, 0, 0, 0, 0, 0);//Vector.<int> = Vector.<int>([0, 0, 0, 0, 0, 0, 0, 0]);
-		private _defaultCulling:string = away.displayGL.ContextGLTriangleFace.BACK;
+		private static _previousUsedStreams:Array<number> = new Array<number>(0, 0, 0, 0, 0, 0, 0, 0);//Vector.<int> = Vector.<int>([0, 0, 0, 0, 0, 0, 0, 0]);
+		private static _previousUsedTexs:Array<number> = new Array<number>(0, 0, 0, 0, 0, 0, 0, 0);//Vector.<int> = Vector.<int>([0, 0, 0, 0, 0, 0, 0, 0]);
+		private _defaultCulling:string = ContextGLTriangleFace.BACK;
 
 		private _renderToTexture:boolean;
 
 		// render state mementos for render-to-texture passes
-		private _oldTarget:away.displayGL.TextureBase;
+		private _oldTarget:TextureBase;
 		private _oldSurface:number;
 		private _oldDepthStencil:boolean;
-		private _oldRect:away.geom.Rectangle;
+		private _oldRect:Rectangle;
 
 		public  _pAlphaPremultiplied:boolean = false;
 		public _pNeedFragmentAnimation:boolean;
@@ -75,6 +86,7 @@ module away.materials
 		public _pUVSource:string;
 
 		private _writeDepth:boolean = true;
+		private _onLightsChangeDelegate:Function;
 
 		public animationRegisterCache:away.animators.AnimationRegisterCache;
 
@@ -88,22 +100,24 @@ module away.materials
 
 			super();
 
+			this._onLightsChangeDelegate = Delegate.create(this, this.onLightsChange);
+
 			this._renderToTexture = renderToTexture;
 			this._pNumUsedStreams = 1;
 			this._pNumUsedVertexConstants = 5;
 
-			this._iUniqueId = away.materials.MaterialPassBase.MATERIALPASS_ID_COUNT++;
+			this._iUniqueId = MaterialPassBase.MATERIALPASS_ID_COUNT++;
 		}
 
 		/**
 		 * The material to which this pass belongs.
 		 */
-		public get material():away.materials.MaterialBase
+		public get material():MaterialBase
 		{
 			return this._pMaterial;
 		}
 
-		public set material(value:away.materials.MaterialBase)
+		public set material(value:MaterialBase)
 		{
 			this._pMaterial = value;
 		}
@@ -256,7 +270,7 @@ module away.materials
 		{
 			if (this._pLightPicker) {
 
-				this._pLightPicker.removeEventListener(away.events.Event.CHANGE, this.onLightsChange, this);
+				this._pLightPicker.removeEventListener(Event.CHANGE, this._onLightsChangeDelegate);
 
 			}
 
@@ -265,7 +279,7 @@ module away.materials
 
 				if (this._iPrograms[i]) {
 
-					//away.Debug.throwPIR( 'away.materials.MaterialPassBase' , 'dispose' , 'required dependency: AGALProgramCache');
+					//away.Debug.throwPIR( 'MaterialPassBase' , 'dispose' , 'required dependency: AGALProgramCache');
 					away.managers.AGALProgramCache.getInstanceFromIndex(i).freeProgram(this._iProgramids[i]);
 					this._iPrograms[i] = null;
 
@@ -367,40 +381,40 @@ module away.materials
 
 				case away.display.BlendMode.NORMAL:
 
-					this._blendFactorSource = away.displayGL.ContextGLBlendFactor.ONE;
-					this._blendFactorDest = away.displayGL.ContextGLBlendFactor.ZERO;
+					this._blendFactorSource = ContextGLBlendFactor.ONE;
+					this._blendFactorDest = ContextGLBlendFactor.ZERO;
 					this._pEnableBlending = false;
 
 					break;
 
 				case away.display.BlendMode.LAYER:
 
-					this._blendFactorSource = away.displayGL.ContextGLBlendFactor.SOURCE_ALPHA;
-					this._blendFactorDest = away.displayGL.ContextGLBlendFactor.ONE_MINUS_SOURCE_ALPHA;
+					this._blendFactorSource = ContextGLBlendFactor.SOURCE_ALPHA;
+					this._blendFactorDest = ContextGLBlendFactor.ONE_MINUS_SOURCE_ALPHA;
 					this._pEnableBlending = true;
 
 					break;
 
 				case away.display.BlendMode.MULTIPLY:
 
-					this._blendFactorSource = away.displayGL.ContextGLBlendFactor.ZERO;
-					this._blendFactorDest = away.displayGL.ContextGLBlendFactor.SOURCE_COLOR;
+					this._blendFactorSource = ContextGLBlendFactor.ZERO;
+					this._blendFactorDest = ContextGLBlendFactor.SOURCE_COLOR;
 					this._pEnableBlending = true;
 
 					break;
 
 				case away.display.BlendMode.ADD:
 
-					this._blendFactorSource = away.displayGL.ContextGLBlendFactor.SOURCE_ALPHA;
-					this._blendFactorDest = away.displayGL.ContextGLBlendFactor.ONE;
+					this._blendFactorSource = ContextGLBlendFactor.SOURCE_ALPHA;
+					this._blendFactorDest = ContextGLBlendFactor.ONE;
 					this._pEnableBlending = true;
 
 					break;
 
 				case away.display.BlendMode.ALPHA:
 
-					this._blendFactorSource = away.displayGL.ContextGLBlendFactor.ZERO;
-					this._blendFactorDest = away.displayGL.ContextGLBlendFactor.SOURCE_ALPHA;
+					this._blendFactorSource = ContextGLBlendFactor.ZERO;
+					this._blendFactorDest = ContextGLBlendFactor.SOURCE_ALPHA;
 					this._pEnableBlending = true;
 
 					break;
@@ -422,7 +436,7 @@ module away.materials
 		public iActivate(stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D)
 		{
 			var contextIndex:number = stageGLProxy._iStageGLIndex;//_stageGLIndex;
-			var context:away.displayGL.ContextGL = stageGLProxy._iContextGL;
+			var context:ContextGL = stageGLProxy._iContextGL;
 
 			context.setDepthTest(( this._writeDepth && !this._pEnableBlending ), this._depthCompareMode);
 
@@ -437,7 +451,7 @@ module away.materials
 				this._contextGLs[contextIndex] = context;
 
 				this.iUpdateProgram(stageGLProxy);
-				this.dispatchEvent(new away.events.Event(away.events.Event.CHANGE));
+				this.dispatchEvent(new Event(Event.CHANGE));
 
 			}
 
@@ -469,7 +483,7 @@ module away.materials
 
 			context.setProgram(this._iPrograms[contextIndex]);
 
-			context.setCulling(this._pBothSides? away.displayGL.ContextGLTriangleFace.NONE : this._defaultCulling);
+			context.setCulling(this._pBothSides? ContextGLTriangleFace.NONE : this._defaultCulling);
 
 			if (this._renderToTexture) {
 				this._oldTarget = stageGLProxy.renderTarget;
@@ -507,7 +521,7 @@ module away.materials
 
 			}
 
-			stageGLProxy._iContextGL.setDepthTest(true, away.displayGL.ContextGLCompareMode.LESS_EQUAL); // TODO : imeplement
+			stageGLProxy._iContextGL.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL); // TODO : imeplement
 		}
 
 		/**
@@ -536,7 +550,7 @@ module away.materials
 		 * Compiles the shader program.
 		 * @param polyOffsetReg An optional register that contains an amount by which to inflate the model (used in single object depth map rendering).
 		 */
-		public iUpdateProgram(stageGLProxy:away.managers.StageGLProxy)
+		public iUpdateProgram(stageGLProxy:StageGLProxy)
 		{
 			var animatorCode:string = "";
 			var UVAnimatorCode:string = "";
@@ -547,17 +561,11 @@ module away.materials
 
 				animatorCode = this._animationSet.getAGALVertexCode(this, this._pAnimatableAttributes, this._pAnimationTargetRegisters, stageGLProxy.profile);
 
-				if (this._pNeedFragmentAnimation) {
-
+				if (this._pNeedFragmentAnimation)
 					fragmentAnimatorCode = this._animationSet.getAGALFragmentCode(this, this._pShadedTarget, stageGLProxy.profile);
 
-				}
-
-				if (this._pNeedUVAnimation) {
-
+				if (this._pNeedUVAnimation)
 					UVAnimatorCode = this._animationSet.getAGALUVCode(this, this._pUVSource, this._pUVTarget);
-
-				}
 
 				this._animationSet.doneAGALCode(this);
 
@@ -566,21 +574,11 @@ module away.materials
 
 				// simply write attributes to targets, do not animate them
 				// projection will pick up on targets[0] to do the projection
-				for (var i:number = 0; i < len; ++i) {
-					// TODO: AGAL <> GLSL conversion:
-					//away.Debug.throwPIR( 'away.materials.MaterialPassBase' , 'iUpdateProgram' , 'AGAL <> GLSL Conversion');
+				for (var i:number = 0; i < len; ++i)
 					animatorCode += "mov " + this._pAnimationTargetRegisters[i] + ", " + this._pAnimatableAttributes[i] + "\n";
 
-				}
-
-				if (this._pNeedUVAnimation) {
-
-					//away.Debug.throwPIR( 'away.materials.MaterialPassBase' , 'iUpdateProgram' , 'AGAL <> GLSL Conversion');
-					// TODO: AGAL <> GLSL conversion
+				if (this._pNeedUVAnimation)
 					UVAnimatorCode = "mov " + this._pUVTarget + "," + this._pUVSource + "\n";
-
-				}
-
 			}
 
 			vertexCode = animatorCode + UVAnimatorCode + vertexCode;
@@ -604,19 +602,19 @@ module away.materials
 		/**
 		 * The light picker used by the material to provide lights to the material if it supports lighting.
 		 *
-		 * @see away3d.materials.lightpickers.LightPickerBase
-		 * @see away3d.materials.lightpickers.StaticLightPicker
+		 * @see away.materials.LightPickerBase
+		 * @see away.materials.StaticLightPicker
 		 */
-		public get lightPicker():away.materials.LightPickerBase
+		public get lightPicker():LightPickerBase
 		{
 			return this._pLightPicker;
 		}
 
-		public set lightPicker(value:away.materials.LightPickerBase)
+		public set lightPicker(value:LightPickerBase)
 		{
 			if (this._pLightPicker) {
 
-				this._pLightPicker.removeEventListener(away.events.Event.CHANGE, this.onLightsChange, this);
+				this._pLightPicker.removeEventListener(Event.CHANGE, this._onLightsChangeDelegate);
 
 			}
 
@@ -624,7 +622,7 @@ module away.materials
 
 			if (this._pLightPicker) {
 
-				this._pLightPicker.addEventListener(away.events.Event.CHANGE, this.onLightsChange, this);
+				this._pLightPicker.addEventListener(Event.CHANGE, this._onLightsChangeDelegate);
 
 			}
 

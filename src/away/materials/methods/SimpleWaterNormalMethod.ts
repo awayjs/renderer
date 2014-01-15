@@ -6,10 +6,10 @@ module away.materials
 	/**
 	 * SimpleWaterNormalMethod provides a basic normal map method to create water ripples by translating two wave normal maps.
 	 */
-	export class SimpleWaterNormalMethod extends away.materials.BasicNormalMethod
+	export class SimpleWaterNormalMethod extends BasicNormalMethod
 	{
 		private _texture2:away.textures.Texture2DBase;
-		private _normalTextureRegister2:away.materials.ShaderRegisterElement;
+		private _normalTextureRegister2:ShaderRegisterElement;
 		private _useSecondNormalMap:boolean = false;
 		private _water1OffsetX:number = 0;
 		private _water1OffsetY:number = 0;
@@ -31,7 +31,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iInitConstants(vo:away.materials.MethodVO):void
+		public iInitConstants(vo:MethodVO):void
 		{
 			var index:number = vo.fragmentConstantsIndex;
 			vo.fragmentData[index] = .5;
@@ -43,7 +43,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iInitVO(vo:away.materials.MethodVO):void
+		public iInitVO(vo:MethodVO):void
 		{
 			super.iInitVO(vo);
 
@@ -147,7 +147,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:away.materials.MethodVO, stageGLProxy:away.managers.StageGLProxy):void
+		public iActivate(vo:MethodVO, stageGLProxy:away.managers.StageGLProxy):void
 		{
 			super.iActivate(vo, stageGLProxy);
 

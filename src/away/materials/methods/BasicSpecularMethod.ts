@@ -13,13 +13,13 @@ module away.materials
 	 * BasicSpecularMethod provides the default shading method for Blinn-Phong specular highlights (an optimized but approximated
 	 * version of Phong specularity).
 	 */
-	export class BasicSpecularMethod extends away.materials.LightingMethodBase
+	export class BasicSpecularMethod extends LightingMethodBase
 	{
 		public _pUseTexture:boolean;
-		public _pTotalLightColorReg:away.materials.ShaderRegisterElement;
-		public _pSpecularTextureRegister:away.materials.ShaderRegisterElement;
-		public _pSpecularTexData:away.materials.ShaderRegisterElement;
-		public _pSpecularDataRegister:away.materials.ShaderRegisterElement;
+		public _pTotalLightColorReg:ShaderRegisterElement;
+		public _pSpecularTextureRegister:ShaderRegisterElement;
+		public _pSpecularTexData:ShaderRegisterElement;
+		public _pSpecularDataRegister:ShaderRegisterElement;
 
 		private _texture:away.textures.Texture2DBase;
 
@@ -29,7 +29,7 @@ module away.materials
 		public _iSpecularR:number = 1;
 		public _iSpecularG:number = 1;
 		public _iSpecularB:number = 1;
-		private _shadowRegister:away.materials.ShaderRegisterElement;
+		private _shadowRegister:ShaderRegisterElement;
 		public _pIsFirstLight:boolean;
 
 		/**
@@ -43,7 +43,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iInitVO(vo:away.materials.MethodVO)
+		public iInitVO(vo:MethodVO)
 		{
 			vo.needsUV = this._pUseTexture;
 			vo.needsNormals = vo.numLights > 0;
@@ -156,7 +156,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentPreLightingCode(vo:away.materials.MethodVO, regCache:away.materials.ShaderRegisterCache):string
+		public iGetFragmentPreLightingCode(vo:MethodVO, regCache:ShaderRegisterCache):string
 		{
 			var code:string = "";
 
@@ -191,10 +191,10 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentCodePerLight(vo:away.materials.MethodVO, lightDirReg:away.materials.ShaderRegisterElement, lightColReg:away.materials.ShaderRegisterElement, regCache:away.materials.ShaderRegisterCache):string
+		public iGetFragmentCodePerLight(vo:MethodVO, lightDirReg:ShaderRegisterElement, lightColReg:ShaderRegisterElement, regCache:ShaderRegisterCache):string
 		{
 			var code:string = "";
-			var t:away.materials.ShaderRegisterElement;
+			var t:ShaderRegisterElement;
 
 			if (this._pIsFirstLight) {
 
@@ -279,10 +279,10 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentCodePerProbe(vo:away.materials.MethodVO, cubeMapReg:away.materials.ShaderRegisterElement, weightRegister:string, regCache:away.materials.ShaderRegisterCache):string
+		public iGetFragmentCodePerProbe(vo:MethodVO, cubeMapReg:ShaderRegisterElement, weightRegister:string, regCache:ShaderRegisterCache):string
 		{
 			var code:string = "";
-			var t:away.materials.ShaderRegisterElement;
+			var t:ShaderRegisterElement;
 
 			// write in temporary if not first light, so we can add to total diffuse colour
 			if (this._pIsFirstLight) {
@@ -296,8 +296,8 @@ module away.materials
 
 			}
 
-			var normalReg:away.materials.ShaderRegisterElement = this._sharedRegisters.normalFragment;
-			var viewDirReg:away.materials.ShaderRegisterElement = this._sharedRegisters.viewDirFragment;
+			var normalReg:ShaderRegisterElement = this._sharedRegisters.normalFragment;
+			var viewDirReg:ShaderRegisterElement = this._sharedRegisters.viewDirFragment;
 
 			//TODO: AGAL <> GLSL
 
@@ -345,7 +345,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentPostLightingCode(vo:away.materials.MethodVO, regCache:away.materials.ShaderRegisterCache, targetReg:away.materials.ShaderRegisterElement):string
+		public iGetFragmentPostLightingCode(vo:MethodVO, regCache:ShaderRegisterCache, targetReg:ShaderRegisterElement):string
 		{
 			var code:string = "";
 
@@ -386,7 +386,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:away.materials.MethodVO, stageGLProxy:away.managers.StageGLProxy)
+		public iActivate(vo:MethodVO, stageGLProxy:away.managers.StageGLProxy)
 		{
 			//var context : ContextGL = stageGLProxy._contextGL;
 
@@ -421,14 +421,14 @@ module away.materials
 		/**
 		 * Set internally by the compiler, so the method knows the register containing the shadow calculation.
 		 */
-		public set iShadowRegister(shadowReg:away.materials.ShaderRegisterElement)
+		public set iShadowRegister(shadowReg:ShaderRegisterElement)
 		{
 
 			this._shadowRegister = shadowReg;
 
 		}
 
-		public setIShadowRegister(shadowReg:away.materials.ShaderRegisterElement)
+		public setIShadowRegister(shadowReg:ShaderRegisterElement)
 		{
 
 			this._shadowRegister = shadowReg;

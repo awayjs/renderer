@@ -8,20 +8,20 @@ module away.materials
 	 */
 	export class ShaderRegisterCache
 	{
-		private _fragmentTempCache:away.materials.RegisterPool;
-		private _vertexTempCache:away.materials.RegisterPool;
-		private _varyingCache:away.materials.RegisterPool;
-		private _fragmentConstantsCache:away.materials.RegisterPool;
-		private _vertexConstantsCache:away.materials.RegisterPool;
-		private _textureCache:away.materials.RegisterPool;
-		private _vertexAttributesCache:away.materials.RegisterPool;
+		private _fragmentTempCache:RegisterPool;
+		private _vertexTempCache:RegisterPool;
+		private _varyingCache:RegisterPool;
+		private _fragmentConstantsCache:RegisterPool;
+		private _vertexConstantsCache:RegisterPool;
+		private _textureCache:RegisterPool;
+		private _vertexAttributesCache:RegisterPool;
 		private _vertexConstantOffset:number; //TODO: check if this should be initialised to 0
 		private _vertexAttributesOffset:number;//TODO: check if this should be initialised to 0
 		private _varyingsOffset:number;//TODO: check if this should be initialised to 0
 		private _fragmentConstantOffset:number;//TODO: check if this should be initialised to 0
 
-		private _fragmentOutputRegister:away.materials.ShaderRegisterElement;
-		private _vertexOutputRegister:away.materials.ShaderRegisterElement;
+		private _fragmentOutputRegister:ShaderRegisterElement;
+		private _vertexOutputRegister:ShaderRegisterElement;
 		private _numUsedVertexConstants:number = 0;
 		private _numUsedFragmentConstants:number = 0;
 		private _numUsedStreams:number = 0;
@@ -108,7 +108,7 @@ module away.materials
 		 * @param register The register to mark as used.
 		 * @param usageCount The amount of usages to add.
 		 */
-		public addFragmentTempUsages(register:away.materials.ShaderRegisterElement, usageCount:number)
+		public addFragmentTempUsages(register:ShaderRegisterElement, usageCount:number)
 		{
 			this._fragmentTempCache.addUsage(register, usageCount);
 		}
@@ -117,7 +117,7 @@ module away.materials
 		 * Removes a usage from a fragment temporary register. When usages reach 0, the register is freed again.
 		 * @param register The register for which to remove a usage.
 		 */
-		public removeFragmentTempUsage(register:away.materials.ShaderRegisterElement)
+		public removeFragmentTempUsage(register:ShaderRegisterElement)
 		{
 			this._fragmentTempCache.removeUsage(register);
 		}
@@ -128,7 +128,7 @@ module away.materials
 		 * @param register The register to mark as used.
 		 * @param usageCount The amount of usages to add.
 		 */
-		public addVertexTempUsages(register:away.materials.ShaderRegisterElement, usageCount:number)
+		public addVertexTempUsages(register:ShaderRegisterElement, usageCount:number)
 		{
 			this._vertexTempCache.addUsage(register, usageCount);
 		}
@@ -137,7 +137,7 @@ module away.materials
 		 * Removes a usage from a vertex temporary register. When usages reach 0, the register is freed again.
 		 * @param register The register for which to remove a usage.
 		 */
-		public removeVertexTempUsage(register:away.materials.ShaderRegisterElement)
+		public removeVertexTempUsage(register:ShaderRegisterElement)
 		{
 			this._vertexTempCache.removeUsage(register);
 		}
@@ -146,7 +146,7 @@ module away.materials
 		 * Retrieve an entire fragment temporary register that's still available. The register won't be able to be used until removeUsage
 		 * has been called usageCount times again.
 		 */
-		public getFreeFragmentVectorTemp():away.materials.ShaderRegisterElement
+		public getFreeFragmentVectorTemp():ShaderRegisterElement
 		{
 			return this._fragmentTempCache.requestFreeVectorReg();
 		}
@@ -154,7 +154,7 @@ module away.materials
 		/**
 		 * Retrieve a single component from a fragment temporary register that's still available.
 		 */
-		public getFreeFragmentSingleTemp():away.materials.ShaderRegisterElement
+		public getFreeFragmentSingleTemp():ShaderRegisterElement
 		{
 			return this._fragmentTempCache.requestFreeRegComponent();
 		}
@@ -162,7 +162,7 @@ module away.materials
 		/**
 		 * Retrieve an available varying register
 		 */
-		public getFreeVarying():away.materials.ShaderRegisterElement
+		public getFreeVarying():ShaderRegisterElement
 		{
 			++this._numUsedVaryings;
 			return this._varyingCache.requestFreeVectorReg();
@@ -171,7 +171,7 @@ module away.materials
 		/**
 		 * Retrieve an available fragment constant register
 		 */
-		public getFreeFragmentConstant():away.materials.ShaderRegisterElement
+		public getFreeFragmentConstant():ShaderRegisterElement
 		{
 			++this._numUsedFragmentConstants;
 			return this._fragmentConstantsCache.requestFreeVectorReg();
@@ -181,7 +181,7 @@ module away.materials
 		/**
 		 * Retrieve an available vertex constant register
 		 */
-		public getFreeVertexConstant():away.materials.ShaderRegisterElement
+		public getFreeVertexConstant():ShaderRegisterElement
 		{
 			++this._numUsedVertexConstants;
 			return this._vertexConstantsCache.requestFreeVectorReg();
@@ -190,7 +190,7 @@ module away.materials
 		/**
 		 * Retrieve an entire vertex temporary register that's still available.
 		 */
-		public getFreeVertexVectorTemp():away.materials.ShaderRegisterElement
+		public getFreeVertexVectorTemp():ShaderRegisterElement
 		{
 			return this._vertexTempCache.requestFreeVectorReg();
 		}
@@ -198,7 +198,7 @@ module away.materials
 		/**
 		 * Retrieve a single component from a vertex temporary register that's still available.
 		 */
-		public getFreeVertexSingleTemp():away.materials.ShaderRegisterElement
+		public getFreeVertexSingleTemp():ShaderRegisterElement
 		{
 			return this._vertexTempCache.requestFreeRegComponent();
 		}
@@ -206,7 +206,7 @@ module away.materials
 		/**
 		 * Retrieve an available vertex attribute register
 		 */
-		public getFreeVertexAttribute():away.materials.ShaderRegisterElement
+		public getFreeVertexAttribute():ShaderRegisterElement
 		{
 			++this._numUsedStreams;
 			return this._vertexAttributesCache.requestFreeVectorReg();
@@ -215,7 +215,7 @@ module away.materials
 		/**
 		 * Retrieve an available texture register
 		 */
-		public getFreeTextureReg():away.materials.ShaderRegisterElement
+		public getFreeTextureReg():ShaderRegisterElement
 		{
 			++this._numUsedTextures;
 			return this._textureCache.requestFreeVectorReg();

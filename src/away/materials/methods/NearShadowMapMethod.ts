@@ -2,9 +2,11 @@
 
 module away.materials
 {
+	import StageGLProxy                     = away.managers.StageGLProxy;
+	import Delegate							= away.utils.Delegate;
+
 	import Camera3D                         = away.cameras.Camera3D;
 	import IRenderable                      = away.base.IRenderable;
-	import StageGLProxy                     = away.managers.StageGLProxy;
 	import ShadingMethodEvent               = away.events.ShadingMethodEvent;
 	import NearDirectionalShadowMapper      = away.lights.NearDirectionalShadowMapper;
 
@@ -22,6 +24,8 @@ module away.materials
 		private _fadeRatio:number;
 		private _nearShadowMapper:NearDirectionalShadowMapper;
 
+		private _onShaderInvalidatedDelegate:Function;
+
 		/**
 		 * Creates a new NearShadowMapMethod object.
 		 * @param baseMethod The shadow map sampling method used to sample individual cascades (fe: HardShadowMapMethod, SoftShadowMapMethod)
@@ -30,12 +34,15 @@ module away.materials
 		constructor(baseMethod:SimpleShadowMapMethodBase, fadeRatio:number = .1)
 		{
 			super(baseMethod.castingLight);
+
+			this._onShaderInvalidatedDelegate = Delegate.create(this, this.onShaderInvalidated);
+
 			this._baseMethod = baseMethod;
 			this._fadeRatio = fadeRatio;
 			this._nearShadowMapper = <NearDirectionalShadowMapper> this._pCastingLight.shadowMapper;
 			if (!this._nearShadowMapper)
 				throw new Error("NearShadowMapMethod requires a light that has a NearDirectionalShadowMapper instance assigned to shadowMapper.");
-			this._baseMethod.addEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this.onShaderInvalidated, this);
+			this._baseMethod.addEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
 		}
 
 		/**
@@ -50,9 +57,9 @@ module away.materials
 		{
 			if (this._baseMethod == value)
 				return;
-			this._baseMethod.removeEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this.onShaderInvalidated, this);
+			this._baseMethod.removeEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
 			this._baseMethod = value;
-			this._baseMethod.addEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this.onShaderInvalidated, this);
+			this._baseMethod.addEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
 			this.iInvalidateShaderProgram();
 		}
 
@@ -84,7 +91,7 @@ module away.materials
 		 */
 		public dispose()
 		{
-			this._baseMethod.removeEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this.onShaderInvalidated, this);
+			this._baseMethod.removeEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
 		}
 
 		/**

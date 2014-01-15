@@ -1,51 +1,61 @@
 ///<reference path="../../_definitions.ts"/>
 module away.materials
 {
+	import StageGLProxy                     = away.managers.StageGLProxy;
+	import Texture2DBase					= away.textures.Texture2DBase;
+	import Delegate							= away.utils.Delegate;
+
+	import ShadingMethodEvent               = away.events.ShadingMethodEvent;
 
 	/**
 	 * CompositeDiffuseMethod provides a base class for diffuse methods that wrap a diffuse method to alter the
 	 * calculated diffuse reflection strength.
 	 */
-	export class CompositeDiffuseMethod extends away.materials.BasicDiffuseMethod
+	export class CompositeDiffuseMethod extends BasicDiffuseMethod
 	{
-		public pBaseMethod:away.materials.BasicDiffuseMethod;
+		public pBaseMethod:BasicDiffuseMethod;
+
+		private _onShaderInvalidatedDelegate:Function;
 
 		/**
 		 * Creates a new WrapDiffuseMethod object.
 		 * @param modulateMethod The method which will add the code to alter the base method's strength. It needs to have the signature clampDiffuse(t : ShaderRegisterElement, regCache : ShaderRegisterCache) : string, in which t.w will contain the diffuse strength.
 		 * @param baseDiffuseMethod The base diffuse method on which this method's shading is based.
 		 */
-		constructor(scope:Object, modulateMethod:Function = null, baseDiffuseMethod:away.materials.BasicDiffuseMethod = null)
+		constructor(scope:Object, modulateMethod:Function = null, baseDiffuseMethod:BasicDiffuseMethod = null)
 		{
 			super();
+
+			this._onShaderInvalidatedDelegate = Delegate.create(this, this.onShaderInvalidated);
 
 			if (scope != null && modulateMethod != null)
 				this._pInitCompositeDiffuseMethod(scope, modulateMethod, baseDiffuseMethod);
 		}
 
-		public _pInitCompositeDiffuseMethod(scope:Object, modulateMethod:Function, baseDiffuseMethod:away.materials.BasicDiffuseMethod = null)
+		public _pInitCompositeDiffuseMethod(scope:Object, modulateMethod:Function, baseDiffuseMethod:BasicDiffuseMethod = null)
 		{
-			this.pBaseMethod = baseDiffuseMethod || new away.materials.BasicDiffuseMethod();
+			this.pBaseMethod = baseDiffuseMethod || new BasicDiffuseMethod();
 			this.pBaseMethod._iModulateMethod = modulateMethod;
 			this.pBaseMethod._iModulateMethodScope = scope;
-			this.pBaseMethod.addEventListener(away.events.ShadingMethodEvent.SHADER_INVALIDATED, this.onShaderInvalidated, this);
+			this.pBaseMethod.addEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
 		}
 
 		/**
 		 * The base diffuse method on which this method's shading is based.
 		 */
-		public get baseMethod():away.materials.BasicDiffuseMethod
+		public get baseMethod():BasicDiffuseMethod
 		{
 			return this.pBaseMethod;
 		}
 
-		public set baseMethod(value:away.materials.BasicDiffuseMethod)
+		public set baseMethod(value:BasicDiffuseMethod)
 		{
 			if (this.pBaseMethod == value)
 				return;
-			this.pBaseMethod.removeEventListener(away.events.ShadingMethodEvent.SHADER_INVALIDATED, this.onShaderInvalidated, this);
+
+			this.pBaseMethod.removeEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
 			this.pBaseMethod = value;
-			this.pBaseMethod.addEventListener(away.events.ShadingMethodEvent.SHADER_INVALIDATED, this.onShaderInvalidated, this);
+			this.pBaseMethod.addEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
 			this.iInvalidateShaderProgram();//invalidateShaderProgram();
 		}
 
@@ -70,7 +80,7 @@ module away.materials
 		 */
 		public dispose():void
 		{
-			this.pBaseMethod.removeEventListener(away.events.ShadingMethodEvent.SHADER_INVALIDATED, this.onShaderInvalidated, this);
+			this.pBaseMethod.removeEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
 			this.pBaseMethod.dispose();
 		}
 
@@ -90,7 +100,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public get texture():away.textures.Texture2DBase
+		public get texture():Texture2DBase
 		{
 			return this.pBaseMethod.texture;
 		}
@@ -98,7 +108,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public set texture(value:away.textures.Texture2DBase)
+		public set texture(value:Texture2DBase)
 		{
 			this.pBaseMethod.texture = value;
 		}
@@ -138,7 +148,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentPreLightingCode(vo:away.materials.MethodVO, regCache:away.materials.ShaderRegisterCache):string
+		public iGetFragmentPreLightingCode(vo:MethodVO, regCache:ShaderRegisterCache):string
 		{
 			return this.pBaseMethod.iGetFragmentPreLightingCode(vo, regCache);
 		}
@@ -146,7 +156,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentCodePerLight(vo:MethodVO, lightDirReg:away.materials.ShaderRegisterElement, lightColReg:away.materials.ShaderRegisterElement, regCache:away.materials.ShaderRegisterCache):string
+		public iGetFragmentCodePerLight(vo:MethodVO, lightDirReg:ShaderRegisterElement, lightColReg:ShaderRegisterElement, regCache:ShaderRegisterCache):string
 		{
 			var code:string = this.pBaseMethod.iGetFragmentCodePerLight(vo, lightDirReg, lightColReg, regCache);
 			this.pTotalLightColorReg = this.pBaseMethod.pTotalLightColorReg;
@@ -156,7 +166,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentCodePerProbe(vo:away.materials.MethodVO, cubeMapReg:away.materials.ShaderRegisterElement, weightRegister:string, regCache:away.materials.ShaderRegisterCache):string
+		public iGetFragmentCodePerProbe(vo:MethodVO, cubeMapReg:ShaderRegisterElement, weightRegister:string, regCache:ShaderRegisterCache):string
 		{
 			var code:string = this.pBaseMethod.iGetFragmentCodePerProbe(vo, cubeMapReg, weightRegister, regCache);
 			this.pTotalLightColorReg = this.pBaseMethod.pTotalLightColorReg;
@@ -166,7 +176,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:away.materials.MethodVO, stageGLProxy:away.managers.StageGLProxy):void
+		public iActivate(vo:MethodVO, stageGLProxy:away.managers.StageGLProxy):void
 		{
 			this.pBaseMethod.iActivate(vo, stageGLProxy);
 		}
@@ -174,7 +184,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iDeactivate(vo:away.materials.MethodVO, stageGLProxy:away.managers.StageGLProxy):void
+		public iDeactivate(vo:MethodVO, stageGLProxy:away.managers.StageGLProxy):void
 		{
 			this.pBaseMethod.iDeactivate(vo, stageGLProxy);
 		}
@@ -182,7 +192,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iGetVertexCode(vo:away.materials.MethodVO, regCache:away.materials.ShaderRegisterCache):string
+		public iGetVertexCode(vo:MethodVO, regCache:ShaderRegisterCache):string
 		{
 			return this.pBaseMethod.iGetVertexCode(vo, regCache);
 		}
@@ -190,7 +200,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iGetFragmentPostLightingCode(vo:away.materials.MethodVO, regCache:away.materials.ShaderRegisterCache, targetReg:away.materials.ShaderRegisterElement):string
+		public iGetFragmentPostLightingCode(vo:MethodVO, regCache:ShaderRegisterCache, targetReg:ShaderRegisterElement):string
 		{
 			return this.pBaseMethod.iGetFragmentPostLightingCode(vo, regCache, targetReg);
 		}
@@ -216,14 +226,14 @@ module away.materials
 		 * @inheritDoc
 		 */
 
-		public set iSharedRegisters(value:away.materials.ShaderRegisterData)
+		public set iSharedRegisters(value:ShaderRegisterData)
 		{
 			this.pBaseMethod.setISharedRegisters(value);
 			super.setISharedRegisters(value);
 
 		}
 
-		public setISharedRegisters(value:away.materials.ShaderRegisterData)
+		public setISharedRegisters(value:ShaderRegisterData)
 		{
 			this.pBaseMethod.setISharedRegisters(value);
 			super.setISharedRegisters(value);
@@ -233,7 +243,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public set iShadowRegister(value:away.materials.ShaderRegisterElement)
+		public set iShadowRegister(value:ShaderRegisterElement)
 		{
 			super.setIShadowRegister(value);
 			this.pBaseMethod.setIShadowRegister(value);
@@ -242,7 +252,7 @@ module away.materials
 		/**
 		 * Called when the base method's shader code is invalidated.
 		 */
-		private onShaderInvalidated(event:away.events.ShadingMethodEvent):void
+		private onShaderInvalidated(event:ShadingMethodEvent):void
 		{
 			this.iInvalidateShaderProgram();
 		}

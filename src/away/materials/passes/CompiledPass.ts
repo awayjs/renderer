@@ -2,14 +2,24 @@
 
 module away.materials
 {
+	import Matrix									= away.geom.Matrix;
+	import Matrix3D									= away.geom.Matrix3D;
+	import Matrix3DUtils							= away.geom.Matrix3DUtils;
+	import Texture2DBase							= away.textures.Texture2DBase;
+	import StageGLProxy								= away.managers.StageGLProxy;
+	import Delegate									= away.utils.Delegate;
+
+	import IRenderable								= away.base.IRenderable;
+	import Camera3D									= away.cameras.Camera3D;
+	import ShadingMethodEvent						= away.events.ShadingMethodEvent;
 
 	/**
 	 * CompiledPass forms an abstract base class for the default compiled pass materials provided by Away3D,
 	 * using material methods to define their appearance.
 	 */
-	export class CompiledPass extends away.materials.MaterialPassBase
+	export class CompiledPass extends MaterialPassBase
 	{
-		public _iPasses:away.materials.MaterialPassBase[];//Vector.<MaterialPassBase>;
+		public _iPasses:Array<MaterialPassBase>;
 		public _iPassesDirty:boolean;
 
 		public _pSpecularLightSources:number = 0x01;
@@ -19,8 +29,8 @@ module away.materials
 		private _fragmentLightCode:string;
 		private _framentPostLightCode:string;
 
-		public _pVertexConstantData:number[] = new Array<number>();//Vector.<Number>();
-		public _pFragmentConstantData:number[] = new Array<number>();//new Vector.<Number>();
+		public _pVertexConstantData:Array<number> = new Array<number>();
+		public _pFragmentConstantData:Array<number> = new Array<number>();
 		private _commonsDataIndex:number;
 		public _pProbeWeightsIndex:number;
 		private _uvBufferIndex:number;
@@ -32,16 +42,16 @@ module away.materials
 		public _pLightFragmentConstantIndex:number;
 		public _pCameraPositionIndex:number;
 		private _uvTransformIndex:number;
-		public _pLightProbeDiffuseIndices:number[] /*uint*/;
-		public _pLightProbeSpecularIndices:number[] /*uint*/;
+		public _pLightProbeDiffuseIndices:Array<number> /*uint*/;
+		public _pLightProbeSpecularIndices:Array<number> /*uint*/;
 
 		public _pAmbientLightR:number;
 		public _pAmbientLightG:number;
 		public _pAmbientLightB:number;
 
-		public _pCompiler:away.materials.ShaderCompiler;
+		public _pCompiler:ShaderCompiler;
 
-		public _pMethodSetup:away.materials.ShaderMethodSetup;
+		public _pMethodSetup:ShaderMethodSetup;
 
 		private _usingSpecularMethod:boolean;
 		private _usesNormals:boolean;
@@ -56,17 +66,19 @@ module away.materials
 
 		private _forceSeparateMVP:boolean = false;
 
+		private _onShaderInvalidatedDelegate:Function;
+
 		/**
 		 * Creates a new CompiledPass object.
 		 * @param material The material to which this pass belongs.
 		 */
-		constructor(material:away.materials.MaterialBase)
+		constructor(material:MaterialBase)
 		{
-
 			super();
-			//away.Debug.throwPIR( "away.materials.CompiledaPass" , 'normalMethod' , 'implement dependency: BasicNormalMethod, BasicAmbientMethod, BasicDiffuseMethod, BasicSpecularMethod');
 
 			this._pMaterial = material;
+
+			this._onShaderInvalidatedDelegate = Delegate.create(this, this.onShaderInvalidated);
 
 			this.init();
 		}
@@ -82,11 +94,8 @@ module away.materials
 
 		public set enableLightFallOff(value:boolean)
 		{
-			if (value != this._enableLightFallOff) {
-
-				this.iInvalidateShaderProgram(true);//this.invalidateShaderProgram(true);
-
-			}
+			if (value != this._enableLightFallOff)
+				this.iInvalidateShaderProgram(true);
 
 			this._enableLightFallOff = value;
 
@@ -134,7 +143,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iUpdateProgram(stageGLProxy:away.managers.StageGLProxy)
+		public iUpdateProgram(stageGLProxy:StageGLProxy)
 		{
 			this.reset(stageGLProxy.profile);
 			super.iUpdateProgram(stageGLProxy);
@@ -179,19 +188,13 @@ module away.materials
 
 			this.pInitCommonsData();//this.initCommonsData();
 
-			if (this._uvTransformIndex >= 0) {
+			if (this._uvTransformIndex >= 0)
+				this.pInitUVTransformData();
 
-				this.pInitUVTransformData();//this.initUVTransformData();
-			}
-
-			if (this._pCameraPositionIndex >= 0) {
-
+			if (this._pCameraPositionIndex >= 0)
 				this._pVertexConstantData[this._pCameraPositionIndex + 3] = 1;
 
-			}
-
-			this.pUpdateMethodConstants();//this.updateMethodConstants();
-
+			this.pUpdateMethodConstants();
 		}
 
 		/**
@@ -221,7 +224,7 @@ module away.materials
 		 * Factory method to create a concrete compiler object for this pass.
 		 * @param profile The compatibility profile used by the renderer.
 		 */
-		public pCreateCompiler(profile:string):away.materials.ShaderCompiler
+		public pCreateCompiler(profile:string):ShaderCompiler
 		{
 			throw new away.errors.AbstractMethodError();
 		}
@@ -277,14 +280,11 @@ module away.materials
 
 		public set preserveAlpha(value:boolean)
 		{
-			if (this._preserveAlpha == value) {
-
+			if (this._preserveAlpha == value)
 				return;
 
-			}
-
 			this._preserveAlpha = value;
-			this.iInvalidateShaderProgram();//invalidateShaderProgram();
+			this.iInvalidateShaderProgram();
 
 		}
 
@@ -300,12 +300,8 @@ module away.materials
 		{
 			this._animateUVs = value;
 
-			if ((value && !this._animateUVs) || (!value && this._animateUVs)) {
-
+			if ((value && !this._animateUVs) || (!value && this._animateUVs))
 				this.iInvalidateShaderProgram();
-
-			}
-
 		}
 
 		/**
@@ -316,21 +312,20 @@ module away.materials
 			if (this._pMipmap == value)
 				return;
 
-			super.setMipMap(value); //super.mipmap = value;
+			super.setMipMap(value);
 		}
 
 		/**
 		 * The normal map to modulate the direction of the surface for each texel. The default normal method expects
 		 * tangent-space normal maps, but others could expect object-space maps.
 		 */
-		public get normalMap():away.textures.Texture2DBase
+		public get normalMap():Texture2DBase
 		{
 			return this._pMethodSetup._iNormalMethod.normalMap;
 		}
 
-		public set normalMap(value:away.textures.Texture2DBase)
+		public set normalMap(value:Texture2DBase)
 		{
-
 			this._pMethodSetup._iNormalMethod.normalMap = value;
 		}
 
@@ -338,12 +333,12 @@ module away.materials
 		 * The method used to generate the per-pixel normals. Defaults to BasicNormalMethod.
 		 */
 
-		public get normalMethod():away.materials.BasicNormalMethod
+		public get normalMethod():BasicNormalMethod
 		{
 			return this._pMethodSetup.normalMethod;
 		}
 
-		public set normalMethod(value:away.materials.BasicNormalMethod)
+		public set normalMethod(value:BasicNormalMethod)
 		{
 			this._pMethodSetup.normalMethod = value;
 		}
@@ -352,12 +347,12 @@ module away.materials
 		 * The method that provides the ambient lighting contribution. Defaults to BasicAmbientMethod.
 		 */
 
-		public get ambientMethod():away.materials.BasicAmbientMethod
+		public get ambientMethod():BasicAmbientMethod
 		{
 			return this._pMethodSetup.ambientMethod;
 		}
 
-		public set ambientMethod(value:away.materials.BasicAmbientMethod)
+		public set ambientMethod(value:BasicAmbientMethod)
 		{
 			this._pMethodSetup.ambientMethod = value;
 		}
@@ -366,12 +361,12 @@ module away.materials
 		 * The method used to render shadows cast on this surface, or null if no shadows are to be rendered. Defaults to null.
 		 */
 
-		public get shadowMethod():away.materials.ShadowMapMethodBase
+		public get shadowMethod():ShadowMapMethodBase
 		{
 			return this._pMethodSetup.shadowMethod;
 		}
 
-		public set shadowMethod(value:away.materials.ShadowMapMethodBase)
+		public set shadowMethod(value:ShadowMapMethodBase)
 		{
 			this._pMethodSetup.shadowMethod = value;
 		}
@@ -379,12 +374,12 @@ module away.materials
 		/**
 		 * The method that provides the diffuse lighting contribution. Defaults to BasicDiffuseMethod.
 		 */
-		public get diffuseMethod():away.materials.BasicDiffuseMethod
+		public get diffuseMethod():BasicDiffuseMethod
 		{
 			return this._pMethodSetup.diffuseMethod;
 		}
 
-		public set diffuseMethod(value:away.materials.BasicDiffuseMethod)
+		public set diffuseMethod(value:BasicDiffuseMethod)
 		{
 			this._pMethodSetup.diffuseMethod = value;
 		}
@@ -393,12 +388,12 @@ module away.materials
 		 * The method that provides the specular lighting contribution. Defaults to BasicSpecularMethod.
 		 */
 
-		public get specularMethod():away.materials.BasicSpecularMethod
+		public get specularMethod():BasicSpecularMethod
 		{
 			return this._pMethodSetup.specularMethod;
 		}
 
-		public set specularMethod(value:away.materials.BasicSpecularMethod)
+		public set specularMethod(value:BasicSpecularMethod)
 		{
 			this._pMethodSetup.specularMethod = value;
 		}
@@ -408,9 +403,9 @@ module away.materials
 		 */
 		private init()
 		{
-			this._pMethodSetup = new away.materials.ShaderMethodSetup();
+			this._pMethodSetup = new ShaderMethodSetup();
 
-			this._pMethodSetup.addEventListener(away.events.ShadingMethodEvent.SHADER_INVALIDATED, this.onShaderInvalidated, this);
+			this._pMethodSetup.addEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
 		}
 
 		/**
@@ -419,7 +414,7 @@ module away.materials
 		public dispose()
 		{
 			super.dispose();
-			this._pMethodSetup.removeEventListener(away.events.ShadingMethodEvent.SHADER_INVALIDATED, this.onShaderInvalidated, this);
+			this._pMethodSetup.removeEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
 			this._pMethodSetup.dispose();
 			this._pMethodSetup = null;
 		}
@@ -429,8 +424,8 @@ module away.materials
 		 */
 		public iInvalidateShaderProgram(updateMaterial:boolean = true)
 		{
-			var oldPasses:away.materials.MaterialPassBase[] = this._iPasses;//:Vector.<MaterialPassBase> = _passes;
-			this._iPasses = new Array<away.materials.MaterialPassBase>();//= new Vector.<MaterialPassBase>();
+			var oldPasses:MaterialPassBase[] = this._iPasses;//:Vector.<MaterialPassBase> = _passes;
+			this._iPasses = new Array<MaterialPassBase>();//= new Vector.<MaterialPassBase>();
 
 			if (this._pMethodSetup) {
 
@@ -461,7 +456,6 @@ module away.materials
 		 */
 		public pAddPassesFromMethods()
 		{
-
 			if (this._pMethodSetup._iNormalMethod && this._pMethodSetup._iNormalMethod.iHasOutput)
 				this.pAddPasses(this._pMethodSetup._iNormalMethod.passes);
 
@@ -476,7 +470,6 @@ module away.materials
 
 			if (this._pMethodSetup._iSpecularMethod)
 				this.pAddPasses(this._pMethodSetup._iSpecularMethod.passes);
-
 		}
 
 		/**
@@ -484,23 +477,17 @@ module away.materials
 		 *
 		 * @param passes The passes to add.
 		 */
-		public pAddPasses(passes:away.materials.MaterialPassBase[]) //Vector.<MaterialPassBase>)
+		public pAddPasses(passes:MaterialPassBase[]) //Vector.<MaterialPassBase>)
 		{
-			if (!passes) {
-
+			if (!passes)
 				return;
-
-			}
-
 
 			var len:number = passes.length;
 
 			for (var i:number = 0; i < len; ++i) {
-
 				passes[i].material = this.material;
 				passes[i].lightPicker = this._pLightPicker;
 				this._iPasses.push(passes[i]);
-
 			}
 		}
 
@@ -537,7 +524,6 @@ module away.materials
 		{
 			this._pCompiler.dispose();
 			this._pCompiler = null;
-
 		}
 
 		/**
@@ -559,7 +545,6 @@ module away.materials
 
 			if (this._pMethodSetup._iShadowMethod)
 				this._pMethodSetup._iShadowMethod.iInitConstants(this._pMethodSetup._iShadowMethodVO);
-
 		}
 
 		/**
@@ -573,7 +558,7 @@ module away.materials
 		/**
 		 * Updates constant data render state used by the light probes. This method is optional for subclasses to implement.
 		 */
-		public pUpdateProbes(stageGLProxy:away.managers.StageGLProxy)
+		public pUpdateProbes(stageGLProxy:StageGLProxy)
 		{
 
 		}
@@ -581,7 +566,7 @@ module away.materials
 		/**
 		 * Called when any method's shader code is invalidated.
 		 */
-		private onShaderInvalidated(event:away.events.ShadingMethodEvent)
+		private onShaderInvalidated(event:ShadingMethodEvent)
 		{
 			this.iInvalidateShaderProgram();//invalidateShaderProgram();
 		}
@@ -601,7 +586,6 @@ module away.materials
 		{
 			//TODO: AGAL <> GLSL conversion
 			return this._fragmentLightCode + animatorCode + this._framentPostLightCode;
-
 		}
 
 		// RENDER LOOP
@@ -609,38 +593,28 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D)
+		public iActivate(stageGLProxy:StageGLProxy, camera:Camera3D)
 		{
 			super.iActivate(stageGLProxy, camera);
 
-			if (this._usesNormals) {
-
+			if (this._usesNormals)
 				this._pMethodSetup._iNormalMethod.iActivate(this._pMethodSetup._iNormalMethodVO, stageGLProxy);
-
-			}
 
 			this._pMethodSetup._iAmbientMethod.iActivate(this._pMethodSetup._iAmbientMethodVO, stageGLProxy);
 
-			if (this._pMethodSetup._iShadowMethod) {
-
+			if (this._pMethodSetup._iShadowMethod)
 				this._pMethodSetup._iShadowMethod.iActivate(this._pMethodSetup._iShadowMethodVO, stageGLProxy);
-
-			}
 
 			this._pMethodSetup._iDiffuseMethod.iActivate(this._pMethodSetup._iDiffuseMethodVO, stageGLProxy);
 
-			if (this._usingSpecularMethod) {
-
+			if (this._usingSpecularMethod)
 				this._pMethodSetup._iSpecularMethod.iActivate(this._pMethodSetup._iSpecularMethodVO, stageGLProxy);
-
-			}
-
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iRender(renderable:away.base.IRenderable, stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D, viewProjection:away.geom.Matrix3D)
+		public iRender(renderable:IRenderable, stageGLProxy:StageGLProxy, camera:Camera3D, viewProjection:Matrix3D)
 		{
 			var i:number;
 			var context:away.displayGL.ContextGL = stageGLProxy._iContextGL;
@@ -658,7 +632,7 @@ module away.materials
 
 
 			if (this._animateUVs) {
-				var uvTransform:away.geom.Matrix = renderable.uvTransform;
+				var uvTransform:Matrix = renderable.uvTransform;
 
 				if (uvTransform) {
 					this._pVertexConstantData[this._uvTransformIndex] = uvTransform.a;
@@ -679,18 +653,11 @@ module away.materials
 
 			this._pAmbientLightR = this._pAmbientLightG = this._pAmbientLightB = 0;
 
-			if (this.pUsesLights()) {
+			if (this.pUsesLights())
+				this.pUpdateLightConstants();
 
-				this.pUpdateLightConstants();//this.updateLightConstants();
-
-			}
-
-			if (this.pUsesProbes()) {
-
-				this.pUpdateProbes(stageGLProxy);//this.updateProbes(stageGLProxy);
-
-			}
-
+			if (this.pUsesProbes())
+				this.pUpdateProbes(stageGLProxy);
 
 			if (this._sceneMatrixIndex >= 0) {
 
@@ -702,7 +669,7 @@ module away.materials
 
 
 			} else {
-				var matrix3D:away.geom.Matrix3D = away.geom.Matrix3DUtils.CALCULATION_MATRIX;
+				var matrix3D:Matrix3D = Matrix3DUtils.CALCULATION_MATRIX;
 
 				matrix3D.copyFrom(renderable.getRenderSceneTransform(camera));
 				matrix3D.append(viewProjection);
@@ -713,33 +680,23 @@ module away.materials
 			}
 
 			if (this._sceneNormalMatrixIndex >= 0) {
-
 				renderable.inverseSceneTransform.copyRawDataTo(this._pVertexConstantData, this._sceneNormalMatrixIndex, false);
 				//this._pVertexConstantData = renderable.inverseSceneTransform.copyRawDataTo(this._sceneNormalMatrixIndex, false);
-
 			}
 
-
-			if (this._usesNormals) {
-
+			if (this._usesNormals)
 				this._pMethodSetup._iNormalMethod.iSetRenderState(this._pMethodSetup._iNormalMethodVO, renderable, stageGLProxy, camera);
 
-			}
-
-			//away.Debug.throwPIR( 'away.materials.CompiledPass' , 'iRender' , 'implement dependency: BasicAmbientMethod');
-
-			var ambientMethod:away.materials.BasicAmbientMethod = this._pMethodSetup._iAmbientMethod;
+			var ambientMethod:BasicAmbientMethod = this._pMethodSetup._iAmbientMethod;
 			ambientMethod._iLightAmbientR = this._pAmbientLightR;
 			ambientMethod._iLightAmbientG = this._pAmbientLightG;
 			ambientMethod._iLightAmbientB = this._pAmbientLightB;
 			ambientMethod.iSetRenderState(this._pMethodSetup._iAmbientMethodVO, renderable, stageGLProxy, camera);
 
-
 			if (this._pMethodSetup._iShadowMethod)
 				this._pMethodSetup._iShadowMethod.iSetRenderState(this._pMethodSetup._iShadowMethodVO, renderable, stageGLProxy, camera);
 
 			this._pMethodSetup._iDiffuseMethod.iSetRenderState(this._pMethodSetup._iDiffuseMethodVO, renderable, stageGLProxy, camera);
-
 
 			if (this._usingSpecularMethod)
 				this._pMethodSetup._iSpecularMethod.iSetRenderState(this._pMethodSetup._iSpecularMethodVO, renderable, stageGLProxy, camera);
@@ -747,19 +704,13 @@ module away.materials
 			if (this._pMethodSetup._iColorTransformMethod)
 				this._pMethodSetup._iColorTransformMethod.iSetRenderState(this._pMethodSetup._iColorTransformMethodVO, renderable, stageGLProxy, camera);
 
-
-			//away.Debug.throwPIR( 'away.materials.CompiledPass' , 'iRender' , 'implement dependency: MethodVOSet');
-
-			//Vector.<MethodVOSet>
-			var methods:away.materials.MethodVOSet[] = this._pMethodSetup._iMethods;
+			var methods:Array<MethodVOSet> = this._pMethodSetup._iMethods;
 			var len:number = methods.length;
 
 			for (i = 0; i < len; ++i) {
-
 				var aset:MethodVOSet = methods[i];
 
 				aset.method.iSetRenderState(aset.data, renderable, stageGLProxy, camera);
-
 			}
 
 			context.setProgramConstantsFromArray(away.displayGL.ContextGLProgramType.VERTEX, 0, this._pVertexConstantData, this._pNumUsedVertexConstants);
@@ -774,7 +725,7 @@ module away.materials
 		 */
 		public pUsesProbes():boolean
 		{
-			return this._pNumLightProbes > 0 && (( this._pDiffuseLightSources | this._pSpecularLightSources) & away.materials.LightSources.PROBES) != 0;
+			return this._pNumLightProbes > 0 && (( this._pDiffuseLightSources | this._pSpecularLightSources) & LightSources.PROBES) != 0;
 		}
 
 		/**
@@ -782,38 +733,28 @@ module away.materials
 		 */
 		public pUsesLights():boolean
 		{
-			return ( this._pNumPointLights > 0 || this._pNumDirectionalLights > 0) && ((this._pDiffuseLightSources | this._pSpecularLightSources) & away.materials.LightSources.LIGHTS) != 0;
+			return ( this._pNumPointLights > 0 || this._pNumDirectionalLights > 0) && ((this._pDiffuseLightSources | this._pSpecularLightSources) & LightSources.LIGHTS) != 0;
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iDeactivate(stageGLProxy:away.managers.StageGLProxy)
+		public iDeactivate(stageGLProxy:StageGLProxy)
 		{
 			super.iDeactivate(stageGLProxy);
 
-			if (this._usesNormals) {
-
+			if (this._usesNormals)
 				this._pMethodSetup._iNormalMethod.iDeactivate(this._pMethodSetup._iNormalMethodVO, stageGLProxy);
-
-			}
 
 			this._pMethodSetup._iAmbientMethod.iDeactivate(this._pMethodSetup._iAmbientMethodVO, stageGLProxy);
 
-			if (this._pMethodSetup._iShadowMethod) {
-
+			if (this._pMethodSetup._iShadowMethod)
 				this._pMethodSetup._iShadowMethod.iDeactivate(this._pMethodSetup._iShadowMethodVO, stageGLProxy);
-
-			}
 
 			this._pMethodSetup._iDiffuseMethod.iDeactivate(this._pMethodSetup._iDiffuseMethodVO, stageGLProxy);
 
-			if (this._usingSpecularMethod) {
-
+			if (this._usingSpecularMethod)
 				this._pMethodSetup._iSpecularMethod.iDeactivate(this._pMethodSetup._iSpecularMethodVO, stageGLProxy);
-
-			}
-
 		}
 
 		/**
@@ -847,9 +788,5 @@ module away.materials
 		{
 			this._pDiffuseLightSources = value;
 		}
-
 	}
-
 }
-
-// Fix for BOM issue

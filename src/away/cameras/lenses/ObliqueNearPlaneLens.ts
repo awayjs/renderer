@@ -7,12 +7,15 @@ module away.cameras
 
 		private _baseLens:away.cameras.LensBase;
 		private _plane:away.geom.Plane3D;
+		private _onLensMatrixChangedDelegate:Function;
 
 		constructor(baseLens:away.cameras.LensBase, plane:away.geom.Plane3D)
 		{
 			super();
 			this.baseLens = baseLens;
 			this.plane = plane;
+
+			this._onLensMatrixChangedDelegate = away.utils.Delegate.create(this, this.onLensMatrixChanged);
 		}
 
 		//@override
@@ -71,12 +74,12 @@ module away.cameras
 		public set baseLens(value:away.cameras.LensBase)
 		{
 			if (this._baseLens) {
-				this._baseLens.removeEventListener(away.events.LensEvent.MATRIX_CHANGED, this.onLensMatrixChanged, this);
+				this._baseLens.removeEventListener(away.events.LensEvent.MATRIX_CHANGED, this._onLensMatrixChangedDelegate);
 			}
 			this._baseLens = value;
 
 			if (this._baseLens) {
-				this._baseLens.addEventListener(away.events.LensEvent.MATRIX_CHANGED, this.onLensMatrixChanged, this);
+				this._baseLens.addEventListener(away.events.LensEvent.MATRIX_CHANGED, this._onLensMatrixChangedDelegate);
 			}
 			this.pInvalidateMatrix();
 		}

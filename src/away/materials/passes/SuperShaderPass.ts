@@ -9,7 +9,7 @@ module away.materials
 	 *
 	 * @see away3d.materials.methods.ShadingMethodBase
 	 */
-	export class SuperShaderPass extends away.materials.CompiledPass
+	export class SuperShaderPass extends CompiledPass
 	{
 		private _includeCasters:boolean = true;
 		private _ignoreLights:boolean;
@@ -19,7 +19,7 @@ module away.materials
 		 *
 		 * @param material The material to which this material belongs.
 		 */
-		constructor(material:away.materials.MaterialBase)
+		constructor(material:MaterialBase)
 		{
 			super(material);
 			this._pNeedFragmentAnimation = true;
@@ -28,9 +28,9 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public pCreateCompiler(profile:string):away.materials.ShaderCompiler
+		public pCreateCompiler(profile:string):ShaderCompiler
 		{
-			return new away.materials.SuperShaderCompiler(profile);
+			return new SuperShaderCompiler(profile);
 		}
 
 		/**
@@ -67,7 +67,7 @@ module away.materials
 				if (this.colorTransformMethod == null) {
 
 
-					this.colorTransformMethod = new away.materials.ColorTransformMethod();
+					this.colorTransformMethod = new ColorTransformMethod();
 
 				}
 
@@ -88,13 +88,13 @@ module away.materials
 		/**
 		 * The ColorTransformMethod object to transform the colour of the material with. Defaults to null.
 		 */
-		public get colorTransformMethod():away.materials.ColorTransformMethod
+		public get colorTransformMethod():ColorTransformMethod
 		{
 
 			return this._pMethodSetup._iColorTransformMethod;
 		}
 
-		public set colorTransformMethod(value:away.materials.ColorTransformMethod)
+		public set colorTransformMethod(value:ColorTransformMethod)
 		{
 			this._pMethodSetup.iColorTransformMethod = value;
 		}
@@ -104,7 +104,7 @@ module away.materials
 		 * but modulate the shaded colour, used for fog, outlines, etc. The method will be applied to the result of the
 		 * methods added prior.
 		 */
-		public addMethod(method:away.materials.EffectMethodBase)
+		public addMethod(method:EffectMethodBase)
 		{
 			this._pMethodSetup.addMethod(method);
 		}
@@ -123,7 +123,7 @@ module away.materials
 		 * @param method The method to be queried.
 		 * @return true if the method was added to the material, false otherwise.
 		 */
-		public hasMethod(method:away.materials.EffectMethodBase):boolean
+		public hasMethod(method:EffectMethodBase):boolean
 		{
 			return this._pMethodSetup.hasMethod(method);
 		}
@@ -133,7 +133,7 @@ module away.materials
 		 * @param index The index of the method to retrieve.
 		 * @return The method at the given index.
 		 */
-		public getMethodAt(index:number):away.materials.EffectMethodBase
+		public getMethodAt(index:number):EffectMethodBase
 		{
 			return this._pMethodSetup.getMethodAt(index);
 		}
@@ -143,7 +143,7 @@ module away.materials
 		 * methods are those that do not influence the lighting but modulate the shaded colour, used for fog, outlines,
 		 * etc. The method will be applied to the result of the methods with a lower index.
 		 */
-		public addMethodAt(method:away.materials.EffectMethodBase, index:number)
+		public addMethodAt(method:EffectMethodBase, index:number)
 		{
 			this._pMethodSetup.addMethodAt(method, index);
 		}
@@ -152,7 +152,7 @@ module away.materials
 		 * Removes an effect method from the material.
 		 * @param method The method to be removed.
 		 */
-		public removeMethod(method:away.materials.EffectMethodBase)
+		public removeMethod(method:EffectMethodBase)
 		{
 			this._pMethodSetup.removeMethod(method);
 		}
@@ -193,12 +193,12 @@ module away.materials
 			if (this._pMethodSetup._iColorTransformMethod)
 				this._pMethodSetup._iColorTransformMethod.iActivate(this._pMethodSetup._iColorTransformMethodVO, stageGLProxy);
 
-			var methods:away.materials.MethodVOSet[] = this._pMethodSetup._iMethods;
+			var methods:MethodVOSet[] = this._pMethodSetup._iMethods;
 			var len:number = methods.length;
 
 			for (var i:number = 0; i < len; ++i) {
 
-				var aset:away.materials.MethodVOSet = methods[i];
+				var aset:MethodVOSet = methods[i];
 				aset.method.iActivate(aset.data, stageGLProxy);
 
 			}
@@ -228,8 +228,8 @@ module away.materials
 
 			}
 
-			var aset:away.materials.MethodVOSet;
-			var methods:away.materials.MethodVOSet[] = this._pMethodSetup._iMethods;
+			var aset:MethodVOSet;
+			var methods:MethodVOSet[] = this._pMethodSetup._iMethods;
 			var len:number = methods.length;
 
 			for (var i:number = 0; i < len; ++i) {
@@ -251,7 +251,7 @@ module away.materials
 				this.pAddPasses(this._pMethodSetup._iColorTransformMethod.passes);
 
 			}
-			var methods:away.materials.MethodVOSet[] = this._pMethodSetup._iMethods;
+			var methods:MethodVOSet[] = this._pMethodSetup._iMethods;
 
 			for (var i:number = 0; i < methods.length; ++i) {
 
@@ -268,7 +268,7 @@ module away.materials
 		private usesProbesForSpecular():boolean
 		{
 
-			return this._pNumLightProbes > 0 && (this._pSpecularLightSources & away.materials.LightSources.PROBES) != 0;
+			return this._pNumLightProbes > 0 && (this._pSpecularLightSources & LightSources.PROBES) != 0;
 		}
 
 		/**
@@ -277,7 +277,7 @@ module away.materials
 		private usesProbesForDiffuse():boolean
 		{
 
-			return this._pNumLightProbes > 0 && (this._pDiffuseLightSources & away.materials.LightSources.PROBES) != 0;
+			return this._pNumLightProbes > 0 && (this._pDiffuseLightSources & LightSources.PROBES) != 0;
 
 		}
 
@@ -295,7 +295,7 @@ module away.materials
 
 			}
 
-			var methods:away.materials.MethodVOSet[] = this._pMethodSetup._iMethods;
+			var methods:MethodVOSet[] = this._pMethodSetup._iMethods;
 			var len:number = methods.length;
 
 			for (var i:number = 0; i < len; ++i) {
