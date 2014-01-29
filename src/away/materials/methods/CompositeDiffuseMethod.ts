@@ -1,7 +1,7 @@
 ///<reference path="../../_definitions.ts"/>
 module away.materials
 {
-	import StageGLProxy                     = away.managers.StageGLProxy;
+	import StageGL                     = away.base.StageGL;
 	import Texture2DBase					= away.textures.Texture2DBase;
 	import Delegate							= away.utils.Delegate;
 
@@ -176,17 +176,17 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGLProxy:away.managers.StageGLProxy):void
+		public iActivate(vo:MethodVO, stageGL:away.base.StageGL):void
 		{
-			this.pBaseMethod.iActivate(vo, stageGLProxy);
+			this.pBaseMethod.iActivate(vo, stageGL);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iDeactivate(vo:MethodVO, stageGLProxy:away.managers.StageGLProxy):void
+		public iDeactivate(vo:MethodVO, stageGL:away.base.StageGL):void
 		{
-			this.pBaseMethod.iDeactivate(vo, stageGLProxy);
+			this.pBaseMethod.iDeactivate(vo, stageGL);
 		}
 
 		/**

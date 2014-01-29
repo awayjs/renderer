@@ -19,12 +19,12 @@ module away.base
 		private _jointWeightsData:number[];
 		private _jointIndexData:number[];
 		private _animatedData:number[]; // used for cpu fallback
-		private _jointWeightsBuffer:away.displayGL.VertexBuffer[] = new Array<away.displayGL.VertexBuffer>(8);
-		private _jointIndexBuffer:away.displayGL.VertexBuffer[] = new Array<away.displayGL.VertexBuffer>(8);
+		private _jointWeightsBuffer:away.gl.VertexBuffer[] = new Array<away.gl.VertexBuffer>(8);
+		private _jointIndexBuffer:away.gl.VertexBuffer[] = new Array<away.gl.VertexBuffer>(8);
 		private _jointWeightsInvalid:boolean[] = new Array<boolean>(8);
 		private _jointIndicesInvalid:boolean[] = new Array<boolean>(8);
-		private _jointWeightContext:away.displayGL.ContextGL[] = new Array<away.displayGL.ContextGL>(8);
-		private _jointIndexContext:away.displayGL.ContextGL[] = new Array<away.displayGL.ContextGL>(8);
+		private _jointWeightContext:away.gl.ContextGL[] = new Array<away.gl.ContextGL>(8);
+		private _jointIndexContext:away.gl.ContextGL[] = new Array<away.gl.ContextGL>(8);
 		private _jointsPerVertex:number;
 
 		private _condensedJointIndexData:number[];
@@ -76,12 +76,12 @@ module away.base
 		/**
 		 * Assigns the attribute stream for joint weights
 		 * @param index The attribute stream index for the vertex shader
-		 * @param stageGLProxy The StageGLProxy to assign the stream to
+		 * @param stageGL The StageGL to assign the stream to
 		 */
-		public activateJointWeightsBuffer(index:number, stageGLProxy:away.managers.StageGLProxy)
+		public activateJointWeightsBuffer(index:number, stageGL:away.base.StageGL)
 		{
-			var contextIndex:number = stageGLProxy._iStageGLIndex;
-			var context:away.displayGL.ContextGL = stageGLProxy._iContextGL;
+			var contextIndex:number = stageGL._iStageGLIndex;
+			var context:away.gl.ContextGL = stageGL.contextGL;
 			if (this._jointWeightContext[contextIndex] != context || !this._jointWeightsBuffer[contextIndex]) {
 				this._jointWeightsBuffer[contextIndex] = context.createVertexBuffer(this._pNumVertices, this._jointsPerVertex);
 				this._jointWeightContext[contextIndex] = context;
@@ -97,12 +97,12 @@ module away.base
 		/**
 		 * Assigns the attribute stream for joint indices
 		 * @param index The attribute stream index for the vertex shader
-		 * @param stageGLProxy The StageGLProxy to assign the stream to
+		 * @param stageGL The StageGL to assign the stream to
 		 */
-		public activateJointIndexBuffer(index:number, stageGLProxy:away.managers.StageGLProxy)
+		public activateJointIndexBuffer(index:number, stageGL:away.base.StageGL)
 		{
-			var contextIndex:number = stageGLProxy._iStageGLIndex;
-			var context:away.displayGL.ContextGL = stageGLProxy._iContextGL;
+			var contextIndex:number = stageGL._iStageGLIndex;
+			var context:away.gl.ContextGL = stageGL.contextGL;
 
 			if (this._jointIndexContext[contextIndex] != context || !this._jointIndexBuffer[contextIndex]) {
 				this._jointIndexBuffer[contextIndex] = context.createVertexBuffer(this._pNumVertices, this._jointsPerVertex);

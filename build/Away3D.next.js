@@ -1651,43 +1651,43 @@ var away;
             /**
             * @inheritDoc
             */
-            SubMesh.prototype.activateVertexBuffer = function (index, stageGLProxy) {
-                this._subGeometry.activateVertexBuffer(index, stageGLProxy);
+            SubMesh.prototype.activateVertexBuffer = function (index, stageGL) {
+                this._subGeometry.activateVertexBuffer(index, stageGL);
             };
 
             /**
             * @inheritDoc
             */
-            SubMesh.prototype.activateVertexNormalBuffer = function (index, stageGLProxy) {
-                this._subGeometry.activateVertexNormalBuffer(index, stageGLProxy);
+            SubMesh.prototype.activateVertexNormalBuffer = function (index, stageGL) {
+                this._subGeometry.activateVertexNormalBuffer(index, stageGL);
             };
 
             /**
             * @inheritDoc
             */
-            SubMesh.prototype.activateVertexTangentBuffer = function (index, stageGLProxy) {
-                this._subGeometry.activateVertexTangentBuffer(index, stageGLProxy);
+            SubMesh.prototype.activateVertexTangentBuffer = function (index, stageGL) {
+                this._subGeometry.activateVertexTangentBuffer(index, stageGL);
             };
 
             /**
             * @inheritDoc
             */
-            SubMesh.prototype.activateUVBuffer = function (index, stageGLProxy) {
-                this._subGeometry.activateUVBuffer(index, stageGLProxy);
+            SubMesh.prototype.activateUVBuffer = function (index, stageGL) {
+                this._subGeometry.activateUVBuffer(index, stageGL);
             };
 
             /**
             * @inheritDoc
             */
-            SubMesh.prototype.activateSecondaryUVBuffer = function (index, stageGLProxy) {
-                this._subGeometry.activateSecondaryUVBuffer(index, stageGLProxy);
+            SubMesh.prototype.activateSecondaryUVBuffer = function (index, stageGL) {
+                this._subGeometry.activateSecondaryUVBuffer(index, stageGL);
             };
 
             /**
             * @inheritDoc
             */
-            SubMesh.prototype.getIndexBuffer = function (stageGLProxy) {
-                return this._subGeometry.getIndexBuffer(stageGLProxy);
+            SubMesh.prototype.getIndexBuffer = function (stageGL) {
+                return this._subGeometry.getIndexBuffer(stageGL);
             };
 
             Object.defineProperty(SubMesh.prototype, "numTriangles", {
@@ -2020,9 +2020,9 @@ var away;
             * @param context The ContextGL for which we request the buffer
             * @return The VertexBuffer object that contains triangle indices.
             */
-            SubGeometryBase.prototype.getIndexBuffer = function (stageGLProxy) {
-                var contextIndex = stageGLProxy._iStageGLIndex;
-                var context = stageGLProxy._iContextGL;
+            SubGeometryBase.prototype.getIndexBuffer = function (stageGL) {
+                var contextIndex = stageGL._iStageGLIndex;
+                var context = stageGL.contextGL;
 
                 if (!this._indexBuffer[contextIndex] || this._indexBufferContext[contextIndex] != context) {
                     this._indexBuffer[contextIndex] = context.createIndexBuffer(this._numIndices);
@@ -2807,9 +2807,9 @@ var away;
                 this.pInvalidateBounds();
             };
 
-            CompactSubGeometry.prototype.activateVertexBuffer = function (index, stageGLProxy) {
-                var contextIndex = stageGLProxy._iStageGLIndex;
-                var context = stageGLProxy._iContextGL;
+            CompactSubGeometry.prototype.activateVertexBuffer = function (index, stageGL) {
+                var contextIndex = stageGL._iStageGLIndex;
+                var context = stageGL.contextGL;
 
                 if (contextIndex != this._contextIndex) {
                     this.pUpdateActiveBuffer(contextIndex);
@@ -2823,12 +2823,12 @@ var away;
                     this.pUploadData(contextIndex);
                 }
 
-                context.setVertexBufferAt(index, this._pActiveBuffer, 0, away.displayGL.ContextGLVertexBufferFormat.FLOAT_3);
+                context.setVertexBufferAt(index, this._pActiveBuffer, 0, away.gl.ContextGLVertexBufferFormat.FLOAT_3);
             };
 
-            CompactSubGeometry.prototype.activateUVBuffer = function (index, stageGLProxy) {
-                var contextIndex = stageGLProxy._iStageGLIndex;
-                var context = stageGLProxy._iContextGL;
+            CompactSubGeometry.prototype.activateUVBuffer = function (index, stageGL) {
+                var contextIndex = stageGL._iStageGLIndex;
+                var context = stageGL.contextGL;
 
                 if (this._uvsDirty && this._autoGenerateUVs) {
                     this._vertexData = this.pUpdateDummyUVs(this._vertexData);
@@ -2847,12 +2847,12 @@ var away;
                     this.pUploadData(contextIndex);
                 }
 
-                context.setVertexBufferAt(index, this._pActiveBuffer, 9, away.displayGL.ContextGLVertexBufferFormat.FLOAT_2);
+                context.setVertexBufferAt(index, this._pActiveBuffer, 9, away.gl.ContextGLVertexBufferFormat.FLOAT_2);
             };
 
-            CompactSubGeometry.prototype.activateSecondaryUVBuffer = function (index, stageGLProxy) {
-                var contextIndex = stageGLProxy._iStageGLIndex;
-                var context = stageGLProxy._iContextGL;
+            CompactSubGeometry.prototype.activateSecondaryUVBuffer = function (index, stageGL) {
+                var contextIndex = stageGL._iStageGLIndex;
+                var context = stageGL.contextGL;
 
                 if (contextIndex != this._contextIndex) {
                     this.pUpdateActiveBuffer(contextIndex);
@@ -2866,7 +2866,7 @@ var away;
                     this.pUploadData(contextIndex);
                 }
 
-                context.setVertexBufferAt(index, this._pActiveBuffer, 11, away.displayGL.ContextGLVertexBufferFormat.FLOAT_2);
+                context.setVertexBufferAt(index, this._pActiveBuffer, 11, away.gl.ContextGLVertexBufferFormat.FLOAT_2);
             };
 
             CompactSubGeometry.prototype.pUploadData = function (contextIndex) {
@@ -2874,9 +2874,9 @@ var away;
                 this._pVertexDataInvalid[contextIndex] = this._pActiveDataInvalid = false;
             };
 
-            CompactSubGeometry.prototype.activateVertexNormalBuffer = function (index, stageGLProxy) {
-                var contextIndex = stageGLProxy._iStageGLIndex;
-                var context = stageGLProxy._iContextGL;
+            CompactSubGeometry.prototype.activateVertexNormalBuffer = function (index, stageGL) {
+                var contextIndex = stageGL._iStageGLIndex;
+                var context = stageGL.contextGL;
 
                 if (contextIndex != this._contextIndex) {
                     this.pUpdateActiveBuffer(contextIndex);
@@ -2890,12 +2890,12 @@ var away;
                     this.pUploadData(contextIndex);
                 }
 
-                context.setVertexBufferAt(index, this._pActiveBuffer, 3, away.displayGL.ContextGLVertexBufferFormat.FLOAT_3);
+                context.setVertexBufferAt(index, this._pActiveBuffer, 3, away.gl.ContextGLVertexBufferFormat.FLOAT_3);
             };
 
-            CompactSubGeometry.prototype.activateVertexTangentBuffer = function (index, stageGLProxy) {
-                var contextIndex = stageGLProxy._iStageGLIndex;
-                var context = stageGLProxy._iContextGL;
+            CompactSubGeometry.prototype.activateVertexTangentBuffer = function (index, stageGL) {
+                var contextIndex = stageGL._iStageGLIndex;
+                var context = stageGL.contextGL;
 
                 if (contextIndex != this._contextIndex) {
                     this.pUpdateActiveBuffer(contextIndex);
@@ -2909,7 +2909,7 @@ var away;
                     this.pUploadData(contextIndex);
                 }
 
-                context.setVertexBufferAt(index, this._pActiveBuffer, 6, away.displayGL.ContextGLVertexBufferFormat.FLOAT_3);
+                context.setVertexBufferAt(index, this._pActiveBuffer, 6, away.gl.ContextGLVertexBufferFormat.FLOAT_3);
             };
 
             CompactSubGeometry.prototype.pCreateBuffer = function (contextIndex, context) {
@@ -3328,11 +3328,11 @@ var away;
             /**
             * Assigns the attribute stream for joint weights
             * @param index The attribute stream index for the vertex shader
-            * @param stageGLProxy The StageGLProxy to assign the stream to
+            * @param stageGL The StageGL to assign the stream to
             */
-            SkinnedSubGeometry.prototype.activateJointWeightsBuffer = function (index, stageGLProxy) {
-                var contextIndex = stageGLProxy._iStageGLIndex;
-                var context = stageGLProxy._iContextGL;
+            SkinnedSubGeometry.prototype.activateJointWeightsBuffer = function (index, stageGL) {
+                var contextIndex = stageGL._iStageGLIndex;
+                var context = stageGL.contextGL;
                 if (this._jointWeightContext[contextIndex] != context || !this._jointWeightsBuffer[contextIndex]) {
                     this._jointWeightsBuffer[contextIndex] = context.createVertexBuffer(this._pNumVertices, this._jointsPerVertex);
                     this._jointWeightContext[contextIndex] = context;
@@ -3348,11 +3348,11 @@ var away;
             /**
             * Assigns the attribute stream for joint indices
             * @param index The attribute stream index for the vertex shader
-            * @param stageGLProxy The StageGLProxy to assign the stream to
+            * @param stageGL The StageGL to assign the stream to
             */
-            SkinnedSubGeometry.prototype.activateJointIndexBuffer = function (index, stageGLProxy) {
-                var contextIndex = stageGLProxy._iStageGLIndex;
-                var context = stageGLProxy._iContextGL;
+            SkinnedSubGeometry.prototype.activateJointIndexBuffer = function (index, stageGL) {
+                var contextIndex = stageGL._iStageGLIndex;
+                var context = stageGL.contextGL;
 
                 if (this._jointIndexContext[contextIndex] != context || !this._jointIndexBuffer[contextIndex]) {
                     this._jointIndexBuffer[contextIndex] = context.createVertexBuffer(this._pNumVertices, this._jointsPerVertex);
@@ -3743,9 +3743,9 @@ var away;
             /**
             * @inheritDoc
             */
-            SubGeometry.prototype.activateVertexBuffer = function (index, stageGLProxy) {
-                var contextIndex = stageGLProxy._iStageGLIndex;
-                var context = stageGLProxy._iContextGL;
+            SubGeometry.prototype.activateVertexBuffer = function (index, stageGL) {
+                var contextIndex = stageGL._iStageGLIndex;
+                var context = stageGL.contextGL;
 
                 if (!this._vertexBuffer[contextIndex] || this._vertexBufferContext[contextIndex] != context) {
                     this._vertexBuffer[contextIndex] = context.createVertexBuffer(this._numVertices, 3);
@@ -3758,15 +3758,15 @@ var away;
                     this._verticesInvalid[contextIndex] = false;
                 }
 
-                context.setVertexBufferAt(index, this._vertexBuffer[contextIndex], 0, away.displayGL.ContextGLVertexBufferFormat.FLOAT_3);
+                context.setVertexBufferAt(index, this._vertexBuffer[contextIndex], 0, away.gl.ContextGLVertexBufferFormat.FLOAT_3);
             };
 
             /**
             * @inheritDoc
             */
-            SubGeometry.prototype.activateUVBuffer = function (index, stageGLProxy) {
-                var contextIndex = stageGLProxy._iStageGLIndex;
-                var context = stageGLProxy._iContextGL;
+            SubGeometry.prototype.activateUVBuffer = function (index, stageGL) {
+                var contextIndex = stageGL._iStageGLIndex;
+                var context = stageGL.contextGL;
 
                 if (this._autoGenerateUVs && this._uvsDirty) {
                     this._uvs = this.pUpdateDummyUVs(this._uvs);
@@ -3783,15 +3783,15 @@ var away;
                     this._uvsInvalid[contextIndex] = false;
                 }
 
-                context.setVertexBufferAt(index, this._uvBuffer[contextIndex], 0, away.displayGL.ContextGLVertexBufferFormat.FLOAT_2);
+                context.setVertexBufferAt(index, this._uvBuffer[contextIndex], 0, away.gl.ContextGLVertexBufferFormat.FLOAT_2);
             };
 
             /**
             * @inheritDoc
             */
-            SubGeometry.prototype.activateSecondaryUVBuffer = function (index, stageGLProxy) {
-                var contextIndex = stageGLProxy._iStageGLIndex;
-                var context = stageGLProxy._iContextGL;
+            SubGeometry.prototype.activateSecondaryUVBuffer = function (index, stageGL) {
+                var contextIndex = stageGL._iStageGLIndex;
+                var context = stageGL.contextGL;
 
                 if (!this._secondaryUvBuffer[contextIndex] || this._secondaryUvBufferContext[contextIndex] != context) {
                     this._secondaryUvBuffer[contextIndex] = context.createVertexBuffer(this._numVertices, 2);
@@ -3804,7 +3804,7 @@ var away;
                     this._secondaryUvsInvalid[contextIndex] = false;
                 }
 
-                context.setVertexBufferAt(index, this._secondaryUvBuffer[contextIndex], 0, away.displayGL.ContextGLVertexBufferFormat.FLOAT_2);
+                context.setVertexBufferAt(index, this._secondaryUvBuffer[contextIndex], 0, away.gl.ContextGLVertexBufferFormat.FLOAT_2);
             };
 
             /**
@@ -3812,9 +3812,9 @@ var away;
             * @param context The ContextGL for which we request the buffer
             * @return The VertexBuffer object that contains vertex normals.
             */
-            SubGeometry.prototype.activateVertexNormalBuffer = function (index, stageGLProxy) {
-                var contextIndex = stageGLProxy._iStageGLIndex;
-                var context = stageGLProxy._iContextGL;
+            SubGeometry.prototype.activateVertexNormalBuffer = function (index, stageGL) {
+                var contextIndex = stageGL._iStageGLIndex;
+                var context = stageGL.contextGL;
 
                 if (this._autoDeriveVertexNormals && this._vertexNormalsDirty) {
                     this._vertexNormals = this.pUpdateVertexNormals(this._vertexNormals);
@@ -3831,7 +3831,7 @@ var away;
                     this._normalsInvalid[contextIndex] = false;
                 }
 
-                context.setVertexBufferAt(index, this._vertexNormalBuffer[contextIndex], 0, away.displayGL.ContextGLVertexBufferFormat.FLOAT_3);
+                context.setVertexBufferAt(index, this._vertexNormalBuffer[contextIndex], 0, away.gl.ContextGLVertexBufferFormat.FLOAT_3);
             };
 
             /**
@@ -3839,9 +3839,9 @@ var away;
             * @param context The ContextGL for which we request the buffer
             * @return The VertexBuffer object that contains vertex tangents.
             */
-            SubGeometry.prototype.activateVertexTangentBuffer = function (index, stageGLProxy) {
-                var contextIndex = stageGLProxy._iStageGLIndex;
-                var context = stageGLProxy._iContextGL;
+            SubGeometry.prototype.activateVertexTangentBuffer = function (index, stageGL) {
+                var contextIndex = stageGL._iStageGLIndex;
+                var context = stageGL.contextGL;
 
                 if (this._vertexTangentsDirty) {
                     this._vertexTangents = this.pUpdateVertexTangents(this._vertexTangents);
@@ -3858,7 +3858,7 @@ var away;
                     this._tangentsInvalid[contextIndex] = false;
                 }
 
-                context.setVertexBufferAt(index, this._vertexTangentBuffer[contextIndex], 0, away.displayGL.ContextGLVertexBufferFormat.FLOAT_3);
+                context.setVertexBufferAt(index, this._vertexTangentBuffer[contextIndex], 0, away.gl.ContextGLVertexBufferFormat.FLOAT_3);
             };
 
             SubGeometry.prototype.applyTransformation = function (transform) {
@@ -4111,8 +4111,8 @@ var away;
                 return _super.prototype.pUpdateDummyUVs.call(this, target);
             };
 
-            SubGeometry.prototype.pDisposeForStageGL = function (stageGLProxy) {
-                var index = stageGLProxy._iStageGLIndex;
+            SubGeometry.prototype.pDisposeForStageGL = function (stageGL) {
+                var index = stageGL._iStageGLIndex;
                 if (this._vertexBuffer[index]) {
                     this._vertexBuffer[index].dispose();
                     this._vertexBuffer[index] = null;
@@ -5828,12 +5828,12 @@ var away;
 
                 var collector = view.iEntityCollector;
 
-                this._stageGLProxy = view.stageGLProxy;
+                this._stageGL = view.stageGL;
 
-                if (!this._stageGLProxy)
+                if (!this._stageGL)
                     return null;
 
-                this._context = this._stageGLProxy._iContextGL;
+                this._context = this._stageGL.contextGL;
 
                 this._viewportData[0] = view.width;
                 this._viewportData[1] = view.height;
@@ -5853,7 +5853,7 @@ var away;
                 }
 
                 if (!this._bitmapData)
-                    this._bitmapData = new away.display.BitmapData(1, 1, false, 0);
+                    this._bitmapData = new away.base.BitmapData(1, 1, false, 0);
 
                 this._context.drawToBitmapData(this._bitmapData);
                 this._hitColor = this._bitmapData.getPixel(0, 0);
@@ -5904,7 +5904,7 @@ var away;
                 var camera = entityCollector.camera;
 
                 this._context.clear(0, 0, 0, 1);
-                this._stageGLProxy.scissorRect = ShaderPicker.MOUSE_SCISSOR_RECT;
+                this._stageGL.scissorRect = ShaderPicker.MOUSE_SCISSOR_RECT;
 
                 this._interactives.length = this._interactiveId = 0;
 
@@ -5912,10 +5912,10 @@ var away;
                     this.initObjectProgram();
                 }
 
-                this._context.setBlendFactors(away.displayGL.ContextGLBlendFactor.ONE, away.displayGL.ContextGLBlendFactor.ZERO);
-                this._context.setDepthTest(true, away.displayGL.ContextGLCompareMode.LESS);
+                this._context.setBlendFactors(away.gl.ContextGLBlendFactor.ONE, away.gl.ContextGLBlendFactor.ZERO);
+                this._context.setDepthTest(true, away.gl.ContextGLCompareMode.LESS);
                 this._context.setProgram(this._objectProgram);
-                this._context.setProgramConstantsFromArray(away.displayGL.ContextGLProgramType.VERTEX, 4, this._viewportData, 1);
+                this._context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 4, this._viewportData, 1);
                 this.drawRenderables(entityCollector.opaqueRenderableHead, camera);
                 this.drawRenderables(entityCollector.blendedRenderableHead, camera);
             };
@@ -5942,7 +5942,7 @@ var away;
 
                     this._potentialFound = true;
 
-                    this._context.setCulling(renderable.material.bothSides ? away.displayGL.ContextGLTriangleFace.NONE : away.displayGL.ContextGLTriangleFace.BACK);
+                    this._context.setCulling(renderable.material.bothSides ? away.gl.ContextGLTriangleFace.NONE : away.gl.ContextGLTriangleFace.BACK);
 
                     this._interactives[this._interactiveId++] = renderable;
 
@@ -5952,10 +5952,10 @@ var away;
 
                     matrix.copyFrom(renderable.getRenderSceneTransform(camera));
                     matrix.append(viewProjection);
-                    this._context.setProgramConstantsFromMatrix(away.displayGL.ContextGLProgramType.VERTEX, 0, matrix, true);
-                    this._context.setProgramConstantsFromArray(away.displayGL.ContextGLProgramType.FRAGMENT, 0, this._id, 1);
-                    renderable.activateVertexBuffer(0, this._stageGLProxy);
-                    this._context.drawTriangles(renderable.getIndexBuffer(this._stageGLProxy), 0, renderable.numTriangles);
+                    this._context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, matrix, true);
+                    this._context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.FRAGMENT, 0, this._id, 1);
+                    renderable.activateVertexBuffer(0, this._stageGL);
+                    this._context.drawTriangles(renderable.getIndexBuffer(this._stageGL), 0, renderable.numTriangles);
 
                     item = item.next;
                 }
@@ -6000,8 +6000,8 @@ var away;
                 var vertCompiler = new aglsl.AGLSLCompiler();
                 var fragCompiler = new aglsl.AGLSLCompiler();
 
-                var vertString = vertCompiler.compile(away.displayGL.ContextGLProgramType.VERTEX, vertexCode);
-                var fragString = fragCompiler.compile(away.displayGL.ContextGLProgramType.FRAGMENT, fragmentCode);
+                var vertString = vertCompiler.compile(away.gl.ContextGLProgramType.VERTEX, vertexCode);
+                var fragString = fragCompiler.compile(away.gl.ContextGLProgramType.FRAGMENT, fragmentCode);
 
                 this._triangleProgram.upload(vertString, fragString);
                 //this._triangleProgram.upload(new AGALMiniAssembler().assemble(ContextGLProgramType.VERTEX, vertexCode), new AGALMiniAssembler().assemble(ContextGLProgramType.FRAGMENT, fragmentCode));
@@ -6041,12 +6041,12 @@ var away;
                 this._boundOffsetScale[2] = offsZ = -entity.minZ;
 
                 this._context.setProgram(this._triangleProgram);
-                this._context.clear(0, 0, 0, 0, 1, 0, away.displayGL.ContextGLClearMask.DEPTH);
+                this._context.clear(0, 0, 0, 0, 1, 0, away.gl.ContextGLClearMask.DEPTH);
                 this._context.setScissorRectangle(ShaderPicker.MOUSE_SCISSOR_RECT);
-                this._context.setProgramConstantsFromMatrix(away.displayGL.ContextGLProgramType.VERTEX, 0, localViewProjection, true);
-                this._context.setProgramConstantsFromArray(away.displayGL.ContextGLProgramType.VERTEX, 5, this._boundOffsetScale, 2);
-                this._hitRenderable.activateVertexBuffer(0, this._stageGLProxy);
-                this._context.drawTriangles(this._hitRenderable.getIndexBuffer(this._stageGLProxy), 0, this._hitRenderable.numTriangles);
+                this._context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, localViewProjection, true);
+                this._context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 5, this._boundOffsetScale, 2);
+                this._hitRenderable.activateVertexBuffer(0, this._stageGL);
+                this._context.drawTriangles(this._hitRenderable.getIndexBuffer(this._stageGL), 0, this._hitRenderable.numTriangles);
                 this._context.drawToBitmapData(this._bitmapData);
 
                 col = this._bitmapData.getPixel(0, 0);
@@ -6643,44 +6643,44 @@ var away;
             });
 
 
-            Object.defineProperty(RendererBase.prototype, "iStageGLProxy", {
+            Object.defineProperty(RendererBase.prototype, "iStageGL", {
                 get: /**
-                * The StageGLProxy that will provide the ContextGL used for rendering.
+                * The StageGL that will provide the ContextGL used for rendering.
                 *
                 * @private
                 */
                 function () {
-                    return this._pStageGLProxy;
+                    return this._pStageGL;
                 },
                 set: function (value) {
-                    this.iSetStageGLProxy(value);
+                    this.iSetStageGL(value);
                 },
                 enumerable: true,
                 configurable: true
             });
 
 
-            RendererBase.prototype.iSetStageGLProxy = function (value) {
-                if (value == this._pStageGLProxy) {
+            RendererBase.prototype.iSetStageGL = function (value) {
+                if (value == this._pStageGL) {
                     return;
                 }
 
                 if (!value) {
-                    if (this._pStageGLProxy) {
-                        this._pStageGLProxy.removeEventListener(away.events.StageGLEvent.CONTEXTGL_CREATED, this._onContextUpdateDelegate);
-                        this._pStageGLProxy.removeEventListener(away.events.StageGLEvent.CONTEXTGL_RECREATED, this._onContextUpdateDelegate);
+                    if (this._pStageGL) {
+                        this._pStageGL.removeEventListener(away.events.StageGLEvent.CONTEXTGL_CREATED, this._onContextUpdateDelegate);
+                        this._pStageGL.removeEventListener(away.events.StageGLEvent.CONTEXTGL_RECREATED, this._onContextUpdateDelegate);
                     }
 
-                    this._pStageGLProxy = null;
+                    this._pStageGL = null;
                     this._pContext = null;
 
                     return;
                 }
 
-                //else if (_pStageGLProxy) throw new Error("A StageGL instance was already assigned!");
-                this._pStageGLProxy = value;
-                this._pStageGLProxy.addEventListener(away.events.StageGLEvent.CONTEXTGL_CREATED, this._onContextUpdateDelegate);
-                this._pStageGLProxy.addEventListener(away.events.StageGLEvent.CONTEXTGL_RECREATED, this._onContextUpdateDelegate);
+                //else if (_pStageGL) throw new Error("A StageGL instance was already assigned!");
+                this._pStageGL = value;
+                this._pStageGL.addEventListener(away.events.StageGLEvent.CONTEXTGL_CREATED, this._onContextUpdateDelegate);
+                this._pStageGL.addEventListener(away.events.StageGLEvent.CONTEXTGL_RECREATED, this._onContextUpdateDelegate);
 
                 if (value.contextGL)
                     this._pContext = value.contextGL;
@@ -6688,7 +6688,7 @@ var away;
 
             Object.defineProperty(RendererBase.prototype, "iShareContext", {
                 get: /**
-                * Defers control of ContextGL clear() and present() calls to StageGLProxy, enabling multiple StageGL frameworks
+                * Defers control of ContextGL clear() and present() calls to StageGL, enabling multiple StageGL frameworks
                 * to share the same ContextGL object.
                 *
                 * @private
@@ -6710,7 +6710,7 @@ var away;
             * @private
             */
             RendererBase.prototype.iDispose = function () {
-                this._pStageGLProxy = null;
+                this._pStageGL = null;
                 /*
                 if (_backgroundImageRenderer) {
                 _backgroundImageRenderer.dispose();
@@ -6730,7 +6730,7 @@ var away;
                 if (typeof target === "undefined") { target = null; }
                 if (typeof scissorRect === "undefined") { scissorRect = null; }
                 if (typeof surfaceSelector === "undefined") { surfaceSelector = 0; }
-                if (!this._pStageGLProxy || !this._pContext || !entityCollector.entityHead) {
+                if (!this._pStageGL || !this._pContext || !entityCollector.entityHead) {
                     return;
                 }
 
@@ -6771,15 +6771,15 @@ var away;
                     this.pExecuteRenderToTexturePass(entityCollector);
                 }
 
-                this._pStageGLProxy.setRenderTarget(target, true, surfaceSelector);
+                this._pStageGL.setRenderTarget(target, true, surfaceSelector);
 
                 if ((target || !this._shareContext) && this._clearOnRender) {
                     this._pContext.clear(this._backgroundR, this._backgroundG, this._backgroundB, this._backgroundAlpha, 1, 0);
                 }
 
-                this._pContext.setDepthTest(false, away.displayGL.ContextGLCompareMode.ALWAYS);
+                this._pContext.setDepthTest(false, away.gl.ContextGLCompareMode.ALWAYS);
 
-                this._pStageGLProxy.scissorRect = scissorRect;
+                this._pStageGL.scissorRect = scissorRect;
 
                 /*
                 if (_backgroundImageRenderer)
@@ -6793,7 +6793,7 @@ var away;
                         this._snapshotRequired = false;
                     }
                 }
-                this._pStageGLProxy.scissorRect = null;
+                this._pStageGL.scissorRect = null;
             };
 
             /*
@@ -6820,7 +6820,7 @@ var away;
             * Assign the context once retrieved
             */
             RendererBase.prototype.onContextUpdate = function (event) {
-                this._pContext = this._pStageGLProxy.contextGL;
+                this._pContext = this._pStageGL.contextGL;
             };
 
             Object.defineProperty(RendererBase.prototype, "iBackgroundAlpha", {
@@ -6853,7 +6853,7 @@ var away;
                 if (!this._backgroundImageRenderer && value)
                 {
                 
-                this._backgroundImageRenderer = new BackgroundImageRenderer(this._pStageGLProxy);
+                this._backgroundImageRenderer = new BackgroundImageRenderer(this._pStageGL);
                 
                 }
                 
@@ -6958,32 +6958,32 @@ var away;
 
                 this._pRenderableSorter.sort(entityCollector);
 
-                this._pStageGLProxy.setRenderTarget(target, true, 0);
+                this._pStageGL.setRenderTarget(target, true, 0);
                 this._pContext.clear(1, 1, 1, 1, 1, 0);
 
-                this._pContext.setBlendFactors(away.displayGL.ContextGLBlendFactor.ONE, away.displayGL.ContextGLBlendFactor.ZERO);
-                this._pContext.setDepthTest(true, away.displayGL.ContextGLCompareMode.LESS);
+                this._pContext.setBlendFactors(away.gl.ContextGLBlendFactor.ONE, away.gl.ContextGLBlendFactor.ZERO);
+                this._pContext.setDepthTest(true, away.gl.ContextGLCompareMode.LESS);
 
                 var head = entityCollector.opaqueRenderableHead;
 
                 var first = true;
 
                 for (var i = numCascades - 1; i >= 0; --i) {
-                    this._pStageGLProxy.scissorRect = scissorRects[i];
+                    this._pStageGL.scissorRect = scissorRects[i];
                     this.drawCascadeRenderables(head, cameras[i], first ? null : cameras[i].frustumPlanes);
                     first = false;
                 }
 
                 if (this._activeMaterial) {
-                    this._activeMaterial.iDeactivateForDepth(this._pStageGLProxy);
+                    this._activeMaterial.iDeactivateForDepth(this._pStageGL);
                 }
 
                 this._activeMaterial = null;
 
                 //line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
-                this._pContext.setDepthTest(false, away.displayGL.ContextGLCompareMode.LESS_EQUAL);
+                this._pContext.setDepthTest(false, away.gl.ContextGLCompareMode.LESS_EQUAL);
 
-                this._pStageGLProxy.scissorRect = null;
+                this._pStageGL.scissorRect = null;
             };
 
             DepthRenderer.prototype.drawCascadeRenderables = function (item, camera, cullPlanes) {
@@ -7004,14 +7004,14 @@ var away;
 
                         if (this._activeMaterial != material) {
                             if (this._activeMaterial) {
-                                this._activeMaterial.iDeactivateForDepth(this._pStageGLProxy);
+                                this._activeMaterial.iDeactivateForDepth(this._pStageGL);
                             }
 
                             this._activeMaterial = material;
-                            this._activeMaterial.iActivateForDepth(this._pStageGLProxy, camera, false);
+                            this._activeMaterial.iActivateForDepth(this._pStageGL, camera, false);
                         }
 
-                        this._activeMaterial.iRenderDepth(renderable, this._pStageGLProxy, camera, camera.viewProjection);
+                        this._activeMaterial.iRenderDepth(renderable, this._pStageGL, camera, camera.viewProjection);
                     } else {
                         item.cascaded = true;
                     }
@@ -7024,9 +7024,9 @@ var away;
             * @inheritDoc
             */
             DepthRenderer.prototype.pDraw = function (entityCollector, target) {
-                this._pContext.setBlendFactors(away.displayGL.ContextGLBlendFactor.ONE, away.displayGL.ContextGLBlendFactor.ZERO);
+                this._pContext.setBlendFactors(away.gl.ContextGLBlendFactor.ONE, away.gl.ContextGLBlendFactor.ZERO);
 
-                this._pContext.setDepthTest(true, away.displayGL.ContextGLCompareMode.LESS);
+                this._pContext.setDepthTest(true, away.gl.ContextGLCompareMode.LESS);
 
                 this.drawRenderables(entityCollector.opaqueRenderableHead, entityCollector);
 
@@ -7037,7 +7037,7 @@ var away;
                     this.drawRenderables(entityCollector.blendedRenderableHead, entityCollector);
 
                 if (this._activeMaterial)
-                    this._activeMaterial.iDeactivateForDepth(this._pStageGLProxy);
+                    this._activeMaterial.iDeactivateForDepth(this._pStageGL);
 
                 if (this._disableColor)
                     this._pContext.setColorMask(true, true, true, true);
@@ -7064,14 +7064,14 @@ var away;
                             item2 = item2.next;
                         } while(item2 && item2.renderable.material == this._activeMaterial);
                     } else {
-                        this._activeMaterial.iActivateForDepth(this._pStageGLProxy, camera, this._distanceBased);
+                        this._activeMaterial.iActivateForDepth(this._pStageGL, camera, this._distanceBased);
                         item2 = item;
                         do {
-                            this._activeMaterial.iRenderDepth(item2.renderable, this._pStageGLProxy, camera, this._pRttViewProjectionMatrix);
+                            this._activeMaterial.iRenderDepth(item2.renderable, this._pStageGL, camera, this._pRttViewProjectionMatrix);
                             item2 = item2.next;
                         } while(item2 && item2.renderable.material == this._activeMaterial);
 
-                        this._activeMaterial.iDeactivateForDepth(this._pStageGLProxy);
+                        this._activeMaterial.iDeactivateForDepth(this._pStageGL);
                     }
 
                     item = item2;
@@ -7111,10 +7111,10 @@ var away;
                 this._pDepthRenderer = new render.DepthRenderer();
                 this._pDistanceRenderer = new render.DepthRenderer(false, true);
             }
-            Object.defineProperty(DefaultRenderer.prototype, "iStageGLProxy", {
+            Object.defineProperty(DefaultRenderer.prototype, "iStageGL", {
                 set: function (value) {
-                    _super.prototype.iSetStageGLProxy.call(this, value);
-                    this._pDistanceRenderer.iStageGLProxy = this._pDepthRenderer.iStageGLProxy = value;
+                    _super.prototype.iSetStageGL.call(this, value);
+                    this._pDistanceRenderer.iStageGL = this._pDepthRenderer.iStageGL = value;
                 },
                 enumerable: true,
                 configurable: true
@@ -7149,7 +7149,7 @@ var away;
                     shadowMapper = light.shadowMapper;
 
                     if (light.castsShadows && (shadowMapper.autoUpdateShadows || shadowMapper._iShadowsInvalid)) {
-                        shadowMapper.iRenderDepthMap(this._pStageGLProxy, entityCollector, this._pDepthRenderer);
+                        shadowMapper.iRenderDepthMap(this._pStageGL, entityCollector, this._pDepthRenderer);
                     }
                 }
 
@@ -7161,7 +7161,7 @@ var away;
                     shadowMapper = light.shadowMapper;
 
                     if (light.castsShadows && (shadowMapper.autoUpdateShadows || shadowMapper._iShadowsInvalid)) {
-                        shadowMapper.iRenderDepthMap(this._pStageGLProxy, entityCollector, this._pDistanceRenderer);
+                        shadowMapper.iRenderDepthMap(this._pStageGL, entityCollector, this._pDistanceRenderer);
                     }
                 }
             };
@@ -7170,30 +7170,30 @@ var away;
             * @inheritDoc
             */
             DefaultRenderer.prototype.pDraw = function (entityCollector, target) {
-                this._pContext.setBlendFactors(away.displayGL.ContextGLBlendFactor.ONE, away.displayGL.ContextGLBlendFactor.ZERO);
+                this._pContext.setBlendFactors(away.gl.ContextGLBlendFactor.ONE, away.gl.ContextGLBlendFactor.ZERO);
 
                 if (entityCollector.skyBox) {
                     if (this._activeMaterial) {
-                        this._activeMaterial.iDeactivate(this._pStageGLProxy);
+                        this._activeMaterial.iDeactivate(this._pStageGL);
                     }
 
                     this._activeMaterial = null;
 
-                    this._pContext.setDepthTest(false, away.displayGL.ContextGLCompareMode.ALWAYS);
+                    this._pContext.setDepthTest(false, away.gl.ContextGLCompareMode.ALWAYS);
                     this.drawSkyBox(entityCollector);
                 }
 
-                this._pContext.setDepthTest(true, away.displayGL.ContextGLCompareMode.LESS_EQUAL);
+                this._pContext.setDepthTest(true, away.gl.ContextGLCompareMode.LESS_EQUAL);
 
                 var which = target ? DefaultRenderer.SCREEN_PASSES : DefaultRenderer.ALL_PASSES;
 
                 this.drawRenderables(entityCollector.opaqueRenderableHead, entityCollector, which);
                 this.drawRenderables(entityCollector.blendedRenderableHead, entityCollector, which);
 
-                this._pContext.setDepthTest(false, away.displayGL.ContextGLCompareMode.LESS_EQUAL);
+                this._pContext.setDepthTest(false, away.gl.ContextGLCompareMode.LESS_EQUAL);
 
                 if (this._activeMaterial) {
-                    this._activeMaterial.iDeactivate(this._pStageGLProxy);
+                    this._activeMaterial.iDeactivate(this._pStageGL);
                 }
 
                 this._activeMaterial = null;
@@ -7212,9 +7212,9 @@ var away;
 
                 this.updateSkyBoxProjection(camera);
 
-                material.iActivatePass(0, this._pStageGLProxy, camera);
-                material.iRenderPass(0, skyBox, this._pStageGLProxy, entityCollector, this._skyboxProjection);
-                material.iDeactivatePass(0, this._pStageGLProxy);
+                material.iActivatePass(0, this._pStageGL, camera);
+                material.iRenderPass(0, skyBox, this._pStageGL, entityCollector, this._skyboxProjection);
+                material.iDeactivatePass(0, this._pStageGL);
             };
 
             DefaultRenderer.prototype.updateSkyBoxProjection = function (camera) {
@@ -7274,15 +7274,15 @@ var away;
                         var rttMask = this._activeMaterial.iPassRendersToTexture(j) ? 1 : 2;
 
                         if ((rttMask & which) != 0) {
-                            this._activeMaterial.iActivatePass(j, this._pStageGLProxy, camera);
+                            this._activeMaterial.iActivatePass(j, this._pStageGL, camera);
 
                             do {
-                                this._activeMaterial.iRenderPass(j, item2.renderable, this._pStageGLProxy, entityCollector, this._pRttViewProjectionMatrix);
+                                this._activeMaterial.iRenderPass(j, item2.renderable, this._pStageGL, entityCollector, this._pRttViewProjectionMatrix);
 
                                 item2 = item2.next;
                             } while(item2 && item2.renderable.material == this._activeMaterial);
 
-                            this._activeMaterial.iDeactivatePass(j, this._pStageGLProxy);
+                            this._activeMaterial.iDeactivatePass(j, this._pStageGL);
                         } else {
                             do {
                                 item2 = item2.next;
@@ -7322,12 +7322,12 @@ var away;
         * @class away.render.Filter3DRenderer
         */
         var Filter3DRenderer = (function () {
-            function Filter3DRenderer(stageGLProxy) {
+            function Filter3DRenderer(stageGL) {
                 this._filterSizesInvalid = true;
                 this._onRTTResizeDelegate = away.utils.Delegate.create(this, this.onRTTResize);
 
-                this._stageGLProxy = stageGLProxy;
-                this._rttManager = away.managers.RTTBufferManager.getInstance(stageGLProxy);
+                this._stageGL = stageGL;
+                this._rttManager = away.managers.RTTBufferManager.getInstance(stageGL);
                 this._rttManager.addEventListener(away.events.Event.RESIZE, this._onRTTResizeDelegate);
             }
             Filter3DRenderer.prototype.onRTTResize = function (event) {
@@ -7342,9 +7342,9 @@ var away;
                 configurable: true
             });
 
-            Filter3DRenderer.prototype.getMainInputTexture = function (stageGLProxy) {
+            Filter3DRenderer.prototype.getMainInputTexture = function (stageGL) {
                 if (this._filterTasksInvalid) {
-                    this.updateFilterTasks(stageGLProxy);
+                    this.updateFilterTasks(stageGL);
                 }
 
                 return this._mainInputTexture;
@@ -7381,7 +7381,7 @@ var away;
             });
 
 
-            Filter3DRenderer.prototype.updateFilterTasks = function (stageGLProxy) {
+            Filter3DRenderer.prototype.updateFilterTasks = function (stageGL) {
                 var len;
 
                 if (this._filterSizesInvalid) {
@@ -7404,20 +7404,20 @@ var away;
                     filter = this._filters[i];
 
                     // TODO: check logic
-                    // filter.setRenderTargets(i == len? null : Filter3DBase(_filters[i + 1]).getMainInputTexture(stageGLProxy), stageGLProxy);
-                    filter.setRenderTargets(i == len ? null : this._filters[i + 1].getMainInputTexture(stageGLProxy), stageGLProxy);
+                    // filter.setRenderTargets(i == len? null : Filter3DBase(_filters[i + 1]).getMainInputTexture(stageGL), stageGL);
+                    filter.setRenderTargets(i == len ? null : this._filters[i + 1].getMainInputTexture(stageGL), stageGL);
 
                     this._tasks = this._tasks.concat(filter.tasks);
                 }
 
-                this._mainInputTexture = this._filters[0].getMainInputTexture(stageGLProxy);
+                this._mainInputTexture = this._filters[0].getMainInputTexture(stageGL);
             };
 
-            Filter3DRenderer.prototype.render = function (stageGLProxy, camera3D, depthTexture) {
+            Filter3DRenderer.prototype.render = function (stageGL, camera3D, depthTexture) {
                 var len;
                 var i;
                 var task;
-                var context = stageGLProxy._iContextGL;
+                var context = stageGL.contextGL;
 
                 var indexBuffer = this._rttManager.indexBuffer;
 
@@ -7432,44 +7432,44 @@ var away;
                 }
 
                 if (this._filterTasksInvalid) {
-                    this.updateFilterTasks(stageGLProxy);
+                    this.updateFilterTasks(stageGL);
                 }
 
                 len = this._filters.length;
 
                 for (i = 0; i < len; ++i) {
-                    this._filters[i].update(stageGLProxy, camera3D);
+                    this._filters[i].update(stageGL, camera3D);
                 }
 
                 len = this._tasks.length;
 
                 if (len > 1) {
-                    context.setVertexBufferAt(0, vertexBuffer, 0, away.displayGL.ContextGLVertexBufferFormat.FLOAT_2);
-                    context.setVertexBufferAt(1, vertexBuffer, 2, away.displayGL.ContextGLVertexBufferFormat.FLOAT_2);
+                    context.setVertexBufferAt(0, vertexBuffer, 0, away.gl.ContextGLVertexBufferFormat.FLOAT_2);
+                    context.setVertexBufferAt(1, vertexBuffer, 2, away.gl.ContextGLVertexBufferFormat.FLOAT_2);
                 }
 
                 for (i = 0; i < len; ++i) {
                     task = this._tasks[i];
 
-                    stageGLProxy.setRenderTarget(task.target);
+                    stageGL.setRenderTarget(task.target);
 
                     if (!task.target) {
-                        stageGLProxy.scissorRect = null;
+                        stageGL.scissorRect = null;
                         vertexBuffer = this._rttManager.renderToScreenVertexBuffer;
-                        context.setVertexBufferAt(0, vertexBuffer, 0, away.displayGL.ContextGLVertexBufferFormat.FLOAT_2);
-                        context.setVertexBufferAt(1, vertexBuffer, 2, away.displayGL.ContextGLVertexBufferFormat.FLOAT_2);
+                        context.setVertexBufferAt(0, vertexBuffer, 0, away.gl.ContextGLVertexBufferFormat.FLOAT_2);
+                        context.setVertexBufferAt(1, vertexBuffer, 2, away.gl.ContextGLVertexBufferFormat.FLOAT_2);
                     }
 
-                    context.setTextureAt(0, task.getMainInputTexture(stageGLProxy));
-                    context.setProgram(task.getProgram(stageGLProxy));
+                    context.setTextureAt(0, task.getMainInputTexture(stageGL));
+                    context.setProgram(task.getProgram(stageGL));
                     context.clear(0.0, 0.0, 0.0, 0.0);
 
-                    task.activate(stageGLProxy, camera3D, depthTexture);
+                    task.activate(stageGL, camera3D, depthTexture);
 
-                    context.setBlendFactors(away.displayGL.ContextGLBlendFactor.ONE, away.displayGL.ContextGLBlendFactor.ZERO);
+                    context.setBlendFactors(away.gl.ContextGLBlendFactor.ONE, away.gl.ContextGLBlendFactor.ZERO);
                     context.drawTriangles(indexBuffer, 0, 2);
 
-                    task.deactivate(stageGLProxy);
+                    task.deactivate(stageGL);
                 }
 
                 context.setTextureAt(0, null);
@@ -7489,7 +7489,7 @@ var away;
             Filter3DRenderer.prototype.dispose = function () {
                 this._rttManager.removeEventListener(away.events.Event.RESIZE, this._onRTTResizeDelegate);
                 this._rttManager = null;
-                this._stageGLProxy = null;
+                this._stageGL = null;
             };
             return Filter3DRenderer;
         })();
@@ -7722,7 +7722,7 @@ var away;
             };
 
             DefaultMaterialManager.createCheckeredBitmapData = function () {
-                var b = new away.display.BitmapData(8, 8, false, 0x000000);
+                var b = new away.base.BitmapData(8, 8, false, 0x000000);
 
                 //create chekerboard
                 var i, j;
@@ -9005,18 +9005,18 @@ var away;
                 configurable: true
             });
 
-            SegmentSet.prototype.getIndexBuffer = function (stageGLProxy) {
-                if (this._activeSubSet.indexContextGL != stageGLProxy.contextGL || this._activeSubSet.indexBufferDirty) {
-                    this._activeSubSet.indexBuffer = stageGLProxy._iContextGL.createIndexBuffer(this._activeSubSet.numIndices);
+            SegmentSet.prototype.getIndexBuffer = function (stageGL) {
+                if (this._activeSubSet.indexContextGL != stageGL.contextGL || this._activeSubSet.indexBufferDirty) {
+                    this._activeSubSet.indexBuffer = stageGL.contextGL.createIndexBuffer(this._activeSubSet.numIndices);
                     this._activeSubSet.indexBuffer.uploadFromArray(this._activeSubSet.indices, 0, this._activeSubSet.numIndices);
                     this._activeSubSet.indexBufferDirty = false;
-                    this._activeSubSet.indexContextGL = stageGLProxy.contextGL;
+                    this._activeSubSet.indexContextGL = stageGL.contextGL;
                 }
 
                 return this._activeSubSet.indexBuffer;
             };
 
-            SegmentSet.prototype.activateVertexBuffer = function (index, stageGLProxy) {
+            SegmentSet.prototype.activateVertexBuffer = function (index, stageGL) {
                 var subSet = this._subSets[index];
 
                 this._activeSubSet = subSet;
@@ -9024,30 +9024,30 @@ var away;
 
                 var vertexBuffer = subSet.vertexBuffer;
 
-                if (subSet.vertexContextGL != stageGLProxy.contextGL || subSet.vertexBufferDirty) {
-                    subSet.vertexBuffer = stageGLProxy._iContextGL.createVertexBuffer(subSet.numVertices, 11);
+                if (subSet.vertexContextGL != stageGL.contextGL || subSet.vertexBufferDirty) {
+                    subSet.vertexBuffer = stageGL.contextGL.createVertexBuffer(subSet.numVertices, 11);
                     subSet.vertexBuffer.uploadFromArray(subSet.vertices, 0, subSet.numVertices);
                     subSet.vertexBufferDirty = false;
-                    subSet.vertexContextGL = stageGLProxy.contextGL;
+                    subSet.vertexContextGL = stageGL.contextGL;
                 }
 
-                var context3d = stageGLProxy._iContextGL;
-                context3d.setVertexBufferAt(0, vertexBuffer, 0, away.displayGL.ContextGLVertexBufferFormat.FLOAT_3);
-                context3d.setVertexBufferAt(1, vertexBuffer, 3, away.displayGL.ContextGLVertexBufferFormat.FLOAT_3);
-                context3d.setVertexBufferAt(2, vertexBuffer, 6, away.displayGL.ContextGLVertexBufferFormat.FLOAT_1);
-                context3d.setVertexBufferAt(3, vertexBuffer, 7, away.displayGL.ContextGLVertexBufferFormat.FLOAT_4);
+                var context3d = stageGL.contextGL;
+                context3d.setVertexBufferAt(0, vertexBuffer, 0, away.gl.ContextGLVertexBufferFormat.FLOAT_3);
+                context3d.setVertexBufferAt(1, vertexBuffer, 3, away.gl.ContextGLVertexBufferFormat.FLOAT_3);
+                context3d.setVertexBufferAt(2, vertexBuffer, 6, away.gl.ContextGLVertexBufferFormat.FLOAT_1);
+                context3d.setVertexBufferAt(3, vertexBuffer, 7, away.gl.ContextGLVertexBufferFormat.FLOAT_4);
             };
 
-            SegmentSet.prototype.activateUVBuffer = function (index, stageGLProxy) {
+            SegmentSet.prototype.activateUVBuffer = function (index, stageGL) {
             };
 
-            SegmentSet.prototype.activateVertexNormalBuffer = function (index, stageGLProxy) {
+            SegmentSet.prototype.activateVertexNormalBuffer = function (index, stageGL) {
             };
 
-            SegmentSet.prototype.activateVertexTangentBuffer = function (index, stageGLProxy) {
+            SegmentSet.prototype.activateVertexTangentBuffer = function (index, stageGL) {
             };
 
-            SegmentSet.prototype.activateSecondaryUVBuffer = function (index, stageGLProxy) {
+            SegmentSet.prototype.activateSecondaryUVBuffer = function (index, stageGL) {
             };
 
             SegmentSet.prototype.reOrderIndices = function (subSetIndex, index) {
@@ -9792,36 +9792,36 @@ var away;
             /**
             * @inheritDoc
             */
-            SkyBox.prototype.activateVertexBuffer = function (index, stageGLProxy) {
-                this._geometry.activateVertexBuffer(index, stageGLProxy);
+            SkyBox.prototype.activateVertexBuffer = function (index, stageGL) {
+                this._geometry.activateVertexBuffer(index, stageGL);
             };
 
             /**
             * @inheritDoc
             */
-            SkyBox.prototype.activateUVBuffer = function (index, stageGLProxy) {
+            SkyBox.prototype.activateUVBuffer = function (index, stageGL) {
             };
 
             /**
             * @inheritDoc
             */
-            SkyBox.prototype.activateVertexNormalBuffer = function (index, stageGLProxy) {
+            SkyBox.prototype.activateVertexNormalBuffer = function (index, stageGL) {
             };
 
             /**
             * @inheritDoc
             */
-            SkyBox.prototype.activateVertexTangentBuffer = function (index, stageGLProxy) {
+            SkyBox.prototype.activateVertexTangentBuffer = function (index, stageGL) {
             };
 
-            SkyBox.prototype.activateSecondaryUVBuffer = function (index, stageGLProxy) {
+            SkyBox.prototype.activateSecondaryUVBuffer = function (index, stageGL) {
             };
 
             /**
             * @inheritDoc
             */
-            SkyBox.prototype.getIndexBuffer = function (stageGLProxy) {
-                return this._geometry.getIndexBuffer(stageGLProxy);
+            SkyBox.prototype.getIndexBuffer = function (stageGL) {
+                return this._geometry.getIndexBuffer(stageGL);
             };
 
             Object.defineProperty(SkyBox.prototype, "numTriangles", {
@@ -10079,28 +10079,28 @@ var away;
             });
 
 
-            Sprite3D.prototype.activateVertexBuffer = function (index, stageGLProxy) {
-                Sprite3D._geometry.activateVertexBuffer(index, stageGLProxy);
+            Sprite3D.prototype.activateVertexBuffer = function (index, stageGL) {
+                Sprite3D._geometry.activateVertexBuffer(index, stageGL);
             };
 
-            Sprite3D.prototype.activateUVBuffer = function (index, stageGLProxy) {
-                Sprite3D._geometry.activateUVBuffer(index, stageGLProxy);
+            Sprite3D.prototype.activateUVBuffer = function (index, stageGL) {
+                Sprite3D._geometry.activateUVBuffer(index, stageGL);
             };
 
-            Sprite3D.prototype.activateSecondaryUVBuffer = function (index, stageGLProxy) {
-                Sprite3D._geometry.activateSecondaryUVBuffer(index, stageGLProxy);
+            Sprite3D.prototype.activateSecondaryUVBuffer = function (index, stageGL) {
+                Sprite3D._geometry.activateSecondaryUVBuffer(index, stageGL);
             };
 
-            Sprite3D.prototype.activateVertexNormalBuffer = function (index, stageGLProxy) {
-                Sprite3D._geometry.activateVertexNormalBuffer(index, stageGLProxy);
+            Sprite3D.prototype.activateVertexNormalBuffer = function (index, stageGL) {
+                Sprite3D._geometry.activateVertexNormalBuffer(index, stageGL);
             };
 
-            Sprite3D.prototype.activateVertexTangentBuffer = function (index, stageGLProxy) {
-                Sprite3D._geometry.activateVertexTangentBuffer(index, stageGLProxy);
+            Sprite3D.prototype.activateVertexTangentBuffer = function (index, stageGL) {
+                Sprite3D._geometry.activateVertexTangentBuffer(index, stageGL);
             };
 
-            Sprite3D.prototype.getIndexBuffer = function (stageGLProxy) {
-                return Sprite3D._geometry.getIndexBuffer(stageGLProxy);
+            Sprite3D.prototype.getIndexBuffer = function (stageGL) {
+                return Sprite3D._geometry.getIndexBuffer(stageGL);
             };
 
             Object.defineProperty(Sprite3D.prototype, "numTriangles", {
@@ -11926,10 +11926,10 @@ var away;
 (function (away) {
     ///<reference path="../_definitions.ts" />
     (function (containers) {
-        var Stage = away.display.Stage;
-        var ContextGL = away.displayGL.ContextGL;
-        var ContextGLTextureFormat = away.displayGL.ContextGLTextureFormat;
-        var Texture = away.displayGL.Texture;
+        var Stage = away.base.Stage;
+        var ContextGL = away.gl.ContextGL;
+        var ContextGLTextureFormat = away.gl.ContextGLTextureFormat;
+        var Texture = away.gl.Texture;
         var StageGLEvent = away.events.StageGLEvent;
         var Matrix3D = away.geom.Matrix3D;
         var Point = away.geom.Point;
@@ -11937,7 +11937,7 @@ var away;
         var Vector3D = away.geom.Vector3D;
         var RTTBufferManager = away.managers.RTTBufferManager;
         var StageGLManager = away.managers.StageGLManager;
-        var StageGLProxy = away.managers.StageGLProxy;
+        var StageGL = away.base.StageGL;
         var Delegate = away.utils.Delegate;
 
         var Camera3D = away.cameras.Camera3D;
@@ -11984,9 +11984,6 @@ var away;
                 this._viewportDirty = true;
                 this._depthPrepass = false;
                 this._layeredView = false;
-                if (View3D.sStage == null)
-                    View3D.sStage = new Stage();
-
                 this._onScenePartitionChangedDelegate = Delegate.create(this, this.onScenePartitionChanged);
                 this._onLensChangedDelegate = Delegate.create(this, this.onLensChanged);
                 this._onViewportUpdatedDelegate = Delegate.create(this, this.onViewportUpdated);
@@ -12003,7 +12000,6 @@ var away;
                 this._pScissorRect = new Rectangle();
                 this._pCamera.addEventListener(CameraEvent.LENS_CHANGED, this._onLensChangedDelegate);
                 this._pCamera.partition = this._pScene.partition;
-                this.stage = View3D.sStage;
 
                 this.onAddedToStage();
             }
@@ -12016,25 +12012,25 @@ var away;
                     this._pCamera.partition = this.scene.partition;
             };
 
-            Object.defineProperty(View3D.prototype, "stageGLProxy", {
+            Object.defineProperty(View3D.prototype, "stageGL", {
                 get: /**
                 *
-                * @returns {away.managers.StageGLProxy}
+                * @returns {away.base.StageGL}
                 */
                 function () {
-                    return this._pStageGLProxy;
+                    return this._pStageGL;
                 },
                 set: /**
                 *
-                * @param stageGLProxy
+                * @param stageGL
                 */
-                function (stageGLProxy) {
-                    if (this._pStageGLProxy)
-                        this._pStageGLProxy.removeEventListener(StageGLEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
+                function (stageGL) {
+                    if (this._pStageGL)
+                        this._pStageGL.removeEventListener(StageGLEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
 
-                    this._pStageGLProxy = stageGLProxy;
-                    this._pStageGLProxy.addEventListener(StageGLEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
-                    this._pRenderer.iStageGLProxy = this._depthRenderer.iStageGLProxy = this._pStageGLProxy;
+                    this._pStageGL = stageGL;
+                    this._pStageGL.addEventListener(StageGLEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
+                    this._pRenderer.iStageGL = this._depthRenderer.iStageGL = this._pStageGL;
                     this._globalPosDirty = true;
                     this._pBackBufferInvalid = true;
                 },
@@ -12083,7 +12079,7 @@ var away;
                         this._pFilter3DRenderer.dispose();
                         this._pFilter3DRenderer = null;
                     } else if (!this._pFilter3DRenderer && value) {
-                        this._pFilter3DRenderer = new Filter3DRenderer(this._pStageGLProxy);
+                        this._pFilter3DRenderer = new Filter3DRenderer(this._pStageGL);
                         this._pFilter3DRenderer.filters = value;
                     }
 
@@ -12122,7 +12118,7 @@ var away;
 
                     this._pEntityCollector = this._pRenderer.iCreateEntityCollector();
                     this._pEntityCollector.camera = this._pCamera;
-                    this._pRenderer.iStageGLProxy = this._pStageGLProxy;
+                    this._pRenderer.iStageGL = this._pStageGL;
                     this._pRenderer.antiAlias = this._antiAlias;
                     this._pRenderer.iBackgroundR = ((this._backgroundColor >> 16) & 0xff) / 0xff;
                     this._pRenderer.iBackgroundG = ((this._backgroundColor >> 8) & 0xff) / 0xff;
@@ -12387,7 +12383,7 @@ else if (value < 0)
 
             Object.defineProperty(View3D.prototype, "canvas", {
                 get: function () {
-                    return this._pStageGLProxy.canvas;
+                    return this._pStageGL.canvas;
                 },
                 enumerable: true,
                 configurable: true
@@ -12455,9 +12451,9 @@ else if (value < 0)
             * Updates the backbuffer dimensions.
             */
             View3D.prototype.pUpdateBackBuffer = function () {
-                if (this._pStageGLProxy._iContextGL && !this._pShareContext) {
+                if (this._pStageGL.contextGL && !this._pShareContext) {
                     if (this._width && this._height) {
-                        this._pStageGLProxy.configureBackBuffer(this._width, this._height, this._antiAlias, true);
+                        this._pStageGL.configureBackBuffer(this._width, this._height, this._antiAlias, true);
                         this._pBackBufferInvalid = false;
                     }
                 }
@@ -12467,7 +12463,7 @@ else if (value < 0)
             * Renders the view.
             */
             View3D.prototype.render = function () {
-                if (!this._pStageGLProxy.recoverFromDisposal()) {
+                if (!this._pStageGL.recoverFromDisposal()) {
                     this._pBackBufferInvalid = true;
                     return;
                 }
@@ -12476,7 +12472,7 @@ else if (value < 0)
                     this.pUpdateBackBuffer();
 
                 if (this._pShareContext && this._layeredView)
-                    this._pStageGLProxy.clearDepthBuffer();
+                    this._pStageGL.clearDepthBuffer();
 
                 if (this._globalPosDirty)
                     this.pUpdateGlobalPos();
@@ -12494,9 +12490,9 @@ else if (value < 0)
 
                 this._pRenderer.iClearOnRender = !this._depthPrepass;
 
-                if (this._pFilter3DRenderer && this._pStageGLProxy._iContextGL) {
-                    this._pRenderer.iRender(this._pEntityCollector, this._pFilter3DRenderer.getMainInputTexture(this._pStageGLProxy), this._pRttBufferManager.renderToTextureRect);
-                    this._pFilter3DRenderer.render(this._pStageGLProxy, this._pCamera, this._pDepthRender);
+                if (this._pFilter3DRenderer && this._pStageGL.contextGL) {
+                    this._pRenderer.iRender(this._pEntityCollector, this._pFilter3DRenderer.getMainInputTexture(this._pStageGL), this._pRttBufferManager.renderToTextureRect);
+                    this._pFilter3DRenderer.render(this._pStageGL, this._pCamera, this._pDepthRender);
                 } else {
                     this._pRenderer.iShareContext = this._pShareContext;
 
@@ -12507,7 +12503,7 @@ else
                 }
 
                 if (!this._pShareContext) {
-                    this._pStageGLProxy.present();
+                    this._pStageGL.present();
                     // TODO: imeplement mouse3dManager
                     // fire collected mouse events
                     //_mouse3DManager.fireMouseEvents();
@@ -12518,7 +12514,7 @@ else
                 this._pEntityCollector.cleanUp();
 
                 // register that a view has been rendered
-                this._pStageGLProxy.bufferClear = false;
+                this._pStageGL.bufferClear = false;
             };
 
             /**
@@ -12527,17 +12523,17 @@ else
             View3D.prototype.pUpdateGlobalPos = function () {
                 this._globalPosDirty = false;
 
-                if (!this._pStageGLProxy)
+                if (!this._pStageGL)
                     return;
 
                 if (this._pShareContext) {
-                    this._pScissorRect.x = this._globalPos.x - this._pStageGLProxy.x;
-                    this._pScissorRect.y = this._globalPos.y - this._pStageGLProxy.y;
+                    this._pScissorRect.x = this._globalPos.x - this._pStageGL.x;
+                    this._pScissorRect.y = this._globalPos.y - this._pStageGL.y;
                 } else {
                     this._pScissorRect.x = 0;
                     this._pScissorRect.y = 0;
-                    this._pStageGLProxy.x = this._globalPos.x;
-                    this._pStageGLProxy.y = this._globalPos.y;
+                    this._pStageGL.x = this._globalPos.x;
+                    this._pStageGL.y = this._globalPos.y;
                 }
 
                 this._scissorRectDirty = true;
@@ -12569,7 +12565,7 @@ else
 
                 if (this._viewportDirty) {
                     this._viewportDirty = false;
-                    this._pCamera.lens.iUpdateViewport(this._pStageGLProxy.viewPort.x, this._pStageGLProxy.viewPort.y, this._pStageGLProxy.viewPort.width, this._pStageGLProxy.viewPort.height);
+                    this._pCamera.lens.iUpdateViewport(this._pStageGL.viewPort.x, this._pStageGL.viewPort.y, this._pStageGL.viewPort.width, this._pStageGL.viewPort.height);
                 }
 
                 if (this._pFilter3DRenderer || this._pRenderer.iRenderToTexture) {
@@ -12591,7 +12587,7 @@ else
                 if (this._pFilter3DRenderer || this._pRenderer.iRenderToTexture) {
                     this._depthRenderer.iTextureRatioX = this._pRttBufferManager.textureRatioX;
                     this._depthRenderer.iTextureRatioY = this._pRttBufferManager.textureRatioY;
-                    this._depthRenderer.iRender(entityCollector, this._pFilter3DRenderer.getMainInputTexture(this._pStageGLProxy), this._pRttBufferManager.renderToTextureRect);
+                    this._depthRenderer.iRender(entityCollector, this._pFilter3DRenderer.getMainInputTexture(this._pStageGL), this._pRttBufferManager.renderToTextureRect);
                 } else {
                     this._depthRenderer.iTextureRatioX = 1;
                     this._depthRenderer.iTextureRatioY = 1;
@@ -12607,7 +12603,7 @@ else
             */
             View3D.prototype.pRenderSceneDepthToTexture = function (entityCollector) {
                 if (this._depthTextureInvalid || !this._pDepthRender) {
-                    this.initDepthTexture(this._pStageGLProxy._iContextGL);
+                    this.initDepthTexture(this._pStageGL.contextGL);
                 }
                 this._depthRenderer.iTextureRatioX = this._pRttBufferManager.textureRatioX;
                 this._depthRenderer.iTextureRatioY = this._pRttBufferManager.textureRatioY;
@@ -12631,10 +12627,10 @@ else
             *
             */
             View3D.prototype.dispose = function () {
-                this._pStageGLProxy.removeEventListener(StageGLEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
+                this._pStageGL.removeEventListener(StageGLEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
 
                 if (!this.shareContext)
-                    this._pStageGLProxy.dispose();
+                    this._pStageGL.dispose();
 
                 this._pRenderer.iDispose();
 
@@ -12654,7 +12650,7 @@ else
                 this._pRttBufferManager = null;
                 this._pDepthRender = null;
                 this._depthRenderer = null;
-                this._pStageGLProxy = null;
+                this._pStageGL = null;
                 this._pRenderer = null;
                 this._pEntityCollector = null;
             };
@@ -12686,8 +12682,8 @@ else
             */
             View3D.prototype.onViewportUpdated = function (event) {
                 if (this._pShareContext) {
-                    this._pScissorRect.x = this._globalPos.x - this._pStageGLProxy.x;
-                    this._pScissorRect.y = this._globalPos.y - this._pStageGLProxy.y;
+                    this._pScissorRect.x = this._globalPos.x - this._pStageGL.x;
+                    this._pScissorRect.y = this._globalPos.y - this._pStageGL.y;
                     this._scissorRectDirty = true;
                 }
 
@@ -12720,22 +12716,22 @@ else
             View3D.prototype.onAddedToStage = function () {
                 this._addedToStage = true;
 
-                if (this._pStageGLProxy == null) {
-                    this._pStageGLProxy = StageGLManager.getInstance(this.stage).getFreeStageGLProxy(this._forceSoftware, this._profile);
-                    this._pStageGLProxy.addEventListener(StageGLEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
+                if (this._pStageGL == null) {
+                    this._pStageGL = StageGLManager.getInstance().getFreeStageGL(this._forceSoftware, this._profile);
+                    this._pStageGL.addEventListener(StageGLEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
                 }
 
                 this._globalPosDirty = true;
-                this._pRttBufferManager = RTTBufferManager.getInstance(this._pStageGLProxy);
-                this._pRenderer.iStageGLProxy = this._depthRenderer.iStageGLProxy = this._pStageGLProxy;
+                this._pRttBufferManager = RTTBufferManager.getInstance(this._pStageGL);
+                this._pRenderer.iStageGL = this._depthRenderer.iStageGL = this._pStageGL;
 
                 if (this._width == 0)
-                    this.width = this.stage.stageWidth;
+                    this.width = window.innerWidth;
 else
                     this._pRttBufferManager.viewWidth = this._width;
 
                 if (this._height == 0)
-                    this.height = this.stage.stageHeight;
+                    this.height = window.innerHeight;
 else
                     this._pRttBufferManager.viewHeight = this._height;
             };
@@ -12750,7 +12746,7 @@ else
             };
 
             View3D.prototype.unproject = function (sX, sY, sZ) {
-                return this._pCamera.unproject((sX * 2 - this._width) / this._pStageGLProxy.width, (sY * 2 - this._height) / this._pStageGLProxy.height, sZ);
+                return this._pCamera.unproject((sX * 2 - this._width) / this._pStageGL.width, (sY * 2 - this._height) / this._pStageGL.height, sZ);
             };
 
             View3D.prototype.getRay = function (sX, sY, sZ) {
@@ -14628,7 +14624,7 @@ var away;
                     this._program3D.dispose();
                 }
 
-                this._program3D = stage._iContextGL.createProgram();
+                this._program3D = stage.contextGL.createProgram();
 
                 //away.Debug.log( 'Filder3DTaskBase' , 'pUpdateProgram' , 'Program.upload / AGAL <> GLSL implementation' );
                 // TODO: imeplement AGAL <> GLSL
@@ -14638,8 +14634,8 @@ var away;
                 var vertCompiler = new aglsl.AGLSLCompiler();
                 var fragCompiler = new aglsl.AGLSLCompiler();
 
-                var vertString = vertCompiler.compile(away.displayGL.ContextGLProgramType.VERTEX, this.pGetVertexCode());
-                var fragString = fragCompiler.compile(away.displayGL.ContextGLProgramType.FRAGMENT, this.pGetFragmentCode());
+                var vertString = vertCompiler.compile(away.gl.ContextGLProgramType.VERTEX, this.pGetVertexCode());
+                var fragString = fragCompiler.compile(away.gl.ContextGLProgramType.FRAGMENT, this.pGetFragmentCode());
 
                 this._program3D.upload(vertString, fragString);
                 this._program3DInvalid = false;
@@ -14661,23 +14657,23 @@ var away;
                     this._mainInputTexture.dispose();
                 }
 
-                this._mainInputTexture = stage._iContextGL.createTexture(this._scaledTextureWidth, this._scaledTextureHeight, away.displayGL.ContextGLTextureFormat.BGRA, true);
+                this._mainInputTexture = stage.contextGL.createTexture(this._scaledTextureWidth, this._scaledTextureHeight, away.gl.ContextGLTextureFormat.BGRA, true);
 
                 this._textureDimensionsInvalid = false;
             };
 
-            Filter3DTaskBase.prototype.getProgram = function (stageGLProxy) {
+            Filter3DTaskBase.prototype.getProgram = function (stageGL) {
                 if (this._program3DInvalid) {
-                    this.pUpdateProgram(stageGLProxy);
+                    this.pUpdateProgram(stageGL);
                 }
 
                 return this._program3D;
             };
 
-            Filter3DTaskBase.prototype.activate = function (stageGLProxy, camera, depthTexture) {
+            Filter3DTaskBase.prototype.activate = function (stageGL, camera, depthTexture) {
             };
 
-            Filter3DTaskBase.prototype.deactivate = function (stageGLProxy) {
+            Filter3DTaskBase.prototype.deactivate = function (stageGL) {
             };
 
             Object.defineProperty(Filter3DTaskBase.prototype, "requireDepthRender", {
@@ -14725,8 +14721,8 @@ var away;
                 configurable: true
             });
 
-            Filter3DBase.prototype.getMainInputTexture = function (stageGLProxy) {
-                return this._tasks[0].getMainInputTexture(stageGLProxy);
+            Filter3DBase.prototype.getMainInputTexture = function (stageGL) {
+                return this._tasks[0].getMainInputTexture(stageGL);
             };
 
             Object.defineProperty(Filter3DBase.prototype, "textureWidth", {
@@ -14762,7 +14758,7 @@ var away;
 
 
             // link up the filters correctly with the next filter
-            Filter3DBase.prototype.setRenderTargets = function (mainTarget, stageGLProxy) {
+            Filter3DBase.prototype.setRenderTargets = function (mainTarget, stageGL) {
                 this._tasks[this._tasks.length - 1].target = mainTarget;
             };
 
@@ -15400,7 +15396,7 @@ var away;
                 return new away.textures.RenderTexture(this._pDepthMapSize, this._pDepthMapSize);
             };
 
-            ShadowMapperBase.prototype.iRenderDepthMap = function (stageGLProxy, entityCollector, renderer) {
+            ShadowMapperBase.prototype.iRenderDepthMap = function (stageGL, entityCollector, renderer) {
                 this._iShadowsInvalid = false;
 
                 this.pUpdateDepthProjection(entityCollector.camera);
@@ -15408,7 +15404,7 @@ var away;
                 if (!this._depthMap) {
                     this._depthMap = this.pCreateDepthTexture();
                 }
-                this.pDrawDepthMap(this._depthMap.getTextureForStageGL(stageGLProxy), entityCollector.scene, renderer);
+                this.pDrawDepthMap(this._depthMap.getTextureForStageGL(stageGL), entityCollector.scene, renderer);
             };
 
             ShadowMapperBase.prototype.pUpdateDepthProjection = function (viewCamera) {
@@ -15779,15 +15775,15 @@ var away;
             // ---------------------------------------------------------------------
             // Interface.
             // ---------------------------------------------------------------------
-            // TODO: required dependency stageGLProxy
+            // TODO: required dependency stageGL
             Mouse3DManager.prototype.updateCollider = function (view) {
-                throw new away.errors.PartialImplementationError('stageGLProxy');
+                throw new away.errors.PartialImplementationError('stageGL');
                 /*
                 this._previousCollidingView = this._collidingView;
                 
                 if (view) {
                 // Clear the current colliding objects for multiple views if backBuffer just cleared
-                if (view.stageGLProxy.bufferClear)
+                if (view.stageGL.bufferClear)
                 _collidingViewObjects = new Vector.<PickingCollisionVO>(_viewCount);
                 
                 if (!view.shareContext) {
@@ -15907,13 +15903,13 @@ var away;
             };
 
             Mouse3DManager.prototype.addViewLayer = function (view) {
-                throw new away.errors.PartialImplementationError('StageGLProxy, Stage, DisplayObjectContainer ( as3 / native ) ');
+                throw new away.errors.PartialImplementationError('StageGL, Stage, DisplayObjectContainer ( as3 / native ) ');
                 /*
                 var stg:Stage = view.stage;
                 
                 // Add instance to mouse3dmanager to fire mouse events for multiple views
-                if (!view.stageGLProxy.mouse3DManager)
-                view.stageGLProxy.mouse3DManager = this;
+                if (!view.stageGL.mouse3DManager)
+                view.stageGL.mouse3DManager = this;
                 
                 if (!hasKey(view))
                 _view3Ds[view] = 0;
@@ -16158,32 +16154,32 @@ var away;
         var StageGLEvent = away.events.StageGLEvent;
 
         var AGALProgramCache = away.managers.AGALProgramCache;
-        var StageGLProxy = away.managers.StageGLProxy;
+        var StageGL = away.base.StageGL;
 
         var AGALProgramCache = (function () {
-            function AGALProgramCache(stageGLProxy, agalProgramCacheSingletonEnforcer) {
+            function AGALProgramCache(stageGL, agalProgramCacheSingletonEnforcer) {
                 if (!agalProgramCacheSingletonEnforcer)
                     throw new Error("This class is a multiton and cannot be instantiated manually. Use StageGLManager.getInstance instead.");
 
-                this._stageGLProxy = stageGLProxy;
+                this._stageGL = stageGL;
 
                 this._program3Ds = new Object();
                 this._ids = new Object();
                 this._usages = new Object();
                 this._keys = new Object();
             }
-            AGALProgramCache.getInstance = function (stageGLProxy) {
-                var index = stageGLProxy._iStageGLIndex;
+            AGALProgramCache.getInstance = function (stageGL) {
+                var index = stageGL._iStageGLIndex;
 
                 if (AGALProgramCache._instances == null)
                     AGALProgramCache._instances = new Array(8);
 
                 if (!AGALProgramCache._instances[index]) {
-                    AGALProgramCache._instances[index] = new AGALProgramCache(stageGLProxy, new AGALProgramCacheSingletonEnforcer());
+                    AGALProgramCache._instances[index] = new AGALProgramCache(stageGL, new AGALProgramCacheSingletonEnforcer());
 
-                    stageGLProxy.addEventListener(StageGLEvent.CONTEXTGL_DISPOSED, AGALProgramCache.onContextGLDisposed);
-                    stageGLProxy.addEventListener(StageGLEvent.CONTEXTGL_CREATED, AGALProgramCache.onContextGLDisposed);
-                    stageGLProxy.addEventListener(StageGLEvent.CONTEXTGL_RECREATED, AGALProgramCache.onContextGLDisposed);
+                    stageGL.addEventListener(StageGLEvent.CONTEXTGL_DISPOSED, AGALProgramCache.onContextGLDisposed);
+                    stageGL.addEventListener(StageGLEvent.CONTEXTGL_CREATED, AGALProgramCache.onContextGLDisposed);
+                    stageGL.addEventListener(StageGLEvent.CONTEXTGL_RECREATED, AGALProgramCache.onContextGLDisposed);
                 }
 
                 return AGALProgramCache._instances[index];
@@ -16197,16 +16193,16 @@ var away;
             };
 
             AGALProgramCache.onContextGLDisposed = function (event) {
-                var stageGLProxy = event.target;
+                var stageGL = event.target;
 
-                var index = stageGLProxy._iStageGLIndex;
+                var index = stageGL._iStageGLIndex;
 
                 AGALProgramCache._instances[index].dispose();
                 AGALProgramCache._instances[index] = null;
 
-                stageGLProxy.removeEventListener(StageGLEvent.CONTEXTGL_DISPOSED, AGALProgramCache.onContextGLDisposed);
-                stageGLProxy.removeEventListener(StageGLEvent.CONTEXTGL_CREATED, AGALProgramCache.onContextGLDisposed);
-                stageGLProxy.removeEventListener(StageGLEvent.CONTEXTGL_RECREATED, AGALProgramCache.onContextGLDisposed);
+                stageGL.removeEventListener(StageGLEvent.CONTEXTGL_DISPOSED, AGALProgramCache.onContextGLDisposed);
+                stageGL.removeEventListener(StageGLEvent.CONTEXTGL_CREATED, AGALProgramCache.onContextGLDisposed);
+                stageGL.removeEventListener(StageGLEvent.CONTEXTGL_RECREATED, AGALProgramCache.onContextGLDisposed);
             };
 
             AGALProgramCache.prototype.dispose = function () {
@@ -16219,7 +16215,7 @@ var away;
             };
 
             AGALProgramCache.prototype.setProgram = function (pass, vertexCode, fragmentCode) {
-                var stageIndex = this._stageGLProxy._iStageGLIndex;
+                var stageIndex = this._stageGL._iStageGLIndex;
                 var program;
                 var key = this.getKey(vertexCode, fragmentCode);
 
@@ -16229,7 +16225,7 @@ var away;
                     this._ids[key] = AGALProgramCache._currentId;
                     ++AGALProgramCache._currentId;
 
-                    program = this._stageGLProxy._iContextGL.createProgram();
+                    program = this._stageGL.contextGL.createProgram();
 
                     //away.Debug.throwPIR( 'AGALProgramCache' , 'setProgram' , 'Dependency: AGALMiniAssembler.assemble');
                     //TODO: implement AGAL <> GLSL
@@ -16246,8 +16242,8 @@ var away;
                     var vertCompiler = new aglsl.AGLSLCompiler();
                     var fragCompiler = new aglsl.AGLSLCompiler();
 
-                    var vertString = vertCompiler.compile(away.displayGL.ContextGLProgramType.VERTEX, vertexCode);
-                    var fragString = fragCompiler.compile(away.displayGL.ContextGLProgramType.FRAGMENT, fragmentCode);
+                    var vertString = vertCompiler.compile(away.gl.ContextGLProgramType.VERTEX, vertexCode);
+                    var fragString = fragCompiler.compile(away.gl.ContextGLProgramType.FRAGMENT, fragmentCode);
 
                     console.log('===GLSL=========================================================');
                     console.log('vertString');
@@ -16268,8 +16264,8 @@ var away;
                     var vertCompiler:aglsl.AGLSLCompiler = new aglsl.AGLSLCompiler();
                     var fragCompiler:aglsl.AGLSLCompiler = new aglsl.AGLSLCompiler();
                     
-                    var vertString : string = vertCompiler.compile( away.displayGL.ContextGLProgramType.VERTEX, this.pGetVertexCode() );
-                    var fragString : string = fragCompiler.compile( away.displayGL.ContextGLProgramType.FRAGMENT, this.pGetFragmentCode() );
+                    var vertString : string = vertCompiler.compile( away.gl.ContextGLProgramType.VERTEX, this.pGetVertexCode() );
+                    var fragString : string = fragCompiler.compile( away.gl.ContextGLProgramType.FRAGMENT, this.pGetFragmentCode() );
                     
                     this._program3D.upload( vertString , fragString );
                     
@@ -16327,15 +16323,15 @@ var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
     (function (materials) {
-        var ContextGL = away.displayGL.ContextGL;
-        var ContextGLBlendFactor = away.displayGL.ContextGLBlendFactor;
-        var ContextGLCompareMode = away.displayGL.ContextGLCompareMode;
-        var ContextGLTriangleFace = away.displayGL.ContextGLTriangleFace;
-        var Program = away.displayGL.Program;
-        var TextureBase = away.displayGL.TextureBase;
+        var ContextGL = away.gl.ContextGL;
+        var ContextGLBlendFactor = away.gl.ContextGLBlendFactor;
+        var ContextGLCompareMode = away.gl.ContextGLCompareMode;
+        var ContextGLTriangleFace = away.gl.ContextGLTriangleFace;
+        var Program = away.gl.Program;
+        var TextureBase = away.gl.TextureBase;
         var Event = away.events.Event;
         var Rectangle = away.geom.Rectangle;
-        var StageGLProxy = away.managers.StageGLProxy;
+        var StageGL = away.base.StageGL;
         var Delegate = away.utils.Delegate;
 
         /**
@@ -16621,8 +16617,8 @@ var away;
             *
             * @private
             */
-            MaterialPassBase.prototype.iUpdateAnimationState = function (renderable, stageGLProxy, camera) {
-                renderable.animator.setRenderState(stageGLProxy, renderable, this._pNumUsedVertexConstants, this._pNumUsedStreams, camera);
+            MaterialPassBase.prototype.iUpdateAnimationState = function (renderable, stageGL, camera) {
+                renderable.animator.setRenderState(stageGL, renderable, this._pNumUsedVertexConstants, this._pNumUsedStreams, camera);
             };
 
             /**
@@ -16630,7 +16626,7 @@ var away;
             *
             * @private
             */
-            MaterialPassBase.prototype.iRender = function (renderable, stageGLProxy, camera, viewProjection) {
+            MaterialPassBase.prototype.iRender = function (renderable, stageGL, camera, viewProjection) {
                 throw new away.errors.AbstractMethodError();
             };
 
@@ -16660,35 +16656,35 @@ var away;
             */
             MaterialPassBase.prototype.setBlendMode = function (value) {
                 switch (value) {
-                    case away.display.BlendMode.NORMAL:
+                    case away.base.BlendMode.NORMAL:
                         this._blendFactorSource = ContextGLBlendFactor.ONE;
                         this._blendFactorDest = ContextGLBlendFactor.ZERO;
                         this._pEnableBlending = false;
 
                         break;
 
-                    case away.display.BlendMode.LAYER:
+                    case away.base.BlendMode.LAYER:
                         this._blendFactorSource = ContextGLBlendFactor.SOURCE_ALPHA;
                         this._blendFactorDest = ContextGLBlendFactor.ONE_MINUS_SOURCE_ALPHA;
                         this._pEnableBlending = true;
 
                         break;
 
-                    case away.display.BlendMode.MULTIPLY:
+                    case away.base.BlendMode.MULTIPLY:
                         this._blendFactorSource = ContextGLBlendFactor.ZERO;
                         this._blendFactorDest = ContextGLBlendFactor.SOURCE_COLOR;
                         this._pEnableBlending = true;
 
                         break;
 
-                    case away.display.BlendMode.ADD:
+                    case away.base.BlendMode.ADD:
                         this._blendFactorSource = ContextGLBlendFactor.SOURCE_ALPHA;
                         this._blendFactorDest = ContextGLBlendFactor.ONE;
                         this._pEnableBlending = true;
 
                         break;
 
-                    case away.display.BlendMode.ALPHA:
+                    case away.base.BlendMode.ALPHA:
                         this._blendFactorSource = ContextGLBlendFactor.ZERO;
                         this._blendFactorDest = ContextGLBlendFactor.SOURCE_ALPHA;
                         this._pEnableBlending = true;
@@ -16703,13 +16699,13 @@ var away;
             /**
             * Sets the render state for the pass that is independent of the rendered object. This needs to be called before
             * calling renderPass. Before activating a pass, the previously used pass needs to be deactivated.
-            * @param stageGLProxy The StageGLProxy object which is currently used for rendering.
+            * @param stageGL The StageGL object which is currently used for rendering.
             * @param camera The camera from which the scene is viewed.
             * @private
             */
-            MaterialPassBase.prototype.iActivate = function (stageGLProxy, camera) {
-                var contextIndex = stageGLProxy._iStageGLIndex;
-                var context = stageGLProxy._iContextGL;
+            MaterialPassBase.prototype.iActivate = function (stageGL, camera) {
+                var contextIndex = stageGL._iStageGLIndex;
+                var context = stageGL.contextGL;
 
                 context.setDepthTest((this._writeDepth && !this._pEnableBlending), this._depthCompareMode);
 
@@ -16720,7 +16716,7 @@ var away;
                 if (this._contextGLs[contextIndex] != context || !this._iPrograms[contextIndex]) {
                     this._contextGLs[contextIndex] = context;
 
-                    this.iUpdateProgram(stageGLProxy);
+                    this.iUpdateProgram(stageGL);
                     this.dispatchEvent(new Event(Event.CHANGE));
                 }
 
@@ -16738,7 +16734,7 @@ var away;
                 }
 
                 if (this._animationSet && !this._animationSet.usesCPU) {
-                    this._animationSet.activate(stageGLProxy, this);
+                    this._animationSet.activate(stageGL, this);
                 }
 
                 context.setProgram(this._iPrograms[contextIndex]);
@@ -16746,35 +16742,35 @@ var away;
                 context.setCulling(this._pBothSides ? ContextGLTriangleFace.NONE : this._defaultCulling);
 
                 if (this._renderToTexture) {
-                    this._oldTarget = stageGLProxy.renderTarget;
-                    this._oldSurface = stageGLProxy.renderSurfaceSelector;
-                    this._oldDepthStencil = stageGLProxy.enableDepthAndStencil;
-                    this._oldRect = stageGLProxy.scissorRect;
+                    this._oldTarget = stageGL.renderTarget;
+                    this._oldSurface = stageGL.renderSurfaceSelector;
+                    this._oldDepthStencil = stageGL.enableDepthAndStencil;
+                    this._oldRect = stageGL.scissorRect;
                 }
             };
 
             /**
             * Clears the render state for the pass. This needs to be called before activating another pass.
-            * @param stageGLProxy The StageGLProxy used for rendering
+            * @param stageGL The StageGL used for rendering
             *
             * @private
             */
-            MaterialPassBase.prototype.iDeactivate = function (stageGLProxy) {
-                var index = stageGLProxy._iStageGLIndex;
+            MaterialPassBase.prototype.iDeactivate = function (stageGL) {
+                var index = stageGL._iStageGLIndex;
                 MaterialPassBase._previousUsedStreams[index] = this._pNumUsedStreams;
                 MaterialPassBase._previousUsedTexs[index] = this._pNumUsedTextures;
 
                 if (this._animationSet && !this._animationSet.usesCPU) {
-                    this._animationSet.deactivate(stageGLProxy, this);
+                    this._animationSet.deactivate(stageGL, this);
                 }
 
                 if (this._renderToTexture) {
                     // kindly restore state
-                    stageGLProxy.setRenderTarget(this._oldTarget, this._oldDepthStencil, this._oldSurface);
-                    stageGLProxy.scissorRect = this._oldRect;
+                    stageGL.setRenderTarget(this._oldTarget, this._oldDepthStencil, this._oldSurface);
+                    stageGL.scissorRect = this._oldRect;
                 }
 
-                stageGLProxy._iContextGL.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL);
+                stageGL.contextGL.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL);
             };
 
             /**
@@ -16797,17 +16793,17 @@ var away;
             * Compiles the shader program.
             * @param polyOffsetReg An optional register that contains an amount by which to inflate the model (used in single object depth map rendering).
             */
-            MaterialPassBase.prototype.iUpdateProgram = function (stageGLProxy) {
+            MaterialPassBase.prototype.iUpdateProgram = function (stageGL) {
                 var animatorCode = "";
                 var UVAnimatorCode = "";
                 var fragmentAnimatorCode = "";
                 var vertexCode = this.iGetVertexCode();
 
                 if (this._animationSet && !this._animationSet.usesCPU) {
-                    animatorCode = this._animationSet.getAGALVertexCode(this, this._pAnimatableAttributes, this._pAnimationTargetRegisters, stageGLProxy.profile);
+                    animatorCode = this._animationSet.getAGALVertexCode(this, this._pAnimatableAttributes, this._pAnimationTargetRegisters, stageGL.profile);
 
                     if (this._pNeedFragmentAnimation)
-                        fragmentAnimatorCode = this._animationSet.getAGALFragmentCode(this, this._pShadedTarget, stageGLProxy.profile);
+                        fragmentAnimatorCode = this._animationSet.getAGALFragmentCode(this, this._pShadedTarget, stageGL.profile);
 
                     if (this._pNeedUVAnimation)
                         UVAnimatorCode = this._animationSet.getAGALUVCode(this, this._pUVSource, this._pUVTarget);
@@ -16836,7 +16832,7 @@ var away;
                 trace(fragmentCode);
                 }
                 */
-                away.managers.AGALProgramCache.getInstance(stageGLProxy).setProgram(this, vertexCode, fragmentCode);
+                away.managers.AGALProgramCache.getInstance(stageGL).setProgram(this, vertexCode, fragmentCode);
             };
 
             Object.defineProperty(MaterialPassBase.prototype, "lightPicker", {
@@ -16915,7 +16911,7 @@ var away;
         var Matrix3D = away.geom.Matrix3D;
         var Matrix3DUtils = away.geom.Matrix3DUtils;
         var Texture2DBase = away.textures.Texture2DBase;
-        var StageGLProxy = away.managers.StageGLProxy;
+        var StageGL = away.base.StageGL;
         var Delegate = away.utils.Delegate;
 
         
@@ -17024,9 +17020,9 @@ var away;
             /**
             * @inheritDoc
             */
-            CompiledPass.prototype.iUpdateProgram = function (stageGLProxy) {
-                this.reset(stageGLProxy.profile);
-                _super.prototype.iUpdateProgram.call(this, stageGLProxy);
+            CompiledPass.prototype.iUpdateProgram = function (stageGL) {
+                this.reset(stageGL.profile);
+                _super.prototype.iUpdateProgram.call(this, stageGL);
             };
 
             /**
@@ -17430,7 +17426,7 @@ var away;
             /**
             * Updates constant data render state used by the light probes. This method is optional for subclasses to implement.
             */
-            CompiledPass.prototype.pUpdateProbes = function (stageGLProxy) {
+            CompiledPass.prototype.pUpdateProbes = function (stageGL) {
             };
 
             /**
@@ -17459,40 +17455,40 @@ var away;
             /**
             * @inheritDoc
             */
-            CompiledPass.prototype.iActivate = function (stageGLProxy, camera) {
-                _super.prototype.iActivate.call(this, stageGLProxy, camera);
+            CompiledPass.prototype.iActivate = function (stageGL, camera) {
+                _super.prototype.iActivate.call(this, stageGL, camera);
 
                 if (this._usesNormals)
-                    this._pMethodSetup._iNormalMethod.iActivate(this._pMethodSetup._iNormalMethodVO, stageGLProxy);
+                    this._pMethodSetup._iNormalMethod.iActivate(this._pMethodSetup._iNormalMethodVO, stageGL);
 
-                this._pMethodSetup._iAmbientMethod.iActivate(this._pMethodSetup._iAmbientMethodVO, stageGLProxy);
+                this._pMethodSetup._iAmbientMethod.iActivate(this._pMethodSetup._iAmbientMethodVO, stageGL);
 
                 if (this._pMethodSetup._iShadowMethod)
-                    this._pMethodSetup._iShadowMethod.iActivate(this._pMethodSetup._iShadowMethodVO, stageGLProxy);
+                    this._pMethodSetup._iShadowMethod.iActivate(this._pMethodSetup._iShadowMethodVO, stageGL);
 
-                this._pMethodSetup._iDiffuseMethod.iActivate(this._pMethodSetup._iDiffuseMethodVO, stageGLProxy);
+                this._pMethodSetup._iDiffuseMethod.iActivate(this._pMethodSetup._iDiffuseMethodVO, stageGL);
 
                 if (this._usingSpecularMethod)
-                    this._pMethodSetup._iSpecularMethod.iActivate(this._pMethodSetup._iSpecularMethodVO, stageGLProxy);
+                    this._pMethodSetup._iSpecularMethod.iActivate(this._pMethodSetup._iSpecularMethodVO, stageGL);
             };
 
             /**
             * @inheritDoc
             */
-            CompiledPass.prototype.iRender = function (renderable, stageGLProxy, camera, viewProjection) {
+            CompiledPass.prototype.iRender = function (renderable, stageGL, camera, viewProjection) {
                 var i;
-                var context = stageGLProxy._iContextGL;
+                var context = stageGL.contextGL;
                 if (this._uvBufferIndex >= 0)
-                    renderable.activateUVBuffer(this._uvBufferIndex, stageGLProxy);
+                    renderable.activateUVBuffer(this._uvBufferIndex, stageGL);
 
                 if (this._secondaryUVBufferIndex >= 0)
-                    renderable.activateSecondaryUVBuffer(this._secondaryUVBufferIndex, stageGLProxy);
+                    renderable.activateSecondaryUVBuffer(this._secondaryUVBufferIndex, stageGL);
 
                 if (this._normalBufferIndex >= 0)
-                    renderable.activateVertexNormalBuffer(this._normalBufferIndex, stageGLProxy);
+                    renderable.activateVertexNormalBuffer(this._normalBufferIndex, stageGL);
 
                 if (this._tangentBufferIndex >= 0)
-                    renderable.activateVertexTangentBuffer(this._tangentBufferIndex, stageGLProxy);
+                    renderable.activateVertexTangentBuffer(this._tangentBufferIndex, stageGL);
 
                 if (this._animateUVs) {
                     var uvTransform = renderable.uvTransform;
@@ -17520,7 +17516,7 @@ var away;
                     this.pUpdateLightConstants();
 
                 if (this.pUsesProbes())
-                    this.pUpdateProbes(stageGLProxy);
+                    this.pUpdateProbes(stageGL);
 
                 if (this._sceneMatrixIndex >= 0) {
                     renderable.getRenderSceneTransform(camera).copyRawDataTo(this._pVertexConstantData, this._sceneMatrixIndex, true);
@@ -17543,24 +17539,24 @@ var away;
                 }
 
                 if (this._usesNormals)
-                    this._pMethodSetup._iNormalMethod.iSetRenderState(this._pMethodSetup._iNormalMethodVO, renderable, stageGLProxy, camera);
+                    this._pMethodSetup._iNormalMethod.iSetRenderState(this._pMethodSetup._iNormalMethodVO, renderable, stageGL, camera);
 
                 var ambientMethod = this._pMethodSetup._iAmbientMethod;
                 ambientMethod._iLightAmbientR = this._pAmbientLightR;
                 ambientMethod._iLightAmbientG = this._pAmbientLightG;
                 ambientMethod._iLightAmbientB = this._pAmbientLightB;
-                ambientMethod.iSetRenderState(this._pMethodSetup._iAmbientMethodVO, renderable, stageGLProxy, camera);
+                ambientMethod.iSetRenderState(this._pMethodSetup._iAmbientMethodVO, renderable, stageGL, camera);
 
                 if (this._pMethodSetup._iShadowMethod)
-                    this._pMethodSetup._iShadowMethod.iSetRenderState(this._pMethodSetup._iShadowMethodVO, renderable, stageGLProxy, camera);
+                    this._pMethodSetup._iShadowMethod.iSetRenderState(this._pMethodSetup._iShadowMethodVO, renderable, stageGL, camera);
 
-                this._pMethodSetup._iDiffuseMethod.iSetRenderState(this._pMethodSetup._iDiffuseMethodVO, renderable, stageGLProxy, camera);
+                this._pMethodSetup._iDiffuseMethod.iSetRenderState(this._pMethodSetup._iDiffuseMethodVO, renderable, stageGL, camera);
 
                 if (this._usingSpecularMethod)
-                    this._pMethodSetup._iSpecularMethod.iSetRenderState(this._pMethodSetup._iSpecularMethodVO, renderable, stageGLProxy, camera);
+                    this._pMethodSetup._iSpecularMethod.iSetRenderState(this._pMethodSetup._iSpecularMethodVO, renderable, stageGL, camera);
 
                 if (this._pMethodSetup._iColorTransformMethod)
-                    this._pMethodSetup._iColorTransformMethod.iSetRenderState(this._pMethodSetup._iColorTransformMethodVO, renderable, stageGLProxy, camera);
+                    this._pMethodSetup._iColorTransformMethod.iSetRenderState(this._pMethodSetup._iColorTransformMethodVO, renderable, stageGL, camera);
 
                 var methods = this._pMethodSetup._iMethods;
                 var len = methods.length;
@@ -17568,14 +17564,14 @@ var away;
                 for (i = 0; i < len; ++i) {
                     var aset = methods[i];
 
-                    aset.method.iSetRenderState(aset.data, renderable, stageGLProxy, camera);
+                    aset.method.iSetRenderState(aset.data, renderable, stageGL, camera);
                 }
 
-                context.setProgramConstantsFromArray(away.displayGL.ContextGLProgramType.VERTEX, 0, this._pVertexConstantData, this._pNumUsedVertexConstants);
-                context.setProgramConstantsFromArray(away.displayGL.ContextGLProgramType.FRAGMENT, 0, this._pFragmentConstantData, this._pNumUsedFragmentConstants);
+                context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 0, this._pVertexConstantData, this._pNumUsedVertexConstants);
+                context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.FRAGMENT, 0, this._pFragmentConstantData, this._pNumUsedFragmentConstants);
 
-                renderable.activateVertexBuffer(0, stageGLProxy);
-                context.drawTriangles(renderable.getIndexBuffer(stageGLProxy), 0, renderable.numTriangles);
+                renderable.activateVertexBuffer(0, stageGL);
+                context.drawTriangles(renderable.getIndexBuffer(stageGL), 0, renderable.numTriangles);
             };
 
             /**
@@ -17595,21 +17591,21 @@ var away;
             /**
             * @inheritDoc
             */
-            CompiledPass.prototype.iDeactivate = function (stageGLProxy) {
-                _super.prototype.iDeactivate.call(this, stageGLProxy);
+            CompiledPass.prototype.iDeactivate = function (stageGL) {
+                _super.prototype.iDeactivate.call(this, stageGL);
 
                 if (this._usesNormals)
-                    this._pMethodSetup._iNormalMethod.iDeactivate(this._pMethodSetup._iNormalMethodVO, stageGLProxy);
+                    this._pMethodSetup._iNormalMethod.iDeactivate(this._pMethodSetup._iNormalMethodVO, stageGL);
 
-                this._pMethodSetup._iAmbientMethod.iDeactivate(this._pMethodSetup._iAmbientMethodVO, stageGLProxy);
+                this._pMethodSetup._iAmbientMethod.iDeactivate(this._pMethodSetup._iAmbientMethodVO, stageGL);
 
                 if (this._pMethodSetup._iShadowMethod)
-                    this._pMethodSetup._iShadowMethod.iDeactivate(this._pMethodSetup._iShadowMethodVO, stageGLProxy);
+                    this._pMethodSetup._iShadowMethod.iDeactivate(this._pMethodSetup._iShadowMethodVO, stageGL);
 
-                this._pMethodSetup._iDiffuseMethod.iDeactivate(this._pMethodSetup._iDiffuseMethodVO, stageGLProxy);
+                this._pMethodSetup._iDiffuseMethod.iDeactivate(this._pMethodSetup._iDiffuseMethodVO, stageGL);
 
                 if (this._usingSpecularMethod)
-                    this._pMethodSetup._iSpecularMethod.iDeactivate(this._pMethodSetup._iSpecularMethodVO, stageGLProxy);
+                    this._pMethodSetup._iSpecularMethod.iDeactivate(this._pMethodSetup._iSpecularMethodVO, stageGL);
             };
 
             Object.defineProperty(CompiledPass.prototype, "specularLightSources", {
@@ -17823,18 +17819,18 @@ var away;
             /**
             * @inheritDoc
             */
-            SuperShaderPass.prototype.iActivate = function (stageGLProxy, camera) {
-                _super.prototype.iActivate.call(this, stageGLProxy, camera);
+            SuperShaderPass.prototype.iActivate = function (stageGL, camera) {
+                _super.prototype.iActivate.call(this, stageGL, camera);
 
                 if (this._pMethodSetup._iColorTransformMethod)
-                    this._pMethodSetup._iColorTransformMethod.iActivate(this._pMethodSetup._iColorTransformMethodVO, stageGLProxy);
+                    this._pMethodSetup._iColorTransformMethod.iActivate(this._pMethodSetup._iColorTransformMethodVO, stageGL);
 
                 var methods = this._pMethodSetup._iMethods;
                 var len = methods.length;
 
                 for (var i = 0; i < len; ++i) {
                     var aset = methods[i];
-                    aset.method.iActivate(aset.data, stageGLProxy);
+                    aset.method.iActivate(aset.data, stageGL);
                 }
 
                 if (this._pCameraPositionIndex >= 0) {
@@ -17849,11 +17845,11 @@ var away;
             /**
             * @inheritDoc
             */
-            SuperShaderPass.prototype.iDeactivate = function (stageGLProxy) {
-                _super.prototype.iDeactivate.call(this, stageGLProxy);
+            SuperShaderPass.prototype.iDeactivate = function (stageGL) {
+                _super.prototype.iDeactivate.call(this, stageGL);
 
                 if (this._pMethodSetup._iColorTransformMethod) {
-                    this._pMethodSetup._iColorTransformMethod.iDeactivate(this._pMethodSetup._iColorTransformMethodVO, stageGLProxy);
+                    this._pMethodSetup._iColorTransformMethod.iDeactivate(this._pMethodSetup._iColorTransformMethodVO, stageGL);
                 }
 
                 var aset;
@@ -17862,7 +17858,7 @@ var away;
 
                 for (var i = 0; i < len; ++i) {
                     aset = methods[i];
-                    aset.method.iDeactivate(aset.data, stageGLProxy);
+                    aset.method.iDeactivate(aset.data, stageGL);
                 }
             };
 
@@ -18016,14 +18012,14 @@ var away;
             /**
             * @inheritDoc
             */
-            SuperShaderPass.prototype.pUpdateProbes = function (stageGLProxy) {
+            SuperShaderPass.prototype.pUpdateProbes = function (stageGL) {
                 var probe;
                 var lightProbes = this._pLightPicker.lightProbes;
                 var weights = this._pLightPicker.lightProbeWeights;
                 var len = lightProbes.length;
                 var addDiff = this.usesProbesForDiffuse();
                 var addSpec = (this._pMethodSetup._iSpecularMethod && this.usesProbesForSpecular());
-                var context = stageGLProxy._iContextGL;
+                var context = stageGL.contextGL;
 
                 if (!(addDiff || addSpec)) {
                     return;
@@ -18033,11 +18029,11 @@ var away;
                     probe = lightProbes[i];
 
                     if (addDiff) {
-                        context.setTextureAt(this._pLightProbeSpecularIndices[i], probe.diffuseMap.getTextureForStageGL(stageGLProxy));
+                        context.setTextureAt(this._pLightProbeSpecularIndices[i], probe.diffuseMap.getTextureForStageGL(stageGL));
                     }
 
                     if (addSpec) {
-                        context.setTextureAt(this._pLightProbeSpecularIndices[i], probe.specularMap.getTextureForStageGL(stageGLProxy));
+                        context.setTextureAt(this._pLightProbeSpecularIndices[i], probe.specularMap.getTextureForStageGL(stageGL));
                     }
                 }
 
@@ -18179,7 +18175,7 @@ var away;
                     var format;
 
                     switch (this._alphaMask.format) {
-                        case away.displayGL.ContextGLTextureFormat.COMPRESSED:
+                        case away.gl.ContextGLTextureFormat.COMPRESSED:
                             format = "dxt1,";
                             break;
 
@@ -18202,34 +18198,34 @@ var away;
             /**
             * @inheritDoc
             */
-            DepthMapPass.prototype.iRender = function (renderable, stageGLProxy, camera, viewProjection) {
+            DepthMapPass.prototype.iRender = function (renderable, stageGL, camera, viewProjection) {
                 if (this._alphaThreshold > 0) {
-                    renderable.activateUVBuffer(1, stageGLProxy);
+                    renderable.activateUVBuffer(1, stageGL);
                 }
 
-                var context = stageGLProxy._iContextGL;
+                var context = stageGL.contextGL;
                 var matrix = away.geom.Matrix3DUtils.CALCULATION_MATRIX;
 
                 matrix.copyFrom(renderable.getRenderSceneTransform(camera));
                 matrix.append(viewProjection);
-                context.setProgramConstantsFromMatrix(away.displayGL.ContextGLProgramType.VERTEX, 0, matrix, true);
-                renderable.activateVertexBuffer(0, stageGLProxy);
-                context.drawTriangles(renderable.getIndexBuffer(stageGLProxy), 0, renderable.numTriangles);
+                context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, matrix, true);
+                renderable.activateVertexBuffer(0, stageGL);
+                context.drawTriangles(renderable.getIndexBuffer(stageGL), 0, renderable.numTriangles);
             };
 
             /**
             * @inheritDoc
             */
-            DepthMapPass.prototype.iActivate = function (stageGLProxy, camera) {
-                var context = stageGLProxy._iContextGL;
+            DepthMapPass.prototype.iActivate = function (stageGL, camera) {
+                var context = stageGL.contextGL;
 
-                _super.prototype.iActivate.call(this, stageGLProxy, camera);
+                _super.prototype.iActivate.call(this, stageGL, camera);
 
                 if (this._alphaThreshold > 0) {
-                    context.setTextureAt(0, this._alphaMask.getTextureForStageGL(stageGLProxy));
-                    context.setProgramConstantsFromArray(away.displayGL.ContextGLProgramType.FRAGMENT, 0, this._data, 3);
+                    context.setTextureAt(0, this._alphaMask.getTextureForStageGL(stageGL));
+                    context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.FRAGMENT, 0, this._data, 3);
                 } else {
-                    context.setProgramConstantsFromArray(away.displayGL.ContextGLProgramType.FRAGMENT, 0, this._data, 2);
+                    context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.FRAGMENT, 0, this._data, 2);
                 }
             };
             return DepthMapPass;
@@ -18245,7 +18241,7 @@ var away;
         //import away3d.arcane;
         //import away3d.cameras.Camera3D;
         //import away3d.core.base.IRenderable;
-        //import away3d.managers.StageGLProxy;
+        //import away3d.base.StageGL;
         //import away3d.core.geom.Matrix3DUtils;
         //import away3d.textures.Texture2DBase;
         //import flash.displayGL.ContextGL;
@@ -18364,7 +18360,7 @@ var away;
                     var format;
 
                     switch (this._alphaMask.format) {
-                        case away.displayGL.ContextGLTextureFormat.COMPRESSED:
+                        case away.gl.ContextGLTextureFormat.COMPRESSED:
                             format = "dxt1,";
 
                             break;
@@ -18389,8 +18385,8 @@ var away;
             /**
             * @inheritDoc
             */
-            DistanceMapPass.prototype.iRender = function (renderable, stageGLProxy, camera, viewProjection) {
-                var context = stageGLProxy._iContextGL;
+            DistanceMapPass.prototype.iRender = function (renderable, stageGL, camera, viewProjection) {
+                var context = stageGL.contextGL;
                 var pos = camera.scenePosition;
 
                 this._vertexData[0] = pos.x;
@@ -18400,12 +18396,12 @@ var away;
 
                 var sceneTransform = renderable.getRenderSceneTransform(camera);
 
-                context.setProgramConstantsFromMatrix(away.displayGL.ContextGLProgramType.VERTEX, 5, sceneTransform, true);
+                context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 5, sceneTransform, true);
 
-                context.setProgramConstantsFromArray(away.displayGL.ContextGLProgramType.VERTEX, 9, this._vertexData, 1);
+                context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 9, this._vertexData, 1);
 
                 if (this._alphaThreshold > 0) {
-                    renderable.activateUVBuffer(1, stageGLProxy);
+                    renderable.activateUVBuffer(1, stageGL);
                 }
 
                 var matrix = away.geom.Matrix3DUtils.CALCULATION_MATRIX;
@@ -18413,17 +18409,17 @@ var away;
                 matrix.copyFrom(sceneTransform);
                 matrix.append(viewProjection);
 
-                context.setProgramConstantsFromMatrix(away.displayGL.ContextGLProgramType.VERTEX, 0, matrix, true);
-                renderable.activateVertexBuffer(0, stageGLProxy);
-                context.drawTriangles(renderable.getIndexBuffer(stageGLProxy), 0, renderable.numTriangles);
+                context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, matrix, true);
+                renderable.activateVertexBuffer(0, stageGL);
+                context.drawTriangles(renderable.getIndexBuffer(stageGL), 0, renderable.numTriangles);
             };
 
             /**
             * @inheritDoc
             */
-            DistanceMapPass.prototype.iActivate = function (stageGLProxy, camera) {
-                var context = stageGLProxy._iContextGL;
-                _super.prototype.iActivate.call(this, stageGLProxy, camera);
+            DistanceMapPass.prototype.iActivate = function (stageGL, camera) {
+                var context = stageGL.contextGL;
+                _super.prototype.iActivate.call(this, stageGL, camera);
 
                 var f = camera.lens.far;
 
@@ -18436,10 +18432,10 @@ var away;
                 this._fragmentData[3] = 16581375.0 * f;
 
                 if (this._alphaThreshold > 0) {
-                    context.setTextureAt(0, this._alphaMask.getTextureForStageGL(stageGLProxy));
-                    context.setProgramConstantsFromArray(away.displayGL.ContextGLProgramType.FRAGMENT, 0, this._fragmentData, 3);
+                    context.setTextureAt(0, this._alphaMask.getTextureForStageGL(stageGL));
+                    context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.FRAGMENT, 0, this._fragmentData, 3);
                 } else {
-                    context.setProgramConstantsFromArray(away.displayGL.ContextGLProgramType.FRAGMENT, 0, this._fragmentData, 2);
+                    context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.FRAGMENT, 0, this._fragmentData, 2);
                 }
             };
             return DistanceMapPass;
@@ -18455,7 +18451,7 @@ var away;
         //import away3d.arcane;
         //import away3d.cameras.Camera3D;
         //import away3d.core.base.IRenderable;
-        //import away3d.managers.StageGLProxy;
+        //import away3d.base.StageGL;
         //import away3d.lights.DirectionalLight;
         //import away3d.lights.LightProbe;
         //import away3d.lights.PointLight;
@@ -18647,7 +18643,7 @@ var away;
             /**
             * @inheritDoc
             */
-            LightingPass.prototype.iRender = function (renderable, stageGLProxy, camera, viewProjection) {
+            LightingPass.prototype.iRender = function (renderable, stageGL, camera, viewProjection) {
                 renderable.inverseSceneTransform.copyRawDataTo(this._inverseSceneMatrix);
 
                 if (this._tangentSpace && this._pCameraPositionIndex >= 0) {
@@ -18661,14 +18657,14 @@ var away;
                     this._pVertexConstantData[this._pCameraPositionIndex + 2] = this._inverseSceneMatrix[2] * x + this._inverseSceneMatrix[6] * y + this._inverseSceneMatrix[10] * z + this._inverseSceneMatrix[14];
                 }
 
-                _super.prototype.iRender.call(this, renderable, stageGLProxy, camera, viewProjection);
+                _super.prototype.iRender.call(this, renderable, stageGL, camera, viewProjection);
             };
 
             /**
             * @inheritDoc
             */
-            LightingPass.prototype.iActivate = function (stageGLProxy, camera) {
-                _super.prototype.iActivate.call(this, stageGLProxy, camera);
+            LightingPass.prototype.iActivate = function (stageGL, camera) {
+                _super.prototype.iActivate.call(this, stageGL, camera);
 
                 if (!this._tangentSpace && this._pCameraPositionIndex >= 0) {
                     var pos = camera.scenePosition;
@@ -18852,8 +18848,8 @@ var away;
             /**
             * @inheritDoc
             */
-            LightingPass.prototype.pUpdateProbes = function (stageGLProxy) {
-                var context = stageGLProxy._iContextGL;
+            LightingPass.prototype.pUpdateProbes = function (stageGL) {
+                var context = stageGL.contextGL;
                 var probe;
                 var lightProbes = this._pLightPicker.lightProbes;
                 var weights = this._pLightPicker.lightProbeWeights;
@@ -18872,10 +18868,10 @@ var away;
                     probe = lightProbes[this._lightProbesOffset + i];
 
                     if (addDiff) {
-                        context.setTextureAt(this._pLightProbeDiffuseIndices[i], probe.diffuseMap.getTextureForStageGL(stageGLProxy));
+                        context.setTextureAt(this._pLightProbeDiffuseIndices[i], probe.diffuseMap.getTextureForStageGL(stageGL));
                     }
                     if (addSpec) {
-                        context.setTextureAt(this._pLightProbeSpecularIndices[i], probe.specularMap.getTextureForStageGL(stageGLProxy));
+                        context.setTextureAt(this._pLightProbeSpecularIndices[i], probe.specularMap.getTextureForStageGL(stageGL));
                     }
                 }
 
@@ -18970,7 +18966,7 @@ var away;
             /**
             * @inheritDoc
             */
-            ShadowCasterPass.prototype.iRender = function (renderable, stageGLProxy, camera, viewProjection) {
+            ShadowCasterPass.prototype.iRender = function (renderable, stageGL, camera, viewProjection) {
                 renderable.inverseSceneTransform.copyRawDataTo(this._inverseSceneMatrix);
 
                 if (this._tangentSpace && this._pCameraPositionIndex >= 0) {
@@ -18983,14 +18979,14 @@ var away;
                     this._pVertexConstantData[this._pCameraPositionIndex + 2] = this._inverseSceneMatrix[2] * x + this._inverseSceneMatrix[6] * y + this._inverseSceneMatrix[10] * z + this._inverseSceneMatrix[14];
                 }
 
-                _super.prototype.iRender.call(this, renderable, stageGLProxy, camera, viewProjection);
+                _super.prototype.iRender.call(this, renderable, stageGL, camera, viewProjection);
             };
 
             /**
             * @inheritDoc
             */
-            ShadowCasterPass.prototype.iActivate = function (stageGLProxy, camera) {
-                _super.prototype.iActivate.call(this, stageGLProxy, camera);
+            ShadowCasterPass.prototype.iActivate = function (stageGL, camera) {
+                _super.prototype.iActivate.call(this, stageGL, camera);
 
                 if (!this._tangentSpace && this._pCameraPositionIndex >= 0) {
                     var pos = camera.scenePosition;
@@ -19103,7 +19099,7 @@ var away;
             /**
             * @inheritDoc
             */
-            ShadowCasterPass.prototype.pUpdateProbes = function (stageGLProxy) {
+            ShadowCasterPass.prototype.pUpdateProbes = function (stageGL) {
             };
             return ShadowCasterPass;
         })(materials.CompiledPass);
@@ -19152,8 +19148,8 @@ var away;
             * @inheritDoc
             * todo: keep maps in dictionary per renderable
             */
-            SegmentPass.prototype.iRender = function (renderable, stageGLProxy, camera, viewProjection) {
-                var context = stageGLProxy._iContextGL;
+            SegmentPass.prototype.iRender = function (renderable, stageGL, camera, viewProjection) {
+                var context = stageGL.contextGL;
                 this._calcMatrix.copyFrom(renderable.sourceEntity.sceneTransform);
                 this._calcMatrix.append(camera.inverseSceneTransform);
 
@@ -19163,9 +19159,9 @@ var away;
 
                 if (ss.hasData) {
                     for (var i = 0; i < subSetCount; ++i) {
-                        renderable.activateVertexBuffer(i, stageGLProxy);
-                        context.setProgramConstantsFromMatrix(away.displayGL.ContextGLProgramType.VERTEX, 8, this._calcMatrix, true);
-                        context.drawTriangles(renderable.getIndexBuffer(stageGLProxy), 0, renderable.numTriangles);
+                        renderable.activateVertexBuffer(i, stageGL);
+                        context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 8, this._calcMatrix, true);
+                        context.drawTriangles(renderable.getIndexBuffer(stageGL), 0, renderable.numTriangles);
                     }
                 }
             };
@@ -19173,31 +19169,31 @@ var away;
             /**
             * @inheritDoc
             */
-            SegmentPass.prototype.iActivate = function (stageGLProxy, camera) {
-                var context = stageGLProxy._iContextGL;
-                _super.prototype.iActivate.call(this, stageGLProxy, camera);
+            SegmentPass.prototype.iActivate = function (stageGL, camera) {
+                var context = stageGL.contextGL;
+                _super.prototype.iActivate.call(this, stageGL, camera);
 
-                if (stageGLProxy.scissorRect)
-                    this._constants[0] = this._thickness / Math.min(stageGLProxy.scissorRect.width, stageGLProxy.scissorRect.height);
+                if (stageGL.scissorRect)
+                    this._constants[0] = this._thickness / Math.min(stageGL.scissorRect.width, stageGL.scissorRect.height);
 else
-                    this._constants[0] = this._thickness / Math.min(stageGLProxy.width, stageGLProxy.height);
+                    this._constants[0] = this._thickness / Math.min(stageGL.width, stageGL.height);
 
                 // value to convert distance from camera to model length per pixel width
                 this._constants[2] = camera.lens.near;
 
-                context.setProgramConstantsFromArray(away.displayGL.ContextGLProgramType.VERTEX, 5, SegmentPass.pONE_VECTOR, 1);
-                context.setProgramConstantsFromArray(away.displayGL.ContextGLProgramType.VERTEX, 6, SegmentPass.pFRONT_VECTOR, 1);
-                context.setProgramConstantsFromArray(away.displayGL.ContextGLProgramType.VERTEX, 7, this._constants, 1);
+                context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 5, SegmentPass.pONE_VECTOR, 1);
+                context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 6, SegmentPass.pFRONT_VECTOR, 1);
+                context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 7, this._constants, 1);
 
                 // projection matrix
-                context.setProgramConstantsFromMatrix(away.displayGL.ContextGLProgramType.VERTEX, 0, camera.lens.matrix, true);
+                context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, camera.lens.matrix, true);
             };
 
             /**
             * @inheritDoc
             */
-            SegmentPass.prototype.pDeactivate = function (stageGLProxy) {
-                var context = stageGLProxy._iContextGL;
+            SegmentPass.prototype.pDeactivate = function (stageGL) {
+                var context = stageGL.contextGL;
                 context.setVertexBufferAt(0, null);
                 context.setVertexBufferAt(1, null);
                 context.setVertexBufferAt(2, null);
@@ -19257,7 +19253,7 @@ var away;
             SkyBoxPass.prototype.iGetFragmentCode = function (animationCode) {
                 var format;
                 switch (this._cubeTexture.format) {
-                    case away.displayGL.ContextGLTextureFormat.COMPRESSED:
+                    case away.gl.ContextGLTextureFormat.COMPRESSED:
                         format = "dxt1,";
                         break;
                     case "compressedAlpha":
@@ -19278,28 +19274,28 @@ var away;
             /**
             * @inheritDoc
             */
-            SkyBoxPass.prototype.iRender = function (renderable, stageGLProxy, camera, viewProjection) {
-                var context = stageGLProxy._iContextGL;
+            SkyBoxPass.prototype.iRender = function (renderable, stageGL, camera, viewProjection) {
+                var context = stageGL.contextGL;
                 var pos = camera.scenePosition;
                 this._vertexData[0] = pos.x;
                 this._vertexData[1] = pos.y;
                 this._vertexData[2] = pos.z;
                 this._vertexData[4] = this._vertexData[5] = this._vertexData[6] = camera.lens.far / Math.sqrt(3);
-                context.setProgramConstantsFromMatrix(away.displayGL.ContextGLProgramType.VERTEX, 0, viewProjection, true);
-                context.setProgramConstantsFromArray(away.displayGL.ContextGLProgramType.VERTEX, 4, this._vertexData, 2);
-                renderable.activateVertexBuffer(0, stageGLProxy);
-                context.drawTriangles(renderable.getIndexBuffer(stageGLProxy), 0, renderable.numTriangles);
+                context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, viewProjection, true);
+                context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 4, this._vertexData, 2);
+                renderable.activateVertexBuffer(0, stageGL);
+                context.drawTriangles(renderable.getIndexBuffer(stageGL), 0, renderable.numTriangles);
             };
 
             /**
             * @inheritDoc
             */
-            SkyBoxPass.prototype.iActivate = function (stageGLProxy, camera) {
-                _super.prototype.iActivate.call(this, stageGLProxy, camera);
-                var context = stageGLProxy._iContextGL;
-                context.setSamplerStateAt(0, away.displayGL.ContextGLWrapMode.CLAMP, away.displayGL.ContextGLTextureFilter.LINEAR, this._cubeTexture.hasMipMaps ? away.displayGL.ContextGLMipFilter.MIPLINEAR : away.displayGL.ContextGLMipFilter.MIPNONE);
-                context.setDepthTest(false, away.displayGL.ContextGLCompareMode.LESS);
-                context.setTextureAt(0, this._cubeTexture.getTextureForStageGL(stageGLProxy));
+            SkyBoxPass.prototype.iActivate = function (stageGL, camera) {
+                _super.prototype.iActivate.call(this, stageGL, camera);
+                var context = stageGL.contextGL;
+                context.setSamplerStateAt(0, away.gl.ContextGLWrapMode.CLAMP, away.gl.ContextGLTextureFilter.LINEAR, this._cubeTexture.hasMipMaps ? away.gl.ContextGLMipFilter.MIPLINEAR : away.gl.ContextGLMipFilter.MIPNONE);
+                context.setDepthTest(false, away.gl.ContextGLCompareMode.LESS);
+                context.setTextureAt(0, this._cubeTexture.getTextureForStageGL(stageGL));
             };
             return SkyBoxPass;
         })(materials.MaterialPassBase);
@@ -19466,10 +19462,10 @@ var away;
             * Sets the render state for this method.
             *
             * @param vo The MethodVO object linking this method with the pass currently being compiled.
-            * @param stageGLProxy The StageGLProxy object currently used for rendering.
+            * @param stageGL The StageGL object currently used for rendering.
             * @private
             */
-            ShadingMethodBase.prototype.iActivate = function (vo, stageGLProxy) {
+            ShadingMethodBase.prototype.iActivate = function (vo, stageGL) {
             };
 
             /**
@@ -19477,18 +19473,18 @@ var away;
             *
             * @param vo The MethodVO object linking this method with the pass currently being compiled.
             * @param renderable The renderable currently being rendered.
-            * @param stageGLProxy The StageGLProxy object currently used for rendering.
+            * @param stageGL The StageGL object currently used for rendering.
             * @param camera The camera from which the scene is currently rendered.
             */
-            ShadingMethodBase.prototype.iSetRenderState = function (vo, renderable, stageGLProxy, camera) {
+            ShadingMethodBase.prototype.iSetRenderState = function (vo, renderable, stageGL, camera) {
             };
 
             /**
             * Clears the render state for this method.
             * @param vo The MethodVO object linking this method with the pass currently being compiled.
-            * @param stageGLProxy The StageGLProxy object currently used for rendering.
+            * @param stageGL The StageGL object currently used for rendering.
             */
-            ShadingMethodBase.prototype.iDeactivate = function (vo, stageGLProxy) {
+            ShadingMethodBase.prototype.iDeactivate = function (vo, stageGL) {
             };
 
             /**
@@ -19550,7 +19546,7 @@ else
             */
             ShadingMethodBase.prototype.getFormatStringForTexture = function (texture) {
                 switch (texture.format) {
-                    case away.displayGL.ContextGLTextureFormat.COMPRESSED:
+                    case away.gl.ContextGLTextureFormat.COMPRESSED:
                         return "dxt1,";
                         break;
                     case "compressedAlpha":
@@ -20314,7 +20310,7 @@ var away;
             /**
             * @inheritDoc
             */
-            SimpleShadowMapMethodBase.prototype.iSetRenderState = function (vo, renderable, stageGLProxy, camera) {
+            SimpleShadowMapMethodBase.prototype.iSetRenderState = function (vo, renderable, stageGL, camera) {
                 if (!this._pUsePoint)
                     (this._pShadowMapper).iDepthProjection.copyRawDataTo(vo.vertexData, vo.vertexConstantsIndex + 4, true);
             };
@@ -20336,7 +20332,7 @@ var away;
             /**
             * @inheritDoc
             */
-            SimpleShadowMapMethodBase.prototype.iActivate = function (vo, stageGLProxy) {
+            SimpleShadowMapMethodBase.prototype.iActivate = function (vo, stageGL) {
                 var fragmentData = vo.fragmentData;
                 var index = vo.fragmentConstantsIndex;
 
@@ -20356,13 +20352,13 @@ else
                     var f = (this._pCastingLight).fallOff;
                     fragmentData[index + 11] = 1 / (2 * f * f);
                 }
-                stageGLProxy._iContextGL.setTextureAt(vo.texturesIndex, this._pCastingLight.shadowMapper.depthMap.getTextureForStageGL(stageGLProxy));
+                stageGL.contextGL.setTextureAt(vo.texturesIndex, this._pCastingLight.shadowMapper.depthMap.getTextureForStageGL(stageGL));
             };
 
             /**
             * Sets the method state for cascade shadow mapping.
             */
-            SimpleShadowMapMethodBase.prototype.iActivateForCascade = function (vo, stageGLProxy) {
+            SimpleShadowMapMethodBase.prototype.iActivateForCascade = function (vo, stageGL) {
                 throw new Error("This shadow method is incompatible with cascade shadows");
             };
             return SimpleShadowMapMethodBase;
@@ -20437,7 +20433,7 @@ var away;
             /**
             * @inheritDoc
             */
-            FilteredShadowMapMethod.prototype.iActivateForCascade = function (vo, stageGLProxy) {
+            FilteredShadowMapMethod.prototype.iActivateForCascade = function (vo, stageGL) {
                 var size = this.castingLight.shadowMapper.depthMapSize;
                 var index = vo.secondaryFragmentConstantsIndex;
                 var data = vo.fragmentData;
@@ -20473,7 +20469,7 @@ var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
     (function (materials) {
-        var StageGLProxy = away.managers.StageGLProxy;
+        var StageGL = away.base.StageGL;
 
         /**
         * FogMethod provides a method to add distance-based fog to a material.
@@ -20564,7 +20560,7 @@ var away;
             /**
             * @inheritDoc
             */
-            FogMethod.prototype.iActivate = function (vo, stageGLProxy) {
+            FogMethod.prototype.iActivate = function (vo, stageGL) {
                 var data = vo.fragmentData;
                 var index = vo.fragmentConstantsIndex;
                 data[index] = this._fogR;
@@ -20670,7 +20666,7 @@ var away;
             /**
             * @inheritDoc
             */
-            HardShadowMapMethod.prototype.iActivateForCascade = function (vo, stageGLProxy) {
+            HardShadowMapMethod.prototype.iActivateForCascade = function (vo, stageGL) {
             };
             return HardShadowMapMethod;
         })(materials.SimpleShadowMapMethodBase);
@@ -20753,8 +20749,8 @@ else if (this._numSamples > 32)
             /**
             * @inheritDoc
             */
-            SoftShadowMapMethod.prototype.iActivate = function (vo, stageGLProxy) {
-                _super.prototype.iActivate.call(this, vo, stageGLProxy);
+            SoftShadowMapMethod.prototype.iActivate = function (vo, stageGL) {
+                _super.prototype.iActivate.call(this, vo, stageGL);
                 var texRange = .5 * this._range / this._pCastingLight.shadowMapper.depthMapSize;
                 var data = vo.fragmentData;
                 var index = vo.fragmentConstantsIndex + 10;
@@ -20797,8 +20793,8 @@ else if (this._numSamples > 32)
             /**
             * @inheritDoc
             */
-            SoftShadowMapMethod.prototype.iActivateForCascade = function (vo, stageGLProxy) {
-                _super.prototype.iActivate.call(this, vo, stageGLProxy);
+            SoftShadowMapMethod.prototype.iActivateForCascade = function (vo, stageGL) {
+                _super.prototype.iActivate.call(this, vo, stageGL);
                 var texRange = this._range / this._pCastingLight.shadowMapper.depthMapSize;
                 var data = vo.fragmentData;
                 var index = vo.secondaryFragmentConstantsIndex;
@@ -20959,7 +20955,7 @@ else if (this._numSamples > 24)
             * Creates a texture containing the dithering noise texture.
             */
             DitheredShadowMapMethod.prototype.initGrainTexture = function () {
-                DitheredShadowMapMethod._grainBitmapData = new away.display.BitmapData(64, 64, false);
+                DitheredShadowMapMethod._grainBitmapData = new away.base.BitmapData(64, 64, false);
                 var vec = new Array();
                 var len = 4096;
                 var step = 1 / (this._depthMapSize * this._range);
@@ -21005,14 +21001,14 @@ else if (g < -1)
             /**
             * @inheritDoc
             */
-            DitheredShadowMapMethod.prototype.iActivate = function (vo, stageGLProxy) {
-                _super.prototype.iActivate.call(this, vo, stageGLProxy);
+            DitheredShadowMapMethod.prototype.iActivate = function (vo, stageGL) {
+                _super.prototype.iActivate.call(this, vo, stageGL);
                 var data = vo.fragmentData;
                 var index = vo.fragmentConstantsIndex;
-                data[index + 9] = (stageGLProxy.width - 1) / 63;
-                data[index + 10] = (stageGLProxy.height - 1) / 63;
+                data[index + 9] = (stageGL.width - 1) / 63;
+                data[index + 10] = (stageGL.height - 1) / 63;
                 data[index + 11] = 2 * this._range / this._depthMapSize;
-                stageGLProxy._iContextGL.setTextureAt(vo.texturesIndex + 1, DitheredShadowMapMethod._grainTexture.getTextureForStageGL(stageGLProxy));
+                stageGL.contextGL.setTextureAt(vo.texturesIndex + 1, DitheredShadowMapMethod._grainTexture.getTextureForStageGL(stageGL));
             };
 
             /**
@@ -21120,14 +21116,14 @@ else
             /**
             * @inheritDoc
             */
-            DitheredShadowMapMethod.prototype.iActivateForCascade = function (vo, stageGLProxy) {
+            DitheredShadowMapMethod.prototype.iActivateForCascade = function (vo, stageGL) {
                 var data = vo.fragmentData;
                 var index = vo.secondaryFragmentConstantsIndex;
                 data[index] = 1 / this._numSamples;
-                data[index + 1] = (stageGLProxy.width - 1) / 63;
-                data[index + 2] = (stageGLProxy.height - 1) / 63;
+                data[index + 1] = (stageGL.width - 1) / 63;
+                data[index + 2] = (stageGL.height - 1) / 63;
                 data[index + 3] = 2 * this._range / this._depthMapSize;
-                stageGLProxy._iContextGL.setTextureAt(vo.texturesIndex + 1, DitheredShadowMapMethod._grainTexture.getTextureForStageGL(stageGLProxy));
+                stageGL.contextGL.setTextureAt(vo.texturesIndex + 1, DitheredShadowMapMethod._grainTexture.getTextureForStageGL(stageGL));
             };
 
             /**
@@ -21151,7 +21147,7 @@ var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
     (function (materials) {
-        var StageGLProxy = away.managers.StageGLProxy;
+        var StageGL = away.base.StageGL;
         var Delegate = away.utils.Delegate;
 
         var Camera3D = away.cameras.Camera3D;
@@ -21296,21 +21292,21 @@ var away;
             /**
             * @inheritDoc
             */
-            NearShadowMapMethod.prototype.iActivate = function (vo, stageGLProxy) {
-                this._baseMethod.iActivate(vo, stageGLProxy);
+            NearShadowMapMethod.prototype.iActivate = function (vo, stageGL) {
+                this._baseMethod.iActivate(vo, stageGL);
             };
 
             /**
             * @inheritDoc
             */
-            NearShadowMapMethod.prototype.iDeactivate = function (vo, stageGLProxy) {
-                this._baseMethod.iDeactivate(vo, stageGLProxy);
+            NearShadowMapMethod.prototype.iDeactivate = function (vo, stageGL) {
+                this._baseMethod.iDeactivate(vo, stageGL);
             };
 
             /**
             * @inheritDoc
             */
-            NearShadowMapMethod.prototype.iSetRenderState = function (vo, renderable, stageGLProxy, camera) {
+            NearShadowMapMethod.prototype.iSetRenderState = function (vo, renderable, stageGL, camera) {
                 // todo: move this to activate (needs camera)
                 var near = camera.lens.near;
                 var d = camera.lens.far - near;
@@ -21324,7 +21320,7 @@ var away;
                 var index = vo.secondaryFragmentConstantsIndex;
                 fragmentData[index] = minDistance;
                 fragmentData[index + 1] = 1 / (maxDistance - minDistance);
-                this._baseMethod.iSetRenderState(vo, renderable, stageGLProxy, camera);
+                this._baseMethod.iSetRenderState(vo, renderable, stageGL, camera);
             };
 
             /**
@@ -21508,11 +21504,11 @@ var away;
             /**
             * @inheritDoc
             */
-            BasicAmbientMethod.prototype.iActivate = function (vo, stageGLProxy) {
+            BasicAmbientMethod.prototype.iActivate = function (vo, stageGL) {
                 if (this._useTexture) {
-                    stageGLProxy._iContextGL.setSamplerStateAt(vo.texturesIndex, vo.repeatTextures ? away.displayGL.ContextGLWrapMode.REPEAT : away.displayGL.ContextGLWrapMode.CLAMP, vo.useSmoothTextures ? away.displayGL.ContextGLTextureFilter.LINEAR : away.displayGL.ContextGLTextureFilter.NEAREST, vo.useMipmapping ? away.displayGL.ContextGLMipFilter.MIPLINEAR : away.displayGL.ContextGLMipFilter.MIPNONE);
+                    stageGL.contextGL.setSamplerStateAt(vo.texturesIndex, vo.repeatTextures ? away.gl.ContextGLWrapMode.REPEAT : away.gl.ContextGLWrapMode.CLAMP, vo.useSmoothTextures ? away.gl.ContextGLTextureFilter.LINEAR : away.gl.ContextGLTextureFilter.NEAREST, vo.useMipmapping ? away.gl.ContextGLMipFilter.MIPLINEAR : away.gl.ContextGLMipFilter.MIPNONE);
 
-                    stageGLProxy._iContextGL.setTextureAt(vo.texturesIndex, this._texture.getTextureForStageGL(stageGLProxy));
+                    stageGL.contextGL.setTextureAt(vo.texturesIndex, this._texture.getTextureForStageGL(stageGL));
                 }
             };
 
@@ -21528,7 +21524,7 @@ var away;
             /**
             * @inheritDoc
             */
-            BasicAmbientMethod.prototype.iSetRenderState = function (vo, renderable, stageGLProxy, camera) {
+            BasicAmbientMethod.prototype.iSetRenderState = function (vo, renderable, stageGL, camera) {
                 this.updateAmbient();
 
                 if (!this._useTexture) {
@@ -21550,7 +21546,7 @@ var away;
     ///<reference path="../../_definitions.ts"/>
     (function (materials) {
         //import away3d.arcane;
-        //import away3d.managers.StageGLProxy;
+        //import away3d.base.StageGL;
         //import away3d.materials.compilation.ShaderRegisterCache;
         //import away3d.materials.compilation.ShaderRegisterElement;
         //import away3d.textures.Texture2DBase;
@@ -21599,11 +21595,11 @@ var away;
 
             /**
             * Forces the creation of the texture.
-            * @param stageGLProxy The StageGLProxy used by the renderer
+            * @param stageGL The StageGL used by the renderer
             */
-            BasicDiffuseMethod.prototype.generateMip = function (stageGLProxy) {
+            BasicDiffuseMethod.prototype.generateMip = function (stageGL) {
                 if (this._useTexture)
-                    this._texture.getTextureForStageGL(stageGLProxy);
+                    this._texture.getTextureForStageGL(stageGL);
             };
 
             Object.defineProperty(BasicDiffuseMethod.prototype, "diffuseAlpha", {
@@ -21893,11 +21889,11 @@ else if (value > 1)
             /**
             * @inheritDoc
             */
-            BasicDiffuseMethod.prototype.iActivate = function (vo, stageGLProxy) {
+            BasicDiffuseMethod.prototype.iActivate = function (vo, stageGL) {
                 if (this._useTexture) {
-                    stageGLProxy._iContextGL.setSamplerStateAt(vo.texturesIndex, vo.repeatTextures ? away.displayGL.ContextGLWrapMode.REPEAT : away.displayGL.ContextGLWrapMode.CLAMP, vo.useSmoothTextures ? away.displayGL.ContextGLTextureFilter.LINEAR : away.displayGL.ContextGLTextureFilter.NEAREST, vo.useMipmapping ? away.displayGL.ContextGLMipFilter.MIPLINEAR : away.displayGL.ContextGLMipFilter.MIPNONE);
+                    stageGL.contextGL.setSamplerStateAt(vo.texturesIndex, vo.repeatTextures ? away.gl.ContextGLWrapMode.REPEAT : away.gl.ContextGLWrapMode.CLAMP, vo.useSmoothTextures ? away.gl.ContextGLTextureFilter.LINEAR : away.gl.ContextGLTextureFilter.NEAREST, vo.useMipmapping ? away.gl.ContextGLMipFilter.MIPLINEAR : away.gl.ContextGLMipFilter.MIPNONE);
 
-                    stageGLProxy._iContextGL.setTextureAt(vo.texturesIndex, this._texture.getTextureForStageGL(stageGLProxy));
+                    stageGL.contextGL.setTextureAt(vo.texturesIndex, this._texture.getTextureForStageGL(stageGL));
 
                     if (this._alphaThreshold > 0)
                         vo.fragmentData[vo.fragmentConstantsIndex] = this._alphaThreshold;
@@ -22045,10 +22041,10 @@ var away;
             /**
             * @inheritDoc
             */
-            BasicNormalMethod.prototype.iActivate = function (vo, stageGLProxy) {
+            BasicNormalMethod.prototype.iActivate = function (vo, stageGL) {
                 if (vo.texturesIndex >= 0) {
-                    stageGLProxy._iContextGL.setSamplerStateAt(vo.texturesIndex, vo.repeatTextures ? away.displayGL.ContextGLWrapMode.REPEAT : away.displayGL.ContextGLWrapMode.CLAMP, vo.useSmoothTextures ? away.displayGL.ContextGLTextureFilter.LINEAR : away.displayGL.ContextGLTextureFilter.NEAREST, vo.useMipmapping ? away.displayGL.ContextGLMipFilter.MIPLINEAR : away.displayGL.ContextGLMipFilter.MIPNONE);
-                    stageGLProxy._iContextGL.setTextureAt(vo.texturesIndex, this._texture.getTextureForStageGL(stageGLProxy));
+                    stageGL.contextGL.setSamplerStateAt(vo.texturesIndex, vo.repeatTextures ? away.gl.ContextGLWrapMode.REPEAT : away.gl.ContextGLWrapMode.CLAMP, vo.useSmoothTextures ? away.gl.ContextGLTextureFilter.LINEAR : away.gl.ContextGLTextureFilter.NEAREST, vo.useMipmapping ? away.gl.ContextGLMipFilter.MIPLINEAR : away.gl.ContextGLMipFilter.MIPNONE);
+                    stageGL.contextGL.setTextureAt(vo.texturesIndex, this._texture.getTextureForStageGL(stageGL));
                 }
             };
 
@@ -22373,13 +22369,13 @@ var away;
             /**
             * @inheritDoc
             */
-            BasicSpecularMethod.prototype.iActivate = function (vo, stageGLProxy) {
+            BasicSpecularMethod.prototype.iActivate = function (vo, stageGL) {
                 if (vo.numLights == 0)
                     return;
 
                 if (this._pUseTexture) {
-                    stageGLProxy._iContextGL.setSamplerStateAt(vo.texturesIndex, vo.repeatTextures ? away.displayGL.ContextGLWrapMode.REPEAT : away.displayGL.ContextGLWrapMode.CLAMP, vo.useSmoothTextures ? away.displayGL.ContextGLTextureFilter.LINEAR : away.displayGL.ContextGLTextureFilter.NEAREST, vo.useMipmapping ? away.displayGL.ContextGLMipFilter.MIPLINEAR : away.displayGL.ContextGLMipFilter.MIPNONE);
-                    stageGLProxy._iContextGL.setTextureAt(vo.texturesIndex, this._texture.getTextureForStageGL(stageGLProxy));
+                    stageGL.contextGL.setSamplerStateAt(vo.texturesIndex, vo.repeatTextures ? away.gl.ContextGLWrapMode.REPEAT : away.gl.ContextGLWrapMode.CLAMP, vo.useSmoothTextures ? away.gl.ContextGLTextureFilter.LINEAR : away.gl.ContextGLTextureFilter.NEAREST, vo.useMipmapping ? away.gl.ContextGLMipFilter.MIPLINEAR : away.gl.ContextGLMipFilter.MIPNONE);
+                    stageGL.contextGL.setTextureAt(vo.texturesIndex, this._texture.getTextureForStageGL(stageGL));
                 }
 
                 var index = vo.fragmentConstantsIndex;
@@ -22424,7 +22420,7 @@ var away;
     ///<reference path="../../_definitions.ts"/>
     (function (materials) {
         //import away3d.arcane;
-        //import away3d.managers.StageGLProxy;
+        //import away3d.base.StageGL;
         //import away3d.materials.compilation.ShaderRegisterCache;
         //import away3d.materials.compilation.ShaderRegisterElement;
         //import flash.geom.ColorTransform;
@@ -22475,7 +22471,7 @@ var away;
             /**
             * @inheritDoc
             */
-            ColorTransformMethod.prototype.iActivate = function (vo, stageGLProxy) {
+            ColorTransformMethod.prototype.iActivate = function (vo, stageGL) {
                 var inv = 1 / 0xff;
                 var index = vo.fragmentConstantsIndex;
                 var data = vo.fragmentData;
@@ -22568,7 +22564,7 @@ var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
     (function (materials) {
-        var StageGLProxy = away.managers.StageGLProxy;
+        var StageGL = away.base.StageGL;
         var Texture2DBase = away.textures.Texture2DBase;
         var Delegate = away.utils.Delegate;
 
@@ -22743,15 +22739,15 @@ var away;
             /**
             * @inheritDoc
             */
-            CompositeDiffuseMethod.prototype.iActivate = function (vo, stageGLProxy) {
-                this.pBaseMethod.iActivate(vo, stageGLProxy);
+            CompositeDiffuseMethod.prototype.iActivate = function (vo, stageGL) {
+                this.pBaseMethod.iActivate(vo, stageGL);
             };
 
             /**
             * @inheritDoc
             */
-            CompositeDiffuseMethod.prototype.iDeactivate = function (vo, stageGLProxy) {
-                this.pBaseMethod.iDeactivate(vo, stageGLProxy);
+            CompositeDiffuseMethod.prototype.iDeactivate = function (vo, stageGL) {
+                this.pBaseMethod.iDeactivate(vo, stageGL);
             };
 
             /**
@@ -22828,7 +22824,7 @@ var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
     (function (materials) {
-        var StageGLProxy = away.managers.StageGLProxy;
+        var StageGL = away.base.StageGL;
         var Texture2DBase = away.textures.Texture2DBase;
         var Delegate = away.utils.Delegate;
 
@@ -22964,15 +22960,15 @@ var away;
             /**
             * @inheritDoc
             */
-            CompositeSpecularMethod.prototype.iActivate = function (vo, stageGLProxy) {
-                this._baseMethod.iActivate(vo, stageGLProxy);
+            CompositeSpecularMethod.prototype.iActivate = function (vo, stageGL) {
+                this._baseMethod.iActivate(vo, stageGL);
             };
 
             /**
             * @inheritDoc
             */
-            CompositeSpecularMethod.prototype.iDeactivate = function (vo, stageGLProxy) {
-                this._baseMethod.iDeactivate(vo, stageGLProxy);
+            CompositeSpecularMethod.prototype.iDeactivate = function (vo, stageGL) {
+                this._baseMethod.iDeactivate(vo, stageGL);
             };
 
             Object.defineProperty(CompositeSpecularMethod.prototype, "iSharedRegisters", {
@@ -23160,13 +23156,13 @@ var away;
             /**
             * @inheritDoc
             */
-            EnvMapMethod.prototype.iActivate = function (vo, stageGLProxy) {
-                var context = stageGLProxy._iContextGL;
+            EnvMapMethod.prototype.iActivate = function (vo, stageGL) {
+                var context = stageGL.contextGL;
                 vo.fragmentData[vo.fragmentConstantsIndex] = this._alpha;
 
-                context.setTextureAt(vo.texturesIndex, this._cubeTexture.getTextureForStageGL(stageGLProxy));
+                context.setTextureAt(vo.texturesIndex, this._cubeTexture.getTextureForStageGL(stageGL));
                 if (this._mask) {
-                    context.setTextureAt(vo.texturesIndex + 1, this._mask.getTextureForStageGL(stageGLProxy));
+                    context.setTextureAt(vo.texturesIndex + 1, this._mask.getTextureForStageGL(stageGL));
                 }
             };
 
@@ -23300,8 +23296,8 @@ var away;
             /**
             * @inheritDoc
             */
-            FresnelSpecularMethod.prototype.iActivate = function (vo, stageGLProxy) {
-                _super.prototype.iActivate.call(this, vo, stageGLProxy);
+            FresnelSpecularMethod.prototype.iActivate = function (vo, stageGL) {
+                _super.prototype.iActivate.call(this, vo, stageGL);
                 var fragmentData = vo.fragmentData;
 
                 var index = vo.secondaryFragmentConstantsIndex;
@@ -23497,8 +23493,8 @@ var away;
             /**
             * @inheritDoc
             */
-            SimpleWaterNormalMethod.prototype.iActivate = function (vo, stageGLProxy) {
-                _super.prototype.iActivate.call(this, vo, stageGLProxy);
+            SimpleWaterNormalMethod.prototype.iActivate = function (vo, stageGL) {
+                _super.prototype.iActivate.call(this, vo, stageGL);
 
                 var data = vo.fragmentData;
                 var index = vo.fragmentConstantsIndex;
@@ -23509,7 +23505,7 @@ var away;
                 data[index + 7] = this._water2OffsetY;
 
                 if (this._useSecondNormalMap)
-                    stageGLProxy._iContextGL.setTextureAt(vo.texturesIndex + 1, this._texture2.getTextureForStageGL(stageGLProxy));
+                    stageGL.contextGL.setTextureAt(vo.texturesIndex + 1, this._texture2.getTextureForStageGL(stageGL));
             };
 
             /**
@@ -26173,9 +26169,9 @@ var away;
     ///<reference path="../_definitions.ts"/>
     (function (materials) {
         
-        var BlendMode = away.display.BlendMode;
-        var ContextGL = away.displayGL.ContextGL;
-        var ContextGLCompareMode = away.displayGL.ContextGLCompareMode;
+        var BlendMode = away.base.BlendMode;
+        var ContextGL = away.gl.ContextGL;
+        var ContextGLCompareMode = away.gl.ContextGLCompareMode;
         var Event = away.events.Event;
         var Matrix3D = away.geom.Matrix3D;
         var AssetType = away.library.AssetType;
@@ -26184,7 +26180,7 @@ var away;
         
         
         var Camera3D = away.cameras.Camera3D;
-        var StageGLProxy = away.managers.StageGLProxy;
+        var StageGL = away.base.StageGL;
         var DepthMapPass = away.materials.DepthMapPass;
         var DistanceMapPass = away.materials.DistanceMapPass;
         var MaterialPassBase = away.materials.MaterialPassBase;
@@ -26321,7 +26317,7 @@ var away;
                 get: /**
                 * The depth compare mode used to render the renderables using this material.
                 *
-                * @see away.displayGL.ContextGLCompareMode
+                * @see away.gl.ContextGLCompareMode
                 */
                 function () {
                     return this._pDepthCompareMode;
@@ -26457,7 +26453,7 @@ var away;
             });
 
             MaterialBase.prototype.getRequiresBlending = function () {
-                return this._pBlendMode != away.display.BlendMode.NORMAL;
+                return this._pBlendMode != away.base.BlendMode.NORMAL;
             };
 
             Object.defineProperty(MaterialBase.prototype, "uniqueId", {
@@ -26498,59 +26494,59 @@ var away;
             * Sets the render state for the depth pass that is independent of the rendered object. Used when rendering
             * depth or distances (fe: shadow maps, depth pre-pass).
             *
-            * @param stageGLProxy The StageGLProxy used for rendering.
+            * @param stageGL The StageGL used for rendering.
             * @param camera The camera from which the scene is viewed.
             * @param distanceBased Whether or not the depth pass or distance pass should be activated. The distance pass
             * is required for shadow cube maps.
             *
             * @private
             */
-            MaterialBase.prototype.iActivateForDepth = function (stageGLProxy, camera, distanceBased) {
+            MaterialBase.prototype.iActivateForDepth = function (stageGL, camera, distanceBased) {
                 if (typeof distanceBased === "undefined") { distanceBased = false; }
                 this._distanceBasedDepthRender = distanceBased;
 
                 if (distanceBased)
-                    this._pDistancePass.iActivate(stageGLProxy, camera);
+                    this._pDistancePass.iActivate(stageGL, camera);
 else
-                    this._pDepthPass.iActivate(stageGLProxy, camera);
+                    this._pDepthPass.iActivate(stageGL, camera);
             };
 
             /**
             * Clears the render state for the depth pass.
             *
-            * @param stageGLProxy The StageGLProxy used for rendering.
+            * @param stageGL The StageGL used for rendering.
             *
             * @private
             */
-            MaterialBase.prototype.iDeactivateForDepth = function (stageGLProxy) {
+            MaterialBase.prototype.iDeactivateForDepth = function (stageGL) {
                 if (this._distanceBasedDepthRender)
-                    this._pDistancePass.iDeactivate(stageGLProxy);
+                    this._pDistancePass.iDeactivate(stageGL);
 else
-                    this._pDepthPass.iDeactivate(stageGLProxy);
+                    this._pDepthPass.iDeactivate(stageGL);
             };
 
             /**
             * Renders a renderable using the depth pass.
             *
             * @param renderable The IRenderable instance that needs to be rendered.
-            * @param stageGLProxy The StageGLProxy used for rendering.
+            * @param stageGL The StageGL used for rendering.
             * @param camera The camera from which the scene is viewed.
             * @param viewProjection The view-projection matrix used to project to the screen. This is not the same as
             * camera.viewProjection as it includes the scaling factors when rendering to textures.
             *
             * @private
             */
-            MaterialBase.prototype.iRenderDepth = function (renderable, stageGLProxy, camera, viewProjection) {
+            MaterialBase.prototype.iRenderDepth = function (renderable, stageGL, camera, viewProjection) {
                 if (this._distanceBasedDepthRender) {
                     if (renderable.animator)
-                        this._pDistancePass.iUpdateAnimationState(renderable, stageGLProxy, camera);
+                        this._pDistancePass.iUpdateAnimationState(renderable, stageGL, camera);
 
-                    this._pDistancePass.iRender(renderable, stageGLProxy, camera, viewProjection);
+                    this._pDistancePass.iRender(renderable, stageGL, camera, viewProjection);
                 } else {
                     if (renderable.animator)
-                        this._pDepthPass.iUpdateAnimationState(renderable, stageGLProxy, camera);
+                        this._pDepthPass.iUpdateAnimationState(renderable, stageGL, camera);
 
-                    this._pDepthPass.iRender(renderable, stageGLProxy, camera, viewProjection);
+                    this._pDepthPass.iRender(renderable, stageGL, camera, viewProjection);
                 }
             };
 
@@ -26570,44 +26566,44 @@ else
             * Sets the render state for a pass that is independent of the rendered object. This needs to be called before
             * calling renderPass. Before activating a pass, the previously used pass needs to be deactivated.
             * @param index The index of the pass to activate.
-            * @param stageGLProxy The StageGLProxy object which is currently used for rendering.
+            * @param stageGL The StageGL object which is currently used for rendering.
             * @param camera The camera from which the scene is viewed.
             * @private
             */
-            MaterialBase.prototype.iActivatePass = function (index, stageGLProxy, camera) {
-                this._passes[index].iActivate(stageGLProxy, camera);
+            MaterialBase.prototype.iActivatePass = function (index, stageGL, camera) {
+                this._passes[index].iActivate(stageGL, camera);
             };
 
             /**
             * Clears the render state for a pass. This needs to be called before activating another pass.
             * @param index The index of the pass to deactivate.
-            * @param stageGLProxy The StageGLProxy used for rendering
+            * @param stageGL The StageGL used for rendering
             *
             * @private
             */
-            MaterialBase.prototype.iDeactivatePass = function (index, stageGLProxy) {
-                this._passes[index].iDeactivate(stageGLProxy);
+            MaterialBase.prototype.iDeactivatePass = function (index, stageGL) {
+                this._passes[index].iDeactivate(stageGL);
             };
 
             /**
             * Renders the current pass. Before calling renderPass, activatePass needs to be called with the same index.
             * @param index The index of the pass used to render the renderable.
             * @param renderable The IRenderable object to draw.
-            * @param stageGLProxy The StageGLProxy object used for rendering.
+            * @param stageGL The StageGL object used for rendering.
             * @param entityCollector The EntityCollector object that contains the visible scene data.
             * @param viewProjection The view-projection matrix used to project to the screen. This is not the same as
             * camera.viewProjection as it includes the scaling factors when rendering to textures.
             */
-            MaterialBase.prototype.iRenderPass = function (index, renderable, stageGLProxy, entityCollector, viewProjection) {
+            MaterialBase.prototype.iRenderPass = function (index, renderable, stageGL, entityCollector, viewProjection) {
                 if (this._pLightPicker)
                     this._pLightPicker.collectLights(renderable, entityCollector);
 
                 var pass = this._passes[index];
 
                 if (renderable.animator)
-                    pass.iUpdateAnimationState(renderable, stageGLProxy, entityCollector.camera);
+                    pass.iUpdateAnimationState(renderable, stageGL, entityCollector.camera);
 
-                pass.iRender(renderable, stageGLProxy, entityCollector.camera, viewProjection);
+                pass.iRender(renderable, stageGL, entityCollector.camera, viewProjection);
             };
 
             //
@@ -26691,8 +26687,8 @@ else
             *
             * @private
             */
-            MaterialBase.prototype.iDeactivate = function (stageGLProxy) {
-                this._passes[this._numPasses - 1].iDeactivate(stageGLProxy);
+            MaterialBase.prototype.iDeactivate = function (stageGL) {
+                this._passes[this._numPasses - 1].iDeactivate(stageGL);
             };
 
             /**
@@ -26908,7 +26904,7 @@ var away;
                 */
                 function (value) {
                     _super.prototype.setBlendMode.call(this, value);
-                    this._pScreenPass.setBlendMode((this._pBlendMode == away.display.BlendMode.NORMAL) && this.requiresBlending ? away.display.BlendMode.LAYER : this._pBlendMode);
+                    this._pScreenPass.setBlendMode((this._pBlendMode == away.base.BlendMode.NORMAL) && this.requiresBlending ? away.base.BlendMode.LAYER : this._pBlendMode);
                 },
                 enumerable: true,
                 configurable: true
@@ -26929,7 +26925,7 @@ var away;
             /**
             * @inheritDoc
             */
-            SinglePassMaterialBase.prototype.iActivateForDepth = function (stageGLProxy, camera, distanceBased) {
+            SinglePassMaterialBase.prototype.iActivateForDepth = function (stageGL, camera, distanceBased) {
                 if (typeof distanceBased === "undefined") { distanceBased = false; }
                 if (distanceBased) {
                     this._pDistancePass.alphaMask = this._pScreenPass.diffuseMethod.texture;
@@ -26937,7 +26933,7 @@ var away;
                     this._pDepthPass.alphaMask = this._pScreenPass.diffuseMethod.texture;
                 }
 
-                _super.prototype.iActivateForDepth.call(this, stageGLProxy, camera, distanceBased);
+                _super.prototype.iActivateForDepth.call(this, stageGL, camera, distanceBased);
             };
 
             Object.defineProperty(SinglePassMaterialBase.prototype, "specularLightSources", {
@@ -26991,9 +26987,9 @@ var away;
                 var ct = this._pScreenPass.colorTransform;
 
                 if (ct) {
-                    return (this._pBlendMode != away.display.BlendMode.NORMAL) || this._alphaBlending || (ct.alphaMultiplier < 1);
+                    return (this._pBlendMode != away.base.BlendMode.NORMAL) || this._alphaBlending || (ct.alphaMultiplier < 1);
                 }
-                return (this._pBlendMode != away.display.BlendMode.NORMAL) || this._alphaBlending;
+                return (this._pBlendMode != away.base.BlendMode.NORMAL) || this._alphaBlending;
                 //return super.getRequiresBlending() || this._alphaBlending || ( this._pScreenPass.colorTransform && this._pScreenPass.colorTransform.alphaMultiplier < 1);
             };
 
@@ -27285,7 +27281,7 @@ var away;
                 },
                 set: function (value) {
                     this._alphaBlending = value;
-                    this._pScreenPass.setBlendMode(this.getBlendMode() == away.display.BlendMode.NORMAL && this.requiresBlending ? away.display.BlendMode.LAYER : this.getBlendMode());
+                    this._pScreenPass.setBlendMode(this.getBlendMode() == away.base.BlendMode.NORMAL && this.requiresBlending ? away.base.BlendMode.LAYER : this.getBlendMode());
                     this._pScreenPass.preserveAlpha = this.requiresBlending;
                 },
                 enumerable: true,
@@ -27337,7 +27333,7 @@ var away;
         var Delegate = away.utils.Delegate;
 
         var Camera3D = away.cameras.Camera3D;
-        var StageGLProxy = away.managers.StageGLProxy;
+        var StageGL = away.base.StageGL;
 
         /**
         * MultiPassMaterialBase forms an abstract base class for the default multi-pass materials provided by Away3D,
@@ -27428,14 +27424,14 @@ var away;
             /**
             * @inheritDoc
             */
-            MultiPassMaterialBase.prototype.iActivateForDepth = function (stageGLProxy, camera, distanceBased) {
+            MultiPassMaterialBase.prototype.iActivateForDepth = function (stageGL, camera, distanceBased) {
                 if (typeof distanceBased === "undefined") { distanceBased = false; }
                 if (distanceBased)
                     this._pDistancePass.alphaMask = this._diffuseMethod.texture;
 else
                     this._pDepthPass.alphaMask = this._diffuseMethod.texture;
 
-                _super.prototype.iActivateForDepth.call(this, stageGLProxy, camera, distanceBased);
+                _super.prototype.iActivateForDepth.call(this, stageGL, camera, distanceBased);
             };
 
             Object.defineProperty(MultiPassMaterialBase.prototype, "specularLightSources", {
@@ -27874,20 +27870,20 @@ else
             /**
             * @inheritDoc
             */
-            MultiPassMaterialBase.prototype.iActivatePass = function (index, stageGLProxy, camera) {
+            MultiPassMaterialBase.prototype.iActivatePass = function (index, stageGL, camera) {
                 if (index == 0)
-                    stageGLProxy._iContextGL.setBlendFactors(away.displayGL.ContextGLBlendFactor.ONE, away.displayGL.ContextGLBlendFactor.ZERO);
+                    stageGL.contextGL.setBlendFactors(away.gl.ContextGLBlendFactor.ONE, away.gl.ContextGLBlendFactor.ZERO);
 
-                _super.prototype.iActivatePass.call(this, index, stageGLProxy, camera);
+                _super.prototype.iActivatePass.call(this, index, stageGL, camera);
             };
 
             /**
             * @inheritDoc
             */
-            MultiPassMaterialBase.prototype.iDeactivate = function (stageGLProxy) {
-                _super.prototype.iDeactivate.call(this, stageGLProxy);
+            MultiPassMaterialBase.prototype.iDeactivate = function (stageGL) {
+                _super.prototype.iDeactivate.call(this, stageGL);
 
-                stageGLProxy._iContextGL.setBlendFactors(away.displayGL.ContextGLBlendFactor.ONE, away.displayGL.ContextGLBlendFactor.ZERO);
+                stageGL.contextGL.setBlendFactors(away.gl.ContextGLBlendFactor.ONE, away.gl.ContextGLBlendFactor.ZERO);
             };
 
             /**
@@ -27927,7 +27923,7 @@ else
                 var forceSeparateMVP = (this._casterLightPass || this._pEffectsPass);
 
                 if (this._casterLightPass) {
-                    this._casterLightPass.setBlendMode(away.display.BlendMode.NORMAL);
+                    this._casterLightPass.setBlendMode(away.base.BlendMode.NORMAL);
                     this._casterLightPass.depthCompareMode = this._pDepthCompareMode;
                     this._casterLightPass.forceSeparateMVP = forceSeparateMVP;
                 }
@@ -27937,23 +27933,23 @@ else
 
                     if (!this._casterLightPass) {
                         this._nonCasterLightPasses[0].forceSeparateMVP = forceSeparateMVP;
-                        this._nonCasterLightPasses[0].setBlendMode(away.display.BlendMode.NORMAL);
+                        this._nonCasterLightPasses[0].setBlendMode(away.base.BlendMode.NORMAL);
                         this._nonCasterLightPasses[0].depthCompareMode = this._pDepthCompareMode;
                         firstAdditiveIndex = 1;
                     }
 
                     for (var i = firstAdditiveIndex; i < this._nonCasterLightPasses.length; ++i) {
                         this._nonCasterLightPasses[i].forceSeparateMVP = forceSeparateMVP;
-                        this._nonCasterLightPasses[i].setBlendMode(away.display.BlendMode.ADD);
-                        this._nonCasterLightPasses[i].depthCompareMode = away.displayGL.ContextGLCompareMode.LESS_EQUAL;
+                        this._nonCasterLightPasses[i].setBlendMode(away.base.BlendMode.ADD);
+                        this._nonCasterLightPasses[i].depthCompareMode = away.gl.ContextGLCompareMode.LESS_EQUAL;
                     }
                 }
 
                 if (this._casterLightPass || this._nonCasterLightPasses) {
                     if (this._pEffectsPass) {
                         this._pEffectsPass.iIgnoreLights = true;
-                        this._pEffectsPass.depthCompareMode = away.displayGL.ContextGLCompareMode.LESS_EQUAL;
-                        this._pEffectsPass.setBlendMode(away.display.BlendMode.LAYER);
+                        this._pEffectsPass.depthCompareMode = away.gl.ContextGLCompareMode.LESS_EQUAL;
+                        this._pEffectsPass.setBlendMode(away.base.BlendMode.LAYER);
                         this._pEffectsPass.forceSeparateMVP = forceSeparateMVP;
                     }
                 } else if (this._pEffectsPass) {
@@ -27963,7 +27959,7 @@ else
 
                     this.depthCompareMode;
 
-                    this._pEffectsPass.setBlendMode(away.display.BlendMode.NORMAL);
+                    this._pEffectsPass.setBlendMode(away.base.BlendMode.NORMAL);
                     this._pEffectsPass.forceSeparateMVP = false;
                 }
             };
@@ -28321,7 +28317,7 @@ else if (value < 0)
 
                     this._pScreenPass.preserveAlpha = this.getRequiresBlending();
 
-                    this._pScreenPass.setBlendMode(this.getBlendMode() == away.display.BlendMode.NORMAL && this.getRequiresBlending() ? away.display.BlendMode.LAYER : this.getBlendMode());
+                    this._pScreenPass.setBlendMode(this.getBlendMode() == away.base.BlendMode.NORMAL && this.getRequiresBlending() ? away.base.BlendMode.LAYER : this.getBlendMode());
                 },
                 enumerable: true,
                 configurable: true
@@ -28403,7 +28399,7 @@ var away;
 
                     this._pScreenPass.diffuseMethod.diffuseAlpha = this._diffuseAlpha = value;
                     this._pScreenPass.preserveAlpha = this.requiresBlending;
-                    this._pScreenPass.setBlendMode(this.getBlendMode() == away.display.BlendMode.NORMAL && this.requiresBlending ? away.display.BlendMode.LAYER : this.getBlendMode());
+                    this._pScreenPass.setBlendMode(this.getBlendMode() == away.base.BlendMode.NORMAL && this.requiresBlending ? away.base.BlendMode.LAYER : this.getBlendMode());
                 },
                 enumerable: true,
                 configurable: true
@@ -32721,7 +32717,7 @@ var away;
                     }
                 }
 
-                if (data instanceof away.display.BitmapData)
+                if (data instanceof away.base.BitmapData)
                     return data;
 
                 if (data instanceof away.textures.HTMLImageElementTexture)
@@ -32729,7 +32725,7 @@ var away;
 
                 if (data instanceof HTMLImageElement) {
                     var imageElement = data;
-                    var bitmapData = new away.display.BitmapData(imageElement.width, imageElement.height, true, 0x0);
+                    var bitmapData = new away.base.BitmapData(imageElement.width, imageElement.height, true, 0x0);
                     bitmapData.draw(imageElement);
                     return bitmapData;
                 }
@@ -33296,9 +33292,9 @@ var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
     (function (animators) {
-        var StageGLProxy = away.managers.StageGLProxy;
-        var ContextGL = away.displayGL.ContextGL;
-        var VertexBuffer = away.displayGL.VertexBuffer;
+        var StageGL = away.base.StageGL;
+        var ContextGL = away.gl.ContextGL;
+        var VertexBuffer = away.gl.VertexBuffer;
 
         /**
         * ...
@@ -33322,9 +33318,9 @@ var away;
                 this._pVertexData = new Array(numVertices * totalLenOfOneVertex);
             };
 
-            AnimationSubGeometry.prototype.activateVertexBuffer = function (index/*int*/ , bufferOffset/*int*/ , stageGLProxy, format) {
-                var contextIndex = stageGLProxy.stageGLIndex;
-                var context = stageGLProxy.contextGL;
+            AnimationSubGeometry.prototype.activateVertexBuffer = function (index/*int*/ , bufferOffset/*int*/ , stageGL, format) {
+                var contextIndex = stageGL.stageGLIndex;
+                var context = stageGL.contextGL;
 
                 var buffer = this._pVertexBuffer[contextIndex];
                 if (!buffer || this._pBufferContext[contextIndex] != context) {
@@ -36849,9 +36845,9 @@ var away;
     (function (animators) {
         
         var Camera3D = away.cameras.Camera3D;
-        var ContextGLVertexBufferFormat = away.displayGL.ContextGLVertexBufferFormat;
+        var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
         var Vector3D = away.geom.Vector3D;
-        var StageGLProxy = away.managers.StageGLProxy;
+        var StageGL = away.base.StageGL;
 
         /**
         * ...
@@ -36875,7 +36871,7 @@ var away;
                 configurable: true
             });
 
-            ParticleStateBase.prototype.setRenderState = function (stageGLProxy, renderable, animationSubGeometry, animationRegisterCache, camera) {
+            ParticleStateBase.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
             };
 
             ParticleStateBase.prototype._pUpdateDynamicProperties = function (animationSubGeometry) {
@@ -36949,9 +36945,9 @@ var away;
     (function (animators) {
         
         var Camera3D = away.cameras.Camera3D;
-        var ContextGLVertexBufferFormat = away.displayGL.ContextGLVertexBufferFormat;
+        var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
         var Vector3D = away.geom.Vector3D;
-        var StageGLProxy = away.managers.StageGLProxy;
+        var StageGL = away.base.StageGL;
 
         /**
         * ...
@@ -36988,11 +36984,11 @@ var away;
             /**
             * @inheritDoc
             */
-            ParticleAccelerationState.prototype.setRenderState = function (stageGLProxy, renderable, animationSubGeometry, animationRegisterCache, camera) {
+            ParticleAccelerationState.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
                 var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleAccelerationNode.ACCELERATION_INDEX);
 
                 if (this._particleAccelerationNode.mode == animators.ParticlePropertiesMode.LOCAL_STATIC)
-                    animationSubGeometry.activateVertexBuffer(index, this._particleAccelerationNode._iDataOffset, stageGLProxy, ContextGLVertexBufferFormat.FLOAT_3);
+                    animationSubGeometry.activateVertexBuffer(index, this._particleAccelerationNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
 else
                     animationRegisterCache.setVertexConst(index, this._halfAcceleration.x, this._halfAcceleration.y, this._halfAcceleration.z);
             };
@@ -37013,9 +37009,9 @@ var away;
     (function (animators) {
         
         var Camera3D = away.cameras.Camera3D;
-        var ContextGLVertexBufferFormat = away.displayGL.ContextGLVertexBufferFormat;
+        var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
         var Vector3D = away.geom.Vector3D;
-        var StageGLProxy = away.managers.StageGLProxy;
+        var StageGL = away.base.StageGL;
 
         /**
         * ...
@@ -37059,13 +37055,13 @@ var away;
             });
 
 
-            ParticleBezierCurveState.prototype.setRenderState = function (stageGLProxy, renderable, animationSubGeometry, animationRegisterCache, camera) {
+            ParticleBezierCurveState.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
                 var controlIndex = animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleBezierCurveNode.BEZIER_CONTROL_INDEX);
                 var endIndex = animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleBezierCurveNode.BEZIER_END_INDEX);
 
                 if (this._particleBezierCurveNode.mode == animators.ParticlePropertiesMode.LOCAL_STATIC) {
-                    animationSubGeometry.activateVertexBuffer(controlIndex, this._particleBezierCurveNode._iDataOffset, stageGLProxy, ContextGLVertexBufferFormat.FLOAT_3);
-                    animationSubGeometry.activateVertexBuffer(endIndex, this._particleBezierCurveNode._iDataOffset + 3, stageGLProxy, ContextGLVertexBufferFormat.FLOAT_3);
+                    animationSubGeometry.activateVertexBuffer(controlIndex, this._particleBezierCurveNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
+                    animationSubGeometry.activateVertexBuffer(endIndex, this._particleBezierCurveNode._iDataOffset + 3, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
                 } else {
                     animationRegisterCache.setVertexConst(controlIndex, this._controlPoint.x, this._controlPoint.y, this._controlPoint.z);
                     animationRegisterCache.setVertexConst(endIndex, this._endPoint.x, this._endPoint.y, this._endPoint.z);
@@ -37083,11 +37079,11 @@ var away;
     (function (animators) {
         
         var Camera3D = away.cameras.Camera3D;
-        var ContextGLVertexBufferFormat = away.displayGL.ContextGLVertexBufferFormat;
+        var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
         var Matrix3D = away.geom.Matrix3D;
         var Orientation3D = away.geom.Orientation3D;
         var Vector3D = away.geom.Vector3D;
-        var StageGLProxy = away.managers.StageGLProxy;
+        var StageGL = away.base.StageGL;
         var MathConsts = away.geom.MathConsts;
 
         /**
@@ -37104,7 +37100,7 @@ var away;
 
                 this._billboardAxis = particleNode._iBillboardAxis;
             }
-            ParticleBillboardState.prototype.setRenderState = function (stageGLProxy, renderable, animationSubGeometry, animationRegisterCache, camera) {
+            ParticleBillboardState.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
                 var comps;
                 if (this._billboardAxis) {
                     var pos = renderable.sceneTransform.position;
@@ -37167,10 +37163,10 @@ var away;
     (function (animators) {
         
         var Camera3D = away.cameras.Camera3D;
-        var ContextGLVertexBufferFormat = away.displayGL.ContextGLVertexBufferFormat;
+        var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
         var ColorTransform = away.geom.ColorTransform;
         var Vector3D = away.geom.Vector3D;
-        var StageGLProxy = away.managers.StageGLProxy;
+        var StageGL = away.base.StageGL;
 
         /**
         * ...
@@ -37261,7 +37257,7 @@ var away;
             });
 
 
-            ParticleColorState.prototype.setRenderState = function (stageGLProxy, renderable, animationSubGeometry, animationRegisterCache, camera) {
+            ParticleColorState.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
                 if (animationRegisterCache.needFragmentAnimation) {
                     var dataOffset = this._particleColorNode._iDataOffset;
                     if (this._usesCycle)
@@ -37269,9 +37265,9 @@ var away;
 
                     if (this._usesMultiplier) {
                         if (this._particleColorNode.mode == animators.ParticlePropertiesMode.LOCAL_STATIC) {
-                            animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleColorNode.START_MULTIPLIER_INDEX), dataOffset, stageGLProxy, ContextGLVertexBufferFormat.FLOAT_4);
+                            animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleColorNode.START_MULTIPLIER_INDEX), dataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
                             dataOffset += 4;
-                            animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleColorNode.DELTA_MULTIPLIER_INDEX), dataOffset, stageGLProxy, ContextGLVertexBufferFormat.FLOAT_4);
+                            animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleColorNode.DELTA_MULTIPLIER_INDEX), dataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
                             dataOffset += 4;
                         } else {
                             animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleColorNode.START_MULTIPLIER_INDEX), this._startMultiplierData.x, this._startMultiplierData.y, this._startMultiplierData.z, this._startMultiplierData.w);
@@ -37280,9 +37276,9 @@ var away;
                     }
                     if (this._usesOffset) {
                         if (this._particleColorNode.mode == animators.ParticlePropertiesMode.LOCAL_STATIC) {
-                            animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleColorNode.START_OFFSET_INDEX), dataOffset, stageGLProxy, ContextGLVertexBufferFormat.FLOAT_4);
+                            animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleColorNode.START_OFFSET_INDEX), dataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
                             dataOffset += 4;
-                            animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleColorNode.DELTA_OFFSET_INDEX), dataOffset, stageGLProxy, ContextGLVertexBufferFormat.FLOAT_4);
+                            animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleColorNode.DELTA_OFFSET_INDEX), dataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
                             dataOffset += 4;
                         } else {
                             animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleColorNode.START_OFFSET_INDEX), this._startOffsetData.x, this._startOffsetData.y, this._startOffsetData.z, this._startOffsetData.w);
@@ -37335,9 +37331,9 @@ var away;
         
         var Object3D = away.base.Object3D;
         var Camera3D = away.cameras.Camera3D;
-        var ContextGLVertexBufferFormat = away.displayGL.ContextGLVertexBufferFormat;
+        var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
         var Vector3D = away.geom.Vector3D;
-        var StageGLProxy = away.managers.StageGLProxy;
+        var StageGL = away.base.StageGL;
         var MathConsts = away.geom.MathConsts;
 
         /**
@@ -37382,7 +37378,7 @@ var away;
             /**
             * @inheritDoc
             */
-            ParticleFollowState.prototype.setRenderState = function (stageGLProxy, renderable, animationSubGeometry, animationRegisterCache, camera) {
+            ParticleFollowState.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
                 if (this._followTarget) {
                     if (this._particleFollowNode._iUsesPosition) {
                         this._targetPos.x = this._followTarget.position.x / renderable.sourceEntity.scaleX;
@@ -37412,18 +37408,18 @@ var away;
                     if (needProcess)
                         this.processPositionAndRotation(currentTime, deltaTime, animationSubGeometry);
 
-                    animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleFollowNode.FOLLOW_POSITION_INDEX), this._particleFollowNode._iDataOffset, stageGLProxy, ContextGLVertexBufferFormat.FLOAT_3);
-                    animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleFollowNode.FOLLOW_ROTATION_INDEX), this._particleFollowNode._iDataOffset + 3, stageGLProxy, ContextGLVertexBufferFormat.FLOAT_3);
+                    animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleFollowNode.FOLLOW_POSITION_INDEX), this._particleFollowNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
+                    animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleFollowNode.FOLLOW_ROTATION_INDEX), this._particleFollowNode._iDataOffset + 3, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
                 } else if (this._particleFollowNode._iUsesPosition) {
                     if (needProcess)
                         this.processPosition(currentTime, deltaTime, animationSubGeometry);
 
-                    animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleFollowNode.FOLLOW_POSITION_INDEX), this._particleFollowNode._iDataOffset, stageGLProxy, ContextGLVertexBufferFormat.FLOAT_3);
+                    animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleFollowNode.FOLLOW_POSITION_INDEX), this._particleFollowNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
                 } else if (this._particleFollowNode._iUsesRotation) {
                     if (needProcess)
                         this.precessRotation(currentTime, deltaTime, animationSubGeometry);
 
-                    animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleFollowNode.FOLLOW_ROTATION_INDEX), this._particleFollowNode._iDataOffset, stageGLProxy, ContextGLVertexBufferFormat.FLOAT_3);
+                    animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleFollowNode.FOLLOW_ROTATION_INDEX), this._particleFollowNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
                 }
 
                 this._prePos.copyFrom(this._targetPos);
@@ -37577,10 +37573,10 @@ var away;
     (function (animators) {
         
         var Camera3D = away.cameras.Camera3D;
-        var ContextGLVertexBufferFormat = away.displayGL.ContextGLVertexBufferFormat;
+        var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
         var ColorTransform = away.geom.ColorTransform;
         var Vector3D = away.geom.Vector3D;
-        var StageGLProxy = away.managers.StageGLProxy;
+        var StageGL = away.base.StageGL;
 
         var ParticleInitialColorState = (function (_super) {
             __extends(ParticleInitialColorState, _super);
@@ -37612,7 +37608,7 @@ var away;
             /**
             * @inheritDoc
             */
-            ParticleInitialColorState.prototype.setRenderState = function (stageGLProxy, renderable, animationSubGeometry, animationRegisterCache, camera) {
+            ParticleInitialColorState.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
                 // TODO: not used
                 renderable = renderable;
                 camera = camera;
@@ -37621,11 +37617,11 @@ var away;
                     if (this._particleInitialColorNode.mode == animators.ParticlePropertiesMode.LOCAL_STATIC) {
                         var dataOffset = this._particleInitialColorNode._iDataOffset;
                         if (this._usesMultiplier) {
-                            animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleInitialColorNode.MULTIPLIER_INDEX), dataOffset, stageGLProxy, ContextGLVertexBufferFormat.FLOAT_4);
+                            animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleInitialColorNode.MULTIPLIER_INDEX), dataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
                             dataOffset += 4;
                         }
                         if (this._usesOffset)
-                            animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleInitialColorNode.OFFSET_INDEX), dataOffset, stageGLProxy, ContextGLVertexBufferFormat.FLOAT_4);
+                            animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleInitialColorNode.OFFSET_INDEX), dataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
                     } else {
                         if (this._usesMultiplier)
                             animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleInitialColorNode.MULTIPLIER_INDEX), this._multiplierData.x, this._multiplierData.y, this._multiplierData.z, this._multiplierData.w);
@@ -37655,10 +37651,10 @@ var away;
     (function (animators) {
         
         var Camera3D = away.cameras.Camera3D;
-        var ContextGLVertexBufferFormat = away.displayGL.ContextGLVertexBufferFormat;
+        var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
         var Matrix3D = away.geom.Matrix3D;
         var Vector3D = away.geom.Vector3D;
-        var StageGLProxy = away.managers.StageGLProxy;
+        var StageGL = away.base.StageGL;
 
         /**
         * ...
@@ -37746,14 +37742,14 @@ var away;
             });
 
 
-            ParticleOrbitState.prototype.setRenderState = function (stageGLProxy, renderable, animationSubGeometry, animationRegisterCache, camera) {
+            ParticleOrbitState.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
                 var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleOrbitNode.ORBIT_INDEX);
 
                 if (this._particleOrbitNode.mode == animators.ParticlePropertiesMode.LOCAL_STATIC) {
                     if (this._usesPhase)
-                        animationSubGeometry.activateVertexBuffer(index, this._particleOrbitNode._iDataOffset, stageGLProxy, ContextGLVertexBufferFormat.FLOAT_4);
+                        animationSubGeometry.activateVertexBuffer(index, this._particleOrbitNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
 else
-                        animationSubGeometry.activateVertexBuffer(index, this._particleOrbitNode._iDataOffset, stageGLProxy, ContextGLVertexBufferFormat.FLOAT_3);
+                        animationSubGeometry.activateVertexBuffer(index, this._particleOrbitNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
                 } else
                     animationRegisterCache.setVertexConst(index, this._orbitData.x, this._orbitData.y, this._orbitData.z, this._orbitData.w);
 
@@ -37790,9 +37786,9 @@ var away;
     (function (animators) {
         
         var Camera3D = away.cameras.Camera3D;
-        var ContextGLVertexBufferFormat = away.displayGL.ContextGLVertexBufferFormat;
+        var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
         var Vector3D = away.geom.Vector3D;
-        var StageGLProxy = away.managers.StageGLProxy;
+        var StageGL = away.base.StageGL;
 
         /**
         * ...
@@ -37827,11 +37823,11 @@ var away;
             /**
             * @inheritDoc
             */
-            ParticleOscillatorState.prototype.setRenderState = function (stageGLProxy, renderable, animationSubGeometry, animationRegisterCache, camera) {
+            ParticleOscillatorState.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
                 var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleOscillatorNode.OSCILLATOR_INDEX);
 
                 if (this._particleOscillatorNode.mode == animators.ParticlePropertiesMode.LOCAL_STATIC)
-                    animationSubGeometry.activateVertexBuffer(index, this._particleOscillatorNode._iDataOffset, stageGLProxy, ContextGLVertexBufferFormat.FLOAT_4);
+                    animationSubGeometry.activateVertexBuffer(index, this._particleOscillatorNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
 else
                     animationRegisterCache.setVertexConst(index, this._oscillatorData.x, this._oscillatorData.y, this._oscillatorData.z, this._oscillatorData.w);
             };
@@ -37862,9 +37858,9 @@ var away;
     (function (animators) {
         
         var Camera3D = away.cameras.Camera3D;
-        var ContextGLVertexBufferFormat = away.displayGL.ContextGLVertexBufferFormat;
+        var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
         var Vector3D = away.geom.Vector3D;
-        var StageGLProxy = away.managers.StageGLProxy;
+        var StageGL = away.base.StageGL;
 
         /**
         * ...
@@ -37909,7 +37905,7 @@ var away;
             /**
             * @inheritDoc
             */
-            ParticlePositionState.prototype.setRenderState = function (stageGLProxy, renderable, animationSubGeometry, animationRegisterCache, camera) {
+            ParticlePositionState.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
                 if (this._particlePositionNode.mode == animators.ParticlePropertiesMode.LOCAL_DYNAMIC && !this._pDynamicPropertiesDirty[animationSubGeometry._iUniqueId])
                     this._pUpdateDynamicProperties(animationSubGeometry);
 
@@ -37918,7 +37914,7 @@ var away;
                 if (this._particlePositionNode.mode == animators.ParticlePropertiesMode.GLOBAL)
                     animationRegisterCache.setVertexConst(index, this._position.x, this._position.y, this._position.z);
 else
-                    animationSubGeometry.activateVertexBuffer(index, this._particlePositionNode._iDataOffset, stageGLProxy, ContextGLVertexBufferFormat.FLOAT_3);
+                    animationSubGeometry.activateVertexBuffer(index, this._particlePositionNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
             };
             return ParticlePositionState;
         })(animators.ParticleStateBase);
@@ -37933,7 +37929,7 @@ var away;
         
         var Camera3D = away.cameras.Camera3D;
         var Matrix3D = away.geom.Matrix3D;
-        var StageGLProxy = away.managers.StageGLProxy;
+        var StageGL = away.base.StageGL;
 
         /**
         * ...
@@ -37944,7 +37940,7 @@ var away;
                 _super.call(this, animator, particleNode);
                 this._matrix = new Matrix3D();
             }
-            ParticleRotateToHeadingState.prototype.setRenderState = function (stageGLProxy, renderable, animationSubGeometry, animationRegisterCache, camera) {
+            ParticleRotateToHeadingState.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
                 if (animationRegisterCache.hasBillboard) {
                     this._matrix.copyFrom(renderable.sceneTransform);
                     this._matrix.append(camera.inverseSceneTransform);
@@ -37963,10 +37959,10 @@ var away;
     (function (animators) {
         
         var Camera3D = away.cameras.Camera3D;
-        var ContextGLVertexBufferFormat = away.displayGL.ContextGLVertexBufferFormat;
+        var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
         var Vector3D = away.geom.Vector3D;
         var Matrix3D = away.geom.Matrix3D;
-        var StageGLProxy = away.managers.StageGLProxy;
+        var StageGL = away.base.StageGL;
 
         /**
         * ...
@@ -37995,7 +37991,7 @@ var away;
             });
 
 
-            ParticleRotateToPositionState.prototype.setRenderState = function (stageGLProxy, renderable, animationSubGeometry, animationRegisterCache, camera) {
+            ParticleRotateToPositionState.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
                 var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleRotateToPositionNode.POSITION_INDEX);
 
                 if (animationRegisterCache.hasBillboard) {
@@ -38008,7 +38004,7 @@ var away;
                     this._offset = renderable.inverseSceneTransform.transformVector(this._position);
                     animationRegisterCache.setVertexConst(index, this._offset.x, this._offset.y, this._offset.z);
                 } else
-                    animationSubGeometry.activateVertexBuffer(index, this._particleRotateToPositionNode._iDataOffset, stageGLProxy, ContextGLVertexBufferFormat.FLOAT_3);
+                    animationSubGeometry.activateVertexBuffer(index, this._particleRotateToPositionNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
             };
             return ParticleRotateToPositionState;
         })(animators.ParticleStateBase);
@@ -38022,9 +38018,9 @@ var away;
     (function (animators) {
         
         var Camera3D = away.cameras.Camera3D;
-        var ContextGLVertexBufferFormat = away.displayGL.ContextGLVertexBufferFormat;
+        var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
         var Vector3D = away.geom.Vector3D;
-        var StageGLProxy = away.managers.StageGLProxy;
+        var StageGL = away.base.StageGL;
 
         /**
         * ...
@@ -38072,7 +38068,7 @@ var away;
             /**
             * @inheritDoc
             */
-            ParticleRotationalVelocityState.prototype.setRenderState = function (stageGLProxy, renderable, animationSubGeometry, animationRegisterCache, camera) {
+            ParticleRotationalVelocityState.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
                 if (this._particleRotationalVelocityNode.mode == animators.ParticlePropertiesMode.LOCAL_DYNAMIC && !this._pDynamicPropertiesDirty[animationSubGeometry._iUniqueId])
                     this._pUpdateDynamicProperties(animationSubGeometry);
 
@@ -38081,7 +38077,7 @@ var away;
                 if (this._particleRotationalVelocityNode.mode == animators.ParticlePropertiesMode.GLOBAL)
                     animationRegisterCache.setVertexConst(index, this._rotationalVelocityData.x, this._rotationalVelocityData.y, this._rotationalVelocityData.z, this._rotationalVelocityData.w);
 else
-                    animationSubGeometry.activateVertexBuffer(index, this._particleRotationalVelocityNode._iDataOffset, stageGLProxy, ContextGLVertexBufferFormat.FLOAT_4);
+                    animationSubGeometry.activateVertexBuffer(index, this._particleRotationalVelocityNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
             };
 
             ParticleRotationalVelocityState.prototype.updateRotationalVelocityData = function () {
@@ -38111,9 +38107,9 @@ var away;
     (function (animators) {
         
         var Camera3D = away.cameras.Camera3D;
-        var ContextGLVertexBufferFormat = away.displayGL.ContextGLVertexBufferFormat;
+        var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
         var Vector3D = away.geom.Vector3D;
-        var StageGLProxy = away.managers.StageGLProxy;
+        var StageGL = away.base.StageGL;
 
         /**
         * ...
@@ -38201,17 +38197,17 @@ var away;
             });
 
 
-            ParticleScaleState.prototype.setRenderState = function (stageGLProxy, renderable, animationSubGeometry, animationRegisterCache, camera) {
+            ParticleScaleState.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
                 var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleScaleNode.SCALE_INDEX);
 
                 if (this._particleScaleNode.mode == animators.ParticlePropertiesMode.LOCAL_STATIC) {
                     if (this._usesCycle) {
                         if (this._usesPhase)
-                            animationSubGeometry.activateVertexBuffer(index, this._particleScaleNode._iDataOffset, stageGLProxy, ContextGLVertexBufferFormat.FLOAT_4);
+                            animationSubGeometry.activateVertexBuffer(index, this._particleScaleNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
 else
-                            animationSubGeometry.activateVertexBuffer(index, this._particleScaleNode._iDataOffset, stageGLProxy, ContextGLVertexBufferFormat.FLOAT_3);
+                            animationSubGeometry.activateVertexBuffer(index, this._particleScaleNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
                     } else
-                        animationSubGeometry.activateVertexBuffer(index, this._particleScaleNode._iDataOffset, stageGLProxy, ContextGLVertexBufferFormat.FLOAT_2);
+                        animationSubGeometry.activateVertexBuffer(index, this._particleScaleNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_2);
                 } else
                     animationRegisterCache.setVertexConst(index, this._scaleData.x, this._scaleData.y, this._scaleData.z, this._scaleData.w);
             };
@@ -38238,10 +38234,10 @@ var away;
     (function (animators) {
         
         var Camera3D = away.cameras.Camera3D;
-        var ContextGLVertexBufferFormat = away.displayGL.ContextGLVertexBufferFormat;
+        var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
         var ColorTransform = away.geom.ColorTransform;
         var Vector3D = away.geom.Vector3D;
-        var StageGLProxy = away.managers.StageGLProxy;
+        var StageGL = away.base.StageGL;
 
         var ParticleSegmentedColorState = (function (_super) {
             __extends(ParticleSegmentedColorState, _super);
@@ -38332,7 +38328,7 @@ var away;
                 configurable: true
             });
 
-            ParticleSegmentedColorState.prototype.setRenderState = function (stageGLProxy, renderable, animationSubGeometry, animationRegisterCache, camera) {
+            ParticleSegmentedColorState.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
                 if (animationRegisterCache.needFragmentAnimation) {
                     if (this._numSegmentPoint > 0)
                         animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleSegmentedColorNode.TIME_DATA_INDEX), this._timeLifeData[0], this._timeLifeData[1], this._timeLifeData[2], this._timeLifeData[3]);
@@ -38402,9 +38398,9 @@ var away;
     (function (animators) {
         
         var Camera3D = away.cameras.Camera3D;
-        var ContextGLVertexBufferFormat = away.displayGL.ContextGLVertexBufferFormat;
+        var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
         var Vector3D = away.geom.Vector3D;
-        var StageGLProxy = away.managers.StageGLProxy;
+        var StageGL = away.base.StageGL;
 
         /**
         * ...
@@ -38460,16 +38456,16 @@ var away;
             });
 
 
-            ParticleSpriteSheetState.prototype.setRenderState = function (stageGLProxy, renderable, animationSubGeometry, animationRegisterCache, camera) {
+            ParticleSpriteSheetState.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
                 if (animationRegisterCache.needUVAnimation) {
                     animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleSpriteSheetNode.UV_INDEX_0), this._spriteSheetData[0], this._spriteSheetData[1], this._spriteSheetData[2], this._spriteSheetData[3]);
                     if (this._usesCycle) {
                         var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleSpriteSheetNode.UV_INDEX_1);
                         if (this._particleSpriteSheetNode.mode == animators.ParticlePropertiesMode.LOCAL_STATIC) {
                             if (this._usesPhase)
-                                animationSubGeometry.activateVertexBuffer(index, this._particleSpriteSheetNode._iDataOffset, stageGLProxy, ContextGLVertexBufferFormat.FLOAT_3);
+                                animationSubGeometry.activateVertexBuffer(index, this._particleSpriteSheetNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
 else
-                                animationSubGeometry.activateVertexBuffer(index, this._particleSpriteSheetNode._iDataOffset, stageGLProxy, ContextGLVertexBufferFormat.FLOAT_2);
+                                animationSubGeometry.activateVertexBuffer(index, this._particleSpriteSheetNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_2);
                         } else
                             animationRegisterCache.setVertexConst(index, this._spriteSheetData[4], this._spriteSheetData[5]);
                     }
@@ -38506,9 +38502,9 @@ var away;
     (function (animators) {
         
         var Camera3D = away.cameras.Camera3D;
-        var ContextGLVertexBufferFormat = away.displayGL.ContextGLVertexBufferFormat;
+        var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
         var Vector3D = away.geom.Vector3D;
-        var StageGLProxy = away.managers.StageGLProxy;
+        var StageGL = away.base.StageGL;
 
         /**
         * ...
@@ -38520,8 +38516,8 @@ var away;
 
                 this._particleTimeNode = particleTimeNode;
             }
-            ParticleTimeState.prototype.setRenderState = function (stageGLProxy, renderable, animationSubGeometry, animationRegisterCache, camera) {
-                animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleTimeNode.TIME_STREAM_INDEX), this._particleTimeNode._iDataOffset, stageGLProxy, ContextGLVertexBufferFormat.FLOAT_4);
+            ParticleTimeState.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
+                animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleTimeNode.TIME_STREAM_INDEX), this._particleTimeNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
 
                 var particleTime = this._pTime / 1000;
                 animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleTimeNode.TIME_CONSTANT_INDEX), particleTime, particleTime, particleTime, particleTime);
@@ -38538,9 +38534,9 @@ var away;
     (function (animators) {
         
         var Camera3D = away.cameras.Camera3D;
-        var ContextGLVertexBufferFormat = away.displayGL.ContextGLVertexBufferFormat;
+        var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
         var Vector3D = away.geom.Vector3D;
-        var StageGLProxy = away.managers.StageGLProxy;
+        var StageGL = away.base.StageGL;
 
         /**
         * ...
@@ -38552,7 +38548,7 @@ var away;
 
                 this._particleUVNode = particleUVNode;
             }
-            ParticleUVState.prototype.setRenderState = function (stageGLProxy, renderable, animationSubGeometry, animationRegisterCache, camera) {
+            ParticleUVState.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
                 if (animationRegisterCache.needUVAnimation) {
                     var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleUVNode.UV_INDEX);
                     var data = this._particleUVNode._iUvData;
@@ -38571,9 +38567,9 @@ var away;
     (function (animators) {
         
         var Camera3D = away.cameras.Camera3D;
-        var ContextGLVertexBufferFormat = away.displayGL.ContextGLVertexBufferFormat;
+        var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
         var Vector3D = away.geom.Vector3D;
-        var StageGLProxy = away.managers.StageGLProxy;
+        var StageGL = away.base.StageGL;
 
         /**
         * ...
@@ -38614,7 +38610,7 @@ var away;
                 this._pDynamicPropertiesDirty = new Object();
             };
 
-            ParticleVelocityState.prototype.setRenderState = function (stageGLProxy, renderable, animationSubGeometry, animationRegisterCache, camera) {
+            ParticleVelocityState.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
                 if (this._particleVelocityNode.mode == animators.ParticlePropertiesMode.LOCAL_DYNAMIC && !this._pDynamicPropertiesDirty[animationSubGeometry._iUniqueId])
                     this._pUpdateDynamicProperties(animationSubGeometry);
 
@@ -38623,7 +38619,7 @@ var away;
                 if (this._particleVelocityNode.mode == animators.ParticlePropertiesMode.GLOBAL)
                     animationRegisterCache.setVertexConst(index, this._velocity.x, this._velocity.y, this._velocity.z);
 else
-                    animationSubGeometry.activateVertexBuffer(index, this._particleVelocityNode._iDataOffset, stageGLProxy, ContextGLVertexBufferFormat.FLOAT_3);
+                    animationSubGeometry.activateVertexBuffer(index, this._particleVelocityNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
             };
             return ParticleVelocityState;
         })(animators.ParticleStateBase);
@@ -40321,9 +40317,9 @@ var away;
         
         var ParticleGeometry = away.base.ParticleGeometry;
         var SubMesh = away.base.SubMesh;
-        var ContextGL = away.displayGL.ContextGL;
+        var ContextGL = away.gl.ContextGL;
         var Mesh = away.entities.Mesh;
-        var StageGLProxy = away.managers.StageGLProxy;
+        var StageGL = away.base.StageGL;
         var MaterialPassBase = away.materials.MaterialPassBase;
 
         /**
@@ -40392,15 +40388,15 @@ var away;
             /**
             * @inheritDoc
             */
-            ParticleAnimationSet.prototype.activate = function (stageGLProxy, pass) {
+            ParticleAnimationSet.prototype.activate = function (stageGL, pass) {
                 this._iAnimationRegisterCache = pass.animationRegisterCache;
             };
 
             /**
             * @inheritDoc
             */
-            ParticleAnimationSet.prototype.deactivate = function (stageGLProxy, pass) {
-                var context = stageGLProxy.contextGL;
+            ParticleAnimationSet.prototype.deactivate = function (stageGL, pass) {
+                var context = stageGL.contextGL;
                 var offset = this._iAnimationRegisterCache.vertexAttributesOffset;
                 var used = this._iAnimationRegisterCache.numUsedStreams;
                 for (var i = offset; i < used; i++)
@@ -40657,10 +40653,10 @@ var away;
         
         var SubMesh = away.base.SubMesh;
         var Camera3D = away.cameras.Camera3D;
-        var ContextGLProgramType = away.displayGL.ContextGLProgramType;
-        var ContextGLVertexBufferFormat = away.displayGL.ContextGLVertexBufferFormat;
+        var ContextGLProgramType = away.gl.ContextGLProgramType;
+        var ContextGLVertexBufferFormat = away.gl.ContextGLVertexBufferFormat;
         var Vector3D = away.geom.Vector3D;
-        var StageGLProxy = away.managers.StageGLProxy;
+        var StageGL = away.base.StageGL;
         var MaterialPassBase = away.materials.MaterialPassBase;
 
         /**
@@ -40714,7 +40710,7 @@ var away;
             /**
             * @inheritDoc
             */
-            ParticleAnimator.prototype.setRenderState = function (stageGLProxy, renderable, vertexConstantOffset/*int*/ , vertexStreamOffset/*int*/ , camera) {
+            ParticleAnimator.prototype.setRenderState = function (stageGL, renderable, vertexConstantOffset/*int*/ , vertexStreamOffset/*int*/ , camera) {
                 var animationRegisterCache = this._particleAnimationSet._iAnimationRegisterCache;
 
                 var subMesh = renderable;
@@ -40730,7 +40726,7 @@ var away;
                 var animationSubGeometry = subMesh.animationSubGeometry;
 
                 for (i = 0; i < this._animationParticleStates.length; i++)
-                    this._animationParticleStates[i].setRenderState(stageGLProxy, renderable, animationSubGeometry, animationRegisterCache, camera);
+                    this._animationParticleStates[i].setRenderState(stageGL, renderable, animationSubGeometry, animationRegisterCache, camera);
 
                 if (!subMesh.animatorSubGeometry && this._animatorParticleStates.length)
                     this.generateAnimatorSubGeometry(subMesh);
@@ -40738,12 +40734,12 @@ var away;
                 var animatorSubGeometry = subMesh.animatorSubGeometry;
 
                 for (i = 0; i < this._animatorParticleStates.length; i++)
-                    this._animatorParticleStates[i].setRenderState(stageGLProxy, renderable, animatorSubGeometry, animationRegisterCache, camera);
+                    this._animatorParticleStates[i].setRenderState(stageGL, renderable, animatorSubGeometry, animationRegisterCache, camera);
 
-                stageGLProxy.contextGL.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, animationRegisterCache.vertexConstantOffset, animationRegisterCache.vertexConstantData, animationRegisterCache.numVertexConstant);
+                stageGL.contextGL.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, animationRegisterCache.vertexConstantOffset, animationRegisterCache.vertexConstantData, animationRegisterCache.numVertexConstant);
 
                 if (animationRegisterCache.numFragmentConstant > 0)
-                    stageGLProxy.contextGL.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, animationRegisterCache.fragmentConstantOffset, animationRegisterCache.fragmentConstantData, animationRegisterCache.numFragmentConstant);
+                    stageGL.contextGL.setProgramConstantsFromArray(ContextGLProgramType.FRAGMENT, animationRegisterCache.fragmentConstantOffset, animationRegisterCache.fragmentConstantData, animationRegisterCache.numFragmentConstant);
             };
 
             /**
@@ -40811,10 +40807,10 @@ var away;
         var SkinnedSubGeometry = away.base.SkinnedSubGeometry;
         var SubMesh = away.base.SubMesh;
         var Camera3D = away.cameras.Camera3D;
-        var ContextGLProgramType = away.displayGL.ContextGLProgramType;
+        var ContextGLProgramType = away.gl.ContextGLProgramType;
         var AnimationStateEvent = away.events.AnimationStateEvent;
         var Vector3D = away.geom.Vector3D;
-        var StageGLProxy = away.managers.StageGLProxy;
+        var StageGL = away.base.StageGL;
         var Quaternion = away.geom.Quaternion;
         var MaterialPassBase = away.materials.MaterialPassBase;
 
@@ -40989,7 +40985,7 @@ var away;
             /**
             * @inheritDoc
             */
-            SkeletonAnimator.prototype.setRenderState = function (stageGLProxy, renderable, vertexConstantOffset/*int*/ , vertexStreamOffset/*int*/ , camera) {
+            SkeletonAnimator.prototype.setRenderState = function (stageGL, renderable, vertexConstantOffset/*int*/ , vertexStreamOffset/*int*/ , camera) {
                 if (this._globalPropertiesDirty)
                     this.updateGlobalProperties();
 
@@ -41003,7 +40999,7 @@ var away;
                         numCondensedJoints = skinnedGeom.numCondensedJoints;
                     }
                     this.updateCondensedMatrices(skinnedGeom.condensedIndexLookUp, numCondensedJoints);
-                    stageGLProxy._iContextGL.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, vertexConstantOffset, this._condensedMatrices, numCondensedJoints * 3);
+                    stageGL.contextGL.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, vertexConstantOffset, this._condensedMatrices, numCondensedJoints * 3);
                 } else {
                     if (this._pAnimationSet.usesCPU) {
                         var subGeomAnimState = this._subGeomAnimationStates[skinnedGeom._iUniqueId];
@@ -41018,11 +41014,11 @@ var away;
                         skinnedGeom.updateAnimatedData(subGeomAnimState.animatedVertexData);
                         return;
                     }
-                    stageGLProxy._iContextGL.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, vertexConstantOffset, this._globalMatrices, this._numJoints * 3);
+                    stageGL.contextGL.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, vertexConstantOffset, this._globalMatrices, this._numJoints * 3);
                 }
 
-                skinnedGeom.activateJointIndexBuffer(vertexStreamOffset, stageGLProxy);
-                skinnedGeom.activateJointWeightsBuffer(vertexStreamOffset + 1, stageGLProxy);
+                skinnedGeom.activateJointIndexBuffer(vertexStreamOffset, stageGL);
+                skinnedGeom.activateJointWeightsBuffer(vertexStreamOffset + 1, stageGL);
             };
 
             /**
@@ -41371,8 +41367,8 @@ var away;
 (function (away) {
     ///<reference path="../_definitions.ts"/>
     (function (animators) {
-        var ContextGL = away.displayGL.ContextGL;
-        var StageGLProxy = away.managers.StageGLProxy;
+        var ContextGL = away.gl.ContextGL;
+        var StageGL = away.base.StageGL;
         var MaterialPassBase = away.materials.MaterialPassBase;
 
         /**
@@ -41446,15 +41442,15 @@ else
             /**
             * @inheritDoc
             */
-            SkeletonAnimationSet.prototype.activate = function (stageGLProxy, pass) {
+            SkeletonAnimationSet.prototype.activate = function (stageGL, pass) {
             };
 
             /**
             * @inheritDoc
             */
-            SkeletonAnimationSet.prototype.deactivate = function (stageGLProxy, pass) {
+            SkeletonAnimationSet.prototype.deactivate = function (stageGL, pass) {
                 var streamOffset = pass.numUsedStreams;
-                var context = stageGLProxy._iContextGL;
+                var context = stageGL.contextGL;
                 context.setVertexBufferAt(streamOffset, null);
                 context.setVertexBufferAt(streamOffset + 1, null);
             };
@@ -41559,7 +41555,7 @@ else
             /**
             * @inheritDoc
             */
-            VertexAnimationSet.prototype.activate = function (stageGLProxy, pass) {
+            VertexAnimationSet.prototype.activate = function (stageGL, pass) {
                 var uID = pass._iUniqueId;
                 this._uploadNormals = this._useNormals[uID];
                 this._uploadTangents = this._useTangents[uID];
@@ -41568,10 +41564,10 @@ else
             /**
             * @inheritDoc
             */
-            VertexAnimationSet.prototype.deactivate = function (stageGLProxy, pass) {
+            VertexAnimationSet.prototype.deactivate = function (stageGL, pass) {
                 var uID = pass._iUniqueId;
                 var index = this._streamIndices[uID];
-                var context = stageGLProxy._iContextGL;
+                var context = stageGL.contextGL;
                 context.setVertexBufferAt(index, null);
                 if (this._uploadNormals)
                     context.setVertexBufferAt(index + 1, null);
@@ -41757,9 +41753,9 @@ var away;
             /**
             * @inheritDoc
             */
-            VertexAnimator.prototype.setRenderState = function (stageGLProxy, renderable, vertexConstantOffset/*int*/ , vertexStreamOffset/*int*/ , camera) {
+            VertexAnimator.prototype.setRenderState = function (stageGL, renderable, vertexConstantOffset/*int*/ , vertexStreamOffset/*int*/ , camera) {
                 if (!this._poses.length) {
-                    this.setNullPose(stageGLProxy, renderable, vertexConstantOffset, vertexStreamOffset);
+                    this.setNullPose(stageGL, renderable, vertexConstantOffset, vertexStreamOffset);
                     return;
                 }
 
@@ -41769,7 +41765,7 @@ var away;
                 var i/*uint*/ ;
                 var len = this._numPoses;
 
-                stageGLProxy._iContextGL.setProgramConstantsFromArray(away.displayGL.ContextGLProgramType.VERTEX, vertexConstantOffset, this._weights, 1);
+                stageGL.contextGL.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, vertexConstantOffset, this._weights, 1);
 
                 if (this._blendMode == animators.VertexAnimationMode.ABSOLUTE) {
                     i = 1;
@@ -41783,23 +41779,23 @@ var away;
                 for (; i < len; ++i) {
                     subGeom = this._poses[i].subGeometries[subMesh._iIndex] || subMesh.subGeometry;
 
-                    subGeom.activateVertexBuffer(vertexStreamOffset++, stageGLProxy);
+                    subGeom.activateVertexBuffer(vertexStreamOffset++, stageGL);
 
                     if (this._vertexAnimationSet.useNormals)
-                        subGeom.activateVertexNormalBuffer(vertexStreamOffset++, stageGLProxy);
+                        subGeom.activateVertexNormalBuffer(vertexStreamOffset++, stageGL);
                 }
             };
 
-            VertexAnimator.prototype.setNullPose = function (stageGLProxy, renderable, vertexConstantOffset/*int*/ , vertexStreamOffset/*int*/ ) {
-                stageGLProxy._iContextGL.setProgramConstantsFromArray(away.displayGL.ContextGLProgramType.VERTEX, vertexConstantOffset, this._weights, 1);
+            VertexAnimator.prototype.setNullPose = function (stageGL, renderable, vertexConstantOffset/*int*/ , vertexStreamOffset/*int*/ ) {
+                stageGL.contextGL.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, vertexConstantOffset, this._weights, 1);
 
                 if (this._blendMode == animators.VertexAnimationMode.ABSOLUTE) {
                     var len = this._numPoses;
                     for (var i = 1; i < len; ++i) {
-                        renderable.activateVertexBuffer(vertexStreamOffset++, stageGLProxy);
+                        renderable.activateVertexBuffer(vertexStreamOffset++, stageGL);
 
                         if (this._vertexAnimationSet.useNormals)
-                            renderable.activateVertexNormalBuffer(vertexStreamOffset++, stageGLProxy);
+                            renderable.activateVertexNormalBuffer(vertexStreamOffset++, stageGL);
                     }
                 }
                 // todo: set temp data for additive?
@@ -42869,7 +42865,7 @@ var away;
         var VertexClipNode = away.animators.VertexClipNode;
         var CompactSubGeometry = away.base.CompactSubGeometry;
         var Geometry = away.base.Geometry;
-        var BlendMode = away.display.BlendMode;
+        var BlendMode = away.base.BlendMode;
         var Mesh = away.entities.Mesh;
         var Matrix3D = away.geom.Matrix3D;
         var AssetType = away.library.AssetType;
@@ -45345,8 +45341,16 @@ var away;
         */
         var Max3DSParser = (function (_super) {
             __extends(Max3DSParser, _super);
-            function Max3DSParser() {
+            /**
+            * Creates a new <code>Max3DSParser</code> object.
+            *
+            * @param useSmoothingGroups Determines whether the parser looks for smoothing groups in the 3ds file or assumes uniform smoothing. Defaults to true.
+            */
+            function Max3DSParser(useSmoothingGroups) {
+                if (typeof useSmoothingGroups === "undefined") { useSmoothingGroups = true; }
                 _super.call(this, parsers.ParserDataFormat.BINARY);
+
+                this._useSmoothingGroups = useSmoothingGroups;
             }
             Max3DSParser.supportsType = /**
             * Indicates whether or not a given file extension is supported by the parser.
@@ -45765,7 +45769,9 @@ else {
                     faces = new Array(obj.indices.length / 3);
 
                     this.prepareData(vertices, faces, obj);
-                    this.applySmoothGroups(vertices, faces);
+
+                    if (this._useSmoothingGroups)
+                        this.applySmoothGroups(vertices, faces);
 
                     obj.verts = new Array(vertices.length * 3);
                     for (i = 0; i < vertices.length; i++) {
@@ -45868,7 +45874,7 @@ else {
                     f.a = obj.indices[i++];
                     f.b = obj.indices[i++];
                     f.c = obj.indices[i++];
-                    f.smoothGroup = obj.smoothingGroups[k];
+                    f.smoothGroup = obj.smoothingGroups[k] || 0;
                     faces[k++] = f;
                 }
             };

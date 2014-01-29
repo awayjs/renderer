@@ -2,7 +2,7 @@
 
 module away.materials
 {
-	import StageGLProxy                     = away.managers.StageGLProxy;
+	import StageGL                     = away.base.StageGL;
 	import Texture2DBase					= away.textures.Texture2DBase;
 	import Delegate							= away.utils.Delegate;
 
@@ -135,17 +135,17 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGLProxy:StageGLProxy):void
+		public iActivate(vo:MethodVO, stageGL:StageGL):void
 		{
-			this._baseMethod.iActivate(vo, stageGLProxy);
+			this._baseMethod.iActivate(vo, stageGL);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iDeactivate(vo:MethodVO, stageGLProxy:StageGLProxy):void
+		public iDeactivate(vo:MethodVO, stageGL:StageGL):void
 		{
-			this._baseMethod.iDeactivate(vo, stageGLProxy);
+			this._baseMethod.iDeactivate(vo, stageGL);
 		}
 
 		/**

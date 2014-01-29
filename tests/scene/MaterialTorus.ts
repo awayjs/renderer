@@ -8,19 +8,18 @@ module scene
 		
 		private _requestAnimationFrameTimer:away.utils.RequestAnimationFrame;
 		private _image:HTMLImageElement;
-		private _contextGL:away.displayGL.ContextGL;
+		private _stageGL:away.base.StageGL;
+		private _contextGL:away.gl.ContextGL;
 		
-		private _iBuffer:away.displayGL.IndexBuffer;
+		private _iBuffer:away.gl.IndexBuffer;
 		private _normalMatrix:away.geom.Matrix3D;
 		private _mvMatrix:away.geom.Matrix3D;
 		private _pMatrix:away.utils.PerspectiveMatrix3D;
-		private _texture:away.displayGL.Texture;
-		private _program:away.displayGL.Program;
+		private _texture:away.gl.Texture;
+		private _program:away.gl.Program;
 		
-		private _stage:away.display.Stage;
 		private _material:away.materials.ColorMaterial;
 		
-		private _stageProxy:away.managers.StageGLProxy;
 		private _stageGLManager:away.managers.StageGLManager;
 		
 		constructor( )
@@ -33,16 +32,8 @@ module scene
 			{
 				throw "The document root object must be avaiable";
 			}
-			this._stage = new away.display.Stage( 800, 600 );
-			
-			this._stageGLManager = away.managers.StageGLManager.getInstance( this._stage );
 			
 			this.loadResources();
-		}
-		
-		public get stage():away.display.Stage
-		{
-			return this._stage;
 		}
 		
 		private loadResources()
@@ -57,24 +48,25 @@ module scene
 		{
 			var imageLoader:away.net.IMGLoader = <away.net.IMGLoader> e.target
 			this._image = imageLoader.image;
-			
-			this._stage.stageGLs[0].addEventListener( away.events.Event.CONTEXTGL_CREATE, away.utils.Delegate.create(this, this.onContextGLCreateHandler) );
-			this._stage.stageGLs[0].requestContext();
+
+			this._stageGL = new away.base.StageGL(document.createElement("canvas"), 0, null);
+			this._stageGL.addEventListener( away.events.StageGLEvent.CONTEXTGL_CREATED, away.utils.Delegate.create(this, this.onContextGLCreateHandler) );
+			this._stageGL.requestContext();
 		}
 		
 		private onContextGLCreateHandler( e )
 		{
-			this._stage.stageGLs[0].removeEventListener( away.events.Event.CONTEXTGL_CREATE, away.utils.Delegate.create(this, this.onContextGLCreateHandler) );
-			
-			var stageGL: away.display.StageGL = <away.display.StageGL> e.target;
-			
+			this._stageGL.removeEventListener( away.events.StageGLEvent.CONTEXTGL_CREATED, away.utils.Delegate.create(this, this.onContextGLCreateHandler) );
+			this._stageGL.width = 800;
+			this._stageGL.height = 600;
+
+			document.body.appendChild(this._stageGL.canvas);
+
 			//constructor(stageGLIndex:number, stageGL:away.display.StageGL, stageGLManager:away.managers.StageGLManager, forceSoftware:boolean = false, profile:string = "baseline")
-		
-			this._stageProxy = new away.managers.StageGLProxy( 0, stageGL, this._stageGLManager );
+
+			this._contextGL = this._stageGL.contextGL;
 			
-			this._contextGL = stageGL.contextGL;
-			
-			//this._texture = this._contextGL.createTexture( 512, 512, away.displayGL.ContextGLTextureFormat.BGRA, true );
+			//this._texture = this._contextGL.createTexture( 512, 512, away.gl.ContextGLTextureFormat.BGRA, true );
 			//this._texture.uploadFromHTMLImageElement( this._image );
 			
 			//var bitmapData: away.display.BitmapData = new away.display.BitmapData( 512, 512, true, 0x02CGL4 );
@@ -104,7 +96,7 @@ module scene
 			  */
 			var stride:number = 13;
 			var numVertices: number = vertices.length / stride;
-			var vBuffer: away.displayGL.VertexBuffer = this._contextGL.createVertexBuffer( numVertices, stride );
+			var vBuffer: away.gl.VertexBuffer = this._contextGL.createVertexBuffer( numVertices, stride );
 			vBuffer.uploadFromArray( vertices, 0, numVertices );
 			
 			var numIndices:number = indices.length;
@@ -114,7 +106,7 @@ module scene
 			this._program = this._contextGL.createProgram();
 			
 			this._material = new away.materials.ColorMaterial();
-			this._material._pScreenPass.iUpdateProgram( this._stageProxy );
+			this._material._pScreenPass.iUpdateProgram( this._stageGL );
 			
 			console.log( this._material._pScreenPass.iGetVertexCode() );
 			
@@ -174,8 +166,8 @@ module scene
 			this._normalMatrix.invert();
 			this._normalMatrix.transpose();
 			
-			this._contextGL.setGLSLVertexBufferAt( "aVertexPosition", vBuffer, 0, away.displayGL.ContextGLVertexBufferFormat.FLOAT_3 );
-			this._contextGL.setGLSLVertexBufferAt( "aVertexNormal", vBuffer, 3, away.displayGL.ContextGLVertexBufferFormat.FLOAT_3 )
+			this._contextGL.setGLSLVertexBufferAt( "aVertexPosition", vBuffer, 0, away.gl.ContextGLVertexBufferFormat.FLOAT_3 );
+			this._contextGL.setGLSLVertexBufferAt( "aVertexNormal", vBuffer, 3, away.gl.ContextGLVertexBufferFormat.FLOAT_3 )
 			
 			this._requestAnimationFrameTimer = new away.utils.RequestAnimationFrame( this.tick , this );
 			this._requestAnimationFrameTimer.start();

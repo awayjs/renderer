@@ -2,9 +2,9 @@
 
 module away.animators
 {
-	import StageGLProxy = away.managers.StageGLProxy;
-	import ContextGL = away.displayGL.ContextGL;
-	import VertexBuffer = away.displayGL.VertexBuffer;
+	import StageGL = away.base.StageGL;
+	import ContextGL = away.gl.ContextGL;
+	import VertexBuffer = away.gl.VertexBuffer;
 	
 	/**
 	 * ...
@@ -51,10 +51,10 @@ module away.animators
 			this._pVertexData = new Array<number>(numVertices*totalLenOfOneVertex);
 		}
 		
-		public activateVertexBuffer(index:number /*int*/, bufferOffset:number /*int*/, stageGLProxy:StageGLProxy, format:string)
+		public activateVertexBuffer(index:number /*int*/, bufferOffset:number /*int*/, stageGL:StageGL, format:string)
 		{
-			var contextIndex:number /*int*/ = stageGLProxy.stageGLIndex;
-			var context:ContextGL = stageGLProxy.contextGL;
+			var contextIndex:number /*int*/ = stageGL.stageGLIndex;
+			var context:ContextGL = stageGL.contextGL;
 			
 			var buffer:VertexBuffer = this._pVertexBuffer[contextIndex];
 			if (!buffer || this._pBufferContext[contextIndex] != context) {

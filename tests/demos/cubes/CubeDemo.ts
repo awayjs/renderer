@@ -58,7 +58,7 @@ module demos.cubes
 			
 			var matTx: away.materials.TextureMaterial = new away.materials.TextureMaterial( ts, true, true, false );
 
-            matTx.blendMode = away.display.BlendMode.ADD;
+            matTx.blendMode = away.base.BlendMode.ADD;
 			matTx.bothSides = true;
 			
 			this._mesh              = new away.entities.Mesh( this._torus, matTx );

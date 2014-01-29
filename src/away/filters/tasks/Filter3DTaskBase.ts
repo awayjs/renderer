@@ -5,7 +5,7 @@ module away.filters
 
 	export class Filter3DTaskBase
 	{
-		private _mainInputTexture:away.displayGL.Texture;
+		private _mainInputTexture:away.gl.Texture;
 
 		private _scaledTextureWidth:number = -1;
 		private _scaledTextureHeight:number = -1;
@@ -13,8 +13,8 @@ module away.filters
 		private _textureHeight:number = -1;
 		private _textureDimensionsInvalid:boolean = true;
 		private _program3DInvalid:boolean = true;
-		private _program3D:away.displayGL.Program;
-		private _target:away.displayGL.Texture;
+		private _program3D:away.gl.Program;
+		private _target:away.gl.Texture;
 		private _requireDepthRender:boolean;
 		private _textureScale:number = 0;
 
@@ -51,14 +51,14 @@ module away.filters
 
 		}
 
-		public get target():away.displayGL.Texture
+		public get target():away.gl.Texture
 		{
 
 			return this._target;
 
 		}
 
-		public set target(value:away.displayGL.Texture)
+		public set target(value:away.gl.Texture)
 		{
 
 			this._target = value;
@@ -109,7 +109,7 @@ module away.filters
 
 		}
 
-		public getMainInputTexture(stage:away.managers.StageGLProxy):away.displayGL.Texture
+		public getMainInputTexture(stage:away.base.StageGL):away.gl.Texture
 		{
 
 			if (this._textureDimensionsInvalid) {
@@ -145,7 +145,7 @@ module away.filters
 			this._program3DInvalid = true;
 		}
 
-		public pUpdateProgram(stage:away.managers.StageGLProxy)
+		public pUpdateProgram(stage:away.base.StageGL)
 		{
 			if (this._program3D) {
 
@@ -153,7 +153,7 @@ module away.filters
 
 			}
 
-			this._program3D = stage._iContextGL.createProgram();
+			this._program3D = stage.contextGL.createProgram();
 
 			//away.Debug.log( 'Filder3DTaskBase' , 'pUpdateProgram' , 'Program.upload / AGAL <> GLSL implementation' );
 
@@ -166,8 +166,8 @@ module away.filters
 			var vertCompiler:aglsl.AGLSLCompiler = new aglsl.AGLSLCompiler();
 			var fragCompiler:aglsl.AGLSLCompiler = new aglsl.AGLSLCompiler();
 
-			var vertString:string = vertCompiler.compile(away.displayGL.ContextGLProgramType.VERTEX, this.pGetVertexCode());
-			var fragString:string = fragCompiler.compile(away.displayGL.ContextGLProgramType.FRAGMENT, this.pGetFragmentCode());
+			var vertString:string = vertCompiler.compile(away.gl.ContextGLProgramType.VERTEX, this.pGetVertexCode());
+			var fragString:string = fragCompiler.compile(away.gl.ContextGLProgramType.FRAGMENT, this.pGetFragmentCode());
 
 			this._program3D.upload(vertString, fragString);
 			this._program3DInvalid = false;
@@ -191,7 +191,7 @@ module away.filters
 
 		}
 
-		public pUpdateTextures(stage:away.managers.StageGLProxy)
+		public pUpdateTextures(stage:away.base.StageGL)
 		{
 
 			if (this._mainInputTexture) {
@@ -201,28 +201,28 @@ module away.filters
 			}
 
 
-			this._mainInputTexture = stage._iContextGL.createTexture(this._scaledTextureWidth, this._scaledTextureHeight, away.displayGL.ContextGLTextureFormat.BGRA, true);
+			this._mainInputTexture = stage.contextGL.createTexture(this._scaledTextureWidth, this._scaledTextureHeight, away.gl.ContextGLTextureFormat.BGRA, true);
 
 			this._textureDimensionsInvalid = false;
 
 		}
 
-		public getProgram(stageGLProxy:away.managers.StageGLProxy):away.displayGL.Program
+		public getProgram(stageGL:away.base.StageGL):away.gl.Program
 		{
 			if (this._program3DInvalid) {
 
-				this.pUpdateProgram(stageGLProxy);
+				this.pUpdateProgram(stageGL);
 
 			}
 
 			return this._program3D;
 		}
 
-		public activate(stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D, depthTexture:away.displayGL.Texture)
+		public activate(stageGL:away.base.StageGL, camera:away.cameras.Camera3D, depthTexture:away.gl.Texture)
 		{
 		}
 
-		public deactivate(stageGLProxy:away.managers.StageGLProxy)
+		public deactivate(stageGL:away.base.StageGL)
 		{
 		}
 

@@ -2,8 +2,8 @@
 
 module away.animators
 {
-	import ContextGL = away.displayGL.ContextGL;
-	import StageGLProxy = away.managers.StageGLProxy;
+	import ContextGL = away.gl.ContextGL;
+	import StageGL = away.base.StageGL;
 	import MaterialPassBase = away.materials.MaterialPassBase;
 
 	/**
@@ -78,17 +78,17 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public activate(stageGLProxy:StageGLProxy, pass:MaterialPassBase)
+		public activate(stageGL:StageGL, pass:MaterialPassBase)
 		{
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public deactivate(stageGLProxy:StageGLProxy, pass:MaterialPassBase)
+		public deactivate(stageGL:StageGL, pass:MaterialPassBase)
 		{
 			var streamOffset:number /*uint*/ = pass.numUsedStreams;
-			var context:ContextGL = stageGLProxy._iContextGL;
+			var context:ContextGL = stageGL.contextGL;
 			context.setVertexBufferAt(streamOffset, null);
 			context.setVertexBufferAt(streamOffset + 1, null);
 		}

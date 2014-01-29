@@ -18,13 +18,13 @@ module away.pick
 	 */
 	export class ShaderPicker implements IPicker
 	{
-		private _stageGLProxy:away.managers.StageGLProxy;
-		private _context:away.displayGL.ContextGL;
+		private _stageGL:away.base.StageGL;
+		private _context:away.gl.ContextGL;
 		private _onlyMouseEnabled:boolean = true;
 
-		private _objectProgram:away.displayGL.Program;
-		private _triangleProgram:away.displayGL.Program;
-		private _bitmapData:away.display.BitmapData;
+		private _objectProgram:away.gl.Program;
+		private _triangleProgram:away.gl.Program;
+		private _bitmapData:away.base.BitmapData;
 		private _viewportData:number[];
 		private _boundOffsetScale:number[];
 		private _id:number[];
@@ -89,12 +89,12 @@ module away.pick
 
 			var collector:away.traverse.EntityCollector = view.iEntityCollector;
 
-			this._stageGLProxy = view.stageGLProxy;
+			this._stageGL = view.stageGL;
 
-			if (!this._stageGLProxy)
+			if (!this._stageGL)
 				return null;
 
-			this._context = this._stageGLProxy._iContextGL;
+			this._context = this._stageGL.contextGL;
 
 			this._viewportData[0] = view.width;
 			this._viewportData[1] = view.height;
@@ -114,7 +114,7 @@ module away.pick
 			}
 
 			if (!this._bitmapData)
-				this._bitmapData = new away.display.BitmapData(1, 1, false, 0);
+				this._bitmapData = new away.base.BitmapData(1, 1, false, 0);
 
 			this._context.drawToBitmapData(this._bitmapData);
 			this._hitColor = this._bitmapData.getPixel(0, 0);
@@ -163,13 +163,13 @@ module away.pick
 		 * @inheritDoc
 		 */
 			// TODO: GLSL implementation / conversion
-		public pDraw(entityCollector:away.traverse.EntityCollector, target:away.displayGL.TextureBase)
+		public pDraw(entityCollector:away.traverse.EntityCollector, target:away.gl.TextureBase)
 		{
 
 			var camera:away.cameras.Camera3D = entityCollector.camera;
 
 			this._context.clear(0, 0, 0, 1);
-			this._stageGLProxy.scissorRect = ShaderPicker.MOUSE_SCISSOR_RECT;
+			this._stageGL.scissorRect = ShaderPicker.MOUSE_SCISSOR_RECT;
 
 			this._interactives.length = this._interactiveId = 0;
 
@@ -179,10 +179,10 @@ module away.pick
 
 			}
 
-			this._context.setBlendFactors(away.displayGL.ContextGLBlendFactor.ONE, away.displayGL.ContextGLBlendFactor.ZERO);
-			this._context.setDepthTest(true, away.displayGL.ContextGLCompareMode.LESS);
+			this._context.setBlendFactors(away.gl.ContextGLBlendFactor.ONE, away.gl.ContextGLBlendFactor.ZERO);
+			this._context.setDepthTest(true, away.gl.ContextGLCompareMode.LESS);
 			this._context.setProgram(this._objectProgram);
-			this._context.setProgramConstantsFromArray(away.displayGL.ContextGLProgramType.VERTEX, 4, this._viewportData, 1);
+			this._context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 4, this._viewportData, 1);
 			this.drawRenderables(entityCollector.opaqueRenderableHead, camera);
 			this.drawRenderables(entityCollector.blendedRenderableHead, camera);
 
@@ -214,7 +214,7 @@ module away.pick
 
 				this._potentialFound = true;
 
-				this._context.setCulling(renderable.material.bothSides? away.displayGL.ContextGLTriangleFace.NONE : away.displayGL.ContextGLTriangleFace.BACK);
+				this._context.setCulling(renderable.material.bothSides? away.gl.ContextGLTriangleFace.NONE : away.gl.ContextGLTriangleFace.BACK);
 
 				this._interactives[this._interactiveId++] = renderable;
 				// color code so that reading from bitmapdata will contain the correct value
@@ -223,10 +223,10 @@ module away.pick
 
 				matrix.copyFrom(renderable.getRenderSceneTransform(camera));
 				matrix.append(viewProjection);
-				this._context.setProgramConstantsFromMatrix(away.displayGL.ContextGLProgramType.VERTEX, 0, matrix, true);
-				this._context.setProgramConstantsFromArray(away.displayGL.ContextGLProgramType.FRAGMENT, 0, this._id, 1);
-				renderable.activateVertexBuffer(0, this._stageGLProxy);
-				this._context.drawTriangles(renderable.getIndexBuffer(this._stageGLProxy), 0, renderable.numTriangles);
+				this._context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, matrix, true);
+				this._context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.FRAGMENT, 0, this._id, 1);
+				renderable.activateVertexBuffer(0, this._stageGL);
+				this._context.drawTriangles(renderable.getIndexBuffer(this._stageGL), 0, renderable.numTriangles);
 
 				item = item.next;
 			}
@@ -280,8 +280,8 @@ module away.pick
 			var vertCompiler:aglsl.AGLSLCompiler = new aglsl.AGLSLCompiler();
 			var fragCompiler:aglsl.AGLSLCompiler = new aglsl.AGLSLCompiler();
 
-			var vertString:string = vertCompiler.compile(away.displayGL.ContextGLProgramType.VERTEX, vertexCode);
-			var fragString:string = fragCompiler.compile(away.displayGL.ContextGLProgramType.FRAGMENT, fragmentCode);
+			var vertString:string = vertCompiler.compile(away.gl.ContextGLProgramType.VERTEX, vertexCode);
+			var fragString:string = fragCompiler.compile(away.gl.ContextGLProgramType.FRAGMENT, fragmentCode);
 
 			this._triangleProgram.upload(vertString, fragString);
 
@@ -325,12 +325,12 @@ module away.pick
 			this._boundOffsetScale[2] = offsZ = -entity.minZ;
 
 			this._context.setProgram(this._triangleProgram);
-			this._context.clear(0, 0, 0, 0, 1, 0, away.displayGL.ContextGLClearMask.DEPTH);
+			this._context.clear(0, 0, 0, 0, 1, 0, away.gl.ContextGLClearMask.DEPTH);
 			this._context.setScissorRectangle(ShaderPicker.MOUSE_SCISSOR_RECT);
-			this._context.setProgramConstantsFromMatrix(away.displayGL.ContextGLProgramType.VERTEX, 0, localViewProjection, true);
-			this._context.setProgramConstantsFromArray(away.displayGL.ContextGLProgramType.VERTEX, 5, this._boundOffsetScale, 2);
-			this._hitRenderable.activateVertexBuffer(0, this._stageGLProxy);
-			this._context.drawTriangles(this._hitRenderable.getIndexBuffer(this._stageGLProxy), 0, this._hitRenderable.numTriangles);
+			this._context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, localViewProjection, true);
+			this._context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 5, this._boundOffsetScale, 2);
+			this._hitRenderable.activateVertexBuffer(0, this._stageGL);
+			this._context.drawTriangles(this._hitRenderable.getIndexBuffer(this._stageGL), 0, this._hitRenderable.numTriangles);
 			this._context.drawToBitmapData(this._bitmapData);
 
 			col = this._bitmapData.getPixel(0, 0);

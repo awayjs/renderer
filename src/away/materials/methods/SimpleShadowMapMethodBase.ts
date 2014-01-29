@@ -171,7 +171,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iSetRenderState(vo:MethodVO, renderable:away.base.IRenderable, stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D):void
+		public iSetRenderState(vo:MethodVO, renderable:away.base.IRenderable, stageGL:away.base.StageGL, camera:away.cameras.Camera3D):void
 		{
 			if (!this._pUsePoint)
 				(<away.lights.DirectionalShadowMapper> this._pShadowMapper).iDepthProjection.copyRawDataTo(vo.vertexData, vo.vertexConstantsIndex + 4, true);
@@ -195,7 +195,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGLProxy:away.managers.StageGLProxy):void
+		public iActivate(vo:MethodVO, stageGL:away.base.StageGL):void
 		{
 			var fragmentData:Array<number> = vo.fragmentData;
 			var index:number /*int*/ = vo.fragmentConstantsIndex;
@@ -214,13 +214,13 @@ module away.materials
 				var f:number = (<away.lights.PointLight> this._pCastingLight).fallOff;
 				fragmentData[index + 11] = 1/(2*f*f);
 			}
-			stageGLProxy._iContextGL.setTextureAt(vo.texturesIndex, this._pCastingLight.shadowMapper.depthMap.getTextureForStageGL(stageGLProxy));
+			stageGL.contextGL.setTextureAt(vo.texturesIndex, this._pCastingLight.shadowMapper.depthMap.getTextureForStageGL(stageGL));
 		}
 
 		/**
 		 * Sets the method state for cascade shadow mapping.
 		 */
-		public iActivateForCascade(vo:MethodVO, stageGLProxy:away.managers.StageGLProxy):void
+		public iActivateForCascade(vo:MethodVO, stageGL:away.base.StageGL):void
 		{
 			throw new Error("This shadow method is incompatible with cascade shadows");
 		}

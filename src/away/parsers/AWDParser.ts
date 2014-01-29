@@ -16,7 +16,7 @@ module away.parsers
 	import VertexClipNode					= away.animators.VertexClipNode;
 	import CompactSubGeometry				= away.base.CompactSubGeometry;
 	import Geometry							= away.base.Geometry;
-	import BlendMode						= away.display.BlendMode;
+	import BlendMode						= away.base.BlendMode;
 	import Mesh								= away.entities.Mesh;
 	import Matrix3D							= away.geom.Matrix3D;
 	import AssetType						= away.library.AssetType;
@@ -2757,7 +2757,7 @@ module away.parsers
 		{
 			if (!this._defaultCubeTexture) {
 
-				var defaultBitmap:away.display.BitmapData = away.materials.DefaultMaterialManager.createCheckeredBitmapData();//this._defaultTexture.bitmapData;
+				var defaultBitmap:away.base.BitmapData = away.materials.DefaultMaterialManager.createCheckeredBitmapData();//this._defaultTexture.bitmapData;
 
 				this._defaultCubeTexture = new away.textures.BitmapCubeTexture(defaultBitmap, defaultBitmap, defaultBitmap, defaultBitmap, defaultBitmap, defaultBitmap);
 				this._defaultCubeTexture.name = "defaultTexture";

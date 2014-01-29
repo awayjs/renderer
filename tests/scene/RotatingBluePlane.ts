@@ -5,21 +5,19 @@ class RotatingBluePlane extends away.events.EventDispatcher
 {
 	
 	private _requestAnimationFrameTimer:away.utils.RequestAnimationFrame;
-	private _stageGL:away.display.StageGL;
+	private _stageGL:away.base.StageGL;
     private _image:HTMLImageElement;
-	private _contextGL:away.displayGL.ContextGL;
+	private _contextGL:away.gl.ContextGL;
 	
-	private _iBuffer:away.displayGL.IndexBuffer;
+	private _iBuffer:away.gl.IndexBuffer;
 	private _mvMatrix:away.geom.Matrix3D;
 	private _pMatrix:away.utils.PerspectiveMatrix3D;
-	private _texture:away.displayGL.Texture;
-	private _program:away.displayGL.Program;
+	private _texture:away.gl.Texture;
+	private _program:away.gl.Program;
 	
 	private _geometry:away.base.Geometry;
 	
-	private _stage:away.display.Stage;
-	
-	constructor( stage:away.display.Stage )
+	constructor()
 	{
 		super();
 		
@@ -27,13 +25,7 @@ class RotatingBluePlane extends away.events.EventDispatcher
 		{
 			throw "The document root object must be avaiable";
 		}
-		this._stage = new away.display.Stage( 800, 600 );
 		this.loadResources();
-	}
-	
-	public get stage():away.display.Stage
-	{
-		return this._stage;
 	}
 	
 	private loadResources()
@@ -48,22 +40,26 @@ class RotatingBluePlane extends away.events.EventDispatcher
 	{
         var imageLoader:away.net.IMGLoader = <away.net.IMGLoader> e.target
 		this._image = imageLoader.image;
-		
-		this._stage.stageGLs[0].addEventListener( away.events.Event.CONTEXTGL_CREATE, away.utils.Delegate.create(this, this.onContextGLCreateHandler) );
-		this._stage.stageGLs[0].requestContext();
+
+		this._stageGL = new away.base.StageGL(document.createElement("canvas"), 0, null);
+		this._stageGL.addEventListener( away.events.StageGLEvent.CONTEXTGL_CREATED, away.utils.Delegate.create(this, this.onContextGLCreateHandler) );
+		this._stageGL.requestContext();
 	}
 	
 	private onContextGLCreateHandler( e )
 	{
-		this._stage.stageGLs[0].removeEventListener( away.events.Event.CONTEXTGL_CREATE, away.utils.Delegate.create(this, this.onContextGLCreateHandler) );
+		this._stageGL.removeEventListener( away.events.StageGLEvent.CONTEXTGL_CREATED, away.utils.Delegate.create(this, this.onContextGLCreateHandler) );
+		this._stageGL.width = 800;
+		this._stageGL.height = 600;
+
+		document.body.appendChild(this._stageGL.canvas);
+
+		this._contextGL = this._stageGL.contextGL;
 		
-		var stageGL: away.display.StageGL = <away.display.StageGL> e.target;
-		this._contextGL = stageGL.contextGL;
-		
-		this._texture = this._contextGL.createTexture( 512, 512, away.displayGL.ContextGLTextureFormat.BGRA, true );
+		this._texture = this._contextGL.createTexture( 512, 512, away.gl.ContextGLTextureFormat.BGRA, true );
 		// this._texture.uploadFromHTMLImageElement( this._image );
 		
-		var bitmapData: away.display.BitmapData = new away.display.BitmapData( 512, 512, true, 0x02C3D4 );
+		var bitmapData: away.base.BitmapData = new away.base.BitmapData( 512, 512, true, 0x02C3D4 );
 		this._texture.uploadFromBitmapData( bitmapData );
 		
 		this._contextGL.configureBackBuffer( 800, 600, 0, true );
@@ -90,10 +86,10 @@ class RotatingBluePlane extends away.events.EventDispatcher
 							0, 2, 3
 							]
 		
-		var vBuffer: away.displayGL.VertexBuffer = this._contextGL.createVertexBuffer( 4, 3 );
+		var vBuffer: away.gl.VertexBuffer = this._contextGL.createVertexBuffer( 4, 3 );
 		vBuffer.uploadFromArray( vertices, 0, 4 );
 		
-		var tCoordBuffer: away.displayGL.VertexBuffer = this._contextGL.createVertexBuffer( 4, 2 );
+		var tCoordBuffer: away.gl.VertexBuffer = this._contextGL.createVertexBuffer( 4, 2 );
 		tCoordBuffer.uploadFromArray( uvCoords, 0, 4 );
 		
 		this._iBuffer = this._contextGL.createIndexBuffer( 6 );
@@ -129,8 +125,8 @@ class RotatingBluePlane extends away.events.EventDispatcher
 		this._mvMatrix = new away.geom.Matrix3D();
 		this._mvMatrix.appendTranslation( 0, 0, 3 );
 		
-		this._contextGL.setGLSLVertexBufferAt( "aVertexPosition", vBuffer, 0, away.displayGL.ContextGLVertexBufferFormat.FLOAT_3 );
-		this._contextGL.setGLSLVertexBufferAt( "aTextureCoord", tCoordBuffer, 0, away.displayGL.ContextGLVertexBufferFormat.FLOAT_2 );
+		this._contextGL.setGLSLVertexBufferAt( "aVertexPosition", vBuffer, 0, away.gl.ContextGLVertexBufferFormat.FLOAT_3 );
+		this._contextGL.setGLSLVertexBufferAt( "aTextureCoord", tCoordBuffer, 0, away.gl.ContextGLVertexBufferFormat.FLOAT_2 );
 		
 		this._requestAnimationFrameTimer = new away.utils.RequestAnimationFrame( this.tick , this );
         this._requestAnimationFrameTimer.start();

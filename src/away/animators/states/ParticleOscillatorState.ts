@@ -4,9 +4,9 @@ module away.animators
 {
 	import IRenderable						= away.base.IRenderable;
 	import Camera3D							= away.cameras.Camera3D;
-	import ContextGLVertexBufferFormat		= away.displayGL.ContextGLVertexBufferFormat
+	import ContextGLVertexBufferFormat		= away.gl.ContextGLVertexBufferFormat
 	import Vector3D							= away.geom.Vector3D;
-	import StageGLProxy						= away.managers.StageGLProxy;
+	import StageGL							= away.base.StageGL;
 	
 	/**
 	 * ...
@@ -45,12 +45,12 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public setRenderState(stageGLProxy:StageGLProxy, renderable:IRenderable, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera3D)
+		public setRenderState(stageGL:StageGL, renderable:IRenderable, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera3D)
 		{
 			var index:number /*int*/ = animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleOscillatorNode.OSCILLATOR_INDEX);
 			
 			if (this._particleOscillatorNode.mode == ParticlePropertiesMode.LOCAL_STATIC)
-				animationSubGeometry.activateVertexBuffer(index, this._particleOscillatorNode._iDataOffset, stageGLProxy, ContextGLVertexBufferFormat.FLOAT_4);
+				animationSubGeometry.activateVertexBuffer(index, this._particleOscillatorNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
 			else
 				animationRegisterCache.setVertexConst(index, this._oscillatorData.x, this._oscillatorData.y, this._oscillatorData.z, this._oscillatorData.w);
 		}

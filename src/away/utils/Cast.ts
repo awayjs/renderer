@@ -253,7 +253,7 @@ module away.utils
 			return name;
 		}
 
-		public static bitmapData(data:any):away.display.BitmapData
+		public static bitmapData(data:any):away.base.BitmapData
 		{
 			if (data == null)
 				return null;
@@ -269,7 +269,7 @@ module away.utils
 				}
 			}
 
-			if (data instanceof away.display.BitmapData)
+			if (data instanceof away.base.BitmapData)
 				return data;
 
 			if (data instanceof away.textures.HTMLImageElementTexture)
@@ -277,7 +277,7 @@ module away.utils
 
 			if (data instanceof HTMLImageElement) {
 				var imageElement:HTMLImageElement = <HTMLImageElement> data;
-				var bitmapData:away.display.BitmapData = new away.display.BitmapData(imageElement.width, imageElement.height, true, 0x0);
+				var bitmapData:away.base.BitmapData = new away.base.BitmapData(imageElement.width, imageElement.height, true, 0x0);
 				bitmapData.draw(imageElement)
 				return bitmapData;
 			}
@@ -315,7 +315,7 @@ module away.utils
 				return data;
 
 			try {
-				var bmd:away.display.BitmapData = Cast.bitmapData(data);
+				var bmd:away.base.BitmapData = Cast.bitmapData(data);
 				return new away.textures.BitmapTexture(bmd);
 			} catch (e /*away.errors.CastError*/) {
 			}

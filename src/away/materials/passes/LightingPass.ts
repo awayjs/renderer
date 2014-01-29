@@ -5,7 +5,7 @@ module away.materials
 	//import away3d.arcane;
 	//import away3d.cameras.Camera3D;
 	//import away3d.core.base.IRenderable;
-	//import away3d.managers.StageGLProxy;
+	//import away3d.base.StageGL;
 	//import away3d.lights.DirectionalLight;
 	//import away3d.lights.LightProbe;
 	//import away3d.lights.PointLight;
@@ -213,7 +213,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iRender(renderable:away.base.IRenderable, stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D, viewProjection:away.geom.Matrix3D)
+		public iRender(renderable:away.base.IRenderable, stageGL:away.base.StageGL, camera:away.cameras.Camera3D, viewProjection:away.geom.Matrix3D)
 		{
 			renderable.inverseSceneTransform.copyRawDataTo(this._inverseSceneMatrix);
 
@@ -228,15 +228,15 @@ module away.materials
 				this._pVertexConstantData[this._pCameraPositionIndex + 2] = this._inverseSceneMatrix[2]*x + this._inverseSceneMatrix[6]*y + this._inverseSceneMatrix[10]*z + this._inverseSceneMatrix[14];
 			}
 
-			super.iRender(renderable, stageGLProxy, camera, viewProjection);
+			super.iRender(renderable, stageGL, camera, viewProjection);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D)
+		public iActivate(stageGL:away.base.StageGL, camera:away.cameras.Camera3D)
 		{
-			super.iActivate(stageGLProxy, camera);
+			super.iActivate(stageGL, camera);
 
 			if (!this._tangentSpace && this._pCameraPositionIndex >= 0) {
 				var pos:away.geom.Vector3D = camera.scenePosition;
@@ -429,9 +429,9 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public pUpdateProbes(stageGLProxy:away.managers.StageGLProxy)
+		public pUpdateProbes(stageGL:away.base.StageGL)
 		{
-			var context:away.displayGL.ContextGL = stageGLProxy._iContextGL;
+			var context:away.gl.ContextGL = stageGL.contextGL;
 			var probe:away.lights.LightProbe;
 			var lightProbes:Array<away.lights.LightProbe> = this._pLightPicker.lightProbes;
 			var weights:number[] = this._pLightPicker.lightProbeWeights;
@@ -450,10 +450,10 @@ module away.materials
 				probe = lightProbes[ this._lightProbesOffset + i];
 
 				if (addDiff) {
-					context.setTextureAt(this._pLightProbeDiffuseIndices[i], probe.diffuseMap.getTextureForStageGL(stageGLProxy));
+					context.setTextureAt(this._pLightProbeDiffuseIndices[i], probe.diffuseMap.getTextureForStageGL(stageGL));
 				}
 				if (addSpec) {
-					context.setTextureAt(this._pLightProbeSpecularIndices[i], probe.specularMap.getTextureForStageGL(stageGLProxy));
+					context.setTextureAt(this._pLightProbeSpecularIndices[i], probe.specularMap.getTextureForStageGL(stageGL));
 				}
 			}
 

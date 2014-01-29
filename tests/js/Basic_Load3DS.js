@@ -120,15 +120,12 @@ var examples;
             this._timer = new away.utils.RequestAnimationFrame(this.onEnterFrame, this);
             this._timer.start();
 
-            //setup parser to be used on Loader3D
-            away.parsers.Parsers.enableAllBundled();
-
             //setup the url map for textures in the 3ds file
             var assetLoaderContext = new away.net.AssetLoaderContext();
             assetLoaderContext.mapUrl("texture.jpg", "assets/demos/soldier_ant.jpg");
 
             this._loader.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, away.utils.Delegate.create(this, this.onAssetComplete));
-            this._loader.load(new away.net.URLRequest("assets/demos/soldier_ant.3ds"), assetLoaderContext);
+            this._loader.load(new away.net.URLRequest("assets/demos/soldier_ant.3ds"), assetLoaderContext, null, new away.parsers.Max3DSParser(false));
 
             away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, away.utils.Delegate.create(this, this.onResourceComplete));
             away.library.AssetLibrary.load(new away.net.URLRequest("assets/demos/CoarseRedSand.jpg"));

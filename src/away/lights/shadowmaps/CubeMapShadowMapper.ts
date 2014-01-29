@@ -71,7 +71,7 @@ module away.lights
 		}
 
 		//@override
-		public pDrawDepthMap(target:away.displayGL.TextureBase, scene:away.containers.Scene3D, renderer:away.render.DepthRenderer)
+		public pDrawDepthMap(target:away.gl.TextureBase, scene:away.containers.Scene3D, renderer:away.render.DepthRenderer)
 		{
 			for (var i:number = 0; i < 6; ++i) {
 				if (this._needsRender[i]) {

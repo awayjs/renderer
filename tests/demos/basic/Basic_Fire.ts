@@ -56,7 +56,7 @@ module examples
 	import Scene3D								= away.containers.Scene3D;
 	import View3D								= away.containers.View3D;
 	import HoverController						= away.controllers.HoverController;
-	import BlendMode							= away.display.BlendMode;
+	import BlendMode							= away.base.BlendMode;
 	import Mesh									= away.entities.Mesh;
 	import TimerEvent							= away.events.TimerEvent;
 	import ColorTransform						= away.geom.ColorTransform;

@@ -96,14 +96,14 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGLProxy:away.managers.StageGLProxy):void
+		public iActivate(vo:MethodVO, stageGL:away.base.StageGL):void
 		{
-			var context:away.displayGL.ContextGL = stageGLProxy._iContextGL;
+			var context:away.gl.ContextGL = stageGL.contextGL;
 			vo.fragmentData[vo.fragmentConstantsIndex] = this._alpha;
 
-			context.setTextureAt(vo.texturesIndex, this._cubeTexture.getTextureForStageGL(stageGLProxy));
+			context.setTextureAt(vo.texturesIndex, this._cubeTexture.getTextureForStageGL(stageGL));
 			if (this._mask) {
-				context.setTextureAt(vo.texturesIndex + 1, this._mask.getTextureForStageGL(stageGLProxy));
+				context.setTextureAt(vo.texturesIndex + 1, this._mask.getTextureForStageGL(stageGL));
 			}
 		}
 

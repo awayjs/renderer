@@ -80,34 +80,34 @@ module away.entities
 			this.iInvalidateTransform();
 		}
 
-		public activateVertexBuffer(index:number, stageGLProxy:away.managers.StageGLProxy)
+		public activateVertexBuffer(index:number, stageGL:away.base.StageGL)
 		{
-			Sprite3D._geometry.activateVertexBuffer(index, stageGLProxy);
+			Sprite3D._geometry.activateVertexBuffer(index, stageGL);
 		}
 
-		public activateUVBuffer(index:number, stageGLProxy:away.managers.StageGLProxy)
+		public activateUVBuffer(index:number, stageGL:away.base.StageGL)
 		{
-			Sprite3D._geometry.activateUVBuffer(index, stageGLProxy);
+			Sprite3D._geometry.activateUVBuffer(index, stageGL);
 		}
 
-		public activateSecondaryUVBuffer(index:number, stageGLProxy:away.managers.StageGLProxy)
+		public activateSecondaryUVBuffer(index:number, stageGL:away.base.StageGL)
 		{
-			Sprite3D._geometry.activateSecondaryUVBuffer(index, stageGLProxy);
+			Sprite3D._geometry.activateSecondaryUVBuffer(index, stageGL);
 		}
 
-		public activateVertexNormalBuffer(index:number, stageGLProxy:away.managers.StageGLProxy)
+		public activateVertexNormalBuffer(index:number, stageGL:away.base.StageGL)
 		{
-			Sprite3D._geometry.activateVertexNormalBuffer(index, stageGLProxy);
+			Sprite3D._geometry.activateVertexNormalBuffer(index, stageGL);
 		}
 
-		public activateVertexTangentBuffer(index:number, stageGLProxy:away.managers.StageGLProxy)
+		public activateVertexTangentBuffer(index:number, stageGL:away.base.StageGL)
 		{
-			Sprite3D._geometry.activateVertexTangentBuffer(index, stageGLProxy);
+			Sprite3D._geometry.activateVertexTangentBuffer(index, stageGL);
 		}
 
-		public getIndexBuffer(stageGLProxy:away.managers.StageGLProxy):away.displayGL.IndexBuffer
+		public getIndexBuffer(stageGL:away.base.StageGL):away.gl.IndexBuffer
 		{
-			return Sprite3D._geometry.getIndexBuffer(stageGLProxy);
+			return Sprite3D._geometry.getIndexBuffer(stageGL);
 		}
 
 		public get numTriangles():number

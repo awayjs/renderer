@@ -259,14 +259,14 @@ module away.entities
 		}
 
 
-		public getIndexBuffer(stageGLProxy:away.managers.StageGLProxy):away.displayGL.IndexBuffer
+		public getIndexBuffer(stageGL:away.base.StageGL):away.gl.IndexBuffer
 		{
 
-			if (this._activeSubSet.indexContextGL != stageGLProxy.contextGL || this._activeSubSet.indexBufferDirty) {
-				this._activeSubSet.indexBuffer = stageGLProxy._iContextGL.createIndexBuffer(this._activeSubSet.numIndices);
+			if (this._activeSubSet.indexContextGL != stageGL.contextGL || this._activeSubSet.indexBufferDirty) {
+				this._activeSubSet.indexBuffer = stageGL.contextGL.createIndexBuffer(this._activeSubSet.numIndices);
 				this._activeSubSet.indexBuffer.uploadFromArray(this._activeSubSet.indices, 0, this._activeSubSet.numIndices);
 				this._activeSubSet.indexBufferDirty = false;
-				this._activeSubSet.indexContextGL = stageGLProxy.contextGL;
+				this._activeSubSet.indexContextGL = stageGL.contextGL;
 			}
 
 			return this._activeSubSet.indexBuffer;
@@ -274,7 +274,7 @@ module away.entities
 		}
 
 
-		public activateVertexBuffer(index:number, stageGLProxy:away.managers.StageGLProxy)
+		public activateVertexBuffer(index:number, stageGL:away.base.StageGL)
 		{
 
 			var subSet:SubSet = this._subSets[index];
@@ -282,36 +282,36 @@ module away.entities
 			this._activeSubSet = subSet;
 			this._numIndices = subSet.numIndices;
 
-			var vertexBuffer:away.displayGL.VertexBuffer = subSet.vertexBuffer;
+			var vertexBuffer:away.gl.VertexBuffer = subSet.vertexBuffer;
 
-			if (subSet.vertexContextGL != stageGLProxy.contextGL || subSet.vertexBufferDirty) {
-				subSet.vertexBuffer = stageGLProxy._iContextGL.createVertexBuffer(subSet.numVertices, 11);
+			if (subSet.vertexContextGL != stageGL.contextGL || subSet.vertexBufferDirty) {
+				subSet.vertexBuffer = stageGL.contextGL.createVertexBuffer(subSet.numVertices, 11);
 				subSet.vertexBuffer.uploadFromArray(subSet.vertices, 0, subSet.numVertices);
 				subSet.vertexBufferDirty = false;
-				subSet.vertexContextGL = stageGLProxy.contextGL;
+				subSet.vertexContextGL = stageGL.contextGL;
 			}
 
-			var context3d:away.displayGL.ContextGL = stageGLProxy._iContextGL;
-			context3d.setVertexBufferAt(0, vertexBuffer, 0, away.displayGL.ContextGLVertexBufferFormat.FLOAT_3);
-			context3d.setVertexBufferAt(1, vertexBuffer, 3, away.displayGL.ContextGLVertexBufferFormat.FLOAT_3);
-			context3d.setVertexBufferAt(2, vertexBuffer, 6, away.displayGL.ContextGLVertexBufferFormat.FLOAT_1);
-			context3d.setVertexBufferAt(3, vertexBuffer, 7, away.displayGL.ContextGLVertexBufferFormat.FLOAT_4);
+			var context3d:away.gl.ContextGL = stageGL.contextGL;
+			context3d.setVertexBufferAt(0, vertexBuffer, 0, away.gl.ContextGLVertexBufferFormat.FLOAT_3);
+			context3d.setVertexBufferAt(1, vertexBuffer, 3, away.gl.ContextGLVertexBufferFormat.FLOAT_3);
+			context3d.setVertexBufferAt(2, vertexBuffer, 6, away.gl.ContextGLVertexBufferFormat.FLOAT_1);
+			context3d.setVertexBufferAt(3, vertexBuffer, 7, away.gl.ContextGLVertexBufferFormat.FLOAT_4);
 
 		}
 
-		public activateUVBuffer(index:number, stageGLProxy:away.managers.StageGLProxy)
+		public activateUVBuffer(index:number, stageGL:away.base.StageGL)
 		{
 		}
 
-		public activateVertexNormalBuffer(index:number, stageGLProxy:away.managers.StageGLProxy)
+		public activateVertexNormalBuffer(index:number, stageGL:away.base.StageGL)
 		{
 		}
 
-		public activateVertexTangentBuffer(index:number, stageGLProxy:away.managers.StageGLProxy)
+		public activateVertexTangentBuffer(index:number, stageGL:away.base.StageGL)
 		{
 		}
 
-		public activateSecondaryUVBuffer(index:number, stageGLProxy:away.managers.StageGLProxy)
+		public activateSecondaryUVBuffer(index:number, stageGL:away.base.StageGL)
 		{
 		}
 
@@ -561,11 +561,11 @@ module away.entities
 		public vertexBufferDirty:boolean;
 		public indexBufferDirty:boolean;
 
-		public vertexContextGL:away.displayGL.ContextGL;
-		public indexContextGL:away.displayGL.ContextGL;
+		public vertexContextGL:away.gl.ContextGL;
+		public indexContextGL:away.gl.ContextGL;
 
-		public vertexBuffer:away.displayGL.VertexBuffer;
-		public indexBuffer:away.displayGL.IndexBuffer;
+		public vertexBuffer:away.gl.VertexBuffer;
+		public indexBuffer:away.gl.IndexBuffer;
 		public lineCount:number;
 
 		public dispose()

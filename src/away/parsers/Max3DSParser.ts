@@ -18,10 +18,18 @@ module away.parsers
 
 		private _cur_mat_end:number /*uint*/;
 		private _cur_mat:MaterialVO;
+		private _useSmoothingGroups:boolean;
 
-		constructor()
+		/**
+		 * Creates a new <code>Max3DSParser</code> object.
+		 *
+		 * @param useSmoothingGroups Determines whether the parser looks for smoothing groups in the 3ds file or assumes uniform smoothing. Defaults to true.
+		 */
+		constructor(useSmoothingGroups:boolean = true)
 		{
 			super(ParserDataFormat.BINARY);
+
+			this._useSmoothingGroups = useSmoothingGroups;
 		}
 
 		/**
@@ -477,7 +485,9 @@ module away.parsers
 				faces = new Array<FaceVO>(obj.indices.length/3);
 
 				this.prepareData(vertices, faces, obj);
-				this.applySmoothGroups(vertices, faces);
+
+				if (this._useSmoothingGroups)
+					this.applySmoothGroups(vertices, faces);
 
 				obj.verts = new Array<number>(vertices.length*3);
 				for (i = 0; i < vertices.length; i++) {
@@ -585,7 +595,7 @@ module away.parsers
 				f.a = obj.indices[i++];
 				f.b = obj.indices[i++];
 				f.c = obj.indices[i++];
-				f.smoothGroup = obj.smoothingGroups[k];
+				f.smoothGroup = obj.smoothingGroups[k] || 0;
 				faces[k++] = f;
 			}
 		}

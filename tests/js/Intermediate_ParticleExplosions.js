@@ -44,7 +44,7 @@ var examples;
     var Scene3D = away.containers.Scene3D;
     var View3D = away.containers.View3D;
     var HoverController = away.controllers.HoverController;
-    var BitmapData = away.display.BitmapData;
+    var BitmapData = away.base.BitmapData;
     var Mesh = away.entities.Mesh;
     var LoaderEvent = away.events.LoaderEvent;
     var ColorTransform = away.geom.ColorTransform;

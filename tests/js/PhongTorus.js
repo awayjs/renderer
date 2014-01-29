@@ -16,17 +16,8 @@ var scene;
             if (!document) {
                 throw "The document root object must be avaiable";
             }
-            this._stage = new away.display.Stage(800, 600);
             this.loadResources();
         }
-        Object.defineProperty(PhongTorus.prototype, "stage", {
-            get: function () {
-                return this._stage;
-            },
-            enumerable: true,
-            configurable: true
-        });
-
         PhongTorus.prototype.loadResources = function () {
             var urlRequest = new away.net.URLRequest("assets/130909wall_big.png");
             var imgLoader = new away.net.IMGLoader();
@@ -38,17 +29,21 @@ var scene;
             var imageLoader = e.target;
             this._image = imageLoader.image;
 
-            this._stage.stageGLs[0].addEventListener(away.events.Event.CONTEXTGL_CREATE, away.utils.Delegate.create(this, this.onContextGLCreateHandler));
-            this._stage.stageGLs[0].requestContext();
+            this._stageGL = new away.base.StageGL(document.createElement("canvas"), 0, null);
+            this._stageGL.addEventListener(away.events.StageGLEvent.CONTEXTGL_CREATED, away.utils.Delegate.create(this, this.onContextGLCreateHandler));
+            this._stageGL.requestContext();
         };
 
         PhongTorus.prototype.onContextGLCreateHandler = function (e) {
-            this._stage.stageGLs[0].removeEventListener(away.events.Event.CONTEXTGL_CREATE, away.utils.Delegate.create(this, this.onContextGLCreateHandler));
+            this._stageGL.removeEventListener(away.events.StageGLEvent.CONTEXTGL_CREATED, away.utils.Delegate.create(this, this.onContextGLCreateHandler));
+            this._stageGL.width = 800;
+            this._stageGL.height = 600;
 
-            var stageGL = e.target;
-            this._contextGL = stageGL.contextGL;
+            document.body.appendChild(this._stageGL.canvas);
 
-            //this._texture = this._contextGL.createTexture( 512, 512, away.displayGL.ContextGLTextureFormat.BGRA, true );
+            this._contextGL = this._stageGL.contextGL;
+
+            //this._texture = this._contextGL.createTexture( 512, 512, away.gl.ContextGLTextureFormat.BGRA, true );
             //this._texture.uploadFromHTMLImageElement( this._image );
             //var bitmapData: away.display.BitmapData = new away.display.BitmapData( 512, 512, true, 0x02CGL4 );
             //this._texture.uploadFromBitmapData( bitmapData );
@@ -97,8 +92,8 @@ var scene;
             this._normalMatrix.invert();
             this._normalMatrix.transpose();
 
-            this._contextGL.setGLSLVertexBufferAt("aVertexPosition", vBuffer, 0, away.displayGL.ContextGLVertexBufferFormat.FLOAT_3);
-            this._contextGL.setGLSLVertexBufferAt("aVertexNormal", vBuffer, 3, away.displayGL.ContextGLVertexBufferFormat.FLOAT_3);
+            this._contextGL.setGLSLVertexBufferAt("aVertexPosition", vBuffer, 0, away.gl.ContextGLVertexBufferFormat.FLOAT_3);
+            this._contextGL.setGLSLVertexBufferAt("aVertexNormal", vBuffer, 3, away.gl.ContextGLVertexBufferFormat.FLOAT_3);
 
             this._requestAnimationFrameTimer = new away.utils.RequestAnimationFrame(this.tick, this);
             this._requestAnimationFrameTimer.start();

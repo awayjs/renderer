@@ -6,10 +6,10 @@ module away.animators
 	import SkinnedSubGeometry               = away.base.SkinnedSubGeometry;
 	import SubMesh                          = away.base.SubMesh;
 	import Camera3D                         = away.cameras.Camera3D;
-	import ContextGLProgramType             = away.displayGL.ContextGLProgramType;
+	import ContextGLProgramType             = away.gl.ContextGLProgramType;
 	import AnimationStateEvent              = away.events.AnimationStateEvent;
 	import Vector3D                         = away.geom.Vector3D;
-	import StageGLProxy                     = away.managers.StageGLProxy;
+	import StageGL                     = away.base.StageGL;
 	import Quaternion                       = away.geom.Quaternion;
 	import MaterialPassBase                 = away.materials.MaterialPassBase;
 
@@ -184,7 +184,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public setRenderState(stageGLProxy:StageGLProxy, renderable:IRenderable, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/, camera:Camera3D)
+		public setRenderState(stageGL:StageGL, renderable:IRenderable, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/, camera:Camera3D)
 		{
 			// do on request of globalProperties
 			if (this._globalPropertiesDirty)
@@ -200,7 +200,7 @@ module away.animators
 					numCondensedJoints = skinnedGeom.numCondensedJoints;
 				}
 				this.updateCondensedMatrices(skinnedGeom.condensedIndexLookUp, numCondensedJoints);
-				stageGLProxy._iContextGL.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, vertexConstantOffset, this._condensedMatrices, numCondensedJoints*3);
+				stageGL.contextGL.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, vertexConstantOffset, this._condensedMatrices, numCondensedJoints*3);
 			} else {
 				if (this._pAnimationSet.usesCPU) {
 					var subGeomAnimState:SubGeomAnimationState = this._subGeomAnimationStates[skinnedGeom._iUniqueId];
@@ -215,11 +215,11 @@ module away.animators
 					skinnedGeom.updateAnimatedData(subGeomAnimState.animatedVertexData);
 					return;
 				}
-				stageGLProxy._iContextGL.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, vertexConstantOffset, this._globalMatrices, this._numJoints*3);
+				stageGL.contextGL.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, vertexConstantOffset, this._globalMatrices, this._numJoints*3);
 			}
 
-			skinnedGeom.activateJointIndexBuffer(vertexStreamOffset, stageGLProxy);
-			skinnedGeom.activateJointWeightsBuffer(vertexStreamOffset + 1, stageGLProxy);
+			skinnedGeom.activateJointIndexBuffer(vertexStreamOffset, stageGL);
+			skinnedGeom.activateJointWeightsBuffer(vertexStreamOffset + 1, stageGL);
 		}
 
 		/**

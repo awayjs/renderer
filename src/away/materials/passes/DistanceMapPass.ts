@@ -4,7 +4,7 @@ module away.materials
 	//import away3d.arcane;
 	//import away3d.cameras.Camera3D;
 	//import away3d.core.base.IRenderable;
-	//import away3d.managers.StageGLProxy;
+	//import away3d.base.StageGL;
 	//import away3d.core.geom.Matrix3DUtils;
 	//import away3d.textures.Texture2DBase;
 
@@ -156,7 +156,7 @@ module away.materials
 
 				switch (this._alphaMask.format) {
 
-					case away.displayGL.ContextGLTextureFormat.COMPRESSED:
+					case away.gl.ContextGLTextureFormat.COMPRESSED:
 
 						format = "dxt1,";
 
@@ -185,9 +185,9 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iRender(renderable:away.base.IRenderable, stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D, viewProjection:away.geom.Matrix3D)
+		public iRender(renderable:away.base.IRenderable, stageGL:away.base.StageGL, camera:away.cameras.Camera3D, viewProjection:away.geom.Matrix3D)
 		{
-			var context:away.displayGL.ContextGL = stageGLProxy._iContextGL;
+			var context:away.gl.ContextGL = stageGL.contextGL;
 			var pos:away.geom.Vector3D = camera.scenePosition;
 
 			this._vertexData[0] = pos.x;
@@ -197,13 +197,13 @@ module away.materials
 
 			var sceneTransform:away.geom.Matrix3D = renderable.getRenderSceneTransform(camera);
 
-			context.setProgramConstantsFromMatrix(away.displayGL.ContextGLProgramType.VERTEX, 5, sceneTransform, true);
+			context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 5, sceneTransform, true);
 
-			context.setProgramConstantsFromArray(away.displayGL.ContextGLProgramType.VERTEX, 9, this._vertexData, 1);
+			context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 9, this._vertexData, 1);
 
 			if (this._alphaThreshold > 0) {
 
-				renderable.activateUVBuffer(1, stageGLProxy);
+				renderable.activateUVBuffer(1, stageGL);
 
 			}
 
@@ -213,18 +213,18 @@ module away.materials
 			matrix.copyFrom(sceneTransform);
 			matrix.append(viewProjection);
 
-			context.setProgramConstantsFromMatrix(away.displayGL.ContextGLProgramType.VERTEX, 0, matrix, true);
-			renderable.activateVertexBuffer(0, stageGLProxy);
-			context.drawTriangles(renderable.getIndexBuffer(stageGLProxy), 0, renderable.numTriangles);
+			context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, matrix, true);
+			renderable.activateVertexBuffer(0, stageGL);
+			context.drawTriangles(renderable.getIndexBuffer(stageGL), 0, renderable.numTriangles);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D)
+		public iActivate(stageGL:away.base.StageGL, camera:away.cameras.Camera3D)
 		{
-			var context:away.displayGL.ContextGL = stageGLProxy._iContextGL;
-			super.iActivate(stageGLProxy, camera);
+			var context:away.gl.ContextGL = stageGL.contextGL;
+			super.iActivate(stageGL, camera);
 
 			var f:number = camera.lens.far;
 
@@ -237,12 +237,12 @@ module away.materials
 
 			if (this._alphaThreshold > 0) {
 
-				context.setTextureAt(0, this._alphaMask.getTextureForStageGL(stageGLProxy));
-				context.setProgramConstantsFromArray(away.displayGL.ContextGLProgramType.FRAGMENT, 0, this._fragmentData, 3);
+				context.setTextureAt(0, this._alphaMask.getTextureForStageGL(stageGL));
+				context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.FRAGMENT, 0, this._fragmentData, 3);
 
 			} else {
 
-				context.setProgramConstantsFromArray(away.displayGL.ContextGLProgramType.FRAGMENT, 0, this._fragmentData, 2);
+				context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.FRAGMENT, 0, this._fragmentData, 2);
 			}
 
 		}

@@ -77,7 +77,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivateForCascade(vo:MethodVO, stageGLProxy:away.managers.StageGLProxy):void
+		public iActivateForCascade(vo:MethodVO, stageGL:away.base.StageGL):void
 		{
 		}
 	}

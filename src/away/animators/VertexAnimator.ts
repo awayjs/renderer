@@ -88,13 +88,13 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public setRenderState(stageGLProxy:away.managers.StageGLProxy, renderable:away.base.IRenderable, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/, camera:away.cameras.Camera3D)
+		public setRenderState(stageGL:away.base.StageGL, renderable:away.base.IRenderable, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/, camera:away.cameras.Camera3D)
 		{
 			// todo: add code for when running on cpu
 
 			// if no poses defined, set temp data
 			if (!this._poses.length) {
-				this.setNullPose(stageGLProxy, renderable, vertexConstantOffset, vertexStreamOffset);
+				this.setNullPose(stageGL, renderable, vertexConstantOffset, vertexStreamOffset);
 				return;
 			}
 
@@ -104,7 +104,7 @@ module away.animators
 			var i:number /*uint*/;
 			var len:number /*uint*/ = this._numPoses;
 
-			stageGLProxy._iContextGL.setProgramConstantsFromArray(away.displayGL.ContextGLProgramType.VERTEX, vertexConstantOffset, this._weights, 1);
+			stageGL.contextGL.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, vertexConstantOffset, this._weights, 1);
 
 			if (this._blendMode == VertexAnimationMode.ABSOLUTE) {
 				i = 1;
@@ -118,25 +118,25 @@ module away.animators
 			for (; i < len; ++i) {
 				subGeom = this._poses[i].subGeometries[subMesh._iIndex] || subMesh.subGeometry;
 
-				subGeom.activateVertexBuffer(vertexStreamOffset++, stageGLProxy);
+				subGeom.activateVertexBuffer(vertexStreamOffset++, stageGL);
 
 				if (this._vertexAnimationSet.useNormals)
-					subGeom.activateVertexNormalBuffer(vertexStreamOffset++, stageGLProxy);
+					subGeom.activateVertexNormalBuffer(vertexStreamOffset++, stageGL);
 
 			}
 		}
 
-		private setNullPose(stageGLProxy:away.managers.StageGLProxy, renderable:away.base.IRenderable, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/)
+		private setNullPose(stageGL:away.base.StageGL, renderable:away.base.IRenderable, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/)
 		{
-			stageGLProxy._iContextGL.setProgramConstantsFromArray(away.displayGL.ContextGLProgramType.VERTEX, vertexConstantOffset, this._weights, 1);
+			stageGL.contextGL.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, vertexConstantOffset, this._weights, 1);
 
 			if (this._blendMode == VertexAnimationMode.ABSOLUTE) {
 				var len:number /*uint*/ = this._numPoses;
 				for (var i:number /*uint*/ = 1; i < len; ++i) {
-					renderable.activateVertexBuffer(vertexStreamOffset++, stageGLProxy);
+					renderable.activateVertexBuffer(vertexStreamOffset++, stageGL);
 
 					if (this._vertexAnimationSet.useNormals)
-						renderable.activateVertexNormalBuffer(vertexStreamOffset++, stageGLProxy);
+						renderable.activateVertexNormalBuffer(vertexStreamOffset++, stageGL);
 				}
 			}
 			// todo: set temp data for additive?

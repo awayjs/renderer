@@ -56,37 +56,37 @@ module away.base
 		/**
 		 * Assigns the attribute stream for vertex positions.
 		 * @param index The attribute stream index for the vertex shader
-		 * @param stageGLProxy The StageGLProxy to assign the stream to
+		 * @param stageGL The StageGL to assign the stream to
 		 */
-		activateVertexBuffer(index:number, stageGLProxy:away.managers.StageGLProxy);
+		activateVertexBuffer(index:number, stageGL:away.base.StageGL);
 
 		/**
 		 * Assigns the attribute stream for UV coordinates
 		 * @param index The attribute stream index for the vertex shader
-		 * @param stageGLProxy The StageGLProxy to assign the stream to
+		 * @param stageGL The StageGL to assign the stream to
 		 */
-		activateUVBuffer(index:number, stageGLProxy:away.managers.StageGLProxy);
+		activateUVBuffer(index:number, stageGL:away.base.StageGL);
 
 		/**
 		 * Assigns the attribute stream for a secondary set of UV coordinates
 		 * @param index The attribute stream index for the vertex shader
-		 * @param stageGLProxy The StageGLProxy to assign the stream to
+		 * @param stageGL The StageGL to assign the stream to
 		 */
-		activateSecondaryUVBuffer(index:number, stageGLProxy:away.managers.StageGLProxy);
+		activateSecondaryUVBuffer(index:number, stageGL:away.base.StageGL);
 
 		/**
 		 * Assigns the attribute stream for vertex normals
 		 * @param index The attribute stream index for the vertex shader
-		 * @param stageGLProxy The StageGLProxy to assign the stream to
+		 * @param stageGL The StageGL to assign the stream to
 		 */
-		activateVertexNormalBuffer(index:number, stageGLProxy:away.managers.StageGLProxy);
+		activateVertexNormalBuffer(index:number, stageGL:away.base.StageGL);
 
 		/**
 		 * Assigns the attribute stream for vertex tangents
 		 * @param index The attribute stream index for the vertex shader
-		 * @param stageGLProxy The StageGLProxy to assign the stream to
+		 * @param stageGL The StageGL to assign the stream to
 		 */
-		activateVertexTangentBuffer(index:number, stageGLProxy:away.managers.StageGLProxy);
+		activateVertexTangentBuffer(index:number, stageGL:away.base.StageGL);
 
 		/**
 		 * Retrieves the IndexBuffer object that contains triangle indices.
@@ -94,7 +94,7 @@ module away.base
 		 * @return The VertexBuffer object that contains triangle indices.
 		 */
 
-		getIndexBuffer(stageGLProxy:away.managers.StageGLProxy):away.displayGL.IndexBuffer;
+		getIndexBuffer(stageGL:away.base.StageGL):away.gl.IndexBuffer;
 
 		/**
 		 * Retrieves the object's vertices as a Number array.

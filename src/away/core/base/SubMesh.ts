@@ -205,49 +205,49 @@ module away.base
 		/**
 		 * @inheritDoc
 		 */
-		public activateVertexBuffer(index:number, stageGLProxy:away.managers.StageGLProxy)
+		public activateVertexBuffer(index:number, stageGL:away.base.StageGL)
 		{
-			this._subGeometry.activateVertexBuffer(index, stageGLProxy);
+			this._subGeometry.activateVertexBuffer(index, stageGL);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public activateVertexNormalBuffer(index:number, stageGLProxy:away.managers.StageGLProxy)
+		public activateVertexNormalBuffer(index:number, stageGL:away.base.StageGL)
 		{
-			this._subGeometry.activateVertexNormalBuffer(index, stageGLProxy);
+			this._subGeometry.activateVertexNormalBuffer(index, stageGL);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public activateVertexTangentBuffer(index:number, stageGLProxy:away.managers.StageGLProxy)
+		public activateVertexTangentBuffer(index:number, stageGL:away.base.StageGL)
 		{
-			this._subGeometry.activateVertexTangentBuffer(index, stageGLProxy);
+			this._subGeometry.activateVertexTangentBuffer(index, stageGL);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public activateUVBuffer(index:number, stageGLProxy:away.managers.StageGLProxy)
+		public activateUVBuffer(index:number, stageGL:away.base.StageGL)
 		{
-			this._subGeometry.activateUVBuffer(index, stageGLProxy);
+			this._subGeometry.activateUVBuffer(index, stageGL);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public activateSecondaryUVBuffer(index:number, stageGLProxy:away.managers.StageGLProxy)
+		public activateSecondaryUVBuffer(index:number, stageGL:away.base.StageGL)
 		{
-			this._subGeometry.activateSecondaryUVBuffer(index, stageGLProxy);
+			this._subGeometry.activateSecondaryUVBuffer(index, stageGL);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public getIndexBuffer(stageGLProxy:away.managers.StageGLProxy):away.displayGL.IndexBuffer
+		public getIndexBuffer(stageGL:away.base.StageGL):away.gl.IndexBuffer
 		{
-			return this._subGeometry.getIndexBuffer(stageGLProxy);
+			return this._subGeometry.getIndexBuffer(stageGL);
 		}
 
 		/**

@@ -19,9 +19,9 @@ module away.base
 		public _faceTangentsDirty:boolean = true;
 		public _faceTangents:number[];
 		public _indices:number[] /*uint*/;
-		public _indexBuffer:away.displayGL.IndexBuffer[] = new Array<away.displayGL.IndexBuffer>(8);//Vector.<IndexBuffer> = new Vector.<IndexBuffer>(8);
+		public _indexBuffer:away.gl.IndexBuffer[] = new Array<away.gl.IndexBuffer>(8);//Vector.<IndexBuffer> = new Vector.<IndexBuffer>(8);
 		public _numIndices:number;
-		public _indexBufferContext:away.displayGL.ContextGL[] = new Array<away.displayGL.ContextGL>(8);//Vector.<ContextGL> = new Vector.<ContextGL>(8);
+		public _indexBufferContext:away.gl.ContextGL[] = new Array<away.gl.ContextGL>(8);//Vector.<ContextGL> = new Vector.<ContextGL>(8);
 		public _indicesInvalid:boolean[] = new Array<boolean>(8);//new Vector.<Boolean>(8, true);
 		public _numTriangles:number;
 
@@ -127,10 +127,10 @@ module away.base
 		 * @param context The ContextGL for which we request the buffer
 		 * @return The VertexBuffer object that contains triangle indices.
 		 */
-		public getIndexBuffer(stageGLProxy:away.managers.StageGLProxy):away.displayGL.IndexBuffer
+		public getIndexBuffer(stageGL:away.base.StageGL):away.gl.IndexBuffer
 		{
-			var contextIndex:number = stageGLProxy._iStageGLIndex;//_stageGLIndex;
-			var context:away.displayGL.ContextGL = stageGLProxy._iContextGL;//_contextGL;
+			var contextIndex:number = stageGL._iStageGLIndex;//_stageGLIndex;
+			var context:away.gl.ContextGL = stageGL.contextGL;//_contextGL;
 
 			if (!this._indexBuffer[contextIndex] || this._indexBufferContext[contextIndex] != context) {
 				this._indexBuffer[contextIndex] = context.createIndexBuffer(this._numIndices);
@@ -500,7 +500,7 @@ module away.base
 		 * Disposes all buffers in a given vector.
 		 * @param buffers The vector of buffers to dispose.
 		 */
-		public pDisposeIndexBuffers(buffers:away.displayGL.IndexBuffer[]):void //Vector.<IndexBuffer>)
+		public pDisposeIndexBuffers(buffers:away.gl.IndexBuffer[]):void //Vector.<IndexBuffer>)
 		{
 			for (var i:number = 0; i < 8; ++i) {
 				if (buffers[i]) {
@@ -514,7 +514,7 @@ module away.base
 		 * Disposes all buffers in a given vector.
 		 * @param buffers The vector of buffers to dispose.
 		 */
-		public pDisposeVertexBuffers(buffers:away.displayGL.VertexBuffer []):void //Vector.<VertexBuffer>)
+		public pDisposeVertexBuffers(buffers:away.gl.VertexBuffer []):void //Vector.<VertexBuffer>)
 		{
 			for (var i:number = 0; i < 8; ++i) {
 				if (buffers[i]) {

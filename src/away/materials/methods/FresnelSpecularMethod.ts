@@ -95,9 +95,9 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGLProxy:away.managers.StageGLProxy):void
+		public iActivate(vo:MethodVO, stageGL:away.base.StageGL):void
 		{
-			super.iActivate(vo, stageGLProxy);
+			super.iActivate(vo, stageGL);
 			var fragmentData:Array<number> = vo.fragmentData;
 
 			var index:number = vo.secondaryFragmentConstantsIndex;

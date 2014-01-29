@@ -39,10 +39,10 @@ module away.filters
 
 		}
 
-		public getMainInputTexture(stageGLProxy:away.managers.StageGLProxy):away.displayGL.Texture
+		public getMainInputTexture(stageGL:away.base.StageGL):away.gl.Texture
 		{
 
-			return this._tasks[0].getMainInputTexture(stageGLProxy);
+			return this._tasks[0].getMainInputTexture(stageGL);
 
 		}
 
@@ -83,7 +83,7 @@ module away.filters
 		}
 
 		// link up the filters correctly with the next filter
-		public setRenderTargets(mainTarget:away.displayGL.Texture, stageGLProxy:away.managers.StageGLProxy)
+		public setRenderTargets(mainTarget:away.gl.Texture, stageGL:away.base.StageGL)
 		{
 
 			this._tasks[this._tasks.length - 1].target = mainTarget;
@@ -101,7 +101,7 @@ module away.filters
 
 		}
 
-		public update(stage:away.managers.StageGLProxy, camera:away.cameras.Camera3D)
+		public update(stage:away.base.StageGL, camera:away.cameras.Camera3D)
 		{
 
 		}

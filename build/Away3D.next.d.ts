@@ -693,27 +693,27 @@ declare module away.base {
         /**
         * @inheritDoc
         */
-        public activateVertexBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        public activateVertexBuffer(index: number, stageGL: base.StageGL): void;
         /**
         * @inheritDoc
         */
-        public activateVertexNormalBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        public activateVertexNormalBuffer(index: number, stageGL: base.StageGL): void;
         /**
         * @inheritDoc
         */
-        public activateVertexTangentBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        public activateVertexTangentBuffer(index: number, stageGL: base.StageGL): void;
         /**
         * @inheritDoc
         */
-        public activateUVBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        public activateUVBuffer(index: number, stageGL: base.StageGL): void;
         /**
         * @inheritDoc
         */
-        public activateSecondaryUVBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        public activateSecondaryUVBuffer(index: number, stageGL: base.StageGL): void;
         /**
         * @inheritDoc
         */
-        public getIndexBuffer(stageGLProxy: away.managers.StageGLProxy): away.displayGL.IndexBuffer;
+        public getIndexBuffer(stageGL: base.StageGL): away.gl.IndexBuffer;
         /**
         * The amount of triangles that make up this SubMesh.
         */
@@ -811,39 +811,39 @@ declare module away.base {
         /**
         * Assigns the attribute stream for vertex positions.
         * @param index The attribute stream index for the vertex shader
-        * @param stageGLProxy The StageGLProxy to assign the stream to
+        * @param stageGL The StageGL to assign the stream to
         */
-        activateVertexBuffer(index: number, stageGLProxy: away.managers.StageGLProxy);
+        activateVertexBuffer(index: number, stageGL: base.StageGL);
         /**
         * Assigns the attribute stream for UV coordinates
         * @param index The attribute stream index for the vertex shader
-        * @param stageGLProxy The StageGLProxy to assign the stream to
+        * @param stageGL The StageGL to assign the stream to
         */
-        activateUVBuffer(index: number, stageGLProxy: away.managers.StageGLProxy);
+        activateUVBuffer(index: number, stageGL: base.StageGL);
         /**
         * Assigns the attribute stream for a secondary set of UV coordinates
         * @param index The attribute stream index for the vertex shader
-        * @param stageGLProxy The StageGLProxy to assign the stream to
+        * @param stageGL The StageGL to assign the stream to
         */
-        activateSecondaryUVBuffer(index: number, stageGLProxy: away.managers.StageGLProxy);
+        activateSecondaryUVBuffer(index: number, stageGL: base.StageGL);
         /**
         * Assigns the attribute stream for vertex normals
         * @param index The attribute stream index for the vertex shader
-        * @param stageGLProxy The StageGLProxy to assign the stream to
+        * @param stageGL The StageGL to assign the stream to
         */
-        activateVertexNormalBuffer(index: number, stageGLProxy: away.managers.StageGLProxy);
+        activateVertexNormalBuffer(index: number, stageGL: base.StageGL);
         /**
         * Assigns the attribute stream for vertex tangents
         * @param index The attribute stream index for the vertex shader
-        * @param stageGLProxy The StageGLProxy to assign the stream to
+        * @param stageGL The StageGL to assign the stream to
         */
-        activateVertexTangentBuffer(index: number, stageGLProxy: away.managers.StageGLProxy);
+        activateVertexTangentBuffer(index: number, stageGL: base.StageGL);
         /**
         * Retrieves the IndexBuffer object that contains triangle indices.
         * @param context The ContextGL for which we request the buffer
         * @return The VertexBuffer object that contains triangle indices.
         */
-        getIndexBuffer(stageGLProxy: away.managers.StageGLProxy): away.displayGL.IndexBuffer;
+        getIndexBuffer(stageGL: base.StageGL): away.gl.IndexBuffer;
         /**
         * Retrieves the object's vertices as a Number array.
         */
@@ -901,9 +901,9 @@ declare module away.base {
         public _faceTangentsDirty: boolean;
         public _faceTangents: number[];
         public _indices: number[];
-        public _indexBuffer: away.displayGL.IndexBuffer[];
+        public _indexBuffer: away.gl.IndexBuffer[];
         public _numIndices: number;
-        public _indexBufferContext: away.displayGL.ContextGL[];
+        public _indexBufferContext: away.gl.ContextGL[];
         public _indicesInvalid: boolean[];
         public _numTriangles: number;
         public _autoDeriveVertexNormals: boolean;
@@ -952,7 +952,7 @@ declare module away.base {
         * @param context The ContextGL for which we request the buffer
         * @return The VertexBuffer object that contains triangle indices.
         */
-        public getIndexBuffer(stageGLProxy: away.managers.StageGLProxy): away.displayGL.IndexBuffer;
+        public getIndexBuffer(stageGL: base.StageGL): away.gl.IndexBuffer;
         /**
         * Updates the tangents for each face.
         */
@@ -985,12 +985,12 @@ declare module away.base {
         * Disposes all buffers in a given vector.
         * @param buffers The vector of buffers to dispose.
         */
-        public pDisposeIndexBuffers(buffers: away.displayGL.IndexBuffer[]): void;
+        public pDisposeIndexBuffers(buffers: away.gl.IndexBuffer[]): void;
         /**
         * Disposes all buffers in a given vector.
         * @param buffers The vector of buffers to dispose.
         */
-        public pDisposeVertexBuffers(buffers: away.displayGL.VertexBuffer[]): void;
+        public pDisposeVertexBuffers(buffers: away.gl.VertexBuffer[]): void;
         /**
         * True if the vertex tangents should be derived from the geometry, false if the vertex normals are set
         * explicitly.
@@ -1090,39 +1090,39 @@ declare module away.base {
         /**
         * Assigns the attribute stream for vertex positions.
         * @param index The attribute stream index for the vertex shader
-        * @param stageGLProxy The StageGLProxy to assign the stream to
+        * @param stageGL The StageGL to assign the stream to
         */
-        activateVertexBuffer(index: number, stageGLProxy: away.managers.StageGLProxy);
+        activateVertexBuffer(index: number, stageGL: base.StageGL);
         /**
         * Assigns the attribute stream for UV coordinates
         * @param index The attribute stream index for the vertex shader
-        * @param stageGLProxy The StageGLProxy to assign the stream to
+        * @param stageGL The StageGL to assign the stream to
         */
-        activateUVBuffer(index: number, stageGLProxy: away.managers.StageGLProxy);
+        activateUVBuffer(index: number, stageGL: base.StageGL);
         /**
         * Assigns the attribute stream for a secondary set of UV coordinates
         * @param index The attribute stream index for the vertex shader
-        * @param stageGLProxy The StageGLProxy to assign the stream to
+        * @param stageGL The StageGL to assign the stream to
         */
-        activateSecondaryUVBuffer(index: number, stageGLProxy: away.managers.StageGLProxy);
+        activateSecondaryUVBuffer(index: number, stageGL: base.StageGL);
         /**
         * Assigns the attribute stream for vertex normals
         * @param index The attribute stream index for the vertex shader
-        * @param stageGLProxy The StageGLProxy to assign the stream to
+        * @param stageGL The StageGL to assign the stream to
         */
-        activateVertexNormalBuffer(index: number, stageGLProxy: away.managers.StageGLProxy);
+        activateVertexNormalBuffer(index: number, stageGL: base.StageGL);
         /**
         * Assigns the attribute stream for vertex tangents
         * @param index The attribute stream index for the vertex shader
-        * @param stageGLProxy The StageGLProxy to assign the stream to
+        * @param stageGL The StageGL to assign the stream to
         */
-        activateVertexTangentBuffer(index: number, stageGLProxy: away.managers.StageGLProxy);
+        activateVertexTangentBuffer(index: number, stageGL: base.StageGL);
         /**
         * Retrieves the IndexBuffer object that contains triangle indices.
         * @param context The ContextGL for which we request the buffer
         * @return The VertexBuffer object that contains triangle indices.
         */
-        getIndexBuffer(stageGLProxy: away.managers.StageGLProxy): away.displayGL.IndexBuffer;
+        getIndexBuffer(stageGL: base.StageGL): away.gl.IndexBuffer;
         /**
         * Retrieves the object's vertices as a Number array.
         */
@@ -1192,7 +1192,7 @@ declare module away.base {
         private _bufferContext;
         public _pNumVertices: number;
         private _contextIndex;
-        public _pActiveBuffer: away.displayGL.VertexBuffer;
+        public _pActiveBuffer: away.gl.VertexBuffer;
         private _activeContext;
         public _pActiveDataInvalid: boolean;
         private _isolatedVertexPositionData;
@@ -1208,13 +1208,13 @@ declare module away.base {
         * 11 - 12: Secondary U V
         */
         public updateData(data: number[]): void;
-        public activateVertexBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
-        public activateUVBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
-        public activateSecondaryUVBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        public activateVertexBuffer(index: number, stageGL: base.StageGL): void;
+        public activateUVBuffer(index: number, stageGL: base.StageGL): void;
+        public activateSecondaryUVBuffer(index: number, stageGL: base.StageGL): void;
         public pUploadData(contextIndex: number): void;
-        public activateVertexNormalBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
-        public activateVertexTangentBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
-        public pCreateBuffer(contextIndex: number, context: away.displayGL.ContextGL): void;
+        public activateVertexNormalBuffer(index: number, stageGL: base.StageGL): void;
+        public activateVertexTangentBuffer(index: number, stageGL: base.StageGL): void;
+        public pCreateBuffer(contextIndex: number, context: away.gl.ContextGL): void;
         public pUpdateActiveBuffer(contextIndex: number): void;
         public vertexData : number[];
         public pUpdateVertexNormals(target: number[]): number[];
@@ -1237,7 +1237,7 @@ declare module away.base {
         public UVOffset : number;
         public secondaryUVOffset : number;
         public dispose(): void;
-        public pDisposeVertexBuffers(buffers: away.displayGL.VertexBuffer[]): void;
+        public pDisposeVertexBuffers(buffers: away.gl.VertexBuffer[]): void;
         public pInvalidateBuffers(invalid: boolean[]): void;
         public cloneWithSeperateBuffers(): base.SubGeometry;
         public vertexPositionData : number[];
@@ -1303,15 +1303,15 @@ declare module away.base {
         /**
         * Assigns the attribute stream for joint weights
         * @param index The attribute stream index for the vertex shader
-        * @param stageGLProxy The StageGLProxy to assign the stream to
+        * @param stageGL The StageGL to assign the stream to
         */
-        public activateJointWeightsBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        public activateJointWeightsBuffer(index: number, stageGL: base.StageGL): void;
         /**
         * Assigns the attribute stream for joint indices
         * @param index The attribute stream index for the vertex shader
-        * @param stageGLProxy The StageGLProxy to assign the stream to
+        * @param stageGL The StageGL to assign the stream to
         */
-        public activateJointIndexBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        public activateJointIndexBuffer(index: number, stageGL: base.StageGL): void;
         public pUploadData(contextIndex: number): void;
         /**
         * Clones the current object.
@@ -1466,27 +1466,27 @@ declare module away.base {
         /**
         * @inheritDoc
         */
-        public activateVertexBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        public activateVertexBuffer(index: number, stageGL: base.StageGL): void;
         /**
         * @inheritDoc
         */
-        public activateUVBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        public activateUVBuffer(index: number, stageGL: base.StageGL): void;
         /**
         * @inheritDoc
         */
-        public activateSecondaryUVBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        public activateSecondaryUVBuffer(index: number, stageGL: base.StageGL): void;
         /**
         * Retrieves the VertexBuffer object that contains vertex normals.
         * @param context The ContextGL for which we request the buffer
         * @return The VertexBuffer object that contains vertex normals.
         */
-        public activateVertexNormalBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        public activateVertexNormalBuffer(index: number, stageGL: base.StageGL): void;
         /**
         * Retrieves the VertexBuffer object that contains vertex tangents.
         * @param context The ContextGL for which we request the buffer
         * @return The VertexBuffer object that contains vertex tangents.
         */
-        public activateVertexTangentBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        public activateVertexTangentBuffer(index: number, stageGL: base.StageGL): void;
         public applyTransformation(transform: away.geom.Matrix3D): void;
         /**
         * Clones the current object
@@ -1553,7 +1553,7 @@ declare module away.base {
         public pUpdateVertexNormals(target: number[]): number[];
         public pUpdateVertexTangents(target: number[]): number[];
         public pUpdateDummyUVs(target: number[]): number[];
-        public pDisposeForStageGL(stageGLProxy: away.managers.StageGLProxy): void;
+        public pDisposeForStageGL(stageGL: base.StageGL): void;
         public vertexStride : number;
         public vertexTangentStride : number;
         public vertexNormalStride : number;
@@ -2239,7 +2239,7 @@ declare module away.pick {
     * @class away.pick.ShaderPicker
     */
     class ShaderPicker implements pick.IPicker {
-        private _stageGLProxy;
+        private _stageGL;
         private _context;
         private _onlyMouseEnabled;
         private _objectProgram;
@@ -2277,7 +2277,7 @@ declare module away.pick {
         * @inheritDoc
         */
         public getSceneCollision(position: away.geom.Vector3D, direction: away.geom.Vector3D, scene: away.containers.Scene3D): pick.PickingCollisionVO;
-        public pDraw(entityCollector: away.traverse.EntityCollector, target: away.displayGL.TextureBase): void;
+        public pDraw(entityCollector: away.traverse.EntityCollector, target: away.gl.TextureBase): void;
         /**
         * Draw a list of renderables.
         * @param renderables The renderables to draw.
@@ -2407,14 +2407,14 @@ declare module away.render {
     * @class away.render.RendererBase
     */
     class RendererBase {
-        public _pContext: away.displayGL.ContextGL;
-        public _pStageGLProxy: away.managers.StageGLProxy;
+        public _pContext: away.gl.ContextGL;
+        public _pStageGL: away.base.StageGL;
         private _backgroundR;
         private _backgroundG;
         private _backgroundB;
         private _backgroundAlpha;
         private _shareContext;
-        public _pRenderTarget: away.displayGL.TextureBase;
+        public _pRenderTarget: away.gl.TextureBase;
         public _pRenderTargetSurface: number;
         private _viewWidth;
         private _viewHeight;
@@ -2457,14 +2457,14 @@ declare module away.render {
         */
         public iBackgroundB : number;
         /**
-        * The StageGLProxy that will provide the ContextGL used for rendering.
+        * The StageGL that will provide the ContextGL used for rendering.
         *
         * @private
         */
-        public iStageGLProxy : away.managers.StageGLProxy;
-        public iSetStageGLProxy(value: away.managers.StageGLProxy): void;
+        public iStageGL : away.base.StageGL;
+        public iSetStageGL(value: away.base.StageGL): void;
         /**
-        * Defers control of ContextGL clear() and present() calls to StageGLProxy, enabling multiple StageGL frameworks
+        * Defers control of ContextGL clear() and present() calls to StageGL, enabling multiple StageGL frameworks
         * to share the same ContextGL object.
         *
         * @private
@@ -2483,7 +2483,7 @@ declare module away.render {
         * @param surfaceSelector The index of a CubeTexture's face to render to.
         * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
         */
-        public iRender(entityCollector: away.traverse.EntityCollector, target?: away.displayGL.TextureBase, scissorRect?: away.geom.Rectangle, surfaceSelector?: number): void;
+        public iRender(entityCollector: away.traverse.EntityCollector, target?: away.gl.TextureBase, scissorRect?: away.geom.Rectangle, surfaceSelector?: number): void;
         /**
         * Renders the potentially visible geometry to the back buffer or texture. Only executed if everything is set up.
         * @param entityCollector The EntityCollector object containing the potentially visible geometry.
@@ -2491,14 +2491,14 @@ declare module away.render {
         * @param surfaceSelector The index of a CubeTexture's face to render to.
         * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
         */
-        public pExecuteRender(entityCollector: away.traverse.EntityCollector, target?: away.displayGL.TextureBase, scissorRect?: away.geom.Rectangle, surfaceSelector?: number): void;
-        public queueSnapshot(bmd: away.display.BitmapData): void;
+        public pExecuteRender(entityCollector: away.traverse.EntityCollector, target?: away.gl.TextureBase, scissorRect?: away.geom.Rectangle, surfaceSelector?: number): void;
+        public queueSnapshot(bmd: away.base.BitmapData): void;
         public pExecuteRenderToTexturePass(entityCollector: away.traverse.EntityCollector): void;
         /**
         * Performs the actual drawing of geometry to the target.
         * @param entityCollector The EntityCollector object containing the potentially visible geometry.
         */
-        public pDraw(entityCollector: away.traverse.EntityCollector, target: away.displayGL.TextureBase): void;
+        public pDraw(entityCollector: away.traverse.EntityCollector, target: away.gl.TextureBase): void;
         /**
         * Assign the context once retrieved
         */
@@ -2530,12 +2530,12 @@ declare module away.render {
         */
         constructor(renderBlended?: boolean, distanceBased?: boolean);
         public disableColor : boolean;
-        public iRenderCascades(entityCollector: away.traverse.EntityCollector, target: away.displayGL.TextureBase, numCascades: number, scissorRects: away.geom.Rectangle[], cameras: away.cameras.Camera3D[]): void;
+        public iRenderCascades(entityCollector: away.traverse.EntityCollector, target: away.gl.TextureBase, numCascades: number, scissorRects: away.geom.Rectangle[], cameras: away.cameras.Camera3D[]): void;
         private drawCascadeRenderables(item, camera, cullPlanes);
         /**
         * @inheritDoc
         */
-        public pDraw(entityCollector: away.traverse.EntityCollector, target: away.displayGL.TextureBase): void;
+        public pDraw(entityCollector: away.traverse.EntityCollector, target: away.gl.TextureBase): void;
         /**
         * Draw a list of renderables.
         * @param renderables The renderables to draw.
@@ -2569,13 +2569,13 @@ declare module away.render {
         * @param renderMode The render mode to use.
         */
         constructor();
-        public iStageGLProxy : away.managers.StageGLProxy;
-        public pExecuteRender(entityCollector: away.traverse.EntityCollector, target?: away.displayGL.TextureBase, scissorRect?: away.geom.Rectangle, surfaceSelector?: number): void;
+        public iStageGL : away.base.StageGL;
+        public pExecuteRender(entityCollector: away.traverse.EntityCollector, target?: away.gl.TextureBase, scissorRect?: away.geom.Rectangle, surfaceSelector?: number): void;
         private updateLights(entityCollector);
         /**
         * @inheritDoc
         */
-        public pDraw(entityCollector: away.traverse.EntityCollector, target: away.displayGL.TextureBase): void;
+        public pDraw(entityCollector: away.traverse.EntityCollector, target: away.gl.TextureBase): void;
         /**
         * Draw the skybox if present.
         * @param entityCollector The EntityCollector containing all potentially visible information.
@@ -2605,16 +2605,16 @@ declare module away.render {
         private _mainInputTexture;
         private _requireDepthRender;
         private _rttManager;
-        private _stageGLProxy;
+        private _stageGL;
         private _filterSizesInvalid;
         private _onRTTResizeDelegate;
-        constructor(stageGLProxy: away.managers.StageGLProxy);
+        constructor(stageGL: away.base.StageGL);
         private onRTTResize(event);
         public requireDepthRender : boolean;
-        public getMainInputTexture(stageGLProxy: away.managers.StageGLProxy): away.displayGL.Texture;
+        public getMainInputTexture(stageGL: away.base.StageGL): away.gl.Texture;
         public filters : away.filters.Filter3DBase[];
-        private updateFilterTasks(stageGLProxy);
-        public render(stageGLProxy: away.managers.StageGLProxy, camera3D: away.cameras.Camera3D, depthTexture: away.displayGL.Texture): void;
+        private updateFilterTasks(stageGL);
+        public render(stageGL: away.base.StageGL, camera3D: away.cameras.Camera3D, depthTexture: away.gl.Texture): void;
         private updateFilterSizes();
         public dispose(): void;
     }
@@ -2652,7 +2652,7 @@ declare module away.materials {
         static getDefaultMaterial(renderable?: away.base.IMaterialOwner): materials.TextureMaterial;
         static getDefaultTexture(renderable?: away.base.IMaterialOwner): away.textures.BitmapTexture;
         private static createDefaultTexture();
-        static createCheckeredBitmapData(): away.display.BitmapData;
+        static createCheckeredBitmapData(): away.base.BitmapData;
         private static createDefaultMaterial();
     }
 }
@@ -2804,12 +2804,12 @@ declare module away.entities {
         public iSubSetCount : number;
         public iUpdateSegment(segment: away.primitives.Segment): void;
         public hasData : boolean;
-        public getIndexBuffer(stageGLProxy: away.managers.StageGLProxy): away.displayGL.IndexBuffer;
-        public activateVertexBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
-        public activateUVBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
-        public activateVertexNormalBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
-        public activateVertexTangentBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
-        public activateSecondaryUVBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        public getIndexBuffer(stageGL: away.base.StageGL): away.gl.IndexBuffer;
+        public activateVertexBuffer(index: number, stageGL: away.base.StageGL): void;
+        public activateUVBuffer(index: number, stageGL: away.base.StageGL): void;
+        public activateVertexNormalBuffer(index: number, stageGL: away.base.StageGL): void;
+        public activateVertexTangentBuffer(index: number, stageGL: away.base.StageGL): void;
+        public activateSecondaryUVBuffer(index: number, stageGL: away.base.StageGL): void;
         private reOrderIndices(subSetIndex, index);
         private addSubSet();
         public dispose(): void;
@@ -2963,24 +2963,24 @@ declare module away.entities {
         /**
         * @inheritDoc
         */
-        public activateVertexBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        public activateVertexBuffer(index: number, stageGL: away.base.StageGL): void;
         /**
         * @inheritDoc
         */
-        public activateUVBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        public activateUVBuffer(index: number, stageGL: away.base.StageGL): void;
         /**
         * @inheritDoc
         */
-        public activateVertexNormalBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        public activateVertexNormalBuffer(index: number, stageGL: away.base.StageGL): void;
         /**
         * @inheritDoc
         */
-        public activateVertexTangentBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
-        public activateSecondaryUVBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        public activateVertexTangentBuffer(index: number, stageGL: away.base.StageGL): void;
+        public activateSecondaryUVBuffer(index: number, stageGL: away.base.StageGL): void;
         /**
         * @inheritDoc
         */
-        public getIndexBuffer(stageGLProxy: away.managers.StageGLProxy): away.displayGL.IndexBuffer;
+        public getIndexBuffer(stageGL: away.base.StageGL): away.gl.IndexBuffer;
         /**
         * The amount of triangles that comprise the SkyBox geometry.
         */
@@ -3047,12 +3047,12 @@ declare module away.entities {
         public pickingCollider : away.pick.IPickingCollider;
         public width : number;
         public height : number;
-        public activateVertexBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
-        public activateUVBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
-        public activateSecondaryUVBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
-        public activateVertexNormalBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
-        public activateVertexTangentBuffer(index: number, stageGLProxy: away.managers.StageGLProxy): void;
-        public getIndexBuffer(stageGLProxy: away.managers.StageGLProxy): away.displayGL.IndexBuffer;
+        public activateVertexBuffer(index: number, stageGL: away.base.StageGL): void;
+        public activateUVBuffer(index: number, stageGL: away.base.StageGL): void;
+        public activateSecondaryUVBuffer(index: number, stageGL: away.base.StageGL): void;
+        public activateVertexNormalBuffer(index: number, stageGL: away.base.StageGL): void;
+        public activateVertexTangentBuffer(index: number, stageGL: away.base.StageGL): void;
+        public getIndexBuffer(stageGL: away.base.StageGL): away.gl.IndexBuffer;
         public numTriangles : number;
         public sourceEntity : entities.Entity;
         public material : away.materials.MaterialBase;
@@ -3355,15 +3355,13 @@ declare module away.containers {
 }
 declare module away.containers {
     class View3D {
-        private static sStage;
-        public stage: away.display.Stage;
         public _pScene: containers.Scene3D;
         public _pCamera: away.cameras.Camera3D;
         public _pEntityCollector: away.traverse.EntityCollector;
         public _pFilter3DRenderer: away.render.Filter3DRenderer;
         public _pRequireDepthRender: boolean;
-        public _pDepthRender: away.displayGL.Texture;
-        public _pStageGLProxy: away.managers.StageGLProxy;
+        public _pDepthRender: away.gl.Texture;
+        public _pStageGL: away.base.StageGL;
         public _pBackBufferInvalid: boolean;
         public _pRttBufferManager: away.managers.RTTBufferManager;
         public _pShareContext: boolean;
@@ -3400,13 +3398,13 @@ declare module away.containers {
         private onScenePartitionChanged(e);
         /**
         *
-        * @returns {away.managers.StageGLProxy}
+        * @returns {away.base.StageGL}
         */
         /**
         *
-        * @param stageGLProxy
+        * @param stageGL
         */
-        public stageGLProxy : away.managers.StageGLProxy;
+        public stageGL : away.base.StageGL;
         /**
         *
         * @returns {boolean}
@@ -3985,19 +3983,19 @@ declare module away.filters {
         * The texture scale for the input of this texture. This will define the output of the previous entry in the chain
         */
         public textureScale : number;
-        public target : away.displayGL.Texture;
+        public target : away.gl.Texture;
         public textureWidth : number;
         public textureHeight : number;
-        public getMainInputTexture(stage: away.managers.StageGLProxy): away.displayGL.Texture;
+        public getMainInputTexture(stage: away.base.StageGL): away.gl.Texture;
         public dispose(): void;
         public pInvalidateProgram(): void;
-        public pUpdateProgram(stage: away.managers.StageGLProxy): void;
+        public pUpdateProgram(stage: away.base.StageGL): void;
         public pGetVertexCode(): string;
         public pGetFragmentCode(): string;
-        public pUpdateTextures(stage: away.managers.StageGLProxy): void;
-        public getProgram(stageGLProxy: away.managers.StageGLProxy): away.displayGL.Program;
-        public activate(stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D, depthTexture: away.displayGL.Texture): void;
-        public deactivate(stageGLProxy: away.managers.StageGLProxy): void;
+        public pUpdateTextures(stage: away.base.StageGL): void;
+        public getProgram(stageGL: away.base.StageGL): away.gl.Program;
+        public activate(stageGL: away.base.StageGL, camera: away.cameras.Camera3D, depthTexture: away.gl.Texture): void;
+        public deactivate(stageGL: away.base.StageGL): void;
         public requireDepthRender : boolean;
     }
 }
@@ -4011,12 +4009,12 @@ declare module away.filters {
         public requireDepthRender : boolean;
         public pAddTask(filter: filters.Filter3DTaskBase): void;
         public tasks : filters.Filter3DTaskBase[];
-        public getMainInputTexture(stageGLProxy: away.managers.StageGLProxy): away.displayGL.Texture;
+        public getMainInputTexture(stageGL: away.base.StageGL): away.gl.Texture;
         public textureWidth : number;
         public textureHeight : number;
-        public setRenderTargets(mainTarget: away.displayGL.Texture, stageGLProxy: away.managers.StageGLProxy): void;
+        public setRenderTargets(mainTarget: away.gl.Texture, stageGL: away.base.StageGL): void;
         public dispose(): void;
-        public update(stage: away.managers.StageGLProxy, camera: away.cameras.Camera3D): void;
+        public update(stage: away.base.StageGL, camera: away.cameras.Camera3D): void;
     }
 }
 declare module away.lights {
@@ -4122,9 +4120,9 @@ declare module away.lights {
         public depthMapSize : number;
         public dispose(): void;
         public pCreateDepthTexture(): away.textures.TextureProxyBase;
-        public iRenderDepthMap(stageGLProxy: away.managers.StageGLProxy, entityCollector: away.traverse.EntityCollector, renderer: away.render.DepthRenderer): void;
+        public iRenderDepthMap(stageGL: away.base.StageGL, entityCollector: away.traverse.EntityCollector, renderer: away.render.DepthRenderer): void;
         public pUpdateDepthProjection(viewCamera: away.cameras.Camera3D): void;
-        public pDrawDepthMap(target: away.displayGL.TextureBase, scene: away.containers.Scene3D, renderer: away.render.DepthRenderer): void;
+        public pDrawDepthMap(target: away.gl.TextureBase, scene: away.containers.Scene3D, renderer: away.render.DepthRenderer): void;
     }
 }
 declare module away.lights {
@@ -4137,7 +4135,7 @@ declare module away.lights {
         private addCamera(rotationX, rotationY, rotationZ);
         public pCreateDepthTexture(): away.textures.TextureProxyBase;
         public pUpdateDepthProjection(viewCamera: away.cameras.Camera3D): void;
-        public pDrawDepthMap(target: away.displayGL.TextureBase, scene: away.containers.Scene3D, renderer: away.render.DepthRenderer): void;
+        public pDrawDepthMap(target: away.gl.TextureBase, scene: away.containers.Scene3D, renderer: away.render.DepthRenderer): void;
     }
 }
 declare module away.lights {
@@ -4156,7 +4154,7 @@ declare module away.lights {
         public lightOffset : number;
         public iDepthProjection : away.geom.Matrix3D;
         public depth : number;
-        public pDrawDepthMap(target: away.displayGL.TextureBase, scene: away.containers.Scene3D, renderer: away.render.DepthRenderer): void;
+        public pDrawDepthMap(target: away.gl.TextureBase, scene: away.containers.Scene3D, renderer: away.render.DepthRenderer): void;
         public pUpdateCullPlanes(viewCamera: away.cameras.Camera3D): void;
         public pUpdateDepthProjection(viewCamera: away.cameras.Camera3D): void;
         public pUpdateProjectionFromFrustumCorners(viewCamera: away.cameras.Camera3D, corners: number[], matrix: away.geom.Matrix3D): void;
@@ -4233,15 +4231,15 @@ declare module away.managers {
 declare module away.managers {
     class AGALProgramCache {
         private static _instances;
-        private _stageGLProxy;
+        private _stageGL;
         private _program3Ds;
         private _ids;
         private _usages;
         private _keys;
         private _onContextGLDisposedDelegate;
         private static _currentId;
-        constructor(stageGLProxy: managers.StageGLProxy, agalProgramCacheSingletonEnforcer: AGALProgramCacheSingletonEnforcer);
-        static getInstance(stageGLProxy: managers.StageGLProxy): AGALProgramCache;
+        constructor(stageGL: away.base.StageGL, agalProgramCacheSingletonEnforcer: AGALProgramCacheSingletonEnforcer);
+        static getInstance(stageGL: away.base.StageGL): AGALProgramCache;
         static getInstanceFromIndex(index: number): AGALProgramCache;
         private static onContextGLDisposed(event);
         public dispose(): void;
@@ -4254,7 +4252,7 @@ declare module away.managers {
 declare class AGALProgramCacheSingletonEnforcer {
 }
 declare module away.materials {
-    import Program = away.displayGL.Program;
+    import Program = away.gl.Program;
     /**
     * MaterialPassBase provides an abstract base class for material shader passes. A material pass constitutes at least
     * a render call per required renderable.
@@ -4378,13 +4376,13 @@ declare module away.materials {
         *
         * @private
         */
-        public iUpdateAnimationState(renderable: away.base.IRenderable, stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D): void;
+        public iUpdateAnimationState(renderable: away.base.IRenderable, stageGL: away.base.StageGL, camera: away.cameras.Camera3D): void;
         /**
         * Renders an object to the current render target.
         *
         * @private
         */
-        public iRender(renderable: away.base.IRenderable, stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D, viewProjection: away.geom.Matrix3D): void;
+        public iRender(renderable: away.base.IRenderable, stageGL: away.base.StageGL, camera: away.cameras.Camera3D, viewProjection: away.geom.Matrix3D): void;
         /**
         * Returns the vertex AGAL code for the material.
         */
@@ -4407,18 +4405,18 @@ declare module away.materials {
         /**
         * Sets the render state for the pass that is independent of the rendered object. This needs to be called before
         * calling renderPass. Before activating a pass, the previously used pass needs to be deactivated.
-        * @param stageGLProxy The StageGLProxy object which is currently used for rendering.
+        * @param stageGL The StageGL object which is currently used for rendering.
         * @param camera The camera from which the scene is viewed.
         * @private
         */
-        public iActivate(stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D): void;
+        public iActivate(stageGL: away.base.StageGL, camera: away.cameras.Camera3D): void;
         /**
         * Clears the render state for the pass. This needs to be called before activating another pass.
-        * @param stageGLProxy The StageGLProxy used for rendering
+        * @param stageGL The StageGL used for rendering
         *
         * @private
         */
-        public iDeactivate(stageGLProxy: away.managers.StageGLProxy): void;
+        public iDeactivate(stageGL: away.base.StageGL): void;
         /**
         * Marks the shader program as invalid, so it will be recompiled before the next render.
         *
@@ -4429,7 +4427,7 @@ declare module away.materials {
         * Compiles the shader program.
         * @param polyOffsetReg An optional register that contains an amount by which to inflate the model (used in single object depth map rendering).
         */
-        public iUpdateProgram(stageGLProxy: away.managers.StageGLProxy): void;
+        public iUpdateProgram(stageGL: away.base.StageGL): void;
         /**
         * The light picker used by the material to provide lights to the material if it supports lighting.
         *
@@ -4527,7 +4525,7 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iUpdateProgram(stageGLProxy: away.managers.StageGLProxy): void;
+        public iUpdateProgram(stageGL: away.base.StageGL): void;
         /**
         * Resets the compilation state.
         *
@@ -4642,7 +4640,7 @@ declare module away.materials {
         /**
         * Updates constant data render state used by the light probes. This method is optional for subclasses to implement.
         */
-        public pUpdateProbes(stageGLProxy: away.managers.StageGLProxy): void;
+        public pUpdateProbes(stageGL: away.base.StageGL): void;
         /**
         * Called when any method's shader code is invalidated.
         */
@@ -4658,11 +4656,11 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iActivate(stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D): void;
+        public iActivate(stageGL: away.base.StageGL, camera: away.cameras.Camera3D): void;
         /**
         * @inheritDoc
         */
-        public iRender(renderable: away.base.IRenderable, stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D, viewProjection: away.geom.Matrix3D): void;
+        public iRender(renderable: away.base.IRenderable, stageGL: away.base.StageGL, camera: away.cameras.Camera3D, viewProjection: away.geom.Matrix3D): void;
         /**
         * Indicates whether the shader uses any light probes.
         */
@@ -4674,7 +4672,7 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iDeactivate(stageGLProxy: away.managers.StageGLProxy): void;
+        public iDeactivate(stageGL: away.base.StageGL): void;
         /**
         * Define which light source types to use for specular reflections. This allows choosing between regular lights
         * and/or light probes for specular reflections.
@@ -4764,11 +4762,11 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iActivate(stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D): void;
+        public iActivate(stageGL: away.base.StageGL, camera: away.cameras.Camera3D): void;
         /**
         * @inheritDoc
         */
-        public iDeactivate(stageGLProxy: away.managers.StageGLProxy): void;
+        public iDeactivate(stageGL: away.base.StageGL): void;
         /**
         * @inheritDoc
         */
@@ -4792,7 +4790,7 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public pUpdateProbes(stageGLProxy: away.managers.StageGLProxy): void;
+        public pUpdateProbes(stageGL: away.base.StageGL): void;
         /**
         * Indicates whether lights should be ignored in this pass. This is used when only effect methods are rendered in
         * a multipass material.
@@ -4835,11 +4833,11 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iRender(renderable: away.base.IRenderable, stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D, viewProjection: away.geom.Matrix3D): void;
+        public iRender(renderable: away.base.IRenderable, stageGL: away.base.StageGL, camera: away.cameras.Camera3D, viewProjection: away.geom.Matrix3D): void;
         /**
         * @inheritDoc
         */
-        public iActivate(stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D): void;
+        public iActivate(stageGL: away.base.StageGL, camera: away.cameras.Camera3D): void;
     }
 }
 declare module away.materials {
@@ -4878,11 +4876,11 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iRender(renderable: away.base.IRenderable, stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D, viewProjection: away.geom.Matrix3D): void;
+        public iRender(renderable: away.base.IRenderable, stageGL: away.base.StageGL, camera: away.cameras.Camera3D, viewProjection: away.geom.Matrix3D): void;
         /**
         * @inheritDoc
         */
-        public iActivate(stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D): void;
+        public iActivate(stageGL: away.base.StageGL, camera: away.cameras.Camera3D): void;
     }
 }
 declare module away.materials {
@@ -4963,11 +4961,11 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iRender(renderable: away.base.IRenderable, stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D, viewProjection: away.geom.Matrix3D): void;
+        public iRender(renderable: away.base.IRenderable, stageGL: away.base.StageGL, camera: away.cameras.Camera3D, viewProjection: away.geom.Matrix3D): void;
         /**
         * @inheritDoc
         */
-        public iActivate(stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D): void;
+        public iActivate(stageGL: away.base.StageGL, camera: away.cameras.Camera3D): void;
         /**
         * Indicates whether any light probes are used to contribute to the specular shading.
         */
@@ -4983,7 +4981,7 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public pUpdateProbes(stageGLProxy: away.managers.StageGLProxy): void;
+        public pUpdateProbes(stageGL: away.base.StageGL): void;
     }
 }
 declare module away.materials {
@@ -5022,11 +5020,11 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iRender(renderable: away.base.IRenderable, stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D, viewProjection: away.geom.Matrix3D): void;
+        public iRender(renderable: away.base.IRenderable, stageGL: away.base.StageGL, camera: away.cameras.Camera3D, viewProjection: away.geom.Matrix3D): void;
         /**
         * @inheritDoc
         */
-        public iActivate(stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D): void;
+        public iActivate(stageGL: away.base.StageGL, camera: away.cameras.Camera3D): void;
         /**
         * @inheritDoc
         */
@@ -5042,7 +5040,7 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public pUpdateProbes(stageGLProxy: away.managers.StageGLProxy): void;
+        public pUpdateProbes(stageGL: away.base.StageGL): void;
     }
 }
 declare module away.materials {
@@ -5073,15 +5071,15 @@ declare module away.materials {
         * @inheritDoc
         * todo: keep maps in dictionary per renderable
         */
-        public iRender(renderable: away.base.IRenderable, stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D, viewProjection: away.geom.Matrix3D): void;
+        public iRender(renderable: away.base.IRenderable, stageGL: away.base.StageGL, camera: away.cameras.Camera3D, viewProjection: away.geom.Matrix3D): void;
         /**
         * @inheritDoc
         */
-        public iActivate(stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D): void;
+        public iActivate(stageGL: away.base.StageGL, camera: away.cameras.Camera3D): void;
         /**
         * @inheritDoc
         */
-        public pDeactivate(stageGLProxy: away.managers.StageGLProxy): void;
+        public pDeactivate(stageGL: away.base.StageGL): void;
     }
 }
 declare module away.materials {
@@ -5110,11 +5108,11 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iRender(renderable: away.base.IRenderable, stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D, viewProjection: away.geom.Matrix3D): void;
+        public iRender(renderable: away.base.IRenderable, stageGL: away.base.StageGL, camera: away.cameras.Camera3D, viewProjection: away.geom.Matrix3D): void;
         /**
         * @inheritDoc
         */
-        public iActivate(stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D): void;
+        public iActivate(stageGL: away.base.StageGL, camera: away.cameras.Camera3D): void;
     }
 }
 declare module away.materials {
@@ -5215,25 +5213,25 @@ declare module away.materials {
         * Sets the render state for this method.
         *
         * @param vo The MethodVO object linking this method with the pass currently being compiled.
-        * @param stageGLProxy The StageGLProxy object currently used for rendering.
+        * @param stageGL The StageGL object currently used for rendering.
         * @private
         */
-        public iActivate(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
         /**
         * Sets the render state for a single renderable.
         *
         * @param vo The MethodVO object linking this method with the pass currently being compiled.
         * @param renderable The renderable currently being rendered.
-        * @param stageGLProxy The StageGLProxy object currently used for rendering.
+        * @param stageGL The StageGL object currently used for rendering.
         * @param camera The camera from which the scene is currently rendered.
         */
-        public iSetRenderState(vo: materials.MethodVO, renderable: away.base.IRenderable, stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D): void;
+        public iSetRenderState(vo: materials.MethodVO, renderable: away.base.IRenderable, stageGL: away.base.StageGL, camera: away.cameras.Camera3D): void;
         /**
         * Clears the render state for this method.
         * @param vo The MethodVO object linking this method with the pass currently being compiled.
-        * @param stageGLProxy The StageGLProxy object currently used for rendering.
+        * @param stageGL The StageGL object currently used for rendering.
         */
-        public iDeactivate(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        public iDeactivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
         /**
         * A helper method that generates standard code for sampling from a texture using the normal uv coordinates.
         * @param vo The MethodVO object linking this method with the pass currently being compiled.
@@ -5568,7 +5566,7 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iSetRenderState(vo: materials.MethodVO, renderable: away.base.IRenderable, stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D): void;
+        public iSetRenderState(vo: materials.MethodVO, renderable: away.base.IRenderable, stageGL: away.base.StageGL, camera: away.cameras.Camera3D): void;
         /**
         * Gets the fragment code for combining this method with a cascaded shadow map method.
         * @param vo The MethodVO object linking this method with the pass currently being compiled.
@@ -5583,11 +5581,11 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iActivate(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
         /**
         * Sets the method state for cascade shadow mapping.
         */
-        public iActivateForCascade(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        public iActivateForCascade(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
     }
 }
 declare module away.materials {
@@ -5613,7 +5611,7 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iActivateForCascade(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        public iActivateForCascade(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
         /**
         * @inheritDoc
         */
@@ -5661,7 +5659,7 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iActivate(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
         /**
         * @inheritDoc
         */
@@ -5692,7 +5690,7 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iActivateForCascade(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        public iActivateForCascade(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
     }
 }
 declare module away.materials {
@@ -5726,7 +5724,7 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iActivate(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
         /**
         * @inheritDoc
         */
@@ -5744,7 +5742,7 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iActivateForCascade(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        public iActivateForCascade(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
         /**
         * @inheritDoc
         */
@@ -5805,7 +5803,7 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iActivate(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
         /**
         * @inheritDoc
         */
@@ -5831,7 +5829,7 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iActivateForCascade(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        public iActivateForCascade(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
         /**
         * @inheritDoc
         */
@@ -5891,15 +5889,15 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iActivate(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
         /**
         * @inheritDoc
         */
-        public iDeactivate(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        public iDeactivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
         /**
         * @inheritDoc
         */
-        public iSetRenderState(vo: materials.MethodVO, renderable: away.base.IRenderable, stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D): void;
+        public iSetRenderState(vo: materials.MethodVO, renderable: away.base.IRenderable, stageGL: away.base.StageGL, camera: away.cameras.Camera3D): void;
         /**
         * @inheritDoc
         */
@@ -5977,7 +5975,7 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iActivate(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
         /**
         * Updates the ambient color data used by the render state.
         */
@@ -5985,7 +5983,7 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iSetRenderState(vo: materials.MethodVO, renderable: away.base.IRenderable, stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D): void;
+        public iSetRenderState(vo: materials.MethodVO, renderable: away.base.IRenderable, stageGL: away.base.StageGL, camera: away.cameras.Camera3D): void;
     }
 }
 declare module away.materials {
@@ -6017,9 +6015,9 @@ declare module away.materials {
         public iInitVO(vo: materials.MethodVO): void;
         /**
         * Forces the creation of the texture.
-        * @param stageGLProxy The StageGLProxy used by the renderer
+        * @param stageGL The StageGL used by the renderer
         */
-        public generateMip(stageGLProxy: away.managers.StageGLProxy): void;
+        public generateMip(stageGL: away.base.StageGL): void;
         /**
         * The alpha component of the diffuse reflection.
         */
@@ -6075,7 +6073,7 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iActivate(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
         /**
         * Updates the diffuse color data used by the render state.
         */
@@ -6132,7 +6130,7 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iActivate(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
         /**
         * @inheritDoc
         */
@@ -6212,7 +6210,7 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iActivate(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
         /**
         * Updates the specular color data used by the render state.
         */
@@ -6246,7 +6244,7 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iActivate(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
     }
 }
 declare module away.materials {
@@ -6335,11 +6333,11 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iActivate(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
         /**
         * @inheritDoc
         */
-        public iDeactivate(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        public iDeactivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
         /**
         * @inheritDoc
         */
@@ -6421,11 +6419,11 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iActivate(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
         /**
         * @inheritDoc
         */
-        public iDeactivate(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        public iDeactivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
         /**
         * @inheritDoc
         */
@@ -6507,7 +6505,7 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iActivate(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
         /**
         * @inheritDoc
         */
@@ -6552,7 +6550,7 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iActivate(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
         /**
         * @inheritDoc
         */
@@ -6630,7 +6628,7 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iActivate(vo: materials.MethodVO, stageGLProxy: away.managers.StageGLProxy): void;
+        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
         /**
         * @inheritDoc
         */
@@ -7657,7 +7655,7 @@ declare module away.materials {
         /**
         * The depth compare mode used to render the renderables using this material.
         *
-        * @see away.displayGL.ContextGLCompareMode
+        * @see away.gl.ContextGLCompareMode
         */
         public depthCompareMode : string;
         public setDepthCompareMode(value: string): void;
@@ -7720,34 +7718,34 @@ declare module away.materials {
         * Sets the render state for the depth pass that is independent of the rendered object. Used when rendering
         * depth or distances (fe: shadow maps, depth pre-pass).
         *
-        * @param stageGLProxy The StageGLProxy used for rendering.
+        * @param stageGL The StageGL used for rendering.
         * @param camera The camera from which the scene is viewed.
         * @param distanceBased Whether or not the depth pass or distance pass should be activated. The distance pass
         * is required for shadow cube maps.
         *
         * @private
         */
-        public iActivateForDepth(stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D, distanceBased?: boolean): void;
+        public iActivateForDepth(stageGL: away.base.StageGL, camera: away.cameras.Camera3D, distanceBased?: boolean): void;
         /**
         * Clears the render state for the depth pass.
         *
-        * @param stageGLProxy The StageGLProxy used for rendering.
+        * @param stageGL The StageGL used for rendering.
         *
         * @private
         */
-        public iDeactivateForDepth(stageGLProxy: away.managers.StageGLProxy): void;
+        public iDeactivateForDepth(stageGL: away.base.StageGL): void;
         /**
         * Renders a renderable using the depth pass.
         *
         * @param renderable The IRenderable instance that needs to be rendered.
-        * @param stageGLProxy The StageGLProxy used for rendering.
+        * @param stageGL The StageGL used for rendering.
         * @param camera The camera from which the scene is viewed.
         * @param viewProjection The view-projection matrix used to project to the screen. This is not the same as
         * camera.viewProjection as it includes the scaling factors when rendering to textures.
         *
         * @private
         */
-        public iRenderDepth(renderable: away.base.IRenderable, stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D, viewProjection: away.geom.Matrix3D): void;
+        public iRenderDepth(renderable: away.base.IRenderable, stageGL: away.base.StageGL, camera: away.cameras.Camera3D, viewProjection: away.geom.Matrix3D): void;
         /**
         * Indicates whether or not the pass with the given index renders to texture or not.
         * @param index The index of the pass.
@@ -7760,29 +7758,29 @@ declare module away.materials {
         * Sets the render state for a pass that is independent of the rendered object. This needs to be called before
         * calling renderPass. Before activating a pass, the previously used pass needs to be deactivated.
         * @param index The index of the pass to activate.
-        * @param stageGLProxy The StageGLProxy object which is currently used for rendering.
+        * @param stageGL The StageGL object which is currently used for rendering.
         * @param camera The camera from which the scene is viewed.
         * @private
         */
-        public iActivatePass(index: number, stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D): void;
+        public iActivatePass(index: number, stageGL: away.base.StageGL, camera: away.cameras.Camera3D): void;
         /**
         * Clears the render state for a pass. This needs to be called before activating another pass.
         * @param index The index of the pass to deactivate.
-        * @param stageGLProxy The StageGLProxy used for rendering
+        * @param stageGL The StageGL used for rendering
         *
         * @private
         */
-        public iDeactivatePass(index: number, stageGLProxy: away.managers.StageGLProxy): void;
+        public iDeactivatePass(index: number, stageGL: away.base.StageGL): void;
         /**
         * Renders the current pass. Before calling renderPass, activatePass needs to be called with the same index.
         * @param index The index of the pass used to render the renderable.
         * @param renderable The IRenderable object to draw.
-        * @param stageGLProxy The StageGLProxy object used for rendering.
+        * @param stageGL The StageGL object used for rendering.
         * @param entityCollector The EntityCollector object that contains the visible scene data.
         * @param viewProjection The view-projection matrix used to project to the screen. This is not the same as
         * camera.viewProjection as it includes the scaling factors when rendering to textures.
         */
-        public iRenderPass(index: number, renderable: away.base.IRenderable, stageGLProxy: away.managers.StageGLProxy, entityCollector: away.traverse.EntityCollector, viewProjection: away.geom.Matrix3D): void;
+        public iRenderPass(index: number, renderable: away.base.IRenderable, stageGL: away.base.StageGL, entityCollector: away.traverse.EntityCollector, viewProjection: away.geom.Matrix3D): void;
         /**
         * Mark an IMaterialOwner as owner of this material.
         * Assures we're not using the same material across renderables with different animations, since the
@@ -7810,13 +7808,13 @@ declare module away.materials {
         *
         * @private
         */
-        public iUpdateMaterial(context: away.displayGL.ContextGL): void;
+        public iUpdateMaterial(context: away.gl.ContextGL): void;
         /**
         * Deactivates the last pass of the material.
         *
         * @private
         */
-        public iDeactivate(stageGLProxy: away.managers.StageGLProxy): void;
+        public iDeactivate(stageGL: away.base.StageGL): void;
         /**
         * Marks the shader programs for all passes as invalid, so they will be recompiled before the next use.
         * @param triggerPass The pass triggering the invalidation, if any. This is passed to prevent invalidating the
@@ -7887,7 +7885,7 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iActivateForDepth(stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D, distanceBased?: boolean): void;
+        public iActivateForDepth(stageGL: away.base.StageGL, camera: away.cameras.Camera3D, distanceBased?: boolean): void;
         /**
         * Define which light source types to use for specular reflections. This allows choosing between regular lights
         * and/or light probes for specular reflections.
@@ -8009,7 +8007,7 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iUpdateMaterial(context: away.displayGL.ContextGL): void;
+        public iUpdateMaterial(context: away.gl.ContextGL): void;
         /**
         * @inheritDoc
         */
@@ -8062,7 +8060,7 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iActivateForDepth(stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D, distanceBased?: boolean): void;
+        public iActivateForDepth(stageGL: away.base.StageGL, camera: away.cameras.Camera3D, distanceBased?: boolean): void;
         /**
         * Define which light source types to use for specular reflections. This allows choosing between regular lights
         * and/or light probes for specular reflections.
@@ -8177,7 +8175,7 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iUpdateMaterial(context: away.displayGL.ContextGL): void;
+        public iUpdateMaterial(context: away.gl.ContextGL): void;
         /**
         * Adds a compiled pass that renders to the screen.
         * @param pass The pass to be added.
@@ -8196,11 +8194,11 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iActivatePass(index: number, stageGLProxy: away.managers.StageGLProxy, camera: away.cameras.Camera3D): void;
+        public iActivatePass(index: number, stageGL: away.base.StageGL, camera: away.cameras.Camera3D): void;
         /**
         * @inheritDoc
         */
-        public iDeactivate(stageGLProxy: away.managers.StageGLProxy): void;
+        public iDeactivate(stageGL: away.base.StageGL): void;
         /**
         * Updates screen passes when they were found to be invalid.
         */
@@ -9206,7 +9204,7 @@ declare module away.utils {
         static tryColor(data: any): number;
         static color(data: any): number;
         static tryClass(name: string): any;
-        static bitmapData(data: any): away.display.BitmapData;
+        static bitmapData(data: any): away.base.BitmapData;
         static bitmapTexture(data: any): away.textures.BitmapTexture;
     }
 }
@@ -9295,8 +9293,8 @@ declare module away.animators {
     class AnimationSubGeometry {
         static SUBGEOM_ID_COUNT: number;
         public _pVertexData: number[];
-        public _pVertexBuffer: away.displayGL.VertexBuffer[];
-        public _pBufferContext: away.displayGL.ContextGL[];
+        public _pVertexBuffer: away.gl.VertexBuffer[];
+        public _pBufferContext: away.gl.ContextGL[];
         public _pBufferDirty: Boolean[];
         private _numVertices;
         private _totalLenOfOneVertex;
@@ -9311,7 +9309,7 @@ declare module away.animators {
         public _iUniqueId: number;
         constructor();
         public createVertexData(numVertices: number, totalLenOfOneVertex: number): void;
-        public activateVertexBuffer(index: number, bufferOffset: number, stageGLProxy: away.managers.StageGLProxy, format: string): void;
+        public activateVertexBuffer(index: number, bufferOffset: number, stageGL: away.base.StageGL, format: string): void;
         public dispose(): void;
         public invalidateBuffer(): void;
         public vertexData : number[];
@@ -10752,7 +10750,7 @@ declare module away.animators {
         public _pNeedUpdateTime: boolean;
         constructor(animator: animators.ParticleAnimator, particleNode: animators.ParticleNodeBase, needUpdateTime?: boolean);
         public needUpdateTime : boolean;
-        public setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        public setRenderState(stageGL: away.base.StageGL, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
         public _pUpdateDynamicProperties(animationSubGeometry: animators.AnimationSubGeometry): void;
     }
 }
@@ -10772,7 +10770,7 @@ declare module away.animators {
         /**
         * @inheritDoc
         */
-        public setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        public setRenderState(stageGL: away.base.StageGL, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
         private updateAccelerationData();
     }
 }
@@ -10793,7 +10791,7 @@ declare module away.animators {
         */
         public endPoint : away.geom.Vector3D;
         constructor(animator: animators.ParticleAnimator, particleBezierCurveNode: animators.ParticleBezierCurveNode);
-        public setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        public setRenderState(stageGL: away.base.StageGL, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
     }
 }
 declare module away.animators {
@@ -10807,7 +10805,7 @@ declare module away.animators {
         *
         */
         constructor(animator: animators.ParticleAnimator, particleNode: animators.ParticleBillboardNode);
-        public setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        public setRenderState(stageGL: away.base.StageGL, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
         /**
         * Defines the billboard axis.
         */
@@ -10851,7 +10849,7 @@ declare module away.animators {
         */
         public cyclePhase : number;
         constructor(animator: animators.ParticleAnimator, particleColorNode: animators.ParticleColorNode);
-        public setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        public setRenderState(stageGL: away.base.StageGL, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
         private updateColorData();
     }
 }
@@ -10874,7 +10872,7 @@ declare module away.animators {
         /**
         * @inheritDoc
         */
-        public setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        public setRenderState(stageGL: away.base.StageGL, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
         private processPosition(currentTime, deltaTime, animationSubGeometry);
         private precessRotation(currentTime, deltaTime, animationSubGeometry);
         private processPositionAndRotation(currentTime, deltaTime, animationSubGeometry);
@@ -10896,7 +10894,7 @@ declare module away.animators {
         /**
         * @inheritDoc
         */
-        public setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        public setRenderState(stageGL: away.base.StageGL, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
         private updateColorData();
     }
 }
@@ -10932,7 +10930,7 @@ declare module away.animators {
         */
         public eulers : away.geom.Vector3D;
         constructor(animator: animators.ParticleAnimator, particleOrbitNode: animators.ParticleOrbitNode);
-        public setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        public setRenderState(stageGL: away.base.StageGL, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
         private updateOrbitData();
     }
 }
@@ -10952,7 +10950,7 @@ declare module away.animators {
         /**
         * @inheritDoc
         */
-        public setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        public setRenderState(stageGL: away.base.StageGL, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
         private updateOscillatorData();
     }
 }
@@ -10977,7 +10975,7 @@ declare module away.animators {
         /**
         * @inheritDoc
         */
-        public setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        public setRenderState(stageGL: away.base.StageGL, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
     }
 }
 declare module away.animators {
@@ -10987,7 +10985,7 @@ declare module away.animators {
     class ParticleRotateToHeadingState extends animators.ParticleStateBase {
         private _matrix;
         constructor(animator: animators.ParticleAnimator, particleNode: animators.ParticleNodeBase);
-        public setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        public setRenderState(stageGL: away.base.StageGL, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
     }
 }
 declare module away.animators {
@@ -11004,7 +11002,7 @@ declare module away.animators {
         */
         public position : away.geom.Vector3D;
         constructor(animator: animators.ParticleAnimator, particleRotateToPositionNode: animators.ParticleRotateToPositionNode);
-        public setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        public setRenderState(stageGL: away.base.StageGL, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
     }
 }
 declare module away.animators {
@@ -11028,7 +11026,7 @@ declare module away.animators {
         /**
         * @inheritDoc
         */
-        public setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        public setRenderState(stageGL: away.base.StageGL, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
         private updateRotationalVelocityData();
     }
 }
@@ -11062,7 +11060,7 @@ declare module away.animators {
         */
         public cyclePhase : number;
         constructor(animator: animators.ParticleAnimator, particleScaleNode: animators.ParticleScaleNode);
-        public setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        public setRenderState(stageGL: away.base.StageGL, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
         private updateScaleData();
     }
 }
@@ -11096,7 +11094,7 @@ declare module away.animators {
         public usesMultiplier : boolean;
         public usesOffset : boolean;
         constructor(animator: animators.ParticleAnimator, particleSegmentedColorNode: animators.ParticleSegmentedColorNode);
-        public setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        public setRenderState(stageGL: away.base.StageGL, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
         private updateColorData();
     }
 }
@@ -11123,7 +11121,7 @@ declare module away.animators {
         */
         public cycleDuration : number;
         constructor(animator: animators.ParticleAnimator, particleSpriteSheetNode: animators.ParticleSpriteSheetNode);
-        public setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        public setRenderState(stageGL: away.base.StageGL, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
         private updateSpriteSheetData();
     }
 }
@@ -11134,7 +11132,7 @@ declare module away.animators {
     class ParticleTimeState extends animators.ParticleStateBase {
         private _particleTimeNode;
         constructor(animator: animators.ParticleAnimator, particleTimeNode: animators.ParticleTimeNode);
-        public setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        public setRenderState(stageGL: away.base.StageGL, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
     }
 }
 declare module away.animators {
@@ -11144,7 +11142,7 @@ declare module away.animators {
     class ParticleUVState extends animators.ParticleStateBase {
         private _particleUVNode;
         constructor(animator: animators.ParticleAnimator, particleUVNode: animators.ParticleUVNode);
-        public setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        public setRenderState(stageGL: away.base.StageGL, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
     }
 }
 declare module away.animators {
@@ -11164,7 +11162,7 @@ declare module away.animators {
         public getVelocities(): away.geom.Vector3D[];
         public setVelocities(value: away.geom.Vector3D[]): void;
         constructor(animator: animators.ParticleAnimator, particleVelocityNode: animators.ParticleVelocityNode);
-        public setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
+        public setRenderState(stageGL: away.base.StageGL, renderable: away.base.IRenderable, animationSubGeometry: animators.AnimationSubGeometry, animationRegisterCache: animators.AnimationRegisterCache, camera: away.cameras.Camera3D): void;
     }
 }
 declare module away.animators {
@@ -11816,21 +11814,21 @@ declare module away.animators {
         /**
         * Sets the GPU render state required by the animation that is independent of the rendered mesh.
         *
-        * @param stageGLProxy The proxy currently performing the rendering.
+        * @param stageGL The proxy currently performing the rendering.
         * @param pass The material pass currently being used to render the geometry.
         *
         * @private
         */
-        activate(stageGLProxy: away.managers.StageGLProxy, pass: away.materials.MaterialPassBase);
+        activate(stageGL: away.base.StageGL, pass: away.materials.MaterialPassBase);
         /**
         * Clears the GPU render state that has been set by the current animation.
         *
-        * @param stageGLProxy The proxy currently performing the rendering.
+        * @param stageGL The proxy currently performing the rendering.
         * @param pass The material pass currently being used to render the geometry.
         *
         * @private
         */
-        deactivate(stageGLProxy: away.managers.StageGLProxy, pass: away.materials.MaterialPassBase);
+        deactivate(stageGL: away.base.StageGL, pass: away.materials.MaterialPassBase);
     }
 }
 declare module away.animators {
@@ -11847,12 +11845,12 @@ declare module away.animators {
         /**
         * Sets the GPU render state required by the animation that is dependent of the rendered object.
         *
-        * @param stageGLProxy The StageGLProxy object which is currently being used for rendering.
+        * @param stageGL The StageGL object which is currently being used for rendering.
         * @param renderable The object currently being rendered.
         * @param vertexConstantOffset The first available vertex register to write data to if running on the gpu.
         * @param vertexStreamOffset The first available vertex stream to write vertex data to if running on the gpu.
         */
-        setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, vertexConstantOffset: number, vertexStreamOffset: number, camera: away.cameras.Camera3D);
+        setRenderState(stageGL: away.base.StageGL, renderable: away.base.IRenderable, vertexConstantOffset: number, vertexStreamOffset: number, camera: away.cameras.Camera3D);
         /**
         * Verifies if the animation will be used on cpu. Needs to be true for all passes for a material to be able to use it on gpu.
         * Needs to be called if gpu code is potentially required.
@@ -11946,11 +11944,11 @@ declare module away.animators {
         /**
         * @inheritDoc
         */
-        public activate(stageGLProxy: away.managers.StageGLProxy, pass: away.materials.MaterialPassBase): void;
+        public activate(stageGL: away.base.StageGL, pass: away.materials.MaterialPassBase): void;
         /**
         * @inheritDoc
         */
-        public deactivate(stageGLProxy: away.managers.StageGLProxy, pass: away.materials.MaterialPassBase): void;
+        public deactivate(stageGL: away.base.StageGL, pass: away.materials.MaterialPassBase): void;
         /**
         * @inheritDoc
         */
@@ -12010,7 +12008,7 @@ declare module away.animators {
         /**
         * @inheritDoc
         */
-        public setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, vertexConstantOffset: number, vertexStreamOffset: number, camera: away.cameras.Camera3D): void;
+        public setRenderState(stageGL: away.base.StageGL, renderable: away.base.IRenderable, vertexConstantOffset: number, vertexStreamOffset: number, camera: away.cameras.Camera3D): void;
         /**
         * @inheritDoc
         */
@@ -12101,7 +12099,7 @@ declare module away.animators {
         /**
         * @inheritDoc
         */
-        public setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, vertexConstantOffset: number, vertexStreamOffset: number, camera: away.cameras.Camera3D): void;
+        public setRenderState(stageGL: away.base.StageGL, renderable: away.base.IRenderable, vertexConstantOffset: number, vertexStreamOffset: number, camera: away.cameras.Camera3D): void;
         /**
         * @inheritDoc
         */
@@ -12158,11 +12156,11 @@ declare module away.animators {
         /**
         * @inheritDoc
         */
-        public activate(stageGLProxy: away.managers.StageGLProxy, pass: away.materials.MaterialPassBase): void;
+        public activate(stageGL: away.base.StageGL, pass: away.materials.MaterialPassBase): void;
         /**
         * @inheritDoc
         */
-        public deactivate(stageGLProxy: away.managers.StageGLProxy, pass: away.materials.MaterialPassBase): void;
+        public deactivate(stageGL: away.base.StageGL, pass: away.materials.MaterialPassBase): void;
         /**
         * @inheritDoc
         */
@@ -12219,11 +12217,11 @@ declare module away.animators {
         /**
         * @inheritDoc
         */
-        public activate(stageGLProxy: away.managers.StageGLProxy, pass: away.materials.MaterialPassBase): void;
+        public activate(stageGL: away.base.StageGL, pass: away.materials.MaterialPassBase): void;
         /**
         * @inheritDoc
         */
-        public deactivate(stageGLProxy: away.managers.StageGLProxy, pass: away.materials.MaterialPassBase): void;
+        public deactivate(stageGL: away.base.StageGL, pass: away.materials.MaterialPassBase): void;
         /**
         * @inheritDoc
         */
@@ -12281,8 +12279,8 @@ declare module away.animators {
         /**
         * @inheritDoc
         */
-        public setRenderState(stageGLProxy: away.managers.StageGLProxy, renderable: away.base.IRenderable, vertexConstantOffset: number, vertexStreamOffset: number, camera: away.cameras.Camera3D): void;
-        private setNullPose(stageGLProxy, renderable, vertexConstantOffset, vertexStreamOffset);
+        public setRenderState(stageGL: away.base.StageGL, renderable: away.base.IRenderable, vertexConstantOffset: number, vertexStreamOffset: number, camera: away.cameras.Camera3D): void;
+        private setNullPose(stageGL, renderable, vertexConstantOffset, vertexStreamOffset);
         /**
         * Verifies if the animation will be used on cpu. Needs to be true for all passes for a material to be able to use it on gpu.
         * Needs to be called if gpu code is potentially required.
@@ -12708,7 +12706,13 @@ declare module away.parsers {
         private _cur_obj;
         private _cur_mat_end;
         private _cur_mat;
-        constructor();
+        private _useSmoothingGroups;
+        /**
+        * Creates a new <code>Max3DSParser</code> object.
+        *
+        * @param useSmoothingGroups Determines whether the parser looks for smoothing groups in the 3ds file or assumes uniform smoothing. Defaults to true.
+        */
+        constructor(useSmoothingGroups?: boolean);
         /**
         * Indicates whether or not a given file extension is supported by the parser.
         * @param extension The file extension of a potential file to be parsed.

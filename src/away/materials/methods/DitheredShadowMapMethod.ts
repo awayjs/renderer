@@ -9,7 +9,7 @@ module away.materials
 	{
 		private static _grainTexture:away.textures.BitmapTexture;
 		private static _grainUsages:number /*int*/;
-		private static _grainBitmapData:away.display.BitmapData;
+		private static _grainBitmapData:away.base.BitmapData;
 		private _depthMapSize:number /*int*/;
 		private _range:number;
 		private _numSamples:number /*int*/;
@@ -91,7 +91,7 @@ module away.materials
 		 */
 		private initGrainTexture():void
 		{
-			DitheredShadowMapMethod._grainBitmapData = new away.display.BitmapData(64, 64, false);
+			DitheredShadowMapMethod._grainBitmapData = new away.base.BitmapData(64, 64, false);
 			var vec:Array<number> /*uint*/ = new Array<number>();
 			var len:number /*uint*/ = 4096;
 			var step:number = 1/(this._depthMapSize*this._range);
@@ -134,15 +134,15 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGLProxy:away.managers.StageGLProxy):void
+		public iActivate(vo:MethodVO, stageGL:away.base.StageGL):void
 		{
-			super.iActivate(vo, stageGLProxy);
+			super.iActivate(vo, stageGL);
 			var data:Array<number> = vo.fragmentData;
 			var index:number /*uint*/ = vo.fragmentConstantsIndex;
-			data[index + 9] = (stageGLProxy.width - 1)/63;
-			data[index + 10] = (stageGLProxy.height - 1)/63;
+			data[index + 9] = (stageGL.width - 1)/63;
+			data[index + 10] = (stageGL.height - 1)/63;
 			data[index + 11] = 2*this._range/this._depthMapSize;
-			stageGLProxy._iContextGL.setTextureAt(vo.texturesIndex + 1, DitheredShadowMapMethod._grainTexture.getTextureForStageGL(stageGLProxy));
+			stageGL.contextGL.setTextureAt(vo.texturesIndex + 1, DitheredShadowMapMethod._grainTexture.getTextureForStageGL(stageGL));
 		}
 
 		/**
@@ -256,15 +256,15 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivateForCascade(vo:MethodVO, stageGLProxy:away.managers.StageGLProxy):void
+		public iActivateForCascade(vo:MethodVO, stageGL:away.base.StageGL):void
 		{
 			var data:Array<number> = vo.fragmentData;
 			var index:number /*uint*/ = vo.secondaryFragmentConstantsIndex;
 			data[index] = 1/this._numSamples;
-			data[index + 1] = (stageGLProxy.width - 1)/63;
-			data[index + 2] = (stageGLProxy.height - 1)/63;
+			data[index + 1] = (stageGL.width - 1)/63;
+			data[index + 2] = (stageGL.height - 1)/63;
 			data[index + 3] = 2*this._range/this._depthMapSize;
-			stageGLProxy._iContextGL.setTextureAt(vo.texturesIndex + 1, DitheredShadowMapMethod._grainTexture.getTextureForStageGL(stageGLProxy));
+			stageGL.contextGL.setTextureAt(vo.texturesIndex + 1, DitheredShadowMapMethod._grainTexture.getTextureForStageGL(stageGL));
 		}
 
 		/**

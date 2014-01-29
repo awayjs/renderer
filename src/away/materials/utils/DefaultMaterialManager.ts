@@ -5,7 +5,7 @@ module away.materials
 
 	export class DefaultMaterialManager
 	{
-		private static _defaultTextureBitmapData:away.display.BitmapData;
+		private static _defaultTextureBitmapData:away.base.BitmapData;
 		private static _defaultMaterial:TextureMaterial;
 		private static _defaultTexture:away.textures.BitmapTexture;
 
@@ -37,7 +37,7 @@ module away.materials
 
 		private static createDefaultTexture()
 		{
-			DefaultMaterialManager._defaultTextureBitmapData = DefaultMaterialManager.createCheckeredBitmapData();//new away.display.BitmapData(8, 8, false, 0x000000);
+			DefaultMaterialManager._defaultTextureBitmapData = DefaultMaterialManager.createCheckeredBitmapData();//new away.base.BitmapData(8, 8, false, 0x000000);
 
 			//create chekerboard
 			/*
@@ -58,9 +58,9 @@ module away.materials
 			DefaultMaterialManager._defaultTexture.name = "defaultTexture";
 		}
 
-		public static createCheckeredBitmapData():away.display.BitmapData
+		public static createCheckeredBitmapData():away.base.BitmapData
 		{
-			var b:away.display.BitmapData = new away.display.BitmapData(8, 8, false, 0x000000);
+			var b:away.base.BitmapData = new away.base.BitmapData(8, 8, false, 0x000000);
 
 			//create chekerboard
 			var i:number, j:number;

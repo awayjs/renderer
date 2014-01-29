@@ -16,24 +16,19 @@ var scene;
             if (!document) {
                 throw "The document root object must be avaiable";
             }
-            this._stage = new away.display.Stage(800, 600);
 
-            this._stage.stageGLs[0].addEventListener(away.events.Event.CONTEXTGL_CREATE, away.utils.Delegate.create(this, this.onContextGLCreateHandler));
-            this._stage.stageGLs[0].requestContext(true);
+            this._stageGL = new away.base.StageGL(document.createElement("canvas"), 0, null);
+            this._stageGL.addEventListener(away.events.StageGLEvent.CONTEXTGL_CREATED, away.utils.Delegate.create(this, this.onContextGLCreateHandler));
+            this._stageGL.requestContext(true);
         }
-        Object.defineProperty(AGALTorus.prototype, "stage", {
-            get: function () {
-                return this._stage;
-            },
-            enumerable: true,
-            configurable: true
-        });
-
         AGALTorus.prototype.onContextGLCreateHandler = function (e) {
-            this._stage.stageGLs[0].removeEventListener(away.events.Event.CONTEXTGL_CREATE, away.utils.Delegate.create(this, this.onContextGLCreateHandler));
+            this._stageGL.removeEventListener(away.events.StageGLEvent.CONTEXTGL_CREATED, away.utils.Delegate.create(this, this.onContextGLCreateHandler));
+            this._stageGL.width = 800;
+            this._stageGL.height = 600;
 
-            var stageGL = e.target;
-            this._contextGL = stageGL.contextGL;
+            document.body.appendChild(this._stageGL.canvas);
+
+            this._contextGL = this._stageGL.contextGL;
 
             this._contextGL.configureBackBuffer(800, 600, 0, true);
             this._contextGL.setColorMask(true, true, true, true);
@@ -64,8 +59,8 @@ var scene;
             var vertCompiler = new aglsl.AGLSLCompiler();
             var fragCompiler = new aglsl.AGLSLCompiler();
 
-            var compVProgram = vertCompiler.compile(away.displayGL.ContextGLProgramType.VERTEX, vProgram);
-            var compFProgram = fragCompiler.compile(away.displayGL.ContextGLProgramType.FRAGMENT, fProgram);
+            var compVProgram = vertCompiler.compile(away.gl.ContextGLProgramType.VERTEX, vProgram);
+            var compFProgram = fragCompiler.compile(away.gl.ContextGLProgramType.FRAGMENT, fProgram);
 
             console.log("=== compVProgram ===");
             console.log(compVProgram);
@@ -81,8 +76,8 @@ var scene;
             this._matrix = new away.utils.PerspectiveMatrix3D();
             this._matrix.perspectiveFieldOfViewLH(85, 800 / 600, 0.1, 1000);
 
-            this._contextGL.setVertexBufferAt(0, this._vBuffer, 0, away.displayGL.ContextGLVertexBufferFormat.FLOAT_3);
-            this._contextGL.setVertexBufferAt(1, this._vBuffer, 6, away.displayGL.ContextGLVertexBufferFormat.FLOAT_3); // test varying interpolation with normal channel as some colors
+            this._contextGL.setVertexBufferAt(0, this._vBuffer, 0, away.gl.ContextGLVertexBufferFormat.FLOAT_3);
+            this._contextGL.setVertexBufferAt(1, this._vBuffer, 6, away.gl.ContextGLVertexBufferFormat.FLOAT_3); // test varying interpolation with normal channel as some colors
 
             //this._requestAnimationFrameTimer = new away.utils.RequestAnimationFrame( this.tick , this );
             //this._requestAnimationFrameTimer.start();
@@ -91,7 +86,7 @@ var scene;
 
         AGALTorus.prototype.tick = function (dt) {
             this._contextGL.setProgram(this._program);
-            this._contextGL.setProgramConstantsFromMatrix(away.displayGL.ContextGLProgramType.VERTEX, 0, this._matrix, true);
+            this._contextGL.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, this._matrix, true);
 
             this._contextGL.clear(0.16, 0.16, 0.16, 1);
             this._contextGL.drawTriangles(this._iBuffer, 0, this._iBuffer.numIndices / 3);

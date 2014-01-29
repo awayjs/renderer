@@ -70,7 +70,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public activate(stageGLProxy:away.managers.StageGLProxy, pass:away.materials.MaterialPassBase)
+		public activate(stageGL:away.base.StageGL, pass:away.materials.MaterialPassBase)
 		{
 			var uID:number = pass._iUniqueId;
 			this._uploadNormals = <boolean> this._useNormals[uID];
@@ -80,11 +80,11 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public deactivate(stageGLProxy:away.managers.StageGLProxy, pass:away.materials.MaterialPassBase)
+		public deactivate(stageGL:away.base.StageGL, pass:away.materials.MaterialPassBase)
 		{
 			var uID:number = pass._iUniqueId;
 			var index:number /*uint*/ = this._streamIndices[uID];
-			var context:away.displayGL.ContextGL = stageGLProxy._iContextGL;
+			var context:away.gl.ContextGL = stageGL.contextGL;
 			context.setVertexBufferAt(index, null);
 			if (this._uploadNormals)
 				context.setVertexBufferAt(index + 1, null);

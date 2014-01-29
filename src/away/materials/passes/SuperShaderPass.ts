@@ -186,12 +186,12 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D)
+		public iActivate(stageGL:away.base.StageGL, camera:away.cameras.Camera3D)
 		{
-			super.iActivate(stageGLProxy, camera);
+			super.iActivate(stageGL, camera);
 
 			if (this._pMethodSetup._iColorTransformMethod)
-				this._pMethodSetup._iColorTransformMethod.iActivate(this._pMethodSetup._iColorTransformMethodVO, stageGLProxy);
+				this._pMethodSetup._iColorTransformMethod.iActivate(this._pMethodSetup._iColorTransformMethodVO, stageGL);
 
 			var methods:MethodVOSet[] = this._pMethodSetup._iMethods;
 			var len:number = methods.length;
@@ -199,7 +199,7 @@ module away.materials
 			for (var i:number = 0; i < len; ++i) {
 
 				var aset:MethodVOSet = methods[i];
-				aset.method.iActivate(aset.data, stageGLProxy);
+				aset.method.iActivate(aset.data, stageGL);
 
 			}
 
@@ -218,13 +218,13 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iDeactivate(stageGLProxy:away.managers.StageGLProxy)
+		public iDeactivate(stageGL:away.base.StageGL)
 		{
-			super.iDeactivate(stageGLProxy);
+			super.iDeactivate(stageGL);
 
 			if (this._pMethodSetup._iColorTransformMethod) {
 
-				this._pMethodSetup._iColorTransformMethod.iDeactivate(this._pMethodSetup._iColorTransformMethodVO, stageGLProxy);
+				this._pMethodSetup._iColorTransformMethod.iDeactivate(this._pMethodSetup._iColorTransformMethodVO, stageGL);
 
 			}
 
@@ -234,7 +234,7 @@ module away.materials
 
 			for (var i:number = 0; i < len; ++i) {
 				aset = methods[i];
-				aset.method.iDeactivate(aset.data, stageGLProxy);
+				aset.method.iDeactivate(aset.data, stageGL);
 			}
 
 		}
@@ -424,7 +424,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public pUpdateProbes(stageGLProxy:away.managers.StageGLProxy)
+		public pUpdateProbes(stageGL:away.base.StageGL)
 		{
 
 			var probe:away.lights.LightProbe;
@@ -433,7 +433,7 @@ module away.materials
 			var len:number = lightProbes.length;
 			var addDiff:boolean = this.usesProbesForDiffuse();
 			var addSpec:boolean = <boolean> (this._pMethodSetup._iSpecularMethod && this.usesProbesForSpecular());
-			var context:away.displayGL.ContextGL = stageGLProxy._iContextGL;
+			var context:away.gl.ContextGL = stageGL.contextGL;
 
 			if (!(addDiff || addSpec)) {
 
@@ -449,13 +449,13 @@ module away.materials
 
 				if (addDiff) {
 
-					context.setTextureAt(this._pLightProbeSpecularIndices[i], probe.diffuseMap.getTextureForStageGL(stageGLProxy));//<------ TODO: implement
+					context.setTextureAt(this._pLightProbeSpecularIndices[i], probe.diffuseMap.getTextureForStageGL(stageGL));//<------ TODO: implement
 
 				}
 
 				if (addSpec) {
 
-					context.setTextureAt(this._pLightProbeSpecularIndices[i], probe.specularMap.getTextureForStageGL(stageGLProxy));//<------ TODO: implement
+					context.setTextureAt(this._pLightProbeSpecularIndices[i], probe.specularMap.getTextureForStageGL(stageGL));//<------ TODO: implement
 
 				}
 

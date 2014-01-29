@@ -3,7 +3,7 @@
 module away.materials
 {
 	//import away3d.arcane;
-	//import away3d.managers.StageGLProxy;
+	//import away3d.base.StageGL;
 	//import away3d.materials.compilation.ShaderRegisterCache;
 	//import away3d.materials.compilation.ShaderRegisterElement;
 	//import away3d.textures.Texture2DBase;
@@ -72,12 +72,12 @@ module away.materials
 
 		/**
 		 * Forces the creation of the texture.
-		 * @param stageGLProxy The StageGLProxy used by the renderer
+		 * @param stageGL The StageGL used by the renderer
 		 */
-		public generateMip(stageGLProxy:away.managers.StageGLProxy)
+		public generateMip(stageGL:away.base.StageGL)
 		{
 			if (this._useTexture)
-				this._texture.getTextureForStageGL(stageGLProxy);
+				this._texture.getTextureForStageGL(stageGL);
 		}
 
 		/**
@@ -421,12 +421,12 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGLProxy:away.managers.StageGLProxy)
+		public iActivate(vo:MethodVO, stageGL:away.base.StageGL)
 		{
 			if (this._useTexture) {
-				stageGLProxy._iContextGL.setSamplerStateAt(vo.texturesIndex, vo.repeatTextures? away.displayGL.ContextGLWrapMode.REPEAT : away.displayGL.ContextGLWrapMode.CLAMP, vo.useSmoothTextures? away.displayGL.ContextGLTextureFilter.LINEAR : away.displayGL.ContextGLTextureFilter.NEAREST, vo.useMipmapping? away.displayGL.ContextGLMipFilter.MIPLINEAR : away.displayGL.ContextGLMipFilter.MIPNONE);
+				stageGL.contextGL.setSamplerStateAt(vo.texturesIndex, vo.repeatTextures? away.gl.ContextGLWrapMode.REPEAT : away.gl.ContextGLWrapMode.CLAMP, vo.useSmoothTextures? away.gl.ContextGLTextureFilter.LINEAR : away.gl.ContextGLTextureFilter.NEAREST, vo.useMipmapping? away.gl.ContextGLMipFilter.MIPLINEAR : away.gl.ContextGLMipFilter.MIPNONE);
 
-				stageGLProxy._iContextGL.setTextureAt(vo.texturesIndex, this._texture.getTextureForStageGL(stageGLProxy));
+				stageGL.contextGL.setTextureAt(vo.texturesIndex, this._texture.getTextureForStageGL(stageGL));
 
 				if (this._alphaThreshold > 0)
 					vo.fragmentData[vo.fragmentConstantsIndex] = this._alphaThreshold;

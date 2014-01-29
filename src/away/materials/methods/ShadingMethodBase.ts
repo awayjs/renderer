@@ -127,10 +127,10 @@ module away.materials
 		 * Sets the render state for this method.
 		 *
 		 * @param vo The MethodVO object linking this method with the pass currently being compiled.
-		 * @param stageGLProxy The StageGLProxy object currently used for rendering.
+		 * @param stageGL The StageGL object currently used for rendering.
 		 * @private
 		 */
-		public iActivate(vo:MethodVO, stageGLProxy:away.managers.StageGLProxy)
+		public iActivate(vo:MethodVO, stageGL:away.base.StageGL)
 		{
 
 		}
@@ -140,10 +140,10 @@ module away.materials
 		 *
 		 * @param vo The MethodVO object linking this method with the pass currently being compiled.
 		 * @param renderable The renderable currently being rendered.
-		 * @param stageGLProxy The StageGLProxy object currently used for rendering.
+		 * @param stageGL The StageGL object currently used for rendering.
 		 * @param camera The camera from which the scene is currently rendered.
 		 */
-		public iSetRenderState(vo:MethodVO, renderable:away.base.IRenderable, stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D)
+		public iSetRenderState(vo:MethodVO, renderable:away.base.IRenderable, stageGL:away.base.StageGL, camera:away.cameras.Camera3D)
 		{
 
 		}
@@ -151,9 +151,9 @@ module away.materials
 		/**
 		 * Clears the render state for this method.
 		 * @param vo The MethodVO object linking this method with the pass currently being compiled.
-		 * @param stageGLProxy The StageGLProxy object currently used for rendering.
+		 * @param stageGL The StageGL object currently used for rendering.
 		 */
-		public iDeactivate(vo:MethodVO, stageGLProxy:away.managers.StageGLProxy)
+		public iDeactivate(vo:MethodVO, stageGL:away.base.StageGL)
 		{
 
 		}
@@ -220,7 +220,7 @@ module away.materials
 		private getFormatStringForTexture(texture:away.textures.TextureProxyBase):string
 		{
 			switch (texture.format) {
-				case away.displayGL.ContextGLTextureFormat.COMPRESSED:
+				case away.gl.ContextGLTextureFormat.COMPRESSED:
 					return "dxt1,";
 					break;
 				case "compressedAlpha":

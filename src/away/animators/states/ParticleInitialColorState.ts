@@ -4,10 +4,10 @@ module away.animators
 {
 	import IRenderable						= away.base.IRenderable;
 	import Camera3D							= away.cameras.Camera3D;
-	import ContextGLVertexBufferFormat		= away.displayGL.ContextGLVertexBufferFormat
+	import ContextGLVertexBufferFormat		= away.gl.ContextGLVertexBufferFormat
 	import ColorTransform					= away.geom.ColorTransform;
 	import Vector3D							= away.geom.Vector3D;
-	import StageGLProxy						= away.managers.StageGLProxy;
+	import StageGL							= away.base.StageGL;
 	
 	export class ParticleInitialColorState extends ParticleStateBase
 	{
@@ -46,7 +46,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public setRenderState(stageGLProxy:StageGLProxy, renderable:IRenderable, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera3D)
+		public setRenderState(stageGL:StageGL, renderable:IRenderable, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera3D)
 		{
 			// TODO: not used
 			renderable = renderable;
@@ -56,11 +56,11 @@ module away.animators
 				if (this._particleInitialColorNode.mode == ParticlePropertiesMode.LOCAL_STATIC) {
 					var dataOffset:number /*uint*/ = this._particleInitialColorNode._iDataOffset;
 					if (this._usesMultiplier) {
-						animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleInitialColorNode.MULTIPLIER_INDEX), dataOffset, stageGLProxy, ContextGLVertexBufferFormat.FLOAT_4);
+						animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleInitialColorNode.MULTIPLIER_INDEX), dataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
 						dataOffset += 4;
 					}
 					if (this._usesOffset)
-						animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleInitialColorNode.OFFSET_INDEX), dataOffset, stageGLProxy, ContextGLVertexBufferFormat.FLOAT_4);
+						animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleInitialColorNode.OFFSET_INDEX), dataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
 				} else {
 					if (this._usesMultiplier)
 						animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleInitialColorNode.MULTIPLIER_INDEX), this._multiplierData.x, this._multiplierData.y, this._multiplierData.z, this._multiplierData.w);

@@ -143,7 +143,7 @@ module away.materials
 
 				switch (this._alphaMask.format) {
 
-					case away.displayGL.ContextGLTextureFormat.COMPRESSED:
+					case away.gl.ContextGLTextureFormat.COMPRESSED:
 						format = "dxt1,";
 						break;
 
@@ -167,44 +167,44 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iRender(renderable:away.base.IRenderable, stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D, viewProjection:away.geom.Matrix3D)
+		public iRender(renderable:away.base.IRenderable, stageGL:away.base.StageGL, camera:away.cameras.Camera3D, viewProjection:away.geom.Matrix3D)
 		{
 			if (this._alphaThreshold > 0) {
 
-				renderable.activateUVBuffer(1, stageGLProxy);
+				renderable.activateUVBuffer(1, stageGL);
 
 			}
 
 
-			var context:away.displayGL.ContextGL = stageGLProxy._iContextGL;
+			var context:away.gl.ContextGL = stageGL.contextGL;
 			var matrix:away.geom.Matrix3D = away.geom.Matrix3DUtils.CALCULATION_MATRIX;
 
 			matrix.copyFrom(renderable.getRenderSceneTransform(camera));
 			matrix.append(viewProjection);
-			context.setProgramConstantsFromMatrix(away.displayGL.ContextGLProgramType.VERTEX, 0, matrix, true);
-			renderable.activateVertexBuffer(0, stageGLProxy);
-			context.drawTriangles(renderable.getIndexBuffer(stageGLProxy), 0, renderable.numTriangles);
+			context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, matrix, true);
+			renderable.activateVertexBuffer(0, stageGL);
+			context.drawTriangles(renderable.getIndexBuffer(stageGL), 0, renderable.numTriangles);
 
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D)
+		public iActivate(stageGL:away.base.StageGL, camera:away.cameras.Camera3D)
 		{
 
-			var context:away.displayGL.ContextGL = stageGLProxy._iContextGL;
+			var context:away.gl.ContextGL = stageGL.contextGL;
 
-			super.iActivate(stageGLProxy, camera);
+			super.iActivate(stageGL, camera);
 
 			if (this._alphaThreshold > 0) {
 
-				context.setTextureAt(0, this._alphaMask.getTextureForStageGL(stageGLProxy));
-				context.setProgramConstantsFromArray(away.displayGL.ContextGLProgramType.FRAGMENT, 0, this._data, 3);
+				context.setTextureAt(0, this._alphaMask.getTextureForStageGL(stageGL));
+				context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.FRAGMENT, 0, this._data, 3);
 
 			} else {
 
-				context.setProgramConstantsFromArray(away.displayGL.ContextGLProgramType.FRAGMENT, 0, this._data, 2);
+				context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.FRAGMENT, 0, this._data, 2);
 			}
 
 		}

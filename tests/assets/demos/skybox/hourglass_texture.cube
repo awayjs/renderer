@@ -1,0 +1,28 @@
+{
+  "data":[
+     {
+        "id":"posX",
+        "image":"hourglass_posX.jpg"
+     },
+     {
+        "id":"negX",
+        "image":"hourglass_negX.jpg"
+     },
+     {
+        "id":"posY",
+        "image":"hourglass_posY.jpg"
+     },
+     {
+        "id":"negY",
+        "image":"hourglass_negY.jpg"
+     },
+     {
+        "id":"posZ",
+        "image":"hourglass_posZ.jpg"
+     },
+     {
+        "id":"negZ",
+        "image":"hourglass_negZ.jpg"
+     }
+  ]
+}

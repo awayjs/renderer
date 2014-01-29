@@ -2,10 +2,10 @@
 
 module away.containers
 {
-	import Stage						= away.display.Stage;
-	import ContextGL					= away.displayGL.ContextGL;
-	import ContextGLTextureFormat		= away.displayGL.ContextGLTextureFormat;
-	import Texture						= away.displayGL.Texture;
+	import Stage						= away.base.Stage;
+	import ContextGL					= away.gl.ContextGL;
+	import ContextGLTextureFormat		= away.gl.ContextGLTextureFormat;
+	import Texture						= away.gl.Texture;
 	import StageGLEvent					= away.events.StageGLEvent;
 	import Matrix3D						= away.geom.Matrix3D;
 	import Point						= away.geom.Point;
@@ -13,7 +13,7 @@ module away.containers
 	import Vector3D						= away.geom.Vector3D;
 	import RTTBufferManager				= away.managers.RTTBufferManager;
 	import StageGLManager				= away.managers.StageGLManager;
-	import StageGLProxy					= away.managers.StageGLProxy;
+	import StageGL						= away.base.StageGL;
 	import Delegate						= away.utils.Delegate;
 
 	import Camera3D						= away.cameras.Camera3D;
@@ -43,12 +43,6 @@ module away.containers
 		 **************************************************************************************************************************
 		 */
 
-		// Static
-		private static sStage:Stage; // View3D's share the same stage
-
-		// Public
-		public stage:Stage;
-
 		// Protected
 		public _pScene:Scene3D;
 		public _pCamera:Camera3D;
@@ -56,7 +50,7 @@ module away.containers
 		public _pFilter3DRenderer:Filter3DRenderer;
 		public _pRequireDepthRender:boolean;
 		public _pDepthRender:Texture;
-		public _pStageGLProxy:StageGLProxy;
+		public _pStageGL:StageGL;
 		public _pBackBufferInvalid:boolean = true;
 		public _pRttBufferManager:RTTBufferManager;
 
@@ -105,9 +99,6 @@ module away.containers
 		 */
 		constructor(scene:Scene3D = null, camera:Camera3D = null, renderer:RendererBase = null, forceSoftware:boolean = false, profile:string = "baseline")
 		{
-			if (View3D.sStage == null)
-				View3D.sStage = new Stage();
-
 			this._onScenePartitionChangedDelegate = Delegate.create(this, this.onScenePartitionChanged);
 			this._onLensChangedDelegate = Delegate.create(this, this.onLensChanged);
 			this._onViewportUpdatedDelegate = Delegate.create(this, this.onViewportUpdated);
@@ -124,7 +115,6 @@ module away.containers
 			this._pScissorRect = new Rectangle();
 			this._pCamera.addEventListener(CameraEvent.LENS_CHANGED, this._onLensChangedDelegate);
 			this._pCamera.partition = this._pScene.partition;
-			this.stage = View3D.sStage;
 
 			this.onAddedToStage();
 		}
@@ -141,25 +131,25 @@ module away.containers
 
 		/**
 		 *
-		 * @returns {away.managers.StageGLProxy}
+		 * @returns {away.base.StageGL}
 		 */
-		public get stageGLProxy():StageGLProxy
+		public get stageGL():StageGL
 		{
-			return this._pStageGLProxy;
+			return this._pStageGL;
 		}
 
 		/**
 		 *
-		 * @param stageGLProxy
+		 * @param stageGL
 		 */
-		public set stageGLProxy(stageGLProxy:StageGLProxy)
+		public set stageGL(stageGL:StageGL)
 		{
-			if (this._pStageGLProxy)
-				this._pStageGLProxy.removeEventListener(StageGLEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
+			if (this._pStageGL)
+				this._pStageGL.removeEventListener(StageGLEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
 
-			this._pStageGLProxy = stageGLProxy;
-			this._pStageGLProxy.addEventListener(StageGLEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
-			this._pRenderer.iStageGLProxy = this._depthRenderer.iStageGLProxy = this._pStageGLProxy;
+			this._pStageGL = stageGL;
+			this._pStageGL.addEventListener(StageGLEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
+			this._pRenderer.iStageGL = this._depthRenderer.iStageGL = this._pStageGL;
 			this._globalPosDirty = true;
 			this._pBackBufferInvalid = true;
 
@@ -205,7 +195,7 @@ module away.containers
 				this._pFilter3DRenderer.dispose();
 				this._pFilter3DRenderer = null;
 			} else if (!this._pFilter3DRenderer && value) {
-				this._pFilter3DRenderer = new Filter3DRenderer(this._pStageGLProxy);
+				this._pFilter3DRenderer = new Filter3DRenderer(this._pStageGL);
 				this._pFilter3DRenderer.filters = value;
 			}
 
@@ -242,7 +232,7 @@ module away.containers
 
 			this._pEntityCollector = this._pRenderer.iCreateEntityCollector();
 			this._pEntityCollector.camera = this._pCamera;
-			this._pRenderer.iStageGLProxy = this._pStageGLProxy;
+			this._pRenderer.iStageGL = this._pStageGL;
 			this._pRenderer.antiAlias = this._antiAlias;
 			this._pRenderer.iBackgroundR = ((this._backgroundColor >> 16) & 0xff)/0xff;
 			this._pRenderer.iBackgroundG = ((this._backgroundColor >> 8) & 0xff)/0xff;
@@ -486,7 +476,7 @@ module away.containers
 
 		public get canvas():HTMLCanvasElement
 		{
-			return this._pStageGLProxy.canvas;
+			return this._pStageGL.canvas;
 
 		}
 
@@ -547,12 +537,12 @@ module away.containers
 		public pUpdateBackBuffer()
 		{
 			// No reason trying to configure back buffer if there is no context available.
-			// Doing this anyway (and relying on _stageGLProxy to cache width/height for
+			// Doing this anyway (and relying on _stageGL to cache width/height for
 			// context does get available) means usesSoftwareRendering won't be reliable.
 
-			if (this._pStageGLProxy._iContextGL && !this._pShareContext) {
+			if (this._pStageGL.contextGL && !this._pShareContext) {
 				if (this._width && this._height) {
-					this._pStageGLProxy.configureBackBuffer(this._width, this._height, this._antiAlias, true);
+					this._pStageGL.configureBackBuffer(this._width, this._height, this._antiAlias, true);
 					this._pBackBufferInvalid = false;
 				}
 			}
@@ -563,7 +553,7 @@ module away.containers
 		 */
 		public render()
 		{
-			if (!this._pStageGLProxy.recoverFromDisposal()) {//if contextGL has Disposed by the OS,don't render at this frame
+			if (!this._pStageGL.recoverFromDisposal()) {//if contextGL has Disposed by the OS,don't render at this frame
 				this._pBackBufferInvalid = true;
 				return;
 			}
@@ -572,7 +562,7 @@ module away.containers
 				this.pUpdateBackBuffer();
 
 			if (this._pShareContext && this._layeredView)
-				this._pStageGLProxy.clearDepthBuffer();
+				this._pStageGL.clearDepthBuffer();
 
 			if (this._globalPosDirty)
 				this.pUpdateGlobalPos();
@@ -595,9 +585,9 @@ module away.containers
 
 			this._pRenderer.iClearOnRender = !this._depthPrepass;
 
-			if (this._pFilter3DRenderer && this._pStageGLProxy._iContextGL) {
-				this._pRenderer.iRender(this._pEntityCollector, this._pFilter3DRenderer.getMainInputTexture(this._pStageGLProxy), this._pRttBufferManager.renderToTextureRect);
-				this._pFilter3DRenderer.render(this._pStageGLProxy, this._pCamera, this._pDepthRender);
+			if (this._pFilter3DRenderer && this._pStageGL.contextGL) {
+				this._pRenderer.iRender(this._pEntityCollector, this._pFilter3DRenderer.getMainInputTexture(this._pStageGL), this._pRttBufferManager.renderToTextureRect);
+				this._pFilter3DRenderer.render(this._pStageGL, this._pCamera, this._pDepthRender);
 
 			} else {
 				this._pRenderer.iShareContext = this._pShareContext;
@@ -609,7 +599,7 @@ module away.containers
 			}
 
 			if (!this._pShareContext) {
-				this._pStageGLProxy.present();
+				this._pStageGL.present();
 
 				// TODO: imeplement mouse3dManager
 				// fire collected mouse events
@@ -622,7 +612,7 @@ module away.containers
 			this._pEntityCollector.cleanUp();
 
 			// register that a view has been rendered
-			this._pStageGLProxy.bufferClear = false;
+			this._pStageGL.bufferClear = false;
 		}
 
 		/**
@@ -632,17 +622,17 @@ module away.containers
 		{
 			this._globalPosDirty = false;
 
-			if (!this._pStageGLProxy)
+			if (!this._pStageGL)
 				return;
 
 			if (this._pShareContext) {
-				this._pScissorRect.x = this._globalPos.x - this._pStageGLProxy.x;
-				this._pScissorRect.y = this._globalPos.y - this._pStageGLProxy.y;
+				this._pScissorRect.x = this._globalPos.x - this._pStageGL.x;
+				this._pScissorRect.y = this._globalPos.y - this._pStageGL.y;
 			} else {
 				this._pScissorRect.x = 0;
 				this._pScissorRect.y = 0;
-				this._pStageGLProxy.x = this._globalPos.x;
-				this._pStageGLProxy.y = this._globalPos.y;
+				this._pStageGL.x = this._globalPos.x;
+				this._pStageGL.y = this._globalPos.y;
 			}
 
 			this._scissorRectDirty = true;
@@ -676,7 +666,7 @@ module away.containers
 
 			if (this._viewportDirty) {
 				this._viewportDirty = false;
-				this._pCamera.lens.iUpdateViewport(this._pStageGLProxy.viewPort.x, this._pStageGLProxy.viewPort.y, this._pStageGLProxy.viewPort.width, this._pStageGLProxy.viewPort.height);
+				this._pCamera.lens.iUpdateViewport(this._pStageGL.viewPort.x, this._pStageGL.viewPort.y, this._pStageGL.viewPort.width, this._pStageGL.viewPort.height);
 			}
 
 			if (this._pFilter3DRenderer || this._pRenderer.iRenderToTexture) {
@@ -699,7 +689,7 @@ module away.containers
 			if (this._pFilter3DRenderer || this._pRenderer.iRenderToTexture) {
 				this._depthRenderer.iTextureRatioX = this._pRttBufferManager.textureRatioX;
 				this._depthRenderer.iTextureRatioY = this._pRttBufferManager.textureRatioY;
-				this._depthRenderer.iRender(entityCollector, this._pFilter3DRenderer.getMainInputTexture(this._pStageGLProxy), this._pRttBufferManager.renderToTextureRect);
+				this._depthRenderer.iRender(entityCollector, this._pFilter3DRenderer.getMainInputTexture(this._pStageGL), this._pRttBufferManager.renderToTextureRect);
 			} else {
 				this._depthRenderer.iTextureRatioX = 1;
 				this._depthRenderer.iTextureRatioY = 1;
@@ -716,7 +706,7 @@ module away.containers
 		public pRenderSceneDepthToTexture(entityCollector:EntityCollector)
 		{
 			if (this._depthTextureInvalid || !this._pDepthRender) {
-				this.initDepthTexture(this._pStageGLProxy._iContextGL);
+				this.initDepthTexture(this._pStageGL.contextGL);
 			}
 			this._depthRenderer.iTextureRatioX = this._pRttBufferManager.textureRatioX;
 			this._depthRenderer.iTextureRatioY = this._pRttBufferManager.textureRatioY;
@@ -742,10 +732,10 @@ module away.containers
 		 */
 		public dispose()
 		{
-			this._pStageGLProxy.removeEventListener(StageGLEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
+			this._pStageGL.removeEventListener(StageGLEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
 
 			if (!this.shareContext)
-				this._pStageGLProxy.dispose();
+				this._pStageGL.dispose();
 
 			this._pRenderer.iDispose();
 
@@ -766,7 +756,7 @@ module away.containers
 			this._pRttBufferManager = null;
 			this._pDepthRender = null;
 			this._depthRenderer = null;
-			this._pStageGLProxy = null;
+			this._pStageGL = null;
 			this._pRenderer = null;
 			this._pEntityCollector = null;
 		}
@@ -797,8 +787,8 @@ module away.containers
 		private onViewportUpdated(event:StageGLEvent)
 		{
 			if (this._pShareContext) {
-				this._pScissorRect.x = this._globalPos.x - this._pStageGLProxy.x;
-				this._pScissorRect.y = this._globalPos.y - this._pStageGLProxy.y;
+				this._pScissorRect.x = this._globalPos.x - this._pStageGL.x;
+				this._pScissorRect.y = this._globalPos.y - this._pStageGL.y;
 				this._scissorRectDirty = true;
 			}
 
@@ -830,22 +820,22 @@ module away.containers
 		{
 			this._addedToStage = true;
 
-			if (this._pStageGLProxy == null) {
-				this._pStageGLProxy = StageGLManager.getInstance(this.stage).getFreeStageGLProxy(this._forceSoftware, this._profile);
-				this._pStageGLProxy.addEventListener(StageGLEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
+			if (this._pStageGL == null) {
+				this._pStageGL = StageGLManager.getInstance().getFreeStageGL(this._forceSoftware, this._profile);
+				this._pStageGL.addEventListener(StageGLEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
 			}
 
 			this._globalPosDirty = true;
-			this._pRttBufferManager = RTTBufferManager.getInstance(this._pStageGLProxy);
-			this._pRenderer.iStageGLProxy = this._depthRenderer.iStageGLProxy = this._pStageGLProxy;
+			this._pRttBufferManager = RTTBufferManager.getInstance(this._pStageGL);
+			this._pRenderer.iStageGL = this._depthRenderer.iStageGL = this._pStageGL;
 
 			if (this._width == 0)
-				this.width = this.stage.stageWidth;
+				this.width = window.innerWidth;
 			else
 				this._pRttBufferManager.viewWidth = this._width;
 
 			if (this._height == 0)
-				this.height = this.stage.stageHeight;
+				this.height = window.innerHeight;
 			else
 				this._pRttBufferManager.viewHeight = this._height;
 		}
@@ -863,7 +853,7 @@ module away.containers
 
 		public unproject(sX:number, sY:number, sZ:number):Vector3D
 		{
-			return this._pCamera.unproject((sX*2 - this._width)/this._pStageGLProxy.width, (sY*2 - this._height)/this._pStageGLProxy.height, sZ);
+			return this._pCamera.unproject((sX*2 - this._width)/this._pStageGL.width, (sY*2 - this._height)/this._pStageGL.height, sZ);
 		}
 
 		public getRay(sX:number, sY:number, sZ:number):Vector3D

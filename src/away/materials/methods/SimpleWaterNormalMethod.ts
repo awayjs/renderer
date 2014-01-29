@@ -147,9 +147,9 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGLProxy:away.managers.StageGLProxy):void
+		public iActivate(vo:MethodVO, stageGL:away.base.StageGL):void
 		{
-			super.iActivate(vo, stageGLProxy);
+			super.iActivate(vo, stageGL);
 
 			var data:Array<number> = vo.fragmentData;
 			var index:number = vo.fragmentConstantsIndex;
@@ -161,7 +161,7 @@ module away.materials
 
 			//if (this._useSecondNormalMap >= 0)
 			if (this._useSecondNormalMap)
-				stageGLProxy._iContextGL.setTextureAt(vo.texturesIndex + 1, this._texture2.getTextureForStageGL(stageGLProxy));
+				stageGL.contextGL.setTextureAt(vo.texturesIndex + 1, this._texture2.getTextureForStageGL(stageGL));
 		}
 
 		/**

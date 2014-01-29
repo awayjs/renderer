@@ -2,7 +2,7 @@
 
 module away.materials
 {
-	import StageGLProxy                     = away.managers.StageGLProxy;
+	import StageGL                     = away.base.StageGL;
 	import Delegate							= away.utils.Delegate;
 
 	import Camera3D                         = away.cameras.Camera3D;
@@ -151,23 +151,23 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGLProxy:StageGLProxy):void
+		public iActivate(vo:MethodVO, stageGL:StageGL):void
 		{
-			this._baseMethod.iActivate(vo, stageGLProxy);
+			this._baseMethod.iActivate(vo, stageGL);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iDeactivate(vo:MethodVO, stageGLProxy:StageGLProxy):void
+		public iDeactivate(vo:MethodVO, stageGL:StageGL):void
 		{
-			this._baseMethod.iDeactivate(vo, stageGLProxy);
+			this._baseMethod.iDeactivate(vo, stageGL);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iSetRenderState(vo:MethodVO, renderable:IRenderable, stageGLProxy:StageGLProxy, camera:Camera3D):void
+		public iSetRenderState(vo:MethodVO, renderable:IRenderable, stageGL:StageGL, camera:Camera3D):void
 		{
 			// todo: move this to activate (needs camera)
 			var near:number = camera.lens.near;
@@ -182,7 +182,7 @@ module away.materials
 			var index:number /*int*/ = vo.secondaryFragmentConstantsIndex;
 			fragmentData[index] = minDistance;
 			fragmentData[index + 1] = 1/(maxDistance - minDistance);
-			this._baseMethod.iSetRenderState(vo, renderable, stageGLProxy, camera);
+			this._baseMethod.iSetRenderState(vo, renderable, stageGL, camera);
 		}
 
 		/**

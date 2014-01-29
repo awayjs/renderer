@@ -93,21 +93,21 @@ module away.animators
 		/**
 		 * Sets the GPU render state required by the animation that is independent of the rendered mesh.
 		 *
-		 * @param stageGLProxy The proxy currently performing the rendering.
+		 * @param stageGL The proxy currently performing the rendering.
 		 * @param pass The material pass currently being used to render the geometry.
 		 *
 		 * @private
 		 */
-		activate(stageGLProxy:away.managers.StageGLProxy, pass:away.materials.MaterialPassBase)
+		activate(stageGL:away.base.StageGL, pass:away.materials.MaterialPassBase)
 
 		/**
 		 * Clears the GPU render state that has been set by the current animation.
 		 *
-		 * @param stageGLProxy The proxy currently performing the rendering.
+		 * @param stageGL The proxy currently performing the rendering.
 		 * @param pass The material pass currently being used to render the geometry.
 		 *
 		 * @private
 		 */
-		deactivate(stageGLProxy:away.managers.StageGLProxy, pass:away.materials.MaterialPassBase)
+		deactivate(stageGL:away.base.StageGL, pass:away.materials.MaterialPassBase)
 	}
 }

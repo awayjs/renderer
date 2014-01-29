@@ -2,15 +2,15 @@
 
 module away.materials
 {
-	import ContextGL					= away.displayGL.ContextGL;
-	import ContextGLBlendFactor			= away.displayGL.ContextGLBlendFactor;
-	import ContextGLCompareMode			= away.displayGL.ContextGLCompareMode;
-	import ContextGLTriangleFace		= away.displayGL.ContextGLTriangleFace;
-	import Program						= away.displayGL.Program;
-	import TextureBase					= away.displayGL.TextureBase;
+	import ContextGL					= away.gl.ContextGL;
+	import ContextGLBlendFactor			= away.gl.ContextGLBlendFactor;
+	import ContextGLCompareMode			= away.gl.ContextGLCompareMode;
+	import ContextGLTriangleFace		= away.gl.ContextGLTriangleFace;
+	import Program						= away.gl.Program;
+	import TextureBase					= away.gl.TextureBase;
 	import Event						= away.events.Event;
 	import Rectangle					= away.geom.Rectangle;
-	import StageGLProxy					= away.managers.StageGLProxy;
+	import StageGL						= away.base.StageGL;
 	import Delegate						= away.utils.Delegate;
 
 	/**
@@ -334,9 +334,9 @@ module away.materials
 		 *
 		 * @private
 		 */
-		public iUpdateAnimationState(renderable:away.base.IRenderable, stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D)
+		public iUpdateAnimationState(renderable:away.base.IRenderable, stageGL:away.base.StageGL, camera:away.cameras.Camera3D)
 		{
-			renderable.animator.setRenderState(stageGLProxy, renderable, this._pNumUsedVertexConstants, this._pNumUsedStreams, camera);
+			renderable.animator.setRenderState(stageGL, renderable, this._pNumUsedVertexConstants, this._pNumUsedStreams, camera);
 		}
 
 		/**
@@ -344,7 +344,7 @@ module away.materials
 		 *
 		 * @private
 		 */
-		public iRender(renderable:away.base.IRenderable, stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D, viewProjection:away.geom.Matrix3D)
+		public iRender(renderable:away.base.IRenderable, stageGL:away.base.StageGL, camera:away.cameras.Camera3D, viewProjection:away.geom.Matrix3D)
 		{
 			throw new away.errors.AbstractMethodError();
 		}
@@ -379,7 +379,7 @@ module away.materials
 		{
 			switch (value) {
 
-				case away.display.BlendMode.NORMAL:
+				case away.base.BlendMode.NORMAL:
 
 					this._blendFactorSource = ContextGLBlendFactor.ONE;
 					this._blendFactorDest = ContextGLBlendFactor.ZERO;
@@ -387,7 +387,7 @@ module away.materials
 
 					break;
 
-				case away.display.BlendMode.LAYER:
+				case away.base.BlendMode.LAYER:
 
 					this._blendFactorSource = ContextGLBlendFactor.SOURCE_ALPHA;
 					this._blendFactorDest = ContextGLBlendFactor.ONE_MINUS_SOURCE_ALPHA;
@@ -395,7 +395,7 @@ module away.materials
 
 					break;
 
-				case away.display.BlendMode.MULTIPLY:
+				case away.base.BlendMode.MULTIPLY:
 
 					this._blendFactorSource = ContextGLBlendFactor.ZERO;
 					this._blendFactorDest = ContextGLBlendFactor.SOURCE_COLOR;
@@ -403,7 +403,7 @@ module away.materials
 
 					break;
 
-				case away.display.BlendMode.ADD:
+				case away.base.BlendMode.ADD:
 
 					this._blendFactorSource = ContextGLBlendFactor.SOURCE_ALPHA;
 					this._blendFactorDest = ContextGLBlendFactor.ONE;
@@ -411,7 +411,7 @@ module away.materials
 
 					break;
 
-				case away.display.BlendMode.ALPHA:
+				case away.base.BlendMode.ALPHA:
 
 					this._blendFactorSource = ContextGLBlendFactor.ZERO;
 					this._blendFactorDest = ContextGLBlendFactor.SOURCE_ALPHA;
@@ -429,14 +429,14 @@ module away.materials
 		/**
 		 * Sets the render state for the pass that is independent of the rendered object. This needs to be called before
 		 * calling renderPass. Before activating a pass, the previously used pass needs to be deactivated.
-		 * @param stageGLProxy The StageGLProxy object which is currently used for rendering.
+		 * @param stageGL The StageGL object which is currently used for rendering.
 		 * @param camera The camera from which the scene is viewed.
 		 * @private
 		 */
-		public iActivate(stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D)
+		public iActivate(stageGL:away.base.StageGL, camera:away.cameras.Camera3D)
 		{
-			var contextIndex:number = stageGLProxy._iStageGLIndex;//_stageGLIndex;
-			var context:ContextGL = stageGLProxy._iContextGL;
+			var contextIndex:number = stageGL._iStageGLIndex;//_stageGLIndex;
+			var context:ContextGL = stageGL.contextGL;
 
 			context.setDepthTest(( this._writeDepth && !this._pEnableBlending ), this._depthCompareMode);
 
@@ -450,7 +450,7 @@ module away.materials
 
 				this._contextGLs[contextIndex] = context;
 
-				this.iUpdateProgram(stageGLProxy);
+				this.iUpdateProgram(stageGL);
 				this.dispatchEvent(new Event(Event.CHANGE));
 
 			}
@@ -476,7 +476,7 @@ module away.materials
 
 			if (this._animationSet && !this._animationSet.usesCPU) {
 
-				this._animationSet.activate(stageGLProxy, this);
+				this._animationSet.activate(stageGL, this);
 
 			}
 
@@ -486,29 +486,29 @@ module away.materials
 			context.setCulling(this._pBothSides? ContextGLTriangleFace.NONE : this._defaultCulling);
 
 			if (this._renderToTexture) {
-				this._oldTarget = stageGLProxy.renderTarget;
-				this._oldSurface = stageGLProxy.renderSurfaceSelector;
-				this._oldDepthStencil = stageGLProxy.enableDepthAndStencil;
-				this._oldRect = stageGLProxy.scissorRect;
+				this._oldTarget = stageGL.renderTarget;
+				this._oldSurface = stageGL.renderSurfaceSelector;
+				this._oldDepthStencil = stageGL.enableDepthAndStencil;
+				this._oldRect = stageGL.scissorRect;
 			}
 		}
 
 		/**
 		 * Clears the render state for the pass. This needs to be called before activating another pass.
-		 * @param stageGLProxy The StageGLProxy used for rendering
+		 * @param stageGL The StageGL used for rendering
 		 *
 		 * @private
 		 */
-		public iDeactivate(stageGLProxy:away.managers.StageGLProxy)
+		public iDeactivate(stageGL:away.base.StageGL)
 		{
 
-			var index:number = stageGLProxy._iStageGLIndex;//_stageGLIndex;
+			var index:number = stageGL._iStageGLIndex;//_stageGLIndex;
 			MaterialPassBase._previousUsedStreams[index] = this._pNumUsedStreams;
 			MaterialPassBase._previousUsedTexs[index] = this._pNumUsedTextures;
 
 			if (this._animationSet && !this._animationSet.usesCPU) {
 
-				this._animationSet.deactivate(stageGLProxy, this);
+				this._animationSet.deactivate(stageGL, this);
 
 			}
 
@@ -516,12 +516,12 @@ module away.materials
 			if (this._renderToTexture) {
 
 				// kindly restore state
-				stageGLProxy.setRenderTarget(this._oldTarget, this._oldDepthStencil, this._oldSurface);
-				stageGLProxy.scissorRect = this._oldRect;
+				stageGL.setRenderTarget(this._oldTarget, this._oldDepthStencil, this._oldSurface);
+				stageGL.scissorRect = this._oldRect;
 
 			}
 
-			stageGLProxy._iContextGL.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL); // TODO : imeplement
+			stageGL.contextGL.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL); // TODO : imeplement
 		}
 
 		/**
@@ -550,7 +550,7 @@ module away.materials
 		 * Compiles the shader program.
 		 * @param polyOffsetReg An optional register that contains an amount by which to inflate the model (used in single object depth map rendering).
 		 */
-		public iUpdateProgram(stageGLProxy:StageGLProxy)
+		public iUpdateProgram(stageGL:StageGL)
 		{
 			var animatorCode:string = "";
 			var UVAnimatorCode:string = "";
@@ -559,10 +559,10 @@ module away.materials
 
 			if (this._animationSet && !this._animationSet.usesCPU) {
 
-				animatorCode = this._animationSet.getAGALVertexCode(this, this._pAnimatableAttributes, this._pAnimationTargetRegisters, stageGLProxy.profile);
+				animatorCode = this._animationSet.getAGALVertexCode(this, this._pAnimatableAttributes, this._pAnimationTargetRegisters, stageGL.profile);
 
 				if (this._pNeedFragmentAnimation)
-					fragmentAnimatorCode = this._animationSet.getAGALFragmentCode(this, this._pShadedTarget, stageGLProxy.profile);
+					fragmentAnimatorCode = this._animationSet.getAGALFragmentCode(this, this._pShadedTarget, stageGL.profile);
 
 				if (this._pNeedUVAnimation)
 					UVAnimatorCode = this._animationSet.getAGALUVCode(this, this._pUVSource, this._pUVTarget);
@@ -595,7 +595,7 @@ module away.materials
 			 }
 			 */
 
-			away.managers.AGALProgramCache.getInstance(stageGLProxy).setProgram(this, vertexCode, fragmentCode);
+			away.managers.AGALProgramCache.getInstance(stageGL).setProgram(this, vertexCode, fragmentCode);
 
 		}
 

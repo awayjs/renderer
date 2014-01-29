@@ -44,7 +44,7 @@ var examples;
     var Scene3D = away.containers.Scene3D;
     var View3D = away.containers.View3D;
     var HoverController = away.controllers.HoverController;
-    var BlendMode = away.display.BlendMode;
+    var BlendMode = away.base.BlendMode;
     var Mesh = away.entities.Mesh;
     var TimerEvent = away.events.TimerEvent;
     var ColorTransform = away.geom.ColorTransform;

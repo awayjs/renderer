@@ -41,42 +41,42 @@ module away.entities
 		/**
 		 * @inheritDoc
 		 */
-		public activateVertexBuffer(index:number, stageGLProxy:away.managers.StageGLProxy):void
+		public activateVertexBuffer(index:number, stageGL:away.base.StageGL):void
 		{
-			this._geometry.activateVertexBuffer(index, stageGLProxy);
+			this._geometry.activateVertexBuffer(index, stageGL);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public activateUVBuffer(index:number, stageGLProxy:away.managers.StageGLProxy):void
-		{
-		}
-
-		/**
-		 * @inheritDoc
-		 */
-		public activateVertexNormalBuffer(index:number, stageGLProxy:away.managers.StageGLProxy):void
+		public activateUVBuffer(index:number, stageGL:away.base.StageGL):void
 		{
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public activateVertexTangentBuffer(index:number, stageGLProxy:away.managers.StageGLProxy):void
-		{
-		}
-
-		public activateSecondaryUVBuffer(index:number, stageGLProxy:away.managers.StageGLProxy):void
+		public activateVertexNormalBuffer(index:number, stageGL:away.base.StageGL):void
 		{
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public getIndexBuffer(stageGLProxy:away.managers.StageGLProxy):away.displayGL.IndexBuffer
+		public activateVertexTangentBuffer(index:number, stageGL:away.base.StageGL):void
 		{
-			return this._geometry.getIndexBuffer(stageGLProxy);
+		}
+
+		public activateSecondaryUVBuffer(index:number, stageGL:away.base.StageGL):void
+		{
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public getIndexBuffer(stageGL:away.base.StageGL):away.gl.IndexBuffer
+		{
+			return this._geometry.getIndexBuffer(stageGL);
 		}
 
 		/**

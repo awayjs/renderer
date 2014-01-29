@@ -3,9 +3,9 @@
 module away.materials
 {
 	import IRenderable					= away.base.IRenderable;
-	import BlendMode					= away.display.BlendMode;
-	import ContextGL					= away.displayGL.ContextGL;
-	import ContextGLCompareMode			= away.displayGL.ContextGLCompareMode;
+	import BlendMode					= away.base.BlendMode;
+	import ContextGL					= away.gl.ContextGL;
+	import ContextGLCompareMode			= away.gl.ContextGLCompareMode;
 	import Event						= away.events.Event;
 	import Matrix3D						= away.geom.Matrix3D;
 	import AssetType					= away.library.AssetType;
@@ -14,7 +14,7 @@ module away.materials
 	import IAnimationSet				= away.animators.IAnimationSet;
 	import IMaterialOwner				= away.base.IMaterialOwner;
 	import Camera3D						= away.cameras.Camera3D;
-	import StageGLProxy					= away.managers.StageGLProxy;
+	import StageGL						= away.base.StageGL;
 	import DepthMapPass					= away.materials.DepthMapPass;
 	import DistanceMapPass				= away.materials.DistanceMapPass;
 	import MaterialPassBase				= away.materials.MaterialPassBase;
@@ -207,7 +207,7 @@ module away.materials
 		/**
 		 * The depth compare mode used to render the renderables using this material.
 		 *
-		 * @see away.displayGL.ContextGLCompareMode
+		 * @see away.gl.ContextGLCompareMode
 		 */
 
 		public get depthCompareMode():string
@@ -340,7 +340,7 @@ module away.materials
 
 		public getRequiresBlending():boolean
 		{
-			return this._pBlendMode != away.display.BlendMode.NORMAL;
+			return this._pBlendMode != away.base.BlendMode.NORMAL;
 		}
 
 		/**
@@ -377,62 +377,62 @@ module away.materials
 		 * Sets the render state for the depth pass that is independent of the rendered object. Used when rendering
 		 * depth or distances (fe: shadow maps, depth pre-pass).
 		 *
-		 * @param stageGLProxy The StageGLProxy used for rendering.
+		 * @param stageGL The StageGL used for rendering.
 		 * @param camera The camera from which the scene is viewed.
 		 * @param distanceBased Whether or not the depth pass or distance pass should be activated. The distance pass
 		 * is required for shadow cube maps.
 		 *
 		 * @private
 		 */
-		public iActivateForDepth(stageGLProxy:StageGLProxy, camera:Camera3D, distanceBased:boolean = false) // ARCANE
+		public iActivateForDepth(stageGL:StageGL, camera:Camera3D, distanceBased:boolean = false) // ARCANE
 		{
 			this._distanceBasedDepthRender = distanceBased;
 
 			if (distanceBased)
-				this._pDistancePass.iActivate(stageGLProxy, camera);
+				this._pDistancePass.iActivate(stageGL, camera);
 			else
-				this._pDepthPass.iActivate(stageGLProxy, camera);
+				this._pDepthPass.iActivate(stageGL, camera);
 		}
 
 		/**
 		 * Clears the render state for the depth pass.
 		 *
-		 * @param stageGLProxy The StageGLProxy used for rendering.
+		 * @param stageGL The StageGL used for rendering.
 		 *
 		 * @private
 		 */
-		public iDeactivateForDepth(stageGLProxy:away.managers.StageGLProxy)
+		public iDeactivateForDepth(stageGL:away.base.StageGL)
 		{
 			if (this._distanceBasedDepthRender)
-				this._pDistancePass.iDeactivate(stageGLProxy);
+				this._pDistancePass.iDeactivate(stageGL);
 			else
-				this._pDepthPass.iDeactivate(stageGLProxy);
+				this._pDepthPass.iDeactivate(stageGL);
 		}
 
 		/**
 		 * Renders a renderable using the depth pass.
 		 *
 		 * @param renderable The IRenderable instance that needs to be rendered.
-		 * @param stageGLProxy The StageGLProxy used for rendering.
+		 * @param stageGL The StageGL used for rendering.
 		 * @param camera The camera from which the scene is viewed.
 		 * @param viewProjection The view-projection matrix used to project to the screen. This is not the same as
 		 * camera.viewProjection as it includes the scaling factors when rendering to textures.
 		 *
 		 * @private
 		 */
-		public iRenderDepth(renderable:IRenderable, stageGLProxy:StageGLProxy, camera:Camera3D, viewProjection:Matrix3D) // ARCANE
+		public iRenderDepth(renderable:IRenderable, stageGL:StageGL, camera:Camera3D, viewProjection:Matrix3D) // ARCANE
 		{
 			if (this._distanceBasedDepthRender) {
 				if (renderable.animator)
-					this._pDistancePass.iUpdateAnimationState(renderable, stageGLProxy, camera);
+					this._pDistancePass.iUpdateAnimationState(renderable, stageGL, camera);
 
-				this._pDistancePass.iRender(renderable, stageGLProxy, camera, viewProjection);
+				this._pDistancePass.iRender(renderable, stageGL, camera, viewProjection);
 
 			} else {
 				if (renderable.animator)
-					this._pDepthPass.iUpdateAnimationState(renderable, stageGLProxy, camera);
+					this._pDepthPass.iUpdateAnimationState(renderable, stageGL, camera);
 
-				this._pDepthPass.iRender(renderable, stageGLProxy, camera, viewProjection);
+				this._pDepthPass.iRender(renderable, stageGL, camera, viewProjection);
 			}
 		}
 
@@ -454,39 +454,39 @@ module away.materials
 		 * Sets the render state for a pass that is independent of the rendered object. This needs to be called before
 		 * calling renderPass. Before activating a pass, the previously used pass needs to be deactivated.
 		 * @param index The index of the pass to activate.
-		 * @param stageGLProxy The StageGLProxy object which is currently used for rendering.
+		 * @param stageGL The StageGL object which is currently used for rendering.
 		 * @param camera The camera from which the scene is viewed.
 		 * @private
 		 */
 
-		public iActivatePass(index:number, stageGLProxy:StageGLProxy, camera:Camera3D) // ARCANE
+		public iActivatePass(index:number, stageGL:StageGL, camera:Camera3D) // ARCANE
 		{
-			this._passes[index].iActivate(stageGLProxy, camera);
+			this._passes[index].iActivate(stageGL, camera);
 		}
 
 		/**
 		 * Clears the render state for a pass. This needs to be called before activating another pass.
 		 * @param index The index of the pass to deactivate.
-		 * @param stageGLProxy The StageGLProxy used for rendering
+		 * @param stageGL The StageGL used for rendering
 		 *
 		 * @private
 		 */
 
-		public iDeactivatePass(index:number, stageGLProxy:StageGLProxy) // ARCANE
+		public iDeactivatePass(index:number, stageGL:StageGL) // ARCANE
 		{
-			this._passes[index].iDeactivate(stageGLProxy);
+			this._passes[index].iDeactivate(stageGL);
 		}
 
 		/**
 		 * Renders the current pass. Before calling renderPass, activatePass needs to be called with the same index.
 		 * @param index The index of the pass used to render the renderable.
 		 * @param renderable The IRenderable object to draw.
-		 * @param stageGLProxy The StageGLProxy object used for rendering.
+		 * @param stageGL The StageGL object used for rendering.
 		 * @param entityCollector The EntityCollector object that contains the visible scene data.
 		 * @param viewProjection The view-projection matrix used to project to the screen. This is not the same as
 		 * camera.viewProjection as it includes the scaling factors when rendering to textures.
 		 */
-		public iRenderPass(index:number, renderable:IRenderable, stageGLProxy:StageGLProxy, entityCollector:EntityCollector, viewProjection:Matrix3D)
+		public iRenderPass(index:number, renderable:IRenderable, stageGL:StageGL, entityCollector:EntityCollector, viewProjection:Matrix3D)
 		{
 			if (this._pLightPicker)
 				this._pLightPicker.collectLights(renderable, entityCollector);
@@ -494,9 +494,9 @@ module away.materials
 			var pass:MaterialPassBase = this._passes[index];
 
 			if (renderable.animator)
-				pass.iUpdateAnimationState(renderable, stageGLProxy, entityCollector.camera);
+				pass.iUpdateAnimationState(renderable, stageGL, entityCollector.camera);
 
-			pass.iRender(renderable, stageGLProxy, entityCollector.camera, viewProjection);
+			pass.iRender(renderable, stageGL, entityCollector.camera, viewProjection);
 
 		}
 
@@ -582,9 +582,9 @@ module away.materials
 		 *
 		 * @private
 		 */
-		public iDeactivate(stageGLProxy:StageGLProxy)
+		public iDeactivate(stageGL:StageGL)
 		{
-			this._passes[this._numPasses - 1].iDeactivate(stageGLProxy);
+			this._passes[this._numPasses - 1].iDeactivate(stageGL);
 		}
 
 		/**

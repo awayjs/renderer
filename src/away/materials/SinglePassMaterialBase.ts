@@ -67,7 +67,7 @@ module away.materials
 		{
 
 			super.setBlendMode(value);
-			this._pScreenPass.setBlendMode(( this._pBlendMode == away.display.BlendMode.NORMAL ) && this.requiresBlending? away.display.BlendMode.LAYER : this._pBlendMode);
+			this._pScreenPass.setBlendMode(( this._pBlendMode == away.base.BlendMode.NORMAL ) && this.requiresBlending? away.base.BlendMode.LAYER : this._pBlendMode);
 
 		}
 
@@ -84,7 +84,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivateForDepth(stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D, distanceBased:boolean = false)
+		public iActivateForDepth(stageGL:away.base.StageGL, camera:away.cameras.Camera3D, distanceBased:boolean = false)
 		{
 
 			if (distanceBased) {
@@ -97,7 +97,7 @@ module away.materials
 
 			}
 
-			super.iActivateForDepth(stageGLProxy, camera, distanceBased);
+			super.iActivateForDepth(stageGL, camera, distanceBased);
 
 		}
 
@@ -147,9 +147,9 @@ module away.materials
 			var ct:away.geom.ColorTransform = this._pScreenPass.colorTransform;
 
 			if (ct) {
-				return ( this._pBlendMode != away.display.BlendMode.NORMAL ) || this._alphaBlending || ( ct.alphaMultiplier < 1);
+				return ( this._pBlendMode != away.base.BlendMode.NORMAL ) || this._alphaBlending || ( ct.alphaMultiplier < 1);
 			}
-			return ( this._pBlendMode != away.display.BlendMode.NORMAL ) || this._alphaBlending;
+			return ( this._pBlendMode != away.base.BlendMode.NORMAL ) || this._alphaBlending;
 
 			//return super.getRequiresBlending() || this._alphaBlending || ( this._pScreenPass.colorTransform && this._pScreenPass.colorTransform.alphaMultiplier < 1);
 
@@ -438,7 +438,7 @@ module away.materials
 		{
 
 			this._alphaBlending = value;
-			this._pScreenPass.setBlendMode(this.getBlendMode() == away.display.BlendMode.NORMAL && this.requiresBlending? away.display.BlendMode.LAYER : this.getBlendMode());
+			this._pScreenPass.setBlendMode(this.getBlendMode() == away.base.BlendMode.NORMAL && this.requiresBlending? away.base.BlendMode.LAYER : this.getBlendMode());
 			this._pScreenPass.preserveAlpha = this.requiresBlending;
 
 		}
@@ -446,7 +446,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iUpdateMaterial(context:away.displayGL.ContextGL)
+		public iUpdateMaterial(context:away.gl.ContextGL)
 		{
 			if (this._pScreenPass._iPassesDirty) {
 

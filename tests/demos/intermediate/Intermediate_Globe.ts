@@ -46,9 +46,9 @@ module examples
     import Scene3D                      = away.containers.Scene3D;
     import View3D                       = away.containers.View3D;
     import HoverController              = away.controllers.HoverController;
-    import BitmapData                   = away.display.BitmapData;
-    import BitmapDataChannel            = away.display.BitmapDataChannel;
-    import BlendMode                    = away.display.BlendMode;
+    import BitmapData                   = away.base.BitmapData;
+    import BitmapDataChannel            = away.base.BitmapDataChannel;
+    import BlendMode                    = away.base.BlendMode;
     import Mesh                         = away.entities.Mesh;
     import Sprite3D                     = away.entities.Sprite3D;
     import SkyBox                       = away.entities.SkyBox;
@@ -589,9 +589,9 @@ module examples
 }
 
 import Scene3D                      = away.containers.Scene3D;
-import BitmapData                   = away.display.BitmapData;
-import BitmapDataChannel            = away.display.BitmapDataChannel;
-import BlendMode                    = away.display.BlendMode;
+import BitmapData                   = away.base.BitmapData;
+import BitmapDataChannel            = away.base.BitmapDataChannel;
+import BlendMode                    = away.base.BlendMode;
 import Sprite3D                     = away.entities.Sprite3D;
 import Point                        = away.geom.Point;
 import TextureMaterial              = away.materials.TextureMaterial;

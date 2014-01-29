@@ -2,7 +2,7 @@
 
 module away.materials
 {
-	import StageGLProxy = away.managers.StageGLProxy;
+	import StageGL = away.base.StageGL;
 	/**
 	 * FogMethod provides a method to add distance-based fog to a material.
 	 */
@@ -94,7 +94,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGLProxy:StageGLProxy):void
+		public iActivate(vo:MethodVO, stageGL:StageGL):void
 		{
 			var data:Array<number> = vo.fragmentData;
 			var index:number /*int*/ = vo.fragmentConstantsIndex;

@@ -50,7 +50,7 @@ module away.materials
 		{
 			var format:string;
 			switch (this._cubeTexture.format) {
-				case away.displayGL.ContextGLTextureFormat.COMPRESSED:
+				case away.gl.ContextGLTextureFormat.COMPRESSED:
 					format = "dxt1,";
 					break;
 				case "compressedAlpha":
@@ -71,30 +71,30 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iRender(renderable:away.base.IRenderable, stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D, viewProjection:away.geom.Matrix3D)
+		public iRender(renderable:away.base.IRenderable, stageGL:away.base.StageGL, camera:away.cameras.Camera3D, viewProjection:away.geom.Matrix3D)
 		{
-			var context:away.displayGL.ContextGL = stageGLProxy._iContextGL;
+			var context:away.gl.ContextGL = stageGL.contextGL;
 			var pos:away.geom.Vector3D = camera.scenePosition;
 			this._vertexData[0] = pos.x;
 			this._vertexData[1] = pos.y;
 			this._vertexData[2] = pos.z;
 			this._vertexData[4] = this._vertexData[5] = this._vertexData[6] = camera.lens.far/Math.sqrt(3);
-			context.setProgramConstantsFromMatrix(away.displayGL.ContextGLProgramType.VERTEX, 0, viewProjection, true);
-			context.setProgramConstantsFromArray(away.displayGL.ContextGLProgramType.VERTEX, 4, this._vertexData, 2);
-			renderable.activateVertexBuffer(0, stageGLProxy);
-			context.drawTriangles(renderable.getIndexBuffer(stageGLProxy), 0, renderable.numTriangles);
+			context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, viewProjection, true);
+			context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 4, this._vertexData, 2);
+			renderable.activateVertexBuffer(0, stageGL);
+			context.drawTriangles(renderable.getIndexBuffer(stageGL), 0, renderable.numTriangles);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(stageGLProxy:away.managers.StageGLProxy, camera:away.cameras.Camera3D)
+		public iActivate(stageGL:away.base.StageGL, camera:away.cameras.Camera3D)
 		{
-			super.iActivate(stageGLProxy, camera);
-			var context:away.displayGL.ContextGL = stageGLProxy._iContextGL;
-			context.setSamplerStateAt(0, away.displayGL.ContextGLWrapMode.CLAMP, away.displayGL.ContextGLTextureFilter.LINEAR, this._cubeTexture.hasMipMaps? away.displayGL.ContextGLMipFilter.MIPLINEAR : away.displayGL.ContextGLMipFilter.MIPNONE);
-			context.setDepthTest(false, away.displayGL.ContextGLCompareMode.LESS);
-			context.setTextureAt(0, this._cubeTexture.getTextureForStageGL(stageGLProxy));
+			super.iActivate(stageGL, camera);
+			var context:away.gl.ContextGL = stageGL.contextGL;
+			context.setSamplerStateAt(0, away.gl.ContextGLWrapMode.CLAMP, away.gl.ContextGLTextureFilter.LINEAR, this._cubeTexture.hasMipMaps? away.gl.ContextGLMipFilter.MIPLINEAR : away.gl.ContextGLMipFilter.MIPNONE);
+			context.setDepthTest(false, away.gl.ContextGLCompareMode.LESS);
+			context.setTextureAt(0, this._cubeTexture.getTextureForStageGL(stageGL));
 		}
 	}
 }

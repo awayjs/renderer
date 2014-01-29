@@ -56,7 +56,7 @@ module examples
 	import Scene3D						= away.containers.Scene3D;
 	import View3D						= away.containers.View3D;
 	import HoverController				= away.controllers.HoverController;
-	import BitmapData					= away.display.BitmapData;
+	import BitmapData					= away.base.BitmapData;
 	import Mesh							= away.entities.Mesh;
 	import LoaderEvent					= away.events.LoaderEvent;
 	import ColorTransform				= away.geom.ColorTransform;

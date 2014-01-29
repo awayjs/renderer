@@ -4,11 +4,11 @@ module away.animators
 {
 	import IRenderable						= away.base.IRenderable;
 	import Camera3D							= away.cameras.Camera3D;
-	import ContextGLVertexBufferFormat		= away.displayGL.ContextGLVertexBufferFormat;
+	import ContextGLVertexBufferFormat		= away.gl.ContextGLVertexBufferFormat;
 	import Matrix3D							= away.geom.Matrix3D;
 	import Orientation3D					= away.geom.Orientation3D;
 	import Vector3D							= away.geom.Vector3D;
-	import StageGLProxy						= away.managers.StageGLProxy;
+	import StageGL							= away.base.StageGL;
 	import MathConsts						= away.geom.MathConsts;
 	
 	/**
@@ -30,7 +30,7 @@ module away.animators
 			this._billboardAxis = particleNode._iBillboardAxis;
 		}
 		
-		public setRenderState(stageGLProxy:StageGLProxy, renderable:IRenderable, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera3D)
+		public setRenderState(stageGL:StageGL, renderable:IRenderable, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera3D)
 		{
 			var comps:Array<Vector3D>;
 			if (this._billboardAxis) {

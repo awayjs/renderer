@@ -13,19 +13,19 @@ module away.render
 		private _filters:Array<away.filters.Filter3DBase>;
 		private _tasks:Array<away.filters.Filter3DTaskBase>;
 		private _filterTasksInvalid:boolean;
-		private _mainInputTexture:away.displayGL.Texture;
+		private _mainInputTexture:away.gl.Texture;
 		private _requireDepthRender:boolean;
 		private _rttManager:away.managers.RTTBufferManager;
-		private _stageGLProxy:away.managers.StageGLProxy;
+		private _stageGL:away.base.StageGL;
 		private _filterSizesInvalid:boolean = true;
 		private _onRTTResizeDelegate:Function;
 
-		constructor(stageGLProxy:away.managers.StageGLProxy)
+		constructor(stageGL:away.base.StageGL)
 		{
 			this._onRTTResizeDelegate = away.utils.Delegate.create(this, this.onRTTResize);
 
-			this._stageGLProxy = stageGLProxy;
-			this._rttManager = away.managers.RTTBufferManager.getInstance(stageGLProxy);
+			this._stageGL = stageGL;
+			this._rttManager = away.managers.RTTBufferManager.getInstance(stageGL);
 			this._rttManager.addEventListener(away.events.Event.RESIZE, this._onRTTResizeDelegate);
 
 		}
@@ -40,11 +40,11 @@ module away.render
 			return this._requireDepthRender;
 		}
 
-		public getMainInputTexture(stageGLProxy:away.managers.StageGLProxy):away.displayGL.Texture
+		public getMainInputTexture(stageGL:away.base.StageGL):away.gl.Texture
 		{
 			if (this._filterTasksInvalid) {
 
-				this.updateFilterTasks(stageGLProxy);
+				this.updateFilterTasks(stageGL);
 
 			}
 
@@ -86,7 +86,7 @@ module away.render
 
 		}
 
-		private updateFilterTasks(stageGLProxy:away.managers.StageGLProxy)
+		private updateFilterTasks(stageGL:away.base.StageGL)
 		{
 			var len:number;
 
@@ -113,28 +113,28 @@ module away.render
 				filter = this._filters[i];
 
 				// TODO: check logic
-				// filter.setRenderTargets(i == len? null : Filter3DBase(_filters[i + 1]).getMainInputTexture(stageGLProxy), stageGLProxy);
+				// filter.setRenderTargets(i == len? null : Filter3DBase(_filters[i + 1]).getMainInputTexture(stageGL), stageGL);
 
-				filter.setRenderTargets(i == len? null : this._filters[i + 1].getMainInputTexture(stageGLProxy), stageGLProxy);
+				filter.setRenderTargets(i == len? null : this._filters[i + 1].getMainInputTexture(stageGL), stageGL);
 
 				this._tasks = this._tasks.concat(filter.tasks);
 
 			}
 
-			this._mainInputTexture = this._filters[0].getMainInputTexture(stageGLProxy);
+			this._mainInputTexture = this._filters[0].getMainInputTexture(stageGL);
 
 		}
 
-		public render(stageGLProxy:away.managers.StageGLProxy, camera3D:away.cameras.Camera3D, depthTexture:away.displayGL.Texture)
+		public render(stageGL:away.base.StageGL, camera3D:away.cameras.Camera3D, depthTexture:away.gl.Texture)
 		{
 			var len:number;
 			var i:number;
 			var task:away.filters.Filter3DTaskBase;
-			var context:away.displayGL.ContextGL = stageGLProxy._iContextGL;
+			var context:away.gl.ContextGL = stageGL.contextGL;
 
-			var indexBuffer:away.displayGL.IndexBuffer = this._rttManager.indexBuffer;
+			var indexBuffer:away.gl.IndexBuffer = this._rttManager.indexBuffer;
 
-			var vertexBuffer:away.displayGL.VertexBuffer = this._rttManager.renderToTextureVertexBuffer;
+			var vertexBuffer:away.gl.VertexBuffer = this._rttManager.renderToTextureVertexBuffer;
 
 			if (!this._filters) {
 				return;
@@ -145,47 +145,47 @@ module away.render
 			}
 
 			if (this._filterTasksInvalid) {
-				this.updateFilterTasks(stageGLProxy);
+				this.updateFilterTasks(stageGL);
 			}
 
 			len = this._filters.length;
 
 			for (i = 0; i < len; ++i) {
-				this._filters[i].update(stageGLProxy, camera3D);
+				this._filters[i].update(stageGL, camera3D);
 			}
 
 			len = this._tasks.length;
 
 			if (len > 1) {
-				context.setVertexBufferAt(0, vertexBuffer, 0, away.displayGL.ContextGLVertexBufferFormat.FLOAT_2);
-				context.setVertexBufferAt(1, vertexBuffer, 2, away.displayGL.ContextGLVertexBufferFormat.FLOAT_2);
+				context.setVertexBufferAt(0, vertexBuffer, 0, away.gl.ContextGLVertexBufferFormat.FLOAT_2);
+				context.setVertexBufferAt(1, vertexBuffer, 2, away.gl.ContextGLVertexBufferFormat.FLOAT_2);
 			}
 
 			for (i = 0; i < len; ++i) {
 
 				task = this._tasks[i];
 
-				stageGLProxy.setRenderTarget(task.target);
+				stageGL.setRenderTarget(task.target);
 
 				if (!task.target) {
 
-					stageGLProxy.scissorRect = null;
+					stageGL.scissorRect = null;
 					vertexBuffer = this._rttManager.renderToScreenVertexBuffer;
-					context.setVertexBufferAt(0, vertexBuffer, 0, away.displayGL.ContextGLVertexBufferFormat.FLOAT_2);
-					context.setVertexBufferAt(1, vertexBuffer, 2, away.displayGL.ContextGLVertexBufferFormat.FLOAT_2);
+					context.setVertexBufferAt(0, vertexBuffer, 0, away.gl.ContextGLVertexBufferFormat.FLOAT_2);
+					context.setVertexBufferAt(1, vertexBuffer, 2, away.gl.ContextGLVertexBufferFormat.FLOAT_2);
 
 				}
 
-				context.setTextureAt(0, task.getMainInputTexture(stageGLProxy));
-				context.setProgram(task.getProgram(stageGLProxy));
+				context.setTextureAt(0, task.getMainInputTexture(stageGL));
+				context.setProgram(task.getProgram(stageGL));
 				context.clear(0.0, 0.0, 0.0, 0.0);
 
-				task.activate(stageGLProxy, camera3D, depthTexture);
+				task.activate(stageGL, camera3D, depthTexture);
 
-				context.setBlendFactors(away.displayGL.ContextGLBlendFactor.ONE, away.displayGL.ContextGLBlendFactor.ZERO);
+				context.setBlendFactors(away.gl.ContextGLBlendFactor.ONE, away.gl.ContextGLBlendFactor.ZERO);
 				context.drawTriangles(indexBuffer, 0, 2);
 
-				task.deactivate(stageGLProxy);
+				task.deactivate(stageGL);
 			}
 
 			context.setTextureAt(0, null);
@@ -208,7 +208,7 @@ module away.render
 		{
 			this._rttManager.removeEventListener(away.events.Event.RESIZE, this._onRTTResizeDelegate);
 			this._rttManager = null;
-			this._stageGLProxy = null;
+			this._stageGL = null;
 		}
 	}
 

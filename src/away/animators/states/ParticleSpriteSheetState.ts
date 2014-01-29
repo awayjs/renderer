@@ -4,9 +4,9 @@ module away.animators
 {
 	import IRenderable						= away.base.IRenderable;
 	import Camera3D							= away.cameras.Camera3D;
-	import ContextGLVertexBufferFormat		= away.displayGL.ContextGLVertexBufferFormat
+	import ContextGLVertexBufferFormat		= away.gl.ContextGLVertexBufferFormat
 	import Vector3D							= away.geom.Vector3D;
-	import StageGLProxy						= away.managers.StageGLProxy;
+	import StageGL							= away.base.StageGL;
 	
 	/**
 	 * ...
@@ -70,7 +70,7 @@ module away.animators
 			this.updateSpriteSheetData();
 		}
 		
-		public setRenderState(stageGLProxy:StageGLProxy, renderable:IRenderable, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera3D)
+		public setRenderState(stageGL:StageGL, renderable:IRenderable, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera3D)
 		{
 			if (animationRegisterCache.needUVAnimation) {
 				animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleSpriteSheetNode.UV_INDEX_0), this._spriteSheetData[0], this._spriteSheetData[1], this._spriteSheetData[2], this._spriteSheetData[3]);
@@ -78,9 +78,9 @@ module away.animators
 					var index:number /*int*/ = animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleSpriteSheetNode.UV_INDEX_1);
 					if (this._particleSpriteSheetNode.mode == ParticlePropertiesMode.LOCAL_STATIC) {
 						if (this._usesPhase)
-							animationSubGeometry.activateVertexBuffer(index, this._particleSpriteSheetNode._iDataOffset, stageGLProxy, ContextGLVertexBufferFormat.FLOAT_3);
+							animationSubGeometry.activateVertexBuffer(index, this._particleSpriteSheetNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
 						else
-							animationSubGeometry.activateVertexBuffer(index, this._particleSpriteSheetNode._iDataOffset, stageGLProxy, ContextGLVertexBufferFormat.FLOAT_2);
+							animationSubGeometry.activateVertexBuffer(index, this._particleSpriteSheetNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_2);
 					} else
 						animationRegisterCache.setVertexConst(index, this._spriteSheetData[4], this._spriteSheetData[5]);
 				}

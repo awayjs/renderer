@@ -31,18 +31,18 @@ module away.base
 		private _tangentsInvalid:boolean[] = new Array<boolean>(8);//= new Vector.<Boolean>(8, true);
 
 		// buffers:
-		private _vertexBuffer:away.displayGL.VertexBuffer[] = new Array<away.displayGL.VertexBuffer>(8);//Vector.<VertexBuffer> = new Vector.<VertexBuffer>(8);
-		private _uvBuffer:away.displayGL.VertexBuffer[] = new Array<away.displayGL.VertexBuffer>(8);//:Vector.<VertexBuffer> = new Vector.<VertexBuffer>(8);
-		private _secondaryUvBuffer:away.displayGL.VertexBuffer[] = new Array<away.displayGL.VertexBuffer>(8);//:Vector.<VertexBuffer> = new Vector.<VertexBuffer>(8);
-		private _vertexNormalBuffer:away.displayGL.VertexBuffer[] = new Array<away.displayGL.VertexBuffer>(8);//:Vector.<VertexBuffer> = new Vector.<VertexBuffer>(8);
-		private _vertexTangentBuffer:away.displayGL.VertexBuffer[] = new Array<away.displayGL.VertexBuffer>(8);//:Vector.<VertexBuffer> = new Vector.<VertexBuffer>(8);
+		private _vertexBuffer:away.gl.VertexBuffer[] = new Array<away.gl.VertexBuffer>(8);//Vector.<VertexBuffer> = new Vector.<VertexBuffer>(8);
+		private _uvBuffer:away.gl.VertexBuffer[] = new Array<away.gl.VertexBuffer>(8);//:Vector.<VertexBuffer> = new Vector.<VertexBuffer>(8);
+		private _secondaryUvBuffer:away.gl.VertexBuffer[] = new Array<away.gl.VertexBuffer>(8);//:Vector.<VertexBuffer> = new Vector.<VertexBuffer>(8);
+		private _vertexNormalBuffer:away.gl.VertexBuffer[] = new Array<away.gl.VertexBuffer>(8);//:Vector.<VertexBuffer> = new Vector.<VertexBuffer>(8);
+		private _vertexTangentBuffer:away.gl.VertexBuffer[] = new Array<away.gl.VertexBuffer>(8);//:Vector.<VertexBuffer> = new Vector.<VertexBuffer>(8);
 
 		// buffer dirty flags, per context:
-		private _vertexBufferContext:away.displayGL.ContextGL[] = new Array<away.displayGL.ContextGL>(8);//:Vector.<ContextGL> = new Vector.<ContextGL>(8);
-		private _uvBufferContext:away.displayGL.ContextGL[] = new Array<away.displayGL.ContextGL>(8);//:Vector.<ContextGL> = new Vector.<ContextGL>(8);
-		private _secondaryUvBufferContext:away.displayGL.ContextGL[] = new Array<away.displayGL.ContextGL>(8);//:Vector.<ContextGL> = new Vector.<ContextGL>(8);
-		private _vertexNormalBufferContext:away.displayGL.ContextGL[] = new Array<away.displayGL.ContextGL>(8);//:Vector.<ContextGL> = new Vector.<ContextGL>(8);
-		private _vertexTangentBufferContext:away.displayGL.ContextGL[] = new Array<away.displayGL.ContextGL>(8);//:Vector.<ContextGL> = new Vector.<ContextGL>(8);
+		private _vertexBufferContext:away.gl.ContextGL[] = new Array<away.gl.ContextGL>(8);//:Vector.<ContextGL> = new Vector.<ContextGL>(8);
+		private _uvBufferContext:away.gl.ContextGL[] = new Array<away.gl.ContextGL>(8);//:Vector.<ContextGL> = new Vector.<ContextGL>(8);
+		private _secondaryUvBufferContext:away.gl.ContextGL[] = new Array<away.gl.ContextGL>(8);//:Vector.<ContextGL> = new Vector.<ContextGL>(8);
+		private _vertexNormalBufferContext:away.gl.ContextGL[] = new Array<away.gl.ContextGL>(8);//:Vector.<ContextGL> = new Vector.<ContextGL>(8);
+		private _vertexTangentBufferContext:away.gl.ContextGL[] = new Array<away.gl.ContextGL>(8);//:Vector.<ContextGL> = new Vector.<ContextGL>(8);
 
 		private _numVertices:number;
 
@@ -65,10 +65,10 @@ module away.base
 		/**
 		 * @inheritDoc
 		 */
-		public activateVertexBuffer(index:number, stageGLProxy:away.managers.StageGLProxy)
+		public activateVertexBuffer(index:number, stageGL:away.base.StageGL)
 		{
-			var contextIndex:number = stageGLProxy._iStageGLIndex;
-			var context:away.displayGL.ContextGL = stageGLProxy._iContextGL;
+			var contextIndex:number = stageGL._iStageGLIndex;
+			var context:away.gl.ContextGL = stageGL.contextGL;
 
 			if (!this._vertexBuffer[contextIndex] || this._vertexBufferContext[contextIndex] != context) {
 				this._vertexBuffer[contextIndex] = context.createVertexBuffer(this._numVertices, 3);
@@ -82,16 +82,16 @@ module away.base
 				this._verticesInvalid[contextIndex] = false;
 			}
 
-			context.setVertexBufferAt(index, this._vertexBuffer[contextIndex], 0, away.displayGL.ContextGLVertexBufferFormat.FLOAT_3);
+			context.setVertexBufferAt(index, this._vertexBuffer[contextIndex], 0, away.gl.ContextGLVertexBufferFormat.FLOAT_3);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public activateUVBuffer(index:number, stageGLProxy:away.managers.StageGLProxy)
+		public activateUVBuffer(index:number, stageGL:away.base.StageGL)
 		{
-			var contextIndex:number = stageGLProxy._iStageGLIndex;
-			var context:away.displayGL.ContextGL = stageGLProxy._iContextGL;
+			var contextIndex:number = stageGL._iStageGLIndex;
+			var context:away.gl.ContextGL = stageGL.contextGL;
 
 			if (this._autoGenerateUVs && this._uvsDirty) {
 				this._uvs = this.pUpdateDummyUVs(this._uvs);
@@ -109,16 +109,16 @@ module away.base
 				this._uvsInvalid[contextIndex] = false;
 			}
 
-			context.setVertexBufferAt(index, this._uvBuffer[contextIndex], 0, away.displayGL.ContextGLVertexBufferFormat.FLOAT_2);
+			context.setVertexBufferAt(index, this._uvBuffer[contextIndex], 0, away.gl.ContextGLVertexBufferFormat.FLOAT_2);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public activateSecondaryUVBuffer(index:number, stageGLProxy:away.managers.StageGLProxy)
+		public activateSecondaryUVBuffer(index:number, stageGL:away.base.StageGL)
 		{
-			var contextIndex:number = stageGLProxy._iStageGLIndex;
-			var context:away.displayGL.ContextGL = stageGLProxy._iContextGL;
+			var contextIndex:number = stageGL._iStageGLIndex;
+			var context:away.gl.ContextGL = stageGL.contextGL;
 
 			if (!this._secondaryUvBuffer[contextIndex] || this._secondaryUvBufferContext[contextIndex] != context) {
 				this._secondaryUvBuffer[contextIndex] = context.createVertexBuffer(this._numVertices, 2);
@@ -131,7 +131,7 @@ module away.base
 				this._secondaryUvsInvalid[contextIndex] = false;
 			}
 
-			context.setVertexBufferAt(index, this._secondaryUvBuffer[contextIndex], 0, away.displayGL.ContextGLVertexBufferFormat.FLOAT_2);
+			context.setVertexBufferAt(index, this._secondaryUvBuffer[contextIndex], 0, away.gl.ContextGLVertexBufferFormat.FLOAT_2);
 		}
 
 		/**
@@ -139,10 +139,10 @@ module away.base
 		 * @param context The ContextGL for which we request the buffer
 		 * @return The VertexBuffer object that contains vertex normals.
 		 */
-		public activateVertexNormalBuffer(index:number, stageGLProxy:away.managers.StageGLProxy)
+		public activateVertexNormalBuffer(index:number, stageGL:away.base.StageGL)
 		{
-			var contextIndex:number = stageGLProxy._iStageGLIndex;
-			var context:away.displayGL.ContextGL = stageGLProxy._iContextGL;
+			var contextIndex:number = stageGL._iStageGLIndex;
+			var context:away.gl.ContextGL = stageGL.contextGL;
 
 			if (this._autoDeriveVertexNormals && this._vertexNormalsDirty) {
 				this._vertexNormals = this.pUpdateVertexNormals(this._vertexNormals);
@@ -159,7 +159,7 @@ module away.base
 				this._normalsInvalid[contextIndex] = false;
 			}
 
-			context.setVertexBufferAt(index, this._vertexNormalBuffer[contextIndex], 0, away.displayGL.ContextGLVertexBufferFormat.FLOAT_3);
+			context.setVertexBufferAt(index, this._vertexNormalBuffer[contextIndex], 0, away.gl.ContextGLVertexBufferFormat.FLOAT_3);
 		}
 
 		/**
@@ -167,10 +167,10 @@ module away.base
 		 * @param context The ContextGL for which we request the buffer
 		 * @return The VertexBuffer object that contains vertex tangents.
 		 */
-		public activateVertexTangentBuffer(index:number, stageGLProxy:away.managers.StageGLProxy)
+		public activateVertexTangentBuffer(index:number, stageGL:away.base.StageGL)
 		{
-			var contextIndex:number = stageGLProxy._iStageGLIndex;
-			var context:away.displayGL.ContextGL = stageGLProxy._iContextGL;
+			var contextIndex:number = stageGL._iStageGLIndex;
+			var context:away.gl.ContextGL = stageGL.contextGL;
 
 			if (this._vertexTangentsDirty) {
 				this._vertexTangents = this.pUpdateVertexTangents(this._vertexTangents);
@@ -187,7 +187,7 @@ module away.base
 				this._tangentsInvalid[contextIndex] = false;
 			}
 
-			context.setVertexBufferAt(index, this._vertexTangentBuffer[contextIndex], 0, away.displayGL.ContextGLVertexBufferFormat.FLOAT_3);
+			context.setVertexBufferAt(index, this._vertexTangentBuffer[contextIndex], 0, away.gl.ContextGLVertexBufferFormat.FLOAT_3);
 		}
 
 		public applyTransformation(transform:away.geom.Matrix3D)
@@ -437,9 +437,9 @@ module away.base
 			return super.pUpdateDummyUVs(target);
 		}
 
-		public pDisposeForStageGL(stageGLProxy:away.managers.StageGLProxy)
+		public pDisposeForStageGL(stageGL:away.base.StageGL)
 		{
-			var index:number = stageGLProxy._iStageGLIndex;
+			var index:number = stageGL._iStageGLIndex;
 			if (this._vertexBuffer[index]) {
 				this._vertexBuffer[index].dispose();
 				this._vertexBuffer[index] = null;

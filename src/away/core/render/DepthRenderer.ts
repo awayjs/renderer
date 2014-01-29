@@ -44,7 +44,7 @@ module away.render
 			this._disableColor = value;
 		}
 
-		public iRenderCascades(entityCollector:away.traverse.EntityCollector, target:away.displayGL.TextureBase, numCascades:number, scissorRects:away.geom.Rectangle[], cameras:away.cameras.Camera3D[])
+		public iRenderCascades(entityCollector:away.traverse.EntityCollector, target:away.gl.TextureBase, numCascades:number, scissorRects:away.geom.Rectangle[], cameras:away.cameras.Camera3D[])
 		{
 
 			this._pRenderTarget = target;
@@ -52,25 +52,25 @@ module away.render
 
 			this._pRenderableSorter.sort(entityCollector);
 
-			this._pStageGLProxy.setRenderTarget(target, true, 0);
+			this._pStageGL.setRenderTarget(target, true, 0);
 			this._pContext.clear(1, 1, 1, 1, 1, 0);
 
-			this._pContext.setBlendFactors(away.displayGL.ContextGLBlendFactor.ONE, away.displayGL.ContextGLBlendFactor.ZERO);
-			this._pContext.setDepthTest(true, away.displayGL.ContextGLCompareMode.LESS);
+			this._pContext.setBlendFactors(away.gl.ContextGLBlendFactor.ONE, away.gl.ContextGLBlendFactor.ZERO);
+			this._pContext.setDepthTest(true, away.gl.ContextGLCompareMode.LESS);
 
 			var head:away.data.RenderableListItem = entityCollector.opaqueRenderableHead;
 
 			var first:boolean = true;
 
 			for (var i:number = numCascades - 1; i >= 0; --i) {
-				this._pStageGLProxy.scissorRect = scissorRects[i];
+				this._pStageGL.scissorRect = scissorRects[i];
 				this.drawCascadeRenderables(head, cameras[i], first? null : cameras[i].frustumPlanes);
 				first = false;
 			}
 
 			if (this._activeMaterial) {
 
-				this._activeMaterial.iDeactivateForDepth(this._pStageGLProxy);
+				this._activeMaterial.iDeactivateForDepth(this._pStageGL);
 
 			}
 
@@ -78,9 +78,9 @@ module away.render
 			this._activeMaterial = null;
 
 			//line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
-			this._pContext.setDepthTest(false, away.displayGL.ContextGLCompareMode.LESS_EQUAL);
+			this._pContext.setDepthTest(false, away.gl.ContextGLCompareMode.LESS_EQUAL);
 
-			this._pStageGLProxy.scissorRect = null;
+			this._pStageGL.scissorRect = null;
 
 		}
 
@@ -112,15 +112,15 @@ module away.render
 					if (this._activeMaterial != material) {
 						if (this._activeMaterial) {
 
-							this._activeMaterial.iDeactivateForDepth(this._pStageGLProxy);
+							this._activeMaterial.iDeactivateForDepth(this._pStageGL);
 
 						}
 
 						this._activeMaterial = material;
-						this._activeMaterial.iActivateForDepth(this._pStageGLProxy, camera, false);
+						this._activeMaterial.iActivateForDepth(this._pStageGL, camera, false);
 					}
 
-					this._activeMaterial.iRenderDepth(renderable, this._pStageGLProxy, camera, camera.viewProjection);
+					this._activeMaterial.iRenderDepth(renderable, this._pStageGL, camera, camera.viewProjection);
 
 				} else {
 
@@ -136,12 +136,12 @@ module away.render
 		/**
 		 * @inheritDoc
 		 */
-		public pDraw(entityCollector:away.traverse.EntityCollector, target:away.displayGL.TextureBase)
+		public pDraw(entityCollector:away.traverse.EntityCollector, target:away.gl.TextureBase)
 		{
 
-			this._pContext.setBlendFactors(away.displayGL.ContextGLBlendFactor.ONE, away.displayGL.ContextGLBlendFactor.ZERO);
+			this._pContext.setBlendFactors(away.gl.ContextGLBlendFactor.ONE, away.gl.ContextGLBlendFactor.ZERO);
 
-			this._pContext.setDepthTest(true, away.displayGL.ContextGLCompareMode.LESS);
+			this._pContext.setDepthTest(true, away.gl.ContextGLCompareMode.LESS);
 
 			this.drawRenderables(entityCollector.opaqueRenderableHead, entityCollector);
 
@@ -152,7 +152,7 @@ module away.render
 				this.drawRenderables(entityCollector.blendedRenderableHead, entityCollector);
 
 			if (this._activeMaterial)
-				this._activeMaterial.iDeactivateForDepth(this._pStageGLProxy);
+				this._activeMaterial.iDeactivateForDepth(this._pStageGL);
 
 			if (this._disableColor)
 				this._pContext.setColorMask(true, true, true, true);
@@ -187,16 +187,16 @@ module away.render
 					} while (item2 && item2.renderable.material == this._activeMaterial);
 
 				} else {
-					this._activeMaterial.iActivateForDepth(this._pStageGLProxy, camera, this._distanceBased);
+					this._activeMaterial.iActivateForDepth(this._pStageGL, camera, this._distanceBased);
 					item2 = item;
 					do {
 
-						this._activeMaterial.iRenderDepth(item2.renderable, this._pStageGLProxy, camera, this._pRttViewProjectionMatrix);
+						this._activeMaterial.iRenderDepth(item2.renderable, this._pStageGL, camera, this._pRttViewProjectionMatrix);
 						item2 = item2.next;
 
 					} while (item2 && item2.renderable.material == this._activeMaterial);
 
-					this._activeMaterial.iDeactivateForDepth(this._pStageGLProxy);
+					this._activeMaterial.iDeactivateForDepth(this._pStageGL);
 
 				}
 

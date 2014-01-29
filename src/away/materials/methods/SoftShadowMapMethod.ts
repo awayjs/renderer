@@ -72,9 +72,9 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGLProxy:away.managers.StageGLProxy):void
+		public iActivate(vo:MethodVO, stageGL:away.base.StageGL):void
 		{
-			super.iActivate(vo, stageGLProxy);
+			super.iActivate(vo, stageGL);
 			var texRange:number = .5*this._range/this._pCastingLight.shadowMapper.depthMapSize;
 			var data:Array<number> = vo.fragmentData;
 			var index:number /*uint*/ = vo.fragmentConstantsIndex + 10;
@@ -120,9 +120,9 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivateForCascade(vo:MethodVO, stageGLProxy:away.managers.StageGLProxy):void
+		public iActivateForCascade(vo:MethodVO, stageGL:away.base.StageGL):void
 		{
-			super.iActivate(vo, stageGLProxy);
+			super.iActivate(vo, stageGL);
 			var texRange:number = this._range/this._pCastingLight.shadowMapper.depthMapSize;
 			var data:Array<number> = vo.fragmentData;
 			var index:number /*uint*/ = vo.secondaryFragmentConstantsIndex;

@@ -73,7 +73,7 @@ module away.materials
 
 			this._pScreenPass.preserveAlpha = this.getRequiresBlending();
 
-			this._pScreenPass.setBlendMode(this.getBlendMode() == away.display.BlendMode.NORMAL && this.getRequiresBlending()? away.display.BlendMode.LAYER : this.getBlendMode());
+			this._pScreenPass.setBlendMode(this.getBlendMode() == away.base.BlendMode.NORMAL && this.getRequiresBlending()? away.base.BlendMode.LAYER : this.getBlendMode());
 
 		}
 
