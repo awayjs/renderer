@@ -3271,7 +3271,7 @@ declare module away.containers {
         private _loadingSessions;
         private _useAssetLib;
         private _assetLibId;
-        private _onResourceRetrievedDelegate;
+        private _onResourceCompleteDelegate;
         private _onAssetCompleteDelegate;
         constructor(useAssetLibrary?: boolean, assetLibraryId?: string);
         /**
@@ -3303,7 +3303,7 @@ declare module away.containers {
         * A parser must have been enabled, to be considered when autoselecting the parser.
         *
         * @param parserClass The parser class to enable.
-        * @see away3d.net.parsers.Parsers
+        * @see away.parsers.Parsers
         */
         static enableParser(parserClass: Object): void;
         /**
@@ -3313,23 +3313,23 @@ declare module away.containers {
         * A parser must have been enabled, to be considered when autoselecting the parser.
         *
         * @param parserClasses A Vector of parser classes to enable.
-        * @see away3d.net.parsers.Parsers
+        * @see away.parsers.Parsers
         */
         static enableParsers(parserClasses: Object[]): void;
         private removeListeners(dispatcher);
         private onAssetComplete(ev);
         /**
-        * Called when a an error occurs during dependency retrieving.
+        * Called when an error occurs during loading
         */
-        private onDependencyRetrievingError(event);
+        private onLoadError(event);
         /**
-        * Called when a an error occurs during parsing.
+        * Called when a an error occurs during parsing
         */
-        private onDependencyRetrievingParseError(event);
+        private onParseError(event);
         /**
         * Called when the resource and all of its dependencies was retrieved.
         */
-        private onResourceRetrieved(event);
+        private onResourceComplete(event);
     }
 }
 declare module away.containers {
@@ -12416,25 +12416,21 @@ declare module away.parsers {
 declare class ObjectGroup {
     public name: string;
     public groups: Group[];
-    constructor();
 }
 declare class Group {
     public name: string;
     public materialID: string;
     public materialGroups: MaterialGroup[];
-    constructor();
 }
 declare class MaterialGroup {
     public url: string;
     public faces: FaceData[];
-    constructor();
 }
 declare class SpecularData {
     public materialID: string;
     public basicSpecularMethod: away.materials.BasicSpecularMethod;
     public ambientColor: number;
     public alpha: number;
-    constructor();
 }
 declare class LoadedMaterial {
     public materialID: string;
@@ -12443,14 +12439,12 @@ declare class LoadedMaterial {
     public specularMethod: away.materials.BasicSpecularMethod;
     public ambientColor: number;
     public alpha: number;
-    constructor();
 }
 declare class FaceData {
     public vertexIndices: number[];
     public uvIndices: number[];
     public normalIndices: number[];
     public indexIds: string[];
-    constructor();
 }
 /**
 * Texture coordinates value object.
@@ -12520,7 +12514,6 @@ declare class Vertex {
     * returns a new Vertex value Object
     */
     public clone(): Vertex;
-    public FaceData(): void;
 }
 declare module away.parsers {
     /**
@@ -12757,7 +12750,6 @@ declare module away.parsers {
 declare class TextureVO {
     public url: string;
     public texture: away.textures.Texture2DBase;
-    public TextureVO(): void;
 }
 declare class MaterialVO {
     public name: string;
@@ -12768,7 +12760,6 @@ declare class MaterialVO {
     public colorMap: TextureVO;
     public specularMap: TextureVO;
     public material: away.materials.MaterialBase;
-    public MaterialVO(): void;
 }
 declare class ObjectVO {
     public name: string;
@@ -12783,7 +12774,6 @@ declare class ObjectVO {
     public materialFaces: Object;
     public materials: string[];
     public smoothingGroups: number[];
-    public ObjectVO(): void;
 }
 declare class VertexVO {
     public x: number;
@@ -12793,14 +12783,12 @@ declare class VertexVO {
     public v: number;
     public normal: away.geom.Vector3D;
     public tangent: away.geom.Vector3D;
-    public VertexVO(): void;
 }
 declare class FaceVO {
     public a: number;
     public b: number;
     public c: number;
     public smoothGroup: number;
-    public FaceVO(): void;
 }
 declare module away.parsers {
     /**

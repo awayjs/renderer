@@ -11622,7 +11622,7 @@ var away;
                 this._useAssetLib = useAssetLibrary;
                 this._assetLibId = assetLibraryId;
 
-                this._onResourceRetrievedDelegate = away.utils.Delegate.create(this, this.onResourceRetrieved);
+                this._onResourceCompleteDelegate = away.utils.Delegate.create(this, this.onResourceComplete);
                 this._onAssetCompleteDelegate = away.utils.Delegate.create(this, this.onAssetComplete);
             }
             /**
@@ -11649,12 +11649,12 @@ var away;
                     token = loader.load(req, context, ns, parser);
                 }
 
-                token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this._onResourceRetrievedDelegate);
+                token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this._onResourceCompleteDelegate);
                 token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this._onAssetCompleteDelegate);
 
                 // Error are handled separately (see documentation for addErrorHandler)
-                token._iLoader._iAddErrorHandler(this.onDependencyRetrievingError);
-                token._iLoader._iAddParseErrorHandler(this.onDependencyRetrievingParseError);
+                token._iLoader._iAddErrorHandler(this.onLoadError);
+                token._iLoader._iAddParseErrorHandler(this.onParseError);
 
                 return token;
             };
@@ -11683,12 +11683,12 @@ var away;
                     token = loader.loadData(data, '', context, ns, parser);
                 }
 
-                token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this._onResourceRetrievedDelegate);
+                token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this._onResourceCompleteDelegate);
                 token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this._onAssetCompleteDelegate);
 
                 // Error are handled separately (see documentation for addErrorHandler)
-                token._iLoader._iAddErrorHandler(this.onDependencyRetrievingError);
-                token._iLoader._iAddParseErrorHandler(this.onDependencyRetrievingParseError);
+                token._iLoader._iAddErrorHandler(this.onLoadError);
+                token._iLoader._iAddParseErrorHandler(this.onParseError);
 
                 return token;
             };
@@ -11721,10 +11721,10 @@ var away;
             * A parser must have been enabled, to be considered when autoselecting the parser.
             *
             * @param parserClass The parser class to enable.
-            * @see away3d.net.parsers.Parsers
+            * @see away.parsers.Parsers
             */
             function (parserClass) {
-                away.net.SingleFileLoader.enableParser(parserClass);
+                away.net.AssetLoader.enableParser(parserClass);
             };
 
             Loader3D.enableParsers = /**
@@ -11734,14 +11734,14 @@ var away;
             * A parser must have been enabled, to be considered when autoselecting the parser.
             *
             * @param parserClasses A Vector of parser classes to enable.
-            * @see away3d.net.parsers.Parsers
+            * @see away.parsers.Parsers
             */
             function (parserClasses) {
-                away.net.SingleFileLoader.enableParsers(parserClasses);
+                away.net.AssetLoader.enableParsers(parserClasses);
             };
 
             Loader3D.prototype.removeListeners = function (dispatcher) {
-                dispatcher.removeEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this._onResourceRetrievedDelegate);
+                dispatcher.removeEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this._onResourceCompleteDelegate);
                 dispatcher.removeEventListener(away.events.AssetEvent.ASSET_COMPLETE, this._onAssetCompleteDelegate);
             };
 
@@ -11780,10 +11780,10 @@ var away;
             };
 
             /**
-            * Called when a an error occurs during dependency retrieving.
+            * Called when an error occurs during loading
             */
-            Loader3D.prototype.onDependencyRetrievingError = function (event) {
-                if (this.hasEventListener(away.events.LoaderEvent.LOAD_ERROR, this.onDependencyRetrievingError)) {
+            Loader3D.prototype.onLoadError = function (event) {
+                if (this.hasEventListener(away.events.IOErrorEvent.IO_ERROR, this.onLoadError)) {
                     this.dispatchEvent(event);
                     return true;
                 } else {
@@ -11792,10 +11792,10 @@ var away;
             };
 
             /**
-            * Called when a an error occurs during parsing.
+            * Called when a an error occurs during parsing
             */
-            Loader3D.prototype.onDependencyRetrievingParseError = function (event) {
-                if (this.hasEventListener(away.events.ParserEvent.PARSE_ERROR, this.onDependencyRetrievingParseError)) {
+            Loader3D.prototype.onParseError = function (event) {
+                if (this.hasEventListener(away.events.ParserEvent.PARSE_ERROR, this.onParseError)) {
                     this.dispatchEvent(event);
                     return true;
                 } else {
@@ -11806,10 +11806,10 @@ var away;
             /**
             * Called when the resource and all of its dependencies was retrieved.
             */
-            Loader3D.prototype.onResourceRetrieved = function (event) {
+            Loader3D.prototype.onResourceComplete = function (event) {
                 var loader = event.target;
 
-                this.dispatchEvent(event.clone());
+                this.dispatchEvent(event);
             };
             return Loader3D;
         })(away.containers.ObjectContainer3D);
@@ -41817,6 +41817,16 @@ var away;
 (function (away) {
     ///<reference path="../_definitions.ts"/>
     (function (parsers) {
+        var Mesh = away.entities.Mesh;
+        var DefaultMaterialManager = away.materials.DefaultMaterialManager;
+        var BasicSpecularMethod = away.materials.BasicSpecularMethod;
+        var ColorMaterial = away.materials.ColorMaterial;
+        var ColorMultiPassMaterial = away.materials.ColorMultiPassMaterial;
+        var MaterialBase = away.materials.MaterialBase;
+        var TextureMaterial = away.materials.TextureMaterial;
+        var TextureMultiPassMaterial = away.materials.TextureMultiPassMaterial;
+        var URLLoaderDataFormat = away.net.URLLoaderDataFormat;
+
         /**
         * OBJParser provides a parser for the OBJ data type.
         */
@@ -41829,7 +41839,7 @@ var away;
             */
             function OBJParser(scale) {
                 if (typeof scale === "undefined") { scale = 1; }
-                _super.call(this, parsers.ParserDataFormat.PLAIN_TEXT);
+                _super.call(this, URLLoaderDataFormat.TEXT);
                 this._mtlLibLoaded = true;
                 this._activeMaterialID = "";
                 this._scale = scale;
@@ -41862,7 +41872,7 @@ var away;
             * @return Whether or not the given data is supported.
             */
             function (data) {
-                var content = away.parsers.ParserUtils.toString(data);
+                var content = parsers.ParserUtils.toString(data);
                 var hasV = false;
                 var hasF = false;
 
@@ -41879,7 +41889,7 @@ var away;
             */
             OBJParser.prototype._iResolveDependency = function (resourceDependency) {
                 if (resourceDependency.id == 'mtl') {
-                    var str = away.parsers.ParserUtils.toString(resourceDependency.data);
+                    var str = parsers.ParserUtils.toString(resourceDependency.data);
                     this.parseMtl(str);
                 } else {
                     var asset;
@@ -41969,22 +41979,22 @@ var away;
                     this.parseLine(trunk);
 
                     if (this.parsingPaused) {
-                        return away.parsers.ParserBase.MORE_TO_PARSE;
+                        return parsers.ParserBase.MORE_TO_PARSE;
                     }
                 }
 
                 if (this._charIndex >= this._stringLength) {
                     if (this._mtlLib && !this._mtlLibLoaded) {
-                        return away.parsers.ParserBase.MORE_TO_PARSE;
+                        return parsers.ParserBase.MORE_TO_PARSE;
                     }
 
                     this.translate();
                     this.applyMaterials();
 
-                    return away.parsers.ParserBase.PARSING_DONE;
+                    return parsers.ParserBase.PARSING_DONE;
                 }
 
-                return away.parsers.ParserBase.MORE_TO_PARSE;
+                return parsers.ParserBase.MORE_TO_PARSE;
             };
 
             /**
@@ -42074,12 +42084,12 @@ var away;
                         this._pFinalizeAsset(geometry);
 
                         if (this.materialMode < 2)
-                            bmMaterial = new away.materials.TextureMaterial(away.materials.DefaultMaterialManager.getDefaultTexture());
+                            bmMaterial = new TextureMaterial(DefaultMaterialManager.getDefaultTexture());
 else
-                            bmMaterial = new away.materials.TextureMultiPassMaterial(away.materials.DefaultMaterialManager.getDefaultTexture());
+                            bmMaterial = new TextureMultiPassMaterial(DefaultMaterialManager.getDefaultTexture());
 
                         //bmMaterial = new TextureMaterial(DefaultMaterialManager.getDefaultTexture());
-                        mesh = new away.entities.Mesh(geometry, bmMaterial);
+                        mesh = new Mesh(geometry, bmMaterial);
 
                         if (this._objects[objIndex].name) {
                             // this is a full independent object ('o' tag in OBJ file)
@@ -42428,7 +42438,7 @@ else
 
                     if (mapkd != "") {
                         if (useSpecular) {
-                            basicSpecularMethod = new away.materials.BasicSpecularMethod();
+                            basicSpecularMethod = new BasicSpecularMethod();
                             basicSpecularMethod.specularColor = specularColor;
                             basicSpecularMethod.specular = specular;
 
@@ -42454,7 +42464,7 @@ else
                         var cm;
 
                         if (this.materialMode < 2) {
-                            cm = new away.materials.ColorMaterial(diffuseColor);
+                            cm = new ColorMaterial(diffuseColor);
 
                             var colorMat = cm;
 
@@ -42467,7 +42477,7 @@ else
                                 colorMat.specular = specular;
                             }
                         } else {
-                            cm = new away.materials.ColorMultiPassMaterial(diffuseColor);
+                            cm = new ColorMultiPassMaterial(diffuseColor);
 
                             var colorMultiMat = cm;
 
@@ -42638,11 +42648,15 @@ else
                     this.applyMaterial(this._materialLoaded[i]);
             };
             return OBJParser;
-        })(away.parsers.ParserBase);
+        })(parsers.ParserBase);
         parsers.OBJParser = OBJParser;
     })(away.parsers || (away.parsers = {}));
     var parsers = away.parsers;
 })(away || (away = {}));
+
+var BasicSpecularMethod = away.materials.BasicSpecularMethod;
+var MaterialBase = away.materials.MaterialBase;
+var Texture2DBase = away.textures.Texture2DBase;
 
 var ObjectGroup = (function () {
     function ObjectGroup() {
@@ -42842,9 +42856,6 @@ var Vertex = (function () {
     Vertex.prototype.clone = function () {
         return new Vertex(this._x, this._y, this._z);
     };
-
-    Vertex.prototype.FaceData = function () {
-    };
     return Vertex;
 })();
 var away;
@@ -42879,6 +42890,7 @@ var away;
         var SimpleShadowMapMethodBase = away.materials.SimpleShadowMapMethodBase;
         var SinglePassMaterialBase = away.materials.SinglePassMaterialBase;
         var SoftShadowMapMethod = away.materials.SoftShadowMapMethod;
+        var URLLoaderDataFormat = away.net.URLLoaderDataFormat;
 
         /**
         * AWDParser provides a parser for the AWD data type.
@@ -42891,7 +42903,7 @@ var away;
             * @param extra The holder for extra contextual data that the parser might need.
             */
             function AWDParser() {
-                _super.call(this, parsers.ParserDataFormat.BINARY);
+                _super.call(this, URLLoaderDataFormat.ARRAY_BUFFER);
                 //set to "true" to have some console.logs in the Console
                 this._debug = false;
                 this._startedParsing = false;
@@ -45336,6 +45348,19 @@ var away;
 (function (away) {
     ///<reference path="../_definitions.ts"/>
     (function (parsers) {
+        var ColorMaterial = away.materials.ColorMaterial;
+        var ColorMultiPassMaterial = away.materials.ColorMultiPassMaterial;
+        var DefaultMaterialManager = away.materials.DefaultMaterialManager;
+        var MultiPassMaterialBase = away.materials.MultiPassMaterialBase;
+        var SinglePassMaterialBase = away.materials.SinglePassMaterialBase;
+        var TextureMaterial = away.materials.TextureMaterial;
+        var TextureMultiPassMaterial = away.materials.TextureMultiPassMaterial;
+        var MaterialBase = away.materials.MaterialBase;
+        var URLLoaderDataFormat = away.net.URLLoaderDataFormat;
+        var Texture2DBase = away.textures.Texture2DBase;
+        var ByteArray = away.utils.ByteArray;
+        var GeometryUtils = away.utils.GeometryUtils;
+
         /**
         * Max3DSParser provides a parser for the 3ds data type.
         */
@@ -45348,7 +45373,7 @@ var away;
             */
             function Max3DSParser(useSmoothingGroups) {
                 if (typeof useSmoothingGroups === "undefined") { useSmoothingGroups = true; }
-                _super.call(this, parsers.ParserDataFormat.BINARY);
+                _super.call(this, URLLoaderDataFormat.ARRAY_BUFFER);
 
                 this._useSmoothingGroups = useSmoothingGroups;
             }
@@ -45370,7 +45395,7 @@ var away;
             function (data) {
                 var ba;
 
-                ba = away.parsers.ParserUtils.toByteArray(data);
+                ba = parsers.ParserUtils.toByteArray(data);
                 if (ba) {
                     ba.position = 0;
                     if (ba.readShort() == 0x4d4d)
@@ -45509,7 +45534,7 @@ else if (this._cur_obj && this._byteData.position >= this._cur_obj_end) {
                 }
 
                 if (this._byteData.getBytesAvailable() || this._cur_obj || this._cur_mat)
-                    return away.parsers.ParserBase.MORE_TO_PARSE;
+                    return parsers.ParserBase.MORE_TO_PARSE;
 else {
                     var name;
 
@@ -45520,7 +45545,7 @@ else {
                             this._pFinalizeAsset(obj, name);
                     }
 
-                    return away.parsers.ParserBase.PARSING_DONE;
+                    return parsers.ParserBase.PARSING_DONE;
                 }
             };
 
@@ -45802,7 +45827,7 @@ else {
 
                     // Construct sub-geometries (potentially splitting buffers)
                     // and add them to geometry.
-                    subs = away.utils.GeometryUtils.fromVectors(obj.verts, obj.indices, obj.uvs, null, null, null, null);
+                    subs = GeometryUtils.fromVectors(obj.verts, obj.indices, obj.uvs, null, null, null, null);
                     for (i = 0; i < subs.length; i++)
                         geom.subGeometries.push(subs[i]);
 
@@ -45966,16 +45991,16 @@ else
                 var mat;
                 if (this.materialMode < 2) {
                     if (this._cur_mat.colorMap)
-                        mat = new away.materials.TextureMaterial(this._cur_mat.colorMap.texture || away.materials.DefaultMaterialManager.getDefaultTexture());
+                        mat = new TextureMaterial(this._cur_mat.colorMap.texture || DefaultMaterialManager.getDefaultTexture());
 else
-                        mat = new away.materials.ColorMaterial(this._cur_mat.diffuseColor);
+                        mat = new ColorMaterial(this._cur_mat.diffuseColor);
                     (mat).ambientColor = this._cur_mat.ambientColor;
                     (mat).specularColor = this._cur_mat.specularColor;
                 } else {
                     if (this._cur_mat.colorMap)
-                        mat = new away.materials.TextureMultiPassMaterial(this._cur_mat.colorMap.texture || away.materials.DefaultMaterialManager.getDefaultTexture());
+                        mat = new TextureMultiPassMaterial(this._cur_mat.colorMap.texture || DefaultMaterialManager.getDefaultTexture());
 else
-                        mat = new away.materials.ColorMultiPassMaterial(this._cur_mat.diffuseColor);
+                        mat = new ColorMultiPassMaterial(this._cur_mat.diffuseColor);
                     (mat).ambientColor = this._cur_mat.ambientColor;
                     (mat).specularColor = this._cur_mat.specularColor;
                 }
@@ -46059,55 +46084,55 @@ else
                 return (r << 16) | (g << 8) | b;
             };
             return Max3DSParser;
-        })(away.parsers.ParserBase);
+        })(parsers.ParserBase);
         parsers.Max3DSParser = Max3DSParser;
     })(away.parsers || (away.parsers = {}));
     var parsers = away.parsers;
 })(away || (away = {}));
 
+var Vector3D = away.geom.Vector3D;
+
 var TextureVO = (function () {
     function TextureVO() {
     }
-    TextureVO.prototype.TextureVO = function () {
-    };
     return TextureVO;
 })();
 
 var MaterialVO = (function () {
     function MaterialVO() {
     }
-    MaterialVO.prototype.MaterialVO = function () {
-    };
     return MaterialVO;
 })();
 
 var ObjectVO = (function () {
     function ObjectVO() {
     }
-    ObjectVO.prototype.ObjectVO = function () {
-    };
     return ObjectVO;
 })();
 
 var VertexVO = (function () {
     function VertexVO() {
     }
-    VertexVO.prototype.VertexVO = function () {
-    };
     return VertexVO;
 })();
 
 var FaceVO = (function () {
     function FaceVO() {
     }
-    FaceVO.prototype.FaceVO = function () {
-    };
     return FaceVO;
 })();
 var away;
 (function (away) {
     ///<reference path="../_definitions.ts"/>
     (function (parsers) {
+        var Geometry = away.base.Geometry;
+        var CompactSubGeometry = away.base.CompactSubGeometry;
+        var VertexAnimationSet = away.animators.VertexAnimationSet;
+        var VertexClipNode = away.animators.VertexClipNode;
+        var URLLoaderDataFormat = away.net.URLLoaderDataFormat;
+        var Texture2DBase = away.textures.Texture2DBase;
+        var ByteArray = away.utils.ByteArray;
+
         /**
         * MD2Parser provides a parser for the MD2 data type.
         */
@@ -46121,10 +46146,10 @@ var away;
             function MD2Parser(textureType, ignoreTexturePath) {
                 if (typeof textureType === "undefined") { textureType = "jpg"; }
                 if (typeof ignoreTexturePath === "undefined") { ignoreTexturePath = true; }
-                _super.call(this, parsers.ParserDataFormat.BINARY);
+                _super.call(this, URLLoaderDataFormat.ARRAY_BUFFER);
                 this._clipNodes = new Object();
                 // the current subgeom being built
-                this._animationSet = new away.animators.VertexAnimationSet();
+                this._animationSet = new VertexAnimationSet();
                 this.materialFinal = false;
                 this.geoCreated = false;
                 this._textureType = textureType;
@@ -46208,7 +46233,7 @@ else
                         //this._byteData.endian = Endian.LITTLE_ENDIAN;
                         // TODO: Create a mesh only when encountered (if it makes sense
                         // for this file format) and return it using this._pFinalizeAsset()
-                        this._geometry = new away.base.Geometry();
+                        this._geometry = new Geometry();
                         this._mesh = new away.entities.Mesh(this._geometry, null);
                         if (this.materialMode < 2)
                             this._mesh.material = away.materials.DefaultMaterialManager.getDefaultMaterial();
@@ -46424,12 +46449,12 @@ else
                 this._byteData.position = this._offsetFrames;
 
                 for (i = 0; i < this._numFrames; i++) {
-                    subGeom = new away.base.CompactSubGeometry();
+                    subGeom = new CompactSubGeometry();
 
                     if (this._firstSubGeom == null)
                         this._firstSubGeom = subGeom;
 
-                    geometry = new away.base.Geometry();
+                    geometry = new Geometry();
                     geometry.addSubGeometry(subGeom);
                     tvertices = new Array();
                     fvertices = new Array(vertLen * 3);
@@ -46469,7 +46494,7 @@ else
                             this._animationSet.addAnimation(prevClip);
                         }
 
-                        clip = new away.animators.VertexClipNode();
+                        clip = new VertexClipNode();
                         clip.name = name;
                         clip.stitchFinalFrame = true;
 
@@ -46507,7 +46532,7 @@ else
             };
 
             MD2Parser.prototype.createDefaultSubGeometry = function () {
-                var sub = new away.base.CompactSubGeometry();
+                var sub = new CompactSubGeometry();
                 sub.updateData(this._firstSubGeom.vertexData);
                 sub.updateIndexData(this._indices);
                 this._geometry.addSubGeometry(sub);
@@ -46528,6 +46553,7 @@ var away;
         var SkeletonClipNode = away.animators.SkeletonClipNode;
         var Quaternion = away.geom.Quaternion;
         var Vector3D = away.geom.Vector3D;
+        var URLLoaderDataFormat = away.net.URLLoaderDataFormat;
 
         /**
         * MD5AnimParser provides a parser for the md5anim data type, providing an animation sequence for the md5 format.
@@ -46544,7 +46570,7 @@ var away;
             function MD5AnimParser(additionalRotationAxis, additionalRotationRadians) {
                 if (typeof additionalRotationAxis === "undefined") { additionalRotationAxis = null; }
                 if (typeof additionalRotationRadians === "undefined") { additionalRotationRadians = 0; }
-                _super.call(this, parsers.ParserDataFormat.PLAIN_TEXT);
+                _super.call(this, URLLoaderDataFormat.TEXT);
                 this._parseIndex = 0;
                 this._line = 0;
                 this._charLineIndex = 0;
@@ -47121,11 +47147,11 @@ var away;
         var SkeletonJoint = away.animators.SkeletonJoint;
         var Geometry = away.base.Geometry;
         var SkinnedSubGeometry = away.base.SkinnedSubGeometry;
-        var Quaternion = away.geom.Quaternion;
-        var Mesh = away.entities.Mesh;
-
         var Matrix3D = away.geom.Matrix3D;
+        var Quaternion = away.geom.Quaternion;
         var Vector3D = away.geom.Vector3D;
+        var Mesh = away.entities.Mesh;
+        var URLLoaderDataFormat = away.net.URLLoaderDataFormat;
 
         // todo: create animation system, parse skeleton
         /**
@@ -47141,7 +47167,7 @@ var away;
             function MD5MeshParser(additionalRotationAxis, additionalRotationRadians) {
                 if (typeof additionalRotationAxis === "undefined") { additionalRotationAxis = null; }
                 if (typeof additionalRotationRadians === "undefined") { additionalRotationRadians = 0; }
-                _super.call(this, parsers.ParserDataFormat.PLAIN_TEXT);
+                _super.call(this, URLLoaderDataFormat.TEXT);
                 this._parseIndex = 0;
                 this._line = 0;
                 this._charLineIndex = 0;
@@ -47749,7 +47775,7 @@ var away;
             * @see away.parsers.parsers.Parsers.ALL_BUNDLED
             */
             function () {
-                away.net.SingleFileLoader.enableParsers(this.ALL_BUNDLED);
+                away.net.AssetLoader.enableParsers(this.ALL_BUNDLED);
             };
             Parsers.ALL_BUNDLED = Array(away.parsers.AWDParser, away.parsers.Max3DSParser, away.parsers.MD2Parser, away.parsers.OBJParser);
             return Parsers;

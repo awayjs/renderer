@@ -124,7 +124,6 @@ declare module away.events {
     */
     class EventDispatcher {
         private listeners;
-        private lFncLength;
         /**
         * Add an event listener
         * @method addEventListener
@@ -267,30 +266,19 @@ declare module away.events {
 declare module away.events {
     class LoaderEvent extends events.Event {
         /**
-        * Dispatched when loading of a asset failed.
-        * Such as wrong parser type, unsupported extensions, parsing errors, malformated or unsupported 3d file etc..
-        */
-        static LOAD_ERROR: string;
-        /**
         * Dispatched when a resource and all of its dependencies is retrieved.
         */
         static RESOURCE_COMPLETE: string;
-        /**
-        * Dispatched when a resource's dependency is retrieved and resolved.
-        */
-        static DEPENDENCY_COMPLETE: string;
         private _url;
         private _assets;
-        private _message;
-        private _isDependency;
-        private _isDefaultPrevented;
         /**
         * Create a new LoaderEvent object.
+        *
         * @param type The event type.
-        * @param resource The loaded or parsed resource.
         * @param url The url of the loaded resource.
+        * @param assets The assets of the loaded resource.
         */
-        constructor(type: string, url?: string, assets?: away.library.IAsset[], isDependency?: boolean, errmsg?: string);
+        constructor(type: string, url?: string, assets?: away.library.IAsset[]);
         /**
         * The url of the loaded resource.
         */
@@ -299,16 +287,6 @@ declare module away.events {
         * The error string on loadError.
         */
         public assets : away.library.IAsset[];
-        /**
-        * The error string on loadError.
-        */
-        public message : string;
-        /**
-        * Indicates whether the event occurred while loading a dependency, as opposed
-        * to the base file. Dependencies can be textures or other files that are
-        * referenced by the base file.
-        */
-        public isDependency : boolean;
         /**
         * Clones the current event.
         * @return An exact duplicate of the current event.
@@ -321,15 +299,39 @@ declare module away.events {
     * @class away.events.AssetEvent
     */
     class AssetEvent extends events.Event {
+        /**
+        *
+        */
         static ASSET_COMPLETE: string;
+        /**
+        *
+        */
         static ASSET_RENAME: string;
+        /**
+        *
+        */
         static ASSET_CONFLICT_RESOLVED: string;
+        /**
+        *
+        */
         static TEXTURE_SIZE_ERROR: string;
         private _asset;
         private _prevName;
+        /**
+        *
+        */
         constructor(type: string, asset?: away.library.IAsset, prevName?: string);
+        /**
+        *
+        */
         public asset : away.library.IAsset;
+        /**
+        *
+        */
         public assetPrevName : string;
+        /**
+        *
+        */
         public clone(): events.Event;
     }
 }
@@ -384,7 +386,6 @@ declare module away.parsers {
         private _pOnIntervalDelegate;
         static supportsType(extension: string): boolean;
         private _dependencies;
-        private _loaderType;
         private _parsingPaused;
         private _parsingComplete;
         private _parsingFailure;
@@ -401,11 +402,10 @@ declare module away.parsers {
         /**
         * Creates a new ParserBase object
         * @param format The data format of the file data to be parsed. Can be either <code>ParserDataFormat.BINARY</code> or <code>ParserDataFormat.PLAIN_TEXT</code>, and should be provided by the concrete subtype.
-        * @param loaderType The type of loader required by the parser
         *
         * @see away.loading.parsers.ParserDataFormat
         */
-        constructor(format: string, loaderType?: string);
+        constructor(format: string);
         /**
         * Validates a bitmapData loaded before assigning to a default BitmapMaterial
         */
@@ -414,10 +414,9 @@ declare module away.parsers {
         public parsingPaused : boolean;
         public parsingComplete : boolean;
         public materialMode : number;
-        public loaderType : string;
         public data : any;
         /**
-        * The data format of the file data to be parsed. Can be either <code>ParserDataFormat.BINARY</code> or <code>ParserDataFormat.PLAIN_TEXT</code>.
+        * The data format of the file data to be parsed. Options are <code>URLLoaderDataFormat.BINARY</code>, <code>URLLoaderDataFormat.ARRAY_BUFFER</code>, <code>URLLoaderDataFormat.BLOB</code>, <code>URLLoaderDataFormat.VARIABLES</code> or <code>URLLoaderDataFormat.TEXT</code>.
         */
         public dataFormat : string;
         /**
@@ -500,6 +499,42 @@ declare module away.parsers {
 }
 declare module away.parsers {
     /**
+    * BitmapParser provides a "parser" for natively supported image types (jpg, png). While it simply loads bytes into
+    * a loader object, it wraps it in a BitmapDataResource so resource management can happen consistently without
+    * exception cases.
+    */
+    class BitmapParser extends parsers.ParserBase {
+        private _startedParsing;
+        private _doneParsing;
+        private _loadingImage;
+        private _htmlImageElement;
+        /**
+        * Creates a new BitmapParser object.
+        * @param uri The url or id of the data or file to be parsed.
+        * @param extra The holder for extra contextual data that the parser might need.
+        */
+        constructor();
+        /**
+        * Indicates whether or not a given file extension is supported by the parser.
+        * @param extension The file extension of a potential file to be parsed.
+        * @return Whether or not the given file type is supported.
+        */
+        static supportsType(extension: string): boolean;
+        /**
+        * Tests whether a data block can be parsed by the parser.
+        * @param data The data block to potentially be parsed.
+        * @return Whether or not the given data is supported.
+        */
+        static supportsData(data: any): boolean;
+        /**
+        * @inheritDoc
+        */
+        public _pProceedParsing(): boolean;
+        public onLoadComplete(event: any): void;
+    }
+}
+declare module away.parsers {
+    /**
     * CubeTextureParser provides a "parser" for natively supported image types (jpg, png). While it simply loads bytes into
     * a loader object, it wraps it in a BitmapDataResource so resource management can happen consistently without
     * exception cases.
@@ -548,15 +583,15 @@ declare module away.parsers {
 }
 declare module away.parsers {
     /**
-    * ImageParser provides a "parser" for natively supported image types (jpg, png). While it simply loads bytes into
+    * Texture2DParser provides a "parser" for natively supported image types (jpg, png). While it simply loads bytes into
     * a loader object, it wraps it in a BitmapDataResource so resource management can happen consistently without
     * exception cases.
     */
-    class ImageParser extends parsers.ParserBase {
+    class Texture2DParser extends parsers.ParserBase {
         private _startedParsing;
         private _doneParsing;
         /**
-        * Creates a new ImageParser object.
+        * Creates a new Texture2DParser object.
         * @param uri The url or id of the data or file to be parsed.
         * @param extra The holder for extra contextual data that the parser might need.
         */
@@ -599,12 +634,6 @@ declare module away.parsers {
     }
 }
 declare module away.parsers {
-    class ParserLoaderType {
-        static URL_LOADER: string;
-        static IMG_LOADER: string;
-    }
-}
-declare module away.parsers {
     class ParserUtils {
         /**
         * Converts an ByteArray to an Image - returns an HTMLImageElement
@@ -615,6 +644,15 @@ declare module away.parsers {
         *
         */
         static byteArrayToImage(data: away.utils.ByteArray): HTMLImageElement;
+        /**
+        * Converts an Blob to an Image - returns an HTMLImageElement
+        *
+        * @param image data as a Blob
+        *
+        * @return HTMLImageElement
+        *
+        */
+        static blobToImage(data: Blob): HTMLImageElement;
         /**
         * Returns a object as ByteArray, if possible.
         *
@@ -644,35 +682,63 @@ declare module away.parsers {
     */
     class ResourceDependency {
         private _id;
-        private _req;
+        private _request;
         private _assets;
+        private _parser;
         private _parentParser;
         private _data;
         private _retrieveAsRawData;
         private _suppressAssetEvents;
         private _dependencies;
-        public _iLoader: away.net.SingleFileLoader;
+        public _iLoader: away.net.URLLoader;
         public _iSuccess: boolean;
-        constructor(id: string, req: away.net.URLRequest, data: any, parentParser: parsers.ParserBase, retrieveAsRawData?: boolean, suppressAssetEvents?: boolean);
+        constructor(id: string, request: away.net.URLRequest, data: any, parser: parsers.ParserBase, parentParser: parsers.ParserBase, retrieveAsRawData?: boolean, suppressAssetEvents?: boolean);
+        /**
+        *
+        */
         public id : string;
-        public assets : away.library.IAsset[];
-        public dependencies : ResourceDependency[];
+        /**
+        *
+        */
         public request : away.net.URLRequest;
-        public retrieveAsRawData : boolean;
-        public suppresAssetEvents : boolean;
         /**
         * The data containing the dependency to be parsed, if the resource was already loaded.
         */
         public data : any;
+        /**
+        *
+        */
+        public parser : parsers.ParserBase;
+        /**
+        * The parser which is dependent on this ResourceDependency object.
+        */
+        public parentParser : parsers.ParserBase;
+        /**
+        *
+        */
+        public retrieveAsRawData : boolean;
+        /**
+        *
+        */
+        public suppresAssetEvents : boolean;
+        /**
+        *
+        */
+        public assets : away.library.IAsset[];
+        /**
+        *
+        */
+        public dependencies : ResourceDependency[];
         /**
         * @private
         * Method to set data after having already created the dependency object, e.g. after load.
         */
         public _iSetData(data: any): void;
         /**
-        * The parser which is dependent on this ResourceDependency object.
+        * @private
+        *
         */
-        public parentParser : parsers.ParserBase;
+        public _iSetParser(parser: parsers.ParserBase): void;
         /**
         * Resolve the dependency when it's loaded with the parent parser. For example, a dependency containing an
         * ImageResource would be assigned to a Mesh instance as a BitmapMaterial, a scene graph object would be added
@@ -767,6 +833,7 @@ declare module away.library {
         static SKELETON: string;
         static SKELETON_POSE: string;
         static CONTAINER: string;
+        static BITMAP: string;
         static TEXTURE: string;
         static TEXTURE_PROJECTOR: string;
         static MATERIAL: string;
@@ -928,12 +995,11 @@ declare module away.library {
         private _gcTimeoutIID;
         private _onAssetRenameDelegate;
         private _onAssetConflictResolvedDelegate;
-        private _onResourceRetrievedDelegate;
-        private _onDependencyRetrievedDelegate;
+        private _onResourceCompleteDelegate;
         private _onTextureSizeErrorDelegate;
         private _onAssetCompleteDelegate;
-        private _onDependencyRetrievingErrorDelegate;
-        private _onDependencyRetrievingParseErrorDelegate;
+        private _onLoadErrorDelegate;
+        private _onParseErrorDelegate;
         /**
         * Creates a new <code>AssetLibraryBundle</code> object.
         *
@@ -1004,6 +1070,7 @@ declare module away.library {
         * @param context An optional context object providing additional parameters for loading
         * @param ns An optional namespace string under which the file is to be loaded, allowing the differentiation of two resources with identical assets
         * @param parser An optional parser object for translating the loaded data into a usable resource. If not provided, AssetLoader will attempt to auto-detect the file type.
+        * @return A handle to the retrieved resource.
         */
         public load(req: away.net.URLRequest, context?: away.net.AssetLoaderContext, ns?: string, parser?: away.parsers.ParserBase): away.net.AssetLoaderToken;
         /**
@@ -1013,6 +1080,7 @@ declare module away.library {
         * @param context An optional context object providing additional parameters for loading
         * @param ns An optional namespace string under which the file is to be loaded, allowing the differentiation of two resources with identical assets
         * @param parser An optional parser object for translating the loaded data into a usable resource. If not provided, AssetLoader will attempt to auto-detect the file type.
+        * @return A handle to the retrieved resource.
         */
         public loadData(data: any, context?: away.net.AssetLoaderContext, ns?: string, parser?: away.parsers.ParserBase): away.net.AssetLoaderToken;
         /**
@@ -1063,39 +1131,22 @@ declare module away.library {
         */
         public removeNamespaceAssets(ns?: string, dispose?: boolean): void;
         private removeAssetFromDict(asset, autoRemoveEmptyNamespace?);
-        /**
-        * Loads a yet unloaded resource file from the given url.
-        */
-        private loadResource(req, context?, ns?, parser?);
         public stopAllLoadingSessions(): void;
-        /**
-        * Retrieves an unloaded resource parsed from the given data.
-        * @param data The data to be parsed.
-        * @param id The id that will be assigned to the resource. This can later also be used by the getResource method.
-        * @param ignoreDependencies Indicates whether or not dependencies should be ignored or loaded.
-        * @param parser An optional parser object that will translate the data into a usable resource.
-        * @return A handle to the retrieved resource.
-        */
-        private parseResource(data, context?, ns?, parser?);
         private rehashAssetDict();
         /**
-        * Called when a dependency was retrieved.
+        * Called when a an error occurs during loading.
         */
-        private onDependencyRetrieved(event);
-        /**
-        * Called when a an error occurs during dependency retrieving.
-        */
-        private onDependencyRetrievingError(event);
+        private onLoadError(event);
         /**
         * Called when a an error occurs during parsing.
         */
-        private onDependencyRetrievingParseError(event);
+        private onParseError(event);
         private onAssetComplete(event);
         private onTextureSizeError(event);
         /**
         * Called when the resource and all of its dependencies was retrieved.
         */
-        private onResourceRetrieved(event);
+        private onResourceComplete(event);
         private loadingSessionGC();
         private killLoadingSession(loader);
         private onAssetRename(ev);
@@ -2582,18 +2633,42 @@ declare module away.net {
         private _context;
         private _token;
         private _uri;
+        private _materialMode;
         private _errorHandlers;
         private _parseErrorHandlers;
         private _stack;
         private _baseDependency;
-        private _loadingDependency;
+        private _currentDependency;
         private _namespace;
         private _onReadyForDependenciesDelegate;
-        private _onRetrievalCompleteDelegate;
-        private _onRetrievalFailedDelegate;
+        private _onParseCompleteDelegate;
+        private _onParseErrorDelegate;
+        private _onLoadCompleteDelegate;
+        private _onLoadErrorDelegate;
         private _onTextureSizeErrorDelegate;
         private _onAssetCompleteDelegate;
-        private _onParserErrorDelegate;
+        private static _parsers;
+        /**
+        * Enables a specific parser.
+        * When no specific parser is set for a loading/parsing opperation,
+        * loader3d can autoselect the correct parser to use.
+        * A parser must have been enabled, to be considered when autoselecting the parser.
+        *
+        * @param parser The parser class to enable.
+        *
+        * @see away.parsers.Parsers
+        */
+        static enableParser(parser: any): void;
+        /**
+        * Enables a list of parsers.
+        * When no specific parser is set for a loading/parsing opperation,
+        * AssetLoader can autoselect the correct parser to use.
+        * A parser must have been enabled, to be considered when autoselecting the parser.
+        *
+        * @param parsers A Vector of parser classes to enable.
+        * @see away.parsers.Parsers
+        */
+        static enableParsers(parsers: Object[]): void;
         /**
         * Returns the base dependency of the loader
         */
@@ -2601,28 +2676,7 @@ declare module away.net {
         /**
         * Create a new ResourceLoadSession object.
         */
-        constructor();
-        /**
-        * Enables a specific parser.
-        * When no specific parser is set for a loading/parsing opperation,
-        * loader3d can autoselect the correct parser to use.
-        * A parser must have been enabled, to be considered when autoselecting the parser.
-        *
-        * @param parserClass The parser class to enable.
-        *
-        * @see away.loaders.parsers.Parsers
-        */
-        static enableParser(parserClass: any): void;
-        /**
-        * Enables a list of parsers.
-        * When no specific parser is set for a loading/parsing opperation,
-        * AssetLoader can autoselect the correct parser to use.
-        * A parser must have been enabled, to be considered when autoselecting the parser.
-        *
-        * @param parserClasses A Vector of parser classes to enable.
-        * @see away.loaders.parsers.Parsers
-        */
-        static enableParsers(parserClasses: Object[]): void;
+        constructor(materialMode?: number);
         /**
         * Loads a file and (optionally) all of its dependencies.
         *
@@ -2651,27 +2705,32 @@ declare module away.net {
         * Retrieves a single dependency.
         * @param parser The parser that will translate the data into a usable resource.
         */
-        private retrieveDependency(dependency, parser?);
+        private retrieveDependency(dependency);
         private joinUrl(base, end);
         private resolveDependencyUrl(dependency);
-        private retrieveLoaderDependencies(loader);
+        private retrieveParserDependencies();
+        private resolveParserDependencies();
         /**
         * Called when a single dependency loading failed, and pushes further dependencies onto the stack.
         * @param event
         */
-        private onRetrievalFailed(event);
+        private onLoadError(event);
         /**
         * Called when a dependency parsing failed, and dispatches a <code>ParserEvent.PARSE_ERROR</code>
         * @param event
         */
-        private onParserError(event);
+        private onParseError(event);
         private onAssetComplete(event);
         private onReadyForDependencies(event);
         /**
         * Called when a single dependency was parsed, and pushes further dependencies onto the stack.
         * @param event
         */
-        private onRetrievalComplete(event);
+        private onLoadComplete(event);
+        /**
+        * Called when parsing is complete.
+        */
+        private onParseComplete(event);
         /**
         * Called when an image is too large or it's dimensions are not a power of 2
         * @param event
@@ -2694,6 +2753,24 @@ declare module away.net {
         */
         public _iAddParseErrorHandler(handler: any): void;
         public _iAddErrorHandler(handler: any): void;
+        /**
+        * Guesses the parser to be used based on the file contents.
+        * @param data The data to be parsed.
+        * @param uri The url or id of the object to be parsed.
+        * @return An instance of the guessed parser.
+        */
+        private getParserFromData(data);
+        /**
+        * Initiates parsing of the loaded dependency.
+        *
+        * @param The dependency to be parsed.
+        */
+        private parseDependency(dependency);
+        /**
+        * Guesses the parser to be used based on the file extension.
+        * @return An instance of the guessed parser.
+        */
+        private getParserFromSuffix(url);
     }
 }
 declare module away.net {
@@ -2716,227 +2793,6 @@ declare module away.net {
         public addEventListener(type: string, listener: Function): void;
         public removeEventListener(type: string, listener: Function): void;
         public hasEventListener(type: string, listener?: Function): boolean;
-    }
-}
-declare module away.net {
-    /**
-    * Interface between SingleFileLoader, and a TypeScript / JavaScript system. JS Does not gracefully convert loaded ByteArrays, BufferArrays, or Blobs to
-    * Bitmaps. ]
-    *
-    * So we have two Types of loaders which need a common interface :
-    *
-    *      IMGLoader ( for images )
-    *      URLLoader ( for data - XMLHttpRequest: text / variables / blobs / Array Buffers / binary data )
-    *
-    * Which kind of loader a Parser is going to require will need to be specified in ParserBase.
-    *
-    */
-    interface ISingleFileTSLoader extends away.events.IEventDispatcher {
-        data: any;
-        dataFormat: string;
-        load(rep: net.URLRequest): void;
-        dispose(): void;
-    }
-}
-declare module away.net {
-    /**
-    * The SingleFileLoader is used to load a single file, as part of a resource.
-    *
-    * While SingleFileLoader can be used directly, e.g. to create a third-party asset
-    * management system, it's recommended to use any of the classes Loader3D, AssetLoader
-    * and AssetLibrary instead in most cases.
-    *
-    * @see AssetLoader
-    * @see away.library.AssetLibrary
-    */
-    class SingleFileLoader extends away.events.EventDispatcher {
-        private _parser;
-        private _assets;
-        private _req;
-        private _fileExtension;
-        private _fileName;
-        private _loadAsRawData;
-        private _materialMode;
-        private _data;
-        private _handleUrlLoaderCompleteDelegate;
-        private _handleUrlLoaderErrorDelegate;
-        private _onReadyForDependenciesDelegate;
-        private _onParseCompleteDelegate;
-        private _onParseErrorDelegate;
-        private _onTextureSizeErrorDelegate;
-        private _onAssetCompleteDelegate;
-        private static _parsers;
-        static enableParser(parser: Object): void;
-        static enableParsers(parsers: Object[]): void;
-        /**
-        * Creates a new SingleFileLoader object.
-        */
-        constructor(materialMode?: number);
-        public url : string;
-        public data : any;
-        public loadAsRawData : boolean;
-        /**
-        * Load a resource from a file.
-        *
-        * @param urlRequest The URLRequest object containing the URL of the object to be loaded.
-        * @param parser An optional parser object that will translate the loaded data into a usable resource. If not provided, AssetLoader will attempt to auto-detect the file type.
-        */
-        public load(urlRequest: net.URLRequest, parser?: away.parsers.ParserBase, loadAsRawData?: boolean): void;
-        /**
-        * Loads a resource from already loaded data.
-        * @param data The data to be parsed. Depending on the parser type, this can be a ByteArray, String or XML.
-        * @param uri The identifier (url or id) of the object to be loaded, mainly used for resource management.
-        * @param parser An optional parser object that will translate the data into a usable resource. If not provided, AssetLoader will attempt to auto-detect the file type.
-        */
-        public parseData(data: any, parser?: away.parsers.ParserBase, req?: net.URLRequest): void;
-        /**
-        * A reference to the parser that will translate the loaded data into a usable resource.
-        */
-        public parser : away.parsers.ParserBase;
-        /**
-        * A list of dependencies that need to be loaded and resolved for the loaded object.
-        */
-        public dependencies : away.parsers.ResourceDependency[];
-        /**
-        *
-        * @param loaderType
-        */
-        private getLoader(loaderType);
-        /**
-        * Splits a url string into base and extension.
-        * @param url The url to be decomposed.
-        */
-        private decomposeFilename(url);
-        /**
-        * Guesses the parser to be used based on the file extension.
-        * @return An instance of the guessed parser.
-        */
-        private getParserFromSuffix();
-        /**
-        * Guesses the parser to be used based on the file contents.
-        * @param data The data to be parsed.
-        * @param uri The url or id of the object to be parsed.
-        * @return An instance of the guessed parser.
-        */
-        private getParserFromData(data);
-        /**
-        * Cleanups
-        */
-        private removeListeners(urlLoader);
-        /**
-        * Called when loading of a file has failed
-        */
-        private handleUrlLoaderError(event);
-        /**
-        * Called when loading of a file is complete
-        */
-        private handleUrlLoaderComplete(event);
-        /**
-        * Initiates parsing of the loaded data.
-        * @param data The data to be parsed.
-        */
-        private parse(data);
-        private onParseError(event);
-        private onReadyForDependencies(event);
-        private onAssetComplete(event);
-        private onTextureSizeError(event);
-        /**
-        * Called when parsing is complete.
-        */
-        private onParseComplete(event);
-    }
-}
-declare module away.net {
-    class SingleFileImageLoader extends away.events.EventDispatcher implements net.ISingleFileTSLoader {
-        private _loader;
-        private _data;
-        private _dataFormat;
-        private _onLoadCompleteDelegate;
-        private _onLoadErrorDelegate;
-        constructor();
-        /**
-        *
-        * @param req
-        */
-        public load(req: net.URLRequest): void;
-        /**
-        *
-        */
-        public dispose(): void;
-        /**
-        *
-        * @returns {*}
-        */
-        public data : HTMLImageElement;
-        /**
-        *
-        * @returns {*}
-        */
-        public dataFormat : string;
-        /**
-        *
-        */
-        private initLoader();
-        /**
-        *
-        */
-        private disposeLoader();
-        /**
-        *
-        * @param event
-        */
-        private onLoadComplete(event);
-        /**
-        *
-        * @param event
-        */
-        private onLoadError(event);
-    }
-}
-declare module away.net {
-    class SingleFileURLLoader extends away.events.EventDispatcher implements net.ISingleFileTSLoader {
-        private _loader;
-        private _data;
-        private _onLoadCompleteDelegate;
-        private _onLoadErrorDelegate;
-        constructor();
-        /**
-        *
-        * @param req
-        */
-        public load(req: net.URLRequest): void;
-        /**
-        *
-        */
-        public dispose(): void;
-        /**
-        *
-        * @returns {*}
-        */
-        public data : HTMLImageElement;
-        /**
-        *
-        * @returns {*}
-        */
-        public dataFormat : string;
-        /**
-        *
-        */
-        private initLoader();
-        /**
-        *
-        */
-        private disposeLoader();
-        /**
-        *
-        * @param event
-        */
-        private onLoadComplete(event);
-        /**
-        *
-        * @param event
-        */
-        private onLoadError(event);
     }
 }
 declare module away.net {
@@ -2987,79 +2843,6 @@ declare module away.net {
     }
 }
 declare module away.net {
-    class IMGLoader extends away.events.EventDispatcher {
-        private _image;
-        private _request;
-        private _name;
-        private _loaded;
-        private _crossOrigin;
-        constructor(imageName?: string);
-        /**
-        * load an image
-        * @param request {away.net.URLRequest}
-        */
-        public load(request: net.URLRequest): void;
-        /**
-        *
-        */
-        public dispose(): void;
-        /**
-        * Get reference to image if it is loaded
-        * @returns {HTMLImageElement}
-        */
-        public image : HTMLImageElement;
-        /**
-        * Get image width. Returns null is image is not loaded
-        * @returns {number}
-        */
-        public loaded : boolean;
-        public crossOrigin : string;
-        /**
-        * Get image width. Returns null is image is not loaded
-        * @returns {number}
-        */
-        public width : number;
-        /**
-        * Get image height. Returns null is image is not loaded
-        * @returns {number}
-        */
-        public height : number;
-        /**
-        * return URL request used to load image
-        * @returns {away.net.URLRequest}
-        */
-        public request : net.URLRequest;
-        /**
-        * get name of HTMLImageElement
-        * @returns {string}
-        */
-        /**
-        * set name of HTMLImageElement
-        * @returns {string}
-        */
-        public name : string;
-        /**
-        * intialise the image object
-        */
-        private initImage();
-        /**
-        * Loading of an image is interrupted
-        * @param event
-        */
-        private onAbort(event);
-        /**
-        * An error occured when loading the image
-        * @param event
-        */
-        private onError(event);
-        /**
-        * image is finished loading
-        * @param event
-        */
-        private onLoadComplete(event);
-    }
-}
-declare module away.net {
     class URLLoaderDataFormat {
         /**
         * TEXT
@@ -3103,33 +2886,40 @@ declare module away.net {
     }
 }
 declare module away.net {
+    /**
+    * The URLLoader is used to load a single file, as part of a resource.
+    *
+    * While URLLoader can be used directly, e.g. to create a third-party asset
+    * management system, it's recommended to use any of the classes Loader3D, AssetLoader
+    * and AssetLibrary instead in most cases.
+    *
+    * @see AssetLoader
+    * @see away.library.AssetLibrary
+    */
     class URLLoader extends away.events.EventDispatcher {
         private _XHR;
         private _bytesLoaded;
         private _bytesTotal;
-        private _data;
         private _dataFormat;
-        private _request;
         private _loadError;
+        private _request;
+        private _data;
+        private _loadStartEvent;
+        private _loadErrorEvent;
+        private _loadCompleteEvent;
+        private _progressEvent;
+        /**
+        * Creates a new URLLoader object.
+        */
         constructor();
         /**
         *
-        * @param request {away.net.URLRequest}
         */
-        public load(request: net.URLRequest): void;
+        public url : string;
         /**
         *
         */
-        public close(): void;
-        /**
-        *
-        */
-        public dispose(): void;
-        /**
-        *
-        * @returns {string}
-        *      away.net.URLLoaderDataFormat
-        */
+        public data : any;
         /**
         *
         * away.net.URLLoaderDataFormat.BINARY
@@ -3141,11 +2931,6 @@ declare module away.net {
         public dataFormat : string;
         /**
         *
-        * @returns {*}
-        */
-        public data : any;
-        /**
-        *
         * @returns {number}
         */
         public bytesLoaded : number;
@@ -3155,10 +2940,19 @@ declare module away.net {
         */
         public bytesTotal : number;
         /**
+        * Load a resource from a file.
         *
-        * @returns {away.net.URLRequest}
+        * @param request The URLRequest object containing the URL of the object to be loaded.
         */
-        public request : net.URLRequest;
+        public load(request: net.URLRequest): void;
+        /**
+        *
+        */
+        public close(): void;
+        /**
+        *
+        */
+        public dispose(): void;
         /**
         *
         * @param xhr

@@ -51,7 +51,7 @@ module away.parsers
 		 */
 		public static enableAllBundled():void
 		{
-			away.net.SingleFileLoader.enableParsers(this.ALL_BUNDLED);
+			away.net.AssetLoader.enableParsers(this.ALL_BUNDLED);
 		}
 	}
 }

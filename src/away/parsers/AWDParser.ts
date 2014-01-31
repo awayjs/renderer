@@ -30,7 +30,8 @@ module away.parsers
 	import SimpleShadowMapMethodBase		= away.materials.SimpleShadowMapMethodBase;
 	import SinglePassMaterialBase			= away.materials.SinglePassMaterialBase;
 	import SoftShadowMapMethod				= away.materials.SoftShadowMapMethod;
-	
+	import URLLoaderDataFormat				= away.net.URLLoaderDataFormat;
+
 	/**
 	 * AWDParser provides a parser for the AWD data type.
 	 */
@@ -96,7 +97,7 @@ module away.parsers
 		 */
 		constructor()
 		{
-			super(ParserDataFormat.BINARY);
+			super(URLLoaderDataFormat.ARRAY_BUFFER);
 
 			this._blocks = new Array<AWDBlock>();
 			this._blocks[0] = new AWDBlock();

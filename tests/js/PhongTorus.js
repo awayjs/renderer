@@ -20,15 +20,22 @@ var scene;
         }
         PhongTorus.prototype.loadResources = function () {
             var urlRequest = new away.net.URLRequest("assets/130909wall_big.png");
-            var imgLoader = new away.net.IMGLoader();
-            imgLoader.addEventListener(away.events.Event.COMPLETE, away.utils.Delegate.create(this, this.imageCompleteHandler));
-            imgLoader.load(urlRequest);
+            var urlLoader = new away.net.URLLoader();
+            urlLoader.dataFormat = away.net.URLLoaderDataFormat.BLOB;
+            urlLoader.addEventListener(away.events.Event.COMPLETE, away.utils.Delegate.create(this, this.imageCompleteHandler));
+            urlLoader.load(urlRequest);
         };
 
         PhongTorus.prototype.imageCompleteHandler = function (e) {
+            var _this = this;
             var imageLoader = e.target;
-            this._image = imageLoader.image;
+            this._image = away.parsers.ParserUtils.blobToImage(imageLoader.data);
+            this._image.onload = function (event) {
+                return _this.onLoadComplete(event);
+            };
+        };
 
+        PhongTorus.prototype.onLoadComplete = function (event) {
             this._stageGL = new away.base.StageGL(document.createElement("canvas"), 0, null);
             this._stageGL.addEventListener(away.events.StageGLEvent.CONTEXTGL_CREATED, away.utils.Delegate.create(this, this.onContextGLCreateHandler));
             this._stageGL.requestContext();

@@ -10,13 +10,13 @@ module tests.materials
     {
 
         private cm          : away.materials.ColorMaterial;
-        private stage       : away.display.Stage;
-        private sProxy      : away.managers.StageGLProxy;
+        private stageGL     : away.base.StageGL;
         private sManager    : away.managers.StageGLManager;
-        private imgLoader   : away.net.IMGLoader;
+        private urlLoader   : away.net.URLLoader;
         private imgTx       : away.textures.HTMLImageElementTexture;
         private matTx       : away.materials.TextureMaterial;
         private specM       : away.materials.BasicSpecularMethod;
+		private _image:HTMLImageElement;
 
         constructor()
         {
@@ -25,14 +25,14 @@ module tests.materials
 
             var mipUrlRequest   = new away.net.URLRequest( 'assets/1024x1024.png');
 
-            this.imgLoader      = new away.net.IMGLoader();
-            this.imgLoader.load( mipUrlRequest );
-            this.imgLoader.addEventListener( away.events.Event.COMPLETE , away.utils.Delegate.create(this, this.imgLoaded) );
+            this.urlLoader      = new away.net.URLLoader();
+			this.urlLoader.dataFormat = away.net.URLLoaderDataFormat.BLOB;
+            this.urlLoader.load( mipUrlRequest );
+            this.urlLoader.addEventListener( away.events.Event.COMPLETE , away.utils.Delegate.create(this, this.imgLoaded) );
 
             this.cm             = new away.materials.ColorMaterial();
-            this.stage          = new away.display.Stage( 800, 600 );
-            this.sManager       = away.managers.StageGLManager.getInstance( this.stage );
-            this.sProxy         = this.sManager.getStageGLProxy( 0 );
+            this.sManager       = away.managers.StageGLManager.getInstance();
+            this.stageGL         = this.sManager.getFreeStageGL();
 
             this.cm.iInvalidatePasses( null );
 
@@ -40,7 +40,7 @@ module tests.materials
             console.log( '- ColorMaterial' );
             console.log( '-----------------------------------------------------------------------------' );
             console.log( 'this.cm ' , this.cm );
-            console.log( 'iUpdateProgram' , this.cm._pScreenPass.iUpdateProgram( this.sProxy ) );
+            console.log( 'iUpdateProgram' , this.cm._pScreenPass.iUpdateProgram( this.stageGL ) );
             console.log( 'iGetVertexCode' , this.cm._pScreenPass.iGetVertexCode() );
             console.log( 'iGetFragmentCode' , this.cm._pScreenPass.iGetFragmentCode(''));
 
@@ -49,8 +49,14 @@ module tests.materials
 
         private imgLoaded( e : away.events.Event )
         {
+			var imageLoader:away.net.URLLoader = <away.net.URLLoader> e.target
+			this._image = away.parsers.ParserUtils.blobToImage(imageLoader.data);
+			this._image.onload = (event) => this.onLoadComplete(event);
+		}
 
-            this.imgTx                  = new away.textures.HTMLImageElementTexture( this.imgLoader.image )
+		private onLoadComplete(event)
+		{
+            this.imgTx                  = new away.textures.HTMLImageElementTexture( this._image )
             this.matTx                  = new away.materials.TextureMaterial( this.imgTx  );
             this.matTx.colorTransform   = new away.geom.ColorTransform( 1 , 1 , 1 , 1 );
 
@@ -62,14 +68,14 @@ module tests.materials
             this.matTx.specularMethod   =  this.specM;
             this.matTx.ambientTexture   =  this.imgTx;
             this.matTx.alpha            = .5;
-            this.matTx.blendMode        = away.display.BlendMode.MULTIPLY;
+            this.matTx.blendMode        = away.base.BlendMode.MULTIPLY;
 
             console.log( '-----------------------------------------------------------------------------' );
             console.log( '- TextureMaterial' );
             console.log( '-----------------------------------------------------------------------------' );
             console.log( 'this.matTx ' , this.matTx );
 
-            this.matTx._pScreenPass.iUpdateProgram( this.sProxy )
+            this.matTx._pScreenPass.iUpdateProgram( this.stageGL )
 
             console.log( 'iGetVertexCode' , this.matTx._pScreenPass.iGetVertexCode() );
             console.log( 'iGetFragmentCode' , this.matTx._pScreenPass.iGetFragmentCode(''));

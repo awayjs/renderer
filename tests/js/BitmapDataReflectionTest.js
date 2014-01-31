@@ -9,7 +9,7 @@ var tests;
                 this.view = new away.containers.View3D();
                 this.raf = new away.utils.RequestAnimationFrame(this.render, this);
 
-                away.library.AssetLibrary.enableParser(away.parsers.ImageParser);
+                away.library.AssetLibrary.enableParser(away.parsers.BitmapParser);
 
                 var token = away.library.AssetLibrary.load(new away.net.URLRequest('assets/dots.png'));
                 token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, away.utils.Delegate.create(this, this.onResourceComplete));
@@ -30,7 +30,7 @@ var tests;
                         case away.library.AssetType.TEXTURE:
                             var geom = new away.primitives.PlaneGeometry(500, 500, 1, 1, false);
                             var tx = asset;
-                            var bitmap = new away.display.BitmapData(1024, 1024, true, 0x00000000);
+                            var bitmap = new away.base.BitmapData(1024, 1024, true, 0x00000000);
 
                             bitmap.context.translate(0, 1024);
                             bitmap.context.scale(1, -1);
@@ -45,7 +45,7 @@ var tests;
                             bitmap.context.globalCompositeOperation = "destination-out";
                             bitmap.context.fill();
 
-                            var bitmapClone = new away.display.BitmapData(1024, 1024, true, 0x00000000);
+                            var bitmapClone = new away.base.BitmapData(1024, 1024, true, 0x00000000);
                             bitmapClone.copyPixels(bitmap, bitmapClone.rect, bitmapClone.rect);
 
                             /*

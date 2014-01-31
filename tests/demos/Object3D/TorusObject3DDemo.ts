@@ -4,7 +4,7 @@
 module demos.object3d
 {
 	import Event						= away.events.Event;
-	import IMGLoader					= away.net.IMGLoader;
+	import URLLoader					= away.net.URLLoader;
 	import URLRequest					= away.net.URLRequest;
 	import RequestAnimationFrame		= away.utils.RequestAnimationFrame;
 	import Delegate						= away.utils.Delegate;
@@ -91,25 +91,31 @@ module demos.object3d
         private loadResources()
         {
             var urlRequest:URLRequest = new URLRequest("assets/custom_uv_horizontal.png");
-            var imgLoader:IMGLoader = new IMGLoader();
-            imgLoader.addEventListener(Event.COMPLETE, Delegate.create(this, this.imageCompleteHandler));
-            imgLoader.load(urlRequest);
+            var urlLoader:URLLoader = new URLLoader();
+			urlLoader.dataFormat = away.net.URLLoaderDataFormat.BLOB;
+            urlLoader.addEventListener(Event.COMPLETE, Delegate.create(this, this.imageCompleteHandler));
+            urlLoader.load(urlRequest);
         }
 
         private imageCompleteHandler(e)
         {
-            var imageLoader:IMGLoader = <IMGLoader> e.target
-            this._image = imageLoader.image;
+            var urlLoader:URLLoader = <URLLoader> e.target;
 
-            var ts : HTMLImageElementTexture = new HTMLImageElementTexture(this._image, false);
+			this._image = away.parsers.ParserUtils.blobToImage(urlLoader.data);
+			this._image.onload = (event) => this.onImageLoadComplete(event);
 
-            var matTx: TextureMaterial = new TextureMaterial(ts, true, true, false);
-                matTx.lightPicker =  this.lightPicker;
-
-            for (var c : number = 0 ; c < this.meshes.length ; c ++)
-                this.meshes[c].material = matTx;
         }
 
+		private onImageLoadComplete(event)
+		{
+			var ts : HTMLImageElementTexture = new HTMLImageElementTexture(this._image, false);
+
+			var matTx: TextureMaterial = new TextureMaterial(ts, true, true, false);
+			matTx.lightPicker =  this.lightPicker;
+
+			for (var c : number = 0 ; c < this.meshes.length ; c ++)
+				this.meshes[c].material = matTx;
+		}
 
         private tick( e )
         {

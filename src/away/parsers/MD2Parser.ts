@@ -2,6 +2,15 @@
 
 module away.parsers
 {
+	import Geometry							= away.base.Geometry;
+	import CompactSubGeometry				= away.base.CompactSubGeometry;
+	import VertexAnimationSet				= away.animators.VertexAnimationSet;
+	import VertexClipNode					= away.animators.VertexClipNode;
+	import URLLoaderDataFormat				= away.net.URLLoaderDataFormat;
+	import Texture2DBase					= away.textures.Texture2DBase
+	import ByteArray						= away.utils.ByteArray;
+	
+	
 	/**
 	 * MD2Parser provides a parser for the MD2 data type.
 	 */
@@ -10,7 +19,7 @@ module away.parsers
 		public static FPS:number /*int*/ = 6;
 
 		private _clipNodes:Object = new Object();
-		private _byteData:away.utils.ByteArray;
+		private _byteData:ByteArray;
 		private _startedParsing:boolean;
 		private _parsedHeader:boolean;
 		private _parsedUV:boolean;
@@ -40,8 +49,8 @@ module away.parsers
 		private _vertIndices:Array<number>;
 
 		// the current subgeom being built
-		private _animationSet:away.animators.VertexAnimationSet = new away.animators.VertexAnimationSet();
-		private _firstSubGeom:away.base.CompactSubGeometry;
+		private _animationSet:VertexAnimationSet = new VertexAnimationSet();
+		private _firstSubGeom:CompactSubGeometry;
 		private _uvs:Array<number>;
 		private _finalUV:Array<number>;
 
@@ -49,7 +58,7 @@ module away.parsers
 		private _textureType:string;
 		private _ignoreTexturePath:boolean;
 		private _mesh:away.entities.Mesh;
-		private _geometry:away.base.Geometry;
+		private _geometry:Geometry;
 
 		private materialFinal:boolean = false;
 		private geoCreated:boolean = false;
@@ -61,7 +70,7 @@ module away.parsers
 		 */
 		constructor(textureType:string = "jpg", ignoreTexturePath:boolean = true)
 		{
-			super(ParserDataFormat.BINARY);
+			super(URLLoaderDataFormat.ARRAY_BUFFER);
 			this._textureType = textureType;
 			this._ignoreTexturePath = ignoreTexturePath;
 		}
@@ -95,7 +104,7 @@ module away.parsers
 			if (resourceDependency.assets.length != 1)
 				return;
 
-			var asset:away.textures.Texture2DBase = <away.textures.Texture2DBase> resourceDependency.assets[0];
+			var asset:Texture2DBase = <Texture2DBase> resourceDependency.assets[0];
 			if (asset) {
 				var material:away.materials.MaterialBase;
 				if (this.materialMode < 2)
@@ -150,7 +159,7 @@ module away.parsers
 
 					// TODO: Create a mesh only when encountered (if it makes sense
 					// for this file format) and return it using this._pFinalizeAsset()
-					this._geometry = new away.base.Geometry();
+					this._geometry = new Geometry();
 					this._mesh = new away.entities.Mesh(this._geometry, null);
 					if (this.materialMode < 2)
 						this._mesh.material = away.materials.DefaultMaterialManager.getDefaultMaterial(); else
@@ -359,25 +368,25 @@ module away.parsers
 		{
 			var sx:number, sy:number, sz:number;
 			var tx:number, ty:number, tz:number;
-			var geometry:away.base.Geometry;
-			var subGeom:away.base.CompactSubGeometry;
+			var geometry:Geometry;
+			var subGeom:CompactSubGeometry;
 			var vertLen:number /*uint*/ = this._vertIndices.length;
 			var fvertices:Array<number>;
 			var tvertices:Array<number>;
 			var i:number /*uint*/, j:number /*int*/, k:number /*uint*/;
 			//var ch : number /*uint*/;
 			var name:string = "";
-			var prevClip:away.animators.VertexClipNode = null;
+			var prevClip:VertexClipNode = null;
 
 			this._byteData.position = this._offsetFrames;
 
 			for (i = 0; i < this._numFrames; i++) {
-				subGeom = new away.base.CompactSubGeometry();
+				subGeom = new CompactSubGeometry();
 
 				if (this._firstSubGeom == null)
 					this._firstSubGeom = subGeom;
 
-				geometry = new away.base.Geometry();
+				geometry = new Geometry();
 				geometry.addSubGeometry(subGeom);
 				tvertices = new Array<number>();
 				fvertices = new Array<number>(vertLen*3);
@@ -411,7 +420,7 @@ module away.parsers
 				subGeom.autoDeriveVertexNormals = false;
 				subGeom.autoDeriveVertexTangents = false;
 
-				var clip:away.animators.VertexClipNode = this._clipNodes[name];
+				var clip:VertexClipNode = this._clipNodes[name];
 
 				if (!clip) {
 					// If another sequence was parsed before this one, starting
@@ -422,7 +431,7 @@ module away.parsers
 						this._animationSet.addAnimation(prevClip);
 					}
 
-					clip = new away.animators.VertexClipNode();
+					clip = new VertexClipNode();
 					clip.name = name;
 					clip.stitchFinalFrame = true;
 
@@ -463,7 +472,7 @@ module away.parsers
 
 		private createDefaultSubGeometry():void
 		{
-			var sub:away.base.CompactSubGeometry = new away.base.CompactSubGeometry();
+			var sub:CompactSubGeometry = new CompactSubGeometry();
 			sub.updateData(this._firstSubGeom.vertexData);
 			sub.updateIndexData(this._indices);
 			this._geometry.addSubGeometry(sub);

@@ -2,12 +2,12 @@
 
 module away.parsers
 {
-	import JointPose                    = away.animators.JointPose;
-	import SkeletonPose                 = away.animators.SkeletonPose;
-	import SkeletonClipNode             = away.animators.SkeletonClipNode;
-	import Quaternion                   = away.geom.Quaternion;
-	import Vector3D                     = away.geom.Vector3D;
-
+	import JointPose                    	= away.animators.JointPose;
+	import SkeletonPose                 	= away.animators.SkeletonPose;
+	import SkeletonClipNode             	= away.animators.SkeletonClipNode;
+	import Quaternion                   	= away.geom.Quaternion;
+	import Vector3D							= away.geom.Vector3D;
+	import URLLoaderDataFormat				= away.net.URLLoaderDataFormat;
 	/**
 	 * MD5AnimParser provides a parser for the md5anim data type, providing an animation sequence for the md5 format.
 	 *
@@ -56,7 +56,7 @@ module away.parsers
 		 */
 		constructor(additionalRotationAxis:Vector3D = null, additionalRotationRadians:number = 0)
 		{
-			super(ParserDataFormat.PLAIN_TEXT);
+			super(URLLoaderDataFormat.TEXT);
 			this._rotationQuat = new Quaternion();
 			var t1:Quaternion = new Quaternion();
 			var t2:Quaternion = new Quaternion();

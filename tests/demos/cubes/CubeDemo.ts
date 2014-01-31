@@ -44,16 +44,21 @@ module demos.cubes
 		private loadResources()
 		{
 			var urlRequest:away.net.URLRequest = new away.net.URLRequest( "assets/130909wall_big.png" );
-			var imgLoader:away.net.IMGLoader = new away.net.IMGLoader();
-			imgLoader.addEventListener( away.events.Event.COMPLETE, away.utils.Delegate.create(this, this.imageCompleteHandler) );
-			imgLoader.load( urlRequest );
+			var urlLoader:away.net.URLLoader = new away.net.URLLoader();
+			urlLoader.dataFormat = away.net.URLLoaderDataFormat.BLOB;
+			urlLoader.addEventListener( away.events.Event.COMPLETE, away.utils.Delegate.create(this, this.imageCompleteHandler) );
+			urlLoader.load( urlRequest );
 		}
 		
 		private imageCompleteHandler(e)
 		{
-			var imageLoader:away.net.IMGLoader = <away.net.IMGLoader> e.target
-			this._image = imageLoader.image;
-			
+			var imageLoader:away.net.URLLoader = <away.net.URLLoader> e.target
+			this._image = away.parsers.ParserUtils.blobToImage(imageLoader.data);
+			this._image.onload = (event) => this.onLoadComplete(event);
+		}
+
+		private onLoadComplete(event)
+		{
 			var ts : away.textures.HTMLImageElementTexture = new away.textures.HTMLImageElementTexture( this._image, false );
 			
 			var matTx: away.materials.TextureMaterial = new away.materials.TextureMaterial( ts, true, true, false );

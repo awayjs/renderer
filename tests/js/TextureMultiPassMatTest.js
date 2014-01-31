@@ -9,16 +9,22 @@ var tests;
                 this.center = new away.geom.Vector3D();
                 var pngURLrq = new away.net.URLRequest('assets/256x256.png');
 
-                this.pngLoader = new away.net.IMGLoader();
-                this.pngLoader = new away.net.IMGLoader();
+                this.pngLoader = new away.net.URLLoader();
+                this.pngLoader = new away.net.URLLoader();
+                this.pngLoader.dataFormat = away.net.URLLoaderDataFormat.BLOB;
                 this.pngLoader.addEventListener(away.events.Event.COMPLETE, away.utils.Delegate.create(this, this.pngLoaderComplete));
                 this.pngLoader.load(pngURLrq);
             }
             TextureMultiPassMatTest.prototype.pngLoaderComplete = function (e) {
-                this.init();
+                var _this = this;
+                var imageLoader = e.target;
+                this._image = away.parsers.ParserUtils.blobToImage(imageLoader.data);
+                this._image.onload = function (event) {
+                    return _this.onLoadComplete(event);
+                };
             };
 
-            TextureMultiPassMatTest.prototype.init = function () {
+            TextureMultiPassMatTest.prototype.onLoadComplete = function (event) {
                 var _this = this;
                 away.Debug.THROW_ERRORS = false;
                 away.Debug.LOG_PI_ERRORS = false;
@@ -32,7 +38,7 @@ var tests;
                 var l = 20;
                 var radius = 500;
 
-                var ts = new away.textures.HTMLImageElementTexture(this.pngLoader.image, false);
+                var ts = new away.textures.HTMLImageElementTexture(this._image, false);
                 var mat = new away.materials.TextureMultiPassMaterial(ts, true, true, false);
 
                 for (var c = 0; c < l; c++) {

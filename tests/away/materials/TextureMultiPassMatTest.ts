@@ -17,15 +17,17 @@ module tests.materials
         private raf         : away.utils.RequestAnimationFrame;
         private counter     : number = 0;
         private center      : away.geom.Vector3D = new away.geom.Vector3D();
-        private pngLoader   : away.net.IMGLoader;
+        private pngLoader   : away.net.URLLoader;
+		private _image:HTMLImageElement;
 
         constructor()
         {
 
             var pngURLrq            = new away.net.URLRequest( 'assets/256x256.png');
 
-            this.pngLoader = new away.net.IMGLoader();
-            this.pngLoader          = new away.net.IMGLoader();
+            this.pngLoader = new away.net.URLLoader();
+            this.pngLoader = new away.net.URLLoader();
+			this.pngLoader.dataFormat = away.net.URLLoaderDataFormat.BLOB;
             this.pngLoader.addEventListener( away.events.Event.COMPLETE , away.utils.Delegate.create(this, this.pngLoaderComplete) );
             this.pngLoader.load( pngURLrq );
 
@@ -33,10 +35,12 @@ module tests.materials
 
         private pngLoaderComplete( e )
         {
-            this.init();
+			var imageLoader:away.net.URLLoader = <away.net.URLLoader> e.target
+			this._image = away.parsers.ParserUtils.blobToImage(imageLoader.data);
+			this._image.onload = (event) => this.onLoadComplete(event);
         }
 
-        private init()
+        private onLoadComplete(event)
         {
 
             away.Debug.THROW_ERRORS     = false;
@@ -51,7 +55,7 @@ module tests.materials
             var l       : number        = 20;
             var radius  : number        = 500;
 
-            var ts      : away.textures.HTMLImageElementTexture     = new away.textures.HTMLImageElementTexture( this.pngLoader.image , false );
+            var ts      : away.textures.HTMLImageElementTexture     = new away.textures.HTMLImageElementTexture( this._image , false );
             var mat     : away.materials.TextureMultiPassMaterial   = new away.materials.TextureMultiPassMaterial( ts , true , true , false );
 
 

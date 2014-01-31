@@ -24,16 +24,23 @@ var demos;
             }
             CubeDemo.prototype.loadResources = function () {
                 var urlRequest = new away.net.URLRequest("assets/130909wall_big.png");
-                var imgLoader = new away.net.IMGLoader();
-                imgLoader.addEventListener(away.events.Event.COMPLETE, away.utils.Delegate.create(this, this.imageCompleteHandler));
-                imgLoader.load(urlRequest);
+                var urlLoader = new away.net.URLLoader();
+                urlLoader.dataFormat = away.net.URLLoaderDataFormat.BLOB;
+                urlLoader.addEventListener(away.events.Event.COMPLETE, away.utils.Delegate.create(this, this.imageCompleteHandler));
+                urlLoader.load(urlRequest);
             };
 
             CubeDemo.prototype.imageCompleteHandler = function (e) {
                 var _this = this;
                 var imageLoader = e.target;
-                this._image = imageLoader.image;
+                this._image = away.parsers.ParserUtils.blobToImage(imageLoader.data);
+                this._image.onload = function (event) {
+                    return _this.onLoadComplete(event);
+                };
+            };
 
+            CubeDemo.prototype.onLoadComplete = function (event) {
+                var _this = this;
                 var ts = new away.textures.HTMLImageElementTexture(this._image, false);
 
                 var matTx = new away.materials.TextureMaterial(ts, true, true, false);

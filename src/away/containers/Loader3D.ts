@@ -216,7 +216,7 @@ module away.containers
 		private _loadingSessions:Array<away.net.AssetLoader>;
 		private _useAssetLib:boolean;
 		private _assetLibId:string;
-		private _onResourceRetrievedDelegate:Function;
+		private _onResourceCompleteDelegate:Function;
 		private _onAssetCompleteDelegate:Function;
 
 		constructor(useAssetLibrary:boolean = true, assetLibraryId:string = null)
@@ -227,7 +227,7 @@ module away.containers
 			this._useAssetLib = useAssetLibrary;
 			this._assetLibId = assetLibraryId;
 
-			this._onResourceRetrievedDelegate = away.utils.Delegate.create(this, this.onResourceRetrieved);
+			this._onResourceCompleteDelegate = away.utils.Delegate.create(this, this.onResourceComplete);
 			this._onAssetCompleteDelegate = away.utils.Delegate.create(this, this.onAssetComplete);
 		}
 
@@ -253,12 +253,12 @@ module away.containers
 				token = loader.load(req, context, ns, parser);
 			}
 
-			token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this._onResourceRetrievedDelegate);
+			token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this._onResourceCompleteDelegate);
 			token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this._onAssetCompleteDelegate);
 
 			// Error are handled separately (see documentation for addErrorHandler)
-			token._iLoader._iAddErrorHandler(this.onDependencyRetrievingError);
-			token._iLoader._iAddParseErrorHandler(this.onDependencyRetrievingParseError);
+			token._iLoader._iAddErrorHandler(this.onLoadError);
+			token._iLoader._iAddParseErrorHandler(this.onParseError);
 
 			return token;
 		}
@@ -285,12 +285,12 @@ module away.containers
 				token = loader.loadData(data, '', context, ns, parser);
 			}
 
-			token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this._onResourceRetrievedDelegate);
+			token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this._onResourceCompleteDelegate);
 			token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this._onAssetCompleteDelegate);
 
 			// Error are handled separately (see documentation for addErrorHandler)
-			token._iLoader._iAddErrorHandler(this.onDependencyRetrievingError);
-			token._iLoader._iAddParseErrorHandler(this.onDependencyRetrievingParseError);
+			token._iLoader._iAddErrorHandler(this.onLoadError);
+			token._iLoader._iAddParseErrorHandler(this.onParseError);
 
 			return token;
 		}
@@ -324,11 +324,11 @@ module away.containers
 		 * A parser must have been enabled, to be considered when autoselecting the parser.
 		 *
 		 * @param parserClass The parser class to enable.
-		 * @see away3d.net.parsers.Parsers
+		 * @see away.parsers.Parsers
 		 */
 		public static enableParser(parserClass:Object):void
 		{
-			away.net.SingleFileLoader.enableParser(parserClass);
+			away.net.AssetLoader.enableParser(parserClass);
 		}
 
 		/**
@@ -338,16 +338,16 @@ module away.containers
 		 * A parser must have been enabled, to be considered when autoselecting the parser.
 		 *
 		 * @param parserClasses A Vector of parser classes to enable.
-		 * @see away3d.net.parsers.Parsers
+		 * @see away.parsers.Parsers
 		 */
 		public static enableParsers(parserClasses:Object[]):void
 		{
-			away.net.SingleFileLoader.enableParsers(parserClasses);
+			away.net.AssetLoader.enableParsers(parserClasses);
 		}
 
 		private removeListeners(dispatcher:away.events.EventDispatcher):void
 		{
-			dispatcher.removeEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this._onResourceRetrievedDelegate);
+			dispatcher.removeEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this._onResourceCompleteDelegate);
 			dispatcher.removeEventListener(away.events.AssetEvent.ASSET_COMPLETE, this._onAssetCompleteDelegate);
 		}
 
@@ -391,51 +391,39 @@ module away.containers
 		}
 
 		/**
-		 * Called when a an error occurs during dependency retrieving.
+		 * Called when an error occurs during loading
 		 */
-		private onDependencyRetrievingError(event:away.events.LoaderEvent):boolean
+		private onLoadError(event:away.events.LoaderEvent):boolean
 		{
-			if (this.hasEventListener(away.events.LoaderEvent.LOAD_ERROR, this.onDependencyRetrievingError)) {
-
+			if (this.hasEventListener(away.events.IOErrorEvent.IO_ERROR, this.onLoadError)) {
 				this.dispatchEvent(event);
 				return true;
-
 			} else {
-
 				return false;
-
 			}
-
 		}
 
 		/**
-		 * Called when a an error occurs during parsing.
+		 * Called when a an error occurs during parsing
 		 */
-		private onDependencyRetrievingParseError(event:away.events.ParserEvent):boolean
+		private onParseError(event:away.events.ParserEvent):boolean
 		{
-			if (this.hasEventListener(away.events.ParserEvent.PARSE_ERROR, this.onDependencyRetrievingParseError)) {
-
+			if (this.hasEventListener(away.events.ParserEvent.PARSE_ERROR, this.onParseError)) {
 				this.dispatchEvent(event);
 				return true;
-
 			} else {
-
 				return false;
-
 			}
-
 		}
 
 		/**
 		 * Called when the resource and all of its dependencies was retrieved.
 		 */
-		private onResourceRetrieved(event:away.events.LoaderEvent)
+		private onResourceComplete(event:away.events.LoaderEvent)
 		{
-
 			var loader:away.net.AssetLoader = <away.net.AssetLoader> event.target;
 
-			this.dispatchEvent(event.clone());
-
+			this.dispatchEvent(event);
 		}
 	}
 }

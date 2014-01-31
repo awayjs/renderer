@@ -2,12 +2,25 @@
 
 module away.parsers
 {
+	import ColorMaterial					= away.materials.ColorMaterial;
+	import ColorMultiPassMaterial			= away.materials.ColorMultiPassMaterial;
+	import DefaultMaterialManager			= away.materials.DefaultMaterialManager;
+	import MultiPassMaterialBase			= away.materials.MultiPassMaterialBase;
+	import SinglePassMaterialBase			= away.materials.SinglePassMaterialBase;
+	import TextureMaterial					= away.materials.TextureMaterial;
+	import TextureMultiPassMaterial			= away.materials.TextureMultiPassMaterial;
+	import MaterialBase						= away.materials.MaterialBase;
+	import URLLoaderDataFormat				= away.net.URLLoaderDataFormat;
+	import Texture2DBase					= away.textures.Texture2DBase;
+	import ByteArray						= away.utils.ByteArray;
+	import GeometryUtils					= away.utils.GeometryUtils;
+	
 	/**
 	 * Max3DSParser provides a parser for the 3ds data type.
 	 */
-	export class Max3DSParser extends away.parsers.ParserBase
+	export class Max3DSParser extends ParserBase
 	{
-		private _byteData:away.utils.ByteArray;
+		private _byteData:ByteArray;
 
 		private _textures:Object;
 		private _materials:Object;
@@ -27,7 +40,7 @@ module away.parsers
 		 */
 		constructor(useSmoothingGroups:boolean = true)
 		{
-			super(ParserDataFormat.BINARY);
+			super(URLLoaderDataFormat.ARRAY_BUFFER);
 
 			this._useSmoothingGroups = useSmoothingGroups;
 		}
@@ -50,9 +63,9 @@ module away.parsers
 		 */
 		public static supportsData(data:any):boolean
 		{
-			var ba:away.utils.ByteArray;
+			var ba:ByteArray;
 
-			ba = away.parsers.ParserUtils.toByteArray(data);
+			ba = ParserUtils.toByteArray(data);
 			if (ba) {
 				ba.position = 0;
 				if (ba.readShort() == 0x4d4d)
@@ -75,7 +88,7 @@ module away.parsers
 					var tex:TextureVO;
 
 					tex = this._textures[resourceDependency.id];
-					tex.texture = <away.textures.Texture2DBase> asset;
+					tex.texture = <Texture2DBase> asset;
 				}
 			}
 		}
@@ -142,7 +155,7 @@ module away.parsers
 						case 0xB000: // KEYF3DS
 							// This types are "container chunks" and contain only
 							// sub-chunks (no data on their own.) This means that
-							// there is nothing more to parse at this point, and 
+							// there is nothing more to parse at this point, and
 							// instead we should progress to the next chunk, which
 							// will be the first sub-chunk of this one.
 							continue;
@@ -161,7 +174,7 @@ module away.parsers
 							this._cur_obj.materialFaces = {};
 							break;
 
-						case 0x4100: // OBJ_TRIMESH 
+						case 0x4100: // OBJ_TRIMESH
 							this._cur_obj.type = away.library.AssetType.MESH;
 							break;
 
@@ -213,7 +226,7 @@ module away.parsers
 			// been read, or if there is a currently non-finalized object in
 			// the pipeline.
 			if (this._byteData.getBytesAvailable() || this._cur_obj || this._cur_mat)
-				return away.parsers.ParserBase.MORE_TO_PARSE; else {
+				return ParserBase.MORE_TO_PARSE; else {
 				var name:string;
 
 				// Finalize any remaining objects before ending.
@@ -224,7 +237,7 @@ module away.parsers
 						this._pFinalizeAsset(obj, name);
 				}
 
-				return away.parsers.ParserBase.PARSING_DONE;
+				return ParserBase.PARSING_DONE;
 			}
 		}
 
@@ -264,7 +277,7 @@ module away.parsers
 						mat.twoSided = true;
 						break;
 
-					case 0xA200: // Main (color) texture 
+					case 0xA200: // Main (color) texture
 						mat.colorMap = this.parseTexture(end);
 						break;
 
@@ -468,7 +481,7 @@ module away.parsers
 				var i:number /*uint*/;
 				var subs:away.base.ISubGeometry[];
 				var geom:away.base.Geometry;
-				var mat:away.materials.MaterialBase;
+				var mat:MaterialBase;
 				var mesh:away.entities.Mesh;
 				var mtx:away.geom.Matrix3D;
 				var vertices:Array<VertexVO>;
@@ -518,7 +531,7 @@ module away.parsers
 
 				// Construct sub-geometries (potentially splitting buffers)
 				// and add them to geometry.
-				subs = away.utils.GeometryUtils.fromVectors(obj.verts, obj.indices, obj.uvs, null, null, null, null);
+				subs = GeometryUtils.fromVectors(obj.verts, obj.indices, obj.uvs, null, null, null, null);
 				for (i = 0; i < subs.length; i++)
 					geom.subGeometries.push(subs[i]);
 
@@ -684,19 +697,19 @@ module away.parsers
 
 		private finalizeCurrentMaterial():void
 		{
-			var mat:away.materials.MaterialBase;
+			var mat:MaterialBase;
 			if (this.materialMode < 2) {
 				if (this._cur_mat.colorMap)
-					mat = new away.materials.TextureMaterial(this._cur_mat.colorMap.texture || away.materials.DefaultMaterialManager.getDefaultTexture()); else
-					mat = new away.materials.ColorMaterial(this._cur_mat.diffuseColor);
-				(<away.materials.SinglePassMaterialBase> mat).ambientColor = this._cur_mat.ambientColor;
-				(<away.materials.SinglePassMaterialBase> mat).specularColor = this._cur_mat.specularColor;
+					mat = new TextureMaterial(this._cur_mat.colorMap.texture || DefaultMaterialManager.getDefaultTexture()); else
+					mat = new ColorMaterial(this._cur_mat.diffuseColor);
+				(<SinglePassMaterialBase> mat).ambientColor = this._cur_mat.ambientColor;
+				(<SinglePassMaterialBase> mat).specularColor = this._cur_mat.specularColor;
 			} else {
 				if (this._cur_mat.colorMap)
-					mat = new away.materials.TextureMultiPassMaterial(this._cur_mat.colorMap.texture || away.materials.DefaultMaterialManager.getDefaultTexture()); else
-					mat = new away.materials.ColorMultiPassMaterial(this._cur_mat.diffuseColor);
-				(<away.materials.MultiPassMaterialBase> mat).ambientColor = this._cur_mat.ambientColor;
-				(<away.materials.MultiPassMaterialBase> mat).specularColor = this._cur_mat.specularColor;
+					mat = new TextureMultiPassMaterial(this._cur_mat.colorMap.texture || DefaultMaterialManager.getDefaultTexture()); else
+					mat = new ColorMultiPassMaterial(this._cur_mat.diffuseColor);
+				(<MultiPassMaterialBase> mat).ambientColor = this._cur_mat.ambientColor;
+				(<MultiPassMaterialBase> mat).specularColor = this._cur_mat.specularColor;
 			}
 
 			mat.bothSides = this._cur_mat.twoSided;
@@ -783,14 +796,12 @@ module away.parsers
 	}
 }
 
+import Vector3D							= away.geom.Vector3D;
+
 class TextureVO
 {
 	public url:string;
 	public texture:away.textures.Texture2DBase;
-
-	public TextureVO()
-	{
-	}
 }
 
 class MaterialVO
@@ -803,10 +814,6 @@ class MaterialVO
 	public colorMap:TextureVO;
 	public specularMap:TextureVO;
 	public material:away.materials.MaterialBase;
-
-	public MaterialVO()
-	{
-	}
 }
 
 class ObjectVO
@@ -823,10 +830,6 @@ class ObjectVO
 	public materialFaces:Object;
 	public materials:Array<string>;
 	public smoothingGroups:Array<number> /*int*/;
-
-	public ObjectVO()
-	{
-	}
 }
 
 class VertexVO
@@ -836,12 +839,8 @@ class VertexVO
 	public z:number;
 	public u:number;
 	public v:number;
-	public normal:away.geom.Vector3D;
-	public tangent:away.geom.Vector3D;
-
-	public VertexVO()
-	{
-	}
+	public normal:Vector3D;
+	public tangent:Vector3D;
 }
 
 class FaceVO
@@ -850,8 +849,4 @@ class FaceVO
 	public b:number /*int*/;
 	public c:number /*int*/;
 	public smoothGroup:number /*int*/;
-
-	public FaceVO()
-	{
-	}
 }

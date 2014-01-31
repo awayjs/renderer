@@ -4,7 +4,7 @@ var demos;
 (function (demos) {
     (function (object3d) {
         var Event = away.events.Event;
-        var IMGLoader = away.net.IMGLoader;
+        var URLLoader = away.net.URLLoader;
         var URLRequest = away.net.URLRequest;
         var RequestAnimationFrame = away.utils.RequestAnimationFrame;
         var Delegate = away.utils.Delegate;
@@ -73,15 +73,23 @@ var demos;
             }
             TorusObject3DDemo.prototype.loadResources = function () {
                 var urlRequest = new URLRequest("assets/custom_uv_horizontal.png");
-                var imgLoader = new IMGLoader();
-                imgLoader.addEventListener(Event.COMPLETE, Delegate.create(this, this.imageCompleteHandler));
-                imgLoader.load(urlRequest);
+                var urlLoader = new URLLoader();
+                urlLoader.dataFormat = away.net.URLLoaderDataFormat.BLOB;
+                urlLoader.addEventListener(Event.COMPLETE, Delegate.create(this, this.imageCompleteHandler));
+                urlLoader.load(urlRequest);
             };
 
             TorusObject3DDemo.prototype.imageCompleteHandler = function (e) {
-                var imageLoader = e.target;
-                this._image = imageLoader.image;
+                var _this = this;
+                var urlLoader = e.target;
 
+                this._image = away.parsers.ParserUtils.blobToImage(urlLoader.data);
+                this._image.onload = function (event) {
+                    return _this.onImageLoadComplete(event);
+                };
+            };
+
+            TorusObject3DDemo.prototype.onImageLoadComplete = function (event) {
                 var ts = new HTMLImageElementTexture(this._image, false);
 
                 var matTx = new TextureMaterial(ts, true, true, false);

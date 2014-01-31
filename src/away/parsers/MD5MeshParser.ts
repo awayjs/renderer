@@ -2,17 +2,16 @@
 
 module away.parsers
 {
-	import SkeletonAnimationSet         = away.animators.SkeletonAnimationSet;
-	import Skeleton                     = away.animators.Skeleton;
-	import SkeletonJoint                = away.animators.SkeletonJoint;
-	import Geometry                     = away.base.Geometry;
-	import SkinnedSubGeometry           = away.base.SkinnedSubGeometry;
-	import Quaternion                   = away.geom.Quaternion;
-	import Mesh                         = away.entities.Mesh;
-
-	import Matrix3D                     = away.geom.Matrix3D;
-	import Vector3D                     = away.geom.Vector3D;
-
+	import SkeletonAnimationSet         	= away.animators.SkeletonAnimationSet;
+	import Skeleton                     	= away.animators.Skeleton;
+	import SkeletonJoint                	= away.animators.SkeletonJoint;
+	import Geometry                     	= away.base.Geometry;
+	import SkinnedSubGeometry           	= away.base.SkinnedSubGeometry;
+	import Matrix3D                     	= away.geom.Matrix3D;
+	import Quaternion                   	= away.geom.Quaternion;
+	import Vector3D                     	= away.geom.Vector3D;
+	import Mesh                         	= away.entities.Mesh;
+	import URLLoaderDataFormat				= away.net.URLLoaderDataFormat;
 	// todo: create animation system, parse skeleton
 
 	/**
@@ -66,7 +65,7 @@ module away.parsers
 		 */
 		constructor(additionalRotationAxis:Vector3D = null, additionalRotationRadians:number = 0)
 		{
-			super(ParserDataFormat.PLAIN_TEXT);
+			super(URLLoaderDataFormat.TEXT);
 			this._rotationQuat = new Quaternion();
 
 			this._rotationQuat.fromAxisAngle(Vector3D.X_AXIS, -Math.PI*.5);

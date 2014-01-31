@@ -2,11 +2,20 @@
 
 module away.parsers
 {
-
+	import Mesh								= away.entities.Mesh;
+	import DefaultMaterialManager			= away.materials.DefaultMaterialManager;
+	import BasicSpecularMethod				= away.materials.BasicSpecularMethod;
+	import ColorMaterial					= away.materials.ColorMaterial;
+	import ColorMultiPassMaterial			= away.materials.ColorMultiPassMaterial;
+	import MaterialBase						= away.materials.MaterialBase;
+	import TextureMaterial					= away.materials.TextureMaterial;
+	import TextureMultiPassMaterial			= away.materials.TextureMultiPassMaterial;
+	import URLLoaderDataFormat				= away.net.URLLoaderDataFormat;
+	
 	/**
 	 * OBJParser provides a parser for the OBJ data type.
 	 */
-	export class OBJParser extends away.parsers.ParserBase
+	export class OBJParser extends ParserBase
 	{
 		private _textData:string;
 		private _startedParsing:boolean;
@@ -20,7 +29,7 @@ module away.parsers
 		private _materialIDs:string[];
 		private _materialLoaded:Array<LoadedMaterial>;
 		private _materialSpecularData:Array<SpecularData>;
-		private _meshes:Array<away.entities.Mesh>;
+		private _meshes:Array<Mesh>;
 		private _lastMtlID:string;
 		private _objectIndex:number;
 		private _realIndices;
@@ -40,7 +49,7 @@ module away.parsers
 		 */
 		constructor(scale:number = 1)
 		{
-			super(ParserDataFormat.PLAIN_TEXT);
+			super(URLLoaderDataFormat.TEXT);
 			this._scale = scale;
 		}
 
@@ -71,7 +80,7 @@ module away.parsers
 		 */
 		public static supportsData(data:any):boolean
 		{
-			var content:string = away.parsers.ParserUtils.toString(data);
+			var content:string = ParserUtils.toString(data);
 			var hasV:boolean = false;
 			var hasF:boolean = false;
 
@@ -86,10 +95,10 @@ module away.parsers
 		/**
 		 * @inheritDoc
 		 */
-		public _iResolveDependency(resourceDependency:away.parsers.ResourceDependency)
+		public _iResolveDependency(resourceDependency:ResourceDependency)
 		{
 			if (resourceDependency.id == 'mtl') {
-				var str:string = away.parsers.ParserUtils.toString(resourceDependency.data);
+				var str:string = ParserUtils.toString(resourceDependency.data);
 				this.parseMtl(str);
 
 			} else {
@@ -119,7 +128,7 @@ module away.parsers
 		/**
 		 * @inheritDoc
 		 */
-		public _iResolveDependencyFailure(resourceDependency:away.parsers.ResourceDependency)
+		public _iResolveDependencyFailure(resourceDependency:ResourceDependency)
 		{
 			if (resourceDependency.id == "mtl") {
 				this._mtlLib = false;
@@ -159,7 +168,7 @@ module away.parsers
 				this._vertexNormals = new Array<Vertex>();
 				this._materialIDs = new Array<string>();
 				this._materialLoaded = new Array<LoadedMaterial>();
-				this._meshes = new Array<away.entities.Mesh>();
+				this._meshes = new Array<Mesh>();
 				this._uvs = new Array<UV>();
 				this._stringLength = this._textData.length;
 				this._charIndex = this._textData.indexOf(creturn, 0);
@@ -185,7 +194,7 @@ module away.parsers
 				// parsing being paused to retrieve dependencies, break
 				// here and do not continue parsing until un-paused.
 				if (this.parsingPaused) {
-					return away.parsers.ParserBase.MORE_TO_PARSE;
+					return ParserBase.MORE_TO_PARSE;
 				}
 
 			}
@@ -193,16 +202,16 @@ module away.parsers
 			if (this._charIndex >= this._stringLength) {
 
 				if (this._mtlLib && !this._mtlLibLoaded) {
-					return away.parsers.ParserBase.MORE_TO_PARSE;
+					return ParserBase.MORE_TO_PARSE;
 				}
 
 				this.translate();
 				this.applyMaterials();
 
-				return away.parsers.ParserBase.PARSING_DONE;
+				return ParserBase.PARSING_DONE;
 			}
 
-			return away.parsers.ParserBase.MORE_TO_PARSE;
+			return ParserBase.MORE_TO_PARSE;
 		}
 
 		/**
@@ -284,11 +293,11 @@ module away.parsers
 				var materialGroups:Array<MaterialGroup>;
 				var numMaterialGroups:number;
 				var geometry:away.base.Geometry;
-				var mesh:away.entities.Mesh;
+				var mesh:Mesh;
 
 				var m:number;
 				var sm:number;
-				var bmMaterial:away.materials.MaterialBase;
+				var bmMaterial:MaterialBase;
 
 				for (var g:number = 0; g < numGroups; ++g) {
 					geometry = new away.base.Geometry();
@@ -305,10 +314,10 @@ module away.parsers
 					this._pFinalizeAsset(<away.library.IAsset> geometry);//, "");
 
 					if (this.materialMode < 2)
-						bmMaterial = new away.materials.TextureMaterial(away.materials.DefaultMaterialManager.getDefaultTexture()); else
-						bmMaterial = new away.materials.TextureMultiPassMaterial(away.materials.DefaultMaterialManager.getDefaultTexture());
+						bmMaterial = new TextureMaterial(DefaultMaterialManager.getDefaultTexture()); else
+						bmMaterial = new TextureMultiPassMaterial(DefaultMaterialManager.getDefaultTexture());
 					//bmMaterial = new TextureMaterial(DefaultMaterialManager.getDefaultTexture());
-					mesh = new away.entities.Mesh(geometry, bmMaterial);
+					mesh = new Mesh(geometry, bmMaterial);
 
 					if (this._objects[objIndex].name) {
 						// this is a full independent object ('o' tag in OBJ file)
@@ -605,7 +614,7 @@ module away.parsers
 			var trunk;
 			var j:number;
 
-			var basicSpecularMethod:away.materials.BasicSpecularMethod;
+			var basicSpecularMethod:BasicSpecularMethod;
 			var useSpecular:boolean;
 			var useColor:boolean;
 			var diffuseColor:number;
@@ -693,7 +702,7 @@ module away.parsers
 
 					if (useSpecular) {
 
-						basicSpecularMethod = new away.materials.BasicSpecularMethod();
+						basicSpecularMethod = new BasicSpecularMethod();
 						basicSpecularMethod.specularColor = specularColor;
 						basicSpecularMethod.specular = specular;
 
@@ -719,12 +728,12 @@ module away.parsers
 					if (alpha == 0)
 						console.log("Warning: an alpha value of 0 was found in mtl color tag (Tr or d) ref:" + this._lastMtlID + ", mesh(es) using it will be invisible!");
 
-					var cm:away.materials.MaterialBase;
+					var cm:MaterialBase;
 
 					if (this.materialMode < 2) {
-						cm = new away.materials.ColorMaterial(diffuseColor);
+						cm = new ColorMaterial(diffuseColor);
 
-						var colorMat:away.materials.ColorMaterial = <away.materials.ColorMaterial> cm;
+						var colorMat:ColorMaterial = <ColorMaterial> cm;
 
 						colorMat.alpha = alpha;
 						colorMat.ambientColor = ambientColor;
@@ -736,9 +745,9 @@ module away.parsers
 						}
 
 					} else {
-						cm = new away.materials.ColorMultiPassMaterial(diffuseColor);
+						cm = new ColorMultiPassMaterial(diffuseColor);
 
-						var colorMultiMat:away.materials.ColorMultiPassMaterial = <away.materials.ColorMultiPassMaterial> cm;
+						var colorMultiMat:ColorMultiPassMaterial = <ColorMultiPassMaterial> cm;
 
 
 						colorMultiMat.ambientColor = ambientColor;
@@ -818,8 +827,8 @@ module away.parsers
 		private applyMaterial(lm:LoadedMaterial)
 		{
 			var decomposeID;
-			var mesh:away.entities.Mesh;
-			var mat:away.materials.MaterialBase;
+			var mesh:Mesh;
+			var mat:MaterialBase;
 			var j:number;
 			var specularData:SpecularData;
 
@@ -836,9 +845,9 @@ module away.parsers
 
 					} else if (lm.texture) {
 						if (this.materialMode < 2) { // if materialMode is 0 or 1, we create a SinglePass
-							mat = <away.materials.TextureMaterial > mesh.material;
+							mat = <TextureMaterial > mesh.material;
 
-							var tm:away.materials.TextureMaterial = <away.materials.TextureMaterial> mat;
+							var tm:TextureMaterial = <TextureMaterial> mat;
 
 							tm.texture = lm.texture;
 							tm.ambientColor = lm.ambientColor;
@@ -869,9 +878,9 @@ module away.parsers
 								}
 							}
 						} else { //if materialMode==2 this is a MultiPassTexture					
-							mat = <away.materials.TextureMultiPassMaterial>mesh.material;
+							mat = <TextureMultiPassMaterial>mesh.material;
 
-							var tmMult:away.materials.TextureMultiPassMaterial = <away.materials.TextureMultiPassMaterial> mat;
+							var tmMult:TextureMultiPassMaterial = <TextureMultiPassMaterial> mat;
 
 							tmMult.texture = lm.texture;
 							tmMult.ambientColor = lm.ambientColor;
@@ -922,14 +931,14 @@ module away.parsers
 	}
 }
 
+import BasicSpecularMethod				= away.materials.BasicSpecularMethod;
+import MaterialBase						= away.materials.MaterialBase;
+import Texture2DBase					= away.textures.Texture2DBase;
+
 class ObjectGroup
 {
 	public name:string;
 	public groups:Group[] = new Array<Group>();
-
-	constructor()
-	{
-	}
 }
 
 class Group
@@ -937,48 +946,30 @@ class Group
 	public name:string;
 	public materialID:string;
 	public materialGroups:MaterialGroup[] = new Array<MaterialGroup>();
-
-	constructor()
-	{
-	}
 }
 
 class MaterialGroup
 {
 	public url:string;
 	public faces:FaceData[] = new Array<FaceData>();
-
-	constructor()
-	{
-	}
 }
 
 class SpecularData
 {
 	public materialID:string;
-	public basicSpecularMethod:away.materials.BasicSpecularMethod;
+	public basicSpecularMethod:BasicSpecularMethod;
 	public ambientColor:number = 0xFFFFFF;
 	public alpha:number = 1;
-
-	constructor()
-	{
-	}
 }
 
 class LoadedMaterial
 {
-	//import away3d.materials.ColorMaterial;
-
 	public materialID:string;
-	public texture:away.textures.Texture2DBase;
-	public cm:away.materials.MaterialBase;
-	public specularMethod:away.materials.BasicSpecularMethod;
+	public texture:Texture2DBase;
+	public cm:MaterialBase;
+	public specularMethod:BasicSpecularMethod;
 	public ambientColor:number = 0xFFFFFF;
 	public alpha:number = 1;
-
-	constructor()
-	{
-	}
 }
 
 class FaceData
@@ -987,10 +978,6 @@ class FaceData
 	public uvIndices:number[] /*uint*/ = new Array<number>();
 	public normalIndices:number[] /*uint*/ = new Array<number>();
 	public indexIds:string[] = new Array<string>(); // used for real index lookups
-
-	constructor()
-	{
-	}
 }
 
 /**
@@ -1007,7 +994,7 @@ class UV
 	 * @param    u        [optional]    The horizontal coordinate of the texture value. Defaults to 0.
 	 * @param    v        [optional]    The vertical coordinate of the texture value. Defaults to 0.
 	 */
-		constructor(u:number = 0, v:number = 0)
+	constructor(u:number = 0, v:number = 0)
 	{
 		this._u = u;
 		this._v = v;
@@ -1071,7 +1058,7 @@ class Vertex
 	 * @param    z            [optional]    The z value. Defaults to 0.
 	 * @param    index        [optional]    The index value. Defaults is NaN.
 	 */
-		constructor(x:number = 0, y:number = 0, z:number = 0, index:number = 0)
+	constructor(x:number = 0, y:number = 0, z:number = 0, index:number = 0)
 	{
 		this._x = x;
 		this._y = y;
@@ -1141,9 +1128,5 @@ class Vertex
 	public clone():Vertex
 	{
 		return new Vertex(this._x, this._y, this._z);
-	}
-
-	public FaceData()
-	{
 	}
 }

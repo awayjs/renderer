@@ -34,16 +34,21 @@ module scene
         private loadResources()
         {
             var urlRequest:away.net.URLRequest = new away.net.URLRequest( "130909wall_big.png" );
-            var imgLoader:away.net.IMGLoader = new away.net.IMGLoader();
-            imgLoader.addEventListener( away.events.Event.COMPLETE, away.utils.Delegate.create(this, this.imageCompleteHandler) );
-            imgLoader.load( urlRequest );
-        }
+			var urlLoader:away.net.URLLoader = new away.net.URLLoader();
+			urlLoader.dataFormat = away.net.URLLoaderDataFormat.BLOB;
+			urlLoader.addEventListener( away.events.Event.COMPLETE, away.utils.Delegate.create(this, this.imageCompleteHandler) );
+			urlLoader.load( urlRequest );
+		}
 
-        private imageCompleteHandler(e)
-        {
-            var imageLoader:away.net.IMGLoader = <away.net.IMGLoader> e.target
-            this._image = imageLoader.image;
+		private imageCompleteHandler(e)
+		{
+			var imageLoader:away.net.URLLoader = <away.net.URLLoader> e.target
+			this._image = away.parsers.ParserUtils.blobToImage(imageLoader.data);
+			this._image.onload = (event) => this.onLoadComplete(event);
+		}
 
+		private onLoadComplete(event)
+		{
 			this._stageGL = new away.base.StageGL(document.createElement("canvas"), 0, null);
 			this._stageGL.addEventListener( away.events.StageGLEvent.CONTEXTGL_CREATED, away.utils.Delegate.create(this, this.onContextGLCreateHandler) );
 			this._stageGL.requestContext();

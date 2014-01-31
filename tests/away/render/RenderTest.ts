@@ -8,7 +8,7 @@ module tests.render
 
         private stage           : away.display.Stage;
         private sManager        : away.managers.StageGLManager;
-        private sProxy          : away.managers.StageGLProxy;
+        private stageGL          : away.base.StageGL;
 
         private dRenderer       : away.render.DefaultRenderer;
         constructor()
@@ -17,12 +17,12 @@ module tests.render
             away.Debug.THROW_ERRORS  = false;
 
             this.stage      = new away.display.Stage();
-            this.sManager   = away.managers.StageGLManager.getInstance( this.stage );
-            this.sProxy     = this.sManager.getStageGLProxy( 0 );
+            this.sManager   = away.managers.StageGLManager.getInstance();
+            this.stageGL     = this.sManager.getFreeStageGL();
 
             console.log( 'away.display.Stage' , this.stage );
             console.log( 'away.managers.StageGLManager' , this.sManager );
-            console.log( 'away.managers.StageGLProxy' , this.sProxy );
+            console.log( 'away.managers.StageGLProxy' , this.stageGL );
 
 
             this.dRenderer = new away.render.DefaultRenderer();
