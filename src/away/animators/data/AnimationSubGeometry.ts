@@ -2,9 +2,9 @@
 
 module away.animators
 {
-	import StageGL = away.base.StageGL;
-	import ContextGL = away.gl.ContextGL;
-	import VertexBuffer = away.gl.VertexBuffer;
+	import StageGL					= away.base.StageGL;
+	import ContextGL				= away.gl.ContextGL;
+	import VertexBuffer				= away.gl.VertexBuffer;
 	
 	/**
 	 * ...
@@ -13,11 +13,11 @@ module away.animators
 	{
 		public static SUBGEOM_ID_COUNT:number = 0;
 
-		public _pVertexData:Array<number>;
+		public _pVertexData:number[];
 		
-		public _pVertexBuffer:Array<VertexBuffer> = new Array<VertexBuffer>(8);
-		public _pBufferContext:Array<ContextGL> = new Array<ContextGL>(8);
-		public _pBufferDirty:Array<Boolean> = new Array<Boolean>(8);
+		public _pVertexBuffer:VertexBuffer[] = new Array<VertexBuffer>(8);
+		public _pBufferContext:ContextGL[] = new Array<ContextGL>(8);
+		public _pBufferDirty:boolean[] = new Array<boolean>(8);
 		
 		private _numVertices:number /*uint*/;
 		
@@ -50,8 +50,9 @@ module away.animators
 			this._totalLenOfOneVertex = totalLenOfOneVertex;
 			this._pVertexData = new Array<number>(numVertices*totalLenOfOneVertex);
 		}
-		
-		public activateVertexBuffer(index:number /*int*/, bufferOffset:number /*int*/, stageGL:StageGL, format:string)
+
+		//TODO Why does Typescript complain when stageGL type away.base.StageGL is changed to StageGL?
+		public activateVertexBuffer(index:number /*int*/, bufferOffset:number /*int*/, stageGL:away.base.StageGL, format:string)
 		{
 			var contextIndex:number /*int*/ = stageGL.stageGLIndex;
 			var context:ContextGL = stageGL.contextGL;

@@ -113,17 +113,17 @@ module away.animators
 		public setRegisterIndex(node:AnimationNodeBase, parameterIndex:number /*int*/, registerIndex:number /*int*/)
 		{
 			//8 should be enough for any node.
-			var t:Array<number> /*int*/ = this.indexDictionary[node._iUniqueId];
+			var t:Array<number> /*int*/ = this.indexDictionary[node.id];
 
 			if (t == null)
-				t = this.indexDictionary[node._iUniqueId] = new Array<number>(8) /*int*/;
+				t = this.indexDictionary[node.id] = new Array<number>(8) /*int*/;
 
 			t[parameterIndex] = registerIndex;
 		}
 		
 		public getRegisterIndex(node:AnimationNodeBase, parameterIndex:number /*int*/):number /*int*/
 		{
-			return (<Array<number>> this.indexDictionary[node._iUniqueId])[parameterIndex];
+			return (<Array<number>> this.indexDictionary[node.id])[parameterIndex];
 		}
 		
 		public getInitCode():string
