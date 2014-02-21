@@ -88,7 +88,8 @@ var away;
         var ArgumentError = (function (_super) {
             __extends(ArgumentError, _super);
             /**
-            * Create a new AbstractMethodError.
+            * Create a new ArgumentError.
+            *
             * @param message An optional message to override the default error message.
             * @param id The id of the error.
             */
@@ -100,6 +101,21 @@ var away;
             return ArgumentError;
         })(away.errors.Error);
         errors.ArgumentError = ArgumentError;
+    })(away.errors || (away.errors = {}));
+    var errors = away.errors;
+})(away || (away = {}));
+///<reference path="../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (errors) {
+        var CastError = (function (_super) {
+            __extends(CastError, _super);
+            function CastError(message) {
+                _super.call(this, message);
+            }
+            return CastError;
+        })(away.errors.Error);
+        errors.CastError = CastError;
     })(away.errors || (away.errors = {}));
     var errors = away.errors;
 })(away || (away = {}));
@@ -173,6 +189,33 @@ var away;
     })(away.errors || (away.errors = {}));
     var errors = away.errors;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (errors) {
+        /**
+        * RangeError is thrown when an index is accessed out of range of the number of
+        * available indices on an Array.
+        */
+        var RangeError = (function (_super) {
+            __extends(RangeError, _super);
+            /**
+            * Create a new RangeError.
+            *
+            * @param message An optional message to override the default error message.
+            * @param id The id of the error.
+            */
+            function RangeError(message, id) {
+                if (typeof message === "undefined") { message = null; }
+                if (typeof id === "undefined") { id = 0; }
+                _super.call(this, message || "RangeError", id);
+            }
+            return RangeError;
+        })(away.errors.Error);
+        errors.RangeError = RangeError;
+    })(away.errors || (away.errors = {}));
+    var errors = away.errors;
+})(away || (away = {}));
 var away;
 (function (away) {
     /**
@@ -215,6 +258,123 @@ var away;
             return Event;
         })();
         events.Event = Event;
+    })(away.events || (away.events = {}));
+    var events = away.events;
+})(away || (away = {}));
+///<reference path="../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (events) {
+        /**
+        * @class away.events.AssetEvent
+        */
+        var AssetEvent = (function (_super) {
+            __extends(AssetEvent, _super);
+            /**
+            *
+            */
+            function AssetEvent(type, asset, prevName) {
+                if (typeof asset === "undefined") { asset = null; }
+                if (typeof prevName === "undefined") { prevName = null; }
+                _super.call(this, type);
+
+                this._asset = asset;
+                this._prevName = prevName || (this._asset ? this._asset.name : null);
+            }
+            Object.defineProperty(AssetEvent.prototype, "asset", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._asset;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(AssetEvent.prototype, "assetPrevName", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._prevName;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            *
+            */
+            AssetEvent.prototype.clone = function () {
+                return new away.events.AssetEvent(this.type, this.asset, this.assetPrevName);
+            };
+            AssetEvent.ASSET_COMPLETE = "assetComplete";
+
+            AssetEvent.ASSET_RENAME = 'assetRename';
+
+            AssetEvent.ASSET_CONFLICT_RESOLVED = 'assetConflictResolved';
+
+            AssetEvent.TEXTURE_SIZE_ERROR = 'textureSizeError';
+            return AssetEvent;
+        })(away.events.Event);
+        events.AssetEvent = AssetEvent;
+    })(away.events || (away.events = {}));
+    var events = away.events;
+})(away || (away = {}));
+///<reference path="../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * @module away.events
+    */
+    (function (events) {
+        /**
+        * @class away.events.CameraEvent
+        */
+        var CameraEvent = (function (_super) {
+            __extends(CameraEvent, _super);
+            function CameraEvent(type, camera) {
+                _super.call(this, type);
+
+                this._camera = camera;
+            }
+            Object.defineProperty(CameraEvent.prototype, "camera", {
+                get: function () {
+                    return this._camera;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            CameraEvent.LENS_CHANGED = "projectionChanged";
+            return CameraEvent;
+        })(away.events.Event);
+        events.CameraEvent = CameraEvent;
+    })(away.events || (away.events = {}));
+    var events = away.events;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    /**
+    * @module away.events
+    */
+    (function (events) {
+        var DisplayObjectEvent = (function (_super) {
+            __extends(DisplayObjectEvent, _super);
+            function DisplayObjectEvent(type, object) {
+                _super.call(this, type);
+                this.object = object;
+            }
+            DisplayObjectEvent.VISIBLITY_UPDATED = "visiblityUpdated";
+            DisplayObjectEvent.SCENETRANSFORM_CHANGED = "scenetransformChanged";
+            DisplayObjectEvent.SCENE_CHANGED = "sceneChanged";
+            DisplayObjectEvent.POSITION_CHANGED = "positionChanged";
+            DisplayObjectEvent.ROTATION_CHANGED = "rotationChanged";
+            DisplayObjectEvent.SCALE_CHANGED = "scaleChanged";
+            return DisplayObjectEvent;
+        })(away.events.Event);
+        events.DisplayObjectEvent = DisplayObjectEvent;
     })(away.events || (away.events = {}));
     var events = away.events;
 })(away || (away = {}));
@@ -324,6 +484,28 @@ var away;
     var events = away.events;
 })(away || (away = {}));
 ///<reference path="../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (events) {
+        /**
+        * @class away.events.HTTPStatusEvent
+        */
+        var HTTPStatusEvent = (function (_super) {
+            __extends(HTTPStatusEvent, _super);
+            function HTTPStatusEvent(type, status) {
+                if (typeof status === "undefined") { status = null; }
+                _super.call(this, type);
+
+                this.status = status;
+            }
+            HTTPStatusEvent.HTTP_STATUS = "HTTPStatusEvent_HTTP_STATUS";
+            return HTTPStatusEvent;
+        })(away.events.Event);
+        events.HTTPStatusEvent = HTTPStatusEvent;
+    })(away.events || (away.events = {}));
+    var events = away.events;
+})(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 ///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
@@ -343,25 +525,90 @@ var away;
     })(away.events || (away.events = {}));
     var events = away.events;
 })(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    /**
+    * @module away.events
+    */
+    (function (events) {
+        var ProjectionEvent = (function (_super) {
+            __extends(ProjectionEvent, _super);
+            function ProjectionEvent(type, projection) {
+                _super.call(this, type);
+                this._projection = projection;
+            }
+            Object.defineProperty(ProjectionEvent.prototype, "projection", {
+                get: function () {
+                    return this._projection;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            ProjectionEvent.MATRIX_CHANGED = "matrixChanged";
+            return ProjectionEvent;
+        })(away.events.Event);
+        events.ProjectionEvent = ProjectionEvent;
+    })(away.events || (away.events = {}));
+    var events = away.events;
+})(away || (away = {}));
 ///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
+    /**
+    * @module away.events
+    */
     (function (events) {
-        /**
-        * @class away.events.HTTPStatusEvent
-        */
-        var HTTPStatusEvent = (function (_super) {
-            __extends(HTTPStatusEvent, _super);
-            function HTTPStatusEvent(type, status) {
-                if (typeof status === "undefined") { status = null; }
+        var LoaderEvent = (function (_super) {
+            __extends(LoaderEvent, _super);
+            /**
+            * Create a new LoaderEvent object.
+            *
+            * @param type The event type.
+            * @param url The url of the loaded resource.
+            * @param assets The assets of the loaded resource.
+            */
+            function LoaderEvent(type, url, assets) {
+                if (typeof url === "undefined") { url = null; }
+                if (typeof assets === "undefined") { assets = null; }
                 _super.call(this, type);
 
-                this.status = status;
+                this._url = url;
+                this._assets = assets;
             }
-            HTTPStatusEvent.HTTP_STATUS = "HTTPStatusEvent_HTTP_STATUS";
-            return HTTPStatusEvent;
+            Object.defineProperty(LoaderEvent.prototype, "url", {
+                /**
+                * The url of the loaded resource.
+                */
+                get: function () {
+                    return this._url;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(LoaderEvent.prototype, "assets", {
+                /**
+                * The error string on loadError.
+                */
+                get: function () {
+                    return this._assets;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * Clones the current event.
+            * @return An exact duplicate of the current event.
+            */
+            LoaderEvent.prototype.clone = function () {
+                return new LoaderEvent(this.type, this._url, this._assets);
+            };
+            LoaderEvent.RESOURCE_COMPLETE = "resourceComplete";
+            return LoaderEvent;
         })(away.events.Event);
-        events.HTTPStatusEvent = HTTPStatusEvent;
+        events.LoaderEvent = LoaderEvent;
     })(away.events || (away.events = {}));
     var events = away.events;
 })(away || (away = {}));
@@ -432,117 +679,64 @@ var away;
     * @module away.events
     */
     (function (events) {
-        var LoaderEvent = (function (_super) {
-            __extends(LoaderEvent, _super);
-            /**
-            * Create a new LoaderEvent object.
-            *
-            * @param type The event type.
-            * @param url The url of the loaded resource.
-            * @param assets The assets of the loaded resource.
-            */
-            function LoaderEvent(type, url, assets) {
-                if (typeof url === "undefined") { url = null; }
-                if (typeof assets === "undefined") { assets = null; }
-                _super.call(this, type);
-
-                this._url = url;
-                this._assets = assets;
+        //import flash.events.Event;
+        var RendererEvent = (function (_super) {
+            __extends(RendererEvent, _super);
+            function RendererEvent(type) {
+                _super.call(this, type); //, bubbles, cancelable);
             }
-            Object.defineProperty(LoaderEvent.prototype, "url", {
-                /**
-                * The url of the loaded resource.
-                */
-                get: function () {
-                    return this._url;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(LoaderEvent.prototype, "assets", {
-                /**
-                * The error string on loadError.
-                */
-                get: function () {
-                    return this._assets;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            /**
-            * Clones the current event.
-            * @return An exact duplicate of the current event.
-            */
-            LoaderEvent.prototype.clone = function () {
-                return new LoaderEvent(this.type, this._url, this._assets);
-            };
-            LoaderEvent.RESOURCE_COMPLETE = "resourceComplete";
-            return LoaderEvent;
+            RendererEvent.VIEWPORT_UPDATED = "viewportUpdated";
+            RendererEvent.SCISSOR_UPDATED = "scissorUpdated";
+            return RendererEvent;
         })(away.events.Event);
-        events.LoaderEvent = LoaderEvent;
+        events.RendererEvent = RendererEvent;
     })(away.events || (away.events = {}));
     var events = away.events;
 })(away || (away = {}));
 ///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
+    /**
+    * @module away.events
+    */
     (function (events) {
-        /**
-        * @class away.events.AssetEvent
-        */
-        var AssetEvent = (function (_super) {
-            __extends(AssetEvent, _super);
-            /**
-            *
-            */
-            function AssetEvent(type, asset, prevName) {
-                if (typeof asset === "undefined") { asset = null; }
-                if (typeof prevName === "undefined") { prevName = null; }
+        var SceneEvent = (function (_super) {
+            __extends(SceneEvent, _super);
+            function SceneEvent(type, displayObject) {
+                this.displayObject = displayObject;
                 _super.call(this, type);
-
-                this._asset = asset;
-                this._prevName = prevName || (this._asset ? this._asset.name : null);
             }
-            Object.defineProperty(AssetEvent.prototype, "asset", {
-                /**
-                *
-                */
-                get: function () {
-                    return this._asset;
-                },
-                enumerable: true,
-                configurable: true
-            });
+            SceneEvent.ADDED_TO_SCENE = "addedToScene";
 
-            Object.defineProperty(AssetEvent.prototype, "assetPrevName", {
-                /**
-                *
-                */
-                get: function () {
-                    return this._prevName;
-                },
-                enumerable: true,
-                configurable: true
-            });
+            SceneEvent.REMOVED_FROM_SCENE = "removedFromScene";
 
-            /**
-            *
-            */
-            AssetEvent.prototype.clone = function () {
-                return new away.events.AssetEvent(this.type, this.asset, this.assetPrevName);
-            };
-            AssetEvent.ASSET_COMPLETE = "assetComplete";
-
-            AssetEvent.ASSET_RENAME = 'assetRename';
-
-            AssetEvent.ASSET_CONFLICT_RESOLVED = 'assetConflictResolved';
-
-            AssetEvent.TEXTURE_SIZE_ERROR = 'textureSizeError';
-            return AssetEvent;
+            SceneEvent.PARTITION_CHANGED = "partitionChanged";
+            return SceneEvent;
         })(away.events.Event);
-        events.AssetEvent = AssetEvent;
+        events.SceneEvent = SceneEvent;
+    })(away.events || (away.events = {}));
+    var events = away.events;
+})(away || (away = {}));
+///<reference path="../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * @module away.events
+    */
+    (function (events) {
+        //import flash.events.Event;
+        var StageGLEvent = (function (_super) {
+            __extends(StageGLEvent, _super);
+            function StageGLEvent(type) {
+                _super.call(this, type); //, bubbles, cancelable);
+            }
+            StageGLEvent.CONTEXTGL_CREATED = "contextGLCreated";
+            StageGLEvent.CONTEXTGL_DISPOSED = "contextGLDisposed";
+            StageGLEvent.CONTEXTGL_RECREATED = "contextGLRecreated";
+            StageGLEvent.VIEWPORT_UPDATED = "viewportUpdated";
+            return StageGLEvent;
+        })(away.events.Event);
+        events.StageGLEvent = StageGLEvent;
     })(away.events || (away.events = {}));
     var events = away.events;
 })(away || (away = {}));
@@ -569,25 +763,1334 @@ var away;
 ///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    /**
-    * @module away.events
-    */
-    (function (events) {
-        //import flash.events.Event;
-        var StageGLEvent = (function (_super) {
-            __extends(StageGLEvent, _super);
-            function StageGLEvent(type) {
-                _super.call(this, type); //, bubbles, cancelable);
+    (function (utils) {
+        var ByteArrayBase = (function () {
+            function ByteArrayBase() {
+                this.position = 0;
+                this.length = 0;
+                this._mode = "";
+                this.Base64Key = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
             }
-            StageGLEvent.CONTEXTGL_CREATED = "ContextGLCreated";
-            StageGLEvent.CONTEXTGL_DISPOSED = "ContextGLDisposed";
-            StageGLEvent.CONTEXTGL_RECREATED = "ContextGLRecreated";
-            StageGLEvent.VIEWPORT_UPDATED = "ViewportUpdated";
-            return StageGLEvent;
-        })(away.events.Event);
-        events.StageGLEvent = StageGLEvent;
-    })(away.events || (away.events = {}));
-    var events = away.events;
+            ByteArrayBase.prototype.writeByte = function (b) {
+                throw "Virtual method";
+            };
+
+            ByteArrayBase.prototype.readByte = function () {
+                throw "Virtual method";
+            };
+
+            ByteArrayBase.prototype.writeUnsignedByte = function (b) {
+                throw "Virtual method";
+            };
+
+            ByteArrayBase.prototype.readUnsignedByte = function () {
+                throw "Virtual method";
+            };
+
+            ByteArrayBase.prototype.writeUnsignedShort = function (b) {
+                throw "Virtual method";
+            };
+
+            ByteArrayBase.prototype.readUnsignedShort = function () {
+                throw "Virtual method";
+            };
+
+            ByteArrayBase.prototype.writeUnsignedInt = function (b) {
+                throw "Virtual method";
+            };
+
+            ByteArrayBase.prototype.readUnsignedInt = function () {
+                throw "Virtual method";
+            };
+
+            ByteArrayBase.prototype.writeFloat = function (b) {
+                throw "Virtual method";
+            };
+
+            ByteArrayBase.prototype.toFloatBits = function (x) {
+                throw "Virtual method";
+            };
+
+            ByteArrayBase.prototype.readFloat = function (b) {
+                throw "Virtual method";
+            };
+
+            ByteArrayBase.prototype.fromFloatBits = function (x) {
+                throw "Virtual method";
+            };
+
+            ByteArrayBase.prototype.getBytesAvailable = function () {
+                throw new away.errors.AbstractMethodError('ByteArrayBase, getBytesAvailable() not implemented ');
+            };
+
+            ByteArrayBase.prototype.toString = function () {
+                return "[ByteArray] ( " + this._mode + " ) position=" + this.position + " length=" + this.length;
+            };
+
+            ByteArrayBase.prototype.compareEqual = function (other, count) {
+                if (count == undefined || count > this.length - this.position)
+                    count = this.length - this.position;
+                if (count > other.length - other.position)
+                    count = other.length - other.position;
+                var co0 = count;
+                var r = true;
+                while (r && count >= 4) {
+                    count -= 4;
+                    if (this.readUnsignedInt() != other.readUnsignedInt())
+                        r = false;
+                }
+                while (r && count >= 1) {
+                    count--;
+                    if (this.readUnsignedByte() != other.readUnsignedByte())
+                        r = false;
+                }
+                var c0;
+                this.position -= (c0 - count);
+                other.position -= (c0 - count);
+                return r;
+            };
+
+            ByteArrayBase.prototype.writeBase64String = function (s) {
+                for (var i = 0; i < s.length; i++) {
+                    var v = s.charAt(i);
+                }
+            };
+
+            ByteArrayBase.prototype.dumpToConsole = function () {
+                var oldpos = this.position;
+                this.position = 0;
+                var nstep = 8;
+
+                function asHexString(x, digits) {
+                    var lut = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"];
+                    var sh = "";
+                    for (var d = 0; d < digits; d++) {
+                        sh = lut[(x >> (d << 2)) & 0xf] + sh;
+                    }
+                    return sh;
+                }
+
+                for (var i = 0; i < this.length; i += nstep) {
+                    var s = asHexString(i, 4) + ":";
+                    for (var j = 0; j < nstep && i + j < this.length; j++) {
+                        s += " " + asHexString(this.readUnsignedByte(), 2);
+                    }
+                    console.log(s);
+                }
+                this.position = oldpos;
+            };
+
+            ByteArrayBase.prototype.internalGetBase64String = function (count, getUnsignedByteFunc, self) {
+                var r = "";
+                var b0, b1, b2, enc1, enc2, enc3, enc4;
+                var base64Key = this.Base64Key;
+                while (count >= 3) {
+                    b0 = getUnsignedByteFunc.apply(self);
+                    b1 = getUnsignedByteFunc.apply(self);
+                    b2 = getUnsignedByteFunc.apply(self);
+                    enc1 = b0 >> 2;
+                    enc2 = ((b0 & 3) << 4) | (b1 >> 4);
+                    enc3 = ((b1 & 15) << 2) | (b2 >> 6);
+                    enc4 = b2 & 63;
+                    r += base64Key.charAt(enc1) + base64Key.charAt(enc2) + base64Key.charAt(enc3) + base64Key.charAt(enc4);
+                    count -= 3;
+                }
+
+                // pad
+                if (count == 2) {
+                    b0 = getUnsignedByteFunc.apply(self);
+                    b1 = getUnsignedByteFunc.apply(self);
+                    enc1 = b0 >> 2;
+                    enc2 = ((b0 & 3) << 4) | (b1 >> 4);
+                    enc3 = ((b1 & 15) << 2);
+                    r += base64Key.charAt(enc1) + base64Key.charAt(enc2) + base64Key.charAt(enc3) + "=";
+                } else if (count == 1) {
+                    b0 = getUnsignedByteFunc.apply(self);
+                    enc1 = b0 >> 2;
+                    enc2 = ((b0 & 3) << 4);
+                    r += base64Key.charAt(enc1) + base64Key.charAt(enc2) + "==";
+                }
+                return r;
+            };
+            return ByteArrayBase;
+        })();
+        utils.ByteArrayBase = ByteArrayBase;
+    })(away.utils || (away.utils = {}));
+    var utils = away.utils;
+})(away || (away = {}));
+///<reference path="../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (utils) {
+        var ByteArray = (function (_super) {
+            __extends(ByteArray, _super);
+            function ByteArray() {
+                _super.call(this);
+                this.maxlength = 0;
+                this._mode = "Typed array";
+                this.maxlength = 4;
+                this.arraybytes = new ArrayBuffer(this.maxlength);
+                this.unalignedarraybytestemp = new ArrayBuffer(16);
+            }
+            ByteArray.prototype.ensureWriteableSpace = function (n) {
+                this.ensureSpace(n + this.position);
+            };
+
+            ByteArray.prototype.setArrayBuffer = function (aBuffer) {
+                this.ensureSpace(aBuffer.byteLength);
+
+                this.length = aBuffer.byteLength;
+
+                var inInt8AView = new Int8Array(aBuffer);
+                var localInt8View = new Int8Array(this.arraybytes, 0, this.length);
+
+                localInt8View.set(inInt8AView);
+
+                this.position = 0;
+            };
+
+            ByteArray.prototype.getBytesAvailable = function () {
+                return (this.length) - (this.position);
+            };
+
+            ByteArray.prototype.ensureSpace = function (n) {
+                if (n > this.maxlength) {
+                    var newmaxlength = (n + 255) & (~255);
+                    var newarraybuffer = new ArrayBuffer(newmaxlength);
+                    var view = new Uint8Array(this.arraybytes, 0, this.length);
+                    var newview = new Uint8Array(newarraybuffer, 0, this.length);
+                    newview.set(view); // memcpy
+                    this.arraybytes = newarraybuffer;
+                    this.maxlength = newmaxlength;
+                }
+            };
+
+            ByteArray.prototype.writeByte = function (b) {
+                this.ensureWriteableSpace(1);
+                var view = new Int8Array(this.arraybytes);
+                view[this.position++] = (~~b); // ~~ is cast to int in js...
+                if (this.position > this.length) {
+                    this.length = this.position;
+                }
+            };
+
+            ByteArray.prototype.readByte = function () {
+                if (this.position >= this.length) {
+                    throw "ByteArray out of bounds read. Positon=" + this.position + ", Length=" + this.length;
+                }
+                var view = new Int8Array(this.arraybytes);
+
+                return view[this.position++];
+            };
+
+            ByteArray.prototype.readBytes = function (bytes, offset, length) {
+                if (typeof offset === "undefined") { offset = 0; }
+                if (typeof length === "undefined") { length = 0; }
+                if (length == null) {
+                    length = bytes.length;
+                }
+
+                bytes.ensureWriteableSpace(offset + length);
+
+                var byteView = new Int8Array(bytes.arraybytes);
+                var localByteView = new Int8Array(this.arraybytes);
+
+                byteView.set(localByteView.subarray(this.position, this.position + length), offset);
+
+                this.position += length;
+
+                if (length + offset > bytes.length) {
+                    bytes.length += (length + offset) - bytes.length;
+                }
+            };
+
+            ByteArray.prototype.writeUnsignedByte = function (b) {
+                this.ensureWriteableSpace(1);
+                var view = new Uint8Array(this.arraybytes);
+                view[this.position++] = (~~b) & 0xff; // ~~ is cast to int in js...
+                if (this.position > this.length) {
+                    this.length = this.position;
+                }
+            };
+
+            ByteArray.prototype.readUnsignedByte = function () {
+                if (this.position >= this.length) {
+                    throw "ByteArray out of bounds read. Positon=" + this.position + ", Length=" + this.length;
+                }
+                var view = new Uint8Array(this.arraybytes);
+                return view[this.position++];
+            };
+
+            ByteArray.prototype.writeUnsignedShort = function (b) {
+                this.ensureWriteableSpace(2);
+                if ((this.position & 1) == 0) {
+                    var view = new Uint16Array(this.arraybytes);
+                    view[this.position >> 1] = (~~b) & 0xffff; // ~~ is cast to int in js...
+                } else {
+                    var view = new Uint16Array(this.unalignedarraybytestemp, 0, 1);
+                    view[0] = (~~b) & 0xffff;
+                    var view2 = new Uint8Array(this.arraybytes, this.position, 2);
+                    var view3 = new Uint8Array(this.unalignedarraybytestemp, 0, 2);
+                    view2.set(view3);
+                }
+                this.position += 2;
+                if (this.position > this.length) {
+                    this.length = this.position;
+                }
+            };
+
+            ByteArray.prototype.readUTFBytes = function (len) {
+                var value = "";
+                var max = this.position + len;
+                var data = new DataView(this.arraybytes);
+
+                while (this.position < max) {
+                    var c = data.getUint8(this.position++);
+
+                    if (c < 0x80) {
+                        if (c == 0)
+                            break;
+                        value += String.fromCharCode(c);
+                    } else if (c < 0xE0) {
+                        value += String.fromCharCode(((c & 0x3F) << 6) | (data.getUint8(this.position++) & 0x7F));
+                    } else if (c < 0xF0) {
+                        var c2 = data.getUint8(this.position++);
+                        value += String.fromCharCode(((c & 0x1F) << 12) | ((c2 & 0x7F) << 6) | (data.getUint8(this.position++) & 0x7F));
+                    } else {
+                        var c2 = data.getUint8(this.position++);
+                        var c3 = data.getUint8(this.position++);
+
+                        value += String.fromCharCode(((c & 0x0F) << 18) | ((c2 & 0x7F) << 12) | ((c3 << 6) & 0x7F) | (data.getUint8(this.position++) & 0x7F));
+                    }
+                }
+
+                return value;
+            };
+
+            ByteArray.prototype.readInt = function () {
+                var data = new DataView(this.arraybytes);
+                var int = data.getInt32(this.position, true);
+
+                this.position += 4;
+
+                return int;
+            };
+
+            ByteArray.prototype.readShort = function () {
+                var data = new DataView(this.arraybytes);
+                var short = data.getInt16(this.position, true);
+
+                this.position += 2;
+                return short;
+            };
+
+            ByteArray.prototype.readDouble = function () {
+                var data = new DataView(this.arraybytes);
+                var double = data.getFloat64(this.position, true);
+
+                this.position += 8;
+                return double;
+            };
+
+            ByteArray.prototype.readUnsignedShort = function () {
+                if (this.position > this.length + 2) {
+                    throw "ByteArray out of bounds read. Position=" + this.position + ", Length=" + this.length;
+                }
+                if ((this.position & 1) == 0) {
+                    var view = new Uint16Array(this.arraybytes);
+                    var pa = this.position >> 1;
+                    this.position += 2;
+                    return view[pa];
+                } else {
+                    var view = new Uint16Array(this.unalignedarraybytestemp, 0, 1);
+                    var view2 = new Uint8Array(this.arraybytes, this.position, 2);
+                    var view3 = new Uint8Array(this.unalignedarraybytestemp, 0, 2);
+                    view3.set(view2);
+                    this.position += 2;
+                    return view[0];
+                }
+            };
+
+            ByteArray.prototype.writeUnsignedInt = function (b) {
+                this.ensureWriteableSpace(4);
+                if ((this.position & 3) == 0) {
+                    var view = new Uint32Array(this.arraybytes);
+                    view[this.position >> 2] = (~~b) & 0xffffffff; // ~~ is cast to int in js...
+                } else {
+                    var view = new Uint32Array(this.unalignedarraybytestemp, 0, 1);
+                    view[0] = (~~b) & 0xffffffff;
+                    var view2 = new Uint8Array(this.arraybytes, this.position, 4);
+                    var view3 = new Uint8Array(this.unalignedarraybytestemp, 0, 4);
+                    view2.set(view3);
+                }
+                this.position += 4;
+                if (this.position > this.length) {
+                    this.length = this.position;
+                }
+            };
+
+            ByteArray.prototype.readUnsignedInt = function () {
+                if (this.position > this.length + 4) {
+                    throw "ByteArray out of bounds read. Position=" + this.position + ", Length=" + this.length;
+                }
+                if ((this.position & 3) == 0) {
+                    var view = new Uint32Array(this.arraybytes);
+                    var pa = this.position >> 2;
+                    this.position += 4;
+                    return view[pa];
+                } else {
+                    var view = new Uint32Array(this.unalignedarraybytestemp, 0, 1);
+                    var view2 = new Uint8Array(this.arraybytes, this.position, 4);
+                    var view3 = new Uint8Array(this.unalignedarraybytestemp, 0, 4);
+                    view3.set(view2);
+                    this.position += 4;
+                    return view[0];
+                }
+            };
+
+            ByteArray.prototype.writeFloat = function (b) {
+                this.ensureWriteableSpace(4);
+                if ((this.position & 3) == 0) {
+                    var view = new Float32Array(this.arraybytes);
+                    view[this.position >> 2] = b;
+                } else {
+                    var view = new Float32Array(this.unalignedarraybytestemp, 0, 1);
+                    view[0] = b;
+                    var view2 = new Uint8Array(this.arraybytes, this.position, 4);
+                    var view3 = new Uint8Array(this.unalignedarraybytestemp, 0, 4);
+                    view2.set(view3);
+                }
+                this.position += 4;
+                if (this.position > this.length) {
+                    this.length = this.position;
+                }
+            };
+
+            ByteArray.prototype.readFloat = function () {
+                if (this.position > this.length + 4) {
+                    throw "ByteArray out of bounds read. Positon=" + this.position + ", Length=" + this.length;
+                }
+                if ((this.position & 3) == 0) {
+                    var view = new Float32Array(this.arraybytes);
+                    var pa = this.position >> 2;
+                    this.position += 4;
+                    return view[pa];
+                } else {
+                    var view = new Float32Array(this.unalignedarraybytestemp, 0, 1);
+                    var view2 = new Uint8Array(this.arraybytes, this.position, 4);
+                    var view3 = new Uint8Array(this.unalignedarraybytestemp, 0, 4);
+                    view3.set(view2);
+                    this.position += 4;
+                    return view[0];
+                }
+            };
+            return ByteArray;
+        })(away.utils.ByteArrayBase);
+        utils.ByteArray = ByteArray;
+    })(away.utils || (away.utils = {}));
+    var utils = away.utils;
+})(away || (away = {}));
+///<reference path="../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (utils) {
+        var ByteArrayBuffer = (function (_super) {
+            __extends(ByteArrayBuffer, _super);
+            function ByteArrayBuffer() {
+                _super.call(this);
+                this._bytes = [];
+                this._mode = "Array";
+            }
+            ByteArrayBuffer.prototype.writeByte = function (b) {
+                var bi = ~~b;
+                this._bytes[this.position++] = bi;
+                if (this.position > this.length) {
+                    this.length = this.position;
+                }
+            };
+
+            ByteArrayBuffer.prototype.readByte = function () {
+                if (this.position >= this.length) {
+                    throw "ByteArray out of bounds read. Position=" + this.position + ", Length=" + this.length;
+                }
+                return this._bytes[this.position++];
+            };
+
+            ByteArrayBuffer.prototype.writeUnsignedByte = function (b) {
+                var bi = ~~b;
+                this._bytes[this.position++] = bi & 0xff;
+                if (this.position > this.length) {
+                    this.length = this.position;
+                }
+            };
+
+            ByteArrayBuffer.prototype.readUnsignedByte = function () {
+                if (this.position >= this.length) {
+                    throw "ByteArray out of bounds read. Position=" + this.position + ", Length=" + this.length;
+                }
+                return this._bytes[this.position++];
+            };
+
+            ByteArrayBuffer.prototype.writeUnsignedShort = function (b) {
+                var bi = ~~b;
+                this._bytes[this.position++] = bi & 0xff;
+                this._bytes[this.position++] = (bi >> 8) & 0xff;
+                if (this.position > this.length) {
+                    this.length = this.position;
+                }
+            };
+
+            ByteArrayBuffer.prototype.readUnsignedShort = function () {
+                if (this.position + 2 > this.length) {
+                    throw "ByteArray out of bounds read. Position=" + this.position + ", Length=" + this.length;
+                }
+                var r = this._bytes[this.position] | (this._bytes[this.position + 1] << 8);
+                this.position += 2;
+                return r;
+            };
+
+            ByteArrayBuffer.prototype.writeUnsignedInt = function (b) {
+                var bi = ~~b;
+                this._bytes[this.position++] = bi & 0xff;
+                this._bytes[this.position++] = (bi >>> 8) & 0xff;
+                this._bytes[this.position++] = (bi >>> 16) & 0xff;
+                this._bytes[this.position++] = (bi >>> 24) & 0xff;
+                if (this.position > this.length) {
+                    this.length = this.position;
+                }
+            };
+
+            ByteArrayBuffer.prototype.readUnsignedInt = function () {
+                if (this.position + 4 > this.length) {
+                    throw "ByteArray out of bounds read. Position=" + this.position + ", Length=" + this.length;
+                }
+                var r = this._bytes[this.position] | (this._bytes[this.position + 1] << 8) | (this._bytes[this.position + 2] << 16) | (this._bytes[this.position + 3] << 24);
+                this.position += 4;
+                return r >>> 0;
+            };
+
+            ByteArrayBuffer.prototype.writeFloat = function (b) {
+                // this is crazy slow and silly, but as a fallback...
+                this.writeUnsignedInt(this.toFloatBits(Number(b)));
+            };
+
+            ByteArrayBuffer.prototype.toFloatBits = function (x) {
+                // don't handle inf/nan yet
+                // special case zero
+                if (x == 0) {
+                    return 0;
+                }
+
+                // remove the sign, after this we only deal with positive numbers
+                var sign = 0;
+                if (x < 0) {
+                    x = -x;
+                    sign = 1;
+                } else {
+                    sign = 0;
+                }
+
+                // a float value is now defined as: x = (1+(mantissa*2^-23))*(2^(exponent-127))
+                var exponent = Math.log(x) / Math.log(2);
+                exponent = Math.floor(exponent);
+                x = x * Math.pow(2, 23 - exponent); // normalize to 24 bits
+                var mantissa = Math.floor(x) - 0x800000;
+                exponent = exponent + 127;
+                return ((sign << 31) >>> 0) | (exponent << 23) | mantissa;
+            };
+
+            ByteArrayBuffer.prototype.readFloat = function (b) {
+                return this.fromFloatBits(this.readUnsignedInt());
+            };
+
+            ByteArrayBuffer.prototype.fromFloatBits = function (x) {
+                if (x == 0) {
+                    return 0;
+                }
+                var exponent = (x >>> 23) & 0xff;
+                var mantissa = (x & 0x7fffff) | 0x800000;
+                var y = Math.pow(2, (exponent - 127) - 23) * mantissa;
+                if (x >>> 31 != 0) {
+                    y = -y;
+                }
+                return y;
+            };
+            return ByteArrayBuffer;
+        })(away.utils.ByteArrayBase);
+        utils.ByteArrayBuffer = ByteArrayBuffer;
+    })(away.utils || (away.utils = {}));
+    var utils = away.utils;
+})(away || (away = {}));
+var away;
+(function (away) {
+    (function (utils) {
+        var ColorUtils = (function () {
+            function ColorUtils() {
+            }
+            ColorUtils.float32ColorToARGB = function (float32Color) {
+                var a = (float32Color & 0xff000000) >>> 24;
+                var r = (float32Color & 0xff0000) >>> 16;
+                var g = (float32Color & 0xff00) >>> 8;
+                var b = float32Color & 0xff;
+                var result = [a, r, g, b];
+
+                return result;
+            };
+
+            ColorUtils.componentToHex = function (c) {
+                var hex = c.toString(16);
+                return hex.length == 1 ? "0" + hex : hex;
+            };
+
+            ColorUtils.RGBToHexString = function (argb) {
+                return "#" + ColorUtils.componentToHex(argb[1]) + ColorUtils.componentToHex(argb[2]) + ColorUtils.componentToHex(argb[3]);
+            };
+
+            ColorUtils.ARGBToHexString = function (argb) {
+                return "#" + ColorUtils.componentToHex(argb[0]) + ColorUtils.componentToHex(argb[1]) + ColorUtils.componentToHex(argb[2]) + ColorUtils.componentToHex(argb[3]);
+            };
+            return ColorUtils;
+        })();
+        utils.ColorUtils = ColorUtils;
+    })(away.utils || (away.utils = {}));
+    var utils = away.utils;
+})(away || (away = {}));
+///<reference path="../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (utils) {
+        /**
+        * Helper class for casting assets to usable objects
+        */
+        var Cast = (function () {
+            function Cast() {
+            }
+            Cast.string = function (data) {
+                if (typeof (data) == 'function')
+                    data = new data;
+
+                if (typeof (data) == 'string')
+                    return data;
+
+                return data;
+            };
+
+            Cast.byteArray = function (data) {
+                if (typeof (data) == 'function')
+                    data = new data;
+
+                if (data instanceof away.utils.ByteArray)
+                    return data;
+
+                return data;
+            };
+
+            //        public static xml(data:any):XML
+            //        {
+            //            if (typeof(data) == 'function')
+            //                data = new data;
+            //
+            //            if (data is XML)
+            //                return data;
+            //
+            //            return XML(data);
+            //        }
+            Cast.isHex = function (str) {
+                var length = str.length;
+                for (var i = 0; i < length; ++i) {
+                    if (this._hexChars.indexOf(str.charAt(i)) == -1)
+                        return false;
+                }
+
+                return true;
+            };
+
+            Cast.tryColor = function (data) {
+                if (typeof (data) == 'number')
+                    return Math.floor(data);
+
+                if (typeof (data) == 'string') {
+                    if (data == "random")
+                        return Math.floor(Math.random() * 0x1000000);
+
+                    if (this._colorNames == null) {
+                        this._colorNames = new Object();
+                        this._colorNames["steelblue"] = 0x4682B4;
+                        this._colorNames["royalblue"] = 0x041690;
+                        this._colorNames["cornflowerblue"] = 0x6495ED;
+                        this._colorNames["lightsteelblue"] = 0xB0C4DE;
+                        this._colorNames["mediumslateblue"] = 0x7B68EE;
+                        this._colorNames["slateblue"] = 0x6A5ACD;
+                        this._colorNames["darkslateblue"] = 0x483D8B;
+                        this._colorNames["midnightblue"] = 0x191970;
+                        this._colorNames["navy"] = 0x000080;
+                        this._colorNames["darkblue"] = 0x00008B;
+                        this._colorNames["mediumblue"] = 0x0000CD;
+                        this._colorNames["blue"] = 0x0000FF;
+                        this._colorNames["dodgerblue"] = 0x1E90FF;
+                        this._colorNames["deepskyblue"] = 0x00BFFF;
+                        this._colorNames["lightskyblue"] = 0x87CEFA;
+                        this._colorNames["skyblue"] = 0x87CEEB;
+                        this._colorNames["lightblue"] = 0xADD8E6;
+                        this._colorNames["powderblue"] = 0xB0E0E6;
+                        this._colorNames["azure"] = 0xF0FFFF;
+                        this._colorNames["lightcyan"] = 0xE0FFFF;
+                        this._colorNames["paleturquoise"] = 0xAFEEEE;
+                        this._colorNames["mediumturquoise"] = 0x48D1CC;
+                        this._colorNames["lightseagreen"] = 0x20B2AA;
+                        this._colorNames["darkcyan"] = 0x008B8B;
+                        this._colorNames["teal"] = 0x008080;
+                        this._colorNames["cadetblue"] = 0x5F9EA0;
+                        this._colorNames["darkturquoise"] = 0x00CED1;
+                        this._colorNames["aqua"] = 0x00FFFF;
+                        this._colorNames["cyan"] = 0x00FFFF;
+                        this._colorNames["turquoise"] = 0x40E0D0;
+                        this._colorNames["aquamarine"] = 0x7FFFD4;
+                        this._colorNames["mediumaquamarine"] = 0x66CDAA;
+                        this._colorNames["darkseagreen"] = 0x8FBC8F;
+                        this._colorNames["mediumseagreen"] = 0x3CB371;
+                        this._colorNames["seagreen"] = 0x2E8B57;
+                        this._colorNames["darkgreen"] = 0x006400;
+                        this._colorNames["green"] = 0x008000;
+                        this._colorNames["forestgreen"] = 0x228B22;
+                        this._colorNames["limegreen"] = 0x32CD32;
+                        this._colorNames["lime"] = 0x00FF00;
+                        this._colorNames["chartreuse"] = 0x7FFF00;
+                        this._colorNames["lawngreen"] = 0x7CFC00;
+                        this._colorNames["greenyellow"] = 0xADFF2F;
+                        this._colorNames["yellowgreen"] = 0x9ACD32;
+                        this._colorNames["palegreen"] = 0x98FB98;
+                        this._colorNames["lightgreen"] = 0x90EE90;
+                        this._colorNames["springgreen"] = 0x00FF7F;
+                        this._colorNames["mediumspringgreen"] = 0x00FA9A;
+                        this._colorNames["darkolivegreen"] = 0x556B2F;
+                        this._colorNames["olivedrab"] = 0x6B8E23;
+                        this._colorNames["olive"] = 0x808000;
+                        this._colorNames["darkkhaki"] = 0xBDB76B;
+                        this._colorNames["darkgoldenrod"] = 0xB8860B;
+                        this._colorNames["goldenrod"] = 0xDAA520;
+                        this._colorNames["gold"] = 0xFFD700;
+                        this._colorNames["yellow"] = 0xFFFF00;
+                        this._colorNames["khaki"] = 0xF0E68C;
+                        this._colorNames["palegoldenrod"] = 0xEEE8AA;
+                        this._colorNames["blanchedalmond"] = 0xFFEBCD;
+                        this._colorNames["moccasin"] = 0xFFE4B5;
+                        this._colorNames["wheat"] = 0xF5DEB3;
+                        this._colorNames["navajowhite"] = 0xFFDEAD;
+                        this._colorNames["burlywood"] = 0xDEB887;
+                        this._colorNames["tan"] = 0xD2B48C;
+                        this._colorNames["rosybrown"] = 0xBC8F8F;
+                        this._colorNames["sienna"] = 0xA0522D;
+                        this._colorNames["saddlebrown"] = 0x8B4513;
+                        this._colorNames["chocolate"] = 0xD2691E;
+                        this._colorNames["peru"] = 0xCD853F;
+                        this._colorNames["sandybrown"] = 0xF4A460;
+                        this._colorNames["darkred"] = 0x8B0000;
+                        this._colorNames["maroon"] = 0x800000;
+                        this._colorNames["brown"] = 0xA52A2A;
+                        this._colorNames["firebrick"] = 0xB22222;
+                        this._colorNames["indianred"] = 0xCD5C5C;
+                        this._colorNames["lightcoral"] = 0xF08080;
+                        this._colorNames["salmon"] = 0xFA8072;
+                        this._colorNames["darksalmon"] = 0xE9967A;
+                        this._colorNames["lightsalmon"] = 0xFFA07A;
+                        this._colorNames["coral"] = 0xFF7F50;
+                        this._colorNames["tomato"] = 0xFF6347;
+                        this._colorNames["darkorange"] = 0xFF8C00;
+                        this._colorNames["orange"] = 0xFFA500;
+                        this._colorNames["orangered"] = 0xFF4500;
+                        this._colorNames["crimson"] = 0xDC143C;
+                        this._colorNames["red"] = 0xFF0000;
+                        this._colorNames["deeppink"] = 0xFF1493;
+                        this._colorNames["fuchsia"] = 0xFF00FF;
+                        this._colorNames["magenta"] = 0xFF00FF;
+                        this._colorNames["hotpink"] = 0xFF69B4;
+                        this._colorNames["lightpink"] = 0xFFB6C1;
+                        this._colorNames["pink"] = 0xFFC0CB;
+                        this._colorNames["palevioletred"] = 0xDB7093;
+                        this._colorNames["mediumvioletred"] = 0xC71585;
+                        this._colorNames["purple"] = 0x800080;
+                        this._colorNames["darkmagenta"] = 0x8B008B;
+                        this._colorNames["mediumpurple"] = 0x9370DB;
+                        this._colorNames["blueviolet"] = 0x8A2BE2;
+                        this._colorNames["indigo"] = 0x4B0082;
+                        this._colorNames["darkviolet"] = 0x9400D3;
+                        this._colorNames["darkorchid"] = 0x9932CC;
+                        this._colorNames["mediumorchid"] = 0xBA55D3;
+                        this._colorNames["orchid"] = 0xDA70D6;
+                        this._colorNames["violet"] = 0xEE82EE;
+                        this._colorNames["plum"] = 0xDDA0DD;
+                        this._colorNames["thistle"] = 0xD8BFD8;
+                        this._colorNames["lavender"] = 0xE6E6FA;
+                        this._colorNames["ghostwhite"] = 0xF8F8FF;
+                        this._colorNames["aliceblue"] = 0xF0F8FF;
+                        this._colorNames["mintcream"] = 0xF5FFFA;
+                        this._colorNames["honeydew"] = 0xF0FFF0;
+                        this._colorNames["lightgoldenrodyellow"] = 0xFAFAD2;
+                        this._colorNames["lemonchiffon"] = 0xFFFACD;
+                        this._colorNames["cornsilk"] = 0xFFF8DC;
+                        this._colorNames["lightyellow"] = 0xFFFFE0;
+                        this._colorNames["ivory"] = 0xFFFFF0;
+                        this._colorNames["floralwhite"] = 0xFFFAF0;
+                        this._colorNames["linen"] = 0xFAF0E6;
+                        this._colorNames["oldlace"] = 0xFDF5E6;
+                        this._colorNames["antiquewhite"] = 0xFAEBD7;
+                        this._colorNames["bisque"] = 0xFFE4C4;
+                        this._colorNames["peachpuff"] = 0xFFDAB9;
+                        this._colorNames["papayawhip"] = 0xFFEFD5;
+                        this._colorNames["beige"] = 0xF5F5DC;
+                        this._colorNames["seashell"] = 0xFFF5EE;
+                        this._colorNames["lavenderblush"] = 0xFFF0F5;
+                        this._colorNames["mistyrose"] = 0xFFE4E1;
+                        this._colorNames["snow"] = 0xFFFAFA;
+                        this._colorNames["white"] = 0xFFFFFF;
+                        this._colorNames["whitesmoke"] = 0xF5F5F5;
+                        this._colorNames["gainsboro"] = 0xDCDCDC;
+                        this._colorNames["lightgrey"] = 0xD3D3D3;
+                        this._colorNames["silver"] = 0xC0C0C0;
+                        this._colorNames["darkgrey"] = 0xA9A9A9;
+                        this._colorNames["grey"] = 0x808080;
+                        this._colorNames["lightslategrey"] = 0x778899;
+                        this._colorNames["slategrey"] = 0x708090;
+                        this._colorNames["dimgrey"] = 0x696969;
+                        this._colorNames["darkslategrey"] = 0x2F4F4F;
+                        this._colorNames["black"] = 0x000000;
+                        this._colorNames["transparent"] = 0xFF000000;
+                    }
+
+                    if (this._colorNames[data] != null)
+                        return this._colorNames[data];
+
+                    if ((data.length == 6) && this.isHex(data))
+                        return parseInt("0x" + data);
+                }
+
+                return null;
+            };
+
+            Cast.color = function (data) {
+                var result = this.tryColor(data);
+
+                if (result == null)
+                    throw new away.errors.CastError("Can't cast to color: " + data);
+
+                return result;
+            };
+
+            Cast.tryClass = function (name) {
+                if (this._notClasses[name])
+                    return name;
+
+                var result = this._classes[name];
+
+                if (result != null)
+                    return result;
+
+                try  {
+                    result = window[name];
+                    this._classes[name] = result;
+                    return result;
+                } catch (e) {
+                }
+
+                this._notClasses[name] = true;
+
+                return name;
+            };
+
+            Cast.bitmapData = function (data) {
+                if (data == null)
+                    return null;
+
+                if (typeof (data) == 'string')
+                    data = this.tryClass(data);
+
+                if (typeof (data) == 'function') {
+                    try  {
+                        data = new data();
+                    } catch (e) {
+                        data = new data(0, 0);
+                    }
+                }
+
+                if (data instanceof away.base.BitmapData)
+                    return data;
+
+                if (data instanceof away.textures.ImageTexture)
+                    data = data.htmlImageElement;
+
+                if (data instanceof HTMLImageElement) {
+                    var imageElement = data;
+                    var bitmapData = new away.base.BitmapData(imageElement.width, imageElement.height, true, 0x0);
+                    bitmapData.draw(imageElement);
+                    return bitmapData;
+                }
+
+                throw new away.errors.CastError("Can't cast to BitmapData: " + data);
+            };
+
+            Cast.bitmapTexture = function (data) {
+                if (data == null)
+                    return null;
+
+                if (typeof (data) == 'string')
+                    data = this.tryClass(data);
+
+                if (typeof (data) == 'function') {
+                    try  {
+                        data = new data();
+                    } catch (e) {
+                        data = new data(0, 0);
+                    }
+                }
+
+                if (data instanceof away.textures.BitmapTexture)
+                    return data;
+
+                try  {
+                    var bmd = Cast.bitmapData(data);
+                    return new away.textures.BitmapTexture(bmd);
+                } catch (e) {
+                }
+
+                throw new away.errors.CastError("Can't cast to BitmapTexture: " + data);
+            };
+            Cast._hexChars = "0123456789abcdefABCDEF";
+
+            Cast._notClasses = new Object();
+            Cast._classes = new Object();
+            return Cast;
+        })();
+        utils.Cast = Cast;
+    })(away.utils || (away.utils = {}));
+    var utils = away.utils;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (utils) {
+        var CSS = (function () {
+            function CSS() {
+            }
+            CSS.setCanvasSize = function (canvas, width, height) {
+                canvas.style.width = width + "px";
+                canvas.style.height = height + "px";
+                canvas.width = width;
+                canvas.height = height;
+            };
+
+            CSS.setCanvasWidth = function (canvas, width) {
+                canvas.style.width = width + "px";
+                canvas.width = width;
+            };
+
+            CSS.setCanvasHeight = function (canvas, height) {
+                canvas.style.height = height + "px";
+                canvas.height = height;
+            };
+
+            CSS.setCanvasX = function (canvas, x) {
+                canvas.style.position = 'absolute';
+                canvas.style.left = x + "px";
+            };
+
+            CSS.setCanvasY = function (canvas, y) {
+                canvas.style.position = 'absolute';
+                canvas.style.top = y + "px";
+            };
+
+            CSS.getCanvasVisibility = function (canvas) {
+                return canvas.style.visibility == 'visible';
+            };
+
+            CSS.setCanvasVisibility = function (canvas, visible) {
+                if (visible) {
+                    canvas.style.visibility = 'visible';
+                } else {
+                    canvas.style.visibility = 'hidden';
+                }
+            };
+
+            CSS.setCanvasAlpha = function (canvas, alpha) {
+                var context = canvas.getContext("2d");
+                context.globalAlpha = alpha;
+            };
+
+            CSS.setCanvasPosition = function (canvas, x, y, absolute) {
+                if (typeof absolute === "undefined") { absolute = false; }
+                if (absolute) {
+                    canvas.style.position = "absolute";
+                } else {
+                    canvas.style.position = "relative";
+                }
+
+                canvas.style.left = x + "px";
+                canvas.style.top = y + "px";
+            };
+            return CSS;
+        })();
+        utils.CSS = CSS;
+    })(away.utils || (away.utils = {}));
+    var utils = away.utils;
+})(away || (away = {}));
+///<reference path="../_definitions.ts"/>
+var away;
+(function (away) {
+    var Debug = (function () {
+        function Debug() {
+        }
+        Debug.breakpoint = function () {
+            away.Debug['break']();
+        };
+
+        Debug.throwPIROnKeyWordOnly = function (str, enable) {
+            if (typeof enable === "undefined") { enable = true; }
+            if (!enable) {
+                away.Debug.keyword = null;
+            } else {
+                away.Debug.keyword = str;
+            }
+        };
+
+        Debug.throwPIR = function (clss, fnc, msg) {
+            Debug.logPIR('PartialImplementationError ' + clss, fnc, msg);
+
+            if (Debug.THROW_ERRORS) {
+                if (away.Debug.keyword) {
+                    var e = clss + fnc + msg;
+
+                    if (e.indexOf(away.Debug.keyword) == -1) {
+                        return;
+                    }
+                }
+
+                throw new away.errors.PartialImplementationError(clss + '.' + fnc + ': ' + msg);
+            }
+        };
+
+        Debug.logPIR = function (clss, fnc, msg) {
+            if (typeof msg === "undefined") { msg = ''; }
+            if (Debug.LOG_PI_ERRORS) {
+                console.log(clss + '.' + fnc + ': ' + msg);
+            }
+        };
+
+        Debug.log = function () {
+            var args = [];
+            for (var _i = 0; _i < (arguments.length - 0); _i++) {
+                args[_i] = arguments[_i + 0];
+            }
+            if (Debug.ENABLE_LOG) {
+                console.log.apply(console, arguments);
+            }
+        };
+        Debug.THROW_ERRORS = true;
+        Debug.ENABLE_LOG = true;
+        Debug.LOG_PI_ERRORS = true;
+
+        Debug.keyword = null;
+        return Debug;
+    })();
+    away.Debug = Debug;
+})(away || (away = {}));
+///<reference path="../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (utils) {
+        var Delegate = (function () {
+            function Delegate(func) {
+                if (typeof func === "undefined") { func = null; }
+                this._func = func;
+            }
+            /**
+            Creates a functions wrapper for the original function so that it runs
+            in the provided context.
+            @parameter obj Context in which to run the function.
+            @paramater func Function to run.
+            */
+            Delegate.create = function (obj, func) {
+                var f = function () {
+                    return func.apply(obj, arguments);
+                };
+
+                return f;
+            };
+
+            Delegate.prototype.createDelegate = function (obj) {
+                return Delegate.create(obj, this._func);
+            };
+            return Delegate;
+        })();
+        utils.Delegate = Delegate;
+    })(away.utils || (away.utils = {}));
+    var utils = away.utils;
+})(away || (away = {}));
+///<reference path="../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (utils) {
+        //[native(cls="TimerClass", gc="exact", instance="TimerObject", methods="auto")]
+        //[Event(name="timerComplete", type="flash.events.TimerEvent")]
+        //[Event(name="timer", type="flash.events.TimerEvent")]
+        function getTimer() {
+            // number milliseconds of 1970/01/01
+            // this different to AS3 implementation which gets the number of milliseconds
+            // since instance of Flash player was initialised
+            return Date.now();
+        }
+        utils.getTimer = getTimer;
+    })(away.utils || (away.utils = {}));
+    var utils = away.utils;
+})(away || (away = {}));
+///<reference path="../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (utils) {
+        var RequestAnimationFrame = (function () {
+            function RequestAnimationFrame(callback, callbackContext) {
+                var _this = this;
+                this._active = false;
+                this._argsArray = new Array();
+                this._getTimer = away.utils.getTimer;
+
+                this.setCallback(callback, callbackContext);
+
+                this._rafUpdateFunction = function () {
+                    if (_this._active) {
+                        _this._tick();
+                    }
+                };
+
+                this._argsArray.push(this._dt);
+            }
+            // Public
+            /**
+            *
+            * @param callback
+            * @param callbackContext
+            */
+            RequestAnimationFrame.prototype.setCallback = function (callback, callbackContext) {
+                this._callback = callback;
+                this._callbackContext = callbackContext;
+            };
+
+            /**
+            *
+            */
+            RequestAnimationFrame.prototype.start = function () {
+                this._prevTime = this._getTimer();
+                this._active = true;
+
+                if (window['mozRequestAnimationFrame']) {
+                    window.requestAnimationFrame = window['mozRequestAnimationFrame'];
+                } else if (window['webkitRequestAnimationFrame']) {
+                    window.requestAnimationFrame = window['webkitRequestAnimationFrame'];
+                } else if (window['oRequestAnimationFrame']) {
+                    window.requestAnimationFrame = window['oRequestAnimationFrame'];
+                }
+
+                if (window.requestAnimationFrame) {
+                    window.requestAnimationFrame(this._rafUpdateFunction);
+                }
+            };
+
+            /**
+            *
+            */
+            RequestAnimationFrame.prototype.stop = function () {
+                this._active = false;
+            };
+
+            Object.defineProperty(RequestAnimationFrame.prototype, "active", {
+                // Get / Set
+                /**
+                *
+                * @returns {boolean}
+                */
+                get: function () {
+                    return this._active;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            // Private
+            /**
+            *
+            * @private
+            */
+            RequestAnimationFrame.prototype._tick = function () {
+                this._currentTime = this._getTimer();
+                this._dt = this._currentTime - this._prevTime;
+                this._argsArray[0] = this._dt;
+                this._callback.apply(this._callbackContext, this._argsArray);
+
+                window.requestAnimationFrame(this._rafUpdateFunction);
+
+                this._prevTime = this._currentTime;
+            };
+            return RequestAnimationFrame;
+        })();
+        utils.RequestAnimationFrame = RequestAnimationFrame;
+    })(away.utils || (away.utils = {}));
+    var utils = away.utils;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    (function (utils) {
+        //import flash.base.BitmapData;
+        var TextureUtils = (function () {
+            function TextureUtils() {
+            }
+            TextureUtils.isBitmapDataValid = function (bitmapData) {
+                if (bitmapData == null) {
+                    return true;
+                }
+
+                return TextureUtils.isDimensionValid(bitmapData.width) && TextureUtils.isDimensionValid(bitmapData.height);
+            };
+
+            TextureUtils.isHTMLImageElementValid = function (image) {
+                if (image == null) {
+                    return true;
+                }
+
+                return TextureUtils.isDimensionValid(image.width) && TextureUtils.isDimensionValid(image.height);
+            };
+
+            TextureUtils.isDimensionValid = function (d) {
+                return d >= 1 && d <= TextureUtils.MAX_SIZE && TextureUtils.isPowerOfTwo(d);
+            };
+
+            TextureUtils.isPowerOfTwo = function (value) {
+                return value ? ((value & -value) == value) : false;
+            };
+
+            TextureUtils.getBestPowerOf2 = function (value) {
+                var p = 1;
+
+                while (p < value)
+                    p <<= 1;
+
+                if (p > TextureUtils.MAX_SIZE)
+                    p = TextureUtils.MAX_SIZE;
+
+                return p;
+            };
+            TextureUtils.MAX_SIZE = 2048;
+            return TextureUtils;
+        })();
+        utils.TextureUtils = TextureUtils;
+    })(away.utils || (away.utils = {}));
+    var utils = away.utils;
+})(away || (away = {}));
+///<reference path="../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (utils) {
+        //[native(cls="TimerClass", gc="exact", instance="TimerObject", methods="auto")]
+        //[Event(name="timerComplete", type="flash.events.TimerEvent")]
+        //[Event(name="timer", type="flash.events.TimerEvent")]
+        var Timer = (function (_super) {
+            __extends(Timer, _super);
+            function Timer(delay, repeatCount) {
+                if (typeof repeatCount === "undefined") { repeatCount = 0; }
+                _super.call(this);
+                this._repeatCount = 0;
+                this._currentCount = 0;
+                this._running = false;
+
+                this._delay = delay;
+                this._repeatCount = repeatCount;
+
+                if (isNaN(delay) || delay < 0) {
+                    throw new away.errors.Error("Delay is negative or not a number");
+                }
+            }
+            Object.defineProperty(Timer.prototype, "currentCount", {
+                get: function () {
+                    return this._currentCount;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Timer.prototype, "delay", {
+                get: function () {
+                    return this._delay;
+                },
+                set: function (value) {
+                    this._delay = value;
+
+                    if (this._running) {
+                        this.stop();
+                        this.start();
+                    }
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Timer.prototype, "repeatCount", {
+                get: function () {
+                    return this._repeatCount;
+                },
+                set: function (value) {
+                    this._repeatCount = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Timer.prototype.reset = function () {
+                if (this._running) {
+                    this.stop();
+                }
+
+                this._currentCount = 0;
+            };
+
+            Object.defineProperty(Timer.prototype, "running", {
+                get: function () {
+                    return this._running;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Timer.prototype.start = function () {
+                var _this = this;
+                this._running = true;
+                clearInterval(this._iid);
+                this._iid = setInterval(function () {
+                    return _this.tick();
+                }, this._delay);
+            };
+
+            Timer.prototype.stop = function () {
+                this._running = false;
+                clearInterval(this._iid);
+            };
+
+            Timer.prototype.tick = function () {
+                this._currentCount++;
+
+                if ((this._repeatCount > 0) && this._currentCount >= this._repeatCount) {
+                    this.stop();
+                    this.dispatchEvent(new away.events.TimerEvent(away.events.TimerEvent.TIMER));
+                    this.dispatchEvent(new away.events.TimerEvent(away.events.TimerEvent.TIMER_COMPLETE));
+                } else {
+                    this.dispatchEvent(new away.events.TimerEvent(away.events.TimerEvent.TIMER));
+                }
+            };
+            return Timer;
+        })(away.events.EventDispatcher);
+        utils.Timer = Timer;
+    })(away.utils || (away.utils = {}));
+    var utils = away.utils;
 })(away || (away = {}));
 ///<reference path="../_definitions.ts"/>
 var away;
@@ -831,9 +2334,6 @@ var away;
                     case away.library.AssetType.SKELETON_POSE:
                         type_name = 'skelpose';
                         break;
-                    case away.library.AssetType.ENTITY:
-                        type_name = 'entity';
-                        break;
                     case away.library.AssetType.SKYBOX:
                         type_name = 'skybox';
                         break;
@@ -1050,12 +2550,12 @@ var away;
                     return away.parsers.ParserBase.MORE_TO_PARSE;
                 } else if (this._htmlImageElement) {
                     if (away.utils.TextureUtils.isHTMLImageElementValid(this._htmlImageElement)) {
-                        asset = new away.textures.HTMLImageElementTexture(this._htmlImageElement, false);
+                        asset = new away.textures.ImageTexture(this._htmlImageElement, false);
                         this._pFinalizeAsset(asset, this._iFileName);
                     }
                 } else if (this.data instanceof HTMLImageElement) {
                     if (away.utils.TextureUtils.isHTMLImageElementValid(this.data)) {
-                        asset = new away.textures.HTMLImageElementTexture(this.data, false);
+                        asset = new away.textures.ImageTexture(this.data, false);
                         this._pFinalizeAsset(asset, this._iFileName);
                     } else {
                         sizeError = true;
@@ -1066,7 +2566,7 @@ var away;
                     var htmlImageElement = away.parsers.ParserUtils.byteArrayToImage(this.data);
 
                     if (away.utils.TextureUtils.isHTMLImageElementValid(htmlImageElement)) {
-                        asset = new away.textures.HTMLImageElementTexture(htmlImageElement, false);
+                        asset = new away.textures.ImageTexture(htmlImageElement, false);
                         this._pFinalizeAsset(asset, this._iFileName);
                     } else {
                         sizeError = true;
@@ -1166,7 +2666,7 @@ var away;
             */
             CubeTextureParser.prototype._pProceedParsing = function () {
                 if (this._imgDependencyDictionary != null) {
-                    var asset = new away.textures.HTMLImageElementCubeTexture(this._getHTMLImageElement(CubeTextureParser.posX), this._getHTMLImageElement(CubeTextureParser.negX), this._getHTMLImageElement(CubeTextureParser.posY), this._getHTMLImageElement(CubeTextureParser.negY), this._getHTMLImageElement(CubeTextureParser.posZ), this._getHTMLImageElement(CubeTextureParser.negZ));
+                    var asset = new away.textures.ImageCubeTexture(this._getHTMLImageElement(CubeTextureParser.posX), this._getHTMLImageElement(CubeTextureParser.negX), this._getHTMLImageElement(CubeTextureParser.posY), this._getHTMLImageElement(CubeTextureParser.negY), this._getHTMLImageElement(CubeTextureParser.posZ), this._getHTMLImageElement(CubeTextureParser.negZ));
 
                     //clear dictionary
                     this._imgDependencyDictionary = null;
@@ -1313,7 +2813,7 @@ var away;
 
                 if (this.data instanceof HTMLImageElement) {
                     if (away.utils.TextureUtils.isHTMLImageElementValid(this.data)) {
-                        asset = new away.textures.HTMLImageElementTexture(this.data, false);
+                        asset = new away.textures.ImageTexture(this.data, false);
                         this._pFinalizeAsset(asset, this._iFileName);
                     } else {
                         sizeError = true;
@@ -1324,7 +2824,7 @@ var away;
                     var htmlImageElement = away.parsers.ParserUtils.byteArrayToImage(this.data);
 
                     if (away.utils.TextureUtils.isHTMLImageElementValid(htmlImageElement)) {
-                        asset = new away.textures.HTMLImageElementTexture(htmlImageElement, false);
+                        asset = new away.textures.ImageTexture(htmlImageElement, false);
                         this._pFinalizeAsset(asset, this._iFileName);
                     } else {
                         sizeError = true;
@@ -1739,6 +3239,8 @@ var away;
                 if (typeof name === "undefined") { name = null; }
                 _super.call(this);
 
+                this._id = (NamedAssetBase.ID_COUNT++).toString();
+
                 if (name == null)
                     name = 'null';
 
@@ -1747,6 +3249,17 @@ var away;
 
                 this.updateFullPath();
             }
+            Object.defineProperty(NamedAssetBase.prototype, "assetType", {
+                /**
+                *
+                */
+                get: function () {
+                    throw new away.errors.AbstractMethodError();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
             Object.defineProperty(NamedAssetBase.prototype, "originalName", {
                 /**
                 * The original name used for this asset in the resource (e.g. file) in which
@@ -1761,28 +3274,15 @@ var away;
             });
 
             Object.defineProperty(NamedAssetBase.prototype, "id", {
+                /**
+                * A unique id for the asset, used to identify assets in an associative array
+                */
                 get: function () {
                     return this._id;
                 },
-                set: function (newID) {
-                    this._id = newID;
-                },
                 enumerable: true,
                 configurable: true
             });
-
-
-            Object.defineProperty(NamedAssetBase.prototype, "assetType", {
-                get: function () {
-                    return this._assetType;
-                },
-                set: function (type) {
-                    this._assetType = type;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
 
             Object.defineProperty(NamedAssetBase.prototype, "name", {
                 get: function () {
@@ -1848,6 +3348,8 @@ var away;
             NamedAssetBase.prototype.updateFullPath = function () {
                 this._full_path = [this._namespace, this._name];
             };
+            NamedAssetBase.ID_COUNT = 0;
+
             NamedAssetBase.DEFAULT_NAMESPACE = 'default';
             return NamedAssetBase;
         })(away.events.EventDispatcher);
@@ -1861,28 +3363,27 @@ var away;
         var AssetType = (function () {
             function AssetType() {
             }
-            AssetType.ENTITY = 'entity';
-            AssetType.SKYBOX = 'skybox';
-            AssetType.CAMERA = 'camera';
-            AssetType.SEGMENT_SET = 'segmentSet';
-            AssetType.MESH = 'mesh';
-            AssetType.GEOMETRY = 'geometry';
-            AssetType.SKELETON = 'skeleton';
-            AssetType.SKELETON_POSE = 'skeletonPose';
-            AssetType.CONTAINER = 'container';
-            AssetType.BITMAP = 'bitmap';
-            AssetType.TEXTURE = 'texture';
-            AssetType.TEXTURE_PROJECTOR = 'textureProjector';
-            AssetType.MATERIAL = 'material';
+            AssetType.ANIMATION_NODE = 'animationNode';
             AssetType.ANIMATION_SET = 'animationSet';
             AssetType.ANIMATION_STATE = 'animationState';
-            AssetType.ANIMATION_NODE = 'animationNode';
             AssetType.ANIMATOR = 'animator';
-            AssetType.STATE_TRANSITION = 'stateTransition';
+            AssetType.BILLBOARD = 'billboard';
+            AssetType.CAMERA = 'camera';
+            AssetType.CONTAINER = 'container';
+            AssetType.EFFECTS_METHOD = 'effectsMethod';
+            AssetType.GEOMETRY = 'geometry';
             AssetType.LIGHT = 'light';
             AssetType.LIGHT_PICKER = 'lightPicker';
+            AssetType.MATERIAL = 'material';
+            AssetType.MESH = 'mesh';
+            AssetType.SEGMENT_SET = 'segmentSet';
             AssetType.SHADOW_MAP_METHOD = 'shadowMapMethod';
-            AssetType.EFFECTS_METHOD = 'effectsMethod';
+            AssetType.SKELETON = 'skeleton';
+            AssetType.SKELETON_POSE = 'skeletonPose';
+            AssetType.SKYBOX = 'skybox';
+            AssetType.STATE_TRANSITION = 'stateTransition';
+            AssetType.TEXTURE = 'texture';
+            AssetType.TEXTURE_PROJECTOR = 'textureProjector';
             return AssetType;
         })();
         library.AssetType = AssetType;
@@ -3019,6 +4520,96 @@ var AssetLibrarySingletonEnforcer = (function () {
 ///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
+    /**
+    * A class that provides constant values for visual blend mode effects. These
+    * constants are used in the following:
+    * <ul>
+    *   <li> The <code>blendMode</code> property of the
+    * flash.display.DisplayObject class.</li>
+    *   <li> The <code>blendMode</code> parameter of the <code>draw()</code>
+    * method of the flash.display.BitmapData class</li>
+    * </ul>
+    */
+    (function (base) {
+        var BlendMode = (function () {
+            function BlendMode() {
+            }
+            BlendMode.ADD = "add";
+
+            BlendMode.ALPHA = "alpha";
+
+            BlendMode.DARKEN = "darken";
+
+            BlendMode.DIFFERENCE = "difference";
+
+            BlendMode.ERASE = "erase";
+
+            BlendMode.HARDLIGHT = "hardlight";
+
+            BlendMode.INVERT = "invert";
+
+            BlendMode.LAYER = "layer";
+
+            BlendMode.LIGHTEN = "lighten";
+
+            BlendMode.MULTIPLY = "multiply";
+
+            BlendMode.NORMAL = "normal";
+
+            BlendMode.OVERLAY = "overlay";
+
+            BlendMode.SCREEN = "screen";
+
+            BlendMode.SHADER = "shader";
+
+            BlendMode.SUBTRACT = "subtract";
+            return BlendMode;
+        })();
+        base.BlendMode = BlendMode;
+    })(away.base || (away.base = {}));
+    var base = away.base;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    */
+    (function (base) {
+        var AlignmentMode = (function () {
+            function AlignmentMode() {
+            }
+            AlignmentMode.REGISTRATION_POINT = "registrationPoint";
+
+            AlignmentMode.PIVOT_POINT = "pivotPoint";
+            return AlignmentMode;
+        })();
+        base.AlignmentMode = AlignmentMode;
+    })(away.base || (away.base = {}));
+    var base = away.base;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    */
+    (function (base) {
+        var OrientationMode = (function () {
+            function OrientationMode() {
+            }
+            OrientationMode.DEFAULT = "default";
+
+            OrientationMode.CAMERA_PLANE = "cameraPlane";
+
+            OrientationMode.CAMERA_POSITION = "cameraPosition";
+            return OrientationMode;
+        })();
+        base.OrientationMode = OrientationMode;
+    })(away.base || (away.base = {}));
+    var base = away.base;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
     (function (base) {
         /**
         *
@@ -3526,31 +5117,3387 @@ var away;
     })(away.base || (away.base = {}));
     var base = away.base;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
+    /**
+    * The CapsStyle class is an enumeration of constant values that specify the
+    * caps style to use in drawing lines. The constants are provided for use as
+    * values in the <code>caps</code> parameter of the
+    * <code>flash.display.Graphics.lineStyle()</code> method. You can specify the
+    * following three types of caps:
+    */
     (function (base) {
-        var BlendMode = (function () {
-            function BlendMode() {
+        var CapsStyle = (function () {
+            function CapsStyle() {
             }
-            BlendMode.ADD = "add";
-            BlendMode.ALPHA = "alpha";
-            BlendMode.DARKEN = "darken";
-            BlendMode.DIFFERENCE = "difference";
-            BlendMode.ERASE = "erase";
-            BlendMode.HARDLIGHT = "hardlight";
-            BlendMode.INVERT = "invert";
-            BlendMode.LAYER = "layer";
-            BlendMode.LIGHTEN = "lighten";
-            BlendMode.MULTIPLY = "multiply";
-            BlendMode.NORMAL = "normal";
-            BlendMode.OVERLAY = "overlay";
-            BlendMode.SCREEN = "screen";
-            BlendMode.SHADER = "shader";
-            BlendMode.SUBTRACT = "subtract";
-            return BlendMode;
+            CapsStyle.ROUND = "round";
+
+            CapsStyle.NONE = "none";
+
+            CapsStyle.SQUARE = "square";
+            return CapsStyle;
         })();
-        base.BlendMode = BlendMode;
+        base.CapsStyle = CapsStyle;
+    })(away.base || (away.base = {}));
+    var base = away.base;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * The DisplayObject class is the base class for all objects that can be
+    * placed on the display list. The display list manages all objects displayed
+    * in flash. Use the DisplayObjectContainer class to arrange the
+    * display objects in the display list. DisplayObjectContainer objects can
+    * have child display objects, while other display objects, such as Shape and
+    * TextField objects, are "leaf" nodes that have only parents and siblings, no
+    * children.
+    *
+    * <p>The DisplayObject class supports basic functionality like the <i>x</i>
+    * and <i>y</i> position of an object, as well as more advanced properties of
+    * the object such as its transformation matrix. </p>
+    *
+    * <p>DisplayObject is an abstract base class; therefore, you cannot call
+    * DisplayObject directly. Invoking <code>new DisplayObject()</code> throws an
+    * <code>ArgumentError</code> exception. </p>
+    *
+    * <p>All display objects inherit from the DisplayObject class.</p>
+    *
+    * <p>The DisplayObject class itself does not include any APIs for rendering
+    * content onscreen. For that reason, if you want create a custom subclass of
+    * the DisplayObject class, you will want to extend one of its subclasses that
+    * do have APIs for rendering content onscreen, such as the Shape, Sprite,
+    * Bitmap, SimpleButton, TextField, or MovieClip class.</p>
+    *
+    * <p>The DisplayObject class contains several broadcast events. Normally, the
+    * target of any particular event is a specific DisplayObject instance. For
+    * example, the target of an <code>added</code> event is the specific
+    * DisplayObject instance that was added to the display list. Having a single
+    * target restricts the placement of event listeners to that target and in
+    * some cases the target's ancestors on the display list. With broadcast
+    * events, however, the target is not a specific DisplayObject instance, but
+    * rather all DisplayObject instances, including those that are not on the
+    * display list. This means that you can add a listener to any DisplayObject
+    * instance to listen for broadcast events. In addition to the broadcast
+    * events listed in the DisplayObject class's Events table, the DisplayObject
+    * class also inherits two broadcast events from the EventDispatcher class:
+    * <code>activate</code> and <code>deactivate</code>.</p>
+    *
+    * <p>Some properties previously used in the ActionScript 1.0 and 2.0
+    * MovieClip, TextField, and Button classes(such as <code>_alpha</code>,
+    * <code>_height</code>, <code>_name</code>, <code>_width</code>,
+    * <code>_x</code>, <code>_y</code>, and others) have equivalents in the
+    * ActionScript 3.0 DisplayObject class that are renamed so that they no
+    * longer begin with the underscore(_) character.</p>
+    *
+    * <p>For more information, see the "Display Programming" chapter of the
+    * <i>ActionScript 3.0 Developer's Guide</i>.</p>
+    *
+    * @event added            Dispatched when a display object is added to the
+    *                         display list. The following methods trigger this
+    *                         event:
+    *                         <code>DisplayObjectContainer.addChild()</code>,
+    *                         <code>DisplayObjectContainer.addChildAt()</code>.
+    * @event addedToStage     Dispatched when a display object is added to the on
+    *                         stage display list, either directly or through the
+    *                         addition of a sub tree in which the display object
+    *                         is contained. The following methods trigger this
+    *                         event:
+    *                         <code>DisplayObjectContainer.addChild()</code>,
+    *                         <code>DisplayObjectContainer.addChildAt()</code>.
+    * @event enterFrame       [broadcast event] Dispatched when the playhead is
+    *                         entering a new frame. If the playhead is not
+    *                         moving, or if there is only one frame, this event
+    *                         is dispatched continuously in conjunction with the
+    *                         frame rate. This event is a broadcast event, which
+    *                         means that it is dispatched by all display objects
+    *                         with a listener registered for this event.
+    * @event exitFrame        [broadcast event] Dispatched when the playhead is
+    *                         exiting the current frame. All frame scripts have
+    *                         been run. If the playhead is not moving, or if
+    *                         there is only one frame, this event is dispatched
+    *                         continuously in conjunction with the frame rate.
+    *                         This event is a broadcast event, which means that
+    *                         it is dispatched by all display objects with a
+    *                         listener registered for this event.
+    * @event frameConstructed [broadcast event] Dispatched after the constructors
+    *                         of frame display objects have run but before frame
+    *                         scripts have run. If the playhead is not moving, or
+    *                         if there is only one frame, this event is
+    *                         dispatched continuously in conjunction with the
+    *                         frame rate. This event is a broadcast event, which
+    *                         means that it is dispatched by all display objects
+    *                         with a listener registered for this event.
+    * @event removed          Dispatched when a display object is about to be
+    *                         removed from the display list. Two methods of the
+    *                         DisplayObjectContainer class generate this event:
+    *                         <code>removeChild()</code> and
+    *                         <code>removeChildAt()</code>.
+    *
+    *                         <p>The following methods of a
+    *                         DisplayObjectContainer object also generate this
+    *                         event if an object must be removed to make room for
+    *                         the new object: <code>addChild()</code>,
+    *                         <code>addChildAt()</code>, and
+    *                         <code>setChildIndex()</code>. </p>
+    * @event removedFromStage Dispatched when a display object is about to be
+    *                         removed from the display list, either directly or
+    *                         through the removal of a sub tree in which the
+    *                         display object is contained. Two methods of the
+    *                         DisplayObjectContainer class generate this event:
+    *                         <code>removeChild()</code> and
+    *                         <code>removeChildAt()</code>.
+    *
+    *                         <p>The following methods of a
+    *                         DisplayObjectContainer object also generate this
+    *                         event if an object must be removed to make room for
+    *                         the new object: <code>addChild()</code>,
+    *                         <code>addChildAt()</code>, and
+    *                         <code>setChildIndex()</code>. </p>
+    * @event render           [broadcast event] Dispatched when the display list
+    *                         is about to be updated and rendered. This event
+    *                         provides the last opportunity for objects listening
+    *                         for this event to make changes before the display
+    *                         list is rendered. You must call the
+    *                         <code>invalidate()</code> method of the Stage
+    *                         object each time you want a <code>render</code>
+    *                         event to be dispatched. <code>Render</code> events
+    *                         are dispatched to an object only if there is mutual
+    *                         trust between it and the object that called
+    *                         <code>Stage.invalidate()</code>. This event is a
+    *                         broadcast event, which means that it is dispatched
+    *                         by all display objects with a listener registered
+    *                         for this event.
+    *
+    *                         <p><b>Note: </b>This event is not dispatched if the
+    *                         display is not rendering. This is the case when the
+    *                         content is either minimized or obscured. </p>
+    */
+    (function (base) {
+        var DisplayObject = (function (_super) {
+            __extends(DisplayObject, _super);
+            /**
+            * Creates a new <code>DisplayObject</code> instance.
+            */
+            function DisplayObject() {
+                _super.call(this);
+                this._pSceneTransform = new away.geom.Matrix3D();
+                this._pSceneTransformDirty = true;
+                this._matrix3D = new away.geom.Matrix3D();
+                this._matrix3DDirty = true;
+                this._inverseSceneTransform = new away.geom.Matrix3D();
+                this._inverseSceneTransformDirty = true;
+                this._scenePosition = new away.geom.Vector3D();
+                this._scenePositionDirty = true;
+                this._explicitVisibility = true;
+                this._pImplicitVisibility = true;
+                this._explicitMouseEnabled = true;
+                this._pImplicitMouseEnabled = true;
+                this._positionDirty = true;
+                this._rotationDirty = true;
+                this._scaleDirty = true;
+                this._rotationX = 0;
+                this._rotationY = 0;
+                this._rotationZ = 0;
+                this._eulers = new away.geom.Vector3D();
+                this._flipY = new away.geom.Matrix3D();
+                this._zOffset = 0;
+                this._pScaleX = 1;
+                this._pScaleY = 1;
+                this._pScaleZ = 1;
+                this._x = 0;
+                this._y = 0;
+                this._z = 0;
+                this._pivotPoint = new away.geom.Vector3D();
+                this._orientationMatrix = new away.geom.Matrix3D();
+                this._pivotZero = true;
+                this._pivotDirty = true;
+                this._pos = new away.geom.Vector3D();
+                this._rot = new away.geom.Vector3D();
+                this._sca = new away.geom.Vector3D();
+                this._pIgnoreTransform = false;
+                this._pBoundsInvalid = true;
+                this._worldBoundsInvalid = true;
+                /**
+                *
+                */
+                this.alignmentMode = away.base.AlignmentMode.REGISTRATION_POINT;
+                /**
+                *
+                */
+                this.castsShadows = true;
+                /**
+                *
+                */
+                this.orientationMode = away.base.OrientationMode.DEFAULT;
+
+                // Cached vector of transformation components used when
+                // recomposing the transform matrix in updateTransform()
+                this._transformComponents = new Array(3); //_transformComponents = new Vector.<Vector3D>(3, true);
+
+                this._transformComponents[0] = this._pos;
+                this._transformComponents[1] = this._rot;
+                this._transformComponents[2] = this._sca;
+
+                //creation of associated transform object
+                this._transform = new away.geom.Transform(this);
+
+                this._matrix3D.identity();
+
+                this._flipY.appendScale(1, -1, 1);
+
+                this._pBounds = this.pCreateDefaultBoundingVolume();
+
+                this._worldBounds = this.pCreateDefaultBoundingVolume();
+            }
+            Object.defineProperty(DisplayObject.prototype, "bounds", {
+                /**
+                *
+                */
+                get: function () {
+                    if (this._pBoundsInvalid)
+                        this.pUpdateBounds();
+
+                    return this._pBounds;
+                },
+                set: function (value) {
+                    if (this._showBounds)
+                        this.removeBounds();
+
+                    this._pBounds = value;
+                    this._worldBounds = value.clone();
+
+                    this.pInvalidateBounds();
+
+                    if (this._showBounds)
+                        this.addBounds();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(DisplayObject.prototype, "depth", {
+                /**
+                * Indicates the depth of the display object, in pixels. The depth is
+                * calculated based on the bounds of the content of the display object. When
+                * you set the <code>depth</code> property, the <code>scaleZ</code> property
+                * is adjusted accordingly, as shown in the following code:
+                *
+                * <p>Except for TextField and Video objects, a display object with no
+                * content (such as an empty sprite) has a depth of 0, even if you try to
+                * set <code>depth</code> to a different value.</p>
+                */
+                get: function () {
+                    if (this._pBoundsInvalid)
+                        this.pUpdateBounds();
+
+                    return this._depth;
+                },
+                set: function (val) {
+                    if (this._depth == val)
+                        return;
+
+                    this._depth == val;
+
+                    this._pScaleZ = val / this.bounds.aabb.depth;
+
+                    this.invalidateScale();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(DisplayObject.prototype, "eulers", {
+                /**
+                * Defines the rotation of the 3d object as a <code>Vector3D</code> object containing euler angles for rotation around x, y and z axis.
+                */
+                get: function () {
+                    this._eulers.x = this._rotationX * away.geom.MathConsts.RADIANS_TO_DEGREES;
+                    this._eulers.y = this._rotationY * away.geom.MathConsts.RADIANS_TO_DEGREES;
+                    this._eulers.z = this._rotationZ * away.geom.MathConsts.RADIANS_TO_DEGREES;
+
+                    return this._eulers;
+                },
+                set: function (value) {
+                    this._rotationX = value.x * away.geom.MathConsts.DEGREES_TO_RADIANS;
+                    this._rotationY = value.y * away.geom.MathConsts.DEGREES_TO_RADIANS;
+                    this._rotationZ = value.z * away.geom.MathConsts.DEGREES_TO_RADIANS;
+
+                    this.invalidateRotation();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(DisplayObject.prototype, "height", {
+                /**
+                * An indexed array that contains each filter object currently associated
+                * with the display object. The flash.filters package contains several
+                * classes that define specific filters you can use.
+                *
+                * <p>Filters can be applied in Flash Professional at design time, or at run
+                * time by using ActionScript code. To apply a filter by using ActionScript,
+                * you must make a temporary copy of the entire <code>filters</code> array,
+                * modify the temporary array, then assign the value of the temporary array
+                * back to the <code>filters</code> array. You cannot directly add a new
+                * filter object to the <code>filters</code> array.</p>
+                *
+                * <p>To add a filter by using ActionScript, perform the following steps
+                * (assume that the target display object is named
+                * <code>myDisplayObject</code>):</p>
+                *
+                * <ol>
+                *   <li>Create a new filter object by using the constructor method of your
+                * chosen filter class.</li>
+                *   <li>Assign the value of the <code>myDisplayObject.filters</code> array
+                * to a temporary array, such as one named <code>myFilters</code>.</li>
+                *   <li>Add the new filter object to the <code>myFilters</code> temporary
+                * array.</li>
+                *   <li>Assign the value of the temporary array to the
+                * <code>myDisplayObject.filters</code> array.</li>
+                * </ol>
+                *
+                * <p>If the <code>filters</code> array is undefined, you do not need to use
+                * a temporary array. Instead, you can directly assign an array literal that
+                * contains one or more filter objects that you create. The first example in
+                * the Examples section adds a drop shadow filter by using code that handles
+                * both defined and undefined <code>filters</code> arrays.</p>
+                *
+                * <p>To modify an existing filter object, you must use the technique of
+                * modifying a copy of the <code>filters</code> array:</p>
+                *
+                * <ol>
+                *   <li>Assign the value of the <code>filters</code> array to a temporary
+                * array, such as one named <code>myFilters</code>.</li>
+                *   <li>Modify the property by using the temporary array,
+                * <code>myFilters</code>. For example, to set the quality property of the
+                * first filter in the array, you could use the following code:
+                * <code>myFilters[0].quality = 1;</code></li>
+                *   <li>Assign the value of the temporary array to the <code>filters</code>
+                * array.</li>
+                * </ol>
+                *
+                * <p>At load time, if a display object has an associated filter, it is
+                * marked to cache itself as a transparent bitmap. From this point forward,
+                * as long as the display object has a valid filter list, the player caches
+                * the display object as a bitmap. This source bitmap is used as a source
+                * image for the filter effects. Each display object usually has two bitmaps:
+                * one with the original unfiltered source display object and another for the
+                * final image after filtering. The final image is used when rendering. As
+                * long as the display object does not change, the final image does not need
+                * updating.</p>
+                *
+                * <p>The flash.filters package includes classes for filters. For example, to
+                * create a DropShadow filter, you would write:</p>
+                *
+                * @throws ArgumentError When <code>filters</code> includes a ShaderFilter
+                *                       and the shader output type is not compatible with
+                *                       this operation(the shader must specify a
+                *                       <code>pixel4</code> output).
+                * @throws ArgumentError When <code>filters</code> includes a ShaderFilter
+                *                       and the shader doesn't specify any image input or
+                *                       the first input is not an <code>image4</code> input.
+                * @throws ArgumentError When <code>filters</code> includes a ShaderFilter
+                *                       and the shader specifies an image input that isn't
+                *                       provided.
+                * @throws ArgumentError When <code>filters</code> includes a ShaderFilter, a
+                *                       ByteArray or Vector.<Number> instance as a shader
+                *                       input, and the <code>width</code> and
+                *                       <code>height</code> properties aren't specified for
+                *                       the ShaderInput object, or the specified values
+                *                       don't match the amount of data in the input data.
+                *                       See the <code>ShaderInput.input</code> property for
+                *                       more information.
+                */
+                //		public filters:Array<Dynamic>;
+                /**
+                * Indicates the height of the display object, in pixels. The height is
+                * calculated based on the bounds of the content of the display object. When
+                * you set the <code>height</code> property, the <code>scaleY</code> property
+                * is adjusted accordingly, as shown in the following code:
+                *
+                * <p>Except for TextField and Video objects, a display object with no
+                * content (such as an empty sprite) has a height of 0, even if you try to
+                * set <code>height</code> to a different value.</p>
+                */
+                get: function () {
+                    if (this._pBoundsInvalid)
+                        this.pUpdateBounds();
+
+                    return this._height;
+                },
+                set: function (val) {
+                    if (this._height == val)
+                        return;
+
+                    this._height == val;
+
+                    this._pScaleY = val / this.bounds.aabb.height;
+
+                    this.invalidateScale();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(DisplayObject.prototype, "index", {
+                /**
+                * Indicates the instance container index of the DisplayObject. The object can be
+                * identified in the child list of its parent display object container by
+                * calling the <code>getChildByIndex()</code> method of the display object
+                * container.
+                *
+                * <p>If the DisplayObject has no parent container, index defaults to 0.</p>
+                */
+                get: function () {
+                    if (this._pParent)
+                        return this._pParent.getChildIndex(this);
+
+                    return 0;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(DisplayObject.prototype, "inverseSceneTransform", {
+                /**
+                *
+                */
+                get: function () {
+                    if (this._inverseSceneTransformDirty) {
+                        this._inverseSceneTransform.copyFrom(this.sceneTransform);
+                        this._inverseSceneTransform.invert();
+                        this._inverseSceneTransformDirty = false;
+                    }
+                    return this._inverseSceneTransform;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(DisplayObject.prototype, "ignoreTransform", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._pIgnoreTransform;
+                },
+                set: function (value) {
+                    if (this._pIgnoreTransform == value)
+                        return;
+
+                    this._pIgnoreTransform = value;
+
+                    if (value) {
+                        this._pSceneTransform.identity();
+                        this._scenePosition.setTo(0, 0, 0);
+                    }
+
+                    this.pInvalidateSceneTransform();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(DisplayObject.prototype, "isEntity", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._pIsEntity;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(DisplayObject.prototype, "loaderInfo", {
+                /**
+                * Returns a LoaderInfo object containing information about loading the file
+                * to which this display object belongs. The <code>loaderInfo</code> property
+                * is defined only for the root display object of a SWF file or for a loaded
+                * Bitmap(not for a Bitmap that is drawn with ActionScript). To find the
+                * <code>loaderInfo</code> object associated with the SWF file that contains
+                * a display object named <code>myDisplayObject</code>, use
+                * <code>myDisplayObject.root.loaderInfo</code>.
+                *
+                * <p>A large SWF file can monitor its download by calling
+                * <code>this.root.loaderInfo.addEventListener(Event.COMPLETE,
+                * func)</code>.</p>
+                */
+                get: function () {
+                    return this._loaderInfo;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(DisplayObject.prototype, "mouseEnabled", {
+                /**
+                * Specifies whether this object receives mouse, or other user input,
+                * messages. The default value is <code>true</code>, which means that by
+                * default any InteractiveObject instance that is on the display list
+                * receives mouse events or other user input events. If
+                * <code>mouseEnabled</code> is set to <code>false</code>, the instance does
+                * not receive any mouse events(or other user input events like keyboard
+                * events). Any children of this instance on the display list are not
+                * affected. To change the <code>mouseEnabled</code> behavior for all
+                * children of an object on the display list, use
+                * <code>flash.display.DisplayObjectContainer.mouseChildren</code>.
+                *
+                * <p> No event is dispatched by setting this property. You must use the
+                * <code>addEventListener()</code> method to create interactive
+                * functionality.</p>
+                */
+                get: function () {
+                    return this._explicitMouseEnabled;
+                },
+                set: function (value) {
+                    if (this._explicitMouseEnabled == value)
+                        return;
+
+                    this._explicitMouseEnabled = value;
+
+                    this._pUpdateImplicitMouseEnabled(this._pParent ? this._pParent.mouseChildren : true);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(DisplayObject.prototype, "mouseX", {
+                /**
+                * Indicates the x coordinate of the mouse or user input device position, in
+                * pixels.
+                *
+                * <p><b>Note</b>: For a DisplayObject that has been rotated, the returned x
+                * coordinate will reflect the non-rotated object.</p>
+                */
+                get: function () {
+                    return this._mouseX;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(DisplayObject.prototype, "mouseY", {
+                /**
+                * Indicates the y coordinate of the mouse or user input device position, in
+                * pixels.
+                *
+                * <p><b>Note</b>: For a DisplayObject that has been rotated, the returned y
+                * coordinate will reflect the non-rotated object.</p>
+                */
+                get: function () {
+                    return this._mouseY;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(DisplayObject.prototype, "parent", {
+                /**
+                * Indicates the DisplayObjectContainer object that contains this display
+                * object. Use the <code>parent</code> property to specify a relative path to
+                * display objects that are above the current display object in the display
+                * list hierarchy.
+                *
+                * <p>You can use <code>parent</code> to move up multiple levels in the
+                * display list as in the following:</p>
+                *
+                * @throws SecurityError The parent display object belongs to a security
+                *                       sandbox to which you do not have access. You can
+                *                       avoid this situation by having the parent movie call
+                *                       the <code>Security.allowDomain()</code> method.
+                */
+                get: function () {
+                    return this._pParent;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(DisplayObject.prototype, "partition", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._explicitPartition;
+                },
+                set: function (value) {
+                    if (this._explicitPartition == value)
+                        return;
+
+                    if (this._pScene && this._explicitPartition)
+                        this._pScene.iUnregisterPartition(this._explicitPartition);
+
+                    this._explicitPartition = value;
+
+                    if (this._pScene && value)
+                        this._pScene.iRegisterPartition(value);
+
+                    this._pUpdateImplicitPartition(this._pParent ? this._pParent._iAssignedPartition : null);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(DisplayObject.prototype, "partitionNode", {
+                /**
+                *
+                */
+                get: function () {
+                    if (!this._partitionNode)
+                        this._partitionNode = this.pCreateEntityPartitionNode();
+
+                    return this._partitionNode;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(DisplayObject.prototype, "pickingCollider", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._pickingCollider;
+                },
+                set: function (value) {
+                    this._pickingCollider = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(DisplayObject.prototype, "pivotPoint", {
+                /**
+                * Defines the local point around which the object rotates.
+                */
+                get: function () {
+                    return this._pivotPoint;
+                },
+                set: function (pivot) {
+                    this._pivotPoint = pivot.clone();
+
+                    this.invalidatePivot();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(DisplayObject.prototype, "root", {
+                /**
+                * For a display object in a loaded SWF file, the <code>root</code> property
+                * is the top-most display object in the portion of the display list's tree
+                * structure represented by that SWF file. For a Bitmap object representing a
+                * loaded image file, the <code>root</code> property is the Bitmap object
+                * itself. For the instance of the main class of the first SWF file loaded,
+                * the <code>root</code> property is the display object itself. The
+                * <code>root</code> property of the Stage object is the Stage object itself.
+                * The <code>root</code> property is set to <code>null</code> for any display
+                * object that has not been added to the display list, unless it has been
+                * added to a display object container that is off the display list but that
+                * is a child of the top-most display object in a loaded SWF file.
+                *
+                * <p>For example, if you create a new Sprite object by calling the
+                * <code>Sprite()</code> constructor method, its <code>root</code> property
+                * is <code>null</code> until you add it to the display list(or to a display
+                * object container that is off the display list but that is a child of the
+                * top-most display object in a SWF file).</p>
+                *
+                * <p>For a loaded SWF file, even though the Loader object used to load the
+                * file may not be on the display list, the top-most display object in the
+                * SWF file has its <code>root</code> property set to itself. The Loader
+                * object does not have its <code>root</code> property set until it is added
+                * as a child of a display object for which the <code>root</code> property is
+                * set.</p>
+                */
+                get: function () {
+                    return this._root;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(DisplayObject.prototype, "rotationX", {
+                /**
+                * Indicates the x-axis rotation of the DisplayObject instance, in degrees,
+                * from its original orientation relative to the 3D parent container. Values
+                * from 0 to 180 represent clockwise rotation; values from 0 to -180
+                * represent counterclockwise rotation. Values outside this range are added
+                * to or subtracted from 360 to obtain a value within the range.
+                */
+                get: function () {
+                    return this._rotationX * away.geom.MathConsts.RADIANS_TO_DEGREES;
+                },
+                set: function (val) {
+                    if (this.rotationX == val)
+                        return;
+
+                    this._rotationX = val * away.geom.MathConsts.DEGREES_TO_RADIANS;
+
+                    this.invalidateRotation();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(DisplayObject.prototype, "rotationY", {
+                /**
+                * Indicates the y-axis rotation of the DisplayObject instance, in degrees,
+                * from its original orientation relative to the 3D parent container. Values
+                * from 0 to 180 represent clockwise rotation; values from 0 to -180
+                * represent counterclockwise rotation. Values outside this range are added
+                * to or subtracted from 360 to obtain a value within the range.
+                */
+                get: function () {
+                    return this._rotationY * away.geom.MathConsts.RADIANS_TO_DEGREES;
+                },
+                set: function (val) {
+                    if (this.rotationY == val)
+                        return;
+
+                    this._rotationY = val * away.geom.MathConsts.DEGREES_TO_RADIANS;
+
+                    this.invalidateRotation();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(DisplayObject.prototype, "rotationZ", {
+                /**
+                * Indicates the z-axis rotation of the DisplayObject instance, in degrees,
+                * from its original orientation relative to the 3D parent container. Values
+                * from 0 to 180 represent clockwise rotation; values from 0 to -180
+                * represent counterclockwise rotation. Values outside this range are added
+                * to or subtracted from 360 to obtain a value within the range.
+                */
+                get: function () {
+                    return this._rotationZ * away.geom.MathConsts.RADIANS_TO_DEGREES;
+                },
+                set: function (val) {
+                    if (this.rotationZ == val)
+                        return;
+
+                    this._rotationZ = val * away.geom.MathConsts.DEGREES_TO_RADIANS;
+
+                    this.invalidateRotation();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(DisplayObject.prototype, "scaleX", {
+                /**
+                * Indicates the horizontal scale(percentage) of the object as applied from
+                * the registration point. The default registration point is(0,0). 1.0
+                * equals 100% scale.
+                *
+                * <p>Scaling the local coordinate system changes the <code>x</code> and
+                * <code>y</code> property values, which are defined in whole pixels. </p>
+                */
+                get: function () {
+                    return this._pScaleX;
+                },
+                set: function (val) {
+                    if (this._pScaleX == val)
+                        return;
+
+                    this._pScaleX = val;
+
+                    this.invalidateScale();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(DisplayObject.prototype, "scaleY", {
+                /**
+                * Indicates the vertical scale(percentage) of an object as applied from the
+                * registration point of the object. The default registration point is(0,0).
+                * 1.0 is 100% scale.
+                *
+                * <p>Scaling the local coordinate system changes the <code>x</code> and
+                * <code>y</code> property values, which are defined in whole pixels. </p>
+                */
+                get: function () {
+                    return this._pScaleY;
+                },
+                set: function (val) {
+                    if (this._pScaleY == val)
+                        return;
+
+                    this._pScaleY = val;
+
+                    this.invalidateScale();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(DisplayObject.prototype, "scaleZ", {
+                /**
+                * Indicates the depth scale(percentage) of an object as applied from the
+                * registration point of the object. The default registration point is(0,0).
+                * 1.0 is 100% scale.
+                *
+                * <p>Scaling the local coordinate system changes the <code>x</code>,
+                * <code>y</code> and <code>z</code> property values, which are defined in
+                * whole pixels. </p>
+                */
+                get: function () {
+                    return this._pScaleZ;
+                },
+                set: function (val) {
+                    if (this._pScaleZ == val)
+                        return;
+
+                    this._pScaleZ = val;
+
+                    this.invalidateScale();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(DisplayObject.prototype, "scene", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._pScene;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(DisplayObject.prototype, "scenePosition", {
+                /**
+                *
+                */
+                get: function () {
+                    if (this._scenePositionDirty) {
+                        if (!this._pivotZero && this.alignmentMode == away.base.AlignmentMode.PIVOT_POINT) {
+                            this._scenePosition = this.sceneTransform.transformVector(this._pivotPoint);
+                            //this._scenePosition.decrementBy(new away.geom.Vector3D(this._pivotPoint.x*this._pScaleX, this._pivotPoint.y*this._pScaleY, this._pivotPoint.z*this._pScaleZ));
+                        } else {
+                            this.sceneTransform.copyColumnTo(3, this._scenePosition);
+                        }
+
+                        this._scenePositionDirty = false;
+                    }
+                    return this._scenePosition;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(DisplayObject.prototype, "sceneTransform", {
+                get: function () {
+                    if (this._pSceneTransformDirty)
+                        this.pUpdateSceneTransform();
+
+                    return this._pSceneTransform;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(DisplayObject.prototype, "shaderPickingDetails", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._shaderPickingDetails;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(DisplayObject.prototype, "showBounds", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._showBounds;
+                },
+                set: function (value) {
+                    if (value == this._showBounds)
+                        return;
+
+                    this._showBounds = value;
+                    //			if (this._showBounds)
+                    //				this.addChild(this._pBounds.boundingEntity);
+                    //			else
+                    //				this.removeBounds();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(DisplayObject.prototype, "transform", {
+                /**
+                * An object with properties pertaining to a display object's matrix, color
+                * transform, and pixel bounds. The specific properties  -  matrix,
+                * colorTransform, and three read-only properties
+                * (<code>concatenatedMatrix</code>, <code>concatenatedColorTransform</code>,
+                * and <code>pixelBounds</code>)  -  are described in the entry for the
+                * Transform class.
+                *
+                * <p>Each of the transform object's properties is itself an object. This
+                * concept is important because the only way to set new values for the matrix
+                * or colorTransform objects is to create a new object and copy that object
+                * into the transform.matrix or transform.colorTransform property.</p>
+                *
+                * <p>For example, to increase the <code>tx</code> value of a display
+                * object's matrix, you must make a copy of the entire matrix object, then
+                * copy the new object into the matrix property of the transform object:</p>
+                * <pre xml:space="preserve"><code> public myMatrix:Matrix =
+                * myDisplayObject.transform.matrix; myMatrix.tx += 10;
+                * myDisplayObject.transform.matrix = myMatrix; </code></pre>
+                *
+                * <p>You cannot directly set the <code>tx</code> property. The following
+                * code has no effect on <code>myDisplayObject</code>: </p>
+                * <pre xml:space="preserve"><code> myDisplayObject.transform.matrix.tx +=
+                * 10; </code></pre>
+                *
+                * <p>You can also copy an entire transform object and assign it to another
+                * display object's transform property. For example, the following code
+                * copies the entire transform object from <code>myOldDisplayObj</code> to
+                * <code>myNewDisplayObj</code>:</p>
+                * <code>myNewDisplayObj.transform = myOldDisplayObj.transform;</code>
+                *
+                * <p>The resulting display object, <code>myNewDisplayObj</code>, now has the
+                * same values for its matrix, color transform, and pixel bounds as the old
+                * display object, <code>myOldDisplayObj</code>.</p>
+                *
+                * <p>Note that AIR for TV devices use hardware acceleration, if it is
+                * available, for color transforms.</p>
+                */
+                get: function () {
+                    return this._transform;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(DisplayObject.prototype, "visible", {
+                /**
+                * Whether or not the display object is visible. Display objects that are not
+                * visible are disabled. For example, if <code>visible=false</code> for an
+                * InteractiveObject instance, it cannot be clicked.
+                */
+                get: function () {
+                    return this._explicitVisibility;
+                },
+                set: function (value) {
+                    if (this._explicitVisibility == value)
+                        return;
+
+                    this._explicitVisibility = value;
+
+                    this._pUpdateImplicitVisibility(this._pParent ? this._pParent._iIsVisible() : true);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(DisplayObject.prototype, "width", {
+                /**
+                * Indicates the width of the display object, in pixels. The width is
+                * calculated based on the bounds of the content of the display object. When
+                * you set the <code>width</code> property, the <code>scaleX</code> property
+                * is adjusted accordingly, as shown in the following code:
+                *
+                * <p>Except for TextField and Video objects, a display object with no
+                * content(such as an empty sprite) has a width of 0, even if you try to set
+                * <code>width</code> to a different value.</p>
+                */
+                get: function () {
+                    if (this._pBoundsInvalid)
+                        this.pUpdateBounds();
+
+                    return this._width;
+                },
+                set: function (val) {
+                    if (this._width == val)
+                        return;
+
+                    this._width == val;
+
+                    this._pScaleX = val / this.bounds.aabb.width;
+
+                    this.invalidateScale();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(DisplayObject.prototype, "worldBounds", {
+                /**
+                *
+                */
+                get: function () {
+                    if (this._worldBoundsInvalid) {
+                        this._worldBoundsInvalid = false;
+                        this._worldBounds.transformFrom(this.bounds, this.sceneTransform);
+                    }
+
+                    return this._worldBounds;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(DisplayObject.prototype, "x", {
+                /**
+                * Indicates the <i>x</i> coordinate of the DisplayObject instance relative
+                * to the local coordinates of the parent DisplayObjectContainer. If the
+                * object is inside a DisplayObjectContainer that has transformations, it is
+                * in the local coordinate system of the enclosing DisplayObjectContainer.
+                * Thus, for a DisplayObjectContainer rotated 90° counterclockwise, the
+                * DisplayObjectContainer's children inherit a coordinate system that is
+                * rotated 90° counterclockwise. The object's coordinates refer to the
+                * registration point position.
+                */
+                get: function () {
+                    return this._x;
+                },
+                set: function (val) {
+                    if (this._x == val)
+                        return;
+
+                    this._x = val;
+
+                    this.invalidatePosition();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(DisplayObject.prototype, "y", {
+                /**
+                * Indicates the <i>y</i> coordinate of the DisplayObject instance relative
+                * to the local coordinates of the parent DisplayObjectContainer. If the
+                * object is inside a DisplayObjectContainer that has transformations, it is
+                * in the local coordinate system of the enclosing DisplayObjectContainer.
+                * Thus, for a DisplayObjectContainer rotated 90° counterclockwise, the
+                * DisplayObjectContainer's children inherit a coordinate system that is
+                * rotated 90° counterclockwise. The object's coordinates refer to the
+                * registration point position.
+                */
+                get: function () {
+                    return this._y;
+                },
+                set: function (val) {
+                    if (this._y == val)
+                        return;
+
+                    this._y = val;
+
+                    this.invalidatePosition();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(DisplayObject.prototype, "z", {
+                /**
+                * Indicates the z coordinate position along the z-axis of the DisplayObject
+                * instance relative to the 3D parent container. The z property is used for
+                * 3D coordinates, not screen or pixel coordinates.
+                *
+                * <p>When you set a <code>z</code> property for a display object to
+                * something other than the default value of <code>0</code>, a corresponding
+                * Matrix3D object is automatically created. for adjusting a display object's
+                * position and orientation in three dimensions. When working with the
+                * z-axis, the existing behavior of x and y properties changes from screen or
+                * pixel coordinates to positions relative to the 3D parent container.</p>
+                *
+                * <p>For example, a child of the <code>_root</code> at position x = 100, y =
+                * 100, z = 200 is not drawn at pixel location(100,100). The child is drawn
+                * wherever the 3D projection calculation puts it. The calculation is:</p>
+                *
+                * <p><code>(x~~cameraFocalLength/cameraRelativeZPosition,
+                * y~~cameraFocalLength/cameraRelativeZPosition)</code></p>
+                */
+                get: function () {
+                    return this._z;
+                },
+                set: function (val) {
+                    if (this._z == val)
+                        return;
+
+                    this._z = val;
+
+                    this.invalidatePosition();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(DisplayObject.prototype, "zOffset", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._zOffset;
+                },
+                set: function (value) {
+                    this._zOffset = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            *
+            */
+            DisplayObject.prototype.addEventListener = function (type, listener) {
+                _super.prototype.addEventListener.call(this, type, listener); //, priority, useWeakReference);
+
+                switch (type) {
+                    case away.events.DisplayObjectEvent.POSITION_CHANGED:
+                        this._listenToPositionChanged = true;
+                        break;
+                    case away.events.DisplayObjectEvent.ROTATION_CHANGED:
+                        this._listenToRotationChanged = true;
+                        break;
+                    case away.events.DisplayObjectEvent.SCALE_CHANGED:
+                        this._listenToScaleChanged = true;
+                        break;
+                }
+            };
+
+            /**
+            *
+            */
+            DisplayObject.prototype.clone = function () {
+                var clone = new DisplayObject();
+                clone.pivotPoint = this.pivotPoint;
+                clone._iMatrix3D = this._iMatrix3D;
+                clone.name = name;
+
+                // todo: implement for all subtypes
+                return clone;
+            };
+
+            /**
+            *
+            */
+            DisplayObject.prototype.dispose = function () {
+                if (this.parent)
+                    this.parent.removeChild(this);
+            };
+
+            /**
+            * @inheritDoc
+            */
+            DisplayObject.prototype.disposeAsset = function () {
+                this.dispose();
+            };
+
+            /**
+            * Returns a rectangle that defines the area of the display object relative
+            * to the coordinate system of the <code>targetCoordinateSpace</code> object.
+            * Consider the following code, which shows how the rectangle returned can
+            * vary depending on the <code>targetCoordinateSpace</code> parameter that
+            * you pass to the method:
+            *
+            * <p><b>Note:</b> Use the <code>localToGlobal()</code> and
+            * <code>globalToLocal()</code> methods to convert the display object's local
+            * coordinates to display coordinates, or display coordinates to local
+            * coordinates, respectively.</p>
+            *
+            * <p>The <code>getBounds()</code> method is similar to the
+            * <code>getRect()</code> method; however, the Rectangle returned by the
+            * <code>getBounds()</code> method includes any strokes on shapes, whereas
+            * the Rectangle returned by the <code>getRect()</code> method does not. For
+            * an example, see the description of the <code>getRect()</code> method.</p>
+            *
+            * @param targetCoordinateSpace The display object that defines the
+            *                              coordinate system to use.
+            * @return The rectangle that defines the area of the display object relative
+            *         to the <code>targetCoordinateSpace</code> object's coordinate
+            *         system.
+            */
+            DisplayObject.prototype.getBounds = function (targetCoordinateSpace) {
+                return this._bounds;
+            };
+
+            /**
+            * Returns a rectangle that defines the boundary of the display object, based
+            * on the coordinate system defined by the <code>targetCoordinateSpace</code>
+            * parameter, excluding any strokes on shapes. The values that the
+            * <code>getRect()</code> method returns are the same or smaller than those
+            * returned by the <code>getBounds()</code> method.
+            *
+            * <p><b>Note:</b> Use <code>localToGlobal()</code> and
+            * <code>globalToLocal()</code> methods to convert the display object's local
+            * coordinates to Stage coordinates, or Stage coordinates to local
+            * coordinates, respectively.</p>
+            *
+            * @param targetCoordinateSpace The display object that defines the
+            *                              coordinate system to use.
+            * @return The rectangle that defines the area of the display object relative
+            *         to the <code>targetCoordinateSpace</code> object's coordinate
+            *         system.
+            */
+            DisplayObject.prototype.getRect = function (targetCoordinateSpace) {
+                return this._bounds;
+            };
+
+            /**
+            * Converts the <code>point</code> object from the Stage(global) coordinates
+            * to the display object's(local) coordinates.
+            *
+            * <p>To use this method, first create an instance of the Point class. The
+            * <i>x</i> and <i>y</i> values that you assign represent global coordinates
+            * because they relate to the origin(0,0) of the main display area. Then
+            * pass the Point instance as the parameter to the
+            * <code>globalToLocal()</code> method. The method returns a new Point object
+            * with <i>x</i> and <i>y</i> values that relate to the origin of the display
+            * object instead of the origin of the Stage.</p>
+            *
+            * @param point An object created with the Point class. The Point object
+            *              specifies the <i>x</i> and <i>y</i> coordinates as
+            *              properties.
+            * @return A Point object with coordinates relative to the display object.
+            */
+            DisplayObject.prototype.globalToLocal = function (point) {
+                return point;
+            };
+
+            /**
+            * Converts a two-dimensional point from the Stage(global) coordinates to a
+            * three-dimensional display object's(local) coordinates.
+            *
+            * <p>To use this method, first create an instance of the Point class. The x
+            * and y values that you assign to the Point object represent global
+            * coordinates because they are relative to the origin(0,0) of the main
+            * display area. Then pass the Point object to the
+            * <code>globalToLocal3D()</code> method as the <code>point</code> parameter.
+            * The method returns three-dimensional coordinates as a Vector3D object
+            * containing <code>x</code>, <code>y</code>, and <code>z</code> values that
+            * are relative to the origin of the three-dimensional display object.</p>
+            *
+            * @param point A two dimensional Point object representing global x and y
+            *              coordinates.
+            * @return A Vector3D object with coordinates relative to the
+            *         three-dimensional display object.
+            */
+            DisplayObject.prototype.globalToLocal3D = function (point) {
+                return new away.geom.Vector3D();
+            };
+
+            /**
+            * Evaluates the bounding box of the display object to see if it overlaps or
+            * intersects with the bounding box of the <code>obj</code> display object.
+            *
+            * @param obj The display object to test against.
+            * @return <code>true</code> if the bounding boxes of the display objects
+            *         intersect; <code>false</code> if not.
+            */
+            DisplayObject.prototype.hitTestObject = function (obj) {
+                return false;
+            };
+
+            /**
+            * Evaluates the display object to see if it overlaps or intersects with the
+            * point specified by the <code>x</code> and <code>y</code> parameters. The
+            * <code>x</code> and <code>y</code> parameters specify a point in the
+            * coordinate space of the Stage, not the display object container that
+            * contains the display object(unless that display object container is the
+            * Stage).
+            *
+            * @param x         The <i>x</i> coordinate to test against this object.
+            * @param y         The <i>y</i> coordinate to test against this object.
+            * @param shapeFlag Whether to check against the actual pixels of the object
+            *                 (<code>true</code>) or the bounding box
+            *                 (<code>false</code>).
+            * @return <code>true</code> if the display object overlaps or intersects
+            *         with the specified point; <code>false</code> otherwise.
+            */
+            DisplayObject.prototype.hitTestPoint = function (x, y, shapeFlag) {
+                if (typeof shapeFlag === "undefined") { shapeFlag = false; }
+                return false;
+            };
+
+            /**
+            * @inheritDoc
+            */
+            DisplayObject.prototype.isIntersectingRay = function (rayPosition, rayDirection) {
+                var localRayPosition = this.inverseSceneTransform.transformVector(rayPosition);
+                var localRayDirection = this.inverseSceneTransform.deltaTransformVector(rayDirection);
+                var pickingCollisionVO = this._iPickingCollisionVO;
+
+                if (!pickingCollisionVO.localNormal)
+                    pickingCollisionVO.localNormal = new away.geom.Vector3D();
+
+                var rayEntryDistance = this.bounds.rayIntersection(localRayPosition, localRayDirection, pickingCollisionVO.localNormal);
+
+                if (rayEntryDistance < 0)
+                    return false;
+
+                pickingCollisionVO.rayEntryDistance = rayEntryDistance;
+                pickingCollisionVO.localRayPosition = localRayPosition;
+                pickingCollisionVO.localRayDirection = localRayDirection;
+                pickingCollisionVO.rayPosition = rayPosition;
+                pickingCollisionVO.rayDirection = rayDirection;
+                pickingCollisionVO.rayOriginIsInsideBounds = rayEntryDistance == 0;
+
+                return true;
+            };
+
+            /**
+            * Converts a three-dimensional point of the three-dimensional display
+            * object's(local) coordinates to a two-dimensional point in the Stage
+            * (global) coordinates.
+            *
+            * <p>For example, you can only use two-dimensional coordinates(x,y) to draw
+            * with the <code>display.Graphics</code> methods. To draw a
+            * three-dimensional object, you need to map the three-dimensional
+            * coordinates of a display object to two-dimensional coordinates. First,
+            * create an instance of the Vector3D class that holds the x-, y-, and z-
+            * coordinates of the three-dimensional display object. Then pass the
+            * Vector3D object to the <code>local3DToGlobal()</code> method as the
+            * <code>point3d</code> parameter. The method returns a two-dimensional Point
+            * object that can be used with the Graphics API to draw the
+            * three-dimensional object.</p>
+            *
+            * @param point3d A Vector3D object containing either a three-dimensional
+            *                point or the coordinates of the three-dimensional display
+            *                object.
+            * @return A two-dimensional point representing a three-dimensional point in
+            *         two-dimensional space.
+            */
+            DisplayObject.prototype.local3DToGlobal = function (point3d) {
+                return new away.geom.Point();
+            };
+
+            /**
+            * Rotates the 3d object around to face a point defined relative to the local coordinates of the parent <code>ObjectContainer3D</code>.
+            *
+            * @param    target        The vector defining the point to be looked at
+            * @param    upAxis        An optional vector used to define the desired up orientation of the 3d object after rotation has occurred
+            */
+            DisplayObject.prototype.lookAt = function (target, upAxis) {
+                if (typeof upAxis === "undefined") { upAxis = null; }
+                var yAxis;
+                var zAxis;
+                var xAxis;
+                var raw;
+
+                if (upAxis == null)
+                    upAxis = away.geom.Vector3D.Y_AXIS;
+
+                zAxis = target.subtract(this._iMatrix3D.position);
+                zAxis.normalize();
+
+                xAxis = upAxis.crossProduct(zAxis);
+
+                if (xAxis.length < .05) {
+                    xAxis.x = upAxis.y;
+                    xAxis.y = upAxis.x;
+                    xAxis.z = 0;
+                    xAxis.normalize();
+                } else {
+                    xAxis.normalize();
+                }
+
+                yAxis = zAxis.crossProduct(xAxis);
+
+                raw = away.geom.Matrix3DUtils.RAW_DATA_CONTAINER;
+
+                raw[0] = xAxis.x;
+                raw[1] = xAxis.y;
+                raw[2] = xAxis.z;
+                raw[3] = 0;
+
+                raw[4] = yAxis.x;
+                raw[5] = yAxis.y;
+                raw[6] = yAxis.z;
+                raw[7] = 0;
+
+                raw[8] = zAxis.x;
+                raw[9] = zAxis.y;
+                raw[10] = zAxis.z;
+                raw[11] = 0;
+
+                var m = new away.geom.Matrix3D();
+                m.copyRawDataFrom(raw);
+
+                var vec = m.decompose()[1];
+
+                this._rotationX = vec.x;
+                this._rotationY = vec.y;
+                this._rotationZ = vec.z;
+
+                this.invalidateRotation();
+            };
+
+            /**
+            * Converts the <code>point</code> object from the display object's(local)
+            * coordinates to the Stage(global) coordinates.
+            *
+            * <p>This method allows you to convert any given <i>x</i> and <i>y</i>
+            * coordinates from values that are relative to the origin(0,0) of a
+            * specific display object(local coordinates) to values that are relative to
+            * the origin of the Stage(global coordinates).</p>
+            *
+            * <p>To use this method, first create an instance of the Point class. The
+            * <i>x</i> and <i>y</i> values that you assign represent local coordinates
+            * because they relate to the origin of the display object.</p>
+            *
+            * <p>You then pass the Point instance that you created as the parameter to
+            * the <code>localToGlobal()</code> method. The method returns a new Point
+            * object with <i>x</i> and <i>y</i> values that relate to the origin of the
+            * Stage instead of the origin of the display object.</p>
+            *
+            * @param point The name or identifier of a point created with the Point
+            *              class, specifying the <i>x</i> and <i>y</i> coordinates as
+            *              properties.
+            * @return A Point object with coordinates relative to the Stage.
+            */
+            DisplayObject.prototype.localToGlobal = function (point) {
+                return new away.geom.Point();
+            };
+
+            /**
+            * Moves the 3d object directly to a point in space
+            *
+            * @param    dx        The amount of movement along the local x axis.
+            * @param    dy        The amount of movement along the local y axis.
+            * @param    dz        The amount of movement along the local z axis.
+            */
+            DisplayObject.prototype.moveTo = function (dx, dy, dz) {
+                if (this._x == dx && this._y == dy && this._z == dz)
+                    return;
+
+                this._x = dx;
+                this._y = dy;
+                this._z = dz;
+
+                this.invalidatePosition();
+            };
+
+            /**
+            * Moves the local point around which the object rotates.
+            *
+            * @param    dx        The amount of movement along the local x axis.
+            * @param    dy        The amount of movement along the local y axis.
+            * @param    dz        The amount of movement along the local z axis.
+            */
+            DisplayObject.prototype.movePivot = function (dx, dy, dz) {
+                if (this._pivotPoint == null)
+                    this._pivotPoint = new away.geom.Vector3D();
+
+                this._pivotPoint.x += dx;
+                this._pivotPoint.y += dy;
+                this._pivotPoint.z += dz;
+
+                this.invalidatePivot();
+            };
+
+            /**
+            * Rotates the 3d object around it's local x-axis
+            *
+            * @param    angle        The amount of rotation in degrees
+            */
+            DisplayObject.prototype.pitch = function (angle) {
+                this.rotate(away.geom.Vector3D.X_AXIS, angle);
+            };
+
+            /**
+            *
+            */
+            DisplayObject.prototype.getRenderSceneTransform = function (camera) {
+                if (this.orientationMode == away.base.OrientationMode.CAMERA_PLANE) {
+                    var comps = camera.sceneTransform.decompose();
+                    var scale = comps[2];
+                    comps[0] = this.scenePosition;
+                    scale.x = this._pScaleX;
+                    scale.y = this._pScaleY;
+                    this._orientationMatrix.recompose(comps);
+
+                    //add in case of pivot
+                    if (!this._pivotZero && this.alignmentMode == away.base.AlignmentMode.PIVOT_POINT)
+                        this._orientationMatrix.prependTranslation(-this._pivotPoint.x, -this._pivotPoint.y, -this._pivotPoint.z);
+
+                    return this._orientationMatrix;
+                }
+
+                return this.sceneTransform;
+            };
+
+            /**
+            * Rotates the 3d object around it's local z-axis
+            *
+            * @param    angle        The amount of rotation in degrees
+            */
+            DisplayObject.prototype.roll = function (angle) {
+                this.rotate(away.geom.Vector3D.Z_AXIS, angle);
+            };
+
+            /**
+            * Rotates the 3d object around an axis by a defined angle
+            *
+            * @param    axis        The vector defining the axis of rotation
+            * @param    angle        The amount of rotation in degrees
+            */
+            DisplayObject.prototype.rotate = function (axis, angle) {
+                var m = new away.geom.Matrix3D();
+                m.prependRotation(angle, axis);
+
+                var vec = m.decompose()[1];
+
+                this._rotationX += vec.x;
+                this._rotationY += vec.y;
+                this._rotationZ += vec.z;
+
+                this.invalidateRotation();
+            };
+
+            /**
+            * Rotates the 3d object directly to a euler angle
+            *
+            * @param    ax        The angle in degrees of the rotation around the x axis.
+            * @param    ay        The angle in degrees of the rotation around the y axis.
+            * @param    az        The angle in degrees of the rotation around the z axis.
+            */
+            DisplayObject.prototype.rotateTo = function (ax, ay, az) {
+                this._rotationX = ax * away.geom.MathConsts.DEGREES_TO_RADIANS;
+                this._rotationY = ay * away.geom.MathConsts.DEGREES_TO_RADIANS;
+                this._rotationZ = az * away.geom.MathConsts.DEGREES_TO_RADIANS;
+
+                this.invalidateRotation();
+            };
+
+            /**
+            *
+            */
+            DisplayObject.prototype.removeEventListener = function (type, listener) {
+                _super.prototype.removeEventListener.call(this, type, listener);
+
+                if (this.hasEventListener(type, listener))
+                    return;
+
+                switch (type) {
+                    case away.events.DisplayObjectEvent.POSITION_CHANGED:
+                        this._listenToPositionChanged = false;
+                        break;
+
+                    case away.events.DisplayObjectEvent.ROTATION_CHANGED:
+                        this._listenToRotationChanged = false;
+                        break;
+
+                    case away.events.DisplayObjectEvent.SCALE_CHANGED:
+                        this._listenToScaleChanged = false;
+                        break;
+                }
+            };
+
+            /**
+            * Moves the 3d object along a vector by a defined length
+            *
+            * @param    axis        The vector defining the axis of movement
+            * @param    distance    The length of the movement
+            */
+            DisplayObject.prototype.translate = function (axis, distance) {
+                var x = axis.x, y = axis.y, z = axis.z;
+                var len = distance / Math.sqrt(x * x + y * y + z * z);
+
+                this._x += x * len;
+                this._y += y * len;
+                this._z += z * len;
+
+                this.invalidatePosition();
+            };
+
+            /**
+            * Moves the 3d object along a vector by a defined length
+            *
+            * @param    axis        The vector defining the axis of movement
+            * @param    distance    The length of the movement
+            */
+            DisplayObject.prototype.translateLocal = function (axis, distance) {
+                var x = axis.x, y = axis.y, z = axis.z;
+                var len = distance / Math.sqrt(x * x + y * y + z * z);
+
+                this._iMatrix3D.prependTranslation(x * len, y * len, z * len);
+
+                this._matrix3D.copyColumnTo(3, this._pos);
+
+                this._x = this._pos.x;
+                this._y = this._pos.y;
+                this._z = this._pos.z;
+
+                this.invalidatePosition();
+            };
+
+            /**
+            * Rotates the 3d object around it's local y-axis
+            *
+            * @param    angle        The amount of rotation in degrees
+            */
+            DisplayObject.prototype.yaw = function (angle) {
+                this.rotate(away.geom.Vector3D.Y_AXIS, angle);
+            };
+
+            Object.defineProperty(DisplayObject.prototype, "_iAssignedPartition", {
+                /**
+                * @internal
+                */
+                get: function () {
+                    return this._pImplicitPartition;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(DisplayObject.prototype, "_iMatrix3D", {
+                /**
+                * The transformation of the 3d object, relative to the local coordinates of the parent <code>ObjectContainer3D</code>.
+                *
+                * @internal
+                */
+                get: function () {
+                    if (this._matrix3DDirty)
+                        this._pUpdateMatrix3D();
+
+                    return this._matrix3D;
+                },
+                set: function (val) {
+                    // TODO: From AS3 - Do we still need this in JS ?
+                    //ridiculous matrix error
+                    /*
+                    if (!val.rawData[0]) {
+                    
+                    var raw:number[] = away.geom.Matrix3DUtils.RAW_DATA_CONTAINER;
+                    val.copyRawDataTo(raw);
+                    raw[0] = this._smallestNumber;
+                    val.copyRawDataFrom(raw);
+                    }
+                    //*/
+                    var elements = val.decompose();
+                    var vec;
+
+                    vec = elements[0];
+
+                    if (this._x != vec.x || this._y != vec.y || this._z != vec.z) {
+                        this._x = vec.x;
+                        this._y = vec.y;
+                        this._z = vec.z;
+
+                        this.invalidatePosition();
+                    }
+
+                    vec = elements[1];
+
+                    if (this._rotationX != vec.x || this._rotationY != vec.y || this._rotationZ != vec.z) {
+                        this._rotationX = vec.x;
+                        this._rotationY = vec.y;
+                        this._rotationZ = vec.z;
+
+                        this.invalidateRotation();
+                    }
+
+                    vec = elements[2];
+
+                    if (this._pScaleX != vec.x || this._pScaleY != vec.y || this._pScaleZ != vec.z) {
+                        this._pScaleX = vec.x;
+                        this._pScaleY = vec.y;
+                        this._pScaleZ = vec.z;
+
+                        this.invalidateScale();
+                    }
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(DisplayObject.prototype, "_iPickingCollisionVO", {
+                /**
+                * @internal
+                */
+                get: function () {
+                    if (!this._pickingCollisionVO)
+                        this._pickingCollisionVO = new away.pick.PickingCollisionVO(this);
+
+                    return this._pickingCollisionVO;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * @internal
+            */
+            DisplayObject.prototype.iSetParent = function (value) {
+                this._pParent = value;
+
+                if (value) {
+                    this._pUpdateImplicitMouseEnabled(value.mouseChildren);
+                    this._pUpdateImplicitVisibility(value._iIsVisible());
+                    this._pUpdateImplicitPartition(value._iAssignedPartition);
+                    this._iSetScene(value._pScene);
+                } else {
+                    this._pUpdateImplicitMouseEnabled(true);
+                    this._pUpdateImplicitVisibility(true);
+                    this._pUpdateImplicitPartition(null);
+
+                    this._iSetScene(null);
+                }
+            };
+
+            /**
+            * @protected
+            */
+            DisplayObject.prototype.pCreateDefaultBoundingVolume = function () {
+                // point lights should be using sphere bounds
+                // directional lights should be using null bounds
+                return new away.bounds.AxisAlignedBoundingBox();
+            };
+
+            /**
+            * @protected
+            */
+            DisplayObject.prototype.pCreateEntityPartitionNode = function () {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            /**
+            * @protected
+            */
+            DisplayObject.prototype.pInvalidateBounds = function () {
+                this._pBoundsInvalid = true;
+                this._worldBoundsInvalid = true;
+            };
+
+            /**
+            * @protected
+            */
+            DisplayObject.prototype.pInvalidateSceneTransform = function () {
+                this._pSceneTransformDirty = !this._pIgnoreTransform;
+                this._inverseSceneTransformDirty = !this._pIgnoreTransform;
+                this._scenePositionDirty = !this._pIgnoreTransform;
+
+                this._worldBoundsInvalid = !this._pIgnoreTransform;
+
+                if (this._listenToSceneTransformChanged)
+                    this.notifySceneTransformChange();
+            };
+
+            /**
+            * @protected
+            */
+            DisplayObject.prototype.pUpdateBounds = function () {
+                this._width = this._pBounds.aabb.width * this._pScaleX;
+                this._height = this._pBounds.aabb.height * this._pScaleY;
+                this._depth = this._pBounds.aabb.depth * this._pScaleZ;
+
+                this._pBoundsInvalid = false;
+            };
+
+            /**
+            * @protected
+            */
+            DisplayObject.prototype._pUpdateImplicitMouseEnabled = function (value) {
+                this._pImplicitMouseEnabled = this._explicitMouseEnabled && value;
+
+                // If there is a parent and this child does not have a picking collider, use its parent's picking collider.
+                if (this._pImplicitMouseEnabled && this._pParent && !this._pickingCollider)
+                    this._pickingCollider = this._pParent._pickingCollider;
+            };
+
+            /**
+            * @protected
+            */
+            DisplayObject.prototype._pUpdateImplicitPartition = function (value) {
+                // assign parent implicit partition if no explicit one is given
+                this._pImplicitPartition = this._explicitPartition || value;
+            };
+
+            /**
+            * @protected
+            */
+            DisplayObject.prototype._pUpdateImplicitVisibility = function (value) {
+                this._pImplicitVisibility = this._explicitVisibility && value;
+            };
+
+            /**
+            * @protected
+            */
+            DisplayObject.prototype._pUpdateMatrix3D = function () {
+                this._pos.x = this._x;
+                this._pos.y = this._y;
+                this._pos.z = this._z;
+
+                this._rot.x = this._rotationX;
+                this._rot.y = this._rotationY;
+                this._rot.z = this._rotationZ;
+
+                this._sca.x = this._pScaleX;
+                this._sca.y = this._pScaleY;
+                this._sca.z = this._pScaleZ;
+
+                this._matrix3D.recompose(this._transformComponents);
+
+                if (!this._pivotZero) {
+                    this._matrix3D.prependTranslation(-this._pivotPoint.x, -this._pivotPoint.y, -this._pivotPoint.z);
+                    if (this.alignmentMode != away.base.AlignmentMode.PIVOT_POINT)
+                        this._matrix3D.appendTranslation(this._pivotPoint.x * this._pScaleX, this._pivotPoint.y * this._pScaleY, this._pivotPoint.z * this._pScaleZ);
+                }
+
+                this._matrix3DDirty = false;
+                this._positionDirty = false;
+                this._rotationDirty = false;
+                this._scaleDirty = false;
+                this._pivotDirty = false;
+            };
+
+            /**
+            * @protected
+            */
+            DisplayObject.prototype.pUpdateSceneTransform = function () {
+                if (this._pParent && !this._pParent._iIsRoot) {
+                    this._pSceneTransform.copyFrom(this._pParent.sceneTransform);
+                    this._pSceneTransform.prepend(this._iMatrix3D);
+                } else {
+                    this._pSceneTransform.copyFrom(this._iMatrix3D);
+                }
+
+                this._pSceneTransformDirty = false;
+            };
+
+            /**
+            * @internal
+            */
+            DisplayObject.prototype._iCollidesBefore = function (shortestCollisionDistance, findClosest) {
+                return true;
+            };
+
+            /**
+            *
+            */
+            DisplayObject.prototype._iInternalUpdate = function () {
+                if (this._iController)
+                    this._iController.update();
+            };
+
+            /**
+            * @internal
+            */
+            DisplayObject.prototype._iIsVisible = function () {
+                return this._pImplicitVisibility;
+            };
+
+            /**
+            * @internal
+            */
+            DisplayObject.prototype._iIsMouseEnabled = function () {
+                return this._pImplicitMouseEnabled;
+            };
+
+            /**
+            * @internal
+            */
+            DisplayObject.prototype._iSetScene = function (value) {
+                // test to see if we're switching roots while we're already using a scene partition
+                /*
+                if (value == null)
+                this._oldScene = this._pScene;
+                
+                if (this._explicitPartition && this._oldScene && this._oldScene != this._pScene)
+                this.partition = null;
+                
+                if (value)
+                this._oldScene = null;
+                
+                // end of stupid partition test code
+                //*/
+                if (this._pScene == value)
+                    return;
+
+                this._pUpdateScene(value);
+
+                if (!this._pSceneTransformDirty && !this._pIgnoreTransform)
+                    this.pInvalidateSceneTransform();
+            };
+
+            /**
+            * @protected
+            */
+            DisplayObject.prototype._pUpdateScene = function (value) {
+                if (this._pScene) {
+                    this._pScene.dispatchEvent(new away.events.SceneEvent(away.events.SceneEvent.REMOVED_FROM_SCENE, this));
+
+                    //unregister entity from current scene
+                    this._pScene.iUnregisterEntity(this);
+                }
+
+                this._pScene = value;
+
+                if (value) {
+                    value.dispatchEvent(new away.events.SceneEvent(away.events.SceneEvent.ADDED_TO_SCENE, this));
+
+                    //register entity with new scene
+                    value.iRegisterEntity(this);
+                }
+
+                this.notifySceneChange();
+            };
+
+            /**
+            * @private
+            */
+            DisplayObject.prototype.addBounds = function () {
+                if (!this._boundsIsShown) {
+                    this._boundsIsShown = true;
+                    //				this.addChild(this._pBounds.boundingEntity);
+                }
+            };
+
+            /**
+            * @private
+            */
+            DisplayObject.prototype.notifyPositionChanged = function () {
+                if (!this._positionChanged)
+                    this._positionChanged = new away.events.DisplayObjectEvent(away.events.DisplayObjectEvent.POSITION_CHANGED, this);
+
+                this.dispatchEvent(this._positionChanged);
+            };
+
+            /**
+            * @private
+            */
+            DisplayObject.prototype.notifyRotationChanged = function () {
+                if (!this._rotationChanged)
+                    this._rotationChanged = new away.events.DisplayObjectEvent(away.events.DisplayObjectEvent.ROTATION_CHANGED, this);
+
+                this.dispatchEvent(this._rotationChanged);
+            };
+
+            /**
+            * @private
+            */
+            DisplayObject.prototype.notifyScaleChanged = function () {
+                if (!this._scaleChanged)
+                    this._scaleChanged = new away.events.DisplayObjectEvent(away.events.DisplayObjectEvent.SCALE_CHANGED, this);
+
+                this.dispatchEvent(this._scaleChanged);
+            };
+
+            /**
+            * @private
+            */
+            DisplayObject.prototype.notifySceneChange = function () {
+                if (this._listenToSceneChanged) {
+                    if (!this._scenechanged)
+                        this._scenechanged = new away.events.DisplayObjectEvent(away.events.DisplayObjectEvent.SCENE_CHANGED, this);
+
+                    this.dispatchEvent(this._scenechanged);
+                }
+            };
+
+            /**
+            * @private
+            */
+            DisplayObject.prototype.notifySceneTransformChange = function () {
+                if (!this._sceneTransformChanged)
+                    this._sceneTransformChanged = new away.events.DisplayObjectEvent(away.events.DisplayObjectEvent.SCENETRANSFORM_CHANGED, this);
+
+                this.dispatchEvent(this._sceneTransformChanged);
+            };
+
+            /**
+            * Invalidates the 3D transformation matrix, causing it to be updated upon the next request
+            *
+            * @private
+            */
+            DisplayObject.prototype.invalidateMatrix3D = function () {
+                if (this._matrix3DDirty)
+                    return;
+
+                this._matrix3DDirty = true;
+
+                if (!this._pSceneTransformDirty && !this._pIgnoreTransform)
+                    this.pInvalidateSceneTransform();
+            };
+
+            /**
+            * @private
+            */
+            DisplayObject.prototype.invalidatePivot = function () {
+                this._pivotZero = (this._pivotPoint.x == 0) && (this._pivotPoint.y == 0) && (this._pivotPoint.z == 0);
+
+                if (this._pivotDirty)
+                    return;
+
+                this._pivotDirty = true;
+
+                this.invalidateMatrix3D();
+            };
+
+            /**
+            * @private
+            */
+            DisplayObject.prototype.invalidatePosition = function () {
+                if (this._positionDirty)
+                    return;
+
+                this._positionDirty = true;
+
+                this.invalidateMatrix3D();
+
+                if (this._listenToPositionChanged)
+                    this.notifyPositionChanged();
+            };
+
+            /**
+            * @private
+            */
+            DisplayObject.prototype.invalidateRotation = function () {
+                if (this._rotationDirty)
+                    return;
+
+                this._rotationDirty = true;
+
+                this.invalidateMatrix3D();
+
+                if (this._listenToRotationChanged)
+                    this.notifyRotationChanged();
+            };
+
+            /**
+            * @private
+            */
+            DisplayObject.prototype.invalidateScale = function () {
+                if (this._scaleDirty)
+                    return;
+
+                this._scaleDirty = true;
+
+                this.invalidateMatrix3D();
+
+                if (this._listenToScaleChanged)
+                    this.notifyScaleChanged();
+            };
+
+            /**
+            * @private
+            */
+            DisplayObject.prototype.removeBounds = function () {
+                if (this._boundsIsShown) {
+                    this._boundsIsShown = false;
+
+                    //				this.removeChild(this._pBounds.boundingEntity);
+                    this._pBounds.disposeRenderable();
+                }
+            };
+            return DisplayObject;
+        })(away.library.NamedAssetBase);
+        base.DisplayObject = DisplayObject;
+    })(away.base || (away.base = {}));
+    var base = away.base;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * The GradientType class provides values for the <code>type</code> parameter
+    * in the <code>beginGradientFill()</code> and
+    * <code>lineGradientStyle()</code> methods of the flash.display.Graphics
+    * class.
+    */
+    (function (base) {
+        var GradientType = (function () {
+            function GradientType() {
+            }
+            GradientType.LINEAR = "linear";
+
+            GradientType.RADIAL = "radial";
+            return GradientType;
+        })();
+        base.GradientType = GradientType;
+    })(away.base || (away.base = {}));
+    var base = away.base;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * The Graphics class contains a set of methods that you can use to create a
+    * vector shape. Display objects that support drawing include Sprite and Shape
+    * objects. Each of these classes includes a <code>graphics</code> property
+    * that is a Graphics object. The following are among those helper functions
+    * provided for ease of use: <code>drawRect()</code>,
+    * <code>drawRoundRect()</code>, <code>drawCircle()</code>, and
+    * <code>drawEllipse()</code>.
+    *
+    * <p>You cannot create a Graphics object directly from ActionScript code. If
+    * you call <code>new Graphics()</code>, an exception is thrown.</p>
+    *
+    * <p>The Graphics class is final; it cannot be subclassed.</p>
+    */
+    (function (base) {
+        var Graphics = (function () {
+            function Graphics() {
+            }
+            /**
+            * Fills a drawing area with a bitmap image. The bitmap can be repeated or
+            * tiled to fill the area. The fill remains in effect until you call the
+            * <code>beginFill()</code>, <code>beginBitmapFill()</code>,
+            * <code>beginGradientFill()</code>, or <code>beginShaderFill()</code>
+            * method. Calling the <code>clear()</code> method clears the fill.
+            *
+            * <p>The application renders the fill whenever three or more points are
+            * drawn, or when the <code>endFill()</code> method is called. </p>
+            *
+            * @param bitmap A transparent or opaque bitmap image that contains the bits
+            *               to be displayed.
+            * @param matrix A matrix object(of the flash.geom.Matrix class), which you
+            *               can use to define transformations on the bitmap. For
+            *               example, you can use the following matrix to rotate a bitmap
+            *               by 45 degrees(pi/4 radians):
+            * @param repeat If <code>true</code>, the bitmap image repeats in a tiled
+            *               pattern. If <code>false</code>, the bitmap image does not
+            *               repeat, and the edges of the bitmap are used for any fill
+            *               area that extends beyond the bitmap.
+            *
+            *               <p>For example, consider the following bitmap(a 20 x
+            *               20-pixel checkerboard pattern):</p>
+            *
+            *               <p>When <code>repeat</code> is set to <code>true</code>(as
+            *               in the following example), the bitmap fill repeats the
+            *               bitmap:</p>
+            *
+            *               <p>When <code>repeat</code> is set to <code>false</code>,
+            *               the bitmap fill uses the edge pixels for the fill area
+            *               outside the bitmap:</p>
+            * @param smooth If <code>false</code>, upscaled bitmap images are rendered
+            *               by using a nearest-neighbor algorithm and look pixelated. If
+            *               <code>true</code>, upscaled bitmap images are rendered by
+            *               using a bilinear algorithm. Rendering by using the nearest
+            *               neighbor algorithm is faster.
+            */
+            Graphics.prototype.beginBitmapFill = function (bitmap, matrix, repeat, smooth) {
+                if (typeof matrix === "undefined") { matrix = null; }
+                if (typeof repeat === "undefined") { repeat = true; }
+                if (typeof smooth === "undefined") { smooth = false; }
+            };
+
+            /**
+            * Specifies a simple one-color fill that subsequent calls to other Graphics
+            * methods(such as <code>lineTo()</code> or <code>drawCircle()</code>) use
+            * when drawing. The fill remains in effect until you call the
+            * <code>beginFill()</code>, <code>beginBitmapFill()</code>,
+            * <code>beginGradientFill()</code>, or <code>beginShaderFill()</code>
+            * method. Calling the <code>clear()</code> method clears the fill.
+            *
+            * <p>The application renders the fill whenever three or more points are
+            * drawn, or when the <code>endFill()</code> method is called.</p>
+            *
+            * @param color The color of the fill(0xRRGGBB).
+            * @param alpha The alpha value of the fill(0.0 to 1.0).
+            */
+            Graphics.prototype.beginFill = function (color /*int*/ , alpha) {
+                if (typeof alpha === "undefined") { alpha = 1; }
+            };
+
+            /**
+            * Specifies a gradient fill used by subsequent calls to other Graphics
+            * methods(such as <code>lineTo()</code> or <code>drawCircle()</code>) for
+            * the object. The fill remains in effect until you call the
+            * <code>beginFill()</code>, <code>beginBitmapFill()</code>,
+            * <code>beginGradientFill()</code>, or <code>beginShaderFill()</code>
+            * method. Calling the <code>clear()</code> method clears the fill.
+            *
+            * <p>The application renders the fill whenever three or more points are
+            * drawn, or when the <code>endFill()</code> method is called. </p>
+            *
+            * @param type                A value from the GradientType class that
+            *                            specifies which gradient type to use:
+            *                            <code>GradientType.LINEAR</code> or
+            *                            <code>GradientType.RADIAL</code>.
+            * @param colors              An array of RGB hexadecimal color values used
+            *                            in the gradient; for example, red is 0xFF0000,
+            *                            blue is 0x0000FF, and so on. You can specify
+            *                            up to 15 colors. For each color, specify a
+            *                            corresponding value in the alphas and ratios
+            *                            parameters.
+            * @param alphas              An array of alpha values for the corresponding
+            *                            colors in the colors array; valid values are 0
+            *                            to 1. If the value is less than 0, the default
+            *                            is 0. If the value is greater than 1, the
+            *                            default is 1.
+            * @param ratios              An array of color distribution ratios; valid
+            *                            values are 0-255. This value defines the
+            *                            percentage of the width where the color is
+            *                            sampled at 100%. The value 0 represents the
+            *                            left position in the gradient box, and 255
+            *                            represents the right position in the gradient
+            *                            box.
+            * @param matrix              A transformation matrix as defined by the
+            *                            flash.geom.Matrix class. The flash.geom.Matrix
+            *                            class includes a
+            *                            <code>createGradientBox()</code> method, which
+            *                            lets you conveniently set up the matrix for use
+            *                            with the <code>beginGradientFill()</code>
+            *                            method.
+            * @param spreadMethod        A value from the SpreadMethod class that
+            *                            specifies which spread method to use, either:
+            *                            <code>SpreadMethod.PAD</code>,
+            *                            <code>SpreadMethod.REFLECT</code>, or
+            *                            <code>SpreadMethod.REPEAT</code>.
+            *
+            *                            <p>For example, consider a simple linear
+            *                            gradient between two colors:</p>
+            *
+            *                            <p>This example uses
+            *                            <code>SpreadMethod.PAD</code> for the spread
+            *                            method, and the gradient fill looks like the
+            *                            following:</p>
+            *
+            *                            <p>If you use <code>SpreadMethod.REFLECT</code>
+            *                            for the spread method, the gradient fill looks
+            *                            like the following:</p>
+            *
+            *                            <p>If you use <code>SpreadMethod.REPEAT</code>
+            *                            for the spread method, the gradient fill looks
+            *                            like the following:</p>
+            * @param interpolationMethod A value from the InterpolationMethod class that
+            *                            specifies which value to use:
+            *                            <code>InterpolationMethod.LINEAR_RGB</code> or
+            *                            <code>InterpolationMethod.RGB</code>
+            *
+            *                            <p>For example, consider a simple linear
+            *                            gradient between two colors(with the
+            *                            <code>spreadMethod</code> parameter set to
+            *                            <code>SpreadMethod.REFLECT</code>). The
+            *                            different interpolation methods affect the
+            *                            appearance as follows: </p>
+            * @param focalPointRatio     A number that controls the location of the
+            *                            focal point of the gradient. 0 means that the
+            *                            focal point is in the center. 1 means that the
+            *                            focal point is at one border of the gradient
+            *                            circle. -1 means that the focal point is at the
+            *                            other border of the gradient circle. A value
+            *                            less than -1 or greater than 1 is rounded to -1
+            *                            or 1. For example, the following example shows
+            *                            a <code>focalPointRatio</code> set to 0.75:
+            * @throws ArgumentError If the <code>type</code> parameter is not valid.
+            */
+            Graphics.prototype.beginGradientFill = function (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio) {
+                if (typeof matrix === "undefined") { matrix = null; }
+                if (typeof spreadMethod === "undefined") { spreadMethod = "pad"; }
+                if (typeof interpolationMethod === "undefined") { interpolationMethod = "rgb"; }
+                if (typeof focalPointRatio === "undefined") { focalPointRatio = 0; }
+            };
+
+            /**
+            * Specifies a shader fill used by subsequent calls to other Graphics methods
+            * (such as <code>lineTo()</code> or <code>drawCircle()</code>) for the
+            * object. The fill remains in effect until you call the
+            * <code>beginFill()</code>, <code>beginBitmapFill()</code>,
+            * <code>beginGradientFill()</code>, or <code>beginShaderFill()</code>
+            * method. Calling the <code>clear()</code> method clears the fill.
+            *
+            * <p>The application renders the fill whenever three or more points are
+            * drawn, or when the <code>endFill()</code> method is called.</p>
+            *
+            * <p>Shader fills are not supported under GPU rendering; filled areas will
+            * be colored cyan.</p>
+            *
+            * @param shader The shader to use for the fill. This Shader instance is not
+            *               required to specify an image input. However, if an image
+            *               input is specified in the shader, the input must be provided
+            *               manually. To specify the input, set the <code>input</code>
+            *               property of the corresponding ShaderInput property of the
+            *               <code>Shader.data</code> property.
+            *
+            *               <p>When you pass a Shader instance as an argument the shader
+            *               is copied internally. The drawing fill operation uses that
+            *               internal copy, not a reference to the original shader. Any
+            *               changes made to the shader, such as changing a parameter
+            *               value, input, or bytecode, are not applied to the copied
+            *               shader that's used for the fill.</p>
+            * @param matrix A matrix object(of the flash.geom.Matrix class), which you
+            *               can use to define transformations on the shader. For
+            *               example, you can use the following matrix to rotate a shader
+            *               by 45 degrees(pi/4 radians):
+            *
+            *               <p>The coordinates received in the shader are based on the
+            *               matrix that is specified for the <code>matrix</code>
+            *               parameter. For a default(<code>null</code>) matrix, the
+            *               coordinates in the shader are local pixel coordinates which
+            *               can be used to sample an input.</p>
+            * @throws ArgumentError When the shader output type is not compatible with
+            *                       this operation(the shader must specify a
+            *                       <code>pixel3</code> or <code>pixel4</code> output).
+            * @throws ArgumentError When the shader specifies an image input that isn't
+            *                       provided.
+            * @throws ArgumentError When a ByteArray or Vector.<Number> instance is used
+            *                       as an input and the <code>width</code> and
+            *                       <code>height</code> properties aren't specified for
+            *                       the ShaderInput, or the specified values don't match
+            *                       the amount of data in the input object. See the
+            *                       <code>ShaderInput.input</code> property for more
+            *                       information.
+            */
+            //		public beginShaderFill(shader:Shader, matrix:away.geom.Matrix = null)
+            //		{
+            //
+            //		}
+            /**
+            * Clears the graphics that were drawn to this Graphics object, and resets
+            * fill and line style settings.
+            *
+            */
+            Graphics.prototype.clear = function () {
+            };
+
+            /**
+            * Copies all of drawing commands from the source Graphics object into the
+            * calling Graphics object.
+            *
+            * @param sourceGraphics The Graphics object from which to copy the drawing
+            *                       commands.
+            */
+            Graphics.prototype.copyFrom = function (sourceGraphics) {
+            };
+
+            /**
+            * Draws a cubic Bezier curve from the current drawing position to the
+            * specified anchor point. Cubic Bezier curves consist of two anchor points
+            * and two control points. The curve interpolates the two anchor points and
+            * curves toward the two control points.
+            *
+            * The four points you use to draw a cubic Bezier curve with the
+            * <code>cubicCurveTo()</code> method are as follows:
+            *
+            * <ul>
+            *   <li>The current drawing position is the first anchor point. </li>
+            *   <li>The anchorX and anchorY parameters specify the second anchor point.
+            *   </li>
+            *   <li>The <code>controlX1</code> and <code>controlY1</code> parameters
+            *   specify the first control point.</li>
+            *   <li>The <code>controlX2</code> and <code>controlY2</code> parameters
+            *   specify the second control point.</li>
+            * </ul>
+            *
+            * If you call the <code>cubicCurveTo()</code> method before calling the
+            * <code>moveTo()</code> method, your curve starts at position (0, 0).
+            *
+            * If the <code>cubicCurveTo()</code> method succeeds, the Flash runtime sets
+            * the current drawing position to (<code>anchorX</code>,
+            * <code>anchorY</code>). If the <code>cubicCurveTo()</code> method fails,
+            * the current drawing position remains unchanged.
+            *
+            * If your movie clip contains content created with the Flash drawing tools,
+            * the results of calls to the <code>cubicCurveTo()</code> method are drawn
+            * underneath that content.
+            *
+            * @param controlX1 Specifies the horizontal position of the first control
+            *                  point relative to the registration point of the parent
+            *                  display object.
+            * @param controlY1 Specifies the vertical position of the first control
+            *                  point relative to the registration point of the parent
+            *                  display object.
+            * @param controlX2 Specifies the horizontal position of the second control
+            *                  point relative to the registration point of the parent
+            *                  display object.
+            * @param controlY2 Specifies the vertical position of the second control
+            *                  point relative to the registration point of the parent
+            *                  display object.
+            * @param anchorX   Specifies the horizontal position of the anchor point
+            *                  relative to the registration point of the parent display
+            *                  object.
+            * @param anchorY   Specifies the vertical position of the anchor point
+            *                  relative to the registration point of the parent display
+            *                  object.
+            */
+            Graphics.prototype.cubicCurveTo = function (controlX1, controlY1, controlX2, controlY2, anchorX, anchorY) {
+            };
+
+            /**
+            * Draws a curve using the current line style from the current drawing
+            * position to(anchorX, anchorY) and using the control point that
+            * (<code>controlX</code>, <code>controlY</code>) specifies. The current
+            * drawing position is then set to(<code>anchorX</code>,
+            * <code>anchorY</code>). If the movie clip in which you are drawing contains
+            * content created with the Flash drawing tools, calls to the
+            * <code>curveTo()</code> method are drawn underneath this content. If you
+            * call the <code>curveTo()</code> method before any calls to the
+            * <code>moveTo()</code> method, the default of the current drawing position
+            * is(0, 0). If any of the parameters are missing, this method fails and the
+            * current drawing position is not changed.
+            *
+            * <p>The curve drawn is a quadratic Bezier curve. Quadratic Bezier curves
+            * consist of two anchor points and one control point. The curve interpolates
+            * the two anchor points and curves toward the control point. </p>
+            *
+            * @param controlX A number that specifies the horizontal position of the
+            *                 control point relative to the registration point of the
+            *                 parent display object.
+            * @param controlY A number that specifies the vertical position of the
+            *                 control point relative to the registration point of the
+            *                 parent display object.
+            * @param anchorX  A number that specifies the horizontal position of the
+            *                 next anchor point relative to the registration point of
+            *                 the parent display object.
+            * @param anchorY  A number that specifies the vertical position of the next
+            *                 anchor point relative to the registration point of the
+            *                 parent display object.
+            */
+            Graphics.prototype.curveTo = function (controlX, controlY, anchorX, anchorY) {
+            };
+
+            /**
+            * Draws a circle. Set the line style, fill, or both before you call the
+            * <code>drawCircle()</code> method, by calling the <code>linestyle()</code>,
+            * <code>lineGradientStyle()</code>, <code>beginFill()</code>,
+            * <code>beginGradientFill()</code>, or <code>beginBitmapFill()</code>
+            * method.
+            *
+            * @param x      The <i>x</i> location of the center of the circle relative
+            *               to the registration point of the parent display object(in
+            *               pixels).
+            * @param y      The <i>y</i> location of the center of the circle relative
+            *               to the registration point of the parent display object(in
+            *               pixels).
+            * @param radius The radius of the circle(in pixels).
+            */
+            Graphics.prototype.drawCircle = function (x, y, radius) {
+            };
+
+            /**
+            * Draws an ellipse. Set the line style, fill, or both before you call the
+            * <code>drawEllipse()</code> method, by calling the
+            * <code>linestyle()</code>, <code>lineGradientStyle()</code>,
+            * <code>beginFill()</code>, <code>beginGradientFill()</code>, or
+            * <code>beginBitmapFill()</code> method.
+            *
+            * @param x      The <i>x</i> location of the top-left of the bounding-box of
+            *               the ellipse relative to the registration point of the parent
+            *               display object(in pixels).
+            * @param y      The <i>y</i> location of the top left of the bounding-box of
+            *               the ellipse relative to the registration point of the parent
+            *               display object(in pixels).
+            * @param width  The width of the ellipse(in pixels).
+            * @param height The height of the ellipse(in pixels).
+            */
+            Graphics.prototype.drawEllipse = function (x, y, width, height) {
+            };
+
+            /**
+            * Submits a series of IGraphicsData instances for drawing. This method
+            * accepts a Vector containing objects including paths, fills, and strokes
+            * that implement the IGraphicsData interface. A Vector of IGraphicsData
+            * instances can refer to a part of a shape, or a complex fully defined set
+            * of data for rendering a complete shape.
+            *
+            * <p> Graphics paths can contain other graphics paths. If the
+            * <code>graphicsData</code> Vector includes a path, that path and all its
+            * sub-paths are rendered during this operation. </p>
+            *
+            */
+            Graphics.prototype.drawGraphicsData = function (graphicsData) {
+            };
+
+            /**
+            * Submits a series of commands for drawing. The <code>drawPath()</code>
+            * method uses vector arrays to consolidate individual <code>moveTo()</code>,
+            * <code>lineTo()</code>, and <code>curveTo()</code> drawing commands into a
+            * single call. The <code>drawPath()</code> method parameters combine drawing
+            * commands with x- and y-coordinate value pairs and a drawing direction. The
+            * drawing commands are values from the GraphicsPathCommand class. The x- and
+            * y-coordinate value pairs are Numbers in an array where each pair defines a
+            * coordinate location. The drawing direction is a value from the
+            * GraphicsPathWinding class.
+            *
+            * <p> Generally, drawings render faster with <code>drawPath()</code> than
+            * with a series of individual <code>lineTo()</code> and
+            * <code>curveTo()</code> methods. </p>
+            *
+            * <p> The <code>drawPath()</code> method uses a uses a floating computation
+            * so rotation and scaling of shapes is more accurate and gives better
+            * results. However, curves submitted using the <code>drawPath()</code>
+            * method can have small sub-pixel alignment errors when used in conjunction
+            * with the <code>lineTo()</code> and <code>curveTo()</code> methods. </p>
+            *
+            * <p> The <code>drawPath()</code> method also uses slightly different rules
+            * for filling and drawing lines. They are: </p>
+            *
+            * <ul>
+            *   <li>When a fill is applied to rendering a path:
+            * <ul>
+            *   <li>A sub-path of less than 3 points is not rendered.(But note that the
+            * stroke rendering will still occur, consistent with the rules for strokes
+            * below.)</li>
+            *   <li>A sub-path that isn't closed(the end point is not equal to the
+            * begin point) is implicitly closed.</li>
+            * </ul>
+            * </li>
+            *   <li>When a stroke is applied to rendering a path:
+            * <ul>
+            *   <li>The sub-paths can be composed of any number of points.</li>
+            *   <li>The sub-path is never implicitly closed.</li>
+            * </ul>
+            * </li>
+            * </ul>
+            *
+            * @param winding Specifies the winding rule using a value defined in the
+            *                GraphicsPathWinding class.
+            */
+            Graphics.prototype.drawPath = function (commands, data, winding) {
+            };
+
+            /**
+            * Draws a rectangle. Set the line style, fill, or both before you call the
+            * <code>drawRect()</code> method, by calling the <code>linestyle()</code>,
+            * <code>lineGradientStyle()</code>, <code>beginFill()</code>,
+            * <code>beginGradientFill()</code>, or <code>beginBitmapFill()</code>
+            * method.
+            *
+            * @param x      A number indicating the horizontal position relative to the
+            *               registration point of the parent display object(in pixels).
+            * @param y      A number indicating the vertical position relative to the
+            *               registration point of the parent display object(in pixels).
+            * @param width  The width of the rectangle(in pixels).
+            * @param height The height of the rectangle(in pixels).
+            * @throws ArgumentError If the <code>width</code> or <code>height</code>
+            *                       parameters are not a number
+            *                      (<code>Number.NaN</code>).
+            */
+            Graphics.prototype.drawRect = function (x, y, width, height) {
+            };
+
+            /**
+            * Draws a rounded rectangle. Set the line style, fill, or both before you
+            * call the <code>drawRoundRect()</code> method, by calling the
+            * <code>linestyle()</code>, <code>lineGradientStyle()</code>,
+            * <code>beginFill()</code>, <code>beginGradientFill()</code>, or
+            * <code>beginBitmapFill()</code> method.
+            *
+            * @param x             A number indicating the horizontal position relative
+            *                      to the registration point of the parent display
+            *                      object(in pixels).
+            * @param y             A number indicating the vertical position relative to
+            *                      the registration point of the parent display object
+            *                     (in pixels).
+            * @param width         The width of the round rectangle(in pixels).
+            * @param height        The height of the round rectangle(in pixels).
+            * @param ellipseWidth  The width of the ellipse used to draw the rounded
+            *                      corners(in pixels).
+            * @param ellipseHeight The height of the ellipse used to draw the rounded
+            *                      corners(in pixels). Optional; if no value is
+            *                      specified, the default value matches that provided
+            *                      for the <code>ellipseWidth</code> parameter.
+            * @throws ArgumentError If the <code>width</code>, <code>height</code>,
+            *                       <code>ellipseWidth</code> or
+            *                       <code>ellipseHeight</code> parameters are not a
+            *                       number(<code>Number.NaN</code>).
+            */
+            Graphics.prototype.drawRoundRect = function (x, y, width, height, ellipseWidth, ellipseHeight) {
+                if (typeof ellipseHeight === "undefined") { ellipseHeight = NaN; }
+            };
+
+            //public drawRoundRectComplex(x:Float, y:Float, width:Float, height:Float, topLeftRadius:Float, topRightRadius:Float, bottomLeftRadius:Float, bottomRightRadius:Float):Void;
+            /**
+            * Renders a set of triangles, typically to distort bitmaps and give them a
+            * three-dimensional appearance. The <code>drawTriangles()</code> method maps
+            * either the current fill, or a bitmap fill, to the triangle faces using a
+            * set of(u,v) coordinates.
+            *
+            * <p> Any type of fill can be used, but if the fill has a transform matrix
+            * that transform matrix is ignored. </p>
+            *
+            * <p> A <code>uvtData</code> parameter improves texture mapping when a
+            * bitmap fill is used. </p>
+            *
+            * @param culling Specifies whether to render triangles that face in a
+            *                specified direction. This parameter prevents the rendering
+            *                of triangles that cannot be seen in the current view. This
+            *                parameter can be set to any value defined by the
+            *                TriangleCulling class.
+            */
+            Graphics.prototype.drawTriangles = function (vertices, indices, uvtData, culling) {
+                if (typeof indices === "undefined") { indices = null; }
+                if (typeof uvtData === "undefined") { uvtData = null; }
+                if (typeof culling === "undefined") { culling = null; }
+            };
+
+            /**
+            * Applies a fill to the lines and curves that were added since the last call
+            * to the <code>beginFill()</code>, <code>beginGradientFill()</code>, or
+            * <code>beginBitmapFill()</code> method. Flash uses the fill that was
+            * specified in the previous call to the <code>beginFill()</code>,
+            * <code>beginGradientFill()</code>, or <code>beginBitmapFill()</code>
+            * method. If the current drawing position does not equal the previous
+            * position specified in a <code>moveTo()</code> method and a fill is
+            * defined, the path is closed with a line and then filled.
+            *
+            */
+            Graphics.prototype.endFill = function () {
+            };
+
+            /**
+            * Specifies a bitmap to use for the line stroke when drawing lines.
+            *
+            * <p>The bitmap line style is used for subsequent calls to Graphics methods
+            * such as the <code>lineTo()</code> method or the <code>drawCircle()</code>
+            * method. The line style remains in effect until you call the
+            * <code>lineStyle()</code> or <code>lineGradientStyle()</code> methods, or
+            * the <code>lineBitmapStyle()</code> method again with different parameters.
+            * </p>
+            *
+            * <p>You can call the <code>lineBitmapStyle()</code> method in the middle of
+            * drawing a path to specify different styles for different line segments
+            * within a path. </p>
+            *
+            * <p>Call the <code>lineStyle()</code> method before you call the
+            * <code>lineBitmapStyle()</code> method to enable a stroke, or else the
+            * value of the line style is <code>undefined</code>.</p>
+            *
+            * <p>Calls to the <code>clear()</code> method set the line style back to
+            * <code>undefined</code>. </p>
+            *
+            * @param bitmap The bitmap to use for the line stroke.
+            * @param matrix An optional transformation matrix as defined by the
+            *               flash.geom.Matrix class. The matrix can be used to scale or
+            *               otherwise manipulate the bitmap before applying it to the
+            *               line style.
+            * @param repeat Whether to repeat the bitmap in a tiled fashion.
+            * @param smooth Whether smoothing should be applied to the bitmap.
+            */
+            Graphics.prototype.lineBitmapStyle = function (bitmap, matrix, repeat, smooth) {
+                if (typeof matrix === "undefined") { matrix = null; }
+                if (typeof repeat === "undefined") { repeat = true; }
+                if (typeof smooth === "undefined") { smooth = false; }
+            };
+
+            /**
+            * Specifies a gradient to use for the stroke when drawing lines.
+            *
+            * <p>The gradient line style is used for subsequent calls to Graphics
+            * methods such as the <code>lineTo()</code> methods or the
+            * <code>drawCircle()</code> method. The line style remains in effect until
+            * you call the <code>lineStyle()</code> or <code>lineBitmapStyle()</code>
+            * methods, or the <code>lineGradientStyle()</code> method again with
+            * different parameters. </p>
+            *
+            * <p>You can call the <code>lineGradientStyle()</code> method in the middle
+            * of drawing a path to specify different styles for different line segments
+            * within a path. </p>
+            *
+            * <p>Call the <code>lineStyle()</code> method before you call the
+            * <code>lineGradientStyle()</code> method to enable a stroke, or else the
+            * value of the line style is <code>undefined</code>.</p>
+            *
+            * <p>Calls to the <code>clear()</code> method set the line style back to
+            * <code>undefined</code>. </p>
+            *
+            * @param type                A value from the GradientType class that
+            *                            specifies which gradient type to use, either
+            *                            GradientType.LINEAR or GradientType.RADIAL.
+            * @param colors              An array of RGB hexadecimal color values used
+            *                            in the gradient; for example, red is 0xFF0000,
+            *                            blue is 0x0000FF, and so on. You can specify
+            *                            up to 15 colors. For each color, specify a
+            *                            corresponding value in the alphas and ratios
+            *                            parameters.
+            * @param alphas              An array of alpha values for the corresponding
+            *                            colors in the colors array; valid values are 0
+            *                            to 1. If the value is less than 0, the default
+            *                            is 0. If the value is greater than 1, the
+            *                            default is 1.
+            * @param ratios              An array of color distribution ratios; valid
+            *                            values are 0-255. This value defines the
+            *                            percentage of the width where the color is
+            *                            sampled at 100%. The value 0 represents the
+            *                            left position in the gradient box, and 255
+            *                            represents the right position in the gradient
+            *                            box.
+            * @param matrix              A transformation matrix as defined by the
+            *                            flash.geom.Matrix class. The flash.geom.Matrix
+            *                            class includes a
+            *                            <code>createGradientBox()</code> method, which
+            *                            lets you conveniently set up the matrix for use
+            *                            with the <code>lineGradientStyle()</code>
+            *                            method.
+            * @param spreadMethod        A value from the SpreadMethod class that
+            *                            specifies which spread method to use:
+            * @param interpolationMethod A value from the InterpolationMethod class that
+            *                            specifies which value to use. For example,
+            *                            consider a simple linear gradient between two
+            *                            colors(with the <code>spreadMethod</code>
+            *                            parameter set to
+            *                            <code>SpreadMethod.REFLECT</code>). The
+            *                            different interpolation methods affect the
+            *                            appearance as follows:
+            * @param focalPointRatio     A number that controls the location of the
+            *                            focal point of the gradient. The value 0 means
+            *                            the focal point is in the center. The value 1
+            *                            means the focal point is at one border of the
+            *                            gradient circle. The value -1 means that the
+            *                            focal point is at the other border of the
+            *                            gradient circle. Values less than -1 or greater
+            *                            than 1 are rounded to -1 or 1. The following
+            *                            image shows a gradient with a
+            *                            <code>focalPointRatio</code> of -0.75:
+            */
+            Graphics.prototype.lineGradientStyle = function (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio) {
+                if (typeof matrix === "undefined") { matrix = null; }
+                if (typeof spreadMethod === "undefined") { spreadMethod = null; }
+                if (typeof interpolationMethod === "undefined") { interpolationMethod = null; }
+                if (typeof focalPointRatio === "undefined") { focalPointRatio = 0; }
+            };
+
+            /**
+            * Specifies a shader to use for the line stroke when drawing lines.
+            *
+            * <p>The shader line style is used for subsequent calls to Graphics methods
+            * such as the <code>lineTo()</code> method or the <code>drawCircle()</code>
+            * method. The line style remains in effect until you call the
+            * <code>lineStyle()</code> or <code>lineGradientStyle()</code> methods, or
+            * the <code>lineBitmapStyle()</code> method again with different parameters.
+            * </p>
+            *
+            * <p>You can call the <code>lineShaderStyle()</code> method in the middle of
+            * drawing a path to specify different styles for different line segments
+            * within a path. </p>
+            *
+            * <p>Call the <code>lineStyle()</code> method before you call the
+            * <code>lineShaderStyle()</code> method to enable a stroke, or else the
+            * value of the line style is <code>undefined</code>.</p>
+            *
+            * <p>Calls to the <code>clear()</code> method set the line style back to
+            * <code>undefined</code>. </p>
+            *
+            * @param shader The shader to use for the line stroke.
+            * @param matrix An optional transformation matrix as defined by the
+            *               flash.geom.Matrix class. The matrix can be used to scale or
+            *               otherwise manipulate the bitmap before applying it to the
+            *               line style.
+            */
+            //		public lineShaderStyle(shader:Shader, matrix:away.geom.Matrix = null)
+            //		{
+            //
+            //		}
+            /**
+            * Specifies a line style used for subsequent calls to Graphics methods such
+            * as the <code>lineTo()</code> method or the <code>drawCircle()</code>
+            * method. The line style remains in effect until you call the
+            * <code>lineGradientStyle()</code> method, the
+            * <code>lineBitmapStyle()</code> method, or the <code>lineStyle()</code>
+            * method with different parameters.
+            *
+            * <p>You can call the <code>lineStyle()</code> method in the middle of
+            * drawing a path to specify different styles for different line segments
+            * within the path.</p>
+            *
+            * <p><b>Note: </b>Calls to the <code>clear()</code> method set the line
+            * style back to <code>undefined</code>.</p>
+            *
+            * <p><b>Note: </b>Flash Lite 4 supports only the first three parameters
+            * (<code>thickness</code>, <code>color</code>, and <code>alpha</code>).</p>
+            *
+            * @param thickness    An integer that indicates the thickness of the line in
+            *                     points; valid values are 0-255. If a number is not
+            *                     specified, or if the parameter is undefined, a line is
+            *                     not drawn. If a value of less than 0 is passed, the
+            *                     default is 0. The value 0 indicates hairline
+            *                     thickness; the maximum thickness is 255. If a value
+            *                     greater than 255 is passed, the default is 255.
+            * @param color        A hexadecimal color value of the line; for example,
+            *                     red is 0xFF0000, blue is 0x0000FF, and so on. If a
+            *                     value is not indicated, the default is 0x000000
+            *                    (black). Optional.
+            * @param alpha        A number that indicates the alpha value of the color
+            *                     of the line; valid values are 0 to 1. If a value is
+            *                     not indicated, the default is 1(solid). If the value
+            *                     is less than 0, the default is 0. If the value is
+            *                     greater than 1, the default is 1.
+            * @param pixelHinting(Not supported in Flash Lite 4) A Boolean value that
+            *                     specifies whether to hint strokes to full pixels. This
+            *                     affects both the position of anchors of a curve and
+            *                     the line stroke size itself. With
+            *                     <code>pixelHinting</code> set to <code>true</code>,
+            *                     line widths are adjusted to full pixel widths. With
+            *                     <code>pixelHinting</code> set to <code>false</code>,
+            *                     disjoints can appear for curves and straight lines.
+            *                     For example, the following illustrations show how
+            *                     Flash Player or Adobe AIR renders two rounded
+            *                     rectangles that are identical, except that the
+            *                     <code>pixelHinting</code> parameter used in the
+            *                     <code>lineStyle()</code> method is set differently
+            *                    (the images are scaled by 200%, to emphasize the
+            *                     difference):
+            *
+            *                     <p>If a value is not supplied, the line does not use
+            *                     pixel hinting.</p>
+            * @param scaleMode   (Not supported in Flash Lite 4) A value from the
+            *                     LineScaleMode class that specifies which scale mode to
+            *                     use:
+            *                     <ul>
+            *                       <li> <code>LineScaleMode.NORMAL</code> - Always
+            *                     scale the line thickness when the object is scaled
+            *                    (the default). </li>
+            *                       <li> <code>LineScaleMode.NONE</code> - Never scale
+            *                     the line thickness. </li>
+            *                       <li> <code>LineScaleMode.VERTICAL</code> - Do not
+            *                     scale the line thickness if the object is scaled
+            *                     vertically <i>only</i>. For example, consider the
+            *                     following circles, drawn with a one-pixel line, and
+            *                     each with the <code>scaleMode</code> parameter set to
+            *                     <code>LineScaleMode.VERTICAL</code>. The circle on the
+            *                     left is scaled vertically only, and the circle on the
+            *                     right is scaled both vertically and horizontally:
+            *                     </li>
+            *                       <li> <code>LineScaleMode.HORIZONTAL</code> - Do not
+            *                     scale the line thickness if the object is scaled
+            *                     horizontally <i>only</i>. For example, consider the
+            *                     following circles, drawn with a one-pixel line, and
+            *                     each with the <code>scaleMode</code> parameter set to
+            *                     <code>LineScaleMode.HORIZONTAL</code>. The circle on
+            *                     the left is scaled horizontally only, and the circle
+            *                     on the right is scaled both vertically and
+            *                     horizontally:   </li>
+            *                     </ul>
+            * @param caps        (Not supported in Flash Lite 4) A value from the
+            *                     CapsStyle class that specifies the type of caps at the
+            *                     end of lines. Valid values are:
+            *                     <code>CapsStyle.NONE</code>,
+            *                     <code>CapsStyle.ROUND</code>, and
+            *                     <code>CapsStyle.SQUARE</code>. If a value is not
+            *                     indicated, Flash uses round caps.
+            *
+            *                     <p>For example, the following illustrations show the
+            *                     different <code>capsStyle</code> settings. For each
+            *                     setting, the illustration shows a blue line with a
+            *                     thickness of 30(for which the <code>capsStyle</code>
+            *                     applies), and a superimposed black line with a
+            *                     thickness of 1(for which no <code>capsStyle</code>
+            *                     applies): </p>
+            * @param joints      (Not supported in Flash Lite 4) A value from the
+            *                     JointStyle class that specifies the type of joint
+            *                     appearance used at angles. Valid values are:
+            *                     <code>JointStyle.BEVEL</code>,
+            *                     <code>JointStyle.MITER</code>, and
+            *                     <code>JointStyle.ROUND</code>. If a value is not
+            *                     indicated, Flash uses round joints.
+            *
+            *                     <p>For example, the following illustrations show the
+            *                     different <code>joints</code> settings. For each
+            *                     setting, the illustration shows an angled blue line
+            *                     with a thickness of 30(for which the
+            *                     <code>jointStyle</code> applies), and a superimposed
+            *                     angled black line with a thickness of 1(for which no
+            *                     <code>jointStyle</code> applies): </p>
+            *
+            *                     <p><b>Note:</b> For <code>joints</code> set to
+            *                     <code>JointStyle.MITER</code>, you can use the
+            *                     <code>miterLimit</code> parameter to limit the length
+            *                     of the miter.</p>
+            * @param miterLimit  (Not supported in Flash Lite 4) A number that
+            *                     indicates the limit at which a miter is cut off. Valid
+            *                     values range from 1 to 255(and values outside that
+            *                     range are rounded to 1 or 255). This value is only
+            *                     used if the <code>jointStyle</code> is set to
+            *                     <code>"miter"</code>. The <code>miterLimit</code>
+            *                     value represents the length that a miter can extend
+            *                     beyond the point at which the lines meet to form a
+            *                     joint. The value expresses a factor of the line
+            *                     <code>thickness</code>. For example, with a
+            *                     <code>miterLimit</code> factor of 2.5 and a
+            *                     <code>thickness</code> of 10 pixels, the miter is cut
+            *                     off at 25 pixels.
+            *
+            *                     <p>For example, consider the following angled lines,
+            *                     each drawn with a <code>thickness</code> of 20, but
+            *                     with <code>miterLimit</code> set to 1, 2, and 4.
+            *                     Superimposed are black reference lines showing the
+            *                     meeting points of the joints:</p>
+            *
+            *                     <p>Notice that a given <code>miterLimit</code> value
+            *                     has a specific maximum angle for which the miter is
+            *                     cut off. The following table lists some examples:</p>
+            */
+            Graphics.prototype.lineStyle = function (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit) {
+                if (typeof thickness === "undefined") { thickness = 0; }
+                if (typeof color === "undefined") { color = 0; }
+                if (typeof alpha === "undefined") { alpha = 1; }
+                if (typeof pixelHinting === "undefined") { pixelHinting = false; }
+                if (typeof scaleMode === "undefined") { scaleMode = null; }
+                if (typeof caps === "undefined") { caps = null; }
+                if (typeof joints === "undefined") { joints = null; }
+                if (typeof miterLimit === "undefined") { miterLimit = 3; }
+            };
+
+            /**
+            * Draws a line using the current line style from the current drawing
+            * position to(<code>x</code>, <code>y</code>); the current drawing position
+            * is then set to(<code>x</code>, <code>y</code>). If the display object in
+            * which you are drawing contains content that was created with the Flash
+            * drawing tools, calls to the <code>lineTo()</code> method are drawn
+            * underneath the content. If you call <code>lineTo()</code> before any calls
+            * to the <code>moveTo()</code> method, the default position for the current
+            * drawing is(<i>0, 0</i>). If any of the parameters are missing, this
+            * method fails and the current drawing position is not changed.
+            *
+            * @param x A number that indicates the horizontal position relative to the
+            *          registration point of the parent display object(in pixels).
+            * @param y A number that indicates the vertical position relative to the
+            *          registration point of the parent display object(in pixels).
+            */
+            Graphics.prototype.lineTo = function (x, y) {
+            };
+
+            /**
+            * Moves the current drawing position to(<code>x</code>, <code>y</code>). If
+            * any of the parameters are missing, this method fails and the current
+            * drawing position is not changed.
+            *
+            * @param x A number that indicates the horizontal position relative to the
+            *          registration point of the parent display object(in pixels).
+            * @param y A number that indicates the vertical position relative to the
+            *          registration point of the parent display object(in pixels).
+            */
+            Graphics.prototype.moveTo = function (x, y) {
+            };
+            return Graphics;
+        })();
+        base.Graphics = Graphics;
+    })(away.base || (away.base = {}));
+    var base = away.base;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * The GraphicsPathWinding class provides values for the
+    * <code>flash.display.GraphicsPath.winding</code> property and the
+    * <code>flash.display.Graphics.drawPath()</code> method to determine the
+    * direction to draw a path. A clockwise path is positively wound, and a
+    * counter-clockwise path is negatively wound:
+    *
+    * <p> When paths intersect or overlap, the winding direction determines the
+    * rules for filling the areas created by the intersection or overlap:</p>
+    */
+    (function (base) {
+        var GraphicsPathWinding = (function () {
+            function GraphicsPathWinding() {
+            }
+            GraphicsPathWinding.EVEN_ODD = "evenOdd";
+            GraphicsPathWinding.NON_ZERO = "nonZero";
+            return GraphicsPathWinding;
+        })();
+        base.GraphicsPathWinding = GraphicsPathWinding;
+    })(away.base || (away.base = {}));
+    var base = away.base;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+///<reference path="../../_definitions.ts"/>
+///<reference path="../../_definitions.ts"/>
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * The InterpolationMethod class provides values for the
+    * <code>interpolationMethod</code> parameter in the
+    * <code>Graphics.beginGradientFill()</code> and
+    * <code>Graphics.lineGradientStyle()</code> methods. This parameter
+    * determines the RGB space to use when rendering the gradient.
+    */
+    (function (base) {
+        var InterpolationMethod = (function () {
+            function InterpolationMethod() {
+            }
+            InterpolationMethod.LINEAR_RGB = "linearRGB";
+
+            InterpolationMethod.RGB = "rgb";
+            return InterpolationMethod;
+        })();
+        base.InterpolationMethod = InterpolationMethod;
+    })(away.base || (away.base = {}));
+    var base = away.base;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * The JointStyle class is an enumeration of constant values that specify the
+    * joint style to use in drawing lines. These constants are provided for use
+    * as values in the <code>joints</code> parameter of the
+    * <code>flash.display.Graphics.lineStyle()</code> method. The method supports
+    * three types of joints: miter, round, and bevel, as the following example
+    * shows:
+    */
+    (function (base) {
+        var JointStyle = (function () {
+            function JointStyle() {
+            }
+            JointStyle.BEVEL = "bevel";
+
+            JointStyle.MITER = "miter";
+
+            JointStyle.ROUND = "round";
+            return JointStyle;
+        })();
+        base.JointStyle = JointStyle;
+    })(away.base || (away.base = {}));
+    var base = away.base;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * The LineScaleMode class provides values for the <code>scaleMode</code>
+    * parameter in the <code>Graphics.lineStyle()</code> method.
+    */
+    (function (base) {
+        var LineScaleMode = (function () {
+            function LineScaleMode() {
+            }
+            LineScaleMode.HORIZONTAL = "horizontal";
+
+            LineScaleMode.NONE = "none";
+
+            LineScaleMode.NORMAL = "normal";
+
+            LineScaleMode.VERTICAL = "vertical";
+            return LineScaleMode;
+        })();
+        base.LineScaleMode = LineScaleMode;
+    })(away.base || (away.base = {}));
+    var base = away.base;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * The LoaderInfo class provides information about a loaded SWF file or a
+    * loaded image file(JPEG, GIF, or PNG). LoaderInfo objects are available for
+    * any display object. The information provided includes load progress, the
+    * URLs of the loader and loaded content, the number of bytes total for the
+    * media, and the nominal height and width of the media.
+    *
+    * <p>You can access LoaderInfo objects in two ways: </p>
+    *
+    * <ul>
+    *   <li>The <code>contentLoaderInfo</code> property of a flash.display.Loader
+    * object -  The <code>contentLoaderInfo</code> property is always available
+    * for any Loader object. For a Loader object that has not called the
+    * <code>load()</code> or <code>loadBytes()</code> method, or that has not
+    * sufficiently loaded, attempting to access many of the properties of the
+    * <code>contentLoaderInfo</code> property throws an error.</li>
+    *   <li>The <code>loaderInfo</code> property of a display object. </li>
+    * </ul>
+    *
+    * <p>The <code>contentLoaderInfo</code> property of a Loader object provides
+    * information about the content that the Loader object is loading, whereas
+    * the <code>loaderInfo</code> property of a DisplayObject provides
+    * information about the root SWF file for that display object. </p>
+    *
+    * <p>When you use a Loader object to load a display object(such as a SWF
+    * file or a bitmap), the <code>loaderInfo</code> property of the display
+    * object is the same as the <code>contentLoaderInfo</code> property of the
+    * Loader object(<code>DisplayObject.loaderInfo =
+    * Loader.contentLoaderInfo</code>). Because the instance of the main class of
+    * the SWF file has no Loader object, the <code>loaderInfo</code> property is
+    * the only way to access the LoaderInfo for the instance of the main class of
+    * the SWF file.</p>
+    *
+    * <p>The following diagram shows the different uses of the LoaderInfo
+    * object - for the instance of the main class of the SWF file, for the
+    * <code>contentLoaderInfo</code> property of a Loader object, and for the
+    * <code>loaderInfo</code> property of a loaded object:</p>
+    *
+    * <p>When a loading operation is not complete, some properties of the
+    * <code>contentLoaderInfo</code> property of a Loader object are not
+    * available. You can obtain some properties, such as
+    * <code>bytesLoaded</code>, <code>bytesTotal</code>, <code>url</code>,
+    * <code>loaderURL</code>, and <code>applicationDomain</code>. When the
+    * <code>loaderInfo</code> object dispatches the <code>init</code> event, you
+    * can access all properties of the <code>loaderInfo</code> object and the
+    * loaded image or SWF file.</p>
+    *
+    * <p><b>Note:</b> All properties of LoaderInfo objects are read-only.</p>
+    *
+    * <p>The <code>EventDispatcher.dispatchEvent()</code> method is not
+    * applicable to LoaderInfo objects. If you call <code>dispatchEvent()</code>
+    * on a LoaderInfo object, an IllegalOperationError exception is thrown.</p>
+    *
+    * @event complete   Dispatched when data has loaded successfully. In other
+    *                   words, it is dispatched when all the content has been
+    *                   downloaded and the loading has finished. The
+    *                   <code>complete</code> event is always dispatched after
+    *                   the <code>init</code> event. The <code>init</code> event
+    *                   is dispatched when the object is ready to access, though
+    *                   the content may still be downloading.
+    * @event httpStatus Dispatched when a network request is made over HTTP and
+    *                   an HTTP status code can be detected.
+    * @event init       Dispatched when the properties and methods of a loaded
+    *                   SWF file are accessible and ready for use. The content,
+    *                   however, can still be downloading. A LoaderInfo object
+    *                   dispatches the <code>init</code> event when the following
+    *                   conditions exist:
+    *                   <ul>
+    *                     <li>All properties and methods associated with the
+    *                   loaded object and those associated with the LoaderInfo
+    *                   object are accessible.</li>
+    *                     <li>The constructors for all child objects have
+    *                   completed.</li>
+    *                     <li>All ActionScript code in the first frame of the
+    *                   loaded SWF's main timeline has been executed.</li>
+    *                   </ul>
+    *
+    *                   <p>For example, an <code>Event.INIT</code> is dispatched
+    *                   when the first frame of a movie or animation is loaded.
+    *                   The movie is then accessible and can be added to the
+    *                   display list. The complete movie, however, can take
+    *                   longer to download. The <code>Event.COMPLETE</code> is
+    *                   only dispatched once the full movie is loaded.</p>
+    *
+    *                   <p>The <code>init</code> event always precedes the
+    *                   <code>complete</code> event.</p>
+    * @event ioError    Dispatched when an input or output error occurs that
+    *                   causes a load operation to fail.
+    * @event open       Dispatched when a load operation starts.
+    * @event progress   Dispatched when data is received as the download
+    *                   operation progresses.
+    * @event unload     Dispatched by a LoaderInfo object whenever a loaded
+    *                   object is removed by using the <code>unload()</code>
+    *                   method of the Loader object, or when a second load is
+    *                   performed by the same Loader object and the original
+    *                   content is removed prior to the load beginning.
+    */
+    (function (base) {
+        var LoaderInfo = (function (_super) {
+            __extends(LoaderInfo, _super);
+            function LoaderInfo() {
+                _super.apply(this, arguments);
+            }
+            Object.defineProperty(LoaderInfo.prototype, "bytes", {
+                /**
+                * The bytes associated with a LoaderInfo object.
+                *
+                * @throws SecurityError If the object accessing this API is prevented from
+                *                       accessing the loaded object due to security
+                *                       restrictions. This situation can occur, for
+                *                       instance, when a Loader object attempts to access
+                *                       the <code>contentLoaderInfo.content</code> property
+                *                       and it is not granted security permission to access
+                *                       the loaded content.
+                *
+                *                       <p>For more information related to security, see the
+                *                       Flash Player Developer Center Topic: <a
+                *                       href="http://www.adobe.com/go/devnet_security_en"
+                *                       scope="external">Security</a>.</p>
+                */
+                get: function () {
+                    return this._bytes;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(LoaderInfo.prototype, "bytesLoaded", {
+                /**
+                * The number of bytes that are loaded for the media. When this number equals
+                * the value of <code>bytesTotal</code>, all of the bytes are loaded.
+                */
+                get: function () {
+                    return this._bytesLoaded;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(LoaderInfo.prototype, "bytesTotal", {
+                /**
+                * The number of compressed bytes in the entire media file.
+                *
+                * <p>Before the first <code>progress</code> event is dispatched by this
+                * LoaderInfo object's corresponding Loader object, <code>bytesTotal</code>
+                * is 0. After the first <code>progress</code> event from the Loader object,
+                * <code>bytesTotal</code> reflects the actual number of bytes to be
+                * downloaded.</p>
+                */
+                get: function () {
+                    return this._bytesTotal;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(LoaderInfo.prototype, "content", {
+                /**
+                * The loaded object associated with this LoaderInfo object.
+                *
+                * @throws SecurityError If the object accessing this API is prevented from
+                *                       accessing the loaded object due to security
+                *                       restrictions. This situation can occur, for
+                *                       instance, when a Loader object attempts to access
+                *                       the <code>contentLoaderInfo.content</code> property
+                *                       and it is not granted security permission to access
+                *                       the loaded content.
+                *
+                *                       <p>For more information related to security, see the
+                *                       Flash Player Developer Center Topic: <a
+                *                       href="http://www.adobe.com/go/devnet_security_en"
+                *                       scope="external">Security</a>.</p>
+                */
+                get: function () {
+                    return this._content;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(LoaderInfo.prototype, "contentType", {
+                /**
+                * The MIME type of the loaded file. The value is <code>null</code> if not
+                * enough of the file has loaded in order to determine the type. The
+                * following list gives the possible values:
+                * <ul>
+                *   <li><code>"application/x-shockwave-flash"</code></li>
+                *   <li><code>"image/jpeg"</code></li>
+                *   <li><code>"image/gif"</code></li>
+                *   <li><code>"image/png"</code></li>
+                * </ul>
+                */
+                get: function () {
+                    return this._contentType;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(LoaderInfo.prototype, "loader", {
+                /**
+                * The Loader object associated with this LoaderInfo object. If this
+                * LoaderInfo object is the <code>loaderInfo</code> property of the instance
+                * of the main class of the SWF file, no Loader object is associated.
+                *
+                * @throws SecurityError If the object accessing this API is prevented from
+                *                       accessing the Loader object because of security
+                *                       restrictions. This can occur, for instance, when a
+                *                       loaded SWF file attempts to access its
+                *                       <code>loaderInfo.loader</code> property and it is
+                *                       not granted security permission to access the
+                *                       loading SWF file.
+                *
+                *                       <p>For more information related to security, see the
+                *                       Flash Player Developer Center Topic: <a
+                *                       href="http://www.adobe.com/go/devnet_security_en"
+                *                       scope="external">Security</a>.</p>
+                */
+                get: function () {
+                    return this._loader;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(LoaderInfo.prototype, "url", {
+                /**
+                * The URL of the media being loaded.
+                *
+                * <p>Before the first <code>progress</code> event is dispatched by this
+                * LoaderInfo object's corresponding Loader object, the value of the
+                * <code>url</code> property might reflect only the initial URL specified in
+                * the call to the <code>load()</code> method of the Loader object. After the
+                * first <code>progress</code> event, the <code>url</code> property reflects
+                * the media's final URL, after any redirects and relative URLs are
+                * resolved.</p>
+                *
+                * <p>In some cases, the value of the <code>url</code> property is truncated;
+                * see the <code>isURLInaccessible</code> property for details.</p>
+                */
+                get: function () {
+                    return this._url;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return LoaderInfo;
+        })(away.events.EventDispatcher);
+        base.LoaderInfo = LoaderInfo;
+    })(away.base || (away.base = {}));
+    var base = away.base;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * The PixelSnapping class is an enumeration of constant values for setting
+    * the pixel snapping options by using the <code>pixelSnapping</code> property
+    * of a Bitmap object.
+    */
+    (function (base) {
+        var PixelSnapping = (function () {
+            function PixelSnapping() {
+            }
+            PixelSnapping.ALWAYS = "always";
+
+            PixelSnapping.AUTO = "auto";
+
+            PixelSnapping.NEVER = "never";
+            return PixelSnapping;
+        })();
+        base.PixelSnapping = PixelSnapping;
+    })(away.base || (away.base = {}));
+    var base = away.base;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * The SpreadMethod class provides values for the <code>spreadMethod</code>
+    * parameter in the <code>beginGradientFill()</code> and
+    * <code>lineGradientStyle()</code> methods of the Graphics class.
+    *
+    * <p>The following example shows the same gradient fill using various spread
+    * methods:</p>
+    */
+    (function (base) {
+        var SpreadMethod = (function () {
+            function SpreadMethod() {
+            }
+            SpreadMethod.PAD = "pad";
+
+            SpreadMethod.REFLECT = "reflect";
+
+            SpreadMethod.REPEAT = "repeat";
+            return SpreadMethod;
+        })();
+        base.SpreadMethod = SpreadMethod;
     })(away.base || (away.base = {}));
     var base = away.base;
 })(away || (away = {}));
@@ -3574,6 +8521,8 @@ var away;
                 if (typeof forceSoftware === "undefined") { forceSoftware = false; }
                 if (typeof profile === "undefined") { profile = "baseline"; }
                 _super.call(this);
+                this._x = 0;
+                this._y = 0;
                 //private static _frameEventDriver:Shape = new Shape(); // TODO: add frame driver / request animation frame
                 this._iStageGLIndex = -1;
                 this._antiAlias = 0;
@@ -3595,8 +8544,9 @@ var away;
 
                 this._enableDepthAndStencil = true;
 
-                this.x = 0;
-                this.y = 0;
+                away.utils.CSS.setCanvasX(this._canvas, 0);
+                away.utils.CSS.setCanvasY(this._canvas, 0);
+
                 this.visible = true;
             }
             /**
@@ -3626,7 +8576,7 @@ var away;
 
                 if (this._contextGL) {
                     // Only configure back buffer if width and height have been set,
-                    // which they may not have been if View3D.render() has yet to be
+                    // which they may not have been if View.render() has yet to be
                     // invoked for the first time.
                     if (this._width && this._height)
                         this._contextGL.configureBackBuffer(this._width, this._height, this._antiAlias, this._enableDepthAndStencil);
@@ -4147,22 +9097,1513 @@ var away;
     })(away.base || (away.base = {}));
     var base = away.base;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
+    /**
+    * Defines codes for culling algorithms that determine which triangles not to
+    * render when drawing triangle paths.
+    *
+    * <p> The terms <code>POSITIVE</code> and <code>NEGATIVE</code> refer to the
+    * sign of a triangle's normal along the z-axis. The normal is a 3D vector
+    * that is perpendicular to the surface of the triangle. </p>
+    *
+    * <p> A triangle whose vertices 0, 1, and 2 are arranged in a clockwise order
+    * has a positive normal value. That is, its normal points in a positive
+    * z-axis direction, away from the current view point. When the
+    * <code>TriangleCulling.POSITIVE</code> algorithm is used, triangles with
+    * positive normals are not rendered. Another term for this is backface
+    * culling. </p>
+    *
+    * <p> A triangle whose vertices are arranged in a counter-clockwise order has
+    * a negative normal value. That is, its normal points in a negative z-axis
+    * direction, toward the current view point. When the
+    * <code>TriangleCulling.NEGATIVE</code> algorithm is used, triangles with
+    * negative normals will not be rendered. </p>
+    */
     (function (base) {
-        var Stage = (function (_super) {
-            __extends(Stage, _super);
-            function Stage(width, height) {
-                if (typeof width === "undefined") { width = 640; }
-                if (typeof height === "undefined") { height = 480; }
-                _super.call(this);
+        var TriangleCulling = (function () {
+            function TriangleCulling() {
             }
-            return Stage;
-        })(away.events.EventDispatcher);
-        base.Stage = Stage;
+            TriangleCulling.NEGATIVE = "negative";
+
+            TriangleCulling.NONE = "none";
+
+            TriangleCulling.POSITIVE = "positive";
+            return TriangleCulling;
+        })();
+        base.TriangleCulling = TriangleCulling;
     })(away.base || (away.base = {}));
     var base = away.base;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * @module away.pool
+    */
+    (function (pool) {
+        /**
+        * @class away.pool.EntityListItem
+        */
+        var EntityListItem = (function () {
+            function EntityListItem() {
+            }
+            return EntityListItem;
+        })();
+        pool.EntityListItem = EntityListItem;
+    })(away.pool || (away.pool = {}));
+    var pool = away.pool;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * @module away.pool
+    */
+    (function (pool) {
+        /**
+        * @class away.pool.EntityListItemPool
+        */
+        var EntityListItemPool = (function () {
+            /**
+            *
+            */
+            function EntityListItemPool() {
+                this._index = 0;
+                this._poolSize = 0;
+                this._pool = [];
+            }
+            /**
+            *
+            */
+            EntityListItemPool.prototype.getItem = function () {
+                var item;
+                if (this._index == this._poolSize) {
+                    item = new away.pool.EntityListItem();
+                    this._pool[this._index++] = item;
+                    ++this._poolSize;
+                } else {
+                    item = this._pool[this._index++];
+                }
+                return item;
+            };
+
+            /**
+            *
+            */
+            EntityListItemPool.prototype.freeAll = function () {
+                this._index = 0;
+            };
+
+            EntityListItemPool.prototype.dispose = function () {
+                this._pool.length = 0;
+            };
+            return EntityListItemPool;
+        })();
+        pool.EntityListItemPool = EntityListItemPool;
+    })(away.pool || (away.pool = {}));
+    var pool = away.pool;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * @module away.traverse
+    */
+    (function (traverse) {
+        /**
+        * @class away.traverse.EntityCollector
+        */
+        var CSSEntityCollector = (function () {
+            function CSSEntityCollector() {
+                this._pNumEntities = 0;
+                this._pNumLights = 0;
+                this._pNumMouseEnableds = 0;
+                this._numDirectionalLights = 0;
+                this._numPointLights = 0;
+                this._numLightProbes = 0;
+                this._numCullPlanes = 0;
+                this._pEntityListItemPool = new away.pool.EntityListItemPool();
+            }
+            Object.defineProperty(CSSEntityCollector.prototype, "camera", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._pCamera;
+                },
+                set: function (value) {
+                    this._pCamera = value;
+                    this._iEntryPoint = this._pCamera.scenePosition;
+                    this._pCameraForward = this._pCamera.transform.forwardVector;
+                    this._cullPlanes = this._pCamera.frustumPlanes;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(CSSEntityCollector.prototype, "cullPlanes", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._customCullPlanes;
+                },
+                set: function (value) {
+                    this._customCullPlanes = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(CSSEntityCollector.prototype, "numMouseEnableds", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._pNumMouseEnableds;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(CSSEntityCollector.prototype, "entityHead", {
+                /**
+                *
+                */
+                //		public get skyBox():away.render.RenderableBase
+                //		{
+                //			return this._pSkyBox;
+                //		}
+                /**
+                *
+                */
+                get: function () {
+                    return this._entityHead;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(CSSEntityCollector.prototype, "entryPoint", {
+                get: function () {
+                    return this._iEntryPoint;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(CSSEntityCollector.prototype, "renderableHead", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._renderableHead;
+                },
+                set: function (value) {
+                    this._renderableHead = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            *
+            */
+            CSSEntityCollector.prototype.clear = function () {
+                this._iEntryPoint = this._pCamera.scenePosition;
+                this._pCameraForward = this._pCamera.transform.forwardVector;
+                this._cullPlanes = this._customCullPlanes ? this._customCullPlanes : (this._pCamera ? this._pCamera.frustumPlanes : null);
+                this._numCullPlanes = this._cullPlanes ? this._cullPlanes.length : 0;
+                this._pNumMouseEnableds = 0;
+                this._renderableHead = null;
+                this._entityHead = null;
+
+                //			this._pRenderableListItemPool.freeAll();
+                this._pEntityListItemPool.freeAll();
+            };
+
+            /**
+            *
+            */
+            CSSEntityCollector.prototype.enterNode = function (node) {
+                var enter = this.scene._iCollectionMark != node._iCollectionMark && node.isInFrustum(this._cullPlanes, this._numCullPlanes);
+
+                node._iCollectionMark = this.scene._iCollectionMark;
+
+                return enter;
+            };
+
+            CSSEntityCollector.prototype.sortRenderables = function () {
+                //nothing here for now
+            };
+
+            /**
+            *
+            */
+            //		public applySkyBox(renderable:away.render.RenderableBase)
+            //		{
+            //			this._pSkyBox = renderable;
+            //		}
+            /**
+            *
+            */
+            CSSEntityCollector.prototype.applyEntity = function (entity) {
+                ++this._pNumEntities;
+
+                var item = this._pEntityListItemPool.getItem();
+                item.entity = entity;
+
+                item.next = this._entityHead;
+                this._entityHead = item;
+
+                if (entity.assetType == away.library.AssetType.BILLBOARD)
+                    this.applyBillboard(entity);
+            };
+
+            /**
+            * Cleans up any data at the end of a frame.
+            */
+            CSSEntityCollector.prototype.cleanUp = function () {
+            };
+
+            /**
+            *
+            * @param billboard
+            * @private
+            */
+            CSSEntityCollector.prototype.applyBillboard = function (billboard) {
+                var renderable = CSSEntityCollector._billboardRenderablePool[billboard.id];
+
+                if (renderable) {
+                    renderable.animator = billboard.animator;
+                    renderable.material = billboard.material;
+                } else {
+                    renderable = CSSEntityCollector._billboardRenderablePool[billboard.id] = new away.render.CSSBillboardRenderable(billboard, billboard.material, billboard.animator);
+                }
+
+                this.applyRenderable(renderable);
+            };
+
+            /**
+            *
+            * @param renderable
+            * @private
+            */
+            CSSEntityCollector.prototype.applyRenderable = function (renderable) {
+                var material = renderable.material;
+                var entity = renderable.sourceEntity;
+                var position = entity.scenePosition;
+
+                if (renderable.sourceEntity._iIsMouseEnabled())
+                    ++this._pNumMouseEnableds;
+
+                if (material) {
+                    //set ids for faster referencing
+                    renderable.materialId = material._iMaterialId;
+                    renderable.renderOrderId = material._iRenderOrderId;
+                    renderable.cascaded = false;
+
+                    // project onto camera's z-axis
+                    position.decrementBy(this._iEntryPoint);
+                    renderable.zIndex = entity.zOffset - position.dotProduct(this._pCameraForward);
+
+                    //store reference to scene transform
+                    renderable.renderSceneTransform = renderable.sourceEntity.getRenderSceneTransform(this._pCamera);
+
+                    //store reference to next item in list
+                    renderable.next = this._renderableHead;
+                    this._renderableHead = renderable;
+                }
+            };
+
+            /**
+            * //TODO
+            *
+            * @param entity
+            * @param shortestCollisionDistance
+            * @param findClosest
+            * @returns {boolean}
+            *
+            * @internal
+            */
+            CSSEntityCollector.prototype._iCollidesBefore = function (entity, shortestCollisionDistance, findClosest) {
+                var pickingCollider = entity.pickingCollider;
+                var pickingCollisionVO = entity._iPickingCollisionVO;
+
+                pickingCollider.setLocalRay(entity._iPickingCollisionVO.localRayPosition, entity._iPickingCollisionVO.localRayDirection);
+                pickingCollisionVO.materialOwner = null;
+
+                if (entity.assetType === away.library.AssetType.BILLBOARD) {
+                    //return this.testBillBoard(<away.entities.Billboard> entity, pickingCollider, pickingCollisionVO, shortestCollisionDistance, findClosest);
+                } else if (entity.assetType === away.library.AssetType.MESH) {
+                    //return this.testMesh(<away.entities.Mesh> entity, pickingCollider, pickingCollisionVO, shortestCollisionDistance, findClosest);
+                }
+
+                return false;
+            };
+            CSSEntityCollector._billboardRenderablePool = new Object();
+            return CSSEntityCollector;
+        })();
+        traverse.CSSEntityCollector = CSSEntityCollector;
+    })(away.traverse || (away.traverse = {}));
+    var traverse = away.traverse;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * @module away.partition
+    */
+    (function (partition) {
+        /**
+        * @class away.partition.NodeBase
+        */
+        var NodeBase = (function () {
+            /**
+            *
+            */
+            function NodeBase() {
+                this._pNumChildNodes = 0;
+                this._iNumEntities = 0;
+                this._pChildNodes = new Array();
+            }
+            Object.defineProperty(NodeBase.prototype, "showDebugBounds", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._pDebugPrimitive != null;
+                },
+                set: function (value) {
+                    if (this._pDebugPrimitive && value == true)
+                        return;
+
+                    if (!this._pDebugPrimitive && value == false)
+                        return;
+
+                    if (value) {
+                        this._pDebugPrimitive = this.pCreateDebugBounds();
+                    } else {
+                        this._pDebugPrimitive.dispose();
+                        this._pDebugPrimitive = null;
+                    }
+
+                    for (var i = 0; i < this._pNumChildNodes; ++i)
+                        this._pChildNodes[i].showDebugBounds = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(NodeBase.prototype, "parent", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._iParent;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(NodeBase.prototype, "_pNumEntities", {
+                /**
+                *
+                * @protected
+                */
+                get: function () {
+                    return this._iNumEntities;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            *
+            * @param planes
+            * @param numPlanes
+            * @returns {boolean}
+            * @internal
+            */
+            NodeBase.prototype.isInFrustum = function (planes, numPlanes) {
+                return true;
+            };
+
+            /**
+            *
+            * @param rayPosition
+            * @param rayDirection
+            * @returns {boolean}
+            */
+            NodeBase.prototype.isIntersectingRay = function (rayPosition, rayDirection) {
+                return true;
+            };
+
+            /**
+            *
+            * @returns {boolean}
+            */
+            NodeBase.prototype.isCastingShadow = function () {
+                return true;
+            };
+
+            /**
+            *
+            * @param entity
+            * @returns {away.partition.NodeBase}
+            */
+            NodeBase.prototype.findPartitionForEntity = function (entity) {
+                return this;
+            };
+
+            /**
+            *
+            * @param traverser
+            */
+            NodeBase.prototype.acceptTraverser = function (traverser) {
+                if (this._pNumEntities == 0 && !this._pDebugPrimitive)
+                    return;
+
+                if (traverser.enterNode(this)) {
+                    var i = 0;
+
+                    while (i < this._pNumChildNodes)
+                        this._pChildNodes[i++].acceptTraverser(traverser);
+
+                    if (this._pDebugPrimitive)
+                        this._pDebugPrimitive.partitionNode.acceptTraverser(traverser);
+                }
+            };
+
+            /**
+            *
+            * @protected
+            */
+            NodeBase.prototype.pCreateDebugBounds = function () {
+                return null;
+            };
+
+            /**
+            *
+            * @param node
+            * @internal
+            */
+            NodeBase.prototype.iAddNode = function (node) {
+                node._iParent = this;
+                this._iNumEntities += node._pNumEntities;
+                this._pChildNodes[this._pNumChildNodes++] = node;
+                node.showDebugBounds = this._pDebugPrimitive != null;
+
+                var numEntities = node._pNumEntities;
+                node = this;
+
+                do {
+                    node._iNumEntities += numEntities;
+                } while((node = node._iParent) != null);
+            };
+
+            /**
+            *
+            * @param node
+            * @internal
+            */
+            NodeBase.prototype.iRemoveNode = function (node) {
+                var index = this._pChildNodes.indexOf(node);
+                this._pChildNodes[index] = this._pChildNodes[--this._pNumChildNodes];
+                this._pChildNodes.pop();
+
+                var numEntities = node._pNumEntities;
+                node = this;
+
+                do {
+                    node._pNumEntities -= numEntities;
+                } while((node = node._iParent) != null);
+            };
+            return NodeBase;
+        })();
+        partition.NodeBase = NodeBase;
+    })(away.partition || (away.partition = {}));
+    var partition = away.partition;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * @module away.partition
+    */
+    (function (partition) {
+        /**
+        * @class away.partition.NullNode
+        */
+        var NullNode = (function () {
+            function NullNode() {
+            }
+            return NullNode;
+        })();
+        partition.NullNode = NullNode;
+    })(away.partition || (away.partition = {}));
+    var partition = away.partition;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * @module away.partition
+    */
+    (function (partition) {
+        /**
+        * @class away.partition.Partition
+        */
+        var Partition = (function () {
+            function Partition(rootNode) {
+                this._updatesMade = false;
+                this._rootNode = rootNode || new away.partition.NullNode();
+            }
+            Object.defineProperty(Partition.prototype, "rootNode", {
+                get: function () {
+                    return this._rootNode;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Partition.prototype.traverse = function (traverser) {
+                if (this._updatesMade)
+                    this.updateEntities();
+
+                this._rootNode.acceptTraverser(traverser);
+            };
+
+            Partition.prototype.iMarkForUpdate = function (entity) {
+                var node = entity.partitionNode;
+                var t = this._updateQueue;
+
+                while (t) {
+                    if (node == t)
+                        return;
+
+                    t = t._iUpdateQueueNext;
+                }
+
+                node._iUpdateQueueNext = this._updateQueue;
+
+                this._updateQueue = node;
+                this._updatesMade = true;
+            };
+
+            Partition.prototype.iRemoveEntity = function (entity) {
+                var node = entity.partitionNode;
+                var t;
+
+                node.removeFromParent();
+
+                if (node == this._updateQueue) {
+                    this._updateQueue = node._iUpdateQueueNext;
+                } else {
+                    t = this._updateQueue;
+                    while (t && t._iUpdateQueueNext != node)
+                        t = t._iUpdateQueueNext;
+
+                    if (t)
+                        t._iUpdateQueueNext = node._iUpdateQueueNext;
+                }
+
+                node._iUpdateQueueNext = null;
+
+                if (!this._updateQueue)
+                    this._updatesMade = false;
+            };
+
+            Partition.prototype.updateEntities = function () {
+                var node = this._updateQueue;
+                var targetNode;
+                var t;
+                this._updateQueue = null;
+                this._updatesMade = false;
+
+                do {
+                    targetNode = this._rootNode.findPartitionForEntity(node.entity);
+
+                    if (node.parent != targetNode) {
+                        if (node)
+                            node.removeFromParent();
+
+                        targetNode.iAddNode(node);
+                    }
+
+                    t = node._iUpdateQueueNext;
+                    node._iUpdateQueueNext = null;
+
+                    //required for controllers with autoUpdate set to true
+                    node.entity._iInternalUpdate();
+                } while((node = t) != null);
+            };
+            return Partition;
+        })();
+        partition.Partition = Partition;
+    })(away.partition || (away.partition = {}));
+    var partition = away.partition;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * @module away.partition
+    */
+    (function (partition) {
+        /**
+        * @class away.partition.EntityNode
+        */
+        var EntityNode = (function (_super) {
+            __extends(EntityNode, _super);
+            function EntityNode(entity) {
+                _super.call(this);
+                this._entity = entity;
+                this._iNumEntities = 1;
+            }
+            Object.defineProperty(EntityNode.prototype, "entity", {
+                get: function () {
+                    return this._entity;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            EntityNode.prototype.removeFromParent = function () {
+                if (this._iParent)
+                    this._iParent.iRemoveNode(this);
+
+                this._iParent = null;
+            };
+
+            /**
+            *
+            * @returns {boolean}
+            */
+            EntityNode.prototype.isCastingShadow = function () {
+                return this.entity.castsShadows;
+            };
+
+            /**
+            *
+            * @param planes
+            * @param numPlanes
+            * @returns {boolean}
+            */
+            EntityNode.prototype.isInFrustum = function (planes, numPlanes) {
+                if (!this._entity._iIsVisible())
+                    return false;
+
+                return this._entity.worldBounds.isInFrustum(planes, numPlanes);
+            };
+
+            /**
+            * @inheritDoc
+            */
+            EntityNode.prototype.acceptTraverser = function (traverser) {
+                if (traverser.enterNode(this))
+                    traverser.applyEntity(this._entity);
+            };
+
+            /**
+            * @inheritDoc
+            */
+            EntityNode.prototype.isIntersectingRay = function (rayPosition, rayDirection) {
+                if (!this._entity._iIsVisible())
+                    return false;
+
+                return this._entity.isIntersectingRay(rayPosition, rayDirection);
+            };
+            return EntityNode;
+        })(away.partition.NodeBase);
+        partition.EntityNode = EntityNode;
+    })(away.partition || (away.partition = {}));
+    var partition = away.partition;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * @module away.partition
+    */
+    (function (partition) {
+        /**
+        * @class away.partition.CameraNode
+        */
+        var CameraNode = (function (_super) {
+            __extends(CameraNode, _super);
+            function CameraNode(camera) {
+                _super.call(this, camera);
+            }
+            /**
+            * @inheritDoc
+            */
+            CameraNode.prototype.acceptTraverser = function (traverser) {
+                // todo: dead end for now, if it has a debug mesh, then sure accept that
+            };
+            return CameraNode;
+        })(away.partition.EntityNode);
+        partition.CameraNode = CameraNode;
+    })(away.partition || (away.partition = {}));
+    var partition = away.partition;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    /**
+    * @module away.pick
+    */
+    (function (pick) {
+        /**
+        * Value object for a picking collision returned by a picking collider. Created as unique objects on display objects
+        *
+        * @see away.base.DisplayObject#pickingCollisionVO
+        * @see away.core.pick.IPickingCollider
+        *
+        * @class away.pick.PickingCollisionVO
+        */
+        var PickingCollisionVO = (function () {
+            /**
+            * Creates a new <code>PickingCollisionVO</code> object.
+            *
+            * @param entity The entity to which this collision object belongs.
+            */
+            function PickingCollisionVO(displayObject) {
+                this.displayObject = displayObject;
+            }
+            return PickingCollisionVO;
+        })();
+        pick.PickingCollisionVO = PickingCollisionVO;
+    })(away.pick || (away.pick = {}));
+    var pick = away.pick;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * @module away.data
+    */
+    (function (render) {
+        /**
+        * @class away.pool.RenderableListItem
+        */
+        var CSSRenderableBase = (function () {
+            /**
+            *
+            * @param sourceEntity
+            * @param material
+            * @param animator
+            */
+            function CSSRenderableBase(sourceEntity, material, animator) {
+                this.sourceEntity = sourceEntity;
+                this.material = material;
+                this.animator = animator;
+            }
+            return CSSRenderableBase;
+        })();
+        render.CSSRenderableBase = CSSRenderableBase;
+    })(away.render || (away.render = {}));
+    var render = away.render;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * @module away.data
+    */
+    (function (render) {
+        /**
+        * @class away.pool.RenderableListItem
+        */
+        var CSSBillboardRenderable = (function (_super) {
+            __extends(CSSBillboardRenderable, _super);
+            function CSSBillboardRenderable(sourceEntity, material, animator) {
+                _super.call(this, sourceEntity, material, animator);
+
+                var image = document.createElement("img");
+                image.src = material.imageElement.src;
+
+                this.htmlElement = image;
+
+                var style = this.htmlElement.style;
+
+                style.position = "absolute";
+
+                style.transformOrigin = style["WebkitTransformOrigin"] = style["MozTransformOrigin"] = style["OTransformOrigin"] = style["msTransformOrigin"] = "0% 0%";
+            }
+            return CSSBillboardRenderable;
+        })(away.render.CSSRenderableBase);
+        render.CSSBillboardRenderable = CSSBillboardRenderable;
+    })(away.render || (away.render = {}));
+    var render = away.render;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * @module away.render
+    */
+    (function (render) {
+        /**
+        * RendererBase forms an abstract base class for classes that are used in the rendering pipeline to render the
+        * contents of a partition
+        *
+        * @class away.render.RendererBase
+        */
+        var CSSRendererBase = (function (_super) {
+            __extends(CSSRendererBase, _super);
+            /**
+            * Creates a new RendererBase object.
+            */
+            function CSSRendererBase(renderToTexture, forceSoftware, profile) {
+                if (typeof renderToTexture === "undefined") { renderToTexture = false; }
+                if (typeof forceSoftware === "undefined") { forceSoftware = false; }
+                if (typeof profile === "undefined") { profile = "baseline"; }
+                _super.call(this);
+                this._backgroundR = 0;
+                this._backgroundG = 0;
+                this._backgroundB = 0;
+                this._backgroundAlpha = 1;
+                this._pBackBufferInvalid = true;
+                this._localPos = new away.geom.Point();
+                this._globalPos = new away.geom.Point();
+                this._pScissorRect = new away.geom.Rectangle();
+
+                //create context for the renderer
+                this._pContext = document.createElement("div");
+
+                //this._pContext.style.transformStyle = this._pContext.style["-webkit-transform-style"] = "preserve-3d";
+                //add context container to body
+                document.body.appendChild(this._pContext);
+
+                this._viewPort = new away.geom.Rectangle();
+
+                if (this._width == 0)
+                    this.width = window.innerWidth;
+
+                if (this._height == 0)
+                    this.height = window.innerHeight;
+            }
+            CSSRendererBase.prototype._iCreateEntityCollector = function () {
+                return new away.traverse.CSSEntityCollector();
+            };
+
+            Object.defineProperty(CSSRendererBase.prototype, "viewPort", {
+                /**
+                * A viewPort rectangle equivalent of the StageGL size and position.
+                */
+                get: function () {
+                    return this._viewPort;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(CSSRendererBase.prototype, "scissorRect", {
+                /**
+                * A scissor rectangle equivalent of the view size and position.
+                */
+                get: function () {
+                    return this._pScissorRect;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(CSSRendererBase.prototype, "x", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._localPos.x;
+                },
+                set: function (value) {
+                    if (this.x == value)
+                        return;
+
+                    this._globalPos.x = this._localPos.x = value;
+
+                    this.updateGlobalPos();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(CSSRendererBase.prototype, "y", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._localPos.y;
+                },
+                set: function (value) {
+                    if (this.y == value)
+                        return;
+
+                    this._globalPos.y = this._localPos.y = value;
+
+                    this.updateGlobalPos();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(CSSRendererBase.prototype, "width", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._width;
+                },
+                set: function (value) {
+                    if (this._width == value)
+                        return;
+
+                    this._width = value;
+                    this._pScissorRect.width = value;
+
+                    this._viewPort.width = value;
+
+                    this.notifyScissorUpdate();
+                    this.notifyViewportUpdate();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(CSSRendererBase.prototype, "height", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._height;
+                },
+                set: function (value) {
+                    if (this._height == value)
+                        return;
+
+                    this._height = value;
+                    this._pScissorRect.height = value;
+
+                    this._viewPort.height = value;
+
+                    this.notifyScissorUpdate();
+                    this.notifyViewportUpdate();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(CSSRendererBase.prototype, "_iBackgroundR", {
+                /**
+                * The background color's red component, used when clearing.
+                *
+                * @private
+                */
+                get: function () {
+                    return this._backgroundR;
+                },
+                set: function (value) {
+                    if (this._backgroundR == value)
+                        return;
+
+                    this._backgroundR = value;
+
+                    this._pBackBufferInvalid = true;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(CSSRendererBase.prototype, "_iBackgroundG", {
+                /**
+                * The background color's green component, used when clearing.
+                *
+                * @private
+                */
+                get: function () {
+                    return this._backgroundG;
+                },
+                set: function (value) {
+                    if (this._backgroundG == value)
+                        return;
+
+                    this._backgroundG = value;
+
+                    this._pBackBufferInvalid = true;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(CSSRendererBase.prototype, "_iBackgroundB", {
+                /**
+                * The background color's blue component, used when clearing.
+                *
+                * @private
+                */
+                get: function () {
+                    return this._backgroundB;
+                },
+                set: function (value) {
+                    if (this._backgroundB == value)
+                        return;
+
+                    this._backgroundB = value;
+
+                    this._pBackBufferInvalid = true;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * Disposes the resources used by the RendererBase.
+            */
+            CSSRendererBase.prototype.dispose = function () {
+                /*
+                if (_backgroundImageRenderer) {
+                _backgroundImageRenderer.dispose();
+                _backgroundImageRenderer = null;
+                }
+                */
+            };
+
+            CSSRendererBase.prototype.render = function (entityCollector) {
+                this._viewportDirty = false;
+                this._scissorDirty = false;
+
+                this._iRender(entityCollector);
+            };
+
+            /**
+            * Renders the potentially visible geometry to the back buffer or texture.
+            * @param entityCollector The EntityCollector object containing the potentially visible geometry.
+            * @param scissorRect
+            */
+            CSSRendererBase.prototype._iRender = function (entityCollector, scissorRect) {
+                if (typeof scissorRect === "undefined") { scissorRect = null; }
+                if (!entityCollector.entityHead)
+                    return;
+
+                this.pExecuteRender(entityCollector, scissorRect);
+            };
+
+            /**
+            * Renders the potentially visible geometry to the back buffer or texture. Only executed if everything is set up.
+            * @param entityCollector The EntityCollector object containing the potentially visible geometry.
+            * @param scissorRect
+            */
+            CSSRendererBase.prototype.pExecuteRender = function (entityCollector, scissorRect) {
+                if (typeof scissorRect === "undefined") { scissorRect = null; }
+                this.pDraw(entityCollector);
+            };
+
+            /**
+            * Updates the backbuffer properties.
+            */
+            CSSRendererBase.prototype.pUpdateBackBuffer = function () {
+            };
+
+            /**
+            * Performs the actual drawing of dom objects to the target.
+            *
+            * @param entityCollector The EntityCollector object containing the potentially visible dom objects.
+            */
+            CSSRendererBase.prototype.pDraw = function (entityCollector) {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            Object.defineProperty(CSSRendererBase.prototype, "_iBackgroundAlpha", {
+                get: function () {
+                    return this._backgroundAlpha;
+                },
+                set: function (value) {
+                    if (this._backgroundAlpha == value)
+                        return;
+
+                    this._backgroundAlpha = value;
+
+                    this._pBackBufferInvalid = true;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * @private
+            */
+            CSSRendererBase.prototype.notifyScissorUpdate = function () {
+                var style = this._pContext.style;
+
+                //			style.transform
+                //				= style["-webkit-transform"]
+                //				= style["-moz-transform"]
+                //				= style["-o-transform"]
+                //				= style["-ms-transform"] = "scale3d(" + this._width/1024 + ", " + this._height/1024 + ", 1)";
+                if (this._scissorDirty)
+                    return;
+
+                this._scissorDirty = true;
+
+                if (!this._scissorUpdated)
+                    this._scissorUpdated = new away.events.RendererEvent(away.events.RendererEvent.SCISSOR_UPDATED);
+
+                this.dispatchEvent(this._scissorUpdated);
+            };
+
+            /**
+            * @private
+            */
+            CSSRendererBase.prototype.notifyViewportUpdate = function () {
+                if (this._viewportDirty)
+                    return;
+
+                this._viewportDirty = true;
+
+                if (!this._viewPortUpdated)
+                    this._viewPortUpdated = new away.events.RendererEvent(away.events.RendererEvent.VIEWPORT_UPDATED);
+
+                this.dispatchEvent(this._viewPortUpdated);
+            };
+
+            /**
+            *
+            */
+            CSSRendererBase.prototype.updateGlobalPos = function () {
+                this._pScissorRect.x = 0;
+                this._pScissorRect.y = 0;
+                this._viewPort.x = this._globalPos.x;
+                this._viewPort.y = this._globalPos.y;
+
+                this.notifyScissorUpdate();
+            };
+            return CSSRendererBase;
+        })(away.events.EventDispatcher);
+        render.CSSRendererBase = CSSRendererBase;
+    })(away.render || (away.render = {}));
+    var render = away.render;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * @module away.render
+    */
+    (function (render) {
+        /**
+        * The DefaultRenderer class provides the default rendering method. It renders the scene graph objects using the
+        * materials assigned to them.
+        *
+        * @class away.render.DefaultRenderer
+        */
+        var CSSDefaultRenderer = (function (_super) {
+            __extends(CSSDefaultRenderer, _super);
+            /**
+            * Creates a new CSSDefaultRenderer object.
+            */
+            function CSSDefaultRenderer() {
+                _super.call(this);
+                this._skyboxProjection = new away.geom.Matrix3D();
+                this._transform = new away.geom.Matrix3D();
+            }
+            /**
+            * @inheritDoc
+            */
+            CSSDefaultRenderer.prototype.pDraw = function (entityCollector) {
+                //			if (entityCollector.skyBox) {
+                //				if (this._activeMaterial)
+                //					this._activeMaterial.iDeactivate(this._pStageGL);
+                //
+                //				this._activeMaterial = null;
+                //
+                //				this._pContext.setDepthTest(false, away.gl.ContextGLCompareMode.ALWAYS);
+                //				this.drawSkyBox(entityCollector);
+                //
+                //			}
+                //
+                //			var which:number = target? DefaultRenderer.SCREEN_PASSES : DefaultRenderer.ALL_PASSES;
+                this.drawRenderables(entityCollector.renderableHead, entityCollector);
+
+                //			if (this._activeMaterial)
+                //				this._activeMaterial.iDeactivate(this._pStageGL);
+                this._activeMaterial = null;
+            };
+
+            /**
+            * Draw the skybox if present.
+            * @param entityCollector The EntityCollector containing all potentially visible information.
+            */
+            CSSDefaultRenderer.prototype.drawSkyBox = function (entityCollector) {
+                //TODO
+            };
+
+            /**
+            * Draw a list of renderables.
+            * @param renderables The renderables to draw.
+            * @param entityCollector The EntityCollector containing all potentially visible information.
+            */
+            CSSDefaultRenderer.prototype.drawRenderables = function (item, entityCollector) {
+                var viewProjection = entityCollector.camera.viewProjection;
+
+                while (item) {
+                    this._activeMaterial = item.material;
+
+                    //serialise transform and apply to html element
+                    this._transform.copyRawDataFrom(item.renderSceneTransform.rawData);
+                    this._transform.prepend(viewProjection);
+
+                    var style = item.htmlElement.style;
+
+                    style.transform = style["-webkit-transform"] = style["-moz-transform"] = style["-o-transform"] = style["-ms-transform"] = "matrix3d(" + this._transform.rawData.join(",") + ")";
+
+                    //check if child requires adding to the view
+                    if (!document.body.contains(item.htmlElement))
+                        document.body.appendChild(item.htmlElement);
+
+                    item = item.next;
+                }
+                //			var numPasses:number;
+                //			var j:number;
+                //			var camera:away.entities.Camera = entityCollector.camera;
+                //			var item2:away.render.CSSRenderableBase;
+                //
+                //			while (item) {
+                //				this._activeMaterial = item.material;
+                //
+                //				this._activeMaterial.iUpdateMaterial(this._pContext);
+                //
+                //				numPasses = this._activeMaterial._iNumPasses;
+                //
+                //				j = 0;
+                //
+                //				do {
+                //					item2 = item;
+                //
+                //					var rttMask:number = this._activeMaterial.iPassRendersToTexture(j)? 1 : 2;
+                //
+                //					if ((rttMask & which) != 0) {
+                //						this._activeMaterial.iActivatePass(j, this._pStageGL, camera);
+                //
+                //						do {
+                //							this._activeMaterial.iRenderPass(j, item2, this._pStageGL, entityCollector);
+                //
+                //							item2 = item2.next;
+                //
+                //						} while (item2 && item2.material == this._activeMaterial);
+                //
+                //						this._activeMaterial.iDeactivatePass(j, this._pStageGL);
+                //
+                //					} else {
+                //						do {
+                //							item2 = item2.next;
+                //
+                //						} while (item2 && item2.renderable.material == this._activeMaterial);
+                //					}
+                //				} while (++j < numPasses);
+                //
+                //				item = item2;
+                //			}
+            };
+
+            CSSDefaultRenderer.prototype.dispose = function () {
+                _super.prototype.dispose.call(this);
+                //TODO
+            };
+            return CSSDefaultRenderer;
+        })(away.render.CSSRendererBase);
+        render.CSSDefaultRenderer = CSSDefaultRenderer;
+    })(away.render || (away.render = {}));
+    var render = away.render;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * @module away.sort
+    */
+    (function (sort) {
+        /**
+        * @class away.sort.RenderableMergeSort
+        */
+        var RenderableMergeSort = (function () {
+            function RenderableMergeSort() {
+            }
+            RenderableMergeSort.prototype.sortBlendedRenderables = function (head) {
+                var headB;
+                var fast;
+                var slow;
+
+                if (!head || !head.next) {
+                    return head;
+                }
+
+                // split in two sublists
+                slow = head;
+                fast = head.next;
+
+                while (fast) {
+                    fast = fast.next;
+                    if (fast) {
+                        slow = slow.next;
+                        fast = fast.next;
+                    }
+                }
+
+                headB = slow.next;
+                slow.next = null;
+
+                // recurse
+                head = this.sortBlendedRenderables(head);
+                headB = this.sortBlendedRenderables(headB);
+
+                // merge sublists while respecting order
+                var result;
+                var curr;
+                var l;
+
+                if (!head)
+                    return headB;
+                if (!headB)
+                    return head;
+
+                while (head && headB) {
+                    if (head.zIndex < headB.zIndex) {
+                        l = head;
+                        head = head.next;
+                    } else {
+                        l = headB;
+                        headB = headB.next;
+                    }
+
+                    if (!result)
+                        result = l;
+                    else
+                        curr.next = l;
+
+                    curr = l;
+                }
+
+                if (head)
+                    curr.next = head;
+                else if (headB)
+                    curr.next = headB;
+
+                return result;
+            };
+
+            RenderableMergeSort.prototype.sortOpaqueRenderables = function (head) {
+                var headB;
+                var fast, slow;
+
+                if (!head || !head.next) {
+                    return head;
+                }
+
+                // split in two sublists
+                slow = head;
+                fast = head.next;
+
+                while (fast) {
+                    fast = fast.next;
+                    if (fast) {
+                        slow = slow.next;
+                        fast = fast.next;
+                    }
+                }
+
+                headB = slow.next;
+                slow.next = null;
+
+                // recurse
+                head = this.sortOpaqueRenderables(head);
+                headB = this.sortOpaqueRenderables(headB);
+
+                // merge sublists while respecting order
+                var result;
+                var curr;
+                var l;
+                var cmp = 0;
+
+                if (!head)
+                    return headB;
+                if (!headB)
+                    return head;
+
+                while (head && headB && head != null && headB != null) {
+                    // first sort per render order id (reduces program3D switches),
+                    // then on material id (reduces setting props),
+                    // then on zIndex (reduces overdraw)
+                    var aid = head.renderOrderId;
+                    var bid = headB.renderOrderId;
+
+                    if (aid == bid) {
+                        var ma = head.materialId;
+                        var mb = headB.materialId;
+
+                        if (ma == mb) {
+                            if (head.zIndex < headB.zIndex)
+                                cmp = 1;
+                            else
+                                cmp = -1;
+                        } else if (ma > mb)
+                            cmp = 1;
+                        else
+                            cmp = -1;
+                    } else if (aid > bid)
+                        cmp = 1;
+                    else
+                        cmp = -1;
+
+                    if (cmp < 0) {
+                        l = head;
+                        head = head.next;
+                    } else {
+                        l = headB;
+                        headB = headB.next;
+                    }
+
+                    if (!result) {
+                        result = l;
+                        curr = l;
+                    } else {
+                        curr.next = l;
+                        curr = l;
+                    }
+                }
+
+                if (head)
+                    curr.next = head;
+                else if (headB)
+                    curr.next = headB;
+
+                return result;
+            };
+            return RenderableMergeSort;
+        })();
+        sort.RenderableMergeSort = RenderableMergeSort;
+    })(away.sort || (away.sort = {}));
+    var sort = away.sort;
 })(away || (away = {}));
 ///<reference path="../../_definitions.ts"/>
 var away;
@@ -4891,28 +11332,26 @@ var away;
 
             ContextGL.prototype.dispose = function () {
                 var i;
-                for (i = 0; i < this._indexBufferList.length; ++i) {
+                for (i = 0; i < this._indexBufferList.length; ++i)
                     this._indexBufferList[i].dispose();
-                }
+
                 this._indexBufferList = null;
 
-                for (i = 0; i < this._vertexBufferList.length; ++i) {
+                for (i = 0; i < this._vertexBufferList.length; ++i)
                     this._vertexBufferList[i].dispose();
-                }
+
                 this._vertexBufferList = null;
 
-                for (i = 0; i < this._textureList.length; ++i) {
+                for (i = 0; i < this._textureList.length; ++i)
                     this._textureList[i].dispose();
-                }
+
                 this._textureList = null;
 
-                for (i = 0; i < this._programList.length; ++i) {
+                for (i = 0; i < this._programList.length; ++i)
                     this._programList[i].dispose();
-                }
 
-                for (i = 0; i < this._samplerStates.length; ++i) {
+                for (i = 0; i < this._samplerStates.length; ++i)
                     this._samplerStates[i] = null;
-                }
 
                 this._programList = null;
             };
@@ -4924,20 +11363,11 @@ var away;
             ContextGL.prototype.drawTriangles = function (indexBuffer, firstIndex, numTriangles) {
                 if (typeof firstIndex === "undefined") { firstIndex = 0; }
                 if (typeof numTriangles === "undefined") { numTriangles = -1; }
-                if (!this._drawing) {
+                if (!this._drawing)
                     throw "Need to clear before drawing if the buffer has not been cleared since the last present() call.";
-                }
-
-                var numIndices = 0;
-
-                if (numTriangles == -1) {
-                    numIndices = indexBuffer.numIndices;
-                } else {
-                    numIndices = numTriangles * 3;
-                }
 
                 this._gl.bindBuffer(this._gl.ELEMENT_ARRAY_BUFFER, indexBuffer.glBuffer);
-                this._gl.drawElements(this._gl.TRIANGLES, numIndices, this._gl.UNSIGNED_SHORT, firstIndex);
+                this._gl.drawElements(this._gl.TRIANGLES, (numTriangles == -1) ? indexBuffer.numIndices : numTriangles * 3, this._gl.UNSIGNED_SHORT, firstIndex);
             };
 
             ContextGL.prototype.present = function () {
@@ -5461,37 +11891,712 @@ var away;
     })(away.gl || (away.gl = {}));
     var gl = away.gl;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
+    /**
+    * A Box object is an area defined by its position, as indicated by its
+    * top-left-front corner point(<i>x</i>, <i>y</i>, <i>z</i>) and by its width,
+    * height and depth.
+    *
+    *
+    * <p>The <code>x</code>, <code>y</code>, <code>z</code>, <code>width</code>,
+    * <code>height</code> <code>depth</code> properties of the Box class are
+    * independent of each other; changing the value of one property has no effect
+    * on the others. However, the <code>right</code>, <code>bottom</code> and
+    * <code>back</code> properties are integrally related to those six
+    * properties. For example, if you change the value of the <code>right</code>
+    * property, the value of the <code>width</code> property changes; if you
+    * change the <code>bottom</code> property, the value of the
+    * <code>height</code> property changes. </p>
+    *
+    * <p>The following methods and properties use Box objects:</p>
+    *
+    * <ul>
+    *   <li>The <code>bounds</code> property of the DisplayObject class</li>
+    * </ul>
+    *
+    * <p>You can use the <code>new Box()</code> constructor to create a
+    * Box object.</p>
+    *
+    * <p><b>Note:</b> The Box class does not define a cubic Shape
+    * display object.
+    */
     (function (geom) {
-        var ColorTransform = (function () {
-            function ColorTransform(inRedMultiplier, inGreenMultiplier, inBlueMultiplier, inAlphaMultiplier, inRedOffset, inGreenOffset, inBlueOffset, inAlphaOffset) {
-                if (typeof inRedMultiplier === "undefined") { inRedMultiplier = 1.0; }
-                if (typeof inGreenMultiplier === "undefined") { inGreenMultiplier = 1.0; }
-                if (typeof inBlueMultiplier === "undefined") { inBlueMultiplier = 1.0; }
-                if (typeof inAlphaMultiplier === "undefined") { inAlphaMultiplier = 1.0; }
-                if (typeof inRedOffset === "undefined") { inRedOffset = 0.0; }
-                if (typeof inGreenOffset === "undefined") { inGreenOffset = 0.0; }
-                if (typeof inBlueOffset === "undefined") { inBlueOffset = 0.0; }
-                if (typeof inAlphaOffset === "undefined") { inAlphaOffset = 0.0; }
-                this.redMultiplier = inRedMultiplier;
-                this.greenMultiplier = inGreenMultiplier;
-                this.blueMultiplier = inBlueMultiplier;
-                this.alphaMultiplier = inAlphaMultiplier;
-                this.redOffset = inRedOffset;
-                this.greenOffset = inGreenOffset;
-                this.blueOffset = inBlueOffset;
-                this.alphaOffset = inAlphaOffset;
+        var Box = (function () {
+            /**
+            * Creates a new Box object with the top-left-front corner specified by the
+            * <code>x</code>, <code>y</code> and <code>z</code> parameters and with the
+            * specified <code>width</code>, <code>height</code> and <code>depth</code>
+            * parameters. If you call this public without parameters, a box with
+            * <code>x</code>, <code>y</code>, <code>z</code>, <code>width</code>,
+            * <code>height</code> and <code>depth</code> properties set to 0 is created.
+            *
+            * @param x      The <i>x</i> coordinate of the top-left-front corner of the
+            *               box.
+            * @param y      The <i>y</i> coordinate of the top-left-front corner of the
+            *               box.
+            * @param z      The <i>z</i> coordinate of the top-left-front corner of the
+            *               box.
+            * @param width  The width of the box, in pixels.
+            * @param height The height of the box, in pixels.
+            * @param depth The depth of the box, in pixels.
+            */
+            function Box(x, y, z, width, height, depth) {
+                if (typeof x === "undefined") { x = 0; }
+                if (typeof y === "undefined") { y = 0; }
+                if (typeof z === "undefined") { z = 0; }
+                if (typeof width === "undefined") { width = 0; }
+                if (typeof height === "undefined") { height = 0; }
+                if (typeof depth === "undefined") { depth = 0; }
+                this.x = x;
+                this.y = y;
+                this.z = z;
+                this.width = width;
+                this.height = height;
+                this.depth = depth;
             }
-            ColorTransform.prototype.concat = function (second) {
-                this.redMultiplier += second.redMultiplier;
-                this.greenMultiplier += second.greenMultiplier;
-                this.blueMultiplier += second.blueMultiplier;
-                this.alphaMultiplier += second.alphaMultiplier;
+            Object.defineProperty(Box.prototype, "back", {
+                /**
+                * The sum of the <code>z</code> and <code>height</code> properties.
+                */
+                get: function () {
+                    return this.z + this.depth;
+                },
+                set: function (val) {
+                    this.depth = val - this.z;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Box.prototype, "bottom", {
+                /**
+                * The sum of the <code>y</code> and <code>height</code> properties.
+                */
+                get: function () {
+                    return this.y + this.height;
+                },
+                set: function (val) {
+                    this.height = val - this.y;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Box.prototype, "bottomRightBack", {
+                /**
+                * The location of the Box object's bottom-right corner, determined by the
+                * values of the <code>right</code> and <code>bottom</code> properties.
+                */
+                get: function () {
+                    if (this._bottomRightBack == null)
+                        this._bottomRightBack = new away.geom.Vector3D();
+
+                    this._bottomRightBack.x = this.x + this.width;
+                    this._bottomRightBack.y = this.y + this.height;
+                    this._bottomRightBack.z = this.z + this.depth;
+
+                    return this._bottomRightBack;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Box.prototype, "front", {
+                /**
+                * The <i>z</i> coordinate of the top-left-front corner of the box. Changing
+                * the <code>front</code> property of a Box object has no effect on the
+                * <code>x</code>, <code>y</code>, <code>width</code> and <code>height</code>
+                * properties. However it does affect the <code>depth</code> property,
+                * whereas changing the <code>z</code> value does <i>not</i> affect the
+                * <code>depth</code> property.
+                *
+                * <p>The value of the <code>left</code> property is equal to the value of
+                * the <code>x</code> property.</p>
+                */
+                get: function () {
+                    return this.z;
+                },
+                set: function (val) {
+                    this.depth += this.z - val;
+                    this.z = val;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Box.prototype, "left", {
+                /**
+                * The <i>x</i> coordinate of the top-left corner of the box. Changing the
+                * <code>left</code> property of a Box object has no effect on the
+                * <code>y</code> and <code>height</code> properties. However it does affect
+                * the <code>width</code> property, whereas changing the <code>x</code> value
+                * does <i>not</i> affect the <code>width</code> property.
+                *
+                * <p>The value of the <code>left</code> property is equal to the value of
+                * the <code>x</code> property.</p>
+                */
+                get: function () {
+                    return this.x;
+                },
+                set: function (val) {
+                    this.width += this.x - val;
+                    this.x = val;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Box.prototype, "right", {
+                /**
+                * The sum of the <code>x</code> and <code>width</code> properties.
+                */
+                get: function () {
+                    return this.x + this.width;
+                },
+                set: function (val) {
+                    this.width = val - this.x;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Box.prototype, "size", {
+                /**
+                * The size of the Box object, expressed as a Vector3D object with the
+                * values of the <code>width</code>, <code>height</code> and
+                * <code>depth</code> properties.
+                */
+                get: function () {
+                    if (this._size == null)
+                        this._size = new away.geom.Vector3D();
+
+                    this._size.x = this.width;
+                    this._size.y = this.height;
+                    this._size.z = this.depth;
+
+                    return this._size;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Box.prototype, "top", {
+                /**
+                * The <i>y</i> coordinate of the top-left-front corner of the box. Changing
+                * the <code>top</code> property of a Box object has no effect on the
+                * <code>x</code> and <code>width</code> properties. However it does affect
+                * the <code>height</code> property, whereas changing the <code>y</code>
+                * value does <i>not</i> affect the <code>height</code> property.
+                *
+                * <p>The value of the <code>top</code> property is equal to the value of the
+                * <code>y</code> property.</p>
+                */
+                get: function () {
+                    return this.y;
+                },
+                set: function (val) {
+                    this.height += (this.y - val);
+                    this.y = val;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Box.prototype, "topLeftFront", {
+                /**
+                * The location of the Box object's top-left-front corner, determined by the
+                * <i>x</i>, <i>y</i> and <i>z</i> coordinates of the point.
+                */
+                get: function () {
+                    if (this._topLeftFront == null)
+                        this._topLeftFront = new away.geom.Vector3D();
+
+                    this._topLeftFront.x = this.x;
+                    this._topLeftFront.y = this.y;
+                    this._topLeftFront.z = this.z;
+
+                    return this._topLeftFront;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * Returns a new Box object with the same values for the <code>x</code>,
+            * <code>y</code>, <code>z</code>, <code>width</code>, <code>height</code>
+            * and <code>depth</code> properties as the original Box object.
+            *
+            * @return A new Box object with the same values for the <code>x</code>,
+            *         <code>y</code>, <code>z</code>, <code>width</code>,
+            *         <code>height</code> and <code>depth</code> properties as the
+            *         original Box object.
+            */
+            Box.prototype.clone = function () {
+                return new Box(this.x, this.y, this.z, this.width, this.height, this.depth);
             };
 
+            /**
+            * Determines whether the specified position is contained within the cubic
+            * region defined by this Box object.
+            *
+            * @param x The <i>x</i> coordinate(horizontal component) of the position.
+            * @param y The <i>y</i> coordinate(vertical component) of the position.
+            * @param z The <i>z</i> coordinate(longitudinal component) of the position.
+            * @return A value of <code>true</code> if the Box object contains the
+            *         specified position; otherwise <code>false</code>.
+            */
+            Box.prototype.contains = function (x, y, z) {
+                return (this.x <= x && this.x + this.width >= x && this.y <= y && this.y + this.height >= y && this.z <= z && this.z + this.depth >= z);
+            };
+
+            /**
+            * Determines whether the specified position is contained within the cubic
+            * region defined by this Box object. This method is similar to the
+            * <code>Box.contains()</code> method, except that it takes a Vector3D
+            * object as a parameter.
+            *
+            * @param position The position, as represented by its <i>x</i>, <i>y</i> and
+            *                 <i>z</i> coordinates.
+            * @return A value of <code>true</code> if the Box object contains the
+            *         specified position; otherwise <code>false</code>.
+            */
+            Box.prototype.containsPoint = function (position) {
+                return (this.x <= position.x && this.x + this.width >= position.x && this.y <= position.y && this.y + this.height >= position.y && this.z <= position.z && this.z + this.depth >= position.z);
+            };
+
+            /**
+            * Determines whether the Box object specified by the <code>box</code>
+            * parameter is contained within this Box object. A Box object is said to
+            * contain another if the second Box object falls entirely within the
+            * boundaries of the first.
+            *
+            * @param box The Box object being checked.
+            * @return A value of <code>true</code> if the Box object that you specify
+            *         is contained by this Box object; otherwise <code>false</code>.
+            */
+            Box.prototype.containsRect = function (box) {
+                return (this.x <= box.x && this.x + this.width >= box.x + box.width && this.y <= box.y && this.y + this.height >= box.y + box.height && this.z <= box.z && this.z + this.depth >= box.z + box.depth);
+            };
+
+            /**
+            * Copies all of box data from the source Box object into the calling
+            * Box object.
+            *
+            * @param sourceBox The Box object from which to copy the data.
+            */
+            Box.prototype.copyFrom = function (sourceBox) {
+                //TODO
+            };
+
+            /**
+            * Determines whether the object specified in the <code>toCompare</code>
+            * parameter is equal to this Box object. This method compares the
+            * <code>x</code>, <code>y</code>, <code>z</code>, <code>width</code>,
+            * <code>height</code> and <code>depth</code> properties of an object against
+            * the same properties of this Box object.
+            *
+            * @param toCompare The box to compare to this Box object.
+            * @return A value of <code>true</code> if the object has exactly the same
+            *         values for the <code>x</code>, <code>y</code>, <code>z</code>,
+            *         <code>width</code>, <code>height</code> and <code>depth</code>
+            *         properties as this Box object; otherwise <code>false</code>.
+            */
+            Box.prototype.equals = function (toCompare) {
+                return (this.x == toCompare.x && this.y == toCompare.y && this.z == toCompare.z && this.width == toCompare.width && this.height == toCompare.height && this.depth == toCompare.depth);
+            };
+
+            /**
+            * Increases the size of the Box object by the specified amounts, in
+            * pixels. The center point of the Box object stays the same, and its
+            * size increases to the left and right by the <code>dx</code> value, to
+            * the top and the bottom by the <code>dy</code> value, and to
+            * the front and the back by the <code>dz</code> value.
+            *
+            * @param dx The value to be added to the left and the right of the Box
+            *           object. The following equation is used to calculate the new
+            *           width and position of the box:
+            * @param dy The value to be added to the top and the bottom of the Box
+            *           object. The following equation is used to calculate the new
+            *           height and position of the box:
+            * @param dz The value to be added to the front and the back of the Box
+            *           object. The following equation is used to calculate the new
+            *           depth and position of the box:
+            */
+            Box.prototype.inflate = function (dx, dy, dz) {
+                this.x -= dx / 2;
+                this.y -= dy / 2;
+                this.z -= dz / 2;
+                this.width += dx / 2;
+                this.height += dy / 2;
+                this.depth += dz / 2;
+            };
+
+            /**
+            * Increases the size of the Box object. This method is similar to the
+            * <code>Box.inflate()</code> method except it takes a Vector3D object as
+            * a parameter.
+            *
+            * <p>The following two code examples give the same result:</p>
+            *
+            * @param delta The <code>x</code> property of this Vector3D object is used to
+            *              increase the horizontal dimension of the Box object.
+            *              The <code>y</code> property is used to increase the vertical
+            *              dimension of the Box object.
+            *              The <code>z</code> property is used to increase the
+            *              longitudinal dimension of the Box object.
+            */
+            Box.prototype.inflatePoint = function (delta) {
+                this.x -= delta.x / 2;
+                this.y -= delta.y / 2;
+                this.z -= delta.z / 2;
+                this.width += delta.x / 2;
+                this.height += delta.y / 2;
+                this.depth += delta.z / 2;
+            };
+
+            /**
+            * If the Box object specified in the <code>toIntersect</code> parameter
+            * intersects with this Box object, returns the area of intersection
+            * as a Box object. If the boxes do not intersect, this method returns an
+            * empty Box object with its properties set to 0.
+            *
+            * @param toIntersect The Box object to compare against to see if it
+            *                    intersects with this Box object.
+            * @return A Box object that equals the area of intersection. If the
+            *         boxes do not intersect, this method returns an empty Box
+            *         object; that is, a box with its <code>x</code>, <code>y</code>,
+            *         <code>z</code>, <code>width</code>,  <code>height</code>, and
+            *         <code>depth</code> properties set to 0.
+            */
+            Box.prototype.intersection = function (toIntersect) {
+                if (this.intersects(toIntersect)) {
+                    var i = new Box();
+
+                    if (this.x > toIntersect.x) {
+                        i.x = this.x;
+                        i.width = toIntersect.x - this.x + toIntersect.width;
+
+                        if (i.width > this.width)
+                            i.width = this.width;
+                    } else {
+                        i.x = toIntersect.x;
+                        i.width = this.x - toIntersect.x + this.width;
+
+                        if (i.width > toIntersect.width)
+                            i.width = toIntersect.width;
+                    }
+
+                    if (this.y > toIntersect.y) {
+                        i.y = this.y;
+                        i.height = toIntersect.y - this.y + toIntersect.height;
+
+                        if (i.height > this.height)
+                            i.height = this.height;
+                    } else {
+                        i.y = toIntersect.y;
+                        i.height = this.y - toIntersect.y + this.height;
+
+                        if (i.height > toIntersect.height)
+                            i.height = toIntersect.height;
+                    }
+
+                    if (this.z > toIntersect.z) {
+                        i.z = this.z;
+                        i.depth = toIntersect.z - this.z + toIntersect.depth;
+
+                        if (i.depth > this.depth)
+                            i.depth = this.depth;
+                    } else {
+                        i.z = toIntersect.z;
+                        i.depth = this.z - toIntersect.z + this.depth;
+
+                        if (i.depth > toIntersect.depth)
+                            i.depth = toIntersect.depth;
+                    }
+
+                    return i;
+                }
+
+                return new Box();
+            };
+
+            /**
+            * Determines whether the object specified in the <code>toIntersect</code>
+            * parameter intersects with this Box object. This method checks the
+            * <code>x</code>, <code>y</code>, <code>z</code>, <code>width</code>,
+            * <code>height</code>, and <code>depth</code> properties of the specified
+            * Box object to see if it intersects with this Box object.
+            *
+            * @param toIntersect The Box object to compare against this Box object.
+            * @return A value of <code>true</code> if the specified object intersects
+            *         with this Box object; otherwise <code>false</code>.
+            */
+            Box.prototype.intersects = function (toIntersect) {
+                return (this.x + this.width > toIntersect.x && this.x < toIntersect.x + toIntersect.width && this.y + this.height > toIntersect.y && this.y < toIntersect.y + toIntersect.height && this.z + this.depth > toIntersect.z && this.z < toIntersect.z + toIntersect.depth);
+            };
+
+            /**
+            * Determines whether or not this Box object is empty.
+            *
+            * @return A value of <code>true</code> if the Box object's width, height or
+            *         depth is less than or equal to 0; otherwise <code>false</code>.
+            */
+            Box.prototype.isEmpty = function () {
+                return (this.x == 0 && this.y == 0 && this.z == 0 && this.width == 0 && this.height == 0 && this.depth == 0);
+            };
+
+            /**
+            * Adjusts the location of the Box object, as determined by its
+            * top-left-front corner, by the specified amounts.
+            *
+            * @param dx Moves the <i>x</i> value of the Box object by this amount.
+            * @param dy Moves the <i>y</i> value of the Box object by this amount.
+            * @param dz Moves the <i>z</i> value of the Box object by this amount.
+            */
+            Box.prototype.offset = function (dx, dy, dz) {
+                this.x += dx;
+                this.y += dy;
+                this.z += dz;
+            };
+
+            /**
+            * Adjusts the location of the Box object using a Vector3D object as a
+            * parameter. This method is similar to the <code>Box.offset()</code>
+            * method, except that it takes a Vector3D object as a parameter.
+            *
+            * @param position A Vector3D object to use to offset this Box object.
+            */
+            Box.prototype.offsetPosition = function (position) {
+                this.x += position.x;
+                this.y += position.y;
+                this.z += position.z;
+            };
+
+            /**
+            * Sets all of the Box object's properties to 0. A Box object is empty if its
+            * width, height or depth is less than or equal to 0.
+            *
+            * <p> This method sets the values of the <code>x</code>, <code>y</code>,
+            * <code>z</code>, <code>width</code>, <code>height</code>, and
+            * <code>depth</code> properties to 0.</p>
+            *
+            */
+            Box.prototype.setEmpty = function () {
+                this.x = 0;
+                this.y = 0;
+                this.z = 0;
+                this.width = 0;
+                this.height = 0;
+                this.depth = 0;
+            };
+
+            /**
+            * Sets the members of Box to the specified values
+            *
+            * @param xa      The <i>x</i> coordinate of the top-left-front corner of the
+            *                box.
+            * @param ya      The <i>y</i> coordinate of the top-left-front corner of the
+            *                box.
+            * @param yz      The <i>z</i> coordinate of the top-left-front corner of the
+            *                box.
+            * @param widtha  The width of the box, in pixels.
+            * @param heighta The height of the box, in pixels.
+            * @param deptha  The depth of the box, in pixels.
+            */
+            Box.prototype.setTo = function (xa, ya, za, widtha, heighta, deptha) {
+                this.x = xa;
+                this.y = ya;
+                this.z = za;
+                this.width = widtha;
+                this.height = heighta;
+                this.depth = deptha;
+            };
+
+            /**
+            * Builds and returns a string that lists the horizontal, vertical and
+            * longitudinal positions and the width, height and depth of the Box object.
+            *
+            * @return A string listing the value of each of the following properties of
+            *         the Box object: <code>x</code>, <code>y</code>, <code>z</code>,
+            *         <code>width</code>, <code>height</code>, and <code>depth</code>.
+            */
+            Box.prototype.toString = function () {
+                return "[Box] (x=" + this.x + ", y=" + this.y + ", z=" + this.z + ", width=" + this.width + ", height=" + this.height + ", depth=" + this.depth + ")";
+            };
+
+            /**
+            * Adds two boxes together to create a new Box object, by filling
+            * in the horizontal, vertical and longitudinal space between the two boxes.
+            *
+            * <p><b>Note:</b> The <code>union()</code> method ignores boxes with
+            * <code>0</code> as the height, width or depth value, such as: <code>var
+            * box2:Box = new Box(300,300,300,50,50,0);</code></p>
+            *
+            * @param toUnion A Box object to add to this Box object.
+            * @return A new Box object that is the union of the two boxes.
+            */
+            Box.prototype.union = function (toUnion) {
+                var u = new Box();
+
+                if (this.x < toUnion.x) {
+                    u.x = this.x;
+                    u.width = toUnion.x - this.x + toUnion.width;
+
+                    if (u.width < this.width)
+                        u.width = this.width;
+                } else {
+                    u.x = toUnion.x;
+                    u.width = this.x - toUnion.x + this.width;
+
+                    if (u.width < toUnion.width)
+                        u.width = toUnion.width;
+                }
+
+                if (this.y < toUnion.y) {
+                    u.y = this.y;
+                    u.height = toUnion.y - this.y + toUnion.height;
+
+                    if (u.height < this.height)
+                        u.height = this.height;
+                } else {
+                    u.y = toUnion.y;
+                    u.height = this.y - toUnion.y + this.height;
+
+                    if (u.height < toUnion.height)
+                        u.height = toUnion.height;
+                }
+
+                if (this.z < toUnion.z) {
+                    u.z = this.z;
+                    u.depth = toUnion.z - this.z + toUnion.depth;
+
+                    if (u.depth < this.depth)
+                        u.depth = this.depth;
+                } else {
+                    u.z = toUnion.z;
+                    u.depth = this.z - toUnion.z + this.depth;
+
+                    if (u.depth < toUnion.depth)
+                        u.depth = toUnion.depth;
+                }
+
+                return u;
+            };
+            return Box;
+        })();
+        geom.Box = Box;
+    })(away.geom || (away.geom = {}));
+    var geom = away.geom;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * The ColorTransform class lets you adjust the color values in a display
+    * object. The color adjustment or <i>color transformation</i> can be applied
+    * to all four channels: red, green, blue, and alpha transparency.
+    *
+    * <p>When a ColorTransform object is applied to a display object, a new value
+    * for each color channel is calculated like this:</p>
+    *
+    * <ul>
+    *   <li>New red value = (old red value * <code>redMultiplier</code>) +
+    * <code>redOffset</code></li>
+    *   <li>New green value = (old green value * <code>greenMultiplier</code>) +
+    * <code>greenOffset</code></li>
+    *   <li>New blue value = (old blue value * <code>blueMultiplier</code>) +
+    * <code>blueOffset</code></li>
+    *   <li>New alpha value = (old alpha value * <code>alphaMultiplier</code>) +
+    * <code>alphaOffset</code></li>
+    * </ul>
+    *
+    * <p>If any of the color channel values is greater than 255 after the
+    * calculation, it is set to 255. If it is less than 0, it is set to 0.</p>
+    *
+    * <p>You can use ColorTransform objects in the following ways:</p>
+    *
+    * <ul>
+    *   <li>In the <code>colorTransform</code> parameter of the
+    * <code>colorTransform()</code> method of the BitmapData class</li>
+    *   <li>As the <code>colorTransform</code> property of a Transform object
+    * (which can be used as the <code>transform</code> property of a display
+    * object)</li>
+    * </ul>
+    *
+    * <p>You must use the <code>new ColorTransform()</code> constructor to create
+    * a ColorTransform object before you can call the methods of the
+    * ColorTransform object.</p>
+    *
+    * <p>Color transformations do not apply to the background color of a movie
+    * clip(such as a loaded SWF object). They apply only to graphics and symbols
+    * that are attached to the movie clip.</p>
+    */
+    (function (geom) {
+        var ColorTransform = (function () {
+            /**
+            * Creates a ColorTransform object for a display object with the specified
+            * color channel values and alpha values.
+            *
+            * @param redMultiplier   The value for the red multiplier, in the range from
+            *                        0 to 1.
+            * @param greenMultiplier The value for the green multiplier, in the range
+            *                        from 0 to 1.
+            * @param blueMultiplier  The value for the blue multiplier, in the range
+            *                        from 0 to 1.
+            * @param alphaMultiplier The value for the alpha transparency multiplier, in
+            *                        the range from 0 to 1.
+            * @param redOffset       The offset value for the red color channel, in the
+            *                        range from -255 to 255.
+            * @param greenOffset     The offset value for the green color channel, in
+            *                        the range from -255 to 255.
+            * @param blueOffset      The offset for the blue color channel value, in the
+            *                        range from -255 to 255.
+            * @param alphaOffset     The offset for alpha transparency channel value, in
+            *                        the range from -255 to 255.
+            */
+            function ColorTransform(redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier, redOffset, greenOffset, blueOffset, alphaOffset) {
+                if (typeof redMultiplier === "undefined") { redMultiplier = 1; }
+                if (typeof greenMultiplier === "undefined") { greenMultiplier = 1; }
+                if (typeof blueMultiplier === "undefined") { blueMultiplier = 1; }
+                if (typeof alphaMultiplier === "undefined") { alphaMultiplier = 1; }
+                if (typeof redOffset === "undefined") { redOffset = 0; }
+                if (typeof greenOffset === "undefined") { greenOffset = 0; }
+                if (typeof blueOffset === "undefined") { blueOffset = 0; }
+                if (typeof alphaOffset === "undefined") { alphaOffset = 0; }
+                this.redMultiplier = redMultiplier;
+                this.greenMultiplier = greenMultiplier;
+                this.blueMultiplier = blueMultiplier;
+                this.alphaMultiplier = alphaMultiplier;
+                this.redOffset = redOffset;
+                this.greenOffset = greenOffset;
+                this.blueOffset = blueOffset;
+                this.alphaOffset = alphaOffset;
+            }
             Object.defineProperty(ColorTransform.prototype, "color", {
+                /**
+                * The RGB color value for a ColorTransform object.
+                *
+                * <p>When you set this property, it changes the three color offset values
+                * (<code>redOffset</code>, <code>greenOffset</code>, and
+                * <code>blueOffset</code>) accordingly, and it sets the three color
+                * multiplier values(<code>redMultiplier</code>,
+                * <code>greenMultiplier</code>, and <code>blueMultiplier</code>) to 0. The
+                * alpha transparency multiplier and offset values do not change.</p>
+                *
+                * <p>When you pass a value for this property, use the format
+                * 0x<i>RRGGBB</i>. <i>RR</i>, <i>GG</i>, and <i>BB</i> each consist of two
+                * hexadecimal digits that specify the offset of each color component. The 0x
+                * tells the ActionScript compiler that the number is a hexadecimal
+                * value.</p>
+                */
                 get: function () {
                     return ((this.redOffset << 16) | (this.greenOffset << 8) | this.blueOffset);
                 },
@@ -5510,17 +12615,113 @@ var away;
                 configurable: true
             });
 
+
+            /**
+            * Concatenates the ColorTranform object specified by the <code>second</code>
+            * parameter with the current ColorTransform object and sets the current
+            * object as the result, which is an additive combination of the two color
+            * transformations. When you apply the concatenated ColorTransform object,
+            * the effect is the same as applying the <code>second</code> color
+            * transformation after the <i>original</i> color transformation.
+            *
+            * @param second The ColorTransform object to be combined with the current
+            *               ColorTransform object.
+            */
+            ColorTransform.prototype.concat = function (second) {
+                this.redMultiplier += second.redMultiplier;
+                this.greenMultiplier += second.greenMultiplier;
+                this.blueMultiplier += second.blueMultiplier;
+                this.alphaMultiplier += second.alphaMultiplier;
+            };
             return ColorTransform;
         })();
         geom.ColorTransform = ColorTransform;
     })(away.geom || (away.geom = {}));
     var geom = away.geom;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
+    /**
+    * The Matrix class represents a transformation matrix that determines how to
+    * map points from one coordinate space to another. You can perform various
+    * graphical transformations on a display object by setting the properties of
+    * a Matrix object, applying that Matrix object to the <code>matrix</code>
+    * property of a Transform object, and then applying that Transform object as
+    * the <code>transform</code> property of the display object. These
+    * transformation functions include translation(<i>x</i> and <i>y</i>
+    * repositioning), rotation, scaling, and skewing.
+    *
+    * <p>Together these types of transformations are known as <i>affine
+    * transformations</i>. Affine transformations preserve the straightness of
+    * lines while transforming, so that parallel lines stay parallel.</p>
+    *
+    * <p>To apply a transformation matrix to a display object, you create a
+    * Transform object, set its <code>matrix</code> property to the
+    * transformation matrix, and then set the <code>transform</code> property of
+    * the display object to the Transform object. Matrix objects are also used as
+    * parameters of some methods, such as the following:</p>
+    *
+    * <ul>
+    *   <li>The <code>draw()</code> method of a BitmapData object</li>
+    *   <li>The <code>beginBitmapFill()</code> method,
+    * <code>beginGradientFill()</code> method, or
+    * <code>lineGradientStyle()</code> method of a Graphics object</li>
+    * </ul>
+    *
+    * <p>A transformation matrix object is a 3 x 3 matrix with the following
+    * contents:</p>
+    *
+    * <p>In traditional transformation matrixes, the <code>u</code>,
+    * <code>v</code>, and <code>w</code> properties provide extra capabilities.
+    * The Matrix class can only operate in two-dimensional space, so it always
+    * assumes that the property values <code>u</code> and <code>v</code> are 0.0,
+    * and that the property value <code>w</code> is 1.0. The effective values of
+    * the matrix are as follows:</p>
+    *
+    * <p>You can get and set the values of all six of the other properties in a
+    * Matrix object: <code>a</code>, <code>b</code>, <code>c</code>,
+    * <code>d</code>, <code>tx</code>, and <code>ty</code>.</p>
+    *
+    * <p>The Matrix class supports the four major types of transformations:
+    * translation, scaling, rotation, and skewing. You can set three of these
+    * transformations by using specialized methods, as described in the following
+    * table: </p>
+    *
+    * <p>Each transformation function alters the current matrix properties so
+    * that you can effectively combine multiple transformations. To do this, you
+    * call more than one transformation function before applying the matrix to
+    * its display object target(by using the <code>transform</code> property of
+    * that display object).</p>
+    *
+    * <p>Use the <code>new Matrix()</code> constructor to create a Matrix object
+    * before you can call the methods of the Matrix object.</p>
+    */
     (function (geom) {
         var Matrix = (function () {
+            /**
+            * Creates a new Matrix object with the specified parameters. In matrix
+            * notation, the properties are organized like this:
+            *
+            * <p>If you do not provide any parameters to the <code>new Matrix()</code>
+            * constructor, it creates an <i>identity matrix</i> with the following
+            * values:</p>
+            *
+            * <p>In matrix notation, the identity matrix looks like this:</p>
+            *
+            * @param a  The value that affects the positioning of pixels along the
+            *           <i>x</i> axis when scaling or rotating an image.
+            * @param b  The value that affects the positioning of pixels along the
+            *           <i>y</i> axis when rotating or skewing an image.
+            * @param c  The value that affects the positioning of pixels along the
+            *           <i>x</i> axis when rotating or skewing an image.
+            * @param d  The value that affects the positioning of pixels along the
+            *           <i>y</i> axis when scaling or rotating an image..
+            * @param tx The distance by which to translate each point along the <i>x</i>
+            *           axis.
+            * @param ty The distance by which to translate each point along the <i>y</i>
+            *           axis.
+            */
             function Matrix(a, b, c, d, tx, ty) {
                 if (typeof a === "undefined") { a = 1; }
                 if (typeof b === "undefined") { b = 0; }
@@ -5536,36 +12737,54 @@ var away;
                 this.ty = ty;
             }
             /**
+            * Returns a new Matrix object that is a clone of this matrix, with an exact
+            * copy of the contained object.
             *
-            * @returns {away.geom.Matrix}
+            * @return A Matrix object.
             */
             Matrix.prototype.clone = function () {
                 return new Matrix(this.a, this.b, this.c, this.d, this.tx, this.ty);
             };
 
             /**
+            * Concatenates a matrix with the current matrix, effectively combining the
+            * geometric effects of the two. In mathematical terms, concatenating two
+            * matrixes is the same as combining them using matrix multiplication.
             *
-            * @param m
+            * <p>For example, if matrix <code>m1</code> scales an object by a factor of
+            * four, and matrix <code>m2</code> rotates an object by 1.5707963267949
+            * radians(<code>Math.PI/2</code>), then <code>m1.concat(m2)</code>
+            * transforms <code>m1</code> into a matrix that scales an object by a factor
+            * of four and rotates the object by <code>Math.PI/2</code> radians. </p>
+            *
+            * <p>This method replaces the source matrix with the concatenated matrix. If
+            * you want to concatenate two matrixes without altering either of the two
+            * source matrixes, first copy the source matrix by using the
+            * <code>clone()</code> method, as shown in the Class Examples section.</p>
+            *
+            * @param matrix The matrix to be concatenated to the source matrix.
             */
-            Matrix.prototype.concat = function (m) {
-                var a1 = this.a * m.a + this.b * m.c;
-                this.b = this.a * m.b + this.b * m.d;
+            Matrix.prototype.concat = function (matrix) {
+                var a1 = this.a * matrix.a + this.b * matrix.c;
+                this.b = this.a * matrix.b + this.b * matrix.d;
                 this.a = a1;
 
-                var c1 = this.c * m.a + this.d * m.c;
-                this.d = this.c * m.b + this.d * m.d;
+                var c1 = this.c * matrix.a + this.d * matrix.c;
+                this.d = this.c * matrix.b + this.d * matrix.d;
 
                 this.c = c1;
 
-                var tx1 = this.tx * m.a + this.ty * m.c + m.tx;
-                this.ty = this.tx * m.b + this.ty * m.d + m.ty;
+                var tx1 = this.tx * matrix.a + this.ty * matrix.c + matrix.tx;
+                this.ty = this.tx * matrix.b + this.ty * matrix.d + matrix.ty;
                 this.tx = tx1;
             };
 
             /**
+            * Copies a Vector3D object into specific column of the calling Matrix3D
+            * object.
             *
-            * @param column
-            * @param vector3D
+            * @param column   The column from which to copy the data from.
+            * @param vector3D The Vector3D object from which to copy the data.
             */
             Matrix.prototype.copyColumnFrom = function (column, vector3D) {
                 if (column > 2) {
@@ -5583,9 +12802,11 @@ var away;
             };
 
             /**
+            * Copies specific column of the calling Matrix object into the Vector3D
+            * object. The w element of the Vector3D object will not be changed.
             *
-            * @param column
-            * @param vector3D
+            * @param column   The column from which to copy the data from.
+            * @param vector3D The Vector3D object from which to copy the data.
             */
             Matrix.prototype.copyColumnTo = function (column, vector3D) {
                 if (column > 2) {
@@ -5606,22 +12827,25 @@ var away;
             };
 
             /**
+            * Copies all of the matrix data from the source Point object into the
+            * calling Matrix object.
             *
-            * @param other
+            * @param sourceMatrix The Matrix object from which to copy the data.
             */
-            Matrix.prototype.copyFrom = function (other) {
-                this.a = other.a;
-                this.b = other.b;
-                this.c = other.c;
-                this.d = other.d;
-                this.tx = other.tx;
-                this.ty = other.ty;
+            Matrix.prototype.copyFrom = function (sourceMatrix) {
+                this.a = sourceMatrix.a;
+                this.b = sourceMatrix.b;
+                this.c = sourceMatrix.c;
+                this.d = sourceMatrix.d;
+                this.tx = sourceMatrix.tx;
+                this.ty = sourceMatrix.ty;
             };
 
             /**
+            * Copies a Vector3D object into specific row of the calling Matrix object.
             *
-            * @param row
-            * @param vector3D
+            * @param row      The row from which to copy the data from.
+            * @param vector3D The Vector3D object from which to copy the data.
             */
             Matrix.prototype.copyRowFrom = function (row, vector3D) {
                 if (row > 2) {
@@ -5639,9 +12863,11 @@ var away;
             };
 
             /**
+            * Copies specific row of the calling Matrix object into the Vector3D object.
+            * The w element of the Vector3D object will not be changed.
             *
-            * @param row
-            * @param vector3D
+            * @param row      The row from which to copy the data from.
+            * @param vector3D The Vector3D object from which to copy the data.
             */
             Matrix.prototype.copyRowTo = function (row, vector3D) {
                 if (row > 2) {
@@ -5660,12 +12886,22 @@ var away;
             };
 
             /**
+            * Includes parameters for scaling, rotation, and translation. When applied
+            * to a matrix it sets the matrix's values based on those parameters.
             *
-            * @param scaleX
-            * @param scaleY
-            * @param rotation
-            * @param tx
-            * @param ty
+            * <p>Using the <code>createBox()</code> method lets you obtain the same
+            * matrix as you would if you applied the <code>identity()</code>,
+            * <code>rotate()</code>, <code>scale()</code>, and <code>translate()</code>
+            * methods in succession. For example, <code>mat1.createBox(2,2,Math.PI/4,
+            * 100, 100)</code> has the same effect as the following:</p>
+            *
+            * @param scaleX   The factor by which to scale horizontally.
+            * @param scaleY   The factor by which scale vertically.
+            * @param rotation The amount to rotate, in radians.
+            * @param tx       The number of pixels to translate(move) to the right
+            *                 along the <i>x</i> axis.
+            * @param ty       The number of pixels to translate(move) down along the
+            *                 <i>y</i> axis.
             */
             Matrix.prototype.createBox = function (scaleX, scaleY, rotation, tx, ty) {
                 if (typeof rotation === "undefined") { rotation = 0; }
@@ -5679,12 +12915,37 @@ var away;
             };
 
             /**
+            * Creates the specific style of matrix expected by the
+            * <code>beginGradientFill()</code> and <code>lineGradientStyle()</code>
+            * methods of the Graphics class. Width and height are scaled to a
+            * <code>scaleX</code>/<code>scaleY</code> pair and the
+            * <code>tx</code>/<code>ty</code> values are offset by half the width and
+            * height.
             *
-            * @param width
-            * @param height
-            * @param rotation
-            * @param tx
-            * @param ty
+            * <p>For example, consider a gradient with the following
+            * characteristics:</p>
+            *
+            * <ul>
+            *   <li><code>GradientType.LINEAR</code></li>
+            *   <li>Two colors, green and blue, with the ratios array set to <code>[0,
+            * 255]</code></li>
+            *   <li><code>SpreadMethod.PAD</code></li>
+            *   <li><code>InterpolationMethod.LINEAR_RGB</code></li>
+            * </ul>
+            *
+            * <p>The following illustrations show gradients in which the matrix was
+            * defined using the <code>createGradientBox()</code> method with different
+            * parameter settings:</p>
+            *
+            * @param width    The width of the gradient box.
+            * @param height   The height of the gradient box.
+            * @param rotation The amount to rotate, in radians.
+            * @param tx       The distance, in pixels, to translate to the right along
+            *                 the <i>x</i> axis. This value is offset by half of the
+            *                 <code>width</code> parameter.
+            * @param ty       The distance, in pixels, to translate down along the
+            *                 <i>y</i> axis. This value is offset by half of the
+            *                 <code>height</code> parameter.
             */
             Matrix.prototype.createGradientBox = function (width, height, rotation, tx, ty) {
                 if (typeof rotation === "undefined") { rotation = 0; }
@@ -5710,15 +12971,32 @@ var away;
             };
 
             /**
+            * Given a point in the pretransform coordinate space, returns the
+            * coordinates of that point after the transformation occurs. Unlike the
+            * standard transformation applied using the <code>transformPoint()</code>
+            * method, the <code>deltaTransformPoint()</code> method's transformation
+            * does not consider the translation parameters <code>tx</code> and
+            * <code>ty</code>.
             *
-            * @param point
-            * @returns {away.geom.Point}
+            * @param point The point for which you want to get the result of the matrix
+            *              transformation.
+            * @return The point resulting from applying the matrix transformation.
             */
             Matrix.prototype.deltaTransformPoint = function (point) {
                 return new away.geom.Point(point.x * this.a + point.y * this.c, point.x * this.b + point.y * this.d);
             };
 
             /**
+            * Sets each matrix property to a value that causes a null transformation. An
+            * object transformed by applying an identity matrix will be identical to the
+            * original.
+            *
+            * <p>After calling the <code>identity()</code> method, the resulting matrix
+            * has the following properties: <code>a</code>=1, <code>b</code>=0,
+            * <code>c</code>=0, <code>d</code>=1, <code>tx</code>=0,
+            * <code>ty</code>=0.</p>
+            *
+            * <p>In matrix notation, the identity matrix looks like this:</p>
             *
             */
             Matrix.prototype.identity = function () {
@@ -5731,8 +13009,9 @@ var away;
             };
 
             /**
-            *
-            * @returns {away.geom.Matrix}
+            * Performs the opposite transformation of the original matrix. You can apply
+            * an inverted matrix to an object to undo the transformation performed when
+            * applying the original matrix.
             */
             Matrix.prototype.invert = function () {
                 var norm = this.a * this.d - this.b * this.c;
@@ -5753,32 +13032,39 @@ var away;
                     this.ty = -this.b * this.tx - this.d * this.ty;
                     this.tx = tx1;
                 }
-
-                return this;
             };
 
             /**
+            * Returns a new Matrix object that is a clone of this matrix, with an exact
+            * copy of the contained object.
             *
-            * @param m
-            * @returns {away.geom.Matrix}
+            * @param matrix The matrix for which you want to get the result of the matrix
+            *               transformation.
+            * @return A Matrix object.
             */
-            Matrix.prototype.mult = function (m) {
+            Matrix.prototype.multiply = function (matrix) {
                 var result = new Matrix();
 
-                result.a = this.a * m.a + this.b * m.c;
-                result.b = this.a * m.b + this.b * m.d;
-                result.c = this.c * m.a + this.d * m.c;
-                result.d = this.c * m.b + this.d * m.d;
+                result.a = this.a * matrix.a + this.b * matrix.c;
+                result.b = this.a * matrix.b + this.b * matrix.d;
+                result.c = this.c * matrix.a + this.d * matrix.c;
+                result.d = this.c * matrix.b + this.d * matrix.d;
 
-                result.tx = this.tx * m.a + this.ty * m.c + m.tx;
-                result.ty = this.tx * m.b + this.ty * m.d + m.ty;
+                result.tx = this.tx * matrix.a + this.ty * matrix.c + matrix.tx;
+                result.ty = this.tx * matrix.b + this.ty * matrix.d + matrix.ty;
 
                 return result;
             };
 
             /**
+            * Applies a rotation transformation to the Matrix object.
             *
-            * @param angle
+            * <p>The <code>rotate()</code> method alters the <code>a</code>,
+            * <code>b</code>, <code>c</code>, and <code>d</code> properties of the
+            * Matrix object. In matrix notation, this is the same as concatenating the
+            * current matrix with the following:</p>
+            *
+            * @param angle The rotation angle in radians.
             */
             Matrix.prototype.rotate = function (angle) {
                 var cos = Math.cos(angle);
@@ -5798,42 +13084,44 @@ var away;
             };
 
             /**
+            * Applies a scaling transformation to the matrix. The <i>x</i> axis is
+            * multiplied by <code>sx</code>, and the <i>y</i> axis it is multiplied by
+            * <code>sy</code>.
             *
-            * @param x
-            * @param y
+            * <p>The <code>scale()</code> method alters the <code>a</code> and
+            * <code>d</code> properties of the Matrix object. In matrix notation, this
+            * is the same as concatenating the current matrix with the following
+            * matrix:</p>
+            *
+            * @param sx A multiplier used to scale the object along the <i>x</i> axis.
+            * @param sy A multiplier used to scale the object along the <i>y</i> axis.
             */
-            Matrix.prototype.scale = function (x, y) {
-                this.a *= x;
-                this.b *= y;
+            Matrix.prototype.scale = function (sx, sy) {
+                this.a *= sx;
+                this.b *= sy;
 
-                this.c *= x;
-                this.d *= y;
+                this.c *= sx;
+                this.d *= sy;
 
-                this.tx *= x;
-                this.ty *= y;
+                this.tx *= sx;
+                this.ty *= sy;
             };
 
             /**
+            * Sets the members of Matrix to the specified values.
             *
-            * @param angle
-            * @param scale
-            */
-            Matrix.prototype.setRotation = function (angle, scale) {
-                if (typeof scale === "undefined") { scale = 1; }
-                this.a = Math.cos(angle) * scale;
-                this.c = Math.sin(angle) * scale;
-                this.b = -this.c;
-                this.d = this.a;
-            };
-
-            /**
-            *
-            * @param a
-            * @param b
-            * @param c
-            * @param d
-            * @param tx
-            * @param ty
+            * @param a  The value that affects the positioning of pixels along the
+            *           <i>x</i> axis when scaling or rotating an image.
+            * @param b  The value that affects the positioning of pixels along the
+            *           <i>y</i> axis when rotating or skewing an image.
+            * @param c  The value that affects the positioning of pixels along the
+            *           <i>x</i> axis when rotating or skewing an image.
+            * @param d  The value that affects the positioning of pixels along the
+            *           <i>y</i> axis when scaling or rotating an image..
+            * @param tx The distance by which to translate each point along the <i>x</i>
+            *           axis.
+            * @param ty The distance by which to translate each point along the <i>y</i>
+            *           axis.
             */
             Matrix.prototype.setTo = function (a, b, c, d, tx, ty) {
                 this.a = a;
@@ -5845,30 +13133,39 @@ var away;
             };
 
             /**
+            * Returns a text value listing the properties of the Matrix object.
             *
-            * @returns {string}
+            * @return A string containing the values of the properties of the Matrix
+            *         object: <code>a</code>, <code>b</code>, <code>c</code>,
+            *         <code>d</code>, <code>tx</code>, and <code>ty</code>.
             */
             Matrix.prototype.toString = function () {
                 return "[Matrix] (a=" + this.a + ", b=" + this.b + ", c=" + this.c + ", d=" + this.d + ", tx=" + this.tx + ", ty=" + this.ty + ")";
             };
 
             /**
+            * Returns the result of applying the geometric transformation represented by
+            * the Matrix object to the specified point.
             *
-            * @param point
-            * @returns {away.geom.Point}
+            * @param point The point for which you want to get the result of the Matrix
+            *              transformation.
+            * @return The point resulting from applying the Matrix transformation.
             */
             Matrix.prototype.transformPoint = function (point) {
                 return new away.geom.Point(point.x * this.a + point.y * this.c + this.tx, point.x * this.b + point.y * this.d + this.ty);
             };
 
             /**
+            * Translates the matrix along the <i>x</i> and <i>y</i> axes, as specified
+            * by the <code>dx</code> and <code>dy</code> parameters.
             *
-            * @param x
-            * @param y
+            * @param dx The amount of movement along the <i>x</i> axis to the right, in
+            *           pixels.
+            * @param dy The amount of movement down along the <i>y</i> axis, in pixels.
             */
-            Matrix.prototype.translate = function (x, y) {
-                this.tx += x;
-                this.ty += y;
+            Matrix.prototype.translate = function (dx, dy) {
+                this.tx += dx;
+                this.ty += dy;
             };
             return Matrix;
         })();
@@ -5876,9 +13173,9 @@ var away;
     })(away.geom || (away.geom = {}));
     var geom = away.geom;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (geom) {
         var Matrix3D = (function () {
             /**
@@ -5886,17 +13183,15 @@ var away;
             */
             function Matrix3D(v) {
                 if (typeof v === "undefined") { v = null; }
-                if (v != null && v.length == 16) {
+                if (v != null && v.length == 16)
                     this.rawData = v.concat();
-                } else {
+                else
                     this.rawData = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
-                }
             }
             /**
             * Appends the matrix by multiplying another Matrix3D object by the current Matrix3D object.
             */
             Matrix3D.prototype.append = function (lhs) {
-                // Initial Tests - OK
                 var m111 = this.rawData[0], m121 = this.rawData[4], m131 = this.rawData[8], m141 = this.rawData[12], m112 = this.rawData[1], m122 = this.rawData[5], m132 = this.rawData[9], m142 = this.rawData[13], m113 = this.rawData[2], m123 = this.rawData[6], m133 = this.rawData[10], m143 = this.rawData[14], m114 = this.rawData[3], m124 = this.rawData[7], m134 = this.rawData[11], m144 = this.rawData[15], m211 = lhs.rawData[0], m221 = lhs.rawData[4], m231 = lhs.rawData[8], m241 = lhs.rawData[12], m212 = lhs.rawData[1], m222 = lhs.rawData[5], m232 = lhs.rawData[9], m242 = lhs.rawData[13], m213 = lhs.rawData[2], m223 = lhs.rawData[6], m233 = lhs.rawData[10], m243 = lhs.rawData[14], m214 = lhs.rawData[3], m224 = lhs.rawData[7], m234 = lhs.rawData[11], m244 = lhs.rawData[15];
 
                 this.rawData[0] = m111 * m211 + m112 * m221 + m113 * m231 + m114 * m241;
@@ -5924,16 +13219,8 @@ var away;
             * Appends an incremental rotation to a Matrix3D object.
             */
             Matrix3D.prototype.appendRotation = function (degrees, axis) {
-                // Initial Tests - OK
                 var m = Matrix3D.getAxisRotation(axis.x, axis.y, axis.z, degrees);
 
-                /*
-                if (pivotPoint != null)
-                {
-                var p:Vector3D = pivotPoint;
-                m.appendTranslation( p.x, p.y, p.z );
-                }
-                */
                 this.append(m);
             };
 
@@ -5941,7 +13228,6 @@ var away;
             * Appends an incremental scale change along the x, y, and z axes to a Matrix3D object.
             */
             Matrix3D.prototype.appendScale = function (xScale, yScale, zScale) {
-                // Initial Tests - OK
                 this.append(new Matrix3D([xScale, 0.0, 0.0, 0.0, 0.0, yScale, 0.0, 0.0, 0.0, 0.0, zScale, 0.0, 0.0, 0.0, 0.0, 1.0]));
             };
 
@@ -5949,7 +13235,6 @@ var away;
             * Appends an incremental translation, a repositioning along the x, y, and z axes, to a Matrix3D object.
             */
             Matrix3D.prototype.appendTranslation = function (x, y, z) {
-                // Initial Tests - OK
                 this.rawData[12] += x;
                 this.rawData[13] += y;
                 this.rawData[14] += z;
@@ -5959,7 +13244,6 @@ var away;
             * Returns a new Matrix3D object that is an exact copy of the current Matrix3D object.
             */
             Matrix3D.prototype.clone = function () {
-                // Initial Tests - OK
                 return new Matrix3D(this.rawData.slice(0));
             };
 
@@ -6035,49 +13319,37 @@ var away;
             * Copies all of the matrix data from the source Matrix3D object into the calling Matrix3D object.
             */
             Matrix3D.prototype.copyFrom = function (sourceMatrix3D) {
-                // Initial Tests - OK
-                var l = sourceMatrix3D.rawData.length;
-
-                for (var c = 0; c < l; c++) {
+                var len = sourceMatrix3D.rawData.length;
+                for (var c = 0; c < len; c++)
                     this.rawData[c] = sourceMatrix3D.rawData[c];
-                }
-                //this.rawData = sourceMatrix3D.rawData.slice( 0 );
             };
 
             Matrix3D.prototype.copyRawDataFrom = function (vector, index, transpose) {
                 if (typeof index === "undefined") { index = 0; }
                 if (typeof transpose === "undefined") { transpose = false; }
-                // Initial Tests - OK
-                if (transpose) {
+                if (transpose)
                     this.transpose();
-                }
 
-                var l = vector.length - index;
-                for (var c = 0; c < l; c++) {
+                var len = vector.length - index;
+                for (var c = 0; c < len; c++)
                     this.rawData[c] = vector[c + index];
-                }
 
-                if (transpose) {
+                if (transpose)
                     this.transpose();
-                }
             };
 
             Matrix3D.prototype.copyRawDataTo = function (vector, index, transpose) {
                 if (typeof index === "undefined") { index = 0; }
                 if (typeof transpose === "undefined") { transpose = false; }
-                // Initial Tests - OK
-                if (transpose) {
+                if (transpose)
                     this.transpose();
-                }
 
-                var l = this.rawData.length;
-                for (var c = 0; c < l; c++) {
+                var len = this.rawData.length;
+                for (var c = 0; c < len; c++)
                     vector[c + index] = this.rawData[c];
-                }
 
-                if (transpose) {
+                if (transpose)
                     this.transpose();
-                }
             };
 
             /**
@@ -6152,11 +13424,9 @@ var away;
             * Copies this Matrix3D object into a destination Matrix3D object.
             */
             Matrix3D.prototype.copyToMatrix3D = function (dest) {
-                // Initial Tests - OK
                 dest.rawData = this.rawData.slice(0);
             };
 
-            // TODO orientationStyle:string = "eulerAngles"
             /**
             * Returns the transformation matrix's translation, rotation, and scale settings as a Vector of three Vector3D objects.
             */
@@ -6180,9 +13450,8 @@ var away;
                 scale.y = Math.sqrt(mr[4] * mr[4] + mr[5] * mr[5] + mr[6] * mr[6]);
                 scale.z = Math.sqrt(mr[8] * mr[8] + mr[9] * mr[9] + mr[10] * mr[10]);
 
-                if (mr[0] * (mr[5] * mr[10] - mr[6] * mr[9]) - mr[1] * (mr[4] * mr[10] - mr[6] * mr[8]) + mr[2] * (mr[4] * mr[9] - mr[5] * mr[8]) < 0) {
+                if (mr[0] * (mr[5] * mr[10] - mr[6] * mr[9]) - mr[1] * (mr[4] * mr[10] - mr[6] * mr[8]) + mr[2] * (mr[4] * mr[9] - mr[5] * mr[8]) < 0)
                     scale.z = -scale.z;
-                }
 
                 mr[0] /= scale.x;
                 mr[1] /= scale.x;
@@ -6279,9 +13548,9 @@ var away;
             */
             Matrix3D.interpolate = function (thisMat, toMat, percent) {
                 var m = new Matrix3D();
-                for (var i = 0; i < 16; ++i) {
+                for (var i = 0; i < 16; ++i)
                     m.rawData[i] = thisMat.rawData[i] + (toMat.rawData[i] - thisMat.rawData[i]) * percent;
-                }
+
                 return m;
             };
 
@@ -6289,16 +13558,14 @@ var away;
             * Interpolates this matrix towards the translation, rotation, and scale transformations of the target matrix.
             */
             Matrix3D.prototype.interpolateTo = function (toMat, percent) {
-                for (var i = 0; i < 16; ++i) {
+                for (var i = 0; i < 16; ++i)
                     this.rawData[i] = this.rawData[i] + (toMat.rawData[i] - this.rawData[i]) * percent;
-                }
             };
 
             /**
             * Inverts the current matrix.
             */
             Matrix3D.prototype.invert = function () {
-                // Initial Tests - OK
                 var d = this.determinant;
                 var invertable = Math.abs(d) > 0.00000000001;
 
@@ -6350,7 +13617,6 @@ var away;
             * Prepends a matrix by multiplying the current Matrix3D object by another Matrix3D object.
             */
             Matrix3D.prototype.prepend = function (rhs) {
-                // Initial Tests - OK
                 var m111 = rhs.rawData[0], m121 = rhs.rawData[4], m131 = rhs.rawData[8], m141 = rhs.rawData[12], m112 = rhs.rawData[1], m122 = rhs.rawData[5], m132 = rhs.rawData[9], m142 = rhs.rawData[13], m113 = rhs.rawData[2], m123 = rhs.rawData[6], m133 = rhs.rawData[10], m143 = rhs.rawData[14], m114 = rhs.rawData[3], m124 = rhs.rawData[7], m134 = rhs.rawData[11], m144 = rhs.rawData[15], m211 = this.rawData[0], m221 = this.rawData[4], m231 = this.rawData[8], m241 = this.rawData[12], m212 = this.rawData[1], m222 = this.rawData[5], m232 = this.rawData[9], m242 = this.rawData[13], m213 = this.rawData[2], m223 = this.rawData[6], m233 = this.rawData[10], m243 = this.rawData[14], m214 = this.rawData[3], m224 = this.rawData[7], m234 = this.rawData[11], m244 = this.rawData[15];
 
                 this.rawData[0] = m111 * m211 + m112 * m221 + m113 * m231 + m114 * m241;
@@ -6378,7 +13644,6 @@ var away;
             * Prepends an incremental rotation to a Matrix3D object.
             */
             Matrix3D.prototype.prependRotation = function (degrees, axis) {
-                // Initial Tests - OK
                 var m = Matrix3D.getAxisRotation(axis.x, axis.y, axis.z, degrees);
 
                 /*
@@ -6519,7 +13784,6 @@ var away;
                 * [read-only] A Number that determines whether a matrix is invertible.
                 */
                 get: function () {
-                    // Initial Tests - OK
                     return ((this.rawData[0] * this.rawData[5] - this.rawData[4] * this.rawData[1]) * (this.rawData[10] * this.rawData[15] - this.rawData[14] * this.rawData[11]) - (this.rawData[0] * this.rawData[9] - this.rawData[8] * this.rawData[1]) * (this.rawData[6] * this.rawData[15] - this.rawData[14] * this.rawData[7]) + (this.rawData[0] * this.rawData[13] - this.rawData[12] * this.rawData[1]) * (this.rawData[6] * this.rawData[11] - this.rawData[10] * this.rawData[7]) + (this.rawData[4] * this.rawData[9] - this.rawData[8] * this.rawData[5]) * (this.rawData[2] * this.rawData[15] - this.rawData[14] * this.rawData[3]) - (this.rawData[4] * this.rawData[13] - this.rawData[12] * this.rawData[5]) * (this.rawData[2] * this.rawData[11] - this.rawData[10] * this.rawData[3]) + (this.rawData[8] * this.rawData[13] - this.rawData[12] * this.rawData[9]) * (this.rawData[2] * this.rawData[7] - this.rawData[6] * this.rawData[3]));
                 },
                 enumerable: true,
@@ -6532,11 +13796,9 @@ var away;
                 * transformation's frame of reference.
                 */
                 get: function () {
-                    // Initial Tests - OK
                     return new away.geom.Vector3D(this.rawData[12], this.rawData[13], this.rawData[14]);
                 },
                 set: function (value) {
-                    // Initial Tests - OK
                     this.rawData[12] = value.x;
                     this.rawData[13] = value.y;
                     this.rawData[14] = value.z;
@@ -6570,17 +13832,292 @@ var away;
     })(away.geom || (away.geom = {}));
     var geom = away.geom;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
+    /**
+    * <p>The PerspectiveProjection class provides an easy way to assign or modify
+    * the perspective transformations of a display object and all of its
+    * children. For more complex or custom perspective transformations, use the
+    * Matrix3D class. While the PerspectiveProjection class provides basic
+    * three-dimensional presentation properties, the Matrix3D class provides more
+    * detailed control over the three-dimensional presentation of display objects.
+    * </p>
+    *
+    * <p>Projection is a way of representing a three-dimensional object in a
+    * two-dimensional space, like a cube projected onto a computer screen.
+    * Perspective projection uses a viewing frustum (a rectangular pyramid) to
+    * model and project a three-dimensional world and its objects on the screen.
+    * The viewing frustum becomes increasingly wider as it moves further from the
+    * origin of the viewpoint. The origin of the viewpoint could be a camera or
+    * the eyes of an observer facing the screen. The projected perspective
+    * produces the illusion of three dimensions with depth and distance, where
+    * the objects closer to the screen appear larger than the objects farther
+    * from the screen.</p>
+    *
+    * <p>A default PerspectiveProjection object is a framework defined for
+    * perspective transformation of the root object, based on the field of view
+    * and aspect ratio (dimensions) of the stage. The projection center, the
+    * vanishing point, is set to the center of the stage, which means the
+    * three-dimensional display objects disappear toward the center of the stage
+    * as they move back in the z axis. The default viewpoint is at point (0,0)
+    * looking down the positive z axis. The y-axis points down toward the bottom
+    * of the screen. You can gain access to the root display object's perspective
+    * projection settings and change the field of view and projection center
+    * properties of the perspectiveProjection property through the root object's
+    * <code>DisplayObject.transform</code> property.</p>
+    *
+    * <p>You can also set a different perspective projection setting for a
+    * display object through the parent's perspective projection. First, create a
+    * PerspectiveProjection object and set its <code>fieldOfView</code> and
+    * <code>projectionCenter</code> properties. Next, assign the
+    * PerspectiveProjection object to the parent display object using the
+    * <code>DisplayObject.transform</code> property. The specified projection
+    * matrix and transformation will then apply to all the display object's
+    * three-dimensional children.</p>
+    *
+    * <p>To modify a perspective projection of the stage or root object: use the
+    * <code>transform.matrix</code> property of the root display object to gain
+    * access to the PerspectiveProjection object. Or, apply different perspective
+    * projection properties to a display object by setting the perspective
+    * projection properties of the display object's parent. The child display
+    * object inherits the new properties. Specifically, create a
+    * PerspectiveProjection object and set its properties, then assign the
+    * PerspectiveProjection object to the <code>perspectiveProjection</code>
+    * property of the parent display object's <code>transform</code> property.
+    * The specified projection transformation then applies to all the display
+    * object's three-dimensional children.</p>
+    *
+    * <p>Since both PerspectiveProjection and Matrix3D objects perform
+    * perspective transformations, do not assign both to a display object at the
+    * same time. Use the PerspectiveProjection object for focal length and
+    * projection center changes. For more control over the perspective
+    * transformation, create a perspective projection Matrix3D object.</p>
+    */
+    (function (geom) {
+        var PerspectiveProjection = (function () {
+            /**
+            * Creates an instance of a PerspectiveProjection object.
+            */
+            function PerspectiveProjection() {
+            }
+            /**
+            * Returns the underlying Matrix3D object of the display object.
+            *
+            * <p>A display object, like the root object, can have a
+            * PerspectiveProjection object without needing a Matrix3D property
+            * defined for its transformations. In fact, use either a
+            * PerspectiveProjection or a Matrix3D object to specify the
+            * perspective transformation. If when using the PerspectiveProjection
+            * object, a Matrix3D object was needed, the <code>toMatrix3D()</code>
+            * method can retrieve the underlying Matrix3D object of the display
+            * object. For example, the <code>toMatrix3D()</code> method can be
+            * used with the <code>Utils3D.projectVectors()</code> method.</p>
+            *
+            * @see away.geom.Matrix3D
+            */
+            PerspectiveProjection.prototype.toMatrix3D = function () {
+                return this._matrix3D;
+            };
+            return PerspectiveProjection;
+        })();
+        geom.PerspectiveProjection = PerspectiveProjection;
+    })(away.geom || (away.geom = {}));
+    var geom = away.geom;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * The Point object represents a location in a two-dimensional coordinate
+    * system, where <i>x</i> represents the horizontal axis and <i>y</i>
+    * represents the vertical axis.
+    *
+    * <p>The following code creates a point at(0,0):</p>
+    *
+    * <p>Methods and properties of the following classes use Point objects:</p>
+    *
+    * <ul>
+    *   <li>BitmapData</li>
+    *   <li>DisplayObject</li>
+    *   <li>DisplayObjectContainer</li>
+    *   <li>DisplacementMapFilter</li>
+    *   <li>NativeWindow</li>
+    *   <li>Matrix</li>
+    *   <li>Rectangle</li>
+    * </ul>
+    *
+    * <p>You can use the <code>new Point()</code> constructor to create a Point
+    * object.</p>
+    */
     (function (geom) {
         var Point = (function () {
+            /**
+            * Creates a new point. If you pass no parameters to this method, a point is
+            * created at(0,0).
+            *
+            * @param x The horizontal coordinate.
+            * @param y The vertical coordinate.
+            */
             function Point(x, y) {
                 if (typeof x === "undefined") { x = 0; }
                 if (typeof y === "undefined") { y = 0; }
                 this.x = x;
                 this.y = y;
             }
+            Object.defineProperty(Point.prototype, "length", {
+                /**
+                * The length of the line segment from(0,0) to this point.
+                */
+                get: function () {
+                    return Math.sqrt(this.x * this.x + this.y * this.y);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * Adds the coordinates of another point to the coordinates of this point to
+            * create a new point.
+            *
+            * @param v The point to be added.
+            * @return The new point.
+            */
+            Point.prototype.add = function (v) {
+                return new Point(this.x + v.x, this.y + v.y);
+            };
+
+            /**
+            * Creates a copy of this Point object.
+            *
+            * @return The new Point object.
+            */
+            Point.prototype.clone = function () {
+                return new Point(this.x, this.y);
+            };
+
+            Point.prototype.copyFrom = function (sourcePoint) {
+            };
+
+            /**
+            * Determines whether two points are equal. Two points are equal if they have
+            * the same <i>x</i> and <i>y</i> values.
+            *
+            * @param toCompare The point to be compared.
+            * @return A value of <code>true</code> if the object is equal to this Point
+            *         object; <code>false</code> if it is not equal.
+            */
+            Point.prototype.equals = function (toCompare) {
+                return (this.x == toCompare.x && this.y == toCompare.y);
+            };
+
+            /**
+            * Scales the line segment between(0,0) and the current point to a set
+            * length.
+            *
+            * @param thickness The scaling value. For example, if the current point is
+            *                 (0,5), and you normalize it to 1, the point returned is
+            *                  at(0,1).
+            */
+            Point.prototype.normalize = function (thickness) {
+                if (typeof thickness === "undefined") { thickness = 1; }
+                if (this.length != 0) {
+                    var invLength = thickness / this.length;
+                    this.x *= invLength;
+                    this.y *= invLength;
+                    return;
+                }
+                throw "Cannot divide by zero length.";
+            };
+
+            /**
+            * Offsets the Point object by the specified amount. The value of
+            * <code>dx</code> is added to the original value of <i>x</i> to create the
+            * new <i>x</i> value. The value of <code>dy</code> is added to the original
+            * value of <i>y</i> to create the new <i>y</i> value.
+            *
+            * @param dx The amount by which to offset the horizontal coordinate,
+            *           <i>x</i>.
+            * @param dy The amount by which to offset the vertical coordinate, <i>y</i>.
+            */
+            Point.prototype.offset = function (dx, dy) {
+                this.x += dx;
+                this.y += dy;
+            };
+
+            Point.prototype.setTo = function (xa, ya) {
+            };
+
+            /**
+            * Subtracts the coordinates of another point from the coordinates of this
+            * point to create a new point.
+            *
+            * @param v The point to be subtracted.
+            * @return The new point.
+            */
+            Point.prototype.subtract = function (v) {
+                return new Point(this.x - v.x, this.y - v.y);
+            };
+
+            /**
+            * Returns a string that contains the values of the <i>x</i> and <i>y</i>
+            * coordinates. The string has the form <code>"(x=<i>x</i>,
+            * y=<i>y</i>)"</code>, so calling the <code>toString()</code> method for a
+            * point at 23,17 would return <code>"(x=23, y=17)"</code>.
+            *
+            * @return The string representation of the coordinates.
+            */
+            Point.prototype.toString = function () {
+                return "[Point] (x=" + this.x + ", y=" + this.y + ")";
+            };
+
+            /**
+            * Returns the distance between <code>pt1</code> and <code>pt2</code>.
+            *
+            * @param pt1 The first point.
+            * @param pt2 The second point.
+            * @return The distance between the first and second points.
+            */
+            Point.distance = function (pt1, pt2) {
+                var dx = pt2.x - pt1.x;
+                var dy = pt2.y - pt1.y;
+
+                return Math.sqrt(dx * dx + dy * dy);
+            };
+
+            /**
+            * Determines a point between two specified points. The parameter
+            * <code>f</code> determines where the new interpolated point is located
+            * relative to the two end points specified by parameters <code>pt1</code>
+            * and <code>pt2</code>. The closer the value of the parameter <code>f</code>
+            * is to <code>1.0</code>, the closer the interpolated point is to the first
+            * point(parameter <code>pt1</code>). The closer the value of the parameter
+            * <code>f</code> is to 0, the closer the interpolated point is to the second
+            * point(parameter <code>pt2</code>).
+            *
+            * @param pt1 The first point.
+            * @param pt2 The second point.
+            * @param f   The level of interpolation between the two points. Indicates
+            *            where the new point will be, along the line between
+            *            <code>pt1</code> and <code>pt2</code>. If <code>f</code>=1,
+            *            <code>pt1</code> is returned; if <code>f</code>=0,
+            *            <code>pt2</code> is returned.
+            * @return The new, interpolated point.
+            */
+            Point.interpolate = function (pt1, pt2, f) {
+                return new Point(pt2.x + (pt1.x - pt2.x) * f, pt2.y + (pt1.y - pt2.y) * f);
+            };
+
+            /**
+            * Converts a pair of polar coordinates to a Cartesian point coordinate.
+            *
+            * @param len   The length coordinate of the polar pair.
+            * @param angle The angle, in radians, of the polar pair.
+            * @return The Cartesian point.
+            */
+            Point.polar = function (len, angle) {
+                return new Point(len * Math.cos(angle), len * Math.sin(angle));
+            };
             return Point;
         })();
         geom.Point = Point;
@@ -6590,8 +14127,67 @@ var away;
 ///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
+    /**
+    * A Rectangle object is an area defined by its position, as indicated by its
+    * top-left corner point(<i>x</i>, <i>y</i>) and by its width and its height.
+    *
+    *
+    * <p>The <code>x</code>, <code>y</code>, <code>width</code>, and
+    * <code>height</code> properties of the Rectangle class are independent of
+    * each other; changing the value of one property has no effect on the others.
+    * However, the <code>right</code> and <code>bottom</code> properties are
+    * integrally related to those four properties. For example, if you change the
+    * value of the <code>right</code> property, the value of the
+    * <code>width</code> property changes; if you change the <code>bottom</code>
+    * property, the value of the <code>height</code> property changes. </p>
+    *
+    * <p>The following methods and properties use Rectangle objects:</p>
+    *
+    * <ul>
+    *   <li>The <code>applyFilter()</code>, <code>colorTransform()</code>,
+    * <code>copyChannel()</code>, <code>copyPixels()</code>, <code>draw()</code>,
+    * <code>fillRect()</code>, <code>generateFilterRect()</code>,
+    * <code>getColorBoundsRect()</code>, <code>getPixels()</code>,
+    * <code>merge()</code>, <code>paletteMap()</code>,
+    * <code>pixelDisolve()</code>, <code>setPixels()</code>, and
+    * <code>threshold()</code> methods, and the <code>rect</code> property of the
+    * BitmapData class</li>
+    *   <li>The <code>getBounds()</code> and <code>getRect()</code> methods, and
+    * the <code>scrollRect</code> and <code>scale9Grid</code> properties of the
+    * DisplayObject class</li>
+    *   <li>The <code>getCharBoundaries()</code> method of the TextField
+    * class</li>
+    *   <li>The <code>pixelBounds</code> property of the Transform class</li>
+    *   <li>The <code>bounds</code> parameter for the <code>startDrag()</code>
+    * method of the Sprite class</li>
+    *   <li>The <code>printArea</code> parameter of the <code>addPage()</code>
+    * method of the PrintJob class</li>
+    * </ul>
+    *
+    * <p>You can use the <code>new Rectangle()</code> constructor to create a
+    * Rectangle object.</p>
+    *
+    * <p><b>Note:</b> The Rectangle class does not define a rectangular Shape
+    * display object. To draw a rectangular Shape object onscreen, use the
+    * <code>drawRect()</code> method of the Graphics class.</p>
+    */
     (function (geom) {
         var Rectangle = (function () {
+            /**
+            * Creates a new Rectangle object with the top-left corner specified by the
+            * <code>x</code> and <code>y</code> parameters and with the specified
+            * <code>width</code> and <code>height</code> parameters. If you call this
+            * public without parameters, a rectangle with <code>x</code>,
+            * <code>y</code>, <code>width</code>, and <code>height</code> properties set
+            * to 0 is created.
+            *
+            * @param x      The <i>x</i> coordinate of the top-left corner of the
+            *               rectangle.
+            * @param y      The <i>y</i> coordinate of the top-left corner of the
+            *               rectangle.
+            * @param width  The width of the rectangle, in pixels.
+            * @param height The height of the rectangle, in pixels.
+            */
             function Rectangle(x, y, width, height) {
                 if (typeof x === "undefined") { x = 0; }
                 if (typeof y === "undefined") { y = 0; }
@@ -6602,7 +14198,46 @@ var away;
                 this.width = width;
                 this.height = height;
             }
+            Object.defineProperty(Rectangle.prototype, "bottom", {
+                /**
+                * The sum of the <code>y</code> and <code>height</code> properties.
+                */
+                get: function () {
+                    return this.y + this.height;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Rectangle.prototype, "bottomRight", {
+                /**
+                * The location of the Rectangle object's bottom-right corner, determined by
+                * the values of the <code>right</code> and <code>bottom</code> properties.
+                */
+                get: function () {
+                    if (this._bottomRight == null)
+                        this._bottomRight = new away.geom.Point();
+
+                    this._bottomRight.x = this.x + this.width;
+                    this._bottomRight.y = this.y + this.height;
+
+                    return this._bottomRight;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
             Object.defineProperty(Rectangle.prototype, "left", {
+                /**
+                * The <i>x</i> coordinate of the top-left corner of the rectangle. Changing
+                * the <code>left</code> property of a Rectangle object has no effect on the
+                * <code>y</code> and <code>height</code> properties. However it does affect
+                * the <code>width</code> property, whereas changing the <code>x</code> value
+                * does <i>not</i> affect the <code>width</code> property.
+                *
+                * <p>The value of the <code>left</code> property is equal to the value of
+                * the <code>x</code> property.</p>
+                */
                 get: function () {
                     return this.x;
                 },
@@ -6611,6 +14246,9 @@ var away;
             });
 
             Object.defineProperty(Rectangle.prototype, "right", {
+                /**
+                * The sum of the <code>x</code> and <code>width</code> properties.
+                */
                 get: function () {
                     return this.x + this.width;
                 },
@@ -6618,7 +14256,35 @@ var away;
                 configurable: true
             });
 
+            Object.defineProperty(Rectangle.prototype, "size", {
+                /**
+                * The size of the Rectangle object, expressed as a Point object with the
+                * values of the <code>width</code> and <code>height</code> properties.
+                */
+                get: function () {
+                    if (this._size == null)
+                        this._size = new away.geom.Point();
+
+                    this._size.x = this.width;
+                    this._size.y = this.height;
+
+                    return this._size;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
             Object.defineProperty(Rectangle.prototype, "top", {
+                /**
+                * The <i>y</i> coordinate of the top-left corner of the rectangle. Changing
+                * the <code>top</code> property of a Rectangle object has no effect on the
+                * <code>x</code> and <code>width</code> properties. However it does affect
+                * the <code>height</code> property, whereas changing the <code>y</code>
+                * value does <i>not</i> affect the <code>height</code> property.
+                *
+                * <p>The value of the <code>top</code> property is equal to the value of the
+                * <code>y</code> property.</p>
+                */
                 get: function () {
                     return this.y;
                 },
@@ -6626,32 +14292,335 @@ var away;
                 configurable: true
             });
 
-            Object.defineProperty(Rectangle.prototype, "bottom", {
-                get: function () {
-                    return this.y + this.height;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
             Object.defineProperty(Rectangle.prototype, "topLeft", {
+                /**
+                * The location of the Rectangle object's top-left corner, determined by the
+                * <i>x</i> and <i>y</i> coordinates of the point.
+                */
                 get: function () {
-                    return new away.geom.Point(this.x, this.y);
+                    if (this._topLeft == null)
+                        this._topLeft = new away.geom.Point();
+
+                    this._topLeft.x = this.x;
+                    this._topLeft.y = this.y;
+
+                    return this._topLeft;
                 },
                 enumerable: true,
                 configurable: true
             });
 
-            Object.defineProperty(Rectangle.prototype, "bottomRight", {
-                get: function () {
-                    return new away.geom.Point(this.x + this.width, this.y + this.height);
-                },
-                enumerable: true,
-                configurable: true
-            });
-
+            /**
+            * Returns a new Rectangle object with the same values for the
+            * <code>x</code>, <code>y</code>, <code>width</code>, and
+            * <code>height</code> properties as the original Rectangle object.
+            *
+            * @return A new Rectangle object with the same values for the
+            *         <code>x</code>, <code>y</code>, <code>width</code>, and
+            *         <code>height</code> properties as the original Rectangle object.
+            */
             Rectangle.prototype.clone = function () {
                 return new Rectangle(this.x, this.y, this.width, this.height);
+            };
+
+            /**
+            * Determines whether the specified point is contained within the rectangular
+            * region defined by this Rectangle object.
+            *
+            * @param x The <i>x</i> coordinate(horizontal position) of the point.
+            * @param y The <i>y</i> coordinate(vertical position) of the point.
+            * @return A value of <code>true</code> if the Rectangle object contains the
+            *         specified point; otherwise <code>false</code>.
+            */
+            Rectangle.prototype.contains = function (x, y) {
+                return (this.x <= x && this.x + this.width >= x && this.y <= y && this.y + this.height >= y);
+            };
+
+            /**
+            * Determines whether the specified point is contained within the rectangular
+            * region defined by this Rectangle object. This method is similar to the
+            * <code>Rectangle.contains()</code> method, except that it takes a Point
+            * object as a parameter.
+            *
+            * @param point The point, as represented by its <i>x</i> and <i>y</i>
+            *              coordinates.
+            * @return A value of <code>true</code> if the Rectangle object contains the
+            *         specified point; otherwise <code>false</code>.
+            */
+            Rectangle.prototype.containsPoint = function (point) {
+                return (this.x <= point.x && this.x + this.width >= point.x && this.y <= point.y && this.y + this.height >= point.y);
+            };
+
+            /**
+            * Determines whether the Rectangle object specified by the <code>rect</code>
+            * parameter is contained within this Rectangle object. A Rectangle object is
+            * said to contain another if the second Rectangle object falls entirely
+            * within the boundaries of the first.
+            *
+            * @param rect The Rectangle object being checked.
+            * @return A value of <code>true</code> if the Rectangle object that you
+            *         specify is contained by this Rectangle object; otherwise
+            *         <code>false</code>.
+            */
+            Rectangle.prototype.containsRect = function (rect) {
+                return (this.x <= rect.x && this.x + this.width >= rect.x + rect.width && this.y <= rect.y && this.y + this.height >= rect.y + rect.height);
+            };
+
+            /**
+            * Copies all of rectangle data from the source Rectangle object into the
+            * calling Rectangle object.
+            *
+            * @param sourceRect The Rectangle object from which to copy the data.
+            */
+            Rectangle.prototype.copyFrom = function (sourceRect) {
+            };
+
+            /**
+            * Determines whether the object specified in the <code>toCompare</code>
+            * parameter is equal to this Rectangle object. This method compares the
+            * <code>x</code>, <code>y</code>, <code>width</code>, and
+            * <code>height</code> properties of an object against the same properties of
+            * this Rectangle object.
+            *
+            * @param toCompare The rectangle to compare to this Rectangle object.
+            * @return A value of <code>true</code> if the object has exactly the same
+            *         values for the <code>x</code>, <code>y</code>, <code>width</code>,
+            *         and <code>height</code> properties as this Rectangle object;
+            *         otherwise <code>false</code>.
+            */
+            Rectangle.prototype.equals = function (toCompare) {
+                return (this.x == toCompare.x && this.y == toCompare.y && this.width == toCompare.width && this.height == toCompare.height);
+            };
+
+            /**
+            * Increases the size of the Rectangle object by the specified amounts, in
+            * pixels. The center point of the Rectangle object stays the same, and its
+            * size increases to the left and right by the <code>dx</code> value, and to
+            * the top and the bottom by the <code>dy</code> value.
+            *
+            * @param dx The value to be added to the left and the right of the Rectangle
+            *           object. The following equation is used to calculate the new
+            *           width and position of the rectangle:
+            * @param dy The value to be added to the top and the bottom of the
+            *           Rectangle. The following equation is used to calculate the new
+            *           height and position of the rectangle:
+            */
+            Rectangle.prototype.inflate = function (dx, dy) {
+                this.x -= dx / 2;
+                this.y -= dy / 2;
+                this.width += dx / 2;
+                this.height += dy / 2;
+            };
+
+            /**
+            * Increases the size of the Rectangle object. This method is similar to the
+            * <code>Rectangle.inflate()</code> method except it takes a Point object as
+            * a parameter.
+            *
+            * <p>The following two code examples give the same result:</p>
+            *
+            * @param point The <code>x</code> property of this Point object is used to
+            *              increase the horizontal dimension of the Rectangle object.
+            *              The <code>y</code> property is used to increase the vertical
+            *              dimension of the Rectangle object.
+            */
+            Rectangle.prototype.inflatePoint = function (point) {
+                this.x -= point.x / 2;
+                this.y -= point.y / 2;
+                this.width += point.x / 2;
+                this.height += point.y / 2;
+            };
+
+            /**
+            * If the Rectangle object specified in the <code>toIntersect</code>
+            * parameter intersects with this Rectangle object, returns the area of
+            * intersection as a Rectangle object. If the rectangles do not intersect,
+            * this method returns an empty Rectangle object with its properties set to
+            * 0.
+            *
+            * @param toIntersect The Rectangle object to compare against to see if it
+            *                    intersects with this Rectangle object.
+            * @return A Rectangle object that equals the area of intersection. If the
+            *         rectangles do not intersect, this method returns an empty
+            *         Rectangle object; that is, a rectangle with its <code>x</code>,
+            *         <code>y</code>, <code>width</code>, and <code>height</code>
+            *         properties set to 0.
+            */
+            Rectangle.prototype.intersection = function (toIntersect) {
+                if (this.intersects(toIntersect)) {
+                    var i = new Rectangle();
+
+                    if (this.x > toIntersect.x) {
+                        i.x = this.x;
+                        i.width = toIntersect.x - this.x + toIntersect.width;
+
+                        if (i.width > this.width)
+                            i.width = this.width;
+                    } else {
+                        i.x = toIntersect.x;
+                        i.width = this.x - toIntersect.x + this.width;
+
+                        if (i.width > toIntersect.width)
+                            i.width = toIntersect.width;
+                    }
+
+                    if (this.y > toIntersect.y) {
+                        i.y = this.y;
+                        i.height = toIntersect.y - this.y + toIntersect.height;
+
+                        if (i.height > this.height)
+                            i.height = this.height;
+                    } else {
+                        i.y = toIntersect.y;
+                        i.height = this.y - toIntersect.y + this.height;
+
+                        if (i.height > toIntersect.height)
+                            i.height = toIntersect.height;
+                    }
+
+                    return i;
+                }
+
+                return new Rectangle();
+            };
+
+            /**
+            * Determines whether the object specified in the <code>toIntersect</code>
+            * parameter intersects with this Rectangle object. This method checks the
+            * <code>x</code>, <code>y</code>, <code>width</code>, and
+            * <code>height</code> properties of the specified Rectangle object to see if
+            * it intersects with this Rectangle object.
+            *
+            * @param toIntersect The Rectangle object to compare against this Rectangle
+            *                    object.
+            * @return A value of <code>true</code> if the specified object intersects
+            *         with this Rectangle object; otherwise <code>false</code>.
+            */
+            Rectangle.prototype.intersects = function (toIntersect) {
+                return (this.x + this.width > toIntersect.x && this.x < toIntersect.x + toIntersect.width && this.y + this.height > toIntersect.y && this.y < toIntersect.y + toIntersect.height);
+            };
+
+            /**
+            * Determines whether or not this Rectangle object is empty.
+            *
+            * @return A value of <code>true</code> if the Rectangle object's width or
+            *         height is less than or equal to 0; otherwise <code>false</code>.
+            */
+            Rectangle.prototype.isEmpty = function () {
+                return (this.x == 0 && this.y == 0 && this.width == 0 && this.height == 0);
+            };
+
+            /**
+            * Adjusts the location of the Rectangle object, as determined by its
+            * top-left corner, by the specified amounts.
+            *
+            * @param dx Moves the <i>x</i> value of the Rectangle object by this amount.
+            * @param dy Moves the <i>y</i> value of the Rectangle object by this amount.
+            */
+            Rectangle.prototype.offset = function (dx, dy) {
+                this.x += dx;
+                this.y += dy;
+            };
+
+            /**
+            * Adjusts the location of the Rectangle object using a Point object as a
+            * parameter. This method is similar to the <code>Rectangle.offset()</code>
+            * method, except that it takes a Point object as a parameter.
+            *
+            * @param point A Point object to use to offset this Rectangle object.
+            */
+            Rectangle.prototype.offsetPoint = function (point) {
+                this.x += point.x;
+                this.y += point.y;
+            };
+
+            /**
+            * Sets all of the Rectangle object's properties to 0. A Rectangle object is
+            * empty if its width or height is less than or equal to 0.
+            *
+            * <p> This method sets the values of the <code>x</code>, <code>y</code>,
+            * <code>width</code>, and <code>height</code> properties to 0.</p>
+            *
+            */
+            Rectangle.prototype.setEmpty = function () {
+                this.x = 0;
+                this.y = 0;
+                this.width = 0;
+                this.height = 0;
+            };
+
+            /**
+            * Sets the members of Rectangle to the specified values
+            *
+            * @param xa      The <i>x</i> coordinate of the top-left corner of the
+            *                rectangle.
+            * @param ya      The <i>y</i> coordinate of the top-left corner of the
+            *                rectangle.
+            * @param widtha  The width of the rectangle, in pixels.
+            * @param heighta The height of the rectangle, in pixels.
+            */
+            Rectangle.prototype.setTo = function (xa, ya, widtha, heighta) {
+                this.x = xa;
+                this.y = ya;
+                this.width = widtha;
+                this.height = heighta;
+            };
+
+            /**
+            * Builds and returns a string that lists the horizontal and vertical
+            * positions and the width and height of the Rectangle object.
+            *
+            * @return A string listing the value of each of the following properties of
+            *         the Rectangle object: <code>x</code>, <code>y</code>,
+            *         <code>width</code>, and <code>height</code>.
+            */
+            Rectangle.prototype.toString = function () {
+                return "[Rectangle] (x=" + this.x + ", y=" + this.y + ", width=" + this.width + ", height=" + this.height + ")";
+            };
+
+            /**
+            * Adds two rectangles together to create a new Rectangle object, by filling
+            * in the horizontal and vertical space between the two rectangles.
+            *
+            * <p><b>Note:</b> The <code>union()</code> method ignores rectangles with
+            * <code>0</code> as the height or width value, such as: <code>var
+            * rect2:Rectangle = new Rectangle(300,300,50,0);</code></p>
+            *
+            * @param toUnion A Rectangle object to add to this Rectangle object.
+            * @return A new Rectangle object that is the union of the two rectangles.
+            */
+            Rectangle.prototype.union = function (toUnion) {
+                var u = new Rectangle();
+
+                if (this.x < toUnion.x) {
+                    u.x = this.x;
+                    u.width = toUnion.x - this.x + toUnion.width;
+
+                    if (u.width < this.width)
+                        u.width = this.width;
+                } else {
+                    u.x = toUnion.x;
+                    u.width = this.x - toUnion.x + this.width;
+
+                    if (u.width < toUnion.width)
+                        u.width = toUnion.width;
+                }
+
+                if (this.y < toUnion.y) {
+                    u.y = this.y;
+                    u.height = toUnion.y - this.y + toUnion.height;
+
+                    if (u.height < this.height)
+                        u.height = this.height;
+                } else {
+                    u.y = toUnion.y;
+                    u.height = this.y - toUnion.y + this.height;
+
+                    if (u.height < toUnion.height)
+                        u.height = toUnion.height;
+                }
+
+                return u;
             };
             return Rectangle;
         })();
@@ -6659,13 +14628,537 @@ var away;
     })(away.geom || (away.geom = {}));
     var geom = away.geom;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
+    /**
+    * The Transform class provides access to color adjustment properties and two-
+    * or three-dimensional transformation objects that can be applied to a
+    * display object. During the transformation, the color or the orientation and
+    * position of a display object is adjusted(offset) from the current values
+    * or coordinates to new values or coordinates. The Transform class also
+    * collects data about color and two-dimensional matrix transformations that
+    * are applied to a display object and all of its parent objects. You can
+    * access these combined transformations through the
+    * <code>concatenatedColorTransform</code> and <code>concatenatedMatrix</code>
+    * properties.
+    *
+    * <p>To apply color transformations: create a ColorTransform object, set the
+    * color adjustments using the object's methods and properties, and then
+    * assign the <code>colorTransformation</code> property of the
+    * <code>transform</code> property of the display object to the new
+    * ColorTransformation object.</p>
+    *
+    * <p>To apply two-dimensional transformations: create a Matrix object, set
+    * the matrix's two-dimensional transformation, and then assign the
+    * <code>transform.matrix</code> property of the display object to the new
+    * Matrix object.</p>
+    *
+    * <p>To apply three-dimensional transformations: start with a
+    * three-dimensional display object. A three-dimensional display object has a
+    * <code>z</code> property value other than zero. You do not need to create
+    * the Matrix3D object. For all three-dimensional objects, a Matrix3D object
+    * is created automatically when you assign a <code>z</code> value to a
+    * display object. You can access the display object's Matrix3D object through
+    * the display object's <code>transform</code> property. Using the methods of
+    * the Matrix3D class, you can add to or modify the existing transformation
+    * settings. Also, you can create a custom Matrix3D object, set the custom
+    * Matrix3D object's transformation elements, and then assign the new Matrix3D
+    * object to the display object using the <code>transform.matrix</code>
+    * property.</p>
+    *
+    * <p>To modify a perspective projection of the stage or root object: use the
+    * <code>transform.matrix</code> property of the root display object to gain
+    * access to the PerspectiveProjection object. Or, apply different perspective
+    * projection properties to a display object by setting the perspective
+    * projection properties of the display object's parent. The child display
+    * object inherits the new properties. Specifically, create a
+    * PerspectiveProjection object and set its properties, then assign the
+    * PerspectiveProjection object to the <code>perspectiveProjection</code>
+    * property of the parent display object's <code>transform</code> property.
+    * The specified projection transformation then applies to all the display
+    * object's three-dimensional children.</p>
+    *
+    * <p>Since both PerspectiveProjection and Matrix3D objects perform
+    * perspective transformations, do not assign both to a display object at the
+    * same time. Use the PerspectiveProjection object for focal length and
+    * projection center changes. For more control over the perspective
+    * transformation, create a perspective projection Matrix3D object.</p>
+    */
+    (function (geom) {
+        var Transform = (function () {
+            function Transform(displayObject) {
+                this._position = new away.geom.Vector3D();
+                this._displayObject = displayObject;
+            }
+            Object.defineProperty(Transform.prototype, "backVector", {
+                /**
+                *
+                */
+                get: function () {
+                    var director = away.geom.Matrix3DUtils.getForward(this._displayObject._iMatrix3D);
+                    director.negate();
+
+                    return director;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Transform.prototype, "concatenatedColorTransform", {
+                /**
+                * A ColorTransform object representing the combined color transformations
+                * applied to the display object and all of its parent objects, back to the
+                * root level. If different color transformations have been applied at
+                * different levels, all of those transformations are concatenated into one
+                * ColorTransform object for this property.
+                */
+                get: function () {
+                    return this._concatenatedColorTransform;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Transform.prototype, "concatenatedMatrix", {
+                /**
+                * A Matrix object representing the combined transformation matrixes of the
+                * display object and all of its parent objects, back to the root level. If
+                * different transformation matrixes have been applied at different levels,
+                * all of those matrixes are concatenated into one matrix for this property.
+                * Also, for resizeable SWF content running in the browser, this property
+                * factors in the difference between stage coordinates and window coordinates
+                * due to window resizing. Thus, the property converts local coordinates to
+                * window coordinates, which may not be the same coordinate space as that of
+                * the Stage.
+                */
+                get: function () {
+                    return this._concatenatedMatrix;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Transform.prototype, "downVector", {
+                /**
+                *
+                */
+                get: function () {
+                    var director = away.geom.Matrix3DUtils.getUp(this._displayObject._iMatrix3D);
+                    director.negate();
+
+                    return director;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Transform.prototype, "forwardVector", {
+                /**
+                *
+                */
+                get: function () {
+                    return away.geom.Matrix3DUtils.getForward(this._displayObject._iMatrix3D);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Transform.prototype, "leftVector", {
+                /**
+                *
+                */
+                get: function () {
+                    var director = away.geom.Matrix3DUtils.getRight(this._displayObject._iMatrix3D);
+                    director.negate();
+
+                    return director;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Transform.prototype, "matrix3D", {
+                /**
+                * Provides access to the Matrix3D object of a three-dimensional display
+                * object. The Matrix3D object represents a transformation matrix that
+                * determines the display object's position and orientation. A Matrix3D
+                * object can also perform perspective projection.
+                *
+                * <p>If the <code>matrix</code> property is set to a value(not
+                * <code>null</code>), the <code>matrix3D</code> property is
+                * <code>null</code>. And if the <code>matrix3D</code> property is set to a
+                * value(not <code>null</code>), the <code>matrix</code> property is
+                * <code>null</code>.</p>
+                */
+                get: function () {
+                    return this._displayObject._iMatrix3D;
+                },
+                set: function (val) {
+                    this._displayObject._iMatrix3D = val;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Transform.prototype, "pixelBounds", {
+                /**
+                * A Rectangle object that defines the bounding rectangle of the display
+                * object on the stage.
+                */
+                get: function () {
+                    return this._pixelBounds;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Transform.prototype, "position", {
+                /**
+                * Defines the position of the 3d object, relative to the local coordinates of the parent <code>ObjectContainer3D</code>.
+                */
+                get: function () {
+                    return this._displayObject._iMatrix3D.position;
+                },
+                set: function (value) {
+                    this._displayObject.x = value.x;
+                    this._displayObject.y = value.y;
+                    this._displayObject.z = value.z;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Transform.prototype, "rightVector", {
+                /**
+                *
+                */
+                get: function () {
+                    return away.geom.Matrix3DUtils.getRight(this._displayObject._iMatrix3D);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Transform.prototype, "rotation", {
+                /**
+                * Defines the rotation of the 3d object, relative to the local coordinates of the parent <code>ObjectContainer3D</code>.
+                */
+                get: function () {
+                    return new away.geom.Vector3D(this._displayObject.rotationX, this._displayObject.rotationY, this._displayObject.rotationZ);
+                },
+                set: function (value) {
+                    this._displayObject.rotationX = value.x;
+                    this._displayObject.rotationY = value.y;
+                    this._displayObject.rotationZ = value.z;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Transform.prototype, "scale", {
+                /**
+                * Defines the scale of the 3d object, relative to the local coordinates of the parent <code>ObjectContainer3D</code>.
+                */
+                get: function () {
+                    return new away.geom.Vector3D(this._displayObject.scaleX, this._displayObject.scaleY, this._displayObject.scaleZ);
+                },
+                set: function (value) {
+                    this._displayObject.scaleX = value.x;
+                    this._displayObject.scaleY = value.y;
+                    this._displayObject.scaleZ = value.z;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Transform.prototype, "upVector", {
+                /**
+                *
+                */
+                get: function () {
+                    return away.geom.Matrix3DUtils.getUp(this._displayObject._iMatrix3D);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * Returns a Matrix3D object, which can transform the space of a specified
+            * display object in relation to the current display object's space. You can
+            * use the <code>getRelativeMatrix3D()</code> method to move one
+            * three-dimensional display object relative to another three-dimensional
+            * display object.
+            *
+            * @param relativeTo The display object relative to which the transformation
+            *                   occurs. To get a Matrix3D object relative to the stage,
+            *                   set the parameter to the <code>root</code> or
+            *                   <code>stage</code> object. To get the world-relative
+            *                   matrix of the display object, set the parameter to a
+            *                   display object that has a perspective transformation
+            *                   applied to it.
+            * @return A Matrix3D object that can be used to transform the space from the
+            *         <code>relativeTo</code> display object to the current display
+            *         object space.
+            */
+            Transform.prototype.getRelativeMatrix3D = function (relativeTo) {
+                return new away.geom.Matrix3D();
+            };
+
+            /**
+            * Moves the 3d object forwards along it's local z axis
+            *
+            * @param    distance    The length of the movement
+            */
+            Transform.prototype.moveForward = function (distance) {
+                this._displayObject.translateLocal(away.geom.Vector3D.Z_AXIS, distance);
+            };
+
+            /**
+            * Moves the 3d object backwards along it's local z axis
+            *
+            * @param    distance    The length of the movement
+            */
+            Transform.prototype.moveBackward = function (distance) {
+                this._displayObject.translateLocal(away.geom.Vector3D.Z_AXIS, -distance);
+            };
+
+            /**
+            * Moves the 3d object backwards along it's local x axis
+            *
+            * @param    distance    The length of the movement
+            */
+            Transform.prototype.moveLeft = function (distance) {
+                this._displayObject.translateLocal(away.geom.Vector3D.X_AXIS, -distance);
+            };
+
+            /**
+            * Moves the 3d object forwards along it's local x axis
+            *
+            * @param    distance    The length of the movement
+            */
+            Transform.prototype.moveRight = function (distance) {
+                this._displayObject.translateLocal(away.geom.Vector3D.X_AXIS, distance);
+            };
+
+            /**
+            * Moves the 3d object forwards along it's local y axis
+            *
+            * @param    distance    The length of the movement
+            */
+            Transform.prototype.moveUp = function (distance) {
+                this._displayObject.translateLocal(away.geom.Vector3D.Y_AXIS, distance);
+            };
+
+            /**
+            * Moves the 3d object backwards along it's local y axis
+            *
+            * @param    distance    The length of the movement
+            */
+            Transform.prototype.moveDown = function (distance) {
+                this._displayObject.translateLocal(away.geom.Vector3D.Y_AXIS, -distance);
+            };
+            return Transform;
+        })();
+        geom.Transform = Transform;
+    })(away.geom || (away.geom = {}));
+    var geom = away.geom;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (geom) {
+        var UVTransform = (function () {
+            function UVTransform(materialOwner) {
+                this._uvMatrix = new away.geom.Matrix();
+                this._rotationUV = 0;
+                this._scaleU = 1;
+                this._scaleV = 1;
+                this._offsetU = 0;
+                this._offsetV = 0;
+                this._materialOwner = materialOwner;
+            }
+            Object.defineProperty(UVTransform.prototype, "offsetU", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._offsetU;
+                },
+                set: function (value) {
+                    if (value == this._offsetU)
+                        return;
+
+                    this._offsetU = value;
+                    this._uvMatrixDirty = true;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(UVTransform.prototype, "offsetV", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._offsetV;
+                },
+                set: function (value) {
+                    if (value == this._offsetV)
+                        return;
+
+                    this._offsetV = value;
+                    this._uvMatrixDirty = true;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(UVTransform.prototype, "rotationUV", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._rotationUV;
+                },
+                set: function (value) {
+                    if (value == this._rotationUV)
+                        return;
+
+                    this._rotationUV = value;
+
+                    this._uvMatrixDirty = true;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(UVTransform.prototype, "scaleU", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._scaleU;
+                },
+                set: function (value) {
+                    if (value == this._scaleU)
+                        return;
+
+                    this._scaleU = value;
+
+                    this._uvMatrixDirty = true;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(UVTransform.prototype, "scaleV", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._scaleV;
+                },
+                set: function (value) {
+                    if (value == this._scaleV)
+                        return;
+
+                    this._scaleV = value;
+
+                    this._uvMatrixDirty = true;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(UVTransform.prototype, "matrix", {
+                /**
+                *
+                */
+                get: function () {
+                    if (this._uvMatrixDirty)
+                        this.updateUVMatrix();
+
+                    return this._uvMatrix;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * @private
+            */
+            UVTransform.prototype.updateUVMatrix = function () {
+                this._uvMatrix.identity();
+
+                if (this._rotationUV != 0)
+                    this._uvMatrix.rotate(this._rotationUV);
+
+                if (this._scaleU != 1 || this._scaleV != 1)
+                    this._uvMatrix.scale(this._scaleU, this._scaleV);
+
+                this._uvMatrix.translate(this._offsetU, this._offsetV);
+                this._uvMatrixDirty = false;
+
+                //TODO stop being lazy and provide proper matrix decomposition on the other side
+                this._materialOwner._iSetUVMatrixComponents(this._offsetU, this._offsetV, this._scaleU, this._scaleV, this._rotationUV);
+            };
+            return UVTransform;
+        })();
+        geom.UVTransform = UVTransform;
+    })(away.geom || (away.geom = {}));
+    var geom = away.geom;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * The Vector3D class represents a point or a location in the three-dimensional
+    * space using the Cartesian coordinates x, y, and z. As in a two-dimensional
+    * space, the x property represents the horizontal axis and the y property
+    * represents the vertical axis. In three-dimensional space, the z property
+    * represents depth. The value of the x property increases as the object moves
+    * to the right. The value of the y property increases as the object moves
+    * down. The z property increases as the object moves farther from the point
+    * of view. Using perspective projection and scaling, the object is seen to be
+    * bigger when near and smaller when farther away from the screen. As in a
+    * right-handed three-dimensional coordinate system, the positive z-axis points
+    * away from the viewer and the value of the z property increases as the object
+    * moves away from the viewer's eye. The origin point (0,0,0) of the global
+    * space is the upper-left corner of the stage.
+    *
+    * <p>The Vector3D class can also represent a direction, an arrow pointing from
+    * the origin of the coordinates, such as (0,0,0), to an endpoint; or a
+    * floating-point component of an RGB (Red, Green, Blue) color model.</p>
+    *
+    * <p>Quaternion notation introduces a fourth element, the w property, which
+    * provides additional orientation information. For example, the w property can
+    * define an angle of rotation of a Vector3D object. The combination of the
+    * angle of rotation and the coordinates x, y, and z can determine the display
+    * object's orientation. Here is a representation of Vector3D elements in
+    * matrix notation:</p>
+    */
     (function (geom) {
         var Vector3D = (function () {
             /**
-            * Creates an instance of a Vector3D object.
+            * Creates an instance of a Vector3D object. If you do not specify a
+            * parameter for the constructor, a Vector3D object is created with
+            * the elements (0,0,0,0).
+            *
+            * @param x The first element, such as the x coordinate.
+            * @param y The second element, such as the y coordinate.
+            * @param z The third element, such as the z coordinate.
+            * @param w An optional element for additional data such as the angle
+            *          of rotation.
             */
             function Vector3D(x, y, z, w) {
                 if (typeof x === "undefined") { x = 0; }
@@ -6679,12 +15172,13 @@ var away;
             }
             Object.defineProperty(Vector3D.prototype, "length", {
                 /**
-                * [read-only] The length, magnitude, of the current Vector3D object from the origin (0,0,0) to the object's
-                * x, y, and z coordinates.
-                * @returns The length of the Vector3D
+                * The length, magnitude, of the current Vector3D object from the
+                * origin (0,0,0) to the object's x, y, and z coordinates. The w
+                * property is ignored. A unit vector has a length or magnitude of
+                * one.
                 */
                 get: function () {
-                    return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+                    return Math.sqrt(this.lengthSquared);
                 },
                 enumerable: true,
                 configurable: true
@@ -6692,61 +15186,113 @@ var away;
 
             Object.defineProperty(Vector3D.prototype, "lengthSquared", {
                 /**
-                * [read-only] The square of the length of the current Vector3D object, calculated using the x, y, and z
-                * properties.
-                * @returns The squared length of the vector
+                * The square of the length of the current Vector3D object, calculated
+                * using the x, y, and z properties. The w property is ignored. Use the
+                * <code>lengthSquared()</code> method whenever possible instead of the
+                * slower <code>Math.sqrt()</code> method call of the
+                * <code>Vector3D.length()</code> method.
                 */
                 get: function () {
-                    return (this.x * this.x + this.y * this.y + this.z * this.z);
+                    return this.x * this.x + this.y * this.y + this.z * this.z;
                 },
                 enumerable: true,
                 configurable: true
             });
 
             /**
-            * Adds the value of the x, y, and z elements of the current Vector3D object to the values of the x, y, and z
-            * elements of another Vector3D object.
+            * Adds the value of the x, y, and z elements of the current Vector3D
+            * object to the values of the x, y, and z elements of another Vector3D
+            * object. The <code>add()</code> method does not change the current
+            * Vector3D object. Instead, it returns a new Vector3D object with
+            * the new values.
+            *
+            * <p>The result of adding two vectors together is a resultant vector.
+            * One way to visualize the result is by drawing a vector from the
+            * origin or tail of the first vector to the end or head of the second
+            * vector. The resultant vector is the distance between the origin
+            * point of the first vector and the end point of the second vector.
+            * </p>
             */
             Vector3D.prototype.add = function (a) {
                 return new Vector3D(this.x + a.x, this.y + a.y, this.z + a.z, this.w + a.w);
             };
 
             /**
-            * [static] Returns the angle in radians between two vectors.
+            * Returns the angle in radians between two vectors. The returned angle
+            * is the smallest radian the first Vector3D object rotates until it
+            * aligns with the second Vector3D object.
+            *
+            * <p>The <code>angleBetween()</code> method is a static method. You
+            * can use it directly as a method of the Vector3D class.</p>
+            *
+            * <p>To convert a degree to a radian, you can use the following
+            * formula:</p>
+            *
+            * <p><code>radian = Math.PI/180 * degree</code></p>
+            *
+            * @param a The first Vector3D object.
+            * @param b The second Vector3D object.
+            * @returns The angle between two Vector3D objects.
             */
             Vector3D.angleBetween = function (a, b) {
                 return Math.acos(a.dotProduct(b) / (a.length * b.length));
             };
 
             /**
-            * Returns a new Vector3D object that is an exact copy of the current Vector3D object.
+            * Returns a new Vector3D object that is an exact copy of the current
+            * Vector3D object.
+            *
+            * @returns A new Vector3D object that is a copy of the current
+            * Vector3D object.
             */
             Vector3D.prototype.clone = function () {
                 return new Vector3D(this.x, this.y, this.z, this.w);
             };
 
             /**
-            * Copies all of vector data from the source Vector3D object into the calling Vector3D object.
+            * Copies all of vector data from the source Vector3D object into the
+            * calling Vector3D object.
+            *
+            * @param src The Vector3D object from which to copy the data.
             */
             Vector3D.prototype.copyFrom = function (src) {
                 this.x = src.x;
                 this.y = src.y;
                 this.z = src.z;
                 this.w = src.w;
-                //return new Vector3D(src.x, src.y, src.z, src.w);
             };
 
             /**
-            * Returns a new Vector3D object that is perpendicular (at a right angle) to the current Vector3D and another
-            * Vector3D object.
+            * Returns a new Vector3D object that is perpendicular (at a right
+            * angle) to the current Vector3D and another Vector3D object. If the
+            * returned Vector3D object's coordinates are (0,0,0), then the two
+            * Vector3D objects are parallel to each other.
+            *
+            * <p>You can use the normalized cross product of two vertices of a
+            * polygon surface with the normalized vector of the camera or eye
+            * viewpoint to get a dot product. The value of the dot product can
+            * identify whether a surface of a three-dimensional object is hidden
+            * from the viewpoint.</p>
+            *
+            * @param a A second Vector3D object.
+            * @returns A new Vector3D object that is perpendicular to the current
+            *          Vector3D object and the Vector3D object specified as the
+            *          parameter.
             */
             Vector3D.prototype.crossProduct = function (a) {
                 return new Vector3D(this.y * a.z - this.z * a.y, this.z * a.x - this.x * a.z, this.x * a.y - this.y * a.x, 1);
             };
 
             /**
-            * Decrements the value of the x, y, and z elements of the current Vector3D object by the values of the x, y,
-            * and z elements of specified Vector3D object.
+            * Decrements the value of the x, y, and z elements of the current
+            * Vector3D object by the values of the x, y, and z elements of
+            * specified Vector3D object. Unlike the
+            * <code>Vector3D.subtract()</code> method, the
+            * <code>decrementBy()</code> method changes the current Vector3D
+            * object and does not return a new Vector3D object.
+            *
+            * @param a The Vector3D object containing the values to subtract from
+            *          the current Vector3D object.
             */
             Vector3D.prototype.decrementBy = function (a) {
                 this.x -= a.x;
@@ -6755,7 +15301,14 @@ var away;
             };
 
             /**
-            * [static] Returns the distance between two Vector3D objects.
+            * Returns the distance between two Vector3D objects. The
+            * <code>distance()</code> method is a static method. You can use it
+            * directly as a method of the Vector3D class to get the Euclidean
+            * distance between two three-dimensional points.
+            *
+            * @param pt1 A Vector3D object as the first three-dimensional point.
+            * @param pt2 A Vector3D object as the second three-dimensional point.
+            * @returns The distance between two Vector3D objects.
             */
             Vector3D.distance = function (pt1, pt2) {
                 var x = (pt1.x - pt2.x);
@@ -6765,25 +15318,68 @@ var away;
             };
 
             /**
-            * If the current Vector3D object and the one specified as the parameter are unit vertices, this method returns
-            * the cosine of the angle between the two vertices.
+            * If the current Vector3D object and the one specified as the
+            * parameter are unit vertices, this method returns the cosine of the
+            * angle between the two vertices. Unit vertices are vertices that
+            * point to the same direction but their length is one. They remove the
+            * length of the vector as a factor in the result. You can use the
+            * <code>normalize()</code> method to convert a vector to a unit
+            * vector.
+            *
+            * <p>The <code>dotProduct()</code> method finds the angle between two
+            * vertices. It is also used in backface culling or lighting
+            * calculations. Backface culling is a procedure for determining which
+            * surfaces are hidden from the viewpoint. You can use the normalized
+            * vertices from the camera, or eye, viewpoint and the cross product of
+            * the vertices of a polygon surface to get the dot product. If the dot
+            * product is less than zero, then the surface is facing the camera or
+            * the viewer. If the two unit vertices are perpendicular to each
+            * other, they are orthogonal and the dot product is zero. If the two
+            * vertices are parallel to each other, the dot product is one.</p>
+            *
+            * @param a The second Vector3D object.
+            * @returns A scalar which is the dot product of the current Vector3D
+            *          object and the specified Vector3D object.
+            *
+            * @see away.geom.Vector3D#crossProduct()
+            * @see away.geom.Vector3D#normalize()
             */
             Vector3D.prototype.dotProduct = function (a) {
                 return this.x * a.x + this.y * a.y + this.z * a.z;
             };
 
             /**
-            * Determines whether two Vector3D objects are equal by comparing the x, y, and z elements of the current
-            * Vector3D object with a specified Vector3D object.
+            * Determines whether two Vector3D objects are equal by comparing the
+            * x, y, and z elements of the current Vector3D object with a
+            * specified Vector3D object. If the values of these elements are the
+            * same, the two Vector3D objects are equal. If the second optional
+            * parameter is set to true, all four elements of the Vector3D objects,
+            * including the w property, are compared.
             */
-            Vector3D.prototype.equals = function (cmp, allFour) {
+            /**
+            *
+            * @param toCompare The Vector3D object to be compared with the current
+            *                  Vector3D object.
+            * @param allFour   An optional parameter that specifies whether the w
+            *                  property of the Vector3D objects is used in the
+            *                  comparison.
+            * @returns A value of true if the specified Vector3D object is equal
+            *          to the current Vector3D object; false if it is not equal.
+            */
+            Vector3D.prototype.equals = function (toCompare, allFour) {
                 if (typeof allFour === "undefined") { allFour = false; }
-                return (this.x == cmp.x && this.y == cmp.y && this.z == cmp.z && (!allFour || this.w == cmp.w));
+                return (this.x == toCompare.x && this.y == toCompare.y && this.z == toCompare.z && (!allFour || this.w == toCompare.w));
             };
 
             /**
-            * Increments the value of the x, y, and z elements of the current Vector3D object by the values of the x, y,
-            * and z elements of a specified Vector3D object.
+            * Increments the value of the x, y, and z elements of the current
+            * Vector3D object by the values of the x, y, and z elements of a
+            * specified Vector3D object. Unlike the <code>Vector3D.add()</code>
+            * method, the <code>incrementBy()</code> method changes the current
+            * Vector3D object and does not return a new Vector3D object.
+            *
+            * @param a The Vector3D object to be added to the current Vector3D
+            *          object.
             */
             Vector3D.prototype.incrementBy = function (a) {
                 this.x += a.x;
@@ -6792,16 +15388,47 @@ var away;
             };
 
             /**
-            * Compares the elements of the current Vector3D object with the elements of a specified Vector3D object to
-            * determine whether they are nearly equal.
+            * Compares the elements of the current Vector3D object with the
+            * elements of a specified Vector3D object to determine whether they
+            * are nearly equal. The two Vector3D objects are nearly equal if the
+            * value of all the elements of the two vertices are equal, or the
+            * result of the comparison is within the tolerance range. The
+            * difference between two elements must be less than the number
+            * specified as the tolerance parameter. If the third optional
+            * parameter is set to <code>true</code>, all four elements of the
+            * Vector3D objects, including the <code>w</code> property, are
+            * compared. Otherwise, only the x, y, and z elements are included in
+            * the comparison.
             */
-            Vector3D.prototype.nearEquals = function (cmp, epsilon, allFour) {
+            /**
+            *
+            * @param toCompare The Vector3D object to be compared with the current
+            *                  Vector3D object.
+            * @param tolerance A number determining the tolerance factor. If the
+            *                  difference between the values of the Vector3D
+            *                  element specified in the toCompare parameter and
+            *                  the current Vector3D element is less than the
+            *                  tolerance number, the two values are considered
+            *                  nearly equal.
+            * @param allFour   An optional parameter that specifies whether the w
+            *                  property of the Vector3D objects is used in the
+            *                  comparison.
+            * @returns A value of true if the specified Vector3D object is nearly
+            *          equal to the current Vector3D object; false if it is not
+            *          equal.
+            *
+            * @see away.geom.Vector3D#equals()
+            */
+            Vector3D.prototype.nearEquals = function (toCompare, tolerance, allFour) {
                 if (typeof allFour === "undefined") { allFour = true; }
-                return ((Math.abs(this.x - cmp.x) < epsilon) && (Math.abs(this.y - cmp.y) < epsilon) && (Math.abs(this.z - cmp.z) < epsilon) && (!allFour || Math.abs(this.w - cmp.w) < epsilon));
+                return ((Math.abs(this.x - toCompare.x) < tolerance) && (Math.abs(this.y - toCompare.y) < tolerance) && (Math.abs(this.z - toCompare.z) < tolerance) && (!allFour || Math.abs(this.w - toCompare.w) < tolerance));
             };
 
             /**
-            * Sets the current Vector3D object to its inverse.
+            * Sets the current Vector3D object to its inverse. The inverse object
+            * is also considered the opposite of the original object. The value of
+            * the x, y, and z properties of the current Vector3D object is changed
+            * to -x, -y, and -z.
             */
             Vector3D.prototype.negate = function () {
                 this.x = -this.x;
@@ -6810,23 +15437,42 @@ var away;
             };
 
             /**
-            * Converts a Vector3D object to a unit vector by dividing the first three elements (x, y, z) by the length of
-            * the vector.
+            * Converts a Vector3D object to a unit vector by dividing the first
+            * three elements (x, y, z) by the length of the vector. Unit vertices
+            * are vertices that have a direction but their length is one. They
+            * simplify vector calculations by removing length as a factor.
             */
-            Vector3D.prototype.normalize = function () {
-                var invLength = 1 / this.length;
-                if (invLength != 0) {
+            /**
+            * Scales the line segment between(0,0) and the current point to a set
+            * length.
+            *
+            * @param thickness The scaling value. For example, if the current
+            *                  Vector3D object is (0,3,4), and you normalize it to
+            *                  1, the point returned is at(0,0.6,0.8).
+            */
+            Vector3D.prototype.normalize = function (thickness) {
+                if (typeof thickness === "undefined") { thickness = 1; }
+                if (this.length != 0) {
+                    var invLength = thickness / this.length;
                     this.x *= invLength;
                     this.y *= invLength;
                     this.z *= invLength;
                     return;
                 }
-                throw "Cannot divide by zero.";
+                throw "Cannot divide by zero length.";
             };
 
             /**
-            * Divides the value of the x, y, and z properties of the current Vector3D object by the value of its w
-            * property.
+            * Divides the value of the <code>x</code>, <code>y</code>, and
+            * <code>z</code> properties of the current Vector3D object by the
+            * value of its <code>w</code> property.
+            *
+            * <p>If the current Vector3D object is the result of multiplying a
+            * Vector3D object by a projection Matrix3D object, the w property can
+            * hold the transform value. The <code>project()</code> method then can
+            * complete the projection by dividing the elements by the
+            * <code>w</code> property. Use the <code>Matrix3D.rawData</code>
+            * property to create a projection Matrix3D object.</p>
             */
             Vector3D.prototype.project = function () {
                 this.x /= this.w;
@@ -6835,7 +15481,15 @@ var away;
             };
 
             /**
-            * Scales the current Vector3D object by a scalar, a magnitude.
+            * Scales the current Vector3D object by a scalar, a magnitude. The
+            * Vector3D object's x, y, and z elements are multiplied by the scalar
+            * number specified in the parameter. For example, if the vector is
+            * scaled by ten, the result is a vector that is ten times longer. The
+            * scalar can also change the direction of the vector. Multiplying the
+            * vector by a negative number reverses its direction.
+            *
+            * @param s A multiplier (scalar) used to scale a Vector3D object.
+            
             */
             Vector3D.prototype.scaleBy = function (s) {
                 this.x *= s;
@@ -6845,6 +15499,10 @@ var away;
 
             /**
             * Sets the members of Vector3D to the specified values
+            *
+            * @param xa The first element, such as the x coordinate.
+            * @param ya The second element, such as the y coordinate.
+            * @param za The third element, such as the z coordinate.
             */
             Vector3D.prototype.setTo = function (xa, ya, za) {
                 this.x = xa;
@@ -6853,21 +15511,34 @@ var away;
             };
 
             /**
-            * Subtracts the value of the x, y, and z elements of the current Vector3D object from the values of the x, y,
-            * and z elements of another Vector3D object.
+            * Subtracts the value of the x, y, and z elements of the current
+            * Vector3D object from the values of the x, y, and z elements of
+            * another Vector3D object. The <code>subtract()</code> method does not
+            * change the current Vector3D object. Instead, this method returns a
+            * new Vector3D object with the new values.
+            *
+            * @param a The Vector3D object to be subtracted from the current
+            *          Vector3D object.
+            * @returns A new Vector3D object that is the difference between the
+            *          current Vector3D and the specified Vector3D object.
+            *
+            * @see away.geom.Vector3D#decrementBy()
             */
             Vector3D.prototype.subtract = function (a) {
                 return new Vector3D(this.x - a.x, this.y - a.y, this.z - a.z);
             };
 
             /**
-            * Returns a string representation of the current Vector3D object.
+            * Returns a string representation of the current Vector3D object. The
+            * string contains the values of the x, y, and z properties.
             */
             Vector3D.prototype.toString = function () {
                 return "[Vector3D] (x:" + this.x + " ,y:" + this.y + ", z" + this.z + ", w:" + this.w + ")";
             };
             Vector3D.X_AXIS = new Vector3D(1, 0, 0);
+
             Vector3D.Y_AXIS = new Vector3D(0, 1, 0);
+
             Vector3D.Z_AXIS = new Vector3D(0, 0, 1);
             return Vector3D;
         })();
@@ -9278,6 +17949,303 @@ var away;
     })(away.net || (away.net = {}));
     var net = away.net;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * The AntiAliasType class provides values for anti-aliasing in the
+    * away.text.TextField class.
+    */
+    (function (text) {
+        var AntiAliasType = (function () {
+            function AntiAliasType() {
+            }
+            AntiAliasType.ADVANCED = "advanced";
+
+            AntiAliasType.NORMAL = "normal";
+            return AntiAliasType;
+        })();
+        text.AntiAliasType = AntiAliasType;
+    })(away.text || (away.text = {}));
+    var text = away.text;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * The GridFitType class defines values for grid fitting in the TextField class.
+    */
+    (function (text) {
+        var GridFitType = (function () {
+            function GridFitType() {
+            }
+            GridFitType.NONE = "none";
+
+            GridFitType.PIXEL = "pixel";
+
+            GridFitType.SUBPIXEL = "subpixel";
+            return GridFitType;
+        })();
+        text.GridFitType = GridFitType;
+    })(away.text || (away.text = {}));
+    var text = away.text;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * The TextFieldAutoSize class is an enumeration of constant values used in
+    * setting the <code>autoSize</code> property of the TextField class.
+    */
+    (function (text) {
+        var TextFieldAutoSize = (function () {
+            function TextFieldAutoSize() {
+            }
+            TextFieldAutoSize.CENTER = "center";
+
+            TextFieldAutoSize.LEFT = "left";
+
+            TextFieldAutoSize.NONE = "none";
+
+            TextFieldAutoSize.RIGHT = "right";
+            return TextFieldAutoSize;
+        })();
+        text.TextFieldAutoSize = TextFieldAutoSize;
+    })(away.text || (away.text = {}));
+    var text = away.text;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * The TextFieldType class is an enumeration of constant values used in setting the
+    * <code>type</code> property of the TextField class.
+    *
+    * @see away.entities.TextField#type
+    */
+    (function (text) {
+        var TextFieldType = (function () {
+            function TextFieldType() {
+            }
+            TextFieldType.DYNAMIC = "dynamic";
+
+            TextFieldType.INPUT = "input";
+            return TextFieldType;
+        })();
+        text.TextFieldType = TextFieldType;
+    })(away.text || (away.text = {}));
+    var text = away.text;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * The TextFormat class represents character formatting information. Use the
+    * TextFormat class to create specific text formatting for text fields. You
+    * can apply text formatting to both static and dynamic text fields. The
+    * properties of the TextFormat class apply to device and embedded fonts.
+    * However, for embedded fonts, bold and italic text actually require specific
+    * fonts. If you want to display bold or italic text with an embedded font,
+    * you need to embed the bold and italic variations of that font.
+    *
+    * <p> You must use the constructor <code>new TextFormat()</code> to create a
+    * TextFormat object before setting its properties. When you apply a
+    * TextFormat object to a text field using the
+    * <code>TextField.defaultTextFormat</code> property or the
+    * <code>TextField.setTextFormat()</code> method, only its defined properties
+    * are applied. Use the <code>TextField.defaultTextFormat</code> property to
+    * apply formatting BEFORE you add text to the <code>TextField</code>, and the
+    * <code>setTextFormat()</code> method to add formatting AFTER you add text to
+    * the <code>TextField</code>. The TextFormat properties are <code>null</code>
+    * by default because if you don't provide values for the properties, Flash
+    * Player uses its own default formatting. The default formatting that Flash
+    * Player uses for each property(if property's value is <code>null</code>) is
+    * as follows:</p>
+    *
+    * <p>The default formatting for each property is also described in each
+    * property description.</p>
+    */
+    (function (text) {
+        var TextFormat = (function () {
+            /**
+            * Creates a TextFormat object with the specified properties. You can then
+            * change the properties of the TextFormat object to change the formatting of
+            * text fields.
+            *
+            * <p>Any parameter may be set to <code>null</code> to indicate that it is
+            * not defined. All of the parameters are optional; any omitted parameters
+            * are treated as <code>null</code>.</p>
+            *
+            * @param font        The name of a font for text as a string.
+            * @param size        An integer that indicates the size in pixels.
+            * @param color       The color of text using this text format. A number
+            *                    containing three 8-bit RGB components; for example,
+            *                    0xFF0000 is red, and 0x00FF00 is green.
+            * @param bold        A Boolean value that indicates whether the text is
+            *                    boldface.
+            * @param italic      A Boolean value that indicates whether the text is
+            *                    italicized.
+            * @param underline   A Boolean value that indicates whether the text is
+            *                    underlined.
+            * @param url         The URL to which the text in this text format
+            *                    hyperlinks. If <code>url</code> is an empty string, the
+            *                    text does not have a hyperlink.
+            * @param target      The target window where the hyperlink is displayed. If
+            *                    the target window is an empty string, the text is
+            *                    displayed in the default target window
+            *                    <code>_self</code>. If the <code>url</code> parameter
+            *                    is set to an empty string or to the value
+            *                    <code>null</code>, you can get or set this property,
+            *                    but the property will have no effect.
+            * @param align       The alignment of the paragraph, as a TextFormatAlign
+            *                    value.
+            * @param leftMargin  Indicates the left margin of the paragraph, in pixels.
+            * @param rightMargin Indicates the right margin of the paragraph, in pixels.
+            * @param indent      An integer that indicates the indentation from the left
+            *                    margin to the first character in the paragraph.
+            * @param leading     A number that indicates the amount of leading vertical
+            *                    space between lines.
+            */
+            function TextFormat(font, size, color, bold, italic, underline, url, target, align, leftMargin, rightMargin, indent, leading) {
+                if (typeof font === "undefined") { font = "Times New Roman"; }
+                if (typeof size === "undefined") { size = 12; }
+                if (typeof color === "undefined") { color = 0x000000; }
+                if (typeof bold === "undefined") { bold = false; }
+                if (typeof italic === "undefined") { italic = false; }
+                if (typeof underline === "undefined") { underline = false; }
+                if (typeof url === "undefined") { url = ""; }
+                if (typeof target === "undefined") { target = ""; }
+                if (typeof align === "undefined") { align = "left"; }
+                if (typeof leftMargin === "undefined") { leftMargin = 0; }
+                if (typeof rightMargin === "undefined") { rightMargin = 0; }
+                if (typeof indent === "undefined") { indent = 0; }
+                if (typeof leading === "undefined") { leading = 0; }
+                /**
+                * Specifies custom tab stops as an array of non-negative integers. Each tab
+                * stop is specified in pixels. If custom tab stops are not specified
+                * (<code>null</code>), the default tab stop is 4(average character width).
+                */
+                this.tabStops = new Array();
+                this.font = font;
+                this.size = size;
+                this.bold = bold;
+                this.italic = italic;
+                this.underline = underline;
+                this.url = url;
+                this.target = target;
+                this.align = align;
+                this.leftMargin = leftMargin;
+                this.rightMargin = rightMargin;
+                this.indent = indent;
+                this.leading = leading;
+            }
+            return TextFormat;
+        })();
+        text.TextFormat = TextFormat;
+    })(away.text || (away.text = {}));
+    var text = away.text;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    /**
+    * The TextFormatAlign class provides values for text alignment in the
+    * TextFormat class.
+    */
+    (function (text) {
+        var TextFormatAlign = (function () {
+            function TextFormatAlign() {
+                /**
+                * Constant; centers the text in the text field. Use the syntax
+                * <code>TextFormatAlign.CENTER</code>.
+                */
+                this.CENTER = "center";
+                /**
+                * Constant; justifies text within the text field. Use the syntax
+                * <code>TextFormatAlign.JUSTIFY</code>.
+                */
+                this.JUSTIFY = "justify";
+                /**
+                * Constant; aligns text to the left within the text field. Use the syntax
+                * <code>TextFormatAlign.LEFT</code>.
+                */
+                this.LEFT = "left";
+                /**
+                * Constant; aligns text to the right within the text field. Use the syntax
+                * <code>TextFormatAlign.RIGHT</code>.
+                */
+                this.RIGHT = "right";
+            }
+            return TextFormatAlign;
+        })();
+        text.TextFormatAlign = TextFormatAlign;
+    })(away.text || (away.text = {}));
+    var text = away.text;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * A class that defines the Interactive mode of a text field object.
+    *
+    * @see away.entities.TextField#textInteractionMode
+    */
+    (function (text) {
+        var TextInteractionMode = (function () {
+            function TextInteractionMode() {
+            }
+            TextInteractionMode.NORMAL = "normal";
+
+            TextInteractionMode.SELECTION = "selection";
+            return TextInteractionMode;
+        })();
+        text.TextInteractionMode = TextInteractionMode;
+    })(away.text || (away.text = {}));
+    var text = away.text;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * The TextLineMetrics class contains information about the text position and
+    * measurements of a line of text within a text field. All measurements are in
+    * pixels. Objects of this class are returned by the
+    * <code>away.entities.TextField.getLineMetrics()</code> method.
+    */
+    (function (text) {
+        var TextLineMetrics = (function () {
+            /**
+            * Creates a TextLineMetrics object. The TextLineMetrics object contains
+            * information about the text metrics of a line of text in a text field.
+            * Objects of this class are returned by the
+            * away.entities.TextField.getLineMetrics() method.
+            *
+            * @param x           The left position of the first character in pixels.
+            * @param width       The width of the text of the selected lines (not
+            *                    necessarily the complete text) in pixels.
+            * @param height      The height of the text of the selected lines (not
+            *                    necessarily the complete text) in pixels.
+            * @param ascent      The length from the baseline to the top of the line
+            *                    height in pixels.
+            * @param descent     The length from the baseline to the bottom depth of
+            *                    the line in pixels.
+            * @param leading     The measurement of the vertical distance between the
+            *                    lines of text.
+            */
+            function TextLineMetrics(x, width, height, ascent, descent, leading) {
+                if (typeof x === "undefined") { x = NaN; }
+                if (typeof width === "undefined") { width = NaN; }
+                if (typeof height === "undefined") { height = NaN; }
+                if (typeof ascent === "undefined") { ascent = NaN; }
+                if (typeof descent === "undefined") { descent = NaN; }
+                if (typeof leading === "undefined") { leading = NaN; }
+            }
+            return TextLineMetrics;
+        })();
+        text.TextLineMetrics = TextLineMetrics;
+    })(away.text || (away.text = {}));
+    var text = away.text;
+})(away || (away = {}));
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
@@ -9695,6 +18663,5386 @@ var away;
         ui.Keyboard = Keyboard;
     })(away.ui || (away.ui = {}));
     var ui = away.ui;
+})(away || (away = {}));
+///<reference path="../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * The DisplayObjectContainer class is the base class for all objects that can
+    * serve as display object containers on the display list. The display list
+    * manages all objects displayed in the Flash runtimes. Use the
+    * DisplayObjectContainer class to arrange the display objects in the display
+    * list. Each DisplayObjectContainer object has its own child list for
+    * organizing the z-order of the objects. The z-order is the front-to-back
+    * order that determines which object is drawn in front, which is behind, and
+    * so on.
+    *
+    * <p>DisplayObject is an abstract base class; therefore, you cannot call
+    * DisplayObject directly. Invoking <code>new DisplayObject()</code> throws an
+    * <code>ArgumentError</code> exception.</p>
+    * The DisplayObjectContainer class is an abstract base class for all objects
+    * that can contain child objects. It cannot be instantiated directly; calling
+    * the <code>new DisplayObjectContainer()</code> constructor throws an
+    * <code>ArgumentError</code> exception.
+    *
+    * <p>For more information, see the "Display Programming" chapter of the
+    * <i>ActionScript 3.0 Developer's Guide</i>.</p>
+    */
+    (function (containers) {
+        var DisplayObjectContainer = (function (_super) {
+            __extends(DisplayObjectContainer, _super);
+            /**
+            * Calling the <code>new DisplayObjectContainer()</code> constructor throws
+            * an <code>ArgumentError</code> exception. You <i>can</i>, however, call
+            * constructors for the following subclasses of DisplayObjectContainer:
+            * <ul>
+            *   <li><code>new Loader()</code></li>
+            *   <li><code>new Sprite()</code></li>
+            *   <li><code>new MovieClip()</code></li>
+            * </ul>
+            */
+            function DisplayObjectContainer() {
+                _super.call(this);
+                this._mouseChildren = true;
+                this._children = new Array();
+            }
+            Object.defineProperty(DisplayObjectContainer.prototype, "assetType", {
+                /**
+                *
+                */
+                get: function () {
+                    return away.library.AssetType.CONTAINER;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(DisplayObjectContainer.prototype, "mouseChildren", {
+                /**
+                * Determines whether or not the children of the object are mouse, or user
+                * input device, enabled. If an object is enabled, a user can interact with
+                * it by using a mouse or user input device. The default is
+                * <code>true</code>.
+                *
+                * <p>This property is useful when you create a button with an instance of
+                * the Sprite class(instead of using the SimpleButton class). When you use a
+                * Sprite instance to create a button, you can choose to decorate the button
+                * by using the <code>addChild()</code> method to add additional Sprite
+                * instances. This process can cause unexpected behavior with mouse events
+                * because the Sprite instances you add as children can become the target
+                * object of a mouse event when you expect the parent instance to be the
+                * target object. To ensure that the parent instance serves as the target
+                * objects for mouse events, you can set the <code>mouseChildren</code>
+                * property of the parent instance to <code>false</code>.</p>
+                *
+                * <p> No event is dispatched by setting this property. You must use the
+                * <code>addEventListener()</code> method to create interactive
+                * functionality.</p>
+                */
+                get: function () {
+                    return this._mouseChildren;
+                },
+                set: function (value) {
+                    if (this._mouseChildren == value)
+                        return;
+
+                    this._mouseChildren = value;
+
+                    this._pUpdateImplicitMouseEnabled(this._pParent ? this._pParent.mouseChildren : true);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(DisplayObjectContainer.prototype, "numChildren", {
+                /**
+                * Returns the number of children of this object.
+                */
+                get: function () {
+                    return this._children.length;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * Adds a child DisplayObject instance to this DisplayObjectContainer
+            * instance. The child is added to the front(top) of all other children in
+            * this DisplayObjectContainer instance.(To add a child to a specific index
+            * position, use the <code>addChildAt()</code> method.)
+            *
+            * <p>If you add a child object that already has a different display object
+            * container as a parent, the object is removed from the child list of the
+            * other display object container. </p>
+            *
+            * <p><b>Note:</b> The command <code>stage.addChild()</code> can cause
+            * problems with a published SWF file, including security problems and
+            * conflicts with other loaded SWF files. There is only one Stage within a
+            * Flash runtime instance, no matter how many SWF files you load into the
+            * runtime. So, generally, objects should not be added to the Stage,
+            * directly, at all. The only object the Stage should contain is the root
+            * object. Create a DisplayObjectContainer to contain all of the items on the
+            * display list. Then, if necessary, add that DisplayObjectContainer instance
+            * to the Stage.</p>
+            *
+            * @param child The DisplayObject instance to add as a child of this
+            *              DisplayObjectContainer instance.
+            * @return The DisplayObject instance that you pass in the <code>child</code>
+            *         parameter.
+            * @throws ArgumentError Throws if the child is the same as the parent. Also
+            *                       throws if the caller is a child(or grandchild etc.)
+            *                       of the child being added.
+            * @event added Dispatched when a display object is added to the display
+            *              list.
+            */
+            DisplayObjectContainer.prototype.addChild = function (child) {
+                if (child == null)
+                    throw new away.errors.Error("Parameter child cannot be null.");
+
+                //if child already has a parent, remove it.
+                if (child._pParent)
+                    child._pParent.removeChildInternal(child);
+
+                child.iSetParent(this);
+
+                this._children.push(child);
+
+                return child;
+            };
+
+            /**
+            * Adds a child DisplayObject instance to this DisplayObjectContainer
+            * instance. The child is added at the index position specified. An index of
+            * 0 represents the back(bottom) of the display list for this
+            * DisplayObjectContainer object.
+            *
+            * <p>For example, the following example shows three display objects, labeled
+            * a, b, and c, at index positions 0, 2, and 1, respectively:</p>
+            *
+            * <p>If you add a child object that already has a different display object
+            * container as a parent, the object is removed from the child list of the
+            * other display object container. </p>
+            *
+            * @param child The DisplayObject instance to add as a child of this
+            *              DisplayObjectContainer instance.
+            * @param index The index position to which the child is added. If you
+            *              specify a currently occupied index position, the child object
+            *              that exists at that position and all higher positions are
+            *              moved up one position in the child list.
+            * @return The DisplayObject instance that you pass in the <code>child</code>
+            *         parameter.
+            * @throws ArgumentError Throws if the child is the same as the parent. Also
+            *                       throws if the caller is a child(or grandchild etc.)
+            *                       of the child being added.
+            * @throws RangeError    Throws if the index position does not exist in the
+            *                       child list.
+            * @event added Dispatched when a display object is added to the display
+            *              list.
+            */
+            DisplayObjectContainer.prototype.addChildAt = function (child, index /*int*/ ) {
+                return child;
+            };
+
+            DisplayObjectContainer.prototype.addChildren = function () {
+                var childarray = [];
+                for (var _i = 0; _i < (arguments.length - 0); _i++) {
+                    childarray[_i] = arguments[_i + 0];
+                }
+                var len = childarray.length;
+                for (var i = 0; i < len; i++)
+                    this.addChild(childarray[i]);
+            };
+
+            /**
+            *
+            */
+            DisplayObjectContainer.prototype.clone = function () {
+                var clone = new away.containers.DisplayObjectContainer();
+                clone.pivotPoint = this.pivotPoint;
+                clone._iMatrix3D = this._iMatrix3D;
+                clone.partition = this.partition;
+                clone.name = name;
+
+                var len = this._children.length;
+                for (var i = 0; i < len; ++i)
+                    clone.addChild(this._children[i].clone());
+
+                // todo: implement for all subtypes
+                return clone;
+            };
+
+            /**
+            * Determines whether the specified display object is a child of the
+            * DisplayObjectContainer instance or the instance itself. The search
+            * includes the entire display list including this DisplayObjectContainer
+            * instance. Grandchildren, great-grandchildren, and so on each return
+            * <code>true</code>.
+            *
+            * @param child The child object to test.
+            * @return <code>true</code> if the <code>child</code> object is a child of
+            *         the DisplayObjectContainer or the container itself; otherwise
+            *         <code>false</code>.
+            */
+            DisplayObjectContainer.prototype.contains = function (child) {
+                return this._children.indexOf(child) >= 0;
+            };
+
+            /**
+            *
+            */
+            DisplayObjectContainer.prototype.disposeWithChildren = function () {
+                this.dispose();
+
+                while (this.numChildren > 0)
+                    this.getChildAt(0).dispose();
+            };
+
+            /**
+            * Returns the child display object instance that exists at the specified
+            * index.
+            *
+            * @param index The index position of the child object.
+            * @return The child display object at the specified index position.
+            * @throws RangeError    Throws if the index does not exist in the child
+            *                       list.
+            */
+            DisplayObjectContainer.prototype.getChildAt = function (index /*int*/ ) {
+                var child = this._children[index];
+
+                if (child == null)
+                    throw new away.errors.RangeError("Index does not exist in the child list of the caller");
+
+                return child;
+            };
+
+            /**
+            * Returns the child display object that exists with the specified name. If
+            * more that one child display object has the specified name, the method
+            * returns the first object in the child list.
+            *
+            * <p>The <code>getChildAt()</code> method is faster than the
+            * <code>getChildByName()</code> method. The <code>getChildAt()</code> method
+            * accesses a child from a cached array, whereas the
+            * <code>getChildByName()</code> method has to traverse a linked list to
+            * access a child.</p>
+            *
+            * @param name The name of the child to return.
+            * @return The child display object with the specified name.
+            */
+            DisplayObjectContainer.prototype.getChildByName = function (name) {
+                var len = this._children.length;
+                for (var i = 0; i < len; ++i)
+                    if (this._children[i].name == name)
+                        return this._children[i];
+
+                return null;
+            };
+
+            /**
+            * Returns the index position of a <code>child</code> DisplayObject instance.
+            *
+            * @param child The DisplayObject instance to identify.
+            * @return The index position of the child display object to identify.
+            * @throws ArgumentError Throws if the child parameter is not a child of this
+            *                       object.
+            */
+            DisplayObjectContainer.prototype.getChildIndex = function (child) {
+                var childIndex = this._children.indexOf(child);
+
+                if (childIndex == -1)
+                    throw new away.errors.ArgumentError("Child parameter is not a child of the caller");
+
+                return childIndex;
+            };
+
+            /**
+            * Returns an array of objects that lie under the specified point and are
+            * children(or grandchildren, and so on) of this DisplayObjectContainer
+            * instance. Any child objects that are inaccessible for security reasons are
+            * omitted from the returned array. To determine whether this security
+            * restriction affects the returned array, call the
+            * <code>areInaccessibleObjectsUnderPoint()</code> method.
+            *
+            * <p>The <code>point</code> parameter is in the coordinate space of the
+            * Stage, which may differ from the coordinate space of the display object
+            * container(unless the display object container is the Stage). You can use
+            * the <code>globalToLocal()</code> and the <code>localToGlobal()</code>
+            * methods to convert points between these coordinate spaces.</p>
+            *
+            * @param point The point under which to look.
+            * @return An array of objects that lie under the specified point and are
+            *         children(or grandchildren, and so on) of this
+            *         DisplayObjectContainer instance.
+            */
+            DisplayObjectContainer.prototype.getObjectsUnderPoint = function (point) {
+                return new Array();
+            };
+
+            /**
+            * Removes the specified <code>child</code> DisplayObject instance from the
+            * child list of the DisplayObjectContainer instance. The <code>parent</code>
+            * property of the removed child is set to <code>null</code> , and the object
+            * is garbage collected if no other references to the child exist. The index
+            * positions of any display objects above the child in the
+            * DisplayObjectContainer are decreased by 1.
+            *
+            * <p>The garbage collector reallocates unused memory space. When a variable
+            * or object is no longer actively referenced or stored somewhere, the
+            * garbage collector sweeps through and wipes out the memory space it used to
+            * occupy if no other references to it exist.</p>
+            *
+            * @param child The DisplayObject instance to remove.
+            * @return The DisplayObject instance that you pass in the <code>child</code>
+            *         parameter.
+            * @throws ArgumentError Throws if the child parameter is not a child of this
+            *                       object.
+            */
+            DisplayObjectContainer.prototype.removeChild = function (child) {
+                if (child == null)
+                    throw new away.errors.Error("Parameter child cannot be null");
+
+                this.removeChildInternal(child);
+
+                child.iSetParent(null);
+
+                return child;
+            };
+
+            /**
+            * Removes a child DisplayObject from the specified <code>index</code>
+            * position in the child list of the DisplayObjectContainer. The
+            * <code>parent</code> property of the removed child is set to
+            * <code>null</code>, and the object is garbage collected if no other
+            * references to the child exist. The index positions of any display objects
+            * above the child in the DisplayObjectContainer are decreased by 1.
+            *
+            * <p>The garbage collector reallocates unused memory space. When a variable
+            * or object is no longer actively referenced or stored somewhere, the
+            * garbage collector sweeps through and wipes out the memory space it used to
+            * occupy if no other references to it exist.</p>
+            *
+            * @param index The child index of the DisplayObject to remove.
+            * @return The DisplayObject instance that was removed.
+            * @throws RangeError    Throws if the index does not exist in the child
+            *                       list.
+            * @throws SecurityError This child display object belongs to a sandbox to
+            *                       which the calling object does not have access. You
+            *                       can avoid this situation by having the child movie
+            *                       call the <code>Security.allowDomain()</code> method.
+            */
+            DisplayObjectContainer.prototype.removeChildAt = function (index /*int*/ ) {
+                return this.removeChild(this._children[index]);
+            };
+
+            /**
+            * Removes all <code>child</code> DisplayObject instances from the child list
+            * of the DisplayObjectContainer instance. The <code>parent</code> property
+            * of the removed children is set to <code>null</code>, and the objects are
+            * garbage collected if no other references to the children exist.
+            *
+            * The garbage collector reallocates unused memory space. When a variable or
+            * object is no longer actively referenced or stored somewhere, the garbage
+            * collector sweeps through and wipes out the memory space it used to occupy
+            * if no other references to it exist.
+            *
+            * @param beginIndex The beginning position. A value smaller than 0 throws a RangeError.
+            * @param endIndex The ending position. A value smaller than 0 throws a RangeError.
+            * @throws RangeError    Throws if the beginIndex or endIndex positions do
+            *                       not exist in the child list.
+            */
+            DisplayObjectContainer.prototype.removeChildren = function (beginIndex, endIndex) {
+                if (typeof beginIndex === "undefined") { beginIndex = 0; }
+                if (typeof endIndex === "undefined") { endIndex = 2147483647; }
+                if (beginIndex < 0)
+                    throw new away.errors.RangeError("beginIndex is out of range of the child list");
+
+                if (endIndex > this._children.length)
+                    throw new away.errors.RangeError("endIndex is out of range of the child list");
+
+                for (var i = beginIndex; i < endIndex; i++)
+                    this.removeChild(this._children[i]);
+            };
+
+            /**
+            * Changes the position of an existing child in the display object container.
+            * This affects the layering of child objects. For example, the following
+            * example shows three display objects, labeled a, b, and c, at index
+            * positions 0, 1, and 2, respectively:
+            *
+            * <p>When you use the <code>setChildIndex()</code> method and specify an
+            * index position that is already occupied, the only positions that change
+            * are those in between the display object's former and new position. All
+            * others will stay the same. If a child is moved to an index LOWER than its
+            * current index, all children in between will INCREASE by 1 for their index
+            * reference. If a child is moved to an index HIGHER than its current index,
+            * all children in between will DECREASE by 1 for their index reference. For
+            * example, if the display object container in the previous example is named
+            * <code>container</code>, you can swap the position of the display objects
+            * labeled a and b by calling the following code:</p>
+            *
+            * <p>This code results in the following arrangement of objects:</p>
+            *
+            * @param child The child DisplayObject instance for which you want to change
+            *              the index number.
+            * @param index The resulting index number for the <code>child</code> display
+            *              object.
+            * @throws ArgumentError Throws if the child parameter is not a child of this
+            *                       object.
+            * @throws RangeError    Throws if the index does not exist in the child
+            *                       list.
+            */
+            DisplayObjectContainer.prototype.setChildIndex = function (child, index /*int*/ ) {
+                //TODO
+            };
+
+            /**
+            * Swaps the z-order (front-to-back order) of the two specified child
+            * objects. All other child objects in the display object container remain in
+            * the same index positions.
+            *
+            * @param child1 The first child object.
+            * @param child2 The second child object.
+            * @throws ArgumentError Throws if either child parameter is not a child of
+            *                       this object.
+            */
+            DisplayObjectContainer.prototype.swapChildren = function (child1, child2) {
+                //TODO
+            };
+
+            /**
+            * Swaps the z-order(front-to-back order) of the child objects at the two
+            * specified index positions in the child list. All other child objects in
+            * the display object container remain in the same index positions.
+            *
+            * @param index1 The index position of the first child object.
+            * @param index2 The index position of the second child object.
+            * @throws RangeError If either index does not exist in the child list.
+            */
+            DisplayObjectContainer.prototype.swapChildrenAt = function (index1 /*int*/ , index2 /*int*/ ) {
+                //TODO
+            };
+
+            /**
+            * @protected
+            */
+            DisplayObjectContainer.prototype.pInvalidateSceneTransform = function () {
+                _super.prototype.pInvalidateSceneTransform.call(this);
+
+                var len = this._children.length;
+                for (var i = 0; i < len; ++i)
+                    this._children[i++].pInvalidateSceneTransform();
+            };
+
+            /**
+            * @protected
+            */
+            DisplayObjectContainer.prototype._pUpdateScene = function (value) {
+                _super.prototype._pUpdateScene.call(this, value);
+
+                var len = this._children.length;
+                for (var i = 0; i < len; ++i)
+                    this._children[i]._pUpdateScene(value);
+            };
+
+            /**
+            * @protected
+            */
+            DisplayObjectContainer.prototype._pUpdateImplicitMouseEnabled = function (value) {
+                _super.prototype._pUpdateImplicitMouseEnabled.call(this, value);
+
+                var len = this._children.length;
+                for (var i = 0; i < len; ++i)
+                    this._children[i]._pUpdateImplicitMouseEnabled(this._mouseChildren);
+            };
+
+            /**
+            * @protected
+            */
+            DisplayObjectContainer.prototype._pUpdateImplicitVisibility = function (value) {
+                _super.prototype._pUpdateImplicitVisibility.call(this, value);
+
+                var len = this._children.length;
+                for (var i = 0; i < len; ++i)
+                    this._children[i]._pUpdateImplicitVisibility(this._pImplicitVisibility);
+            };
+
+            /**
+            * @protected
+            */
+            DisplayObjectContainer.prototype._pUpdateImplicitPartition = function (value) {
+                _super.prototype._pUpdateImplicitPartition.call(this, value);
+
+                var len = this._children.length;
+                for (var i = 0; i < len; ++i)
+                    this._children[i]._pUpdateImplicitPartition(this._pImplicitPartition);
+            };
+
+            /**
+            * @private
+            *
+            * @param child
+            */
+            DisplayObjectContainer.prototype.removeChildInternal = function (child) {
+                this._children.splice(this.getChildIndex(child), 1);
+
+                return child;
+            };
+            return DisplayObjectContainer;
+        })(away.base.DisplayObject);
+        containers.DisplayObjectContainer = DisplayObjectContainer;
+    })(away.containers || (away.containers = {}));
+    var containers = away.containers;
+})(away || (away = {}));
+///<reference path="../_definitions.ts"/>
+///<reference path="../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * The Billboard class represents display objects that represent bitmap images.
+    * These can be images that you load with the <code>flash.Assets</code> or
+    * <code>flash.display.Loader</code> classes, or they can be images that you
+    * create with the <code>Billboard()</code> constructor.
+    *
+    * <p>The <code>Billboard()</code> constructor allows you to create a Billboard
+    * object that contains a reference to a BitmapData object. After you create a
+    * Billboard object, use the <code>addChild()</code> or <code>addChildAt()</code>
+    * method of the parent DisplayObjectContainer instance to place the bitmap on
+    * the display list.</p>
+    *
+    * <p>A Billboard object can share its BitmapData reference among several Billboard
+    * objects, independent of translation or rotation properties. Because you can
+    * create multiple Billboard objects that reference the same BitmapData object,
+    * multiple display objects can use the same complex BitmapData object without
+    * incurring the memory overhead of a BitmapData object for each display
+    * object instance.</p>
+    *
+    * <p>A BitmapData object can be drawn to the screen by a Billboard object in one
+    * of two ways: by using the default hardware renderer with a single hardware surface,
+    * or by using the slower software renderer when 3D acceleration is not available.</p>
+    *
+    * <p>If you would prefer to perform a batch rendering command, rather than using a
+    * single surface for each Billboard object, you can also draw to the screen using the
+    * <code>drawTiles()</code> or <code>drawTriangles()</code> methods which are
+    * available to <code>flash.display.Tilesheet</code> and <code>flash.display.Graphics
+    * objects.</code></p>
+    *
+    * <p><b>Note:</b> The Billboard class is not a subclass of the InteractiveObject
+    * class, so it cannot dispatch mouse events. However, you can use the
+    * <code>addEventListener()</code> method of the display object container that
+    * contains the Billboard object.</p>
+    */
+    (function (entities) {
+        var Billboard = (function (_super) {
+            __extends(Billboard, _super);
+            function Billboard(material, width, height, pixelSnapping, smoothing) {
+                if (typeof pixelSnapping === "undefined") { pixelSnapping = "auto"; }
+                if (typeof smoothing === "undefined") { smoothing = false; }
+                _super.call(this);
+
+                this._pIsEntity = true;
+
+                this.material = material;
+
+                //TODO don't rely on scaling for the width and height of the billboard
+                this.width = width;
+                this.height = height;
+
+                this.pivotPoint = new away.geom.Vector3D(0.5, 0.5, 0);
+
+                this._bitmapMatrix = new away.geom.Matrix3D();
+
+                this._uvTransform = new away.geom.UVTransform(this);
+            }
+            Object.defineProperty(Billboard.prototype, "animator", {
+                /**
+                * Defines the animator of the mesh. Act on the mesh's geometry. Defaults to null
+                */
+                get: function () {
+                    return this._animator;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Billboard.prototype, "assetType", {
+                /**
+                *
+                */
+                get: function () {
+                    return away.library.AssetType.BILLBOARD;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Billboard.prototype, "material", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._material;
+                },
+                set: function (value) {
+                    if (value == this._material)
+                        return;
+
+                    if (this._material)
+                        this._material.iRemoveOwner(this);
+
+                    this._material = value;
+
+                    if (this._material)
+                        this._material.iAddOwner(this);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Billboard.prototype, "uvTransform", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._uvTransform;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * @protected
+            */
+            Billboard.prototype.pCreateEntityPartitionNode = function () {
+                return new away.partition.EntityNode(this);
+            };
+
+            /**
+            * @protected
+            */
+            Billboard.prototype.pUpdateBounds = function () {
+                this._pBounds.fromExtremes(0, 0, 0, 1, 1, 0);
+
+                _super.prototype.pUpdateBounds.call(this);
+            };
+
+            /**
+            * @protected
+            */
+            Billboard.prototype.pInvalidateBounds = function () {
+                _super.prototype.pInvalidateBounds.call(this);
+
+                if (this._iAssignedPartition)
+                    this._iAssignedPartition.iMarkForUpdate(this);
+            };
+
+            /**
+            * @internal
+            */
+            Billboard.prototype._iSetUVMatrixComponents = function (offsetU, offsetV, scaleU, scaleV, rotationUV) {
+            };
+            return Billboard;
+        })(away.base.DisplayObject);
+        entities.Billboard = Billboard;
+    })(away.entities || (away.entities = {}));
+    var entities = away.entities;
+})(away || (away = {}));
+///<reference path="../_definitions.ts" />
+var away;
+(function (away) {
+    (function (entities) {
+        var Camera = (function (_super) {
+            __extends(Camera, _super);
+            function Camera(projection) {
+                if (typeof projection === "undefined") { projection = null; }
+                _super.call(this);
+                this._viewProjection = new away.geom.Matrix3D();
+                this._viewProjectionDirty = true;
+                this._frustumPlanesDirty = true;
+
+                this._pIsEntity = true;
+
+                this._onProjectionMatrixChangedDelegate = away.utils.Delegate.create(this, this.onProjectionMatrixChanged);
+
+                this._projection = projection || new away.projections.PerspectiveProjection();
+                this._projection.addEventListener(away.events.ProjectionEvent.MATRIX_CHANGED, this._onProjectionMatrixChangedDelegate);
+
+                this._frustumPlanes = [];
+
+                for (var i = 0; i < 6; ++i)
+                    this._frustumPlanes[i] = new away.geom.Plane3D();
+
+                this.z = -1000;
+            }
+            Camera.prototype.pCreateDefaultBoundingVolume = function () {
+                return new away.bounds.NullBounds();
+            };
+
+            /**
+            * @protected
+            */
+            Camera.prototype.pCreateEntityPartitionNode = function () {
+                return new away.partition.CameraNode(this);
+            };
+
+            Object.defineProperty(Camera.prototype, "assetType", {
+                //@override
+                get: function () {
+                    return away.library.AssetType.CAMERA;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Camera.prototype.onProjectionMatrixChanged = function (event) {
+                this._viewProjectionDirty = true;
+                this._frustumPlanesDirty = true;
+                this.dispatchEvent(event);
+            };
+
+            Object.defineProperty(Camera.prototype, "frustumPlanes", {
+                get: function () {
+                    if (this._frustumPlanesDirty)
+                        this.updateFrustum();
+
+                    return this._frustumPlanes;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Camera.prototype.updateFrustum = function () {
+                var a, b, c;
+
+                //var d : Number;
+                var c11, c12, c13, c14;
+                var c21, c22, c23, c24;
+                var c31, c32, c33, c34;
+                var c41, c42, c43, c44;
+                var p;
+                var raw = new Array(16);
+                ;
+                var invLen;
+                this.viewProjection.copyRawDataTo(raw);
+
+                c11 = raw[0];
+                c12 = raw[4];
+                c13 = raw[8];
+                c14 = raw[12];
+                c21 = raw[1];
+                c22 = raw[5];
+                c23 = raw[9];
+                c24 = raw[13];
+                c31 = raw[2];
+                c32 = raw[6];
+                c33 = raw[10];
+                c34 = raw[14];
+                c41 = raw[3];
+                c42 = raw[7];
+                c43 = raw[11];
+                c44 = raw[15];
+
+                // left plane
+                p = this._frustumPlanes[0];
+                a = c41 + c11;
+                b = c42 + c12;
+                c = c43 + c13;
+                invLen = 1 / Math.sqrt(a * a + b * b + c * c);
+                p.a = a * invLen;
+                p.b = b * invLen;
+                p.c = c * invLen;
+                p.d = -(c44 + c14) * invLen;
+
+                // right plane
+                p = this._frustumPlanes[1];
+                a = c41 - c11;
+                b = c42 - c12;
+                c = c43 - c13;
+                invLen = 1 / Math.sqrt(a * a + b * b + c * c);
+                p.a = a * invLen;
+                p.b = b * invLen;
+                p.c = c * invLen;
+                p.d = (c14 - c44) * invLen;
+
+                // bottom
+                p = this._frustumPlanes[2];
+                a = c41 + c21;
+                b = c42 + c22;
+                c = c43 + c23;
+                invLen = 1 / Math.sqrt(a * a + b * b + c * c);
+                p.a = a * invLen;
+                p.b = b * invLen;
+                p.c = c * invLen;
+                p.d = -(c44 + c24) * invLen;
+
+                // top
+                p = this._frustumPlanes[3];
+                a = c41 - c21;
+                b = c42 - c22;
+                c = c43 - c23;
+                invLen = 1 / Math.sqrt(a * a + b * b + c * c);
+                p.a = a * invLen;
+                p.b = b * invLen;
+                p.c = c * invLen;
+                p.d = (c24 - c44) * invLen;
+
+                // near
+                p = this._frustumPlanes[4];
+                a = c31;
+                b = c32;
+                c = c33;
+                invLen = 1 / Math.sqrt(a * a + b * b + c * c);
+                p.a = a * invLen;
+                p.b = b * invLen;
+                p.c = c * invLen;
+                p.d = -c34 * invLen;
+
+                // far
+                p = this._frustumPlanes[5];
+                a = c41 - c31;
+                b = c42 - c32;
+                c = c43 - c33;
+                invLen = 1 / Math.sqrt(a * a + b * b + c * c);
+                p.a = a * invLen;
+                p.b = b * invLen;
+                p.c = c * invLen;
+                p.d = (c34 - c44) * invLen;
+
+                this._frustumPlanesDirty = false;
+            };
+
+            /**
+            * @protected
+            */
+            Camera.prototype.pInvalidateSceneTransform = function () {
+                _super.prototype.pInvalidateSceneTransform.call(this);
+
+                this._viewProjectionDirty = true;
+                this._frustumPlanesDirty = true;
+            };
+
+            /**
+            * @protected
+            */
+            Camera.prototype.pUpdateBounds = function () {
+                this._pBoundsInvalid = false;
+                this._pBounds.nullify();
+            };
+
+            Object.defineProperty(Camera.prototype, "projection", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._projection;
+                },
+                set: function (value) {
+                    if (this._projection == value)
+                        return;
+
+                    if (!value)
+                        throw new Error("Projection cannot be null!");
+
+                    this._projection.removeEventListener(away.events.ProjectionEvent.MATRIX_CHANGED, this._onProjectionMatrixChangedDelegate);
+                    this._projection = value;
+                    this._projection.addEventListener(away.events.ProjectionEvent.MATRIX_CHANGED, this._onProjectionMatrixChangedDelegate);
+                    this.dispatchEvent(new away.events.CameraEvent(away.events.CameraEvent.LENS_CHANGED, this));
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Camera.prototype, "viewProjection", {
+                /**
+                *
+                */
+                get: function () {
+                    if (this._viewProjectionDirty) {
+                        this._viewProjection.copyFrom(this.inverseSceneTransform);
+                        this._viewProjection.append(this._projection.matrix);
+                        this._viewProjectionDirty = false;
+                    }
+
+                    return this._viewProjection;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * Calculates the ray in scene space from the camera to the given normalized coordinates in screen space.
+            *
+            * @param nX The normalised x coordinate in screen space, -1 corresponds to the left edge of the viewport, 1 to the right.
+            * @param nY The normalised y coordinate in screen space, -1 corresponds to the top edge of the viewport, 1 to the bottom.
+            * @param sZ The z coordinate in screen space, representing the distance into the screen.
+            * @return The ray from the camera to the scene space position of the given screen coordinates.
+            */
+            Camera.prototype.getRay = function (nX, nY, sZ) {
+                return this.sceneTransform.deltaTransformVector(this._projection.unproject(nX, nY, sZ));
+            };
+
+            /**
+            * Calculates the normalised position in screen space of the given scene position.
+            *
+            * @param point3d the position vector of the scene coordinates to be projected.
+            * @return The normalised screen position of the given scene coordinates.
+            */
+            Camera.prototype.project = function (point3d) {
+                return this._projection.project(this.inverseSceneTransform.transformVector(point3d));
+            };
+
+            /**
+            * Calculates the scene position of the given normalized coordinates in screen space.
+            *
+            * @param nX The normalised x coordinate in screen space, -1 corresponds to the left edge of the viewport, 1 to the right.
+            * @param nY The normalised y coordinate in screen space, -1 corresponds to the top edge of the viewport, 1 to the bottom.
+            * @param sZ The z coordinate in screen space, representing the distance into the screen.
+            * @return The scene position of the given screen coordinates.
+            */
+            Camera.prototype.unproject = function (nX, nY, sZ) {
+                return this.sceneTransform.transformVector(this._projection.unproject(nX, nY, sZ));
+            };
+            return Camera;
+        })(away.containers.DisplayObjectContainer);
+        entities.Camera = Camera;
+    })(away.entities || (away.entities = {}));
+    var entities = away.entities;
+})(away || (away = {}));
+///<reference path="../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * This class is used to create lightweight shapes using the ActionScript
+    * drawing application program interface(API). The Shape class includes a
+    * <code>graphics</code> property, which lets you access methods from the
+    * Graphics class.
+    *
+    * <p>The Sprite class also includes a <code>graphics</code>property, and it
+    * includes other features not available to the Shape class. For example, a
+    * Sprite object is a display object container, whereas a Shape object is not
+    * (and cannot contain child display objects). For this reason, Shape objects
+    * consume less memory than Sprite objects that contain the same graphics.
+    * However, a Sprite object supports user input events, while a Shape object
+    * does not.</p>
+    */
+    (function (entities) {
+        var Shape = (function (_super) {
+            __extends(Shape, _super);
+            /**
+            * Creates a new Shape object.
+            */
+            function Shape() {
+                _super.call(this);
+            }
+            Object.defineProperty(Shape.prototype, "graphics", {
+                /**
+                * Specifies the Graphics object belonging to this Shape object, where vector
+                * drawing commands can occur.
+                */
+                get: function () {
+                    return this._graphics;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return Shape;
+        })(away.base.DisplayObject);
+        entities.Shape = Shape;
+    })(away.entities || (away.entities = {}));
+    var entities = away.entities;
+})(away || (away = {}));
+///<reference path="../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * The TextField class is used to create display objects for text display and
+    * input. <ph outputclass="flexonly">You can use the TextField class to
+    * perform low-level text rendering. However, in Flex, you typically use the
+    * Label, Text, TextArea, and TextInput controls to process text. <ph
+    * outputclass="flashonly">You can give a text field an instance name in the
+    * Property inspector and use the methods and properties of the TextField
+    * class to manipulate it with ActionScript. TextField instance names are
+    * displayed in the Movie Explorer and in the Insert Target Path dialog box in
+    * the Actions panel.
+    *
+    * <p>To create a text field dynamically, use the <code>TextField()</code>
+    * constructor.</p>
+    *
+    * <p>The methods of the TextField class let you set, select, and manipulate
+    * text in a dynamic or input text field that you create during authoring or
+    * at runtime. </p>
+    *
+    * <p>ActionScript provides several ways to format your text at runtime. The
+    * TextFormat class lets you set character and paragraph formatting for
+    * TextField objects. You can apply Cascading Style Sheets(CSS) styles to
+    * text fields by using the <code>TextField.styleSheet</code> property and the
+    * StyleSheet class. You can use CSS to style built-in HTML tags, define new
+    * formatting tags, or apply styles. You can assign HTML formatted text, which
+    * optionally uses CSS styles, directly to a text field. HTML text that you
+    * assign to a text field can contain embedded media(movie clips, SWF files,
+    * GIF files, PNG files, and JPEG files). The text wraps around the embedded
+    * media in the same way that a web browser wraps text around media embedded
+    * in an HTML document. </p>
+    *
+    * <p>Flash Player supports a subset of HTML tags that you can use to format
+    * text. See the list of supported HTML tags in the description of the
+    * <code>htmlText</code> property.</p>
+    *
+    * @event change                    Dispatched after a control value is
+    *                                  modified, unlike the
+    *                                  <code>textInput</code> event, which is
+    *                                  dispatched before the value is modified.
+    *                                  Unlike the W3C DOM Event Model version of
+    *                                  the <code>change</code> event, which
+    *                                  dispatches the event only after the
+    *                                  control loses focus, the ActionScript 3.0
+    *                                  version of the <code>change</code> event
+    *                                  is dispatched any time the control
+    *                                  changes. For example, if a user types text
+    *                                  into a text field, a <code>change</code>
+    *                                  event is dispatched after every keystroke.
+    * @event link                      Dispatched when a user clicks a hyperlink
+    *                                  in an HTML-enabled text field, where the
+    *                                  URL begins with "event:". The remainder of
+    *                                  the URL after "event:" is placed in the
+    *                                  text property of the LINK event.
+    *
+    *                                  <p><b>Note:</b> The default behavior,
+    *                                  adding the text to the text field, occurs
+    *                                  only when Flash Player generates the
+    *                                  event, which in this case happens when a
+    *                                  user attempts to input text. You cannot
+    *                                  put text into a text field by sending it
+    *                                  <code>textInput</code> events.</p>
+    * @event scroll                    Dispatched by a TextField object
+    *                                  <i>after</i> the user scrolls.
+    * @event textInput                 Flash Player dispatches the
+    *                                  <code>textInput</code> event when a user
+    *                                  enters one or more characters of text.
+    *                                  Various text input methods can generate
+    *                                  this event, including standard keyboards,
+    *                                  input method editors(IMEs), voice or
+    *                                  speech recognition systems, and even the
+    *                                  act of pasting plain text with no
+    *                                  formatting or style information.
+    * @event textInteractionModeChange Flash Player dispatches the
+    *                                  <code>textInteractionModeChange</code>
+    *                                  event when a user changes the interaction
+    *                                  mode of a text field. for example on
+    *                                  Android, one can toggle from NORMAL mode
+    *                                  to SELECTION mode using context menu
+    *                                  options
+    */
+    (function (entities) {
+        var TextField = (function (_super) {
+            __extends(TextField, _super);
+            /**
+            * Creates a new TextField instance. After you create the TextField instance,
+            * call the <code>addChild()</code> or <code>addChildAt()</code> method of
+            * the parent DisplayObjectContainer object to add the TextField instance to
+            * the display list.
+            *
+            * <p>The default size for a text field is 100 x 100 pixels.</p>
+            */
+            function TextField() {
+                _super.call(this);
+            }
+            Object.defineProperty(TextField.prototype, "bottomScrollV", {
+                /**
+                * An integer(1-based index) that indicates the bottommost line that is
+                * currently visible in the specified text field. Think of the text field as
+                * a window onto a block of text. The <code>scrollV</code> property is the
+                * 1-based index of the topmost visible line in the window.
+                *
+                * <p>All the text between the lines indicated by <code>scrollV</code> and
+                * <code>bottomScrollV</code> is currently visible in the text field.</p>
+                */
+                get: function () {
+                    return this._bottomScrollV;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(TextField.prototype, "caretIndex", {
+                /**
+                * The index of the insertion point(caret) position. If no insertion point
+                * is displayed, the value is the position the insertion point would be if
+                * you restored focus to the field(typically where the insertion point last
+                * was, or 0 if the field has not had focus).
+                *
+                * <p>Selection span indexes are zero-based(for example, the first position
+                * is 0, the second position is 1, and so on).</p>
+                */
+                get: function () {
+                    return this._caretIndex;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(TextField.prototype, "length", {
+                /**
+                * The number of characters in a text field. A character such as tab
+                * (<code>\t</code>) counts as one character.
+                */
+                get: function () {
+                    return this._length;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * The maximum value of <code>scrollH</code>.
+            */
+            TextField.prototype.maxScrollH = function () {
+                return this._maxScrollH;
+            };
+
+            /**
+            * The maximum value of <code>scrollV</code>.
+            */
+            TextField.prototype.maxScrollV = function () {
+                return this._maxScrollV;
+            };
+
+            Object.defineProperty(TextField.prototype, "numLines", {
+                /**
+                * Defines the number of text lines in a multiline text field. If
+                * <code>wordWrap</code> property is set to <code>true</code>, the number of
+                * lines increases when text wraps.
+                */
+                get: function () {
+                    return this._numLines;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(TextField.prototype, "selectionBeginIndex", {
+                /**
+                * The zero-based character index value of the first character in the current
+                * selection. For example, the first character is 0, the second character is
+                * 1, and so on. If no text is selected, this property is the value of
+                * <code>caretIndex</code>.
+                */
+                get: function () {
+                    return this._selectionBeginIndex;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(TextField.prototype, "selectionEndIndex", {
+                /**
+                * The zero-based character index value of the last character in the current
+                * selection. For example, the first character is 0, the second character is
+                * 1, and so on. If no text is selected, this property is the value of
+                * <code>caretIndex</code>.
+                */
+                get: function () {
+                    return this._selectionEndIndex;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(TextField.prototype, "textHeight", {
+                /**
+                * The height of the text in pixels.
+                */
+                get: function () {
+                    return this._textHeight;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(TextField.prototype, "textInteractionMode", {
+                /**
+                * The interaction mode property, Default value is
+                * TextInteractionMode.NORMAL. On mobile platforms, the normal mode implies
+                * that the text can be scrolled but not selected. One can switch to the
+                * selectable mode through the in-built context menu on the text field. On
+                * Desktop, the normal mode implies that the text is in scrollable as well as
+                * selection mode.
+                */
+                get: function () {
+                    return this._textInteractionMode;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(TextField.prototype, "textWidth", {
+                /**
+                * The width of the text in pixels.
+                */
+                get: function () {
+                    return this._textWidth;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * Appends the string specified by the <code>newText</code> parameter to the
+            * end of the text of the text field. This method is more efficient than an
+            * addition assignment(<code>+=</code>) on a <code>text</code> property
+            * (such as <code>someTextField.text += moreText</code>), particularly for a
+            * text field that contains a significant amount of content.
+            *
+            * @param newText The string to append to the existing text.
+            */
+            TextField.prototype.appendText = function (newText) {
+            };
+
+            /**
+            * Returns a rectangle that is the bounding box of the character.
+            *
+            * @param charIndex The zero-based index value for the character(for
+            *                  example, the first position is 0, the second position is
+            *                  1, and so on).
+            * @return A rectangle with <code>x</code> and <code>y</code> minimum and
+            *         maximum values defining the bounding box of the character.
+            */
+            TextField.prototype.getCharBoundaries = function (charIndex) {
+                return this._charBoundaries;
+            };
+
+            /**
+            * Returns the zero-based index value of the character at the point specified
+            * by the <code>x</code> and <code>y</code> parameters.
+            *
+            * @param x The <i>x</i> coordinate of the character.
+            * @param y The <i>y</i> coordinate of the character.
+            * @return The zero-based index value of the character(for example, the
+            *         first position is 0, the second position is 1, and so on). Returns
+            *         -1 if the point is not over any character.
+            */
+            TextField.prototype.getCharIndexAtPoint = function (x, y) {
+                return this._charIndexAtPoint;
+            };
+
+            /**
+            * Given a character index, returns the index of the first character in the
+            * same paragraph.
+            *
+            * @param charIndex The zero-based index value of the character(for example,
+            *                  the first character is 0, the second character is 1, and
+            *                  so on).
+            * @return The zero-based index value of the first character in the same
+            *         paragraph.
+            * @throws RangeError The character index specified is out of range.
+            */
+            TextField.prototype.getFirstCharInParagraph = function (charIndex /*int*/ ) {
+                return this._firstCharInParagraph;
+            };
+
+            /**
+            * Returns a DisplayObject reference for the given <code>id</code>, for an
+            * image or SWF file that has been added to an HTML-formatted text field by
+            * using an <code><img></code> tag. The <code><img></code> tag is in the
+            * following format:
+            *
+            * <p><pre xml:space="preserve"><code> <img src = 'filename.jpg' id =
+            * 'instanceName' ></code></pre></p>
+            *
+            * @param id The <code>id</code> to match(in the <code>id</code> attribute
+            *           of the <code><img></code> tag).
+            * @return The display object corresponding to the image or SWF file with the
+            *         matching <code>id</code> attribute in the <code><img></code> tag
+            *         of the text field. For media loaded from an external source, this
+            *         object is a Loader object, and, once loaded, the media object is a
+            *         child of that Loader object. For media embedded in the SWF file,
+            *         it is the loaded object. If no <code><img></code> tag with the
+            *         matching <code>id</code> exists, the method returns
+            *         <code>null</code>.
+            */
+            TextField.prototype.getImageReference = function (id) {
+                return this._imageReference;
+            };
+
+            /**
+            * Returns the zero-based index value of the line at the point specified by
+            * the <code>x</code> and <code>y</code> parameters.
+            *
+            * @param x The <i>x</i> coordinate of the line.
+            * @param y The <i>y</i> coordinate of the line.
+            * @return The zero-based index value of the line(for example, the first
+            *         line is 0, the second line is 1, and so on). Returns -1 if the
+            *         point is not over any line.
+            */
+            TextField.prototype.getLineIndexAtPoint = function (x, y) {
+                return this._lineIndexAtPoint;
+            };
+
+            /**
+            * Returns the zero-based index value of the line containing the character
+            * specified by the <code>charIndex</code> parameter.
+            *
+            * @param charIndex The zero-based index value of the character(for example,
+            *                  the first character is 0, the second character is 1, and
+            *                  so on).
+            * @return The zero-based index value of the line.
+            * @throws RangeError The character index specified is out of range.
+            */
+            TextField.prototype.getLineIndexOfChar = function (charIndex /*int*/ ) {
+                return this._lineIndexOfChar;
+            };
+
+            /**
+            * Returns the number of characters in a specific text line.
+            *
+            * @param lineIndex The line number for which you want the length.
+            * @return The number of characters in the line.
+            * @throws RangeError The line number specified is out of range.
+            */
+            TextField.prototype.getLineLength = function (lineIndex /*int*/ ) {
+                return this._lineLength;
+            };
+
+            /**
+            * Returns metrics information about a given text line.
+            *
+            * @param lineIndex The line number for which you want metrics information.
+            * @return A TextLineMetrics object.
+            * @throws RangeError The line number specified is out of range.
+            */
+            TextField.prototype.getLineMetrics = function (lineIndex /*int*/ ) {
+                return this._lineMetrics;
+            };
+
+            /**
+            * Returns the character index of the first character in the line that the
+            * <code>lineIndex</code> parameter specifies.
+            *
+            * @param lineIndex The zero-based index value of the line(for example, the
+            *                  first line is 0, the second line is 1, and so on).
+            * @return The zero-based index value of the first character in the line.
+            * @throws RangeError The line number specified is out of range.
+            */
+            TextField.prototype.getLineOffset = function (lineIndex /*int*/ ) {
+                return this._lineOffset;
+            };
+
+            /**
+            * Returns the text of the line specified by the <code>lineIndex</code>
+            * parameter.
+            *
+            * @param lineIndex The zero-based index value of the line(for example, the
+            *                  first line is 0, the second line is 1, and so on).
+            * @return The text string contained in the specified line.
+            * @throws RangeError The line number specified is out of range.
+            */
+            TextField.prototype.getLineText = function (lineIndex /*int*/ ) {
+                return this._lineText;
+            };
+
+            /**
+            * Given a character index, returns the length of the paragraph containing
+            * the given character. The length is relative to the first character in the
+            * paragraph(as returned by <code>getFirstCharInParagraph()</code>), not to
+            * the character index passed in.
+            *
+            * @param charIndex The zero-based index value of the character(for example,
+            *                  the first character is 0, the second character is 1, and
+            *                  so on).
+            * @return Returns the number of characters in the paragraph.
+            * @throws RangeError The character index specified is out of range.
+            */
+            TextField.prototype.getParagraphLength = function (charIndex /*int*/ ) {
+                return this._paragraphLength;
+            };
+
+            /**
+            * Returns a TextFormat object that contains formatting information for the
+            * range of text that the <code>beginIndex</code> and <code>endIndex</code>
+            * parameters specify. Only properties that are common to the entire text
+            * specified are set in the resulting TextFormat object. Any property that is
+            * <i>mixed</i>, meaning that it has different values at different points in
+            * the text, has a value of <code>null</code>.
+            *
+            * <p>If you do not specify values for these parameters, this method is
+            * applied to all the text in the text field. </p>
+            *
+            * <p>The following table describes three possible usages:</p>
+            *
+            * @return The TextFormat object that represents the formatting properties
+            *         for the specified text.
+            * @throws RangeError The <code>beginIndex</code> or <code>endIndex</code>
+            *                    specified is out of range.
+            */
+            TextField.prototype.getTextFormat = function (beginIndex, endIndex) {
+                if (typeof beginIndex === "undefined") { beginIndex = -1; }
+                if (typeof endIndex === "undefined") { endIndex = -1; }
+                return this._textFormat;
+            };
+
+            /**
+            * Replaces the current selection with the contents of the <code>value</code>
+            * parameter. The text is inserted at the position of the current selection,
+            * using the current default character format and default paragraph format.
+            * The text is not treated as HTML.
+            *
+            * <p>You can use the <code>replaceSelectedText()</code> method to insert and
+            * delete text without disrupting the character and paragraph formatting of
+            * the rest of the text.</p>
+            *
+            * <p><b>Note:</b> This method does not work if a style sheet is applied to
+            * the text field.</p>
+            *
+            * @param value The string to replace the currently selected text.
+            * @throws Error This method cannot be used on a text field with a style
+            *               sheet.
+            */
+            TextField.prototype.replaceSelectedText = function (value) {
+            };
+
+            /**
+            * Replaces the range of characters that the <code>beginIndex</code> and
+            * <code>endIndex</code> parameters specify with the contents of the
+            * <code>newText</code> parameter. As designed, the text from
+            * <code>beginIndex</code> to <code>endIndex-1</code> is replaced.
+            *
+            * <p><b>Note:</b> This method does not work if a style sheet is applied to
+            * the text field.</p>
+            *
+            * @param beginIndex The zero-based index value for the start position of the
+            *                   replacement range.
+            * @param endIndex   The zero-based index position of the first character
+            *                   after the desired text span.
+            * @param newText    The text to use to replace the specified range of
+            *                   characters.
+            * @throws Error This method cannot be used on a text field with a style
+            *               sheet.
+            */
+            TextField.prototype.replaceText = function (beginIndex /*int*/ , endIndex /*int*/ , newText) {
+            };
+
+            /**
+            * Sets as selected the text designated by the index values of the first and
+            * last characters, which are specified with the <code>beginIndex</code> and
+            * <code>endIndex</code> parameters. If the two parameter values are the
+            * same, this method sets the insertion point, as if you set the
+            * <code>caretIndex</code> property.
+            *
+            * @param beginIndex The zero-based index value of the first character in the
+            *                   selection(for example, the first character is 0, the
+            *                   second character is 1, and so on).
+            * @param endIndex   The zero-based index value of the last character in the
+            *                   selection.
+            */
+            TextField.prototype.setSelection = function (beginIndex /*int*/ , endIndex /*int*/ ) {
+            };
+
+            /**
+            * Applies the text formatting that the <code>format</code> parameter
+            * specifies to the specified text in a text field. The value of
+            * <code>format</code> must be a TextFormat object that specifies the desired
+            * text formatting changes. Only the non-null properties of
+            * <code>format</code> are applied to the text field. Any property of
+            * <code>format</code> that is set to <code>null</code> is not applied. By
+            * default, all of the properties of a newly created TextFormat object are
+            * set to <code>null</code>.
+            *
+            * <p><b>Note:</b> This method does not work if a style sheet is applied to
+            * the text field.</p>
+            *
+            * <p>The <code>setTextFormat()</code> method changes the text formatting
+            * applied to a range of characters or to the entire body of text in a text
+            * field. To apply the properties of format to all text in the text field, do
+            * not specify values for <code>beginIndex</code> and <code>endIndex</code>.
+            * To apply the properties of the format to a range of text, specify values
+            * for the <code>beginIndex</code> and the <code>endIndex</code> parameters.
+            * You can use the <code>length</code> property to determine the index
+            * values.</p>
+            *
+            * <p>The two types of formatting information in a TextFormat object are
+            * character level formatting and paragraph level formatting. Each character
+            * in a text field can have its own character formatting settings, such as
+            * font name, font size, bold, and italic.</p>
+            *
+            * <p>For paragraphs, the first character of the paragraph is examined for
+            * the paragraph formatting settings for the entire paragraph. Examples of
+            * paragraph formatting settings are left margin, right margin, and
+            * indentation.</p>
+            *
+            * <p>Any text inserted manually by the user, or replaced by the
+            * <code>replaceSelectedText()</code> method, receives the default text field
+            * formatting for new text, and not the formatting specified for the text
+            * insertion point. To set the default formatting for new text, use
+            * <code>defaultTextFormat</code>.</p>
+            *
+            * @param format A TextFormat object that contains character and paragraph
+            *               formatting information.
+            * @throws Error      This method cannot be used on a text field with a style
+            *                    sheet.
+            * @throws RangeError The <code>beginIndex</code> or <code>endIndex</code>
+            *                    specified is out of range.
+            */
+            TextField.prototype.setTextFormat = function (format, beginIndex, endIndex) {
+                if (typeof beginIndex === "undefined") { beginIndex = -1; }
+                if (typeof endIndex === "undefined") { endIndex = -1; }
+            };
+
+            /**
+            * Returns true if an embedded font is available with the specified
+            * <code>fontName</code> and <code>fontStyle</code> where
+            * <code>Font.fontType</code> is <code>flash.text.FontType.EMBEDDED</code>.
+            * Starting with Flash Player 10, two kinds of embedded fonts can appear in a
+            * SWF file. Normal embedded fonts are only used with TextField objects. CFF
+            * embedded fonts are only used with the flash.text.engine classes. The two
+            * types are distinguished by the <code>fontType</code> property of the
+            * <code>Font</code> class, as returned by the <code>enumerateFonts()</code>
+            * function.
+            *
+            * <p>TextField cannot use a font of type <code>EMBEDDED_CFF</code>. If
+            * <code>embedFonts</code> is set to <code>true</code> and the only font
+            * available at run time with the specified name and style is of type
+            * <code>EMBEDDED_CFF</code>, Flash Player fails to render the text, as if no
+            * embedded font were available with the specified name and style.</p>
+            *
+            * <p>If both <code>EMBEDDED</code> and <code>EMBEDDED_CFF</code> fonts are
+            * available with the same name and style, the <code>EMBEDDED</code> font is
+            * selected and text renders with the <code>EMBEDDED</code> font.</p>
+            *
+            * @param fontName  The name of the embedded font to check.
+            * @param fontStyle Specifies the font style to check. Use
+            *                  <code>flash.text.FontStyle</code>
+            * @return <code>true</code> if a compatible embedded font is available,
+            *         otherwise <code>false</code>.
+            * @throws ArgumentError The <code>fontStyle</code> specified is not a member
+            *                       of <code>flash.text.FontStyle</code>.
+            */
+            TextField.isFontCompatible = function (fontName, fontStyle) {
+                return false;
+            };
+            return TextField;
+        })(away.base.DisplayObject);
+        entities.TextField = TextField;
+    })(away.entities || (away.entities = {}));
+    var entities = away.entities;
+})(away || (away = {}));
+///<reference path="../_definitions.ts" />
+var away;
+(function (away) {
+    (function (projections) {
+        var ProjectionBase = (function (_super) {
+            __extends(ProjectionBase, _super);
+            function ProjectionBase() {
+                _super.call(this);
+                this._pScissorRect = new away.geom.Rectangle();
+                this._pViewPort = new away.geom.Rectangle();
+                this._pNear = 20;
+                this._pFar = 3000;
+                this._pAspectRatio = 1;
+                this._pMatrixInvalid = true;
+                this._pFrustumCorners = [];
+                this._unprojectionInvalid = true;
+                this._pMatrix = new away.geom.Matrix3D();
+            }
+            Object.defineProperty(ProjectionBase.prototype, "frustumCorners", {
+                get: function () {
+                    return this._pFrustumCorners;
+                },
+                set: function (frustumCorners) {
+                    this._pFrustumCorners = frustumCorners;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(ProjectionBase.prototype, "matrix", {
+                get: function () {
+                    if (this._pMatrixInvalid) {
+                        this.pUpdateMatrix();
+                        this._pMatrixInvalid = false;
+                    }
+                    return this._pMatrix;
+                },
+                set: function (value) {
+                    this._pMatrix = value;
+                    this.pInvalidateMatrix();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(ProjectionBase.prototype, "near", {
+                get: function () {
+                    return this._pNear;
+                },
+                set: function (value) {
+                    if (value == this._pNear) {
+                        return;
+                    }
+                    this._pNear = value;
+                    this.pInvalidateMatrix();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(ProjectionBase.prototype, "far", {
+                get: function () {
+                    return this._pFar;
+                },
+                set: function (value) {
+                    if (value == this._pFar) {
+                        return;
+                    }
+                    this._pFar = value;
+                    this.pInvalidateMatrix();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            ProjectionBase.prototype.project = function (point3d) {
+                var v = this.matrix.transformVector(point3d);
+                v.x = v.x / v.w;
+                v.y = -v.y / v.w;
+
+                //z is unaffected by transform
+                v.z = point3d.z;
+
+                return v;
+            };
+
+            Object.defineProperty(ProjectionBase.prototype, "unprojectionMatrix", {
+                get: function () {
+                    if (this._unprojectionInvalid) {
+                        if (!this._unprojection) {
+                            this._unprojection = new away.geom.Matrix3D();
+                        }
+                        this._unprojection.copyFrom(this.matrix);
+                        this._unprojection.invert();
+                        this._unprojectionInvalid = false;
+                    }
+                    return this._unprojection;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            ProjectionBase.prototype.unproject = function (nX, nY, sZ) {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            ProjectionBase.prototype.clone = function () {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            Object.defineProperty(ProjectionBase.prototype, "iAspectRatio", {
+                get: function () {
+                    return this._pAspectRatio;
+                },
+                set: function (value) {
+                    if (this._pAspectRatio == value) {
+                        return;
+                    }
+                    this._pAspectRatio = value;
+                    this.pInvalidateMatrix();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            ProjectionBase.prototype.pInvalidateMatrix = function () {
+                this._pMatrixInvalid = true;
+                this._unprojectionInvalid = true;
+                this.dispatchEvent(new away.events.ProjectionEvent(away.events.ProjectionEvent.MATRIX_CHANGED, this));
+            };
+
+            ProjectionBase.prototype.pUpdateMatrix = function () {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            ProjectionBase.prototype.iUpdateScissorRect = function (x, y, width, height) {
+                this._pScissorRect.x = x;
+                this._pScissorRect.y = y;
+                this._pScissorRect.width = width;
+                this._pScissorRect.height = height;
+                this.pInvalidateMatrix();
+            };
+
+            ProjectionBase.prototype.iUpdateViewport = function (x, y, width, height) {
+                this._pViewPort.x = x;
+                this._pViewPort.y = y;
+                this._pViewPort.width = width;
+                this._pViewPort.height = height;
+                this.pInvalidateMatrix();
+            };
+            return ProjectionBase;
+        })(away.events.EventDispatcher);
+        projections.ProjectionBase = ProjectionBase;
+    })(away.projections || (away.projections = {}));
+    var projections = away.projections;
+})(away || (away = {}));
+///<reference path="../_definitions.ts" />
+var away;
+(function (away) {
+    (function (projections) {
+        var PerspectiveProjection = (function (_super) {
+            __extends(PerspectiveProjection, _super);
+            function PerspectiveProjection(fieldOfView) {
+                if (typeof fieldOfView === "undefined") { fieldOfView = 60; }
+                _super.call(this);
+                this.fieldOfView = fieldOfView;
+            }
+            Object.defineProperty(PerspectiveProjection.prototype, "fieldOfView", {
+                get: function () {
+                    return this._fieldOfView;
+                },
+                set: function (value) {
+                    if (value == this._fieldOfView) {
+                        return;
+                    }
+                    this._fieldOfView = value;
+
+                    this._focalLengthInv = Math.tan(this._fieldOfView * Math.PI / 360);
+                    this._focalLength = 1 / this._focalLengthInv;
+
+                    this.pInvalidateMatrix();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PerspectiveProjection.prototype, "focalLength", {
+                get: function () {
+                    return this._focalLength;
+                },
+                set: function (value) {
+                    if (value == this._focalLength) {
+                        return;
+                    }
+                    this._focalLength = value;
+
+                    this._focalLengthInv = 1 / this._focalLength;
+                    this._fieldOfView = Math.atan(this._focalLengthInv) * 360 / Math.PI;
+
+                    this.pInvalidateMatrix();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            //@override
+            PerspectiveProjection.prototype.unproject = function (nX, nY, sZ) {
+                var v = new away.geom.Vector3D(nX, -nY, sZ, 1.0);
+
+                v.x *= sZ;
+                v.y *= sZ;
+
+                v = this.unprojectionMatrix.transformVector(v);
+
+                //z is unaffected by transform
+                v.z = sZ;
+
+                return v;
+            };
+
+            //@override
+            PerspectiveProjection.prototype.clone = function () {
+                var clone = new PerspectiveProjection(this._fieldOfView);
+                clone._pNear = this._pNear;
+                clone._pFar = this._pFar;
+                clone._pAspectRatio = this._pAspectRatio;
+                return clone;
+            };
+
+            //@override
+            PerspectiveProjection.prototype.pUpdateMatrix = function () {
+                var raw = [];
+
+                this._yMax = this._pNear * this._focalLengthInv;
+                this._xMax = this._yMax * this._pAspectRatio;
+
+                var left, right, top, bottom;
+
+                if (this._pScissorRect.x == 0 && this._pScissorRect.y == 0 && this._pScissorRect.width == this._pViewPort.width && this._pScissorRect.height == this._pViewPort.height) {
+                    // assume unscissored frustum
+                    left = -this._xMax;
+                    right = this._xMax;
+                    top = -this._yMax;
+                    bottom = this._yMax;
+
+                    // assume unscissored frustum
+                    raw[0] = this._pNear / this._xMax;
+                    raw[5] = this._pNear / this._yMax;
+                    raw[10] = this._pFar / (this._pFar - this._pNear);
+                    raw[11] = 1;
+                    raw[1] = raw[2] = raw[3] = raw[4] = raw[6] = raw[7] = raw[8] = raw[9] = raw[12] = raw[13] = raw[15] = 0;
+                    raw[14] = -this._pNear * raw[10];
+                } else {
+                    // assume scissored frustum
+                    var xWidth = this._xMax * (this._pViewPort.width / this._pScissorRect.width);
+                    var yHgt = this._yMax * (this._pViewPort.height / this._pScissorRect.height);
+                    var center = this._xMax * (this._pScissorRect.x * 2 - this._pViewPort.width) / this._pScissorRect.width + this._xMax;
+                    var middle = -this._yMax * (this._pScissorRect.y * 2 - this._pViewPort.height) / this._pScissorRect.height - this._yMax;
+
+                    left = center - xWidth;
+                    right = center + xWidth;
+                    top = middle - yHgt;
+                    bottom = middle + yHgt;
+
+                    raw[0] = 2 * this._pNear / (right - left);
+                    raw[5] = 2 * this._pNear / (bottom - top);
+                    raw[8] = (right + left) / (right - left);
+                    raw[9] = (bottom + top) / (bottom - top);
+                    raw[10] = (this._pFar + this._pNear) / (this._pFar - this._pNear);
+                    raw[11] = 1;
+                    raw[1] = raw[2] = raw[3] = raw[4] = raw[6] = raw[7] = raw[12] = raw[13] = raw[15] = 0;
+                    raw[14] = -2 * this._pFar * this._pNear / (this._pFar - this._pNear);
+                }
+
+                this._pMatrix.copyRawDataFrom(raw);
+
+                var yMaxFar = this._pFar * this._focalLengthInv;
+                var xMaxFar = yMaxFar * this._pAspectRatio;
+
+                this._pFrustumCorners[0] = this._pFrustumCorners[9] = left;
+                this._pFrustumCorners[3] = this._pFrustumCorners[6] = right;
+                this._pFrustumCorners[1] = this._pFrustumCorners[4] = top;
+                this._pFrustumCorners[7] = this._pFrustumCorners[10] = bottom;
+
+                this._pFrustumCorners[12] = this._pFrustumCorners[21] = -xMaxFar;
+                this._pFrustumCorners[15] = this._pFrustumCorners[18] = xMaxFar;
+                this._pFrustumCorners[13] = this._pFrustumCorners[16] = -yMaxFar;
+                this._pFrustumCorners[19] = this._pFrustumCorners[22] = yMaxFar;
+
+                this._pFrustumCorners[2] = this._pFrustumCorners[5] = this._pFrustumCorners[8] = this._pFrustumCorners[11] = this._pNear;
+                this._pFrustumCorners[14] = this._pFrustumCorners[17] = this._pFrustumCorners[20] = this._pFrustumCorners[23] = this._pFar;
+
+                this._pMatrixInvalid = false;
+            };
+            return PerspectiveProjection;
+        })(away.projections.ProjectionBase);
+        projections.PerspectiveProjection = PerspectiveProjection;
+    })(away.projections || (away.projections = {}));
+    var projections = away.projections;
+})(away || (away = {}));
+///<reference path="../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (projections) {
+        var FreeMatrixProjection = (function (_super) {
+            __extends(FreeMatrixProjection, _super);
+            function FreeMatrixProjection() {
+                _super.call(this);
+                this._pMatrix.copyFrom(new away.projections.PerspectiveProjection().matrix);
+            }
+            Object.defineProperty(FreeMatrixProjection.prototype, "near", {
+                //@override
+                set: function (value) {
+                    this._pNear = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(FreeMatrixProjection.prototype, "far", {
+                //@override
+                set: function (value) {
+                    this._pFar = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(FreeMatrixProjection.prototype, "iAspectRatio", {
+                //@override
+                set: function (value) {
+                    this._pAspectRatio = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            //@override
+            FreeMatrixProjection.prototype.clone = function () {
+                var clone = new FreeMatrixProjection();
+                clone._pMatrix.copyFrom(this._pMatrix);
+                clone._pNear = this._pNear;
+                clone._pFar = this._pFar;
+                clone._pAspectRatio = this._pAspectRatio;
+                clone.pInvalidateMatrix();
+                return clone;
+            };
+
+            //@override
+            FreeMatrixProjection.prototype.pUpdateMatrix = function () {
+                this._pMatrixInvalid = false;
+            };
+            return FreeMatrixProjection;
+        })(away.projections.ProjectionBase);
+        projections.FreeMatrixProjection = FreeMatrixProjection;
+    })(away.projections || (away.projections = {}));
+    var projections = away.projections;
+})(away || (away = {}));
+///<reference path="../_definitions.ts" />
+var away;
+(function (away) {
+    (function (projections) {
+        var OrthographicProjection = (function (_super) {
+            __extends(OrthographicProjection, _super);
+            function OrthographicProjection(projectionHeight) {
+                if (typeof projectionHeight === "undefined") { projectionHeight = 500; }
+                _super.call(this);
+                this._projectionHeight = projectionHeight;
+            }
+            Object.defineProperty(OrthographicProjection.prototype, "projectionHeight", {
+                get: function () {
+                    return this._projectionHeight;
+                },
+                set: function (value) {
+                    if (value == this._projectionHeight) {
+                        return;
+                    }
+                    this._projectionHeight = value;
+                    this.pInvalidateMatrix();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            //@override
+            OrthographicProjection.prototype.unproject = function (nX, nY, sZ) {
+                var v = new away.geom.Vector3D(nX + this.matrix.rawData[12], -nY + this.matrix.rawData[13], sZ, 1.0);
+                v = this.unprojectionMatrix.transformVector(v);
+
+                //z is unaffected by transform
+                v.z = sZ;
+
+                return v;
+            };
+
+            //@override
+            OrthographicProjection.prototype.clone = function () {
+                var clone = new OrthographicProjection();
+                clone._pNear = this._pNear;
+                clone._pFar = this._pFar;
+                clone._pAspectRatio = this._pAspectRatio;
+                clone.projectionHeight = this._projectionHeight;
+                return clone;
+            };
+
+            //@override
+            OrthographicProjection.prototype.pUpdateMatrix = function () {
+                var raw = [];
+                this._yMax = this._projectionHeight * .5;
+                this._xMax = this._yMax * this._pAspectRatio;
+
+                var left;
+                var right;
+                var top;
+                var bottom;
+
+                if (this._pScissorRect.x == 0 && this._pScissorRect.y == 0 && this._pScissorRect.width == this._pViewPort.width && this._pScissorRect.height == this._pViewPort.height) {
+                    // assume symmetric frustum
+                    left = -this._xMax;
+                    right = this._xMax;
+                    top = -this._yMax;
+                    bottom = this._yMax;
+
+                    raw[0] = 2 / (this._projectionHeight * this._pAspectRatio);
+                    raw[5] = 2 / this._projectionHeight;
+                    raw[10] = 1 / (this._pFar - this._pNear);
+                    raw[14] = this._pNear / (this._pNear - this._pFar);
+                    raw[1] = raw[2] = raw[3] = raw[4] = raw[6] = raw[7] = raw[8] = raw[9] = raw[11] = raw[12] = raw[13] = 0;
+                    raw[15] = 1;
+                } else {
+                    var xWidth = this._xMax * (this._pViewPort.width / this._pScissorRect.width);
+                    var yHgt = this._yMax * (this._pViewPort.height / this._pScissorRect.height);
+                    var center = this._xMax * (this._pScissorRect.x * 2 - this._pViewPort.width) / this._pScissorRect.width + this._xMax;
+                    var middle = -this._yMax * (this._pScissorRect.y * 2 - this._pViewPort.height) / this._pScissorRect.height - this._yMax;
+
+                    left = center - xWidth;
+                    right = center + xWidth;
+                    top = middle - yHgt;
+                    bottom = middle + yHgt;
+
+                    raw[0] = 2 * 1 / (right - left);
+                    raw[5] = -2 * 1 / (top - bottom);
+                    raw[10] = 1 / (this._pFar - this._pNear);
+
+                    raw[12] = (right + left) / (right - left);
+                    raw[13] = (bottom + top) / (bottom - top);
+                    raw[14] = this._pNear / (this.near - this.far);
+
+                    raw[1] = raw[2] = raw[3] = raw[4] = raw[6] = raw[7] = raw[8] = raw[9] = raw[11] = 0;
+                    raw[15] = 1;
+                }
+
+                this._pFrustumCorners[0] = this._pFrustumCorners[9] = this._pFrustumCorners[12] = this._pFrustumCorners[21] = left;
+                this._pFrustumCorners[3] = this._pFrustumCorners[6] = this._pFrustumCorners[15] = this._pFrustumCorners[18] = right;
+                this._pFrustumCorners[1] = this._pFrustumCorners[4] = this._pFrustumCorners[13] = this._pFrustumCorners[16] = top;
+                this._pFrustumCorners[7] = this._pFrustumCorners[10] = this._pFrustumCorners[19] = this._pFrustumCorners[22] = bottom;
+                this._pFrustumCorners[2] = this._pFrustumCorners[5] = this._pFrustumCorners[8] = this._pFrustumCorners[11] = this._pNear;
+                this._pFrustumCorners[14] = this._pFrustumCorners[17] = this._pFrustumCorners[20] = this._pFrustumCorners[23] = this._pFar;
+
+                this._pMatrix.copyRawDataFrom(raw);
+
+                this._pMatrixInvalid = false;
+            };
+            return OrthographicProjection;
+        })(away.projections.ProjectionBase);
+        projections.OrthographicProjection = OrthographicProjection;
+    })(away.projections || (away.projections = {}));
+    var projections = away.projections;
+})(away || (away = {}));
+///<reference path="../_definitions.ts" />
+var away;
+(function (away) {
+    (function (projections) {
+        var OrthographicOffCenterProjection = (function (_super) {
+            __extends(OrthographicOffCenterProjection, _super);
+            function OrthographicOffCenterProjection(minX, maxX, minY, maxY) {
+                _super.call(this);
+                this._minX = minX;
+                this._maxX = maxX;
+                this._minY = minY;
+                this._maxY = maxY;
+            }
+            Object.defineProperty(OrthographicOffCenterProjection.prototype, "minX", {
+                get: function () {
+                    return this._minX;
+                },
+                set: function (value) {
+                    this._minX = value;
+                    this.pInvalidateMatrix();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(OrthographicOffCenterProjection.prototype, "maxX", {
+                get: function () {
+                    return this._maxX;
+                },
+                set: function (value) {
+                    this._maxX = value;
+                    this.pInvalidateMatrix();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(OrthographicOffCenterProjection.prototype, "minY", {
+                get: function () {
+                    return this._minY;
+                },
+                set: function (value) {
+                    this._minY = value;
+                    this.pInvalidateMatrix();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(OrthographicOffCenterProjection.prototype, "maxY", {
+                get: function () {
+                    return this._maxY;
+                },
+                set: function (value) {
+                    this._maxY = value;
+                    this.pInvalidateMatrix();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            //@override
+            OrthographicOffCenterProjection.prototype.unproject = function (nX, nY, sZ) {
+                var v = new away.geom.Vector3D(nX, -nY, sZ, 1.0);
+                v = this.unprojectionMatrix.transformVector(v);
+
+                //z is unaffected by transform
+                v.z = sZ;
+
+                return v;
+            };
+
+            //@override
+            OrthographicOffCenterProjection.prototype.clone = function () {
+                var clone = new OrthographicOffCenterProjection(this._minX, this._maxX, this._minY, this._maxY);
+                clone._pNear = this._pNear;
+                clone._pFar = this._pFar;
+                clone._pAspectRatio = this._pAspectRatio;
+                return clone;
+            };
+
+            //@override
+            OrthographicOffCenterProjection.prototype.pUpdateMatrix = function () {
+                var raw = [];
+                var w = 1 / (this._maxX - this._minX);
+                var h = 1 / (this._maxY - this._minY);
+                var d = 1 / (this._pFar - this._pNear);
+
+                raw[0] = 2 * w;
+                raw[5] = 2 * h;
+                raw[10] = d;
+                raw[12] = -(this._maxX + this._minX) * w;
+                raw[13] = -(this._maxY + this._minY) * h;
+                raw[14] = -this._pNear * d;
+                raw[15] = 1;
+                raw[1] = raw[2] = raw[3] = raw[4] = raw[6] = raw[7] = raw[8] = raw[9] = raw[11] = 0;
+                this._pMatrix.copyRawDataFrom(raw);
+
+                this._pFrustumCorners[0] = this._pFrustumCorners[9] = this._pFrustumCorners[12] = this._pFrustumCorners[21] = this._minX;
+                this._pFrustumCorners[3] = this._pFrustumCorners[6] = this._pFrustumCorners[15] = this._pFrustumCorners[18] = this._maxX;
+                this._pFrustumCorners[1] = this._pFrustumCorners[4] = this._pFrustumCorners[13] = this._pFrustumCorners[16] = this._minY;
+                this._pFrustumCorners[7] = this._pFrustumCorners[10] = this._pFrustumCorners[19] = this._pFrustumCorners[22] = this._maxY;
+                this._pFrustumCorners[2] = this._pFrustumCorners[5] = this._pFrustumCorners[8] = this._pFrustumCorners[11] = this._pNear;
+                this._pFrustumCorners[14] = this._pFrustumCorners[17] = this._pFrustumCorners[20] = this._pFrustumCorners[23] = this._pFar;
+
+                this._pMatrixInvalid = false;
+            };
+            return OrthographicOffCenterProjection;
+        })(away.projections.ProjectionBase);
+        projections.OrthographicOffCenterProjection = OrthographicOffCenterProjection;
+    })(away.projections || (away.projections = {}));
+    var projections = away.projections;
+})(away || (away = {}));
+///<reference path="../_definitions.ts" />
+var away;
+(function (away) {
+    (function (projections) {
+        var PerspectiveOffCenterProjection = (function (_super) {
+            __extends(PerspectiveOffCenterProjection, _super);
+            function PerspectiveOffCenterProjection(minAngleX, maxAngleX, minAngleY, maxAngleY) {
+                if (typeof minAngleX === "undefined") { minAngleX = -40; }
+                if (typeof maxAngleX === "undefined") { maxAngleX = 40; }
+                if (typeof minAngleY === "undefined") { minAngleY = -40; }
+                if (typeof maxAngleY === "undefined") { maxAngleY = 40; }
+                _super.call(this);
+
+                this.minAngleX = minAngleX;
+                this.maxAngleX = maxAngleX;
+                this.minAngleY = minAngleY;
+                this.maxAngleY = maxAngleY;
+            }
+            Object.defineProperty(PerspectiveOffCenterProjection.prototype, "minAngleX", {
+                get: function () {
+                    return this._minAngleX;
+                },
+                set: function (value) {
+                    this._minAngleX = value;
+                    this._tanMinX = Math.tan(this._minAngleX * Math.PI / 180);
+                    this.pInvalidateMatrix();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PerspectiveOffCenterProjection.prototype, "maxAngleX", {
+                get: function () {
+                    return this._maxAngleX;
+                },
+                set: function (value) {
+                    this._maxAngleX = value;
+                    this._tanMaxX = Math.tan(this._maxAngleX * Math.PI / 180);
+                    this.pInvalidateMatrix();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PerspectiveOffCenterProjection.prototype, "minAngleY", {
+                get: function () {
+                    return this._minAngleY;
+                },
+                set: function (value) {
+                    this._minAngleY = value;
+                    this._tanMinY = Math.tan(this._minAngleY * Math.PI / 180);
+                    this.pInvalidateMatrix();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PerspectiveOffCenterProjection.prototype, "maxAngleY", {
+                get: function () {
+                    return this._maxAngleY;
+                },
+                set: function (value) {
+                    this._maxAngleY = value;
+                    this._tanMaxY = Math.tan(this._maxAngleY * Math.PI / 180);
+                    this.pInvalidateMatrix();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            //@override
+            PerspectiveOffCenterProjection.prototype.unproject = function (nX, nY, sZ) {
+                var v = new away.geom.Vector3D(nX, -nY, sZ, 1.0);
+
+                v.x *= sZ;
+                v.y *= sZ;
+                v = this.unprojectionMatrix.transformVector(v);
+
+                //z is unaffected by transform
+                v.z = sZ;
+
+                return v;
+            };
+
+            //@override
+            PerspectiveOffCenterProjection.prototype.clone = function () {
+                var clone = new PerspectiveOffCenterProjection(this._minAngleX, this._maxAngleX, this._minAngleY, this._maxAngleY);
+                clone._pNear = this._pNear;
+                clone._pFar = this._pFar;
+                clone._pAspectRatio = this._pAspectRatio;
+                return clone;
+            };
+
+            //@override
+            PerspectiveOffCenterProjection.prototype.pUpdateMatrix = function () {
+                var raw = [];
+
+                this._minLengthX = this._pNear * this._tanMinX;
+                this._maxLengthX = this._pNear * this._tanMaxX;
+                this._minLengthY = this._pNear * this._tanMinY;
+                this._maxLengthY = this._pNear * this._tanMaxY;
+
+                var minLengthFracX = -this._minLengthX / (this._maxLengthX - this._minLengthX);
+                var minLengthFracY = -this._minLengthY / (this._maxLengthY - this._minLengthY);
+
+                var left;
+                var right;
+                var top;
+                var bottom;
+
+                // assume scissored frustum
+                var center = -this._minLengthX * (this._pScissorRect.x + this._pScissorRect.width * minLengthFracX) / (this._pScissorRect.width * minLengthFracX);
+                var middle = this._minLengthY * (this._pScissorRect.y + this._pScissorRect.height * minLengthFracY) / (this._pScissorRect.height * minLengthFracY);
+
+                left = center - (this._maxLengthX - this._minLengthX) * (this._pViewPort.width / this._pScissorRect.width);
+                right = center;
+                top = middle;
+                bottom = middle + (this._maxLengthY - this._minLengthY) * (this._pViewPort.height / this._pScissorRect.height);
+
+                raw[0] = 2 * this._pNear / (right - left);
+                raw[5] = 2 * this._pNear / (bottom - top);
+                raw[8] = (right + left) / (right - left);
+                raw[9] = (bottom + top) / (bottom - top);
+                raw[10] = (this._pFar + this._pNear) / (this._pFar - this._pNear);
+                raw[11] = 1;
+                raw[1] = raw[2] = raw[3] = raw[4] = raw[6] = raw[7] = raw[12] = raw[13] = raw[15] = 0;
+                raw[14] = -2 * this._pFar * this._pNear / (this._pFar - this._pNear);
+
+                this._pMatrix.copyRawDataFrom(raw);
+
+                this._minLengthX = this._pFar * this._tanMinX;
+                this._maxLengthX = this._pFar * this._tanMaxX;
+                this._minLengthY = this._pFar * this._tanMinY;
+                this._maxLengthY = this._pFar * this._tanMaxY;
+
+                this._pFrustumCorners[0] = this._pFrustumCorners[9] = left;
+                this._pFrustumCorners[3] = this._pFrustumCorners[6] = right;
+                this._pFrustumCorners[1] = this._pFrustumCorners[4] = top;
+                this._pFrustumCorners[7] = this._pFrustumCorners[10] = bottom;
+
+                this._pFrustumCorners[12] = this._pFrustumCorners[21] = this._minLengthX;
+                this._pFrustumCorners[15] = this._pFrustumCorners[18] = this._maxLengthX;
+                this._pFrustumCorners[13] = this._pFrustumCorners[16] = this._minLengthY;
+                this._pFrustumCorners[19] = this._pFrustumCorners[22] = this._maxLengthY;
+
+                this._pFrustumCorners[2] = this._pFrustumCorners[5] = this._pFrustumCorners[8] = this._pFrustumCorners[11] = this._pNear;
+                this._pFrustumCorners[14] = this._pFrustumCorners[17] = this._pFrustumCorners[20] = this._pFrustumCorners[23] = this._pFar;
+
+                this._pMatrixInvalid = false;
+            };
+            return PerspectiveOffCenterProjection;
+        })(away.projections.ProjectionBase);
+        projections.PerspectiveOffCenterProjection = PerspectiveOffCenterProjection;
+    })(away.projections || (away.projections = {}));
+    var projections = away.projections;
+})(away || (away = {}));
+///<reference path="../_definitions.ts" />
+var away;
+(function (away) {
+    (function (projections) {
+        var ObliqueNearPlaneProjection = (function (_super) {
+            __extends(ObliqueNearPlaneProjection, _super);
+            function ObliqueNearPlaneProjection(baseProjection, plane) {
+                _super.call(this);
+                this.baseProjection = baseProjection;
+                this.plane = plane;
+
+                this._onProjectionMatrixChangedDelegate = away.utils.Delegate.create(this, this.onProjectionMatrixChanged);
+            }
+            Object.defineProperty(ObliqueNearPlaneProjection.prototype, "frustumCorners", {
+                //@override
+                get: function () {
+                    return this._baseProjection.frustumCorners;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(ObliqueNearPlaneProjection.prototype, "near", {
+                //@override
+                get: function () {
+                    return this._baseProjection.near;
+                },
+                //@override
+                set: function (value) {
+                    this._baseProjection.near = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(ObliqueNearPlaneProjection.prototype, "far", {
+                //@override
+                get: function () {
+                    return this._baseProjection.far;
+                },
+                //@override
+                set: function (value) {
+                    this._baseProjection.far = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(ObliqueNearPlaneProjection.prototype, "iAspectRatio", {
+                //@override
+                get: function () {
+                    return this._baseProjection.iAspectRatio;
+                },
+                //@override
+                set: function (value) {
+                    this._baseProjection.iAspectRatio = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(ObliqueNearPlaneProjection.prototype, "plane", {
+                get: function () {
+                    return this._plane;
+                },
+                set: function (value) {
+                    this._plane = value;
+                    this.pInvalidateMatrix();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(ObliqueNearPlaneProjection.prototype, "baseProjection", {
+                set: function (value) {
+                    if (this._baseProjection) {
+                        this._baseProjection.removeEventListener(away.events.ProjectionEvent.MATRIX_CHANGED, this._onProjectionMatrixChangedDelegate);
+                    }
+                    this._baseProjection = value;
+
+                    if (this._baseProjection) {
+                        this._baseProjection.addEventListener(away.events.ProjectionEvent.MATRIX_CHANGED, this._onProjectionMatrixChangedDelegate);
+                    }
+                    this.pInvalidateMatrix();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            ObliqueNearPlaneProjection.prototype.onProjectionMatrixChanged = function (event) {
+                this.pInvalidateMatrix();
+            };
+
+            //@override
+            ObliqueNearPlaneProjection.prototype.pUpdateMatrix = function () {
+                this._pMatrix.copyFrom(this._baseProjection.matrix);
+
+                var cx = this._plane.a;
+                var cy = this._plane.b;
+                var cz = this._plane.c;
+                var cw = -this._plane.d + .05;
+                var signX = cx >= 0 ? 1 : -1;
+                var signY = cy >= 0 ? 1 : -1;
+                var p = new away.geom.Vector3D(signX, signY, 1, 1);
+                var inverse = this._pMatrix.clone();
+                inverse.invert();
+                var q = inverse.transformVector(p);
+                this._pMatrix.copyRowTo(3, p);
+                var a = (q.x * p.x + q.y * p.y + q.z * p.z + q.w * p.w) / (cx * q.x + cy * q.y + cz * q.z + cw * q.w);
+                this._pMatrix.copyRowFrom(2, new away.geom.Vector3D(cx * a, cy * a, cz * a, cw * a));
+            };
+            return ObliqueNearPlaneProjection;
+        })(away.projections.ProjectionBase);
+        projections.ObliqueNearPlaneProjection = ObliqueNearPlaneProjection;
+    })(away.projections || (away.projections = {}));
+    var projections = away.projections;
+})(away || (away = {}));
+///<reference path="../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * The Loader class is used to load SWF files or image(JPG, PNG, or GIF)
+    * files. Use the <code>load()</code> method to initiate loading. The loaded
+    * display object is added as a child of the Loader object.
+    *
+    * <p>Use the URLLoader class to load text or binary data.</p>
+    *
+    * <p>The Loader class overrides the following methods that it inherits,
+    * because a Loader object can only have one child display object - the
+    * display object that it loads. Calling the following methods throws an
+    * exception: <code>addChild()</code>, <code>addChildAt()</code>,
+    * <code>removeChild()</code>, <code>removeChildAt()</code>, and
+    * <code>setChildIndex()</code>. To remove a loaded display object, you must
+    * remove the <i>Loader</i> object from its parent DisplayObjectContainer
+    * child array. </p>
+    *
+    * <p><b>Note:</b> The ActionScript 2.0 MovieClipLoader and LoadVars classes
+    * are not used in ActionScript 3.0. The Loader and URLLoader classes replace
+    * them.</p>
+    *
+    * <p>When you use the Loader class, consider the Flash Player and Adobe AIR
+    * security model: </p>
+    *
+    * <ul>
+    *   <li>You can load content from any accessible source. </li>
+    *   <li>Loading is not allowed if the calling SWF file is in a network
+    * sandbox and the file to be loaded is local. </li>
+    *   <li>If the loaded content is a SWF file written with ActionScript 3.0, it
+    * cannot be cross-scripted by a SWF file in another security sandbox unless
+    * that cross-scripting arrangement was approved through a call to the
+    * <code>System.allowDomain()</code> or the
+    * <code>System.allowInsecureDomain()</code> method in the loaded content
+    * file.</li>
+    *   <li>If the loaded content is an AVM1 SWF file(written using ActionScript
+    * 1.0 or 2.0), it cannot be cross-scripted by an AVM2 SWF file(written using
+    * ActionScript 3.0). However, you can communicate between the two SWF files
+    * by using the LocalConnection class.</li>
+    *   <li>If the loaded content is an image, its data cannot be accessed by a
+    * SWF file outside of the security sandbox, unless the domain of that SWF
+    * file was included in a URL policy file at the origin domain of the
+    * image.</li>
+    *   <li>Movie clips in the local-with-file-system sandbox cannot script movie
+    * clips in the local-with-networking sandbox, and the reverse is also
+    * prevented. </li>
+    *   <li>You cannot connect to commonly reserved ports. For a complete list of
+    * blocked ports, see "Restricting Networking APIs" in the <i>ActionScript 3.0
+    * Developer's Guide</i>. </li>
+    * </ul>
+    *
+    * <p>However, in AIR, content in the <code>application</code> security
+    * sandbox(content installed with the AIR application) are not restricted by
+    * these security limitations.</p>
+    *
+    * <p>For more information related to security, see the Flash Player Developer
+    * Center Topic: <a href="http://www.adobe.com/go/devnet_security_en"
+    * scope="external">Security</a>.</p>
+    *
+    * <p>When loading a SWF file from an untrusted source(such as a domain other
+    * than that of the Loader object's root SWF file), you may want to define a
+    * mask for the Loader object, to prevent the loaded content(which is a child
+    * of the Loader object) from drawing to portions of the Stage outside of that
+    * mask, as shown in the following code:</p>
+    */
+    (function (containers) {
+        var Loader = (function (_super) {
+            __extends(Loader, _super);
+            /**
+            * Creates a Loader object that you can use to load files, such as SWF, JPEG,
+            * GIF, or PNG files. Call the <code>load()</code> method to load the asset
+            * as a child of the Loader instance. You can then add the Loader object to
+            * the display list(for instance, by using the <code>addChild()</code>
+            * method of a DisplayObjectContainer instance). The asset appears on the
+            * Stage as it loads.
+            *
+            * <p>You can also use a Loader instance "offlist," that is without adding it
+            * to a display object container on the display list. In this mode, the
+            * Loader instance might be used to load a SWF file that contains additional
+            * modules of an application. </p>
+            *
+            * <p>To detect when the SWF file is finished loading, you can use the events
+            * of the LoaderInfo object associated with the
+            * <code>contentLoaderInfo</code> property of the Loader object. At that
+            * point, the code in the module SWF file can be executed to initialize and
+            * start the module. In the offlist mode, a Loader instance might also be
+            * used to load a SWF file that contains components or media assets. Again,
+            * you can use the LoaderInfo object event notifications to detect when the
+            * components are finished loading. At that point, the application can start
+            * using the components and media assets in the library of the SWF file by
+            * instantiating the ActionScript 3.0 classes that represent those components
+            * and assets.</p>
+            *
+            * <p>To determine the status of a Loader object, monitor the following
+            * events that the LoaderInfo object associated with the
+            * <code>contentLoaderInfo</code> property of the Loader object:</p>
+            *
+            * <ul>
+            *   <li>The <code>open</code> event is dispatched when loading begins.</li>
+            *   <li>The <code>ioError</code> or <code>securityError</code> event is
+            * dispatched if the file cannot be loaded or if an error occured during the
+            * load process. </li>
+            *   <li>The <code>progress</code> event fires continuously while the file is
+            * being loaded.</li>
+            *   <li>The <code>complete</code> event is dispatched when a file completes
+            * downloading, but before the loaded movie clip's methods and properties are
+            * available. </li>
+            *   <li>The <code>init</code> event is dispatched after the properties and
+            * methods of the loaded SWF file are accessible, so you can begin
+            * manipulating the loaded SWF file. This event is dispatched before the
+            * <code>complete</code> handler. In streaming SWF files, the
+            * <code>init</code> event can occur significantly earlier than the
+            * <code>complete</code> event. For most purposes, use the <code>init</code>
+            * handler.</li>
+            * </ul>
+            */
+            function Loader() {
+                _super.call(this);
+            }
+            Object.defineProperty(Loader.prototype, "content", {
+                /**
+                * Contains the root display object of the SWF file or image(JPG, PNG, or
+                * GIF) file that was loaded by using the <code>load()</code> or
+                * <code>loadBytes()</code> methods.
+                *
+                * @throws SecurityError The loaded SWF file or image file belongs to a
+                *                       security sandbox to which you do not have access.
+                *                       For a loaded SWF file, you can avoid this situation
+                *                       by having the file call the
+                *                       <code>Security.allowDomain()</code> method or by
+                *                       having the loading file specify a
+                *                       <code>loaderContext</code> parameter with its
+                *                       <code>securityDomain</code> property set to
+                *                       <code>SecurityDomain.currentDomain</code> when you
+                *                       call the <code>load()</code> or
+                *                       <code>loadBytes()</code> method.
+                */
+                get: function () {
+                    return this._content;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Loader.prototype, "contentLoaderInfo", {
+                /**
+                * Returns a LoaderInfo object corresponding to the object being loaded.
+                * LoaderInfo objects are shared between the Loader object and the loaded
+                * content object. The LoaderInfo object supplies loading progress
+                * information and statistics about the loaded file.
+                *
+                * <p>Events related to the load are dispatched by the LoaderInfo object
+                * referenced by the <code>contentLoaderInfo</code> property of the Loader
+                * object. The <code>contentLoaderInfo</code> property is set to a valid
+                * LoaderInfo object, even before the content is loaded, so that you can add
+                * event listeners to the object prior to the load.</p>
+                *
+                * <p>To detect uncaught errors that happen in a loaded SWF, use the
+                * <code>Loader.uncaughtErrorEvents</code> property, not the
+                * <code>Loader.contentLoaderInfo.uncaughtErrorEvents</code> property.</p>
+                */
+                get: function () {
+                    return this._contentLoaderInfo;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * Cancels a <code>load()</code> method operation that is currently in
+            * progress for the Loader instance.
+            *
+            */
+            Loader.prototype.close = function () {
+            };
+
+            /**
+            * Loads a SWF, JPEG, progressive JPEG, unanimated GIF, or PNG file into an
+            * object that is a child of this Loader object. If you load an animated GIF
+            * file, only the first frame is displayed. As the Loader object can contain
+            * only a single child, issuing a subsequent <code>load()</code> request
+            * terminates the previous request, if still pending, and commences a new
+            * load.
+            *
+            * <p><b>Note</b>: In AIR 1.5 and Flash Player 10, the maximum size for a
+            * loaded image is 8,191 pixels in width or height, and the total number of
+            * pixels cannot exceed 16,777,215 pixels.(So, if an loaded image is 8,191
+            * pixels wide, it can only be 2,048 pixels high.) In Flash Player 9 and
+            * earlier and AIR 1.1 and earlier, the limitation is 2,880 pixels in height
+            * and 2,880 pixels in width.</p>
+            *
+            * <p>A SWF file or image loaded into a Loader object inherits the position,
+            * rotation, and scale properties of the parent display objects of the Loader
+            * object. </p>
+            *
+            * <p>Use the <code>unload()</code> method to remove movies or images loaded
+            * with this method, or to cancel a load operation that is in progress.</p>
+            *
+            * <p>You can prevent a SWF file from using this method by setting the
+            * <code>allowNetworking</code> parameter of the the <code>object</code> and
+            * <code>embed</code> tags in the HTML page that contains the SWF
+            * content.</p>
+            *
+            * <p>When you use this method, consider the Flash Player security model,
+            * which is described in the Loader class description. </p>
+            *
+            * <p> In Flash Player 10 and later, if you use a multipart Content-Type(for
+            * example "multipart/form-data") that contains an upload(indicated by a
+            * "filename" parameter in a "content-disposition" header within the POST
+            * body), the POST operation is subject to the security rules applied to
+            * uploads:</p>
+            *
+            * <ul>
+            *   <li>The POST operation must be performed in response to a user-initiated
+            * action, such as a mouse click or key press.</li>
+            *   <li>If the POST operation is cross-domain(the POST target is not on the
+            * same server as the SWF file that is sending the POST request), the target
+            * server must provide a URL policy file that permits cross-domain
+            * access.</li>
+            * </ul>
+            *
+            * <p>Also, for any multipart Content-Type, the syntax must be valid
+            * (according to the RFC2046 standard). If the syntax appears to be invalid,
+            * the POST operation is subject to the security rules applied to
+            * uploads.</p>
+            *
+            * <p>For more information related to security, see the Flash Player
+            * Developer Center Topic: <a
+            * href="http://www.adobe.com/go/devnet_security_en"
+            * scope="external">Security</a>.</p>
+            *
+            * @param request The absolute or relative URL of the SWF, JPEG, GIF, or PNG
+            *                file to be loaded. A relative path must be relative to the
+            *                main SWF file. Absolute URLs must include the protocol
+            *                reference, such as http:// or file:///. Filenames cannot
+            *                include disk drive specifications.
+            * @param context A LoaderContext object, which has properties that define
+            *                the following:
+            *                <ul>
+            *                  <li>Whether or not to check for the existence of a policy
+            *                file upon loading the object</li>
+            *                  <li>The ApplicationDomain for the loaded object</li>
+            *                  <li>The SecurityDomain for the loaded object</li>
+            *                  <li>The ImageDecodingPolicy for the loaded image
+            *                object</li>
+            *                </ul>
+            *
+            *                <p>If the <code>context</code> parameter is not specified
+            *                or refers to a null object, the loaded content remains in
+            *                its own security domain.</p>
+            *
+            *                <p>For complete details, see the description of the
+            *                properties in the <a
+            *                href="../system/LoaderContext.html">LoaderContext</a>
+            *                class.</p>
+            * @throws IOError               The <code>digest</code> property of the
+            *                               <code>request</code> object is not
+            *                               <code>null</code>. You should only set the
+            *                               <code>digest</code> property of a URLRequest
+            *                               object when calling the
+            *                               <code>URLLoader.load()</code> method when
+            *                               loading a SWZ file(an Adobe platform
+            *                               component).
+            * @throws IllegalOperationError If the <code>requestedContentParent</code>
+            *                               property of the <code>context</code>
+            *                               parameter is a <code>Loader</code>.
+            * @throws IllegalOperationError If the <code>LoaderContext.parameters</code>
+            *                               parameter is set to non-null and has some
+            *                               values which are not Strings.
+            * @throws SecurityError         The value of
+            *                               <code>LoaderContext.securityDomain</code>
+            *                               must be either <code>null</code> or
+            *                               <code>SecurityDomain.currentDomain</code>.
+            *                               This reflects the fact that you can only
+            *                               place the loaded media in its natural
+            *                               security sandbox or your own(the latter
+            *                               requires a policy file).
+            * @throws SecurityError         Local SWF files may not set
+            *                               LoaderContext.securityDomain to anything
+            *                               other than <code>null</code>. It is not
+            *                               permitted to import non-local media into a
+            *                               local sandbox, or to place other local media
+            *                               in anything other than its natural sandbox.
+            * @throws SecurityError         You cannot connect to commonly reserved
+            *                               ports. For a complete list of blocked ports,
+            *                               see "Restricting Networking APIs" in the
+            *                               <i>ActionScript 3.0 Developer's Guide</i>.
+            * @throws SecurityError         If the <code>applicationDomain</code> or
+            *                               <code>securityDomain</code> properties of
+            *                               the <code>context</code> parameter are from
+            *                               a disallowed domain.
+            * @throws SecurityError         If a local SWF file is attempting to use the
+            *                               <code>securityDomain</code> property of the
+            *                               <code>context</code> parameter.
+            * @event asyncError    Dispatched by the <code>contentLoaderInfo</code>
+            *                      object if the
+            *                      <code>LoaderContext.requestedContentParent</code>
+            *                      property has been specified and it is not possible to
+            *                      add the loaded content as a child to the specified
+            *                      DisplayObjectContainer. This could happen if the
+            *                      loaded content is a
+            *                      <code>flash.display.AVM1Movie</code> or if the
+            *                      <code>addChild()</code> call to the
+            *                      requestedContentParent throws an error.
+            * @event complete      Dispatched by the <code>contentLoaderInfo</code>
+            *                      object when the file has completed loading. The
+            *                      <code>complete</code> event is always dispatched
+            *                      after the <code>init</code> event.
+            * @event httpStatus    Dispatched by the <code>contentLoaderInfo</code>
+            *                      object when a network request is made over HTTP and
+            *                      Flash Player can detect the HTTP status code.
+            * @event init          Dispatched by the <code>contentLoaderInfo</code>
+            *                      object when the properties and methods of the loaded
+            *                      SWF file are accessible. The <code>init</code> event
+            *                      always precedes the <code>complete</code> event.
+            * @event ioError       Dispatched by the <code>contentLoaderInfo</code>
+            *                      object when an input or output error occurs that
+            *                      causes a load operation to fail.
+            * @event open          Dispatched by the <code>contentLoaderInfo</code>
+            *                      object when the loading operation starts.
+            * @event progress      Dispatched by the <code>contentLoaderInfo</code>
+            *                      object as data is received while load operation
+            *                      progresses.
+            * @event securityError Dispatched by the <code>contentLoaderInfo</code>
+            *                      object if a SWF file in the local-with-filesystem
+            *                      sandbox attempts to load content in the
+            *                      local-with-networking sandbox, or vice versa.
+            * @event securityError Dispatched by the <code>contentLoaderInfo</code>
+            *                      object if the
+            *                      <code>LoaderContext.requestedContentParent</code>
+            *                      property has been specified and the security sandbox
+            *                      of the
+            *                      <code>LoaderContext.requestedContentParent</code>
+            *                      does not have access to the loaded SWF.
+            * @event unload        Dispatched by the <code>contentLoaderInfo</code>
+            *                      object when a loaded object is removed.
+            */
+            Loader.prototype.load = function (request, context) {
+                if (typeof context === "undefined") { context = null; }
+            };
+
+            /**
+            * Loads from binary data stored in a ByteArray object.
+            *
+            * <p>The <code>loadBytes()</code> method is asynchronous. You must wait for
+            * the "init" event before accessing the properties of a loaded object.</p>
+            *
+            * <p>When you use this method, consider the Flash Player security model,
+            * which is described in the Loader class description. </p>
+            *
+            * @param bytes   A ByteArray object. The contents of the ByteArray can be
+            *                any of the file formats supported by the Loader class: SWF,
+            *                GIF, JPEG, or PNG.
+            * @param context A LoaderContext object. Only the
+            *                <code>applicationDomain</code> property of the
+            *                LoaderContext object applies; the
+            *                <code>checkPolicyFile</code> and
+            *                <code>securityDomain</code> properties of the LoaderContext
+            *                object do not apply.
+            *
+            *                <p>If the <code>context</code> parameter is not specified
+            *                or refers to a null object, the content is loaded into the
+            *                current security domain -  a process referred to as "import
+            *                loading" in Flash Player security documentation.
+            *                Specifically, if the loading SWF file trusts the remote SWF
+            *                by incorporating the remote SWF into its code, then the
+            *                loading SWF can import it directly into its own security
+            *                domain.</p>
+            *
+            *                <p>For more information related to security, see the Flash
+            *                Player Developer Center Topic: <a
+            *                href="http://www.adobe.com/go/devnet_security_en"
+            *                scope="external">Security</a>.</p>
+            * @throws ArgumentError         If the <code>length</code> property of the
+            *                               ByteArray object is not greater than 0.
+            * @throws IllegalOperationError If the <code>checkPolicyFile</code> or
+            *                               <code>securityDomain</code> property of the
+            *                               <code>context</code> parameter are non-null.
+            * @throws IllegalOperationError If the <code>requestedContentParent</code>
+            *                               property of the <code>context</code>
+            *                               parameter is a <code>Loader</code>.
+            * @throws IllegalOperationError If the <code>LoaderContext.parameters</code>
+            *                               parameter is set to non-null and has some
+            *                               values which are not Strings.
+            * @throws SecurityError         If the provided
+            *                               <code>applicationDomain</code> property of
+            *                               the <code>context</code> property is from a
+            *                               disallowed domain.
+            * @throws SecurityError         You cannot connect to commonly reserved
+            *                               ports. For a complete list of blocked ports,
+            *                               see "Restricting Networking APIs" in the
+            *                               <i>ActionScript 3.0 Developer's Guide</i>.
+            * @event asyncError    Dispatched by the <code>contentLoaderInfo</code>
+            *                      object if the
+            *                      <code>LoaderContext.requestedContentParent</code>
+            *                      property has been specified and it is not possible to
+            *                      add the loaded content as a child to the specified
+            *                      DisplayObjectContainer. This could happen if the
+            *                      loaded content is a
+            *                      <code>flash.display.AVM1Movie</code> or if the
+            *                      <code>addChild()</code> call to the
+            *                      requestedContentParent throws an error.
+            * @event complete      Dispatched by the <code>contentLoaderInfo</code>
+            *                      object when the operation is complete. The
+            *                      <code>complete</code> event is always dispatched
+            *                      after the <code>init</code> event.
+            * @event init          Dispatched by the <code>contentLoaderInfo</code>
+            *                      object when the properties and methods of the loaded
+            *                      data are accessible. The <code>init</code> event
+            *                      always precedes the <code>complete</code> event.
+            * @event ioError       Dispatched by the <code>contentLoaderInfo</code>
+            *                      object when the runtime cannot parse the data in the
+            *                      byte array.
+            * @event open          Dispatched by the <code>contentLoaderInfo</code>
+            *                      object when the operation starts.
+            * @event progress      Dispatched by the <code>contentLoaderInfo</code>
+            *                      object as data is transfered in memory.
+            * @event securityError Dispatched by the <code>contentLoaderInfo</code>
+            *                      object if the
+            *                      <code>LoaderContext.requestedContentParent</code>
+            *                      property has been specified and the security sandbox
+            *                      of the
+            *                      <code>LoaderContext.requestedContentParent</code>
+            *                      does not have access to the loaded SWF.
+            * @event unload        Dispatched by the <code>contentLoaderInfo</code>
+            *                      object when a loaded object is removed.
+            */
+            Loader.prototype.loadBytes = function (bytes, context) {
+                if (typeof context === "undefined") { context = null; }
+            };
+
+            /**
+            * Removes a child of this Loader object that was loaded by using the
+            * <code>load()</code> method. The <code>property</code> of the associated
+            * LoaderInfo object is reset to <code>null</code>. The child is not
+            * necessarily destroyed because other objects might have references to it;
+            * however, it is no longer a child of the Loader object.
+            *
+            * <p>As a best practice, before you unload a child SWF file, you should
+            * explicitly close any streams in the child SWF file's objects, such as
+            * LocalConnection, NetConnection, NetStream, and Sound objects. Otherwise,
+            * audio in the child SWF file might continue to play, even though the child
+            * SWF file was unloaded. To close streams in the child SWF file, add an
+            * event listener to the child that listens for the <code>unload</code>
+            * event. When the parent calls <code>Loader.unload()</code>, the
+            * <code>unload</code> event is dispatched to the child. The following code
+            * shows how you might do this:</p>
+            * <pre xml:space="preserve"> public closeAllStreams(evt:Event) {
+            * myNetStream.close(); mySound.close(); myNetConnection.close();
+            * myLocalConnection.close(); }
+            * myMovieClip.loaderInfo.addEventListener(Event.UNLOAD,
+            * closeAllStreams);</pre>
+            *
+            */
+            Loader.prototype.unload = function () {
+            };
+            return Loader;
+        })(away.containers.DisplayObjectContainer);
+        containers.Loader = Loader;
+    })(away.containers || (away.containers = {}));
+    var containers = away.containers;
+})(away || (away = {}));
+///<reference path="../_definitions.ts" />
+var away;
+(function (away) {
+    (function (containers) {
+        var Scene = (function (_super) {
+            __extends(Scene, _super);
+            function Scene() {
+                _super.call(this);
+                this._expandedPartitions = new Array();
+                this._partitions = new Array();
+                this._iCollectionMark = 0;
+
+                this._iSceneGraphRoot = new away.containers.DisplayObjectContainer();
+
+                this._iSceneGraphRoot._iSetScene(this);
+                this._iSceneGraphRoot._iIsRoot = true;
+                this._iSceneGraphRoot.partition = new away.partition.Partition(new away.partition.NodeBase());
+            }
+            Scene.prototype.traversePartitions = function (traverser) {
+                var i = 0;
+                var len = this._partitions.length;
+
+                traverser.scene = this;
+
+                while (i < len) {
+                    this._iCollectionMark++;
+                    this._partitions[i++].traverse(traverser);
+                }
+            };
+
+            Object.defineProperty(Scene.prototype, "partition", {
+                get: function () {
+                    return this._iSceneGraphRoot.partition;
+                },
+                set: function (value) {
+                    this._iSceneGraphRoot.partition = value;
+
+                    this.dispatchEvent(new away.events.SceneEvent(away.events.SceneEvent.PARTITION_CHANGED, this._iSceneGraphRoot));
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Scene.prototype.contains = function (child) {
+                return this._iSceneGraphRoot.contains(child);
+            };
+
+            Scene.prototype.addChild = function (child) {
+                return this._iSceneGraphRoot.addChild(child);
+            };
+
+            Scene.prototype.removeChild = function (child) {
+                this._iSceneGraphRoot.removeChild(child);
+            };
+
+            Scene.prototype.removeChildAt = function (index) {
+                this._iSceneGraphRoot.removeChildAt(index);
+            };
+
+            Scene.prototype.getChildAt = function (index) {
+                return this._iSceneGraphRoot.getChildAt(index);
+            };
+
+            Object.defineProperty(Scene.prototype, "numChildren", {
+                get: function () {
+                    return this._iSceneGraphRoot.numChildren;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * @internal
+            */
+            Scene.prototype.iRegisterEntity = function (displayObject) {
+                if (displayObject.partition)
+                    this.iRegisterPartition(displayObject.partition);
+
+                if (displayObject.isEntity)
+                    displayObject._iAssignedPartition.iMarkForUpdate(displayObject);
+            };
+
+            /**
+            * @internal
+            */
+            Scene.prototype.iRegisterPartition = function (partition) {
+                this._expandedPartitions.push(partition);
+
+                //ensure duplicates are not found in partitions array
+                if (this._partitions.indexOf(partition) == -1)
+                    this._partitions.push(partition);
+            };
+
+            /**
+            * @internal
+            */
+            Scene.prototype.iUnregisterEntity = function (displayObject) {
+                if (displayObject.partition)
+                    this.iUnregisterPartition(displayObject.partition);
+
+                if (displayObject.isEntity)
+                    displayObject._iAssignedPartition.iRemoveEntity(displayObject);
+            };
+
+            /**
+            * @internal
+            */
+            Scene.prototype.iUnregisterPartition = function (partition) {
+                this._expandedPartitions.splice(this._expandedPartitions.indexOf(partition), 1);
+
+                //if no more partition references found, remove from partitions array
+                if (this._expandedPartitions.indexOf(partition) == -1)
+                    this._partitions.splice(this._partitions.indexOf(partition), 1);
+            };
+            return Scene;
+        })(away.events.EventDispatcher);
+        containers.Scene = Scene;
+    })(away.containers || (away.containers = {}));
+    var containers = away.containers;
+})(away || (away = {}));
+///<reference path="../_definitions.ts" />
+var away;
+(function (away) {
+    (function (containers) {
+        var ContextGL = away.gl.ContextGL;
+        var ContextGLTextureFormat = away.gl.ContextGLTextureFormat;
+        var Texture = away.gl.Texture;
+        var RendererEvent = away.events.RendererEvent;
+        var Matrix3D = away.geom.Matrix3D;
+        var Point = away.geom.Point;
+        var Rectangle = away.geom.Rectangle;
+        var Vector3D = away.geom.Vector3D;
+        var Delegate = away.utils.Delegate;
+
+        var Camera = away.entities.Camera;
+        var Scene = away.containers.Scene;
+        var CameraEvent = away.events.CameraEvent;
+        var SceneEvent = away.events.SceneEvent;
+
+        var CSSRendererBase = away.render.CSSRendererBase;
+
+        var View = (function () {
+            /*
+            ***********************************************************************
+            * Disabled / Not yet implemented
+            ***********************************************************************
+            *
+            * private _background:away.textures.Texture2DBase;
+            *
+            * public _pMouse3DManager:away.managers.Mouse3DManager;
+            * public _pTouch3DManager:away.managers.Touch3DManager;
+            *
+            */
+            function View(renderer, scene, camera) {
+                if (typeof scene === "undefined") { scene = null; }
+                if (typeof camera === "undefined") { camera = null; }
+                this._width = 0;
+                this._height = 0;
+                this._time = 0;
+                this._deltaTime = 0;
+                this._backgroundColor = 0x000000;
+                this._backgroundAlpha = 1;
+                this._viewportDirty = true;
+                this._scissorDirty = true;
+                this._onScenePartitionChangedDelegate = Delegate.create(this, this.onScenePartitionChanged);
+                this._onProjectionChangedDelegate = Delegate.create(this, this.onProjectionChanged);
+                this._onViewportUpdatedDelegate = Delegate.create(this, this.onViewportUpdated);
+                this._onScissorUpdatedDelegate = Delegate.create(this, this.onScissorUpdated);
+
+                this.scene = scene || new Scene();
+                this.camera = camera || new Camera();
+                this.renderer = renderer;
+            }
+            /**
+            *
+            * @param e
+            */
+            View.prototype.onScenePartitionChanged = function (e) {
+                if (this._pCamera)
+                    this._pCamera.partition = this.scene.partition;
+            };
+
+            Object.defineProperty(View.prototype, "renderer", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._pRenderer;
+                },
+                set: function (value) {
+                    if (this._pRenderer == value)
+                        return;
+
+                    if (this._pRenderer) {
+                        this._pRenderer.dispose();
+                        this._pRenderer.removeEventListener(RendererEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
+                        this._pRenderer.removeEventListener(RendererEvent.SCISSOR_UPDATED, this._onScissorUpdatedDelegate);
+                    }
+
+                    this._pRenderer = value;
+
+                    this._pRenderer.addEventListener(RendererEvent.VIEWPORT_UPDATED, this._onViewportUpdatedDelegate);
+                    this._pRenderer.addEventListener(RendererEvent.SCISSOR_UPDATED, this._onScissorUpdatedDelegate);
+
+                    //reset entity collector
+                    this._pEntityCollector = this._pRenderer._iCreateEntityCollector();
+
+                    if (this._pCamera)
+                        this._pEntityCollector.camera = this._pCamera;
+
+                    //reset back buffer
+                    this._pRenderer._iBackgroundR = ((this._backgroundColor >> 16) & 0xff) / 0xff;
+                    this._pRenderer._iBackgroundG = ((this._backgroundColor >> 8) & 0xff) / 0xff;
+                    this._pRenderer._iBackgroundB = (this._backgroundColor & 0xff) / 0xff;
+                    this._pRenderer._iBackgroundAlpha = this._backgroundAlpha;
+                    this._pRenderer.width = this._width;
+                    this._pRenderer.height = this._height;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(View.prototype, "backgroundColor", {
+                /**
+                *
+                * @returns {number}
+                */
+                get: function () {
+                    return this._backgroundColor;
+                },
+                /**
+                *
+                * @param value
+                */
+                set: function (value) {
+                    if (this._backgroundColor == value)
+                        return;
+
+                    this._backgroundColor = value;
+
+                    this._pRenderer._iBackgroundR = ((value >> 16) & 0xff) / 0xff;
+                    this._pRenderer._iBackgroundG = ((value >> 8) & 0xff) / 0xff;
+                    this._pRenderer._iBackgroundB = (value & 0xff) / 0xff;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(View.prototype, "backgroundAlpha", {
+                /**
+                *
+                * @returns {number}
+                */
+                get: function () {
+                    return this._backgroundAlpha;
+                },
+                /**
+                *
+                * @param value
+                */
+                set: function (value) {
+                    if (value > 1)
+                        value = 1;
+                    else if (value < 0)
+                        value = 0;
+
+                    if (this._backgroundAlpha == value)
+                        return;
+
+                    this._pRenderer._iBackgroundAlpha = this._backgroundAlpha = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(View.prototype, "camera", {
+                /**
+                *
+                * @returns {Camera3D}
+                */
+                get: function () {
+                    return this._pCamera;
+                },
+                /**
+                * Set camera that's used to render the scene for this viewport
+                */
+                set: function (value) {
+                    if (this._pCamera == value)
+                        return;
+
+                    if (this._pCamera)
+                        this._pCamera.removeEventListener(CameraEvent.LENS_CHANGED, this._onProjectionChangedDelegate);
+
+                    this._pCamera = value;
+
+                    if (this._pEntityCollector)
+                        this._pEntityCollector.camera = this._pCamera;
+
+                    if (this._pScene)
+                        this._pCamera.partition = this._pScene.partition;
+
+                    this._pCamera.addEventListener(CameraEvent.LENS_CHANGED, this._onProjectionChangedDelegate);
+                    this._scissorDirty = true;
+                    this._viewportDirty = true;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(View.prototype, "scene", {
+                /**
+                *
+                * @returns {away.containers.Scene3D}
+                */
+                get: function () {
+                    return this._pScene;
+                },
+                /**
+                * Set the scene that's used to render for this viewport
+                */
+                set: function (value) {
+                    if (this._pScene == value)
+                        return;
+
+                    if (this._pScene)
+                        this._pScene.removeEventListener(SceneEvent.PARTITION_CHANGED, this._onScenePartitionChangedDelegate);
+
+                    this._pScene = value;
+
+                    this._pScene.addEventListener(SceneEvent.PARTITION_CHANGED, this._onScenePartitionChangedDelegate);
+
+                    if (this._pCamera)
+                        this._pCamera.partition = this._pScene.partition;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(View.prototype, "deltaTime", {
+                /**
+                *
+                * @returns {number}
+                */
+                get: function () {
+                    return this._deltaTime;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(View.prototype, "width", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._width;
+                },
+                set: function (value) {
+                    if (this._width == value)
+                        return;
+
+                    this._width = value;
+                    this._aspectRatio = this._width / this._height;
+                    this._pCamera.projection.iAspectRatio = this._aspectRatio;
+                    this._pRenderer.width = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(View.prototype, "height", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._height;
+                },
+                set: function (value) {
+                    if (this._height == value)
+                        return;
+
+                    this._height = value;
+                    this._aspectRatio = this._width / this._height;
+                    this._pCamera.projection.iAspectRatio = this._aspectRatio;
+                    this._pRenderer.height = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(View.prototype, "x", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._pRenderer.x;
+                },
+                set: function (value) {
+                    if (this._pRenderer.x == value)
+                        return;
+
+                    this._pRenderer.x == value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(View.prototype, "y", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._pRenderer.y;
+                },
+                set: function (value) {
+                    if (this._pRenderer.y == value)
+                        return;
+
+                    this._pRenderer.y == value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(View.prototype, "visible", {
+                /**
+                *
+                */
+                get: function () {
+                    return true;
+                },
+                set: function (v) {
+                    //TODO
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(View.prototype, "renderedFacesCount", {
+                /**
+                *
+                * @returns {number}
+                */
+                get: function () {
+                    return 0;
+                    //return this._pEntityCollector._pNumTriangles;//numTriangles;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * Renders the view.
+            */
+            View.prototype.render = function () {
+                this.pUpdateTime();
+
+                //update view and size data
+                this._pCamera.projection.iAspectRatio = this._aspectRatio;
+
+                if (this._scissorDirty) {
+                    this._scissorDirty = false;
+                    this._pCamera.projection.iUpdateScissorRect(this._pRenderer.scissorRect.x, this._pRenderer.scissorRect.y, this._pRenderer.scissorRect.width, this._pRenderer.scissorRect.height);
+                }
+
+                if (this._viewportDirty) {
+                    this._viewportDirty = false;
+                    this._pCamera.projection.iUpdateViewport(this._pRenderer.viewPort.x, this._pRenderer.viewPort.y, this._pRenderer.viewPort.width, this._pRenderer.viewPort.height);
+                }
+
+                //clear entity collector ready for collection
+                this._pEntityCollector.clear();
+
+                // collect stuff to render
+                this._pScene.traversePartitions(this._pEntityCollector);
+
+                // TODO: implement & integrate mouse3DManager
+                // update picking
+                //_mouse3DManager.updateCollider(this);
+                //_touch3DManager.updateCollider();
+                //render the contents of the entity collector
+                this._pRenderer.render(this._pEntityCollector);
+                //if (!this._pShareContext) {
+                // TODO: imeplement mouse3dManager
+                // fire collected mouse events
+                //_mouse3DManager.fireMouseEvents();
+                //_touch3DManager.fireTouchEvents();
+                //}
+            };
+
+            /**
+            *
+            */
+            View.prototype.pUpdateTime = function () {
+                var time = away.utils.getTimer();
+
+                if (this._time == 0)
+                    this._time = time;
+
+                this._deltaTime = time - this._time;
+                this._time = time;
+            };
+
+            /**
+            *
+            */
+            View.prototype.dispose = function () {
+                this._pRenderer.dispose();
+
+                // TODO: imeplement mouse3DManager / touch3DManager
+                //this._mouse3DManager.disableMouseListeners(this);
+                //this._mouse3DManager.dispose();
+                //this._touch3DManager.disableTouchListeners(this);
+                //this._touch3DManager.dispose();
+                //this._mouse3DManager = null;
+                //this._touch3DManager = null;
+                this._pRenderer = null;
+                this._pEntityCollector = null;
+            };
+
+            Object.defineProperty(View.prototype, "iEntityCollector", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._pEntityCollector;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            *
+            */
+            View.prototype.onProjectionChanged = function (event) {
+                this._scissorDirty = true;
+                this._viewportDirty = true;
+            };
+
+            /**
+            *
+            */
+            View.prototype.onViewportUpdated = function (event) {
+                this._viewportDirty = true;
+            };
+
+            /**
+            *
+            */
+            View.prototype.onScissorUpdated = function (event) {
+                this._scissorDirty = true;
+            };
+
+            View.prototype.project = function (point3d) {
+                var v = this._pCamera.project(point3d);
+                v.x = (v.x + 1.0) * this._width / 2.0;
+                v.y = (v.y + 1.0) * this._height / 2.0;
+
+                return v;
+            };
+
+            View.prototype.unproject = function (sX, sY, sZ) {
+                return this._pCamera.unproject((sX * 2 - this._width) / this._pRenderer.viewPort.width, (sY * 2 - this._height) / this._pRenderer.viewPort.height, sZ);
+            };
+
+            View.prototype.getRay = function (sX, sY, sZ) {
+                return this._pCamera.getRay((sX * 2 - this._width) / this._width, (sY * 2 - this._height) / this._height, sZ);
+            };
+            return View;
+        })();
+        containers.View = View;
+    })(away.containers || (away.containers = {}));
+    var containers = away.containers;
+})(away || (away = {}));
+///<reference path="../_definitions.ts" />
+var away;
+(function (away) {
+    (function (bounds) {
+        var BoundingVolumeBase = (function () {
+            function BoundingVolumeBase() {
+                this._pAabbPoints = new Array();
+                this._pAabbPointsDirty = true;
+                this._aabb = new away.geom.Box();
+            }
+            Object.defineProperty(BoundingVolumeBase.prototype, "aabb", {
+                get: function () {
+                    return this._aabb;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(BoundingVolumeBase.prototype, "aabbPoints", {
+                get: function () {
+                    if (this._pAabbPointsDirty)
+                        this.pUpdateAABBPoints();
+
+                    return this._pAabbPoints;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(BoundingVolumeBase.prototype, "boundingEntity", {
+                get: function () {
+                    if (!this._pBoundingEntity) {
+                        this._pBoundingEntity = this.pCreateBoundingEntity();
+                        this.pUpdateBoundingEntity();
+                    }
+
+                    return this._pBoundingEntity;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            BoundingVolumeBase.prototype.nullify = function () {
+                this._aabb.x = this._aabb.y = this._aabb.z = 0;
+                this._aabb.width = this._aabb.height = this._aabb.depth = 0;
+                this._pAabbPointsDirty = true;
+
+                if (this._pBoundingEntity)
+                    this.pUpdateBoundingEntity();
+            };
+
+            BoundingVolumeBase.prototype.disposeRenderable = function () {
+                if (this._pBoundingEntity)
+                    this._pBoundingEntity.dispose();
+
+                this._pBoundingEntity = null;
+            };
+
+            BoundingVolumeBase.prototype.fromVertices = function (vertices) {
+                var i;
+                var len = vertices.length;
+                var minX, minY, minZ;
+                var maxX, maxY, maxZ;
+
+                if (len == 0) {
+                    this.nullify();
+                    return;
+                }
+
+                var v;
+
+                minX = maxX = vertices[i++];
+                minY = maxY = vertices[i++];
+                minZ = maxZ = vertices[i++];
+
+                while (i < len) {
+                    v = vertices[i++];
+                    if (v < minX)
+                        minX = v;
+                    else if (v > maxX)
+                        maxX = v;
+                    v = vertices[i++];
+                    if (v < minY)
+                        minY = v;
+                    else if (v > maxY)
+                        maxY = v;
+                    v = vertices[i++];
+                    if (v < minZ)
+                        minZ = v;
+                    else if (v > maxZ)
+                        maxZ = v;
+                }
+
+                this.fromExtremes(minX, minY, minZ, maxX, maxY, maxZ);
+            };
+
+            BoundingVolumeBase.prototype.fromSphere = function (center, radius) {
+                this.fromExtremes(center.x - radius, center.y - radius, center.z - radius, center.x + radius, center.y + radius, center.z + radius);
+            };
+
+            BoundingVolumeBase.prototype.fromExtremes = function (minX, minY, minZ, maxX, maxY, maxZ) {
+                this._aabb.x = minX;
+                this._aabb.y = maxY;
+                this._aabb.z = minZ;
+                this._aabb.width = maxX - minX;
+                this._aabb.height = maxY - minY;
+                this._aabb.depth = maxZ - minZ;
+                this._pAabbPointsDirty = true;
+
+                if (this._pBoundingEntity)
+                    this.pUpdateBoundingEntity();
+            };
+
+            BoundingVolumeBase.prototype.isInFrustum = function (planes, numPlanes) {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            BoundingVolumeBase.prototype.overlaps = function (bounds) {
+                return this._aabb.intersects(bounds.aabb);
+            };
+
+            BoundingVolumeBase.prototype.clone = function () {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            BoundingVolumeBase.prototype.rayIntersection = function (position, direction, targetNormal) {
+                return -1;
+            };
+
+            BoundingVolumeBase.prototype.containsPoint = function (position) {
+                return false;
+            };
+
+            BoundingVolumeBase.prototype.pUpdateAABBPoints = function () {
+                var minX = this._aabb.x;
+                var minY = this._aabb.y - this._aabb.height;
+                var minZ = this._aabb.z;
+                var maxX = this._aabb.x + this._aabb.width;
+                var maxY = this._aabb.y;
+                var maxZ = this._aabb.z + this._aabb.depth;
+
+                this._pAabbPoints[0] = minX;
+                this._pAabbPoints[1] = minY;
+                this._pAabbPoints[2] = minZ;
+                this._pAabbPoints[3] = maxX;
+                this._pAabbPoints[4] = minY;
+                this._pAabbPoints[5] = minZ;
+                this._pAabbPoints[6] = minX;
+                this._pAabbPoints[7] = maxY;
+                this._pAabbPoints[8] = minZ;
+                this._pAabbPoints[9] = maxX;
+                this._pAabbPoints[10] = maxY;
+                this._pAabbPoints[11] = minZ;
+                this._pAabbPoints[12] = minX;
+                this._pAabbPoints[13] = minY;
+                this._pAabbPoints[14] = maxZ;
+                this._pAabbPoints[15] = maxX;
+                this._pAabbPoints[16] = minY;
+                this._pAabbPoints[17] = maxZ;
+                this._pAabbPoints[18] = minX;
+                this._pAabbPoints[19] = maxY;
+                this._pAabbPoints[20] = maxZ;
+                this._pAabbPoints[21] = maxX;
+                this._pAabbPoints[22] = maxY;
+                this._pAabbPoints[23] = maxZ;
+                this._pAabbPointsDirty = false;
+            };
+
+            BoundingVolumeBase.prototype.pUpdateBoundingEntity = function () {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            BoundingVolumeBase.prototype.pCreateBoundingEntity = function () {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            BoundingVolumeBase.prototype.classifyToPlane = function (plane) {
+                throw new away.errors.AbstractMethodError();
+            };
+
+            BoundingVolumeBase.prototype.transformFrom = function (bounds, matrix) {
+                throw new away.errors.AbstractMethodError();
+            };
+            return BoundingVolumeBase;
+        })();
+        bounds.BoundingVolumeBase = BoundingVolumeBase;
+    })(away.bounds || (away.bounds = {}));
+    var bounds = away.bounds;
+})(away || (away = {}));
+///<reference path="../_definitions.ts" />
+var away;
+(function (away) {
+    (function (bounds) {
+        var NullBounds = (function (_super) {
+            __extends(NullBounds, _super);
+            function NullBounds(alwaysIn) {
+                if (typeof alwaysIn === "undefined") { alwaysIn = true; }
+                _super.call(this);
+
+                this._alwaysIn = alwaysIn;
+
+                this._aabb.width = this._aabb.height = this._aabb.depth = Number.POSITIVE_INFINITY;
+                this._aabb.x = this._aabb.y = this._aabb.z = this._alwaysIn ? Number.NEGATIVE_INFINITY / 2 : Number.POSITIVE_INFINITY;
+            }
+            //@override
+            NullBounds.prototype.clone = function () {
+                return new away.bounds.NullBounds(this._alwaysIn);
+            };
+
+            //@override
+            NullBounds.prototype.pCreateBoundingEntity = function () {
+                //return this._renderable || new away.primitives.WireframeSphere( 100, 16, 12, 0xffffff, 0.5 );
+                return null;
+            };
+
+            //@override
+            NullBounds.prototype.isInFrustum = function (planes, numPlanes) {
+                return this._alwaysIn;
+            };
+
+            //		//@override
+            //		public fromGeometry(geometry:away.base.Geometry)
+            //		{
+            //		}
+            //@override
+            NullBounds.prototype.fromSphere = function (center, radius) {
+            };
+
+            //@override
+            NullBounds.prototype.fromExtremes = function (minX, minY, minZ, maxX, maxY, maxZ) {
+            };
+
+            NullBounds.prototype.classifyToPlane = function (plane) {
+                return away.geom.PlaneClassification.INTERSECT;
+            };
+
+            //@override
+            NullBounds.prototype.transformFrom = function (bounds, matrix) {
+                this._alwaysIn = bounds._alwaysIn;
+            };
+            return NullBounds;
+        })(away.bounds.BoundingVolumeBase);
+        bounds.NullBounds = NullBounds;
+    })(away.bounds || (away.bounds = {}));
+    var bounds = away.bounds;
+})(away || (away = {}));
+///<reference path="../_definitions.ts" />
+var away;
+(function (away) {
+    (function (bounds) {
+        var BoundingSphere = (function (_super) {
+            __extends(BoundingSphere, _super);
+            function BoundingSphere() {
+                _super.call(this);
+                this._radius = 0;
+                this._centerX = 0;
+                this._centerY = 0;
+                this._centerZ = 0;
+            }
+            Object.defineProperty(BoundingSphere.prototype, "radius", {
+                get: function () {
+                    return this._radius;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            BoundingSphere.prototype.nullify = function () {
+                _super.prototype.nullify.call(this);
+                this._centerX = this._centerY = this._centerZ = 0;
+                this._radius = 0;
+            };
+
+            BoundingSphere.prototype.isInFrustum = function (planes, numPlanes) {
+                for (var i = 0; i < numPlanes; ++i) {
+                    var plane = planes[i];
+                    var flippedExtentX = plane.a < 0 ? -this._radius : this._radius;
+                    var flippedExtentY = plane.b < 0 ? -this._radius : this._radius;
+                    var flippedExtentZ = plane.c < 0 ? -this._radius : this._radius;
+                    var projDist = plane.a * (this._centerX + flippedExtentX) + plane.b * (this._centerY + flippedExtentY) + plane.c * (this._centerZ + flippedExtentZ) - plane.d;
+                    if (projDist < 0) {
+                        return false;
+                    }
+                }
+                return true;
+            };
+
+            BoundingSphere.prototype.fromSphere = function (center, radius) {
+                this._centerX = center.x;
+                this._centerY = center.y;
+                this._centerZ = center.z;
+                this._radius = radius;
+                this._aabb.width = this._aabb.height = this._aabb.depth = radius * 2;
+                this._aabb.x = this._centerX - radius;
+                this._aabb.y = this._centerY + radius;
+                this._aabb.z = this._centerZ - radius;
+                this._pAabbPointsDirty = true;
+
+                if (this._pBoundingEntity)
+                    this.pUpdateBoundingEntity();
+            };
+
+            BoundingSphere.prototype.fromExtremes = function (minX, minY, minZ, maxX, maxY, maxZ) {
+                this._centerX = (maxX + minX) * .5;
+                this._centerY = (maxY + minY) * .5;
+                this._centerZ = (maxZ + minZ) * .5;
+
+                var d = maxX - minX;
+                var y = maxY - minY;
+                var z = maxZ - minZ;
+
+                if (y > d)
+                    d = y;
+
+                if (z > d)
+                    d = z;
+
+                this._radius = d * Math.sqrt(.5);
+                _super.prototype.fromExtremes.call(this, minX, minY, minZ, maxX, maxY, maxZ);
+            };
+
+            BoundingSphere.prototype.clone = function () {
+                var clone = new BoundingSphere();
+                clone.fromSphere(new away.geom.Vector3D(this._centerX, this._centerY, this._centerZ), this._radius);
+                return clone;
+            };
+
+            BoundingSphere.prototype.rayIntersection = function (position, direction, targetNormal) {
+                if (this.containsPoint(position)) {
+                    return 0;
+                }
+
+                var px = position.x - this._centerX, py = position.y - this._centerY, pz = position.z - this._centerZ;
+                var vx = direction.x, vy = direction.y, vz = direction.z;
+                var rayEntryDistance;
+
+                var a = vx * vx + vy * vy + vz * vz;
+                var b = 2 * (px * vx + py * vy + pz * vz);
+                var c = px * px + py * py + pz * pz - this._radius * this._radius;
+                var det = b * b - 4 * a * c;
+
+                if (det >= 0) {
+                    var sqrtDet = Math.sqrt(det);
+                    rayEntryDistance = (-b - sqrtDet) / (2 * a);
+                    if (rayEntryDistance >= 0) {
+                        targetNormal.x = px + rayEntryDistance * vx;
+                        targetNormal.y = py + rayEntryDistance * vy;
+                        targetNormal.z = pz + rayEntryDistance * vz;
+                        targetNormal.normalize();
+
+                        return rayEntryDistance;
+                    }
+                }
+
+                // ray misses sphere
+                return -1;
+            };
+
+            BoundingSphere.prototype.containsPoint = function (position) {
+                var px = position.x - this._centerX;
+                var py = position.y - this._centerY;
+                var pz = position.z - this._centerZ;
+                var distance = Math.sqrt(px * px + py * py + pz * pz);
+                return distance <= this._radius;
+            };
+
+            BoundingSphere.prototype.pUpdateBoundingEntity = function () {
+                var sc = this._radius;
+                if (sc == 0)
+                    sc = 0.001;
+
+                var transform = this._pBoundingEntity.transform;
+                transform.scale = new away.geom.Vector3D(sc, sc, sc);
+                transform.position = new away.geom.Vector3D(this._centerX, this._centerY, this._centerZ);
+            };
+
+            // TODO pCreateBoundingRenderable():WireframePrimitiveBase
+            BoundingSphere.prototype.pCreateBoundingEntity = function () {
+                return null;
+            };
+
+            //@override
+            BoundingSphere.prototype.classifyToPlane = function (plane) {
+                var a = plane.a;
+                var b = plane.b;
+                var c = plane.c;
+                var dd = a * this._centerX + b * this._centerY + c * this._centerZ - plane.d;
+
+                if (a < 0)
+                    a = -a;
+
+                if (b < 0)
+                    b = -b;
+
+                if (c < 0)
+                    c = -c;
+
+                var rr = (a + b + c) * this._radius;
+
+                return dd > rr ? away.geom.PlaneClassification.FRONT : dd < -rr ? away.geom.PlaneClassification.BACK : away.geom.PlaneClassification.INTERSECT;
+            };
+
+            BoundingSphere.prototype.transformFrom = function (bounds, matrix) {
+                var sphere = bounds;
+                var cx = sphere._centerX;
+                var cy = sphere._centerY;
+                var cz = sphere._centerZ;
+                var raw = new Array(16);
+
+                matrix.copyRawDataTo(raw);
+
+                var m11 = raw[0], m12 = raw[4], m13 = raw[8], m14 = raw[12];
+                var m21 = raw[1], m22 = raw[5], m23 = raw[9], m24 = raw[13];
+                var m31 = raw[2], m32 = raw[6], m33 = raw[10], m34 = raw[14];
+
+                this._centerX = cx * m11 + cy * m12 + cz * m13 + m14;
+                this._centerY = cx * m21 + cy * m22 + cz * m23 + m24;
+                this._centerZ = cx * m31 + cy * m32 + cz * m33 + m34;
+
+                if (m11 < 0)
+                    m11 = -m11;
+                if (m12 < 0)
+                    m12 = -m12;
+                if (m13 < 0)
+                    m13 = -m13;
+                if (m21 < 0)
+                    m21 = -m21;
+                if (m22 < 0)
+                    m22 = -m22;
+                if (m23 < 0)
+                    m23 = -m23;
+                if (m31 < 0)
+                    m31 = -m31;
+                if (m32 < 0)
+                    m32 = -m32;
+                if (m33 < 0)
+                    m33 = -m33;
+
+                var r = sphere._radius;
+                var rx = m11 + m12 + m13;
+                var ry = m21 + m22 + m23;
+                var rz = m31 + m32 + m33;
+                this._radius = r * Math.sqrt(rx * rx + ry * ry + rz * rz);
+
+                this._aabb.width = this._aabb.height = this._aabb.depth = this._radius * 2;
+                this._aabb.x = this._centerX - this._radius;
+                this._aabb.y = this._centerY + this._radius;
+                this._aabb.z = this._centerZ - this._radius;
+            };
+            return BoundingSphere;
+        })(away.bounds.BoundingVolumeBase);
+        bounds.BoundingSphere = BoundingSphere;
+    })(away.bounds || (away.bounds = {}));
+    var bounds = away.bounds;
+})(away || (away = {}));
+///<reference path="../_definitions.ts" />
+var away;
+(function (away) {
+    (function (bounds) {
+        //import away3d.arcane;
+        //import away3d.core.geom.*;
+        //import away3d.primitives.*;
+        //import flash.geom.*;
+        //use namespace arcane;
+        /**
+        * AxisAlignedBoundingBox represents a bounding box volume that has its planes aligned to the local coordinate axes of the bounded object.
+        * This is useful for most meshes.
+        */
+        var AxisAlignedBoundingBox = (function (_super) {
+            __extends(AxisAlignedBoundingBox, _super);
+            /**
+            * Creates a new <code>AxisAlignedBoundingBox</code> object.
+            */
+            function AxisAlignedBoundingBox() {
+                _super.call(this);
+                this._centerX = 0;
+                this._centerY = 0;
+                this._centerZ = 0;
+                this._halfExtentsX = 0;
+                this._halfExtentsY = 0;
+                this._halfExtentsZ = 0;
+            }
+            /**
+            * @inheritDoc
+            */
+            AxisAlignedBoundingBox.prototype.nullify = function () {
+                _super.prototype.nullify.call(this);
+
+                this._centerX = this._centerY = this._centerZ = 0;
+                this._halfExtentsX = this._halfExtentsY = this._halfExtentsZ = 0;
+            };
+
+            /**
+            * @inheritDoc
+            */
+            AxisAlignedBoundingBox.prototype.isInFrustum = function (planes, numPlanes) {
+                for (var i = 0; i < numPlanes; ++i) {
+                    var plane = planes[i];
+                    var a = plane.a;
+                    var b = plane.b;
+                    var c = plane.c;
+                    var flippedExtentX = a < 0 ? -this._halfExtentsX : this._halfExtentsX;
+                    var flippedExtentY = b < 0 ? -this._halfExtentsY : this._halfExtentsY;
+                    var flippedExtentZ = c < 0 ? -this._halfExtentsZ : this._halfExtentsZ;
+                    var projDist = a * (this._centerX + flippedExtentX) + b * (this._centerY + flippedExtentY) + c * (this._centerZ + flippedExtentZ) - plane.d;
+
+                    if (projDist < 0)
+                        return false;
+                }
+
+                return true;
+            };
+
+            AxisAlignedBoundingBox.prototype.rayIntersection = function (position, direction, targetNormal) {
+                if (this.containsPoint(position))
+                    return 0;
+
+                var px = position.x - this._centerX;
+                var py = position.y - this._centerY;
+                var pz = position.z - this._centerZ;
+
+                var vx = direction.x;
+                var vy = direction.y;
+                var vz = direction.z;
+
+                var ix;
+                var iy;
+                var iz;
+                var rayEntryDistance;
+
+                // ray-plane tests
+                var intersects;
+                if (vx < 0) {
+                    rayEntryDistance = (this._halfExtentsX - px) / vx;
+                    if (rayEntryDistance > 0) {
+                        iy = py + rayEntryDistance * vy;
+                        iz = pz + rayEntryDistance * vz;
+                        if (iy > -this._halfExtentsY && iy < this._halfExtentsY && iz > -this._halfExtentsZ && iz < this._halfExtentsZ) {
+                            targetNormal.x = 1;
+                            targetNormal.y = 0;
+                            targetNormal.z = 0;
+
+                            intersects = true;
+                        }
+                    }
+                }
+                if (!intersects && vx > 0) {
+                    rayEntryDistance = (-this._halfExtentsX - px) / vx;
+                    if (rayEntryDistance > 0) {
+                        iy = py + rayEntryDistance * vy;
+                        iz = pz + rayEntryDistance * vz;
+                        if (iy > -this._halfExtentsY && iy < this._halfExtentsY && iz > -this._halfExtentsZ && iz < this._halfExtentsZ) {
+                            targetNormal.x = -1;
+                            targetNormal.y = 0;
+                            targetNormal.z = 0;
+                            intersects = true;
+                        }
+                    }
+                }
+                if (!intersects && vy < 0) {
+                    rayEntryDistance = (this._halfExtentsY - py) / vy;
+                    if (rayEntryDistance > 0) {
+                        ix = px + rayEntryDistance * vx;
+                        iz = pz + rayEntryDistance * vz;
+                        if (ix > -this._halfExtentsX && ix < this._halfExtentsX && iz > -this._halfExtentsZ && iz < this._halfExtentsZ) {
+                            targetNormal.x = 0;
+                            targetNormal.y = 1;
+                            targetNormal.z = 0;
+                            intersects = true;
+                        }
+                    }
+                }
+                if (!intersects && vy > 0) {
+                    rayEntryDistance = (-this._halfExtentsY - py) / vy;
+                    if (rayEntryDistance > 0) {
+                        ix = px + rayEntryDistance * vx;
+                        iz = pz + rayEntryDistance * vz;
+                        if (ix > -this._halfExtentsX && ix < this._halfExtentsX && iz > -this._halfExtentsZ && iz < this._halfExtentsZ) {
+                            targetNormal.x = 0;
+                            targetNormal.y = -1;
+                            targetNormal.z = 0;
+                            intersects = true;
+                        }
+                    }
+                }
+                if (!intersects && vz < 0) {
+                    rayEntryDistance = (this._halfExtentsZ - pz) / vz;
+                    if (rayEntryDistance > 0) {
+                        ix = px + rayEntryDistance * vx;
+                        iy = py + rayEntryDistance * vy;
+                        if (iy > -this._halfExtentsY && iy < this._halfExtentsY && ix > -this._halfExtentsX && ix < this._halfExtentsX) {
+                            targetNormal.x = 0;
+                            targetNormal.y = 0;
+                            targetNormal.z = 1;
+                            intersects = true;
+                        }
+                    }
+                }
+                if (!intersects && vz > 0) {
+                    rayEntryDistance = (-this._halfExtentsZ - pz) / vz;
+                    if (rayEntryDistance > 0) {
+                        ix = px + rayEntryDistance * vx;
+                        iy = py + rayEntryDistance * vy;
+                        if (iy > -this._halfExtentsY && iy < this._halfExtentsY && ix > -this._halfExtentsX && ix < this._halfExtentsX) {
+                            targetNormal.x = 0;
+                            targetNormal.y = 0;
+                            targetNormal.z = -1;
+                            intersects = true;
+                        }
+                    }
+                }
+
+                return intersects ? rayEntryDistance : -1;
+            };
+
+            /**
+            * @inheritDoc
+            */
+            AxisAlignedBoundingBox.prototype.containsPoint = function (position) {
+                var px = position.x - this._centerX, py = position.y - this._centerY, pz = position.z - this._centerZ;
+                return px <= this._halfExtentsX && px >= -this._halfExtentsX && py <= this._halfExtentsY && py >= -this._halfExtentsY && pz <= this._halfExtentsZ && pz >= -this._halfExtentsZ;
+            };
+
+            /**
+            * @inheritDoc
+            */
+            AxisAlignedBoundingBox.prototype.fromExtremes = function (minX, minY, minZ, maxX, maxY, maxZ) {
+                this._centerX = (maxX + minX) * .5;
+                this._centerY = (maxY + minY) * .5;
+                this._centerZ = (maxZ + minZ) * .5;
+                this._halfExtentsX = (maxX - minX) * .5;
+                this._halfExtentsY = (maxY - minY) * .5;
+                this._halfExtentsZ = (maxZ - minZ) * .5;
+
+                _super.prototype.fromExtremes.call(this, minX, minY, minZ, maxX, maxY, maxZ);
+            };
+
+            /**
+            * @inheritDoc
+            */
+            AxisAlignedBoundingBox.prototype.clone = function () {
+                var clone = new AxisAlignedBoundingBox();
+                clone.fromExtremes(this._aabb.x, this._aabb.y + this._aabb.height, this._aabb.z, this._aabb.x + this._aabb.width, this._aabb.y, this._aabb.z + this._aabb.depth);
+                return clone;
+            };
+
+            Object.defineProperty(AxisAlignedBoundingBox.prototype, "halfExtentsX", {
+                get: function () {
+                    return this._halfExtentsX;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(AxisAlignedBoundingBox.prototype, "halfExtentsY", {
+                get: function () {
+                    return this._halfExtentsY;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(AxisAlignedBoundingBox.prototype, "halfExtentsZ", {
+                get: function () {
+                    return this._halfExtentsZ;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * Finds the closest point on the bounding volume to another given point. This can be used for maximum error calculations for content within a given bound.
+            * @param point The point for which to find the closest point on the bounding volume
+            * @param target An optional Vector3D to store the result to prevent creating a new object.
+            * @return
+            */
+            AxisAlignedBoundingBox.prototype.closestPointToPoint = function (point, target) {
+                if (typeof target === "undefined") { target = null; }
+                var p;
+
+                if (target == null)
+                    target = new away.geom.Vector3D();
+
+                p = point.x;
+                if (p < this._aabb.x)
+                    p = this._aabb.x;
+                if (p > this._aabb.x + this._aabb.width)
+                    p = this._aabb.x + this._aabb.width;
+                target.x = p;
+
+                p = point.y;
+                if (p < this._aabb.y + this._aabb.height)
+                    p = this._aabb.y + this._aabb.height;
+                if (p > this._aabb.y)
+                    p = this._aabb.y;
+                target.y = p;
+
+                p = point.z;
+                if (p < this._aabb.z)
+                    p = this._aabb.z;
+                if (p > this._aabb.z + this._aabb.depth)
+                    p = this._aabb.z + this._aabb.depth;
+                target.z = p;
+
+                return target;
+            };
+
+            AxisAlignedBoundingBox.prototype.pUpdateBoundingRenderable = function () {
+                this._pBoundingEntity.transform.scale.x = Math.max(this._halfExtentsX * 2, 0.001);
+                this._pBoundingEntity.transform.scale.y = Math.max(this._halfExtentsY * 2, 0.001);
+                this._pBoundingEntity.transform.scale.z = Math.max(this._halfExtentsZ * 2, 0.001);
+                this._pBoundingEntity.transform.position.x = this._centerX;
+                this._pBoundingEntity.transform.position.y = this._centerY;
+                this._pBoundingEntity.transform.position.z = this._centerZ;
+            };
+
+            AxisAlignedBoundingBox.prototype.pCreateBoundingEntity = function () {
+                return null;
+            };
+
+            AxisAlignedBoundingBox.prototype.classifyToPlane = function (plane) {
+                var a = plane.a;
+                var b = plane.b;
+                var c = plane.c;
+                var centerDistance = a * this._centerX + b * this._centerY + c * this._centerZ - plane.d;
+
+                if (a < 0)
+                    a = -a;
+
+                if (b < 0)
+                    b = -b;
+
+                if (c < 0)
+                    c = -c;
+
+                var boundOffset = a * this._halfExtentsX + b * this._halfExtentsY + c * this._halfExtentsZ;
+
+                return centerDistance > boundOffset ? away.geom.PlaneClassification.FRONT : centerDistance < -boundOffset ? away.geom.PlaneClassification.BACK : away.geom.PlaneClassification.INTERSECT;
+            };
+
+            AxisAlignedBoundingBox.prototype.transformFrom = function (bounds, matrix) {
+                var aabb = bounds;
+                var cx = aabb._centerX;
+                var cy = aabb._centerY;
+                var cz = aabb._centerZ;
+                var raw = away.geom.Matrix3DUtils.RAW_DATA_CONTAINER;
+
+                matrix.copyRawDataTo(raw);
+
+                var m11 = raw[0], m12 = raw[4], m13 = raw[8], m14 = raw[12];
+                var m21 = raw[1], m22 = raw[5], m23 = raw[9], m24 = raw[13];
+                var m31 = raw[2], m32 = raw[6], m33 = raw[10], m34 = raw[14];
+
+                this._centerX = cx * m11 + cy * m12 + cz * m13 + m14;
+                this._centerY = cx * m21 + cy * m22 + cz * m23 + m24;
+                this._centerZ = cx * m31 + cy * m32 + cz * m33 + m34;
+
+                if (m11 < 0)
+                    m11 = -m11;
+                if (m12 < 0)
+                    m12 = -m12;
+                if (m13 < 0)
+                    m13 = -m13;
+                if (m21 < 0)
+                    m21 = -m21;
+                if (m22 < 0)
+                    m22 = -m22;
+                if (m23 < 0)
+                    m23 = -m23;
+                if (m31 < 0)
+                    m31 = -m31;
+                if (m32 < 0)
+                    m32 = -m32;
+                if (m33 < 0)
+                    m33 = -m33;
+                var hx = aabb._halfExtentsX;
+                var hy = aabb._halfExtentsY;
+                var hz = aabb._halfExtentsZ;
+                this._halfExtentsX = hx * m11 + hy * m12 + hz * m13;
+                this._halfExtentsY = hx * m21 + hy * m22 + hz * m23;
+                this._halfExtentsZ = hx * m31 + hy * m32 + hz * m33;
+
+                this._aabb.width = this._aabb.height = this._aabb.depth = this._halfExtentsX * 2;
+                this._aabb.x = this._centerX - this._halfExtentsX;
+                this._aabb.y = this._centerY + this._halfExtentsY;
+                this._aabb.z = this._centerZ - this._halfExtentsZ;
+            };
+            return AxisAlignedBoundingBox;
+        })(away.bounds.BoundingVolumeBase);
+        bounds.AxisAlignedBoundingBox = AxisAlignedBoundingBox;
+    })(away.bounds || (away.bounds = {}));
+    var bounds = away.bounds;
+})(away || (away = {}));
+///<reference path="../_definitions.ts" />
+var away;
+(function (away) {
+    (function (controllers) {
+        var ControllerBase = (function () {
+            function ControllerBase(targetObject) {
+                if (typeof targetObject === "undefined") { targetObject = null; }
+                this._pAutoUpdate = true;
+                this.targetObject = targetObject;
+            }
+            ControllerBase.prototype.pNotifyUpdate = function () {
+                if (this._pTargetObject && this._pTargetObject._iAssignedPartition && this._pAutoUpdate) {
+                    this._pTargetObject._iAssignedPartition.iMarkForUpdate(this._pTargetObject);
+                }
+            };
+
+            Object.defineProperty(ControllerBase.prototype, "targetObject", {
+                get: function () {
+                    return this._pTargetObject;
+                },
+                set: function (val) {
+                    if (this._pTargetObject == val) {
+                        return;
+                    }
+
+                    if (this._pTargetObject && this._pAutoUpdate) {
+                        this._pTargetObject._iController = null;
+                    }
+                    this._pTargetObject = val;
+
+                    if (this._pTargetObject && this._pAutoUpdate) {
+                        this._pTargetObject._iController = this;
+                    }
+                    this.pNotifyUpdate();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(ControllerBase.prototype, "autoUpdate", {
+                get: function () {
+                    return this._pAutoUpdate;
+                },
+                set: function (val) {
+                    if (this._pAutoUpdate == val) {
+                        return;
+                    }
+                    this._pAutoUpdate = val;
+
+                    if (this._pTargetObject) {
+                        if (this._pTargetObject) {
+                            this._pTargetObject._iController = this;
+                        } else {
+                            this._pTargetObject._iController = null;
+                        }
+                    }
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            ControllerBase.prototype.update = function (interpolate) {
+                if (typeof interpolate === "undefined") { interpolate = true; }
+                throw new away.errors.AbstractMethodError();
+            };
+            return ControllerBase;
+        })();
+        controllers.ControllerBase = ControllerBase;
+    })(away.controllers || (away.controllers = {}));
+    var controllers = away.controllers;
+})(away || (away = {}));
+///<reference path="../_definitions.ts" />
+var away;
+(function (away) {
+    (function (controllers) {
+        var LookAtController = (function (_super) {
+            __extends(LookAtController, _super);
+            function LookAtController(targetObject, lookAtObject) {
+                if (typeof targetObject === "undefined") { targetObject = null; }
+                if (typeof lookAtObject === "undefined") { lookAtObject = null; }
+                _super.call(this, targetObject);
+                this._pOrigin = new away.geom.Vector3D(0.0, 0.0, 0.0);
+
+                this._onLookAtObjectChangedDelegate = away.utils.Delegate.create(this, this.onLookAtObjectChanged);
+
+                if (lookAtObject) {
+                    this.lookAtObject = lookAtObject;
+                } else {
+                    this.lookAtPosition = new away.geom.Vector3D();
+                }
+            }
+            Object.defineProperty(LookAtController.prototype, "lookAtPosition", {
+                get: function () {
+                    return this._pLookAtPosition;
+                },
+                set: function (val) {
+                    if (this._pLookAtObject) {
+                        this._pLookAtObject.removeEventListener(away.events.DisplayObjectEvent.SCENETRANSFORM_CHANGED, this._onLookAtObjectChangedDelegate);
+                        this._pLookAtObject = null;
+                    }
+
+                    this._pLookAtPosition = val;
+                    this.pNotifyUpdate();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(LookAtController.prototype, "lookAtObject", {
+                get: function () {
+                    return this._pLookAtObject;
+                },
+                set: function (val) {
+                    if (this._pLookAtPosition) {
+                        this._pLookAtPosition = null;
+                    }
+
+                    if (this._pLookAtObject == val) {
+                        return;
+                    }
+
+                    if (this._pLookAtObject) {
+                        this._pLookAtObject.removeEventListener(away.events.DisplayObjectEvent.SCENETRANSFORM_CHANGED, this._onLookAtObjectChangedDelegate);
+                    }
+                    this._pLookAtObject = val;
+
+                    if (this._pLookAtObject) {
+                        this._pLookAtObject.addEventListener(away.events.DisplayObjectEvent.SCENETRANSFORM_CHANGED, this._onLookAtObjectChangedDelegate);
+                    }
+
+                    this.pNotifyUpdate();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            //@override
+            LookAtController.prototype.update = function (interpolate) {
+                if (typeof interpolate === "undefined") { interpolate = true; }
+                if (this._pTargetObject) {
+                    if (this._pLookAtPosition)
+                        this._pTargetObject.lookAt(this._pLookAtPosition);
+                    else if (this._pLookAtObject)
+                        this._pTargetObject.lookAt(this._pLookAtObject.scene ? this._pLookAtObject.scenePosition : this._pLookAtObject.transform.position);
+                }
+            };
+
+            LookAtController.prototype.onLookAtObjectChanged = function (event) {
+                this.pNotifyUpdate();
+            };
+            return LookAtController;
+        })(away.controllers.ControllerBase);
+        controllers.LookAtController = LookAtController;
+    })(away.controllers || (away.controllers = {}));
+    var controllers = away.controllers;
+})(away || (away = {}));
+///<reference path="../_definitions.ts" />
+var away;
+(function (away) {
+    (function (controllers) {
+        /**
+        * Extended camera used to hover round a specified target object.
+        *
+        * @see    away3d.containers.View3D
+        */
+        var HoverController = (function (_super) {
+            __extends(HoverController, _super);
+            /**
+            * Creates a new <code>HoverController</code> object.
+            */
+            function HoverController(targetObject, lookAtObject, panAngle, tiltAngle, distance, minTiltAngle, maxTiltAngle, minPanAngle, maxPanAngle, steps, yFactor, wrapPanAngle) {
+                if (typeof targetObject === "undefined") { targetObject = null; }
+                if (typeof lookAtObject === "undefined") { lookAtObject = null; }
+                if (typeof panAngle === "undefined") { panAngle = 0; }
+                if (typeof tiltAngle === "undefined") { tiltAngle = 90; }
+                if (typeof distance === "undefined") { distance = 1000; }
+                if (typeof minTiltAngle === "undefined") { minTiltAngle = -90; }
+                if (typeof maxTiltAngle === "undefined") { maxTiltAngle = 90; }
+                if (typeof minPanAngle === "undefined") { minPanAngle = null; }
+                if (typeof maxPanAngle === "undefined") { maxPanAngle = null; }
+                if (typeof steps === "undefined") { steps = 8; }
+                if (typeof yFactor === "undefined") { yFactor = 2; }
+                if (typeof wrapPanAngle === "undefined") { wrapPanAngle = false; }
+                _super.call(this, targetObject, lookAtObject);
+                this._iCurrentPanAngle = 0;
+                this._iCurrentTiltAngle = 90;
+                this._panAngle = 0;
+                this._tiltAngle = 90;
+                this._distance = 1000;
+                this._minPanAngle = -Infinity;
+                this._maxPanAngle = Infinity;
+                this._minTiltAngle = -90;
+                this._maxTiltAngle = 90;
+                this._steps = 8;
+                this._yFactor = 2;
+                this._wrapPanAngle = false;
+
+                this.distance = distance;
+                this.panAngle = panAngle;
+                this.tiltAngle = tiltAngle;
+                this.minPanAngle = (minPanAngle != null) ? minPanAngle : -Infinity;
+                this.maxPanAngle = (maxPanAngle != null) ? maxPanAngle : Infinity;
+                this.minTiltAngle = minTiltAngle;
+                this.maxTiltAngle = maxTiltAngle;
+                this.steps = steps;
+                this.yFactor = yFactor;
+                this.wrapPanAngle = wrapPanAngle;
+
+                //values passed in contrustor are applied immediately
+                this._iCurrentPanAngle = this._panAngle;
+                this._iCurrentTiltAngle = this._tiltAngle;
+            }
+            Object.defineProperty(HoverController.prototype, "steps", {
+                /**
+                * Fractional step taken each time the <code>hover()</code> method is called. Defaults to 8.
+                *
+                * Affects the speed at which the <code>tiltAngle</code> and <code>panAngle</code> resolve to their targets.
+                *
+                * @see    #tiltAngle
+                * @see    #panAngle
+                */
+                get: function () {
+                    return this._steps;
+                },
+                set: function (val) {
+                    val = (val < 1) ? 1 : val;
+
+                    if (this._steps == val)
+                        return;
+
+                    this._steps = val;
+
+                    this.pNotifyUpdate();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(HoverController.prototype, "panAngle", {
+                /**
+                * Rotation of the camera in degrees around the y axis. Defaults to 0.
+                */
+                get: function () {
+                    return this._panAngle;
+                },
+                set: function (val) {
+                    val = Math.max(this._minPanAngle, Math.min(this._maxPanAngle, val));
+
+                    if (this._panAngle == val)
+                        return;
+
+                    this._panAngle = val;
+
+                    this.pNotifyUpdate();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(HoverController.prototype, "tiltAngle", {
+                /**
+                * Elevation angle of the camera in degrees. Defaults to 90.
+                */
+                get: function () {
+                    return this._tiltAngle;
+                },
+                set: function (val) {
+                    val = Math.max(this._minTiltAngle, Math.min(this._maxTiltAngle, val));
+
+                    if (this._tiltAngle == val)
+                        return;
+
+                    this._tiltAngle = val;
+
+                    this.pNotifyUpdate();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(HoverController.prototype, "distance", {
+                /**
+                * Distance between the camera and the specified target. Defaults to 1000.
+                */
+                get: function () {
+                    return this._distance;
+                },
+                set: function (val) {
+                    if (this._distance == val)
+                        return;
+
+                    this._distance = val;
+
+                    this.pNotifyUpdate();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(HoverController.prototype, "minPanAngle", {
+                /**
+                * Minimum bounds for the <code>panAngle</code>. Defaults to -Infinity.
+                *
+                * @see    #panAngle
+                */
+                get: function () {
+                    return this._minPanAngle;
+                },
+                set: function (val) {
+                    if (this._minPanAngle == val)
+                        return;
+
+                    this._minPanAngle = val;
+
+                    this.panAngle = Math.max(this._minPanAngle, Math.min(this._maxPanAngle, this._panAngle));
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(HoverController.prototype, "maxPanAngle", {
+                /**
+                * Maximum bounds for the <code>panAngle</code>. Defaults to Infinity.
+                *
+                * @see    #panAngle
+                */
+                get: function () {
+                    return this._maxPanAngle;
+                },
+                set: function (val) {
+                    if (this._maxPanAngle == val)
+                        return;
+
+                    this._maxPanAngle = val;
+
+                    this.panAngle = Math.max(this._minPanAngle, Math.min(this._maxPanAngle, this._panAngle));
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(HoverController.prototype, "minTiltAngle", {
+                /**
+                * Minimum bounds for the <code>tiltAngle</code>. Defaults to -90.
+                *
+                * @see    #tiltAngle
+                */
+                get: function () {
+                    return this._minTiltAngle;
+                },
+                set: function (val) {
+                    if (this._minTiltAngle == val)
+                        return;
+
+                    this._minTiltAngle = val;
+
+                    this.tiltAngle = Math.max(this._minTiltAngle, Math.min(this._maxTiltAngle, this._tiltAngle));
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(HoverController.prototype, "maxTiltAngle", {
+                /**
+                * Maximum bounds for the <code>tiltAngle</code>. Defaults to 90.
+                *
+                * @see    #tiltAngle
+                */
+                get: function () {
+                    return this._maxTiltAngle;
+                },
+                set: function (val) {
+                    if (this._maxTiltAngle == val)
+                        return;
+
+                    this._maxTiltAngle = val;
+
+                    this.tiltAngle = Math.max(this._minTiltAngle, Math.min(this._maxTiltAngle, this._tiltAngle));
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(HoverController.prototype, "yFactor", {
+                /**
+                * Fractional difference in distance between the horizontal camera orientation and vertical camera orientation. Defaults to 2.
+                *
+                * @see    #distance
+                */
+                get: function () {
+                    return this._yFactor;
+                },
+                set: function (val) {
+                    if (this._yFactor == val)
+                        return;
+
+                    this._yFactor = val;
+
+                    this.pNotifyUpdate();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(HoverController.prototype, "wrapPanAngle", {
+                /**
+                * Defines whether the value of the pan angle wraps when over 360 degrees or under 0 degrees. Defaults to false.
+                */
+                get: function () {
+                    return this._wrapPanAngle;
+                },
+                set: function (val) {
+                    if (this._wrapPanAngle == val)
+                        return;
+
+                    this._wrapPanAngle = val;
+
+                    this.pNotifyUpdate();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * Updates the current tilt angle and pan angle values.
+            *
+            * Values are calculated using the defined <code>tiltAngle</code>, <code>panAngle</code> and <code>steps</code> variables.
+            *
+            * @param interpolate   If the update to a target pan- or tiltAngle is interpolated. Default is true.
+            *
+            * @see    #tiltAngle
+            * @see    #panAngle
+            * @see    #steps
+            */
+            HoverController.prototype.update = function (interpolate) {
+                if (typeof interpolate === "undefined") { interpolate = true; }
+                if (this._tiltAngle != this._iCurrentTiltAngle || this._panAngle != this._iCurrentPanAngle) {
+                    this.pNotifyUpdate();
+
+                    if (this._wrapPanAngle) {
+                        if (this._panAngle < 0) {
+                            this._iCurrentPanAngle += this._panAngle % 360 + 360 - this._panAngle;
+                            this._panAngle = this._panAngle % 360 + 360;
+                        } else {
+                            this._iCurrentPanAngle += this._panAngle % 360 - this._panAngle;
+                            this._panAngle = this._panAngle % 360;
+                        }
+
+                        while (this._panAngle - this._iCurrentPanAngle < -180)
+                            this._iCurrentPanAngle -= 360;
+
+                        while (this._panAngle - this._iCurrentPanAngle > 180)
+                            this._iCurrentPanAngle += 360;
+                    }
+
+                    if (interpolate) {
+                        this._iCurrentTiltAngle += (this._tiltAngle - this._iCurrentTiltAngle) / (this.steps + 1);
+                        this._iCurrentPanAngle += (this._panAngle - this._iCurrentPanAngle) / (this.steps + 1);
+                    } else {
+                        this._iCurrentPanAngle = this._panAngle;
+                        this._iCurrentTiltAngle = this._tiltAngle;
+                    }
+
+                    //snap coords if angle differences are close
+                    if ((Math.abs(this.tiltAngle - this._iCurrentTiltAngle) < 0.01) && (Math.abs(this._panAngle - this._iCurrentPanAngle) < 0.01)) {
+                        this._iCurrentTiltAngle = this._tiltAngle;
+                        this._iCurrentPanAngle = this._panAngle;
+                    }
+                }
+
+                var pos = (this.lookAtObject) ? this.lookAtObject.transform.position : (this.lookAtPosition) ? this.lookAtPosition : this._pOrigin;
+                this.targetObject.x = pos.x + this.distance * Math.sin(this._iCurrentPanAngle * away.geom.MathConsts.DEGREES_TO_RADIANS) * Math.cos(this._iCurrentTiltAngle * away.geom.MathConsts.DEGREES_TO_RADIANS);
+                this.targetObject.y = pos.y + this.distance * Math.sin(this._iCurrentTiltAngle * away.geom.MathConsts.DEGREES_TO_RADIANS) * this.yFactor;
+                this.targetObject.z = pos.z + this.distance * Math.cos(this._iCurrentPanAngle * away.geom.MathConsts.DEGREES_TO_RADIANS) * Math.cos(this._iCurrentTiltAngle * away.geom.MathConsts.DEGREES_TO_RADIANS);
+
+                _super.prototype.update.call(this);
+            };
+            return HoverController;
+        })(away.controllers.LookAtController);
+        controllers.HoverController = HoverController;
+    })(away.controllers || (away.controllers = {}));
+    var controllers = away.controllers;
+})(away || (away = {}));
+///<reference path="../_definitions.ts" />
+var away;
+(function (away) {
+    (function (controllers) {
+        /**
+        * Extended camera used to hover round a specified target object.
+        *
+        * @see    away3d.containers.View3D
+        */
+        var FirstPersonController = (function (_super) {
+            __extends(FirstPersonController, _super);
+            /**
+            * Creates a new <code>HoverController</code> object.
+            */
+            function FirstPersonController(targetObject, panAngle, tiltAngle, minTiltAngle, maxTiltAngle, steps, wrapPanAngle) {
+                if (typeof targetObject === "undefined") { targetObject = null; }
+                if (typeof panAngle === "undefined") { panAngle = 0; }
+                if (typeof tiltAngle === "undefined") { tiltAngle = 90; }
+                if (typeof minTiltAngle === "undefined") { minTiltAngle = -90; }
+                if (typeof maxTiltAngle === "undefined") { maxTiltAngle = 90; }
+                if (typeof steps === "undefined") { steps = 8; }
+                if (typeof wrapPanAngle === "undefined") { wrapPanAngle = false; }
+                _super.call(this, targetObject);
+                this._iCurrentPanAngle = 0;
+                this._iCurrentTiltAngle = 90;
+                this._panAngle = 0;
+                this._tiltAngle = 90;
+                this._minTiltAngle = -90;
+                this._maxTiltAngle = 90;
+                this._steps = 8;
+                this._walkIncrement = 0;
+                this._strafeIncrement = 0;
+                this._wrapPanAngle = false;
+                this.fly = false;
+
+                this.panAngle = panAngle;
+                this.tiltAngle = tiltAngle;
+                this.minTiltAngle = minTiltAngle;
+                this.maxTiltAngle = maxTiltAngle;
+                this.steps = steps;
+                this.wrapPanAngle = wrapPanAngle;
+
+                //values passed in contrustor are applied immediately
+                this._iCurrentPanAngle = this._panAngle;
+                this._iCurrentTiltAngle = this._tiltAngle;
+            }
+            Object.defineProperty(FirstPersonController.prototype, "steps", {
+                /**
+                * Fractional step taken each time the <code>hover()</code> method is called. Defaults to 8.
+                *
+                * Affects the speed at which the <code>tiltAngle</code> and <code>panAngle</code> resolve to their targets.
+                *
+                * @see    #tiltAngle
+                * @see    #panAngle
+                */
+                get: function () {
+                    return this._steps;
+                },
+                set: function (val) {
+                    val = (val < 1) ? 1 : val;
+
+                    if (this._steps == val)
+                        return;
+
+                    this._steps = val;
+
+                    this.pNotifyUpdate();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(FirstPersonController.prototype, "panAngle", {
+                /**
+                * Rotation of the camera in degrees around the y axis. Defaults to 0.
+                */
+                get: function () {
+                    return this._panAngle;
+                },
+                set: function (val) {
+                    if (this._panAngle == val)
+                        return;
+
+                    this._panAngle = val;
+
+                    this.pNotifyUpdate();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(FirstPersonController.prototype, "tiltAngle", {
+                /**
+                * Elevation angle of the camera in degrees. Defaults to 90.
+                */
+                get: function () {
+                    return this._tiltAngle;
+                },
+                set: function (val) {
+                    val = Math.max(this._minTiltAngle, Math.min(this._maxTiltAngle, val));
+
+                    if (this._tiltAngle == val)
+                        return;
+
+                    this._tiltAngle = val;
+
+                    this.pNotifyUpdate();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(FirstPersonController.prototype, "minTiltAngle", {
+                /**
+                * Minimum bounds for the <code>tiltAngle</code>. Defaults to -90.
+                *
+                * @see    #tiltAngle
+                */
+                get: function () {
+                    return this._minTiltAngle;
+                },
+                set: function (val) {
+                    if (this._minTiltAngle == val)
+                        return;
+
+                    this._minTiltAngle = val;
+
+                    this.tiltAngle = Math.max(this._minTiltAngle, Math.min(this._maxTiltAngle, this._tiltAngle));
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(FirstPersonController.prototype, "maxTiltAngle", {
+                /**
+                * Maximum bounds for the <code>tiltAngle</code>. Defaults to 90.
+                *
+                * @see    #tiltAngle
+                */
+                get: function () {
+                    return this._maxTiltAngle;
+                },
+                set: function (val) {
+                    if (this._maxTiltAngle == val)
+                        return;
+
+                    this._maxTiltAngle = val;
+
+                    this.tiltAngle = Math.max(this._minTiltAngle, Math.min(this._maxTiltAngle, this._tiltAngle));
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(FirstPersonController.prototype, "wrapPanAngle", {
+                /**
+                * Defines whether the value of the pan angle wraps when over 360 degrees or under 0 degrees. Defaults to false.
+                */
+                get: function () {
+                    return this._wrapPanAngle;
+                },
+                set: function (val) {
+                    if (this._wrapPanAngle == val)
+                        return;
+
+                    this._wrapPanAngle = val;
+
+                    this.pNotifyUpdate();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * Updates the current tilt angle and pan angle values.
+            *
+            * Values are calculated using the defined <code>tiltAngle</code>, <code>panAngle</code> and <code>steps</code> variables.
+            *
+            * @param interpolate   If the update to a target pan- or tiltAngle is interpolated. Default is true.
+            *
+            * @see    #tiltAngle
+            * @see    #panAngle
+            * @see    #steps
+            */
+            FirstPersonController.prototype.update = function (interpolate) {
+                if (typeof interpolate === "undefined") { interpolate = true; }
+                if (this._tiltAngle != this._iCurrentTiltAngle || this._panAngle != this._iCurrentPanAngle) {
+                    this.pNotifyUpdate();
+
+                    if (this._wrapPanAngle) {
+                        if (this._panAngle < 0) {
+                            this._iCurrentPanAngle += this._panAngle % 360 + 360 - this._panAngle;
+                            this._panAngle = this._panAngle % 360 + 360;
+                        } else {
+                            this._iCurrentPanAngle += this._panAngle % 360 - this._panAngle;
+                            this._panAngle = this._panAngle % 360;
+                        }
+
+                        while (this._panAngle - this._iCurrentPanAngle < -180)
+                            this._iCurrentPanAngle -= 360;
+
+                        while (this._panAngle - this._iCurrentPanAngle > 180)
+                            this._iCurrentPanAngle += 360;
+                    }
+
+                    if (interpolate) {
+                        this._iCurrentTiltAngle += (this._tiltAngle - this._iCurrentTiltAngle) / (this.steps + 1);
+                        this._iCurrentPanAngle += (this._panAngle - this._iCurrentPanAngle) / (this.steps + 1);
+                    } else {
+                        this._iCurrentTiltAngle = this._tiltAngle;
+                        this._iCurrentPanAngle = this._panAngle;
+                    }
+
+                    //snap coords if angle differences are close
+                    if ((Math.abs(this.tiltAngle - this._iCurrentTiltAngle) < 0.01) && (Math.abs(this._panAngle - this._iCurrentPanAngle) < 0.01)) {
+                        this._iCurrentTiltAngle = this._tiltAngle;
+                        this._iCurrentPanAngle = this._panAngle;
+                    }
+                }
+
+                this.targetObject.rotationX = this._iCurrentTiltAngle;
+                this.targetObject.rotationY = this._iCurrentPanAngle;
+
+                if (this._walkIncrement) {
+                    if (this.fly) {
+                        this.targetObject.transform.moveForward(this._walkIncrement);
+                    } else {
+                        this.targetObject.x += this._walkIncrement * Math.sin(this._panAngle * away.geom.MathConsts.DEGREES_TO_RADIANS);
+                        this.targetObject.z += this._walkIncrement * Math.cos(this._panAngle * away.geom.MathConsts.DEGREES_TO_RADIANS);
+                    }
+                    this._walkIncrement = 0;
+                }
+
+                if (this._strafeIncrement) {
+                    this.targetObject.transform.moveRight(this._strafeIncrement);
+                    this._strafeIncrement = 0;
+                }
+            };
+
+            FirstPersonController.prototype.incrementWalk = function (val) {
+                if (val == 0)
+                    return;
+
+                this._walkIncrement += val;
+
+                this.pNotifyUpdate();
+            };
+
+            FirstPersonController.prototype.incrementStrafe = function (val) {
+                if (val == 0)
+                    return;
+
+                this._strafeIncrement += val;
+
+                this.pNotifyUpdate();
+            };
+            return FirstPersonController;
+        })(away.controllers.ControllerBase);
+        controllers.FirstPersonController = FirstPersonController;
+    })(away.controllers || (away.controllers = {}));
+    var controllers = away.controllers;
+})(away || (away = {}));
+///<reference path="../_definitions.ts" />
+var away;
+(function (away) {
+    (function (controllers) {
+        /**
+        * Controller used to follow behind an object on the XZ plane, with an optional
+        * elevation (tiltAngle).
+        *
+        * @see    away3d.containers.View3D
+        */
+        var FollowController = (function (_super) {
+            __extends(FollowController, _super);
+            function FollowController(targetObject, lookAtObject, tiltAngle, distance) {
+                if (typeof targetObject === "undefined") { targetObject = null; }
+                if (typeof lookAtObject === "undefined") { lookAtObject = null; }
+                if (typeof tiltAngle === "undefined") { tiltAngle = 45; }
+                if (typeof distance === "undefined") { distance = 700; }
+                _super.call(this, targetObject, lookAtObject, 0, tiltAngle, distance);
+            }
+            FollowController.prototype.update = function (interpolate) {
+                if (typeof interpolate === "undefined") { interpolate = true; }
+                interpolate = interpolate; // unused: prevents warning
+
+                if (!this.lookAtObject)
+                    return;
+
+                this.panAngle = this._pLookAtObject.rotationY - 180;
+                _super.prototype.update.call(this);
+            };
+            return FollowController;
+        })(away.controllers.HoverController);
+        controllers.FollowController = FollowController;
+    })(away.controllers || (away.controllers = {}));
+    var controllers = away.controllers;
+})(away || (away = {}));
+///<reference path="../_definitions.ts" />
+var away;
+(function (away) {
+    (function (controllers) {
+        /**
+        * Uses spring physics to animate the target object towards a position that is
+        * defined as the lookAtTarget object's position plus the vector defined by the
+        * positionOffset property.
+        */
+        var SpringController = (function (_super) {
+            __extends(SpringController, _super);
+            function SpringController(targetObject, lookAtObject, stiffness, mass, damping) {
+                if (typeof targetObject === "undefined") { targetObject = null; }
+                if (typeof lookAtObject === "undefined") { lookAtObject = null; }
+                if (typeof stiffness === "undefined") { stiffness = 1; }
+                if (typeof mass === "undefined") { mass = 40; }
+                if (typeof damping === "undefined") { damping = 4; }
+                _super.call(this, targetObject, lookAtObject);
+                /**
+                * Offset of spring center from target in target object space, ie: Where the camera should ideally be in the target object space.
+                */
+                this.positionOffset = new away.geom.Vector3D(0, 500, -1000);
+
+                this.stiffness = stiffness;
+                this.damping = damping;
+                this.mass = mass;
+
+                this._velocity = new away.geom.Vector3D();
+                this._dv = new away.geom.Vector3D();
+                this._stretch = new away.geom.Vector3D();
+                this._force = new away.geom.Vector3D();
+                this._acceleration = new away.geom.Vector3D();
+                this._desiredPosition = new away.geom.Vector3D();
+            }
+            SpringController.prototype.update = function (interpolate) {
+                if (typeof interpolate === "undefined") { interpolate = true; }
+                var offs;
+
+                if (!this._pLookAtObject || !this._pTargetObject)
+                    return;
+
+                offs = this._pLookAtObject.transform.matrix3D.deltaTransformVector(this.positionOffset);
+                this._desiredPosition.x = this._pLookAtObject.x + offs.x;
+                this._desiredPosition.y = this._pLookAtObject.y + offs.y;
+                this._desiredPosition.z = this._pLookAtObject.z + offs.z;
+
+                this._stretch = this._pTargetObject.transform.position.add(this._desiredPosition);
+                this._stretch.scaleBy(-this.stiffness);
+
+                this._dv.copyFrom(this._velocity);
+                this._dv.scaleBy(this.damping);
+
+                this._force.x = this._stretch.x - this._dv.x;
+                this._force.y = this._stretch.y - this._dv.y;
+                this._force.z = this._stretch.z - this._dv.z;
+
+                this._acceleration.copyFrom(this._force);
+                this._acceleration.scaleBy(1 / this.mass);
+
+                this._velocity.incrementBy(this._acceleration);
+
+                this._pTargetObject.transform.position = this._pTargetObject.transform.position.add(this._velocity);
+
+                _super.prototype.update.call(this);
+            };
+            return SpringController;
+        })(away.controllers.LookAtController);
+        controllers.SpringController = SpringController;
+    })(away.controllers || (away.controllers = {}));
+    var controllers = away.controllers;
+})(away || (away = {}));
+///<reference path="../_definitions.ts"/>
+///<reference path="../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (materials) {
+        var BlendMode = away.base.BlendMode;
+        var Event = away.events.Event;
+        var Matrix3D = away.geom.Matrix3D;
+        var AssetType = away.library.AssetType;
+        var Delegate = away.utils.Delegate;
+
+        var CSSRenderableBase = away.render.CSSRenderableBase;
+
+        /**
+        * MaterialBase forms an abstract base class for any material.
+        * A material consists of several passes, each of which constitutes at least one render call. Several passes could
+        * be used for special effects (render lighting for many lights in several passes, render an outline in a separate
+        * pass) or to provide additional render-to-texture passes (rendering diffuse light to texture for texture-space
+        * subsurface scattering, or rendering a depth map for specialized self-shadowing).
+        *
+        * Away3D provides default materials trough SinglePassMaterialBase and MultiPassMaterialBase, which use modular
+        * methods to build the shader code. MaterialBase can be extended to build specific and high-performant custom
+        * shaders, or entire new material frameworks.
+        */
+        var CSSMaterialBase = (function (_super) {
+            __extends(CSSMaterialBase, _super);
+            /**
+            * Creates a new MaterialBase object.
+            */
+            function CSSMaterialBase(texture, smooth, repeat) {
+                if (typeof texture === "undefined") { texture = null; }
+                if (typeof smooth === "undefined") { smooth = true; }
+                if (typeof repeat === "undefined") { repeat = false; }
+                _super.call(this);
+                /**
+                * An id for this material used to sort the renderables by shader program, which reduces Program state changes.
+                *
+                * @private
+                */
+                this._iRenderOrderId = 0;
+                this._bothSides = false;
+                this._pBlendMode = BlendMode.NORMAL;
+                this._repeat = false;
+                this._smooth = true;
+
+                this._iMaterialId = Number(this.id);
+
+                this.texture = texture;
+
+                this.smooth = smooth;
+                this.repeat = repeat;
+
+                this._owners = new Array();
+            }
+            Object.defineProperty(CSSMaterialBase.prototype, "imageElement", {
+                get: function () {
+                    return this._imageElement;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(CSSMaterialBase.prototype, "repeat", {
+                /**
+                * Indicates whether or not any used textures should be tiled. If set to false, texture samples are clamped to
+                * the texture's borders when the uv coordinates are outside the [0, 1] interval.
+                */
+                get: function () {
+                    return this._repeat;
+                },
+                set: function (value) {
+                    this._repeat = value;
+                    //TODO
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(CSSMaterialBase.prototype, "smooth", {
+                /**
+                * Indicates whether or not any used textures should use smoothing.
+                */
+                get: function () {
+                    return this._smooth;
+                },
+                set: function (value) {
+                    this._smooth = value;
+                    //TODO
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(CSSMaterialBase.prototype, "texture", {
+                /**
+                * The texture object to use for the albedo colour.
+                */
+                get: function () {
+                    return this._texture;
+                },
+                set: function (value) {
+                    if (this._texture == value)
+                        return;
+
+                    this._texture = value;
+
+                    if (value instanceof away.textures.ImageTexture)
+                        this._imageElement = value.htmlImageElement;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(CSSMaterialBase.prototype, "assetType", {
+                /**
+                * @inheritDoc
+                */
+                get: function () {
+                    return AssetType.MATERIAL;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * Cleans up resources owned by the material, including passes. Textures are not owned by the material since they
+            * could be used by other materials and will not be disposed.
+            */
+            CSSMaterialBase.prototype.dispose = function () {
+                //TODO
+            };
+
+            Object.defineProperty(CSSMaterialBase.prototype, "bothSides", {
+                /**
+                * Defines whether or not the material should cull triangles facing away from the camera.
+                */
+                get: function () {
+                    return this._bothSides;
+                },
+                set: function (value) {
+                    this._bothSides = value;
+                    //TODO
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(CSSMaterialBase.prototype, "blendMode", {
+                /**
+                * The blend mode to use when drawing this renderable. The following blend modes are supported:
+                * <ul>
+                * <li>BlendMode.NORMAL: No blending, unless the material inherently needs it</li>
+                * <li>BlendMode.LAYER: Force blending. This will draw the object the same as NORMAL, but without writing depth writes.</li>
+                * <li>BlendMode.MULTIPLY</li>
+                * <li>BlendMode.ADD</li>
+                * <li>BlendMode.ALPHA</li>
+                * </ul>
+                */
+                get: function () {
+                    return this._pBlendMode;
+                },
+                set: function (value) {
+                    this._pBlendMode = value;
+                    //TODO
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(CSSMaterialBase.prototype, "requiresBlending", {
+                /**
+                * Indicates whether or not the material requires alpha blending during rendering.
+                */
+                get: function () {
+                    return this._pBlendMode != away.base.BlendMode.NORMAL;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            //
+            // MATERIAL MANAGEMENT
+            //
+            /**
+            * Mark an IMaterialOwner as owner of this material.
+            * Assures we're not using the same material across renderables with different animations, since the
+            * Programs depend on animation. This method needs to be called when a material is assigned.
+            *
+            * @param owner The IMaterialOwner that had this material assigned
+            *
+            * @private
+            */
+            CSSMaterialBase.prototype.iAddOwner = function (owner) {
+                this._owners.push(owner);
+                //TODO
+            };
+
+            /**
+            * Removes an IMaterialOwner as owner.
+            * @param owner
+            *
+            * @internal
+            */
+            CSSMaterialBase.prototype.iRemoveOwner = function (owner) {
+                //TODO
+            };
+
+            Object.defineProperty(CSSMaterialBase.prototype, "iOwners", {
+                /**
+                * A list of the IMaterialOwners that use this material
+                *
+                * @internal
+                */
+                get: function () {
+                    return this._owners;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return CSSMaterialBase;
+        })(away.library.NamedAssetBase);
+        materials.CSSMaterialBase = CSSMaterialBase;
+    })(away.materials || (away.materials = {}));
+    var materials = away.materials;
 })(away || (away = {}));
 ///<reference path="../_definitions.ts"/>
 var away;
@@ -10160,1027 +24508,6 @@ var StageGLManagerSingletonEnforcer = (function () {
     return StageGLManagerSingletonEnforcer;
 })();
 ///<reference path="../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (utils) {
-        var ByteArrayBase = (function () {
-            function ByteArrayBase() {
-                this.position = 0;
-                this.length = 0;
-                this._mode = "";
-                this.Base64Key = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-            }
-            ByteArrayBase.prototype.writeByte = function (b) {
-                throw "Virtual method";
-            };
-
-            ByteArrayBase.prototype.readByte = function () {
-                throw "Virtual method";
-            };
-
-            ByteArrayBase.prototype.writeUnsignedByte = function (b) {
-                throw "Virtual method";
-            };
-
-            ByteArrayBase.prototype.readUnsignedByte = function () {
-                throw "Virtual method";
-            };
-
-            ByteArrayBase.prototype.writeUnsignedShort = function (b) {
-                throw "Virtual method";
-            };
-
-            ByteArrayBase.prototype.readUnsignedShort = function () {
-                throw "Virtual method";
-            };
-
-            ByteArrayBase.prototype.writeUnsignedInt = function (b) {
-                throw "Virtual method";
-            };
-
-            ByteArrayBase.prototype.readUnsignedInt = function () {
-                throw "Virtual method";
-            };
-
-            ByteArrayBase.prototype.writeFloat = function (b) {
-                throw "Virtual method";
-            };
-
-            ByteArrayBase.prototype.toFloatBits = function (x) {
-                throw "Virtual method";
-            };
-
-            ByteArrayBase.prototype.readFloat = function (b) {
-                throw "Virtual method";
-            };
-
-            ByteArrayBase.prototype.fromFloatBits = function (x) {
-                throw "Virtual method";
-            };
-
-            ByteArrayBase.prototype.getBytesAvailable = function () {
-                throw new away.errors.AbstractMethodError('ByteArrayBase, getBytesAvailable() not implemented ');
-            };
-
-            ByteArrayBase.prototype.toString = function () {
-                return "[ByteArray] ( " + this._mode + " ) position=" + this.position + " length=" + this.length;
-            };
-
-            ByteArrayBase.prototype.compareEqual = function (other, count) {
-                if (count == undefined || count > this.length - this.position)
-                    count = this.length - this.position;
-                if (count > other.length - other.position)
-                    count = other.length - other.position;
-                var co0 = count;
-                var r = true;
-                while (r && count >= 4) {
-                    count -= 4;
-                    if (this.readUnsignedInt() != other.readUnsignedInt())
-                        r = false;
-                }
-                while (r && count >= 1) {
-                    count--;
-                    if (this.readUnsignedByte() != other.readUnsignedByte())
-                        r = false;
-                }
-                var c0;
-                this.position -= (c0 - count);
-                other.position -= (c0 - count);
-                return r;
-            };
-
-            ByteArrayBase.prototype.writeBase64String = function (s) {
-                for (var i = 0; i < s.length; i++) {
-                    var v = s.charAt(i);
-                }
-            };
-
-            ByteArrayBase.prototype.dumpToConsole = function () {
-                var oldpos = this.position;
-                this.position = 0;
-                var nstep = 8;
-
-                function asHexString(x, digits) {
-                    var lut = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"];
-                    var sh = "";
-                    for (var d = 0; d < digits; d++) {
-                        sh = lut[(x >> (d << 2)) & 0xf] + sh;
-                    }
-                    return sh;
-                }
-
-                for (var i = 0; i < this.length; i += nstep) {
-                    var s = asHexString(i, 4) + ":";
-                    for (var j = 0; j < nstep && i + j < this.length; j++) {
-                        s += " " + asHexString(this.readUnsignedByte(), 2);
-                    }
-                    console.log(s);
-                }
-                this.position = oldpos;
-            };
-
-            ByteArrayBase.prototype.internalGetBase64String = function (count, getUnsignedByteFunc, self) {
-                var r = "";
-                var b0, b1, b2, enc1, enc2, enc3, enc4;
-                var base64Key = this.Base64Key;
-                while (count >= 3) {
-                    b0 = getUnsignedByteFunc.apply(self);
-                    b1 = getUnsignedByteFunc.apply(self);
-                    b2 = getUnsignedByteFunc.apply(self);
-                    enc1 = b0 >> 2;
-                    enc2 = ((b0 & 3) << 4) | (b1 >> 4);
-                    enc3 = ((b1 & 15) << 2) | (b2 >> 6);
-                    enc4 = b2 & 63;
-                    r += base64Key.charAt(enc1) + base64Key.charAt(enc2) + base64Key.charAt(enc3) + base64Key.charAt(enc4);
-                    count -= 3;
-                }
-
-                // pad
-                if (count == 2) {
-                    b0 = getUnsignedByteFunc.apply(self);
-                    b1 = getUnsignedByteFunc.apply(self);
-                    enc1 = b0 >> 2;
-                    enc2 = ((b0 & 3) << 4) | (b1 >> 4);
-                    enc3 = ((b1 & 15) << 2);
-                    r += base64Key.charAt(enc1) + base64Key.charAt(enc2) + base64Key.charAt(enc3) + "=";
-                } else if (count == 1) {
-                    b0 = getUnsignedByteFunc.apply(self);
-                    enc1 = b0 >> 2;
-                    enc2 = ((b0 & 3) << 4);
-                    r += base64Key.charAt(enc1) + base64Key.charAt(enc2) + "==";
-                }
-                return r;
-            };
-            return ByteArrayBase;
-        })();
-        utils.ByteArrayBase = ByteArrayBase;
-    })(away.utils || (away.utils = {}));
-    var utils = away.utils;
-})(away || (away = {}));
-///<reference path="../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (utils) {
-        var ByteArray = (function (_super) {
-            __extends(ByteArray, _super);
-            function ByteArray() {
-                _super.call(this);
-                this.maxlength = 0;
-                this._mode = "Typed array";
-                this.maxlength = 4;
-                this.arraybytes = new ArrayBuffer(this.maxlength);
-                this.unalignedarraybytestemp = new ArrayBuffer(16);
-            }
-            ByteArray.prototype.ensureWriteableSpace = function (n) {
-                this.ensureSpace(n + this.position);
-            };
-
-            ByteArray.prototype.setArrayBuffer = function (aBuffer) {
-                this.ensureSpace(aBuffer.byteLength);
-
-                this.length = aBuffer.byteLength;
-
-                var inInt8AView = new Int8Array(aBuffer);
-                var localInt8View = new Int8Array(this.arraybytes, 0, this.length);
-
-                localInt8View.set(inInt8AView);
-
-                this.position = 0;
-            };
-
-            ByteArray.prototype.getBytesAvailable = function () {
-                return (this.length) - (this.position);
-            };
-
-            ByteArray.prototype.ensureSpace = function (n) {
-                if (n > this.maxlength) {
-                    var newmaxlength = (n + 255) & (~255);
-                    var newarraybuffer = new ArrayBuffer(newmaxlength);
-                    var view = new Uint8Array(this.arraybytes, 0, this.length);
-                    var newview = new Uint8Array(newarraybuffer, 0, this.length);
-                    newview.set(view); // memcpy
-                    this.arraybytes = newarraybuffer;
-                    this.maxlength = newmaxlength;
-                }
-            };
-
-            ByteArray.prototype.writeByte = function (b) {
-                this.ensureWriteableSpace(1);
-                var view = new Int8Array(this.arraybytes);
-                view[this.position++] = (~~b); // ~~ is cast to int in js...
-                if (this.position > this.length) {
-                    this.length = this.position;
-                }
-            };
-
-            ByteArray.prototype.readByte = function () {
-                if (this.position >= this.length) {
-                    throw "ByteArray out of bounds read. Positon=" + this.position + ", Length=" + this.length;
-                }
-                var view = new Int8Array(this.arraybytes);
-
-                return view[this.position++];
-            };
-
-            ByteArray.prototype.readBytes = function (bytes, offset, length) {
-                if (typeof offset === "undefined") { offset = 0; }
-                if (typeof length === "undefined") { length = 0; }
-                if (length == null) {
-                    length = bytes.length;
-                }
-
-                bytes.ensureWriteableSpace(offset + length);
-
-                var byteView = new Int8Array(bytes.arraybytes);
-                var localByteView = new Int8Array(this.arraybytes);
-
-                byteView.set(localByteView.subarray(this.position, this.position + length), offset);
-
-                this.position += length;
-
-                if (length + offset > bytes.length) {
-                    bytes.length += (length + offset) - bytes.length;
-                }
-            };
-
-            ByteArray.prototype.writeUnsignedByte = function (b) {
-                this.ensureWriteableSpace(1);
-                var view = new Uint8Array(this.arraybytes);
-                view[this.position++] = (~~b) & 0xff; // ~~ is cast to int in js...
-                if (this.position > this.length) {
-                    this.length = this.position;
-                }
-            };
-
-            ByteArray.prototype.readUnsignedByte = function () {
-                if (this.position >= this.length) {
-                    throw "ByteArray out of bounds read. Positon=" + this.position + ", Length=" + this.length;
-                }
-                var view = new Uint8Array(this.arraybytes);
-                return view[this.position++];
-            };
-
-            ByteArray.prototype.writeUnsignedShort = function (b) {
-                this.ensureWriteableSpace(2);
-                if ((this.position & 1) == 0) {
-                    var view = new Uint16Array(this.arraybytes);
-                    view[this.position >> 1] = (~~b) & 0xffff; // ~~ is cast to int in js...
-                } else {
-                    var view = new Uint16Array(this.unalignedarraybytestemp, 0, 1);
-                    view[0] = (~~b) & 0xffff;
-                    var view2 = new Uint8Array(this.arraybytes, this.position, 2);
-                    var view3 = new Uint8Array(this.unalignedarraybytestemp, 0, 2);
-                    view2.set(view3);
-                }
-                this.position += 2;
-                if (this.position > this.length) {
-                    this.length = this.position;
-                }
-            };
-
-            ByteArray.prototype.readUTFBytes = function (len) {
-                var value = "";
-                var max = this.position + len;
-                var data = new DataView(this.arraybytes);
-
-                while (this.position < max) {
-                    var c = data.getUint8(this.position++);
-
-                    if (c < 0x80) {
-                        if (c == 0)
-                            break;
-                        value += String.fromCharCode(c);
-                    } else if (c < 0xE0) {
-                        value += String.fromCharCode(((c & 0x3F) << 6) | (data.getUint8(this.position++) & 0x7F));
-                    } else if (c < 0xF0) {
-                        var c2 = data.getUint8(this.position++);
-                        value += String.fromCharCode(((c & 0x1F) << 12) | ((c2 & 0x7F) << 6) | (data.getUint8(this.position++) & 0x7F));
-                    } else {
-                        var c2 = data.getUint8(this.position++);
-                        var c3 = data.getUint8(this.position++);
-
-                        value += String.fromCharCode(((c & 0x0F) << 18) | ((c2 & 0x7F) << 12) | ((c3 << 6) & 0x7F) | (data.getUint8(this.position++) & 0x7F));
-                    }
-                }
-
-                return value;
-            };
-
-            ByteArray.prototype.readInt = function () {
-                var data = new DataView(this.arraybytes);
-                var int = data.getInt32(this.position, true);
-
-                this.position += 4;
-
-                return int;
-            };
-
-            ByteArray.prototype.readShort = function () {
-                var data = new DataView(this.arraybytes);
-                var short = data.getInt16(this.position, true);
-
-                this.position += 2;
-                return short;
-            };
-
-            ByteArray.prototype.readDouble = function () {
-                var data = new DataView(this.arraybytes);
-                var double = data.getFloat64(this.position, true);
-
-                this.position += 8;
-                return double;
-            };
-
-            ByteArray.prototype.readUnsignedShort = function () {
-                if (this.position > this.length + 2) {
-                    throw "ByteArray out of bounds read. Position=" + this.position + ", Length=" + this.length;
-                }
-                if ((this.position & 1) == 0) {
-                    var view = new Uint16Array(this.arraybytes);
-                    var pa = this.position >> 1;
-                    this.position += 2;
-                    return view[pa];
-                } else {
-                    var view = new Uint16Array(this.unalignedarraybytestemp, 0, 1);
-                    var view2 = new Uint8Array(this.arraybytes, this.position, 2);
-                    var view3 = new Uint8Array(this.unalignedarraybytestemp, 0, 2);
-                    view3.set(view2);
-                    this.position += 2;
-                    return view[0];
-                }
-            };
-
-            ByteArray.prototype.writeUnsignedInt = function (b) {
-                this.ensureWriteableSpace(4);
-                if ((this.position & 3) == 0) {
-                    var view = new Uint32Array(this.arraybytes);
-                    view[this.position >> 2] = (~~b) & 0xffffffff; // ~~ is cast to int in js...
-                } else {
-                    var view = new Uint32Array(this.unalignedarraybytestemp, 0, 1);
-                    view[0] = (~~b) & 0xffffffff;
-                    var view2 = new Uint8Array(this.arraybytes, this.position, 4);
-                    var view3 = new Uint8Array(this.unalignedarraybytestemp, 0, 4);
-                    view2.set(view3);
-                }
-                this.position += 4;
-                if (this.position > this.length) {
-                    this.length = this.position;
-                }
-            };
-
-            ByteArray.prototype.readUnsignedInt = function () {
-                if (this.position > this.length + 4) {
-                    throw "ByteArray out of bounds read. Position=" + this.position + ", Length=" + this.length;
-                }
-                if ((this.position & 3) == 0) {
-                    var view = new Uint32Array(this.arraybytes);
-                    var pa = this.position >> 2;
-                    this.position += 4;
-                    return view[pa];
-                } else {
-                    var view = new Uint32Array(this.unalignedarraybytestemp, 0, 1);
-                    var view2 = new Uint8Array(this.arraybytes, this.position, 4);
-                    var view3 = new Uint8Array(this.unalignedarraybytestemp, 0, 4);
-                    view3.set(view2);
-                    this.position += 4;
-                    return view[0];
-                }
-            };
-
-            ByteArray.prototype.writeFloat = function (b) {
-                this.ensureWriteableSpace(4);
-                if ((this.position & 3) == 0) {
-                    var view = new Float32Array(this.arraybytes);
-                    view[this.position >> 2] = b;
-                } else {
-                    var view = new Float32Array(this.unalignedarraybytestemp, 0, 1);
-                    view[0] = b;
-                    var view2 = new Uint8Array(this.arraybytes, this.position, 4);
-                    var view3 = new Uint8Array(this.unalignedarraybytestemp, 0, 4);
-                    view2.set(view3);
-                }
-                this.position += 4;
-                if (this.position > this.length) {
-                    this.length = this.position;
-                }
-            };
-
-            ByteArray.prototype.readFloat = function () {
-                if (this.position > this.length + 4) {
-                    throw "ByteArray out of bounds read. Positon=" + this.position + ", Length=" + this.length;
-                }
-                if ((this.position & 3) == 0) {
-                    var view = new Float32Array(this.arraybytes);
-                    var pa = this.position >> 2;
-                    this.position += 4;
-                    return view[pa];
-                } else {
-                    var view = new Float32Array(this.unalignedarraybytestemp, 0, 1);
-                    var view2 = new Uint8Array(this.arraybytes, this.position, 4);
-                    var view3 = new Uint8Array(this.unalignedarraybytestemp, 0, 4);
-                    view3.set(view2);
-                    this.position += 4;
-                    return view[0];
-                }
-            };
-            return ByteArray;
-        })(away.utils.ByteArrayBase);
-        utils.ByteArray = ByteArray;
-    })(away.utils || (away.utils = {}));
-    var utils = away.utils;
-})(away || (away = {}));
-///<reference path="../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (utils) {
-        var ByteArrayBuffer = (function (_super) {
-            __extends(ByteArrayBuffer, _super);
-            function ByteArrayBuffer() {
-                _super.call(this);
-                this._bytes = [];
-                this._mode = "Array";
-            }
-            ByteArrayBuffer.prototype.writeByte = function (b) {
-                var bi = ~~b;
-                this._bytes[this.position++] = bi;
-                if (this.position > this.length) {
-                    this.length = this.position;
-                }
-            };
-
-            ByteArrayBuffer.prototype.readByte = function () {
-                if (this.position >= this.length) {
-                    throw "ByteArray out of bounds read. Position=" + this.position + ", Length=" + this.length;
-                }
-                return this._bytes[this.position++];
-            };
-
-            ByteArrayBuffer.prototype.writeUnsignedByte = function (b) {
-                var bi = ~~b;
-                this._bytes[this.position++] = bi & 0xff;
-                if (this.position > this.length) {
-                    this.length = this.position;
-                }
-            };
-
-            ByteArrayBuffer.prototype.readUnsignedByte = function () {
-                if (this.position >= this.length) {
-                    throw "ByteArray out of bounds read. Position=" + this.position + ", Length=" + this.length;
-                }
-                return this._bytes[this.position++];
-            };
-
-            ByteArrayBuffer.prototype.writeUnsignedShort = function (b) {
-                var bi = ~~b;
-                this._bytes[this.position++] = bi & 0xff;
-                this._bytes[this.position++] = (bi >> 8) & 0xff;
-                if (this.position > this.length) {
-                    this.length = this.position;
-                }
-            };
-
-            ByteArrayBuffer.prototype.readUnsignedShort = function () {
-                if (this.position + 2 > this.length) {
-                    throw "ByteArray out of bounds read. Position=" + this.position + ", Length=" + this.length;
-                }
-                var r = this._bytes[this.position] | (this._bytes[this.position + 1] << 8);
-                this.position += 2;
-                return r;
-            };
-
-            ByteArrayBuffer.prototype.writeUnsignedInt = function (b) {
-                var bi = ~~b;
-                this._bytes[this.position++] = bi & 0xff;
-                this._bytes[this.position++] = (bi >>> 8) & 0xff;
-                this._bytes[this.position++] = (bi >>> 16) & 0xff;
-                this._bytes[this.position++] = (bi >>> 24) & 0xff;
-                if (this.position > this.length) {
-                    this.length = this.position;
-                }
-            };
-
-            ByteArrayBuffer.prototype.readUnsignedInt = function () {
-                if (this.position + 4 > this.length) {
-                    throw "ByteArray out of bounds read. Position=" + this.position + ", Length=" + this.length;
-                }
-                var r = this._bytes[this.position] | (this._bytes[this.position + 1] << 8) | (this._bytes[this.position + 2] << 16) | (this._bytes[this.position + 3] << 24);
-                this.position += 4;
-                return r >>> 0;
-            };
-
-            ByteArrayBuffer.prototype.writeFloat = function (b) {
-                // this is crazy slow and silly, but as a fallback...
-                this.writeUnsignedInt(this.toFloatBits(Number(b)));
-            };
-
-            ByteArrayBuffer.prototype.toFloatBits = function (x) {
-                // don't handle inf/nan yet
-                // special case zero
-                if (x == 0) {
-                    return 0;
-                }
-
-                // remove the sign, after this we only deal with positive numbers
-                var sign = 0;
-                if (x < 0) {
-                    x = -x;
-                    sign = 1;
-                } else {
-                    sign = 0;
-                }
-
-                // a float value is now defined as: x = (1+(mantissa*2^-23))*(2^(exponent-127))
-                var exponent = Math.log(x) / Math.log(2);
-                exponent = Math.floor(exponent);
-                x = x * Math.pow(2, 23 - exponent); // normalize to 24 bits
-                var mantissa = Math.floor(x) - 0x800000;
-                exponent = exponent + 127;
-                return ((sign << 31) >>> 0) | (exponent << 23) | mantissa;
-            };
-
-            ByteArrayBuffer.prototype.readFloat = function (b) {
-                return this.fromFloatBits(this.readUnsignedInt());
-            };
-
-            ByteArrayBuffer.prototype.fromFloatBits = function (x) {
-                if (x == 0) {
-                    return 0;
-                }
-                var exponent = (x >>> 23) & 0xff;
-                var mantissa = (x & 0x7fffff) | 0x800000;
-                var y = Math.pow(2, (exponent - 127) - 23) * mantissa;
-                if (x >>> 31 != 0) {
-                    y = -y;
-                }
-                return y;
-            };
-            return ByteArrayBuffer;
-        })(away.utils.ByteArrayBase);
-        utils.ByteArrayBuffer = ByteArrayBuffer;
-    })(away.utils || (away.utils = {}));
-    var utils = away.utils;
-})(away || (away = {}));
-var away;
-(function (away) {
-    (function (utils) {
-        var ColorUtils = (function () {
-            function ColorUtils() {
-            }
-            ColorUtils.float32ColorToARGB = function (float32Color) {
-                var a = (float32Color & 0xff000000) >>> 24;
-                var r = (float32Color & 0xff0000) >>> 16;
-                var g = (float32Color & 0xff00) >>> 8;
-                var b = float32Color & 0xff;
-                var result = [a, r, g, b];
-
-                return result;
-            };
-
-            ColorUtils.componentToHex = function (c) {
-                var hex = c.toString(16);
-                return hex.length == 1 ? "0" + hex : hex;
-            };
-
-            ColorUtils.RGBToHexString = function (argb) {
-                return "#" + ColorUtils.componentToHex(argb[1]) + ColorUtils.componentToHex(argb[2]) + ColorUtils.componentToHex(argb[3]);
-            };
-
-            ColorUtils.ARGBToHexString = function (argb) {
-                return "#" + ColorUtils.componentToHex(argb[0]) + ColorUtils.componentToHex(argb[1]) + ColorUtils.componentToHex(argb[2]) + ColorUtils.componentToHex(argb[3]);
-            };
-            return ColorUtils;
-        })();
-        utils.ColorUtils = ColorUtils;
-    })(away.utils || (away.utils = {}));
-    var utils = away.utils;
-})(away || (away = {}));
-var away;
-(function (away) {
-    ///<reference path="../_definitions.ts"/>
-    (function (utils) {
-        var CSS = (function () {
-            function CSS() {
-            }
-            CSS.setCanvasSize = function (canvas, width, height) {
-                canvas.style.width = width + "px";
-                canvas.style.height = height + "px";
-                canvas.width = width;
-                canvas.height = height;
-            };
-
-            CSS.setCanvasWidth = function (canvas, width) {
-                canvas.style.width = width + "px";
-                canvas.width = width;
-            };
-
-            CSS.setCanvasHeight = function (canvas, height) {
-                canvas.style.height = height + "px";
-                canvas.height = height;
-            };
-
-            CSS.setCanvasX = function (canvas, x) {
-                canvas.style.position = 'absolute';
-                canvas.style.left = x + "px";
-            };
-
-            CSS.setCanvasY = function (canvas, y) {
-                canvas.style.position = 'absolute';
-                canvas.style.top = y + "px";
-            };
-
-            CSS.getCanvasVisibility = function (canvas) {
-                return canvas.style.visibility == 'visible';
-            };
-
-            CSS.setCanvasVisibility = function (canvas, visible) {
-                if (visible) {
-                    canvas.style.visibility = 'visible';
-                } else {
-                    canvas.style.visibility = 'hidden';
-                }
-            };
-
-            CSS.setCanvasAlpha = function (canvas, alpha) {
-                var context = canvas.getContext("2d");
-                context.globalAlpha = alpha;
-            };
-
-            CSS.setCanvasPosition = function (canvas, x, y, absolute) {
-                if (typeof absolute === "undefined") { absolute = false; }
-                if (absolute) {
-                    canvas.style.position = "absolute";
-                } else {
-                    canvas.style.position = "relative";
-                }
-
-                canvas.style.left = x + "px";
-                canvas.style.top = y + "px";
-            };
-            return CSS;
-        })();
-        utils.CSS = CSS;
-    })(away.utils || (away.utils = {}));
-    var utils = away.utils;
-})(away || (away = {}));
-///<reference path="../_definitions.ts"/>
-var away;
-(function (away) {
-    var Debug = (function () {
-        function Debug() {
-        }
-        Debug.breakpoint = function () {
-            away.Debug['break']();
-        };
-
-        Debug.throwPIROnKeyWordOnly = function (str, enable) {
-            if (typeof enable === "undefined") { enable = true; }
-            if (!enable) {
-                away.Debug.keyword = null;
-            } else {
-                away.Debug.keyword = str;
-            }
-        };
-
-        Debug.throwPIR = function (clss, fnc, msg) {
-            Debug.logPIR('PartialImplementationError ' + clss, fnc, msg);
-
-            if (Debug.THROW_ERRORS) {
-                if (away.Debug.keyword) {
-                    var e = clss + fnc + msg;
-
-                    if (e.indexOf(away.Debug.keyword) == -1) {
-                        return;
-                    }
-                }
-
-                throw new away.errors.PartialImplementationError(clss + '.' + fnc + ': ' + msg);
-            }
-        };
-
-        Debug.logPIR = function (clss, fnc, msg) {
-            if (typeof msg === "undefined") { msg = ''; }
-            if (Debug.LOG_PI_ERRORS) {
-                console.log(clss + '.' + fnc + ': ' + msg);
-            }
-        };
-
-        Debug.log = function () {
-            var args = [];
-            for (var _i = 0; _i < (arguments.length - 0); _i++) {
-                args[_i] = arguments[_i + 0];
-            }
-            if (Debug.ENABLE_LOG) {
-                console.log.apply(console, arguments);
-            }
-        };
-        Debug.THROW_ERRORS = true;
-        Debug.ENABLE_LOG = true;
-        Debug.LOG_PI_ERRORS = true;
-
-        Debug.keyword = null;
-        return Debug;
-    })();
-    away.Debug = Debug;
-})(away || (away = {}));
-///<reference path="../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (utils) {
-        var Delegate = (function () {
-            function Delegate(func) {
-                if (typeof func === "undefined") { func = null; }
-                this._func = func;
-            }
-            /**
-            Creates a functions wrapper for the original function so that it runs
-            in the provided context.
-            @parameter obj Context in which to run the function.
-            @paramater func Function to run.
-            */
-            Delegate.create = function (obj, func) {
-                var f = function () {
-                    return func.apply(obj, arguments);
-                };
-
-                return f;
-            };
-
-            Delegate.prototype.createDelegate = function (obj) {
-                return Delegate.create(obj, this._func);
-            };
-            return Delegate;
-        })();
-        utils.Delegate = Delegate;
-    })(away.utils || (away.utils = {}));
-    var utils = away.utils;
-})(away || (away = {}));
-///<reference path="../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (utils) {
-        //[native(cls="TimerClass", gc="exact", instance="TimerObject", methods="auto")]
-        //[Event(name="timerComplete", type="flash.events.TimerEvent")]
-        //[Event(name="timer", type="flash.events.TimerEvent")]
-        function getTimer() {
-            // number milliseconds of 1970/01/01
-            // this different to AS3 implementation which gets the number of milliseconds
-            // since instance of Flash player was initialised
-            return Date.now();
-        }
-        utils.getTimer = getTimer;
-    })(away.utils || (away.utils = {}));
-    var utils = away.utils;
-})(away || (away = {}));
-///<reference path="../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (utils) {
-        var RequestAnimationFrame = (function () {
-            function RequestAnimationFrame(callback, callbackContext) {
-                var _this = this;
-                this._active = false;
-                this._argsArray = new Array();
-                this._getTimer = away.utils.getTimer;
-
-                this.setCallback(callback, callbackContext);
-
-                this._rafUpdateFunction = function () {
-                    if (_this._active) {
-                        _this._tick();
-                    }
-                };
-
-                this._argsArray.push(this._dt);
-            }
-            // Public
-            /**
-            *
-            * @param callback
-            * @param callbackContext
-            */
-            RequestAnimationFrame.prototype.setCallback = function (callback, callbackContext) {
-                this._callback = callback;
-                this._callbackContext = callbackContext;
-            };
-
-            /**
-            *
-            */
-            RequestAnimationFrame.prototype.start = function () {
-                this._prevTime = this._getTimer();
-                this._active = true;
-
-                if (window['mozRequestAnimationFrame']) {
-                    window.requestAnimationFrame = window['mozRequestAnimationFrame'];
-                } else if (window['webkitRequestAnimationFrame']) {
-                    window.requestAnimationFrame = window['webkitRequestAnimationFrame'];
-                } else if (window['oRequestAnimationFrame']) {
-                    window.requestAnimationFrame = window['oRequestAnimationFrame'];
-                }
-
-                if (window.requestAnimationFrame) {
-                    window.requestAnimationFrame(this._rafUpdateFunction);
-                }
-            };
-
-            /**
-            *
-            */
-            RequestAnimationFrame.prototype.stop = function () {
-                this._active = false;
-            };
-
-            Object.defineProperty(RequestAnimationFrame.prototype, "active", {
-                // Get / Set
-                /**
-                *
-                * @returns {boolean}
-                */
-                get: function () {
-                    return this._active;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            // Private
-            /**
-            *
-            * @private
-            */
-            RequestAnimationFrame.prototype._tick = function () {
-                this._currentTime = this._getTimer();
-                this._dt = this._currentTime - this._prevTime;
-                this._argsArray[0] = this._dt;
-                this._callback.apply(this._callbackContext, this._argsArray);
-
-                window.requestAnimationFrame(this._rafUpdateFunction);
-
-                this._prevTime = this._currentTime;
-            };
-            return RequestAnimationFrame;
-        })();
-        utils.RequestAnimationFrame = RequestAnimationFrame;
-    })(away.utils || (away.utils = {}));
-    var utils = away.utils;
-})(away || (away = {}));
-var away;
-(function (away) {
-    ///<reference path="../_definitions.ts"/>
-    (function (utils) {
-        //import flash.base.BitmapData;
-        var TextureUtils = (function () {
-            function TextureUtils() {
-            }
-            TextureUtils.isBitmapDataValid = function (bitmapData) {
-                if (bitmapData == null) {
-                    return true;
-                }
-
-                return TextureUtils.isDimensionValid(bitmapData.width) && TextureUtils.isDimensionValid(bitmapData.height);
-            };
-
-            TextureUtils.isHTMLImageElementValid = function (image) {
-                if (image == null) {
-                    return true;
-                }
-
-                return TextureUtils.isDimensionValid(image.width) && TextureUtils.isDimensionValid(image.height);
-            };
-
-            TextureUtils.isDimensionValid = function (d) {
-                return d >= 1 && d <= TextureUtils.MAX_SIZE && TextureUtils.isPowerOfTwo(d);
-            };
-
-            TextureUtils.isPowerOfTwo = function (value) {
-                return value ? ((value & -value) == value) : false;
-            };
-
-            TextureUtils.getBestPowerOf2 = function (value) {
-                var p = 1;
-
-                while (p < value)
-                    p <<= 1;
-
-                if (p > TextureUtils.MAX_SIZE)
-                    p = TextureUtils.MAX_SIZE;
-
-                return p;
-            };
-            TextureUtils.MAX_SIZE = 2048;
-            return TextureUtils;
-        })();
-        utils.TextureUtils = TextureUtils;
-    })(away.utils || (away.utils = {}));
-    var utils = away.utils;
-})(away || (away = {}));
-///<reference path="../_definitions.ts"/>
-var away;
-(function (away) {
-    (function (utils) {
-        //[native(cls="TimerClass", gc="exact", instance="TimerObject", methods="auto")]
-        //[Event(name="timerComplete", type="flash.events.TimerEvent")]
-        //[Event(name="timer", type="flash.events.TimerEvent")]
-        var Timer = (function (_super) {
-            __extends(Timer, _super);
-            function Timer(delay, repeatCount) {
-                if (typeof repeatCount === "undefined") { repeatCount = 0; }
-                _super.call(this);
-                this._repeatCount = 0;
-                this._currentCount = 0;
-                this._running = false;
-
-                this._delay = delay;
-                this._repeatCount = repeatCount;
-
-                if (isNaN(delay) || delay < 0) {
-                    throw new away.errors.Error("Delay is negative or not a number");
-                }
-            }
-            Object.defineProperty(Timer.prototype, "currentCount", {
-                get: function () {
-                    return this._currentCount;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(Timer.prototype, "delay", {
-                get: function () {
-                    return this._delay;
-                },
-                set: function (value) {
-                    this._delay = value;
-
-                    if (this._running) {
-                        this.stop();
-                        this.start();
-                    }
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(Timer.prototype, "repeatCount", {
-                get: function () {
-                    return this._repeatCount;
-                },
-                set: function (value) {
-                    this._repeatCount = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Timer.prototype.reset = function () {
-                if (this._running) {
-                    this.stop();
-                }
-
-                this._currentCount = 0;
-            };
-
-            Object.defineProperty(Timer.prototype, "running", {
-                get: function () {
-                    return this._running;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Timer.prototype.start = function () {
-                var _this = this;
-                this._running = true;
-                clearInterval(this._iid);
-                this._iid = setInterval(function () {
-                    return _this.tick();
-                }, this._delay);
-            };
-
-            Timer.prototype.stop = function () {
-                this._running = false;
-                clearInterval(this._iid);
-            };
-
-            Timer.prototype.tick = function () {
-                this._currentCount++;
-
-                if ((this._repeatCount > 0) && this._currentCount >= this._repeatCount) {
-                    this.stop();
-                    this.dispatchEvent(new away.events.TimerEvent(away.events.TimerEvent.TIMER));
-                    this.dispatchEvent(new away.events.TimerEvent(away.events.TimerEvent.TIMER_COMPLETE));
-                } else {
-                    this.dispatchEvent(new away.events.TimerEvent(away.events.TimerEvent.TIMER));
-                }
-            };
-            return Timer;
-        })(away.events.EventDispatcher);
-        utils.Timer = Timer;
-    })(away.utils || (away.utils = {}));
-    var utils = away.utils;
-})(away || (away = {}));
 ///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
@@ -11557,16 +24884,16 @@ var away;
 var away;
 (function (away) {
     (function (textures) {
-        var HTMLImageElementTexture = (function (_super) {
-            __extends(HTMLImageElementTexture, _super);
-            function HTMLImageElementTexture(htmlImageElement, generateMipmaps) {
+        var ImageTexture = (function (_super) {
+            __extends(ImageTexture, _super);
+            function ImageTexture(htmlImageElement, generateMipmaps) {
                 if (typeof generateMipmaps === "undefined") { generateMipmaps = true; }
                 _super.call(this);
 
                 this._htmlImageElement = htmlImageElement;
                 this._generateMipmaps = generateMipmaps;
             }
-            Object.defineProperty(HTMLImageElementTexture.prototype, "htmlImageElement", {
+            Object.defineProperty(ImageTexture.prototype, "htmlImageElement", {
                 get: function () {
                     return this._htmlImageElement;
                 },
@@ -11592,7 +24919,7 @@ var away;
             });
 
 
-            HTMLImageElementTexture.prototype.pUploadContent = function (texture) {
+            ImageTexture.prototype.pUploadContent = function (texture) {
                 if (this._generateMipmaps) {
                     away.textures.MipmapGenerator.generateHTMLImageElementMipMaps(this._htmlImageElement, texture, this._mipMapHolder, true);
                 } else {
@@ -11601,7 +24928,7 @@ var away;
                 }
             };
 
-            HTMLImageElementTexture.prototype.getMipMapHolder = function () {
+            ImageTexture.prototype.getMipMapHolder = function () {
                 var newW = this._htmlImageElement.width;
                 var newH = this._htmlImageElement.height;
 
@@ -11613,42 +24940,42 @@ var away;
                     this.freeMipMapHolder();
                 }
 
-                if (!HTMLImageElementTexture._mipMaps[newW]) {
-                    HTMLImageElementTexture._mipMaps[newW] = [];
-                    HTMLImageElementTexture._mipMapUses[newW] = [];
+                if (!ImageTexture._mipMaps[newW]) {
+                    ImageTexture._mipMaps[newW] = [];
+                    ImageTexture._mipMapUses[newW] = [];
                 }
 
-                if (!HTMLImageElementTexture._mipMaps[newW][newH]) {
-                    this._mipMapHolder = HTMLImageElementTexture._mipMaps[newW][newH] = new away.base.BitmapData(newW, newH, true);
-                    HTMLImageElementTexture._mipMapUses[newW][newH] = 1;
+                if (!ImageTexture._mipMaps[newW][newH]) {
+                    this._mipMapHolder = ImageTexture._mipMaps[newW][newH] = new away.base.BitmapData(newW, newH, true);
+                    ImageTexture._mipMapUses[newW][newH] = 1;
                 } else {
-                    HTMLImageElementTexture._mipMapUses[newW][newH] = HTMLImageElementTexture._mipMapUses[newW][newH] + 1;
-                    this._mipMapHolder = HTMLImageElementTexture._mipMaps[newW][newH];
+                    ImageTexture._mipMapUses[newW][newH] = ImageTexture._mipMapUses[newW][newH] + 1;
+                    this._mipMapHolder = ImageTexture._mipMaps[newW][newH];
                 }
             };
 
-            HTMLImageElementTexture.prototype.freeMipMapHolder = function () {
+            ImageTexture.prototype.freeMipMapHolder = function () {
                 var holderWidth = this._mipMapHolder.width;
                 var holderHeight = this._mipMapHolder.height;
 
-                if (--HTMLImageElementTexture._mipMapUses[holderWidth][holderHeight] == 0) {
-                    HTMLImageElementTexture._mipMaps[holderWidth][holderHeight].dispose();
-                    HTMLImageElementTexture._mipMaps[holderWidth][holderHeight] = null;
+                if (--ImageTexture._mipMapUses[holderWidth][holderHeight] == 0) {
+                    ImageTexture._mipMaps[holderWidth][holderHeight].dispose();
+                    ImageTexture._mipMaps[holderWidth][holderHeight] = null;
                 }
             };
 
-            HTMLImageElementTexture.prototype.dispose = function () {
+            ImageTexture.prototype.dispose = function () {
                 _super.prototype.dispose.call(this);
 
                 if (this._mipMapHolder) {
                     this.freeMipMapHolder();
                 }
             };
-            HTMLImageElementTexture._mipMaps = [];
-            HTMLImageElementTexture._mipMapUses = [];
-            return HTMLImageElementTexture;
+            ImageTexture._mipMaps = [];
+            ImageTexture._mipMapUses = [];
+            return ImageTexture;
         })(away.textures.Texture2DBase);
-        textures.HTMLImageElementTexture = HTMLImageElementTexture;
+        textures.ImageTexture = ImageTexture;
     })(away.textures || (away.textures = {}));
     var textures = away.textures;
 })(away || (away = {}));
@@ -11835,9 +25162,9 @@ var away;
 var away;
 (function (away) {
     (function (textures) {
-        var HTMLImageElementCubeTexture = (function (_super) {
-            __extends(HTMLImageElementCubeTexture, _super);
-            function HTMLImageElementCubeTexture(posX, negX, posY, negY, posZ, negZ) {
+        var ImageCubeTexture = (function (_super) {
+            __extends(ImageCubeTexture, _super);
+            function ImageCubeTexture(posX, negX, posY, negY, posZ, negZ) {
                 _super.call(this);
                 this._useMipMaps = false;
 
@@ -11851,7 +25178,7 @@ var away;
 
                 this.pSetSize(posX.width, posX.height);
             }
-            Object.defineProperty(HTMLImageElementCubeTexture.prototype, "positiveX", {
+            Object.defineProperty(ImageCubeTexture.prototype, "positiveX", {
                 /**
                 * The texture on the cube's right face.
                 */
@@ -11869,7 +25196,7 @@ var away;
             });
 
 
-            Object.defineProperty(HTMLImageElementCubeTexture.prototype, "negativeX", {
+            Object.defineProperty(ImageCubeTexture.prototype, "negativeX", {
                 /**
                 * The texture on the cube's left face.
                 */
@@ -11887,7 +25214,7 @@ var away;
             });
 
 
-            Object.defineProperty(HTMLImageElementCubeTexture.prototype, "positiveY", {
+            Object.defineProperty(ImageCubeTexture.prototype, "positiveY", {
                 /**
                 * The texture on the cube's top face.
                 */
@@ -11905,7 +25232,7 @@ var away;
             });
 
 
-            Object.defineProperty(HTMLImageElementCubeTexture.prototype, "negativeY", {
+            Object.defineProperty(ImageCubeTexture.prototype, "negativeY", {
                 /**
                 * The texture on the cube's bottom face.
                 */
@@ -11923,7 +25250,7 @@ var away;
             });
 
 
-            Object.defineProperty(HTMLImageElementCubeTexture.prototype, "positiveZ", {
+            Object.defineProperty(ImageCubeTexture.prototype, "positiveZ", {
                 /**
                 * The texture on the cube's far face.
                 */
@@ -11941,7 +25268,7 @@ var away;
             });
 
 
-            Object.defineProperty(HTMLImageElementCubeTexture.prototype, "negativeZ", {
+            Object.defineProperty(ImageCubeTexture.prototype, "negativeZ", {
                 /**
                 * The texture on the cube's near face.
                 */
@@ -11959,14 +25286,14 @@ var away;
             });
 
 
-            HTMLImageElementCubeTexture.prototype.testSize = function (value) {
+            ImageCubeTexture.prototype.testSize = function (value) {
                 if (value.width != value.height)
                     throw new Error("BitmapData should have equal width and height!");
                 if (!away.utils.TextureUtils.isHTMLImageElementValid(value))
                     throw new Error("Invalid bitmapData: Width and height must be power of 2 and cannot exceed 2048");
             };
 
-            HTMLImageElementCubeTexture.prototype.pUploadContent = function (texture) {
+            ImageCubeTexture.prototype.pUploadContent = function (texture) {
                 for (var i = 0; i < 6; ++i) {
                     if (this._useMipMaps) {
                         //away.materials.MipmapGenerator.generateMipMaps(this._bitmapDatas[i], texture, null, false, i);
@@ -11976,9 +25303,9 @@ var away;
                     }
                 }
             };
-            return HTMLImageElementCubeTexture;
+            return ImageCubeTexture;
         })(away.textures.CubeTextureBase);
-        textures.HTMLImageElementCubeTexture = HTMLImageElementCubeTexture;
+        textures.ImageCubeTexture = ImageCubeTexture;
     })(away.textures || (away.textures = {}));
     var textures = away.textures;
 })(away || (away = {}));
