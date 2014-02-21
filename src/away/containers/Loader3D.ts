@@ -211,7 +211,7 @@ module away.containers
 	 * @see away.net.AssetLoader
 	 * @see away.library.AssetLibrary
 	 */
-	export class Loader3D extends away.containers.ObjectContainer3D
+	export class Loader3D extends away.containers.DisplayObjectContainer
 	{
 		private _loadingSessions:Array<away.net.AssetLoader>;
 		private _useAssetLib:boolean;
@@ -356,25 +356,25 @@ module away.containers
 			if (ev.type == away.events.AssetEvent.ASSET_COMPLETE) {
 				// TODO: not used
 				// var type : string = ev.asset.assetType;
-				var obj:away.containers.ObjectContainer3D;
+				var obj:away.base.DisplayObject;
 				switch (ev.asset.assetType) {
 					case away.library.AssetType.LIGHT:
 						obj = <away.lights.LightBase> ev.asset;
 						break;
 					case away.library.AssetType.CONTAINER:
-						obj = <away.containers.ObjectContainer3D> ev.asset;
+						obj = <away.containers.DisplayObjectContainer> ev.asset;
 						break;
 					case away.library.AssetType.MESH:
 						obj = <away.entities.Mesh> ev.asset;
 						break;
 						//case away.library.AssetType.SKYBOX:
-						//    obj = <away.entities.SkyBox> ev.asset;
+						//    obj = <away.entities.Skybox> ev.asset;
 						break;
 						//case away.library.AssetType.TEXTURE_PROJECTOR:
 						//    obj = <away.entities.TextureProjector> ev.asset;
 						break;
 					case away.library.AssetType.CAMERA:
-						obj = <away.cameras.Camera3D> ev.asset;
+						obj = <away.entities.Camera> ev.asset;
 						break;
 					case away.library.AssetType.SEGMENT_SET:
 						obj = <away.entities.SegmentSet> ev.asset;
