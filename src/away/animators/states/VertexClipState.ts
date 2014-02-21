@@ -34,7 +34,7 @@ module away.animators
 			return this._nextGeometry;
 		}
 
-		constructor(animator:IAnimator, vertexClipNode:VertexClipNode)
+		constructor(animator:AnimatorBase, vertexClipNode:VertexClipNode)
 		{
 			super(animator, vertexClipNode);
 

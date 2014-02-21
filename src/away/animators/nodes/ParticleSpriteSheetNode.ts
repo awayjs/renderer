@@ -160,7 +160,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public getAnimationState(animator:IAnimator):ParticleSpriteSheetState
+		public getAnimationState(animator:AnimatorBase):ParticleSpriteSheetState
 		{
 			return <ParticleSpriteSheetState> animator.getAnimationState(this);
 		}

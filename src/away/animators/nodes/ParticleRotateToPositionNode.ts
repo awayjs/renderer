@@ -192,7 +192,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public getAnimationState(animator:IAnimator):ParticleRotateToPositionState
+		public getAnimationState(animator:AnimatorBase):ParticleRotateToPositionState
 		{
 			return <ParticleRotateToPositionState> animator.getAnimationState(this);
 		}

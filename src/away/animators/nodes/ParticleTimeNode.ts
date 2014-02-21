@@ -85,7 +85,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public getAnimationState(animator:IAnimator):ParticleTimeState
+		public getAnimationState(animator:AnimatorBase):ParticleTimeState
 		{
 			return <ParticleTimeState> animator.getAnimationState(this);
 		}

@@ -58,7 +58,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public getAnimationState(animator:IAnimator):SkeletonNaryLERPState
+		public getAnimationState(animator:AnimatorBase):SkeletonNaryLERPState
 		{
 			return <SkeletonNaryLERPState> animator.getAnimationState(this);
 		}

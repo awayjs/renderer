@@ -2,9 +2,9 @@
 
 module away.animators
 {
-	import IRenderable						= away.base.IRenderable;
-	import Object3D							= away.base.Object3D;
-	import Camera3D							= away.cameras.Camera3D;
+	import RenderableBase					= away.pool.RenderableBase;
+	import DisplayObject					= away.base.DisplayObject;
+	import Camera							= away.entities.Camera;
 	import ContextGLVertexBufferFormat		= away.gl.ContextGLVertexBufferFormat
 	import Vector3D							= away.geom.Vector3D;
 	import StageGL							= away.base.StageGL;
@@ -16,7 +16,7 @@ module away.animators
 	export class ParticleFollowState extends ParticleStateBase
 	{
 		private _particleFollowNode:ParticleFollowNode;
-		private _followTarget:Object3D;
+		private _followTarget:DisplayObject;
 		
 		private _targetPos:Vector3D = new Vector3D();
 		private _targetEuler:Vector3D = new Vector3D();
@@ -35,12 +35,12 @@ module away.animators
 			this._smooth = particleFollowNode._iSmooth;
 		}
 		
-		public get followTarget():Object3D
+		public get followTarget():DisplayObject
 		{
 			return this._followTarget;
 		}
 		
-		public set followTarget(value:Object3D)
+		public set followTarget(value:DisplayObject)
 		{
 			this._followTarget = value;
 		}
@@ -58,13 +58,13 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public setRenderState(stageGL:StageGL, renderable:IRenderable, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera3D)
+		public setRenderState(stageGL:StageGL, renderable:RenderableBase, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera)
 		{	
 			if (this._followTarget) {
 				if (this._particleFollowNode._iUsesPosition) {
-					this._targetPos.x = this._followTarget.position.x/renderable.sourceEntity.scaleX;
-					this._targetPos.y = this._followTarget.position.y/renderable.sourceEntity.scaleY;
-					this._targetPos.z = this._followTarget.position.z/renderable.sourceEntity.scaleZ;
+					this._targetPos.x = this._followTarget.transform.position.x/renderable.sourceEntity.scaleX;
+					this._targetPos.y = this._followTarget.transform.position.y/renderable.sourceEntity.scaleY;
+					this._targetPos.z = this._followTarget.transform.position.z/renderable.sourceEntity.scaleZ;
 				}
 				if (this._particleFollowNode._iUsesRotation) {
 					this._targetEuler.x = this._followTarget.rotationX;

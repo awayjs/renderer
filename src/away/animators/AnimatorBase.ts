@@ -2,6 +2,11 @@
 
 module away.animators
 {
+	import StageGL							= away.base.StageGL;
+	import Camera							= away.entities.Camera;
+	import MaterialPassBase					= away.materials.MaterialPassBase;
+	import RenderableBase					= away.pool.RenderableBase;
+
 	/**
 	 * Dispatched when playback of an animation inside the animator object starts.
 	 *
@@ -28,7 +33,7 @@ module away.animators
 	 *
 	 * @see away.animators.AnimationSetBase
 	 */
-	export class AnimatorBase extends away.library.NamedAssetBase implements away.library.IAsset
+	export class AnimatorBase extends away.library.NamedAssetBase implements away.library.IAsset, away.animators.IAnimator
 	{
 		private _broadcaster:away.utils.RequestAnimationFrame;
 		private _isPlaying:boolean;
@@ -55,10 +60,10 @@ module away.animators
 		 */
 		public updatePosition:boolean = true;
 
-		public getAnimationState(node:AnimationNodeBase):AnimationStateBase
+		public getAnimationState(node:AnimationNodeBase):IAnimationState
 		{
 			var className:any = node.stateClass;
-			var uID:number = node._iUniqueId;
+			var uID:string = node.id;
 
 			if (this._animationStates[uID] == null)
 				this._animationStates[uID] = new className(this, node);
@@ -66,7 +71,7 @@ module away.animators
 			return this._animationStates[uID];
 		}
 
-		public getAnimationStateByName(name:string):AnimationStateBase
+		public getAnimationStateByName(name:string):IAnimationState
 		{
 			return this.getAnimationState(this._pAnimationSet.getAnimation(name));
 		}
@@ -190,6 +195,11 @@ module away.animators
 		public set playbackSpeed(value:number)
 		{
 			this._playbackSpeed = value;
+		}
+
+		public setRenderState(stageGL:StageGL, renderable:RenderableBase, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/, camera:Camera)
+		{
+			throw new away.errors.AbstractMethodError();
 		}
 
 		/**
@@ -334,8 +344,24 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
+		public clone():AnimatorBase
+		{
+			throw new away.errors.AbstractMethodError();
+		}
+
+		/**
+		 * @inheritDoc
+		 */
 		public dispose()
 		{
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public testGPUCompatibility(pass:MaterialPassBase)
+		{
+			throw new away.errors.AbstractMethodError();
 		}
 
 		/**

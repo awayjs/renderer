@@ -54,7 +54,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public getAnimationState(animator:IAnimator):SkeletonClipState
+		public getAnimationState(animator:AnimatorBase):SkeletonClipState
 		{
 			return <SkeletonClipState> animator.getAnimationState(this);
 		}

@@ -283,7 +283,7 @@ module away.animators
 				subMesh = mesh.subMeshes[i];
 				subGeometry = subMesh.subGeometry;
 				if (mesh.shareAnimationGeometry) {
-					animationSubGeometry = this._animationSubGeometries[subGeometry.uniqueId];
+					animationSubGeometry = this._animationSubGeometries[subGeometry.id];
 					
 					if (animationSubGeometry) {
 						subMesh.animationSubGeometry = animationSubGeometry;
@@ -293,7 +293,7 @@ module away.animators
 				
 				animationSubGeometry = subMesh.animationSubGeometry = new AnimationSubGeometry();
 				if (mesh.shareAnimationGeometry)
-					this._animationSubGeometries[subGeometry.uniqueId] = animationSubGeometry;
+					this._animationSubGeometries[subGeometry.id] = animationSubGeometry;
 				
 				newAnimationSubGeometry = true;
 				

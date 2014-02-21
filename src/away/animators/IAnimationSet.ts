@@ -6,7 +6,7 @@ module away.animators
 	/**
 	 * Provides an interface for data set classes that hold animation data for use in animator classes.
 	 *
-	 * @see away3d.animators.IAnimator
+	 * @see away3d.animators.AnimatorBase
 	 */
 	export interface IAnimationSet
 	{
@@ -29,7 +29,7 @@ module away.animators
 		 * the vertex registers aslready in use on shading materials allows the animation data to utilise
 		 * GPU calls.
 		 */
-			usesCPU:boolean; // GET
+		usesCPU:boolean; // GET
 
 		/**
 		 * Called by the material to reset the GPU indicator before testing whether register space in the shader

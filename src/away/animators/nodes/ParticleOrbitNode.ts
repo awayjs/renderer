@@ -133,7 +133,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public getAnimationState(animator:IAnimator):ParticleOrbitState
+		public getAnimationState(animator:AnimatorBase):ParticleOrbitState
 		{
 			return <ParticleOrbitState> animator.getAnimationState(this);
 		}

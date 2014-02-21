@@ -13,7 +13,7 @@ module away.animators
 
 		public _pTime:number;
 		public _pStartTime:number = 0;
-		public _pAnimator:away.animators.IAnimator;
+		public _pAnimator:away.animators.AnimatorBase;
 
 		/**
 		 * Returns a 3d vector representing the translation delta of the animating entity for the current timestep of animation
@@ -29,7 +29,7 @@ module away.animators
 
 		}
 
-		constructor(animator:away.animators.IAnimator, animationNode:away.animators.AnimationNodeBase)
+		constructor(animator:away.animators.AnimatorBase, animationNode:away.animators.AnimationNodeBase)
 		{
 			this._pAnimator = animator;
 			this._pAnimationNode = animationNode;

@@ -38,7 +38,7 @@ module away.animators
 			this._skeletonPoseDirty = true;
 		}
 
-		constructor(animator:IAnimator, skeletonAnimationNode:SkeletonDifferenceNode)
+		constructor(animator:AnimatorBase, skeletonAnimationNode:SkeletonDifferenceNode)
 		{
 			super(animator, skeletonAnimationNode);
 

@@ -44,7 +44,7 @@ module away.animators
 			return this._direction;
 		}
 
-		constructor(animator:IAnimator, skeletonAnimationNode:SkeletonDirectionalNode)
+		constructor(animator:AnimatorBase, skeletonAnimationNode:SkeletonDirectionalNode)
 		{
 			super(animator, skeletonAnimationNode);
 

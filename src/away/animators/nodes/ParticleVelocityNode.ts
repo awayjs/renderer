@@ -60,7 +60,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public getAnimationState(animator:IAnimator):ParticleVelocityState
+		public getAnimationState(animator:AnimatorBase):ParticleVelocityState
 		{
 			return <ParticleVelocityState> animator.getAnimationState(this);
 		}

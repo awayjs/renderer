@@ -12,7 +12,7 @@ module away.animators
 			this.blendSpeed = blendSpeed;
 		}
 
-		public getAnimationNode(animator:IAnimator, startNode:AnimationNodeBase, endNode:AnimationNodeBase, startBlend:number /*int*/):AnimationNodeBase
+		public getAnimationNode(animator:AnimatorBase, startNode:AnimationNodeBase, endNode:AnimationNodeBase, startBlend:number /*int*/):AnimationNodeBase
 		{
 			var crossFadeTransitionNode:CrossfadeTransitionNode = new CrossfadeTransitionNode();
 			crossFadeTransitionNode.inputA = startNode;

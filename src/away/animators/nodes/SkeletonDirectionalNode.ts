@@ -38,7 +38,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public getAnimationState(animator:IAnimator):SkeletonDirectionalState
+		public getAnimationState(animator:AnimatorBase):SkeletonDirectionalState
 		{
 			return <SkeletonDirectionalState> animator.getAnimationState(this);
 		}

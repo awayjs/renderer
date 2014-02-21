@@ -30,7 +30,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public getAnimationState(animator:IAnimator):SkeletonBinaryLERPState
+		public getAnimationState(animator:AnimatorBase):SkeletonBinaryLERPState
 		{
 			return <SkeletonBinaryLERPState> animator.getAnimationState(this);
 		}

@@ -53,7 +53,7 @@ module away.animators
 			return this._pNextFrame;
 		}
 
-		constructor(animator:IAnimator, animationClipNode:AnimationClipNodeBase)
+		constructor(animator:AnimatorBase, animationClipNode:AnimationClipNodeBase)
 		{
 			super(animator, animationClipNode);
 

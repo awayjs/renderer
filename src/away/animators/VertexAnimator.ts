@@ -2,15 +2,23 @@
 
 module away.animators
 {
+	import ISubGeometry				= away.base.ISubGeometry;
+	import SubMesh					= away.base.SubMesh;
+	import Geometry					= away.base.Geometry;
+	import StageGL					= away.base.StageGL;
+	import RenderableBase			= away.pool.RenderableBase;
+	import SubMeshRenderable		= away.pool.SubMeshRenderable;
+
+
 	/**
 	 * Provides an interface for assigning vertex-based animation data sets to mesh-based entity objects
 	 * and controlling the various available states of animation through an interative playhead that can be
 	 * automatically updated or manually triggered.
 	 */
-	export class VertexAnimator extends AnimatorBase implements IAnimator
+	export class VertexAnimator extends AnimatorBase
 	{
 		private _vertexAnimationSet:VertexAnimationSet;
-		private _poses:Array<away.base.Geometry> = new Array<away.base.Geometry>();
+		private _poses:Array<Geometry> = new Array<Geometry>();
 		private _weights:Array<number> = Array<number>(1, 0, 0, 0);
 		private _numPoses:number /*uint*/;
 		private _blendMode:string;
@@ -33,7 +41,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public clone():IAnimator
+		public clone():AnimatorBase
 		{
 			return new VertexAnimator(this._vertexAnimationSet);
 		}
@@ -88,7 +96,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public setRenderState(stageGL:away.base.StageGL, renderable:away.base.IRenderable, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/, camera:away.cameras.Camera3D)
+		public setRenderState(stageGL:StageGL, renderable:RenderableBase, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/, camera:away.entities.Camera)
 		{
 			// todo: add code for when running on cpu
 
@@ -99,8 +107,8 @@ module away.animators
 			}
 
 			// this type of animation can only be SubMesh
-			var subMesh:away.base.SubMesh = <away.base.SubMesh> renderable;
-			var subGeom:away.base.ISubGeometry;
+			var subMesh:SubMesh = <SubMesh> (<SubMeshRenderable> renderable).subMesh;
+			var subGeom:ISubGeometry;
 			var i:number /*uint*/;
 			var len:number /*uint*/ = this._numPoses;
 
@@ -111,12 +119,12 @@ module away.animators
 				subGeom = this._poses[0].subGeometries[subMesh._iIndex];
 				// set the base sub-geometry so the material can simply pick up on this data
 				if (subGeom)
-					subMesh.subGeometry = subGeom;
+					renderable.subGeometry = subGeom; //TODO more elegant way to swap subgeometry that doesn't involve changing it on the SubMesh
 			} else
 				i = 0;
 
 			for (; i < len; ++i) {
-				subGeom = this._poses[i].subGeometries[subMesh._iIndex] || subMesh.subGeometry;
+				subGeom = this._poses[i].subGeometries[subMesh._iIndex] || renderable.subGeometry;
 
 				subGeom.activateVertexBuffer(vertexStreamOffset++, stageGL);
 
@@ -126,17 +134,17 @@ module away.animators
 			}
 		}
 
-		private setNullPose(stageGL:away.base.StageGL, renderable:away.base.IRenderable, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/)
+		private setNullPose(stageGL:StageGL, renderable:RenderableBase, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/)
 		{
 			stageGL.contextGL.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, vertexConstantOffset, this._weights, 1);
 
 			if (this._blendMode == VertexAnimationMode.ABSOLUTE) {
 				var len:number /*uint*/ = this._numPoses;
 				for (var i:number /*uint*/ = 1; i < len; ++i) {
-					renderable.activateVertexBuffer(vertexStreamOffset++, stageGL);
+					renderable.subGeometry.activateVertexBuffer(vertexStreamOffset++, stageGL);
 
 					if (this._vertexAnimationSet.useNormals)
-						renderable.activateVertexNormalBuffer(vertexStreamOffset++, stageGL);
+						renderable.subGeometry.activateVertexNormalBuffer(vertexStreamOffset++, stageGL);
 				}
 			}
 			// todo: set temp data for additive?

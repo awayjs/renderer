@@ -16,7 +16,7 @@ module away.animators
 		private _blendWeights:Array<number> = new Array<number>();
 		private _inputs:Array<ISkeletonAnimationState> = new Array<ISkeletonAnimationState>();
 
-		constructor(animator:IAnimator, skeletonAnimationNode:SkeletonNaryLERPNode)
+		constructor(animator:AnimatorBase, skeletonAnimationNode:SkeletonNaryLERPNode)
 		{
 			super(animator, skeletonAnimationNode);
 

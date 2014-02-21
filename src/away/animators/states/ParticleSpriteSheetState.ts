@@ -2,8 +2,8 @@
 
 module away.animators
 {
-	import IRenderable						= away.base.IRenderable;
-	import Camera3D							= away.cameras.Camera3D;
+	import RenderableBase					= away.pool.RenderableBase;
+	import Camera							= away.entities.Camera;
 	import ContextGLVertexBufferFormat		= away.gl.ContextGLVertexBufferFormat
 	import Vector3D							= away.geom.Vector3D;
 	import StageGL							= away.base.StageGL;
@@ -70,7 +70,7 @@ module away.animators
 			this.updateSpriteSheetData();
 		}
 		
-		public setRenderState(stageGL:StageGL, renderable:IRenderable, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera3D)
+		public setRenderState(stageGL:StageGL, renderable:RenderableBase, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera)
 		{
 			if (animationRegisterCache.needUVAnimation) {
 				animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleSpriteSheetNode.UV_INDEX_0), this._spriteSheetData[0], this._spriteSheetData[1], this._spriteSheetData[2], this._spriteSheetData[3]);

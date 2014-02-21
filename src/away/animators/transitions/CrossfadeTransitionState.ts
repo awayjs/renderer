@@ -12,7 +12,7 @@ module away.animators
 		private _crossfadeTransitionNode:CrossfadeTransitionNode;
 		private _animationStateTransitionComplete:AnimationStateEvent;
 
-		constructor(animator:IAnimator, skeletonAnimationNode:CrossfadeTransitionNode)
+		constructor(animator:AnimatorBase, skeletonAnimationNode:CrossfadeTransitionNode)
 		{
 			super(animator, <SkeletonBinaryLERPNode> skeletonAnimationNode);
 

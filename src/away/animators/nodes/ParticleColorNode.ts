@@ -143,7 +143,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public getAnimationState(animator:IAnimator):ParticleColorState
+		public getAnimationState(animator:AnimatorBase):ParticleColorState
 		{
 			return <ParticleColorState> animator.getAnimationState(this);
 		}

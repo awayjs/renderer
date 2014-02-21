@@ -2,12 +2,12 @@
 
 module away.animators
 {
-	import IRenderable						= away.base.IRenderable;
-	import Camera3D							= away.cameras.Camera3D;
+	import StageGL							= away.base.StageGL;
+	import Camera							= away.entities.Camera;
 	import ContextGLVertexBufferFormat		= away.gl.ContextGLVertexBufferFormat
 	import Vector3D							= away.geom.Vector3D;
-	import StageGL							= away.base.StageGL;
-	
+	import RenderableBase					= away.pool.RenderableBase;
+
 	/**
 	 * ...
 	 */
@@ -33,7 +33,7 @@ module away.animators
 			return this._pNeedUpdateTime;
 		}
 		
-		public setRenderState(stageGL:StageGL, renderable:IRenderable, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera3D)
+		public setRenderState(stageGL:StageGL, renderable:RenderableBase, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera)
 		{
 		
 		}

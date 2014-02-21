@@ -30,7 +30,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public getAnimationState(animator:IAnimator):SkeletonDifferenceState
+		public getAnimationState(animator:AnimatorBase):SkeletonDifferenceState
 		{
 			return <SkeletonDifferenceState> animator.getAnimationState(this);
 		}

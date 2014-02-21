@@ -2,8 +2,8 @@
 
 module away.animators
 {
-	import IRenderable						= away.base.IRenderable;
-	import Camera3D							= away.cameras.Camera3D;
+	import RenderableBase					= away.pool.RenderableBase;
+	import Camera							= away.entities.Camera;
 	import Matrix3D							= away.geom.Matrix3D;
 	import StageGL							= away.base.StageGL;
 	
@@ -20,10 +20,10 @@ module away.animators
 			super(animator, particleNode);
 		}
 		
-		public setRenderState(stageGL:StageGL, renderable:IRenderable, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera3D)
+		public setRenderState(stageGL:StageGL, renderable:RenderableBase, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera)
 		{
 			if (animationRegisterCache.hasBillboard) {
-				this._matrix.copyFrom(renderable.sceneTransform);
+				this._matrix.copyFrom(renderable.sourceEntity.sceneTransform);
 				this._matrix.append(camera.inverseSceneTransform);
 				animationRegisterCache.setVertexConstFromMatrix(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleRotateToHeadingNode.MATRIX_INDEX), this._matrix);
 			}

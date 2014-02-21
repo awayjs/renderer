@@ -58,7 +58,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public getAnimationState(animator:IAnimator):ParticleBillboardState
+		public getAnimationState(animator:AnimatorBase):ParticleBillboardState
 		{
 			return <ParticleBillboardState> animator.getAnimationState(this);
 		}

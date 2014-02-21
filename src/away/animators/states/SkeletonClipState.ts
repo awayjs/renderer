@@ -39,7 +39,7 @@ module away.animators
 			return this._nextPose;
 		}
 
-		constructor(animator:IAnimator, skeletonClipNode:SkeletonClipNode)
+		constructor(animator:AnimatorBase, skeletonClipNode:SkeletonClipNode)
 		{
 			super(animator, skeletonClipNode);
 

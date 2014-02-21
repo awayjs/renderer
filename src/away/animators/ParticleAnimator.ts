@@ -2,15 +2,15 @@
 
 module away.animators
 {
-	import IRenderable						= away.base.IRenderable;
 	import ISubGeometry						= away.base.ISubGeometry;
 	import SubMesh							= away.base.SubMesh;
-	import Camera3D							= away.cameras.Camera3D;
+	import StageGL							= away.base.StageGL;
+	import Camera							= away.entities.Camera;
+	import Vector3D							= away.geom.Vector3D;
 	import ContextGLProgramType				= away.gl.ContextGLProgramType;
 	import ContextGLVertexBufferFormat		= away.gl.ContextGLVertexBufferFormat;
-	import Vector3D							= away.geom.Vector3D;
-	import StageGL							= away.base.StageGL;
 	import MaterialPassBase					= away.materials.MaterialPassBase;
+	import RenderableBase					= away.pool.RenderableBase;
 	
 	/**
 	 * Provides an interface for assigning paricle-based animation data sets to mesh-based entity objects
@@ -21,7 +21,7 @@ module away.animators
 	 *
 	 * @see away.base.ParticleGeometry
 	 */
-	export class ParticleAnimator extends AnimatorBase implements IAnimator
+	export class ParticleAnimator extends AnimatorBase implements AnimatorBase
 	{
 		
 		private _particleAnimationSet:ParticleAnimationSet;
@@ -61,7 +61,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public clone():IAnimator
+		public clone():AnimatorBase
 		{
 			return new ParticleAnimator(this._particleAnimationSet);
 		}
@@ -69,11 +69,11 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public setRenderState(stageGL:StageGL, renderable:IRenderable, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/, camera:Camera3D)
+		public setRenderState(stageGL:StageGL, renderable:RenderableBase, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/, camera:Camera)
 		{
 			var animationRegisterCache:AnimationRegisterCache = this._particleAnimationSet._iAnimationRegisterCache;
 			
-			var subMesh:SubMesh = <SubMesh> renderable;
+			var subMesh:SubMesh = (<away.pool.SubMeshRenderable> renderable).subMesh;
 			var state:ParticleStateBase;
 			var i:number;
 
@@ -82,7 +82,7 @@ module away.animators
 			
 			//process animation sub geometries
 			if (!subMesh.animationSubGeometry)
-				this._particleAnimationSet._iGenerateAnimationSubGeometries(subMesh.iParentMesh);
+				this._particleAnimationSet._iGenerateAnimationSubGeometries(<away.entities.Mesh> renderable.sourceEntity);
 			
 			var animationSubGeometry:AnimationSubGeometry = subMesh.animationSubGeometry;
 			
@@ -153,7 +153,7 @@ module away.animators
 		private generateAnimatorSubGeometry(subMesh:SubMesh)
 		{
 			var subGeometry:ISubGeometry = subMesh.subGeometry;
-			var animatorSubGeometry:AnimationSubGeometry = subMesh.animatorSubGeometry = this._animatorSubGeometries[subGeometry.uniqueId] = new AnimationSubGeometry();
+			var animatorSubGeometry:AnimationSubGeometry = subMesh.animatorSubGeometry = this._animatorSubGeometries[subGeometry.id] = new AnimationSubGeometry();
 			
 			//create the vertexData vector that will be used for local state data
 			animatorSubGeometry.createVertexData(subGeometry.numVertices, this._totalLenOfOneVertex);

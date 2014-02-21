@@ -174,7 +174,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public getAnimationState(animator:IAnimator):ParticleRotateToHeadingState
+		public getAnimationState(animator:AnimatorBase):ParticleRotateToHeadingState
 		{
 			return <ParticleRotateToHeadingState> animator.getAnimationState(this);
 		}

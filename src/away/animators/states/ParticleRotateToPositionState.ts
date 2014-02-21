@@ -2,8 +2,8 @@
 
 module away.animators
 {
-	import IRenderable						= away.base.IRenderable;
-	import Camera3D							= away.cameras.Camera3D;
+	import RenderableBase					= away.pool.RenderableBase;
+	import Camera							= away.entities.Camera;
 	import ContextGLVertexBufferFormat		= away.gl.ContextGLVertexBufferFormat
 	import Vector3D							= away.geom.Vector3D;
 	import Matrix3D							= away.geom.Matrix3D;
@@ -40,18 +40,18 @@ module away.animators
 			this._position = this._particleRotateToPositionNode._iPosition;
 		}
 		
-		public setRenderState(stageGL:StageGL, renderable:IRenderable, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera3D)
+		public setRenderState(stageGL:StageGL, renderable:RenderableBase, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera)
 		{
 			var index:number /*int*/ = animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleRotateToPositionNode.POSITION_INDEX);
 			
 			if (animationRegisterCache.hasBillboard) {
-				this._matrix.copyFrom(renderable.sceneTransform);
+				this._matrix.copyFrom(renderable.sourceEntity.sceneTransform);
 				this._matrix.append(camera.inverseSceneTransform);
 				animationRegisterCache.setVertexConstFromMatrix(animationRegisterCache.getRegisterIndex(this._pAnimationNode, ParticleRotateToPositionNode.MATRIX_INDEX), this._matrix);
 			}
 			
 			if (this._particleRotateToPositionNode.mode == ParticlePropertiesMode.GLOBAL) {
-				this._offset = renderable.inverseSceneTransform.transformVector(this._position);
+				this._offset = renderable.sourceEntity.inverseSceneTransform.transformVector(this._position);
 				animationRegisterCache.setVertexConst(index, this._offset.x, this._offset.y, this._offset.z);
 			} else
 				animationSubGeometry.activateVertexBuffer(index, this._particleRotateToPositionNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_3);

@@ -36,7 +36,7 @@ module away.animators
 			this._skeletonPoseDirty = true;
 		}
 
-		constructor(animator:IAnimator, skeletonAnimationNode:SkeletonBinaryLERPNode)
+		constructor(animator:AnimatorBase, skeletonAnimationNode:SkeletonBinaryLERPNode)
 		{
 			super(animator, skeletonAnimationNode);
 

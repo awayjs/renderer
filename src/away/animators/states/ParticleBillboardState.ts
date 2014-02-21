@@ -2,8 +2,8 @@
 
 module away.animators
 {
-	import IRenderable						= away.base.IRenderable;
-	import Camera3D							= away.cameras.Camera3D;
+	import RenderableBase					= away.pool.RenderableBase;
+	import Camera							= away.entities.Camera;
 	import ContextGLVertexBufferFormat		= away.gl.ContextGLVertexBufferFormat;
 	import Matrix3D							= away.geom.Matrix3D;
 	import Orientation3D					= away.geom.Orientation3D;
@@ -30,11 +30,11 @@ module away.animators
 			this._billboardAxis = particleNode._iBillboardAxis;
 		}
 		
-		public setRenderState(stageGL:StageGL, renderable:IRenderable, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera3D)
+		public setRenderState(stageGL:StageGL, renderable:RenderableBase, animationSubGeometry:AnimationSubGeometry, animationRegisterCache:AnimationRegisterCache, camera:Camera)
 		{
 			var comps:Array<Vector3D>;
 			if (this._billboardAxis) {
-				var pos:Vector3D = renderable.sceneTransform.position;
+				var pos:Vector3D = renderable.sourceEntity.sceneTransform.position;
 				var look:Vector3D = camera.sceneTransform.position.subtract(pos);
 				var right:Vector3D = look.crossProduct(this._billboardAxis);
 				right.normalize();
@@ -42,7 +42,7 @@ module away.animators
 				look.normalize();
 				
 				//create a quick inverse projection matrix
-				this._matrix.copyFrom(renderable.sceneTransform);
+				this._matrix.copyFrom(renderable.sourceEntity.sceneTransform);
 				comps = this._matrix.decompose(Orientation3D.AXIS_ANGLE);
 				this._matrix.copyColumnFrom(0, right);
 				this._matrix.copyColumnFrom(1, this.billboardAxis);
@@ -51,7 +51,7 @@ module away.animators
 				this._matrix.appendRotation(-comps[1].w*MathConsts.RADIANS_TO_DEGREES, comps[1]);
 			} else {
 				//create a quick inverse projection matrix
-				this._matrix.copyFrom(renderable.sceneTransform);
+				this._matrix.copyFrom(renderable.sourceEntity.sceneTransform);
 				this._matrix.append(camera.inverseSceneTransform);
 				
 				//decompose using axis angle rotations

@@ -2,15 +2,16 @@
 
 module away.animators
 {
-	import IRenderable                      = away.base.IRenderable;
 	import SkinnedSubGeometry               = away.base.SkinnedSubGeometry;
 	import SubMesh                          = away.base.SubMesh;
-	import Camera3D                         = away.cameras.Camera3D;
-	import ContextGLProgramType             = away.gl.ContextGLProgramType;
+	import StageGL                     		= away.base.StageGL;
+	import Camera                         	= away.entities.Camera;
 	import AnimationStateEvent              = away.events.AnimationStateEvent;
-	import Vector3D                         = away.geom.Vector3D;
-	import StageGL                     = away.base.StageGL;
+	import ContextGLProgramType             = away.gl.ContextGLProgramType;
 	import Quaternion                       = away.geom.Quaternion;
+	import Vector3D                         = away.geom.Vector3D;
+	import RenderableBase                   = away.pool.RenderableBase;
+	import SubMeshRenderable				= away.pool.SubMeshRenderable;
 	import MaterialPassBase                 = away.materials.MaterialPassBase;
 
 	/**
@@ -18,7 +19,7 @@ module away.animators
 	 * and controlling the various available states of animation through an interative playhead that can be
 	 * automatically updated or manually triggered.
 	 */
-	export class SkeletonAnimator extends AnimatorBase implements IAnimator
+	export class SkeletonAnimator extends AnimatorBase
 	{
 		private _globalMatrices:Array<number>;
 		private _globalPose:SkeletonPose = new SkeletonPose();
@@ -133,7 +134,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public clone():IAnimator
+		public clone():AnimatorBase
 		{
 			/* The cast to SkeletonAnimationSet should never fail, as _animationSet can only be set
 			 through the constructor, which will only accept a SkeletonAnimationSet. */
@@ -184,13 +185,13 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public setRenderState(stageGL:StageGL, renderable:IRenderable, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/, camera:Camera3D)
+		public setRenderState(stageGL:StageGL, renderable:RenderableBase, vertexConstantOffset:number /*int*/, vertexStreamOffset:number /*int*/, camera:Camera)
 		{
 			// do on request of globalProperties
 			if (this._globalPropertiesDirty)
 				this.updateGlobalProperties();
 
-			var skinnedGeom:SkinnedSubGeometry = <SkinnedSubGeometry> (<SubMesh> renderable).subGeometry;
+			var skinnedGeom:SkinnedSubGeometry = <SkinnedSubGeometry> (<SubMesh> (<SubMeshRenderable> renderable).subMesh).subGeometry;
 
 			// using condensed data
 			var numCondensedJoints:number /*uint*/ = skinnedGeom.numCondensedJoints;
@@ -203,10 +204,10 @@ module away.animators
 				stageGL.contextGL.setProgramConstantsFromArray(ContextGLProgramType.VERTEX, vertexConstantOffset, this._condensedMatrices, numCondensedJoints*3);
 			} else {
 				if (this._pAnimationSet.usesCPU) {
-					var subGeomAnimState:SubGeomAnimationState = this._subGeomAnimationStates[skinnedGeom._iUniqueId];
+					var subGeomAnimState:SubGeomAnimationState = this._subGeomAnimationStates[skinnedGeom.id];
 
 					if (subGeomAnimState == null)
-						subGeomAnimState = this._subGeomAnimationStates[skinnedGeom._iUniqueId] = new SubGeomAnimationState(skinnedGeom);
+						subGeomAnimState = this._subGeomAnimationStates[skinnedGeom.id] = new SubGeomAnimationState(skinnedGeom);
 
 					if (subGeomAnimState.dirty) {
 						this.morphGeometry(subGeomAnimState, skinnedGeom);

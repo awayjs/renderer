@@ -99,7 +99,7 @@ module away.animators
 		/**
 		 * @inheritDoc
 		 */
-		public getAnimationState(animator:IAnimator):ParticleBezierCurveState
+		public getAnimationState(animator:AnimatorBase):ParticleBezierCurveState
 		{
 			return <ParticleBezierCurveState> animator.getAnimationState(this);
 		}
