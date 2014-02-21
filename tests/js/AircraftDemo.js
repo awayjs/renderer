@@ -51,12 +51,12 @@ var demos;
             };
 
             AircraftDemo.prototype.initView = function () {
-                this._view = new away.containers.View3D();
+                this._view = new away.containers.View(new away.render.DefaultRenderer());
                 this._view.camera.z = -500;
                 this._view.camera.y = 250;
                 this._view.camera.rotationX = 20;
-                this._view.camera.lens.near = 0.5;
-                this._view.camera.lens.far = 14000;
+                this._view.camera.projection.near = 0.5;
+                this._view.camera.projection.far = 14000;
                 this._view.backgroundColor = 0x2c2c32;
                 this.resize();
             };
@@ -90,10 +90,10 @@ var demos;
                 f14Material.lightPicker = this._lightPicker;
 
                 this._view.scene.addChild(this._f14Geom);
-                this._f14Geom.scale(20);
+                this._f14Geom.transform.scale = new away.geom.Vector3D(20, 20, 20);
                 this._f14Geom.rotationX = 90;
                 this._f14Geom.y = 200;
-                this._view.camera.lookAt(this._f14Geom.position);
+                this._view.camera.lookAt(this._f14Geom.transform.position);
 
                 document.onmousedown = function () {
                     return _this.onMouseDown();
@@ -134,7 +134,7 @@ var demos;
                         this._seaNormalTexture = loader.baseDependency.assets[0];
                         break;
                     case 'assets/f14d.obj':
-                        this._f14Geom = new away.containers.ObjectContainer3D();
+                        this._f14Geom = new away.containers.DisplayObjectContainer();
                         for (i = 0; i < numAssets; ++i) {
                             var asset = loader.baseDependency.assets[i];
                             switch (asset.assetType) {
@@ -180,7 +180,7 @@ var demos;
                 }
 
                 if (this._f14Geom) {
-                    this._view.camera.lookAt(this._f14Geom.position);
+                    this._view.camera.lookAt(this._f14Geom.transform.position);
                 }
 
                 if (this._view.camera) {
@@ -190,11 +190,11 @@ var demos;
                 }
 
                 if (this._f14Geom) {
-                    this._view.camera.lookAt(this._f14Geom.position);
+                    this._view.camera.lookAt(this._f14Geom.transform.position);
                 }
 
                 if (this._seaMaterial) {
-                    this._seaMesh.subMeshes[0].offsetV -= 0.04;
+                    this._seaMesh.subMeshes[0].uvTransform.offsetV -= 0.04;
                     /*
                     this.waterMethod.water1OffsetX += .001;
                     this.waterMethod.water1OffsetY += .1;

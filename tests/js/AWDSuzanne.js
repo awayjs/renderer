@@ -17,8 +17,8 @@ var demos;
                 this._token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, away.utils.Delegate.create(this, this.onResourceComplete));
                 this._token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, away.utils.Delegate.create(this, this.onAssetComplete));
 
-                this._view = new away.containers.View3D();
-                this._view.camera.lens.far = 6000;
+                this._view = new away.containers.View(new away.render.DefaultRenderer());
+                this._view.camera.projection.far = 6000;
                 this._timer = new away.utils.RequestAnimationFrame(this.render, this);
 
                 this._light = new away.lights.DirectionalLight();
@@ -83,16 +83,17 @@ var demos;
                             this._suzane.y = -100;
 
                             for (var c = 0; c < 80; c++) {
+                                var scale = this.getRandom(50, 200);
                                 var clone = mesh.clone();
                                 clone.x = this.getRandom(-2000, 2000);
                                 clone.y = this.getRandom(-2000, 2000);
                                 clone.z = this.getRandom(-2000, 2000);
-                                clone.scale(this.getRandom(50, 200));
+                                clone.transform.scale = new away.geom.Vector3D(scale, scale, scale);
                                 clone.rotationY = this.getRandom(0, 360);
                                 this._view.scene.addChild(clone);
                             }
 
-                            mesh.scale(500);
+                            mesh.transform.scale = new away.geom.Vector3D(500, 500, 500);
 
                             this._view.scene.addChild(mesh);
 

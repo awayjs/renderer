@@ -12,10 +12,10 @@ module tests.pick
 
         private rcPicker            : away.pick.RaycastPicker;
         private materialBaseTest    : away.materials.MaterialBase;
-        private entity              : away.entities.Entity;
+        private mesh              : away.entities.Mesh;
         private pickCOllVo          : away.pick.PickingCollisionVO;
         private pickCBase           : away.pick.PickingColliderBase;
-        private as3PickCollider     : away.pick.AS3PickingCollider;
+        private jsPickCollider     : away.pick.JSPickingCollider;
         private shaderPicker        : away.pick.ShaderPicker;
 
         constructor()
@@ -23,20 +23,20 @@ module tests.pick
 
             away.pick.PickingColliderType.AS3_BEST_HIT;
 
-            this.entity = new away.entities.Entity();
-            this.entity.x = 10;
-            this.entity.y = 10;
-            this.entity.z = 10;
+            this.mesh = new away.entities.Mesh(null);
+            this.mesh.x = 10;
+            this.mesh.y = 10;
+            this.mesh.z = 10;
 
-            this.entity.getIgnoreTransform();
+            this.mesh.ignoreTransform = true;
 
-            this.pickCOllVo         = new away.pick.PickingCollisionVO( this.entity );
+            this.pickCOllVo         = new away.pick.PickingCollisionVO( this.mesh );
             this.pickCBase          = new away.pick.PickingColliderBase();
-            this.as3PickCollider    = new away.pick.AS3PickingCollider();
+            this.jsPickCollider    = new away.pick.JSPickingCollider();
 
             console.log( 'away.pick.PickingCollisionVO' , this.pickCOllVo  );
             console.log( 'away.pick.PickingColliderBase' , this.pickCBase  );
-            console.log( 'away.pick.AS3PickingCollider' , this.as3PickCollider  );
+            console.log( 'away.pick.AS3PickingCollider' , this.jsPickCollider  );
 
 
         }

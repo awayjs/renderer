@@ -7,8 +7,8 @@ module demos.lights
 	export class TorusLight
 	{
 
-		private _scene			: away.containers.Scene3D;
-		private _view			: away.containers.View3D;
+		private _scene			: away.containers.Scene;
+		private _view			: away.containers.View;
 		private _torus       	: away.primitives.TorusGeometry;
 		private _mesh  			: away.entities.Mesh;
 		private _raf			: away.utils.RequestAnimationFrame;
@@ -22,9 +22,9 @@ module demos.lights
             away.Debug.ENABLE_LOG       = false;
             away.Debug.LOG_PI_ERRORS    = false;
 
-			this._view                  = new away.containers.View3D( );
+			this._view                  = new away.containers.View( new away.render.DefaultRenderer());
 			this._view.backgroundColor  = 0x014C73;
-			this._view.camera.lens      = new away.cameras.PerspectiveLens( 60 );
+			this._view.camera.projection      = new away.projections.PerspectiveProjection( 60 );
 			this._torus                 = new away.primitives.TorusGeometry( 120, 80, 32, 16, false );
 			
 			this.loadResources();
@@ -51,7 +51,7 @@ module demos.lights
 		private onLoadComplete(event)
 		{
             this._view.camera.z = -1000;
-			var ts : away.textures.HTMLImageElementTexture = new away.textures.HTMLImageElementTexture( this._image, false );
+			var ts : away.textures.ImageTexture = new away.textures.ImageTexture( this._image, false );
 			
 			var light:away.lights.DirectionalLight = new away.lights.DirectionalLight();
                 light.color         = 0x00ff88;

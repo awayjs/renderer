@@ -6,7 +6,7 @@ module tests.base{
     export class Object3DTestV2
     {
 
-        private view        : away.containers.View3D;
+        private view        : away.containers.View;
         private torus       : away.primitives.TorusGeometry;
 
         private light       : away.lights.PointLight;
@@ -26,10 +26,10 @@ module tests.base{
 
             this.meshes                 = new Array<away.entities.Mesh>();
             this.light                  = new away.lights.PointLight();
-            this.view                   = new away.containers.View3D();
+            this.view                   = new away.containers.View(new away.render.DefaultRenderer());
 
-            var perspectiveLens : away.cameras.PerspectiveLens = <away.cameras.PerspectiveLens> this.view.camera.lens;
-            perspectiveLens.fieldOfView = 75;
+            var perspectiveProjection : away.projections.PerspectiveProjection = <away.projections.PerspectiveProjection> this.view.camera.projection;
+			perspectiveProjection.fieldOfView = 75;
 
 
             this.view.camera.z          = 0;
@@ -95,7 +95,7 @@ module tests.base{
 
             if ( this.follow )
             {
-                this.view.camera.lookAt( this.meshes[0].position );
+                this.view.camera.lookAt( this.meshes[0].transform.position );
             }
 
             this.view.camera.y = Math.sin( this.tPos ) * 1500;

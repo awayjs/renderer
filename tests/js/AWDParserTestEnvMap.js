@@ -14,7 +14,7 @@ var tests;
                 this.token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, away.utils.Delegate.create(this, this.onResourceComplete));
                 this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, away.utils.Delegate.create(this, this.onAssetComplete));
 
-                this._view = new away.containers.View3D();
+                this._view = new away.containers.View(new away.render.DefaultRenderer());
                 this._timer = new away.utils.RequestAnimationFrame(this.render, this);
 
                 window.onresize = function () {

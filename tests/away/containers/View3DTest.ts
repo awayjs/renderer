@@ -6,7 +6,7 @@ module tests.containers{
     export class View3DTest
     {
 
-        private view        : away.containers.View3D;
+        private view        : away.containers.View;
         private torus       : away.primitives.TorusGeometry;
 
         private light       : away.lights.PointLight;
@@ -21,7 +21,7 @@ module tests.containers{
 
             this.meshes                 = new Array<away.entities.Mesh>();
             this.light                  = new away.lights.PointLight();
-            this.view                   = new away.containers.View3D( )
+            this.view                   = new away.containers.View(new away.render.DefaultRenderer())
             this.view.camera.z          = 0;
             this.view.backgroundColor   = 0x776655;
             this.torus                  = new away.primitives.TorusGeometry(150 , 50 , 32 , 32 , false );
@@ -70,8 +70,11 @@ module tests.containers{
 
         public resize( e )
         {
-            this.view.y         = ( window.innerHeight - this.view.height ) / 2;
-            this.view.x         = ( window.innerWidth - this.view.width) / 2;
+			this.view.y = 0;
+			this.view.x = 0;
+
+			this.view.width = window.innerWidth;
+			this.view.height = window.innerHeight;
         }
 
     }

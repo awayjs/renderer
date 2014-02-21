@@ -48,14 +48,14 @@ module examples
     import SkeletonAnimationSet                 = away.animators.SkeletonAnimationSet;
     import SkeletonAnimator                     = away.animators.SkeletonAnimator;
     import SkeletonClipNode                     = away.animators.SkeletonClipNode;
-	import Camera3D                             = away.cameras.Camera3D;
-	import ObjectContainer3D                    = away.containers.ObjectContainer3D;
-    import Scene3D                              = away.containers.Scene3D;
-    import View3D                               = away.containers.View3D;
+	import DisplayObjectContainer               = away.containers.DisplayObjectContainer;
+    import Scene                                = away.containers.Scene;
+    import View                                 = away.containers.View;
 	import LookAtController                     = away.controllers.LookAtController;
+	import Billboard                            = away.entities.Billboard;
+	import Camera                               = away.entities.Camera;
 	import Mesh                                 = away.entities.Mesh;
-    import SkyBox                               = away.entities.SkyBox;
-    import Sprite3D                             = away.entities.Sprite3D;
+    import Skybox                               = away.entities.Skybox;
 	import AnimationStateEvent                  = away.events.AnimationStateEvent;
     import AssetEvent                           = away.events.AssetEvent;
     import LoaderEvent                          = away.events.LoaderEvent;
@@ -66,15 +66,16 @@ module examples
 	import NearDirectionalShadowMapper          = away.lights.NearDirectionalShadowMapper;
 	import MD5AnimParser                        = away.parsers.MD5AnimParser;
     import MD5MeshParser                        = away.parsers.MD5MeshParser;
+	import PlaneGeometry                        = away.primitives.PlaneGeometry;
     import FogMethod                            = away.materials.FogMethod;
 	import StaticLightPicker                    = away.materials.StaticLightPicker;
     import TextureMaterial                      = away.materials.TextureMaterial;
     import SoftShadowMapMethod                  = away.materials.SoftShadowMapMethod;
     import NearShadowMapMethod                  = away.materials.NearShadowMapMethod;
     import URLRequest                           = away.net.URLRequest;
-	import PlaneGeometry                        = away.primitives.PlaneGeometry;
-	import HTMLImageElementCubeTexture          = away.textures.HTMLImageElementCubeTexture;
-    import HTMLImageElementTexture              = away.textures.HTMLImageElementTexture;
+	import DefaultRenderer                      = away.render.DefaultRenderer;
+	import ImageCubeTexture          			= away.textures.ImageCubeTexture;
+    import ImageTexture              			= away.textures.ImageTexture;
     import Keyboard                             = away.ui.Keyboard;
 	import Cast                                 = away.utils.Cast;
     import RequestAnimationFrame                = away.utils.RequestAnimationFrame;
@@ -82,9 +83,9 @@ module examples
 	export class Intermediate_MD5Animation
 	{
 		//engine variables
-		private scene:Scene3D;
-		private camera:Camera3D;
-		private view:View3D;
+		private scene:Scene;
+		private camera:Camera;
+		private view:View;
 		private cameraController:LookAtController;
 
 		//animation variables
@@ -124,13 +125,13 @@ module examples
 		private groundMaterial:TextureMaterial;
 		private bodyMaterial:TextureMaterial;
         private gobMaterial:TextureMaterial;
-		private cubeTexture:HTMLImageElementCubeTexture;
+		private cubeTexture:ImageCubeTexture;
 
 		//scene objects
-		private placeHolder:ObjectContainer3D;
+		private placeHolder:DisplayObjectContainer;
 		private mesh:Mesh;
 		private ground:Mesh;
-		private skyBox:SkyBox;
+		private skyBox:Skybox;
 
         private _timer:RequestAnimationFrame;
         private _time:number = 0;
@@ -161,16 +162,16 @@ module examples
 		 */
 		private initEngine():void
 		{
-            this.view = new View3D();
+            this.view = new View(new DefaultRenderer());
             this.scene = this.view.scene;
             this.camera = this.view.camera;
 
-            this.camera.lens.far = 5000;
+            this.camera.projection.far = 5000;
             this.camera.z = -200;
             this.camera.y = 160;
 
 			//setup controller to be used on the camera
-            this.placeHolder = new ObjectContainer3D();
+            this.placeHolder = new DisplayObjectContainer();
             this.placeHolder.y = 50;
             this.cameraController = new LookAtController(this.camera, this.placeHolder);
 		}
@@ -230,7 +231,7 @@ module examples
             this.shadowMapMethod.epsilon = .1;
 
 			//create a global fog method
-            this.fogMethod = new FogMethod(0, this.camera.lens.far*0.5, 0x000000);
+            this.fogMethod = new FogMethod(0, this.camera.projection.far*0.5, 0x000000);
 		}
 
 		/**
@@ -281,9 +282,9 @@ module examples
 		private initObjects():void
 		{
 			//create light billboards
-            var redSprite:Sprite3D = new Sprite3D(this.redLightMaterial, 200, 200);
+            var redSprite:Billboard = new Billboard(this.redLightMaterial, 200, 200);
             redSprite.castsShadows = false;
-            var blueSprite:Sprite3D = new Sprite3D(this.blueLightMaterial, 200, 200);
+            var blueSprite:Billboard = new Billboard(this.blueLightMaterial, 200, 200);
             blueSprite.castsShadows = false;
             this.redLight.addChild(redSprite);
             this.blueLight.addChild(blueSprite);
@@ -351,7 +352,7 @@ module examples
 
 			//update character animation
 			if (this.mesh) {
-                this.mesh.subMeshes[1].offsetV = this.mesh.subMeshes[2].offsetV = this.mesh.subMeshes[3].offsetV = (-this._time/2000 % 1);
+                this.mesh.subMeshes[1].uvTransform.offsetV = this.mesh.subMeshes[2].uvTransform.offsetV = this.mesh.subMeshes[3].uvTransform.offsetV = (-this._time/2000 % 1);
                 this.mesh.rotationY += this.currentRotationInc;
             }
 
@@ -421,43 +422,43 @@ module examples
             {
                 //environment texture
                 case 'assets/demos/skybox/grimnight_texture.cube':
-                    this.cubeTexture = <HTMLImageElementCubeTexture> event.assets[ 0 ];
+                    this.cubeTexture = <ImageCubeTexture> event.assets[ 0 ];
 
-                    this.skyBox = new SkyBox(this.cubeTexture);
+                    this.skyBox = new Skybox(this.cubeTexture);
                     this.scene.addChild(this.skyBox);
                     break;
 
                 //lights textures
                 case "assets/demos/redlight.png" :
-                    this.redLightMaterial.texture = <HTMLImageElementTexture> event.assets[ 0 ];
+                    this.redLightMaterial.texture = <ImageTexture> event.assets[ 0 ];
                     break;
                 case "assets/demos/bluelight.png" :
-                    this.blueLightMaterial.texture = <HTMLImageElementTexture> event.assets[ 0 ];
+                    this.blueLightMaterial.texture = <ImageTexture> event.assets[ 0 ];
                     break;
 
                 //floor textures
                 case "assets/demos/rockbase_diffuse.jpg" :
-                    this.groundMaterial.texture = <HTMLImageElementTexture> event.assets[ 0 ];
+                    this.groundMaterial.texture = <ImageTexture> event.assets[ 0 ];
                     break;
                 case "assets/demos/rockbase_normals.png" :
-                    this.groundMaterial.normalMap = <HTMLImageElementTexture> event.assets[ 0 ];
+                    this.groundMaterial.normalMap = <ImageTexture> event.assets[ 0 ];
                     break;
                 case "assets/demos/rockbase_specular.png" :
-                    this.groundMaterial.specularMap = <HTMLImageElementTexture> event.assets[ 0 ];
+                    this.groundMaterial.specularMap = <ImageTexture> event.assets[ 0 ];
                     break;
 
                 //hellknight textures
                 case "assets/demos/hellknight/hellknight_diffuse.jpg" :
-                    this.bodyMaterial.texture = <HTMLImageElementTexture> event.assets[ 0 ];
+                    this.bodyMaterial.texture = <ImageTexture> event.assets[ 0 ];
                     break;
                 case "assets/demos/hellknight/hellknight_normals.png" :
-                    this.bodyMaterial.normalMap = <HTMLImageElementTexture> event.assets[ 0 ];
+                    this.bodyMaterial.normalMap = <ImageTexture> event.assets[ 0 ];
                     break;
                 case "assets/demos/hellknight/hellknight_specular.png" :
-                    this.bodyMaterial.specularMap = <HTMLImageElementTexture> event.assets[ 0 ];
+                    this.bodyMaterial.specularMap = <ImageTexture> event.assets[ 0 ];
                     break;
                 case "assets/demos/hellknight/gob.png" :
-                    this.bodyMaterial.specularMap = this.gobMaterial.texture = <HTMLImageElementTexture> event.assets[ 0 ];
+                    this.bodyMaterial.specularMap = this.gobMaterial.texture = <ImageTexture> event.assets[ 0 ];
                     break;
             }
         }

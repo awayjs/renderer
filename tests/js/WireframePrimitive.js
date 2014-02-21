@@ -1,7 +1,7 @@
+///<reference path="../../../build/Away3D.next.d.ts" />
+//<reference path="../../../src/Away3D.ts" />
 var tests;
 (function (tests) {
-    ///<reference path="../../../build/Away3D.next.d.ts" />
-    //<reference path="../../../src/Away3D.ts" />
     (function (primitives) {
         var WireframePrimitiveTest = (function () {
             function WireframePrimitiveTest() {
@@ -12,13 +12,13 @@ var tests;
                 away.Debug.LOG_PI_ERRORS = false;
                 away.Debug.THROW_ERRORS = false;
 
-                this.view = new away.containers.View3D();
+                this.view = new away.containers.View(new away.render.DefaultRenderer());
                 this.raf = new away.utils.RequestAnimationFrame(this.render, this);
 
                 this.light = new away.lights.DirectionalLight();
                 this.light.color = 0xFFFFFF;
                 this.light.direction = new away.geom.Vector3D(1, 1, 0);
-                this.light.ambient = 0;
+                this.light.ambient = 0; //0.05;//.4;
                 this.light.ambientColor = 0xFFFFFF;
                 this.light.diffuse = 1;
                 this.light.specular = 1;
@@ -26,7 +26,7 @@ var tests;
                 this.lightB = new away.lights.DirectionalLight();
                 this.lightB.color = 0xFF0000;
                 this.lightB.direction = new away.geom.Vector3D(-1, 0, 1);
-                this.lightB.ambient = 0;
+                this.lightB.ambient = 0; //0.05;//.4;
                 this.lightB.ambientColor = 0xFFFFFF;
                 this.lightB.diffuse = 1;
                 this.lightB.specular = 1;
@@ -62,7 +62,7 @@ var tests;
                     primitives[c].x = Math.cos(t) * this.radius;
                     primitives[c].y = Math.sin(t) * this.radius;
                     primitives[c].z = 0;
-                    primitives[c].scale(2);
+                    primitives[c].transform.scale = new away.geom.Vector3D(1, 200, 1);
 
                     //mesh.material.lightPicker = this.staticLightPicker;
                     this.view.scene.addChild(primitives[c]);

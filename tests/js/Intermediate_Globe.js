@@ -29,17 +29,19 @@ THE SOFTWARE.
 */
 var examples;
 (function (examples) {
-    var Camera3D = away.cameras.Camera3D;
-    var ObjectContainer3D = away.containers.ObjectContainer3D;
-    var Scene3D = away.containers.Scene3D;
-    var View3D = away.containers.View3D;
+    var Camera = away.entities.Camera;
+    var DisplayObjectContainer = away.containers.DisplayObjectContainer;
+    var Scene = away.containers.Scene;
+    var View = away.containers.View;
     var HoverController = away.controllers.HoverController;
     var BitmapData = away.base.BitmapData;
     var BitmapDataChannel = away.base.BitmapDataChannel;
     var BlendMode = away.base.BlendMode;
+    var OrientationMode = away.base.OrientationMode;
+    var AlignmentMode = away.base.AlignmentMode;
     var Mesh = away.entities.Mesh;
-    var Sprite3D = away.entities.Sprite3D;
-    var SkyBox = away.entities.SkyBox;
+    var Billboard = away.entities.Billboard;
+    var Skybox = away.entities.Skybox;
     var LoaderEvent = away.events.LoaderEvent;
     var ColorTransform = away.geom.ColorTransform;
     var Vector3D = away.geom.Vector3D;
@@ -59,8 +61,9 @@ var examples;
     var StaticLightPicker = away.materials.StaticLightPicker;
     var TextureMaterial = away.materials.TextureMaterial;
     var SphereGeometry = away.primitives.SphereGeometry;
-    var HTMLImageElementCubeTexture = away.textures.HTMLImageElementCubeTexture;
-    var HTMLImageElementTexture = away.textures.HTMLImageElementTexture;
+    var DefaultRenderer = away.render.DefaultRenderer;
+    var ImageCubeTexture = away.textures.ImageCubeTexture;
+    var ImageTexture = away.textures.ImageTexture;
     var BitmapTexture = away.textures.BitmapTexture;
     var Cast = away.utils.Cast;
     var RequestAnimationFrame = away.utils.RequestAnimationFrame;
@@ -94,13 +97,13 @@ var examples;
         * Initialise the engine
         */
         Intermediate_Globe.prototype.initEngine = function () {
-            this.scene = new Scene3D();
+            this.scene = new Scene();
 
             //setup camera for optimal skybox rendering
-            this.camera = new Camera3D();
-            this.camera.lens.far = 100000;
+            this.camera = new Camera();
+            this.camera.projection.far = 100000;
 
-            this.view = new View3D();
+            this.view = new View(new DefaultRenderer());
             this.view.scene = this.scene;
             this.view.camera = this.camera;
 
@@ -209,11 +212,13 @@ var examples;
         * Initialise the scene objects
         */
         Intermediate_Globe.prototype.initObjects = function () {
-            this.orbitContainer = new ObjectContainer3D();
+            this.orbitContainer = new DisplayObjectContainer();
             this.orbitContainer.addChild(this.light);
             this.scene.addChild(this.orbitContainer);
 
-            this.sun = new Sprite3D(this.sunMaterial, 3000, 3000);
+            this.sun = new Billboard(this.sunMaterial, 3000, 3000);
+            this.sun.orientationMode = OrientationMode.CAMERA_PLANE;
+            this.sun.alignmentMode = AlignmentMode.PIVOT_POINT;
             this.sun.x = 10000;
             this.orbitContainer.addChild(this.sun);
 
@@ -224,7 +229,7 @@ var examples;
             this.atmosphere = new Mesh(new SphereGeometry(210, 200, 100), this.atmosphereMaterial);
             this.atmosphere.scaleX = -1;
 
-            this.tiltContainer = new ObjectContainer3D();
+            this.tiltContainer = new DisplayObjectContainer();
             this.tiltContainer.rotationX = -23;
             this.tiltContainer.addChild(this.earth);
             this.tiltContainer.addChild(this.clouds);
@@ -325,7 +330,7 @@ var examples;
                 for (var i = 0; i < this.flares.length; i++) {
                     flareObject = this.flares[i];
                     if (flareObject)
-                        flareObject.sprite.visible = this.flareVisible;
+                        flareObject.billboard.visible = this.flareVisible;
                 }
             }
 
@@ -335,7 +340,7 @@ var examples;
                 for (var i = 0; i < this.flares.length; i++) {
                     flareObject = this.flares[i];
                     if (flareObject)
-                        flareObject.sprite.position = this.view.unproject(sunScreenPosition.x - flareDirection.x * flareObject.position, sunScreenPosition.y - flareDirection.y * flareObject.position, 100 - i);
+                        flareObject.billboard.transform.position = this.view.unproject(sunScreenPosition.x - flareDirection.x * flareObject.position, sunScreenPosition.y - flareDirection.y * flareObject.position, 100 - i);
                 }
             }
         };
@@ -348,7 +353,7 @@ var examples;
                 case 'assets/demos/skybox/space_texture.cube':
                     this.cubeTexture = event.assets[0];
 
-                    this.skyBox = new SkyBox(this.cubeTexture);
+                    this.skyBox = new Skybox(this.cubeTexture);
                     this.scene.addChild(this.skyBox);
                     break;
 
@@ -520,11 +525,13 @@ var examples;
     examples.Intermediate_Globe = Intermediate_Globe;
 })(examples || (examples = {}));
 
-var Scene3D = away.containers.Scene3D;
+var Scene3D = away.containers.Scene;
 var BitmapData = away.base.BitmapData;
 var BitmapDataChannel = away.base.BitmapDataChannel;
 var BlendMode = away.base.BlendMode;
-var Sprite3D = away.entities.Sprite3D;
+var OrientationMode = away.base.OrientationMode;
+var AlignmentMode = away.base.AlignmentMode;
+var Billboard = away.entities.Billboard;
 var Point = away.geom.Point;
 var TextureMaterial = away.materials.TextureMaterial;
 var BitmapTexture = away.textures.BitmapTexture;
@@ -539,18 +546,20 @@ var FlareObject = (function () {
         var bd = new BitmapData(bitmapData.width, bitmapData.height, true, 0xFFFFFFFF);
         bd.copyChannel(bitmapData, bitmapData.rect, new Point(), BitmapDataChannel.RED, BitmapDataChannel.ALPHA);
 
-        var spriteMaterial = new TextureMaterial(new BitmapTexture(bd, false));
-        spriteMaterial.alpha = opacity / 100;
-        spriteMaterial.alphaBlending = true;
+        var billboardMaterial = new TextureMaterial(new BitmapTexture(bd, false));
+        billboardMaterial.alpha = opacity / 100;
+        billboardMaterial.alphaBlending = true;
 
-        //spriteMaterial.blendMode = BlendMode.LAYER;
-        this.sprite = new Sprite3D(spriteMaterial, size * this.flareSize, size * this.flareSize);
-        this.sprite.visible = false;
+        //billboardMaterial.blendMode = BlendMode.LAYER;
+        this.billboard = new Billboard(billboardMaterial, size * this.flareSize, size * this.flareSize);
+        this.billboard.orientationMode = OrientationMode.CAMERA_PLANE;
+        this.billboard.alignmentMode = AlignmentMode.PIVOT_POINT;
+        this.billboard.visible = false;
         this.size = size;
         this.position = position;
         this.opacity = opacity;
 
-        scene.addChild(this.sprite);
+        scene.addChild(this.billboard);
     }
     return FlareObject;
 })();

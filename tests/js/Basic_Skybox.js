@@ -1,4 +1,5 @@
 ///<reference path="../../../build/Away3D.next.d.ts" />
+///<reference path="../../../libs/ame.next.d.ts" />
 //<reference path="../../../src/Away3D.ts" />
 /*
 SkyBox example in Away3d
@@ -51,14 +52,14 @@ var examples;
         */
         Basic_SkyBox.prototype.initEngine = function () {
             //setup the view
-            this._view = new away.containers.View3D();
+            this._view = new away.containers.View(new away.render.DefaultRenderer());
 
             //setup the camera
             this._view.camera.z = -600;
             this._view.camera.y = 0;
             this._view.camera.lookAt(new away.geom.Vector3D());
-            this._view.camera.lens = new away.cameras.PerspectiveLens(90);
-
+            this._view.camera.projection = new away.projections.PerspectiveProjection(90);
+            this._view.backgroundColor = 0xFFFF00;
             this._mouseX = window.innerWidth / 2;
         };
 
@@ -117,9 +118,9 @@ var examples;
             this._torus.rotationX += 2;
             this._torus.rotationY += 1;
 
-            this._view.camera.position = new away.geom.Vector3D();
+            this._view.camera.transform.position = new away.geom.Vector3D();
             this._view.camera.rotationY += 0.5 * (this._mouseX - window.innerWidth / 2) / 800;
-            this._view.camera.moveBackward(600);
+            this._view.camera.transform.moveBackward(600);
             this._view.render();
         };
 
@@ -131,7 +132,7 @@ var examples;
                 case 'assets/demos/skybox/snow_texture.cube':
                     this._cubeTexture = event.assets[0];
 
-                    this._skyBox = new away.entities.SkyBox(this._cubeTexture);
+                    this._skyBox = new away.entities.Skybox(this._cubeTexture);
                     this._view.scene.addChild(this._skyBox);
 
                     this._torusMaterial.addMethod(new away.materials.EnvMapMethod(this._cubeTexture, 1));

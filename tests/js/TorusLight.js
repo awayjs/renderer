@@ -9,9 +9,9 @@ var demos;
                 away.Debug.ENABLE_LOG = false;
                 away.Debug.LOG_PI_ERRORS = false;
 
-                this._view = new away.containers.View3D();
+                this._view = new away.containers.View(new away.render.DefaultRenderer());
                 this._view.backgroundColor = 0x014C73;
-                this._view.camera.lens = new away.cameras.PerspectiveLens(60);
+                this._view.camera.projection = new away.projections.PerspectiveProjection(60);
                 this._torus = new away.primitives.TorusGeometry(120, 80, 32, 16, false);
 
                 this.loadResources();
@@ -37,7 +37,7 @@ var demos;
             TorusLight.prototype.onLoadComplete = function (event) {
                 var _this = this;
                 this._view.camera.z = -1000;
-                var ts = new away.textures.HTMLImageElementTexture(this._image, false);
+                var ts = new away.textures.ImageTexture(this._image, false);
 
                 var light = new away.lights.DirectionalLight();
                 light.color = 0x00ff88;

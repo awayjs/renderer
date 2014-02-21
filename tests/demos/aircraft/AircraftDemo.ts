@@ -15,25 +15,25 @@ module demos.aircraft
         //}
 		
         private _lightPicker		: away.materials.StaticLightPicker;
-        private _view				: away.containers.View3D;
+        private _view				: away.containers.View;
         private _timer              : away.utils.RequestAnimationFrame;
 		
         //{ sea
         private _seaGeom			: away.primitives.PlaneGeometry;
         private _seaMesh			: away.entities.Mesh;
-        private _seaNormalTexture	: away.textures.HTMLImageElementTexture;
+        private _seaNormalTexture	: away.textures.ImageTexture;
         private _seaInitialized		: boolean = false;
         private _seaMaterial        : away.materials.TextureMaterial;
         //}
 		
         //{ f14
-        private _f14Geom			: away.containers.ObjectContainer3D;
+        private _f14Geom			: away.containers.DisplayObjectContainer;
         private _f14Initialized		: boolean = false;
         //}
 		
         //{ skybox
         private _waterMethod        : away.materials.SimpleWaterNormalMethod
-        private _skyboxCubeTexture  : away.textures.HTMLImageElementCubeTexture;
+        private _skyboxCubeTexture  : away.textures.ImageCubeTexture;
         private _skyboxInitialized	: boolean = false;
         //}
 		
@@ -77,12 +77,12 @@ module demos.aircraft
 
         private initView():void
         {
-            this._view						= new away.containers.View3D();
+            this._view						= new away.containers.View(new away.render.DefaultRenderer());
             this._view.camera.z				= -500;
             this._view.camera.y				= 250;
             this._view.camera.rotationX		= 20;
-            this._view.camera.lens.near		= 0.5;
-            this._view.camera.lens.far		= 14000;
+            this._view.camera.projection.near		= 0.5;
+            this._view.camera.projection.far		= 14000;
             this._view.backgroundColor		= 0x2c2c32;
             this.resize();
         }
@@ -121,10 +121,10 @@ module demos.aircraft
 			f14Material.lightPicker = this._lightPicker;
 			
 			this._view.scene.addChild( this._f14Geom );
-			this._f14Geom.scale( 20 );
+			this._f14Geom.transform.scale = new away.geom.Vector3D( 20, 20, 20 );
 			this._f14Geom.rotationX = 90;
 			this._f14Geom.y = 200;
-			this._view.camera.lookAt( this._f14Geom.position );
+			this._view.camera.lookAt( this._f14Geom.transform.position );
 			
 			document.onmousedown = () => this.onMouseDown();
         }
@@ -162,10 +162,10 @@ module demos.aircraft
             switch( e.url )
             {
                 case "assets/sea_normals.jpg":
-                    this._seaNormalTexture = <away.textures.HTMLImageElementTexture> loader.baseDependency.assets[ 0 ];
+                    this._seaNormalTexture = <away.textures.ImageTexture> loader.baseDependency.assets[ 0 ];
                     break;
                 case 'assets/f14d.obj':
-                    this._f14Geom = new away.containers.ObjectContainer3D();
+                    this._f14Geom = new away.containers.DisplayObjectContainer();
                     for( i = 0; i < numAssets; ++i )
                     {
                         var asset: away.library.IAsset = loader.baseDependency.assets[ i ];
@@ -183,7 +183,7 @@ module demos.aircraft
                     }
                     break;
                 case 'assets/CubeTextureTest.cube':
-                    this._skyboxCubeTexture = <away.textures.HTMLImageElementCubeTexture> loader.baseDependency.assets[ 0 ];
+                    this._skyboxCubeTexture = <away.textures.ImageCubeTexture> loader.baseDependency.assets[ 0 ];
                     break;
             }
 			this.initializeScene();
@@ -218,7 +218,7 @@ module demos.aircraft
 			
             if ( this._f14Geom )
 			{
-                this._view.camera.lookAt( this._f14Geom.position );
+                this._view.camera.lookAt( this._f14Geom.transform.position );
 			}
 			
             if ( this._view.camera )
@@ -230,12 +230,12 @@ module demos.aircraft
 			
             if ( this._f14Geom )
 			{
-                this._view.camera.lookAt( this._f14Geom.position );
+                this._view.camera.lookAt( this._f14Geom.transform.position );
 			}
 			
             if ( this._seaMaterial )
             {
-                this._seaMesh.subMeshes[0].offsetV -= 0.04;
+                this._seaMesh.subMeshes[0].uvTransform.offsetV -= 0.04;
 				
                 /*
                  this.waterMethod.water1OffsetX += .001;

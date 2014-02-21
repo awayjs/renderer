@@ -45,7 +45,7 @@ module examples
     export class Basic_Load3DS
     {
         //engine variables
-        private _view:away.containers.View3D;
+        private _view:away.containers.View;
         private _cameraController:away.controllers.HoverController;
 
         //material objects
@@ -97,10 +97,10 @@ module examples
          */
         private initEngine():void
         {
-            this._view = new away.containers.View3D();
+            this._view = new away.containers.View(new away.render.DefaultRenderer());
 
             //setup the camera for optimal shadow rendering
-            this._view.camera.lens.far = 2100;
+            this._view.camera.projection.far = 2100;
 
             //setup controller to be used on the camera
             this._cameraController = new away.controllers.HoverController(this._view.camera, null, 45, 20, 1000, 10);
@@ -138,7 +138,7 @@ module examples
         private initObjects():void
         {
             this._loader = new away.containers.Loader3D();
-            this._loader.scale(300);
+            this._loader.transform.scale = new away.geom.Vector3D(300, 300, 300);
             this._loader.z = -200;
             this._view.scene.addChild(this._loader);
         }

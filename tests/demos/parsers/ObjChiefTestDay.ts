@@ -10,7 +10,7 @@ module demos.parsers
         private height : number = 0;
 
         private token   : away.net.AssetLoaderToken;
-        private view    : away.containers.View3D;
+        private view    : away.containers.View;
         private raf     : away.utils.RequestAnimationFrame;
         private mesh    : away.entities.Mesh;
         private meshes  : Array<away.entities.Mesh> = new Array<away.entities.Mesh>();
@@ -22,7 +22,7 @@ module demos.parsers
         private light   : away.lights.DirectionalLight;
         private t800M   : away.entities.Mesh;
 
-        private spartan : away.containers.ObjectContainer3D = new away.containers.ObjectContainer3D();
+        private spartan : away.containers.DisplayObjectContainer = new away.containers.DisplayObjectContainer();
         private terrain : away.entities.Mesh;
 
         constructor()
@@ -31,10 +31,10 @@ module demos.parsers
             away.Debug.LOG_PI_ERRORS    = false;
             away.Debug.THROW_ERRORS     = false;
 
-            this.view                  = new away.containers.View3D( );
+            this.view                  = new away.containers.View( new away.render.DefaultRenderer() );
             this.view.camera.z          = -50;
             this.view.camera.y          = 20;
-            this.view.camera.lens.near  = 0.1;
+            this.view.camera.projection.near  = 0.1;
             this.view.backgroundColor   = 0xCEC8C6//A0A7DE;//0E0E10;
 
             //this.view.backgroundColor   = 0xFF0000;
@@ -50,7 +50,7 @@ module demos.parsers
             //this.light.x                = 800;
             //this.light.y                = 800;
 
-            this.spartan.scale(.25 );
+            this.spartan.transform.scale = new away.geom.Vector3D(.25, .25, .25 );
             this.spartan.y = 0;
 
             this.view.scene.addChild( this.light );
@@ -164,7 +164,7 @@ module demos.parsers
                         {
 
                             var lightPicker:away.materials.StaticLightPicker    = new away.materials.StaticLightPicker( [this.light] );
-                            var tx  : away.textures.HTMLImageElementTexture     = <away.textures.HTMLImageElementTexture> away.library.AssetLibrary.getAsset( d.name );
+                            var tx  : away.textures.ImageTexture     = <away.textures.ImageTexture> away.library.AssetLibrary.getAsset( d.name );
 
                             this.mat                                            = new away.materials.TextureMaterial( tx, true, true, false );
                             this.mat.lightPicker                                = lightPicker;
@@ -176,7 +176,7 @@ module demos.parsers
                         {
 
                             var lp:away.materials.StaticLightPicker    = new away.materials.StaticLightPicker( [this.light] );
-                            var txT  : away.textures.HTMLImageElementTexture    = <away.textures.HTMLImageElementTexture> away.library.AssetLibrary.getAsset( d.name );
+                            var txT  : away.textures.ImageTexture    = <away.textures.ImageTexture> away.library.AssetLibrary.getAsset( d.name );
 
                             this.terrainMaterial                                = new away.materials.TextureMaterial( txT, true, true, false );
                             this.terrainMaterial.lightPicker                    = lp;

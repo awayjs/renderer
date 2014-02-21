@@ -3,10 +3,10 @@
 
 module tests.entities {
 
-	export class Sprite3DTest //extends away.events.EventDispatcher
+	export class BillboardTest //extends away.events.EventDispatcher
 	{
 		//engine variables
-		private _view:away.containers.View3D;
+		private _view:away.containers.View;
 		private _cameraController:away.controllers.HoverController;
 
 		//navigation variables
@@ -41,10 +41,10 @@ module tests.entities {
 		 */
 		private initEngine():void
 		{
-			this._view = new away.containers.View3D();
+			this._view = new away.containers.View(new away.render.DefaultRenderer());
 
 			//setup the camera for optimal shadow rendering
-			this._view.camera.lens.far = 2100;
+			this._view.camera.projection.far = 2100;
 
 			//setup controller to be used on the camera
 			this._cameraController = new away.controllers.HoverController(this._view.camera, null, 45, 20, 1000, 10);
@@ -106,16 +106,20 @@ module tests.entities {
 						var material : away.materials.TextureMaterial = new away.materials.TextureMaterial();
 							material.texture = <away.textures.Texture2DBase> away.library.AssetLibrary.getAsset(asset.name);
 
-						var s : away.entities.Sprite3D;
-							s           = new away.entities.Sprite3D(material , 300 , 300 );
+						var s : away.entities.Billboard;
+							s           = new away.entities.Billboard(material , 300 , 300 );
 							s.rotationX = 45;
+						s.orientationMode = away.base.OrientationMode.CAMERA_PLANE;
+						s.alignmentMode = away.base.AlignmentMode.PIVOT_POINT;
 
 						this._view.scene.addChild( s );
 
 						for ( var c : number = 0 ; c < 100 ; c ++ )
 						{
 							var size : number = this.getRandom( 5 , 50 );
-							s = new away.entities.Sprite3D( material, size , size );
+							s = new away.entities.Billboard( material, size , size );
+							s.orientationMode = away.base.OrientationMode.CAMERA_PLANE;
+							s.alignmentMode = away.base.AlignmentMode.PIVOT_POINT;
 								s.x =  this.getRandom( -400 , 400 );
 								s.y =  this.getRandom( -400 , 400 );
 								s.z =  this.getRandom( -400 , 400 );

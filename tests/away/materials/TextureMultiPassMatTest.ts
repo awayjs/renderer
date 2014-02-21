@@ -9,7 +9,7 @@ module tests.materials
     export class TextureMultiPassMatTest
     {
 
-        private view        : away.containers.View3D;
+        private view        : away.containers.View;
         private torus       : away.primitives.TorusGeometry;
 
         private mesh        : away.entities.Mesh;
@@ -47,7 +47,7 @@ module tests.materials
             away.Debug.LOG_PI_ERRORS    = false;
 
             this.light                  = new away.lights.PointLight();
-            this.view                   = new away.containers.View3D( )
+            this.view                   = new away.containers.View( new away.render.DefaultRenderer())
             this.view.camera.z          = -1000;
             this.view.backgroundColor   = 0x000000;
             this.torus                  = new away.primitives.TorusGeometry( 50 , 10, 32 , 32 , false );
@@ -55,7 +55,7 @@ module tests.materials
             var l       : number        = 20;
             var radius  : number        = 500;
 
-            var ts      : away.textures.HTMLImageElementTexture     = new away.textures.HTMLImageElementTexture( this._image , false );
+            var ts      : away.textures.ImageTexture     = new away.textures.ImageTexture( this._image , false );
             var mat     : away.materials.TextureMultiPassMaterial   = new away.materials.TextureMultiPassMaterial( ts , true , true , false );
 
 

@@ -40,11 +40,11 @@ var examples;
     var ParticleProperties = away.animators.ParticleProperties;
     var Geometry = away.base.Geometry;
     var ParticleGeometry = away.base.ParticleGeometry;
-    var Camera3D = away.cameras.Camera3D;
-    var Scene3D = away.containers.Scene3D;
-    var View3D = away.containers.View3D;
+    var Scene = away.containers.Scene;
+    var View = away.containers.View;
     var HoverController = away.controllers.HoverController;
     var BlendMode = away.base.BlendMode;
+    var Camera = away.entities.Camera;
     var Mesh = away.entities.Mesh;
     var TimerEvent = away.events.TimerEvent;
     var ColorTransform = away.geom.ColorTransform;
@@ -85,12 +85,13 @@ var examples;
         * Initialise the engine
         */
         Basic_Fire.prototype.initEngine = function () {
-            this.scene = new Scene3D();
+            this.scene = new Scene();
 
-            this.camera = new Camera3D();
+            this.camera = new Camera();
 
-            this.view = new View3D();
-            this.view.antiAlias = 4;
+            this.view = new View(new away.render.DefaultRenderer());
+
+            //this.view.antiAlias = 4;
             this.view.scene = this.scene;
             this.view.camera = this.camera;
 
@@ -276,7 +277,7 @@ var examples;
             light.color = 0xFF3301;
             light.diffuse = 0;
             light.specular = 0;
-            light.position = fireObject.mesh.position;
+            light.transform.position = fireObject.mesh.transform.position;
 
             //add the lightsource to the fire object
             fireObject.light = light;

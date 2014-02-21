@@ -40,11 +40,11 @@ var examples;
     var ParticlePropertiesMode = away.animators.ParticlePropertiesMode;
     var Geometry = away.base.Geometry;
     var ParticleGeometry = away.base.ParticleGeometry;
-    var Camera3D = away.cameras.Camera3D;
-    var Scene3D = away.containers.Scene3D;
-    var View3D = away.containers.View3D;
+    var Scene = away.containers.Scene;
+    var View = away.containers.View;
     var HoverController = away.controllers.HoverController;
     var BitmapData = away.base.BitmapData;
+    var Camera = away.entities.Camera;
     var Mesh = away.entities.Mesh;
     var LoaderEvent = away.events.LoaderEvent;
     var ColorTransform = away.geom.ColorTransform;
@@ -54,6 +54,7 @@ var examples;
     var ColorMaterial = away.materials.ColorMaterial;
     var StaticLightPicker = away.materials.StaticLightPicker;
     var PlaneGeometry = away.primitives.PlaneGeometry;
+    var DefaultRenderer = away.render.DefaultRenderer;
     var ParticleGeometryHelper = away.tools.ParticleGeometryHelper;
     var Cast = away.utils.Cast;
     var RequestAnimationFrame = away.utils.RequestAnimationFrame;
@@ -84,13 +85,11 @@ var examples;
         * Initialise the engine
         */
         Intermediate_ParticleExplosions.prototype.initEngine = function () {
-            this.scene = new Scene3D();
+            this.scene = new Scene();
 
-            this.camera = new Camera3D();
+            this.camera = new Camera();
 
-            this.view = new View3D();
-            this.view.scene = this.scene;
-            this.view.camera = this.camera;
+            this.view = new View(new DefaultRenderer(), this.scene, this.camera);
 
             //setup controller to be used on the camera
             this.cameraController = new HoverController(this.camera, null, 225, 10, 1000);

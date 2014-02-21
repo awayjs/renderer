@@ -18,8 +18,8 @@ var demos;
                 this._token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, away.utils.Delegate.create(this, this.onResourceComplete));
                 this._token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, away.utils.Delegate.create(this, this.onAssetComplete));
 
-                this._view = new away.containers.View3D();
-                this._view.camera.lens.far = 5000;
+                this._view = new away.containers.View(new away.render.DefaultRenderer());
+                this._view.camera.projection.far = 5000;
                 this._view.camera.y = 100;
 
                 this._timer = new away.utils.RequestAnimationFrame(this.render, this);

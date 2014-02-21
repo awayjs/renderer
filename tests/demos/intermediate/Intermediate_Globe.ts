@@ -41,17 +41,19 @@
 
 module examples
 {
-    import Camera3D                     = away.cameras.Camera3D;
-    import ObjectContainer3D            = away.containers.ObjectContainer3D;
-    import Scene3D                      = away.containers.Scene3D;
-    import View3D                       = away.containers.View3D;
+    import Camera						= away.entities.Camera;
+    import DisplayObjectContainer		= away.containers.DisplayObjectContainer;
+    import Scene                        = away.containers.Scene;
+    import View                         = away.containers.View;
     import HoverController              = away.controllers.HoverController;
     import BitmapData                   = away.base.BitmapData;
     import BitmapDataChannel            = away.base.BitmapDataChannel;
     import BlendMode                    = away.base.BlendMode;
+	import OrientationMode              = away.base.OrientationMode;
+	import AlignmentMode                = away.base.AlignmentMode;
     import Mesh                         = away.entities.Mesh;
-    import Sprite3D                     = away.entities.Sprite3D;
-    import SkyBox                       = away.entities.SkyBox;
+    import Billboard                    = away.entities.Billboard;
+    import Skybox                       = away.entities.Skybox;
     import LoaderEvent                  = away.events.LoaderEvent
     import ColorTransform               = away.geom.ColorTransform;
     import Vector3D                     = away.geom.Vector3D;
@@ -71,8 +73,9 @@ module examples
     import StaticLightPicker            = away.materials.StaticLightPicker;
     import TextureMaterial              = away.materials.TextureMaterial;
     import SphereGeometry               = away.primitives.SphereGeometry;
-    import HTMLImageElementCubeTexture  = away.textures.HTMLImageElementCubeTexture;
-    import HTMLImageElementTexture      = away.textures.HTMLImageElementTexture
+	import DefaultRenderer              = away.render.DefaultRenderer;
+    import ImageCubeTexture  			= away.textures.ImageCubeTexture;
+    import ImageTexture      			= away.textures.ImageTexture
     import BitmapTexture                = away.textures.BitmapTexture;
     import Cast                         = away.utils.Cast;
     import RequestAnimationFrame        = away.utils.RequestAnimationFrame;
@@ -80,9 +83,9 @@ module examples
     export class Intermediate_Globe
     {
         //engine variables
-        private scene:Scene3D;
-        private camera:Camera3D;
-        private view:View3D;
+        private scene:Scene;
+        private camera:Camera;
+        private view:View;
         private cameraController:HoverController;
 
         //material objects
@@ -92,21 +95,21 @@ module examples
         private atmosphereMaterial:ColorMaterial;
         private atmosphereDiffuseMethod:BasicDiffuseMethod;
         private atmosphereSpecularMethod:BasicSpecularMethod;
-        private cubeTexture:HTMLImageElementCubeTexture;
+        private cubeTexture:ImageCubeTexture;
 
         //scene objects
-        private sun:Sprite3D;
+        private sun:Billboard;
         private earth:Mesh;
         private clouds:Mesh;
         private atmosphere:Mesh;
-        private tiltContainer:ObjectContainer3D;
-        private orbitContainer:ObjectContainer3D;
-        private skyBox:SkyBox;
+        private tiltContainer:DisplayObjectContainer;
+        private orbitContainer:DisplayObjectContainer;
+        private skyBox:Skybox;
 
         //light objects
         private light:PointLight;
         private lightPicker:StaticLightPicker;
-        private flares:Array<FlareObject> = new Array<FlareObject>(12);
+        private flares:FlareObject[] = new Array<FlareObject>(12);
 
         //navigation variables
         private _timer:RequestAnimationFrame;
@@ -146,22 +149,22 @@ module examples
          * Initialise the engine
          */
         private initEngine():void
-    {
-        this.scene = new Scene3D();
+		{
+			this.scene = new Scene();
 
-        //setup camera for optimal skybox rendering
-        this.camera = new Camera3D();
-        this.camera.lens.far = 100000;
+			//setup camera for optimal skybox rendering
+			this.camera = new Camera();
+			this.camera.projection.far = 100000;
 
-        this.view = new View3D();
-        this.view.scene = this.scene;
-        this.view.camera = this.camera;
+			this.view = new View(new DefaultRenderer());
+			this.view.scene = this.scene;
+			this.view.camera = this.camera;
 
-        //setup controller to be used on the camera
-        this.cameraController = new HoverController(this.camera, null, 0, 0, 600, -90, 90);
-        this.cameraController.autoUpdate = false;
-        this.cameraController.yFactor = 1;
-    }
+			//setup controller to be used on the camera
+			this.cameraController = new HoverController(this.camera, null, 0, 0, 600, -90, 90);
+			this.cameraController.autoUpdate = false;
+			this.cameraController.yFactor = 1;
+		}
 
         /**
          * Initialise the lights
@@ -271,11 +274,13 @@ module examples
          */
         private initObjects():void
         {
-            this.orbitContainer = new ObjectContainer3D();
+            this.orbitContainer = new DisplayObjectContainer();
             this.orbitContainer.addChild(this.light);
             this.scene.addChild(this.orbitContainer);
 
-            this.sun = new Sprite3D(this.sunMaterial, 3000, 3000);
+            this.sun = new Billboard(this.sunMaterial, 3000, 3000);
+			this.sun.orientationMode = OrientationMode.CAMERA_PLANE;
+			this.sun.alignmentMode = AlignmentMode.PIVOT_POINT;
             this.sun.x = 10000;
             this.orbitContainer.addChild(this.sun);
 
@@ -286,7 +291,7 @@ module examples
             this.atmosphere = new Mesh(new SphereGeometry(210, 200, 100), this.atmosphereMaterial);
             this.atmosphere.scaleX = -1;
 
-            this.tiltContainer = new ObjectContainer3D();
+            this.tiltContainer = new DisplayObjectContainer();
             this.tiltContainer.rotationX = -23;
             this.tiltContainer.addChild(this.earth);
             this.tiltContainer.addChild(this.clouds);
@@ -380,7 +385,7 @@ module examples
                 for (var i:number = 0; i < this.flares.length; i++) {
                     flareObject = this.flares[i];
                     if (flareObject)
-                        flareObject.sprite.visible = this.flareVisible;
+                        flareObject.billboard.visible = this.flareVisible;
                 }
             }
 
@@ -390,7 +395,7 @@ module examples
                 for (var i:number = 0; i < this.flares.length; i++) {
                     flareObject = this.flares[i];
                     if (flareObject)
-                        flareObject.sprite.position = this.view.unproject(sunScreenPosition.x - flareDirection.x*flareObject.position, sunScreenPosition.y - flareDirection.y*flareObject.position, 100 - i);
+                        flareObject.billboard.transform.position = this.view.unproject(sunScreenPosition.x - flareDirection.x*flareObject.position, sunScreenPosition.y - flareDirection.y*flareObject.position, 100 - i);
                 }
             }
         }
@@ -404,9 +409,9 @@ module examples
             {
                 //environment texture
                 case 'assets/demos/skybox/space_texture.cube':
-                    this.cubeTexture = <HTMLImageElementCubeTexture> event.assets[ 0 ];
+                    this.cubeTexture = <ImageCubeTexture> event.assets[ 0 ];
 
-                    this.skyBox = new SkyBox(this.cubeTexture);
+                    this.skyBox = new Skybox(this.cubeTexture);
                     this.scene.addChild(this.skyBox);
                     break;
 
@@ -423,13 +428,13 @@ module examples
                     this.groundMaterial.specularMap = new BitmapTexture(specBitmapData, false); //TODO: fix mipmaps for bitmapdata textures
                     break;
                 case "assets/demos/globe/EarthNormal.png" :
-                    this.groundMaterial.normalMap = <HTMLImageElementTexture> event.assets[ 0 ];
+                    this.groundMaterial.normalMap = <ImageTexture> event.assets[ 0 ];
                     break;
                 case "assets/demos/globe/land_lights_16384.jpg" :
-                    this.groundMaterial.ambientTexture = <HTMLImageElementTexture> event.assets[ 0 ];
+                    this.groundMaterial.ambientTexture = <ImageTexture> event.assets[ 0 ];
                     break;
                 case "assets/demos/globe/land_ocean_ice_2048_match.jpg" :
-                    this.groundMaterial.texture = <HTMLImageElementTexture> event.assets[ 0 ];
+                    this.groundMaterial.texture = <ImageTexture> event.assets[ 0 ];
                     break;
 
                 //flare textures
@@ -455,7 +460,7 @@ module examples
                     this.flares[9] = new FlareObject(Cast.bitmapData(event.assets[ 0 ]), 0.5, 2.21, 33.15, this.scene);
                     break;
                 case "assets/demos/lensflare/flare10.jpg" :
-                    this.sunMaterial.texture = <HTMLImageElementTexture> event.assets[ 0 ];
+                    this.sunMaterial.texture = <ImageTexture> event.assets[ 0 ];
                     this.flares[0] = new FlareObject(Cast.bitmapData(event.assets[ 0 ]), 3.2, -0.01, 100, this.scene);
                     break;
                 case "assets/demos/lensflare/flare11.jpg" :
@@ -588,11 +593,13 @@ module examples
     }
 }
 
-import Scene3D                      = away.containers.Scene3D;
+import Scene                      = away.containers.Scene;
 import BitmapData                   = away.base.BitmapData;
 import BitmapDataChannel            = away.base.BitmapDataChannel;
 import BlendMode                    = away.base.BlendMode;
-import Sprite3D                     = away.entities.Sprite3D;
+import OrientationMode              = away.base.OrientationMode;
+import AlignmentMode                = away.base.AlignmentMode;
+import Billboard                    = away.entities.Billboard;
 import Point                        = away.geom.Point;
 import TextureMaterial              = away.materials.TextureMaterial;
 import BitmapTexture                = away.textures.BitmapTexture;
@@ -602,7 +609,7 @@ class FlareObject
 {
     private flareSize:number = 14.4;
 
-    public sprite:Sprite3D;
+    public billboard:Billboard;
 
     public size:number;
 
@@ -613,22 +620,24 @@ class FlareObject
     /**
      * Constructor
      */
-    constructor(bitmapData:BitmapData, size:number, position:number, opacity:number, scene:Scene3D)
+    constructor(bitmapData:BitmapData, size:number, position:number, opacity:number, scene:Scene)
     {
         var bd:BitmapData = new BitmapData(bitmapData.width, bitmapData.height, true, 0xFFFFFFFF);
         bd.copyChannel(bitmapData, bitmapData.rect, new Point(), BitmapDataChannel.RED, BitmapDataChannel.ALPHA);
 
-        var spriteMaterial:TextureMaterial = new TextureMaterial(new BitmapTexture(bd, false));
-        spriteMaterial.alpha = opacity/100;
-        spriteMaterial.alphaBlending = true;
-        //spriteMaterial.blendMode = BlendMode.LAYER;
+        var billboardMaterial:TextureMaterial = new TextureMaterial(new BitmapTexture(bd, false));
+        billboardMaterial.alpha = opacity/100;
+        billboardMaterial.alphaBlending = true;
+        //billboardMaterial.blendMode = BlendMode.LAYER;
 
-        this.sprite = new Sprite3D(spriteMaterial, size*this.flareSize, size*this.flareSize);
-        this.sprite.visible = false;
+        this.billboard = new Billboard(billboardMaterial, size*this.flareSize, size*this.flareSize);
+		this.billboard.orientationMode = OrientationMode.CAMERA_PLANE;
+		this.billboard.alignmentMode = AlignmentMode.PIVOT_POINT;
+        this.billboard.visible = false;
         this.size = size;
         this.position = position;
         this.opacity = opacity;
 
-        scene.addChild(this.sprite)
+        scene.addChild(this.billboard)
     }
 }

@@ -7,7 +7,7 @@ var tests;
             function HoverControllerTest() {
                 var _this = this;
                 this._move = false;
-                this._view = new away.containers.View3D();
+                this._view = new away.containers.View(new away.render.DefaultRenderer());
 
                 this._wireframeCube = new away.primitives.WireframeCube(400, 400, 400);
                 this._view.scene.addChild(this._wireframeCube);

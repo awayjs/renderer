@@ -7,7 +7,7 @@ var demos;
             function CubeDemo() {
                 away.Debug.THROW_ERRORS = false;
 
-                this._view = new away.containers.View3D();
+                this._view = new away.containers.View(new away.render.DefaultRenderer());
 
                 this._view.backgroundColor = 0x000000;
                 this._view.camera.x = 130;
@@ -15,7 +15,7 @@ var demos;
                 this._view.camera.z = 0;
                 this._cameraAxis = new away.geom.Vector3D(0, 0, 1);
 
-                this._view.camera.lens = new away.cameras.PerspectiveLens(120);
+                this._view.camera.projection = new away.projections.PerspectiveProjection(120);
 
                 this._cube = new away.primitives.CubeGeometry(20.0, 20.0, 20.0);
                 this._torus = new away.primitives.TorusGeometry(150, 80, 32, 16, true);
@@ -41,7 +41,7 @@ var demos;
 
             CubeDemo.prototype.onLoadComplete = function (event) {
                 var _this = this;
-                var ts = new away.textures.HTMLImageElementTexture(this._image, false);
+                var ts = new away.textures.ImageTexture(this._image, false);
 
                 var matTx = new away.materials.TextureMaterial(ts, true, true, false);
 

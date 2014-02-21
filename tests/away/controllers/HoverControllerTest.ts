@@ -6,7 +6,7 @@ module tests.controllers{
     export class HoverControllerTest
     {
 
-        private _view           : away.containers.View3D;
+        private _view           : away.containers.View;
         private _timer          : away.utils.RequestAnimationFrame;
         private _light          : away.lights.DirectionalLight;
         private _lightPicker    : away.materials.StaticLightPicker;
@@ -22,7 +22,7 @@ module tests.controllers{
         constructor()
         {
 
-            this._view                = new away.containers.View3D();
+            this._view                = new away.containers.View(new away.render.DefaultRenderer());
 
             this._wireframeCube         = new away.primitives.WireframeCube( 400 , 400 , 400 )
             this._view.scene.addChild( this._wireframeCube );

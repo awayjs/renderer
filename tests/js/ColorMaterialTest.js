@@ -38,7 +38,7 @@ var tests;
             };
 
             ColorMaterialTest.prototype.onLoadComplete = function (event) {
-                this.imgTx = new away.textures.HTMLImageElementTexture(this._image);
+                this.imgTx = new away.textures.ImageTexture(this._image);
                 this.matTx = new away.materials.TextureMaterial(this.imgTx);
                 this.matTx.colorTransform = new away.geom.ColorTransform(1, 1, 1, 1);
 

@@ -6,7 +6,7 @@ module tests.render
     export class RenderTest
     {
 
-        private stage           : away.display.Stage;
+        private scene           : away.containers.Scene;
         private sManager        : away.managers.StageGLManager;
         private stageGL          : away.base.StageGL;
 
@@ -16,11 +16,11 @@ module tests.render
 
             away.Debug.THROW_ERRORS  = false;
 
-            this.stage      = new away.display.Stage();
+            this.scene      = new away.containers.Scene();
             this.sManager   = away.managers.StageGLManager.getInstance();
             this.stageGL     = this.sManager.getFreeStageGL();
 
-            console.log( 'away.display.Stage' , this.stage );
+            console.log( 'away.display.Stage' , this.scene );
             console.log( 'away.managers.StageGLManager' , this.sManager );
             console.log( 'away.managers.StageGLProxy' , this.stageGL );
 

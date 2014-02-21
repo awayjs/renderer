@@ -6,7 +6,7 @@ module demos.parsers {
     export class AWDSuzanne
     {
 
-        private _view           : away.containers.View3D;
+        private _view           : away.containers.View;
         private _token          : away.net.AssetLoaderToken;
         private _timer          : away.utils.RequestAnimationFrame;
         private _suzane         : away.entities.Mesh;
@@ -27,8 +27,8 @@ module demos.parsers {
             this._token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE , away.utils.Delegate.create(this, this.onResourceComplete) );
             this._token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE , away.utils.Delegate.create(this, this.onAssetComplete) );
 
-            this._view = new away.containers.View3D();
-            this._view.camera.lens.far  = 6000;
+            this._view = new away.containers.View(new away.render.DefaultRenderer());
+            this._view.camera.projection.far  = 6000;
             this._timer = new away.utils.RequestAnimationFrame( this.render, this );
 
             this._light                  = new away.lights.DirectionalLight();
@@ -108,18 +108,18 @@ module demos.parsers {
 
                         for ( var c : number = 0 ; c < 80 ; c ++ )
                         {
-
-                            var clone : away.entities.Mesh = mesh.clone();
+							var scale : number = this.getRandom( 50 , 200 );
+                            var clone : away.entities.Mesh = <away.entities.Mesh> mesh.clone();
                                 clone.x = this.getRandom( -2000 , 2000 );
                                 clone.y = this.getRandom( -2000 , 2000 );
                                 clone.z = this.getRandom( -2000 , 2000 );
-                                clone.scale( this.getRandom( 50 , 200 ));
+                                clone.transform.scale = new away.geom.Vector3D( scale, scale, scale);
                                 clone.rotationY = this.getRandom( 0 , 360 );
                             this._view.scene.addChild( clone );
 
                         }
 
-                        mesh.scale( 500 );
+                        mesh.transform.scale = new away.geom.Vector3D( 500, 500, 500 );
 
                         this._view.scene.addChild( mesh );
 

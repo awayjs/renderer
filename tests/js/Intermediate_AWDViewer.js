@@ -30,8 +30,8 @@ var examples;
     var SkeletonAnimator = away.animators.SkeletonAnimator;
     var SkeletonClipNode = away.animators.SkeletonClipNode;
     var CrossfadeTransition = away.animators.CrossfadeTransition;
-    var PerspectiveLens = away.cameras.PerspectiveLens;
-    var View3D = away.containers.View3D;
+    var PerspectiveProjection = away.projections.PerspectiveProjection;
+    var View3D = away.containers.View;
     var HoverController = away.controllers.HoverController;
     var AnimationStateEvent = away.events.AnimationStateEvent;
     var AssetEvent = away.events.AssetEvent;
@@ -41,6 +41,7 @@ var examples;
     var Loader3D = away.containers.Loader3D;
     var AWD2Parser = away.parsers.AWDParser;
     var URLRequest = away.net.URLRequest;
+    var DefaultRenderer = away.render.DefaultRenderer;
     var Keyboard = away.ui.Keyboard;
     var RequestAnimationFrame = away.utils.RequestAnimationFrame;
 
@@ -67,13 +68,13 @@ var examples;
         */
         Intermediate_AWDViewer.prototype.initEngine = function () {
             //create the view
-            this._view = new View3D();
+            this._view = new View3D(new DefaultRenderer());
             this._view.backgroundColor = 0x333338;
 
             //create custom lens
-            this._view.camera.lens = new PerspectiveLens(70);
-            this._view.camera.lens.far = 5000;
-            this._view.camera.lens.near = 1;
+            this._view.camera.projection = new PerspectiveProjection(70);
+            this._view.camera.projection.far = 5000;
+            this._view.camera.projection.near = 1;
 
             //setup controller to be used on the camera
             this._cameraController = new HoverController(this._view.camera, null, 0, 0, 150, 10, 90);

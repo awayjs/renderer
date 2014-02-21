@@ -9,7 +9,7 @@ module tests.library {
         private height : number = 0;
 
         private token   : away.net.AssetLoaderToken;
-        private view    : away.containers.View3D;
+        private view    : away.containers.View;
         private raf     : away.utils.RequestAnimationFrame;
         private mesh    : away.entities.Mesh;
 
@@ -20,7 +20,7 @@ module tests.library {
             away.Debug.THROW_ERRORS     = false;
 
 
-            this.view                  = new away.containers.View3D( );
+            this.view                  = new away.containers.View(new away.render.DefaultRenderer());
             this.raf                    = new away.utils.RequestAnimationFrame( this.render , this );
 
             away.library.AssetLibrary.enableParser( away.parsers.OBJParser ) ;
@@ -91,7 +91,7 @@ module tests.library {
 
             this.mesh = <away.entities.Mesh> away.library.AssetLibrary.getAsset( 'Mesh_g0' );
             this.mesh.y = -200;
-            this.mesh.scale( 4 );
+            this.mesh.transform.scale = new away.geom.Vector3D( 4, 4, 4 );
 
             this.view.scene.addChild( this.mesh );
 

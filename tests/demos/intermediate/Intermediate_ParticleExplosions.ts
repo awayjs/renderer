@@ -52,11 +52,11 @@ module examples
 	import ParticlePropertiesMode		= away.animators.ParticlePropertiesMode;
 	import Geometry						= away.base.Geometry;
 	import ParticleGeometry				= away.base.ParticleGeometry;
-	import Camera3D						= away.cameras.Camera3D;
-	import Scene3D						= away.containers.Scene3D;
-	import View3D						= away.containers.View3D;
+	import Scene						= away.containers.Scene;
+	import View							= away.containers.View;
 	import HoverController				= away.controllers.HoverController;
 	import BitmapData					= away.base.BitmapData;
+	import Camera						= away.entities.Camera;
 	import Mesh							= away.entities.Mesh;
 	import LoaderEvent					= away.events.LoaderEvent;
 	import ColorTransform				= away.geom.ColorTransform;
@@ -66,6 +66,7 @@ module examples
 	import ColorMaterial				= away.materials.ColorMaterial;
 	import StaticLightPicker			= away.materials.StaticLightPicker;
 	import PlaneGeometry				= away.primitives.PlaneGeometry;
+	import DefaultRenderer              = away.render.DefaultRenderer;
 	import ParticleGeometryHelper		= away.tools.ParticleGeometryHelper;
 	import Cast							= away.utils.Cast;
 	import RequestAnimationFrame		= away.utils.RequestAnimationFrame;
@@ -76,9 +77,9 @@ module examples
 		private static NUM_ANIMATORS:number /*uint*/ = 4;
 		
 		//engine variables
-		private scene:Scene3D;
-		private camera:Camera3D;
-		private view:View3D;
+		private scene:Scene;
+		private camera:Camera;
+		private view:View;
 		private cameraController:HoverController;
 		
 		//light variables
@@ -142,13 +143,11 @@ module examples
 		 */
 		private initEngine():void
 		{
-			this.scene = new Scene3D();
+			this.scene = new Scene();
 
-			this.camera = new Camera3D();
+			this.camera = new Camera();
 
-			this.view = new View3D();
-			this.view.scene = this.scene;
-			this.view.camera = this.camera;
+			this.view = new View(new DefaultRenderer(), this.scene, this.camera);
 			
 			//setup controller to be used on the camera
 			this.cameraController = new HoverController(this.camera, null, 225, 10, 1000);

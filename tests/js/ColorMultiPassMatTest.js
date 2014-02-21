@@ -1,7 +1,7 @@
+///<reference path="../../../build/Away3D.next.d.ts" />
+//<reference path="../../../src/Away3D.ts" />
 var tests;
 (function (tests) {
-    ///<reference path="../../../build/Away3D.next.d.ts" />
-    //<reference path="../../../src/Away3D.ts" />
     (function (materials) {
         var ColorMultiPassMatTest = (function () {
             function ColorMultiPassMatTest() {
@@ -15,7 +15,7 @@ var tests;
                 away.Debug.LOG_PI_ERRORS = false;
 
                 this.light = new away.lights.PointLight();
-                this.view = new away.containers.View3D();
+                this.view = new away.containers.View(new away.render.DefaultRenderer());
                 this.view.camera.z = -1000;
                 this.view.backgroundColor = 0x000000;
                 this.torus = new away.primitives.TorusGeometry(50, 10, 32, 32, false);

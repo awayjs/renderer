@@ -14,7 +14,7 @@ var demos;
                 //away.Debug.LOG_PI_ERRORS    = false;
                 away.Debug.THROW_ERRORS = false;
 
-                this.view = new away.containers.View3D();
+                this.view = new away.containers.View(new away.render.DefaultRenderer());
                 this.raf = new away.utils.RequestAnimationFrame(this.render, this);
 
                 this.light = new away.lights.DirectionalLight();
@@ -96,9 +96,9 @@ var demos;
                             if (d.name == 'Mesh_g0') {
                                 this.t800M = mesh;
                                 mesh.y = -400;
-                                mesh.scale(5);
+                                mesh.transform.scale = new away.geom.Vector3D(5, 5, 5);
                             } else {
-                                mesh.scale(3.5);
+                                mesh.transform.scale = new away.geom.Vector3D(3.5, 3.5, 3.5);
                             }
 
                             if (this.loadedMeshMaterial)

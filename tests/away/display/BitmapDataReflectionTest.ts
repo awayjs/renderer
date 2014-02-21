@@ -6,14 +6,14 @@ module tests.display {
 
 	export class BitmapDataReflectionTest
 	{
-		private view : away.containers.View3D;
+		private view : away.containers.View;
 		private raf  : away.utils.RequestAnimationFrame;
 		private reflectionMesh : away.entities.Mesh;
 		private fullmesh : away.entities.Mesh;
 
 		constructor()
 		{
-			this.view   = new away.containers.View3D();
+			this.view   = new away.containers.View(new away.render.DefaultRenderer());
 			this.raf    = new away.utils.RequestAnimationFrame( this.render , this );
 
 			away.library.AssetLibrary.enableParser( away.parsers.BitmapParser );
@@ -44,7 +44,7 @@ module tests.display {
 					case away.library.AssetType.TEXTURE:
 
 						var geom    : away.primitives.PlaneGeometry = new away.primitives.PlaneGeometry(500  , 500 , 1 , 1 , false );
-						var tx      : away.textures.HTMLImageElementTexture = <away.textures.HTMLImageElementTexture> asset;
+						var tx      : away.textures.ImageTexture = <away.textures.ImageTexture> asset;
 						var bitmap  : away.base.BitmapData = new away.base.BitmapData(  1024, 1024 , true , 0x00000000 )
 
 						bitmap.context.translate(0, 1024);

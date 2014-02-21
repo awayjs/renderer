@@ -9,19 +9,20 @@ module demos.object3d
 	import RequestAnimationFrame		= away.utils.RequestAnimationFrame;
 	import Delegate						= away.utils.Delegate;
 
-	import PerspectiveLens				= away.cameras.PerspectiveLens;
-	import View3D						= away.containers.View3D;
+	import PerspectiveProjection		= away.projections.PerspectiveProjection;
+	import View						= away.containers.View;
 	import Mesh							= away.entities.Mesh;
 	import PointLight					= away.lights.PointLight;
 	import StaticLightPicker			= away.materials.StaticLightPicker;
 	import TextureMaterial				= away.materials.TextureMaterial;
 	import TorusGeometry				= away.primitives.TorusGeometry;
-	import HTMLImageElementTexture		= away.textures.HTMLImageElementTexture;
+	import DefaultRenderer				= away.render.DefaultRenderer;
+	import ImageTexture					= away.textures.ImageTexture;
 
     export class TorusObject3DDemo
     {
 
-        private view:View3D;
+        private view:View;
         private torus:TorusGeometry;
 
         private light:PointLight;
@@ -45,14 +46,13 @@ module demos.object3d
 
             this.meshes = new Array<Mesh>();
             this.light = new PointLight();
-            this.view = new View3D();
-
+            this.view = new View(new DefaultRenderer());
             this.pointLight = new PointLight();
             this.lightPicker = new StaticLightPicker([this.pointLight])
 
             this.view.scene.addChild(this.pointLight);
 
-            var perspectiveLens:PerspectiveLens = <PerspectiveLens> this.view.camera.lens;
+            var perspectiveLens:PerspectiveProjection = <PerspectiveProjection> this.view.camera.projection;
             perspectiveLens.fieldOfView = 75;
 
             this.view.camera.z = 0;
@@ -108,7 +108,7 @@ module demos.object3d
 
 		private onImageLoadComplete(event)
 		{
-			var ts : HTMLImageElementTexture = new HTMLImageElementTexture(this._image, false);
+			var ts : ImageTexture = new ImageTexture(this._image, false);
 
 			var matTx: TextureMaterial = new TextureMaterial(ts, true, true, false);
 			matTx.lightPicker =  this.lightPicker;
@@ -139,7 +139,7 @@ module demos.object3d
             //this.view.camera.y = Math.sin( this.tPos ) * 1500;
 
             if (this.follow)
-                this.view.camera.lookAt(this.meshes[0].position);
+                this.view.camera.lookAt(this.meshes[0].transform.position);
 
             this.view.camera.y = Math.sin(this.tPos) * 1500;
 

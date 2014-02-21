@@ -52,11 +52,11 @@ module examples
 	import ParticleProperties					= away.animators.ParticleProperties;
 	import Geometry								= away.base.Geometry;
 	import ParticleGeometry						= away.base.ParticleGeometry;
-	import Camera3D								= away.cameras.Camera3D;
-	import Scene3D								= away.containers.Scene3D;
-	import View3D								= away.containers.View3D;
+	import Scene								= away.containers.Scene;
+	import View									= away.containers.View;
 	import HoverController						= away.controllers.HoverController;
 	import BlendMode							= away.base.BlendMode;
+	import Camera								= away.entities.Camera;
 	import Mesh									= away.entities.Mesh;
 	import TimerEvent							= away.events.TimerEvent;
 	import ColorTransform						= away.geom.ColorTransform;
@@ -76,9 +76,9 @@ module examples
 		private static NUM_FIRES:number /*uint*/ = 10;
     	
     	//engine variables
-    	private scene:Scene3D;
-		private camera:Camera3D;
-		private view:View3D;
+    	private scene:Scene;
+		private camera:Camera;
+		private view:View;
 		private cameraController:HoverController;
 		
 		//material objects
@@ -133,12 +133,12 @@ module examples
 		 */
 		private initEngine():void
 		{
-			this.scene = new Scene3D();
+			this.scene = new Scene();
 
-			this.camera = new Camera3D();
+			this.camera = new Camera();
 
-			this.view = new View3D();
-			this.view.antiAlias = 4;
+			this.view = new View(new away.render.DefaultRenderer());
+			//this.view.antiAlias = 4;
 			this.view.scene = this.scene;
 			this.view.camera = this.camera;
 			
@@ -325,7 +325,7 @@ module examples
 			light.color = 0xFF3301;
 			light.diffuse = 0;
 			light.specular = 0;
-			light.position = fireObject.mesh.position;
+			light.transform.position = fireObject.mesh.transform.position;
 			
 			//add the lightsource to the fire object
 			fireObject.light = light;

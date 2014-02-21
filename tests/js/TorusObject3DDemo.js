@@ -9,14 +9,15 @@ var demos;
         var RequestAnimationFrame = away.utils.RequestAnimationFrame;
         var Delegate = away.utils.Delegate;
 
-        var PerspectiveLens = away.cameras.PerspectiveLens;
-        var View3D = away.containers.View3D;
+        var PerspectiveProjection = away.projections.PerspectiveProjection;
+        var View = away.containers.View;
         var Mesh = away.entities.Mesh;
         var PointLight = away.lights.PointLight;
         var StaticLightPicker = away.materials.StaticLightPicker;
         var TextureMaterial = away.materials.TextureMaterial;
         var TorusGeometry = away.primitives.TorusGeometry;
-        var HTMLImageElementTexture = away.textures.HTMLImageElementTexture;
+        var DefaultRenderer = away.render.DefaultRenderer;
+        var ImageTexture = away.textures.ImageTexture;
 
         var TorusObject3DDemo = (function () {
             function TorusObject3DDemo() {
@@ -30,14 +31,13 @@ var demos;
 
                 this.meshes = new Array();
                 this.light = new PointLight();
-                this.view = new View3D();
-
+                this.view = new View(new DefaultRenderer());
                 this.pointLight = new PointLight();
                 this.lightPicker = new StaticLightPicker([this.pointLight]);
 
                 this.view.scene.addChild(this.pointLight);
 
-                var perspectiveLens = this.view.camera.lens;
+                var perspectiveLens = this.view.camera.projection;
                 perspectiveLens.fieldOfView = 75;
 
                 this.view.camera.z = 0;
@@ -90,7 +90,7 @@ var demos;
             };
 
             TorusObject3DDemo.prototype.onImageLoadComplete = function (event) {
-                var ts = new HTMLImageElementTexture(this._image, false);
+                var ts = new ImageTexture(this._image, false);
 
                 var matTx = new TextureMaterial(ts, true, true, false);
                 matTx.lightPicker = this.lightPicker;
@@ -120,7 +120,7 @@ var demos;
 
                 //this.view.camera.y = Math.sin( this.tPos ) * 1500;
                 if (this.follow)
-                    this.view.camera.lookAt(this.meshes[0].position);
+                    this.view.camera.lookAt(this.meshes[0].transform.position);
 
                 this.view.camera.y = Math.sin(this.tPos) * 1500;
 

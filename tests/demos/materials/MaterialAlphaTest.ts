@@ -10,7 +10,7 @@ module demos.materials
         private height : number = 0;
 
         private token   : away.net.AssetLoaderToken;
-        private view    : away.containers.View3D;
+        private view    : away.containers.View;
         private raf     : away.utils.RequestAnimationFrame;
         private mesh    : away.entities.Mesh;
         private meshes  : Array<away.entities.Mesh> = new Array<away.entities.Mesh>();
@@ -29,7 +29,7 @@ module demos.materials
             //away.Debug.LOG_PI_ERRORS    = false;
             away.Debug.THROW_ERRORS     = false;
 
-            this.view                  = new away.containers.View3D( );
+            this.view                  = new away.containers.View( new away.render.DefaultRenderer());
             this.raf                    = new away.utils.RequestAnimationFrame( this.render , this );
 
             this.light                  = new away.lights.DirectionalLight();
@@ -131,11 +131,11 @@ module demos.materials
                         {
                             this.t800M = mesh;
                             mesh.y = -400;
-                            mesh.scale( 5 );
+                            mesh.transform.scale = new away.geom.Vector3D( 5, 5, 5 );
                         }
                         else
                         {
-                            mesh.scale( 3.5 );
+                            mesh.transform.scale = new away.geom.Vector3D( 3.5, 3.5, 3.5 );
 
                         }
 
@@ -152,7 +152,7 @@ module demos.materials
                     case away.library.AssetType.TEXTURE :
 
                         // Loaded Texture
-                        var tx  : away.textures.HTMLImageElementTexture     = <away.textures.HTMLImageElementTexture> away.library.AssetLibrary.getAsset( d.name );
+                        var tx  : away.textures.ImageTexture     = <away.textures.ImageTexture> away.library.AssetLibrary.getAsset( d.name );
 
                         // Light Picker
                         this.staticLightPicker                              = new away.materials.StaticLightPicker( [this.light , this.lightB ] );

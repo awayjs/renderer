@@ -50,7 +50,7 @@ THE SOFTWARE.
 module examples
 {
 	import Loader3D							= away.containers.Loader3D;
-	import View3D							= away.containers.View3D;
+	import View							= away.containers.View;
 	import FirstPersonController			= away.controllers.FirstPersonController;
 	import Geometry							= away.base.Geometry;
 	import SubMesh							= away.base.SubMesh;
@@ -116,7 +116,7 @@ module examples
 		private colMeshes:Array<Mesh> = new Array<Mesh>();
 		
 		//engien variables
-		private _view:View3D;
+		private _view:View;
 		private _cameraController:FirstPersonController;
 		
 		//gui variables
@@ -201,7 +201,7 @@ module examples
 		private initEngine()
 		{
 			//create the view
-			this._view = new View3D();
+			this._view = new View();
 			this._view.camera.y = 150;
 			this._view.camera.z = 0;
 			

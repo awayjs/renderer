@@ -30,7 +30,7 @@ var tests;
                 away.Debug.LOG_PI_ERRORS = false;
 
                 this.light = new away.lights.PointLight();
-                this.view = new away.containers.View3D();
+                this.view = new away.containers.View(new away.render.DefaultRenderer());
                 this.view.camera.z = -1000;
                 this.view.backgroundColor = 0x000000;
                 this.torus = new away.primitives.TorusGeometry(50, 10, 32, 32, false);
@@ -38,7 +38,7 @@ var tests;
                 var l = 20;
                 var radius = 500;
 
-                var ts = new away.textures.HTMLImageElementTexture(this._image, false);
+                var ts = new away.textures.ImageTexture(this._image, false);
                 var mat = new away.materials.TextureMultiPassMaterial(ts, true, true, false);
 
                 for (var c = 0; c < l; c++) {

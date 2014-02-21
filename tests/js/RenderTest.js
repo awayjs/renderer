@@ -7,13 +7,13 @@ var tests;
             function RenderTest() {
                 away.Debug.THROW_ERRORS = false;
 
-                this.stage = new away.display.Stage();
-                this.sManager = away.managers.StageGLManager.getInstance(this.stage);
-                this.sProxy = this.sManager.getStageGLProxy(0);
+                this.scene = new away.containers.Scene();
+                this.sManager = away.managers.StageGLManager.getInstance();
+                this.stageGL = this.sManager.getFreeStageGL();
 
-                console.log('away.display.Stage', this.stage);
+                console.log('away.display.Stage', this.scene);
                 console.log('away.managers.StageGLManager', this.sManager);
-                console.log('away.managers.StageGLProxy', this.sProxy);
+                console.log('away.managers.StageGLProxy', this.stageGL);
 
                 this.dRenderer = new away.render.DefaultRenderer();
 

@@ -6,7 +6,7 @@ var tests;
         var BitmapDataReflectionTest = (function () {
             function BitmapDataReflectionTest() {
                 var _this = this;
-                this.view = new away.containers.View3D();
+                this.view = new away.containers.View(new away.render.DefaultRenderer());
                 this.raf = new away.utils.RequestAnimationFrame(this.render, this);
 
                 away.library.AssetLibrary.enableParser(away.parsers.BitmapParser);

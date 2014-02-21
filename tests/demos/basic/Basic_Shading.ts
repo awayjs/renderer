@@ -44,9 +44,9 @@ module examples
     export class Basic_Shading
     {
         //engine variables
-        private _scene:away.containers.Scene3D;
-        private _camera:away.cameras.Camera3D;
-        private _view:away.containers.View3D;
+        private _scene:away.containers.Scene;
+        private _camera:away.entities.Camera;
+        private _view:away.containers.View;
         private _cameraController:away.controllers.HoverController;
 
         //material objects
@@ -100,12 +100,12 @@ module examples
          */
         private initEngine():void
         {
-            this._scene = new away.containers.Scene3D();
+            this._scene = new away.containers.Scene();
 
-            this._camera = new away.cameras.Camera3D();
+            this._camera = new away.entities.Camera();
 
-            this._view = new away.containers.View3D();
-            this._view.antiAlias = 4;
+            this._view = new away.containers.View(new away.render.DefaultRenderer());
+            //this._view.antiAlias = 4;
             this._view.scene = this._scene;
             this._view.camera = this._camera;
 

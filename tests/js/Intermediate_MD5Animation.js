@@ -36,14 +36,14 @@ var examples;
     var SkeletonAnimationSet = away.animators.SkeletonAnimationSet;
     var SkeletonAnimator = away.animators.SkeletonAnimator;
     var SkeletonClipNode = away.animators.SkeletonClipNode;
-    var Camera3D = away.cameras.Camera3D;
-    var ObjectContainer3D = away.containers.ObjectContainer3D;
-    var Scene3D = away.containers.Scene3D;
-    var View3D = away.containers.View3D;
+    var DisplayObjectContainer = away.containers.DisplayObjectContainer;
+    var Scene = away.containers.Scene;
+    var View = away.containers.View;
     var LookAtController = away.controllers.LookAtController;
+    var Billboard = away.entities.Billboard;
+    var Camera = away.entities.Camera;
     var Mesh = away.entities.Mesh;
-    var SkyBox = away.entities.SkyBox;
-    var Sprite3D = away.entities.Sprite3D;
+    var Skybox = away.entities.Skybox;
     var AnimationStateEvent = away.events.AnimationStateEvent;
     var AssetEvent = away.events.AssetEvent;
     var LoaderEvent = away.events.LoaderEvent;
@@ -54,15 +54,16 @@ var examples;
     var NearDirectionalShadowMapper = away.lights.NearDirectionalShadowMapper;
     var MD5AnimParser = away.parsers.MD5AnimParser;
     var MD5MeshParser = away.parsers.MD5MeshParser;
+    var PlaneGeometry = away.primitives.PlaneGeometry;
     var FogMethod = away.materials.FogMethod;
     var StaticLightPicker = away.materials.StaticLightPicker;
     var TextureMaterial = away.materials.TextureMaterial;
     var SoftShadowMapMethod = away.materials.SoftShadowMapMethod;
     var NearShadowMapMethod = away.materials.NearShadowMapMethod;
     var URLRequest = away.net.URLRequest;
-    var PlaneGeometry = away.primitives.PlaneGeometry;
-    var HTMLImageElementCubeTexture = away.textures.HTMLImageElementCubeTexture;
-    var HTMLImageElementTexture = away.textures.HTMLImageElementTexture;
+    var DefaultRenderer = away.render.DefaultRenderer;
+    var ImageCubeTexture = away.textures.ImageCubeTexture;
+    var ImageTexture = away.textures.ImageTexture;
     var Keyboard = away.ui.Keyboard;
     var Cast = away.utils.Cast;
     var RequestAnimationFrame = away.utils.RequestAnimationFrame;
@@ -95,16 +96,16 @@ var examples;
         * Initialise the engine
         */
         Intermediate_MD5Animation.prototype.initEngine = function () {
-            this.view = new View3D();
+            this.view = new View(new DefaultRenderer());
             this.scene = this.view.scene;
             this.camera = this.view.camera;
 
-            this.camera.lens.far = 5000;
+            this.camera.projection.far = 5000;
             this.camera.z = -200;
             this.camera.y = 160;
 
             //setup controller to be used on the camera
-            this.placeHolder = new ObjectContainer3D();
+            this.placeHolder = new DisplayObjectContainer();
             this.placeHolder.y = 50;
             this.cameraController = new LookAtController(this.camera, this.placeHolder);
         };
@@ -161,7 +162,7 @@ var examples;
             this.shadowMapMethod.epsilon = .1;
 
             //create a global fog method
-            this.fogMethod = new FogMethod(0, this.camera.lens.far * 0.5, 0x000000);
+            this.fogMethod = new FogMethod(0, this.camera.projection.far * 0.5, 0x000000);
         };
 
         /**
@@ -210,9 +211,9 @@ var examples;
         */
         Intermediate_MD5Animation.prototype.initObjects = function () {
             //create light billboards
-            var redSprite = new Sprite3D(this.redLightMaterial, 200, 200);
+            var redSprite = new Billboard(this.redLightMaterial, 200, 200);
             redSprite.castsShadows = false;
-            var blueSprite = new Sprite3D(this.blueLightMaterial, 200, 200);
+            var blueSprite = new Billboard(this.blueLightMaterial, 200, 200);
             blueSprite.castsShadows = false;
             this.redLight.addChild(redSprite);
             this.blueLight.addChild(blueSprite);
@@ -285,7 +286,7 @@ var examples;
 
             //update character animation
             if (this.mesh) {
-                this.mesh.subMeshes[1].offsetV = this.mesh.subMeshes[2].offsetV = this.mesh.subMeshes[3].offsetV = (-this._time / 2000 % 1);
+                this.mesh.subMeshes[1].uvTransform.offsetV = this.mesh.subMeshes[2].uvTransform.offsetV = this.mesh.subMeshes[3].uvTransform.offsetV = (-this._time / 2000 % 1);
                 this.mesh.rotationY += this.currentRotationInc;
             }
 
@@ -352,7 +353,7 @@ var examples;
                 case 'assets/demos/skybox/grimnight_texture.cube':
                     this.cubeTexture = event.assets[0];
 
-                    this.skyBox = new SkyBox(this.cubeTexture);
+                    this.skyBox = new Skybox(this.cubeTexture);
                     this.scene.addChild(this.skyBox);
                     break;
 

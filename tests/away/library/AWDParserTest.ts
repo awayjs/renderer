@@ -6,7 +6,7 @@ module tests.library {
     export class AWDParserTest //extends away.events.EventDispatcher
     {
 
-        private _view    : away.containers.View3D;
+        private _view    : away.containers.View;
         private token   : away.net.AssetLoaderToken;
         private _timer   : away.utils.RequestAnimationFrame;
         private _suzane : away.entities.Mesh;
@@ -25,7 +25,7 @@ module tests.library {
             this.token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE , away.utils.Delegate.create(this, this.onResourceComplete) );
             this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE , away.utils.Delegate.create(this, this.onAssetComplete) );
 
-            this._view = new away.containers.View3D();
+            this._view = new away.containers.View(new away.render.DefaultRenderer());
             this._timer = new away.utils.RequestAnimationFrame( this.render, this );
 
             window.onresize = () => this.resize();
@@ -83,7 +83,7 @@ module tests.library {
 
                         var mesh : away.entities.Mesh = <away.entities.Mesh> asset;
 
-                            mesh.scale( 600 );
+                            mesh.transform.scale = new away.geom.Vector3D(600, 600, 600 );
 
                         this._suzane = mesh;
 

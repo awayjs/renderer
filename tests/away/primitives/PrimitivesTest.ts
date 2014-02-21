@@ -7,7 +7,7 @@ module tests.primitives
     export class PrimitivesTest//extends away.events.EventDispatcher
     {
 
-        private view                : away.containers.View3D;
+        private view                : away.containers.View;
         private raf                 : away.utils.RequestAnimationFrame;
         private meshes              : Array<away.entities.Mesh> = new Array<away.entities.Mesh>();
         private light               : away.lights.DirectionalLight;
@@ -23,7 +23,7 @@ module tests.primitives
             away.Debug.LOG_PI_ERRORS    = false;
             away.Debug.THROW_ERRORS     = false;
 
-            this.view                   = new away.containers.View3D( );
+            this.view                   = new away.containers.View( new away.render.DefaultRenderer());
             this.raf                    = new away.utils.RequestAnimationFrame( this.render , this );
 
             this.light                  = new away.lights.DirectionalLight();
@@ -80,7 +80,7 @@ module tests.primitives
                 mesh.x = Math.cos(t)*this.radius;
                 mesh.y = Math.sin(t)*this.radius;
                 mesh.z = 0;
-                mesh.scale( 2 );
+                mesh.transform.scale = new away.geom.Vector3D( 2, 2, 2 );
                 mesh.material.lightPicker = this.staticLightPicker;
 
                 this.view.scene.addChild( mesh );

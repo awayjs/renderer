@@ -6,7 +6,6 @@ module tests.entities {
     export class MeshTest //extends away.events.EventDispatcher
     {
 
-        private entity  : away.entities.Entity;
         private mesh    : away.entities.Mesh;
         private geom    : away.base.Geometry;
         private mat     : away.materials.MaterialBase;
@@ -24,13 +23,6 @@ module tests.entities {
             console.log( 'mat' , this.mat );
             console.log( 'geom' , this.geom );
             console.log( 'mesh' , this.mesh );
-
-            this.entity = new away.entities.Entity();
-            this.entity.x = 10;
-            this.entity.y = 10;
-            this.entity.z = 10;
-
-            this.entity.getIgnoreTransform();
         }
 
     }

@@ -52,12 +52,13 @@ var examples;
         * Initialise the engine
         */
         Basic_Shading.prototype.initEngine = function () {
-            this._scene = new away.containers.Scene3D();
+            this._scene = new away.containers.Scene();
 
-            this._camera = new away.cameras.Camera3D();
+            this._camera = new away.entities.Camera();
 
-            this._view = new away.containers.View3D();
-            this._view.antiAlias = 4;
+            this._view = new away.containers.View(new away.render.DefaultRenderer());
+
+            //this._view.antiAlias = 4;
             this._view.scene = this._scene;
             this._view.camera = this._camera;
 

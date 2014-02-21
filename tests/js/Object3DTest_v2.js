@@ -1,4 +1,5 @@
 ///<reference path="../../../build/Away3D.next.d.ts" />
+//<reference path="../../../src/Away3D.ts" />
 var tests;
 (function (tests) {
     (function (base) {
@@ -14,10 +15,10 @@ var tests;
 
                 this.meshes = new Array();
                 this.light = new away.lights.PointLight();
-                this.view = new away.containers.View3D();
+                this.view = new away.containers.View(new away.render.DefaultRenderer());
 
-                var perspectiveLens = this.view.camera.lens;
-                perspectiveLens.fieldOfView = 75;
+                var perspectiveProjection = this.view.camera.projection;
+                perspectiveProjection.fieldOfView = 75;
 
                 this.view.camera.z = 0;
                 this.view.backgroundColor = 0x000000;
@@ -71,7 +72,7 @@ var tests;
 
                 //this.view.camera.y = Math.sin( this.tPos ) * 1500;
                 if (this.follow) {
-                    this.view.camera.lookAt(this.meshes[0].position);
+                    this.view.camera.lookAt(this.meshes[0].transform.position);
                 }
 
                 this.view.camera.y = Math.sin(this.tPos) * 1500;

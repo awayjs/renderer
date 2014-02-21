@@ -13,7 +13,7 @@ module tests.materials
         private stageGL     : away.base.StageGL;
         private sManager    : away.managers.StageGLManager;
         private urlLoader   : away.net.URLLoader;
-        private imgTx       : away.textures.HTMLImageElementTexture;
+        private imgTx       : away.textures.ImageTexture;
         private matTx       : away.materials.TextureMaterial;
         private specM       : away.materials.BasicSpecularMethod;
 		private _image:HTMLImageElement;
@@ -56,7 +56,7 @@ module tests.materials
 
 		private onLoadComplete(event)
 		{
-            this.imgTx                  = new away.textures.HTMLImageElementTexture( this._image )
+            this.imgTx                  = new away.textures.ImageTexture( this._image )
             this.matTx                  = new away.materials.TextureMaterial( this.imgTx  );
             this.matTx.colorTransform   = new away.geom.ColorTransform( 1 , 1 , 1 , 1 );
 

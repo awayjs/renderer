@@ -46,10 +46,10 @@ var examples;
             this._move = false;
             this._lookAtPosition = new away.geom.Vector3D();
             //setup the view
-            this._view = new away.containers.View3D();
+            this._view = new away.containers.View(new away.render.DefaultRenderer());
 
             //setup the camera for optimal rendering
-            this._view.camera.lens.far = 5000;
+            this._view.camera.projection.far = 5000;
 
             //setup controller to be used on the camera
             this._cameraController = new away.controllers.HoverController(this._view.camera, null, 45, 20, 2000, 5);
@@ -189,7 +189,7 @@ var examples;
 
                     //adjust the mesh
                     this._mesh.y = 120;
-                    this._mesh.scale(5);
+                    this._mesh.transform.scale = new away.geom.Vector3D(5, 5, 5);
 
                     this._meshInitialised = true;
 

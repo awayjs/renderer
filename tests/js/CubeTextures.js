@@ -41,12 +41,12 @@ var tests;
             };
 
             CubeTextures.prototype.initView = function () {
-                this._view = new away.containers.View3D();
+                this._view = new away.containers.View(new away.render.DefaultRenderer());
                 this._view.camera.z = -500;
                 this._view.camera.y = 250;
                 this._view.camera.rotationX = 20;
-                this._view.camera.lens.near = 0.5;
-                this._view.camera.lens.far = 14000;
+                this._view.camera.projection.near = 0.5;
+                this._view.camera.projection.far = 14000;
                 this._view.backgroundColor = 0x2c2c32;
                 this.resize();
             };
@@ -73,12 +73,12 @@ var tests;
 
                         this._torus = new away.primitives.TorusGeometry();
 
-                        this._cubeMaterial = new away.materials.SkyBoxMaterial(this._skyboxCubeTexture);
+                        this._cubeMaterial = new away.materials.SkyboxMaterial(this._skyboxCubeTexture);
                         this._torusMesh = new away.entities.Mesh(this._torus, this._cubeMaterial);
 
                         this._view.scene.addChild(this._torusMesh);
 
-                        this._skybox = new away.entities.SkyBox(this._skyboxCubeTexture);
+                        this._skybox = new away.entities.Skybox(this._skyboxCubeTexture);
                         this._view.scene.addChild(this._skybox);
 
                         break;

@@ -6,7 +6,7 @@ module demos.parsers {
     export class AWDShadowTest
     {
 
-        private _view               : away.containers.View3D;
+        private _view               : away.containers.View;
         private _token              : away.net.AssetLoaderToken;
         private _timer              : away.utils.RequestAnimationFrame;
         private lookAtPosition      : away.geom.Vector3D = new away.geom.Vector3D();
@@ -32,8 +32,8 @@ module demos.parsers {
 	        this._token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE , away.utils.Delegate.create(this, this.onResourceComplete) );
             this._token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE , away.utils.Delegate.create(this, this.onAssetComplete) );
 
-            this._view = new away.containers.View3D();
-            this._view.camera.lens.far  = 5000;
+            this._view = new away.containers.View(new away.render.DefaultRenderer());
+            this._view.camera.projection.far  = 5000;
 	        this._view.camera.y = 100;
 
             this._timer = new away.utils.RequestAnimationFrame( this.render, this );

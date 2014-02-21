@@ -8,17 +8,17 @@ var demos;
                 var _this = this;
                 this.height = 0;
                 this.meshes = new Array();
-                this.spartan = new away.containers.ObjectContainer3D();
+                this.spartan = new away.containers.DisplayObjectContainer();
                 this.t = 0;
                 this.spartanFlag = false;
                 this.terrainObjFlag = false;
                 away.Debug.LOG_PI_ERRORS = false;
                 away.Debug.THROW_ERRORS = false;
 
-                this.view = new away.containers.View3D();
+                this.view = new away.containers.View(new away.render.DefaultRenderer());
                 this.view.camera.z = -50;
                 this.view.camera.y = 20;
-                this.view.camera.lens.near = 0.1;
+                this.view.camera.projection.near = 0.1;
                 this.view.backgroundColor = 0xCEC8C6;
 
                 //this.view.backgroundColor   = 0xFF0000;
@@ -34,7 +34,7 @@ var demos;
 
                 //this.light.x                = 800;
                 //this.light.y                = 800;
-                this.spartan.scale(.25);
+                this.spartan.transform.scale = new away.geom.Vector3D(.25, .25, .25);
                 this.spartan.y = 0;
 
                 this.view.scene.addChild(this.light);

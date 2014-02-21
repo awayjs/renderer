@@ -1,4 +1,5 @@
 ///<reference path="../../../build/Away3D.next.d.ts" />
+//<reference path="../../../src/Away3D.ts" />
 var tests;
 (function (tests) {
     (function (containers) {
@@ -10,7 +11,7 @@ var tests;
 
                 this.meshes = new Array();
                 this.light = new away.lights.PointLight();
-                this.view = new away.containers.View3D();
+                this.view = new away.containers.View(new away.render.DefaultRenderer());
                 this.view.camera.z = 0;
                 this.view.backgroundColor = 0x776655;
                 this.torus = new away.primitives.TorusGeometry(150, 50, 32, 32, false);
@@ -51,8 +52,11 @@ var tests;
             };
 
             View3DTest.prototype.resize = function (e) {
-                this.view.y = (window.innerHeight - this.view.height) / 2;
-                this.view.x = (window.innerWidth - this.view.width) / 2;
+                this.view.y = 0;
+                this.view.x = 0;
+
+                this.view.width = window.innerWidth;
+                this.view.height = window.innerHeight;
             };
             return View3DTest;
         })();

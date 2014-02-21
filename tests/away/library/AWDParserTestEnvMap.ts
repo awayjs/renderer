@@ -5,7 +5,7 @@ module tests.library {
     export class AWDParserTestEnvMap
     {
 
-        private _view       : away.containers.View3D;
+        private _view       : away.containers.View;
         private token       : away.net.AssetLoaderToken;
         private _timer      : away.utils.RequestAnimationFrame;
         private _torus      : away.entities.Mesh;
@@ -22,7 +22,7 @@ module tests.library {
             this.token.addEventListener( away.events.LoaderEvent.RESOURCE_COMPLETE , away.utils.Delegate.create(this, this.onResourceComplete) );
             this.token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE , away.utils.Delegate.create(this, this.onAssetComplete) );
 
-            this._view = new away.containers.View3D();
+            this._view = new away.containers.View(new away.render.DefaultRenderer());
             this._timer = new away.utils.RequestAnimationFrame( this.render, this );
 
             window.onresize = () => this.resize();
@@ -81,7 +81,7 @@ module tests.library {
 
                     case away.library.AssetType.SKYBOX:
 
-                        var skybox : away.entities.SkyBox= <away.entities.SkyBox> asset;
+                        var skybox : away.entities.Skybox= <away.entities.Skybox> asset;
                         this._view.scene.addChild( skybox );
                         break;
 

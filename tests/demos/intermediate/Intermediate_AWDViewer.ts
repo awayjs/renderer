@@ -42,8 +42,8 @@ module examples
     import SkeletonAnimator			= away.animators.SkeletonAnimator;
     import SkeletonClipNode			= away.animators.SkeletonClipNode;
     import CrossfadeTransition		= away.animators.CrossfadeTransition;
-    import PerspectiveLens			= away.cameras.PerspectiveLens;
-    import View3D					= away.containers.View3D;
+    import PerspectiveProjection	= away.projections.PerspectiveProjection;
+    import View					= away.containers.View;
     import HoverController			= away.controllers.HoverController;
     import AnimationStateEvent		= away.events.AnimationStateEvent;
     import AssetEvent				= away.events.AssetEvent;
@@ -53,6 +53,7 @@ module examples
     import Loader3D					= away.containers.Loader3D;
     import AWD2Parser				= away.parsers.AWDParser;
 	import URLRequest				= away.net.URLRequest;
+	import DefaultRenderer			= away.render.DefaultRenderer;
 	import Keyboard					= away.ui.Keyboard;
 	import RequestAnimationFrame	= away.utils.RequestAnimationFrame;
 
@@ -61,7 +62,7 @@ module examples
 	{
 		
         //engine variables
-        private _view:View3D;
+        private _view:View;
         private _cameraController:HoverController;
         private _animator:SkeletonAnimator;
 
@@ -101,13 +102,13 @@ module examples
         private initEngine():void
 		{
 			//create the view
-			this._view = new View3D();
+			this._view = new View(new DefaultRenderer());
 			this._view.backgroundColor = 0x333338;
             
 			//create custom lens
-			this._view.camera.lens = new PerspectiveLens(70);
-			this._view.camera.lens.far = 5000;
-			this._view.camera.lens.near = 1;
+			this._view.camera.projection = new PerspectiveProjection(70);
+			this._view.camera.projection.far = 5000;
+			this._view.camera.projection.near = 1;
             
 			//setup controller to be used on the camera
 			this._cameraController = new HoverController(this._view.camera, null, 0, 0, 150, 10, 90);

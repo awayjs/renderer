@@ -9,7 +9,7 @@ module tests.materials
     export class ColorMultiPassMatTest
     {
 
-        private view        : away.containers.View3D;
+        private view        : away.containers.View;
         private torus       : away.primitives.TorusGeometry;
         private light       : away.lights.PointLight;
         private raf         : away.utils.RequestAnimationFrame;
@@ -30,7 +30,7 @@ module tests.materials
             away.Debug.LOG_PI_ERRORS    = false;
 
             this.light                  = new away.lights.PointLight();
-            this.view                   = new away.containers.View3D( )
+            this.view                   = new away.containers.View(new away.render.DefaultRenderer())
             this.view.camera.z            = -1000;
             this.view.backgroundColor   = 0x000000;
             this.torus                  = new away.primitives.TorusGeometry( 50 , 10, 32 , 32 , false );
