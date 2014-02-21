@@ -11,7 +11,7 @@ module away.materials
 	 */
 	export class DepthMapPass extends MaterialPassBase
 	{
-		private _data:number[];
+		private _data:Array<number>;
 		private _alphaThreshold:number = 0;
 		private _alphaMask:away.textures.Texture2DBase;
 
@@ -167,11 +167,11 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iRender(renderable:away.base.IRenderable, stageGL:away.base.StageGL, camera:away.cameras.Camera3D, viewProjection:away.geom.Matrix3D)
+		public iRender(renderable:away.pool.RenderableBase, stageGL:away.base.StageGL, camera:away.entities.Camera, viewProjection:away.geom.Matrix3D)
 		{
 			if (this._alphaThreshold > 0) {
 
-				renderable.activateUVBuffer(1, stageGL);
+				renderable.subGeometry.activateUVBuffer(1, stageGL);
 
 			}
 
@@ -179,18 +179,18 @@ module away.materials
 			var context:away.gl.ContextGL = stageGL.contextGL;
 			var matrix:away.geom.Matrix3D = away.geom.Matrix3DUtils.CALCULATION_MATRIX;
 
-			matrix.copyFrom(renderable.getRenderSceneTransform(camera));
+			matrix.copyFrom(renderable.sourceEntity.getRenderSceneTransform(camera));
 			matrix.append(viewProjection);
 			context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, matrix, true);
-			renderable.activateVertexBuffer(0, stageGL);
-			context.drawTriangles(renderable.getIndexBuffer(stageGL), 0, renderable.numTriangles);
+			renderable.subGeometry.activateVertexBuffer(0, stageGL);
+			context.drawTriangles(renderable.subGeometry.getIndexBuffer(stageGL), 0, renderable.subGeometry.numTriangles);
 
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(stageGL:away.base.StageGL, camera:away.cameras.Camera3D)
+		public iActivate(stageGL:away.base.StageGL, camera:away.entities.Camera)
 		{
 
 			var context:away.gl.ContextGL = stageGL.contextGL;

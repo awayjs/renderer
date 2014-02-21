@@ -5,17 +5,17 @@ module away.materials
 {
 
 	/**
-	 * SkyBoxMaterial is a material exclusively used to render skyboxes
+	 * SkyboxMaterial is a material exclusively used to render skyboxes
 	 *
-	 * @see away3d.primitives.SkyBox
+	 * @see away3d.primitives.Skybox
 	 */
-	export class SkyBoxMaterial extends MaterialBase
+	export class SkyboxMaterial extends MaterialBase
 	{
 		private _cubeMap:away.textures.CubeTextureBase;
-		private _skyboxPass:SkyBoxPass;
+		private _skyboxPass:SkyboxPass;
 
 		/**
-		 * Creates a new SkyBoxMaterial object.
+		 * Creates a new SkyboxMaterial object.
 		 * @param cubeMap The CubeMap to use as the skybox.
 		 */
 		constructor(cubeMap:away.textures.CubeTextureBase)
@@ -24,7 +24,7 @@ module away.materials
 			super();
 
 			this._cubeMap = cubeMap;
-			this.pAddPass(this._skyboxPass = new SkyBoxPass());
+			this.pAddPass(this._skyboxPass = new SkyboxPass());
 			this._skyboxPass.cubeTexture = this._cubeMap;
 		}
 

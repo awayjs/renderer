@@ -22,7 +22,7 @@ module away.materials
 
 		private _regName:string;
 		private _usedSingleCount:Array<Array<number>>;//Vector.<Vector.<uint>>;
-		private _usedVectorCount:number[] /*uint*/;
+		private _usedVectorCount:Array<number> /*uint*/;
 		private _regCount:number;
 
 		private _persistent:boolean;

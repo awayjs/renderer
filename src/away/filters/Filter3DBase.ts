@@ -101,7 +101,7 @@ module away.filters
 
 		}
 
-		public update(stage:away.base.StageGL, camera:away.cameras.Camera3D)
+		public update(stage:away.base.StageGL, camera:away.entities.Camera)
 		{
 
 		}

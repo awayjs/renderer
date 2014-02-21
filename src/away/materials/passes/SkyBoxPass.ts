@@ -4,15 +4,15 @@ module away.materials
 {
 
 	/**
-	 * SkyBoxPass provides a material pass exclusively used to render sky boxes from a cube texture.
+	 * SkyboxPass provides a material pass exclusively used to render sky boxes from a cube texture.
 	 */
-	export class SkyBoxPass extends MaterialPassBase
+	export class SkyboxPass extends MaterialPassBase
 	{
 		private _cubeTexture:away.textures.CubeTextureBase;
-		private _vertexData:number[];
+		private _vertexData:Array<number>;
 
 		/**
-		 * Creates a new SkyBoxPass object.
+		 * Creates a new SkyboxPass object.
 		 */
 		constructor()
 		{
@@ -71,24 +71,24 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iRender(renderable:away.base.IRenderable, stageGL:away.base.StageGL, camera:away.cameras.Camera3D, viewProjection:away.geom.Matrix3D)
+		public iRender(renderable:away.pool.RenderableBase, stageGL:away.base.StageGL, camera:away.entities.Camera, viewProjection:away.geom.Matrix3D)
 		{
 			var context:away.gl.ContextGL = stageGL.contextGL;
 			var pos:away.geom.Vector3D = camera.scenePosition;
 			this._vertexData[0] = pos.x;
 			this._vertexData[1] = pos.y;
 			this._vertexData[2] = pos.z;
-			this._vertexData[4] = this._vertexData[5] = this._vertexData[6] = camera.lens.far/Math.sqrt(3);
+			this._vertexData[4] = this._vertexData[5] = this._vertexData[6] = camera.projection.far/Math.sqrt(3);
 			context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, viewProjection, true);
 			context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 4, this._vertexData, 2);
-			renderable.activateVertexBuffer(0, stageGL);
-			context.drawTriangles(renderable.getIndexBuffer(stageGL), 0, renderable.numTriangles);
+			renderable.subGeometry.activateVertexBuffer(0, stageGL);
+			context.drawTriangles(renderable.subGeometry.getIndexBuffer(stageGL), 0, renderable.subGeometry.numTriangles);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(stageGL:away.base.StageGL, camera:away.cameras.Camera3D)
+		public iActivate(stageGL:away.base.StageGL, camera:away.entities.Camera)
 		{
 			super.iActivate(stageGL, camera);
 			var context:away.gl.ContextGL = stageGL.contextGL;

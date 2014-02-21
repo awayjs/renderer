@@ -5,12 +5,12 @@ module away.lights
 	export class DirectionalShadowMapper extends away.lights.ShadowMapperBase
 	{
 
-		public _pOverallDepthCamera:away.cameras.Camera3D;
-		public _pLocalFrustum:number[];
+		public _pOverallDepthCamera:away.entities.Camera;
+		public _pLocalFrustum:Array<number>;
 
 		public _pLightOffset:number = 10000;
 		public _pMatrix:away.geom.Matrix3D;
-		public _pOverallDepthLens:away.cameras.FreeMatrixLens;
+		public _pOverallDepthProjection:away.projections.FreeMatrixProjection;
 		public _pSnap:number = 64;
 
 		public _pCullPlanes:away.geom.Plane3D[];
@@ -21,8 +21,8 @@ module away.lights
 		{
 			super();
 			this._pCullPlanes = [];
-			this._pOverallDepthLens = new away.cameras.FreeMatrixLens();
-			this._pOverallDepthCamera = new away.cameras.Camera3D(this._pOverallDepthLens);
+			this._pOverallDepthProjection = new away.projections.FreeMatrixProjection();
+			this._pOverallDepthCamera = new away.entities.Camera(this._pOverallDepthProjection);
 			this._pLocalFrustum = [];
 			this._pMatrix = new away.geom.Matrix3D();
 		}
@@ -60,18 +60,17 @@ module away.lights
 		}
 
 		//@override
-		public pDrawDepthMap(target:away.gl.TextureBase, scene:away.containers.Scene3D, renderer:away.render.DepthRenderer)
+		public pDrawDepthMap(target:away.gl.TextureBase, scene:away.containers.Scene, renderer:away.render.DepthRenderer)
 		{
 			this._pCasterCollector.camera = this._pOverallDepthCamera;
 			this._pCasterCollector.cullPlanes = this._pCullPlanes;
 			this._pCasterCollector.clear();
 			scene.traversePartitions(this._pCasterCollector);
-			renderer.iRender(this._pCasterCollector, target);
-			this._pCasterCollector.cleanUp();
+			renderer._iRender(this._pCasterCollector, target);
 		}
 
 		//@protected
-		public pUpdateCullPlanes(viewCamera:away.cameras.Camera3D)
+		public pUpdateCullPlanes(viewCamera:away.entities.Camera)
 		{
 			var lightFrustumPlanes:away.geom.Plane3D[] = this._pOverallDepthCamera.frustumPlanes;
 			var viewFrustumPlanes:away.geom.Plane3D[] = viewCamera.frustumPlanes;
@@ -97,16 +96,16 @@ module away.lights
 		}
 
 		//@override
-		public pUpdateDepthProjection(viewCamera:away.cameras.Camera3D)
+		public pUpdateDepthProjection(viewCamera:away.entities.Camera)
 		{
-			this.pUpdateProjectionFromFrustumCorners(viewCamera, viewCamera.lens.frustumCorners, this._pMatrix);
-			this._pOverallDepthLens.matrix = this._pMatrix;
+			this.pUpdateProjectionFromFrustumCorners(viewCamera, viewCamera.projection.frustumCorners, this._pMatrix);
+			this._pOverallDepthProjection.matrix = this._pMatrix;
 			this.pUpdateCullPlanes(viewCamera);
 		}
 
-		public pUpdateProjectionFromFrustumCorners(viewCamera:away.cameras.Camera3D, corners:number[], matrix:away.geom.Matrix3D)
+		public pUpdateProjectionFromFrustumCorners(viewCamera:away.entities.Camera, corners:Array<number>, matrix:away.geom.Matrix3D)
 		{
-			var raw:number[] = [];
+			var raw:Array<number> = new Array<number>();
 			var dir:away.geom.Vector3D;
 			var x:number, y:number, z:number;
 			var minX:number, minY:number;
@@ -115,7 +114,7 @@ module away.lights
 
 			var light:away.lights.DirectionalLight = <away.lights.DirectionalLight> this._pLight;
 			dir = light.sceneDirection;
-			this._pOverallDepthCamera.transform = this._pLight.sceneTransform;
+			this._pOverallDepthCamera.transform.matrix3D = this._pLight.sceneTransform;
 			x = Math.floor((viewCamera.x - dir.x*this._pLightOffset)/this._pSnap)*this._pSnap;
 			y = Math.floor((viewCamera.y - dir.y*this._pLightOffset)/this._pSnap)*this._pSnap;
 			z = Math.floor((viewCamera.z - dir.z*this._pLightOffset)/this._pSnap)*this._pSnap;

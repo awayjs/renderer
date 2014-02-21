@@ -154,8 +154,8 @@ module away.primitives
 		 */
 		public pBuildGeometry(target:away.base.CompactSubGeometry)
 		{
-			var data:number[];
-			var indices:number[] /*uint*/;
+			var data:Array<number>;
+			var indices:Array<number> /*uint*/;
 
 			var tl:number, tr:number, bl:number, br:number;
 			var i:number, j:number, inc:number = 0;
@@ -362,7 +362,7 @@ module away.primitives
 		public pBuildUVs(target:away.base.CompactSubGeometry)
 		{
 			var i:number, j:number, uidx:number;
-			var data:number[];
+			var data:Array<number>;
 
 			var u_tile_dim:number, v_tile_dim:number;
 			var u_tile_step:number, v_tile_step:number;

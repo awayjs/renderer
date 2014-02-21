@@ -35,10 +35,8 @@ module away.materials
 
 		public set mask(value:away.textures.Texture2DBase)
 		{
-			if (value != this._mask || (value && this._mask && (value.hasMipMaps != this._mask.hasMipMaps || value.format != this._mask.format))) {
-
+			if (value != this._mask || (value && this._mask && (value.hasMipMaps != this._mask.hasMipMaps || value.format != this._mask.format)))
 				this.iInvalidateShaderProgram();
-			}
 
 			/*
 			 if (Boolean(value) != Boolean(_mask) ||
@@ -53,7 +51,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iInitVO(vo:MethodVO):void
+		public iInitVO(vo:MethodVO)
 		{
 			vo.needsNormals = true;
 			vo.needsView = true;
@@ -76,7 +74,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public dispose():void
+		public dispose()
 		{
 		}
 

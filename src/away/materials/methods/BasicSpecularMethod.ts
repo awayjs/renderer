@@ -119,7 +119,7 @@ module away.materials
 			if (b != this._pUseTexture || (value && this._texture && (value.hasMipMaps != this._texture.hasMipMaps || value.format != this._texture.format))) {
 				this.iInvalidateShaderProgram();
 			}
-			this._pUseTexture = b;//Boolean(value);
+			this._pUseTexture = b;
 			this._texture = value;
 
 		}
@@ -401,7 +401,7 @@ module away.materials
 			}
 
 			var index:number = vo.fragmentConstantsIndex;
-			var data:number[] = vo.fragmentData;
+			var data:Array<number> = vo.fragmentData;
 			data[index] = this._iSpecularR;
 			data[index + 1] = this._iSpecularG;
 			data[index + 2] = this._iSpecularB;

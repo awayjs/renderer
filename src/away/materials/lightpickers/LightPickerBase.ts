@@ -24,7 +24,7 @@ module away.materials
 		public _pDirectionalLights:away.lights.DirectionalLight[];//Vector.<DirectionalLight>;
 		public _pCastingDirectionalLights:away.lights.DirectionalLight[];//Vector.<DirectionalLight>;
 		public _pLightProbes:away.lights.LightProbe[];//Vector.<LightProbe>;
-		public _pLightProbeWeights:number[];
+		public _pLightProbeWeights:Array<number>;
 
 		/**
 		 * Creates a new LightPickerBase object.
@@ -134,7 +134,7 @@ module away.materials
 		/**
 		 * The weights for each light probe, defining their influence on the object.
 		 */
-		public get lightProbeWeights():number[]
+		public get lightProbeWeights():Array<number>
 		{
 			return this._pLightProbeWeights;
 		}
@@ -150,7 +150,7 @@ module away.materials
 		/**
 		 * Updates set of lights for a given renderable and EntityCollector. Always call super.collectLights() after custom overridden code.
 		 */
-		public collectLights(renderable:away.base.IRenderable, entityCollector:away.traverse.EntityCollector)
+		public collectLights(renderable:away.pool.RenderableBase, entityCollector:away.traverse.ICollector)
 		{
 			this.updateProbeWeights(renderable);
 		}
@@ -159,7 +159,7 @@ module away.materials
 		 * Updates the weights for the light probes, based on the renderable's position relative to them.
 		 * @param renderable The renderble for which to calculate the light probes' influence.
 		 */
-		private updateProbeWeights(renderable:away.base.IRenderable)
+		private updateProbeWeights(renderable:away.pool.RenderableBase)
 		{
 			// todo: this will cause the same calculations to occur per SubMesh. See if this can be improved.
 			var objectPos:away.geom.Vector3D = renderable.sourceEntity.scenePosition;

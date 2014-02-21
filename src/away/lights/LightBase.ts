@@ -2,9 +2,8 @@
 
 module away.lights
 {
-	export class LightBase extends away.entities.Entity
+	export class LightBase extends away.containers.DisplayObjectContainer
 	{
-
 		private _color:number = 0xffffff;
 		private _colorR:number = 1;
 		private _colorG:number = 1;
@@ -42,19 +41,14 @@ module away.lights
 
 		public set castsShadows(value:boolean)
 		{
-			if (this._castsShadows == value) {
+			if (this._castsShadows == value)
 				return;
-			}
 
 			this._castsShadows = value;
 
 			if (value) {
-
-				if (this._shadowMapper == null) {
-
+				if (this._shadowMapper == null)
 					this._shadowMapper = this.pCreateShadowMapper();
-
-				}
 
 				this._shadowMapper.light = this;
 			} else {
@@ -77,9 +71,9 @@ module away.lights
 
 		public set specular(value:number)
 		{
-			if (value < 0) {
+			if (value < 0)
 				value = 0;
-			}
+
 			this._specular = value;
 			this.updateSpecular();
 		}
@@ -91,9 +85,9 @@ module away.lights
 
 		public set diffuse(value:number)
 		{
-			if (value < 0) {
+			if (value < 0)
 				value = 0;
-			}
+
 			this._diffuse = value;
 			this.updateDiffuse();
 		}
@@ -120,11 +114,11 @@ module away.lights
 
 		public set ambient(value:number)
 		{
-			if (value < 0) {
+			if (value < 0)
 				value = 0;
-			} else if (value > 1) {
+			else if (value > 1)
 				value = 1;
-			}
+
 			this._ambient = value;
 			this.updateAmbient();
 		}
@@ -147,15 +141,9 @@ module away.lights
 			this._iAmbientB = (this._ambientColor & 0xff)/0xff*this._ambient;
 		}
 
-		public iGetObjectProjectionMatrix(renderable:away.base.IRenderable, target:away.geom.Matrix3D = null):away.geom.Matrix3D
+		public iGetObjectProjectionMatrix(entity:away.entities.IEntity, camera:away.entities.Camera, target:away.geom.Matrix3D = null):away.geom.Matrix3D
 		{
 			throw new away.errors.AbstractMethodError();
-		}
-
-		//@override
-		public pCreateEntityPartitionNode():away.partition.EntityNode
-		{
-			return new away.partition.LightNode(this);
 		}
 
 		//@override

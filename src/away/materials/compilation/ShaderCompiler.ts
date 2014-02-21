@@ -23,8 +23,8 @@ module away.materials
 		private _preserveAlpha:boolean = true;
 		private _animateUVs:boolean;
 		public _pAlphaPremultiplied:boolean; // PROTECTED
-		private _vertexConstantData:number[];
-		private _fragmentConstantData:number[];
+		private _vertexConstantData:Array<number>;
+		private _fragmentConstantData:Array<number>;
 
 		public _pVertexCode:string = ''; // Changed to emtpy string- AwayTS
 		public _pFragmentCode:string = '';// Changed to emtpy string - AwayTS
@@ -35,8 +35,8 @@ module away.materials
 		public _pAnimatableAttributes:string[]; // PROTECTED
 		public _pAnimationTargetRegisters:string[]; // PROTECTED
 
-		public _pLightProbeDiffuseIndices:number[] /*uint*/;
-		public _pLightProbeSpecularIndices:number[] /*uint*/;
+		public _pLightProbeDiffuseIndices:Array<number> /*uint*/;
+		public _pLightProbeSpecularIndices:Array<number> /*uint*/;
 		private _uvBufferIndex:number = -1;
 		private _uvTransformIndex:number = -1;
 		private _secondaryUVBufferIndex:number = -1;
@@ -203,7 +203,7 @@ module away.materials
 		 * @param vertexConstantData The vertex constant data buffer.
 		 * @param fragmentConstantData The fragment constant data buffer.
 		 */
-		public setConstantDataBuffers(vertexConstantData:number[], fragmentConstantData:number[])
+		public setConstantDataBuffers(vertexConstantData:Array<number>, fragmentConstantData:Array<number>)
 		{
 			this._vertexConstantData = vertexConstantData;
 			this._fragmentConstantData = fragmentConstantData;
@@ -1001,7 +1001,7 @@ module away.materials
 		/**
 		 * Indices for the light probe diffuse textures.
 		 */
-		public get lightProbeDiffuseIndices():number[] /*uint*/
+		public get lightProbeDiffuseIndices():Array<number> /*uint*/
 		{
 			return this._pLightProbeDiffuseIndices;
 		}
@@ -1009,7 +1009,7 @@ module away.materials
 		/**
 		 * Indices for the light probe specular textures.
 		 */
-		public get lightProbeSpecularIndices():number[] /*uint*/
+		public get lightProbeSpecularIndices():Array<number> /*uint*/
 		{
 			return this._pLightProbeSpecularIndices;
 		}

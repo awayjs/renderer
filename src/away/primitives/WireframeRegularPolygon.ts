@@ -2,7 +2,7 @@
 
 module away.primitives
 {
-	//import flash.geom.Vector3D;
+	//TODO - convert to geometry primitive
 
 	/**
 	 * A WireframeRegularPolygon primitive mesh.

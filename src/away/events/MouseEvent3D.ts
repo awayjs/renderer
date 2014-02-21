@@ -6,7 +6,7 @@ module away.events
 {
 	//import away3d.arcane;
 	//import away3d.containers.ObjectContainer3D;
-	//import away3d.containers.View3D;
+	//import away3d.containers.View;
 	//import away3d.core.base.IRenderable;
 	//import away3d.materials.MaterialBase;
 
@@ -17,7 +17,7 @@ module away.events
 	//use namespace arcane;
 
 	/**
-	 * A MouseEvent3D is dispatched when a mouse event occurs over a mouseEnabled object in View3D.
+	 * A MouseEvent3D is dispatched when a mouse event occurs over a mouseEnabled object in View.
 	 * todo: we don't have screenZ data, tho this should be easy to implement
 	 */
 	export class MouseEvent3D extends Event
@@ -89,17 +89,17 @@ module away.events
 		/**
 		 * The view object inside which the event took place.
 		 */
-		public view:away.containers.View3D;
+		public view:away.containers.View;
 
 		/**
 		 * The 3d object inside which the event took place.
 		 */
-		public object:away.containers.ObjectContainer3D;
+		public object:away.containers.DisplayObjectContainer;
 
 		/**
-		 * The renderable inside which the event took place.
+		 * The material owner inside which the event took place.
 		 */
-		public renderable:away.base.IRenderable;
+		public materialOwner:away.base.IMaterialOwner;
 
 		/**
 		 * The material of the 3d element inside which the event took place.
@@ -218,7 +218,7 @@ module away.events
 
 			result.view = this.view;
 			result.object = this.object;
-			result.renderable = this.renderable;
+			result.materialOwner = this.materialOwner;
 			result.material = this.material;
 			result.uv = this.uv;
 			result.localPosition = this.localPosition;
@@ -241,10 +241,10 @@ module away.events
 		 */
 		public get scenePosition():away.geom.Vector3D
 		{
-			if (this.object instanceof away.containers.ObjectContainer3D) //if (this.object is ObjectContainer3D)
+			if (this.object instanceof away.containers.DisplayObjectContainer) //if (this.object is ObjectContainer3D)
 			{
 
-				var objContainer:away.containers.ObjectContainer3D = <away.containers.ObjectContainer3D > this.object;
+				var objContainer:away.containers.DisplayObjectContainer = <away.containers.DisplayObjectContainer > this.object;
 				return objContainer.sceneTransform.transformVector(this.localPosition);
 
 			} else {
@@ -261,9 +261,9 @@ module away.events
 		public get sceneNormal():away.geom.Vector3D
 		{
 
-			if (this.object instanceof away.containers.ObjectContainer3D) //if (this.object is ObjectContainer3D)
+			if (this.object instanceof away.containers.DisplayObjectContainer) //if (this.object is ObjectContainer3D)
 			{
-				var objContainer:away.containers.ObjectContainer3D = <away.containers.ObjectContainer3D > this.object;
+				var objContainer:away.containers.DisplayObjectContainer = <away.containers.DisplayObjectContainer > this.object;
 				var sceneNormal:away.geom.Vector3D = objContainer.sceneTransform.deltaTransformVector(this.localNormal);
 
 				sceneNormal.normalize();

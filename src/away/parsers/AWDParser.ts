@@ -195,7 +195,7 @@ module away.parsers
 				{
 					thisBitmapTexture = <away.textures.BitmapTexture> resourceDependency.assets[0];
 
-					var tx:away.textures.HTMLImageElementTexture = <away.textures.HTMLImageElementTexture> thisBitmapTexture;
+					var tx:away.textures.ImageTexture = <away.textures.ImageTexture> thisBitmapTexture;
 
 					this._cubeTextures[ isCubeTextureArray[1] ] = tx.htmlImageElement; // ?
 					this._texture_users[ressourceID].push(1);
@@ -212,7 +212,7 @@ module away.parsers
 						var posZ:any = this._cubeTextures[4];
 						var negZ:any = this._cubeTextures[5];
 
-						asset = new away.textures.HTMLImageElementCubeTexture(posX, negX, posY, negY, posZ, negZ);
+						asset = <away.textures.TextureProxyBase> new away.textures.ImageCubeTexture(posX, negX, posY, negY, posZ, negZ);
 						block = this._blocks[ressourceID];
 						block.data = asset; // Store finished asset
 
@@ -488,7 +488,7 @@ module away.parsers
 						isParsed = true;
 						break;
 					case 31:
-						this.parseSkyBoxInstance(this._cur_block_id);
+						this.parseSkyboxInstance(this._cur_block_id);
 						isParsed = true;
 						break;
 					case 41:
@@ -847,22 +847,22 @@ module away.parsers
 			var name:string;
 			var par_id:number;
 			var mtx:Matrix3D;
-			var ctr:away.containers.ObjectContainer3D;
-			var parent:away.containers.ObjectContainer3D;
+			var ctr:away.containers.DisplayObjectContainer;
+			var parent:away.containers.DisplayObjectContainer;
 
 			par_id = this._newBlockBytes.readUnsignedInt();
 			mtx = this.parseMatrix3D();
 			name = this.parseVarStr();
 
 			var parentName:string = "Root (TopLevel)";
-			ctr = new away.containers.ObjectContainer3D();
-			ctr.transform = mtx;
+			ctr = new away.containers.DisplayObjectContainer();
+			ctr.transform.matrix3D = mtx;
 
-			var returnedArray:Array<any> = this.getAssetByID(par_id, [AssetType.CONTAINER, AssetType.LIGHT, AssetType.MESH, AssetType.ENTITY, AssetType.SEGMENT_SET]);
+			var returnedArray:Array<any> = this.getAssetByID(par_id, [AssetType.CONTAINER, AssetType.LIGHT, AssetType.MESH, AssetType.SEGMENT_SET]);
 
 			if (returnedArray[0]) {
-				var obj:away.containers.ObjectContainer3D = ( <away.containers.ObjectContainer3D> returnedArray[1] ).addChild(ctr);
-				parentName = (<away.containers.ObjectContainer3D> returnedArray[1]).name;
+				var obj:away.base.DisplayObject = (<away.containers.DisplayObjectContainer> returnedArray[1]).addChild(ctr);
+				parentName = (<away.containers.DisplayObjectContainer> returnedArray[1]).name;
 			} else if (par_id > 0) {
 				this._blocks[ blockID ].addError("Could not find a parent for this ObjectContainer3D");
 			}
@@ -893,7 +893,7 @@ module away.parsers
 		{
 			var num_materials:number;
 			var materials_parsed:number;
-			var parent:away.containers.ObjectContainer3D;
+			var parent:away.containers.DisplayObjectContainer;
 			var par_id:number = this._newBlockBytes.readUnsignedInt();
 			var mtx:Matrix3D = this.parseMatrix3D();
 			var name:string = this.parseVarStr();
@@ -935,12 +935,12 @@ module away.parsers
 			}
 
 			var mesh:Mesh = new Mesh(geom, null);
-			mesh.transform = mtx;
+			mesh.transform.matrix3D = mtx;
 
-			var returnedArrayParent:Array<any> = this.getAssetByID(par_id, [AssetType.CONTAINER, AssetType.LIGHT, AssetType.MESH, AssetType.ENTITY, AssetType.SEGMENT_SET])
+			var returnedArrayParent:Array<any> = this.getAssetByID(par_id, [AssetType.CONTAINER, AssetType.LIGHT, AssetType.MESH, AssetType.SEGMENT_SET])
 
 			if (returnedArrayParent[0]) {
-				var objC:away.containers.ObjectContainer3D = <away.containers.ObjectContainer3D> returnedArrayParent[1];
+				var objC:away.containers.DisplayObjectContainer = <away.containers.DisplayObjectContainer> returnedArrayParent[1];
 				objC.addChild(mesh);
 				parentName = objC.name;
 			} else if (par_id > 0) {
@@ -978,22 +978,22 @@ module away.parsers
 
 
 		//Block ID 31
-		private parseSkyBoxInstance(blockID:number):void
+		private parseSkyboxInstance(blockID:number):void
 		{
 			var name:string = this.parseVarStr();
 			var cubeTexAddr:number = this._newBlockBytes.readUnsignedInt();
 
 			var returnedArrayCubeTex:Array<any> = this.getAssetByID(cubeTexAddr, [AssetType.TEXTURE], "CubeTexture");
 			if ((!returnedArrayCubeTex[0]) && (cubeTexAddr != 0))
-				this._blocks[blockID].addError("Could not find the Cubetexture (ID = " + cubeTexAddr + " ) for this SkyBox");
-			var asset:away.entities.SkyBox = new away.entities.SkyBox(<away.textures.HTMLImageElementCubeTexture> returnedArrayCubeTex[1]);
+				this._blocks[blockID].addError("Could not find the Cubetexture (ID = " + cubeTexAddr + " ) for this Skybox");
+			var asset:away.entities.Skybox = new away.entities.Skybox(<away.textures.ImageCubeTexture> returnedArrayCubeTex[1]);
 
 			this.parseProperties(null)
 			asset.extra = this.parseUserAttributes();
 			this._pFinalizeAsset(asset, name);
 			this._blocks[blockID].data = asset;
 			if (this._debug)
-				console.log("Parsed a SkyBox: Name = '" + name + "' | CubeTexture-Name = " + (<away.textures.HTMLImageElementCubeTexture> returnedArrayCubeTex[1]).name);
+				console.log("Parsed a Skybox: Name = '" + name + "' | CubeTexture-Name = " + (<away.textures.ImageCubeTexture> returnedArrayCubeTex[1]).name);
 
 		}
 
@@ -1025,7 +1025,7 @@ module away.parsers
 					}
 				}
 
-				light.transform = mtx;
+				light.transform.matrix3D = mtx;
 
 			}
 
@@ -1070,11 +1070,11 @@ module away.parsers
 
 			if (par_id != 0) {
 
-				var returnedArrayParent:Array<any> = this.getAssetByID(par_id, [AssetType.CONTAINER, AssetType.LIGHT, AssetType.MESH, AssetType.ENTITY, AssetType.SEGMENT_SET])
+				var returnedArrayParent:Array<any> = this.getAssetByID(par_id, [AssetType.CONTAINER, AssetType.LIGHT, AssetType.MESH, AssetType.SEGMENT_SET])
 
 				if (returnedArrayParent[0]) {
-					(<away.containers.ObjectContainer3D> returnedArrayParent[1]).addChild(light);
-					parentName = (<away.containers.ObjectContainer3D> returnedArrayParent[1]).name;
+					(<away.containers.DisplayObjectContainer> returnedArrayParent[1]).addChild(light);
+					parentName = (<away.containers.DisplayObjectContainer> returnedArrayParent[1]).name;
 				} else {
 					this._blocks[blockID].addError("Could not find a parent for this Light");
 				}
@@ -1099,37 +1099,37 @@ module away.parsers
 			var mtx:Matrix3D = this.parseMatrix3D();
 			var name:string = this.parseVarStr();
 			var parentName:string = "Root (TopLevel)";
-			var lens:away.cameras.LensBase;
+			var projection:away.projections.ProjectionBase;
 
 			this._newBlockBytes.readUnsignedByte(); //set as active camera
 			this._newBlockBytes.readShort(); //lengthof lenses - not used yet
 
-			var lenstype:number = this._newBlockBytes.readShort();
+			var projectiontype:number = this._newBlockBytes.readShort();
 			var props:AWDProperties = this.parseProperties({101:this._propsNrType, 102:this._propsNrType, 103:this._propsNrType, 104:this._propsNrType});
 
-			switch (lenstype) {
+			switch (projectiontype) {
 				case 5001:
-					lens = new away.cameras.PerspectiveLens(props.get(101, 60));
+					projection = new away.projections.PerspectiveProjection(props.get(101, 60));
 					break;
 				case 5002:
-					lens = new away.cameras.OrthographicLens(props.get(101, 500));
+					projection = new away.projections.OrthographicProjection(props.get(101, 500));
 					break;
 				case 5003:
-					lens = new away.cameras.OrthographicOffCenterLens(props.get(101, -400), props.get(102, 400), props.get(103, -300), props.get(104, 300));
+					projection = new away.projections.OrthographicOffCenterProjection(props.get(101, -400), props.get(102, 400), props.get(103, -300), props.get(104, 300));
 					break;
 				default:
 					console.log("unsupportedLenstype");
 					return;
 			}
 
-			var camera:away.cameras.Camera3D = new away.cameras.Camera3D(lens);
-			camera.transform = mtx;
+			var camera:away.entities.Camera = new away.entities.Camera(projection);
+			camera.transform.matrix3D = mtx;
 
-			var returnedArrayParent:Array<any> = this.getAssetByID(par_id, [AssetType.CONTAINER, AssetType.LIGHT, AssetType.MESH, AssetType.ENTITY, AssetType.SEGMENT_SET])
+			var returnedArrayParent:Array<any> = this.getAssetByID(par_id, [AssetType.CONTAINER, AssetType.LIGHT, AssetType.MESH, AssetType.SEGMENT_SET])
 
 			if (returnedArrayParent[0]) {
 
-				var objC:away.containers.ObjectContainer3D = <away.containers.ObjectContainer3D> returnedArrayParent[1];
+				var objC:away.containers.DisplayObjectContainer = <away.containers.DisplayObjectContainer> returnedArrayParent[1];
 				objC.addChild(camera);
 
 				parentName = objC.name;
@@ -1148,7 +1148,7 @@ module away.parsers
 			this._blocks[blockID].data = camera
 
 			if (this._debug) {
-				console.log("Parsed a Camera: Name = '" + name + "' | Lenstype = " + lens + " | Parent-Name = " + parentName);
+				console.log("Parsed a Camera: Name = '" + name + "' | Projectiontype = " + projection + " | Parent-Name = " + parentName);
 			}
 
 		}
@@ -1805,13 +1805,13 @@ module away.parsers
 			var mtx:Matrix3D = this.parseMatrix3D();
 			var name:string = this.parseVarStr();
 
-			var parentObject:away.containers.ObjectContainer3D;
-			var targetObject:away.containers.ObjectContainer3D;
+			var parentObject:away.containers.DisplayObjectContainer;
+			var targetObject:away.containers.DisplayObjectContainer;
 
-			var returnedArray:Array<any> = this.getAssetByID(par_id, [AssetType.CONTAINER, AssetType.LIGHT, AssetType.MESH, AssetType.ENTITY, AssetType.SEGMENT_SET]);
+			var returnedArray:Array<any> = this.getAssetByID(par_id, [AssetType.CONTAINER, AssetType.LIGHT, AssetType.MESH, AssetType.SEGMENT_SET]);
 
 			if (returnedArray[0]) {
-				parentObject = <away.containers.ObjectContainer3D> returnedArray[1];
+				parentObject = <away.containers.DisplayObjectContainer> returnedArray[1];
 			}
 
 			var numCommands:number = this._newBlockBytes.readShort();
@@ -1836,7 +1836,7 @@ module away.parsers
 						parentObject.addChild(targetObject);
 					}
 
-					targetObject.transform = mtx;
+					targetObject.transform.matrix3D = mtx;
 
 					break;
 			}
@@ -2669,14 +2669,14 @@ module away.parsers
 							if (iasset.assetType == assetTypesToGet[typeCnt]) {
 								//if the right assetType was found
 								if ((assetTypesToGet[typeCnt] == AssetType.TEXTURE) && (extraTypeInfo == "CubeTexture")) {
-									if (this._blocks[assetID].data instanceof away.textures.HTMLImageElementCubeTexture) {
+									if (this._blocks[assetID].data instanceof away.textures.ImageCubeTexture) {
 										returnArray.push(true);
 										returnArray.push(this._blocks[assetID].data);
 										return returnArray;
 									}
 								}
 								if ((assetTypesToGet[typeCnt] == AssetType.TEXTURE) && (extraTypeInfo == "SingleTexture")) {
-									if (this._blocks[assetID].data instanceof away.textures.HTMLImageElementTexture) {
+									if (this._blocks[assetID].data instanceof away.textures.ImageTexture) {
 										returnArray.push(true);
 										returnArray.push(this._blocks[assetID].data);
 										return returnArray;

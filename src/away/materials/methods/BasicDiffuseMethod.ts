@@ -434,7 +434,7 @@ module away.materials
 			} else {
 
 				var index:number = vo.fragmentConstantsIndex;
-				var data:number[] = vo.fragmentData;
+				var data:Array<number> = vo.fragmentData;
 				data[index] = this._diffuseR;
 				data[index + 1] = this._diffuseG;
 				data[index + 2] = this._diffuseB;

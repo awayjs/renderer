@@ -334,9 +334,9 @@ module away.materials
 		 *
 		 * @private
 		 */
-		public iUpdateAnimationState(renderable:away.base.IRenderable, stageGL:away.base.StageGL, camera:away.cameras.Camera3D)
+		public iUpdateAnimationState(renderable:away.pool.RenderableBase, stageGL:away.base.StageGL, camera:away.entities.Camera)
 		{
-			renderable.animator.setRenderState(stageGL, renderable, this._pNumUsedVertexConstants, this._pNumUsedStreams, camera);
+			(<away.animators.AnimatorBase> renderable.materialOwner.animator).setRenderState(stageGL, renderable, this._pNumUsedVertexConstants, this._pNumUsedStreams, camera);
 		}
 
 		/**
@@ -344,7 +344,7 @@ module away.materials
 		 *
 		 * @private
 		 */
-		public iRender(renderable:away.base.IRenderable, stageGL:away.base.StageGL, camera:away.cameras.Camera3D, viewProjection:away.geom.Matrix3D)
+		public iRender(renderable:away.pool.RenderableBase, stageGL:away.base.StageGL, camera:away.entities.Camera, viewProjection:away.geom.Matrix3D)
 		{
 			throw new away.errors.AbstractMethodError();
 		}
@@ -433,7 +433,7 @@ module away.materials
 		 * @param camera The camera from which the scene is viewed.
 		 * @private
 		 */
-		public iActivate(stageGL:away.base.StageGL, camera:away.cameras.Camera3D)
+		public iActivate(stageGL:away.base.StageGL, camera:away.entities.Camera)
 		{
 			var contextIndex:number = stageGL._iStageGLIndex;//_stageGLIndex;
 			var context:ContextGL = stageGL.contextGL;

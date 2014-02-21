@@ -2,7 +2,6 @@
 
 module away.materials
 {
-	import IRenderable					= away.base.IRenderable;
 	import BlendMode					= away.base.BlendMode;
 	import ContextGL					= away.gl.ContextGL;
 	import ContextGLCompareMode			= away.gl.ContextGLCompareMode;
@@ -13,12 +12,13 @@ module away.materials
 
 	import IAnimationSet				= away.animators.IAnimationSet;
 	import IMaterialOwner				= away.base.IMaterialOwner;
-	import Camera3D						= away.cameras.Camera3D;
+	import Camera						= away.entities.Camera;
 	import StageGL						= away.base.StageGL;
 	import DepthMapPass					= away.materials.DepthMapPass;
 	import DistanceMapPass				= away.materials.DistanceMapPass;
 	import MaterialPassBase				= away.materials.MaterialPassBase;
-	import EntityCollector				= away.traverse.EntityCollector;
+	import RenderableBase				= away.pool.RenderableBase;
+	import ICollector					= away.traverse.ICollector;
 
 	/**
 	 * MaterialBase forms an abstract base class for any material.
@@ -31,14 +31,8 @@ module away.materials
 	 * methods to build the shader code. MaterialBase can be extended to build specific and high-performant custom
 	 * shaders, or entire new material frameworks.
 	 */
-	export class MaterialBase extends away.library.NamedAssetBase implements away.library.IAsset
+	export class MaterialBase extends away.library.NamedAssetBase implements away.library.IAsset, IMaterial
 	{
-		/**
-		 * A counter used to assign unique ids per material, which is used to sort per material while rendering.
-		 * This reduces state changes.
-		 */
-		private static MATERIAL_ID_COUNT:number = 0;
-
 		/**
 		 * An object to contain any extra data.
 		 */
@@ -53,13 +47,13 @@ module away.materials
 		 */
 		public _iClassification:string;
 
+
 		/**
-		 * An id for this material used to sort the renderables by material, which reduces render state changes across
-		 * materials using the same Program.
+		 * An id for this material used to sort the renderables by shader program, which reduces Program state changes.
 		 *
 		 * @private
 		 */
-		public _iUniqueId:number;
+		public _iMaterialId:number = 0;
 
 		/**
 		 * An id for this material used to sort the renderables by shader program, which reduces Program state changes.
@@ -112,6 +106,8 @@ module away.materials
 		{
 			super();
 
+			this._iMaterialId = Number(this.id);
+
 			this._owners = new Array<IMaterialOwner>();
 			this._passes = new Array<MaterialPassBase>();
 			this._pDepthPass = new DepthMapPass();
@@ -125,8 +121,6 @@ module away.materials
 			this._pDistancePass.addEventListener(Event.CHANGE, this._onDistancePassChangeDelegate);
 
 			this.alphaPremultiplied = false; //TODO: work out why this is different for WebGL
-
-			this._iUniqueId = MaterialBase.MATERIAL_ID_COUNT++;
 		}
 
 		/**
@@ -344,15 +338,6 @@ module away.materials
 		}
 
 		/**
-		 * An id for this material used to sort the renderables by material, which reduces render state changes across
-		 * materials using the same Program.
-		 */
-		public get uniqueId():number
-		{
-			return this._iUniqueId;
-		}
-
-		/**
 		 * The amount of passes used by the material.
 		 *
 		 * @private
@@ -382,9 +367,9 @@ module away.materials
 		 * @param distanceBased Whether or not the depth pass or distance pass should be activated. The distance pass
 		 * is required for shadow cube maps.
 		 *
-		 * @private
+		 * @internal
 		 */
-		public iActivateForDepth(stageGL:StageGL, camera:Camera3D, distanceBased:boolean = false) // ARCANE
+		public iActivateForDepth(stageGL:StageGL, camera:Camera, distanceBased:boolean = false) // ARCANE
 		{
 			this._distanceBasedDepthRender = distanceBased;
 
@@ -399,7 +384,7 @@ module away.materials
 		 *
 		 * @param stageGL The StageGL used for rendering.
 		 *
-		 * @private
+		 * @internal
 		 */
 		public iDeactivateForDepth(stageGL:away.base.StageGL)
 		{
@@ -412,24 +397,24 @@ module away.materials
 		/**
 		 * Renders a renderable using the depth pass.
 		 *
-		 * @param renderable The IRenderable instance that needs to be rendered.
+		 * @param renderable The RenderableBase instance that needs to be rendered.
 		 * @param stageGL The StageGL used for rendering.
 		 * @param camera The camera from which the scene is viewed.
 		 * @param viewProjection The view-projection matrix used to project to the screen. This is not the same as
 		 * camera.viewProjection as it includes the scaling factors when rendering to textures.
 		 *
-		 * @private
+		 * @internal
 		 */
-		public iRenderDepth(renderable:IRenderable, stageGL:StageGL, camera:Camera3D, viewProjection:Matrix3D) // ARCANE
+		public iRenderDepth(renderable:RenderableBase, stageGL:StageGL, camera:Camera, viewProjection:Matrix3D) // ARCANE
 		{
 			if (this._distanceBasedDepthRender) {
-				if (renderable.animator)
+				if (renderable.materialOwner.animator)
 					this._pDistancePass.iUpdateAnimationState(renderable, stageGL, camera);
 
 				this._pDistancePass.iRender(renderable, stageGL, camera, viewProjection);
 
 			} else {
-				if (renderable.animator)
+				if (renderable.materialOwner.animator)
 					this._pDepthPass.iUpdateAnimationState(renderable, stageGL, camera);
 
 				this._pDepthPass.iRender(renderable, stageGL, camera, viewProjection);
@@ -442,7 +427,7 @@ module away.materials
 		 * @param index The index of the pass.
 		 * @return True if the pass renders to texture, false otherwise.
 		 *
-		 * @private
+		 * @internal
 		 */
 
 		public iPassRendersToTexture(index:number):boolean
@@ -459,7 +444,7 @@ module away.materials
 		 * @private
 		 */
 
-		public iActivatePass(index:number, stageGL:StageGL, camera:Camera3D) // ARCANE
+		public iActivatePass(index:number, stageGL:StageGL, camera:Camera) // ARCANE
 		{
 			this._passes[index].iActivate(stageGL, camera);
 		}
@@ -469,7 +454,7 @@ module away.materials
 		 * @param index The index of the pass to deactivate.
 		 * @param stageGL The StageGL used for rendering
 		 *
-		 * @private
+		 * @internal
 		 */
 
 		public iDeactivatePass(index:number, stageGL:StageGL) // ARCANE
@@ -480,20 +465,22 @@ module away.materials
 		/**
 		 * Renders the current pass. Before calling renderPass, activatePass needs to be called with the same index.
 		 * @param index The index of the pass used to render the renderable.
-		 * @param renderable The IRenderable object to draw.
+		 * @param renderable The RenderableBase object to draw.
 		 * @param stageGL The StageGL object used for rendering.
 		 * @param entityCollector The EntityCollector object that contains the visible scene data.
 		 * @param viewProjection The view-projection matrix used to project to the screen. This is not the same as
 		 * camera.viewProjection as it includes the scaling factors when rendering to textures.
+		 *
+		 * @internal
 		 */
-		public iRenderPass(index:number, renderable:IRenderable, stageGL:StageGL, entityCollector:EntityCollector, viewProjection:Matrix3D)
+		public iRenderPass(index:number, renderable:RenderableBase, stageGL:StageGL, entityCollector:away.traverse.ICollector, viewProjection:Matrix3D)
 		{
 			if (this._pLightPicker)
 				this._pLightPicker.collectLights(renderable, entityCollector);
 
 			var pass:MaterialPassBase = this._passes[index];
 
-			if (renderable.animator)
+			if (renderable.materialOwner.animator)
 				pass.iUpdateAnimationState(renderable, stageGL, entityCollector.camera);
 
 			pass.iRender(renderable, stageGL, entityCollector.camera, viewProjection);
@@ -510,19 +497,25 @@ module away.materials
 		 *
 		 * @param owner The IMaterialOwner that had this material assigned
 		 *
-		 * @private
+		 * @internal
 		 */
 		public iAddOwner(owner:away.base.IMaterialOwner)
 		{
 			this._owners.push(owner);
 
+			var animationSet:away.animators.IAnimationSet;
+			var animator:away.animators.AnimatorBase = <away.animators.AnimatorBase> owner.animator;
+
+			if (animator)
+				animationSet = animator.animationSet;
+
 			if (owner.animator) {
-				if (this._animationSet && owner.animator.animationSet != this._animationSet) {
+				if (this._animationSet && animationSet != this._animationSet) {
 					throw new Error("A Material instance cannot be shared across renderables with different animator libraries");
 				} else {
-					if (this._animationSet != owner.animator.animationSet) {
+					if (this._animationSet != animationSet) {
 
-						this._animationSet = owner.animator.animationSet;
+						this._animationSet = animationSet;
 
 						for (var i:number = 0; i < this._numPasses; ++i)
 							this._passes[i].animationSet = this._animationSet;
@@ -539,7 +532,8 @@ module away.materials
 		/**
 		 * Removes an IMaterialOwner as owner.
 		 * @param owner
-		 * @private
+		 *
+		 * @internal
 		 */
 		public iRemoveOwner(owner:away.base.IMaterialOwner)
 		{
@@ -597,6 +591,7 @@ module away.materials
 		public iInvalidatePasses(triggerPass:MaterialPassBase)
 		{
 			var owner:away.base.IMaterialOwner;
+			var animator:away.animators.AnimatorBase;
 
 			var l:number;
 			var c:number;
@@ -615,10 +610,11 @@ module away.materials
 
 				for (c = 0; c < l; c++) {
 					owner = this._owners[c];
+					animator = <away.animators.AnimatorBase> owner.animator;
 
-					if (owner.animator) {
-						owner.animator.testGPUCompatibility(this._pDepthPass);
-						owner.animator.testGPUCompatibility(this._pDistancePass);
+					if (animator) {
+						animator.testGPUCompatibility(this._pDepthPass);
+						animator.testGPUCompatibility(this._pDistancePass);
 					}
 				}
 			}
@@ -637,9 +633,10 @@ module away.materials
 
 					for (c = 0; c < l; c++) {
 						owner = this._owners[c];
+						animator = <away.animators.AnimatorBase> owner.animator;
 
-						if (owner.animator)
-							owner.animator.testGPUCompatibility(this._passes[i]);
+						if (animator)
+							animator.testGPUCompatibility(this._passes[i]);
 					}
 				}
 			}
@@ -693,7 +690,7 @@ module away.materials
 		private onPassChange(event:Event)
 		{
 			var mult:number = 1;
-			var ids:number[];////Vector.<int>;
+			var ids:Array<number>;////Vector.<int>;
 			var len:number;
 
 			this._iRenderOrderId = 0;
@@ -719,7 +716,7 @@ module away.materials
 		 */
 		private onDistancePassChange(event:Event)
 		{
-			var ids:number[] = this._pDistancePass._iProgramids;
+			var ids:Array<number> = this._pDistancePass._iProgramids;
 			var len:number = ids.length;
 
 			this._iDepthPassId = 0;
@@ -737,7 +734,7 @@ module away.materials
 		 */
 		private onDepthPassChange(event:Event)
 		{
-			var ids:number[] = this._pDepthPass._iProgramids;
+			var ids:Array<number> = this._pDepthPass._iProgramids;
 			var len:number = ids.length;
 
 			this._iDepthPassId = 0;

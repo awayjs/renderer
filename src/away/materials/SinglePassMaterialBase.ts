@@ -84,7 +84,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivateForDepth(stageGL:away.base.StageGL, camera:away.cameras.Camera3D, distanceBased:boolean = false)
+		public iActivateForDepth(stageGL:away.base.StageGL, camera:away.entities.Camera, distanceBased:boolean = false)
 		{
 
 			if (distanceBased) {

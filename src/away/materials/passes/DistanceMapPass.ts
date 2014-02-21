@@ -2,7 +2,7 @@
 module away.materials
 {
 	//import away3d.arcane;
-	//import away3d.cameras.Camera3D;
+	//import away3d.cameras.Camera;
 	//import away3d.core.base.IRenderable;
 	//import away3d.base.StageGL;
 	//import away3d.core.geom.Matrix3DUtils;
@@ -21,8 +21,8 @@ module away.materials
 	 */
 	export class DistanceMapPass extends MaterialPassBase
 	{
-		private _fragmentData:number[];
-		private _vertexData:number[];
+		private _fragmentData:Array<number>;
+		private _vertexData:Array<number>;
 		private _alphaThreshold:number;
 		private _alphaMask:away.textures.Texture2DBase;
 
@@ -185,7 +185,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iRender(renderable:away.base.IRenderable, stageGL:away.base.StageGL, camera:away.cameras.Camera3D, viewProjection:away.geom.Matrix3D)
+		public iRender(renderable:away.pool.RenderableBase, stageGL:away.base.StageGL, camera:away.entities.Camera, viewProjection:away.geom.Matrix3D)
 		{
 			var context:away.gl.ContextGL = stageGL.contextGL;
 			var pos:away.geom.Vector3D = camera.scenePosition;
@@ -195,7 +195,7 @@ module away.materials
 			this._vertexData[2] = pos.z;
 			this._vertexData[3] = 1;
 
-			var sceneTransform:away.geom.Matrix3D = renderable.getRenderSceneTransform(camera);
+			var sceneTransform:away.geom.Matrix3D = renderable.sourceEntity.getRenderSceneTransform(camera);
 
 			context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 5, sceneTransform, true);
 
@@ -203,7 +203,7 @@ module away.materials
 
 			if (this._alphaThreshold > 0) {
 
-				renderable.activateUVBuffer(1, stageGL);
+				renderable.subGeometry.activateUVBuffer(1, stageGL);
 
 			}
 
@@ -214,19 +214,19 @@ module away.materials
 			matrix.append(viewProjection);
 
 			context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, matrix, true);
-			renderable.activateVertexBuffer(0, stageGL);
-			context.drawTriangles(renderable.getIndexBuffer(stageGL), 0, renderable.numTriangles);
+			renderable.subGeometry.activateVertexBuffer(0, stageGL);
+			context.drawTriangles(renderable.subGeometry.getIndexBuffer(stageGL), 0, renderable.subGeometry.numTriangles);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(stageGL:away.base.StageGL, camera:away.cameras.Camera3D)
+		public iActivate(stageGL:away.base.StageGL, camera:away.entities.Camera)
 		{
 			var context:away.gl.ContextGL = stageGL.contextGL;
 			super.iActivate(stageGL, camera);
 
-			var f:number = camera.lens.far;
+			var f:number = camera.projection.far;
 
 			f = 1/(2*f*f);
 			// sqrt(f*f+f*f) is largest possible distance for any frustum, so we need to divide by it. Rarely a tight fit, but with 32 bits precision, it's enough.

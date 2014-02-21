@@ -218,7 +218,7 @@ module away.filters
 			return this._program3D;
 		}
 
-		public activate(stageGL:away.base.StageGL, camera:away.cameras.Camera3D, depthTexture:away.gl.Texture)
+		public activate(stageGL:away.base.StageGL, camera:away.entities.Camera, depthTexture:away.gl.Texture)
 		{
 		}
 

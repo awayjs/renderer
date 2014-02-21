@@ -2,7 +2,7 @@
 
 module away.lights
 {
-	export class LightProbe extends away.lights.LightBase
+	export class LightProbe extends away.lights.LightBase implements away.entities.IEntity
 	{
 		private _diffuseMap:away.textures.CubeTextureBase;
 		private _specularMap:away.textures.CubeTextureBase;
@@ -10,14 +10,11 @@ module away.lights
 		constructor(diffuseMap:away.textures.CubeTextureBase, specularMap:away.textures.CubeTextureBase = null)
 		{
 			super();
+
+			this._pIsEntity = true;
+
 			this._diffuseMap = diffuseMap;
 			this._specularMap = specularMap;
-		}
-
-		//@override
-		public pCreateEntityPartitionNode():away.partition.EntityNode
-		{
-			return new away.partition.LightProbeNode(this);
 		}
 
 		public get diffuseMap():away.textures.CubeTextureBase
@@ -40,6 +37,14 @@ module away.lights
 			this._specularMap = value;
 		}
 
+		/**
+		 * @protected
+		 */
+		public pCreateEntityPartitionNode():away.partition.EntityNode
+		{
+			return new away.partition.LightProbeNode(this);
+		}
+
 		//@override
 		public pUpdateBounds()
 		{
@@ -53,14 +58,9 @@ module away.lights
 		}
 
 		//@override
-		public iGetObjectProjectionMatrix(renderable:away.base.IRenderable, target:away.geom.Matrix3D = null):away.geom.Matrix3D
+		public iGetObjectProjectionMatrix(entity:away.entities.IEntity, camera:away.entities.Camera, target:away.geom.Matrix3D = null):away.geom.Matrix3D
 		{
-			// TODO: not used
-			renderable = renderable;
-			target = target;
-
 			throw new away.errors.Error("Object projection matrices are not supported for LightProbe objects!");
-			return null;
 		}
 	}
 }

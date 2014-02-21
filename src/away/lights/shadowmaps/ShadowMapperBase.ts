@@ -97,9 +97,10 @@ module away.lights
 		public dispose()
 		{
 			this._pCasterCollector = null;
-			if (this._depthMap && !this._explicitDepthMap) {
+
+			if (this._depthMap && !this._explicitDepthMap)
 				this._depthMap.dispose();
-			}
+
 			this._depthMap = null;
 		}
 
@@ -114,18 +115,18 @@ module away.lights
 
 			this.pUpdateDepthProjection(entityCollector.camera);
 
-			if (!this._depthMap) {
+			if (!this._depthMap)
 				this._depthMap = this.pCreateDepthTexture();
-			}
+
 			this.pDrawDepthMap(this._depthMap.getTextureForStageGL(stageGL), entityCollector.scene, renderer);
 		}
 
-		public pUpdateDepthProjection(viewCamera:away.cameras.Camera3D)
+		public pUpdateDepthProjection(viewCamera:away.entities.Camera)
 		{
 			throw new away.errors.AbstractMethodError();
 		}
 
-		public pDrawDepthMap(target:away.gl.TextureBase, scene:away.containers.Scene3D, renderer:away.render.DepthRenderer)
+		public pDrawDepthMap(target:away.gl.TextureBase, scene:away.containers.Scene, renderer:away.render.DepthRenderer)
 		{
 			throw new away.errors.AbstractMethodError();
 		}

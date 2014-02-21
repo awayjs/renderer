@@ -38,8 +38,8 @@ module away.primitives
 		 */
 		public pBuildGeometry(target:away.base.CompactSubGeometry)
 		{
-			var data:number[];
-			var indices:number[] /*uint*/;
+			var data:Array<number>;
+			var indices:Array<number> /*uint*/;
 			var i:number;
 			var j:number;
 			var triIndex:number = 0;
@@ -173,7 +173,7 @@ module away.primitives
 			var i:number;
 			var j:number;
 			var index:number;
-			var data:number[];
+			var data:Array<number>;
 			var stride:number = target.UVStride;
 			var UVlen:number = (this._segmentsH + 1)*(this._segmentsW + 1)*stride;
 			var skip:number = stride - 2;

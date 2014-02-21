@@ -9,7 +9,7 @@ module away.utils
 		 * Build a list of sub-geometries from raw data vectors, splitting them up in
 		 * such a way that they won't exceed buffer length limits.
 		 */
-		public static fromVectors(verts:number[], indices:number[] /*uint*/, uvs:number[], normals:number[], tangents:number[], weights:number[], jointIndices:number[], triangleOffset:number = 0):away.base.ISubGeometry[]
+		public static fromVectors(verts:Array<number>, indices:Array<number> /*uint*/, uvs:Array<number>, normals:Array<number>, tangents:Array<number>, weights:Array<number>, jointIndices:Array<number>, triangleOffset:number = 0):away.base.ISubGeometry[]
 		{
 			var LIMIT_VERTS:number = 3*0xffff;
 			var LIMIT_INDICES:number = 15*0xffff;
@@ -37,13 +37,13 @@ module away.utils
 				var len:number;
 				var outIndex:number;
 				var j:number;
-				var splitVerts:number[] = new Array<number>();
-				var splitIndices:number[] /*uint*/ = new Array<number>();
-				var splitUvs:number[] = (uvs != null)? new Array<number>() : null;
-				var splitNormals:number[] = (normals != null)? new Array<number>() : null;
-				var splitTangents:number[] = (tangents != null)? new Array<number>() : null;
-				var splitWeights:number[] = (weights != null)? new Array<number>() : null;
-				var splitJointIndices:number[] = (jointIndices != null)? new Array<number>() : null;
+				var splitVerts:Array<number> = new Array<number>();
+				var splitIndices:Array<number> /*uint*/ = new Array<number>();
+				var splitUvs:Array<number> = (uvs != null)? new Array<number>() : null;
+				var splitNormals:Array<number> = (normals != null)? new Array<number>() : null;
+				var splitTangents:Array<number> = (tangents != null)? new Array<number>() : null;
+				var splitWeights:Array<number> = (weights != null)? new Array<number>() : null;
+				var splitJointIndices:Array<number> = (jointIndices != null)? new Array<number>() : null;
 
 				var mappings:Array<number> = new Array<number>(verts.length/3);
 
@@ -178,7 +178,7 @@ module away.utils
 		/**
 		 * Build a sub-geometry from data vectors.
 		 */
-		public static constructSubGeometry(verts:number[], indices:number[] /*uint*/, uvs:number[], normals:number[], tangents:number[], weights:number[], jointIndices:number[], triangleOffset:number):away.base.CompactSubGeometry
+		public static constructSubGeometry(verts:Array<number>, indices:Array<number> /*uint*/, uvs:Array<number>, normals:Array<number>, tangents:Array<number>, weights:Array<number>, jointIndices:Array<number>, triangleOffset:number):away.base.CompactSubGeometry
 		{
 			var sub:away.base.CompactSubGeometry;
 
@@ -209,11 +209,11 @@ module away.utils
 		 * with CompactSubGeometry. SubGeometry uses separate buffers, whereas CompactSubGeometry
 		 * uses a single, combined buffer.
 		 * */
-		public static interleaveBuffers(numVertices:number, vertices:number[] = null, normals:number[] = null, tangents:number[] = null, uvs:number[] = null, suvs:number[] = null):number[]
+		public static interleaveBuffers(numVertices:number, vertices:Array<number> = null, normals:Array<number> = null, tangents:Array<number> = null, uvs:Array<number> = null, suvs:Array<number> = null):Array<number>
 		{
 
 			var i:number, compIndex:number, uvCompIndex:number, interleavedCompIndex:number;
-			var interleavedBuffer:number[];
+			var interleavedBuffer:Array<number>;
 
 			interleavedBuffer = new Array<number>();
 
@@ -272,7 +272,7 @@ module away.utils
 		public static getMeshSubMeshIndex(subMesh:away.base.SubMesh):number
 		{
 			var index:number;
-			var subMeshes:Array<away.base.SubMesh> = subMesh.iParentMesh.subMeshes;
+			var subMeshes:Array<away.base.SubMesh> = (<away.entities.Mesh> subMesh.sourceEntity).subMeshes;
 
 			for (var i:number = 0; i < subMeshes.length; ++i) {
 

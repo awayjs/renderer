@@ -16,7 +16,6 @@ module away.primitives
 			}
 			this._color = color;
 			this._thickness = thickness;
-			this.mouseEnabled = this.mouseChildren = false;
 		}
 
 		public get color():number
@@ -28,9 +27,7 @@ module away.primitives
 		{
 			this._color = value;
 
-			for (var segRef in this._pSegments) {
-				segRef.segment.startColor = segRef.segment.endColor = value;
-			}
+			this._pSubGeometry._iSetColor(value);
 		}
 
 		public get thickness():number
@@ -42,24 +39,13 @@ module away.primitives
 		{
 			this._thickness = value;
 
-			for (var segRef in this._pSegments) {
-				segRef.segment.thickness = segRef.segment.thickness = value;
-			}
+			this._pSubGeometry._iSetThickness(value);
 		}
 
 		//@override
 		public removeAllSegments()
 		{
 			super.removeAllSegments();
-		}
-
-		//@override
-		public getBounds():away.bounds.BoundingVolumeBase
-		{
-			if (this._geomDirty) {
-				this.updateGeometry();
-			}
-			return super.getBounds();
 		}
 
 		public pBuildGeometry()
@@ -69,19 +55,29 @@ module away.primitives
 
 		public pInvalidateGeometry():void
 		{
-			this._geomDirty = true;
 			this.pInvalidateBounds();
+
+			this._geomDirty = true;
 		}
 
 		private updateGeometry():void
 		{
 			this.pBuildGeometry();
+
 			this._geomDirty = false;
+		}
+
+		public pUpdateBounds()
+		{
+			if (this._geomDirty)
+				this.updateGeometry();
+
+			super.pUpdateBounds();
 		}
 
 		public pUpdateOrAddSegment(index:number, v0:away.geom.Vector3D, v1:away.geom.Vector3D)
 		{
-			var segment:away.primitives.Segment;
+			var segment:away.base.Segment;
 			var s:away.geom.Vector3D;
 			var e:away.geom.Vector3D;
 
@@ -99,12 +95,5 @@ module away.primitives
 				this.addSegment(new away.primitives.LineSegment(v0.clone(), v1.clone(), this._color, this._color, this._thickness));
 			}
 		}
-
-		//@override
-		public pUpdateMouseChildren():void
-		{
-			this._iAncestorsAllowMouseEnabled = false;
-		}
-
 	}
 }

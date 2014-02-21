@@ -143,7 +143,7 @@ module away.materials
 		 * @param stageGL The StageGL object currently used for rendering.
 		 * @param camera The camera from which the scene is currently rendered.
 		 */
-		public iSetRenderState(vo:MethodVO, renderable:away.base.IRenderable, stageGL:away.base.StageGL, camera:away.cameras.Camera3D)
+		public iSetRenderState(vo:MethodVO, renderable:away.pool.RenderableBase, stageGL:away.base.StageGL, camera:away.entities.Camera)
 		{
 
 		}

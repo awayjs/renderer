@@ -2,17 +2,13 @@
 
 module away.primitives
 {
-	//import flash.geom.Vector3D;
+	//TODO - convert to geometry primitive
 
 	/**
 	 * A WirefameCube primitive mesh.
 	 */
 	export class WireframeCube extends away.primitives.WireframePrimitiveBase
 	{
-		private _width:number;
-		private _height:number;
-		private _depth:number;
-
 		/**
 		 * Creates a new WireframeCube object.
 		 * @param width The size of the cube along its X-axis.
@@ -25,53 +21,9 @@ module away.primitives
 		{
 			super(color, thickness);
 
-			this._width = width;
-			this._height = height;
-			this._depth = depth;
-		}
-
-		/**
-		 * The size of the cube along its X-axis.
-		 */
-		public get width():number
-		{
-			return this._width;
-		}
-
-		public set width(value:number)
-		{
-			this._width = value;
-			this.pInvalidateGeometry();
-		}
-
-		/**
-		 * The size of the cube along its Y-axis.
-		 */
-		public get height():number
-		{
-			return this._height;
-		}
-
-		public set height(value:number)
-		{
-			if (value <= 0)
-				throw new Error("Value needs to be greater than 0");
-			this._height = value;
-			this.pInvalidateGeometry();
-		}
-
-		/**
-		 * The size of the cube along its Z-axis.
-		 */
-		public get depth():number
-		{
-			return this._depth;
-		}
-
-		public set depth(value:number)
-		{
-			this._depth = value;
-			this.pInvalidateGeometry();
+			this.width = width;
+			this.height = height;
+			this.depth = depth;
 		}
 
 		/**
@@ -81,9 +33,9 @@ module away.primitives
 		{
 			var v0:away.geom.Vector3D = new away.geom.Vector3D();
 			var v1:away.geom.Vector3D = new away.geom.Vector3D();
-			var hw:number = this._width*.5;
-			var hh:number = this._height*.5;
-			var hd:number = this._depth*.5;
+			var hw:number = 0.5;
+			var hh:number = 0.5;
+			var hd:number = 0.5;
 
 			v0.x = -hw;
 			v0.y = hh;

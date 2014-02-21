@@ -186,7 +186,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(stageGL:away.base.StageGL, camera:away.cameras.Camera3D)
+		public iActivate(stageGL:away.base.StageGL, camera:away.entities.Camera)
 		{
 			super.iActivate(stageGL, camera);
 
@@ -429,7 +429,7 @@ module away.materials
 
 			var probe:away.lights.LightProbe;
 			var lightProbes:away.lights.LightProbe[] = this._pLightPicker.lightProbes;
-			var weights:number[] = this._pLightPicker.lightProbeWeights;
+			var weights:Array<number> = this._pLightPicker.lightProbeWeights;
 			var len:number = lightProbes.length;
 			var addDiff:boolean = this.usesProbesForDiffuse();
 			var addSpec:boolean = <boolean> (this._pMethodSetup._iSpecularMethod && this.usesProbesForSpecular());

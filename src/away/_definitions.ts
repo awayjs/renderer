@@ -16,24 +16,17 @@
 ///<reference path="../../libs/ref/js.d.ts"/>
 ///<reference path="../../libs/ame.next.d.ts"/>
 
-///<reference path="errors/CastError.ts"/>
 ///<reference path="errors/AnimationSetError.ts"/>
 
 ///<reference path="events/LightEvent.ts" />
-///<reference path="events/CameraEvent.ts" />
-///<reference path="events/Object3DEvent.ts" />
 ///<reference path="events/MouseEvent3D.ts"/>
-///<reference path="events/Scene3DEvent.ts"/>
-///<reference path="events/LensEvent.ts" />
 ///<reference path="events/AnimationStateEvent.ts" />
 ///<reference path="events/AnimatorEvent.ts" />
 ///<reference path="events/ShadingMethodEvent.ts"/>
 ///<reference path="events/GeometryEvent.ts"/>
 
-///<reference path="core/base/Object3D.ts" />
 ///<reference path="core/base/SubMesh.ts"/>
-///<reference path="core/base/IRenderable.ts" />
-///<reference path="core/base/IMaterialOwner.ts" />
+///<reference path="core/base/Segment.ts" />
 ///<reference path="core/base/SubGeometryBase.ts"/>
 ///<reference path="core/base/ISubGeometry.ts"/>
 ///<reference path="core/base/CompactSubGeometry.ts"/>
@@ -41,83 +34,48 @@
 ///<reference path="core/base/Geometry.ts"/>
 ///<reference path="core/base/ParticleGeometry.ts"/>
 ///<reference path="core/base/SubGeometry.ts"/>
+///<reference path="core/base/SegmentSubGeometry.ts"/>
 
-///<reference path="core/data/RenderableListItem.ts"/>
-///<reference path="core/data/EntityListItem.ts"/>
-///<reference path="core/data/EntityListItemPool.ts"/>
-///<reference path="core/data/RenderableListItemPool.ts"/>
+///<reference path="core/pool/RenderableBase.ts"/>
+///<reference path="core/pool/BillboardRenderable.ts"/>
+///<reference path="core/pool/BillboardRenderablePool.ts"/>
+///<reference path="core/pool/SegmentSetRenderable.ts"/>
+///<reference path="core/pool/SegmentSetRenderablePool.ts"/>
+///<reference path="core/pool/SubMeshRenderable.ts"/>
+///<reference path="core/pool/SubMeshRenderablePool.ts"/>
+///<reference path="core/pool/SkyboxRenderable.ts"/>
+///<reference path="core/pool/SkyboxRenderablePool.ts"/>
 
-///<reference path="core/traverse/PartitionTraverser.ts" />
+///<reference path="core/traverse/RenderableCollectorBase.ts" />
 ///<reference path="core/traverse/EntityCollector.ts" />
 ///<reference path="core/traverse/ShadowCasterCollector.ts" />
 ///<reference path="core/traverse/RaycastCollector.ts" />
 
-///<reference path="core/partition/NodeBase.ts" />
-///<reference path="core/partition/NullNode.ts" />
-///<reference path="core/partition/Partition3D.ts" />
-///<reference path="core/partition/EntityNode.ts" />
-///<reference path="core/partition/CameraNode.ts" />
-///<reference path="core/partition/LightNode.ts" />
 ///<reference path="core/partition/DirectionalLightNode.ts" />
-///<reference path="core/partition/PointLightNode.ts"/>
-///<reference path="core/partition/LightProbeNode.ts"/>
-///<reference path="core/partition/MeshNode.ts" />
-///<reference path="core/partition/SkyBoxNode.ts" />
-///<reference path="core/partition/RenderableNode.ts" />
+///<reference path="core/partition/LightProbeNode.ts" />
+///<reference path="core/partition/PointLightNode.ts" />
+///<reference path="core/partition/SkyboxNode.ts" />
 
-///<reference path="core/pick/IPickingCollider.ts" />
 ///<reference path="core/pick/PickingColliderBase.ts" />
-///<reference path="core/pick/PickingCollisionVO.ts" />
-///<reference path="core/pick/AS3PickingCollider.ts" />
-///<reference path="core/pick/PickingColliderType.ts" />
-///<reference path="core/pick/IPicker.ts"/>
-///<reference path="core/pick/PickingColliderBase.ts" />
-///<reference path="core/pick/AS3PickingCollider.ts" />
+///<reference path="core/pick/JSPickingCollider.ts" />
 ///<reference path="core/pick/ShaderPicker.ts" />
 ///<reference path="core/pick/RaycastPicker.ts" />
 ///<reference path="core/pick/PickingType.ts"/>
+///<reference path="core/pick/PickingColliderType.ts" />
 
 ///<reference path="core/render/RendererBase.ts"/>
+
 ///<reference path="core/render/DepthRenderer.ts"/>
 ///<reference path="core/render/DefaultRenderer.ts"/>
 ///<reference path="core/render/Filter3DRenderer.ts"/>
 
-///<reference path="core/sort/IEntitySorter.ts"/>
-///<reference path="core/sort/RenderableMergeSort.ts"/>
 ///<reference path="materials/utils/DefaultMaterialManager.ts"/>
 
-///<reference path="containers/ObjectContainer3D.ts" />
-
-///<reference path="entities/Entity.ts" />
 ///<reference path="entities/SegmentSet.ts" />
 ///<reference path="entities/Mesh.ts"/>
-///<reference path="entities/SkyBox.ts" />
-///<reference path="entities/Sprite3D.ts"/>
-
-///<reference path="cameras/lenses/LensBase.ts" />
-///<reference path="cameras/lenses/PerspectiveLens.ts" />
-///<reference path="cameras/lenses/FreeMatrixLens.ts" />
-///<reference path="cameras/lenses/OrthographicLens.ts" />
-///<reference path="cameras/lenses/OrthographicOffCenterLens.ts" />
-///<reference path="cameras/lenses/PerspectiveOffCenterLens.ts" />
-///<reference path="cameras/lenses/ObliqueNearPlaneLens.ts" />
-///<reference path="cameras/Camera3D.ts" />
+///<reference path="entities/Skybox.ts" />
 
 ///<reference path="containers/Loader3D.ts" />
-///<reference path="containers/Scene3D.ts" />
-///<reference path="containers/View3D.ts"/>
-
-///<reference path="bounds/BoundingVolumeBase.ts" />
-///<reference path="bounds/NullBounds.ts" />
-///<reference path="bounds/BoundingSphere.ts" />
-///<reference path="bounds/AxisAlignedBoundingBox.ts" />
-
-///<reference path="controllers/ControllerBase.ts"/>
-///<reference path="controllers/LookAtController.ts"/>
-///<reference path="controllers/HoverController.ts"/>
-///<reference path="controllers/FirstPersonController.ts"/>
-///<reference path="controllers/FollowController.ts"/>
-///<reference path="controllers/SpringController.ts"/>
 
 ///<reference path="filters/tasks/Filter3DTaskBase.ts"/>
 ///<reference path="filters/Filter3DBase.ts"/>
@@ -142,7 +100,7 @@
 ///<reference path="materials/passes/LightingPass.ts"/>
 ///<reference path="materials/passes/ShadowCasterPass.ts"/>
 ///<reference path="materials/passes/SegmentPass.ts"/>
-///<reference path="materials/passes/SkyBoxPass.ts"/>
+///<reference path="materials/passes/SkyboxPass.ts"/>
 
 ///<reference path="materials/methods/MethodVO.ts"/>
 ///<reference path="materials/methods/ShadingMethodBase.ts"/>
@@ -192,9 +150,8 @@
 ///<reference path="materials/ColorMaterial.ts"/>
 ///<reference path="materials/compilation/LightingShaderCompiler.ts"/>
 ///<reference path="materials/SegmentMaterial.ts"/>
-///<reference path="materials/SkyBoxMaterial.ts"/>
+///<reference path="materials/SkyboxMaterial.ts"/>
 
-///<reference path="primitives/data/Segment.ts" />
 ///<reference path="primitives/PrimitiveBase.ts"/>
 ///<reference path="primitives/LineSegment.ts"/>
 ///<reference path="primitives/TorusGeometry.ts"/>
@@ -213,7 +170,6 @@
 ///<reference path="primitives/WireframeRegularPolygon.ts" />
 ///<reference path="primitives/WireframeTetrahedron.ts" />
 
-///<reference path="utils/Cast.ts"/>
 ///<reference path="utils/GeometryUtils.ts"/>
 ///<reference path="utils/PerspectiveMatrix3D.ts"/>
 
@@ -298,7 +254,6 @@
 ///<reference path="animators/AnimationSetBase.ts"/>
 ///<reference path="animators/AnimatorBase.ts"/>
 ///<reference path="animators/IAnimationSet.ts"/>
-///<reference path="animators/IAnimator.ts"/>
 ///<reference path="animators/ParticleAnimationSet.ts"/>
 ///<reference path="animators/ParticleAnimator.ts"/>
 ///<reference path="animators/SkeletonAnimator.ts"/>

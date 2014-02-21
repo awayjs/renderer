@@ -15,7 +15,7 @@ module away.materials
 	{
 		private _tangentSpace:boolean;
 		private _lightVertexConstantIndex:number;
-		private _inverseSceneMatrix:number[] = new Array<number>();
+		private _inverseSceneMatrix:Array<number> = new Array<number>();
 
 		/**
 		 * Creates a new ShadowCasterPass objects.
@@ -96,9 +96,9 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iRender(renderable:away.base.IRenderable, stageGL:away.base.StageGL, camera:away.cameras.Camera3D, viewProjection:away.geom.Matrix3D)
+		public iRender(renderable:away.pool.RenderableBase, stageGL:away.base.StageGL, camera:away.entities.Camera, viewProjection:away.geom.Matrix3D)
 		{
-			renderable.inverseSceneTransform.copyRawDataTo(this._inverseSceneMatrix);
+			renderable.sourceEntity.inverseSceneTransform.copyRawDataTo(this._inverseSceneMatrix);
 
 			if (this._tangentSpace && this._pCameraPositionIndex >= 0) {
 
@@ -117,7 +117,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(stageGL:away.base.StageGL, camera:away.cameras.Camera3D)
+		public iActivate(stageGL:away.base.StageGL, camera:away.entities.Camera)
 		{
 			super.iActivate(stageGL, camera);
 

@@ -31,7 +31,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iInitConstants(vo:MethodVO):void
+		public iInitConstants(vo:MethodVO)
 		{
 			var index:number = vo.fragmentConstantsIndex;
 			vo.fragmentData[index] = .5;
@@ -43,7 +43,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iInitVO(vo:MethodVO):void
+		public iInitVO(vo:MethodVO)
 		{
 			super.iInitVO(vo);
 
@@ -129,7 +129,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iCleanCompilationData():void
+		public iCleanCompilationData()
 		{
 			super.iCleanCompilationData();
 			this._normalTextureRegister2 = null;
@@ -138,7 +138,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public dispose():void
+		public dispose()
 		{
 			super.dispose();
 			this._texture2 = null;
@@ -147,7 +147,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGL:away.base.StageGL):void
+		public iActivate(vo:MethodVO, stageGL:away.base.StageGL)
 		{
 			super.iActivate(vo, stageGL);
 

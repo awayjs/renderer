@@ -8,10 +8,10 @@ module away.materials
 	 */
 	export class SegmentPass extends MaterialPassBase
 	{
-		public static pONE_VECTOR:number[] = Array<number>(1, 1, 1, 1);
-		public static pFRONT_VECTOR:number[] = Array<number>(0, 0, -1, 0);
+		public static pONE_VECTOR:Array<number> = Array<number>(1, 1, 1, 1);
+		public static pFRONT_VECTOR:Array<number> = Array<number>(0, 0, -1, 0);
 
-		private _constants:number[] = new Array<number>(0, 0, 0, 0);//private _constants:number[] = new Array<number>(4);
+		private _constants:Array<number> = new Array<number>(0, 0, 0, 0);//private _constants:Array<number> = new Array<number>(4);
 		private _calcMatrix:away.geom.Matrix3D;
 		private _thickness:number;
 
@@ -110,21 +110,21 @@ module away.materials
 		 * @inheritDoc
 		 * todo: keep maps in dictionary per renderable
 		 */
-		public iRender(renderable:away.base.IRenderable, stageGL:away.base.StageGL, camera:away.cameras.Camera3D, viewProjection:away.geom.Matrix3D)
+		public iRender(renderable:away.pool.RenderableBase, stageGL:away.base.StageGL, camera:away.entities.Camera, viewProjection:away.geom.Matrix3D)
 		{
 			var context:away.gl.ContextGL = stageGL.contextGL;
 			this._calcMatrix.copyFrom(renderable.sourceEntity.sceneTransform);
 			this._calcMatrix.append(camera.inverseSceneTransform);
 
-			var ss:away.entities.SegmentSet = <away.entities.SegmentSet> renderable;
+			var subGeometry:away.base.SegmentSubGeometry = <away.base.SegmentSubGeometry> (<away.pool.SegmentSetRenderable> renderable).subGeometry;
 
-			var subSetCount:number = ss.iSubSetCount;
+			var subSetCount:number = subGeometry.iSubSetCount;
 
-			if (ss.hasData) {
+			if (subGeometry.hasData) {
 				for (var i:number = 0; i < subSetCount; ++i) {
-					renderable.activateVertexBuffer(i, stageGL);
+					subGeometry.activateVertexBuffer(i, stageGL);
 					context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 8, this._calcMatrix, true);
-					context.drawTriangles(renderable.getIndexBuffer(stageGL), 0, renderable.numTriangles);
+					context.drawTriangles(subGeometry.getIndexBuffer(stageGL), 0, subGeometry.numTriangles);
 				}
 			}
 		}
@@ -132,24 +132,25 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(stageGL:away.base.StageGL, camera:away.cameras.Camera3D)
+		public iActivate(stageGL:away.base.StageGL, camera:away.entities.Camera)
 		{
 			var context:away.gl.ContextGL = stageGL.contextGL;
 			super.iActivate(stageGL, camera);
 
 			if (stageGL.scissorRect)
-				this._constants[0] = this._thickness/Math.min(stageGL.scissorRect.width, stageGL.scissorRect.height); else
+				this._constants[0] = this._thickness/Math.min(stageGL.scissorRect.width, stageGL.scissorRect.height);
+			else
 				this._constants[0] = this._thickness/Math.min(stageGL.width, stageGL.height);
 
 			// value to convert distance from camera to model length per pixel width
-			this._constants[2] = camera.lens.near;
+			this._constants[2] = camera.projection.near;
 
 			context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 5, SegmentPass.pONE_VECTOR, 1);
 			context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 6, SegmentPass.pFRONT_VECTOR, 1);
 			context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 7, this._constants, 1);
 
 			// projection matrix
-			context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, camera.lens.matrix, true);
+			context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, camera.projection.matrix, true);
 		}
 
 		/**

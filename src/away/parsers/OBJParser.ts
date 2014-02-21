@@ -363,10 +363,10 @@ module away.parsers
 			var numVerts:number;
 			var subs:Array<away.base.ISubGeometry>;
 
-			var vertices:number[] = new Array<number>();
-			var uvs:number[] = new Array<number>();
-			var normals:number[] = new Array<number>();
-			var indices:number[] /*uint*/ = new Array<number>();
+			var vertices:Array<number> = new Array<number>();
+			var uvs:Array<number> = new Array<number>();
+			var normals:Array<number> = new Array<number>();
+			var indices:Array<number> /*uint*/ = new Array<number>();
 
 			this._realIndices = [];
 			this._vertexIndex = 0;
@@ -392,7 +392,7 @@ module away.parsers
 			}
 		}
 
-		private translateVertexData(face:FaceData, vertexIndex:number, vertices:number[], uvs:number[], indices:number[] /*uint*/, normals:number[])
+		private translateVertexData(face:FaceData, vertexIndex:number, vertices:Array<number>, uvs:Array<number>, indices:Array<number> /*uint*/, normals:Array<number>)
 		{
 			var index:number;
 			var vertex:Vertex;
@@ -974,9 +974,9 @@ class LoadedMaterial
 
 class FaceData
 {
-	public vertexIndices:number[] /*uint*/ = new Array<number>();
-	public uvIndices:number[] /*uint*/ = new Array<number>();
-	public normalIndices:number[] /*uint*/ = new Array<number>();
+	public vertexIndices:Array<number> /*uint*/ = new Array<number>();
+	public uvIndices:Array<number> /*uint*/ = new Array<number>();
+	public normalIndices:Array<number> /*uint*/ = new Array<number>();
 	public indexIds:string[] = new Array<string>(); // used for real index lookups
 }
 

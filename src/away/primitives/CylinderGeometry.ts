@@ -19,8 +19,8 @@ module away.primitives
 		private _bottomClosed:boolean;
 		private _surfaceClosed:boolean;
 		private _yUp:boolean;
-		private _rawData:number[];
-		private _rawIndices:number[] /*uint*/;
+		private _rawData:Array<number>;
+		private _rawIndices:Array<number> /*uint*/;
 		private _nextVertexIndex:number;
 		private _currentIndex:number = 0;
 		private _currentTriangleIndex:number;
@@ -289,7 +289,7 @@ module away.primitives
 			var revolutionAngle:number;
 			var stride:number = target.UVStride;
 			var skip:number = stride - 2;
-			var UVData:number[];
+			var UVData:Array<number>;
 
 			// evaluate num uvs
 			var numUvs:number = this._numVertices*stride;

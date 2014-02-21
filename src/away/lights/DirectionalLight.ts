@@ -2,25 +2,22 @@
 
 module away.lights
 {
-	export class DirectionalLight extends away.lights.LightBase
+	export class DirectionalLight extends away.lights.LightBase implements away.entities.IEntity
 	{
-
 		private _direction:away.geom.Vector3D;
 		private _tmpLookAt:away.geom.Vector3D;
 		private _sceneDirection:away.geom.Vector3D;
-		private _projAABBPoints:number[];
+		private _projAABBPoints:Array<number>;
 
 		constructor(xDir:number = 0, yDir:number = -1, zDir:number = 1)
 		{
 			super();
-			this.direction = new away.geom.Vector3D(xDir, yDir, zDir);
-			this._sceneDirection = new away.geom.Vector3D();
-		}
 
-		//@override
-		public pCreateEntityPartitionNode():away.partition.EntityNode
-		{
-			return new away.partition.DirectionalLightNode(this);
+			this._pIsEntity = true;
+
+			this.direction = new away.geom.Vector3D(xDir, yDir, zDir);
+
+			this._sceneDirection = new away.geom.Vector3D();
 		}
 
 		public get sceneDirection():away.geom.Vector3D
@@ -75,14 +72,22 @@ module away.lights
 			return new away.lights.DirectionalShadowMapper();
 		}
 
-		//override
-		public iGetObjectProjectionMatrix(renderable:away.base.IRenderable, target:away.geom.Matrix3D = null):away.geom.Matrix3D
+		/**
+		 * @protected
+		 */
+		public pCreateEntityPartitionNode():away.partition.EntityNode
 		{
-			var raw:number[] = [];
-			var bounds:away.bounds.BoundingVolumeBase = renderable.sourceEntity.bounds;
+			return new away.partition.DirectionalLightNode(this);
+		}
+
+		//override
+		public iGetObjectProjectionMatrix(entity:away.entities.IEntity, camera:away.entities.Camera, target:away.geom.Matrix3D = null):away.geom.Matrix3D
+		{
+			var raw:Array<number> = new Array<number>();
+			var bounds:away.bounds.BoundingVolumeBase = entity.bounds;
 			var m:away.geom.Matrix3D = new away.geom.Matrix3D();
 
-			m.copyFrom(renderable.sceneTransform);
+			m.copyFrom(entity.getRenderSceneTransform(camera));
 			m.append(this.inverseSceneTransform);
 
 			if (!this._projAABBPoints) {

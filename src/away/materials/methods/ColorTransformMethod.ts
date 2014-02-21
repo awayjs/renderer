@@ -64,7 +64,7 @@ module away.materials
 		{
 			var inv:number = 1/0xff;
 			var index:number = vo.fragmentConstantsIndex;
-			var data:number[] = vo.fragmentData;
+			var data:Array<number> = vo.fragmentData;
 
 			data[index] = this._colorTransform.redMultiplier;
 			data[index + 1] = this._colorTransform.greenMultiplier;

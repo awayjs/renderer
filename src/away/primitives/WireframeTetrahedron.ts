@@ -1,9 +1,7 @@
 ///<reference path="../_definitions.ts" />
 module away.primitives
 {
-	//import flash.geom.Vector3D;
-
-	//import away3d.primitives.WireframePrimitiveBase;
+	//TODO - convert to geometry primitive
 
 	/**
 	 * A WireframeTetrahedron primitive mesh
@@ -15,8 +13,6 @@ module away.primitives
 		public static ORIENTATION_XY:string = "xy";
 		public static ORIENTATION_XZ:string = "xz";
 
-		private _width:number;
-		private _height:number;
 		private _orientation:string;
 
 		/**
@@ -30,10 +26,10 @@ module away.primitives
 		{
 			super(color, thickness);
 
-			this._width = width;
-			this._height = height;
-
 			this._orientation = orientation;
+
+			this.width = width;
+			this.height = height;
 		}
 
 		/**
@@ -51,38 +47,6 @@ module away.primitives
 		}
 
 		/**
-		 * The size of the tetrahedron bottom.
-		 */
-		public get width():number
-		{
-			return this._width;
-		}
-
-		public set width(value:number)
-		{
-			if (value <= 0)
-				throw new Error("Value needs to be greater than 0");
-			this._width = value;
-			this.pInvalidateGeometry();
-		}
-
-		/**
-		 * The size of the tetrahedron height.
-		 */
-		public get height():number
-		{
-			return this._height;
-		}
-
-		public set height(value:number)
-		{
-			if (value <= 0)
-				throw new Error("Value needs to be greater than 0");
-			this._height = value;
-			this.pInvalidateGeometry();
-		}
-
-		/**
 		 * @inheritDoc
 		 */
 		public pBuildGeometry()
@@ -94,7 +58,7 @@ module away.primitives
 			var bv3:away.geom.Vector3D;
 			var top:away.geom.Vector3D;
 
-			var hw:number = this._width*0.5;
+			var hw:number = 0.5;
 
 			switch (this._orientation) {
 				case WireframeTetrahedron.ORIENTATION_XY:
@@ -103,21 +67,21 @@ module away.primitives
 					bv1 = new away.geom.Vector3D(hw, hw, 0);
 					bv2 = new away.geom.Vector3D(hw, -hw, 0);
 					bv3 = new away.geom.Vector3D(-hw, -hw, 0);
-					top = new away.geom.Vector3D(0, 0, this._height);
+					top = new away.geom.Vector3D(0, 0, 1);
 					break;
 				case WireframeTetrahedron.ORIENTATION_XZ:
 					bv0 = new away.geom.Vector3D(-hw, 0, hw);
 					bv1 = new away.geom.Vector3D(hw, 0, hw);
 					bv2 = new away.geom.Vector3D(hw, 0, -hw);
 					bv3 = new away.geom.Vector3D(-hw, 0, -hw);
-					top = new away.geom.Vector3D(0, this._height, 0);
+					top = new away.geom.Vector3D(0, 1, 0);
 					break;
 				case WireframeTetrahedron.ORIENTATION_YZ:
 					bv0 = new away.geom.Vector3D(0, -hw, hw);
 					bv1 = new away.geom.Vector3D(0, hw, hw);
 					bv2 = new away.geom.Vector3D(0, hw, -hw);
 					bv3 = new away.geom.Vector3D(0, -hw, -hw);
-					top = new away.geom.Vector3D(this._height, 0, 0);
+					top = new away.geom.Vector3D(1, 0, 0);
 					break;
 			}
 			//bottom

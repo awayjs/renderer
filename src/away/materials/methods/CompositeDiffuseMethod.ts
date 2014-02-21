@@ -208,7 +208,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iReset():void
+		public iReset()
 		{
 			this.pBaseMethod.iReset();
 		}
@@ -216,7 +216,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iCleanCompilationData():void
+		public iCleanCompilationData()
 		{
 			super.iCleanCompilationData();
 			this.pBaseMethod.iCleanCompilationData();

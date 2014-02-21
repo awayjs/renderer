@@ -207,7 +207,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iReset():void
+		public iReset()
 		{
 			this._baseMethod.iReset();
 		}

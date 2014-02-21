@@ -5,8 +5,8 @@ module away.materials
 	import StageGL                     = away.base.StageGL;
 	import Delegate							= away.utils.Delegate;
 
-	import Camera3D                         = away.cameras.Camera3D;
-	import IRenderable                      = away.base.IRenderable;
+	import Camera                         = away.entities.Camera;
+	import IRenderable                      = away.pool.RenderableBase;
 	import ShadingMethodEvent               = away.events.ShadingMethodEvent;
 	import NearDirectionalShadowMapper      = away.lights.NearDirectionalShadowMapper;
 
@@ -167,11 +167,11 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iSetRenderState(vo:MethodVO, renderable:IRenderable, stageGL:StageGL, camera:Camera3D):void
+		public iSetRenderState(vo:MethodVO, renderable:IRenderable, stageGL:StageGL, camera:Camera):void
 		{
 			// todo: move this to activate (needs camera)
-			var near:number = camera.lens.near;
-			var d:number = camera.lens.far - near;
+			var near:number = camera.projection.near;
+			var d:number = camera.projection.far - near;
 			var maxDistance:number = this._nearShadowMapper.coverageRatio;
 			var minDistance:number = maxDistance*(1 - this._fadeRatio);
 

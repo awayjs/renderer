@@ -2,7 +2,7 @@
 
 module away.primitives
 {
-	//import flash.geom.Vector3D;
+	//TODO - convert to geometry primitive
 
 	/**
 	 * Generates a wireframd cylinder primitive.
@@ -13,7 +13,6 @@ module away.primitives
 
 		private _topRadius:number;
 		private _bottomRadius:number;
-		private _height:number;
 		private _segmentsW:number;
 		private _segmentsH:number;
 
@@ -32,9 +31,10 @@ module away.primitives
 			super(color, thickness);
 			this._topRadius = topRadius;
 			this._bottomRadius = bottomRadius;
-			this._height = height;
 			this._segmentsW = segmentsW;
 			this._segmentsH = segmentsH;
+
+			this.height = height;
 		}
 
 		public pBuildGeometry()
@@ -47,13 +47,13 @@ module away.primitives
 			var nextVertexIndex:number = 0;
 			var x:number, y:number, z:number;
 
-			var lastLayer:Array<Array<away.geom.Vector3D>> = new Array<Array<away.geom.Vector3D>>(this._segmentsH + 1);
+			var lastLayer:away.geom.Vector3D[][] = new Array<Array<away.geom.Vector3D>>(this._segmentsH + 1);
 
 			for (j = 0; j <= this._segmentsH; ++j) {
 				lastLayer[j] = new Array<away.geom.Vector3D>(this._segmentsW + 1);
 
 				radius = this._topRadius - ((j/this._segmentsH)*(this._topRadius - this._bottomRadius));
-				z = -(this._height/2) + (j/this._segmentsH*this._height);
+				z = -(1/2) + (j/this._segmentsH*1);
 
 				var previousV:away.geom.Vector3D = null;
 
@@ -103,23 +103,6 @@ module away.primitives
 		public set bottomRadius(value:number)
 		{
 			this._bottomRadius = value;
-			this.pInvalidateGeometry();
-		}
-
-		/**
-		 * The height of the cylinder
-		 */
-		public get height():number
-		{
-			return this._height;
-		}
-
-		public set height(value:number)
-		{
-			if (this.height <= 0)
-				throw new Error('Height must be a value greater than zero.');
-
-			this._height = value;
 			this.pInvalidateGeometry();
 		}
 	}

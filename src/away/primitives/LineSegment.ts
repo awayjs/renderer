@@ -2,7 +2,7 @@
 
 module away.primitives
 {
-	export class LineSegment extends away.primitives.Segment
+	export class LineSegment extends away.base.Segment
 	{
 		public TYPE:string = "line";
 

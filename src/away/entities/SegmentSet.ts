@@ -3,580 +3,214 @@
 
 module away.entities
 {
+	import SegmentSubGeometry			= away.base.SegmentSubGeometry;
 
-	export class SegmentSet extends away.entities.Entity implements away.base.IRenderable
+	export class SegmentSet extends away.base.DisplayObject implements IEntity, away.base.IMaterialOwner
 	{
-		private LIMIT:number = 3*0xFFFF;
-		private _activeSubSet:SubSet;
-		private _subSets:SubSet[];
-		private _subSetCount:number;
-		private _numIndices:number;
+		private _uvTransform:away.geom.UVTransform;
+
 		private _material:away.materials.MaterialBase;
 		private _animator:away.animators.IAnimator;
-		private _hasData:boolean;
-
-		public _pSegments:Object; //Dictionary
-		private _indexSegments:number = 0;
-
-		constructor()
-		{
-			super();
-
-			this._subSetCount = 0;
-			this._subSets = [];
-			this.addSubSet();
-
-			this._pSegments = new Object();
-
-			this.material = new away.materials.SegmentMaterial();
-		}
-
-		public addSegment(segment:away.primitives.Segment)
-		{
-			segment.iSegmentsBase = this;
-
-			this._hasData = true;
-
-			var subSetIndex:number = this._subSets.length - 1;
-			var subSet:SubSet = this._subSets[subSetIndex];
-
-			if (subSet.vertices.length + 44 > this.LIMIT) {
-				subSet = this.addSubSet();
-				subSetIndex++;
-			}
-
-			segment.iIndex = subSet.vertices.length;
-			segment.iSubSetIndex = subSetIndex;
-
-			this.iUpdateSegment(segment);
-
-			var index:number = subSet.lineCount << 2;
-
-			subSet.indices.push(index, index + 1, index + 2, index + 3, index + 2, index + 1);
-			subSet.numVertices = subSet.vertices.length/11;
-			subSet.numIndices = subSet.indices.length;
-			subSet.lineCount++;
-
-			var segRef:SegRef = new SegRef();
-			segRef.index = index;
-			segRef.subSetIndex = subSetIndex;
-			segRef.segment = segment;
-
-			this._pSegments[this._indexSegments] = segRef;
-
-			this._indexSegments++;
-		}
-
-		public removeSegmentByIndex(index:number, dispose:boolean = false)
-		{
-			var segRef:SegRef;
-			if (index >= this._indexSegments) {
-				return;
-			}
-			if (this._pSegments[index]) {
-				segRef = this._pSegments[index];
-			} else {
-				return;
-			}
-
-			var subSet:SubSet;
-			if (!this._subSets[segRef.subSetIndex]) {
-				return;
-			}
-
-			var subSetIndex:number = segRef.subSetIndex;
-			subSet = this._subSets[segRef.subSetIndex];
-
-			var segment:away.primitives.Segment = segRef.segment;
-			var indices:number[] = subSet.indices;
-
-			var ind:number = index*6;
-			for (var i:number = ind; i < indices.length; ++i) {
-				indices[i] -= 4;
-			}
-			subSet.indices.splice(index*6, 6);
-			subSet.vertices.splice(index*44, 44);
-			subSet.numVertices = subSet.vertices.length/11;
-			subSet.numIndices = indices.length;
-			subSet.vertexBufferDirty = true;
-			subSet.indexBufferDirty = true;
-			subSet.lineCount--;
-
-			if (dispose) {
-				segment.dispose();
-				segment = null;
-
-			} else {
-				segment.iIndex = -1;
-				segment.iSegmentsBase = null;
-			}
-
-			if (subSet.lineCount == 0) {
-
-				if (subSetIndex == 0) {
-					this._hasData = false;
-				} else {
-					subSet.dispose();
-					this._subSets[subSetIndex] = null;
-					this._subSets.splice(subSetIndex, 1);
-				}
-			}
-
-			this.reOrderIndices(subSetIndex, index);
-
-			segRef = null;
-			this._pSegments[this._indexSegments] = null;
-			this._indexSegments--;
-		}
-
-		public removeSegment(segment:away.primitives.Segment, dispose:boolean = false)
-		{
-			if (segment.iIndex == -1) {
-				return;
-			}
-			this.removeSegmentByIndex(segment.iIndex/44);
-		}
-
-		public removeAllSegments()
-		{
-			var subSet:SubSet;
-			for (var i:number = 0; i < this._subSetCount; ++i) {
-				subSet = this._subSets[i];
-				subSet.vertices = null;
-				subSet.indices = null;
-				if (subSet.vertexBuffer) {
-					subSet.vertexBuffer.dispose();
-				}
-				if (subSet.indexBuffer) {
-					subSet.indexBuffer.dispose();
-				}
-				subSet = null;
-			}
-
-			for (var segRef in this._pSegments) {
-				segRef = null;
-			}
-			this._pSegments = null; //WHY?
-			this._subSetCount = 0;
-			this._activeSubSet = null;
-			this._indexSegments = 0;
-			this._subSets = [];
-			this._pSegments = new Object();
-
-			this.addSubSet();
-
-			this._hasData = false;
-		}
-
-		public getSegment(index:number):away.primitives.Segment
-		{
-			if (index > this._indexSegments - 1) {
-				return null;
-			}
-			return this._pSegments[index].segment;
-		}
-
-		public get segmentCount():number
-		{
-			return this._indexSegments;
-		}
-
-		public get iSubSetCount():number
-		{
-			return this._subSetCount;
-		}
-
-		public iUpdateSegment(segment:away.primitives.Segment)
-		{
-			var start:away.geom.Vector3D = segment._pStart;
-			var end:away.geom.Vector3D = segment._pEnd;
-			var startX:number = start.x, startY:number = start.y, startZ:number = start.z;
-			var endX:number = end.x, endY:number = end.y, endZ:number = end.z;
-			var startR:number = segment._pStartR, startG:number = segment._pStartG, startB:number = segment._pStartB;
-			var endR:number = segment._pEndR, endG:number = segment._pEndG, endB:number = segment._pEndB;
-			var index:number = segment.iIndex;
-			var t:number = segment.thickness;
-
-			var subSet:SubSet = this._subSets[segment.iSubSetIndex];
-			var vertices:number[] = subSet.vertices;
-
-			vertices[index++] = startX;
-			vertices[index++] = startY;
-			vertices[index++] = startZ;
-			vertices[index++] = endX;
-			vertices[index++] = endY;
-			vertices[index++] = endZ;
-			vertices[index++] = t;
-			vertices[index++] = startR;
-			vertices[index++] = startG;
-			vertices[index++] = startB;
-			vertices[index++] = 1;
-
-			vertices[index++] = endX;
-			vertices[index++] = endY;
-			vertices[index++] = endZ;
-			vertices[index++] = startX;
-			vertices[index++] = startY;
-			vertices[index++] = startZ;
-			vertices[index++] = -t;
-			vertices[index++] = endR;
-			vertices[index++] = endG;
-			vertices[index++] = endB;
-			vertices[index++] = 1;
-
-			vertices[index++] = startX;
-			vertices[index++] = startY;
-			vertices[index++] = startZ;
-			vertices[index++] = endX;
-			vertices[index++] = endY;
-			vertices[index++] = endZ;
-			vertices[index++] = -t;
-			vertices[index++] = startR;
-			vertices[index++] = startG;
-			vertices[index++] = startB;
-			vertices[index++] = 1;
-
-			vertices[index++] = endX;
-			vertices[index++] = endY;
-			vertices[index++] = endZ;
-			vertices[index++] = startX;
-			vertices[index++] = startY;
-			vertices[index++] = startZ;
-			vertices[index++] = t;
-			vertices[index++] = endR;
-			vertices[index++] = endG;
-			vertices[index++] = endB;
-			vertices[index++] = 1;
-
-			subSet.vertexBufferDirty = true;
-
-			this._pBoundsInvalid = true;
-		}
-
-		public get hasData():boolean
-		{
-			return this._hasData;
-		}
-
-
-		public getIndexBuffer(stageGL:away.base.StageGL):away.gl.IndexBuffer
-		{
-
-			if (this._activeSubSet.indexContextGL != stageGL.contextGL || this._activeSubSet.indexBufferDirty) {
-				this._activeSubSet.indexBuffer = stageGL.contextGL.createIndexBuffer(this._activeSubSet.numIndices);
-				this._activeSubSet.indexBuffer.uploadFromArray(this._activeSubSet.indices, 0, this._activeSubSet.numIndices);
-				this._activeSubSet.indexBufferDirty = false;
-				this._activeSubSet.indexContextGL = stageGL.contextGL;
-			}
-
-			return this._activeSubSet.indexBuffer;
-
-		}
-
-
-		public activateVertexBuffer(index:number, stageGL:away.base.StageGL)
-		{
-
-			var subSet:SubSet = this._subSets[index];
-
-			this._activeSubSet = subSet;
-			this._numIndices = subSet.numIndices;
-
-			var vertexBuffer:away.gl.VertexBuffer = subSet.vertexBuffer;
-
-			if (subSet.vertexContextGL != stageGL.contextGL || subSet.vertexBufferDirty) {
-				subSet.vertexBuffer = stageGL.contextGL.createVertexBuffer(subSet.numVertices, 11);
-				subSet.vertexBuffer.uploadFromArray(subSet.vertices, 0, subSet.numVertices);
-				subSet.vertexBufferDirty = false;
-				subSet.vertexContextGL = stageGL.contextGL;
-			}
-
-			var context3d:away.gl.ContextGL = stageGL.contextGL;
-			context3d.setVertexBufferAt(0, vertexBuffer, 0, away.gl.ContextGLVertexBufferFormat.FLOAT_3);
-			context3d.setVertexBufferAt(1, vertexBuffer, 3, away.gl.ContextGLVertexBufferFormat.FLOAT_3);
-			context3d.setVertexBufferAt(2, vertexBuffer, 6, away.gl.ContextGLVertexBufferFormat.FLOAT_1);
-			context3d.setVertexBufferAt(3, vertexBuffer, 7, away.gl.ContextGLVertexBufferFormat.FLOAT_4);
-
-		}
-
-		public activateUVBuffer(index:number, stageGL:away.base.StageGL)
-		{
-		}
-
-		public activateVertexNormalBuffer(index:number, stageGL:away.base.StageGL)
-		{
-		}
-
-		public activateVertexTangentBuffer(index:number, stageGL:away.base.StageGL)
-		{
-		}
-
-		public activateSecondaryUVBuffer(index:number, stageGL:away.base.StageGL)
-		{
-		}
-
-		private reOrderIndices(subSetIndex:number, index:number)
-		{
-			var segRef:SegRef;
-
-			for (var i:number = index; i < this._indexSegments - 1; ++i) {
-				segRef = this._pSegments[i + 1];
-				segRef.index = i;
-				if (segRef.subSetIndex == subSetIndex) {
-					segRef.segment.iIndex -= 44;
-				}
-				this._pSegments[i] = segRef;
-			}
-		}
-
-		private addSubSet():SubSet
-		{
-			var subSet:SubSet = new SubSet();
-			this._subSets.push(subSet);
-
-			subSet.vertices = [];
-			subSet.numVertices = 0;
-			subSet.indices = [];
-			subSet.numIndices = 0;
-			subSet.vertexBufferDirty = true;
-			subSet.indexBufferDirty = true;
-			subSet.lineCount = 0;
-
-			this._subSetCount++;
-
-			return subSet;
-		}
-
-		//@override
-		public dispose()
-		{
-			super.dispose();
-			this.removeAllSegments();
-			this._pSegments = null
-			this._material = null;
-			var subSet:SubSet = this._subSets[0];
-			subSet.vertices = null;
-			subSet.indices = null;
-			this._subSets = null;
-		}
-
-		//@override
-		public get mouseEnabled():boolean
-		{
-			return false;
-		}
-
-		//@override
-		public pGetDefaultBoundingVolume():away.bounds.BoundingVolumeBase
-		{
-			return new away.bounds.BoundingSphere();
-		}
-
-		//@override
-		public pUpdateBounds()
-		{
-			var subSet:SubSet;
-			var len:number;
-			var v:number;
-			var index:number;
-
-			var minX:number = Infinity;
-			var minY:number = Infinity;
-			var minZ:number = Infinity;
-			var maxX:number = -Infinity;
-			var maxY:number = -Infinity;
-			var maxZ:number = -Infinity;
-			var vertices:number[];
-
-			for (var i:number = 0; i < this._subSetCount; ++i) {
-				subSet = this._subSets[i];
-				index = 0;
-				vertices = subSet.vertices;
-				len = vertices.length;
-
-				if (len == 0) {
-					continue;
-				}
-
-				while (index < len) {
-					v = vertices[index++];
-					if (v < minX)
-						minX = v; else if (v > maxX)
-						maxX = v;
-
-					v = vertices[index++];
-					if (v < minY)
-						minY = v; else if (v > maxY)
-						maxY = v;
-
-					v = vertices[index++];
-					if (v < minZ)
-						minZ = v; else if (v > maxZ)
-						maxZ = v;
-
-					index += 8;
-				}
-			}
-
-			if (minX != Infinity) {
-				this._pBounds.fromExtremes(minX, minY, minZ, maxX, maxY, maxZ);
-
-			} else {
-				var min:number = .5;
-				this._pBounds.fromExtremes(-min, -min, -min, min, min, min);
-			}
-
-			this._pBoundsInvalid = false;
-		}
-
-
-		//@override
-
-		public pCreateEntityPartitionNode():away.partition.EntityNode
-		{
-			return new away.partition.RenderableNode(this);
-		}
-
-		public get numTriangles():number
-		{
-			return this._numIndices/3;
-		}
-
-		public get sourceEntity():away.entities.Entity
-		{
-			return this;
-		}
-
-		public get castsShadows():boolean
-		{
-			return false;
-		}
-
-		public get material():away.materials.MaterialBase
-		{
-			return this._material;
-		}
-
+		public _pSubGeometry:SegmentSubGeometry;
+
+		/**
+		 *
+		 */
 		public get animator():away.animators.IAnimator
 		{
 			return this._animator;
 		}
 
-		public set material(value:away.materials.MaterialBase)
-		{
-			if (value == this._material) {
-				return;
-			}
-			if (this._material) {
-				this._material.iRemoveOwner(this);
-			}
-			this._material = value;
-			if (this._material) {
-				this._material.iAddOwner(this);
-			}
-		}
-
-		public get uvTransform():away.geom.Matrix
-		{
-			return null;
-		}
-
-		public get vertexData():number[]
-		{
-			return null;
-		}
-
-		public get indexData():number[]
-		{
-			return null;
-		}
-
-		public get UVData():number[]
-		{
-			return null;
-		}
-
-		public get numVertices():number
-		{
-			return null;
-		}
-
-		public get vertexStride():number
-		{
-			return 11;
-		}
-
-		public get vertexNormalData():number[]
-		{
-			return null;
-		}
-
-		public  get vertexTangentData():number[]
-		{
-			return null;
-		}
-
-		public get vertexOffset():number
-		{
-			return 0;
-		}
-
-		public get vertexNormalOffset():number
-		{
-			return 0;
-		}
-
-		public get vertexTangentOffset():number
-		{
-			return 0;
-		}
-
-		//@override
+		/**
+		 *
+		 */
 		public get assetType():string
 		{
 			return away.library.AssetType.SEGMENT_SET;
 		}
 
-		public getRenderSceneTransform(camera:away.cameras.Camera3D):away.geom.Matrix3D
+		/**
+		 *
+		 */
+		public get castsShadows():boolean
 		{
-			return this._pSceneTransform;
+			return false;
 		}
-	}
 
-	class SegRef
-	{
-		public index:number;
-		public subSetIndex:number;
-		public segment:away.primitives.Segment;
-	}
+		/**
+		 *
+		 */
+		public get material():away.materials.MaterialBase
+		{
+			return this._material;
+		}
 
-	class SubSet
-	{
-		public vertices:number[];
-		public numVertices:number;
+		public set material(value:away.materials.MaterialBase)
+		{
+			if (value == this._material)
+				return;
 
-		public indices:number[];
-		public numIndices:number;
+			if (this._material)
+				this._material.iRemoveOwner(this);
 
-		public vertexBufferDirty:boolean;
-		public indexBufferDirty:boolean;
+			this._material = value;
 
-		public vertexContextGL:away.gl.ContextGL;
-		public indexContextGL:away.gl.ContextGL;
+			if (this._material)
+				this._material.iAddOwner(this);
+		}
 
-		public vertexBuffer:away.gl.VertexBuffer;
-		public indexBuffer:away.gl.IndexBuffer;
-		public lineCount:number;
+		/**
+		 *
+		 */
+		public get subGeometry():SegmentSubGeometry
+		{
+			return this._pSubGeometry;
+		}
 
+		/**
+		 *
+		 */
+		public get uvTransform():away.geom.UVTransform
+		{
+			return this._uvTransform;
+		}
+
+		/**
+		 *
+		 */
+		constructor()
+		{
+			super();
+
+			this._pIsEntity = true;
+
+			this.material = new away.materials.SegmentMaterial();
+
+			this._pSubGeometry = new SegmentSubGeometry();
+			this._uvTransform = new away.geom.UVTransform(this);
+		}
+
+		/**
+		 * //TODO
+		 *
+		 * @param segment
+		 */
+		public addSegment(segment:away.base.Segment)
+		{
+			this._pSubGeometry.addSegment(segment);
+
+			this._pBoundsInvalid = true;
+		}
+
+		/**
+		 * //TODO
+		 *
+		 * @param index
+		 * @returns {*}
+		 */
+		public getSegment(index:number):away.base.Segment
+		{
+			return this._pSubGeometry.getSegment(index);
+		}
+
+		/**
+		 * //TODO
+		 *
+		 * @param index
+		 * @param dispose
+		 */
+		public removeSegmentByIndex(index:number, dispose:boolean = false)
+		{
+			this._pSubGeometry.removeSegmentByIndex(index, dispose);
+
+			this._pBoundsInvalid = true;
+		}
+
+		/**
+		 * //TODO
+		 */
+		public removeAllSegments()
+		{
+			this._pSubGeometry.removeAllSegments();
+
+			this._pBoundsInvalid = true;
+		}
+
+		/**
+		 * //TODO
+		 *
+		 * @param segment
+		 * @param dispose
+		 */
+		public removeSegment(segment:away.base.Segment, dispose:boolean = false)
+		{
+			this._pSubGeometry.removeSegment(segment, dispose);
+
+			this._pBoundsInvalid = true;
+		}
+
+		/**
+		 * //TODO
+		 */
 		public dispose()
 		{
-			this.vertices = null;
-			if (this.vertexBuffer) {
-				this.vertexBuffer.dispose();
-			}
-			if (this.indexBuffer) {
-				this.indexBuffer.dispose();
-			}
+			super.dispose();
+
+			this._pSubGeometry.dispose();
+
+			this._material = null;
+		}
+
+		/**
+		 * @protected
+		 */
+		public pCreateEntityPartitionNode():away.partition.EntityNode
+		{
+			return new away.partition.EntityNode(this);
+		}
+
+		/**
+		 * //TOOD
+		 *
+		 * @returns {away.bounds.BoundingSphere}
+		 *
+		 * @protected
+		 */
+		public pGetDefaultBoundingVolume():away.bounds.BoundingVolumeBase
+		{
+			return new away.bounds.BoundingSphere();
+		}
+
+		/**
+		 * //TODO
+		 *
+		 * @protected
+		 */
+		public pUpdateBounds()
+		{
+			this._pSubGeometry.updateBounds(this._pBounds);
+
+			super.pUpdateBounds();
+		}
+
+		/**
+		 * //TODO
+		 *
+		 * @internal
+		 */
+		public _iSetUVMatrixComponents(offsetU:number, offsetV:number, scaleU:number, scaleV:number, rotationUV:number)
+		{
+
+		}
+
+		/**
+		 * //TODO
+		 *
+		 * @internal
+		 */
+		public _iIsMouseEnabled():boolean
+		{
+			return false;
 		}
 	}
 }

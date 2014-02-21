@@ -2,6 +2,7 @@
 
 module away.primitives
 {
+	//TODO - convert to geometry primitive
 
 	/**
 	 * A WireframeSphere primitive mesh
@@ -34,7 +35,7 @@ module away.primitives
 		 */
 		public pBuildGeometry()
 		{
-			var vertices:number[] = new Array<number>();
+			var vertices:Array<number> = new Array<number>();
 			var v0:away.geom.Vector3D = new away.geom.Vector3D();
 			var v1:away.geom.Vector3D = new away.geom.Vector3D();
 			var i:number, j:number;

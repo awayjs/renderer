@@ -181,14 +181,14 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iSetRenderState(vo:MethodVO, renderable:away.base.IRenderable, stageGL:away.base.StageGL, camera:away.cameras.Camera3D)
+		public iSetRenderState(vo:MethodVO, renderable:away.pool.RenderableBase, stageGL:away.base.StageGL, camera:away.entities.Camera)
 		{
 			this.updateAmbient();
 
 			if (!this._useTexture) {
 
 				var index:number = vo.fragmentConstantsIndex;
-				var data:number[] = vo.fragmentData;
+				var data:Array<number> = vo.fragmentData;
 				data[index] = this._ambientR;
 				data[index + 1] = this._ambientG;
 				data[index + 2] = this._ambientB;

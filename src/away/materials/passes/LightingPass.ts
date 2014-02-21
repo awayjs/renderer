@@ -3,7 +3,7 @@
 module away.materials
 {
 	//import away3d.arcane;
-	//import away3d.cameras.Camera3D;
+	//import away3d.cameras.Camera;
 	//import away3d.core.base.IRenderable;
 	//import away3d.base.StageGL;
 	//import away3d.lights.DirectionalLight;
@@ -32,7 +32,7 @@ module away.materials
 		private _includeCasters:boolean = true;
 		private _tangentSpace:boolean;
 		private _lightVertexConstantIndex:number;
-		private _inverseSceneMatrix:number[] = new Array<number>();
+		private _inverseSceneMatrix:Array<number> = new Array<number>();
 
 		private _directionalLightsOffset:number;
 		private _pointLightsOffset:number;
@@ -213,9 +213,9 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iRender(renderable:away.base.IRenderable, stageGL:away.base.StageGL, camera:away.cameras.Camera3D, viewProjection:away.geom.Matrix3D)
+		public iRender(renderable:away.pool.RenderableBase, stageGL:away.base.StageGL, camera:away.entities.Camera, viewProjection:away.geom.Matrix3D)
 		{
-			renderable.inverseSceneTransform.copyRawDataTo(this._inverseSceneMatrix);
+			renderable.sourceEntity.inverseSceneTransform.copyRawDataTo(this._inverseSceneMatrix);
 
 			if (this._tangentSpace && this._pCameraPositionIndex >= 0) {
 				var pos:away.geom.Vector3D = camera.scenePosition;
@@ -234,7 +234,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(stageGL:away.base.StageGL, camera:away.cameras.Camera3D)
+		public iActivate(stageGL:away.base.StageGL, camera:away.entities.Camera)
 		{
 			super.iActivate(stageGL, camera);
 
@@ -434,7 +434,7 @@ module away.materials
 			var context:away.gl.ContextGL = stageGL.contextGL;
 			var probe:away.lights.LightProbe;
 			var lightProbes:Array<away.lights.LightProbe> = this._pLightPicker.lightProbes;
-			var weights:number[] = this._pLightPicker.lightProbeWeights;
+			var weights:Array<number> = this._pLightPicker.lightProbeWeights;
 			var len:number = lightProbes.length - this._lightProbesOffset;
 			var addDiff:boolean = this.usesProbesForDiffuse();
 			var addSpec:boolean = <boolean> (this._pMethodSetup._iSpecularMethod && this.usesProbesForSpecular());

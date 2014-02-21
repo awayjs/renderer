@@ -1,7 +1,7 @@
 ﻿///<reference path="../_definitions.ts"/>
 module away.primitives
 {
-	//import flash.geom.Vector3D;
+	//TODO - convert to geometry primitive
 
 	/**
 	 * A WireframePlane primitive mesh.
@@ -12,8 +12,6 @@ module away.primitives
 		public static ORIENTATION_XY:string = "xy";
 		public static ORIENTATION_XZ:string = "xz";
 
-		private _width:number;
-		private _height:number;
 		private _segmentsW:number;
 		private _segmentsH:number;
 		private _orientation:string;
@@ -32,11 +30,12 @@ module away.primitives
 		{
 			super(color, thickness);
 
-			this._width = width;
-			this._height = height;
 			this._segmentsW = segmentsW;
 			this._segmentsH = segmentsH;
 			this._orientation = orientation;
+
+			this.width = width;
+			this.height = height;
 		}
 
 		/**
@@ -50,36 +49,6 @@ module away.primitives
 		public set orientation(value:string)
 		{
 			this._orientation = value;
-			this.pInvalidateGeometry();
-		}
-
-		/**
-		 * The size of the cube along its X-axis.
-		 */
-		public get width():number
-		{
-			return this._width;
-		}
-
-		public set width(value:number)
-		{
-			this._width = value;
-			this.pInvalidateGeometry();
-		}
-
-		/**
-		 * The size of the cube along its Y-axis.
-		 */
-		public get height():number
-		{
-			return this._height;
-		}
-
-		public set height(value:number)
-		{
-			if (value <= 0)
-				throw new Error("Value needs to be greater than 0");
-			this._height = value;
 			this.pInvalidateGeometry();
 		}
 
@@ -120,8 +89,8 @@ module away.primitives
 		{
 			var v0:away.geom.Vector3D = new away.geom.Vector3D();
 			var v1:away.geom.Vector3D = new away.geom.Vector3D();
-			var hw:number = this._width*.5;
-			var hh:number = this._height*.5;
+			var hw:number = 0.5;
+			var hh:number = 0.5;
 			var index:number = 0;
 			var ws:number, hs:number;
 
@@ -133,7 +102,7 @@ module away.primitives
 				v1.z = 0;
 
 				for (ws = 0; ws <= this._segmentsW; ++ws) {
-					v0.x = v1.x = (ws/this._segmentsW - .5)*this._width;
+					v0.x = v1.x = (ws/this._segmentsW - .5);
 					this.pUpdateOrAddSegment(index++, v0, v1);
 				}
 
@@ -141,7 +110,7 @@ module away.primitives
 				v1.x = hw;
 
 				for (hs = 0; hs <= this._segmentsH; ++hs) {
-					v0.y = v1.y = (hs/this._segmentsH - .5)*this._height;
+					v0.y = v1.y = (hs/this._segmentsH - .5);
 					this.pUpdateOrAddSegment(index++, v0, v1);
 				}
 			} else if (this._orientation == WireframePlane.ORIENTATION_XZ) {
@@ -151,7 +120,7 @@ module away.primitives
 				v1.y = 0;
 
 				for (ws = 0; ws <= this._segmentsW; ++ws) {
-					v0.x = v1.x = (ws/this._segmentsW - .5)*this._width;
+					v0.x = v1.x = (ws/this._segmentsW - .5);
 					this.pUpdateOrAddSegment(index++, v0, v1);
 				}
 
@@ -159,7 +128,7 @@ module away.primitives
 				v1.x = hw;
 
 				for (hs = 0; hs <= this._segmentsH; ++hs) {
-					v0.z = v1.z = (hs/this._segmentsH - .5)*this._height;
+					v0.z = v1.z = (hs/this._segmentsH - .5);
 					this.pUpdateOrAddSegment(index++, v0, v1);
 				}
 			} else if (this._orientation == WireframePlane.ORIENTATION_YZ) {
@@ -169,7 +138,7 @@ module away.primitives
 				v1.x = 0;
 
 				for (ws = 0; ws <= this._segmentsW; ++ws) {
-					v0.z = v1.z = (ws/this._segmentsW - .5)*this._width;
+					v0.z = v1.z = (ws/this._segmentsW - .5);
 					this.pUpdateOrAddSegment(index++, v0, v1);
 				}
 
@@ -177,11 +146,10 @@ module away.primitives
 				v1.z = -hw;
 
 				for (hs = 0; hs <= this._segmentsH; ++hs) {
-					v0.y = v1.y = (hs/this._segmentsH - .5)*this._height;
+					v0.y = v1.y = (hs/this._segmentsH - .5);
 					this.pUpdateOrAddSegment(index++, v0, v1);
 				}
 			}
 		}
-
 	}
 }

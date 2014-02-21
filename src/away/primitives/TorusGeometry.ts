@@ -17,8 +17,8 @@ module away.primitives
 		private _segmentsR:number;
 		private _segmentsT:number;
 		private _yUp:boolean;
-		private _rawVertexData:number[];
-		private _rawIndices:number[] /*uint*/;
+		private _rawVertexData:Array<number>;
+		private _rawIndices:Array<number> /*uint*/;
 		private _nextVertexIndex:number = 0;
 		private _currentIndex:number = 0;
 		private _currentTriangleIndex:number = 0;
@@ -166,7 +166,7 @@ module away.primitives
 		{
 
 			var i:number, j:number;
-			var data:number[];
+			var data:Array<number>;
 			var stride:number = target.UVStride;
 			var offset:number = target.UVOffset;
 			var skip:number = target.UVStride - 2;

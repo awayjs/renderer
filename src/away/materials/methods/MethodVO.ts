@@ -8,8 +8,8 @@ module away.materials
 	 */
 	export class MethodVO
 	{
-		public vertexData:number[];
-		public fragmentData:number[];
+		public vertexData:Array<number>;
+		public fragmentData:Array<number>;
 
 		// public register indices
 		public texturesIndex:number;

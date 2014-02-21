@@ -231,7 +231,7 @@ module away.parsers
 
 				// Finalize any remaining objects before ending.
 				for (name in this._unfinalized_objects) {
-					var obj:away.containers.ObjectContainer3D;
+					var obj:away.containers.DisplayObjectContainer;
 					obj = this.constructObject(this._unfinalized_objects[name]);
 					if (obj)
 						this._pFinalizeAsset(obj, name);
@@ -427,7 +427,7 @@ module away.parsers
 		private parseObjectAnimation(end:number):void
 		{
 			var vo:ObjectVO;
-			var obj:away.containers.ObjectContainer3D;
+			var obj:away.containers.DisplayObjectContainer;
 			var pivot:away.geom.Vector3D;
 			var name:string;
 			var hier:number /*uint*/;
@@ -475,7 +475,7 @@ module away.parsers
 			}
 		}
 
-		private constructObject(obj:ObjectVO, pivot:away.geom.Vector3D = null):away.containers.ObjectContainer3D
+		private constructObject(obj:ObjectVO, pivot:away.geom.Vector3D = null):away.containers.DisplayObjectContainer
 		{
 			if (obj.type == away.library.AssetType.MESH) {
 				var i:number /*uint*/;
@@ -576,7 +576,7 @@ module away.parsers
 
 				// Build mesh and return it
 				mesh = new away.entities.Mesh(geom, mat);
-				mesh.transform = new away.geom.Matrix3D(obj.transform);
+				mesh.transform.matrix3D = new away.geom.Matrix3D(obj.transform);
 				return mesh;
 			}
 

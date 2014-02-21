@@ -9,8 +9,8 @@ module away.materials
 	import StageGL									= away.base.StageGL;
 	import Delegate									= away.utils.Delegate;
 
-	import IRenderable								= away.base.IRenderable;
-	import Camera3D									= away.cameras.Camera3D;
+	import IRenderable								= away.pool.RenderableBase;
+	import Camera									= away.entities.Camera;
 	import ShadingMethodEvent						= away.events.ShadingMethodEvent;
 
 	/**
@@ -593,7 +593,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(stageGL:StageGL, camera:Camera3D)
+		public iActivate(stageGL:StageGL, camera:Camera)
 		{
 			super.iActivate(stageGL, camera);
 
@@ -614,25 +614,25 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iRender(renderable:IRenderable, stageGL:StageGL, camera:Camera3D, viewProjection:Matrix3D)
+		public iRender(renderable:IRenderable, stageGL:StageGL, camera:Camera, viewProjection:Matrix3D)
 		{
 			var i:number;
 			var context:away.gl.ContextGL = stageGL.contextGL;
 			if (this._uvBufferIndex >= 0)
-				renderable.activateUVBuffer(this._uvBufferIndex, stageGL);
+				renderable.subGeometry.activateUVBuffer(this._uvBufferIndex, stageGL);
 
 			if (this._secondaryUVBufferIndex >= 0)
-				renderable.activateSecondaryUVBuffer(this._secondaryUVBufferIndex, stageGL);
+				renderable.subGeometry.activateSecondaryUVBuffer(this._secondaryUVBufferIndex, stageGL);
 
 			if (this._normalBufferIndex >= 0)
-				renderable.activateVertexNormalBuffer(this._normalBufferIndex, stageGL);
+				renderable.subGeometry.activateVertexNormalBuffer(this._normalBufferIndex, stageGL);
 
 			if (this._tangentBufferIndex >= 0)
-				renderable.activateVertexTangentBuffer(this._tangentBufferIndex, stageGL);
+				renderable.subGeometry.activateVertexTangentBuffer(this._tangentBufferIndex, stageGL);
 
 
 			if (this._animateUVs) {
-				var uvTransform:Matrix = renderable.uvTransform;
+				var uvTransform:Matrix = renderable.materialOwner.uvTransform.matrix;
 
 				if (uvTransform) {
 					this._pVertexConstantData[this._uvTransformIndex] = uvTransform.a;
@@ -661,7 +661,7 @@ module away.materials
 
 			if (this._sceneMatrixIndex >= 0) {
 
-				renderable.getRenderSceneTransform(camera).copyRawDataTo(this._pVertexConstantData, this._sceneMatrixIndex, true);
+				renderable.sourceEntity.getRenderSceneTransform(camera).copyRawDataTo(this._pVertexConstantData, this._sceneMatrixIndex, true);
 				viewProjection.copyRawDataTo(this._pVertexConstantData, 0, true);
 
 				//this._pVertexConstantData = renderable.getRenderSceneTransform(camera).copyRawDataTo( this._sceneMatrixIndex, true);
@@ -671,7 +671,7 @@ module away.materials
 			} else {
 				var matrix3D:Matrix3D = Matrix3DUtils.CALCULATION_MATRIX;
 
-				matrix3D.copyFrom(renderable.getRenderSceneTransform(camera));
+				matrix3D.copyFrom(renderable.sourceEntity.getRenderSceneTransform(camera));
 				matrix3D.append(viewProjection);
 
 				matrix3D.copyRawDataTo(this._pVertexConstantData, 0, true);
@@ -680,7 +680,7 @@ module away.materials
 			}
 
 			if (this._sceneNormalMatrixIndex >= 0) {
-				renderable.inverseSceneTransform.copyRawDataTo(this._pVertexConstantData, this._sceneNormalMatrixIndex, false);
+				renderable.sourceEntity.inverseSceneTransform.copyRawDataTo(this._pVertexConstantData, this._sceneNormalMatrixIndex, false);
 				//this._pVertexConstantData = renderable.inverseSceneTransform.copyRawDataTo(this._sceneNormalMatrixIndex, false);
 			}
 
@@ -716,8 +716,8 @@ module away.materials
 			context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 0, this._pVertexConstantData, this._pNumUsedVertexConstants);
 			context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.FRAGMENT, 0, this._pFragmentConstantData, this._pNumUsedFragmentConstants);
 
-			renderable.activateVertexBuffer(0, stageGL);
-			context.drawTriangles(renderable.getIndexBuffer(stageGL), 0, renderable.numTriangles);
+			renderable.subGeometry.activateVertexBuffer(0, stageGL);
+			context.drawTriangles(renderable.subGeometry.getIndexBuffer(stageGL), 0, renderable.subGeometry.numTriangles);
 		}
 
 		/**

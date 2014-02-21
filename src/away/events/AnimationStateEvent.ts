@@ -14,7 +14,7 @@ module away.events
 
 		public static TRANSITION_COMPLETE:string = "transitionComplete";
 
-		private _animator:away.animators.IAnimator;
+		private _animator:away.animators.AnimatorBase;
 		private _animationState:away.animators.IAnimationState;
 		private _animationNode:away.animators.AnimationNodeBase;
 
@@ -25,7 +25,7 @@ module away.events
 		 * @param animator The animation state object that is the subject of this event.
 		 * @param animationNode The animation node inside the animation state from which the event originated.
 		 */
-		constructor(type:string, animator:away.animators.IAnimator, animationState:away.animators.IAnimationState, animationNode:away.animators.AnimationNodeBase)
+		constructor(type:string, animator:away.animators.AnimatorBase, animationState:away.animators.IAnimationState, animationNode:away.animators.AnimationNodeBase)
 		{
 			super(type);
 
@@ -37,7 +37,7 @@ module away.events
 		/**
 		 * The animator object that is the subject of this event.
 		 */
-		public get animator():away.animators.IAnimator
+		public get animator():away.animators.AnimatorBase
 		{
 			return this._animator;
 		}

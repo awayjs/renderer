@@ -4,7 +4,7 @@ module away.materials
 {
 	import Delegate						= away.utils.Delegate;
 
-	import Camera3D						= away.cameras.Camera3D;
+	import Camera						= away.entities.Camera;
 	import StageGL						= away.base.StageGL;
 
 	/**
@@ -98,7 +98,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivateForDepth(stageGL:StageGL, camera:Camera3D, distanceBased:boolean = false)
+		public iActivateForDepth(stageGL:StageGL, camera:Camera, distanceBased:boolean = false)
 		{
 			if (distanceBased)
 				this._pDistancePass.alphaMask = this._diffuseMethod.texture;
@@ -516,7 +516,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivatePass(index:number, stageGL:StageGL, camera:Camera3D)
+		public iActivatePass(index:number, stageGL:StageGL, camera:Camera)
 		{
 			if (index == 0)
 				stageGL.contextGL.setBlendFactors(away.gl.ContextGLBlendFactor.ONE, away.gl.ContextGLBlendFactor.ZERO);

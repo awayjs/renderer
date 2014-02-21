@@ -6,7 +6,7 @@ module away.managers
 {
 	//import away3d.arcane;
 	//import away3d.containers.ObjectContainer3D;
-	//import away3d.containers.View3D;
+	//import away3d.containers.View;
 	//import away3d.core.pick.IPicker;
 	//import away3d.core.pick.PickingCollisionVO;
 	//import away3d.core.pick.PickingType;
@@ -23,15 +23,15 @@ module away.managers
 
 	/**
 	 * Mouse3DManager enforces a singleton pattern and is not intended to be instanced.
-	 * it provides a manager class for detecting 3D mouse hits on View3D objects and sending out 3D mouse events.
+	 * it provides a manager class for detecting 3D mouse hits on View objects and sending out 3D mouse events.
 	 */
 	export class Mouse3DManager
 	{
 		private static _view3Ds:Object;
-		private static _view3DLookup:away.containers.View3D[];
+		private static _view3DLookup:away.containers.View[];
 		private static _viewCount:number = 0;
 
-		private _activeView:away.containers.View3D;
+		private _activeView:away.containers.View;
 		private _updateDirty:boolean = true;
 		private _nullVector:away.geom.Vector3D = new away.geom.Vector3D();
 		public static _pCollidingObject:away.pick.PickingCollisionVO;//Protected
@@ -67,7 +67,7 @@ module away.managers
 
 			if (!Mouse3DManager._view3Ds) {
 				Mouse3DManager._view3Ds = new Object();
-				Mouse3DManager._view3DLookup = new Array<away.containers.View3D>();//Vector.<View3D>();
+				Mouse3DManager._view3DLookup = new Array<away.containers.View>();//Vector.<View>();
 			}
 
 		}
@@ -77,7 +77,7 @@ module away.managers
 		// ---------------------------------------------------------------------
 
 		// TODO: required dependency stageGL
-		public updateCollider(view:away.containers.View3D)
+		public updateCollider(view:away.containers.View)
 		{
 			throw new away.errors.PartialImplementationError('stageGL');
 			/*
@@ -106,7 +106,7 @@ module away.managers
 		public fireMouseEvents()
 		{
 
-			throw new away.errors.PartialImplementationError('View3D().layeredView')
+			throw new away.errors.PartialImplementationError('View().layeredView')
 
 			/*
 
@@ -124,7 +124,7 @@ module away.managers
 
 			 // Get the top-most view colliding object
 			 var distance:number = Infinity;
-			 var view:away.containers.View3D;
+			 var view:away.containers.View;
 
 			 for (var v:number = Mouse3DManager._viewCount - 1; v >= 0; v--)
 			 {
@@ -207,7 +207,7 @@ module away.managers
 			 //*/
 		}
 
-		public addViewLayer(view:away.containers.View3D)
+		public addViewLayer(view:away.containers.View)
 		{
 			throw new away.errors.PartialImplementationError('StageGL, Stage, DisplayObjectContainer ( as3 / native ) ');
 
@@ -228,7 +228,7 @@ module away.managers
 
 		}
 
-		public enableMouseListeners(view:away.containers.View3D)
+		public enableMouseListeners(view:away.containers.View)
 		{
 			throw new away.errors.PartialImplementationError('MouseEvent ( as3 / native ) as3 <> JS Conversion');
 
@@ -244,7 +244,7 @@ module away.managers
 			 */
 		}
 
-		public disableMouseListeners(view:away.containers.View3D)
+		public disableMouseListeners(view:away.containers.View)
 		{
 			throw new away.errors.PartialImplementationError('MouseEvent ( as3 / native ) as3 <> JS Conversion');
 
@@ -345,7 +345,7 @@ module away.managers
 
 		}
 
-		private hasKey(view:away.containers.View3D):boolean
+		private hasKey(view:away.containers.View):boolean
 		{
 
 			for (var v in Mouse3DManager._view3Ds) {
@@ -431,8 +431,8 @@ module away.managers
 		{
 
 			/*
-			 this._activeView = <away.containers.View3D> event.target ;//as View3D); // TODO: target was changed from currentTarget ( which might cause a bug ) .
-			 //_activeView = (event.currentTarget as View3D);
+			 this._activeView = <away.containers.View> event.target ;//as View); // TODO: target was changed from currentTarget ( which might cause a bug ) .
+			 //_activeView = (event.currentTarget as View);
 
 			 if ( Mouse3DManager._pCollidingObject && Mouse3DManager._previousCollidingObject !=  Mouse3DManager._pCollidingObject)
 			 {
@@ -486,7 +486,7 @@ module away.managers
 		private onMouseDown(event:MouseEvent)
 		{
 			/*
-			 this._activeView = <away.containers.View3D> event.target ;//as View3D); // TODO: target was changed from currentTarget ( which might cause a bug ) .
+			 this._activeView = <away.containers.View> event.target ;//as View); // TODO: target was changed from currentTarget ( which might cause a bug ) .
 
 			 this.updateCollider(this._activeView); // ensures collision check is done with correct mouse coordinates on mobile
 			 if ( Mouse3DManager._pCollidingObject)

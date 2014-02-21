@@ -40,16 +40,11 @@ module away.primitives
 		 */
 		public get subGeometries():away.base.ISubGeometry[]
 		{
-			if (this._geomDirty) {
-
+			if (this._geomDirty)
 				this.updateGeometry();
 
-			}
-
-			if (this._uvDirty) {
-
+			if (this._uvDirty)
 				this.updateUVs();
-			}
 
 
 			return super.getSubGeometries();
@@ -60,16 +55,11 @@ module away.primitives
 		 */
 		public clone():away.base.Geometry
 		{
-			if (this._geomDirty) {
-
+			if (this._geomDirty)
 				this.updateGeometry();
 
-			}
-
-			if (this._uvDirty) {
+			if (this._uvDirty)
 				this.updateUVs();
-			}
-
 
 			return super.clone();
 		}
@@ -79,10 +69,8 @@ module away.primitives
 		 */
 		public scale(scale:number)
 		{
-			if (this._geomDirty) {
+			if (this._geomDirty)
 				this.updateGeometry();
-			}
-
 
 			super.scale(scale);
 		}
@@ -92,11 +80,8 @@ module away.primitives
 		 */
 		public scaleUV(scaleU:number = 1, scaleV:number = 1)
 		{
-			if (this._uvDirty) {
-
+			if (this._uvDirty)
 				this.updateUVs();
-
-			}
 
 
 			super.scaleUV(scaleU, scaleV);
@@ -107,11 +92,8 @@ module away.primitives
 		 */
 		public applyTransformation(transform:away.geom.Matrix3D)
 		{
-			if (this._geomDirty) {
-
+			if (this._geomDirty)
 				this.updateGeometry();
-
-			}
 
 			super.applyTransformation(transform);
 
@@ -171,18 +153,11 @@ module away.primitives
 
 		public iValidate()
 		{
-			if (this._geomDirty) {
-
+			if (this._geomDirty)
 				this.updateGeometry();
 
-			}
-
-			if (this._uvDirty) {
-
+			if (this._uvDirty)
 				this.updateUVs();
-
-			}
-
 		}
 	}
 }

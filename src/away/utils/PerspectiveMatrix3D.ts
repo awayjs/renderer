@@ -4,7 +4,7 @@ module away.utils
 {
 	export class PerspectiveMatrix3D extends away.geom.Matrix3D
 	{
-		constructor(v:number[] = null)
+		constructor(v:Array<number> = null)
 		{
 			super(v);
 		}

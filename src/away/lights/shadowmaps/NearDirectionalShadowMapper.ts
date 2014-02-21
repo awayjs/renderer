@@ -2,7 +2,7 @@
 
 module away.lights
 {
-	import Camera3D = away.cameras.Camera3D;
+	import Camera = away.entities.Camera;
 
 	export class NearDirectionalShadowMapper extends DirectionalShadowMapper
 	{
@@ -31,9 +31,9 @@ module away.lights
 			this._coverageRatio = value;
 		}
 
-		public pUpdateDepthProjection(viewCamera:Camera3D)
+		public pUpdateDepthProjection(viewCamera:Camera)
 		{
-			var corners:Array<number> = viewCamera.lens.frustumCorners;
+			var corners:Array<number> = viewCamera.projection.frustumCorners;
 
 			for (var i:number /*int*/ = 0; i < 12; ++i) {
 				var v:number = corners[i];
@@ -42,7 +42,7 @@ module away.lights
 			}
 
 			this.pUpdateProjectionFromFrustumCorners(viewCamera, this._pLocalFrustum, this._pMatrix);
-			this._pOverallDepthLens.matrix = this._pMatrix;
+			this._pOverallDepthProjection.matrix = this._pMatrix;
 		}
 	}
 }
