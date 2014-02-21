@@ -20,7 +20,7 @@ module away.pick
 
 		}
 
-		public _pPetCollisionNormal(indexData:number[] /*uint*/, vertexData:number[], triangleIndex:number):away.geom.Vector3D // PROTECTED
+		public _pPetCollisionNormal(indexData:Array<number> /*uint*/, vertexData:Array<number>, triangleIndex:number):away.geom.Vector3D // PROTECTED
 		{
 			var normal:away.geom.Vector3D = new away.geom.Vector3D();
 			var i0:number = indexData[ triangleIndex ]*3;
@@ -36,7 +36,7 @@ module away.pick
 			return normal;
 		}
 
-		public _pGetCollisionUV(indexData:number[] /*uint*/, uvData:number[], triangleIndex:number, v:number, w:number, u:number, uvOffset:number, uvStride:number):away.geom.Point // PROTECTED
+		public _pGetCollisionUV(indexData:Array<number> /*uint*/, uvData:Array<number>, triangleIndex:number, v:number, w:number, u:number, uvOffset:number, uvStride:number):away.geom.Point // PROTECTED
 		{
 			var uv:away.geom.Point = new away.geom.Point();
 			var uIndex:number = indexData[ triangleIndex ]*uvStride + uvOffset;
@@ -50,19 +50,9 @@ module away.pick
 			return uv;
 		}
 
-		public pGetMeshSubGeometryIndex(subGeometry:away.base.SubGeometry):number
+		public testRenderableCollision(renderable:away.pool.RenderableBase, pickingCollisionVO:PickingCollisionVO, shortestCollisionDistance:number):boolean
 		{
-
-			away.Debug.throwPIR('away.pick.PickingColliderBase', 'pGetMeshSubMeshIndex', 'GeometryUtils.getMeshSubMeshIndex');
-
-			return away.utils.GeometryUtils.getMeshSubGeometryIndex(subGeometry);
-		}
-		public pGetMeshSubMeshIndex(subMesh:away.base.SubMesh):number
-		{
-
-			away.Debug.throwPIR('away.pick.PickingColliderBase', 'pGetMeshSubMeshIndex', 'GeometryUtils.getMeshSubMeshIndex');
-
-			return away.utils.GeometryUtils.getMeshSubMeshIndex(subMesh);
+			throw new away.errors.AbstractMethodError();
 		}
 
 		/**

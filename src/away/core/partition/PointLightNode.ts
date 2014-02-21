@@ -10,28 +10,32 @@ module away.partition
 	 */
 	export class PointLightNode extends EntityNode
 	{
+		private _pointLight:away.entities.IEntity;
 
-		private _light:away.lights.PointLight;
-
-		constructor(light:away.lights.PointLight)
+		/**
+		 *
+		 * @param pointLight
+		 */
+		constructor(pointLight:away.entities.IEntity)
 		{
-			super(light);
-			this._light = light;
+			super(pointLight);
+
+			this._pointLight = pointLight;
 		}
 
-		public get light():away.lights.PointLight
+		/**
+		 * @inheritDoc
+		 */
+		public acceptTraverser(traverser:away.traverse.ICollector)
 		{
-			return this._light;
+			//do not run frustum checks on lights
+			traverser.applyEntity(this._pointLight);
 		}
 
-		public acceptTraverser(traverser:away.traverse.PartitionTraverser)
-		{
-			if (traverser.enterNode(<NodeBase> this)) {
-				super.acceptTraverser(traverser);
-				traverser.applyPointLight(this._light);
-			}
-		}
-
+		/**
+		 *
+		 * @returns {boolean}
+		 */
 		public isCastingShadow():boolean
 		{
 			return false;

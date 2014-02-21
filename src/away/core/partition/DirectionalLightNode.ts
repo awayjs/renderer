@@ -10,29 +10,32 @@ module away.partition
 	 */
 	export class DirectionalLightNode extends EntityNode
 	{
+		private _directionalLight:away.entities.IEntity;
 
-		private _light:away.lights.DirectionalLight;
-
-		constructor(light:away.lights.DirectionalLight)
+		/**
+		 *
+		 * @param directionalLight
+		 */
+		constructor(directionalLight:away.entities.IEntity)
 		{
-			super(light);
-			this._light = light;
+			super(directionalLight);
+
+			this._directionalLight = directionalLight;
 		}
 
-		public get light():away.lights.DirectionalLight
+		/**
+		 * @inheritDoc
+		 */
+		public acceptTraverser(traverser:away.traverse.ICollector)
 		{
-			return this._light;
+			//do not run frustum checks on lights
+			traverser.applyEntity(this._directionalLight);
 		}
 
-		//@override
-		public acceptTraverser(traverser:away.traverse.PartitionTraverser)
-		{
-			if (traverser.enterNode(this)) {
-				super.acceptTraverser(traverser);
-				traverser.applyDirectionalLight(this._light);
-			}
-		}
-
+		/**
+		 *
+		 * @returns {boolean}
+		 */
 		public isCastingShadow():boolean
 		{
 			return false;

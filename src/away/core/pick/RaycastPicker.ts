@@ -19,7 +19,7 @@ module away.pick
 		private _ignoredEntities = [];
 		private _onlyMouseEnabled:boolean = true;
 
-		private _entities:away.entities.Entity[];//Vector.<Entity>;
+		private _entities:Array<away.entities.IEntity>;
 		private _numEntities:number = 0;
 		private _hasCollisions:boolean;
 
@@ -47,21 +47,20 @@ module away.pick
 			this._raycastCollector = new away.traverse.RaycastCollector();
 
 			this._findClosestCollision = findClosestCollision;
-			this._entities = new Array<away.entities.Entity>();//Vector.<Entity>();
+			this._entities = new Array<away.entities.IEntity>();
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-
-		public getViewCollision(x:number, y:number, view:away.containers.View3D):PickingCollisionVO
+		public getViewCollision(x:number, y:number, view:away.containers.View):PickingCollisionVO
 		{
 
 			//cast ray through the collection of entities on the view
-			var collector:away.traverse.EntityCollector = view.iEntityCollector;
+			var collector:away.traverse.EntityCollector = <away.traverse.EntityCollector> view.iEntityCollector;
 			//var i:number;
 
-			if (collector.numMouseEnableds == 0)
+			if (collector.numInteractiveEntities == 0)
 				return null;
 
 			//update ray
@@ -71,8 +70,8 @@ module away.pick
 
 			// Perform ray-bounds collision checks.
 			this._numEntities = 0;
-			var node:away.data.EntityListItem = collector.entityHead;
-			var entity:away.entities.Entity;
+			var node:away.pool.EntityListItem = collector.entityHead;
+			var entity:away.entities.IEntity;
 			while (node) {
 				entity = node.entity;
 
@@ -82,7 +81,7 @@ module away.pick
 				}
 
 				// If collision detected, store in new data set.
-				if (entity._iIsVisible && entity.isIntersectingRay(rayPosition, rayDirection))
+				if (entity._iIsVisible() && entity.isIntersectingRay(rayPosition, rayDirection))
 					this._entities[this._numEntities++] = entity;
 
 				node = node.next;
@@ -92,7 +91,7 @@ module away.pick
 			if (!this._numEntities)
 				return null;
 
-			return this.getPickingCollisionVO();
+			return this.getPickingCollisionVO(collector);
 
 		}
 
@@ -102,7 +101,7 @@ module away.pick
 		 */
 
 			//* TODO Implement Dependency: EntityListItem, EntityCollector, RaycastCollector
-		public getSceneCollision(position:away.geom.Vector3D, direction:away.geom.Vector3D, scene:away.containers.Scene3D):PickingCollisionVO
+		public getSceneCollision(position:away.geom.Vector3D, direction:away.geom.Vector3D, scene:away.containers.Scene):PickingCollisionVO
 		{
 
 			//clear collector
@@ -116,8 +115,8 @@ module away.pick
 			scene.traversePartitions(this._raycastCollector);
 
 			this._numEntities = 0;
-			var node:away.data.EntityListItem = this._raycastCollector.entityHead;
-			var entity:away.entities.Entity;
+			var node:away.pool.EntityListItem = this._raycastCollector.entityHead;
+			var entity:away.entities.IEntity;
 
 			while (node) {
 				entity = node.entity;
@@ -136,55 +135,38 @@ module away.pick
 			if (!this._numEntities)
 				return null;
 
-			return this.getPickingCollisionVO();
+			return this.getPickingCollisionVO(this._raycastCollector);
 
 		}
 
-		public getEntityCollision(position:away.geom.Vector3D, direction:away.geom.Vector3D, entities:away.entities.Entity[]):PickingCollisionVO
-		{
-
-
-			position = position; // TODO: remove ?
-			direction = direction;
-
-			this._numEntities = 0;
-
-			var entity:away.entities.Entity;
-			var l:number = entities.length;
-
-
-			for (var c:number = 0; c < l; c++) {
-
-				entity = entities[c];
-
-				if (entity.isIntersectingRay(position, direction)) {
-
-					this._entities[this._numEntities++] = entity;
-
-				}
-
-
-			}
-
-			return this.getPickingCollisionVO();
-
-		}
+//		public getEntityCollision(position:away.geom.Vector3D, direction:away.geom.Vector3D, entities:Array<away.entities.IEntity>):PickingCollisionVO
+//		{
+//			this._numEntities = 0;
+//
+//			var entity:away.entities.IEntity;
+//			var l:number = entities.length;
+//
+//			for (var c:number = 0; c < l; c++) {
+//				entity = entities[c];
+//
+//				if (entity.isIntersectingRay(position, direction))
+//					this._entities[this._numEntities++] = entity;
+//			}
+//
+//			return this.getPickingCollisionVO(this._raycastCollector);
+//		}
 
 		public setIgnoreList(entities)
 		{
 			this._ignoredEntities = entities;
 		}
 
-		private isIgnored(entity:away.entities.Entity):boolean
+		private isIgnored(entity:away.entities.IEntity):boolean
 		{
-			if (this._onlyMouseEnabled && (!entity._iAncestorsAllowMouseEnabled || !entity.mouseEnabled)) {
-
+			if (this._onlyMouseEnabled && entity._iIsMouseEnabled)
 				return true;
 
-			}
-
-
-			var ignoredEntity:away.entities.Entity;
+			var ignoredEntity:away.entities.IEntity;
 
 			var l:number = this._ignoredEntities.length;
 
@@ -192,24 +174,19 @@ module away.pick
 
 				ignoredEntity = this._ignoredEntities[ c ];
 
-				if (ignoredEntity == entity) {
-
+				if (ignoredEntity == entity)
 					return true;
-
-				}
-
 			}
 
 			return false;
-
 		}
 
-		private sortOnNearT(entity1:away.entities.Entity, entity2:away.entities.Entity):number
+		private sortOnNearT(entity1:away.entities.IEntity, entity2:away.entities.IEntity):number
 		{
-			return entity1.pickingCollisionVO.rayEntryDistance > entity2.pickingCollisionVO.rayEntryDistance? 1 : -1;
+			return entity1._iPickingCollisionVO.rayEntryDistance > entity2._iPickingCollisionVO.rayEntryDistance? 1 : -1;
 		}
 
-		private getPickingCollisionVO():PickingCollisionVO
+		private getPickingCollisionVO(collector:away.traverse.ICollector):PickingCollisionVO
 		{
 			// trim before sorting
 			this._entities.length = this._numEntities;
@@ -225,7 +202,7 @@ module away.pick
 			var shortestCollisionDistance:number = Number.MAX_VALUE;
 			var bestCollisionVO:PickingCollisionVO;
 			var pickingCollisionVO:PickingCollisionVO;
-			var entity:away.entities.Entity;
+			var entity:away.entities.IEntity;
 			var i:number;
 
 			for (i = 0; i < this._numEntities; ++i) {
@@ -233,7 +210,7 @@ module away.pick
 				pickingCollisionVO = entity._iPickingCollisionVO;
 				if (entity.pickingCollider) {
 					// If a collision exists, update the collision data and stop all checks.
-					if ((bestCollisionVO == null || pickingCollisionVO.rayEntryDistance < bestCollisionVO.rayEntryDistance) && entity.iCollidesBefore(shortestCollisionDistance, this._findClosestCollision)) {
+					if ((bestCollisionVO == null || pickingCollisionVO.rayEntryDistance < bestCollisionVO.rayEntryDistance) && collector._iCollidesBefore(entity, shortestCollisionDistance, this._findClosestCollision)) {
 						shortestCollisionDistance = pickingCollisionVO.rayEntryDistance;
 						bestCollisionVO = pickingCollisionVO;
 						if (!this._findClosestCollision) {

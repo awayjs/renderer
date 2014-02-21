@@ -51,7 +51,7 @@ module away.base
 		/**
 		 * Unique identifier for a subgeometry
 		 */
-		uniqueId:number;//GET
+		id:string;//GET
 
 		/**
 		 * Assigns the attribute stream for vertex positions.
@@ -99,17 +99,17 @@ module away.base
 		/**
 		 * Retrieves the object's vertices as a Number array.
 		 */
-		vertexData:number[];//GET
+		vertexData:Array<number>;//GET
 
 		/**
 		 * Retrieves the object's normals as a Number array.
 		 */
-		vertexNormalData:number[];//GET
+		vertexNormalData:Array<number>;//GET
 
 		/**
 		 * Retrieves the object's tangents as a Number array.
 		 */
-		vertexTangentData:number[];//GET
+		vertexTangentData:Array<number>;//GET
 
 		/**
 		 * The offset into vertexData where the vertices are placed
@@ -139,12 +139,12 @@ module away.base
 		/**
 		 * Retrieves the object's indices as a uint array.
 		 */
-		indexData:number[] /*uint*/;//GET
+		indexData:Array<number> /*uint*/;//GET
 
 		/**
 		 * Retrieves the object's uvs as a Number array.
 		 */
-		UVData:number[];//GET
+		UVData:Array<number>;//GET
 
 		applyTransformation(transform:away.geom.Matrix3D);
 
@@ -162,7 +162,7 @@ module away.base
 
 		parentGeometry:away.base.Geometry;//GET / SET
 
-		faceNormals:number[];//GET
+		faceNormals:Array<number>;//GET
 
 		cloneWithSeperateBuffers():away.base.SubGeometry;
 
@@ -170,8 +170,8 @@ module away.base
 
 		autoDeriveVertexTangents:boolean;//GET / SET
 
-		fromVectors(vertices:number[], uvs:number[], normals:number[], tangents:number[]);
+		fromVectors(vertices:Array<number>, uvs:Array<number>, normals:Array<number>, tangents:Array<number>);
 
-		vertexPositionData:number[];//GET
+		vertexPositionData:Array<number>;//GET
 	}
 }

@@ -10,15 +10,15 @@ module away.base
 	 */
 	export class CompactSubGeometry extends SubGeometryBase implements ISubGeometry
 	{
-		public _pVertexDataInvalid:boolean[] = Array<boolean>(8);//new Vector.<Boolean>(8, true);
-		private _vertexBuffer:away.gl.VertexBuffer[] = new Array<away.gl.VertexBuffer>(8);//Vector.<VertexBuffer> = new Vector.<VertexBuffer>(8);
-		private _bufferContext:away.gl.ContextGL[] = new Array<away.gl.ContextGL>(8);//Vector.<ContextGL> = new Vector.<ContextGL>(8);
+		public _pVertexDataInvalid:boolean[] = Array<boolean>(8);
+		private _vertexBuffer:away.gl.VertexBuffer[] = new Array<away.gl.VertexBuffer>(8);
+		private _bufferContext:away.gl.ContextGL[] = new Array<away.gl.ContextGL>(8);
 		public _pNumVertices:number;
 		private _contextIndex:number;
 		public _pActiveBuffer:away.gl.VertexBuffer;
 		private _activeContext:away.gl.ContextGL;
 		public _pActiveDataInvalid:boolean;
-		private _isolatedVertexPositionData:number[];
+		private _isolatedVertexPositionData:Array<number>;
 		private _isolatedVertexPositionDataDirty:boolean;
 
 		constructor()
@@ -42,7 +42,7 @@ module away.base
 		 * 9 - 10: U V
 		 * 11 - 12: Secondary U V
 		 */
-		public updateData(data:number[])
+		public updateData(data:Array<number>)
 		{
 			if (this._autoDeriveVertexNormals) {
 				this._vertexNormalsDirty = true;
@@ -207,7 +207,7 @@ module away.base
 			this._activeContext = this._bufferContext[contextIndex];
 		}
 
-		public get vertexData():number[]
+		public get vertexData():Array<number>
 		{
 			if (this._autoDeriveVertexNormals && this._vertexNormalsDirty) {
 				this._vertexData = this.pUpdateVertexNormals(this._vertexData);
@@ -224,13 +224,13 @@ module away.base
 			return this._vertexData;
 		}
 
-		public pUpdateVertexNormals(target:number[]):number[]
+		public pUpdateVertexNormals(target:Array<number>):Array<number>
 		{
 			this.pInvalidateBuffers(this._pVertexDataInvalid);
 			return super.pUpdateVertexNormals(target);
 		}
 
-		public pUpdateVertexTangents(target:number[]):number[]
+		public pUpdateVertexTangents(target:Array<number>):Array<number>
 		{
 			if (this._vertexNormalsDirty) {
 				this._vertexData = this.pUpdateVertexNormals(this._vertexData);
@@ -242,7 +242,7 @@ module away.base
 
 		}
 
-		public get vertexNormalData():number[]
+		public get vertexNormalData():Array<number>
 		{
 			if (this._autoDeriveVertexNormals && this._vertexNormalsDirty) {
 				this._vertexData = this.pUpdateVertexNormals(this._vertexData);
@@ -252,7 +252,7 @@ module away.base
 
 		}
 
-		public get vertexTangentData():number[]
+		public get vertexTangentData():Array<number>
 		{
 			if (this._autoDeriveVertexTangents && this._vertexTangentsDirty) {
 				this._vertexData = this.pUpdateVertexTangents(this._vertexData);
@@ -261,7 +261,7 @@ module away.base
 			return this._vertexData;
 		}
 
-		public get UVData():number[]
+		public get UVData():Array<number>
 		{
 			if (this._uvsDirty && this._autoGenerateUVs) {
 				this._vertexData = this.pUpdateDummyUVs(this._vertexData);
@@ -362,7 +362,7 @@ module away.base
 			this._vertexBuffer = null;
 		}
 
-		public pDisposeVertexBuffers(buffers:away.gl.VertexBuffer[])
+		public pDisposeVertexBuffers(buffers:Array<away.gl.VertexBuffer>)
 		{
 
 			super.pDisposeVertexBuffers(buffers);
@@ -370,7 +370,7 @@ module away.base
 
 		}
 
-		public pInvalidateBuffers(invalid:boolean[])
+		public pInvalidateBuffers(invalid:Array<boolean>)
 		{
 			super.pInvalidateBuffers(invalid);
 			this._pActiveDataInvalid = true;
@@ -400,7 +400,7 @@ module away.base
 
 		}
 
-		public get vertexPositionData():number[]
+		public get vertexPositionData():Array<number>
 		{
 			if (this._isolatedVertexPositionDataDirty || !this._isolatedVertexPositionData) {
 				this._isolatedVertexPositionData = this.stripBuffer(0, 3);
@@ -411,7 +411,7 @@ module away.base
 
 		}
 
-		public get strippedUVData():number[]
+		public get strippedUVData():Array<number>
 		{
 			return this.stripBuffer(9, 2);
 		}
@@ -425,9 +425,9 @@ module away.base
 		 * - stripBuffer(9, 2): return only the uv's
 		 * - stripBuffer(11, 2): return only the secondary uv's
 		 */
-		public stripBuffer(offset:number, numEntries:number):number[]
+		public stripBuffer(offset:number, numEntries:number):Array<number>
 		{
-			var data:number[] = new Array<number>(this._pNumVertices*numEntries);// Vector.<Number>(_pNumVertices*numEntries);
+			var data:number[] = new Array<number>(this._pNumVertices*numEntries);
 			var i:number = 0;
 			var j:number = offset;
 			var skip:number = 13 - numEntries;
@@ -445,7 +445,7 @@ module away.base
 
 		}
 
-		public fromVectors(verts:number[], uvs:number[], normals:number[], tangents:number[])
+		public fromVectors(verts:Array<number>, uvs:Array<number>, normals:Array<number>, tangents:Array<number>)
 		{
 			var vertLen:number = verts.length/3*13;
 
@@ -455,7 +455,7 @@ module away.base
 			var t:number = 0;
 			var u:number = 0;
 
-			var data:number[] = new Array<number>(vertLen);//Vector.<Number>(vertLen, true);
+			var data:number[] = new Array<number>(vertLen);
 
 			while (index < vertLen) {
 

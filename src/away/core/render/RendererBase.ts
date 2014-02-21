@@ -6,43 +6,38 @@
 module away.render
 {
 	/**
-	 * RendererBase forms an abstract base class for classes that are used in the rendering pipeline to render geometry
-	 * to the back buffer or a texture.
+	 * RendererBase forms an abstract base class for classes that are used in the rendering pipeline to render the
+	 * contents of a partition
 	 *
 	 * @class away.render.RendererBase
 	 */
-	export class RendererBase
+	export class RendererBase extends away.events.EventDispatcher
 	{
 		public _pContext:away.gl.ContextGL;
 		public _pStageGL:away.base.StageGL;
 
+		public _pBackBufferInvalid:boolean = true;
+		public _depthPrepass:boolean = false;
 		private _backgroundR:number = 0;
 		private _backgroundG:number = 0;
 		private _backgroundB:number = 0;
 		private _backgroundAlpha:number = 1;
-		private _shareContext:boolean = false;
+		public _shareContext:boolean = false;
 
 		public _pRenderTarget:away.gl.TextureBase;
 		public _pRenderTargetSurface:number;
 
 		// only used by renderers that need to render geometry to textures
-		private _viewWidth:number;
-		private _viewHeight:number;
-
-		public _pRenderableSorter:away.sort.IEntitySorter;
-
-		//private _backgroundImageRenderer:BackgroundImageRenderer;
-		//private _background:Texture2DBase;
+		public _width:number;
+		public _height:number;
 
 		private _renderToTexture:boolean;
-		private _antiAlias:number;
-		private _textureRatioX:number = 1;
-		private _textureRatioY:number = 1;
+		public textureRatioX:number = 1;
+		public textureRatioY:number = 1;
 
 		private _snapshotBitmapData:away.base.BitmapData;
 		private _snapshotRequired:boolean;
 
-		private _clearOnRender:boolean = true;
 		public _pRttViewProjectionMatrix:away.geom.Matrix3D = new away.geom.Matrix3D();
 
 		private _onContextUpdateDelegate:Function;
@@ -52,35 +47,16 @@ module away.render
 		 */
 		constructor(renderToTexture:boolean = false)
 		{
-			this._pRenderableSorter = new away.sort.RenderableMergeSort();
+			super();
+
 			this._renderToTexture = renderToTexture;
 
 			this._onContextUpdateDelegate = away.utils.Delegate.create(this, this.onContextUpdate);
 		}
 
-		public iCreateEntityCollector():away.traverse.EntityCollector
+		public _iCreateEntityCollector():away.traverse.ICollector
 		{
 			return new away.traverse.EntityCollector();
-		}
-
-		public get iViewWidth():number
-		{
-			return this._viewWidth;
-		}
-
-		public set iViewWidth(value:number)
-		{
-			this._viewWidth = value;
-		}
-
-		public get iViewHeight():number
-		{
-			return this._viewHeight;
-		}
-
-		public set iViewHeight(value:number)
-		{
-			this._viewHeight = value;
 		}
 
 		public get iRenderToTexture():boolean
@@ -88,39 +64,24 @@ module away.render
 			return this._renderToTexture;
 		}
 
-		public get renderableSorter():away.sort.IEntitySorter
-		{
-			return this._pRenderableSorter;
-		}
-
-		public set renderableSorter(value:away.sort.IEntitySorter)
-		{
-			this._pRenderableSorter = value;
-		}
-
-		public get iClearOnRender():boolean
-		{
-			return this._clearOnRender;
-		}
-
-		public set iClearOnRender(value:boolean)
-		{
-			this._clearOnRender = value;
-		}
-
 		/**
 		 * The background color's red component, used when clearing.
 		 *
 		 * @private
 		 */
-		public get iBackgroundR():number
+		public get _iBackgroundR():number
 		{
 			return this._backgroundR;
 		}
 
-		public set iBackgroundR(value:number)
+		public set _iBackgroundR(value:number)
 		{
+			if (this._backgroundR == value)
+				return;
+
 			this._backgroundR = value;
+
+			this._pBackBufferInvalid = true;
 		}
 
 		/**
@@ -128,14 +89,19 @@ module away.render
 		 *
 		 * @private
 		 */
-		public get iBackgroundG():number
+		public get _iBackgroundG():number
 		{
 			return this._backgroundG;
 		}
 
-		public set iBackgroundG(value:number)
+		public set _iBackgroundG(value:number)
 		{
+			if (this._backgroundG == value)
+				return;
+
 			this._backgroundG = value;
+
+			this._pBackBufferInvalid = true;
 		}
 
 		/**
@@ -143,96 +109,93 @@ module away.render
 		 *
 		 * @private
 		 */
-		public get iBackgroundB():number
+		public get _iBackgroundB():number
 		{
 			return this._backgroundB;
 		}
 
-		public set iBackgroundB(value:number)
+		public set _iBackgroundB(value:number)
 		{
+			if (this._backgroundB == value)
+				return;
+
 			this._backgroundB = value;
+
+			this._pBackBufferInvalid = true;
 		}
 
 		/**
 		 * The StageGL that will provide the ContextGL used for rendering.
-		 *
-		 * @private
 		 */
-		public get iStageGL():away.base.StageGL
+		public get stageGL():away.base.StageGL
 		{
 			return this._pStageGL;
 		}
 
-		public set iStageGL(value:away.base.StageGL)
+		public set stageGL(value:away.base.StageGL)
 		{
+			if (value == this._pStageGL)
+				return;
 
 			this.iSetStageGL(value);
-
 		}
 
 		public iSetStageGL(value:away.base.StageGL)
 		{
-
-			if (value == this._pStageGL) {
-
-				return;
+			if (this._pStageGL) {
+				this._pStageGL.removeEventListener(away.events.StageGLEvent.CONTEXTGL_CREATED, this._onContextUpdateDelegate);
+				this._pStageGL.removeEventListener(away.events.StageGLEvent.CONTEXTGL_RECREATED, this._onContextUpdateDelegate);
 
 			}
-
 
 			if (!value) {
-
-				if (this._pStageGL) {
-
-					this._pStageGL.removeEventListener(away.events.StageGLEvent.CONTEXTGL_CREATED, this._onContextUpdateDelegate);
-					this._pStageGL.removeEventListener(away.events.StageGLEvent.CONTEXTGL_RECREATED, this._onContextUpdateDelegate);
-
-				}
-
 				this._pStageGL = null;
 				this._pContext = null;
+			} else {
+				this._pStageGL = value;
+				this._pStageGL.addEventListener(away.events.StageGLEvent.CONTEXTGL_CREATED, this._onContextUpdateDelegate);
+				this._pStageGL.addEventListener(away.events.StageGLEvent.CONTEXTGL_RECREATED, this._onContextUpdateDelegate);
 
-				return;
+				/*
+				 if (_backgroundImageRenderer)
+				 _backgroundImageRenderer.stageGL = value;
+				 */
+				if (this._pStageGL.contextGL)
+					this._pContext = this._pStageGL.contextGL;
 			}
 
-			//else if (_pStageGL) throw new Error("A StageGL instance was already assigned!");
+			this._pBackBufferInvalid = true;
 
-			this._pStageGL = value;
-			this._pStageGL.addEventListener(away.events.StageGLEvent.CONTEXTGL_CREATED, this._onContextUpdateDelegate);
-			this._pStageGL.addEventListener(away.events.StageGLEvent.CONTEXTGL_RECREATED, this._onContextUpdateDelegate);
-
-			/*
-			 if (_backgroundImageRenderer)
-			 _backgroundImageRenderer.stageGL = value;
-			 */
-			if (value.contextGL)
-				this._pContext = value.contextGL;
-
+			this.updateGlobalPos();
 		}
 
 		/**
 		 * Defers control of ContextGL clear() and present() calls to StageGL, enabling multiple StageGL frameworks
 		 * to share the same ContextGL object.
-		 *
-		 * @private
 		 */
-		public get iShareContext():boolean
+		public get shareContext():boolean
 		{
 			return this._shareContext;
 		}
 
-		public set iShareContext(value:boolean)
+		public set shareContext(value:boolean)
 		{
+			if (this._shareContext == value)
+				return;
+
 			this._shareContext = value;
+
+			this.updateGlobalPos();
 		}
 
 		/**
 		 * Disposes the resources used by the RendererBase.
-		 *
-		 * @private
 		 */
-		public iDispose()
+		public dispose()
 		{
+			this._pStageGL.removeEventListener(away.events.StageGLEvent.CONTEXTGL_CREATED, this._onContextUpdateDelegate);
+			this._pStageGL.removeEventListener(away.events.StageGLEvent.CONTEXTGL_RECREATED, this._onContextUpdateDelegate);
+
 			this._pStageGL = null;
 
 			/*
@@ -243,6 +206,10 @@ module away.render
 			 */
 		}
 
+		public render(entityCollector:away.traverse.ICollector)
+		{
+		}
+
 		/**
 		 * Renders the potentially visible geometry to the back buffer or texture.
 		 * @param entityCollector The EntityCollector object containing the potentially visible geometry.
@@ -250,33 +217,25 @@ module away.render
 		 * @param surfaceSelector The index of a CubeTexture's face to render to.
 		 * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
 		 */
-		public iRender(entityCollector:away.traverse.EntityCollector, target:away.gl.TextureBase = null, scissorRect:away.geom.Rectangle = null, surfaceSelector:number = 0)
+		public _iRender(entityCollector:away.traverse.ICollector, target:away.gl.TextureBase = null, scissorRect:away.geom.Rectangle = null, surfaceSelector:number = 0)
 		{
-			if (!this._pStageGL || !this._pContext || !entityCollector.entityHead) {
 
+			if (!this._pStageGL || !this._pContext || !entityCollector.entityHead)
 				return;
 
-
-			}
-
-
 			this._pRttViewProjectionMatrix.copyFrom(entityCollector.camera.viewProjection);
-			this._pRttViewProjectionMatrix.appendScale(this._textureRatioX, this._textureRatioY, 1);
+			this._pRttViewProjectionMatrix.appendScale(this.textureRatioX, this.textureRatioY, 1);
 
 			this.pExecuteRender(entityCollector, target, scissorRect, surfaceSelector);
 
 			// generate mip maps on target (if target exists)
-			if (target) {
+			if (target)
 				(<away.gl.Texture>target).generateMipmaps();
-			}
 
 			// clear buffers
-
 			for (var i:number = 0; i < 8; ++i) {
-
 				this._pContext.setVertexBufferAt(i, null);
 				this._pContext.setTextureAt(i, null);
-
 			}
 		}
 
@@ -287,31 +246,20 @@ module away.render
 		 * @param surfaceSelector The index of a CubeTexture's face to render to.
 		 * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
 		 */
-		public pExecuteRender(entityCollector:away.traverse.EntityCollector, target:away.gl.TextureBase = null, scissorRect:away.geom.Rectangle = null, surfaceSelector:number = 0)
+		public pExecuteRender(entityCollector:away.traverse.ICollector, target:away.gl.TextureBase = null, scissorRect:away.geom.Rectangle = null, surfaceSelector:number = 0)
 		{
 			this._pRenderTarget = target;
 			this._pRenderTargetSurface = surfaceSelector;
 
-			if (this._pRenderableSorter) {
+			entityCollector.sortRenderables();
 
-				this._pRenderableSorter.sort(entityCollector);
-
-			}
-
-
-			if (this._renderToTexture) {
-
+			if (this._renderToTexture)
 				this.pExecuteRenderToTexturePass(entityCollector);
-
-			}
 
 			this._pStageGL.setRenderTarget(target, true, surfaceSelector);
 
-			if ((target || !this._shareContext) && this._clearOnRender) {
-
+			if ((target || !this._shareContext) && !this._depthPrepass)
 				this._pContext.clear(this._backgroundR, this._backgroundG, this._backgroundB, this._backgroundAlpha, 1, 0);
-
-			}
 
 			this._pContext.setDepthTest(false, away.gl.ContextGLCompareMode.ALWAYS);
 
@@ -328,15 +276,12 @@ module away.render
 			//this._pContext.setDepthTest(false, away.gl.ContextGLCompareMode.LESS_EQUAL); //oopsie
 
 			if (!this._shareContext) {
-
 				if (this._snapshotRequired && this._snapshotBitmapData) {
-
 					this._pContext.drawToBitmapData(this._snapshotBitmapData);
 					this._snapshotRequired = false;
-
 				}
-
 			}
+
 			this._pStageGL.scissorRect = null;
 		}
 
@@ -349,7 +294,7 @@ module away.render
 			this._snapshotBitmapData = bmd;
 		}
 
-		public pExecuteRenderToTexturePass(entityCollector:away.traverse.EntityCollector)
+		public pExecuteRenderToTexturePass(entityCollector:away.traverse.ICollector)
 		{
 			throw new away.errors.AbstractMethodError();
 		}
@@ -358,7 +303,7 @@ module away.render
 		 * Performs the actual drawing of geometry to the target.
 		 * @param entityCollector The EntityCollector object containing the potentially visible geometry.
 		 */
-		public pDraw(entityCollector:away.traverse.EntityCollector, target:away.gl.TextureBase)
+		public pDraw(entityCollector:away.traverse.ICollector, target:away.gl.TextureBase)
 		{
 			throw new away.errors.AbstractMethodError();
 		}
@@ -368,17 +313,23 @@ module away.render
 		 */
 		private onContextUpdate(event:Event)
 		{
+
 			this._pContext = this._pStageGL.contextGL;
 		}
 
-		public get iBackgroundAlpha():number
+		public get _iBackgroundAlpha():number
 		{
 			return this._backgroundAlpha;
 		}
 
-		public set iBackgroundAlpha(value:number)
+		public set _iBackgroundAlpha(value:number)
 		{
+			if (this._backgroundAlpha == value)
+				return;
+
 			this._backgroundAlpha = value;
+
+			this._pBackBufferInvalid = true;
 		}
 
 		/*
@@ -417,35 +368,13 @@ module away.render
 		 }
 		 */
 
-		public get antiAlias():number
-		{
-			return this._antiAlias;
-		}
 
-		public set antiAlias(antiAlias:number)
+		/**
+		 *
+		 */
+		public updateGlobalPos()
 		{
-			this._antiAlias = antiAlias;
-		}
 
-		public get iTextureRatioX():number
-		{
-			return this._textureRatioX;
 		}
-
-		public set iTextureRatioX(value:number)
-		{
-			this._textureRatioX = value;
-		}
-
-		public get iTextureRatioY():number
-		{
-			return this._textureRatioY;
-		}
-
-		public set iTextureRatioY(value:number)
-		{
-			this._textureRatioY = value;
-		}
-
 	}
 }

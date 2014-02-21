@@ -7,33 +7,36 @@ module away.pick
 {
 
 	/**
-	 * Pure AS3 picking collider for entity objects. Used with the <code>RaycastPicker</code> picking object.
+	 * Pure JS picking collider for display objects. Used with the <code>RaycastPicker</code> picking object.
 	 *
-	 * @see away.entities.Entity#pickingCollider
+	 * @see away.base.DisplayObject#pickingCollider
 	 * @see away.pick.RaycastPicker
 	 *
-	 * @class away.pick.AS3PickingCollider
+	 * @class away.pick.JSPickingCollider
 	 */
-	export class AS3PickingCollider extends PickingColliderBase implements IPickingCollider
+	export class JSPickingCollider extends PickingColliderBase implements IPickingCollider
 	{
 		private _findClosestCollision:boolean;
 
 		/**
-		 * Creates a new <code>AS3PickingCollider</code> object.
+		 * Creates a new <code>JSPickingCollider</code> object.
 		 *
 		 * @param findClosestCollision Determines whether the picking collider searches for the closest collision along the ray. Defaults to false.
 		 */
 		constructor(findClosestCollision:boolean = false)
 		{
 			super();
+
 			this._findClosestCollision = findClosestCollision;
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public testSubMeshCollision(subMesh:away.base.SubMesh, pickingCollisionVO:PickingCollisionVO, shortestCollisionDistance:number):boolean
+		public testRenderableCollision(renderable:away.pool.RenderableBase, pickingCollisionVO:PickingCollisionVO, shortestCollisionDistance:number):boolean
 		{
+			var subGeometry:away.base.ISubGeometry = renderable.subGeometry;
+
 			var t:number;
 			var i0:number, i1:number, i2:number;
 			var rx:number, ry:number, rz:number;
@@ -47,16 +50,16 @@ module away.pick
 			var s1x:number, s1y:number, s1z:number;
 			var nl:number, nDotV:number, D:number, disToPlane:number;
 			var Q1Q2:number, Q1Q1:number, Q2Q2:number, RQ1:number, RQ2:number;
-			var indexData:number[] = subMesh.indexData;//uint
-			var vertexData:number[] = subMesh.vertexData;
-			var uvData:number[] = subMesh.UVData;
+			var indexData:Array<number> = subGeometry.indexData;//uint
+			var vertexData:Array<number> = subGeometry.vertexData;
+			var uvData:Array<number> = subGeometry.UVData;
 			var collisionTriangleIndex:number = -1;
-			var bothSides:boolean = subMesh.material.bothSides;
+			var bothSides:boolean = (<away.materials.MaterialBase> renderable.materialOwner.material).bothSides;
 
-			var vertexStride:number = subMesh.vertexStride;
-			var vertexOffset:number = subMesh.vertexOffset;
-			var uvStride:number = subMesh.UVStride;
-			var uvOffset:number = subMesh.UVOffset;
+			var vertexStride:number = subGeometry.vertexStride;
+			var vertexOffset:number = subGeometry.vertexOffset;
+			var uvStride:number = subGeometry.UVStride;
+			var uvOffset:number = subGeometry.UVOffset;
 			var numIndices:number = indexData.length;
 
 			for (var index:number = 0; index < numIndices; index += 3) { // sweep all triangles
@@ -127,7 +130,7 @@ module away.pick
 						pickingCollisionVO.localNormal = new away.geom.Vector3D(nx, ny, nz);
 						pickingCollisionVO.uv = this._pGetCollisionUV(indexData, uvData, index, v, w, u, uvOffset, uvStride);
 						pickingCollisionVO.index = index;
-						pickingCollisionVO.subGeometryIndex = this.pGetMeshSubMeshIndex(subMesh);
+//						pickingCollisionVO.subGeometryIndex = this.pGetMeshSubMeshIndex(renderable);
 
 						// if not looking for best hit, first found will do...
 						if (!this._findClosestCollision)

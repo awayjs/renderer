@@ -10,26 +10,35 @@ module away.partition
 	 */
 	export class LightProbeNode extends EntityNode
 	{
-		private _light:away.lights.LightProbe;
+		private _lightProbe:away.entities.IEntity;
 
-		constructor(light:away.lights.LightProbe)
+		/**
+		 *
+		 * @param lightProbe
+		 */
+		constructor(lightProbe:away.entities.IEntity)
 		{
-			super(light);
-			this._light = light;
+			super(lightProbe);
+
+			this._lightProbe = lightProbe;
 		}
 
-		public get light():away.lights.LightProbe
+		/**
+		 * @inheritDoc
+		 */
+		public acceptTraverser(traverser:away.traverse.ICollector)
 		{
-			return this._light;
+			//do not run frustum checks on lights
+			traverser.applyEntity(this._lightProbe);
 		}
 
-		//@override
-		public acceptTraverser(traverser:away.traverse.PartitionTraverser)
+		/**
+		 *
+		 * @returns {boolean}
+		 */
+		public isCastingShadow():boolean
 		{
-			if (traverser.enterNode(this)) {
-				super.acceptTraverser(traverser);
-				traverser.applyLightProbe(this._light);
-			}
+			return false;
 		}
 	}
 }

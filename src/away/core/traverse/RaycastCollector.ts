@@ -10,24 +10,31 @@ module away.traverse
 	 * The RaycastCollector class is a traverser for scene partitions that collects all scene graph entities that are
 	 * considered intersecting with the defined ray.
 	 *
-	 * @see away.partition.Partition3D
-	 * @see away.partition.Entity
+	 * @see away.partition.Partition
+	 * @see away.entities.IEntity
 	 *
 	 * @class away.traverse.RaycastCollector
 	 */
-	export class RaycastCollector extends EntityCollector
+	export class RaycastCollector extends RenderableCollectorBase implements ICollector
 	{
 		private _rayPosition:away.geom.Vector3D = new away.geom.Vector3D();
 		private _rayDirection:away.geom.Vector3D = new away.geom.Vector3D();
 
+		public _iCollectionMark:number = 0;
+
+		public _pCamera:away.entities.Camera;
+
 		/**
-		 * Creates a new RaycastCollector object.
+		 *
 		 */
-		constructor()
+		public get camera():away.entities.Camera
 		{
+			return this._pCamera;
+		}
 
-			super();
-
+		public set camera(value:away.entities.Camera)
+		{
+			this._pCamera = value;
 		}
 
 		/**
@@ -57,6 +64,14 @@ module away.traverse
 		}
 
 		/**
+		 * Creates a new RaycastCollector object.
+		 */
+		constructor()
+		{
+			super();
+		}
+
+		/**
 		 * Returns true if the current node is at least partly in the frustum. If so, the partition node knows to pass on the traverser to its children.
 		 *
 		 * @param node The Partition3DNode object to frustum-test.
@@ -67,25 +82,12 @@ module away.traverse
 		}
 
 		/**
-		 * @inheritDoc
+		 *
+		 * @param entity
 		 */
-		public applySkyBox(renderable:away.base.IRenderable)
+		public pFindRenderable(entity:away.entities.IEntity)
 		{
-		}
-
-		/**
-		 * Adds an IRenderable object to the potentially visible objects.
-		 * @param renderable The IRenderable object to add.
-		 */
-		public applyRenderable(renderable:away.base.IRenderable)
-		{
-		}
-
-		/**
-		 * @inheritDoc
-		 */
-		public applyUnknownLight(light:away.lights.LightBase)
-		{
+			//no renderables required
 		}
 	}
 }

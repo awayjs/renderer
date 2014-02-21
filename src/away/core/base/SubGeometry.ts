@@ -19,30 +19,30 @@ module away.base
 	export class SubGeometry extends SubGeometryBase implements ISubGeometry
 	{
 		// raw data:
-		private _uvs:number[];
-		private _secondaryUvs:number[];
-		private _vertexNormals:number[];
-		private _vertexTangents:number[];
+		private _uvs:Array<number>;
+		private _secondaryUvs:Array<number>;
+		private _vertexNormals:Array<number>;
+		private _vertexTangents:Array<number>;
 
-		private _verticesInvalid:boolean[] = new Array<boolean>(8);//= new Vector.<Boolean>(8, true);
-		private _uvsInvalid:boolean[] = new Array<boolean>(8);//new Vector.<Boolean>(8, true);
-		private _secondaryUvsInvalid:boolean[] = new Array<boolean>(8);//= new Vector.<Boolean>(8, true);
-		private _normalsInvalid:boolean[] = new Array<boolean>(8);//= new Vector.<Boolean>(8, true);
-		private _tangentsInvalid:boolean[] = new Array<boolean>(8);//= new Vector.<Boolean>(8, true);
+		private _verticesInvalid:boolean[] = new Array<boolean>(8);
+		private _uvsInvalid:boolean[] = new Array<boolean>(8);
+		private _secondaryUvsInvalid:boolean[] = new Array<boolean>(8);
+		private _normalsInvalid:boolean[] = new Array<boolean>(8);
+		private _tangentsInvalid:boolean[] = new Array<boolean>(8);
 
 		// buffers:
-		private _vertexBuffer:away.gl.VertexBuffer[] = new Array<away.gl.VertexBuffer>(8);//Vector.<VertexBuffer> = new Vector.<VertexBuffer>(8);
-		private _uvBuffer:away.gl.VertexBuffer[] = new Array<away.gl.VertexBuffer>(8);//:Vector.<VertexBuffer> = new Vector.<VertexBuffer>(8);
-		private _secondaryUvBuffer:away.gl.VertexBuffer[] = new Array<away.gl.VertexBuffer>(8);//:Vector.<VertexBuffer> = new Vector.<VertexBuffer>(8);
-		private _vertexNormalBuffer:away.gl.VertexBuffer[] = new Array<away.gl.VertexBuffer>(8);//:Vector.<VertexBuffer> = new Vector.<VertexBuffer>(8);
-		private _vertexTangentBuffer:away.gl.VertexBuffer[] = new Array<away.gl.VertexBuffer>(8);//:Vector.<VertexBuffer> = new Vector.<VertexBuffer>(8);
+		private _vertexBuffer:away.gl.VertexBuffer[] = new Array<away.gl.VertexBuffer>(8);
+		private _uvBuffer:away.gl.VertexBuffer[] = new Array<away.gl.VertexBuffer>(8);
+		private _secondaryUvBuffer:away.gl.VertexBuffer[] = new Array<away.gl.VertexBuffer>(8);
+		private _vertexNormalBuffer:away.gl.VertexBuffer[] = new Array<away.gl.VertexBuffer>(8);
+		private _vertexTangentBuffer:away.gl.VertexBuffer[] = new Array<away.gl.VertexBuffer>(8);
 
 		// buffer dirty flags, per context:
-		private _vertexBufferContext:away.gl.ContextGL[] = new Array<away.gl.ContextGL>(8);//:Vector.<ContextGL> = new Vector.<ContextGL>(8);
-		private _uvBufferContext:away.gl.ContextGL[] = new Array<away.gl.ContextGL>(8);//:Vector.<ContextGL> = new Vector.<ContextGL>(8);
-		private _secondaryUvBufferContext:away.gl.ContextGL[] = new Array<away.gl.ContextGL>(8);//:Vector.<ContextGL> = new Vector.<ContextGL>(8);
-		private _vertexNormalBufferContext:away.gl.ContextGL[] = new Array<away.gl.ContextGL>(8);//:Vector.<ContextGL> = new Vector.<ContextGL>(8);
-		private _vertexTangentBufferContext:away.gl.ContextGL[] = new Array<away.gl.ContextGL>(8);//:Vector.<ContextGL> = new Vector.<ContextGL>(8);
+		private _vertexBufferContext:away.gl.ContextGL[] = new Array<away.gl.ContextGL>(8);
+		private _uvBufferContext:away.gl.ContextGL[] = new Array<away.gl.ContextGL>(8);
+		private _secondaryUvBufferContext:away.gl.ContextGL[] = new Array<away.gl.ContextGL>(8);
+		private _vertexNormalBufferContext:away.gl.ContextGL[] = new Array<away.gl.ContextGL>(8);
+		private _vertexTangentBufferContext:away.gl.ContextGL[] = new Array<away.gl.ContextGL>(8);
 
 		private _numVertices:number;
 
@@ -144,9 +144,8 @@ module away.base
 			var contextIndex:number = stageGL._iStageGLIndex;
 			var context:away.gl.ContextGL = stageGL.contextGL;
 
-			if (this._autoDeriveVertexNormals && this._vertexNormalsDirty) {
+			if (this._autoDeriveVertexNormals && this._vertexNormalsDirty)
 				this._vertexNormals = this.pUpdateVertexNormals(this._vertexNormals);
-			}
 
 			if (!this._vertexNormalBuffer[contextIndex] || this._vertexNormalBufferContext[contextIndex] != context) {
 				this._vertexNormalBuffer[contextIndex] = context.createVertexBuffer(this._numVertices, 3);
@@ -278,12 +277,12 @@ module away.base
 		/**
 		 * The raw vertex position data.
 		 */
-		public get vertexData():number[]
+		public get vertexData():Array<number>
 		{
 			return this._vertexData;
 		}
 
-		public get vertexPositionData():number[]
+		public get vertexPositionData():Array<number>
 		{
 			return this._vertexData;
 		}
@@ -292,7 +291,7 @@ module away.base
 		 * Updates the vertex data of the SubGeometry.
 		 * @param vertices The new vertex data to upload.
 		 */
-		public updateVertexData(vertices:number[])
+		public updateVertexData(vertices:Array<number>)
 		{
 			if (this._autoDeriveVertexNormals) {
 				this._vertexNormalsDirty = true;
@@ -318,7 +317,7 @@ module away.base
 		/**
 		 * The raw texture coordinate data.
 		 */
-		public get UVData():number[]
+		public get UVData():Array<number>
 		{
 			if (this._uvsDirty && this._autoGenerateUVs) {
 				this._uvs = this.pUpdateDummyUVs(this._uvs);
@@ -327,7 +326,7 @@ module away.base
 			return this._uvs;
 		}
 
-		public get secondaryUVData():number[]
+		public get secondaryUVData():Array<number>
 		{
 			return this._secondaryUvs;
 		}
@@ -336,7 +335,7 @@ module away.base
 		 * Updates the uv coordinates of the SubGeometry.
 		 * @param uvs The uv coordinates to upload.
 		 */
-		public updateUVData(uvs:number[])
+		public updateUVData(uvs:Array<number>)
 		{
 			// normals don't get dirty from this
 			if (this._autoDeriveVertexTangents) {
@@ -348,7 +347,7 @@ module away.base
 			this.pInvalidateBuffers(this._uvsInvalid);
 		}
 
-		public updateSecondaryUVData(uvs:number[])
+		public updateSecondaryUVData(uvs:Array<number>)
 		{
 			this._secondaryUvs = uvs;
 			this.pInvalidateBuffers(this._secondaryUvsInvalid);
@@ -357,7 +356,7 @@ module away.base
 		/**
 		 * The raw vertex normal data.
 		 */
-		public get vertexNormalData():number[]
+		public get vertexNormalData():Array<number>
 		{
 			if (this._autoDeriveVertexNormals && this._vertexNormalsDirty) {
 				this._vertexNormals = this.pUpdateVertexNormals(this._vertexNormals);
@@ -371,7 +370,7 @@ module away.base
 		 * autoDeriveVertexNormals will be set to false and vertex normals will no longer be calculated automatically.
 		 * @param vertexNormals The vertex normals to upload.
 		 */
-		public updateVertexNormalData(vertexNormals:number[])
+		public updateVertexNormalData(vertexNormals:Array<number>)
 		{
 			this._vertexNormalsDirty = false;
 			this._autoDeriveVertexNormals = (vertexNormals == null);
@@ -384,7 +383,7 @@ module away.base
 		 *
 		 * @private
 		 */
-		public get vertexTangentData():number[]
+		public get vertexTangentData():Array<number>
 		{
 			if (this._autoDeriveVertexTangents && this._vertexTangentsDirty) {
 				this._vertexTangents = this.pUpdateVertexTangents(this._vertexTangents);
@@ -398,7 +397,7 @@ module away.base
 		 * autoDeriveVertexTangents will be set to false and vertex tangents will no longer be calculated automatically.
 		 * @param vertexTangents The vertex tangents to upload.
 		 */
-		public updateVertexTangentData(vertexTangents:number[])
+		public updateVertexTangentData(vertexTangents:Array<number>)
 		{
 			this._vertexTangentsDirty = false;
 			this._autoDeriveVertexTangents = (vertexTangents == null);
@@ -406,7 +405,7 @@ module away.base
 			this.pInvalidateBuffers(this._tangentsInvalid);
 		}
 
-		public fromVectors(vertices:number[], uvs:number[], normals:number[], tangents:number[])
+		public fromVectors(vertices:Array<number>, uvs:Array<number>, normals:Array<number>, tangents:Array<number>)
 		{
 			this.updateVertexData(vertices);
 			this.updateUVData(uvs);
@@ -414,14 +413,14 @@ module away.base
 			this.updateVertexTangentData(tangents);
 		}
 
-		public pUpdateVertexNormals(target:number[]):number[]
+		public pUpdateVertexNormals(target:Array<number>):Array<number>
 		{
 			this.pInvalidateBuffers(this._normalsInvalid);
 			return super.pUpdateVertexNormals(target);
 
 		}
 
-		public pUpdateVertexTangents(target:number[]):number[]
+		public pUpdateVertexTangents(target:Array<number>):Array<number>
 		{
 			if (this._vertexNormalsDirty) {
 				this._vertexNormals = this.pUpdateVertexNormals(this._vertexNormals);
@@ -431,7 +430,7 @@ module away.base
 			return super.pUpdateVertexTangents(target);
 		}
 
-		public pUpdateDummyUVs(target:number[]):number[]
+		public pUpdateDummyUVs(target:Array<number>):Array<number>
 		{
 			this.pInvalidateBuffers(this._uvsInvalid);
 			return super.pUpdateDummyUVs(target);

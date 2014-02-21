@@ -125,7 +125,7 @@ module away.render
 
 		}
 
-		public render(stageGL:away.base.StageGL, camera3D:away.cameras.Camera3D, depthTexture:away.gl.Texture)
+		public render(stageGL:away.base.StageGL, camera:away.entities.Camera, depthTexture:away.gl.Texture)
 		{
 			var len:number;
 			var i:number;
@@ -151,7 +151,7 @@ module away.render
 			len = this._filters.length;
 
 			for (i = 0; i < len; ++i) {
-				this._filters[i].update(stageGL, camera3D);
+				this._filters[i].update(stageGL, camera);
 			}
 
 			len = this._tasks.length;
@@ -180,7 +180,7 @@ module away.render
 				context.setProgram(task.getProgram(stageGL));
 				context.clear(0.0, 0.0, 0.0, 0.0);
 
-				task.activate(stageGL, camera3D, depthTexture);
+				task.activate(stageGL, camera, depthTexture);
 
 				context.setBlendFactors(away.gl.ContextGLBlendFactor.ONE, away.gl.ContextGLBlendFactor.ZERO);
 				context.drawTriangles(indexBuffer, 0, 2);

@@ -29,14 +29,14 @@ module away.pick
 		private _boundOffsetScale:number[];
 		private _id:number[];
 
-		private _interactives:away.base.IRenderable[] = new Array<away.base.IRenderable>();
+		private _interactives:Array<away.pool.RenderableBase> = new Array<away.pool.RenderableBase>();
 		private _interactiveId:number;
 		private _hitColor:number;
 		private _projX:number;
 		private _projY:number;
 
-		private _hitRenderable:away.base.IRenderable;
-		private _hitEntity:away.entities.Entity;
+		private _hitRenderable:away.pool.RenderableBase;
+		private _hitEntity:away.entities.IEntity;
 		private _localHitPosition:away.geom.Vector3D = new away.geom.Vector3D();
 		private _hitUV:away.geom.Point = new away.geom.Point();
 		private _faceIndex:number;
@@ -48,6 +48,8 @@ module away.pick
 		private _rayDir:away.geom.Vector3D = new away.geom.Vector3D();
 		private _potentialFound:boolean;
 		private static MOUSE_SCISSOR_RECT:away.geom.Rectangle = new away.geom.Rectangle(0, 0, 1, 1);
+
+		private _shaderPickingDetails:boolean;
 
 		/**
 		 * @inheritDoc
@@ -64,9 +66,14 @@ module away.pick
 
 		/**
 		 * Creates a new <code>ShaderPicker</code> object.
+		 *
+		 * @param shaderPickingDetails Determines whether the picker includes a second pass to calculate extra
+		 * properties such as uv and normal coordinates.
 		 */
-		constructor()
+		constructor(shaderPickingDetails:boolean = false)
 		{
+			this._shaderPickingDetails = shaderPickingDetails;
+
 			this._id = new Array<number>(4);//new Vector.<Number>(4, true);
 			this._viewportData = new Array<number>(4);//new Vector.<Number>(4, true); // first 2 contain scale, last 2 translation
 			this._boundOffsetScale = new Array<number>(8);//new Vector.<Number>(8, true); // first 2 contain scale, last 2 translation
@@ -79,7 +86,7 @@ module away.pick
 		 */
 			// TODO implement dependency : EntityCollector
 			// TODO: GLSL implementation / conversion
-		public getViewCollision(x:number, y:number, view:away.containers.View3D):PickingCollisionVO
+		public getViewCollision(x:number, y:number, view:away.containers.View):PickingCollisionVO
 		{
 
 			away.Debug.throwPIR('ShaderPicker', 'getViewCollision', 'implement');
@@ -87,9 +94,9 @@ module away.pick
 			return null;
 
 
-			var collector:away.traverse.EntityCollector = view.iEntityCollector;
+			var collector:away.traverse.EntityCollector = <away.traverse.EntityCollector> view.iEntityCollector;
 
-			this._stageGL = view.stageGL;
+			this._stageGL = (<away.render.DefaultRenderer> view.renderer).stageGL;
 
 			if (!this._stageGL)
 				return null;
@@ -126,25 +133,25 @@ module away.pick
 
 			this._hitRenderable = this._interactives[this._hitColor - 1];
 			this._hitEntity = this._hitRenderable.sourceEntity;
-			if (this._onlyMouseEnabled && (!this._hitEntity._iAncestorsAllowMouseEnabled || !this._hitEntity.mouseEnabled)) {
-				return null;
-			}
 
-			var _collisionVO:PickingCollisionVO = this._hitEntity.pickingCollisionVO;
-			if (this._hitRenderable.shaderPickingDetails) {
+			if (this._onlyMouseEnabled && !this._hitEntity._iIsMouseEnabled())
+				return null;
+
+			var _collisionVO:PickingCollisionVO = this._hitEntity._iPickingCollisionVO;
+			if (this._shaderPickingDetails) {
 				this.getHitDetails(view.camera);
 				_collisionVO.localPosition = this._localHitPosition;
 				_collisionVO.localNormal = this._localHitNormal;
 				_collisionVO.uv = this._hitUV;
 				_collisionVO.index = this._faceIndex;
-				_collisionVO.subGeometryIndex = this._subGeometryIndex;
+				//_collisionVO.subGeometryIndex = this._subGeometryIndex;
 
 			} else {
 				_collisionVO.localPosition = null;
 				_collisionVO.localNormal = null;
 				_collisionVO.uv = null;
 				_collisionVO.index = 0;
-				_collisionVO.subGeometryIndex = 0;
+				//_collisionVO.subGeometryIndex = 0;
 			}
 
 			return _collisionVO;
@@ -154,7 +161,7 @@ module away.pick
 		/**
 		 * @inheritDoc
 		 */
-		public getSceneCollision(position:away.geom.Vector3D, direction:away.geom.Vector3D, scene:away.containers.Scene3D):PickingCollisionVO
+		public getSceneCollision(position:away.geom.Vector3D, direction:away.geom.Vector3D, scene:away.containers.Scene):PickingCollisionVO
 		{
 			return null;
 		}
@@ -166,7 +173,7 @@ module away.pick
 		public pDraw(entityCollector:away.traverse.EntityCollector, target:away.gl.TextureBase)
 		{
 
-			var camera:away.cameras.Camera3D = entityCollector.camera;
+			var camera:away.entities.Camera = entityCollector.camera;
 
 			this._context.clear(0, 0, 0, 1);
 			this._stageGL.scissorRect = ShaderPicker.MOUSE_SCISSOR_RECT;
@@ -193,53 +200,49 @@ module away.pick
 		 * @param renderables The renderables to draw.
 		 * @param camera The camera for which to render.
 		 */
-		private drawRenderables(item:away.data.RenderableListItem, camera:away.cameras.Camera3D)
+		private drawRenderables(renderable:away.pool.RenderableBase, camera:away.entities.Camera)
 		{
 
 			away.Debug.throwPIR('ShaderPicker', 'drawRenderables', 'implement');
 
 
 			var matrix:away.geom.Matrix3D = away.geom.Matrix3DUtils.CALCULATION_MATRIX;
-			var renderable:away.base.IRenderable;
 			var viewProjection:away.geom.Matrix3D = camera.viewProjection;
 
-			while (item) {
-				renderable = item.renderable;
-
+			while (renderable) {
 				// it's possible that the renderable was already removed from the scene
-				if (!renderable.sourceEntity.scene || (!renderable.mouseEnabled && this._onlyMouseEnabled)) {
-					item = item.next;
+				if (!renderable.sourceEntity.scene || !renderable.sourceEntity._iIsMouseEnabled()) {
+					renderable = renderable.next;
 					continue;
 				}
 
 				this._potentialFound = true;
 
-				this._context.setCulling(renderable.material.bothSides? away.gl.ContextGLTriangleFace.NONE : away.gl.ContextGLTriangleFace.BACK);
+				this._context.setCulling((<away.materials.MaterialBase> renderable.materialOwner.material).bothSides? away.gl.ContextGLTriangleFace.NONE : away.gl.ContextGLTriangleFace.BACK);
 
 				this._interactives[this._interactiveId++] = renderable;
 				// color code so that reading from bitmapdata will contain the correct value
 				this._id[1] = (this._interactiveId >> 8)/255; // on green channel
 				this._id[2] = (this._interactiveId & 0xff)/255; // on blue channel
 
-				matrix.copyFrom(renderable.getRenderSceneTransform(camera));
+				matrix.copyFrom(renderable.sourceEntity.getRenderSceneTransform(camera));
 				matrix.append(viewProjection);
 				this._context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, matrix, true);
 				this._context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.FRAGMENT, 0, this._id, 1);
-				renderable.activateVertexBuffer(0, this._stageGL);
-				this._context.drawTriangles(renderable.getIndexBuffer(this._stageGL), 0, renderable.numTriangles);
+				renderable.subGeometry.activateVertexBuffer(0, this._stageGL);
+				this._context.drawTriangles(renderable.subGeometry.getIndexBuffer(this._stageGL), 0, renderable.subGeometry.numTriangles);
 
-				item = item.next;
+				renderable = renderable.next;
 			}
 
 		}
 
-		private updateRay(camera:away.cameras.Camera3D)
+		private updateRay(camera:away.entities.Camera)
 		{
-
 			this._rayPos = camera.scenePosition;
+
 			this._rayDir = camera.getRay(this._projX, this._projY, 1);
 			this._rayDir.normalize();
-
 		}
 
 		/**
@@ -292,7 +295,7 @@ module away.pick
 		 * Gets more detailed information about the hir position, if required.
 		 * @param camera The camera used to view the hit object.
 		 */
-		private getHitDetails(camera:away.cameras.Camera3D)
+		private getHitDetails(camera:away.entities.Camera)
 		{
 			this.getApproximatePosition(camera);
 			this.getPreciseDetails(camera);
@@ -300,37 +303,37 @@ module away.pick
 
 		/**
 		 * Finds a first-guess approximate position about the hit position.
+		 *
 		 * @param camera The camera used to view the hit object.
 		 */
-
-		private getApproximatePosition(camera:away.cameras.Camera3D)
+		private getApproximatePosition(camera:away.entities.Camera)
 		{
-			var entity:away.entities.Entity = this._hitRenderable.sourceEntity;
+			var bounds:away.geom.Box = this._hitRenderable.sourceEntity.bounds.aabb;
 			var col:number;
 			var scX:number, scY:number, scZ:number;
 			var offsX:number, offsY:number, offsZ:number;
 			var localViewProjection:away.geom.Matrix3D = away.geom.Matrix3DUtils.CALCULATION_MATRIX;
 
-			localViewProjection.copyFrom(this._hitRenderable.getRenderSceneTransform(camera));
+			localViewProjection.copyFrom(this._hitRenderable.sourceEntity.getRenderSceneTransform(camera));
 			localViewProjection.append(camera.viewProjection);
 			if (!this._triangleProgram) {
 				this.initTriangleProgram();
 			}
 
-			this._boundOffsetScale[4] = 1/(scX = entity.maxX - entity.minX);
-			this._boundOffsetScale[5] = 1/(scY = entity.maxY - entity.minY);
-			this._boundOffsetScale[6] = 1/(scZ = entity.maxZ - entity.minZ);
-			this._boundOffsetScale[0] = offsX = -entity.minX;
-			this._boundOffsetScale[1] = offsY = -entity.minY;
-			this._boundOffsetScale[2] = offsZ = -entity.minZ;
+			this._boundOffsetScale[4] = 1/(scX = bounds.width);
+			this._boundOffsetScale[5] = 1/(scY = bounds.height);
+			this._boundOffsetScale[6] = 1/(scZ = bounds.depth);
+			this._boundOffsetScale[0] = offsX = -bounds.x;
+			this._boundOffsetScale[1] = offsY = -bounds.y;
+			this._boundOffsetScale[2] = offsZ = -bounds.z;
 
 			this._context.setProgram(this._triangleProgram);
 			this._context.clear(0, 0, 0, 0, 1, 0, away.gl.ContextGLClearMask.DEPTH);
 			this._context.setScissorRectangle(ShaderPicker.MOUSE_SCISSOR_RECT);
 			this._context.setProgramConstantsFromMatrix(away.gl.ContextGLProgramType.VERTEX, 0, localViewProjection, true);
 			this._context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 5, this._boundOffsetScale, 2);
-			this._hitRenderable.activateVertexBuffer(0, this._stageGL);
-			this._context.drawTriangles(this._hitRenderable.getIndexBuffer(this._stageGL), 0, this._hitRenderable.numTriangles);
+			this._hitRenderable.subGeometry.activateVertexBuffer(0, this._stageGL);
+			this._context.drawTriangles(this._hitRenderable.subGeometry.getIndexBuffer(this._stageGL), 0, this._hitRenderable.subGeometry.numTriangles);
 			this._context.drawToBitmapData(this._bitmapData);
 
 			col = this._bitmapData.getPixel(0, 0);
@@ -345,14 +348,11 @@ module away.pick
 		 * ray-face intersection point, then use barycentric coordinates to figure out the uv coordinates, etc.
 		 * @param camera The camera used to view the hit object.
 		 */
-		private getPreciseDetails(camera:away.cameras.Camera3D)
+		private getPreciseDetails(camera:away.entities.Camera)
 		{
-
-			var subMesh:away.base.SubMesh = <away.base.SubMesh > this._hitRenderable;
-
-			var subGeom:away.base.ISubGeometry = subMesh.subGeometry;
-			var indices:number[] = subGeom.indexData;
-			var vertices:number[] = subGeom.vertexData;
+			var subGeom:away.base.ISubGeometry = this._hitRenderable.subGeometry;
+			var indices:Array<number> = subGeom.indexData;
+			var vertices:Array<number> = subGeom.vertexData;
 			var len:number = indices.length;
 			var x1:number, y1:number, z1:number;
 			var x2:number, y2:number, z2:number;
@@ -364,8 +364,8 @@ module away.pick
 			var v2x:number, v2y:number, v2z:number;
 			var dot00:number, dot01:number, dot02:number, dot11:number, dot12:number;
 			var s:number, t:number, invDenom:number;
-			var uvs:number[] = subGeom.UVData;
-			var normals:number[] = subGeom.faceNormals;
+			var uvs:Array<number> = subGeom.UVData;
+			var normals:Array<number> = subGeom.faceNormals;
 			var x:number = this._localHitPosition.x, y:number = this._localHitPosition.y, z:number = this._localHitPosition.z;
 			var u:number, v:number;
 			var ui1:number, ui2:number, ui3:number;
@@ -417,7 +417,7 @@ module away.pick
 					if (s >= 0 && t >= 0 && (s + t) <= 1) {
 
 						// this is def the triangle, now calculate precise coords
-						this.getPrecisePosition(this._hitRenderable.inverseSceneTransform, normals[i], normals[i + 1], normals[i + 2], x1, y1, z1);
+						this.getPrecisePosition(this._hitRenderable.sourceEntity.inverseSceneTransform, normals[i], normals[i + 1], normals[i + 2], x1, y1, z1);
 
 						v2x = this._localHitPosition.x - x1;
 						v2y = this._localHitPosition.y - y1;
@@ -452,7 +452,7 @@ module away.pick
 						this._hitUV.y = v + t*(uvs[ui2 + 1] - v) + s*(uvs[ui3 + 1] - v);
 
 						this._faceIndex = i;
-						this._subGeometryIndex = away.utils.GeometryUtils.getMeshSubMeshIndex(subMesh);
+						this._subGeometryIndex = away.utils.GeometryUtils.getMeshSubGeometryIndex(subGeom);
 
 						return;
 					}
@@ -483,7 +483,7 @@ module away.pick
 			var rx:number, ry:number, rz:number;
 			var ox:number, oy:number, oz:number;
 			var t:number;
-			var raw:number[] = away.geom.Matrix3DUtils.RAW_DATA_CONTAINER;
+			var raw:Array<number> = away.geom.Matrix3DUtils.RAW_DATA_CONTAINER;
 			var cx:number = this._rayPos.x, cy:number = this._rayPos.y, cz:number = this._rayPos.z;
 
 			// unprojected projection point, gives ray dir in cam space
@@ -512,17 +512,11 @@ module away.pick
 		public dispose()
 		{
 			this._bitmapData.dispose();
-			if (this._triangleProgram) {
-
+			if (this._triangleProgram)
 				this._triangleProgram.dispose();
 
-			}
-
-			if (this._objectProgram) {
-
+			if (this._objectProgram)
 				this._objectProgram.dispose();
-
-			}
 
 			this._triangleProgram = null;
 			this._objectProgram = null;

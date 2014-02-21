@@ -1,10 +1,10 @@
 ///<reference path="../../_definitions.ts"/>
 
-module away.primitives
+module away.base
 {
 	export class Segment
 	{
-		public _pSegmentsBase:away.entities.SegmentSet;
+		public _pSegmentsBase:away.base.SegmentSubGeometry;
 		public _pThickness:number;
 		public _pStart:away.geom.Vector3D;
 		public _pEnd:away.geom.Vector3D;
@@ -143,7 +143,7 @@ module away.primitives
 			this._subSetIndex = ind;
 		}
 
-		public set iSegmentsBase(segBase:away.entities.SegmentSet)
+		public set iSegmentsBase(segBase:away.base.SegmentSubGeometry)
 		{
 			this._pSegmentsBase = segBase;
 		}

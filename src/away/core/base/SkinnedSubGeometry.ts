@@ -16,19 +16,19 @@ module away.base
 	export class SkinnedSubGeometry extends CompactSubGeometry
 	{
 		private _bufferFormat:string;
-		private _jointWeightsData:number[];
-		private _jointIndexData:number[];
-		private _animatedData:number[]; // used for cpu fallback
-		private _jointWeightsBuffer:away.gl.VertexBuffer[] = new Array<away.gl.VertexBuffer>(8);
-		private _jointIndexBuffer:away.gl.VertexBuffer[] = new Array<away.gl.VertexBuffer>(8);
-		private _jointWeightsInvalid:boolean[] = new Array<boolean>(8);
-		private _jointIndicesInvalid:boolean[] = new Array<boolean>(8);
-		private _jointWeightContext:away.gl.ContextGL[] = new Array<away.gl.ContextGL>(8);
-		private _jointIndexContext:away.gl.ContextGL[] = new Array<away.gl.ContextGL>(8);
+		private _jointWeightsData:Array<number>;
+		private _jointIndexData:Array<number>;
+		private _animatedData:Array<number>; // used for cpu fallback
+		private _jointWeightsBuffer:Array<away.gl.VertexBuffer> = new Array<away.gl.VertexBuffer>(8);
+		private _jointIndexBuffer:Array<away.gl.VertexBuffer> = new Array<away.gl.VertexBuffer>(8);
+		private _jointWeightsInvalid:Array<boolean> = new Array<boolean>(8);
+		private _jointIndicesInvalid:Array<boolean> = new Array<boolean>(8);
+		private _jointWeightContext:Array<away.gl.ContextGL> = new Array<away.gl.ContextGL>(8);
+		private _jointIndexContext:Array<away.gl.ContextGL> = new Array<away.gl.ContextGL>(8);
 		private _jointsPerVertex:number;
 
-		private _condensedJointIndexData:number[];
-		private _condensedIndexLookUp:number[] /*uint*/; // used for linking condensed indices to the real ones
+		private _condensedJointIndexData:Array<number>;
+		private _condensedIndexLookUp:Array<number> /*uint*/; // used for linking condensed indices to the real ones
 		private _numCondensedJoints:number;
 
 		/**
@@ -46,7 +46,7 @@ module away.base
 		/**
 		 * If indices have been condensed, this will contain the original index for each condensed index.
 		 */
-		public get condensedIndexLookUp():number[] /*uint*/
+		public get condensedIndexLookUp():Array<number> /*uint*/
 		{
 			return this._condensedIndexLookUp;
 		}
@@ -62,12 +62,12 @@ module away.base
 		/**
 		 * The animated vertex positions when set explicitly if the skinning transformations couldn't be performed on GPU.
 		 */
-		public get animatedData():number[]
+		public get animatedData():Array<number>
 		{
 			return this._animatedData || this._vertexData.concat();
 		}
 
-		public updateAnimatedData(value:number[])
+		public updateAnimatedData(value:Array<number>)
 		{
 			this._animatedData = value;
 			this.pInvalidateBuffers(this._pVertexDataInvalid);
@@ -189,12 +189,12 @@ module away.base
 		/**
 		 * The raw joint weights data.
 		 */
-		public get iJointWeightsData():number[]
+		public get iJointWeightsData():Array<number>
 		{
 			return this._jointWeightsData;
 		}
 
-		public iUpdateJointWeightsData(value:number[])
+		public iUpdateJointWeightsData(value:Array<number>)
 		{
 			// invalidate condensed stuff
 			this._numCondensedJoints = 0;
@@ -208,12 +208,12 @@ module away.base
 		/**
 		 * The raw joint index data.
 		 */
-		public get iJointIndexData():number[]
+		public get iJointIndexData():Array<number>
 		{
 			return this._jointIndexData;
 		}
 
-		public iUpdateJointIndexData(value:number[])
+		public iUpdateJointIndexData(value:Array<number>)
 		{
 			this._jointIndexData = value;
 			this.pInvalidateBuffers(this._jointIndicesInvalid);

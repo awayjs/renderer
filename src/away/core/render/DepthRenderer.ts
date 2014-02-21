@@ -28,9 +28,9 @@ module away.render
 
 			this._renderBlended = renderBlended;
 			this._distanceBased = distanceBased;
-			this.iBackgroundR = 1;
-			this.iBackgroundG = 1;
-			this.iBackgroundB = 1;
+			this._iBackgroundR = 1;
+			this._iBackgroundG = 1;
+			this._iBackgroundB = 1;
 
 		}
 
@@ -44,13 +44,12 @@ module away.render
 			this._disableColor = value;
 		}
 
-		public iRenderCascades(entityCollector:away.traverse.EntityCollector, target:away.gl.TextureBase, numCascades:number, scissorRects:away.geom.Rectangle[], cameras:away.cameras.Camera3D[])
+		public iRenderCascades(entityCollector:away.traverse.ShadowCasterCollector, target:away.gl.TextureBase, numCascades:number, scissorRects:Array<away.geom.Rectangle>, cameras:Array<away.entities.Camera>)
 		{
-
 			this._pRenderTarget = target;
 			this._pRenderTargetSurface = 0;
 
-			this._pRenderableSorter.sort(entityCollector);
+			entityCollector.sortRenderables();
 
 			this._pStageGL.setRenderTarget(target, true, 0);
 			this._pContext.clear(1, 1, 1, 1, 1, 0);
@@ -58,7 +57,7 @@ module away.render
 			this._pContext.setBlendFactors(away.gl.ContextGLBlendFactor.ONE, away.gl.ContextGLBlendFactor.ZERO);
 			this._pContext.setDepthTest(true, away.gl.ContextGLCompareMode.LESS);
 
-			var head:away.data.RenderableListItem = entityCollector.opaqueRenderableHead;
+			var head:away.pool.RenderableBase = entityCollector.opaqueRenderableHead;
 
 			var first:boolean = true;
 
@@ -68,12 +67,8 @@ module away.render
 				first = false;
 			}
 
-			if (this._activeMaterial) {
-
+			if (this._activeMaterial)
 				this._activeMaterial.iDeactivateForDepth(this._pStageGL);
-
-			}
-
 
 			this._activeMaterial = null;
 
@@ -84,22 +79,18 @@ module away.render
 
 		}
 
-		private drawCascadeRenderables(item:away.data.RenderableListItem, camera:away.cameras.Camera3D, cullPlanes:away.geom.Plane3D[])
+		private drawCascadeRenderables(renderable:away.pool.RenderableBase, camera:away.entities.Camera, cullPlanes:away.geom.Plane3D[])
 		{
 			var material:away.materials.MaterialBase;
 
-			while (item) {
+			while (renderable) {
 
-				if (item.cascaded) {
-
-					item = item.next;
+				if (renderable.cascaded) {
+					renderable = renderable.next;
 					continue;
-
 				}
 
-				var renderable:away.base.IRenderable = item.renderable;
-
-				var entity:away.entities.Entity = renderable.sourceEntity;
+				var entity:away.entities.IEntity = renderable.sourceEntity;
 
 
 				// if completely in front, it will fall in a different cascade
@@ -107,29 +98,22 @@ module away.render
 
 				if (!cullPlanes || entity.worldBounds.isInFrustum(cullPlanes, 4)) {
 
-					material = renderable.material;
+					material = <away.materials.MaterialBase> renderable.materialOwner.material;
 
 					if (this._activeMaterial != material) {
-						if (this._activeMaterial) {
-
+						if (this._activeMaterial)
 							this._activeMaterial.iDeactivateForDepth(this._pStageGL);
-
-						}
 
 						this._activeMaterial = material;
 						this._activeMaterial.iActivateForDepth(this._pStageGL, camera, false);
 					}
 
 					this._activeMaterial.iRenderDepth(renderable, this._pStageGL, camera, camera.viewProjection);
-
 				} else {
-
-					item.cascaded = true;
-
+					renderable.cascaded = true;
 				}
 
-
-				item = item.next;
+				renderable = renderable.next;
 			}
 		}
 
@@ -138,7 +122,6 @@ module away.render
 		 */
 		public pDraw(entityCollector:away.traverse.EntityCollector, target:away.gl.TextureBase)
 		{
-
 			this._pContext.setBlendFactors(away.gl.ContextGLBlendFactor.ONE, away.gl.ContextGLBlendFactor.ZERO);
 
 			this._pContext.setDepthTest(true, away.gl.ContextGLCompareMode.LESS);
@@ -166,42 +149,35 @@ module away.render
 		 * @param renderables The renderables to draw.
 		 * @param entityCollector The EntityCollector containing all potentially visible information.
 		 */
-		private drawRenderables(item:away.data.RenderableListItem, entityCollector:away.traverse.EntityCollector)
+		private drawRenderables(renderable:away.pool.RenderableBase, entityCollector:away.traverse.EntityCollector)
 		{
-			var camera:away.cameras.Camera3D = entityCollector.camera;
-			var item2:away.data.RenderableListItem;
+			var camera:away.entities.Camera = entityCollector.camera;
+			var renderable2:away.pool.RenderableBase;
 
-			while (item) {
-
-				this._activeMaterial = item.renderable.material;
+			while (renderable) {
+				this._activeMaterial = <away.materials.MaterialBase> renderable.materialOwner.material;
 
 				// otherwise this would result in depth rendered anyway because fragment shader kil is ignored
 				if (this._disableColor && this._activeMaterial.iHasDepthAlphaThreshold()) {
-
-					item2 = item;
+					renderable2 = renderable;
 					// fast forward
 					do {
+						renderable2 = renderable2.next;
 
-						item2 = item2.next;
-
-					} while (item2 && item2.renderable.material == this._activeMaterial);
-
+					} while (renderable2 && renderable2.materialOwner.material == this._activeMaterial);
 				} else {
 					this._activeMaterial.iActivateForDepth(this._pStageGL, camera, this._distanceBased);
-					item2 = item;
+					renderable2 = renderable;
 					do {
+						this._activeMaterial.iRenderDepth(renderable2, this._pStageGL, camera, this._pRttViewProjectionMatrix);
+						renderable2 = renderable2.next;
 
-						this._activeMaterial.iRenderDepth(item2.renderable, this._pStageGL, camera, this._pRttViewProjectionMatrix);
-						item2 = item2.next;
-
-					} while (item2 && item2.renderable.material == this._activeMaterial);
+					} while (renderable2 && renderable2.materialOwner.material == this._activeMaterial);
 
 					this._activeMaterial.iDeactivateForDepth(this._pStageGL);
-
 				}
 
-				item = item2;
-
+				renderable = renderable2;
 			}
 		}
 	}

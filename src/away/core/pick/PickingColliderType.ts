@@ -24,15 +24,15 @@ module away.pick
 		/**
 		 * Pure AS3 picking collider that returns the first encountered hit on an Entity. Useful for low poly meshes and applying to many mesh instances.
 		 *
-		 * @see away.pick.AS3PickingCollider
+		 * @see away.pick.JSPickingCollider
 		 */
-		public static AS3_FIRST_ENCOUNTERED:IPickingCollider = new AS3PickingCollider(false);
+		public static AS3_FIRST_ENCOUNTERED:IPickingCollider = new JSPickingCollider(false);
 
 		/**
 		 * Pure AS3 picking collider that returns the best (closest) hit on an Entity. Useful for low poly meshes and applying to many mesh instances.
 		 *
-		 * @see away.pick.AS3PickingCollider
+		 * @see away.pick.JSPickingCollider
 		 */
-		public static AS3_BEST_HIT:IPickingCollider = new AS3PickingCollider(true);
+		public static AS3_BEST_HIT:IPickingCollider = new JSPickingCollider(true);
 	}
 }

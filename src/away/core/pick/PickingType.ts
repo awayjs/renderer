@@ -8,7 +8,7 @@ module away.pick
 	/**
 	 * Options for the different 3D object picking approaches available in Away3D. Can be used for automatic mouse picking on the view.
 	 *
-	 * @see away3d.containers.View3D#mousePicker
+	 * @see away3d.containers.View#mousePicker
 	 *
 	 * @class away.pick.PickingType
 	 */

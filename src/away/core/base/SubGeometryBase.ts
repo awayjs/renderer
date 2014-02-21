@@ -8,21 +8,19 @@ module away.base
 	/**
 	 * @class away.base.SubGeometryBase
 	 */
-	export class SubGeometryBase
+	export class SubGeometryBase extends away.library.NamedAssetBase
 	{
-		public static SUBGEOM_ID_COUNT:number = 0;
-
 		public _parentGeometry:away.base.Geometry;
-		public _vertexData:number[];
+		public _vertexData:Array<number>;
 
 		public _faceNormalsDirty:boolean = true;
 		public _faceTangentsDirty:boolean = true;
 		public _faceTangents:number[];
-		public _indices:number[] /*uint*/;
-		public _indexBuffer:away.gl.IndexBuffer[] = new Array<away.gl.IndexBuffer>(8);//Vector.<IndexBuffer> = new Vector.<IndexBuffer>(8);
+		public _indices:Array<number> /*uint*/;
+		public _indexBuffer:away.gl.IndexBuffer[] = new Array<away.gl.IndexBuffer>(8);
 		public _numIndices:number;
-		public _indexBufferContext:away.gl.ContextGL[] = new Array<away.gl.ContextGL>(8);//Vector.<ContextGL> = new Vector.<ContextGL>(8);
-		public _indicesInvalid:boolean[] = new Array<boolean>(8);//new Vector.<Boolean>(8, true);
+		public _indexBufferContext:away.gl.ContextGL[] = new Array<away.gl.ContextGL>(8);
+		public _indicesInvalid:boolean[] = new Array<boolean>(8);
 		public _numTriangles:number;
 
 		public _autoDeriveVertexNormals:boolean = true;
@@ -38,16 +36,9 @@ module away.base
 		public _scaleV:number = 1;
 		public _uvsDirty:boolean = true;
 
-		/**
-		 * An id for this subgeometry, used to identify subgeometries when using animation sets.
-		 *
-		 * @private
-		 */
-		public _iUniqueId:number;//Arcane
-
 		constructor()
 		{
-			this._iUniqueId = SubGeometryBase.SUBGEOM_ID_COUNT++;
+			super();
 		}
 
 		/**
@@ -115,14 +106,6 @@ module away.base
 		}
 
 		/**
-		 * Unique identifier for a subgeometry
-		 */
-		public get uniqueId():number
-		{
-			return this._iUniqueId;
-		}
-
-		/**
 		 * Retrieves the VertexBuffer object that contains triangle indices.
 		 * @param context The ContextGL for which we request the buffer
 		 * @return The VertexBuffer object that contains triangle indices.
@@ -166,8 +149,8 @@ module away.base
 			var dx1:number, dy1:number, dz1:number;
 			var dx2:number, dy2:number, dz2:number;
 			var cx:number, cy:number, cz:number;
-			var vertices:number[] = this._vertexData;
-			var uvs:number[] = this.UVData;
+			var vertices:Array<number> = this._vertexData;
+			var uvs:Array<number> = this.UVData;
 			var posStride:number = this.vertexStride;
 			var posOffset:number = this.vertexOffset;
 			var texStride:number = this.UVStride;
@@ -234,7 +217,7 @@ module away.base
 			var dx2:number, dy2:number, dz2:number;
 			var cx:number, cy:number, cz:number;
 			var d:number;
-			var vertices:number[] = this._vertexData;
+			var vertices:Array<number> = this._vertexData;
 			var posStride:number = this.vertexStride;
 			var posOffset:number = this.vertexOffset;
 
@@ -297,7 +280,7 @@ module away.base
 		/**
 		 * Updates the vertex normals based on the geometry.
 		 */
-		public pUpdateVertexNormals(target:number[]):number[]
+		public pUpdateVertexNormals(target:number[]):Array<number>
 		{
 			if (this._faceNormalsDirty) {
 				this.updateFaceNormals();
@@ -371,7 +354,7 @@ module away.base
 		/**
 		 * Updates the vertex tangents based on the geometry.
 		 */
-		public pUpdateVertexTangents(target:number[]):number[]
+		public pUpdateVertexTangents(target:number[]):Array<number>
 		{
 			if (this._faceTangentsDirty) {
 				this.pUpdateFaceTangents()//updateFaceTangents();
@@ -462,7 +445,7 @@ module away.base
 		 *
 		 * @private
 		 */
-		public get indexData():number[] /*uint*/
+		public get indexData():Array<number> /*uint*/
 		{
 			return this._indices;
 		}
@@ -471,7 +454,7 @@ module away.base
 		 * Updates the face indices of the SubGeometry.
 		 * @param indices The face indices to upload.
 		 */
-		public updateIndexData(indices:number[] /*uint*/)
+		public updateIndexData(indices:Array<number> /*uint*/)
 		{
 			this._indices = indices;
 			this._numIndices = indices.length;
@@ -544,7 +527,7 @@ module away.base
 		 *
 		 * @private
 		 */
-		public get faceNormals():number[]
+		public get faceNormals():Array<number>
 		{
 			if (this._faceNormalsDirty) {
 				this.updateFaceNormals();
@@ -557,7 +540,7 @@ module away.base
 		 * Invalidates all buffers in a vector, causing them the update when they are first requested.
 		 * @param buffers The vector of buffers to invalidate.
 		 */
-		public pInvalidateBuffers(invalid:boolean[]):void
+		public pInvalidateBuffers(invalid:Array<boolean>):void
 		{
 			for (var i:number = 0; i < 8; ++i) {
 				invalid[i] = true;
@@ -569,27 +552,27 @@ module away.base
 			throw new away.errors.AbstractMethodError();//AbstractMethodError();
 		}
 
-		public get vertexData():number[]
+		public get vertexData():Array<number>
 		{
 			throw new away.errors.AbstractMethodError();//
 		}
 
-		public get vertexPositionData():number[]
+		public get vertexPositionData():Array<number>
 		{
 			throw new away.errors.AbstractMethodError();//
 		}
 
-		public get vertexNormalData():number[]
+		public get vertexNormalData():Array<number>
 		{
 			throw new away.errors.AbstractMethodError();//
 		}
 
-		public get vertexTangentData():number[]
+		public get vertexTangentData():Array<number>
 		{
 			throw new away.errors.AbstractMethodError();//
 		}
 
-		public get UVData():number[]
+		public get UVData():Array<number>
 		{
 			throw new away.errors.AbstractMethodError();//
 		}
@@ -672,7 +655,7 @@ module away.base
 		{
 			var offset:number = this.UVOffset;
 			var stride:number = this.UVStride;
-			var uvs:number[] = this.UVData;
+			var uvs:Array<number> = this.UVData;
 			var len:number = uvs.length;
 			var ratioU:number = scaleU/this._scaleU;
 			var ratioV:number = scaleV/this._scaleV;
@@ -692,7 +675,7 @@ module away.base
 		 */
 		public scale(scale:number)
 		{
-			var vertices:number[] = this.UVData;
+			var vertices:Array<number> = this.UVData;
 			var len:number = vertices.length;
 			var offset:number = this.vertexOffset;
 			var stride:number = this.vertexStride;
@@ -706,9 +689,9 @@ module away.base
 
 		public applyTransformation(transform:away.geom.Matrix3D)
 		{
-			var vertices:number[] = this._vertexData;
-			var normals:number[] = this.vertexNormalData;
-			var tangents:number[] = this.vertexTangentData;
+			var vertices:Array<number> = this._vertexData;
+			var normals:Array<number> = this.vertexNormalData;
+			var tangents:Array<number> = this.vertexTangentData;
 			var posStride:number = this.vertexStride;
 			var normalStride:number = this.vertexNormalStride;
 			var tangentStride:number = this.vertexTangentStride;
@@ -781,7 +764,7 @@ module away.base
 			}
 		}
 
-		public pUpdateDummyUVs(target:number[]):number[]
+		public pUpdateDummyUVs(target:Array<number>):Array<number>
 		{
 			this._uvsDirty = false;
 			var idx:number;
