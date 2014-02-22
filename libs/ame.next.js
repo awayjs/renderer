@@ -392,8 +392,10 @@ var away;
         *
         */
         var EventDispatcher = (function () {
-            function EventDispatcher() {
+            function EventDispatcher(target) {
+                if (typeof target === "undefined") { target = null; }
                 this.listeners = new Array();
+                this.target = target || this;
             }
             /**
             * Add an event listener
@@ -433,7 +435,7 @@ var away;
                 if (listenerArray !== undefined) {
                     var l = listenerArray.length;
 
-                    event.target = this;
+                    event.target = this.target;
 
                     for (var i = 0; i < l; i++)
                         listenerArray[i](event);
@@ -16145,7 +16147,7 @@ var away;
                 var zz = z * z;
                 var zw = z * w;
 
-                var raw = away.geom.Matrix3DUtils.RAW_DATA_CONTAINER;
+                var raw = Matrix3DUtils.RAW_DATA_CONTAINER;
                 raw[0] = 1 - 2 * (yy + zz);
                 raw[1] = 2 * (xy + zw);
                 raw[2] = 2 * (xz - yw);
@@ -16173,7 +16175,7 @@ var away;
             */
             Matrix3DUtils.getForward = function (m, v) {
                 if (typeof v === "undefined") { v = null; }
-                //v ||= new away.geom.Vector3D(0.0, 0.0, 0.0);
+                //v ||= new Vector3D(0.0, 0.0, 0.0);
                 if (v === null) {
                     v = new away.geom.Vector3D(0.0, 0.0, 0.0);
                 }
@@ -16192,7 +16194,7 @@ var away;
             */
             Matrix3DUtils.getUp = function (m, v) {
                 if (typeof v === "undefined") { v = null; }
-                //v ||= new away.geom.Vector3D(0.0, 0.0, 0.0);
+                //v ||= new Vector3D(0.0, 0.0, 0.0);
                 if (v === null) {
                     v = new away.geom.Vector3D(0.0, 0.0, 0.0);
                 }
@@ -16226,7 +16228,7 @@ var away;
             * Returns a boolean value representing whether there is any significant difference between the two given 3d matrices.
             */
             Matrix3DUtils.compare = function (m1, m2) {
-                var r1 = away.geom.Matrix3DUtils.RAW_DATA_CONTAINER;
+                var r1 = Matrix3DUtils.RAW_DATA_CONTAINER;
                 var r2 = m2.rawData;
                 m1.copyRawDataTo(r1);
 
@@ -16242,7 +16244,7 @@ var away;
                 var dirN;
                 var upN;
                 var lftN;
-                var raw = away.geom.Matrix3DUtils.RAW_DATA_CONTAINER;
+                var raw = Matrix3DUtils.RAW_DATA_CONTAINER;
 
                 lftN = dir.crossProduct(up);
                 lftN.normalize();
@@ -16277,13 +16279,11 @@ var away;
 
             Matrix3DUtils.reflection = function (plane, target) {
                 if (typeof target === "undefined") { target = null; }
-                //target ||= new Matrix3D();
-                if (target === null) {
+                if (target === null)
                     target = new away.geom.Matrix3D();
-                }
 
                 var a = plane.a, b = plane.b, c = plane.c, d = plane.d;
-                var rawData = away.geom.Matrix3DUtils.RAW_DATA_CONTAINER;
+                var rawData = Matrix3DUtils.RAW_DATA_CONTAINER;
                 var ab2 = -2 * a * b;
                 var ac2 = -2 * a * c;
                 var bc2 = -2 * b * c;
@@ -16308,6 +16308,105 @@ var away;
                 target.copyRawDataFrom(rawData);
 
                 return target;
+            };
+
+            Matrix3DUtils.transformVector = function (matrix, vector, result) {
+                if (typeof result === "undefined") { result = null; }
+                if (!result)
+                    result = new away.geom.Vector3D();
+
+                var raw = Matrix3DUtils.RAW_DATA_CONTAINER;
+                matrix.copyRawDataTo(raw);
+                var a = raw[0];
+                var e = raw[1];
+                var i = raw[2];
+                var m = raw[3];
+                var b = raw[4];
+                var f = raw[5];
+                var j = raw[6];
+                var n = raw[7];
+                var c = raw[8];
+                var g = raw[9];
+                var k = raw[10];
+                var o = raw[11];
+                var d = raw[12];
+                var h = raw[13];
+                var l = raw[14];
+                var p = raw[15];
+
+                var x = vector.x;
+                var y = vector.y;
+                var z = vector.z;
+                result.x = a * x + b * y + c * z + d;
+                result.y = e * x + f * y + g * z + h;
+                result.z = i * x + j * y + k * z + l;
+                result.w = m * x + n * y + o * z + p;
+                return result;
+            };
+
+            Matrix3DUtils.deltaTransformVector = function (matrix, vector, result) {
+                if (typeof result === "undefined") { result = null; }
+                if (!result)
+                    result = new away.geom.Vector3D();
+
+                var raw = Matrix3DUtils.RAW_DATA_CONTAINER;
+                matrix.copyRawDataTo(raw);
+                var a = raw[0];
+                var e = raw[1];
+                var i = raw[2];
+                var m = raw[3];
+                var b = raw[4];
+                var f = raw[5];
+                var j = raw[6];
+                var n = raw[7];
+                var c = raw[8];
+                var g = raw[9];
+                var k = raw[10];
+                var o = raw[11];
+                var x = vector.x;
+                var y = vector.y;
+                var z = vector.z;
+                result.x = a * x + b * y + c * z;
+                result.y = e * x + f * y + g * z;
+                result.z = i * x + j * y + k * z;
+                result.w = m * x + n * y + o * z;
+                return result;
+            };
+
+            Matrix3DUtils.getTranslation = function (transform, result) {
+                if (typeof result === "undefined") { result = null; }
+                if (!result)
+                    result = new away.geom.Vector3D();
+
+                transform.copyColumnTo(3, result);
+                return result;
+            };
+
+            Matrix3DUtils.deltaTransformVectors = function (matrix, vin, vout) {
+                var raw = Matrix3DUtils.RAW_DATA_CONTAINER;
+                matrix.copyRawDataTo(raw);
+                var a = raw[0];
+                var e = raw[1];
+                var i = raw[2];
+                var m = raw[3];
+                var b = raw[4];
+                var f = raw[5];
+                var j = raw[6];
+                var n = raw[7];
+                var c = raw[8];
+                var g = raw[9];
+                var k = raw[10];
+                var o = raw[11];
+                var outIndex = 0;
+                var length = vin.length;
+                for (var index = 0; index < length; index += 3) {
+                    var x = vin[index];
+                    var y = vin[index + 1];
+                    var z = vin[index + 2];
+                    vout[outIndex++] = a * x + b * y + c * z;
+                    vout[outIndex++] = e * x + f * y + g * z;
+                    vout[outIndex++] = i * x + j * y + k * z;
+                }
             };
             Matrix3DUtils.RAW_DATA_CONTAINER = new Array(16);
 
@@ -25551,6 +25650,114 @@ var away;
             return MipmapGenerator;
         })();
         textures.MipmapGenerator = MipmapGenerator;
+    })(away.textures || (away.textures = {}));
+    var textures = away.textures;
+})(away || (away = {}));
+///<reference path="../_definitions.ts"/>
+var away;
+(function (away) {
+    (function (textures) {
+        var BitmapData = away.base.BitmapData;
+        var BitmapDataChannel = away.base.BitmapDataChannel;
+        var TextureBase = away.gl.TextureBase;
+        var Point = away.geom.Point;
+        var Rectangle = away.geom.Rectangle;
+
+        /**
+        * A convenience texture that encodes a specular map in the red channel, and the gloss map in the green channel, as expected by BasicSpecularMapMethod
+        */
+        var SpecularBitmapTexture = (function (_super) {
+            __extends(SpecularBitmapTexture, _super);
+            function SpecularBitmapTexture(specularMap, glossMap) {
+                if (typeof specularMap === "undefined") { specularMap = null; }
+                if (typeof glossMap === "undefined") { glossMap = null; }
+                var bmd;
+
+                if (specularMap)
+                    bmd = specularMap;
+                else
+                    bmd = glossMap;
+                bmd = bmd ? new BitmapData(bmd.width, bmd.height, false, 0xffffff) : new BitmapData(1, 1, false, 0xffffff);
+
+                _super.call(this, bmd);
+
+                this.specularMap = specularMap;
+                this.glossMap = glossMap;
+            }
+            Object.defineProperty(SpecularBitmapTexture.prototype, "specularMap", {
+                get: function () {
+                    return this._specularMap;
+                },
+                set: function (value) {
+                    this._specularMap = value;
+
+                    this.invalidateContent();
+
+                    this.testSize();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(SpecularBitmapTexture.prototype, "glossMap", {
+                get: function () {
+                    return this._glossMap;
+                },
+                set: function (value) {
+                    this._glossMap = value;
+                    this.invalidateContent();
+
+                    this.testSize();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            SpecularBitmapTexture.prototype.testSize = function () {
+                var w, h;
+
+                if (this._specularMap) {
+                    w = this._specularMap.width;
+                    h = this._specularMap.height;
+                } else if (this._glossMap) {
+                    w = this._glossMap.width;
+                    h = this._glossMap.height;
+                } else {
+                    w = 1;
+                    h = 1;
+                }
+
+                if (w != this.bitmapData.width && h != this.bitmapData.height) {
+                    var oldBitmap = this.bitmapData;
+                    this.bitmapData = new BitmapData(this._specularMap.width, this._specularMap.height, false, 0xffffff);
+                    oldBitmap.dispose();
+                }
+            };
+
+            SpecularBitmapTexture.prototype.pUploadContent = function (texture) {
+                var rect = this._specularMap.rect;
+                var origin = new Point();
+
+                this.bitmapData.fillRect(rect, 0xffffff);
+
+                if (this._glossMap)
+                    this.bitmapData.copyChannel(this._glossMap, rect, origin, BitmapDataChannel.GREEN, BitmapDataChannel.GREEN);
+
+                if (this._specularMap)
+                    this.bitmapData.copyChannel(this._specularMap, rect, origin, BitmapDataChannel.RED, BitmapDataChannel.RED);
+
+                _super.prototype.pUploadContent.call(this, texture);
+            };
+
+            SpecularBitmapTexture.prototype.dispose = function () {
+                this.bitmapData.dispose();
+                this.bitmapData = null;
+            };
+            return SpecularBitmapTexture;
+        })(away.textures.BitmapTexture);
+        textures.SpecularBitmapTexture = SpecularBitmapTexture;
     })(away.textures || (away.textures = {}));
     var textures = away.textures;
 })(away || (away = {}));

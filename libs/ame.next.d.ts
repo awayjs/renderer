@@ -215,6 +215,8 @@ declare module away.events {
     */
     class EventDispatcher {
         private listeners;
+        private target;
+        constructor(target?: any);
         /**
         * Add an event listener
         * @method addEventListener
@@ -7933,6 +7935,10 @@ declare module away.geom {
         static compare(m1: geom.Matrix3D, m2: geom.Matrix3D): boolean;
         static lookAt(matrix: geom.Matrix3D, pos: geom.Vector3D, dir: geom.Vector3D, up: geom.Vector3D): void;
         static reflection(plane: geom.Plane3D, target?: geom.Matrix3D): geom.Matrix3D;
+        static transformVector(matrix: geom.Matrix3D, vector: geom.Vector3D, result?: geom.Vector3D): geom.Vector3D;
+        static deltaTransformVector(matrix: geom.Matrix3D, vector: geom.Vector3D, result?: geom.Vector3D): geom.Vector3D;
+        static getTranslation(transform: geom.Matrix3D, result?: geom.Vector3D): geom.Vector3D;
+        static deltaTransformVectors(matrix: geom.Matrix3D, vin: number[], vout: number[]): void;
     }
 }
 declare module away.geom {
@@ -12836,6 +12842,21 @@ declare module away.textures {
         * @param alpha Indicate whether or not the uploaded bitmapData is transparent.
         */
         static generateMipMaps(source: away.base.BitmapData, target: away.gl.TextureBase, mipmap?: away.base.BitmapData, alpha?: boolean, side?: number): void;
+    }
+}
+declare module away.textures {
+    /**
+    * A convenience texture that encodes a specular map in the red channel, and the gloss map in the green channel, as expected by BasicSpecularMapMethod
+    */
+    class SpecularBitmapTexture extends textures.BitmapTexture {
+        private _specularMap;
+        private _glossMap;
+        constructor(specularMap?: away.base.BitmapData, glossMap?: away.base.BitmapData);
+        public specularMap : away.base.BitmapData;
+        public glossMap : away.base.BitmapData;
+        private testSize();
+        public pUploadContent(texture: away.gl.TextureBase): void;
+        public dispose(): void;
     }
 }
 declare module aglsl {
