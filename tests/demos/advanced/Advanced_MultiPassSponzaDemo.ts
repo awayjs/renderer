@@ -50,13 +50,14 @@ THE SOFTWARE.
 module examples
 {
 	import Loader3D							= away.containers.Loader3D;
-	import View							= away.containers.View;
+	import View								= away.containers.View;
 	import FirstPersonController			= away.controllers.FirstPersonController;
 	import Geometry							= away.base.Geometry;
 	import SubMesh							= away.base.SubMesh;
-	import BlendMode						= away.display.BlendMode;
+	import BlendMode						= away.base.BlendMode;
 	import Mesh								= away.entities.Mesh;
-	import SkyBox							= away.entities.SkyBox;
+	import Skybox							= away.entities.Skybox;
+	import Event							= away.events.Event;
 	import AssetEvent						= away.events.AssetEvent;
 	import ProgressEvent					= away.events.ProgressEvent;
 	import LoaderEvent						= away.events.LoaderEvent;
@@ -64,7 +65,8 @@ module examples
 	import AssetType						= away.library.AssetType;
 	import DirectionalLight					= away.lights.DirectionalLight;
 	import PointLight						= away.lights.PointLight;
-	import CascadeShadowMapper				= away.lights.CascadeShadowMapper;
+//	import CascadeShadowMapper				= away.lights.CascadeShadowMapper;
+	import DirectionalShadowMapper			= away.lights.DirectionalShadowMapper;
 	import AWDParser						= away.parsers.AWDParser;
 	import TextureMaterial					= away.materials.TextureMaterial;
 	import TextureMultiPassMaterial			= away.materials.TextureMultiPassMaterial;
@@ -74,13 +76,16 @@ module examples
 	import FogMethod						= away.materials.FogMethod;
 	import AssetLoaderContext				= away.net.AssetLoaderContext;
 	import URLLoader						= away.net.URLLoader;
-	import URLLoader						= away.net.URLLoader;
 	import URLLoaderDataFormat				= away.net.URLLoaderDataFormat;
 	import URLRequest						= away.net.URLRequest;
 	import PlaneGeometry					= away.primitives.PlaneGeometry;
-	import HTMLImageElementCubeTexture		= away.textures.HTMLImageElementCubeTexture;
-	import Merge							= away.tools.Merge;
+	import DefaultRenderer					= away.render.DefaultRenderer;
+	import ImageCubeTexture					= away.textures.ImageCubeTexture;
+	import ImageTexture						= away.textures.ImageTexture;
+	import SpecularBitmapTexture			= away.textures.SpecularBitmapTexture;
+	import Merge							= away.commands.Merge;
 	import Keyboard							= away.ui.Keyboard;
+	import Cast								= away.utils.Cast;
 
 
 
@@ -90,20 +95,20 @@ module examples
 		private _assetsRoot:string = "assets/demos/";
 		
 		//default material data strings
-		private _materialNameStrings:Array<string> = Array<string>(["arch",            "Material__298",  "bricks",            "ceiling",            "chain",             "column_a",          "column_b",          "column_c",          "fabric_g",              "fabric_c",         "fabric_f",               "details",          "fabric_d",             "fabric_a",        "fabric_e",              "flagpole",          "floor",            "16___Default","Material__25","roof",       "leaf",           "vase",         "vase_hanging",     "Material__57",   "vase_round"]);
+		private _materialNameStrings:Array<string> = Array<string>("arch",            "Material__298",  "bricks",            "ceiling",            "chain",             "column_a",          "column_b",          "column_c",          "fabric_g",              "fabric_c",         "fabric_f",               "details",          "fabric_d",             "fabric_a",        "fabric_e",              "flagpole",          "floor",            "16___Default","Material__25","roof",       "leaf",           "vase",         "vase_hanging",     "Material__57",   "vase_round");
 		
 		//private const diffuseTextureStrings:Array<string> = Array<string>(["arch_diff.atf", "background.atf", "bricks_a_diff.atf", "ceiling_a_diff.atf", "chain_texture.png", "column_a_diff.atf", "column_b_diff.atf", "column_c_diff.atf", "curtain_blue_diff.atf", "curtain_diff.atf", "curtain_green_diff.atf", "details_diff.atf", "fabric_blue_diff.atf", "fabric_diff.atf", "fabric_green_diff.atf", "flagpole_diff.atf", "floor_a_diff.atf", "gi_flag.atf", "lion.atf", "roof_diff.atf", "thorn_diff.png", "vase_dif.atf", "vase_hanging.atf", "vase_plant.png", "vase_round.atf"]);
 		//private const normalTextureStrings:Array<string> = Array<string>(["arch_ddn.atf", "background_ddn.atf", "bricks_a_ddn.atf", null,                "chain_texture_ddn.atf", "column_a_ddn.atf", "column_b_ddn.atf", "column_c_ddn.atf", null,                   null,               null,                     null,               null,                   null,              null,                    null,                null,               null,          "lion2_ddn.atf", null,       "thorn_ddn.atf", "vase_ddn.atf",  null,               null,             "vase_round_ddn.atf"]);
 		//private const specularTextureStrings:Array<string> = Array<string>(["arch_spec.atf", null,            "bricks_a_spec.atf", "ceiling_a_spec.atf", null,                "column_a_spec.atf", "column_b_spec.atf", "column_c_spec.atf", "curtain_spec.atf",      "curtain_spec.atf", "curtain_spec.atf",       "details_spec.atf", "fabric_spec.atf",      "fabric_spec.atf", "fabric_spec.atf",       "flagpole_spec.atf", "floor_a_spec.atf", null,          null,       null,            "thorn_spec.atf", null,           null,               "vase_plant_spec.atf", "vase_round_spec.atf"]);
 		
-		private _diffuseTextureStrings:Array<string> = Array<string>(["arch_diff.jpg", "background.jpg", "bricks_a_diff.jpg", "ceiling_a_diff.jpg", "chain_texture.png", "column_a_diff.jpg", "column_b_diff.jpg", "column_c_diff.jpg", "curtain_blue_diff.jpg", "curtain_diff.jpg", "curtain_green_diff.jpg", "details_diff.jpg", "fabric_blue_diff.jpg", "fabric_diff.jpg", "fabric_green_diff.jpg", "flagpole_diff.jpg", "floor_a_diff.jpg", "gi_flag.jpg", "lion.jpg", "roof_diff.jpg", "thorn_diff.png", "vase_dif.jpg", "vase_hanging.jpg", "vase_plant.png", "vase_round.jpg"]);
-		private _normalTextureStrings:Array<string> = Array<string>(["arch_ddn.jpg", "background_ddn.jpg", "bricks_a_ddn.jpg", null,                "chain_texture_ddn.jpg", "column_a_ddn.jpg", "column_b_ddn.jpg", "column_c_ddn.jpg", null,                   null,               null,                     null,               null,                   null,              null,                    null,                null,               null,          "lion2_ddn.jpg", null,       "thorn_ddn.jpg", "vase_ddn.jpg",  null,               null,             "vase_round_ddn.jpg"]);
-		private _specularTextureStrings:Array<string> = Array<string>(["arch_spec.jpg", null,            "bricks_a_spec.jpg", "ceiling_a_spec.jpg", null,                "column_a_spec.jpg", "column_b_spec.jpg", "column_c_spec.jpg", "curtain_spec.jpg",      "curtain_spec.jpg", "curtain_spec.jpg",       "details_spec.jpg", "fabric_spec.jpg",      "fabric_spec.jpg", "fabric_spec.jpg",       "flagpole_spec.jpg", "floor_a_spec.jpg", null,          null,       null,            "thorn_spec.jpg", null,           null,               "vase_plant_spec.jpg", "vase_round_spec.jpg"]);
-		private _numTexStrings:Array<number /*uint*/> = Array<number /*uint*/>([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-		private _meshReference:Array<Mesh> = new Array<Mesh>(25);
+		private _diffuseTextureStrings:Array<string> = Array<string>("arch_diff.jpg", "background.jpg", "bricks_a_diff.jpg", "ceiling_a_diff.jpg", "chain_texture.png", "column_a_diff.jpg", "column_b_diff.jpg", "column_c_diff.jpg", "curtain_blue_diff.jpg", "curtain_diff.jpg", "curtain_green_diff.jpg", "details_diff.jpg", "fabric_blue_diff.jpg", "fabric_diff.jpg", "fabric_green_diff.jpg", "flagpole_diff.jpg", "floor_a_diff.jpg", "gi_flag.jpg", "lion.jpg", "roof_diff.jpg", "thorn_diff.png", "vase_dif.jpg", "vase_hanging.jpg", "vase_plant.png", "vase_round.jpg");
+		private _normalTextureStrings:Array<string> = Array<string>("arch_ddn.jpg", "background_ddn.jpg", "bricks_a_ddn.jpg", null,                "chain_texture_ddn.jpg", "column_a_ddn.jpg", "column_b_ddn.jpg", "column_c_ddn.jpg", null,                   null,               null,                     null,               null,                   null,              null,                    null,                null,               null,          "lion2_ddn.jpg", null,       "thorn_ddn.jpg", "vase_ddn.jpg",  null,               null,             "vase_round_ddn.jpg");
+		private _specularTextureStrings:Array<string> = Array<string>("arch_spec.jpg", null,            "bricks_a_spec.jpg", "ceiling_a_spec.jpg", null,                "column_a_spec.jpg", "column_b_spec.jpg", "column_c_spec.jpg", "curtain_spec.jpg",      "curtain_spec.jpg", "curtain_spec.jpg",       "details_spec.jpg", "fabric_spec.jpg",      "fabric_spec.jpg", "fabric_spec.jpg",       "flagpole_spec.jpg", "floor_a_spec.jpg", null,          null,       null,            "thorn_spec.jpg", null,           null,               "vase_plant_spec.jpg", "vase_round_spec.jpg");
+		private _numTexStrings:Array<number /*uint*/> = Array<number /*uint*/>(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+		private _meshReference:Mesh[] = new Array<Mesh>(25);
 		
 		//flame data objects
-		private _flameData:Array<FlameVO> = Array<FlameVO>([new FlameVO(new Vector3D(-625, 165, 219), 0xffaa44), new FlameVO(new Vector3D(485, 165, 219), 0xffaa44), new FlameVO(new Vector3D(-625, 165, -148), 0xffaa44), new FlameVO(new Vector3D(485, 165, -148), 0xffaa44)]);
+		private _flameData:Array<FlameVO> = Array<FlameVO>(new FlameVO(new Vector3D(-625, 165, 219), 0xffaa44), new FlameVO(new Vector3D(485, 165, 219), 0xffaa44), new FlameVO(new Vector3D(-625, 165, -148), 0xffaa44), new FlameVO(new Vector3D(485, 165, -148), 0xffaa44));
 		
 		//material dictionaries to hold instances
 		private _textureDictionary:Object = new Object();
@@ -133,12 +138,12 @@ module examples
 		private _baseShadowMethod:FilteredShadowMapMethod;
 		private _cascadeMethod:CascadeShadowMapMethod;
 		private _fogMethod : FogMethod;
-		private _cascadeShadowMapper:CascadeShadowMapper;
+		private _cascadeShadowMapper:DirectionalShadowMapper;
 		private _directionalLight:DirectionalLight;
 		private _lights:Array<any> = new Array<any>();
 		
 		//material variables
-		private _skyMap:HTMLImageElementCubeTexture;
+		private _skyMap:ImageCubeTexture;
 		private _flameMaterial:TextureMaterial;
 		private _numTextures:number /*uint*/ = 0;
 		private _currentTexture:number /*uint*/ = 0;
@@ -165,8 +170,11 @@ module examples
 		private _strafeSpeed:number = 0;
 		private _walkAcceleration:number = 0;
 		private _strafeAcceleration:number = 0;
-		
-        /**
+
+		private _timer:away.utils.RequestAnimationFrame;
+		private _time:number = 0;
+
+		/**
          * Constructor
          */
 		constructor()
@@ -201,7 +209,7 @@ module examples
 		private initEngine()
 		{
 			//create the view
-			this._view = new View();
+			this._view = new View(new DefaultRenderer());
 			this._view.camera.y = 150;
 			this._view.camera.z = 0;
 			
@@ -218,10 +226,10 @@ module examples
 			this._lights = new Array<any>();
 			
 			//create global directional light
-			this._cascadeShadowMapper = new CascadeShadowMapper(3);
-			this._cascadeShadowMapper.lightOffset = 20000;
+//			this._cascadeShadowMapper = new CascadeShadowMapper(3);
+//			this._cascadeShadowMapper.lightOffset = 20000;
 			this._directionalLight = new DirectionalLight(-1, -15, 1);
-			this._directionalLight.shadowMapper = this._cascadeShadowMapper;
+//			this._directionalLight.shadowMapper = this._cascadeShadowMapper;
 			this._directionalLight.color = 0xeedddd;
 			this._directionalLight.ambient = .35;
 			this._directionalLight.ambientColor = 0x808090;
@@ -230,10 +238,11 @@ module examples
 
 			this.updateDirection();
 			
-			//creat flame lights
+			//create flame lights
 			var flameVO:FlameVO;
-			for each (flameVO in this._flameData)
-			{
+			var len:number = this._flameData.length;
+			for (var i:number = 0; i < len; i++) {
+				flameVO = this._flameData[i];
 				var light : PointLight = flameVO.light = new PointLight();
 				light.radius = 200;
 				light.fallOff = 600;
@@ -244,27 +253,12 @@ module examples
 			
 			//create our global light picker
 			this._lightPicker = new StaticLightPicker(this._lights);
-			this._baseShadowMethod = new FilteredShadowMapMethod(this._directionalLight);
+			this._baseShadowMethod = new away.materials.SoftShadowMapMethod(this._directionalLight , 10 , 5 );
+//			this._baseShadowMethod = new FilteredShadowMapMethod(this._directionalLight);
 			
 			//create our global fog method
 			this._fogMethod = new FogMethod(0, 4000, 0x9090e7);
-			this._cascadeMethod = new CascadeShadowMapMethod(this._baseShadowMethod);
-		}
-		
-        /**
-         * Initialise the scene materials
-         */		
-		private initMaterials()
-		{
-			//create skybox texture map
-			this._skyMap = new HTMLImageElementCubeTexture(new SkyMapCubeTexture());
-			
-			//create flame material
-			//_flameMaterial = new TextureMaterial(Cast.bitmapTexture(FlameTexture));
-			this._flameMaterial = new TextureMaterial(new ATFTexture(new FlameTexture()));
-			this._flameMaterial.blendMode = BlendMode.ADD;
-			this._flameMaterial.animateUVs = true;
-			
+//			this._cascadeMethod = new CascadeShadowMapMethod(this._baseShadowMethod);
 		}
 		        
         /**
@@ -273,16 +267,17 @@ module examples
         private initObjects()
 		{
 			//create skybox
-			this._view.scene.addChild(new SkyBox(this._skyMap));
+			this._view.scene.addChild(new Skybox(this._skyMap));
 			
 			//create flame meshes
 			this._flameGeometry = new PlaneGeometry(40, 80, 1, 1, false, true);
 			var flameVO:FlameVO;
-			for each (flameVO in this._flameData)
-			{
+			var len:number = this._flameData.length;
+			for (var i:number = 0; i < len; i++) {
+				flameVO = this._flameData[i];
 				var mesh : Mesh = flameVO.mesh = new Mesh(this._flameGeometry, this._flameMaterial);
-				mesh.position = flameVO.position;
-				mesh.subMeshes[0].scaleU = 1/16;
+				mesh.transform.position = flameVO.position;
+				mesh.subMeshes[0].uvTransform.scaleU = 1/16;
 				this._view.scene.addChild(mesh);
 				mesh.addChild(flameVO.light);
 			}
@@ -301,27 +296,34 @@ module examples
 			document.onmousemove = (event) => this.onMouseMove(event);
 			document.onkeydown = (event) => this.onKeyDown(event);
 			document.onkeyup = (event) => this.onKeyUp(event);
+
 			this.onResize();
+
+
+			this._timer = new away.utils.RequestAnimationFrame(this.onEnterFrame, this);
+			this._timer.start();
 		}
 		
 		/**
-		 * Updates the mateiral mode between single pass and multi pass
+		 * Updates the material mode between single pass and multi pass
 		 */
-		private updateMaterialPass(materialDictionary:Dictionary)
-		{
-			var mesh:Mesh;
-			var name:string;
-			for each (mesh in this._meshes) {
-				if (mesh.name == "sponza_04" || mesh.name == "sponza_379")
-					continue;
-				name = mesh.material.name;
-				var textureIndex:number = this._materialNameStrings.indexOf(name);
-				if (textureIndex == -1 || textureIndex >= this._materialNameStrings.length)
-					continue;
-				
-				mesh.material = materialDictionary[name];
-			}
-		}
+//		private updateMaterialPass(materialDictionary:Dictionary)
+//		{
+//			var mesh:Mesh;
+//			var name:string;
+//			var len:number = this._meshes.length;
+//			for (var i:number = 0; i < len; i++) {
+//				mesh = this._meshes[i];
+//				if (mesh.name == "sponza_04" || mesh.name == "sponza_379")
+//					continue;
+//				name = mesh.material.name;
+//				var textureIndex:number = this._materialNameStrings.indexOf(name);
+//				if (textureIndex == -1 || textureIndex >= this._materialNameStrings.length)
+//					continue;
+//
+//				mesh.material = materialDictionary[name];
+//			}
+//		}
 		
 		/**
 		 * Updates the direction of the directional lightsource
@@ -367,30 +369,30 @@ module examples
         private load(url:string)
 		{
 			var loader:URLLoader = new URLLoader();
-            loader.dataFormat = URLLoaderDataFormat.BINARY;
-			
             switch (url.substring(url.length - 3)) {
                 case "AWD": 
-                case "awd":
+				case "awd":
+					loader.dataFormat = URLLoaderDataFormat.ARRAY_BUFFER;
 					this._loadingText = "Loading Model";
-                    loader.addEventListener(Event.COMPLETE, this.parseAWD);
+                    loader.addEventListener(Event.COMPLETE, (event:Event) => this.parseAWD(event));
                     break;
                 case "png": 
                 case "jpg":
+					loader.dataFormat = URLLoaderDataFormat.BLOB;
 					this._currentTexture++;
 					this._loadingText = "Loading Textures";
-                    loader.addEventListener(Event.COMPLETE, this.parseBitmap);
+                    loader.addEventListener(Event.COMPLETE, (event) => this.parseBitmap(event));
 					url = "sponza/" + url;
                     break;
-				case "atf":
-					this._currentTexture++;
-					this._loadingText = "Loading Textures";
-                    loader.addEventListener(Event.COMPLETE, this.onATFComplete);
-					url = "sponza/atf/" + url;
-                    break;
+//				case "atf":
+//					this._currentTexture++;
+//					this._loadingText = "Loading Textures";
+//                    loader.addEventListener(Event.COMPLETE, (event:Event) => this.onATFComplete(event));
+//					url = "sponza/atf/" + url;
+//                    break;
             }
 			
-            loader.addEventListener(ProgressEvent.PROGRESS, this.loadProgress, false, 0, true);
+            loader.addEventListener(ProgressEvent.PROGRESS, (e:ProgressEvent) => this.loadProgress(e));
 			var urlReq:URLRequest = new URLRequest(this._assetsRoot+url);
  			loader.load(urlReq);
 			
@@ -401,64 +403,64 @@ module examples
          */
         private loadProgress(e:ProgressEvent)
 		{
-            var P:number = int(e.bytesLoaded / e.bytesTotal * 100);
+			//TODO work out why the casting on ProgressEvent fails for bytesLoaded and bytesTotal properties
+            var P:number = Math.floor(e["bytesLoaded"] / e["bytesTotal"] * 100);
             if (P != 100) {
-                log(this._loadingText + '\n' + ((this._loadingText == "Loading Model")? int((e.bytesLoaded / 1024) << 0) + 'kb | ' + int((e.bytesTotal / 1024) << 0) + 'kb' : this._currentTexture + ' | ' + this._numTextures));
+				console.log(this._loadingText + '\n' + ((this._loadingText == "Loading Model")? Math.floor((e["bytesLoaded"] / 1024) << 0) + 'kb | ' + Math.floor((e["bytesTotal"] / 1024) << 0) + 'kb' : this._currentTexture + ' | ' + this._numTextures));
 			}
         }
         
 		/**
 		 * Parses the ATF file
 		 */
-		private onATFComplete(e:Event)
-		{
-            var loader:URLLoader = URLLoader(e.target);
-            loader.removeEventListener(Event.COMPLETE, this.onATFComplete);
-			
-			if (!this._textureDictionary[this._loadingTextureStrings[this._n]])
-			{
-				this._textureDictionary[this._loadingTextureStrings[this._n]] = new ATFTexture(loader.data);
-			}
-				
-            loader.data = null;
-            loader.close();
-			loader = null;
-			
-			
-			//skip null textures
-			while (this._n++ < this._loadingTextureStrings.length - 1)
-				if (this._loadingTextureStrings[this._n])
-					break;
-			
-			//switch to next teture set
-            if (this._n < this._loadingTextureStrings.length) {
-				this.load(this._loadingTextureStrings[this._n]);
-			} else if (this._loadingTextureStrings == this._diffuseTextureStrings) {
-				this._n = 0;
-				this._loadingTextureStrings = this._normalTextureStrings;
-				this.load(this._loadingTextureStrings[this._n]);
-			} else if (this._loadingTextureStrings == this._normalTextureStrings) {
-				this._n = 0;
-				this._loadingTextureStrings = this._specularTextureStrings;
-				this.load(this._loadingTextureStrings[this._n]);
-			} else {
-				this.load("sponza/sponza.awd");
-            }
-        }
+//		private onATFComplete(e:Event)
+//		{
+//            var loader:URLLoader = URLLoader(e.target);
+//            loader.removeEventListener(Event.COMPLETE, this.onATFComplete);
+//
+//			if (!this._textureDictionary[this._loadingTextureStrings[this._n]])
+//			{
+//				this._textureDictionary[this._loadingTextureStrings[this._n]] = new ATFTexture(loader.data);
+//			}
+//
+//            loader.data = null;
+//            loader.close();
+//			loader = null;
+//
+//
+//			//skip null textures
+//			while (this._n++ < this._loadingTextureStrings.length - 1)
+//				if (this._loadingTextureStrings[this._n])
+//					break;
+//
+//			//switch to next teture set
+//            if (this._n < this._loadingTextureStrings.length) {
+//				this.load(this._loadingTextureStrings[this._n]);
+//			} else if (this._loadingTextureStrings == this._diffuseTextureStrings) {
+//				this._n = 0;
+//				this._loadingTextureStrings = this._normalTextureStrings;
+//				this.load(this._loadingTextureStrings[this._n]);
+//			} else if (this._loadingTextureStrings == this._normalTextureStrings) {
+//				this._n = 0;
+//				this._loadingTextureStrings = this._specularTextureStrings;
+//				this.load(this._loadingTextureStrings[this._n]);
+//			} else {
+//				this.load("sponza/sponza.awd");
+//            }
+//        }
 		
 		
 		/**
 		 * Parses the Bitmap file
 		 */
-        private parseBitmap(e:Event) 
+        private parseBitmap(e)
 		{
             var urlLoader:URLLoader = <URLLoader> e.target;
-            var loader:Loader = new Loader();
-            loader.loadBytes(urlLoader.data);
-            loader.contentLoaderInfo.addEventListener(Event.COMPLETE, this.onBitmapComplete, false, 0, true);
+            var image:HTMLImageElement = away.parsers.ParserUtils.blobToImage(urlLoader.data);
+			image.onload = (event) => this.onBitmapComplete(event);
             urlLoader.removeEventListener(Event.COMPLETE, this.parseBitmap);
             urlLoader.removeEventListener(ProgressEvent.PROGRESS, this.loadProgress);
-            loader = null;
+			urlLoader = null;
         }
         
 		/**
@@ -466,16 +468,15 @@ module examples
 		 */
         private onBitmapComplete(e:Event)
 		{
-            var loader:Loader = (<LoaderInfo> e.target).loader;
-            loader.contentLoaderInfo.removeEventListener(Event.COMPLETE, this.onBitmapComplete);
+			var image:HTMLImageElement = <HTMLImageElement> e.target;
 			
 			//create bitmap texture in dictionary
 			if (!this._textureDictionary[this._loadingTextureStrings[this._n]])
-				this._textureDictionary[this._loadingTextureStrings[this._n]] = (this._loadingTextureStrings == this._specularTextureStrings)? new SpecularBitmapTexture((e.target.content as Bitmap).bitmapData) : Cast.bitmapTexture(e.target.content);
-				
-            loader.unload();
-            loader = null;
-			
+				this._textureDictionary[this._loadingTextureStrings[this._n]] = (this._loadingTextureStrings == this._specularTextureStrings)? new ImageTexture(image, false) : new ImageTexture(image, false);
+
+			//this._textureDictionary[this._loadingTextureStrings[this._n]] = (this._loadingTextureStrings == this._specularTextureStrings)? new SpecularBitmapTexture(Cast.bitmapData(image)) : new ImageTexture(image);
+
+
 			//skip null textures
 			while (this._n++ < this._loadingTextureStrings.length - 1)
 				if (this._loadingTextureStrings[this._n])
@@ -500,16 +501,16 @@ module examples
         /**
          * Parses the AWD file
          */
-        private parseAWD(e:Event)
+        private parseAWD(e)
 		{
-			Console.log("Parsing Data");
+			console.log("Parsing Data");
             var loader:URLLoader = <URLLoader> e.target;
             var loader3d:Loader3D = new Loader3D(false);
 			var context:AssetLoaderContext = new AssetLoaderContext();
-			//context.includeDependencies = false;
-			context.dependencyBaseUrl = "assets/sponza/";
-            loader3d.addEventListener(AssetEvent.ASSET_COMPLETE, this.onAssetComplete, false, 0, true);
-            loader3d.addEventListener(LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete, false, 0, true);
+			context.includeDependencies = false;
+			//context.dependencyBaseUrl = "assets/sponza/";
+            loader3d.addEventListener(AssetEvent.ASSET_COMPLETE, (event:AssetEvent) => this.onAssetComplete(event));
+            loader3d.addEventListener(LoaderEvent.RESOURCE_COMPLETE, (event:LoaderEvent) => this.onResourceComplete(event));
             loader3d.loadData(loader.data, context, null, new AWDParser());
 			
             loader.removeEventListener(ProgressEvent.PROGRESS, this.loadProgress);
@@ -542,18 +543,20 @@ module examples
 			//reassign materials
 			var mesh:Mesh;
 			var name:string;
-			
-			for each (mesh in this._meshes) {
+
+			var len:number = this._meshes.length;
+			for (var i:number = 0; i < len; i++) {
+				mesh = this._meshes[i];
 				if (mesh.name == "sponza_04" || mesh.name == "sponza_379")
 					continue;
-				
+
 				var num:number = Number(mesh.name.substring(7));
-				
+
 				name = mesh.material.name;
-				
+
 				if (name == "column_c" && (num < 22 || num > 33))
 					continue;
-				
+
 				var colNum:number = (num - 125);
 				if (name == "column_b") {
 					if (colNum  >=0 && colNum < 132 && (colNum % 11) < 10) {
@@ -568,7 +571,7 @@ module examples
 						this.colMeshes = new Array<Mesh>();
 					}
 				}
-				
+
 				var vaseNum:number = (num - 334);
 				if (name == "vase_hanging" && (vaseNum % 9) < 5) {
 					if (vaseNum  >=0 && vaseNum < 370 && (vaseNum % 9) < 4) {
@@ -583,7 +586,7 @@ module examples
 						this.vaseMeshes = new Array<Mesh>();
 					}
 				}
-				
+
 				var poleNum:number = num - 290;
 				if (name == "flagpole") {
 					if (poleNum >=0 && poleNum < 320 && (poleNum % 3) < 2) {
@@ -612,38 +615,38 @@ module examples
 				var normalTextureName:string;
 				var specularTextureName:string;
 				
-				//store single pass materials for use later
-				var singleMaterial:TextureMaterial = this._singleMaterialDictionary[name];
-				
-				if (!singleMaterial) {
-					
-					//create singlepass material
-					singleMaterial = new TextureMaterial(this._textureDictionary[textureName]);
-					
-					singleMaterial.name = name;
-					singleMaterial.lightPicker = this._lightPicker;
-					singleMaterial.addMethod(this._fogMethod);
-					singleMaterial.mipmap = true;
-					singleMaterial.repeat = true;
-					singleMaterial.specular = 2;
-					
-					//use alpha transparancy if texture is png
-					if (textureName.substring(textureName.length - 3) == "png")
-						singleMaterial.alphaThreshold = 0.5;
-					
-					//add normal map if it exists
-					normalTextureName = this._normalTextureStrings[textureIndex];
-					if (normalTextureName)
-						singleMaterial.normalMap = this._textureDictionary[normalTextureName];
-					
-					//add specular map if it exists
-					specularTextureName = this._specularTextureStrings[textureIndex];
-					if (specularTextureName)
-						singleMaterial.specularMap = this._textureDictionary[specularTextureName];
-
-					this._singleMaterialDictionary[name] = singleMaterial;
-					
-				}
+//				//store single pass materials for use later
+//				var singleMaterial:TextureMaterial = this._singleMaterialDictionary[name];
+//
+//				if (!singleMaterial) {
+//
+//					//create singlepass material
+//					singleMaterial = new TextureMaterial(this._textureDictionary[textureName]);
+//
+//					singleMaterial.name = name;
+//					singleMaterial.lightPicker = this._lightPicker;
+//					singleMaterial.addMethod(this._fogMethod);
+//					singleMaterial.mipmap = true;
+//					singleMaterial.repeat = true;
+//					singleMaterial.specular = 2;
+//
+//					//use alpha transparancy if texture is png
+//					if (textureName.substring(textureName.length - 3) == "png")
+//						singleMaterial.alphaThreshold = 0.5;
+//
+//					//add normal map if it exists
+//					normalTextureName = this._normalTextureStrings[textureIndex];
+//					if (normalTextureName)
+//						singleMaterial.normalMap = this._textureDictionary[normalTextureName];
+//
+//					//add specular map if it exists
+//					specularTextureName = this._specularTextureStrings[textureIndex];
+//					if (specularTextureName)
+//						singleMaterial.specularMap = this._textureDictionary[specularTextureName];
+//
+//					this._singleMaterialDictionary[name] = singleMaterial;
+//
+//				}
 
 				//store multi pass materials for use later
 				var multiMaterial:TextureMultiPassMaterial = this._multiMaterialDictionary[name];
@@ -654,9 +657,10 @@ module examples
 					multiMaterial = new TextureMultiPassMaterial(this._textureDictionary[textureName]);
 					multiMaterial.name = name;
 					multiMaterial.lightPicker = this._lightPicker;
-					multiMaterial.shadowMethod = this._cascadeMethod;
+//					multiMaterial.shadowMethod = this._cascadeMethod;
+					multiMaterial.shadowMethod = this._baseShadowMethod;
 					multiMaterial.addMethod(this._fogMethod);
-					multiMaterial.mipmap = true;
+					multiMaterial.mipmap = false;
 					multiMaterial.repeat = true;
 					multiMaterial.specular = 2;
 					
@@ -669,7 +673,7 @@ module examples
 					normalTextureName = this._normalTextureStrings[textureIndex];
 					if (normalTextureName)
 						multiMaterial.normalMap = this._textureDictionary[normalTextureName];
-					
+
 					//add specular map if it exists
 					specularTextureName = this._specularTextureStrings[textureIndex];
 					if (specularTextureName)
@@ -698,18 +702,52 @@ module examples
 			
 			while (z < this._numTexStrings.length)
 			{
-				Console.log(this._diffuseTextureStrings[z], this._numTexStrings[z]);
+				console.log(this._diffuseTextureStrings[z], this._numTexStrings[z]);
 				z++;
 			}
 
-			this.initMaterials();
-			this.initObjects();
+			//load skybox and flame texture
+
+			away.library.AssetLibrary.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, away.utils.Delegate.create(this, this.onExtraResourceComplete));
+
+			//setup the url map for textures in the cubemap file
+			var assetLoaderContext:away.net.AssetLoaderContext = new away.net.AssetLoaderContext();
+			assetLoaderContext.dependencyBaseUrl = "assets/demos/skybox/";
+
+			//environment texture
+			away.library.AssetLibrary.load(new away.net.URLRequest("assets/demos/skybox/hourglass_texture.cube"), assetLoaderContext);
+
+			//globe textures
+			away.library.AssetLibrary.load(new away.net.URLRequest("assets/demos/fire.png"));
         }
-		
+
+		/**
+		 * Triggered once extra resources are loaded
+		 */
+		private onExtraResourceComplete(event:LoaderEvent)
+		{
+			switch( event.url )
+			{
+				case 'assets/demos/skybox/hourglass_texture.cube':
+					//create skybox texture map
+					this._skyMap = <ImageCubeTexture> event.assets[ 0 ];
+					break;
+				case "assets/demos/fire.png" :
+					this._flameMaterial = new TextureMaterial(<ImageTexture> event.assets[ 0 ]);
+					this._flameMaterial.blendMode = BlendMode.ADD;
+					this._flameMaterial.animateUVs = true;
+					break;
+			}
+
+			if (this._skyMap && this._flameMaterial)
+				this.initObjects();
+		}
+
+
 		/**
 		 * Navigation and render loop
 		 */
-		private onEnterFrame(event:Event)
+		private onEnterFrame(dt:number)
 		{	
 			if (this._walkSpeed || this._walkAcceleration) {
 				this._walkSpeed = (this._walkSpeed + this._walkAcceleration)*this._drag;
@@ -727,7 +765,9 @@ module examples
 			
 			//animate flames
 			var flameVO:FlameVO;
-			for each (flameVO in this._flameData) {
+			var len:number = this._flameData.length;
+			for (var i:number = 0; i < len; i++) {
+				flameVO = this._flameData[i];
 				//update flame light
 				var light : PointLight = flameVO.light;
 				
@@ -745,8 +785,8 @@ module examples
 					continue;
 				
 				var subMesh : SubMesh = mesh.subMeshes[0];
-				subMesh.offsetU += 1/16;
-				subMesh.offsetU %= 1;
+				subMesh.uvTransform.offsetU += 1/16;
+				subMesh.uvTransform.offsetU %= 1;
 				mesh.rotationY = Math.atan2(mesh.x - this._view.camera.x, mesh.z - this._view.camera.z)*180/Math.PI;
 			}
 

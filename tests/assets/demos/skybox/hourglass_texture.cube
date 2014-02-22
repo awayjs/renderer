@@ -2,11 +2,11 @@
   "data":[
      {
         "id":"posX",
-        "image":"hourglass_posX.jpg"
+        "image":"hourglass_posZ.jpg"
      },
      {
         "id":"negX",
-        "image":"hourglass_negX.jpg"
+        "image":"hourglass_negZ.jpg"
      },
      {
         "id":"posY",
@@ -18,11 +18,11 @@
      },
      {
         "id":"posZ",
-        "image":"hourglass_posZ.jpg"
+        "image":"hourglass_posX.jpg"
      },
      {
         "id":"negZ",
-        "image":"hourglass_negZ.jpg"
+        "image":"hourglass_negX.jpg"
      }
   ]
 }
