@@ -2820,6 +2820,7 @@ declare module away.lights {
         public iRenderDepthMap(stageGL: away.base.StageGL, entityCollector: away.traverse.EntityCollector, renderer: away.render.DepthRenderer): void;
         public pUpdateDepthProjection(viewCamera: away.entities.Camera): void;
         public pDrawDepthMap(target: away.gl.TextureBase, scene: away.containers.Scene, renderer: away.render.DepthRenderer): void;
+        public _pSetDepthMapSize(value): void;
     }
 }
 declare module away.lights {
@@ -2855,6 +2856,38 @@ declare module away.lights {
         public pUpdateCullPlanes(viewCamera: away.entities.Camera): void;
         public pUpdateDepthProjection(viewCamera: away.entities.Camera): void;
         public pUpdateProjectionFromFrustumCorners(viewCamera: away.entities.Camera, corners: number[], matrix: away.geom.Matrix3D): void;
+    }
+}
+declare module away.lights {
+    import Rectangle = away.geom.Rectangle;
+    class CascadeShadowMapper extends lights.DirectionalShadowMapper implements away.events.IEventDispatcher {
+        public _pScissorRects: Rectangle[];
+        private _pScissorRectsInvalid;
+        private _splitRatios;
+        private _numCascades;
+        private _depthCameras;
+        private _depthLenses;
+        private _texOffsetsX;
+        private _texOffsetsY;
+        private _changeDispatcher;
+        private _nearPlaneDistances;
+        constructor(numCascades?: number);
+        public getSplitRatio(index: number): number;
+        public setSplitRatio(index: number, value: number): void;
+        public getDepthProjections(partition: number): away.geom.Matrix3D;
+        private init();
+        public _pSetDepthMapSize(value: number): void;
+        private invalidateScissorRects();
+        public numCascades : number;
+        public pDrawDepthMap(target: away.gl.TextureBase, scene: away.containers.Scene, renderer: away.render.DepthRenderer): void;
+        private updateScissorRects();
+        public pUpdateDepthProjection(viewCamera: away.entities.Camera): void;
+        private updateProjectionPartition(matrix, splitRatio, texOffsetX, texOffsetY);
+        public addEventListener(type: string, listener: Function): void;
+        public removeEventListener(type: string, listener: Function): void;
+        public dispatchEvent(event: away.events.Event): void;
+        public hasEventListener(type: string): boolean;
+        public _iNearPlaneDistances : number[];
     }
 }
 declare module away.lights {
@@ -4917,6 +4950,78 @@ declare module away.materials {
         */
         public iShadowRegister : materials.ShaderRegisterElement;
         public setIShadowRegister(shadowReg: materials.ShaderRegisterElement): void;
+    }
+}
+declare module away.materials {
+    /**
+    * CascadeShadowMapMethod is a shadow map method to apply cascade shadow mapping on materials.
+    * Must be used with a DirectionalLight with a CascadeShadowMapper assigned to its shadowMapper property.
+    *
+    * @see away.lights.CascadeShadowMapper
+    */
+    class CascadeShadowMapMethod extends materials.ShadowMapMethodBase {
+        private _baseMethod;
+        private _cascadeShadowMapper;
+        private _depthMapCoordVaryings;
+        private _cascadeProjections;
+        /**
+        * Creates a new CascadeShadowMapMethod object.
+        *
+        * @param shadowMethodBase The shadow map sampling method used to sample individual cascades (fe: HardShadowMapMethod, SoftShadowMapMethod)
+        */
+        constructor(shadowMethodBase: materials.SimpleShadowMapMethodBase);
+        /**
+        * The shadow map sampling method used to sample individual cascades. These are typically those used in conjunction
+        * with a DirectionalShadowMapper.
+        *
+        * @see HardShadowMapMethod
+        * @see SoftShadowMapMethod
+        */
+        public baseMethod : materials.SimpleShadowMapMethodBase;
+        /**
+        * @inheritDoc
+        */
+        public iInitVO(vo: materials.MethodVO): void;
+        /**
+        * @inheritDoc
+        */
+        public iSharedRegisters : materials.ShaderRegisterData;
+        /**
+        * @inheritDoc
+        */
+        public iInitConstants(vo: materials.MethodVO): void;
+        /**
+        * @inheritDoc
+        */
+        public iCleanCompilationData(): void;
+        /**
+        * @inheritDoc
+        */
+        public iGetVertexCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache): string;
+        /**
+        * Creates the registers for the cascades' projection coordinates.
+        */
+        private initProjectionsRegs(regCache);
+        /**
+        * @inheritDoc
+        */
+        public iGetFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
+        /**
+        * @inheritDoc
+        */
+        public iSetRenderState(vo: materials.MethodVO, renderable: away.pool.RenderableBase, stageGL: away.base.StageGL, camera: away.entities.Camera): void;
+        /**
+        * Called when the shadow mappers cascade configuration changes.
+        */
+        private onCascadeChange(event);
+        /**
+        * Called when the base method's shader code is invalidated.
+        */
+        private onShaderInvalidated(event);
     }
 }
 declare module away.materials {
@@ -11844,6 +11949,73 @@ declare module away.parsers {
         */
         static enableAllBundled(): void;
     }
+}
+declare module away.commands {
+    /**
+    *  Class Merge merges two or more static meshes into one.<code>Merge</code>
+    */
+    class Merge {
+        private _objectSpace;
+        private _keepMaterial;
+        private _disposeSources;
+        private _geomVOs;
+        private _toDispose;
+        /**
+        * @param    keepMaterial    [optional]    Determines if the merged object uses the recevier mesh material information or keeps its source material(s). Defaults to false.
+        * If false and receiver object has multiple materials, the last material found in receiver submeshes is applied to the merged submesh(es).
+        * @param    disposeSources  [optional]    Determines if the mesh and geometry source(s) used for the merging are disposed. Defaults to false.
+        * If true, only receiver geometry and resulting mesh are kept in  memory.
+        * @param    objectSpace     [optional]    Determines if source mesh(es) is/are merged using objectSpace or worldspace. Defaults to false.
+        */
+        constructor(keepMaterial?: boolean, disposeSources?: boolean, objectSpace?: boolean);
+        /**
+        * Determines if the mesh and geometry source(s) used for the merging are disposed. Defaults to false.
+        */
+        public disposeSources : boolean;
+        /**
+        * Determines if the material source(s) used for the merging are disposed. Defaults to false.
+        */
+        public keepMaterial : boolean;
+        /**
+        * Determines if source mesh(es) is/are merged using objectSpace or worldspace. Defaults to false.
+        */
+        public objectSpace : boolean;
+        /**
+        * Merges all the children of a container into a single Mesh. If no Mesh object is found, method returns the receiver without modification.
+        *
+        * @param    receiver           The Mesh to receive the merged contents of the container.
+        * @param    objectContainer    The DisplayObjectContainer holding the meshes to be mergd.
+        *
+        * @return The merged Mesh instance.
+        */
+        public applyToContainer(receiver: away.entities.Mesh, objectContainer: away.containers.DisplayObjectContainer): void;
+        /**
+        * Merges all the meshes found in the Array&lt;Mesh&gt; into a single Mesh.
+        *
+        * @param    receiver    The Mesh to receive the merged contents of the meshes.
+        * @param    meshes      A series of Meshes to be merged with the reciever mesh.
+        */
+        public applyToMeshes(receiver: away.entities.Mesh, meshes: away.entities.Mesh[]): void;
+        /**
+        *  Merges 2 meshes into one. It is recommand to use apply when 2 meshes are to be merged. If more need to be merged, use either applyToMeshes or applyToContainer methods.
+        *
+        * @param    receiver    The Mesh to receive the merged contents of both meshes.
+        * @param    mesh        The Mesh to be merged with the receiver mesh
+        */
+        public apply(receiver: away.entities.Mesh, mesh: away.entities.Mesh): void;
+        private reset();
+        private merge(destMesh, dispose);
+        private collect(mesh, dispose);
+        private getSubGeomData(material);
+        private parseContainer(receiver, object);
+    }
+}
+declare class GeometryVO {
+    public uvs: number[];
+    public vertices: number[];
+    public normals: number[];
+    public indices: number[];
+    public material: away.materials.MaterialBase;
 }
 declare module away.tools {
     /**

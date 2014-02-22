@@ -9228,17 +9228,10 @@ var away;
                     return this._pDepthMapSize;
                 },
                 set: function (value) {
-                    if (value == this._pDepthMapSize) {
+                    if (value == this._pDepthMapSize)
                         return;
-                    }
-                    this._pDepthMapSize = value;
 
-                    if (this._explicitDepthMap) {
-                        throw Error("Cannot set depth map size for the current renderer.");
-                    } else if (this._depthMap) {
-                        this._depthMap.dispose();
-                        this._depthMap = null;
-                    }
+                    this._pSetDepthMapSize(value);
                 },
                 enumerable: true,
                 configurable: true
@@ -9275,6 +9268,17 @@ var away;
 
             ShadowMapperBase.prototype.pDrawDepthMap = function (target, scene, renderer) {
                 throw new away.errors.AbstractMethodError();
+            };
+
+            ShadowMapperBase.prototype._pSetDepthMapSize = function (value) {
+                this._pDepthMapSize = value;
+
+                if (this._explicitDepthMap) {
+                    throw Error("Cannot set depth map size for the current renderer.");
+                } else if (this._depthMap) {
+                    this._depthMap.dispose();
+                    this._depthMap = null;
+                }
             };
             return ShadowMapperBase;
         })();
@@ -9541,6 +9545,259 @@ var away;
             return DirectionalShadowMapper;
         })(away.lights.ShadowMapperBase);
         lights.DirectionalShadowMapper = DirectionalShadowMapper;
+    })(away.lights || (away.lights = {}));
+    var lights = away.lights;
+})(away || (away = {}));
+var away;
+(function (away) {
+    (function (lights) {
+        var Camera = away.entities.Camera;
+        var FreeMatrixProjection = away.projections.FreeMatrixProjection;
+        var ProjectionBase = away.projections.ProjectionBase;
+        var Scene = away.containers.Scene;
+        var Matrix3DUtils = away.geom.Matrix3DUtils;
+        var DepthRenderer = away.render.DepthRenderer;
+
+        var TextureBase = away.gl.TextureBase;
+        var Event = away.events.Event;
+        var EventDispatcher = away.events.EventDispatcher;
+        
+        var Matrix3D = away.geom.Matrix3D;
+        var Rectangle = away.geom.Rectangle;
+
+        var CascadeShadowMapper = (function (_super) {
+            __extends(CascadeShadowMapper, _super);
+            function CascadeShadowMapper(numCascades) {
+                if (typeof numCascades === "undefined") { numCascades = 3; }
+                _super.call(this);
+                this._pScissorRectsInvalid = true;
+
+                if (numCascades < 1 || numCascades > 4)
+                    throw new Error("numCascades must be an integer between 1 and 4");
+
+                this._numCascades = numCascades;
+                this._changeDispatcher = new EventDispatcher(this);
+                this.init();
+            }
+            CascadeShadowMapper.prototype.getSplitRatio = function (index/*uint*/ ) {
+                return this._splitRatios[index];
+            };
+
+            CascadeShadowMapper.prototype.setSplitRatio = function (index/*uint*/ , value) {
+                if (value < 0)
+                    value = 0;
+else if (value > 1)
+                    value = 1;
+
+                if (index >= this._numCascades)
+                    throw new Error("index must be smaller than the number of cascades!");
+
+                this._splitRatios[index] = value;
+            };
+
+            CascadeShadowMapper.prototype.getDepthProjections = function (partition/*uint*/ ) {
+                return this._depthCameras[partition].viewProjection;
+            };
+
+            CascadeShadowMapper.prototype.init = function () {
+                this._splitRatios = new Array(this._numCascades);
+                this._nearPlaneDistances = new Array(this._numCascades);
+
+                var s = 1;
+                for (var i = this._numCascades - 1; i >= 0; --i) {
+                    this._splitRatios[i] = s;
+                    s *= .4;
+                }
+
+                this._texOffsetsX = Array(-1, 1, -1, 1);
+                this._texOffsetsY = Array(1, 1, -1, -1);
+                this._pScissorRects = new Array(4);
+                this._depthLenses = new Array();
+                this._depthCameras = new Array();
+
+                for (i = 0; i < this._numCascades; ++i) {
+                    this._depthLenses[i] = new FreeMatrixProjection();
+                    this._depthCameras[i] = new Camera(this._depthLenses[i]);
+                }
+            };
+
+            CascadeShadowMapper.prototype._pSetDepthMapSize = function (value/*uint*/ ) {
+                _super.prototype._pSetDepthMapSize.call(this, value);
+
+                this.invalidateScissorRects();
+            };
+
+            CascadeShadowMapper.prototype.invalidateScissorRects = function () {
+                this._pScissorRectsInvalid = true;
+            };
+
+            Object.defineProperty(CascadeShadowMapper.prototype, "numCascades", {
+                get: function () {
+                    return this._numCascades;
+                },
+                set: function (value/*int*/ ) {
+                    if (value == this._numCascades)
+                        return;
+                    if (value < 1 || value > 4)
+                        throw new Error("numCascades must be an integer between 1 and 4");
+                    this._numCascades = value;
+                    this.invalidateScissorRects();
+                    this.init();
+                    this.dispatchEvent(new Event(Event.CHANGE));
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            CascadeShadowMapper.prototype.pDrawDepthMap = function (target, scene, renderer) {
+                if (this._pScissorRectsInvalid)
+                    this.updateScissorRects();
+
+                this._pCasterCollector.cullPlanes = this._pCullPlanes;
+                this._pCasterCollector.camera = this._pOverallDepthCamera;
+                this._pCasterCollector.clear();
+                scene.traversePartitions(this._pCasterCollector);
+
+                renderer.iRenderCascades(this._pCasterCollector, target, this._numCascades, this._pScissorRects, this._depthCameras);
+            };
+
+            CascadeShadowMapper.prototype.updateScissorRects = function () {
+                var half = this._pDepthMapSize * .5;
+
+                this._pScissorRects[0] = new Rectangle(0, 0, half, half);
+                this._pScissorRects[1] = new Rectangle(half, 0, half, half);
+                this._pScissorRects[2] = new Rectangle(0, half, half, half);
+                this._pScissorRects[3] = new Rectangle(half, half, half, half);
+
+                this._pScissorRectsInvalid = false;
+            };
+
+            CascadeShadowMapper.prototype.pUpdateDepthProjection = function (viewCamera) {
+                var matrix;
+                var projection = viewCamera.projection;
+                var projectionNear = projection.near;
+                var projectionRange = projection.far - projectionNear;
+
+                this.pUpdateProjectionFromFrustumCorners(viewCamera, viewCamera.projection.frustumCorners, this._pMatrix);
+                this._pMatrix.appendScale(.96, .96, 1);
+                this._pOverallDepthProjection.matrix = this._pMatrix;
+                this.pUpdateCullPlanes(viewCamera);
+
+                for (var i = 0; i < this._numCascades; ++i) {
+                    matrix = this._depthLenses[i].matrix;
+
+                    this._nearPlaneDistances[i] = projectionNear + this._splitRatios[i] * projectionRange;
+                    this._depthCameras[i].transform = this._pOverallDepthCamera.transform;
+
+                    this.updateProjectionPartition(matrix, this._splitRatios[i], this._texOffsetsX[i], this._texOffsetsY[i]);
+
+                    this._depthLenses[i].matrix = matrix;
+                }
+            };
+
+            CascadeShadowMapper.prototype.updateProjectionPartition = function (matrix, splitRatio, texOffsetX, texOffsetY) {
+                var raw = Matrix3DUtils.RAW_DATA_CONTAINER;
+                var xN, yN, zN;
+                var xF, yF, zF;
+                var minX = Number.POSITIVE_INFINITY, minY = Number.POSITIVE_INFINITY, minZ;
+                var maxX = Number.NEGATIVE_INFINITY, maxY = Number.NEGATIVE_INFINITY, maxZ = Number.NEGATIVE_INFINITY;
+                var i = 0;
+
+                while (i < 12) {
+                    xN = this._pLocalFrustum[i];
+                    yN = this._pLocalFrustum[i + 1];
+                    zN = this._pLocalFrustum[i + 2];
+                    xF = xN + (this._pLocalFrustum[i + 12] - xN) * splitRatio;
+                    yF = yN + (this._pLocalFrustum[i + 13] - yN) * splitRatio;
+                    zF = zN + (this._pLocalFrustum[i + 14] - zN) * splitRatio;
+                    if (xN < minX)
+                        minX = xN;
+                    if (xN > maxX)
+                        maxX = xN;
+                    if (yN < minY)
+                        minY = yN;
+                    if (yN > maxY)
+                        maxY = yN;
+                    if (zN > maxZ)
+                        maxZ = zN;
+                    if (xF < minX)
+                        minX = xF;
+                    if (xF > maxX)
+                        maxX = xF;
+                    if (yF < minY)
+                        minY = yF;
+                    if (yF > maxY)
+                        maxY = yF;
+                    if (zF > maxZ)
+                        maxZ = zF;
+                    i += 3;
+                }
+
+                minZ = 1;
+
+                var w = (maxX - minX);
+                var h = (maxY - minY);
+                var d = 1 / (maxZ - minZ);
+
+                if (minX < 0)
+                    minX -= this._pSnap;
+                if (minY < 0)
+                    minY -= this._pSnap;
+                minX = Math.floor(minX / this._pSnap) * this._pSnap;
+                minY = Math.floor(minY / this._pSnap) * this._pSnap;
+
+                var snap2 = 2 * this._pSnap;
+                w = Math.floor(w / snap2 + 1) * snap2;
+                h = Math.floor(h / snap2 + 1) * snap2;
+
+                maxX = minX + w;
+                maxY = minY + h;
+
+                w = 1 / w;
+                h = 1 / h;
+
+                raw[0] = 2 * w;
+                raw[5] = 2 * h;
+                raw[10] = d;
+                raw[12] = -(maxX + minX) * w;
+                raw[13] = -(maxY + minY) * h;
+                raw[14] = -minZ * d;
+                raw[15] = 1;
+                raw[1] = raw[2] = raw[3] = raw[4] = raw[6] = raw[7] = raw[8] = raw[9] = raw[11] = 0;
+
+                matrix.copyRawDataFrom(raw);
+                matrix.appendScale(.96, .96, 1);
+                matrix.appendTranslation(texOffsetX, texOffsetY, 0);
+                matrix.appendScale(.5, .5, 1);
+            };
+
+            CascadeShadowMapper.prototype.addEventListener = function (type, listener) {
+                this._changeDispatcher.addEventListener(type, listener);
+            };
+
+            CascadeShadowMapper.prototype.removeEventListener = function (type, listener) {
+                this._changeDispatcher.removeEventListener(type, listener);
+            };
+
+            CascadeShadowMapper.prototype.dispatchEvent = function (event) {
+                return this._changeDispatcher.dispatchEvent(event);
+            };
+
+            CascadeShadowMapper.prototype.hasEventListener = function (type) {
+                return this._changeDispatcher.hasEventListener(type);
+            };
+
+            Object.defineProperty(CascadeShadowMapper.prototype, "_iNearPlaneDistances", {
+                get: function () {
+                    return this._nearPlaneDistances;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return CascadeShadowMapper;
+        })(lights.DirectionalShadowMapper);
+        lights.CascadeShadowMapper = CascadeShadowMapper;
     })(away.lights || (away.lights = {}));
     var lights = away.lights;
 })(away || (away = {}));
@@ -16272,6 +16529,271 @@ var away;
             return BasicSpecularMethod;
         })(materials.LightingMethodBase);
         materials.BasicSpecularMethod = BasicSpecularMethod;
+    })(away.materials || (away.materials = {}));
+    var materials = away.materials;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (materials) {
+        var Camera = away.entities.Camera;
+        var StageGL = away.base.StageGL;
+        var ShadingMethodEvent = away.events.ShadingMethodEvent;
+        var DirectionalLight = away.lights.DirectionalLight;
+        var CascadeShadowMapper = away.lights.CascadeShadowMapper;
+        var RenderableBase = away.pool.RenderableBase;
+
+        var Event = away.events.Event;
+
+        /**
+        * CascadeShadowMapMethod is a shadow map method to apply cascade shadow mapping on materials.
+        * Must be used with a DirectionalLight with a CascadeShadowMapper assigned to its shadowMapper property.
+        *
+        * @see away.lights.CascadeShadowMapper
+        */
+        var CascadeShadowMapMethod = (function (_super) {
+            __extends(CascadeShadowMapMethod, _super);
+            /**
+            * Creates a new CascadeShadowMapMethod object.
+            *
+            * @param shadowMethodBase The shadow map sampling method used to sample individual cascades (fe: HardShadowMapMethod, SoftShadowMapMethod)
+            */
+            function CascadeShadowMapMethod(shadowMethodBase) {
+                var _this = this;
+                _super.call(this, shadowMethodBase.castingLight);
+
+                this._baseMethod = shadowMethodBase;
+                if (!(this._pCastingLight instanceof DirectionalLight))
+                    throw new Error("CascadeShadowMapMethod is only compatible with DirectionalLight");
+
+                this._cascadeShadowMapper = this._pCastingLight.shadowMapper;
+
+                if (!this._cascadeShadowMapper)
+                    throw new Error("CascadeShadowMapMethod requires a light that has a CascadeShadowMapper instance assigned to shadowMapper.");
+
+                this._cascadeShadowMapper.addEventListener(Event.CHANGE, function (event) {
+                    return _this.onCascadeChange(event);
+                });
+                this._baseMethod.addEventListener(ShadingMethodEvent.SHADER_INVALIDATED, function (event) {
+                    return _this.onShaderInvalidated(event);
+                });
+            }
+            Object.defineProperty(CascadeShadowMapMethod.prototype, "baseMethod", {
+                get: /**
+                * The shadow map sampling method used to sample individual cascades. These are typically those used in conjunction
+                * with a DirectionalShadowMapper.
+                *
+                * @see HardShadowMapMethod
+                * @see SoftShadowMapMethod
+                */
+                function () {
+                    return this._baseMethod;
+                },
+                set: function (value) {
+                    var _this = this;
+                    if (this._baseMethod == value)
+                        return;
+
+                    this._baseMethod.removeEventListener(ShadingMethodEvent.SHADER_INVALIDATED, function (event) {
+                        return _this.onShaderInvalidated(event);
+                    });
+                    this._baseMethod = value;
+                    this._baseMethod.addEventListener(ShadingMethodEvent.SHADER_INVALIDATED, function (event) {
+                        return _this.onShaderInvalidated(event);
+                    });
+                    this.iInvalidateShaderProgram();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            * @inheritDoc
+            */
+            CascadeShadowMapMethod.prototype.iInitVO = function (vo) {
+                var tempVO = new materials.MethodVO();
+                this._baseMethod.iInitVO(tempVO);
+                vo.needsGlobalVertexPos = true;
+                vo.needsProjection = true;
+            };
+
+            Object.defineProperty(CascadeShadowMapMethod.prototype, "iSharedRegisters", {
+                set: /**
+                * @inheritDoc
+                */
+                function (value) {
+                    this.setISharedRegisters(value);
+                    this._baseMethod.iSharedRegisters = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * @inheritDoc
+            */
+            CascadeShadowMapMethod.prototype.iInitConstants = function (vo) {
+                var fragmentData = vo.fragmentData;
+                var vertexData = vo.vertexData;
+                var index = vo.fragmentConstantsIndex;
+                fragmentData[index] = 1.0;
+                fragmentData[index + 1] = 1 / 255.0;
+                fragmentData[index + 2] = 1 / 65025.0;
+                fragmentData[index + 3] = 1 / 16581375.0;
+
+                fragmentData[index + 6] = .5;
+                fragmentData[index + 7] = -.5;
+
+                index = vo.vertexConstantsIndex;
+                vertexData[index] = .5;
+                vertexData[index + 1] = -.5;
+                vertexData[index + 2] = 0;
+            };
+
+            /**
+            * @inheritDoc
+            */
+            CascadeShadowMapMethod.prototype.iCleanCompilationData = function () {
+                _super.prototype.iCleanCompilationData.call(this);
+                this._cascadeProjections = null;
+                this._depthMapCoordVaryings = null;
+            };
+
+            /**
+            * @inheritDoc
+            */
+            CascadeShadowMapMethod.prototype.iGetVertexCode = function (vo, regCache) {
+                var code = "";
+                var dataReg = regCache.getFreeVertexConstant();
+
+                this.initProjectionsRegs(regCache);
+                vo.vertexConstantsIndex = dataReg.index * 4;
+
+                var temp = regCache.getFreeVertexVectorTemp();
+
+                for (var i = 0; i < this._cascadeShadowMapper.numCascades; ++i) {
+                    code += "m44 " + temp + ", " + this._sharedRegisters.globalPositionVertex + ", " + this._cascadeProjections[i] + "\n" + "add " + this._depthMapCoordVaryings[i] + ", " + temp + ", " + dataReg + ".zzwz\n";
+                }
+
+                return code;
+            };
+
+            /**
+            * Creates the registers for the cascades' projection coordinates.
+            */
+            CascadeShadowMapMethod.prototype.initProjectionsRegs = function (regCache) {
+                this._cascadeProjections = new Array(this._cascadeShadowMapper.numCascades);
+                this._depthMapCoordVaryings = new Array(this._cascadeShadowMapper.numCascades);
+
+                for (var i = 0; i < this._cascadeShadowMapper.numCascades; ++i) {
+                    this._depthMapCoordVaryings[i] = regCache.getFreeVarying();
+                    this._cascadeProjections[i] = regCache.getFreeVertexConstant();
+                    regCache.getFreeVertexConstant();
+                    regCache.getFreeVertexConstant();
+                    regCache.getFreeVertexConstant();
+                }
+            };
+
+            /**
+            * @inheritDoc
+            */
+            CascadeShadowMapMethod.prototype.iGetFragmentCode = function (vo, regCache, targetReg) {
+                var numCascades = this._cascadeShadowMapper.numCascades;
+                var depthMapRegister = regCache.getFreeTextureReg();
+                var decReg = regCache.getFreeFragmentConstant();
+                var dataReg = regCache.getFreeFragmentConstant();
+                var planeDistanceReg = regCache.getFreeFragmentConstant();
+                var planeDistances = Array(planeDistanceReg + ".x", planeDistanceReg + ".y", planeDistanceReg + ".z", planeDistanceReg + ".w");
+                var code;
+
+                vo.fragmentConstantsIndex = decReg.index * 4;
+                vo.texturesIndex = depthMapRegister.index;
+
+                var inQuad = regCache.getFreeFragmentVectorTemp();
+                regCache.addFragmentTempUsages(inQuad, 1);
+                var uvCoord = regCache.getFreeFragmentVectorTemp();
+                regCache.addFragmentTempUsages(uvCoord, 1);
+
+                // assume lowest partition is selected, will be overwritten later otherwise
+                code = "mov " + uvCoord + ", " + this._depthMapCoordVaryings[numCascades - 1] + "\n";
+
+                for (var i = numCascades - 2; i >= 0; --i) {
+                    var uvProjection = this._depthMapCoordVaryings[i];
+
+                    // calculate if in texturemap (result == 0 or 1, only 1 for a single partition)
+                    code += "slt " + inQuad + ".z, " + this._sharedRegisters.projectionFragment + ".z, " + planeDistances[i] + "\n";
+
+                    var temp = regCache.getFreeFragmentVectorTemp();
+
+                    // linearly interpolate between old and new uv coords using predicate value == conditional toggle to new value if predicate == 1 (true)
+                    code += "sub " + temp + ", " + uvProjection + ", " + uvCoord + "\n" + "mul " + temp + ", " + temp + ", " + inQuad + ".z\n" + "add " + uvCoord + ", " + uvCoord + ", " + temp + "\n";
+                }
+
+                regCache.removeFragmentTempUsage(inQuad);
+
+                code += "div " + uvCoord + ", " + uvCoord + ", " + uvCoord + ".w\n" + "mul " + uvCoord + ".xy, " + uvCoord + ".xy, " + dataReg + ".zw\n" + "add " + uvCoord + ".xy, " + uvCoord + ".xy, " + dataReg + ".zz\n";
+
+                code += this._baseMethod._iGetCascadeFragmentCode(vo, regCache, decReg, depthMapRegister, uvCoord, targetReg) + "add " + targetReg + ".w, " + targetReg + ".w, " + dataReg + ".y\n";
+
+                regCache.removeFragmentTempUsage(uvCoord);
+
+                return code;
+            };
+
+            /**
+            * @inheritDoc
+            */
+            CascadeShadowMapMethod.prototype.iActivate = function (vo, stageGL) {
+                stageGL.contextGL.setTextureAt(vo.texturesIndex, this._pCastingLight.shadowMapper.depthMap.getTextureForStageGL(stageGL));
+
+                var vertexData = vo.vertexData;
+                var vertexIndex = vo.vertexConstantsIndex;
+
+                vo.vertexData[vo.vertexConstantsIndex + 3] = -1 / (this._cascadeShadowMapper.depth * this._pEpsilon);
+
+                var numCascades = this._cascadeShadowMapper.numCascades;
+                vertexIndex += 4;
+                for (var k = 0; k < numCascades; ++k) {
+                    this._cascadeShadowMapper.getDepthProjections(k).copyRawDataTo(vertexData, vertexIndex, true);
+                    vertexIndex += 16;
+                }
+
+                var fragmentData = vo.fragmentData;
+                var fragmentIndex = vo.fragmentConstantsIndex;
+                fragmentData[fragmentIndex + 5] = 1 - this._pAlpha;
+
+                var nearPlaneDistances = this._cascadeShadowMapper._iNearPlaneDistances;
+
+                fragmentIndex += 8;
+                for (var i = 0; i < numCascades; ++i)
+                    fragmentData[fragmentIndex + i] = nearPlaneDistances[i];
+
+                this._baseMethod.iActivateForCascade(vo, stageGL);
+            };
+
+            /**
+            * @inheritDoc
+            */
+            CascadeShadowMapMethod.prototype.iSetRenderState = function (vo, renderable, stageGL, camera) {
+            };
+
+            /**
+            * Called when the shadow mappers cascade configuration changes.
+            */
+            CascadeShadowMapMethod.prototype.onCascadeChange = function (event) {
+                this.iInvalidateShaderProgram();
+            };
+
+            /**
+            * Called when the base method's shader code is invalidated.
+            */
+            CascadeShadowMapMethod.prototype.onShaderInvalidated = function (event) {
+                this.iInvalidateShaderProgram();
+            };
+            return CascadeShadowMapMethod;
+        })(materials.ShadowMapMethodBase);
+        materials.CascadeShadowMapMethod = CascadeShadowMapMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
@@ -41046,6 +41568,352 @@ var away;
     })(away.parsers || (away.parsers = {}));
     var parsers = away.parsers;
 })(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../../_definitions.ts"/>
+    (function (commands) {
+        var DisplayObjectContainer = away.containers.DisplayObjectContainer;
+        var Geometry = away.base.Geometry;
+        
+        var Matrix3DUtils = away.geom.Matrix3DUtils;
+        var Mesh = away.entities.Mesh;
+        var GeometryUtils = away.utils.GeometryUtils;
+
+        /**
+        *  Class Merge merges two or more static meshes into one.<code>Merge</code>
+        */
+        var Merge = (function () {
+            /**
+            * @param    keepMaterial    [optional]    Determines if the merged object uses the recevier mesh material information or keeps its source material(s). Defaults to false.
+            * If false and receiver object has multiple materials, the last material found in receiver submeshes is applied to the merged submesh(es).
+            * @param    disposeSources  [optional]    Determines if the mesh and geometry source(s) used for the merging are disposed. Defaults to false.
+            * If true, only receiver geometry and resulting mesh are kept in  memory.
+            * @param    objectSpace     [optional]    Determines if source mesh(es) is/are merged using objectSpace or worldspace. Defaults to false.
+            */
+            function Merge(keepMaterial, disposeSources, objectSpace) {
+                if (typeof keepMaterial === "undefined") { keepMaterial = false; }
+                if (typeof disposeSources === "undefined") { disposeSources = false; }
+                if (typeof objectSpace === "undefined") { objectSpace = false; }
+                this._keepMaterial = keepMaterial;
+                this._disposeSources = disposeSources;
+                this._objectSpace = objectSpace;
+            }
+
+            Object.defineProperty(Merge.prototype, "disposeSources", {
+                get: function () {
+                    return this._disposeSources;
+                },
+                set: /**
+                * Determines if the mesh and geometry source(s) used for the merging are disposed. Defaults to false.
+                */
+                function (b) {
+                    this._disposeSources = b;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Merge.prototype, "keepMaterial", {
+                get: function () {
+                    return this._keepMaterial;
+                },
+                set: /**
+                * Determines if the material source(s) used for the merging are disposed. Defaults to false.
+                */
+                function (b) {
+                    this._keepMaterial = b;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(Merge.prototype, "objectSpace", {
+                get: function () {
+                    return this._objectSpace;
+                },
+                set: /**
+                * Determines if source mesh(es) is/are merged using objectSpace or worldspace. Defaults to false.
+                */
+                function (b) {
+                    this._objectSpace = b;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            /**
+            * Merges all the children of a container into a single Mesh. If no Mesh object is found, method returns the receiver without modification.
+            *
+            * @param    receiver           The Mesh to receive the merged contents of the container.
+            * @param    objectContainer    The DisplayObjectContainer holding the meshes to be mergd.
+            *
+            * @return The merged Mesh instance.
+            */
+            Merge.prototype.applyToContainer = function (receiver, objectContainer) {
+                this.reset();
+
+                //collect container meshes
+                this.parseContainer(receiver, objectContainer);
+
+                //collect receiver
+                this.collect(receiver, false);
+
+                //merge to receiver
+                this.merge(receiver, this._disposeSources);
+            };
+
+            /**
+            * Merges all the meshes found in the Array&lt;Mesh&gt; into a single Mesh.
+            *
+            * @param    receiver    The Mesh to receive the merged contents of the meshes.
+            * @param    meshes      A series of Meshes to be merged with the reciever mesh.
+            */
+            Merge.prototype.applyToMeshes = function (receiver, meshes) {
+                this.reset();
+
+                if (!meshes.length)
+                    return;
+
+                for (var i = 0; i < meshes.length; i++)
+                    if (meshes[i] != receiver)
+                        this.collect(meshes[i], this._disposeSources);
+
+                //collect receiver
+                this.collect(receiver, false);
+
+                //merge to receiver
+                this.merge(receiver, this._disposeSources);
+            };
+
+            /**
+            *  Merges 2 meshes into one. It is recommand to use apply when 2 meshes are to be merged. If more need to be merged, use either applyToMeshes or applyToContainer methods.
+            *
+            * @param    receiver    The Mesh to receive the merged contents of both meshes.
+            * @param    mesh        The Mesh to be merged with the receiver mesh
+            */
+            Merge.prototype.apply = function (receiver, mesh) {
+                this.reset();
+
+                //collect mesh
+                this.collect(mesh, this._disposeSources);
+
+                //collect receiver
+                this.collect(receiver, false);
+
+                //merge to receiver
+                this.merge(receiver, this._disposeSources);
+            };
+
+            Merge.prototype.reset = function () {
+                this._toDispose = new Array();
+                this._geomVOs = new Array();
+            };
+
+            Merge.prototype.merge = function (destMesh, dispose) {
+                var i/*uint*/ ;
+                var subIdx/*uint*/ ;
+                var oldGeom;
+                var destGeom;
+                var useSubMaterials;
+
+                oldGeom = destMesh.geometry;
+                destGeom = destMesh.geometry = new Geometry();
+                subIdx = destMesh.subMeshes.length;
+
+                // Only apply materials directly to sub-meshes if necessary,
+                // i.e. if there is more than one material available.
+                useSubMaterials = (this._geomVOs.length > 1);
+
+                for (i = 0; i < this._geomVOs.length; i++) {
+                    var s/*uint*/ ;
+                    var data;
+                    var subs;
+
+                    data = this._geomVOs[i];
+                    subs = GeometryUtils.fromVectors(data.vertices, data.indices, data.uvs, data.normals, null, null, null);
+
+                    for (s = 0; s < subs.length; s++) {
+                        destGeom.addSubGeometry(subs[s]);
+
+                        if (this._keepMaterial && useSubMaterials)
+                            destMesh.subMeshes[subIdx].material = data.material;
+
+                        subIdx++;
+                    }
+                }
+
+                if (this._keepMaterial && !useSubMaterials && this._geomVOs.length)
+                    destMesh.material = this._geomVOs[0].material;
+
+                if (dispose) {
+                    var m;
+                    var len = this._toDispose.length;
+                    for (var i; i < len; i++) {
+                        m = this._toDispose[i];
+                        m.geometry.dispose();
+                        m.dispose();
+                    }
+
+                    //dispose of the original receiver geometry
+                    oldGeom.dispose();
+                }
+
+                this._toDispose = null;
+            };
+
+            Merge.prototype.collect = function (mesh, dispose) {
+                if (mesh.geometry) {
+                    var subIdx/*uint*/ ;
+                    var subGeometries = mesh.geometry.subGeometries;
+                    var calc/*uint*/ ;
+                    for (subIdx = 0; subIdx < subGeometries.length; subIdx++) {
+                        var i/*uint*/ ;
+                        var len/*uint*/ ;
+                        var iIdx/*uint*/ , vIdx, nIdx, uIdx;
+                        var indexOffset/*uint*/ ;
+                        var subGeom;
+                        var vo;
+                        var vertices;
+                        var normals;
+                        var vStride/*uint*/ , nStride, uStride;
+                        var vOffs/*uint*/ , nOffs, uOffs;
+                        var vd, nd, ud;
+
+                        subGeom = subGeometries[subIdx];
+                        vd = subGeom.vertexData;
+                        vStride = subGeom.vertexStride;
+                        vOffs = subGeom.vertexOffset;
+                        nd = subGeom.vertexNormalData;
+                        nStride = subGeom.vertexNormalStride;
+                        nOffs = subGeom.vertexNormalOffset;
+                        ud = subGeom.UVData;
+                        uStride = subGeom.UVStride;
+                        uOffs = subGeom.UVOffset;
+
+                        // Get (or create) a VO for this material
+                        vo = this.getSubGeomData(mesh.subMeshes[subIdx].material || mesh.material);
+
+                        // Vertices and normals are copied to temporary vectors, to be transformed
+                        // before concatenated onto those of the data. This is unnecessary if no
+                        // transformation will be performed, i.e. for object space merging.
+                        vertices = (this._objectSpace) ? vo.vertices : new Array();
+                        normals = (this._objectSpace) ? vo.normals : new Array();
+
+                        // Copy over vertex attributes
+                        vIdx = vertices.length;
+                        nIdx = normals.length;
+                        uIdx = vo.uvs.length;
+                        len = subGeom.numVertices;
+                        for (i = 0; i < len; i++) {
+                            // Position
+                            calc = vOffs + i * vStride;
+                            vertices[vIdx++] = vd[calc];
+                            vertices[vIdx++] = vd[calc + 1];
+                            vertices[vIdx++] = vd[calc + 2];
+
+                            // Normal
+                            calc = nOffs + i * nStride;
+                            normals[nIdx++] = nd[calc];
+                            normals[nIdx++] = nd[calc + 1];
+                            normals[nIdx++] = nd[calc + 2];
+
+                            // UV
+                            calc = uOffs + i * uStride;
+                            vo.uvs[uIdx++] = ud[calc];
+                            vo.uvs[uIdx++] = ud[calc + 1];
+                        }
+
+                        // Copy over triangle indices
+                        indexOffset = (!this._objectSpace) ? vo.vertices.length / 3 : 0;
+                        iIdx = vo.indices.length;
+                        len = subGeom.numTriangles;
+                        for (i = 0; i < len; i++) {
+                            calc = i * 3;
+                            vo.indices[iIdx++] = subGeom.indexData[calc] + indexOffset;
+                            vo.indices[iIdx++] = subGeom.indexData[calc + 1] + indexOffset;
+                            vo.indices[iIdx++] = subGeom.indexData[calc + 2] + indexOffset;
+                        }
+
+                        if (!this._objectSpace) {
+                            mesh.sceneTransform.transformVectors(vertices, vertices);
+                            Matrix3DUtils.deltaTransformVectors(mesh.sceneTransform, normals, normals);
+
+                            // Copy vertex data from temporary (transformed) vectors
+                            vIdx = vo.vertices.length;
+                            nIdx = vo.normals.length;
+                            len = vertices.length;
+                            for (i = 0; i < len; i++) {
+                                vo.vertices[vIdx++] = vertices[i];
+                                vo.normals[nIdx++] = normals[i];
+                            }
+                        }
+                    }
+
+                    if (dispose)
+                        this._toDispose.push(mesh);
+                }
+            };
+
+            Merge.prototype.getSubGeomData = function (material) {
+                var data;
+
+                if (this._keepMaterial) {
+                    var i/*uint*/ ;
+                    var len/*uint*/ ;
+
+                    len = this._geomVOs.length;
+                    for (i = 0; i < len; i++) {
+                        if (this._geomVOs[i].material == material) {
+                            data = this._geomVOs[i];
+                            break;
+                        }
+                    }
+                } else if (this._geomVOs.length) {
+                    // If materials are not to be kept, all data can be
+                    // put into a single VO, so return that one.
+                    data = this._geomVOs[0];
+                }
+
+                if (!data) {
+                    data = new GeometryVO();
+                    data.vertices = new Array();
+                    data.normals = new Array();
+                    data.uvs = new Array();
+                    data.indices = new Array();
+                    data.material = material;
+
+                    this._geomVOs.push(data);
+                }
+
+                return data;
+            };
+
+            Merge.prototype.parseContainer = function (receiver, object) {
+                var child;
+                var i/*uint*/ ;
+
+                if (object instanceof Mesh && object != (receiver))
+                    this.collect(object, this._disposeSources);
+
+                for (i = 0; i < object.numChildren; ++i) {
+                    child = object.getChildAt(i);
+                    this.parseContainer(receiver, child);
+                }
+            };
+            return Merge;
+        })();
+        commands.Merge = Merge;
+    })(away.commands || (away.commands = {}));
+    var commands = away.commands;
+})(away || (away = {}));
+
+var GeometryVO = (function () {
+    function GeometryVO() {
+    }
+    return GeometryVO;
+})();
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
