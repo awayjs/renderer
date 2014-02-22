@@ -87,6 +87,7 @@
 ///<reference path="lights/shadowmaps/ShadowMapperBase.ts"/>
 ///<reference path="lights/shadowmaps/CubeMapShadowMapper.ts"/>
 ///<reference path="lights/shadowmaps/DirectionalShadowMapper.ts"/>
+///<reference path="lights/shadowmaps/CascadeShadowMapper.ts"/>
 ///<reference path="lights/shadowmaps/NearDirectionalShadowMapper.ts"/>
 
 ///<reference path="managers/Mouse3DManager.ts"/>
@@ -120,6 +121,7 @@
 ///<reference path="materials/methods/BasicDiffuseMethod.ts"/>
 ///<reference path="materials/methods/BasicNormalMethod.ts"/>
 ///<reference path="materials/methods/BasicSpecularMethod.ts"/>
+///<reference path="materials/methods/CascadeShadowMapMethod.ts"/>
 ///<reference path="materials/methods/ColorTransformMethod.ts"/>
 ///<reference path="materials/methods/PhongSpecularMethod.ts"/>
 ///<reference path="materials/methods/CompositeDiffuseMethod.ts"/>
@@ -269,5 +271,6 @@
 ///<reference path="parsers/MD5MeshParser.ts"/>
 ///<reference path="parsers/Parsers.ts"/>
 
+///<reference path="tools/commands/Merge.ts"/>
 ///<reference path="tools/data/ParticleGeometryTransform.ts"/>
 ///<reference path="tools/helpers/ParticleGeometryHelper.ts"/>

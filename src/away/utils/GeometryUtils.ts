@@ -45,7 +45,7 @@ module away.utils
 				var splitWeights:Array<number> = (weights != null)? new Array<number>() : null;
 				var splitJointIndices:Array<number> = (jointIndices != null)? new Array<number>() : null;
 
-				var mappings:Array<number> = new Array<number>(verts.length/3);
+				var mappings:number[] = new Array<number>(verts.length/3);
 
 				i = mappings.length;
 
@@ -229,19 +229,19 @@ module away.utils
 				compIndex = i*3;
 				interleavedCompIndex = i*13;
 
-				interleavedBuffer[ interleavedCompIndex     ] = vertices? vertices[ compIndex       ] : 0;
-				interleavedBuffer[ interleavedCompIndex + 1 ] = vertices? vertices[ compIndex + 1   ] : 0;
-				interleavedBuffer[ interleavedCompIndex + 2 ] = vertices? vertices[ compIndex + 2   ] : 0;
-				interleavedBuffer[ interleavedCompIndex + 3 ] = normals? normals[   compIndex       ] : 0;
-				interleavedBuffer[ interleavedCompIndex + 4 ] = normals? normals[   compIndex + 1   ] : 0;
-				interleavedBuffer[ interleavedCompIndex + 5 ] = normals? normals[   compIndex + 2   ] : 0;
-				interleavedBuffer[ interleavedCompIndex + 6 ] = tangents? tangents[ compIndex       ] : 0;
-				interleavedBuffer[ interleavedCompIndex + 7 ] = tangents? tangents[ compIndex + 1   ] : 0;
-				interleavedBuffer[ interleavedCompIndex + 8 ] = tangents? tangents[ compIndex + 2   ] : 0;
-				interleavedBuffer[ interleavedCompIndex + 9 ] = uvs? uvs[           uvCompIndex     ] : 0;
-				interleavedBuffer[ interleavedCompIndex + 10 ] = uvs? uvs[          uvCompIndex + 1 ] : 0;
-				interleavedBuffer[ interleavedCompIndex + 11 ] = suvs? suvs[        uvCompIndex      ] : 0;
-				interleavedBuffer[ interleavedCompIndex + 12 ] = suvs? suvs[        uvCompIndex + 1 ] : 0;
+				interleavedBuffer[ interleavedCompIndex     ] = vertices? <number> vertices[ compIndex       ] : 0;
+				interleavedBuffer[ interleavedCompIndex + 1 ] = vertices? <number> vertices[ compIndex + 1   ] : 0;
+				interleavedBuffer[ interleavedCompIndex + 2 ] = vertices? <number> vertices[ compIndex + 2   ] : 0;
+				interleavedBuffer[ interleavedCompIndex + 3 ] = normals? <number> normals[   compIndex       ] : 0;
+				interleavedBuffer[ interleavedCompIndex + 4 ] = normals? <number> normals[   compIndex + 1   ] : 0;
+				interleavedBuffer[ interleavedCompIndex + 5 ] = normals? <number> normals[   compIndex + 2   ] : 0;
+				interleavedBuffer[ interleavedCompIndex + 6 ] = tangents? <number> tangents[ compIndex       ] : 0;
+				interleavedBuffer[ interleavedCompIndex + 7 ] = tangents? <number> tangents[ compIndex + 1   ] : 0;
+				interleavedBuffer[ interleavedCompIndex + 8 ] = tangents? <number> tangents[ compIndex + 2   ] : 0;
+				interleavedBuffer[ interleavedCompIndex + 9 ] = uvs? <number> uvs[           uvCompIndex     ] : 0;
+				interleavedBuffer[ interleavedCompIndex + 10 ] = uvs? <number> uvs[          uvCompIndex + 1 ] : 0;
+				interleavedBuffer[ interleavedCompIndex + 11 ] = suvs? <number> suvs[        uvCompIndex      ] : 0;
+				interleavedBuffer[ interleavedCompIndex + 12 ] = suvs? <number> suvs[        uvCompIndex + 1 ] : 0;
 
 			}
 

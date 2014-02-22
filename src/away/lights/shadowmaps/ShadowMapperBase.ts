@@ -81,17 +81,10 @@ module away.lights
 
 		public set depthMapSize(value:number)
 		{
-			if (value == this._pDepthMapSize) {
+			if (value == this._pDepthMapSize)
 				return;
-			}
-			this._pDepthMapSize = value;
 
-			if (this._explicitDepthMap) {
-				throw Error("Cannot set depth map size for the current renderer.");
-			} else if (this._depthMap) {
-				this._depthMap.dispose();
-				this._depthMap = null;
-			}
+			this._pSetDepthMapSize(value);
 		}
 
 		public dispose()
@@ -129,6 +122,18 @@ module away.lights
 		public pDrawDepthMap(target:away.gl.TextureBase, scene:away.containers.Scene, renderer:away.render.DepthRenderer)
 		{
 			throw new away.errors.AbstractMethodError();
+		}
+
+		public _pSetDepthMapSize(value)
+		{
+			this._pDepthMapSize = value;
+
+			if (this._explicitDepthMap) {
+				throw Error("Cannot set depth map size for the current renderer.");
+			} else if (this._depthMap) {
+				this._depthMap.dispose();
+				this._depthMap = null;
+			}
 		}
 	}
 }
