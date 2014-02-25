@@ -67,11 +67,11 @@ module.exports = function(grunt) {
 
         meta: {
 
-            tsFile: 'src/Away3D.ts',                                     // TypeScript export source
+            tsFile: 'src/away3d.ts',                                     // TypeScript export source
             tsPath: 'src/',                                              // TypeScript source folder
 
-            tsExportFile: 'build/Away3D.' + version + '.js',             // JavaScript export target
-            tsExportUglyFile: 'build/Away3D.' + version + '.min.js',     // JavaScript minified target
+            tsExportFile: 'build/away3d.' + version + '.js',             // JavaScript export target
+            tsExportUglyFile: 'build/away3d.' + version + '.min.js',     // JavaScript minified target
 
             tsExportFolder: 'build/',                                    // Export folder
             docsPath: 'docs/'                                            // Documentation export path
