@@ -24989,7 +24989,7 @@ var away;
                 if (typeof generateMipmaps === "undefined") { generateMipmaps = true; }
                 _super.call(this);
 
-                this._htmlImageElement = htmlImageElement;
+                this.htmlImageElement = htmlImageElement;
                 this._generateMipmaps = generateMipmaps;
             }
             Object.defineProperty(ImageTexture.prototype, "htmlImageElement", {
@@ -25611,7 +25611,7 @@ var away;
                 var w = source.width;
                 var h = source.height;
                 var regen = mipmap != null;
-                var i;
+                var i = 0;
 
                 if (!mipmap)
                     mipmap = new away.base.BitmapData(w, h, alpha);
@@ -26968,13 +26968,13 @@ away.Debug.LOG_PI_ERRORS = false;
 
 var away;
 (function (away) {
-    var AME = (function (_super) {
-        __extends(AME, _super);
-        function AME() {
+    var AwayJS = (function (_super) {
+        __extends(AwayJS, _super);
+        function AwayJS() {
             _super.call(this);
         }
-        return AME;
+        return AwayJS;
     })(away.events.EventDispatcher);
-    away.AME = AME;
+    away.AwayJS = AwayJS;
 })(away || (away = {}));
-//# sourceMappingURL=ame.next.js.map
+//# sourceMappingURL=awayjs.next.js.map

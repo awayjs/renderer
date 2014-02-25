@@ -13045,7 +13045,7 @@ declare module aglsl {
     }
 }
 declare module away {
-    class AME extends away.events.EventDispatcher {
+    class AwayJS extends away.events.EventDispatcher {
         constructor();
     }
 }
