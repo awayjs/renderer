@@ -22,9 +22,7 @@ module away.materials
 		{
 			super();
 
-
 			this._data = new Array<number>(1.0, 255.0, 65025.0, 16581375.0, 1.0/255.0, 1.0/255.0, 1.0/255.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-
 		}
 
 		/**
@@ -39,29 +37,16 @@ module away.materials
 
 		public set alphaThreshold(value:number)
 		{
-			if (value < 0) {
-
+			if (value < 0)
 				value = 0;
-
-			} else if (value > 1) {
-
+			else if (value > 1)
 				value = 1;
 
-			}
-
-			if (value == this._alphaThreshold) {
-
+			if (value == this._alphaThreshold)
 				return;
 
-			}
-
-
-			if (value == 0 || this._alphaThreshold == 0) {
-
+			if (value == 0 || this._alphaThreshold == 0)
 				this.iInvalidateShaderProgram();
-
-			}
-
 
 			this._alphaThreshold = value;
 			this._data[8] = this._alphaThreshold;
@@ -98,13 +83,10 @@ module away.materials
 				this._pNumUsedTextures = 1;
 				this._pNumUsedStreams = 2;
 				code += "mov v0, vt1\n" + "mov v1, va1\n";
-
 			} else {
-
 				this._pNumUsedTextures = 0;
 				this._pNumUsedStreams = 1;
 				code += "mov v0, vt1\n";
-
 			}
 
 			return code;
@@ -115,19 +97,13 @@ module away.materials
 		 */
 		public iGetFragmentCode(code:string):string
 		{
-
 			var wrap:string = this._pRepeat? "wrap" : "clamp";
 			var filter:string;
 
-			if (this._pSmooth) {
-
+			if (this._pSmooth)
 				filter = this._pMipmap? "linear,miplinear" : "linear";
-
-			} else {
-
+			else
 				filter = this._pMipmap? "nearest,mipnearest" : "nearest";
-
-			}
 
 			// TODO: AGAL<>GLSL
 
@@ -142,7 +118,6 @@ module away.materials
 				var format:string;
 
 				switch (this._alphaMask.format) {
-
 					case away.gl.ContextGLTextureFormat.COMPRESSED:
 						format = "dxt1,";
 						break;
@@ -153,7 +128,6 @@ module away.materials
 
 					default:
 						format = "";
-
 				}
 
 				codeF += "tex ft3, v1, fs0 <2d," + filter + "," + format + wrap + ">\n" + "sub ft3.w, ft3.w, fc2.x\n" + "kil ft3.w\n";
@@ -169,12 +143,8 @@ module away.materials
 		 */
 		public iRender(renderable:away.pool.RenderableBase, stageGL:away.base.StageGL, camera:away.entities.Camera, viewProjection:away.geom.Matrix3D)
 		{
-			if (this._alphaThreshold > 0) {
-
+			if (this._alphaThreshold > 0)
 				renderable.subGeometry.activateUVBuffer(1, stageGL);
-
-			}
-
 
 			var context:away.gl.ContextGL = stageGL.contextGL;
 			var matrix:away.geom.Matrix3D = away.geom.Matrix3DUtils.CALCULATION_MATRIX;
@@ -192,21 +162,16 @@ module away.materials
 		 */
 		public iActivate(stageGL:away.base.StageGL, camera:away.entities.Camera)
 		{
-
 			var context:away.gl.ContextGL = stageGL.contextGL;
 
 			super.iActivate(stageGL, camera);
 
 			if (this._alphaThreshold > 0) {
-
 				context.setTextureAt(0, this._alphaMask.getTextureForStageGL(stageGL));
 				context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.FRAGMENT, 0, this._data, 3);
-
 			} else {
-
 				context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.FRAGMENT, 0, this._data, 2);
 			}
-
 		}
 	}
 }

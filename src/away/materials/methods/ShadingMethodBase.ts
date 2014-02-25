@@ -177,15 +177,12 @@ module away.materials
 			var enableMipMaps:boolean = vo.useMipmapping && texture.hasMipMaps;
 
 			if (vo.useSmoothTextures)
-				filter = enableMipMaps? "linear,miplinear" : "linear"; else
+				filter = enableMipMaps? "linear,miplinear" : "linear";
+			else
 				filter = enableMipMaps? "nearest,mipnearest" : "nearest";
 
-			//uvReg ||= _sharedRegisters.uvVarying;
-			if (uvReg == null) {
-
+			if (uvReg == null)
 				uvReg = this._sharedRegisters.uvVarying;
-
-			}
 
 			return "tex " + targetReg + ", " + uvReg + ", " + inputReg + " <2d," + filter + "," + format + wrap + ">\n";
 

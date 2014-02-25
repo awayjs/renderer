@@ -14,7 +14,7 @@
 
 ///<reference path="../../libs/ref/webgl.d.ts"/>
 ///<reference path="../../libs/ref/js.d.ts"/>
-///<reference path="../../libs/ame.next.d.ts"/>
+///<reference path="../../libs/awayjs.next.d.ts"/>
 
 ///<reference path="errors/AnimationSetError.ts"/>
 
