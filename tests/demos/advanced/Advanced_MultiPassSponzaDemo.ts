@@ -472,7 +472,7 @@ module examples
 			
 			//create bitmap texture in dictionary
 			if (!this._textureDictionary[this._loadingTextureStrings[this._n]])
-				this._textureDictionary[this._loadingTextureStrings[this._n]] = (this._loadingTextureStrings == this._specularTextureStrings)? new ImageTexture(image, false) : new ImageTexture(image, false);
+				this._textureDictionary[this._loadingTextureStrings[this._n]] = (this._loadingTextureStrings == this._specularTextureStrings)? new ImageTexture(image, true) : new ImageTexture(image, true);
 
 			//this._textureDictionary[this._loadingTextureStrings[this._n]] = (this._loadingTextureStrings == this._specularTextureStrings)? new SpecularBitmapTexture(Cast.bitmapData(image)) : new ImageTexture(image);
 
