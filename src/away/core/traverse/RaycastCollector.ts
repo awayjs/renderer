@@ -22,21 +22,6 @@ module away.traverse
 
 		public _iCollectionMark:number = 0;
 
-		public _pCamera:away.entities.Camera;
-
-		/**
-		 *
-		 */
-		public get camera():away.entities.Camera
-		{
-			return this._pCamera;
-		}
-
-		public set camera(value:away.entities.Camera)
-		{
-			this._pCamera = value;
-		}
-
 		/**
 		 * Provides the starting position of the ray.
 		 */
@@ -79,15 +64,6 @@ module away.traverse
 		public enterNode(node:away.partition.NodeBase):boolean
 		{
 			return node.isIntersectingRay(this._rayPosition, this._rayDirection);
-		}
-
-		/**
-		 *
-		 * @param entity
-		 */
-		public pFindRenderable(entity:away.entities.IEntity)
-		{
-			//no renderables required
 		}
 	}
 }

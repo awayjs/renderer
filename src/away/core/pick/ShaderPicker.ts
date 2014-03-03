@@ -84,15 +84,12 @@ module away.pick
 		/**
 		 * @inheritDoc
 		 */
-			// TODO implement dependency : EntityCollector
-			// TODO: GLSL implementation / conversion
 		public getViewCollision(x:number, y:number, view:away.containers.View):PickingCollisionVO
 		{
 
 			away.Debug.throwPIR('ShaderPicker', 'getViewCollision', 'implement');
 
 			return null;
-
 
 			var collector:away.traverse.EntityCollector = <away.traverse.EntityCollector> view.iEntityCollector;
 
@@ -116,9 +113,8 @@ module away.pick
 			// clear buffers
 			this._context.setVertexBufferAt(0, null);
 
-			if (!this._context || !this._potentialFound) {
+			if (!this._context || !this._potentialFound)
 				return null;
-			}
 
 			if (!this._bitmapData)
 				this._bitmapData = new away.base.BitmapData(1, 1, false, 0);
@@ -169,7 +165,6 @@ module away.pick
 		/**
 		 * @inheritDoc
 		 */
-			// TODO: GLSL implementation / conversion
 		public pDraw(entityCollector:away.traverse.EntityCollector, target:away.gl.TextureBase)
 		{
 
@@ -180,18 +175,15 @@ module away.pick
 
 			this._interactives.length = this._interactiveId = 0;
 
-			if (!this._objectProgram) {
-
+			if (!this._objectProgram)
 				this.initObjectProgram();
-
-			}
 
 			this._context.setBlendFactors(away.gl.ContextGLBlendFactor.ONE, away.gl.ContextGLBlendFactor.ZERO);
 			this._context.setDepthTest(true, away.gl.ContextGLCompareMode.LESS);
 			this._context.setProgram(this._objectProgram);
 			this._context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 4, this._viewportData, 1);
-			this.drawRenderables(entityCollector.opaqueRenderableHead, camera);
-			this.drawRenderables(entityCollector.blendedRenderableHead, camera);
+//			this.drawRenderables(entityCollector.opaqueRenderableHead, camera);
+//			this.drawRenderables(entityCollector.blendedRenderableHead, camera);
 
 		}
 

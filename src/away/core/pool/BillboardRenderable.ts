@@ -13,9 +13,9 @@ module away.pool
 		// TODO: Replace with CompactSubGeometry
 		private static _geometry:away.base.SubGeometry;
 
-		constructor(billboard:away.entities.Billboard)
+		constructor(pool:RenderablePool, billboard:away.entities.Billboard)
 		{
-			super(billboard, billboard, null, null);
+			super(pool, billboard, billboard, null, null);
 
 			if (!BillboardRenderable._geometry) {
 				BillboardRenderable._geometry = new away.base.SubGeometry();

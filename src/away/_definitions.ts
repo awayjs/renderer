@@ -38,13 +38,9 @@
 
 ///<reference path="core/pool/RenderableBase.ts"/>
 ///<reference path="core/pool/BillboardRenderable.ts"/>
-///<reference path="core/pool/BillboardRenderablePool.ts"/>
 ///<reference path="core/pool/SegmentSetRenderable.ts"/>
-///<reference path="core/pool/SegmentSetRenderablePool.ts"/>
 ///<reference path="core/pool/SubMeshRenderable.ts"/>
-///<reference path="core/pool/SubMeshRenderablePool.ts"/>
 ///<reference path="core/pool/SkyboxRenderable.ts"/>
-///<reference path="core/pool/SkyboxRenderablePool.ts"/>
 
 ///<reference path="core/traverse/RenderableCollectorBase.ts" />
 ///<reference path="core/traverse/EntityCollector.ts" />

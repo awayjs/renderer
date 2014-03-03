@@ -10,7 +10,7 @@ module away.lights
 	import DepthRenderer			= away.render.DepthRenderer;
 	
 	import TextureBase				= away.gl.TextureBase;
-	import Event					= away.events.Event;
+//	import Event					= away.events.Event;
 	import EventDispatcher			= away.events.EventDispatcher;
 	import IEventDispatcher			= away.events.IEventDispatcher;
 	import Matrix3D					= away.geom.Matrix3D;
@@ -116,7 +116,7 @@ module away.lights
 			this._numCascades = value;
 			this.invalidateScissorRects();
 			this.init();
-			this.dispatchEvent(new Event(Event.CHANGE));
+			this.dispatchEvent(new away.events.Event(away.events.Event.CHANGE));
 		}
 		
 		public pDrawDepthMap(target:TextureBase, scene:Scene, renderer:DepthRenderer)
@@ -255,7 +255,7 @@ module away.lights
 			this._changeDispatcher.removeEventListener(type, listener);
 		}
 		
-		public dispatchEvent(event:Event)
+		public dispatchEvent(event:away.events.Event)
 		{
 			return this._changeDispatcher.dispatchEvent(event);
 		}

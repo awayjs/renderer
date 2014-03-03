@@ -42,8 +42,8 @@ module away.materials
 			if (!this._cascadeShadowMapper)
 				throw new Error("CascadeShadowMapMethod requires a light that has a CascadeShadowMapper instance assigned to shadowMapper.");
 			
-			this._cascadeShadowMapper.addEventListener(Event.CHANGE, (event:away.events.Event) => this.onCascadeChange(event));
-			this._baseMethod.addEventListener(ShadingMethodEvent.SHADER_INVALIDATED, (event:away.events.Event) => this.onShaderInvalidated(event));
+			this._cascadeShadowMapper.addEventListener(Event.CHANGE, (event:Event) => this.onCascadeChange(event));
+			this._baseMethod.addEventListener(ShadingMethodEvent.SHADER_INVALIDATED, (event:ShadingMethodEvent) => this.onShaderInvalidated(event));
 		}
 
 		/**

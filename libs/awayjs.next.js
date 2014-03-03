@@ -2491,7 +2491,7 @@ var away;
             * @param extra The holder for extra contextual data that the parser might need.
             */
             function BitmapParser() {
-                _super.call(this, away.net.URLLoaderDataFormat.BLOB);
+                _super.call(this, away.net.URLLoaderDataFormat.ARRAY_BUFFER);
             }
             /**
             * Indicates whether or not a given file extension is supported by the parser.
@@ -2573,6 +2573,11 @@ var away;
                     } else {
                         sizeError = true;
                     }
+                } else if (this.data instanceof ArrayBuffer) {
+                    this._htmlImageElement = away.parsers.ParserUtils.arrayBufferToImage(this.data);
+
+                    asset = new away.textures.ImageTexture(this._htmlImageElement, false);
+                    this._pFinalizeAsset(asset, this._iFileName);
                 } else if (this.data instanceof Blob) {
                     this._htmlImageElement = away.parsers.ParserUtils.blobToImage(this.data);
 
@@ -2875,6 +2880,30 @@ var away;
         var ParserUtils = (function () {
             function ParserUtils() {
             }
+            /**
+            * Converts an ArrayBuffer to a base64 string
+            *
+            * @param image data as a ByteArray
+            *
+            * @return HTMLImageElement
+            *
+            */
+            ParserUtils.arrayBufferToImage = function (data) {
+                var byteStr = '';
+                var bytes = new Uint8Array(data);
+                var len = bytes.byteLength;
+
+                for (var i = 0; i < len; i++)
+                    byteStr += String.fromCharCode(bytes[i]);
+
+                var base64Image = window.btoa(byteStr);
+                var str = 'data:image/png;base64,' + base64Image;
+                var img = new Image();
+                img.src = str;
+
+                return img;
+            };
+
             /**
             * Converts an ByteArray to an Image - returns an HTMLImageElement
             *
@@ -5321,6 +5350,7 @@ var away;
                 this._pIgnoreTransform = false;
                 this._pBoundsInvalid = true;
                 this._worldBoundsInvalid = true;
+                this._pRenderables = new Array();
                 /**
                 *
                 */
@@ -6313,6 +6343,10 @@ var away;
             DisplayObject.prototype.dispose = function () {
                 if (this.parent)
                     this.parent.removeChild(this);
+
+                var len = this._pRenderables.length;
+                for (var i = 0; i < len; i++)
+                    this._pRenderables[i].dispose();
             };
 
             /**
@@ -6515,20 +6549,13 @@ var away;
 
                 if (upAxis == null)
                     upAxis = away.geom.Vector3D.Y_AXIS;
+                else
+                    upAxis.normalize();
 
                 zAxis = target.subtract(this._iMatrix3D.position);
                 zAxis.normalize();
 
                 xAxis = upAxis.crossProduct(zAxis);
-
-                if (xAxis.length < .05) {
-                    xAxis.x = upAxis.y;
-                    xAxis.y = upAxis.x;
-                    xAxis.z = 0;
-                    xAxis.normalize();
-                } else {
-                    xAxis.normalize();
-                }
 
                 yAxis = zAxis.crossProduct(xAxis);
 
@@ -6996,6 +7023,20 @@ var away;
                 this._pSceneTransformDirty = false;
             };
 
+            DisplayObject.prototype._iAddRenderable = function (renderable) {
+                this._pRenderables.push(renderable);
+
+                return renderable;
+            };
+
+            DisplayObject.prototype._iRemoveRenderable = function (renderable) {
+                var index = this._pRenderables.indexOf(renderable);
+
+                this._pRenderables.splice(index, 1);
+
+                return renderable;
+            };
+
             /**
             * @internal
             */
@@ -7080,7 +7121,7 @@ var away;
             DisplayObject.prototype.addBounds = function () {
                 if (!this._boundsIsShown) {
                     this._boundsIsShown = true;
-                    //				this.addChild(this._pBounds.boundingEntity);
+                    //				this.addChild(this._pBounds.boundingEntity);//TODO turn this into a Node-based bounding Entity
                 }
             };
 
@@ -9139,7 +9180,6 @@ var away;
     var base = away.base;
 })(away || (away = {}));
 ///<reference path="../../_definitions.ts"/>
-///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
     /**
@@ -9213,6 +9253,107 @@ var away;
 var away;
 (function (away) {
     /**
+    * @module away.pool
+    */
+    (function (pool) {
+        /**
+        * @class away.pool.RenderablePool
+        */
+        var RenderablePool = (function () {
+            function RenderablePool(renderableClass) {
+                this._pool = new Object();
+                this._renderableClass = renderableClass;
+            }
+            RenderablePool.prototype.getItem = function (materialOwner) {
+                return (this._pool[materialOwner.id] || (this._pool[materialOwner.id] = materialOwner._iAddRenderable(new this._renderableClass(this, materialOwner))));
+            };
+
+            RenderablePool.prototype.disposeItem = function (materialOwner) {
+                this._pool[materialOwner.id] = null;
+            };
+            return RenderablePool;
+        })();
+        pool.RenderablePool = RenderablePool;
+    })(away.pool || (away.pool = {}));
+    var pool = away.pool;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * @module away.data
+    */
+    (function (pool) {
+        /**
+        * @class away.pool.RenderableListItem
+        */
+        var CSSRenderableBase = (function () {
+            /**
+            *
+            * @param sourceEntity
+            * @param material
+            * @param animator
+            */
+            function CSSRenderableBase(pool, sourceEntity, materialOwner) {
+                //store a reference to the pool for later disposal
+                this._pool = pool;
+
+                this.sourceEntity = sourceEntity;
+                this.materialOwner = materialOwner;
+            }
+            CSSRenderableBase.prototype.dispose = function () {
+                this._pool.disposeItem(this.materialOwner);
+            };
+            return CSSRenderableBase;
+        })();
+        pool.CSSRenderableBase = CSSRenderableBase;
+    })(away.pool || (away.pool = {}));
+    var pool = away.pool;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
+    * @module away.data
+    */
+    (function (pool) {
+        /**
+        * @class away.pool.RenderableListItem
+        */
+        var CSSBillboardRenderable = (function (_super) {
+            __extends(CSSBillboardRenderable, _super);
+            function CSSBillboardRenderable(pool, billboard) {
+                _super.call(this, pool, billboard, billboard);
+
+                var div = document.createElement("div");
+                div.onmousedown = function (event) {
+                    return false;
+                };
+
+                this.htmlElement = div;
+
+                var style = div.style;
+
+                style.position = "absolute";
+                style.transformOrigin = style["-webkit-transform-origin"] = style["-moz-transform-origin"] = style["-o-transform-origin"] = style["-ms-transform-origin"] = "0% 0%";
+
+                var img = document.createElement("div");
+
+                div.appendChild(img);
+
+                img.className = "material" + this.materialOwner.material.id;
+            }
+            return CSSBillboardRenderable;
+        })(away.pool.CSSRenderableBase);
+        pool.CSSBillboardRenderable = CSSBillboardRenderable;
+    })(away.pool || (away.pool = {}));
+    var pool = away.pool;
+})(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+///<reference path="../../_definitions.ts"/>
+var away;
+(function (away) {
+    /**
     * @module away.traverse
     */
     (function (traverse) {
@@ -9222,8 +9363,8 @@ var away;
         var CSSEntityCollector = (function () {
             function CSSEntityCollector() {
                 this._pNumEntities = 0;
+                this._pNumInteractiveEntities = 0;
                 this._pNumLights = 0;
-                this._pNumMouseEnableds = 0;
                 this._numDirectionalLights = 0;
                 this._numPointLights = 0;
                 this._numLightProbes = 0;
@@ -9239,8 +9380,6 @@ var away;
                 },
                 set: function (value) {
                     this._pCamera = value;
-                    this._iEntryPoint = this._pCamera.scenePosition;
-                    this._pCameraForward = this._pCamera.transform.forwardVector;
                     this._cullPlanes = this._pCamera.frustumPlanes;
                 },
                 enumerable: true,
@@ -9263,12 +9402,12 @@ var away;
             });
 
 
-            Object.defineProperty(CSSEntityCollector.prototype, "numMouseEnableds", {
+            Object.defineProperty(CSSEntityCollector.prototype, "numInteractiveEntities", {
                 /**
                 *
                 */
                 get: function () {
-                    return this._pNumMouseEnableds;
+                    return this._pNumInteractiveEntities;
                 },
                 enumerable: true,
                 configurable: true
@@ -9292,42 +9431,15 @@ var away;
                 configurable: true
             });
 
-            Object.defineProperty(CSSEntityCollector.prototype, "entryPoint", {
-                get: function () {
-                    return this._iEntryPoint;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(CSSEntityCollector.prototype, "renderableHead", {
-                /**
-                *
-                */
-                get: function () {
-                    return this._renderableHead;
-                },
-                set: function (value) {
-                    this._renderableHead = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
             /**
             *
             */
             CSSEntityCollector.prototype.clear = function () {
-                this._iEntryPoint = this._pCamera.scenePosition;
-                this._pCameraForward = this._pCamera.transform.forwardVector;
+                this._pNumEntities = this._pNumInteractiveEntities = 0;
+
                 this._cullPlanes = this._customCullPlanes ? this._customCullPlanes : (this._pCamera ? this._pCamera.frustumPlanes : null);
                 this._numCullPlanes = this._cullPlanes ? this._cullPlanes.length : 0;
-                this._pNumMouseEnableds = 0;
-                this._renderableHead = null;
                 this._entityHead = null;
-
-                //			this._pRenderableListItemPool.freeAll();
                 this._pEntityListItemPool.freeAll();
             };
 
@@ -9340,10 +9452,6 @@ var away;
                 node._iCollectionMark = this.scene._iCollectionMark;
 
                 return enter;
-            };
-
-            CSSEntityCollector.prototype.sortRenderables = function () {
-                //nothing here for now
             };
 
             /**
@@ -9359,14 +9467,14 @@ var away;
             CSSEntityCollector.prototype.applyEntity = function (entity) {
                 ++this._pNumEntities;
 
+                if (entity._iIsMouseEnabled())
+                    this._pNumInteractiveEntities++;
+
                 var item = this._pEntityListItemPool.getItem();
                 item.entity = entity;
 
                 item.next = this._entityHead;
                 this._entityHead = item;
-
-                if (entity.assetType == away.library.AssetType.BILLBOARD)
-                    this.applyBillboard(entity);
             };
 
             /**
@@ -9374,83 +9482,6 @@ var away;
             */
             CSSEntityCollector.prototype.cleanUp = function () {
             };
-
-            /**
-            *
-            * @param billboard
-            * @private
-            */
-            CSSEntityCollector.prototype.applyBillboard = function (billboard) {
-                var renderable = CSSEntityCollector._billboardRenderablePool[billboard.id];
-
-                if (renderable) {
-                    renderable.animator = billboard.animator;
-                    renderable.material = billboard.material;
-                } else {
-                    renderable = CSSEntityCollector._billboardRenderablePool[billboard.id] = new away.render.CSSBillboardRenderable(billboard, billboard.material, billboard.animator);
-                }
-
-                this.applyRenderable(renderable);
-            };
-
-            /**
-            *
-            * @param renderable
-            * @private
-            */
-            CSSEntityCollector.prototype.applyRenderable = function (renderable) {
-                var material = renderable.material;
-                var entity = renderable.sourceEntity;
-                var position = entity.scenePosition;
-
-                if (renderable.sourceEntity._iIsMouseEnabled())
-                    ++this._pNumMouseEnableds;
-
-                if (material) {
-                    //set ids for faster referencing
-                    renderable.materialId = material._iMaterialId;
-                    renderable.renderOrderId = material._iRenderOrderId;
-                    renderable.cascaded = false;
-
-                    // project onto camera's z-axis
-                    position.decrementBy(this._iEntryPoint);
-                    renderable.zIndex = entity.zOffset - position.dotProduct(this._pCameraForward);
-
-                    //store reference to scene transform
-                    renderable.renderSceneTransform = renderable.sourceEntity.getRenderSceneTransform(this._pCamera);
-
-                    //store reference to next item in list
-                    renderable.next = this._renderableHead;
-                    this._renderableHead = renderable;
-                }
-            };
-
-            /**
-            * //TODO
-            *
-            * @param entity
-            * @param shortestCollisionDistance
-            * @param findClosest
-            * @returns {boolean}
-            *
-            * @internal
-            */
-            CSSEntityCollector.prototype._iCollidesBefore = function (entity, shortestCollisionDistance, findClosest) {
-                var pickingCollider = entity.pickingCollider;
-                var pickingCollisionVO = entity._iPickingCollisionVO;
-
-                pickingCollider.setLocalRay(entity._iPickingCollisionVO.localRayPosition, entity._iPickingCollisionVO.localRayDirection);
-                pickingCollisionVO.materialOwner = null;
-
-                if (entity.assetType === away.library.AssetType.BILLBOARD) {
-                    //return this.testBillBoard(<away.entities.Billboard> entity, pickingCollider, pickingCollisionVO, shortestCollisionDistance, findClosest);
-                } else if (entity.assetType === away.library.AssetType.MESH) {
-                    //return this.testMesh(<away.entities.Mesh> entity, pickingCollider, pickingCollisionVO, shortestCollisionDistance, findClosest);
-                }
-
-                return false;
-            };
-            CSSEntityCollector._billboardRenderablePool = new Object();
             return CSSEntityCollector;
         })();
         traverse.CSSEntityCollector = CSSEntityCollector;
@@ -9894,66 +9925,6 @@ var away;
 var away;
 (function (away) {
     /**
-    * @module away.data
-    */
-    (function (render) {
-        /**
-        * @class away.pool.RenderableListItem
-        */
-        var CSSRenderableBase = (function () {
-            /**
-            *
-            * @param sourceEntity
-            * @param material
-            * @param animator
-            */
-            function CSSRenderableBase(sourceEntity, material, animator) {
-                this.sourceEntity = sourceEntity;
-                this.material = material;
-                this.animator = animator;
-            }
-            return CSSRenderableBase;
-        })();
-        render.CSSRenderableBase = CSSRenderableBase;
-    })(away.render || (away.render = {}));
-    var render = away.render;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    /**
-    * @module away.data
-    */
-    (function (render) {
-        /**
-        * @class away.pool.RenderableListItem
-        */
-        var CSSBillboardRenderable = (function (_super) {
-            __extends(CSSBillboardRenderable, _super);
-            function CSSBillboardRenderable(sourceEntity, material, animator) {
-                _super.call(this, sourceEntity, material, animator);
-
-                var image = document.createElement("img");
-                image.src = material.imageElement.src;
-
-                this.htmlElement = image;
-
-                var style = this.htmlElement.style;
-
-                style.position = "absolute";
-
-                style.transformOrigin = style["WebkitTransformOrigin"] = style["MozTransformOrigin"] = style["OTransformOrigin"] = style["msTransformOrigin"] = "0% 0%";
-            }
-            return CSSBillboardRenderable;
-        })(away.render.CSSRenderableBase);
-        render.CSSBillboardRenderable = CSSBillboardRenderable;
-    })(away.render || (away.render = {}));
-    var render = away.render;
-})(away || (away = {}));
-///<reference path="../../_definitions.ts"/>
-var away;
-(function (away) {
-    /**
     * @module away.render
     */
     (function (render) {
@@ -9978,138 +9949,11 @@ var away;
                 this._backgroundB = 0;
                 this._backgroundAlpha = 1;
                 this._pBackBufferInvalid = true;
-                this._localPos = new away.geom.Point();
-                this._globalPos = new away.geom.Point();
-                this._pScissorRect = new away.geom.Rectangle();
-
-                //create context for the renderer
-                this._pContext = document.createElement("div");
-
-                //this._pContext.style.transformStyle = this._pContext.style["-webkit-transform-style"] = "preserve-3d";
-                //add context container to body
-                document.body.appendChild(this._pContext);
-
-                this._viewPort = new away.geom.Rectangle();
-
-                if (this._width == 0)
-                    this.width = window.innerWidth;
-
-                if (this._height == 0)
-                    this.height = window.innerHeight;
+                this._depthTextureInvalid = true;
             }
             CSSRendererBase.prototype._iCreateEntityCollector = function () {
                 return new away.traverse.CSSEntityCollector();
             };
-
-            Object.defineProperty(CSSRendererBase.prototype, "viewPort", {
-                /**
-                * A viewPort rectangle equivalent of the StageGL size and position.
-                */
-                get: function () {
-                    return this._viewPort;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(CSSRendererBase.prototype, "scissorRect", {
-                /**
-                * A scissor rectangle equivalent of the view size and position.
-                */
-                get: function () {
-                    return this._pScissorRect;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(CSSRendererBase.prototype, "x", {
-                /**
-                *
-                */
-                get: function () {
-                    return this._localPos.x;
-                },
-                set: function (value) {
-                    if (this.x == value)
-                        return;
-
-                    this._globalPos.x = this._localPos.x = value;
-
-                    this.updateGlobalPos();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(CSSRendererBase.prototype, "y", {
-                /**
-                *
-                */
-                get: function () {
-                    return this._localPos.y;
-                },
-                set: function (value) {
-                    if (this.y == value)
-                        return;
-
-                    this._globalPos.y = this._localPos.y = value;
-
-                    this.updateGlobalPos();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(CSSRendererBase.prototype, "width", {
-                /**
-                *
-                */
-                get: function () {
-                    return this._width;
-                },
-                set: function (value) {
-                    if (this._width == value)
-                        return;
-
-                    this._width = value;
-                    this._pScissorRect.width = value;
-
-                    this._viewPort.width = value;
-
-                    this.notifyScissorUpdate();
-                    this.notifyViewportUpdate();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(CSSRendererBase.prototype, "height", {
-                /**
-                *
-                */
-                get: function () {
-                    return this._height;
-                },
-                set: function (value) {
-                    if (this._height == value)
-                        return;
-
-                    this._height = value;
-                    this._pScissorRect.height = value;
-
-                    this._viewPort.height = value;
-
-                    this.notifyScissorUpdate();
-                    this.notifyViewportUpdate();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
 
             Object.defineProperty(CSSRendererBase.prototype, "_iBackgroundR", {
                 /**
@@ -10190,10 +10034,6 @@ var away;
             };
 
             CSSRendererBase.prototype.render = function (entityCollector) {
-                this._viewportDirty = false;
-                this._scissorDirty = false;
-
-                this._iRender(entityCollector);
             };
 
             /**
@@ -10209,6 +10049,24 @@ var away;
                 this.pExecuteRender(entityCollector, scissorRect);
             };
 
+            CSSRendererBase.prototype.pCollectRenderables = function (entityCollector) {
+                //reset head values
+                this._renderableHead = null;
+
+                //grab entity head
+                var entity = entityCollector.entityHead;
+
+                //set temp values for entry point and camera forward vector
+                this._pCamera = entityCollector.camera;
+                this._iEntryPoint = this._pCamera.scenePosition;
+                this._pCameraForward = this._pCamera.transform.forwardVector;
+
+                while (entity) {
+                    this.pFindRenderables(entity.entity);
+                    entity = entity.next;
+                }
+            };
+
             /**
             * Renders the potentially visible geometry to the back buffer or texture. Only executed if everything is set up.
             * @param entityCollector The EntityCollector object containing the potentially visible geometry.
@@ -10216,13 +10074,9 @@ var away;
             */
             CSSRendererBase.prototype.pExecuteRender = function (entityCollector, scissorRect) {
                 if (typeof scissorRect === "undefined") { scissorRect = null; }
-                this.pDraw(entityCollector);
-            };
+                this.pCollectRenderables(entityCollector);
 
-            /**
-            * Updates the backbuffer properties.
-            */
-            CSSRendererBase.prototype.pUpdateBackBuffer = function () {
+                this.pDraw(entityCollector);
             };
 
             /**
@@ -10252,53 +10106,86 @@ var away;
 
 
             /**
-            * @private
+            *
             */
-            CSSRendererBase.prototype.notifyScissorUpdate = function () {
-                var style = this._pContext.style;
-
-                //			style.transform
-                //				= style["-webkit-transform"]
-                //				= style["-moz-transform"]
-                //				= style["-o-transform"]
-                //				= style["-ms-transform"] = "scale3d(" + this._width/1024 + ", " + this._height/1024 + ", 1)";
-                if (this._scissorDirty)
-                    return;
-
-                this._scissorDirty = true;
-
-                if (!this._scissorUpdated)
-                    this._scissorUpdated = new away.events.RendererEvent(away.events.RendererEvent.SCISSOR_UPDATED);
-
-                this.dispatchEvent(this._scissorUpdated);
-            };
-
-            /**
-            * @private
-            */
-            CSSRendererBase.prototype.notifyViewportUpdate = function () {
-                if (this._viewportDirty)
-                    return;
-
-                this._viewportDirty = true;
-
-                if (!this._viewPortUpdated)
-                    this._viewPortUpdated = new away.events.RendererEvent(away.events.RendererEvent.VIEWPORT_UPDATED);
-
-                this.dispatchEvent(this._viewPortUpdated);
+            CSSRendererBase.prototype.updateGlobalPos = function () {
             };
 
             /**
             *
+            * @param billboard
+            * @protected
             */
-            CSSRendererBase.prototype.updateGlobalPos = function () {
-                this._pScissorRect.x = 0;
-                this._pScissorRect.y = 0;
-                this._viewPort.x = this._globalPos.x;
-                this._viewPort.y = this._globalPos.y;
-
-                this.notifyScissorUpdate();
+            CSSRendererBase.prototype.applyBillboard = function (billboard) {
+                this.applyRenderable(CSSRendererBase.billboardRenderablePool.getItem(billboard));
             };
+
+            /**
+            *
+            * @param renderable
+            * @private
+            */
+            CSSRendererBase.prototype.applyRenderable = function (renderable) {
+                var material = renderable.materialOwner.material;
+                var entity = renderable.sourceEntity;
+                var position = entity.scenePosition;
+
+                if (material) {
+                    //set ids for faster referencing
+                    renderable.materialId = material._iMaterialId;
+                    renderable.renderOrderId = material._iRenderOrderId;
+                    renderable.cascaded = false;
+
+                    // project onto camera's z-axis
+                    position = this._iEntryPoint.subtract(position);
+                    renderable.zIndex = entity.zOffset - position.dotProduct(this._pCameraForward);
+
+                    //store reference to scene transform
+                    renderable.renderSceneTransform = renderable.sourceEntity.getRenderSceneTransform(this._pCamera);
+
+                    //store reference to next item in list
+                    renderable.next = this._renderableHead;
+                    this._renderableHead = renderable;
+                }
+            };
+
+            /**
+            *
+            * @param entity
+            */
+            CSSRendererBase.prototype.pFindRenderables = function (entity) {
+                //TODO abstract conditional in the entity with a callback to IRenderer
+                if (entity.assetType === away.library.AssetType.BILLBOARD) {
+                    this.applyBillboard(entity);
+                }
+            };
+
+            /**
+            * //TODO
+            *
+            * @param entity
+            * @param shortestCollisionDistance
+            * @param findClosest
+            * @returns {boolean}
+            *
+            * @internal
+            */
+            CSSRendererBase._iCollidesBefore = function (entity, shortestCollisionDistance, findClosest) {
+                var pickingCollider = entity.pickingCollider;
+                var pickingCollisionVO = entity._iPickingCollisionVO;
+
+                pickingCollider.setLocalRay(entity._iPickingCollisionVO.localRayPosition, entity._iPickingCollisionVO.localRayDirection);
+                pickingCollisionVO.materialOwner = null;
+
+                if (entity.assetType === away.library.AssetType.BILLBOARD) {
+                    //return this.testBillBoard(<away.entities.Billboard> entity, pickingCollider, pickingCollisionVO, shortestCollisionDistance, findClosest);
+                } else if (entity.assetType === away.library.AssetType.MESH) {
+                    //return this.testMesh(<away.entities.Mesh> entity, pickingCollider, pickingCollisionVO, shortestCollisionDistance, findClosest);
+                }
+
+                return false;
+            };
+            CSSRendererBase.billboardRenderablePool = new away.pool.RenderablePool(away.pool.CSSBillboardRenderable);
             return CSSRendererBase;
         })(away.events.EventDispatcher);
         render.CSSRendererBase = CSSRendererBase;
@@ -10325,9 +10212,169 @@ var away;
             */
             function CSSDefaultRenderer() {
                 _super.call(this);
+                this._contextMatrix = new away.geom.Matrix3D();
                 this._skyboxProjection = new away.geom.Matrix3D();
                 this._transform = new away.geom.Matrix3D();
+                this._viewPort = new away.geom.Rectangle();
+                this._scissorRect = new away.geom.Rectangle();
+                this._localPos = new away.geom.Point();
+                this._globalPos = new away.geom.Point();
+
+                //create container for the renderer
+                this._container = document.createElement("div");
+                this._container.style.overflow = "hidden";
+                this._container.style.position = "absolute";
+
+                //add container to body
+                document.body.appendChild(this._container);
+                document.body.style.margin = "0px";
+
+                //create conxtext for the renderer
+                this._context = document.createElement("div");
+                this._contextStyle = this._context.style;
+                this._contextStyle.position = "absolute";
+                this._contextStyle.transformStyle = this._contextStyle["-webkit-transform-style"] = this._contextStyle["-moz-transform-style"] = this._contextStyle["-o-transform-style"] = this._contextStyle["-ms-transform-style"] = "preserve-3d";
+                this._contextStyle.transformOrigin = this._contextStyle["-webkit-transform-origin"] = this._contextStyle["-moz-transform-origin"] = this._contextStyle["-o-transform-origin"] = this._contextStyle["-ms-transform-origin"] = "0% 0%";
+
+                //add context to container
+                this._container.appendChild(this._context);
+
+                this._viewPort = new away.geom.Rectangle();
+
+                if (this._width == 0)
+                    this.width = window.innerWidth;
+
+                if (this._height == 0)
+                    this.height = window.innerHeight;
             }
+            Object.defineProperty(CSSDefaultRenderer.prototype, "viewPort", {
+                /**
+                * A viewPort rectangle equivalent of the StageGL size and position.
+                */
+                get: function () {
+                    return this._viewPort;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(CSSDefaultRenderer.prototype, "scissorRect", {
+                /**
+                * A scissor rectangle equivalent of the view size and position.
+                */
+                get: function () {
+                    return this._scissorRect;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(CSSDefaultRenderer.prototype, "x", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._localPos.x;
+                },
+                set: function (value) {
+                    if (this.x == value)
+                        return;
+
+                    this.updateGlobalPos();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(CSSDefaultRenderer.prototype, "y", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._localPos.y;
+                },
+                set: function (value) {
+                    if (this.y == value)
+                        return;
+
+                    this._globalPos.y = this._localPos.y = value;
+
+                    this.updateGlobalPos();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(CSSDefaultRenderer.prototype, "width", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._width;
+                },
+                set: function (value) {
+                    if (this._width == value)
+                        return;
+
+                    this._width = value;
+                    this._scissorRect.width = value;
+                    this._viewPort.width = value;
+
+                    this._pBackBufferInvalid = true;
+                    this._depthTextureInvalid = true;
+
+                    this.notifyViewportUpdate();
+                    this.notifyScissorUpdate();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(CSSDefaultRenderer.prototype, "height", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._height;
+                },
+                set: function (value) {
+                    if (this._height == value)
+                        return;
+
+                    this._height = value;
+                    this._scissorRect.height = value;
+                    this._viewPort.height = value;
+
+                    this._pBackBufferInvalid = true;
+                    this._depthTextureInvalid = true;
+
+                    this.notifyViewportUpdate();
+                    this.notifyScissorUpdate();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            /**
+            *
+            * @param entityCollector
+            */
+            CSSDefaultRenderer.prototype.render = function (entityCollector) {
+                this._viewportDirty = false;
+                this._scissorDirty = false;
+
+                if (this._pBackBufferInvalid)
+                    this.pUpdateBackBuffer();
+
+                this._iRender(entityCollector);
+
+                this._pBackBufferInvalid = false;
+            };
+
             /**
             * @inheritDoc
             */
@@ -10344,11 +10391,32 @@ var away;
                 //			}
                 //
                 //			var which:number = target? DefaultRenderer.SCREEN_PASSES : DefaultRenderer.ALL_PASSES;
-                this.drawRenderables(entityCollector.renderableHead, entityCollector);
+                this.drawRenderables(this._renderableHead, entityCollector);
 
                 //			if (this._activeMaterial)
                 //				this._activeMaterial.iDeactivate(this._pStageGL);
                 this._activeMaterial = null;
+            };
+
+            /**
+            * Updates the backbuffer properties.
+            */
+            CSSDefaultRenderer.prototype.pUpdateBackBuffer = function () {
+                this._container.style.width = this._width + "px";
+                this._container.style.height = this._height + "px";
+                this._container.style.clip = "rect(0px, " + this._width + "px, " + this._height + "px, 0px)";
+
+                //update context matrix
+                this._contextMatrix.rawData[0] = this._width;
+                this._contextMatrix.rawData[5] = -this._height;
+                this._contextMatrix.rawData[10] = -1; //fix for innaccurate z-sort
+                this._contextMatrix.rawData[12] = this._width / 2;
+                this._contextMatrix.rawData[13] = this._height / 2;
+
+                //update context tranform
+                this._contextStyle.transform = this._contextStyle["-webkit-transform"] = this._contextStyle["-moz-transform"] = this._contextStyle["-o-transform"] = this._contextStyle["-ms-transform"] = this._contextMatrix.toString();
+
+                this._pBackBufferInvalid = false;
             };
 
             /**
@@ -10365,22 +10433,24 @@ var away;
             * @param entityCollector The EntityCollector containing all potentially visible information.
             */
             CSSDefaultRenderer.prototype.drawRenderables = function (item, entityCollector) {
-                var viewProjection = entityCollector.camera.viewProjection;
+                var viewProjection = entityCollector.camera.viewProjection.clone();
 
                 while (item) {
-                    this._activeMaterial = item.material;
+                    this._activeMaterial = item.materialOwner.material;
 
                     //serialise transform and apply to html element
                     this._transform.copyRawDataFrom(item.renderSceneTransform.rawData);
-                    this._transform.prepend(viewProjection);
+                    this._transform.append(viewProjection);
 
                     var style = item.htmlElement.style;
 
-                    style.transform = style["-webkit-transform"] = style["-moz-transform"] = style["-o-transform"] = style["-ms-transform"] = "matrix3d(" + this._transform.rawData.join(",") + ")";
+                    style.transform = style["-webkit-transform"] = style["-moz-transform"] = style["-o-transform"] = style["-ms-transform"] = this._transform.toString();
+
+                    style.transformStyle = style["-webkit-transform-style"] = style["-moz-transform-style"] = style["-o-transform-style"] = style["-ms-transform-style"] = "preserve-3d";
 
                     //check if child requires adding to the view
-                    if (!document.body.contains(item.htmlElement))
-                        document.body.appendChild(item.htmlElement);
+                    if (!this._context.contains(item.htmlElement))
+                        this._context.appendChild(item.htmlElement);
 
                     item = item.next;
                 }
@@ -10430,6 +10500,47 @@ var away;
             CSSDefaultRenderer.prototype.dispose = function () {
                 _super.prototype.dispose.call(this);
                 //TODO
+            };
+
+            /**
+            * @private
+            */
+            CSSDefaultRenderer.prototype.notifyScissorUpdate = function () {
+                if (this._scissorDirty)
+                    return;
+
+                this._scissorDirty = true;
+
+                if (!this._scissorUpdated)
+                    this._scissorUpdated = new away.events.RendererEvent(away.events.RendererEvent.SCISSOR_UPDATED);
+
+                this.dispatchEvent(this._scissorUpdated);
+            };
+
+            /**
+            * @private
+            */
+            CSSDefaultRenderer.prototype.notifyViewportUpdate = function () {
+                if (this._viewportDirty)
+                    return;
+
+                this._viewportDirty = true;
+
+                if (!this._viewPortUpdated)
+                    this._viewPortUpdated = new away.events.RendererEvent(away.events.RendererEvent.VIEWPORT_UPDATED);
+
+                this.dispatchEvent(this._viewPortUpdated);
+            };
+
+            /**
+            *
+            */
+            CSSDefaultRenderer.prototype.updateGlobalPos = function () {
+                this._viewPort.x = this._globalPos.x;
+                this._viewPort.y = this._globalPos.y;
+
+                this.notifyViewportUpdate();
+                this.notifyScissorUpdate();
             };
             return CSSDefaultRenderer;
         })(away.render.CSSRendererBase);
@@ -13809,6 +13920,15 @@ var away;
                 configurable: true
             });
 
+
+            Matrix3D.prototype.toFixed = function (decimalPlace) {
+                var magnitude = Math.pow(10, decimalPlace);
+                return "matrix3d(" + Math.round(this.rawData[0] * magnitude) / magnitude + "," + Math.round(this.rawData[1] * magnitude) / magnitude + "," + Math.round(this.rawData[2] * magnitude) / magnitude + "," + Math.round(this.rawData[3] * magnitude) / magnitude + "," + Math.round(this.rawData[4] * magnitude) / magnitude + "," + Math.round(this.rawData[5] * magnitude) / magnitude + "," + Math.round(this.rawData[6] * magnitude) / magnitude + "," + Math.round(this.rawData[7] * magnitude) / magnitude + "," + Math.round(this.rawData[8] * magnitude) / magnitude + "," + Math.round(this.rawData[9] * magnitude) / magnitude + "," + Math.round(this.rawData[10] * magnitude) / magnitude + "," + Math.round(this.rawData[11] * magnitude) / magnitude + "," + Math.round(this.rawData[12] * magnitude) / magnitude + "," + Math.round(this.rawData[13] * magnitude) / magnitude + "," + Math.round(this.rawData[14] * magnitude) / magnitude + "," + Math.round(this.rawData[15] * magnitude) / magnitude + ")";
+            };
+
+            Matrix3D.prototype.toString = function () {
+                return "matrix3d(" + Math.round(this.rawData[0] * 1000) / 1000 + "," + Math.round(this.rawData[1] * 1000) / 1000 + "," + Math.round(this.rawData[2] * 1000) / 1000 + "," + Math.round(this.rawData[3] * 1000) / 1000 + "," + Math.round(this.rawData[4] * 1000) / 1000 + "," + Math.round(this.rawData[5] * 1000) / 1000 + "," + Math.round(this.rawData[6] * 1000) / 1000 + "," + Math.round(this.rawData[7] * 1000) / 1000 + "," + Math.round(this.rawData[8] * 1000) / 1000 + "," + Math.round(this.rawData[9] * 1000) / 1000 + "," + Math.round(this.rawData[10] * 1000) / 1000 + "," + Math.round(this.rawData[11] * 1000) / 1000 + "," + Math.round(this.rawData[12] * 1000) / 1000 + "," + Math.round(this.rawData[13] * 1000) / 1000 + "," + Math.round(this.rawData[14] * 1000) / 1000 + "," + Math.round(this.rawData[15] * 1000) / 1000 + ")";
+            };
             return Matrix3D;
         })();
         geom.Matrix3D = Matrix3D;
@@ -19847,6 +19967,7 @@ var away;
             */
             function TextField() {
                 _super.call(this);
+                this._text = "";
             }
             Object.defineProperty(TextField.prototype, "bottomScrollV", {
                 /**
@@ -19949,6 +20070,29 @@ var away;
                 configurable: true
             });
 
+            Object.defineProperty(TextField.prototype, "text", {
+                /**
+                * A string that is the current text in the text field. Lines are separated
+                * by the carriage return character(<code>'\r'</code>, ASCII 13). This
+                * property contains unformatted text in the text field, without HTML tags.
+                *
+                * <p>To get the text in HTML form, use the <code>htmlText</code>
+                * property.</p>
+                */
+                get: function () {
+                    return this._text;
+                },
+                set: function (value) {
+                    if (this._text == value)
+                        return;
+
+                    this._text = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
             Object.defineProperty(TextField.prototype, "textHeight", {
                 /**
                 * The height of the text in pixels.
@@ -19997,6 +20141,7 @@ var away;
             * @param newText The string to append to the existing text.
             */
             TextField.prototype.appendText = function (newText) {
+                //TODO
             };
 
             /**
@@ -23924,8 +24069,6 @@ var away;
         var AssetType = away.library.AssetType;
         var Delegate = away.utils.Delegate;
 
-        var CSSRenderableBase = away.render.CSSRenderableBase;
-
         /**
         * MaterialBase forms an abstract base class for any material.
         * A material consists of several passes, each of which constitutes at least one render call. Several passes could
@@ -23970,6 +24113,14 @@ var away;
             Object.defineProperty(CSSMaterialBase.prototype, "imageElement", {
                 get: function () {
                     return this._imageElement;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(CSSMaterialBase.prototype, "imageStyle", {
+                get: function () {
+                    return this._imageStyle;
                 },
                 enumerable: true,
                 configurable: true
@@ -24021,8 +24172,25 @@ var away;
 
                     this._texture = value;
 
-                    if (value instanceof away.textures.ImageTexture)
+                    if (value instanceof away.textures.ImageTexture) {
                         this._imageElement = value.htmlImageElement;
+
+                        var node = document.createElement("style");
+                        node.type = "text/css";
+                        document.getElementsByTagName("head")[0].appendChild(node);
+
+                        var sheet = document.styleSheets[document.styleSheets.length - 1];
+                        sheet.insertRule(".material" + this.id + "{ }", 0);
+                        var style = sheet.cssRules[0].style;
+
+                        style.backgroundImage = "url(" + this._imageElement.src + ")";
+                        style.backgroundSize = "100% 100%";
+                        style.position = "absolute";
+                        style.width = this._imageElement.width + "px";
+                        style.height = this._imageElement.height + "px";
+                        style.transformOrigin = style["-webkit-transform-origin"] = style["-moz-transform-origin"] = style["-o-transform-origin"] = style["-ms-transform-origin"] = "0% 0%";
+                        style.transform = style["-webkit-transform"] = style["-moz-transform"] = style["-o-transform"] = style["-ms-transform"] = "scale3d(" + 1 / this._imageElement.width + ", -" + 1 / this._imageElement.height + ", 1) translateY(-" + this._imageElement.height + "px)";
+                    }
                 },
                 enumerable: true,
                 configurable: true

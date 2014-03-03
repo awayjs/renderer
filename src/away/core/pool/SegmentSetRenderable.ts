@@ -10,9 +10,9 @@ module away.pool
 	 */
 	export class SegmentSetRenderable extends RenderableBase
 	{
-		constructor(segmentSet:away.entities.SegmentSet)
+		constructor(pool:RenderablePool, segmentSet:away.entities.SegmentSet)
 		{
-			super(segmentSet, segmentSet, segmentSet.subGeometry, null);
+			super(pool, segmentSet, segmentSet, segmentSet.subGeometry, null);
 		}
 	}
 }

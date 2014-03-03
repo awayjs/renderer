@@ -12,10 +12,9 @@ module away.pool
 	{
 		public subMesh:away.base.SubMesh;
 
-		constructor(subMesh:away.base.SubMesh)
+		constructor(pool:RenderablePool, subMesh:away.base.SubMesh)
 		{
-			super(subMesh.sourceEntity, subMesh, subMesh.subGeometry, subMesh.animationSubGeometry);
-			//super(subMesh.sourceEntity, subMesh, subMesh.subGeometry, subMesh.animationSubGeometry);
+			super(pool, subMesh.sourceEntity, subMesh, subMesh.subGeometry, subMesh.animationSubGeometry);
 
 			this.subMesh = subMesh;
 		}

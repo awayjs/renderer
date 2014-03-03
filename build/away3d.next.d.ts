@@ -290,6 +290,7 @@ declare module away.base {
         public _iIndex: number;
         public animationSubGeometry: away.animators.AnimationSubGeometry;
         public animatorSubGeometry: away.animators.AnimationSubGeometry;
+        private _renderables;
         /**
         * The animator object that provides the state for the SubMesh's animation.
         */
@@ -331,6 +332,8 @@ declare module away.base {
         * @returns {away.geom.Matrix3D}
         */
         public getRenderSceneTransform(camera: away.entities.Camera): away.geom.Matrix3D;
+        public _iAddRenderable(renderable: away.pool.IRenderable): away.pool.IRenderable;
+        public _iRemoveRenderable(renderable: away.pool.IRenderable): away.pool.IRenderable;
         /**
         * @internal
         */
@@ -1220,6 +1223,10 @@ declare module away.pool {
         /**
         *
         */
+        private _pool;
+        /**
+        *
+        */
         public next: RenderableBase;
         /**
         *
@@ -1264,7 +1271,8 @@ declare module away.pool {
         * @param subGeometry
         * @param animationSubGeometry
         */
-        constructor(sourceEntity: away.entities.IEntity, materialOwner: away.base.IMaterialOwner, subGeometry: away.base.ISubGeometry, animationSubGeometry: away.animators.AnimationSubGeometry);
+        constructor(pool: pool.RenderablePool, sourceEntity: away.entities.IEntity, materialOwner: away.base.IMaterialOwner, subGeometry: away.base.ISubGeometry, animationSubGeometry: away.animators.AnimationSubGeometry);
+        public dispose(): void;
     }
 }
 /**
@@ -1276,21 +1284,7 @@ declare module away.pool {
     */
     class BillboardRenderable extends pool.RenderableBase {
         private static _geometry;
-        constructor(billboard: away.entities.Billboard);
-    }
-}
-/**
-* @module away.pool
-*/
-declare module away.pool {
-    /**
-    * @class away.pool.BillboardRenderablePool
-    */
-    class BillboardRenderablePool {
-        private _pool;
-        public getItem(billboard: away.entities.Billboard): pool.BillboardRenderable;
-        public dispose(billboard: away.entities.Billboard): void;
-        public disposeAll(): void;
+        constructor(pool: pool.RenderablePool, billboard: away.entities.Billboard);
     }
 }
 /**
@@ -1301,21 +1295,7 @@ declare module away.pool {
     * @class away.pool.RenderableListItem
     */
     class SegmentSetRenderable extends pool.RenderableBase {
-        constructor(segmentSet: away.entities.SegmentSet);
-    }
-}
-/**
-* @module away.pool
-*/
-declare module away.pool {
-    /**
-    * @class away.pool.SegmentSetRenderablePool
-    */
-    class SegmentSetRenderablePool {
-        private _pool;
-        public getItem(segmentSet: away.entities.SegmentSet): pool.SegmentSetRenderable;
-        public dispose(segmentSet: away.entities.Billboard): void;
-        public disposeAll(): void;
+        constructor(pool: pool.RenderablePool, segmentSet: away.entities.SegmentSet);
     }
 }
 /**
@@ -1327,21 +1307,7 @@ declare module away.pool {
     */
     class SubMeshRenderable extends pool.RenderableBase {
         public subMesh: away.base.SubMesh;
-        constructor(subMesh: away.base.SubMesh);
-    }
-}
-/**
-* @module away.pool
-*/
-declare module away.pool {
-    /**
-    * @class away.pool.SubMeshRenderablePool
-    */
-    class SubMeshRenderablePool {
-        private _pool;
-        public getItem(subMesh: away.base.SubMesh): pool.SubMeshRenderable;
-        public dispose(subMesh: away.base.SubMesh): void;
-        public disposeAll(): void;
+        constructor(pool: pool.RenderablePool, subMesh: away.base.SubMesh);
     }
 }
 /**
@@ -1353,21 +1319,7 @@ declare module away.pool {
     */
     class SkyboxRenderable extends pool.RenderableBase {
         private static _geometry;
-        constructor(skybox: away.entities.Skybox);
-    }
-}
-/**
-* @module away.pool
-*/
-declare module away.pool {
-    /**
-    * @class away.pool.SkyboxRenderablePool
-    */
-    class SkyboxRenderablePool {
-        private _pool;
-        public getItem(skybox: away.entities.Skybox): pool.SkyboxRenderable;
-        public dispose(skybox: away.entities.Skybox): void;
-        public disposeAll(): void;
+        constructor(pool: pool.RenderablePool, skybox: away.entities.Skybox);
     }
 }
 /**
@@ -1379,23 +1331,13 @@ declare module away.traverse {
     */
     class RenderableCollectorBase implements traverse.ICollector {
         public scene: away.containers.Scene;
-        public _iEntryPoint: away.geom.Vector3D;
         public _pSkybox: away.pool.RenderableBase;
         public _pEntityHead: away.pool.EntityListItem;
         public _pEntityListItemPool: away.pool.EntityListItemPool;
-        public _pBillboardRenderablePool: away.pool.BillboardRenderablePool;
-        public _pSegmentSetRenderablePool: away.pool.SegmentSetRenderablePool;
-        public _pSkyboxRenderablePool: away.pool.SkyboxRenderablePool;
-        public _pSubMeshRenderablePool: away.pool.SubMeshRenderablePool;
         public _pCamera: away.entities.Camera;
-        public _pCameraForward: away.geom.Vector3D;
         private _customCullPlanes;
         private _cullPlanes;
         private _numCullPlanes;
-        /**
-        *
-        */
-        public renderableSorter: away.sort.IEntitySorter;
         constructor();
         /**
         *
@@ -1409,7 +1351,6 @@ declare module away.traverse {
         *
         */
         public entityHead : away.pool.EntityListItem;
-        public entryPoint : away.geom.Vector3D;
         /**
         *
         */
@@ -1425,45 +1366,6 @@ declare module away.traverse {
         * @param entity
         */
         public applyEntity(entity: away.entities.IEntity): void;
-        public sortRenderables(): void;
-        /**
-        *
-        * @param billboard
-        * @protected
-        */
-        public pApplyBillboard(billboard: away.entities.Billboard): void;
-        /**
-        *
-        * @param mesh
-        * @protected
-        */
-        public pApplyMesh(mesh: away.entities.Mesh): void;
-        /**
-        *
-        * @param renderable
-        * @protected
-        */
-        public pApplyRenderable(renderable: away.pool.RenderableBase): void;
-        public pApplySkybox(skybox: away.entities.Skybox): void;
-        public pApplySegmentSet(segmentSet: away.entities.SegmentSet): void;
-        /**
-        *
-        * @param entity
-        */
-        public pFindRenderable(entity: away.entities.IEntity): void;
-        /**
-        * //TODO
-        *
-        * @param entity
-        * @param shortestCollisionDistance
-        * @param findClosest
-        * @returns {boolean}
-        *
-        * @internal
-        */
-        public _iCollidesBefore(entity: away.entities.IEntity, shortestCollisionDistance: number, findClosest: boolean): boolean;
-        private testBillBoard(billboard, pickingCollider, pickingCollisionVO, shortestCollisionDistance, findClosest);
-        public testMesh(mesh: away.entities.Mesh, pickingCollider: away.pick.PickingColliderBase, pickingCollisionVO: away.pick.PickingCollisionVO, shortestCollisionDistance: number, findClosest: boolean): boolean;
     }
 }
 /**
@@ -1479,10 +1381,7 @@ declare module away.traverse {
         private _directionalLights;
         private _pointLights;
         private _lightProbes;
-        public _pOpaqueRenderableHead: away.pool.RenderableBase;
-        public _pBlendedRenderableHead: away.pool.RenderableBase;
         public _pNumLights: number;
-        public _pNumTriangles: number;
         public _pNumEntities: number;
         public _pNumInteractiveEntities: number;
         private _numDirectionalLights;
@@ -1492,10 +1391,6 @@ declare module away.traverse {
         *
         */
         public directionalLights : away.lights.DirectionalLight[];
-        /**
-        *
-        */
-        public blendedRenderableHead : away.pool.RenderableBase;
         /**
         *
         */
@@ -1515,14 +1410,6 @@ declare module away.traverse {
         /**
         *
         */
-        public numTriangles : number;
-        /**
-        *
-        */
-        public opaqueRenderableHead : away.pool.RenderableBase;
-        /**
-        *
-        */
         public pointLights : away.lights.PointLight[];
         /**
         *
@@ -1533,22 +1420,10 @@ declare module away.traverse {
         *
         */
         public applyEntity(entity: away.entities.IEntity): void;
-        public sortRenderables(): void;
         /**
         *
         */
         public clear(): void;
-        /**
-        *
-        * @param renderable
-        * @protected
-        */
-        public pApplyRenderable(renderable: away.pool.RenderableBase): void;
-        /**
-        *
-        * @param entity
-        */
-        public pFindRenderable(entity: away.entities.IEntity): void;
     }
 }
 /**
@@ -1558,18 +1433,12 @@ declare module away.traverse {
     /**
     * @class away.traverse.ShadowCasterCollector
     */
-    class ShadowCasterCollector extends traverse.EntityCollector {
+    class ShadowCasterCollector extends traverse.RenderableCollectorBase {
         constructor();
         /**
         *
         */
         public enterNode(node: away.partition.NodeBase): boolean;
-        public pApplyRenderable(renderable: away.pool.RenderableBase): void;
-        /**
-        *
-        * @param entity
-        */
-        public pFindRenderable(entity: away.entities.IEntity): void;
     }
 }
 /**
@@ -1589,11 +1458,6 @@ declare module away.traverse {
         private _rayPosition;
         private _rayDirection;
         public _iCollectionMark: number;
-        public _pCamera: away.entities.Camera;
-        /**
-        *
-        */
-        public camera : away.entities.Camera;
         /**
         * Provides the starting position of the ray.
         */
@@ -1612,11 +1476,6 @@ declare module away.traverse {
         * @param node The Partition3DNode object to frustum-test.
         */
         public enterNode(node: away.partition.NodeBase): boolean;
-        /**
-        *
-        * @param entity
-        */
-        public pFindRenderable(entity: away.entities.IEntity): void;
     }
 }
 /**
@@ -1820,11 +1679,17 @@ declare module away.pick {
         * properties such as uv and normal coordinates.
         */
         constructor(shaderPickingDetails?: boolean);
+        /**
+        * @inheritDoc
+        */
         public getViewCollision(x: number, y: number, view: away.containers.View): pick.PickingCollisionVO;
         /**
         * @inheritDoc
         */
         public getSceneCollision(position: away.geom.Vector3D, direction: away.geom.Vector3D, scene: away.containers.Scene): pick.PickingCollisionVO;
+        /**
+        * @inheritDoc
+        */
         public pDraw(entityCollector: away.traverse.EntityCollector, target: away.gl.TextureBase): void;
         /**
         * Draw a list of renderables.
@@ -1986,8 +1851,15 @@ declare module away.render {
     * @class away.render.RendererBase
     */
     class RendererBase extends away.events.EventDispatcher {
+        static billboardRenderablePool: away.pool.RenderablePool;
+        static segmentSetRenderablePool: away.pool.RenderablePool;
+        static skyboxRenderablePool: away.pool.RenderablePool;
+        static subMeshRenderablePool: away.pool.RenderablePool;
         public _pContext: away.gl.ContextGL;
         public _pStageGL: away.base.StageGL;
+        public _pCamera: away.entities.Camera;
+        public _iEntryPoint: away.geom.Vector3D;
+        public _pCameraForward: away.geom.Vector3D;
         public _pBackBufferInvalid: boolean;
         public _depthPrepass: boolean;
         private _backgroundR;
@@ -2006,6 +1878,17 @@ declare module away.render {
         private _snapshotRequired;
         public _pRttViewProjectionMatrix: away.geom.Matrix3D;
         private _onContextUpdateDelegate;
+        public _pNumTriangles: number;
+        public _pOpaqueRenderableHead: away.pool.RenderableBase;
+        public _pBlendedRenderableHead: away.pool.RenderableBase;
+        /**
+        *
+        */
+        public numTriangles : number;
+        /**
+        *
+        */
+        public renderableSorter: away.sort.IEntitySorter;
         /**
         * Creates a new RendererBase object.
         */
@@ -2053,6 +1936,7 @@ declare module away.render {
         * @param additionalClearMask Additional clear mask information, in case extra clear channels are to be omitted.
         */
         public _iRender(entityCollector: away.traverse.ICollector, target?: away.gl.TextureBase, scissorRect?: away.geom.Rectangle, surfaceSelector?: number): void;
+        public pCollectRenderables(entityCollector: away.traverse.ICollector): void;
         /**
         * Renders the potentially visible geometry to the back buffer or texture. Only executed if everything is set up.
         * @param entityCollector The EntityCollector object containing the potentially visible geometry.
@@ -2077,6 +1961,44 @@ declare module away.render {
         *
         */
         public updateGlobalPos(): void;
+        /**
+        *
+        * @param billboard
+        * @protected
+        */
+        public pApplyBillboard(billboard: away.entities.Billboard): void;
+        /**
+        *
+        * @param mesh
+        * @protected
+        */
+        public pApplyMesh(mesh: away.entities.Mesh): void;
+        /**
+        *
+        * @param renderable
+        * @protected
+        */
+        public pApplyRenderable(renderable: away.pool.RenderableBase): void;
+        public pApplySkybox(skybox: away.entities.Skybox): void;
+        public pApplySegmentSet(segmentSet: away.entities.SegmentSet): void;
+        /**
+        *
+        * @param entity
+        */
+        public pFindRenderables(entity: away.entities.IEntity): void;
+        /**
+        * //TODO
+        *
+        * @param entity
+        * @param shortestCollisionDistance
+        * @param findClosest
+        * @returns {boolean}
+        *
+        * @internal
+        */
+        static _iCollidesBefore(entity: away.entities.IEntity, shortestCollisionDistance: number, findClosest: boolean): boolean;
+        private static testBillBoard(billboard, pickingCollider, pickingCollisionVO, shortestCollisionDistance, findClosest);
+        private static testMesh(mesh, pickingCollider, pickingCollisionVO, shortestCollisionDistance, findClosest);
     }
 }
 /**

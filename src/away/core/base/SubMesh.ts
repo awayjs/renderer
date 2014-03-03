@@ -25,6 +25,8 @@ module away.base
 		public animationSubGeometry:away.animators.AnimationSubGeometry;
 		public animatorSubGeometry:away.animators.AnimationSubGeometry;
 
+		private _renderables:Array<away.pool.IRenderable> = new Array<away.pool.IRenderable>();
+
 		//TODO test shader picking
 //		public get shaderPickingDetails():boolean
 //		{
@@ -119,6 +121,10 @@ module away.base
 		public dispose()
 		{
 			this.material = null;
+
+			var len:number = this._renderables.length;
+			for (var i:number = 0; i < len; i++)
+				this._renderables[i].dispose();
 		}
 		
 		/**
@@ -129,6 +135,23 @@ module away.base
 		public getRenderSceneTransform(camera:away.entities.Camera):away.geom.Matrix3D
 		{
 			return this._parentMesh.getRenderSceneTransform(camera);
+		}
+
+		public _iAddRenderable(renderable:away.pool.IRenderable):away.pool.IRenderable
+		{
+			this._renderables.push(renderable);
+
+			return renderable;
+		}
+
+
+		public _iRemoveRenderable(renderable:away.pool.IRenderable):away.pool.IRenderable
+		{
+			var index:number = this._renderables.indexOf(renderable);
+
+			this._renderables.splice(index, 1);
+
+			return renderable;
 		}
 
 		/**

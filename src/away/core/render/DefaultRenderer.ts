@@ -302,8 +302,10 @@ module away.render
 
 			// otherwise RTT will interfere with other RTTs
 			if (target) {
-				this.drawRenderables(entityCollector.opaqueRenderableHead, entityCollector, DefaultRenderer.RTT_PASSES);
-				this.drawRenderables(entityCollector.blendedRenderableHead, entityCollector, DefaultRenderer.RTT_PASSES);
+				this.pCollectRenderables(entityCollector);
+
+				this.drawRenderables(this._pOpaqueRenderableHead, entityCollector, DefaultRenderer.RTT_PASSES);
+				this.drawRenderables(this._pBlendedRenderableHead, entityCollector, DefaultRenderer.RTT_PASSES);
 			}
 
 			super.pExecuteRender(entityCollector, target, scissorRect, surfaceSelector);
@@ -343,6 +345,9 @@ module away.render
 		 */
 		public pDraw(entityCollector:away.traverse.EntityCollector, target:away.gl.TextureBase)
 		{
+			if (!target)
+				this.pCollectRenderables(entityCollector);
+
 			this._pContext.setBlendFactors(away.gl.ContextGLBlendFactor.ONE, away.gl.ContextGLBlendFactor.ZERO);
 
 			if (entityCollector.skyBox) {
@@ -360,8 +365,8 @@ module away.render
 
 			var which:number = target? DefaultRenderer.SCREEN_PASSES : DefaultRenderer.ALL_PASSES;
 
-			this.drawRenderables(entityCollector.opaqueRenderableHead, entityCollector, which);
-			this.drawRenderables(entityCollector.blendedRenderableHead, entityCollector, which);
+			this.drawRenderables(this._pOpaqueRenderableHead, entityCollector, which);
+			this.drawRenderables(this._pBlendedRenderableHead, entityCollector, which);
 
 			this._pContext.setDepthTest(false, away.gl.ContextGLCompareMode.LESS_EQUAL);
 

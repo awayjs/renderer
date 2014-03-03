@@ -941,6 +941,15 @@ declare module away.parsers {
 declare module away.parsers {
     class ParserUtils {
         /**
+        * Converts an ArrayBuffer to a base64 string
+        *
+        * @param image data as a ByteArray
+        *
+        * @return HTMLImageElement
+        *
+        */
+        static arrayBufferToImage(data: ArrayBuffer): HTMLImageElement;
+        /**
         * Converts an ByteArray to an Image - returns an HTMLImageElement
         *
         * @param image data as a ByteArray
@@ -2172,6 +2181,7 @@ declare module away.base {
         private _worldBounds;
         private _worldBoundsInvalid;
         private _pickingCollider;
+        public _pRenderables: away.pool.IRenderable[];
         /**
         *
         */
@@ -3053,6 +3063,8 @@ declare module away.base {
         * @protected
         */
         public pUpdateSceneTransform(): void;
+        public _iAddRenderable(renderable: away.pool.IRenderable): away.pool.IRenderable;
+        public _iRemoveRenderable(renderable: away.pool.IRenderable): away.pool.IRenderable;
         /**
         * @internal
         */
@@ -3893,6 +3905,10 @@ declare module away.base {
         */
         animator: away.animators.IAnimator;
         /**
+        *
+        */
+        id: string;
+        /**
         * The material with which to render the object.
         */
         material: away.materials.IMaterial;
@@ -3904,6 +3920,14 @@ declare module away.base {
         *
         */
         _iSetUVMatrixComponents(offsetU: number, offsetV: number, scaleU: number, scaleV: number, rotationUV: number): any;
+        /**
+        *
+        */
+        _iAddRenderable(renderable: away.pool.IRenderable): away.pool.IRenderable;
+        /**
+        *
+        */
+        _iRemoveRenderable(renderable: away.pool.IRenderable): away.pool.IRenderable;
     }
 }
 /**
@@ -4446,35 +4470,6 @@ declare module away.base {
 */
 declare module away.pool {
     /**
-    * IRenderable is an interface for classes that are used in the rendering pipeline to render the
-    * contents of a partition
-    *
-    * @class away.render.IRenderable
-    */
-    interface IRenderable {
-        /**
-        *
-        */
-        next: IRenderable;
-        /**
-        *
-        */
-        materialId: number;
-        /**
-        *
-        */
-        renderOrderId: number;
-        /**
-        *
-        */
-        zIndex: number;
-    }
-}
-/**
-* @module away.pool
-*/
-declare module away.pool {
-    /**
     * @class away.pool.EntityListItem
     */
     class EntityListItem {
@@ -4515,6 +4510,123 @@ declare module away.pool {
     }
 }
 /**
+* @module away.pool
+*/
+declare module away.pool {
+    /**
+    * IRenderable is an interface for classes that are used in the rendering pipeline to render the
+    * contents of a partition
+    *
+    * @class away.render.IRenderable
+    */
+    interface IRenderable {
+        /**
+        *
+        */
+        next: IRenderable;
+        /**
+        *
+        */
+        materialId: number;
+        /**
+        *
+        */
+        renderOrderId: number;
+        /**
+        *
+        */
+        zIndex: number;
+        /**
+        *
+        */
+        dispose(): any;
+    }
+}
+/**
+* @module away.pool
+*/
+declare module away.pool {
+    /**
+    * @class away.pool.RenderablePool
+    */
+    class RenderablePool {
+        private _pool;
+        private _renderableClass;
+        constructor(renderableClass: any);
+        public getItem(materialOwner: away.base.IMaterialOwner): pool.IRenderable;
+        public disposeItem(materialOwner: away.base.IMaterialOwner): void;
+    }
+}
+/**
+* @module away.data
+*/
+declare module away.pool {
+    /**
+    * @class away.pool.RenderableListItem
+    */
+    class CSSRenderableBase implements pool.IRenderable {
+        /**
+        *
+        */
+        private _pool;
+        /**
+        *
+        */
+        public next: CSSRenderableBase;
+        /**
+        *
+        */
+        public materialId: number;
+        /**
+        *
+        */
+        public renderOrderId: number;
+        /**
+        *
+        */
+        public zIndex: number;
+        /**
+        *
+        */
+        public cascaded: boolean;
+        /**
+        *
+        */
+        public renderSceneTransform: away.geom.Matrix3D;
+        /**
+        *
+        */
+        public sourceEntity: away.entities.IEntity;
+        /**
+        *
+        */
+        public materialOwner: away.base.IMaterialOwner;
+        /**
+        *
+        */
+        public htmlElement: HTMLElement;
+        /**
+        *
+        * @param sourceEntity
+        * @param material
+        * @param animator
+        */
+        constructor(pool: pool.RenderablePool, sourceEntity: away.entities.IEntity, materialOwner: away.base.IMaterialOwner);
+        public dispose(): void;
+    }
+}
+/**
+* @module away.data
+*/
+declare module away.pool {
+    /**
+    * @class away.pool.RenderableListItem
+    */
+    class CSSBillboardRenderable extends pool.CSSRenderableBase {
+        constructor(pool: pool.RenderablePool, billboard: away.entities.Billboard);
+    }
+}
+/**
 * @module away.traverse
 */
 declare module away.traverse {
@@ -4526,10 +4638,6 @@ declare module away.traverse {
         *
         */
         camera: away.entities.Camera;
-        /**
-        *
-        */
-        renderableSorter: away.sort.IEntitySorter;
         /**
         *
         */
@@ -4552,21 +4660,6 @@ declare module away.traverse {
         * @param entity
         */
         applyEntity(entity: away.entities.IEntity): any;
-        /**
-        *
-        */
-        sortRenderables(): any;
-        /**
-        * //TODO
-        *
-        * @param entity
-        * @param shortestCollisionDistance
-        * @param findClosest
-        * @returns {boolean}
-        *
-        * @internal
-        */
-        _iCollidesBefore(entity: away.entities.IEntity, shortestCollisionDistance: number, findClosest: boolean): boolean;
     }
 }
 /**
@@ -4577,27 +4670,19 @@ declare module away.traverse {
     * @class away.traverse.EntityCollector
     */
     class CSSEntityCollector implements traverse.ICollector {
-        private static _billboardRenderablePool;
         public scene: away.containers.Scene;
-        public _iEntryPoint: away.geom.Vector3D;
-        public _renderableHead: away.render.CSSRenderableBase;
         private _entityHead;
         public _pEntityListItemPool: away.pool.EntityListItemPool;
         public _pNumEntities: number;
+        public _pNumInteractiveEntities: number;
         public _pNumLights: number;
-        public _pNumMouseEnableds: number;
         public _pCamera: away.entities.Camera;
         private _numDirectionalLights;
         private _numPointLights;
         private _numLightProbes;
-        public _pCameraForward: away.geom.Vector3D;
         private _customCullPlanes;
         private _cullPlanes;
         private _numCullPlanes;
-        /**
-        *
-        */
-        public renderableSorter: away.sort.IEntitySorter;
         constructor();
         /**
         *
@@ -4610,16 +4695,11 @@ declare module away.traverse {
         /**
         *
         */
-        public numMouseEnableds : number;
+        public numInteractiveEntities : number;
         /**
         *
         */
         public entityHead : away.pool.EntityListItem;
-        public entryPoint : away.geom.Vector3D;
-        /**
-        *
-        */
-        public renderableHead : away.render.CSSRenderableBase;
         /**
         *
         */
@@ -4628,7 +4708,6 @@ declare module away.traverse {
         *
         */
         public enterNode(node: away.partition.NodeBase): boolean;
-        public sortRenderables(): void;
         /**
         *
         */
@@ -4637,29 +4716,6 @@ declare module away.traverse {
         * Cleans up any data at the end of a frame.
         */
         public cleanUp(): void;
-        /**
-        *
-        * @param billboard
-        * @private
-        */
-        private applyBillboard(billboard);
-        /**
-        *
-        * @param renderable
-        * @private
-        */
-        private applyRenderable(renderable);
-        /**
-        * //TODO
-        *
-        * @param entity
-        * @param shortestCollisionDistance
-        * @param findClosest
-        * @returns {boolean}
-        *
-        * @internal
-        */
-        public _iCollidesBefore(entity: away.entities.IEntity, shortestCollisionDistance: number, findClosest: boolean): boolean;
     }
 }
 /**
@@ -4964,6 +5020,10 @@ declare module away.render {
     * @class away.render.IRenderer
     */
     interface IRenderer extends away.events.IEventDispatcher {
+        /**
+        *
+        */
+        renderableSorter: away.sort.IEntitySorter;
         x: number;
         y: number;
         width: number;
@@ -4995,74 +5055,6 @@ declare module away.render {
     }
 }
 /**
-* @module away.data
-*/
-declare module away.render {
-    /**
-    * @class away.pool.RenderableListItem
-    */
-    class CSSRenderableBase implements away.pool.IRenderable {
-        /**
-        *
-        */
-        public next: CSSRenderableBase;
-        /**
-        *
-        */
-        public materialId: number;
-        /**
-        *
-        */
-        public renderOrderId: number;
-        /**
-        *
-        */
-        public zIndex: number;
-        /**
-        *
-        */
-        public cascaded: boolean;
-        /**
-        *
-        */
-        public renderSceneTransform: away.geom.Matrix3D;
-        /**
-        *
-        */
-        public sourceEntity: away.entities.IEntity;
-        /**
-        *
-        */
-        public material: away.materials.CSSMaterialBase;
-        /**
-        *
-        */
-        public animator: away.animators.IAnimator;
-        /**
-        *
-        */
-        public htmlElement: HTMLElement;
-        /**
-        *
-        * @param sourceEntity
-        * @param material
-        * @param animator
-        */
-        constructor(sourceEntity: away.entities.IEntity, material: away.materials.CSSMaterialBase, animator: away.animators.IAnimator);
-    }
-}
-/**
-* @module away.data
-*/
-declare module away.render {
-    /**
-    * @class away.pool.RenderableListItem
-    */
-    class CSSBillboardRenderable extends render.CSSRenderableBase {
-        constructor(sourceEntity: away.entities.IEntity, material: away.materials.CSSMaterialBase, animator: away.animators.IAnimator);
-    }
-}
-/**
 * @module away.render
 */
 declare module away.render {
@@ -5072,52 +5064,23 @@ declare module away.render {
     *
     * @class away.render.RendererBase
     */
-    class CSSRendererBase extends away.events.EventDispatcher implements render.IRenderer {
-        public _pContext: HTMLDivElement;
+    class CSSRendererBase extends away.events.EventDispatcher {
+        static billboardRenderablePool: away.pool.RenderablePool;
+        public _pCamera: away.entities.Camera;
+        public _iEntryPoint: away.geom.Vector3D;
+        public _pCameraForward: away.geom.Vector3D;
         private _backgroundR;
         private _backgroundG;
         private _backgroundB;
         private _backgroundAlpha;
-        private _viewportDirty;
-        private _scissorDirty;
-        private _pBackBufferInvalid;
-        private _width;
-        private _height;
-        private _localPos;
-        private _globalPos;
-        public _pScissorRect: away.geom.Rectangle;
-        private _viewPort;
-        private _scissorUpdated;
-        private _viewPortUpdated;
+        public _pBackBufferInvalid: boolean;
+        public _depthTextureInvalid: boolean;
+        public _renderableHead: away.pool.CSSRenderableBase;
         /**
         * Creates a new RendererBase object.
         */
         constructor(renderToTexture?: boolean, forceSoftware?: boolean, profile?: string);
         public _iCreateEntityCollector(): away.traverse.ICollector;
-        /**
-        * A viewPort rectangle equivalent of the StageGL size and position.
-        */
-        public viewPort : away.geom.Rectangle;
-        /**
-        * A scissor rectangle equivalent of the view size and position.
-        */
-        public scissorRect : away.geom.Rectangle;
-        /**
-        *
-        */
-        public x : number;
-        /**
-        *
-        */
-        public y : number;
-        /**
-        *
-        */
-        public width : number;
-        /**
-        *
-        */
-        public height : number;
         /**
         * The background color's red component, used when clearing.
         *
@@ -5147,16 +5110,13 @@ declare module away.render {
         * @param scissorRect
         */
         public _iRender(entityCollector: away.traverse.CSSEntityCollector, scissorRect?: away.geom.Rectangle): void;
+        public pCollectRenderables(entityCollector: away.traverse.ICollector): void;
         /**
         * Renders the potentially visible geometry to the back buffer or texture. Only executed if everything is set up.
         * @param entityCollector The EntityCollector object containing the potentially visible geometry.
         * @param scissorRect
         */
         public pExecuteRender(entityCollector: away.traverse.CSSEntityCollector, scissorRect?: away.geom.Rectangle): void;
-        /**
-        * Updates the backbuffer properties.
-        */
-        public pUpdateBackBuffer(): void;
         /**
         * Performs the actual drawing of dom objects to the target.
         *
@@ -5165,17 +5125,37 @@ declare module away.render {
         public pDraw(entityCollector: away.traverse.CSSEntityCollector): void;
         public _iBackgroundAlpha : number;
         /**
-        * @private
-        */
-        private notifyScissorUpdate();
-        /**
-        * @private
-        */
-        private notifyViewportUpdate();
-        /**
         *
         */
-        private updateGlobalPos();
+        public updateGlobalPos(): void;
+        /**
+        *
+        * @param billboard
+        * @protected
+        */
+        public applyBillboard(billboard: away.entities.Billboard): void;
+        /**
+        *
+        * @param renderable
+        * @private
+        */
+        private applyRenderable(renderable);
+        /**
+        *
+        * @param entity
+        */
+        public pFindRenderables(entity: away.entities.IEntity): void;
+        /**
+        * //TODO
+        *
+        * @param entity
+        * @param shortestCollisionDistance
+        * @param findClosest
+        * @returns {boolean}
+        *
+        * @internal
+        */
+        static _iCollidesBefore(entity: away.entities.IEntity, shortestCollisionDistance: number, findClosest: boolean): boolean;
     }
 }
 /**
@@ -5188,18 +5168,69 @@ declare module away.render {
     *
     * @class away.render.DefaultRenderer
     */
-    class CSSDefaultRenderer extends render.CSSRendererBase {
+    class CSSDefaultRenderer extends render.CSSRendererBase implements render.IRenderer {
+        private _container;
+        private _context;
+        private _contextStyle;
+        private _contextMatrix;
         private _activeMaterial;
         private _skyboxProjection;
         private _transform;
+        public _width: number;
+        public _height: number;
+        private _viewPort;
+        private _viewportDirty;
+        private _scissorRect;
+        private _scissorDirty;
+        private _localPos;
+        private _globalPos;
+        private _scissorUpdated;
+        private _viewPortUpdated;
+        /**
+        * A viewPort rectangle equivalent of the StageGL size and position.
+        */
+        public viewPort : away.geom.Rectangle;
+        /**
+        * A scissor rectangle equivalent of the view size and position.
+        */
+        public scissorRect : away.geom.Rectangle;
+        /**
+        *
+        */
+        public x : number;
+        /**
+        *
+        */
+        public y : number;
+        /**
+        *
+        */
+        public width : number;
+        /**
+        *
+        */
+        public height : number;
+        /**
+        *
+        */
+        public renderableSorter: away.sort.IEntitySorter;
         /**
         * Creates a new CSSDefaultRenderer object.
         */
         constructor();
         /**
+        *
+        * @param entityCollector
+        */
+        public render(entityCollector: away.traverse.ICollector): void;
+        /**
         * @inheritDoc
         */
         public pDraw(entityCollector: away.traverse.CSSEntityCollector): void;
+        /**
+        * Updates the backbuffer properties.
+        */
+        public pUpdateBackBuffer(): void;
         /**
         * Draw the skybox if present.
         * @param entityCollector The EntityCollector containing all potentially visible information.
@@ -5212,6 +5243,18 @@ declare module away.render {
         */
         private drawRenderables(item, entityCollector);
         public dispose(): void;
+        /**
+        * @private
+        */
+        private notifyScissorUpdate();
+        /**
+        * @private
+        */
+        private notifyViewportUpdate();
+        /**
+        *
+        */
+        public updateGlobalPos(): void;
     }
 }
 /**
@@ -6452,6 +6495,8 @@ declare module away.geom {
         * transformation's frame of reference.
         */
         public position : geom.Vector3D;
+        public toFixed(decimalPlace: number): string;
+        public toString(): string;
     }
 }
 declare module away.geom {
@@ -10469,6 +10514,7 @@ declare module away.entities {
         private _numLines;
         private _selectionBeginIndex;
         private _selectionEndIndex;
+        private _text;
         private _textHeight;
         private _textInteractionMode;
         private _textWidth;
@@ -10894,7 +10940,7 @@ declare module away.entities {
         * <p>To get the text in HTML form, use the <code>htmlText</code>
         * property.</p>
         */
-        public text: string;
+        public text : string;
         /**
         * The color of the text in a text field, in hexadecimal format. The
         * hexadecimal color system uses six digits to represent color values. Each
@@ -12322,6 +12368,7 @@ declare module away.materials {
     * @class away.materials.IMaterial
     */
     interface IMaterial {
+        id: string;
         /**
         *
         *
@@ -12378,10 +12425,12 @@ declare module away.materials {
         private _owners;
         public _pBlendMode: string;
         private _imageElement;
+        private _imageStyle;
         private _repeat;
         private _smooth;
         private _texture;
         public imageElement : HTMLImageElement;
+        public imageStyle : MSStyleCSSProperties;
         /**
         * Indicates whether or not any used textures should be tiled. If set to false, texture samples are clamped to
         * the texture's borders when the uv coordinates are outside the [0, 1] interval.

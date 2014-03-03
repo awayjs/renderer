@@ -13,8 +13,17 @@ module away.render
 	 */
 	export class RendererBase extends away.events.EventDispatcher
 	{
+		public static billboardRenderablePool:away.pool.RenderablePool = new away.pool.RenderablePool(away.pool.BillboardRenderable);
+		public static segmentSetRenderablePool:away.pool.RenderablePool = new away.pool.RenderablePool(away.pool.SegmentSetRenderable);
+		public static skyboxRenderablePool:away.pool.RenderablePool = new away.pool.RenderablePool(away.pool.SkyboxRenderable);
+		public static subMeshRenderablePool:away.pool.RenderablePool = new away.pool.RenderablePool(away.pool.SubMeshRenderable);
+
 		public _pContext:away.gl.ContextGL;
 		public _pStageGL:away.base.StageGL;
+
+		public _pCamera:away.entities.Camera;
+		public _iEntryPoint:away.geom.Vector3D;
+		public _pCameraForward:away.geom.Vector3D;
 
 		public _pBackBufferInvalid:boolean = true;
 		public _depthPrepass:boolean = false;
@@ -41,6 +50,23 @@ module away.render
 		public _pRttViewProjectionMatrix:away.geom.Matrix3D = new away.geom.Matrix3D();
 
 		private _onContextUpdateDelegate:Function;
+		public _pNumTriangles:number = 0;
+
+		public _pOpaqueRenderableHead:away.pool.RenderableBase;
+		public _pBlendedRenderableHead:away.pool.RenderableBase;
+
+		/**
+		 *
+		 */
+		public get numTriangles():number
+		{
+			return this._pNumTriangles;
+		}
+
+		/**
+		 *
+		 */
+		public renderableSorter:away.sort.IEntitySorter;
 
 		/**
 		 * Creates a new RendererBase object.
@@ -52,6 +78,9 @@ module away.render
 			this._renderToTexture = renderToTexture;
 
 			this._onContextUpdateDelegate = away.utils.Delegate.create(this, this.onContextUpdate);
+
+			//default sorting algorithm
+			this.renderableSorter = new away.sort.RenderableMergeSort();
 		}
 
 		public _iCreateEntityCollector():away.traverse.ICollector
@@ -219,7 +248,6 @@ module away.render
 		 */
 		public _iRender(entityCollector:away.traverse.ICollector, target:away.gl.TextureBase = null, scissorRect:away.geom.Rectangle = null, surfaceSelector:number = 0)
 		{
-
 			if (!this._pStageGL || !this._pContext || !entityCollector.entityHead)
 				return;
 
@@ -239,6 +267,32 @@ module away.render
 			}
 		}
 
+		public pCollectRenderables(entityCollector:away.traverse.ICollector)
+		{
+			//reset head values
+			this._pBlendedRenderableHead = null;
+			this._pOpaqueRenderableHead = null;
+			this._pNumTriangles = 0;
+
+			//grab entity head
+			var entity:away.pool.EntityListItem = entityCollector.entityHead;
+
+			//set temp values for entry point and camera forward vector
+			this._pCamera = entityCollector.camera;
+			this._iEntryPoint = this._pCamera.scenePosition;
+			this._pCameraForward = this._pCamera.transform.forwardVector;
+
+			//iterate through all entities
+			while (entity) {
+				this.pFindRenderables(entity.entity)
+				entity = entity.next;
+			}
+
+			//sort the resulting renderables
+			this._pOpaqueRenderableHead = <away.pool.RenderableBase> this.renderableSorter.sortOpaqueRenderables(this._pOpaqueRenderableHead);
+			this._pBlendedRenderableHead = <away.pool.RenderableBase> this.renderableSorter.sortBlendedRenderables(this._pBlendedRenderableHead);
+		}
+
 		/**
 		 * Renders the potentially visible geometry to the back buffer or texture. Only executed if everything is set up.
 		 * @param entityCollector The EntityCollector object containing the potentially visible geometry.
@@ -250,8 +304,6 @@ module away.render
 		{
 			this._pRenderTarget = target;
 			this._pRenderTargetSurface = surfaceSelector;
-
-			entityCollector.sortRenderables();
 
 			if (this._renderToTexture)
 				this.pExecuteRenderToTexturePass(entityCollector);
@@ -375,6 +427,162 @@ module away.render
 		public updateGlobalPos()
 		{
 
+		}
+
+
+		/**
+		 *
+		 * @param billboard
+		 * @protected
+		 */
+		public pApplyBillboard(billboard:away.entities.Billboard)
+		{
+			this.pApplyRenderable(<away.pool.RenderableBase> RendererBase.billboardRenderablePool.getItem(billboard));
+		}
+
+
+		/**
+		 *
+		 * @param mesh
+		 * @protected
+		 */
+		public pApplyMesh(mesh:away.entities.Mesh)
+		{
+			var subMesh:away.base.SubMesh;
+			var renderable:away.pool.SubMeshRenderable;
+
+			var len:number /*uint*/ = mesh.subMeshes.length;
+			for (var i:number /*uint*/ = 0; i < len; i++)
+				this.pApplyRenderable(<away.pool.RenderableBase> RendererBase.subMeshRenderablePool.getItem(mesh.subMeshes[i]));
+		}
+		/**
+		 *
+		 * @param renderable
+		 * @protected
+		 */
+		public pApplyRenderable(renderable:away.pool.RenderableBase)
+		{
+			var material:away.materials.MaterialBase = <away.materials.MaterialBase> renderable.materialOwner.material;
+			var entity:away.entities.IEntity = renderable.sourceEntity;
+			var position:away.geom.Vector3D = entity.scenePosition;
+
+			if (material) {
+				//set ids for faster referencing
+				renderable.materialId = material._iMaterialId;
+				renderable.renderOrderId = material._iRenderOrderId;
+				renderable.cascaded = false;
+
+				// project onto camera's z-axis
+				position = this._iEntryPoint.subtract(position);
+				renderable.zIndex = entity.zOffset + position.dotProduct(this._pCameraForward);
+
+				//store reference to scene transform
+				renderable.renderSceneTransform = renderable.sourceEntity.getRenderSceneTransform(this._pCamera);
+
+				if (material.requiresBlending) {
+					renderable.next = this._pBlendedRenderableHead;
+					this._pBlendedRenderableHead = renderable;
+				} else {
+					renderable.next = this._pOpaqueRenderableHead;
+					this._pOpaqueRenderableHead = renderable;
+				}
+			}
+
+			this._pNumTriangles += renderable.subGeometry.numTriangles;
+		}
+
+		public pApplySkybox(skybox:away.entities.Skybox)
+		{
+			this.pApplyRenderable(<away.pool.RenderableBase> RendererBase.skyboxRenderablePool.getItem(skybox));
+		}
+
+
+		public pApplySegmentSet(segmentSet:away.entities.SegmentSet)
+		{
+			this.pApplyRenderable(<away.pool.RenderableBase> RendererBase.segmentSetRenderablePool.getItem(segmentSet));
+		}
+
+		/**
+		 *
+		 * @param entity
+		 */
+		public pFindRenderables(entity:away.entities.IEntity)
+		{
+			//TODO abstract conditional in the entity with a callback to IRenderer
+			if (entity.assetType === away.library.AssetType.BILLBOARD) {
+				this.pApplyBillboard(<away.entities.Billboard> entity);
+			} else if (entity.assetType === away.library.AssetType.MESH) {
+				this.pApplyMesh(<away.entities.Mesh> entity);
+			} else if (entity.assetType === away.library.AssetType.SKYBOX) {
+				this.pApplySkybox(<away.entities.Skybox> entity)
+			} else if (entity.assetType === away.library.AssetType.SEGMENT_SET) {
+				this.pApplySegmentSet(<away.entities.SegmentSet> entity)
+			}
+		}
+
+
+		/**
+		 * //TODO
+		 *
+		 * @param entity
+		 * @param shortestCollisionDistance
+		 * @param findClosest
+		 * @returns {boolean}
+		 *
+		 * @internal
+		 */
+		public static _iCollidesBefore(entity:away.entities.IEntity, shortestCollisionDistance:number, findClosest:boolean):boolean
+		{
+			var pickingCollider:away.pick.PickingColliderBase = <away.pick.PickingColliderBase> entity.pickingCollider;
+			var pickingCollisionVO:away.pick.PickingCollisionVO = entity._iPickingCollisionVO;
+
+			pickingCollider.setLocalRay(entity._iPickingCollisionVO.localRayPosition, entity._iPickingCollisionVO.localRayDirection);
+			pickingCollisionVO.materialOwner = null;
+
+			if (entity.assetType === away.library.AssetType.BILLBOARD) {
+				return this.testBillBoard(<away.entities.Billboard> entity, pickingCollider, pickingCollisionVO, shortestCollisionDistance, findClosest);
+			} else if (entity.assetType === away.library.AssetType.MESH) {
+				return this.testMesh(<away.entities.Mesh> entity, pickingCollider, pickingCollisionVO, shortestCollisionDistance, findClosest);
+			}
+
+			return false;
+		}
+
+		private static testBillBoard(billboard:away.entities.Billboard, pickingCollider:away.pick.PickingColliderBase, pickingCollisionVO:away.pick.PickingCollisionVO, shortestCollisionDistance:number, findClosest:boolean):boolean
+		{
+			if (pickingCollider.testRenderableCollision(<away.pool.RenderableBase> this.billboardRenderablePool.getItem(billboard), pickingCollisionVO, shortestCollisionDistance)) {
+				shortestCollisionDistance = pickingCollisionVO.rayEntryDistance;
+
+				pickingCollisionVO.materialOwner = billboard;
+
+				return true;
+			}
+
+			return false;
+		}
+
+		private static testMesh(mesh:away.entities.Mesh, pickingCollider:away.pick.PickingColliderBase, pickingCollisionVO:away.pick.PickingCollisionVO, shortestCollisionDistance:number, findClosest:boolean):boolean
+		{
+			var subMesh:away.base.SubMesh;
+			var renderable:away.pool.RenderableBase;
+
+			var len:number = mesh.subMeshes.length;
+			for (var i:number = 0; i < len; ++i) {
+				subMesh = mesh.subMeshes[i];
+				renderable = <away.pool.RenderableBase> this.subMeshRenderablePool.getItem(subMesh);
+
+
+				if (pickingCollider.testRenderableCollision(renderable, pickingCollisionVO, shortestCollisionDistance)) {
+					shortestCollisionDistance = pickingCollisionVO.rayEntryDistance;
+
+					pickingCollisionVO.materialOwner = subMesh;
+
+					if (!findClosest)
+						return true;
+				}
+			}
+
+			return pickingCollisionVO.materialOwner != null;
 		}
 	}
 }

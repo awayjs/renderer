@@ -424,6 +424,7 @@ var away;
                 if (typeof material === "undefined") { material = null; }
                 _super.call(this);
                 this._iIndex = 0;
+                this._renderables = new Array();
 
                 this._parentMesh = parentMesh;
                 this._subGeometry = subGeometry;
@@ -522,6 +523,10 @@ var away;
             */
             SubMesh.prototype.dispose = function () {
                 this.material = null;
+
+                var len = this._renderables.length;
+                for (var i = 0; i < len; i++)
+                    this._renderables[i].dispose();
             };
 
             /**
@@ -531,6 +536,20 @@ var away;
             */
             SubMesh.prototype.getRenderSceneTransform = function (camera) {
                 return this._parentMesh.getRenderSceneTransform(camera);
+            };
+
+            SubMesh.prototype._iAddRenderable = function (renderable) {
+                this._renderables.push(renderable);
+
+                return renderable;
+            };
+
+            SubMesh.prototype._iRemoveRenderable = function (renderable) {
+                var index = this._renderables.indexOf(renderable);
+
+                this._renderables.splice(index, 1);
+
+                return renderable;
             };
 
             /**
@@ -3760,12 +3779,18 @@ var away;
             * @param subGeometry
             * @param animationSubGeometry
             */
-            function RenderableBase(sourceEntity, materialOwner, subGeometry, animationSubGeometry) {
+            function RenderableBase(pool, sourceEntity, materialOwner, subGeometry, animationSubGeometry) {
+                //store a reference to the pool for later disposal
+                this._pool = pool;
+
                 this.sourceEntity = sourceEntity;
                 this.materialOwner = materialOwner;
                 this.subGeometry = subGeometry;
                 this.animationSubGeometry = animationSubGeometry;
             }
+            RenderableBase.prototype.dispose = function () {
+                this._pool.disposeItem(this.materialOwner);
+            };
             return RenderableBase;
         })();
         pool.RenderableBase = RenderableBase;
@@ -3784,8 +3809,8 @@ var away;
         */
         var BillboardRenderable = (function (_super) {
             __extends(BillboardRenderable, _super);
-            function BillboardRenderable(billboard) {
-                _super.call(this, billboard, billboard, null, null);
+            function BillboardRenderable(pool, billboard) {
+                _super.call(this, pool, billboard, billboard, null, null);
 
                 if (!BillboardRenderable._geometry) {
                     BillboardRenderable._geometry = new away.base.SubGeometry();
@@ -3812,43 +3837,12 @@ var away;
     */
     (function (pool) {
         /**
-        * @class away.pool.BillboardRenderablePool
-        */
-        var BillboardRenderablePool = (function () {
-            function BillboardRenderablePool() {
-                this._pool = new Object();
-            }
-            BillboardRenderablePool.prototype.getItem = function (billboard) {
-                return (this._pool[billboard.id] || (this._pool[billboard.id] = new pool.BillboardRenderable(billboard)));
-            };
-
-            BillboardRenderablePool.prototype.dispose = function (billboard) {
-                this._pool[billboard.id] = null;
-            };
-
-            BillboardRenderablePool.prototype.disposeAll = function () {
-                this._pool = new Object();
-            };
-            return BillboardRenderablePool;
-        })();
-        pool.BillboardRenderablePool = BillboardRenderablePool;
-    })(away.pool || (away.pool = {}));
-    var pool = away.pool;
-})(away || (away = {}));
-var away;
-(function (away) {
-    ///<reference path="../../_definitions.ts"/>
-    /**
-    * @module away.pool
-    */
-    (function (pool) {
-        /**
         * @class away.pool.RenderableListItem
         */
         var SegmentSetRenderable = (function (_super) {
             __extends(SegmentSetRenderable, _super);
-            function SegmentSetRenderable(segmentSet) {
-                _super.call(this, segmentSet, segmentSet, segmentSet.subGeometry, null);
+            function SegmentSetRenderable(pool, segmentSet) {
+                _super.call(this, pool, segmentSet, segmentSet, segmentSet.subGeometry, null);
             }
             return SegmentSetRenderable;
         })(pool.RenderableBase);
@@ -3864,45 +3858,13 @@ var away;
     */
     (function (pool) {
         /**
-        * @class away.pool.SegmentSetRenderablePool
-        */
-        var SegmentSetRenderablePool = (function () {
-            function SegmentSetRenderablePool() {
-                this._pool = new Object();
-            }
-            SegmentSetRenderablePool.prototype.getItem = function (segmentSet) {
-                return (this._pool[segmentSet.id] || (this._pool[segmentSet.id] = new pool.SegmentSetRenderable(segmentSet)));
-            };
-
-            SegmentSetRenderablePool.prototype.dispose = function (segmentSet) {
-                this._pool[segmentSet.id] = null;
-            };
-
-            SegmentSetRenderablePool.prototype.disposeAll = function () {
-                this._pool = new Object();
-            };
-            return SegmentSetRenderablePool;
-        })();
-        pool.SegmentSetRenderablePool = SegmentSetRenderablePool;
-    })(away.pool || (away.pool = {}));
-    var pool = away.pool;
-})(away || (away = {}));
-var away;
-(function (away) {
-    ///<reference path="../../_definitions.ts"/>
-    /**
-    * @module away.pool
-    */
-    (function (pool) {
-        /**
         * @class away.pool.SubMeshRenderable
         */
         var SubMeshRenderable = (function (_super) {
             __extends(SubMeshRenderable, _super);
-            function SubMeshRenderable(subMesh) {
-                _super.call(this, subMesh.sourceEntity, subMesh, subMesh.subGeometry, subMesh.animationSubGeometry);
+            function SubMeshRenderable(pool, subMesh) {
+                _super.call(this, pool, subMesh.sourceEntity, subMesh, subMesh.subGeometry, subMesh.animationSubGeometry);
 
-                //super(subMesh.sourceEntity, subMesh, subMesh.subGeometry, subMesh.animationSubGeometry);
                 this.subMesh = subMesh;
             }
             return SubMeshRenderable;
@@ -3919,43 +3881,12 @@ var away;
     */
     (function (pool) {
         /**
-        * @class away.pool.SubMeshRenderablePool
-        */
-        var SubMeshRenderablePool = (function () {
-            function SubMeshRenderablePool() {
-                this._pool = new Object();
-            }
-            SubMeshRenderablePool.prototype.getItem = function (subMesh) {
-                return (this._pool[subMesh.id] || (this._pool[subMesh.id] = new pool.SubMeshRenderable(subMesh)));
-            };
-
-            SubMeshRenderablePool.prototype.dispose = function (subMesh) {
-                this._pool[subMesh.id] = null;
-            };
-
-            SubMeshRenderablePool.prototype.disposeAll = function () {
-                this._pool = new Object();
-            };
-            return SubMeshRenderablePool;
-        })();
-        pool.SubMeshRenderablePool = SubMeshRenderablePool;
-    })(away.pool || (away.pool = {}));
-    var pool = away.pool;
-})(away || (away = {}));
-var away;
-(function (away) {
-    ///<reference path="../../_definitions.ts"/>
-    /**
-    * @module away.pool
-    */
-    (function (pool) {
-        /**
         * @class away.pool.SkyboxRenderable
         */
         var SkyboxRenderable = (function (_super) {
             __extends(SkyboxRenderable, _super);
-            function SkyboxRenderable(skybox) {
-                _super.call(this, skybox, skybox, null, null);
+            function SkyboxRenderable(pool, skybox) {
+                _super.call(this, pool, skybox, skybox, null, null);
 
                 if (!SkyboxRenderable._geometry) {
                     SkyboxRenderable._geometry = new away.base.SubGeometry();
@@ -3975,37 +3906,6 @@ var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
     /**
-    * @module away.pool
-    */
-    (function (pool) {
-        /**
-        * @class away.pool.SkyboxRenderablePool
-        */
-        var SkyboxRenderablePool = (function () {
-            function SkyboxRenderablePool() {
-                this._pool = new Object();
-            }
-            SkyboxRenderablePool.prototype.getItem = function (skybox) {
-                return (this._pool[skybox.id] || (this._pool[skybox.id] = new pool.SkyboxRenderable(skybox)));
-            };
-
-            SkyboxRenderablePool.prototype.dispose = function (skybox) {
-                this._pool[skybox.id] = null;
-            };
-
-            SkyboxRenderablePool.prototype.disposeAll = function () {
-                this._pool = new Object();
-            };
-            return SkyboxRenderablePool;
-        })();
-        pool.SkyboxRenderablePool = SkyboxRenderablePool;
-    })(away.pool || (away.pool = {}));
-    var pool = away.pool;
-})(away || (away = {}));
-var away;
-(function (away) {
-    ///<reference path="../../_definitions.ts"/>
-    /**
     * @module away.traverse
     */
     (function (traverse) {
@@ -4016,13 +3916,6 @@ var away;
             function RenderableCollectorBase() {
                 this._numCullPlanes = 0;
                 this._pEntityListItemPool = new away.pool.EntityListItemPool();
-                this._pBillboardRenderablePool = new away.pool.BillboardRenderablePool();
-                this._pSegmentSetRenderablePool = new away.pool.SegmentSetRenderablePool();
-                this._pSkyboxRenderablePool = new away.pool.SkyboxRenderablePool();
-                this._pSubMeshRenderablePool = new away.pool.SubMeshRenderablePool();
-
-                //default sorting algorithm
-                this.renderableSorter = new away.sort.RenderableMergeSort();
             }
             Object.defineProperty(RenderableCollectorBase.prototype, "camera", {
                 get: /**
@@ -4033,8 +3926,6 @@ var away;
                 },
                 set: function (value) {
                     this._pCamera = value;
-                    this._iEntryPoint = this._pCamera.scenePosition;
-                    this._pCameraForward = this._pCamera.transform.forwardVector;
                     this._cullPlanes = this._pCamera.frustumPlanes;
                 },
                 enumerable: true,
@@ -4068,20 +3959,10 @@ var away;
                 configurable: true
             });
 
-            Object.defineProperty(RenderableCollectorBase.prototype, "entryPoint", {
-                get: function () {
-                    return this._iEntryPoint;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
             /**
             *
             */
             RenderableCollectorBase.prototype.clear = function () {
-                this._iEntryPoint = this._pCamera.scenePosition;
-                this._pCameraForward = this._pCamera.transform.forwardVector;
                 this._cullPlanes = this._customCullPlanes ? this._customCullPlanes : (this._pCamera ? this._pCamera.frustumPlanes : null);
                 this._numCullPlanes = this._cullPlanes ? this._cullPlanes.length : 0;
                 this._pEntityHead = null;
@@ -4111,120 +3992,6 @@ var away;
 
                 item.next = this._pEntityHead;
                 this._pEntityHead = item;
-
-                this.pFindRenderable(entity);
-            };
-
-            RenderableCollectorBase.prototype.sortRenderables = function () {
-                throw new away.errors.AbstractMethodError();
-            };
-
-            /**
-            *
-            * @param billboard
-            * @protected
-            */
-            RenderableCollectorBase.prototype.pApplyBillboard = function (billboard) {
-                this.pApplyRenderable(this._pBillboardRenderablePool.getItem(billboard));
-            };
-
-            /**
-            *
-            * @param mesh
-            * @protected
-            */
-            RenderableCollectorBase.prototype.pApplyMesh = function (mesh) {
-                var subMesh;
-                var renderable;
-
-                var len = mesh.subMeshes.length;
-                for (var i = 0; i < len; i++)
-                    this.pApplyRenderable(this._pSubMeshRenderablePool.getItem(mesh.subMeshes[i]));
-            };
-
-            /**
-            *
-            * @param renderable
-            * @protected
-            */
-            RenderableCollectorBase.prototype.pApplyRenderable = function (renderable) {
-                throw new away.errors.AbstractMethodError();
-            };
-
-            RenderableCollectorBase.prototype.pApplySkybox = function (skybox) {
-                this.pApplyRenderable(this._pSkyboxRenderablePool.getItem(skybox));
-            };
-
-            RenderableCollectorBase.prototype.pApplySegmentSet = function (segmentSet) {
-                this.pApplyRenderable(this._pSegmentSetRenderablePool.getItem(segmentSet));
-            };
-
-            /**
-            *
-            * @param entity
-            */
-            RenderableCollectorBase.prototype.pFindRenderable = function (entity) {
-                throw new away.errors.AbstractMethodError();
-            };
-
-            /**
-            * //TODO
-            *
-            * @param entity
-            * @param shortestCollisionDistance
-            * @param findClosest
-            * @returns {boolean}
-            *
-            * @internal
-            */
-            RenderableCollectorBase.prototype._iCollidesBefore = function (entity, shortestCollisionDistance, findClosest) {
-                var pickingCollider = entity.pickingCollider;
-                var pickingCollisionVO = entity._iPickingCollisionVO;
-
-                pickingCollider.setLocalRay(entity._iPickingCollisionVO.localRayPosition, entity._iPickingCollisionVO.localRayDirection);
-                pickingCollisionVO.materialOwner = null;
-
-                if (entity.assetType === away.library.AssetType.BILLBOARD) {
-                    return this.testBillBoard(entity, pickingCollider, pickingCollisionVO, shortestCollisionDistance, findClosest);
-                } else if (entity.assetType === away.library.AssetType.MESH) {
-                    return this.testMesh(entity, pickingCollider, pickingCollisionVO, shortestCollisionDistance, findClosest);
-                }
-
-                return false;
-            };
-
-            RenderableCollectorBase.prototype.testBillBoard = function (billboard, pickingCollider, pickingCollisionVO, shortestCollisionDistance, findClosest) {
-                if (pickingCollider.testRenderableCollision(this._pBillboardRenderablePool.getItem(billboard), pickingCollisionVO, shortestCollisionDistance)) {
-                    shortestCollisionDistance = pickingCollisionVO.rayEntryDistance;
-
-                    pickingCollisionVO.materialOwner = billboard;
-
-                    return true;
-                }
-
-                return false;
-            };
-
-            RenderableCollectorBase.prototype.testMesh = function (mesh, pickingCollider, pickingCollisionVO, shortestCollisionDistance, findClosest) {
-                var subMesh;
-                var renderable;
-
-                var len = mesh.subMeshes.length;
-                for (var i = 0; i < len; ++i) {
-                    subMesh = mesh.subMeshes[i];
-                    renderable = this._pSubMeshRenderablePool.getItem(subMesh);
-
-                    if (pickingCollider.testRenderableCollision(renderable, pickingCollisionVO, shortestCollisionDistance)) {
-                        shortestCollisionDistance = pickingCollisionVO.rayEntryDistance;
-
-                        pickingCollisionVO.materialOwner = subMesh;
-
-                        if (!findClosest)
-                            return true;
-                    }
-                }
-
-                return pickingCollisionVO.materialOwner != null;
             };
             return RenderableCollectorBase;
         })();
@@ -4247,7 +4014,6 @@ var away;
             function EntityCollector() {
                 _super.call(this);
                 this._pNumLights = 0;
-                this._pNumTriangles = 0;
                 this._pNumEntities = 0;
                 this._pNumInteractiveEntities = 0;
                 this._numDirectionalLights = 0;
@@ -4265,17 +4031,6 @@ var away;
                 */
                 function () {
                     return this._directionalLights;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(EntityCollector.prototype, "blendedRenderableHead", {
-                get: /**
-                *
-                */
-                function () {
-                    return this._pBlendedRenderableHead;
                 },
                 enumerable: true,
                 configurable: true
@@ -4325,28 +4080,6 @@ var away;
                 configurable: true
             });
 
-            Object.defineProperty(EntityCollector.prototype, "numTriangles", {
-                get: /**
-                *
-                */
-                function () {
-                    return this._pNumTriangles;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            Object.defineProperty(EntityCollector.prototype, "opaqueRenderableHead", {
-                get: /**
-                *
-                */
-                function () {
-                    return this._pOpaqueRenderableHead;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
             Object.defineProperty(EntityCollector.prototype, "pointLights", {
                 get: /**
                 *
@@ -4379,11 +4112,17 @@ var away;
 
                 if (entity._iIsMouseEnabled())
                     this._pNumInteractiveEntities++;
-            };
 
-            EntityCollector.prototype.sortRenderables = function () {
-                this._pOpaqueRenderableHead = this.renderableSorter.sortOpaqueRenderables(this._pOpaqueRenderableHead);
-                this._pBlendedRenderableHead = this.renderableSorter.sortBlendedRenderables(this._pBlendedRenderableHead);
+                if (entity.assetType === away.library.AssetType.LIGHT) {
+                    this._pLights[this._pNumLights++] = entity;
+
+                    if (entity instanceof away.lights.DirectionalLight)
+                        this._directionalLights[this._numDirectionalLights++] = entity;
+else if (entity instanceof away.lights.PointLight)
+                        this._pointLights[this._numPointLights++] = entity;
+else if (entity instanceof away.lights.LightProbe)
+                        this._lightProbes[this._numLightProbes++] = entity;
+                }
             };
 
             /**
@@ -4392,9 +4131,7 @@ var away;
             EntityCollector.prototype.clear = function () {
                 _super.prototype.clear.call(this);
 
-                this._pBlendedRenderableHead = null;
-                this._pOpaqueRenderableHead = null;
-                this._pNumTriangles = this._pNumEntities = this._pNumInteractiveEntities = 0;
+                this._pNumEntities = this._pNumInteractiveEntities = 0;
                 this._pSkybox = null;
 
                 if (this._pNumLights > 0)
@@ -4408,66 +4145,6 @@ var away;
 
                 if (this._numLightProbes > 0)
                     this._lightProbes.length = this._numLightProbes = 0;
-            };
-
-            /**
-            *
-            * @param renderable
-            * @protected
-            */
-            EntityCollector.prototype.pApplyRenderable = function (renderable) {
-                var material = renderable.materialOwner.material;
-                var entity = renderable.sourceEntity;
-                var position = entity.scenePosition;
-
-                if (material) {
-                    //set ids for faster referencing
-                    renderable.materialId = material._iMaterialId;
-                    renderable.renderOrderId = material._iRenderOrderId;
-                    renderable.cascaded = false;
-
-                    // project onto camera's z-axis
-                    position = this._iEntryPoint.subtract(position);
-                    renderable.zIndex = entity.zOffset + position.dotProduct(this._pCameraForward);
-
-                    //store reference to scene transform
-                    renderable.renderSceneTransform = renderable.sourceEntity.getRenderSceneTransform(this._pCamera);
-
-                    if (material.requiresBlending) {
-                        renderable.next = this._pBlendedRenderableHead;
-                        this._pBlendedRenderableHead = renderable;
-                    } else {
-                        renderable.next = this._pOpaqueRenderableHead;
-                        this._pOpaqueRenderableHead = renderable;
-                    }
-                }
-
-                this._pNumTriangles += renderable.subGeometry.numTriangles;
-            };
-
-            /**
-            *
-            * @param entity
-            */
-            EntityCollector.prototype.pFindRenderable = function (entity) {
-                if (entity.assetType === away.library.AssetType.BILLBOARD) {
-                    this.pApplyBillboard(entity);
-                } else if (entity.assetType === away.library.AssetType.MESH) {
-                    this.pApplyMesh(entity);
-                } else if (entity.assetType === away.library.AssetType.LIGHT) {
-                    this._pLights[this._pNumLights++] = entity;
-
-                    if (entity instanceof away.lights.DirectionalLight)
-                        this._directionalLights[this._numDirectionalLights++] = entity;
-else if (entity instanceof away.lights.PointLight)
-                        this._pointLights[this._numPointLights++] = entity;
-else if (entity instanceof away.lights.LightProbe)
-                        this._lightProbes[this._numLightProbes++] = entity;
-                } else if (entity.assetType === away.library.AssetType.SKYBOX) {
-                    this.pApplySkybox(entity);
-                } else if (entity.assetType === away.library.AssetType.SEGMENT_SET) {
-                    this.pApplySegmentSet(entity);
-                }
             };
             return EntityCollector;
         })(traverse.RenderableCollectorBase);
@@ -4504,49 +4181,8 @@ var away;
 
                 return _super.prototype.enterNode.call(this, node);
             };
-            ShadowCasterCollector.prototype.pApplyRenderable = function (renderable) {
-                var material = renderable.materialOwner.material;
-                var entity = renderable.sourceEntity;
-                var position = entity.scenePosition;
-
-                if (material) {
-                    //set ids for faster referencing
-                    renderable.materialId = material._iMaterialId;
-                    renderable.renderOrderId = material._iRenderOrderId;
-                    renderable.cascaded = false;
-
-                    // project onto camera's z-axis
-                    position = this._iEntryPoint.subtract(position);
-                    renderable.zIndex = entity.zOffset + position.dotProduct(this._pCameraForward);
-
-                    //store reference to scene transform
-                    renderable.renderSceneTransform = renderable.sourceEntity.getRenderSceneTransform(this._pCamera);
-
-                    if (material.requiresBlending) {
-                        renderable.next = this._pBlendedRenderableHead;
-                        this._pBlendedRenderableHead = renderable;
-                    } else {
-                        renderable.next = this._pOpaqueRenderableHead;
-                        this._pOpaqueRenderableHead = renderable;
-                    }
-                }
-
-                this._pNumTriangles += renderable.subGeometry.numTriangles;
-            };
-
-            /**
-            *
-            * @param entity
-            */
-            ShadowCasterCollector.prototype.pFindRenderable = function (entity) {
-                if (entity.assetType == away.library.AssetType.BILLBOARD) {
-                    this.pApplyBillboard(entity);
-                } else if (entity.assetType == away.library.AssetType.MESH) {
-                    this.pApplyMesh(entity);
-                }
-            };
             return ShadowCasterCollector;
-        })(traverse.EntityCollector);
+        })(traverse.RenderableCollectorBase);
         traverse.ShadowCasterCollector = ShadowCasterCollector;
     })(away.traverse || (away.traverse = {}));
     var traverse = away.traverse;
@@ -4578,21 +4214,6 @@ var away;
                 this._rayDirection = new away.geom.Vector3D();
                 this._iCollectionMark = 0;
             }
-            Object.defineProperty(RaycastCollector.prototype, "camera", {
-                get: /**
-                *
-                */
-                function () {
-                    return this._pCamera;
-                },
-                set: function (value) {
-                    this._pCamera = value;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
             Object.defineProperty(RaycastCollector.prototype, "rayPosition", {
                 get: /**
                 * Provides the starting position of the ray.
@@ -4630,14 +4251,6 @@ var away;
             */
             RaycastCollector.prototype.enterNode = function (node) {
                 return node.isIntersectingRay(this._rayPosition, this._rayDirection);
-            };
-
-            /**
-            *
-            * @param entity
-            */
-            RaycastCollector.prototype.pFindRenderable = function (entity) {
-                //no renderables required
             };
             return RaycastCollector;
         })(traverse.RenderableCollectorBase);
@@ -5080,8 +4693,6 @@ var away;
             /**
             * @inheritDoc
             */
-            // TODO implement dependency : EntityCollector
-            // TODO: GLSL implementation / conversion
             ShaderPicker.prototype.getViewCollision = function (x, y, view) {
                 away.Debug.throwPIR('ShaderPicker', 'getViewCollision', 'implement');
 
@@ -5109,9 +4720,8 @@ var away;
                 // clear buffers
                 this._context.setVertexBufferAt(0, null);
 
-                if (!this._context || !this._potentialFound) {
+                if (!this._context || !this._potentialFound)
                     return null;
-                }
 
                 if (!this._bitmapData)
                     this._bitmapData = new away.base.BitmapData(1, 1, false, 0);
@@ -5160,7 +4770,6 @@ var away;
             /**
             * @inheritDoc
             */
-            // TODO: GLSL implementation / conversion
             ShaderPicker.prototype.pDraw = function (entityCollector, target) {
                 var camera = entityCollector.camera;
 
@@ -5169,16 +4778,15 @@ var away;
 
                 this._interactives.length = this._interactiveId = 0;
 
-                if (!this._objectProgram) {
+                if (!this._objectProgram)
                     this.initObjectProgram();
-                }
 
                 this._context.setBlendFactors(away.gl.ContextGLBlendFactor.ONE, away.gl.ContextGLBlendFactor.ZERO);
                 this._context.setDepthTest(true, away.gl.ContextGLCompareMode.LESS);
                 this._context.setProgram(this._objectProgram);
                 this._context.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, 4, this._viewportData, 1);
-                this.drawRenderables(entityCollector.opaqueRenderableHead, camera);
-                this.drawRenderables(entityCollector.blendedRenderableHead, camera);
+                //			this.drawRenderables(entityCollector.opaqueRenderableHead, camera);
+                //			this.drawRenderables(entityCollector.blendedRenderableHead, camera);
             };
 
             /**
@@ -5682,7 +5290,7 @@ var away;
                     entity = this._entities[i];
                     pickingCollisionVO = entity._iPickingCollisionVO;
                     if (entity.pickingCollider) {
-                        if ((bestCollisionVO == null || pickingCollisionVO.rayEntryDistance < bestCollisionVO.rayEntryDistance) && collector._iCollidesBefore(entity, shortestCollisionDistance, this._findClosestCollision)) {
+                        if ((bestCollisionVO == null || pickingCollisionVO.rayEntryDistance < bestCollisionVO.rayEntryDistance) && away.render.RendererBase._iCollidesBefore(entity, shortestCollisionDistance, this._findClosestCollision)) {
                             shortestCollisionDistance = pickingCollisionVO.rayEntryDistance;
                             bestCollisionVO = pickingCollisionVO;
                             if (!this._findClosestCollision) {
@@ -5809,11 +5417,26 @@ var away;
                 this.textureRatioX = 1;
                 this.textureRatioY = 1;
                 this._pRttViewProjectionMatrix = new away.geom.Matrix3D();
+                this._pNumTriangles = 0;
 
                 this._renderToTexture = renderToTexture;
 
                 this._onContextUpdateDelegate = away.utils.Delegate.create(this, this.onContextUpdate);
+
+                //default sorting algorithm
+                this.renderableSorter = new away.sort.RenderableMergeSort();
             }
+            Object.defineProperty(RendererBase.prototype, "numTriangles", {
+                get: /**
+                *
+                */
+                function () {
+                    return this._pNumTriangles;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
             RendererBase.prototype._iCreateEntityCollector = function () {
                 return new away.traverse.EntityCollector();
             };
@@ -6001,6 +5624,30 @@ var away;
                 }
             };
 
+            RendererBase.prototype.pCollectRenderables = function (entityCollector) {
+                //reset head values
+                this._pBlendedRenderableHead = null;
+                this._pOpaqueRenderableHead = null;
+                this._pNumTriangles = 0;
+
+                //grab entity head
+                var entity = entityCollector.entityHead;
+
+                //set temp values for entry point and camera forward vector
+                this._pCamera = entityCollector.camera;
+                this._iEntryPoint = this._pCamera.scenePosition;
+                this._pCameraForward = this._pCamera.transform.forwardVector;
+
+                while (entity) {
+                    this.pFindRenderables(entity.entity);
+                    entity = entity.next;
+                }
+
+                //sort the resulting renderables
+                this._pOpaqueRenderableHead = this.renderableSorter.sortOpaqueRenderables(this._pOpaqueRenderableHead);
+                this._pBlendedRenderableHead = this.renderableSorter.sortBlendedRenderables(this._pBlendedRenderableHead);
+            };
+
             /**
             * Renders the potentially visible geometry to the back buffer or texture. Only executed if everything is set up.
             * @param entityCollector The EntityCollector object containing the potentially visible geometry.
@@ -6014,8 +5661,6 @@ var away;
                 if (typeof surfaceSelector === "undefined") { surfaceSelector = 0; }
                 this._pRenderTarget = target;
                 this._pRenderTargetSurface = surfaceSelector;
-
-                entityCollector.sortRenderables();
 
                 if (this._renderToTexture)
                     this.pExecuteRenderToTexturePass(entityCollector);
@@ -6128,6 +5773,152 @@ var away;
             */
             RendererBase.prototype.updateGlobalPos = function () {
             };
+
+            /**
+            *
+            * @param billboard
+            * @protected
+            */
+            RendererBase.prototype.pApplyBillboard = function (billboard) {
+                this.pApplyRenderable(RendererBase.billboardRenderablePool.getItem(billboard));
+            };
+
+            /**
+            *
+            * @param mesh
+            * @protected
+            */
+            RendererBase.prototype.pApplyMesh = function (mesh) {
+                var subMesh;
+                var renderable;
+
+                var len = mesh.subMeshes.length;
+                for (var i = 0; i < len; i++)
+                    this.pApplyRenderable(RendererBase.subMeshRenderablePool.getItem(mesh.subMeshes[i]));
+            };
+
+            /**
+            *
+            * @param renderable
+            * @protected
+            */
+            RendererBase.prototype.pApplyRenderable = function (renderable) {
+                var material = renderable.materialOwner.material;
+                var entity = renderable.sourceEntity;
+                var position = entity.scenePosition;
+
+                if (material) {
+                    //set ids for faster referencing
+                    renderable.materialId = material._iMaterialId;
+                    renderable.renderOrderId = material._iRenderOrderId;
+                    renderable.cascaded = false;
+
+                    // project onto camera's z-axis
+                    position = this._iEntryPoint.subtract(position);
+                    renderable.zIndex = entity.zOffset + position.dotProduct(this._pCameraForward);
+
+                    //store reference to scene transform
+                    renderable.renderSceneTransform = renderable.sourceEntity.getRenderSceneTransform(this._pCamera);
+
+                    if (material.requiresBlending) {
+                        renderable.next = this._pBlendedRenderableHead;
+                        this._pBlendedRenderableHead = renderable;
+                    } else {
+                        renderable.next = this._pOpaqueRenderableHead;
+                        this._pOpaqueRenderableHead = renderable;
+                    }
+                }
+
+                this._pNumTriangles += renderable.subGeometry.numTriangles;
+            };
+
+            RendererBase.prototype.pApplySkybox = function (skybox) {
+                this.pApplyRenderable(RendererBase.skyboxRenderablePool.getItem(skybox));
+            };
+
+            RendererBase.prototype.pApplySegmentSet = function (segmentSet) {
+                this.pApplyRenderable(RendererBase.segmentSetRenderablePool.getItem(segmentSet));
+            };
+
+            /**
+            *
+            * @param entity
+            */
+            RendererBase.prototype.pFindRenderables = function (entity) {
+                if (entity.assetType === away.library.AssetType.BILLBOARD) {
+                    this.pApplyBillboard(entity);
+                } else if (entity.assetType === away.library.AssetType.MESH) {
+                    this.pApplyMesh(entity);
+                } else if (entity.assetType === away.library.AssetType.SKYBOX) {
+                    this.pApplySkybox(entity);
+                } else if (entity.assetType === away.library.AssetType.SEGMENT_SET) {
+                    this.pApplySegmentSet(entity);
+                }
+            };
+
+            RendererBase._iCollidesBefore = /**
+            * //TODO
+            *
+            * @param entity
+            * @param shortestCollisionDistance
+            * @param findClosest
+            * @returns {boolean}
+            *
+            * @internal
+            */
+            function (entity, shortestCollisionDistance, findClosest) {
+                var pickingCollider = entity.pickingCollider;
+                var pickingCollisionVO = entity._iPickingCollisionVO;
+
+                pickingCollider.setLocalRay(entity._iPickingCollisionVO.localRayPosition, entity._iPickingCollisionVO.localRayDirection);
+                pickingCollisionVO.materialOwner = null;
+
+                if (entity.assetType === away.library.AssetType.BILLBOARD) {
+                    return this.testBillBoard(entity, pickingCollider, pickingCollisionVO, shortestCollisionDistance, findClosest);
+                } else if (entity.assetType === away.library.AssetType.MESH) {
+                    return this.testMesh(entity, pickingCollider, pickingCollisionVO, shortestCollisionDistance, findClosest);
+                }
+
+                return false;
+            };
+
+            RendererBase.testBillBoard = function (billboard, pickingCollider, pickingCollisionVO, shortestCollisionDistance, findClosest) {
+                if (pickingCollider.testRenderableCollision(this.billboardRenderablePool.getItem(billboard), pickingCollisionVO, shortestCollisionDistance)) {
+                    shortestCollisionDistance = pickingCollisionVO.rayEntryDistance;
+
+                    pickingCollisionVO.materialOwner = billboard;
+
+                    return true;
+                }
+
+                return false;
+            };
+
+            RendererBase.testMesh = function (mesh, pickingCollider, pickingCollisionVO, shortestCollisionDistance, findClosest) {
+                var subMesh;
+                var renderable;
+
+                var len = mesh.subMeshes.length;
+                for (var i = 0; i < len; ++i) {
+                    subMesh = mesh.subMeshes[i];
+                    renderable = this.subMeshRenderablePool.getItem(subMesh);
+
+                    if (pickingCollider.testRenderableCollision(renderable, pickingCollisionVO, shortestCollisionDistance)) {
+                        shortestCollisionDistance = pickingCollisionVO.rayEntryDistance;
+
+                        pickingCollisionVO.materialOwner = subMesh;
+
+                        if (!findClosest)
+                            return true;
+                    }
+                }
+
+                return pickingCollisionVO.materialOwner != null;
+            };
+            RendererBase.billboardRenderablePool = new away.pool.RenderablePool(away.pool.BillboardRenderable);
+            RendererBase.segmentSetRenderablePool = new away.pool.RenderablePool(away.pool.SegmentSetRenderable);
+            RendererBase.skyboxRenderablePool = new away.pool.RenderablePool(away.pool.SkyboxRenderable);
+            RendererBase.subMeshRenderablePool = new away.pool.RenderablePool(away.pool.SubMeshRenderable);
             return RendererBase;
         })(away.events.EventDispatcher);
         render.RendererBase = RendererBase;
@@ -6180,7 +5971,7 @@ var away;
                 this._pRenderTarget = target;
                 this._pRenderTargetSurface = 0;
 
-                entityCollector.sortRenderables();
+                this.pCollectRenderables(entityCollector);
 
                 this._pStageGL.setRenderTarget(target, true, 0);
                 this._pContext.clear(1, 1, 1, 1, 1, 0);
@@ -6188,7 +5979,7 @@ var away;
                 this._pContext.setBlendFactors(away.gl.ContextGLBlendFactor.ONE, away.gl.ContextGLBlendFactor.ZERO);
                 this._pContext.setDepthTest(true, away.gl.ContextGLCompareMode.LESS);
 
-                var head = entityCollector.opaqueRenderableHead;
+                var head = this._pOpaqueRenderableHead;
 
                 var first = true;
 
@@ -6244,17 +6035,19 @@ var away;
             * @inheritDoc
             */
             DepthRenderer.prototype.pDraw = function (entityCollector, target) {
+                this.pCollectRenderables(entityCollector);
+
                 this._pContext.setBlendFactors(away.gl.ContextGLBlendFactor.ONE, away.gl.ContextGLBlendFactor.ZERO);
 
                 this._pContext.setDepthTest(true, away.gl.ContextGLCompareMode.LESS);
 
-                this.drawRenderables(entityCollector.opaqueRenderableHead, entityCollector);
+                this.drawRenderables(this._pOpaqueRenderableHead, entityCollector);
 
                 if (this._disableColor)
                     this._pContext.setColorMask(false, false, false, false);
 
                 if (this._renderBlended)
-                    this.drawRenderables(entityCollector.blendedRenderableHead, entityCollector);
+                    this.drawRenderables(this._pBlendedRenderableHead, entityCollector);
 
                 if (this._activeMaterial)
                     this._activeMaterial.iDeactivateForDepth(this._pStageGL);
@@ -6597,8 +6390,10 @@ else
                 this.updateLights(entityCollector);
 
                 if (target) {
-                    this.drawRenderables(entityCollector.opaqueRenderableHead, entityCollector, DefaultRenderer.RTT_PASSES);
-                    this.drawRenderables(entityCollector.blendedRenderableHead, entityCollector, DefaultRenderer.RTT_PASSES);
+                    this.pCollectRenderables(entityCollector);
+
+                    this.drawRenderables(this._pOpaqueRenderableHead, entityCollector, DefaultRenderer.RTT_PASSES);
+                    this.drawRenderables(this._pBlendedRenderableHead, entityCollector, DefaultRenderer.RTT_PASSES);
                 }
 
                 _super.prototype.pExecuteRender.call(this, entityCollector, target, scissorRect, surfaceSelector);
@@ -6636,6 +6431,9 @@ else
             * @inheritDoc
             */
             DefaultRenderer.prototype.pDraw = function (entityCollector, target) {
+                if (!target)
+                    this.pCollectRenderables(entityCollector);
+
                 this._pContext.setBlendFactors(away.gl.ContextGLBlendFactor.ONE, away.gl.ContextGLBlendFactor.ZERO);
 
                 if (entityCollector.skyBox) {
@@ -6652,8 +6450,8 @@ else
 
                 var which = target ? DefaultRenderer.SCREEN_PASSES : DefaultRenderer.ALL_PASSES;
 
-                this.drawRenderables(entityCollector.opaqueRenderableHead, entityCollector, which);
-                this.drawRenderables(entityCollector.blendedRenderableHead, entityCollector, which);
+                this.drawRenderables(this._pOpaqueRenderableHead, entityCollector, which);
+                this.drawRenderables(this._pBlendedRenderableHead, entityCollector, which);
 
                 this._pContext.setDepthTest(false, away.gl.ContextGLCompareMode.LESS_EQUAL);
 
@@ -9559,7 +9357,8 @@ var away;
         var DepthRenderer = away.render.DepthRenderer;
 
         var TextureBase = away.gl.TextureBase;
-        var Event = away.events.Event;
+
+        //	import Event					= away.events.Event;
         var EventDispatcher = away.events.EventDispatcher;
         
         var Matrix3D = away.geom.Matrix3D;
@@ -9643,7 +9442,7 @@ else if (value > 1)
                     this._numCascades = value;
                     this.invalidateScissorRects();
                     this.init();
-                    this.dispatchEvent(new Event(Event.CHANGE));
+                    this.dispatchEvent(new away.events.Event(away.events.Event.CHANGE));
                 },
                 enumerable: true,
                 configurable: true

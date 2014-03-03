@@ -49,7 +49,7 @@ module away.render
 			this._pRenderTarget = target;
 			this._pRenderTargetSurface = 0;
 
-			entityCollector.sortRenderables();
+			this.pCollectRenderables(entityCollector);
 
 			this._pStageGL.setRenderTarget(target, true, 0);
 			this._pContext.clear(1, 1, 1, 1, 1, 0);
@@ -57,7 +57,7 @@ module away.render
 			this._pContext.setBlendFactors(away.gl.ContextGLBlendFactor.ONE, away.gl.ContextGLBlendFactor.ZERO);
 			this._pContext.setDepthTest(true, away.gl.ContextGLCompareMode.LESS);
 
-			var head:away.pool.RenderableBase = entityCollector.opaqueRenderableHead;
+			var head:away.pool.RenderableBase = this._pOpaqueRenderableHead;
 
 			var first:boolean = true;
 
@@ -122,17 +122,19 @@ module away.render
 		 */
 		public pDraw(entityCollector:away.traverse.EntityCollector, target:away.gl.TextureBase)
 		{
+			this.pCollectRenderables(entityCollector);
+
 			this._pContext.setBlendFactors(away.gl.ContextGLBlendFactor.ONE, away.gl.ContextGLBlendFactor.ZERO);
 
 			this._pContext.setDepthTest(true, away.gl.ContextGLCompareMode.LESS);
 
-			this.drawRenderables(entityCollector.opaqueRenderableHead, entityCollector);
+			this.drawRenderables(this._pOpaqueRenderableHead, entityCollector);
 
 			if (this._disableColor)
 				this._pContext.setColorMask(false, false, false, false);
 
 			if (this._renderBlended)
-				this.drawRenderables(entityCollector.blendedRenderableHead, entityCollector);
+				this.drawRenderables(this._pBlendedRenderableHead, entityCollector);
 
 			if (this._activeMaterial)
 				this._activeMaterial.iDeactivateForDepth(this._pStageGL);

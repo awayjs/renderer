@@ -210,7 +210,7 @@ module away.pick
 				pickingCollisionVO = entity._iPickingCollisionVO;
 				if (entity.pickingCollider) {
 					// If a collision exists, update the collision data and stop all checks.
-					if ((bestCollisionVO == null || pickingCollisionVO.rayEntryDistance < bestCollisionVO.rayEntryDistance) && collector._iCollidesBefore(entity, shortestCollisionDistance, this._findClosestCollision)) {
+					if ((bestCollisionVO == null || pickingCollisionVO.rayEntryDistance < bestCollisionVO.rayEntryDistance) && away.render.RendererBase._iCollidesBefore(entity, shortestCollisionDistance, this._findClosestCollision)) {
 						shortestCollisionDistance = pickingCollisionVO.rayEntryDistance;
 						bestCollisionVO = pickingCollisionVO;
 						if (!this._findClosestCollision) {

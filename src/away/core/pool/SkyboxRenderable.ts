@@ -13,9 +13,9 @@ module away.pool
 		// TODO: Replace with CompactSubGeometry
 		private static _geometry:away.base.SubGeometry;
 
-		constructor(skybox:away.entities.Skybox)
+		constructor(pool:RenderablePool, skybox:away.entities.Skybox)
 		{
-			super(skybox, skybox, null, null);
+			super(pool, skybox, skybox, null, null);
 
 			if (!SkyboxRenderable._geometry) {
 				SkyboxRenderable._geometry = new away.base.SubGeometry();

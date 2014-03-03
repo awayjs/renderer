@@ -13,6 +13,11 @@ module away.pool
 		/**
 		 *
 		 */
+		private _pool:RenderablePool;
+
+		/**
+		 *
+		 */
 		public next:RenderableBase;
 
 		/**
@@ -67,12 +72,20 @@ module away.pool
 		 * @param subGeometry
 		 * @param animationSubGeometry
 		 */
-		constructor(sourceEntity:away.entities.IEntity, materialOwner:away.base.IMaterialOwner, subGeometry:away.base.ISubGeometry, animationSubGeometry:away.animators.AnimationSubGeometry)
+		constructor(pool:RenderablePool, sourceEntity:away.entities.IEntity, materialOwner:away.base.IMaterialOwner, subGeometry:away.base.ISubGeometry, animationSubGeometry:away.animators.AnimationSubGeometry)
 		{
+			//store a reference to the pool for later disposal
+			this._pool = pool;
+
 			this.sourceEntity = sourceEntity;
 			this.materialOwner = materialOwner;
 			this.subGeometry = subGeometry;
 			this.animationSubGeometry = animationSubGeometry;
+		}
+
+		public dispose()
+		{
+			this._pool.disposeItem(this.materialOwner);
 		}
 	}
 }
