@@ -334,6 +334,7 @@ declare module away.events {
         */
         static RESOURCE_COMPLETE: string;
         private _url;
+        private _content;
         private _assets;
         /**
         * Create a new LoaderEvent object.
@@ -342,7 +343,11 @@ declare module away.events {
         * @param url The url of the loaded resource.
         * @param assets The assets of the loaded resource.
         */
-        constructor(type: string, url?: string, assets?: away.library.IAsset[]);
+        constructor(type: string, url?: string, content?: away.base.DisplayObject, assets?: away.library.IAsset[]);
+        /**
+        * The content returned if the resource has been loaded inside a <code>Loader</code> object.
+        */
+        public content : away.base.DisplayObject;
         /**
         * The url of the loaded resource.
         */
@@ -689,6 +694,7 @@ declare module away.parsers {
         private _frameLimit;
         private _lastFrameTime;
         private _pOnIntervalDelegate;
+        public _pContent: away.base.DisplayObject;
         static supportsType(extension: string): boolean;
         private _dependencies;
         private _parsingPaused;
@@ -704,6 +710,7 @@ declare module away.parsers {
         * Returned by <code>proceedParsing</code> to indicate more parsing is needed, allowing asynchronous parsing.
         */
         static MORE_TO_PARSE: boolean;
+        public content : away.base.DisplayObject;
         /**
         * Creates a new ParserBase object
         * @param format The data format of the file data to be parsed. Can be either <code>ParserDataFormat.BINARY</code> or <code>ParserDataFormat.PLAIN_TEXT</code>, and should be provided by the concrete subtype.
@@ -783,7 +790,7 @@ declare module away.parsers {
         * Initializes the parsing of data.
         * @param frameLimit The maximum duration of a parsing session.
         */
-        private startParsing(frameLimit);
+        public _pStartParsing(frameLimit: number): void;
         /**
         * Finish parsing the data.
         */
@@ -8101,6 +8108,7 @@ declare module away.net {
         private _context;
         private _token;
         private _uri;
+        private _content;
         private _materialMode;
         private _errorHandlers;
         private _parseErrorHandlers;
@@ -11486,6 +11494,11 @@ declare module away.projections {
 */
 declare module away.containers {
     class Loader extends containers.DisplayObjectContainer {
+        private _loadingSessions;
+        private _useAssetLib;
+        private _assetLibId;
+        private _onResourceCompleteDelegate;
+        private _onAssetCompleteDelegate;
         private _content;
         private _contentLoaderInfo;
         /**
@@ -11571,7 +11584,7 @@ declare module away.containers {
         * handler.</li>
         * </ul>
         */
-        constructor();
+        constructor(useAssetLibrary?: boolean, assetLibraryId?: string);
         /**
         * Cancels a <code>load()</code> method operation that is currently in
         * progress for the Loader instance.
@@ -11657,6 +11670,12 @@ declare module away.containers {
         *                properties in the <a
         *                href="../system/LoaderContext.html">LoaderContext</a>
         *                class.</p>
+        * @param ns      An optional namespace string under which the file is to be
+        *                loaded, allowing the differentiation of two resources with
+        *                identical assets.
+        * @param parser  An optional parser object for translating the loaded data
+        *                into a usable resource. If not provided, AssetLoader will
+        *                attempt to auto-detect the file type.
         * @throws IOError               The <code>digest</code> property of the
         *                               <code>request</code> object is not
         *                               <code>null</code>. You should only set the
@@ -11739,7 +11758,7 @@ declare module away.containers {
         * @event unload        Dispatched by the <code>contentLoaderInfo</code>
         *                      object when a loaded object is removed.
         */
-        public load(request: away.net.URLRequest, context?: away.net.AssetLoaderContext): void;
+        public load(request: away.net.URLRequest, context?: away.net.AssetLoaderContext, ns?: string, parser?: away.parsers.ParserBase): away.net.AssetLoaderToken;
         /**
         * Loads from binary data stored in a ByteArray object.
         *
@@ -11826,7 +11845,7 @@ declare module away.containers {
         * @event unload        Dispatched by the <code>contentLoaderInfo</code>
         *                      object when a loaded object is removed.
         */
-        public loadBytes(bytes: away.utils.ByteArray, context?: away.net.AssetLoaderContext): void;
+        public loadData(data: any, context?: away.net.AssetLoaderContext, ns?: string, parser?: away.parsers.ParserBase): away.net.AssetLoaderToken;
         /**
         * Removes a child of this Loader object that was loaded by using the
         * <code>load()</code> method. The <code>property</code> of the associated
@@ -11851,6 +11870,40 @@ declare module away.containers {
         *
         */
         public unload(): void;
+        /**
+        * Enables a specific parser.
+        * When no specific parser is set for a loading/parsing opperation,
+        * loader3d can autoselect the correct parser to use.
+        * A parser must have been enabled, to be considered when autoselecting the parser.
+        *
+        * @param parserClass The parser class to enable.
+        * @see away.parsers.Parsers
+        */
+        static enableParser(parserClass: Object): void;
+        /**
+        * Enables a list of parsers.
+        * When no specific parser is set for a loading/parsing opperation,
+        * loader3d can autoselect the correct parser to use.
+        * A parser must have been enabled, to be considered when autoselecting the parser.
+        *
+        * @param parserClasses A Vector of parser classes to enable.
+        * @see away.parsers.Parsers
+        */
+        static enableParsers(parserClasses: Object[]): void;
+        private removeListeners(dispatcher);
+        private onAssetComplete(event);
+        /**
+        * Called when an error occurs during loading
+        */
+        private onLoadError(event);
+        /**
+        * Called when a an error occurs during parsing
+        */
+        private onParseError(event);
+        /**
+        * Called when the resource and all of its dependencies was retrieved.
+        */
+        private onResourceComplete(event);
     }
 }
 declare module away.containers {

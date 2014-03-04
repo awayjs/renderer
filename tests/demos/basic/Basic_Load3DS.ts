@@ -7,7 +7,7 @@
 
  Demonstrates:
 
- How to use the Loader3D object to load an embedded internal 3ds model.
+ How to use the Loader object to load an embedded internal 3ds model.
  How to map an external asset reference inside a file to an internal embedded asset.
  How to extract material data and use it to set custom material properties on a model.
 
@@ -57,7 +57,7 @@ module examples
         private _direction:away.geom.Vector3D;
 
         //scene objects
-        private _loader:away.containers.Loader3D;
+        private _loader:away.containers.Loader;
         private _ground:away.entities.Mesh;
 
         //navigation variables
@@ -137,7 +137,7 @@ module examples
          */
         private initObjects():void
         {
-            this._loader = new away.containers.Loader3D();
+            this._loader = new away.containers.Loader();
             this._loader.transform.scale = new away.geom.Vector3D(300, 300, 300);
             this._loader.z = -200;
             this._view.scene.addChild(this._loader);

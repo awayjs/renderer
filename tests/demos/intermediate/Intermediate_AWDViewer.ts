@@ -7,7 +7,7 @@ AWD file loading example in Away3d
 
 Demonstrates:
 
-How to use the Loader3D object to load an embedded internal awd model.
+How to use the Loader object to load an embedded internal awd model.
 
 Code by Rob Bateman
 rob@infiniteturtles.co.uk
@@ -50,7 +50,7 @@ module examples
 	import Vector3D					= away.geom.Vector3D;
     import AssetLibrary				= away.library.AssetLibrary;
     import AssetType				= away.library.AssetType;
-    import Loader3D					= away.containers.Loader3D;
+    import Loader					= away.containers.Loader;
     import AWD2Parser				= away.parsers.AWDParser;
 	import URLRequest				= away.net.URLRequest;
 	import DefaultRenderer			= away.render.DefaultRenderer;
@@ -128,7 +128,7 @@ module examples
 			AssetLibrary.enableParser(AWD2Parser);
 
 			//kickoff asset loading
-			var loader:Loader3D = new Loader3D();
+			var loader:Loader = new Loader();
 			loader.addEventListener(AssetEvent.ASSET_COMPLETE, away.utils.Delegate.create(this, this.onAssetComplete));
 
 			loader.load(new URLRequest("assets/shambler.awd"));

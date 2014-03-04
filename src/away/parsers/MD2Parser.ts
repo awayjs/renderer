@@ -108,8 +108,12 @@ module away.parsers
 			if (asset) {
 				var material:away.materials.MaterialBase;
 				if (this.materialMode < 2)
-					material = new away.materials.TextureMaterial(asset); else
+					material = new away.materials.TextureMaterial(asset);
+				else
 					material = new away.materials.TextureMultiPassMaterial(asset);
+
+				//add to the content property
+				(<away.containers.DisplayObjectContainer> this._pContent).addChild(this._mesh);
 
 				material.name = this._mesh.material.name;
 				this._mesh.material = material;
@@ -127,8 +131,12 @@ module away.parsers
 		{
 			// apply system default
 			if (this.materialMode < 2)
-				this._mesh.material = away.materials.DefaultMaterialManager.getDefaultMaterial(); else
+				this._mesh.material = away.materials.DefaultMaterialManager.getDefaultMaterial();
+			else
 				this._mesh.material = new away.materials.TextureMultiPassMaterial(away.materials.DefaultMaterialManager.getDefaultTexture());
+
+			//add to the content property
+			(<away.containers.DisplayObjectContainer> this._pContent).addChild(this._mesh);
 
 			this._pFinalizeAsset(this._mesh.geometry);
 			this._pFinalizeAsset(this._mesh);
@@ -162,7 +170,8 @@ module away.parsers
 					this._geometry = new Geometry();
 					this._mesh = new away.entities.Mesh(this._geometry, null);
 					if (this.materialMode < 2)
-						this._mesh.material = away.materials.DefaultMaterialManager.getDefaultMaterial(); else
+						this._mesh.material = away.materials.DefaultMaterialManager.getDefaultMaterial();
+					else
 						this._mesh.material = new away.materials.TextureMultiPassMaterial(away.materials.DefaultMaterialManager.getDefaultTexture());
 
 					//_geometry.animation = new VertexAnimation(2, VertexAnimationMode.ABSOLUTE);
@@ -171,24 +180,23 @@ module away.parsers
 					// Parse header and decompress body
 					this.parseHeader();
 					this.parseMaterialNames();
-				}
-
-				else if (!this._parsedUV)
+				} else if (!this._parsedUV) {
 					this.parseUV();
-
-				else if (!this._parsedFaces)
+				} else if (!this._parsedFaces) {
 					this.parseFaces();
-
-				else if (!this._parsedFrames)
-					this.parseFrames(); else if ((this.geoCreated) && (this.materialFinal))
+				} else if (!this._parsedFrames) {
+					this.parseFrames();
+				} else if ((this.geoCreated) && (this.materialFinal)) {
 					return away.parsers.ParserBase.PARSING_DONE;
-
-				else if (!this.geoCreated) {
+				} else if (!this.geoCreated) {
 					this.geoCreated = true;
 					this.createDefaultSubGeometry();
 					// Force name to be chosen by this._pFinalizeAsset()
 					this._mesh.name = "";
 					if (this.materialFinal) {
+						//add to the content property
+						(<away.containers.DisplayObjectContainer> this._pContent).addChild(this._mesh);
+
 						this._pFinalizeAsset(this._mesh.geometry);
 						this._pFinalizeAsset(this._mesh);
 					}
@@ -198,6 +206,14 @@ module away.parsers
 			}
 
 			return away.parsers.ParserBase.MORE_TO_PARSE;
+		}
+
+		public _pStartParsing(frameLimit:number)
+		{
+			super._pStartParsing(frameLimit);
+
+			//create a content object for Loaders
+			this._pContent = new away.containers.DisplayObjectContainer();
 		}
 
 		/**
@@ -252,10 +268,12 @@ module away.parsers
 				if (name.toLowerCase().indexOf(".jpg") == -1 && name.toLowerCase().indexOf(".png") == -1) {
 					name = name.substring(slashIndex + 1, extIndex);
 					url = name + "." + this._textureType;
-				} else
+				} else {
 					url = name;
+				}
 
 				this._materialNames[i] = name;
+
 				// only support 1 skin TODO: really?
 				if (this.dependencies.length == 0)
 					this._pAddDependency(name, new away.net.URLRequest(url));
@@ -264,7 +282,6 @@ module away.parsers
 			if (this._materialNames.length > 0)
 				this._mesh.material.name = this._materialNames[0]; else
 				this.materialFinal = true;
-
 		}
 
 		/**

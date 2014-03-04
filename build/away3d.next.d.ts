@@ -565,31 +565,31 @@ declare module away.base {
         * @param index The attribute stream index for the vertex shader
         * @param stageGL The StageGL to assign the stream to
         */
-        activateVertexBuffer(index: number, stageGL: base.StageGL);
+        activateVertexBuffer(index: number, stageGL: base.StageGL): any;
         /**
         * Assigns the attribute stream for UV coordinates
         * @param index The attribute stream index for the vertex shader
         * @param stageGL The StageGL to assign the stream to
         */
-        activateUVBuffer(index: number, stageGL: base.StageGL);
+        activateUVBuffer(index: number, stageGL: base.StageGL): any;
         /**
         * Assigns the attribute stream for a secondary set of UV coordinates
         * @param index The attribute stream index for the vertex shader
         * @param stageGL The StageGL to assign the stream to
         */
-        activateSecondaryUVBuffer(index: number, stageGL: base.StageGL);
+        activateSecondaryUVBuffer(index: number, stageGL: base.StageGL): any;
         /**
         * Assigns the attribute stream for vertex normals
         * @param index The attribute stream index for the vertex shader
         * @param stageGL The StageGL to assign the stream to
         */
-        activateVertexNormalBuffer(index: number, stageGL: base.StageGL);
+        activateVertexNormalBuffer(index: number, stageGL: base.StageGL): any;
         /**
         * Assigns the attribute stream for vertex tangents
         * @param index The attribute stream index for the vertex shader
         * @param stageGL The StageGL to assign the stream to
         */
-        activateVertexTangentBuffer(index: number, stageGL: base.StageGL);
+        activateVertexTangentBuffer(index: number, stageGL: base.StageGL): any;
         /**
         * Retrieves the IndexBuffer object that contains triangle indices.
         * @param context The ContextGL for which we request the buffer
@@ -636,19 +636,19 @@ declare module away.base {
         * Retrieves the object's uvs as a Number array.
         */
         UVData: number[];
-        applyTransformation(transform: away.geom.Matrix3D);
-        scale(scale: number);
-        dispose();
+        applyTransformation(transform: away.geom.Matrix3D): any;
+        scale(scale: number): any;
+        dispose(): any;
         clone(): ISubGeometry;
         scaleU: number;
         scaleV: number;
-        scaleUV(scaleU: number, scaleV: number);
+        scaleUV(scaleU: number, scaleV: number): any;
         parentGeometry: base.Geometry;
         faceNormals: number[];
         cloneWithSeperateBuffers(): base.SubGeometry;
         autoDeriveVertexNormals: boolean;
         autoDeriveVertexTangents: boolean;
-        fromVectors(vertices: number[], uvs: number[], normals: number[], tangents: number[]);
+        fromVectors(vertices: number[], uvs: number[], normals: number[], tangents: number[]): any;
         vertexPositionData: number[];
     }
 }
@@ -1774,7 +1774,7 @@ declare module away.pick {
         */
         public getViewCollision(x: number, y: number, view: away.containers.View): pick.PickingCollisionVO;
         public getSceneCollision(position: away.geom.Vector3D, direction: away.geom.Vector3D, scene: away.containers.Scene): pick.PickingCollisionVO;
-        public setIgnoreList(entities): void;
+        public setIgnoreList(entities: any): void;
         private isIgnored(entity);
         private sortOnNearT(entity1, entity2);
         private getPickingCollisionVO(collector);
@@ -2494,88 +2494,6 @@ declare module away.entities {
         public _iSetUVMatrixComponents(offsetU: number, offsetV: number, scaleU: number, scaleV: number, rotationUV: number): void;
     }
 }
-declare module away.containers {
-    /**
-    * Loader3D can load any file format that Away3D supports (or for which a third-party parser
-    * has been plugged in) and be added directly to the scene. As assets are encountered
-    * they are added to the Loader3D container. Assets that can not be displayed in the scene
-    * graph (e.g. unused bitmaps/materials/skeletons etc) will be ignored.
-    *
-    * This provides a fast and easy way to load models (no need for event listeners) but is not
-    * very versatile since many types of assets are ignored.
-    *
-    * Loader3D by default uses the AssetLibrary to load all assets, which means that they also
-    * ends up in the library. To circumvent this, Loader3D can be configured to not use the
-    * AssetLibrary in which case it will use the AssetLoader directly.
-    *
-    * @see away.net.AssetLoader
-    * @see away.library.AssetLibrary
-    */
-    class Loader3D extends containers.DisplayObjectContainer {
-        private _loadingSessions;
-        private _useAssetLib;
-        private _assetLibId;
-        private _onResourceCompleteDelegate;
-        private _onAssetCompleteDelegate;
-        constructor(useAssetLibrary?: boolean, assetLibraryId?: string);
-        /**
-        * Loads a file and (optionally) all of its dependencies.
-        *
-        * @param req The URLRequest object containing the URL of the file to be loaded.
-        * @param context An optional context object providing additional parameters for loading
-        * @param ns An optional namespace string under which the file is to be loaded, allowing the differentiation of two resources with identical assets
-        * @param parser An optional parser object for translating the loaded data into a usable resource. If not provided, AssetLoader will attempt to auto-detect the file type.
-        */
-        public load(req: away.net.URLRequest, context?: away.net.AssetLoaderContext, ns?: string, parser?: away.parsers.ParserBase): away.net.AssetLoaderToken;
-        /**
-        * Loads a resource from already loaded data.
-        *
-        * @param data The data object containing all resource information.
-        * @param context An optional context object providing additional parameters for loading
-        * @param ns An optional namespace string under which the file is to be loaded, allowing the differentiation of two resources with identical assets
-        * @param parser An optional parser object for translating the loaded data into a usable resource. If not provided, AssetLoader will attempt to auto-detect the file type.
-        */
-        public loadData(data: any, context?: away.net.AssetLoaderContext, ns?: string, parser?: away.parsers.ParserBase): away.net.AssetLoaderToken;
-        /**
-        * Stop the current loading/parsing process.
-        */
-        public stopLoad(): void;
-        /**
-        * Enables a specific parser.
-        * When no specific parser is set for a loading/parsing opperation,
-        * loader3d can autoselect the correct parser to use.
-        * A parser must have been enabled, to be considered when autoselecting the parser.
-        *
-        * @param parserClass The parser class to enable.
-        * @see away.parsers.Parsers
-        */
-        static enableParser(parserClass: Object): void;
-        /**
-        * Enables a list of parsers.
-        * When no specific parser is set for a loading/parsing opperation,
-        * loader3d can autoselect the correct parser to use.
-        * A parser must have been enabled, to be considered when autoselecting the parser.
-        *
-        * @param parserClasses A Vector of parser classes to enable.
-        * @see away.parsers.Parsers
-        */
-        static enableParsers(parserClasses: Object[]): void;
-        private removeListeners(dispatcher);
-        private onAssetComplete(ev);
-        /**
-        * Called when an error occurs during loading
-        */
-        private onLoadError(event);
-        /**
-        * Called when a an error occurs during parsing
-        */
-        private onParseError(event);
-        /**
-        * Called when the resource and all of its dependencies was retrieved.
-        */
-        private onResourceComplete(event);
-    }
-}
 declare module away.filters {
     class Filter3DTaskBase {
         private _mainInputTexture;
@@ -2742,7 +2660,7 @@ declare module away.lights {
         public iRenderDepthMap(stageGL: away.base.StageGL, entityCollector: away.traverse.EntityCollector, renderer: away.render.DepthRenderer): void;
         public pUpdateDepthProjection(viewCamera: away.entities.Camera): void;
         public pDrawDepthMap(target: away.gl.TextureBase, scene: away.containers.Scene, renderer: away.render.DepthRenderer): void;
-        public _pSetDepthMapSize(value): void;
+        public _pSetDepthMapSize(value: any): void;
     }
 }
 declare module away.lights {
@@ -2781,9 +2699,8 @@ declare module away.lights {
     }
 }
 declare module away.lights {
-    import Rectangle = away.geom.Rectangle;
     class CascadeShadowMapper extends lights.DirectionalShadowMapper implements away.events.IEventDispatcher {
-        public _pScissorRects: Rectangle[];
+        public _pScissorRects: away.geom.Rectangle[];
         private _pScissorRectsInvalid;
         private _splitRatios;
         private _numCascades;
@@ -2904,7 +2821,6 @@ declare module away.managers {
 declare class AGALProgramCacheSingletonEnforcer {
 }
 declare module away.materials {
-    import Program = away.gl.Program;
     /**
     * MaterialPassBase provides an abstract base class for material shader passes. A material pass constitutes at least
     * a render call per required renderable.
@@ -2919,7 +2835,7 @@ declare module away.materials {
         public _iUniqueId: number;
         public _pMaterial: materials.MaterialBase;
         private _animationSet;
-        public _iPrograms: Program[];
+        public _iPrograms: away.gl.Program[];
         public _iProgramids: number[];
         private _contextGLs;
         public _pNumUsedStreams: number;
@@ -4070,7 +3986,7 @@ declare module away.materials {
         /**
         * A method that is exposed to wrappers in case the strength needs to be controlled
         */
-        public _iModulateMethod;
+        public _iModulateMethod: any;
         public _iModulateMethodScope: Object;
         /**
         * Creates a new LightingMethodBase.
@@ -5464,7 +5380,7 @@ declare module away.materials {
         * Creates a new StaticLightPicker object.
         * @param lights The lights to be used for shading.
         */
-        constructor(lights);
+        constructor(lights: any);
         /**
         * The lights used for shading.
         */
@@ -7913,16 +7829,14 @@ declare module away.animators {
     }
 }
 declare module away.animators {
-    import ContextGL = away.gl.ContextGL;
-    import VertexBuffer = away.gl.VertexBuffer;
     /**
     * ...
     */
     class AnimationSubGeometry {
         static SUBGEOM_ID_COUNT: number;
         public _pVertexData: number[];
-        public _pVertexBuffer: VertexBuffer[];
-        public _pBufferContext: ContextGL[];
+        public _pVertexBuffer: away.gl.VertexBuffer[];
+        public _pBufferContext: away.gl.ContextGL[];
         public _pBufferDirty: boolean[];
         private _numVertices;
         private _totalLenOfOneVertex;
@@ -9272,14 +9186,14 @@ declare module away.animators {
 declare module away.animators {
     interface IAnimationState {
         positionDelta: away.geom.Vector3D;
-        offset(startTime: number);
-        update(time: number);
+        offset(startTime: number): any;
+        update(time: number): any;
         /**
         * Sets the animation phase of the node.
         *
         * @param value The phase value to use. 0 represents the beginning of an animation clip, 1 represents the end.
         */
-        phase(value: number);
+        phase(value: number): any;
     }
 }
 declare module away.animators {
@@ -10394,14 +10308,14 @@ declare module away.animators {
         *
         * @private
         */
-        resetGPUCompatibility();
+        resetGPUCompatibility(): any;
         /**
         * Called by the animator to void the GPU indicator when register space in the shader
         * is no longer available for running GPU-based animation code.
         *
         * @private
         */
-        cancelGPUCompatibility();
+        cancelGPUCompatibility(): any;
         /**
         * Generates the AGAL Vertex code for the animation, tailored to the material pass's requirements.
         *
@@ -10440,7 +10354,7 @@ declare module away.animators {
         *
         * @private
         */
-        doneAGALCode(pass: away.materials.MaterialPassBase);
+        doneAGALCode(pass: away.materials.MaterialPassBase): any;
         /**
         * Sets the GPU render state required by the animation that is independent of the rendered mesh.
         *
@@ -10449,7 +10363,7 @@ declare module away.animators {
         *
         * @private
         */
-        activate(stageGL: away.base.StageGL, pass: away.materials.MaterialPassBase);
+        activate(stageGL: away.base.StageGL, pass: away.materials.MaterialPassBase): any;
         /**
         * Clears the GPU render state that has been set by the current animation.
         *
@@ -10458,7 +10372,7 @@ declare module away.animators {
         *
         * @private
         */
-        deactivate(stageGL: away.base.StageGL, pass: away.materials.MaterialPassBase);
+        deactivate(stageGL: away.base.StageGL, pass: away.materials.MaterialPassBase): any;
     }
 }
 declare module away.animators {
@@ -10936,6 +10850,7 @@ declare module away.parsers {
         * @inheritDoc
         */
         public _pProceedParsing(): boolean;
+        public _pStartParsing(frameLimit: number): void;
         /**
         * Parses a single line in the OBJ file.
         */
@@ -11189,6 +11104,7 @@ declare module away.parsers {
         * @inheritDoc
         */
         public _pProceedParsing(): boolean;
+        public _pStartParsing(frameLimit: number): void;
         private dispose();
         private parseNextBlock();
         private parseTriangleGeometrieBlock(blockID);
@@ -11314,6 +11230,7 @@ declare module away.parsers {
         * @inheritDoc
         */
         public _pProceedParsing(): boolean;
+        public _pStartParsing(frameLimit: number): void;
         private parseMaterial();
         private parseTexture(end);
         private parseVertexList();
@@ -11445,6 +11362,7 @@ declare module away.parsers {
         * @inheritDoc
         */
         public _pProceedParsing(): boolean;
+        public _pStartParsing(frameLimit: number): void;
         /**
         * Reads in all that MD2 Header data that is declared as private variables.
         * I know its a lot, and it looks ugly, but only way to do it in Flash
@@ -11708,6 +11626,7 @@ declare module away.parsers {
         * @inheritDoc
         */
         public _pProceedParsing(): boolean;
+        public _pStartParsing(frameLimit: number): void;
         private calculateMaxJointCount();
         private countZeroWeightJoints(vertex, weights);
         /**

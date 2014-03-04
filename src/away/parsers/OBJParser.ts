@@ -214,6 +214,14 @@ module away.parsers
 			return ParserBase.MORE_TO_PARSE;
 		}
 
+		public _pStartParsing(frameLimit:number)
+		{
+			super._pStartParsing(frameLimit);
+
+			//create a content object for Loaders
+			this._pContent = new away.containers.DisplayObjectContainer();
+		}
+
 		/**
 		 * Parses a single line in the OBJ file.
 		 */
@@ -344,6 +352,9 @@ module away.parsers
 						for (sm = 1; sm < mesh.subMeshes.length; ++sm)
 							mesh.subMeshes[sm].material = bmMaterial;
 					}
+
+					//add to the content property
+					(<away.containers.DisplayObjectContainer> this._pContent).addChild(mesh);
 
 					this._pFinalizeAsset(<away.library.IAsset> mesh);
 				}

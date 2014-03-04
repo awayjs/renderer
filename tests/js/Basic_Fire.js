@@ -251,8 +251,7 @@ var examples;
         Basic_Fire.prototype.getAllLights = function () {
             var lights = new Array();
 
-            lights.push(this.directionalLight);
-
+            //lights.push(this.directionalLight);
             var fireVO;
             for (var i = 0; i < this.fireObjects.length; i++) {
                 fireVO = this.fireObjects[i];

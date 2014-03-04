@@ -369,6 +369,14 @@ module away.parsers
 
 		}
 
+		public _pStartParsing(frameLimit:number)
+		{
+			super._pStartParsing(frameLimit);
+
+			//create a content object for Loaders
+			this._pContent = new away.containers.DisplayObjectContainer();
+		}
+
 		private dispose():void
 		{
 
@@ -865,6 +873,9 @@ module away.parsers
 				parentName = (<away.containers.DisplayObjectContainer> returnedArray[1]).name;
 			} else if (par_id > 0) {
 				this._blocks[ blockID ].addError("Could not find a parent for this ObjectContainer3D");
+			} else {
+				//add to the content property
+				(<away.containers.DisplayObjectContainer> this._pContent).addChild(ctr);
 			}
 
 			// in AWD version 2.1 we read the Container properties
@@ -945,6 +956,9 @@ module away.parsers
 				parentName = objC.name;
 			} else if (par_id > 0) {
 				this._blocks[blockID].addError("Could not find a parent for this Mesh");
+			} else {
+				//add to the content property
+				(<away.containers.DisplayObjectContainer> this._pContent).addChild(mesh);
 			}
 
 			if (materials.length >= 1 && mesh.subMeshes.length == 1) {
@@ -1078,6 +1092,9 @@ module away.parsers
 				} else {
 					this._blocks[blockID].addError("Could not find a parent for this Light");
 				}
+			} else {
+				//add to the content property
+				(<away.containers.DisplayObjectContainer> this._pContent).addChild(light);
 			}
 
 			this.parseUserAttributes();
@@ -1136,6 +1153,9 @@ module away.parsers
 
 			} else if (par_id > 0) {
 				this._blocks[blockID].addError("Could not find a parent for this Camera");
+			} else {
+				//add to the content property
+				(<away.containers.DisplayObjectContainer> this._pContent).addChild(camera);
 			}
 
 			camera.name = name;

@@ -155,6 +155,9 @@ module away.parsers
 					//_geometry.animation = _animation;
 					//					_mesh.animationController = _animationController;
 
+					//add to the content property
+					(<away.containers.DisplayObjectContainer> this._pContent).addChild(this._mesh);
+
 					this._pFinalizeAsset(this._geometry);
 					this._pFinalizeAsset(this._mesh);
 					this._pFinalizeAsset(this._skeleton);
@@ -163,6 +166,14 @@ module away.parsers
 				}
 			}
 			return ParserBase.MORE_TO_PARSE;
+		}
+
+		public _pStartParsing(frameLimit:number)
+		{
+			super._pStartParsing(frameLimit);
+
+			//create a content object for Loaders
+			this._pContent = new away.containers.DisplayObjectContainer();
 		}
 
 		private calculateMaxJointCount():void

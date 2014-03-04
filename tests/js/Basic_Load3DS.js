@@ -3,7 +3,7 @@
 /*
 3ds file loading example in Away3d
 Demonstrates:
-How to use the Loader3D object to load an embedded internal 3ds model.
+How to use the Loader object to load an embedded internal 3ds model.
 How to map an external asset reference inside a file to an internal embedded asset.
 How to extract material data and use it to set custom material properties on a model.
 Code by Rob Bateman
@@ -90,7 +90,7 @@ var examples;
         * Initialise the scene objects
         */
         Basic_Load3DS.prototype.initObjects = function () {
-            this._loader = new away.containers.Loader3D();
+            this._loader = new away.containers.Loader();
             this._loader.transform.scale = new away.geom.Vector3D(300, 300, 300);
             this._loader.z = -200;
             this._view.scene.addChild(this._loader);

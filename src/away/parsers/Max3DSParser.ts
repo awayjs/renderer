@@ -131,12 +131,12 @@ module away.parsers
 				// If we are currently working on an object, and the most recent chunk was
 				// the last one in that object, finalize the current object.
 				if (this._cur_mat && this._byteData.position >= this._cur_mat_end)
-					this.finalizeCurrentMaterial(); else if (this._cur_obj && this._byteData.position >= this._cur_obj_end) {
+					this.finalizeCurrentMaterial();
+				else if (this._cur_obj && this._byteData.position >= this._cur_obj_end) {
 					// Can't finalize at this point, because we have to wait until the full
 					// animation section has been parsed for any potential pivot definitions
 					this._unfinalized_objects[this._cur_obj.name] = this._cur_obj;
 					this._cur_obj_end = Number.MAX_VALUE /*uint*/;
-					;
 					this._cur_obj = null;
 				}
 
@@ -225,20 +225,33 @@ module away.parsers
 			// More parsing is required if the entire byte array has not yet
 			// been read, or if there is a currently non-finalized object in
 			// the pipeline.
-			if (this._byteData.getBytesAvailable() || this._cur_obj || this._cur_mat)
-				return ParserBase.MORE_TO_PARSE; else {
+			if (this._byteData.getBytesAvailable() || this._cur_obj || this._cur_mat) {
+				return ParserBase.MORE_TO_PARSE;
+			} else {
 				var name:string;
 
 				// Finalize any remaining objects before ending.
 				for (name in this._unfinalized_objects) {
 					var obj:away.containers.DisplayObjectContainer;
 					obj = this.constructObject(this._unfinalized_objects[name]);
-					if (obj)
+					if (obj) {
+						//add to the content property
+						(<away.containers.DisplayObjectContainer> this._pContent).addChild(obj);
+
 						this._pFinalizeAsset(obj, name);
+					}
 				}
 
 				return ParserBase.PARSING_DONE;
 			}
+		}
+
+		public _pStartParsing(frameLimit:number)
+		{
+			super._pStartParsing(frameLimit);
+
+			//create a content object for Loaders
+			this._pContent = new away.containers.DisplayObjectContainer();
 		}
 
 		private parseMaterial():MaterialVO
@@ -468,8 +481,13 @@ module away.parsers
 				vo = this._unfinalized_objects[name];
 				obj = this.constructObject(vo, pivot);
 
-				if (obj)
+				if (obj) {
+					//add to the content property
+					(<away.containers.DisplayObjectContainer> this._pContent).addChild(obj);
+
 					this._pFinalizeAsset(obj, vo.name);
+				}
+
 
 				delete this._unfinalized_objects[name];
 			}
@@ -509,7 +527,7 @@ module away.parsers
 					obj.verts[i*3 + 2] = vertices[i].z;
 				}
 				obj.indices = new Array<number>(faces.length*3) /*uint*/;
-				;
+
 				for (i = 0; i < faces.length; i++) {
 					obj.indices[i*3] = faces[i].a;
 					obj.indices[i*3 + 1] = faces[i].b;

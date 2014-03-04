@@ -468,7 +468,7 @@ var away;
             * @param {Function} Callback function
             */
             EventDispatcher.prototype.hasEventListener = function (type, listener) {
-                if (this.listeners != null) {
+                if (listener != null) {
                     return (this.getEventListenerIndex(type, listener) !== -1);
                 } else {
                     if (this.listeners[type] !== undefined)
@@ -570,14 +570,27 @@ var away;
             * @param url The url of the loaded resource.
             * @param assets The assets of the loaded resource.
             */
-            function LoaderEvent(type, url, assets) {
+            function LoaderEvent(type, url, content, assets) {
                 if (typeof url === "undefined") { url = null; }
+                if (typeof content === "undefined") { content = null; }
                 if (typeof assets === "undefined") { assets = null; }
                 _super.call(this, type);
 
                 this._url = url;
+                this._content = content;
                 this._assets = assets;
             }
+            Object.defineProperty(LoaderEvent.prototype, "content", {
+                /**
+                * The content returned if the resource has been loaded inside a <code>Loader</code> object.
+                */
+                get: function () {
+                    return this._content;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
             Object.defineProperty(LoaderEvent.prototype, "url", {
                 /**
                 * The url of the loaded resource.
@@ -605,7 +618,7 @@ var away;
             * @return An exact duplicate of the current event.
             */
             LoaderEvent.prototype.clone = function () {
-                return new LoaderEvent(this.type, this._url, this._assets);
+                return new LoaderEvent(this.type, this._url, this._content, this._assets);
             };
             LoaderEvent.RESOURCE_COMPLETE = "resourceComplete";
             return LoaderEvent;
@@ -2119,7 +2132,6 @@ var away;
         */
         var ParserBase = (function (_super) {
             __extends(ParserBase, _super);
-            /* Protected */
             /**
             * Creates a new ParserBase object
             * @param format The data format of the file data to be parsed. Can be either <code>ParserDataFormat.BINARY</code> or <code>ParserDataFormat.PLAIN_TEXT</code>, and should be provided by the concrete subtype.
@@ -2146,6 +2158,15 @@ var away;
                 throw new away.errors.AbstractMethodError();
                 return false;
             };
+
+            Object.defineProperty(ParserBase.prototype, "content", {
+                /* Protected */
+                get: function () {
+                    return this._pContent;
+                },
+                enumerable: true,
+                configurable: true
+            });
 
             /**
             * Validates a bitmapData loaded before assigning to a default BitmapMaterial
@@ -2232,7 +2253,7 @@ var away;
             ParserBase.prototype.parseAsync = function (data, frameLimit) {
                 if (typeof frameLimit === "undefined") { frameLimit = 30; }
                 this._data = data;
-                this.startParsing(frameLimit);
+                this._pStartParsing(frameLimit);
             };
 
             Object.defineProperty(ParserBase.prototype, "dependencies", {
@@ -2425,7 +2446,7 @@ var away;
             * Initializes the parsing of data.
             * @param frameLimit The maximum duration of a parsing session.
             */
-            ParserBase.prototype.startParsing = function (frameLimit) {
+            ParserBase.prototype._pStartParsing = function (frameLimit) {
                 this._frameLimit = frameLimit;
                 this._timer = new away.utils.Timer(this._frameLimit, 0);
                 this._timer.addEventListener(away.events.TimerEvent.TIMER, this._pOnIntervalDelegate);
@@ -2594,6 +2615,8 @@ var away;
                     //				this._pFinalizeAsset(<away.library.IAsset> asset, this._iFileName);
                     //				this.dispatchEvent(new away.events.AssetEvent(away.events.AssetEvent.TEXTURE_SIZE_ERROR, <away.library.IAsset> asset));
                 }
+
+                this._pContent = new away.entities.Billboard(new away.materials.CSSMaterialBase(asset), asset.width, asset.height);
 
                 return away.parsers.ParserBase.PARSING_DONE;
             };
@@ -6556,6 +6579,14 @@ var away;
                 zAxis.normalize();
 
                 xAxis = upAxis.crossProduct(zAxis);
+                xAxis.normalize();
+
+                if (xAxis.length < 0.05) {
+                    xAxis.x = upAxis.y;
+                    xAxis.y = upAxis.x;
+                    xAxis.z = 0;
+                    xAxis.normalize();
+                }
 
                 yAxis = zAxis.crossProduct(xAxis);
 
@@ -15581,7 +15612,6 @@ var away;
                     this.z *= invLength;
                     return;
                 }
-                throw "Cannot divide by zero length.";
             };
 
             /**
@@ -16955,7 +16985,7 @@ var away;
                     this._stack.push(this._currentDependency);
                     this.retrieveDependency(next);
                 } else if (this._currentDependency.parser && this._currentDependency.parser.parsingPaused) {
-                    this._currentDependency.parser._iResumeParsingAfterDependencies(); //resumeParsingAfterDependencies();
+                    this._currentDependency.parser._iResumeParsingAfterDependencies();
                     this._stack.pop();
                 } else if (this._stack.length) {
                     var prev = this._currentDependency;
@@ -16967,7 +16997,7 @@ var away;
 
                     this.retrieveNext(parser);
                 } else {
-                    this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.RESOURCE_COMPLETE, this._uri, this._baseDependency.assets));
+                    this.dispatchEvent(new away.events.LoaderEvent(away.events.LoaderEvent.RESOURCE_COMPLETE, this._uri, this._baseDependency.parser.content, this._baseDependency.assets));
                 }
             };
 
@@ -21413,6 +21443,19 @@ var away;
     * mask, as shown in the following code:</p>
     */
     (function (containers) {
+        /**
+        * Dispatched when any asset finishes parsing. Also see specific events for each
+        * individual asset type (meshes, materials et c.)
+        *
+        * @eventType away3d.events.AssetEvent
+        */
+        //[Event(name="assetComplete", type="away3d.events.AssetEvent")]
+        /**
+        * Dispatched when a full resource (including dependencies) finishes loading.
+        *
+        * @eventType away3d.events.LoaderEvent
+        */
+        //[Event(name="resourceComplete", type="away3d.events.LoaderEvent")]
         var Loader = (function (_super) {
             __extends(Loader, _super);
             /**
@@ -21463,8 +21506,17 @@ var away;
             * handler.</li>
             * </ul>
             */
-            function Loader() {
+            function Loader(useAssetLibrary, assetLibraryId) {
+                if (typeof useAssetLibrary === "undefined") { useAssetLibrary = true; }
+                if (typeof assetLibraryId === "undefined") { assetLibraryId = null; }
                 _super.call(this);
+
+                this._loadingSessions = new Array();
+                this._useAssetLib = useAssetLibrary;
+                this._assetLibId = assetLibraryId;
+
+                this._onResourceCompleteDelegate = away.utils.Delegate.create(this, this.onResourceComplete);
+                this._onAssetCompleteDelegate = away.utils.Delegate.create(this, this.onAssetComplete);
             }
             Object.defineProperty(Loader.prototype, "content", {
                 /**
@@ -21521,6 +21573,21 @@ var away;
             *
             */
             Loader.prototype.close = function () {
+                if (this._useAssetLib) {
+                    var lib;
+                    lib = away.library.AssetLibraryBundle.getInstance(this._assetLibId);
+                    lib.stopAllLoadingSessions();
+                    this._loadingSessions = null;
+                    return;
+                }
+                var i;
+                var length = this._loadingSessions.length;
+                for (i = 0; i < length; i++) {
+                    this.removeListeners(this._loadingSessions[i]);
+                    this._loadingSessions[i].stop();
+                    this._loadingSessions[i] = null;
+                }
+                this._loadingSessions = null;
             };
 
             /**
@@ -21602,6 +21669,12 @@ var away;
             *                properties in the <a
             *                href="../system/LoaderContext.html">LoaderContext</a>
             *                class.</p>
+            * @param ns      An optional namespace string under which the file is to be
+            *                loaded, allowing the differentiation of two resources with
+            *                identical assets.
+            * @param parser  An optional parser object for translating the loaded data
+            *                into a usable resource. If not provided, AssetLoader will
+            *                attempt to auto-detect the file type.
             * @throws IOError               The <code>digest</code> property of the
             *                               <code>request</code> object is not
             *                               <code>null</code>. You should only set the
@@ -21684,8 +21757,30 @@ var away;
             * @event unload        Dispatched by the <code>contentLoaderInfo</code>
             *                      object when a loaded object is removed.
             */
-            Loader.prototype.load = function (request, context) {
+            Loader.prototype.load = function (request, context, ns, parser) {
                 if (typeof context === "undefined") { context = null; }
+                if (typeof ns === "undefined") { ns = null; }
+                if (typeof parser === "undefined") { parser = null; }
+                var token;
+
+                if (this._useAssetLib) {
+                    var lib;
+                    lib = away.library.AssetLibraryBundle.getInstance(this._assetLibId);
+                    token = lib.load(request, context, ns, parser);
+                } else {
+                    var loader = new away.net.AssetLoader();
+                    this._loadingSessions.push(loader);
+                    token = loader.load(request, context, ns, parser);
+                }
+
+                token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this._onResourceCompleteDelegate);
+                token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this._onAssetCompleteDelegate);
+
+                // Error are handled separately (see documentation for addErrorHandler)
+                token._iLoader._iAddErrorHandler(this.onLoadError);
+                token._iLoader._iAddParseErrorHandler(this.onParseError);
+
+                return token;
             };
 
             /**
@@ -21774,8 +21869,30 @@ var away;
             * @event unload        Dispatched by the <code>contentLoaderInfo</code>
             *                      object when a loaded object is removed.
             */
-            Loader.prototype.loadBytes = function (bytes, context) {
+            Loader.prototype.loadData = function (data, context, ns, parser) {
                 if (typeof context === "undefined") { context = null; }
+                if (typeof ns === "undefined") { ns = null; }
+                if (typeof parser === "undefined") { parser = null; }
+                var token;
+
+                if (this._useAssetLib) {
+                    var lib;
+                    lib = away.library.AssetLibraryBundle.getInstance(this._assetLibId);
+                    token = lib.loadData(data, context, ns, parser);
+                } else {
+                    var loader = new away.net.AssetLoader();
+                    this._loadingSessions.push(loader);
+                    token = loader.loadData(data, '', context, ns, parser);
+                }
+
+                token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this._onResourceCompleteDelegate);
+                token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this._onAssetCompleteDelegate);
+
+                // Error are handled separately (see documentation for addErrorHandler)
+                token._iLoader._iAddErrorHandler(this.onLoadError);
+                token._iLoader._iAddParseErrorHandler(this.onParseError);
+
+                return token;
             };
 
             /**
@@ -21802,6 +21919,80 @@ var away;
             *
             */
             Loader.prototype.unload = function () {
+                //TODO
+            };
+
+            /**
+            * Enables a specific parser.
+            * When no specific parser is set for a loading/parsing opperation,
+            * loader3d can autoselect the correct parser to use.
+            * A parser must have been enabled, to be considered when autoselecting the parser.
+            *
+            * @param parserClass The parser class to enable.
+            * @see away.parsers.Parsers
+            */
+            Loader.enableParser = function (parserClass) {
+                away.net.AssetLoader.enableParser(parserClass);
+            };
+
+            /**
+            * Enables a list of parsers.
+            * When no specific parser is set for a loading/parsing opperation,
+            * loader3d can autoselect the correct parser to use.
+            * A parser must have been enabled, to be considered when autoselecting the parser.
+            *
+            * @param parserClasses A Vector of parser classes to enable.
+            * @see away.parsers.Parsers
+            */
+            Loader.enableParsers = function (parserClasses) {
+                away.net.AssetLoader.enableParsers(parserClasses);
+            };
+
+            Loader.prototype.removeListeners = function (dispatcher) {
+                dispatcher.removeEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this._onResourceCompleteDelegate);
+                dispatcher.removeEventListener(away.events.AssetEvent.ASSET_COMPLETE, this._onAssetCompleteDelegate);
+            };
+
+            Loader.prototype.onAssetComplete = function (event) {
+                this.dispatchEvent(event);
+            };
+
+            /**
+            * Called when an error occurs during loading
+            */
+            Loader.prototype.onLoadError = function (event) {
+                if (this.hasEventListener(away.events.IOErrorEvent.IO_ERROR)) {
+                    this.dispatchEvent(event);
+                    return true;
+                } else {
+                    return false;
+                }
+            };
+
+            /**
+            * Called when a an error occurs during parsing
+            */
+            Loader.prototype.onParseError = function (event) {
+                if (this.hasEventListener(away.events.ParserEvent.PARSE_ERROR)) {
+                    this.dispatchEvent(event);
+                    return true;
+                } else {
+                    return false;
+                }
+            };
+
+            /**
+            * Called when the resource and all of its dependencies was retrieved.
+            */
+            Loader.prototype.onResourceComplete = function (event) {
+                var content = event.content;
+
+                this._content = content;
+
+                if (content)
+                    this.addChild(content);
+
+                this.dispatchEvent(event);
             };
             return Loader;
         })(away.containers.DisplayObjectContainer);

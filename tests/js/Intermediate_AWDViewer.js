@@ -3,7 +3,7 @@
 /*
 AWD file loading example in Away3d
 Demonstrates:
-How to use the Loader3D object to load an embedded internal awd model.
+How to use the Loader object to load an embedded internal awd model.
 Code by Rob Bateman
 rob@infiniteturtles.co.uk
 http://www.infiniteturtles.co.uk
@@ -31,14 +31,14 @@ var examples;
     var SkeletonClipNode = away.animators.SkeletonClipNode;
     var CrossfadeTransition = away.animators.CrossfadeTransition;
     var PerspectiveProjection = away.projections.PerspectiveProjection;
-    var View3D = away.containers.View;
+    var View = away.containers.View;
     var HoverController = away.controllers.HoverController;
     var AnimationStateEvent = away.events.AnimationStateEvent;
     var AssetEvent = away.events.AssetEvent;
     var Vector3D = away.geom.Vector3D;
     var AssetLibrary = away.library.AssetLibrary;
     var AssetType = away.library.AssetType;
-    var Loader3D = away.containers.Loader3D;
+    var Loader = away.containers.Loader;
     var AWD2Parser = away.parsers.AWDParser;
     var URLRequest = away.net.URLRequest;
     var DefaultRenderer = away.render.DefaultRenderer;
@@ -68,7 +68,7 @@ var examples;
         */
         Intermediate_AWDViewer.prototype.initEngine = function () {
             //create the view
-            this._view = new View3D(new DefaultRenderer());
+            this._view = new View(new DefaultRenderer());
             this._view.backgroundColor = 0x333338;
 
             //create custom lens
@@ -93,7 +93,7 @@ var examples;
             AssetLibrary.enableParser(AWD2Parser);
 
             //kickoff asset loading
-            var loader = new Loader3D();
+            var loader = new Loader();
             loader.addEventListener(AssetEvent.ASSET_COMPLETE, away.utils.Delegate.create(this, this.onAssetComplete));
 
             loader.load(new URLRequest("assets/shambler.awd"));

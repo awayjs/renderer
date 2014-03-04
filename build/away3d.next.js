@@ -13,14 +13,14 @@ var away;
                 _super.call(this, message);
             }
             return AnimationSetError;
-        })(errors.Error);
+        })(away.errors.Error);
         errors.AnimationSetError = AnimationSetError;
     })(away.errors || (away.errors = {}));
     var errors = away.errors;
 })(away || (away = {}));
+///<reference path="../_definitions.ts" />
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts" />
     /**
     * @module away.events
     */
@@ -68,15 +68,15 @@ var away;
             * @param type The type of the MouseEvent3D.
             */
             function MouseEvent3D(type) {
-                _super.call(this, type);
+                _super.call(this, type); //, true, true);
                 // Private.
                 this._iAllowedToPropagate = true;
             }
             Object.defineProperty(MouseEvent3D.prototype, "bubbles", {
-                get: /**
+                /**
                 * @inheritDoc
                 */
-                function () {
+                get: function () {
                     var doesBubble = this._iAllowedToPropagate;
                     this._iAllowedToPropagate = true;
 
@@ -143,10 +143,10 @@ var away;
             };
 
             Object.defineProperty(MouseEvent3D.prototype, "scenePosition", {
-                get: /**
+                /**
                 * The position in scene space where the event took place
                 */
-                function () {
+                get: function () {
                     if (this.object instanceof away.containers.DisplayObjectContainer) {
                         var objContainer = this.object;
                         return objContainer.sceneTransform.transformVector(this.localPosition);
@@ -159,10 +159,10 @@ var away;
             });
 
             Object.defineProperty(MouseEvent3D.prototype, "sceneNormal", {
-                get: /**
+                /**
                 * The normal in scene space where the event took place
                 */
-                function () {
+                get: function () {
                     if (this.object instanceof away.containers.DisplayObjectContainer) {
                         var objContainer = this.object;
                         var sceneNormal = objContainer.sceneTransform.deltaTransformVector(this.localNormal);
@@ -201,14 +201,14 @@ var away;
 
             MouseEvent3D.MOUSE_WHEEL = "mouseWheel3d";
             return MouseEvent3D;
-        })(events.Event);
+        })(away.events.Event);
         events.MouseEvent3D = MouseEvent3D;
     })(away.events || (away.events = {}));
     var events = away.events;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (events) {
         /**
         * Dispatched to notify changes in an animation state's state.
@@ -230,10 +230,10 @@ var away;
                 this._animationNode = animationNode;
             }
             Object.defineProperty(AnimationStateEvent.prototype, "animator", {
-                get: /**
+                /**
                 * The animator object that is the subject of this event.
                 */
-                function () {
+                get: function () {
                     return this._animator;
                 },
                 enumerable: true,
@@ -241,10 +241,10 @@ var away;
             });
 
             Object.defineProperty(AnimationStateEvent.prototype, "animationState", {
-                get: /**
+                /**
                 * The animation state object that is the subject of this event.
                 */
-                function () {
+                get: function () {
                     return this._animationState;
                 },
                 enumerable: true,
@@ -252,10 +252,10 @@ var away;
             });
 
             Object.defineProperty(AnimationStateEvent.prototype, "animationNode", {
-                get: /**
+                /**
                 * The animation node inside the animation state from which the event originated.
                 */
-                function () {
+                get: function () {
                     return this._animationNode;
                 },
                 enumerable: true,
@@ -274,14 +274,14 @@ var away;
 
             AnimationStateEvent.TRANSITION_COMPLETE = "transitionComplete";
             return AnimationStateEvent;
-        })(events.Event);
+        })(away.events.Event);
         events.AnimationStateEvent = AnimationStateEvent;
     })(away.events || (away.events = {}));
     var events = away.events;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (events) {
         /**
         * Dispatched to notify changes in an animator's state.
@@ -320,7 +320,7 @@ var away;
 
             AnimatorEvent.CYCLE_COMPLETE = "cycle_complete";
             return AnimatorEvent;
-        })(events.Event);
+        })(away.events.Event);
         events.AnimatorEvent = AnimatorEvent;
     })(away.events || (away.events = {}));
     var events = away.events;
@@ -368,10 +368,10 @@ var away;
                 this._subGeometry = subGeometry;
             }
             Object.defineProperty(GeometryEvent.prototype, "subGeometry", {
-                get: /**
+                /**
                 * The SubGeometry object that is the subject of this event, if appropriate.
                 */
-                function () {
+                get: function () {
                     return this._subGeometry;
                 },
                 enumerable: true,
@@ -396,9 +396,9 @@ var away;
     })(away.events || (away.events = {}));
     var events = away.events;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     /**
     * @module away.base
     */
@@ -433,7 +433,7 @@ var away;
                 this._uvTransform = new away.geom.UVTransform(this);
             }
             Object.defineProperty(SubMesh.prototype, "animator", {
-                get: //TODO test shader picking
+                //TODO test shader picking
                 //		public get shaderPickingDetails():boolean
                 //		{
                 //
@@ -442,7 +442,7 @@ var away;
                 /**
                 * The animator object that provides the state for the SubMesh's animation.
                 */
-                function () {
+                get: function () {
                     return this._parentMesh.animator;
                 },
                 enumerable: true,
@@ -450,10 +450,10 @@ var away;
             });
 
             Object.defineProperty(SubMesh.prototype, "material", {
-                get: /**
+                /**
                 * The material used to render the current SubMesh. If set to null, its parent Mesh's material will be used instead.
                 */
-                function () {
+                get: function () {
                     return this._iMaterial || this._parentMesh.material;
                 },
                 set: function (value) {
@@ -471,10 +471,10 @@ var away;
 
 
             Object.defineProperty(SubMesh.prototype, "sceneTransform", {
-                get: /**
+                /**
                 * The scene transform object that transforms from model to world space.
                 */
-                function () {
+                get: function () {
                     return this._parentMesh.sceneTransform;
                 },
                 enumerable: true,
@@ -482,10 +482,10 @@ var away;
             });
 
             Object.defineProperty(SubMesh.prototype, "sourceEntity", {
-                get: /**
+                /**
                 * The entity that that initially provided the IRenderable to the render pipeline (ie: the owning Mesh object).
                 */
-                function () {
+                get: function () {
                     return this._parentMesh;
                 },
                 enumerable: true,
@@ -493,14 +493,14 @@ var away;
             });
 
             Object.defineProperty(SubMesh.prototype, "subGeometry", {
-                get: /**
+                /**
                 * The SubGeometry object which provides the geometry data for this SubMesh.
                 */
-                function () {
+                get: function () {
                     return this._subGeometry;
                 },
                 set: function (value) {
-                    this._subGeometry = value;
+                    this._subGeometry = value; //TODO remove setter
                 },
                 enumerable: true,
                 configurable: true
@@ -508,10 +508,10 @@ var away;
 
 
             Object.defineProperty(SubMesh.prototype, "uvTransform", {
-                get: /**
+                /**
                 *
                 */
-                function () {
+                get: function () {
                     return this._uvTransform;
                 },
                 enumerable: true,
@@ -563,9 +563,9 @@ var away;
     })(away.base || (away.base = {}));
     var base = away.base;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (base) {
         var Segment = (function () {
             function Segment(start, end, anchor, colorStart, colorEnd, thickness) {
@@ -729,9 +729,9 @@ var away;
     })(away.base || (away.base = {}));
     var base = away.base;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     /**
     * @module away.base
     */
@@ -759,12 +759,12 @@ var away;
                 this._uvsDirty = true;
             }
             Object.defineProperty(SubGeometryBase.prototype, "autoGenerateDummyUVs", {
-                get: /**
+                /**
                 * Defines whether a UV buffer should be automatically generated to contain dummy UV coordinates.
                 * Set to true if a geometry lacks UV data but uses a material that requires it, or leave as false
                 * in cases where UV data is explicitly defined or the material does not require UV data.
                 */
-                function () {
+                get: function () {
                     return this._autoGenerateUVs;
                 },
                 set: function (value) {
@@ -777,11 +777,11 @@ var away;
 
 
             Object.defineProperty(SubGeometryBase.prototype, "autoDeriveVertexNormals", {
-                get: /**
+                /**
                 * True if the vertex normals should be derived from the geometry, false if the vertex normals are set
                 * explicitly.
                 */
-                function () {
+                get: function () {
                     return this._autoDeriveVertexNormals;
                 },
                 set: function (value) {
@@ -794,10 +794,10 @@ var away;
 
 
             Object.defineProperty(SubGeometryBase.prototype, "useFaceWeights", {
-                get: /**
+                /**
                 * Indicates whether or not to take the size of faces into account when auto-deriving vertex normals and tangents.
                 */
-                function () {
+                get: function () {
                     return this._useFaceWeights;
                 },
                 set: function (value) {
@@ -819,10 +819,10 @@ var away;
 
 
             Object.defineProperty(SubGeometryBase.prototype, "numTriangles", {
-                get: /**
+                /**
                 * The total amount of triangles in the SubGeometry.
                 */
-                function () {
+                get: function () {
                     return this._numTriangles;
                 },
                 enumerable: true,
@@ -879,7 +879,7 @@ var away;
                 var texOffset = this.UVOffset;
 
                 if (this._faceTangents == null) {
-                    this._faceTangents = new Array(this._indices.length);
+                    this._faceTangents = new Array(this._indices.length); //||= new Vector.<Number>(_indices.length, true);
                 }
 
                 while (i < len) {
@@ -942,12 +942,12 @@ var away;
                 var posOffset = this.vertexOffset;
 
                 if (this._faceNormals == null) {
-                    this._faceNormals = new Array(len);
+                    this._faceNormals = new Array(len); //_faceNormals ||= new Vector.<Number>(len, true);
                 }
 
                 if (this._useFaceWeights) {
                     if (this._faceWeights == null) {
-                        this._faceWeights = new Array(len / 3);
+                        this._faceWeights = new Array(len / 3); //_faceWeights ||= new Vector.<Number>(len/3, true);
                     }
                 }
 
@@ -975,6 +975,7 @@ var away;
                     cz = dy1 * dx2 - dx1 * dy2;
                     d = Math.sqrt(cx * cx + cy * cy + cz * cz);
 
+                    // length of cross product = 2*triangle area
                     if (this._useFaceWeights) {
                         var w = d * 10000;
 
@@ -1012,7 +1013,7 @@ var away;
                 var normalOffset = this.vertexNormalOffset;
 
                 if (target == null) {
-                    target = new Array(lenV);
+                    target = new Array(lenV); //target ||= new Vector.<Number>(lenV, true);
                 }
 
                 v1 = normalOffset;
@@ -1080,7 +1081,7 @@ var away;
                 var tangentOffset = this.vertexTangentOffset;
 
                 if (target == null) {
-                    target = new Array(lenV);
+                    target = new Array(lenV); //target ||= new Vector.<Number>(lenV, true);
                 }
 
                 i = tangentOffset;
@@ -1150,12 +1151,12 @@ var away;
             };
 
             Object.defineProperty(SubGeometryBase.prototype, "indexData", {
-                get: /**
+                /**
                 * The raw index data that define the faces.
                 *
                 * @private
                 */
-                function () {
+                get: function () {
                     return this._indices;
                 },
                 enumerable: true,
@@ -1166,7 +1167,7 @@ var away;
             * Updates the face indices of the SubGeometry.
             * @param indices The face indices to upload.
             */
-            SubGeometryBase.prototype.updateIndexData = function (indices/*uint*/ ) {
+            SubGeometryBase.prototype.updateIndexData = function (indices /*uint*/ ) {
                 this._indices = indices;
                 this._numIndices = indices.length;
 
@@ -1216,11 +1217,11 @@ var away;
             };
 
             Object.defineProperty(SubGeometryBase.prototype, "autoDeriveVertexTangents", {
-                get: /**
+                /**
                 * True if the vertex tangents should be derived from the geometry, false if the vertex normals are set
                 * explicitly.
                 */
-                function () {
+                get: function () {
                     return this._autoDeriveVertexTangents;
                 },
                 set: function (value) {
@@ -1233,12 +1234,12 @@ var away;
 
 
             Object.defineProperty(SubGeometryBase.prototype, "faceNormals", {
-                get: /**
+                /**
                 * The raw data of the face normals, in the same order as the faces are listed in the index list.
                 *
                 * @private
                 */
-                function () {
+                get: function () {
                     if (this._faceNormalsDirty) {
                         this.updateFaceNormals();
                     }
@@ -1371,12 +1372,12 @@ var away;
             };
 
             Object.defineProperty(SubGeometryBase.prototype, "parentGeometry", {
-                get: /**
+                /**
                 * The Geometry object that 'owns' this SubGeometry object.
                 *
                 * @private
                 */
-                function () {
+                get: function () {
                     return this._parentGeometry;
                 },
                 set: function (value) {
@@ -1388,12 +1389,12 @@ var away;
 
 
             Object.defineProperty(SubGeometryBase.prototype, "scaleU", {
-                get: /**
+                /**
                 * Scales the uv coordinates
                 * @param scaleU The amount by which to scale on the u axis. Default is 1;
                 * @param scaleV The amount by which to scale on the v axis. Default is 1;
                 */
-                function () {
+                get: function () {
                     return this._scaleU;
                 },
                 enumerable: true,
@@ -1488,6 +1489,7 @@ var away;
                     vertices[i2] = vector.z;
                     vi0 += posStride;
 
+                    // bake normal
                     if (bakeNormals) {
                         i1 = ni0 + 1;
                         i2 = ni0 + 2;
@@ -1502,6 +1504,7 @@ var away;
                         ni0 += normalStride;
                     }
 
+                    // bake tangent
                     if (bakeTangents) {
                         i1 = ti0 + 1;
                         i2 = ti0 + 2;
@@ -1553,9 +1556,10 @@ var away;
     })(away.base || (away.base = {}));
     var base = away.base;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     /**
     * @module away.base
     */
@@ -1937,7 +1941,7 @@ var away;
             };
 
             CompactSubGeometry.prototype.cloneWithSeperateBuffers = function () {
-                var clone = new base.SubGeometry();
+                var clone = new away.base.SubGeometry();
 
                 clone.updateVertexData(this._isolatedVertexPositionData ? this._isolatedVertexPositionData : this._isolatedVertexPositionData = this.stripBuffer(0, 3));
                 clone.autoDeriveVertexNormals = this._autoDeriveVertexNormals;
@@ -2062,14 +2066,14 @@ var away;
                 this.updateData(data);
             };
             return CompactSubGeometry;
-        })(base.SubGeometryBase);
+        })(away.base.SubGeometryBase);
         base.CompactSubGeometry = CompactSubGeometry;
     })(away.base || (away.base = {}));
     var base = away.base;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     /**
     * @module away.base
     */
@@ -2101,10 +2105,10 @@ var away;
                 this._bufferFormat = "float" + this._jointsPerVertex;
             }
             Object.defineProperty(SkinnedSubGeometry.prototype, "condensedIndexLookUp", {
-                get: /**
+                /**
                 * If indices have been condensed, this will contain the original index for each condensed index.
                 */
-                function () {
+                get: function () {
                     return this._condensedIndexLookUp;
                 },
                 enumerable: true,
@@ -2112,10 +2116,10 @@ var away;
             });
 
             Object.defineProperty(SkinnedSubGeometry.prototype, "numCondensedJoints", {
-                get: /**
+                /**
                 * The amount of joints used when joint indices have been condensed.
                 */
-                function () {
+                get: function () {
                     return this._numCondensedJoints;
                 },
                 enumerable: true,
@@ -2123,10 +2127,10 @@ var away;
             });
 
             Object.defineProperty(SkinnedSubGeometry.prototype, "animatedData", {
-                get: /**
+                /**
                 * The animated vertex positions when set explicitly if the skinning transformations couldn't be performed on GPU.
                 */
-                function () {
+                get: function () {
                     return this._animatedData || this._vertexData.concat();
                 },
                 enumerable: true,
@@ -2231,6 +2235,7 @@ var away;
                 for (var i = 0; i < len; ++i) {
                     oldIndex = this._jointIndexData[i];
 
+                    // if we encounter a new index, assign it a new condensed index
                     if (dic[oldIndex] == undefined) {
                         dic[oldIndex] = newIndex;
                         this._condensedIndexLookUp[newIndex++] = oldIndex;
@@ -2245,10 +2250,10 @@ var away;
             };
 
             Object.defineProperty(SkinnedSubGeometry.prototype, "iJointWeightsData", {
-                get: /**
+                /**
                 * The raw joint weights data.
                 */
-                function () {
+                get: function () {
                     return this._jointWeightsData;
                 },
                 enumerable: true,
@@ -2266,10 +2271,10 @@ var away;
             };
 
             Object.defineProperty(SkinnedSubGeometry.prototype, "iJointIndexData", {
-                get: /**
+                /**
                 * The raw joint index data.
                 */
-                function () {
+                get: function () {
                     return this._jointIndexData;
                 },
                 enumerable: true,
@@ -2281,14 +2286,14 @@ var away;
                 this.pInvalidateBuffers(this._jointIndicesInvalid);
             };
             return SkinnedSubGeometry;
-        })(base.CompactSubGeometry);
+        })(away.base.CompactSubGeometry);
         base.SkinnedSubGeometry = SkinnedSubGeometry;
     })(away.base || (away.base = {}));
     var base = away.base;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     /**
     * @module away.base
     */
@@ -2315,7 +2320,7 @@ var away;
             function Geometry() {
                 _super.call(this);
 
-                this._subGeometries = new Array();
+                this._subGeometries = new Array(); //Vector.<ISubGeometry>();
             }
             Object.defineProperty(Geometry.prototype, "assetType", {
                 get: function () {
@@ -2326,10 +2331,10 @@ var away;
             });
 
             Object.defineProperty(Geometry.prototype, "subGeometries", {
-                get: /**
+                /**
                 * A collection of SubGeometry objects, each of which contain geometrical data such as vertices, normals, etc.
                 */
-                function () {
+                get: function () {
                     return this._subGeometries;
                 },
                 enumerable: true,
@@ -2478,9 +2483,9 @@ var away;
     })(away.base || (away.base = {}));
     var base = away.base;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     /**
     * @module away.base
     */
@@ -2494,14 +2499,14 @@ var away;
                 _super.apply(this, arguments);
             }
             return ParticleGeometry;
-        })(base.Geometry);
+        })(away.base.Geometry);
         base.ParticleGeometry = ParticleGeometry;
     })(away.base || (away.base = {}));
     var base = away.base;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     /**
     * @module away.base
     */
@@ -2543,10 +2548,10 @@ var away;
                 this._vertexTangentBufferContext = new Array(8);
             }
             Object.defineProperty(SubGeometry.prototype, "numVertices", {
-                get: /**
+                /**
                 * The total amount of vertices in the SubGeometry.
                 */
-                function () {
+                get: function () {
                     return this._numVertices;
                 },
                 enumerable: true,
@@ -2755,10 +2760,10 @@ var away;
             };
 
             Object.defineProperty(SubGeometry.prototype, "vertexData", {
-                get: /**
+                /**
                 * The raw vertex position data.
                 */
-                function () {
+                get: function () {
                     return this._vertexData;
                 },
                 enumerable: true,
@@ -2796,14 +2801,14 @@ var away;
 
                 this._numVertices = numVertices;
                 this.pInvalidateBuffers(this._verticesInvalid);
-                this.pInvalidateBounds();
+                this.pInvalidateBounds(); //invalidateBounds();
             };
 
             Object.defineProperty(SubGeometry.prototype, "UVData", {
-                get: /**
+                /**
                 * The raw texture coordinate data.
                 */
-                function () {
+                get: function () {
                     if (this._uvsDirty && this._autoGenerateUVs) {
                         this._uvs = this.pUpdateDummyUVs(this._uvs);
                     }
@@ -2827,6 +2832,7 @@ var away;
             * @param uvs The uv coordinates to upload.
             */
             SubGeometry.prototype.updateUVData = function (uvs) {
+                // normals don't get dirty from this
                 if (this._autoDeriveVertexTangents) {
                     this._vertexTangentsDirty = true;
                 }
@@ -2842,10 +2848,10 @@ var away;
             };
 
             Object.defineProperty(SubGeometry.prototype, "vertexNormalData", {
-                get: /**
+                /**
                 * The raw vertex normal data.
                 */
-                function () {
+                get: function () {
                     if (this._autoDeriveVertexNormals && this._vertexNormalsDirty) {
                         this._vertexNormals = this.pUpdateVertexNormals(this._vertexNormals);
                     }
@@ -2869,12 +2875,12 @@ var away;
             };
 
             Object.defineProperty(SubGeometry.prototype, "vertexTangentData", {
-                get: /**
+                /**
                 * The raw vertex tangent data.
                 *
                 * @private
                 */
-                function () {
+                get: function () {
                     if (this._autoDeriveVertexTangents && this._vertexTangentsDirty) {
                         this._vertexTangents = this.pUpdateVertexTangents(this._vertexTangents);
                     }
@@ -3036,14 +3042,14 @@ var away;
                 return obj;
             };
             return SubGeometry;
-        })(base.SubGeometryBase);
+        })(away.base.SubGeometryBase);
         base.SubGeometry = SubGeometry;
     })(away.base || (away.base = {}));
     var base = away.base;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     /**
     * @module away.base
     */
@@ -3098,10 +3104,10 @@ var away;
             });
 
             Object.defineProperty(SegmentSubGeometry.prototype, "segmentCount", {
-                get: /**
+                /**
                 *
                 */
-                function () {
+                get: function () {
                     return this._indexSegments;
                 },
                 enumerable: true,
@@ -3109,10 +3115,10 @@ var away;
             });
 
             Object.defineProperty(SegmentSubGeometry.prototype, "iSubSetCount", {
-                get: /**
+                /**
                 *
                 */
-                function () {
+                get: function () {
                     return this._subSetCount;
                 },
                 enumerable: true,
@@ -3120,10 +3126,10 @@ var away;
             });
 
             Object.defineProperty(SegmentSubGeometry.prototype, "numVertices", {
-                get: /**
+                /**
                 * The total amount of vertices in the SubGeometry.
                 */
-                function () {
+                get: function () {
                     return this._numVertices;
                 },
                 enumerable: true,
@@ -3244,10 +3250,10 @@ var away;
             };
 
             Object.defineProperty(SegmentSubGeometry.prototype, "vertexData", {
-                get: /**
+                /**
                 * The raw vertex position data.
                 */
-                function () {
+                get: function () {
                     return this._vertexData;
                 },
                 enumerable: true,
@@ -3285,7 +3291,7 @@ var away;
 
                 this._numVertices = numVertices;
                 this.pInvalidateBuffers(this._verticesInvalid);
-                this.pInvalidateBounds();
+                this.pInvalidateBounds(); //invalidateBounds();
             };
 
             SegmentSubGeometry.prototype.fromVectors = function (vertices, uvs, normals, tangents) {
@@ -3456,7 +3462,7 @@ var away;
 
                 if (this._pSegments[index])
                     segRef = this._pSegments[index];
-else
+                else
                     return;
 
                 var subSet;
@@ -3527,7 +3533,7 @@ else
                 for (var segRef in this._pSegments)
                     segRef = null;
 
-                this._pSegments = null;
+                this._pSegments = null; //WHY?
                 this._subSetCount = 0;
                 this._activeSubSet = null;
                 this._indexSegments = 0;
@@ -3585,19 +3591,19 @@ else
                         v = vertices[index++];
                         if (v < minX)
                             minX = v;
-else if (v > maxX)
+                        else if (v > maxX)
                             maxX = v;
 
                         v = vertices[index++];
                         if (v < minY)
                             minY = v;
-else if (v > maxY)
+                        else if (v > maxY)
                             maxY = v;
 
                         v = vertices[index++];
                         if (v < minZ)
                             minZ = v;
-else if (v > maxZ)
+                        else if (v > maxZ)
                             maxZ = v;
 
                         index += 8;
@@ -3736,7 +3742,7 @@ else if (v > maxZ)
                 }
             };
             return SegmentSubGeometry;
-        })(base.SubGeometryBase);
+        })(away.base.SubGeometryBase);
         base.SegmentSubGeometry = SegmentSubGeometry;
 
         var SegRef = (function () {
@@ -3761,9 +3767,9 @@ else if (v > maxZ)
     })(away.base || (away.base = {}));
     var base = away.base;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     /**
     * @module away.pool
     */
@@ -3797,9 +3803,9 @@ var away;
     })(away.pool || (away.pool = {}));
     var pool = away.pool;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     /**
     * @module away.pool
     */
@@ -3824,14 +3830,14 @@ var away;
                 this.subGeometry = BillboardRenderable._geometry;
             }
             return BillboardRenderable;
-        })(pool.RenderableBase);
+        })(away.pool.RenderableBase);
         pool.BillboardRenderable = BillboardRenderable;
     })(away.pool || (away.pool = {}));
     var pool = away.pool;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     /**
     * @module away.pool
     */
@@ -3845,14 +3851,14 @@ var away;
                 _super.call(this, pool, segmentSet, segmentSet, segmentSet.subGeometry, null);
             }
             return SegmentSetRenderable;
-        })(pool.RenderableBase);
+        })(away.pool.RenderableBase);
         pool.SegmentSetRenderable = SegmentSetRenderable;
     })(away.pool || (away.pool = {}));
     var pool = away.pool;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     /**
     * @module away.pool
     */
@@ -3868,14 +3874,14 @@ var away;
                 this.subMesh = subMesh;
             }
             return SubMeshRenderable;
-        })(pool.RenderableBase);
+        })(away.pool.RenderableBase);
         pool.SubMeshRenderable = SubMeshRenderable;
     })(away.pool || (away.pool = {}));
     var pool = away.pool;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     /**
     * @module away.pool
     */
@@ -3897,14 +3903,14 @@ var away;
                 this.subGeometry = SkyboxRenderable._geometry;
             }
             return SkyboxRenderable;
-        })(pool.RenderableBase);
+        })(away.pool.RenderableBase);
         pool.SkyboxRenderable = SkyboxRenderable;
     })(away.pool || (away.pool = {}));
     var pool = away.pool;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     /**
     * @module away.traverse
     */
@@ -3918,10 +3924,10 @@ var away;
                 this._pEntityListItemPool = new away.pool.EntityListItemPool();
             }
             Object.defineProperty(RenderableCollectorBase.prototype, "camera", {
-                get: /**
+                /**
                 *
                 */
-                function () {
+                get: function () {
                     return this._pCamera;
                 },
                 set: function (value) {
@@ -3934,10 +3940,10 @@ var away;
 
 
             Object.defineProperty(RenderableCollectorBase.prototype, "cullPlanes", {
-                get: /**
+                /**
                 *
                 */
-                function () {
+                get: function () {
                     return this._customCullPlanes;
                 },
                 set: function (value) {
@@ -3949,10 +3955,10 @@ var away;
 
 
             Object.defineProperty(RenderableCollectorBase.prototype, "entityHead", {
-                get: /**
+                /**
                 *
                 */
-                function () {
+                get: function () {
                     return this._pEntityHead;
                 },
                 enumerable: true,
@@ -3999,9 +4005,9 @@ var away;
     })(away.traverse || (away.traverse = {}));
     var traverse = away.traverse;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     /**
     * @module away.traverse
     */
@@ -4026,10 +4032,10 @@ var away;
                 this._lightProbes = new Array();
             }
             Object.defineProperty(EntityCollector.prototype, "directionalLights", {
-                get: /**
+                /**
                 *
                 */
-                function () {
+                get: function () {
                     return this._directionalLights;
                 },
                 enumerable: true,
@@ -4037,10 +4043,10 @@ var away;
             });
 
             Object.defineProperty(EntityCollector.prototype, "lightProbes", {
-                get: /**
+                /**
                 *
                 */
-                function () {
+                get: function () {
                     return this._lightProbes;
                 },
                 enumerable: true,
@@ -4048,10 +4054,10 @@ var away;
             });
 
             Object.defineProperty(EntityCollector.prototype, "lights", {
-                get: /**
+                /**
                 *
                 */
-                function () {
+                get: function () {
                     return this._pLights;
                 },
                 enumerable: true,
@@ -4059,10 +4065,10 @@ var away;
             });
 
             Object.defineProperty(EntityCollector.prototype, "numEntities", {
-                get: /**
+                /**
                 *
                 */
-                function () {
+                get: function () {
                     return this._pNumEntities;
                 },
                 enumerable: true,
@@ -4070,10 +4076,10 @@ var away;
             });
 
             Object.defineProperty(EntityCollector.prototype, "numInteractiveEntities", {
-                get: /**
+                /**
                 *
                 */
-                function () {
+                get: function () {
                     return this._pNumInteractiveEntities;
                 },
                 enumerable: true,
@@ -4081,10 +4087,10 @@ var away;
             });
 
             Object.defineProperty(EntityCollector.prototype, "pointLights", {
-                get: /**
+                /**
                 *
                 */
-                function () {
+                get: function () {
                     return this._pointLights;
                 },
                 enumerable: true,
@@ -4092,10 +4098,10 @@ var away;
             });
 
             Object.defineProperty(EntityCollector.prototype, "skyBox", {
-                get: /**
+                /**
                 *
                 */
-                function () {
+                get: function () {
                     return this._pSkybox;
                 },
                 enumerable: true,
@@ -4118,9 +4124,9 @@ var away;
 
                     if (entity instanceof away.lights.DirectionalLight)
                         this._directionalLights[this._numDirectionalLights++] = entity;
-else if (entity instanceof away.lights.PointLight)
+                    else if (entity instanceof away.lights.PointLight)
                         this._pointLights[this._numPointLights++] = entity;
-else if (entity instanceof away.lights.LightProbe)
+                    else if (entity instanceof away.lights.LightProbe)
                         this._lightProbes[this._numLightProbes++] = entity;
                 }
             };
@@ -4147,14 +4153,14 @@ else if (entity instanceof away.lights.LightProbe)
                     this._lightProbes.length = this._numLightProbes = 0;
             };
             return EntityCollector;
-        })(traverse.RenderableCollectorBase);
+        })(away.traverse.RenderableCollectorBase);
         traverse.EntityCollector = EntityCollector;
     })(away.traverse || (away.traverse = {}));
     var traverse = away.traverse;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     /**
     * @module away.traverse
     */
@@ -4182,14 +4188,14 @@ var away;
                 return _super.prototype.enterNode.call(this, node);
             };
             return ShadowCasterCollector;
-        })(traverse.RenderableCollectorBase);
+        })(away.traverse.RenderableCollectorBase);
         traverse.ShadowCasterCollector = ShadowCasterCollector;
     })(away.traverse || (away.traverse = {}));
     var traverse = away.traverse;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     /**
     * @module away.traverse
     */
@@ -4215,10 +4221,10 @@ var away;
                 this._iCollectionMark = 0;
             }
             Object.defineProperty(RaycastCollector.prototype, "rayPosition", {
-                get: /**
+                /**
                 * Provides the starting position of the ray.
                 */
-                function () {
+                get: function () {
                     return this._rayPosition;
                 },
                 set: function (value) {
@@ -4230,10 +4236,10 @@ var away;
 
 
             Object.defineProperty(RaycastCollector.prototype, "rayDirection", {
-                get: /**
+                /**
                 * Provides the direction vector of the ray.
                 */
-                function () {
+                get: function () {
                     return this._rayDirection;
                 },
                 set: function (value) {
@@ -4253,14 +4259,14 @@ var away;
                 return node.isIntersectingRay(this._rayPosition, this._rayDirection);
             };
             return RaycastCollector;
-        })(traverse.RenderableCollectorBase);
+        })(away.traverse.RenderableCollectorBase);
         traverse.RaycastCollector = RaycastCollector;
     })(away.traverse || (away.traverse = {}));
     var traverse = away.traverse;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     /**
     * @module away.partition
     */
@@ -4295,14 +4301,14 @@ var away;
                 return false;
             };
             return DirectionalLightNode;
-        })(partition.EntityNode);
+        })(away.partition.EntityNode);
         partition.DirectionalLightNode = DirectionalLightNode;
     })(away.partition || (away.partition = {}));
     var partition = away.partition;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     /**
     * @module away.partition
     */
@@ -4337,14 +4343,14 @@ var away;
                 return false;
             };
             return LightProbeNode;
-        })(partition.EntityNode);
+        })(away.partition.EntityNode);
         partition.LightProbeNode = LightProbeNode;
     })(away.partition || (away.partition = {}));
     var partition = away.partition;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     /**
     * @module away.partition
     */
@@ -4379,14 +4385,14 @@ var away;
                 return false;
             };
             return PointLightNode;
-        })(partition.EntityNode);
+        })(away.partition.EntityNode);
         partition.PointLightNode = PointLightNode;
     })(away.partition || (away.partition = {}));
     var partition = away.partition;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     /**
     * @module away.partition
     */
@@ -4421,14 +4427,14 @@ var away;
                 return true;
             };
             return SkyboxNode;
-        })(partition.EntityNode);
+        })(away.partition.EntityNode);
         partition.SkyboxNode = SkyboxNode;
     })(away.partition || (away.partition = {}));
     var partition = away.partition;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     /**
     * @module away.pick
     */
@@ -4441,7 +4447,7 @@ var away;
         var PickingColliderBase = (function () {
             function PickingColliderBase() {
             }
-            PickingColliderBase.prototype._pPetCollisionNormal = function (indexData/*uint*/ , vertexData, triangleIndex) {
+            PickingColliderBase.prototype._pPetCollisionNormal = function (indexData /*uint*/ , vertexData, triangleIndex) {
                 var normal = new away.geom.Vector3D();
                 var i0 = indexData[triangleIndex] * 3;
                 var i1 = indexData[triangleIndex + 1] * 3;
@@ -4456,7 +4462,7 @@ var away;
                 return normal;
             };
 
-            PickingColliderBase.prototype._pGetCollisionUV = function (indexData/*uint*/ , uvData, triangleIndex, v, w, u, uvOffset, uvStride) {
+            PickingColliderBase.prototype._pGetCollisionUV = function (indexData /*uint*/ , uvData, triangleIndex, v, w, u, uvOffset, uvStride) {
                 var uv = new away.geom.Point();
                 var uIndex = indexData[triangleIndex] * uvStride + uvOffset;
                 var uv0 = new away.geom.Vector3D(uvData[uIndex], uvData[uIndex + 1]);
@@ -4486,9 +4492,9 @@ var away;
     })(away.pick || (away.pick = {}));
     var pick = away.pick;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     /**
     * @module away.pick
     */
@@ -4537,7 +4543,7 @@ var away;
                 var vertexData = subGeometry.vertexData;
                 var uvData = subGeometry.UVData;
                 var collisionTriangleIndex = -1;
-                var bothSides = (renderable.materialOwner.material).bothSides;
+                var bothSides = renderable.materialOwner.material.bothSides;
 
                 var vertexStride = subGeometry.vertexStride;
                 var vertexOffset = subGeometry.vertexOffset;
@@ -4563,22 +4569,22 @@ var away;
                     p2z = vertexData[(i2 + 2)];
 
                     // evaluate sides and triangle normal
-                    s0x = p1x - p0x;
+                    s0x = p1x - p0x; // s0 = p1 - p0
                     s0y = p1y - p0y;
                     s0z = p1z - p0z;
-                    s1x = p2x - p0x;
+                    s1x = p2x - p0x; // s1 = p2 - p0
                     s1y = p2y - p0y;
                     s1z = p2z - p0z;
-                    nx = s0y * s1z - s0z * s1y;
+                    nx = s0y * s1z - s0z * s1y; // n = s0 x s1
                     ny = s0z * s1x - s0x * s1z;
                     nz = s0x * s1y - s0y * s1x;
-                    nl = 1 / Math.sqrt(nx * nx + ny * ny + nz * nz);
+                    nl = 1 / Math.sqrt(nx * nx + ny * ny + nz * nz); // normalize n
                     nx *= nl;
                     ny *= nl;
                     nz *= nl;
 
                     // -- plane intersection test --
-                    nDotV = nx * this.rayDirection.x + ny * +this.rayDirection.y + nz * this.rayDirection.z;
+                    nDotV = nx * this.rayDirection.x + ny * +this.rayDirection.y + nz * this.rayDirection.z; // rayDirection . normal
                     if ((!bothSides && nDotV < 0.0) || (bothSides && nDotV != 0.0)) {
                         // find collision t
                         D = -(nx * p0x + ny * p0y + nz * p0z);
@@ -4616,6 +4622,8 @@ var away;
                             pickingCollisionVO.uv = this._pGetCollisionUV(indexData, uvData, index, v, w, u, uvOffset, uvStride);
                             pickingCollisionVO.index = index;
 
+                            //						pickingCollisionVO.subGeometryIndex = this.pGetMeshSubMeshIndex(renderable);
+                            // if not looking for best hit, first found will do...
                             if (!this._findClosestCollision)
                                 return true;
                         }
@@ -4628,14 +4636,14 @@ var away;
                 return false;
             };
             return JSPickingCollider;
-        })(pick.PickingColliderBase);
+        })(away.pick.PickingColliderBase);
         pick.JSPickingCollider = JSPickingCollider;
     })(away.pick || (away.pick = {}));
     var pick = away.pick;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     /**
     * @module away.pick
     */
@@ -4669,17 +4677,17 @@ var away;
                 this._rayDir = new away.geom.Vector3D();
                 this._shaderPickingDetails = shaderPickingDetails;
 
-                this._id = new Array(4);
-                this._viewportData = new Array(4);
-                this._boundOffsetScale = new Array(8);
+                this._id = new Array(4); //new Vector.<Number>(4, true);
+                this._viewportData = new Array(4); //new Vector.<Number>(4, true); // first 2 contain scale, last 2 translation
+                this._boundOffsetScale = new Array(8); //new Vector.<Number>(8, true); // first 2 contain scale, last 2 translation
                 this._boundOffsetScale[3] = 0;
                 this._boundOffsetScale[7] = 1;
             }
             Object.defineProperty(ShaderPicker.prototype, "onlyMouseEnabled", {
-                get: /**
+                /**
                 * @inheritDoc
                 */
-                function () {
+                get: function () {
                     return this._onlyMouseEnabled;
                 },
                 set: function (value) {
@@ -4700,7 +4708,7 @@ var away;
 
                 var collector = view.iEntityCollector;
 
-                this._stageGL = (view.renderer).stageGL;
+                this._stageGL = view.renderer.stageGL;
 
                 if (!this._stageGL)
                     return null;
@@ -4801,6 +4809,7 @@ var away;
                 var viewProjection = camera.viewProjection;
 
                 while (renderable) {
+                    // it's possible that the renderable was already removed from the scene
                     if (!renderable.sourceEntity.scene || !renderable.sourceEntity._iIsMouseEnabled()) {
                         renderable = renderable.next;
                         continue;
@@ -4808,13 +4817,13 @@ var away;
 
                     this._potentialFound = true;
 
-                    this._context.setCulling((renderable.materialOwner.material).bothSides ? away.gl.ContextGLTriangleFace.NONE : away.gl.ContextGLTriangleFace.BACK);
+                    this._context.setCulling(renderable.materialOwner.material.bothSides ? away.gl.ContextGLTriangleFace.NONE : away.gl.ContextGLTriangleFace.BACK);
 
                     this._interactives[this._interactiveId++] = renderable;
 
                     // color code so that reading from bitmapdata will contain the correct value
-                    this._id[1] = (this._interactiveId >> 8) / 255;
-                    this._id[2] = (this._interactiveId & 0xff) / 255;
+                    this._id[1] = (this._interactiveId >> 8) / 255; // on green channel
+                    this._id[2] = (this._interactiveId & 0xff) / 255; // on blue channel
 
                     matrix.copyFrom(renderable.sourceEntity.getRenderSceneTransform(camera));
                     matrix.append(viewProjection);
@@ -4844,7 +4853,7 @@ var away;
                 this._objectProgram = this._context.createProgram();
 
                 vertexCode = "m44 vt0, va0, vc0			\n" + "mul vt1.xy, vt0.w, vc4.zw	\n" + "add vt0.xy, vt0.xy, vt1.xy	\n" + "mul vt0.xy, vt0.xy, vc4.xy	\n" + "mov op, vt0	\n";
-                fragmentCode = "mov oc, fc0";
+                fragmentCode = "mov oc, fc0"; // write identifier
 
                 away.Debug.throwPIR('ShaderPicker', 'initTriangleProgram', 'Dependency: initObjectProgram');
                 //_objectProgram.upload(new AGALMiniAssembler().assemble(ContextGLProgramType.VERTEX, vertexCode),new AGALMiniAssembler().assemble(ContextGLProgramType.FRAGMENT, fragmentCode));
@@ -4861,7 +4870,7 @@ var away;
 
                 // todo: add animation code
                 vertexCode = "add vt0, va0, vc5 			\n" + "mul vt0, vt0, vc6 			\n" + "mov v0, vt0				\n" + "m44 vt0, va0, vc0			\n" + "mul vt1.xy, vt0.w, vc4.zw	\n" + "add vt0.xy, vt0.xy, vt1.xy	\n" + "mul vt0.xy, vt0.xy, vc4.xy	\n" + "mov op, vt0	\n";
-                fragmentCode = "mov oc, v0";
+                fragmentCode = "mov oc, v0"; // write identifier
 
                 //away.Debug.throwPIR( 'ShaderPicker' , 'initTriangleProgram' , 'Dependency: AGALMiniAssembler')
                 var vertCompiler = new aglsl.AGLSLCompiler();
@@ -4971,6 +4980,7 @@ var away;
                     y3 = vertices[t3 + 1];
                     z3 = vertices[t3 + 2];
 
+                    // if within bounds
                     if (!((x < x1 && x < x2 && x < x3) || (y < y1 && y < y2 && y < y3) || (z < z1 && z < z2 && z < z3) || (x > x1 && x > x2 && x > x3) || (y > y1 && y > y2 && y > y3) || (z > z1 && z > z2 && z > z3))) {
                         // calculate barycentric coords for approximated position
                         v0x = x3 - x1;
@@ -4991,6 +5001,7 @@ var away;
                         s = (dot11 * dot02 - dot01 * dot12) * invDenom;
                         t = (dot00 * dot12 - dot01 * dot02) * invDenom;
 
+                        // if inside the current triangle, fetch details hit information
                         if (s >= 0 && t >= 0 && (s + t) <= 1) {
                             // this is def the triangle, now calculate precise coords
                             this.getPrecisePosition(this._hitRenderable.sourceEntity.inverseSceneTransform, normals[i], normals[i + 1], normals[i + 2], x1, y1, z1);
@@ -4999,16 +5010,16 @@ var away;
                             v2y = this._localHitPosition.y - y1;
                             v2z = this._localHitPosition.z - z1;
 
-                            s0x = x2 - x1;
+                            s0x = x2 - x1; // s0 = p1 - p0
                             s0y = y2 - y1;
                             s0z = z2 - z1;
-                            s1x = x3 - x1;
+                            s1x = x3 - x1; // s1 = p2 - p0
                             s1y = y3 - y1;
                             s1z = z3 - z1;
-                            this._localHitNormal.x = s0y * s1z - s0z * s1y;
+                            this._localHitNormal.x = s0y * s1z - s0z * s1y; // n = s0 x s1
                             this._localHitNormal.y = s0z * s1x - s0x * s1z;
                             this._localHitNormal.z = s0x * s1y - s0y * s1x;
-                            nl = 1 / Math.sqrt(this._localHitNormal.x * this._localHitNormal.x + this._localHitNormal.y * this._localHitNormal.y + this._localHitNormal.z * this._localHitNormal.z);
+                            nl = 1 / Math.sqrt(this._localHitNormal.x * this._localHitNormal.x + this._localHitNormal.y * this._localHitNormal.y + this._localHitNormal.z * this._localHitNormal.z); // normalize n
                             this._localHitNormal.x *= nl;
                             this._localHitNormal.y *= nl;
                             this._localHitNormal.z *= nl;
@@ -5104,9 +5115,9 @@ var away;
     })(away.pick || (away.pick = {}));
     var pick = away.pick;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     /**
     * @module away.pick
     */
@@ -5135,10 +5146,10 @@ var away;
                 this._entities = new Array();
             }
             Object.defineProperty(RaycastPicker.prototype, "onlyMouseEnabled", {
-                get: /**
+                /**
                 * @inheritDoc
                 */
-                function () {
+                get: function () {
                     return this._onlyMouseEnabled;
                 },
                 set: function (value) {
@@ -5156,6 +5167,7 @@ var away;
                 //cast ray through the collection of entities on the view
                 var collector = view.iEntityCollector;
 
+                //var i:number;
                 if (collector.numInteractiveEntities == 0)
                     return null;
 
@@ -5176,12 +5188,14 @@ var away;
                         continue;
                     }
 
+                    // If collision detected, store in new data set.
                     if (entity._iIsVisible() && entity.isIntersectingRay(rayPosition, rayDirection))
                         this._entities[this._numEntities++] = entity;
 
                     node = node.next;
                 }
 
+                //early out if no collisions detected
                 if (!this._numEntities)
                     return null;
 
@@ -5221,6 +5235,7 @@ var away;
                     node = node.next;
                 }
 
+                //early out if no collisions detected
                 if (!this._numEntities)
                     return null;
 
@@ -5274,7 +5289,7 @@ var away;
                 this._entities.length = this._numEntities;
 
                 // Sort entities from closest to furthest.
-                this._entities = this._entities.sort(this.sortOnNearT);
+                this._entities = this._entities.sort(this.sortOnNearT); // TODO - test sort filter in JS
 
                 // ---------------------------------------------------------------------
                 // Evaluate triangle collisions when needed.
@@ -5290,6 +5305,7 @@ var away;
                     entity = this._entities[i];
                     pickingCollisionVO = entity._iPickingCollisionVO;
                     if (entity.pickingCollider) {
+                        // If a collision exists, update the collision data and stop all checks.
                         if ((bestCollisionVO == null || pickingCollisionVO.rayEntryDistance < bestCollisionVO.rayEntryDistance) && away.render.RendererBase._iCollidesBefore(entity, shortestCollisionDistance, this._findClosestCollision)) {
                             shortestCollisionDistance = pickingCollisionVO.rayEntryDistance;
                             bestCollisionVO = pickingCollisionVO;
@@ -5299,6 +5315,10 @@ var away;
                             }
                         }
                     } else if (bestCollisionVO == null || pickingCollisionVO.rayEntryDistance < bestCollisionVO.rayEntryDistance) {
+                        // Note: a bounds collision with a ray origin inside its bounds is ONLY ever used
+                        // to enable the detection of a corresponsding triangle collision.
+                        // Therefore, bounds collisions with a ray origin inside its bounds can be ignored
+                        // if it has been established that there is NO triangle collider to test
                         if (!pickingCollisionVO.rayOriginIsInsideBounds) {
                             this.updateLocalPosition(pickingCollisionVO);
                             return pickingCollisionVO;
@@ -5346,20 +5366,20 @@ var away;
         var PickingType = (function () {
             function PickingType() {
             }
-            PickingType.SHADER = new pick.ShaderPicker();
+            PickingType.SHADER = new away.pick.ShaderPicker();
 
-            PickingType.RAYCAST_FIRST_ENCOUNTERED = new pick.RaycastPicker(false);
+            PickingType.RAYCAST_FIRST_ENCOUNTERED = new away.pick.RaycastPicker(false);
 
-            PickingType.RAYCAST_BEST_HIT = new pick.RaycastPicker(true);
+            PickingType.RAYCAST_BEST_HIT = new away.pick.RaycastPicker(true);
             return PickingType;
         })();
         pick.PickingType = PickingType;
     })(away.pick || (away.pick = {}));
     var pick = away.pick;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     /**
     * @module away.pick
     */
@@ -5377,18 +5397,18 @@ var away;
             }
             PickingColliderType.BOUNDS_ONLY = null;
 
-            PickingColliderType.AS3_FIRST_ENCOUNTERED = new pick.JSPickingCollider(false);
+            PickingColliderType.AS3_FIRST_ENCOUNTERED = new away.pick.JSPickingCollider(false);
 
-            PickingColliderType.AS3_BEST_HIT = new pick.JSPickingCollider(true);
+            PickingColliderType.AS3_BEST_HIT = new away.pick.JSPickingCollider(true);
             return PickingColliderType;
         })();
         pick.PickingColliderType = PickingColliderType;
     })(away.pick || (away.pick = {}));
     var pick = away.pick;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     /**
     * @module away.render
     */
@@ -5427,10 +5447,10 @@ var away;
                 this.renderableSorter = new away.sort.RenderableMergeSort();
             }
             Object.defineProperty(RendererBase.prototype, "numTriangles", {
-                get: /**
+                /**
                 *
                 */
-                function () {
+                get: function () {
                     return this._pNumTriangles;
                 },
                 enumerable: true,
@@ -5450,12 +5470,12 @@ var away;
             });
 
             Object.defineProperty(RendererBase.prototype, "_iBackgroundR", {
-                get: /**
+                /**
                 * The background color's red component, used when clearing.
                 *
                 * @private
                 */
-                function () {
+                get: function () {
                     return this._backgroundR;
                 },
                 set: function (value) {
@@ -5472,12 +5492,12 @@ var away;
 
 
             Object.defineProperty(RendererBase.prototype, "_iBackgroundG", {
-                get: /**
+                /**
                 * The background color's green component, used when clearing.
                 *
                 * @private
                 */
-                function () {
+                get: function () {
                     return this._backgroundG;
                 },
                 set: function (value) {
@@ -5494,12 +5514,12 @@ var away;
 
 
             Object.defineProperty(RendererBase.prototype, "_iBackgroundB", {
-                get: /**
+                /**
                 * The background color's blue component, used when clearing.
                 *
                 * @private
                 */
-                function () {
+                get: function () {
                     return this._backgroundB;
                 },
                 set: function (value) {
@@ -5516,10 +5536,10 @@ var away;
 
 
             Object.defineProperty(RendererBase.prototype, "stageGL", {
-                get: /**
+                /**
                 * The StageGL that will provide the ContextGL used for rendering.
                 */
-                function () {
+                get: function () {
                     return this._pStageGL;
                 },
                 set: function (value) {
@@ -5547,6 +5567,10 @@ var away;
                     this._pStageGL.addEventListener(away.events.StageGLEvent.CONTEXTGL_CREATED, this._onContextUpdateDelegate);
                     this._pStageGL.addEventListener(away.events.StageGLEvent.CONTEXTGL_RECREATED, this._onContextUpdateDelegate);
 
+                    /*
+                    if (_backgroundImageRenderer)
+                    _backgroundImageRenderer.stageGL = value;
+                    */
                     if (this._pStageGL.contextGL)
                         this._pContext = this._pStageGL.contextGL;
                 }
@@ -5557,11 +5581,11 @@ var away;
             };
 
             Object.defineProperty(RendererBase.prototype, "shareContext", {
-                get: /**
+                /**
                 * Defers control of ContextGL clear() and present() calls to StageGL, enabling multiple StageGL frameworks
                 * to share the same ContextGL object.
                 */
-                function () {
+                get: function () {
                     return this._shareContext;
                 },
                 set: function (value) {
@@ -5615,8 +5639,9 @@ var away;
 
                 this.pExecuteRender(entityCollector, target, scissorRect, surfaceSelector);
 
+                // generate mip maps on target (if target exists)
                 if (target)
-                    (target).generateMipmaps();
+                    target.generateMipmaps();
 
                 for (var i = 0; i < 8; ++i) {
                     this._pContext.setVertexBufferAt(i, null);
@@ -5680,6 +5705,8 @@ var away;
                 */
                 this.pDraw(entityCollector, target);
 
+                //line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
+                //this._pContext.setDepthTest(false, away.gl.ContextGLCompareMode.LESS_EQUAL); //oopsie
                 if (!this._shareContext) {
                     if (this._snapshotRequired && this._snapshotBitmapData) {
                         this._pContext.drawToBitmapData(this._snapshotBitmapData);
@@ -5845,6 +5872,7 @@ var away;
             * @param entity
             */
             RendererBase.prototype.pFindRenderables = function (entity) {
+                //TODO abstract conditional in the entity with a callback to IRenderer
                 if (entity.assetType === away.library.AssetType.BILLBOARD) {
                     this.pApplyBillboard(entity);
                 } else if (entity.assetType === away.library.AssetType.MESH) {
@@ -5856,7 +5884,7 @@ var away;
                 }
             };
 
-            RendererBase._iCollidesBefore = /**
+            /**
             * //TODO
             *
             * @param entity
@@ -5866,7 +5894,7 @@ var away;
             *
             * @internal
             */
-            function (entity, shortestCollisionDistance, findClosest) {
+            RendererBase._iCollidesBefore = function (entity, shortestCollisionDistance, findClosest) {
                 var pickingCollider = entity.pickingCollider;
                 var pickingCollisionVO = entity._iPickingCollisionVO;
 
@@ -5925,9 +5953,9 @@ var away;
     })(away.render || (away.render = {}));
     var render = away.render;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     /**
     * @module away.render
     */
@@ -6011,6 +6039,8 @@ var away;
 
                     var entity = renderable.sourceEntity;
 
+                    // if completely in front, it will fall in a different cascade
+                    // do not use near and far planes
                     if (!cullPlanes || entity.worldBounds.isInFrustum(cullPlanes, 4)) {
                         material = renderable.materialOwner.material;
 
@@ -6070,6 +6100,7 @@ var away;
                 while (renderable) {
                     this._activeMaterial = renderable.materialOwner.material;
 
+                    // otherwise this would result in depth rendered anyway because fragment shader kil is ignored
                     if (this._disableColor && this._activeMaterial.iHasDepthAlphaThreshold()) {
                         renderable2 = renderable;
 
@@ -6091,14 +6122,14 @@ var away;
                 }
             };
             return DepthRenderer;
-        })(render.RendererBase);
+        })(away.render.RendererBase);
         render.DepthRenderer = DepthRenderer;
     })(away.render || (away.render = {}));
     var render = away.render;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     /**
     * @module away.render
     */
@@ -6130,8 +6161,8 @@ var away;
 
                 this._onViewportUpdatedDelegate = away.utils.Delegate.create(this, this.onViewportUpdated);
 
-                this._pDepthRenderer = new render.DepthRenderer();
-                this._pDistanceRenderer = new render.DepthRenderer(false, true);
+                this._pDepthRenderer = new away.render.DepthRenderer();
+                this._pDistanceRenderer = new away.render.DepthRenderer(false, true);
 
                 if (this._pStageGL == null)
                     this.stageGL = away.managers.StageGLManager.getInstance().getFreeStageGL(this._forceSoftware, this._profile);
@@ -6143,12 +6174,12 @@ var away;
 
                 if (this._width == 0)
                     this.width = window.innerWidth;
-else
+                else
                     this._pRttBufferManager.viewWidth = this._width;
 
                 if (this._height == 0)
                     this.height = window.innerHeight;
-else
+                else
                     this._pRttBufferManager.viewHeight = this._height;
             }
             Object.defineProperty(DefaultRenderer.prototype, "antiAlias", {
@@ -6169,10 +6200,10 @@ else
 
 
             Object.defineProperty(DefaultRenderer.prototype, "depthPrepass", {
-                get: /**
+                /**
                 *
                 */
-                function () {
+                get: function () {
                     return this._depthPrepass;
                 },
                 set: function (value) {
@@ -6184,11 +6215,11 @@ else
 
 
             Object.defineProperty(DefaultRenderer.prototype, "filters3d", {
-                get: /**
+                /**
                 *
                 * @returns {*}
                 */
-                function () {
+                get: function () {
                     return this._pFilter3DRenderer ? this._pFilter3DRenderer.filters : null;
                 },
                 set: function (value) {
@@ -6199,7 +6230,7 @@ else
                         this._pFilter3DRenderer.dispose();
                         this._pFilter3DRenderer = null;
                     } else if (!this._pFilter3DRenderer && value) {
-                        this._pFilter3DRenderer = new render.Filter3DRenderer(this._pStageGL);
+                        this._pFilter3DRenderer = new away.render.Filter3DRenderer(this._pStageGL);
                         this._pFilter3DRenderer.filters = value;
                     }
 
@@ -6220,10 +6251,10 @@ else
             });
 
             Object.defineProperty(DefaultRenderer.prototype, "viewPort", {
-                get: /**
+                /**
                 * A viewPort rectangle equivalent of the StageGL size and position.
                 */
-                function () {
+                get: function () {
                     return this._viewPort;
                 },
                 enumerable: true,
@@ -6231,10 +6262,10 @@ else
             });
 
             Object.defineProperty(DefaultRenderer.prototype, "scissorRect", {
-                get: /**
+                /**
                 * A scissor rectangle equivalent of the view size and position.
                 */
-                function () {
+                get: function () {
                     return this._pScissorRect;
                 },
                 enumerable: true,
@@ -6242,10 +6273,10 @@ else
             });
 
             Object.defineProperty(DefaultRenderer.prototype, "x", {
-                get: /**
+                /**
                 *
                 */
-                function () {
+                get: function () {
                     return this._localPos.x;
                 },
                 set: function (value) {
@@ -6262,10 +6293,10 @@ else
 
 
             Object.defineProperty(DefaultRenderer.prototype, "y", {
-                get: /**
+                /**
                 *
                 */
-                function () {
+                get: function () {
                     return this._localPos.y;
                 },
                 set: function (value) {
@@ -6282,10 +6313,10 @@ else
 
 
             Object.defineProperty(DefaultRenderer.prototype, "width", {
-                get: /**
+                /**
                 *
                 */
-                function () {
+                get: function () {
                     return this._width;
                 },
                 set: function (value) {
@@ -6309,10 +6340,10 @@ else
 
 
             Object.defineProperty(DefaultRenderer.prototype, "height", {
-                get: /**
+                /**
                 *
                 */
-                function () {
+                get: function () {
                     return this._height;
                 },
                 set: function (value) {
@@ -6370,7 +6401,7 @@ else
                 } else {
                     if (this._shareContext)
                         this._iRender(entityCollector, null, this._pScissorRect);
-else
+                    else
                         this._iRender(entityCollector);
                 }
 
@@ -6389,6 +6420,7 @@ else
                 if (typeof surfaceSelector === "undefined") { surfaceSelector = 0; }
                 this.updateLights(entityCollector);
 
+                // otherwise RTT will interfere with other RTTs
                 if (target) {
                     this.pCollectRenderables(entityCollector);
 
@@ -6610,6 +6642,9 @@ else
             * Updates the backbuffer dimensions.
             */
             DefaultRenderer.prototype.pUpdateBackBuffer = function () {
+                // No reason trying to configure back buffer if there is no context available.
+                // Doing this anyway (and relying on _stageGL to cache width/height for
+                // context does get available) means usesSoftwareRendering won't be reliable.
                 if (this._pStageGL.contextGL && !this._shareContext) {
                     if (this._width && this._height) {
                         this._pStageGL.configureBackBuffer(this._width, this._height, this._antiAlias, true);
@@ -6679,6 +6714,7 @@ else
             DefaultRenderer.prototype.onViewportUpdated = function (event) {
                 this._viewPort = this._pStageGL.viewPort;
 
+                //TODO stop firing viewport updated for every stagegl viewport change
                 if (this._shareContext) {
                     this._pScissorRect.x = this._globalPos.x - this._pStageGL.x;
                     this._pScissorRect.y = this._globalPos.y - this._pStageGL.y;
@@ -6708,14 +6744,14 @@ else
             DefaultRenderer.SCREEN_PASSES = 2;
             DefaultRenderer.ALL_PASSES = 3;
             return DefaultRenderer;
-        })(render.RendererBase);
+        })(away.render.RendererBase);
         render.DefaultRenderer = DefaultRenderer;
     })(away.render || (away.render = {}));
     var render = away.render;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     /**
     * @module away.render
     */
@@ -6899,9 +6935,9 @@ var away;
     })(away.render || (away.render = {}));
     var render = away.render;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (materials) {
         var DefaultMaterialManager = (function () {
             function DefaultMaterialManager() {
@@ -6929,7 +6965,7 @@ var away;
             };
 
             DefaultMaterialManager.createDefaultTexture = function () {
-                DefaultMaterialManager._defaultTextureBitmapData = DefaultMaterialManager.createCheckeredBitmapData();
+                DefaultMaterialManager._defaultTextureBitmapData = DefaultMaterialManager.createCheckeredBitmapData(); //new away.base.BitmapData(8, 8, false, 0x000000);
 
                 //create chekerboard
                 /*
@@ -6966,7 +7002,7 @@ var away;
             };
 
             DefaultMaterialManager.createDefaultMaterial = function () {
-                DefaultMaterialManager._defaultMaterial = new materials.TextureMaterial(DefaultMaterialManager._defaultTexture);
+                DefaultMaterialManager._defaultMaterial = new away.materials.TextureMaterial(DefaultMaterialManager._defaultTexture);
                 DefaultMaterialManager._defaultMaterial.mipmap = false;
                 DefaultMaterialManager._defaultMaterial.smooth = false;
                 DefaultMaterialManager._defaultMaterial.name = "defaultMaterial";
@@ -6977,9 +7013,9 @@ var away;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (entities) {
         var SegmentSubGeometry = away.base.SegmentSubGeometry;
 
@@ -6999,10 +7035,10 @@ var away;
                 this._uvTransform = new away.geom.UVTransform(this);
             }
             Object.defineProperty(SegmentSet.prototype, "animator", {
-                get: /**
+                /**
                 *
                 */
-                function () {
+                get: function () {
                     return this._animator;
                 },
                 enumerable: true,
@@ -7010,10 +7046,10 @@ var away;
             });
 
             Object.defineProperty(SegmentSet.prototype, "assetType", {
-                get: /**
+                /**
                 *
                 */
-                function () {
+                get: function () {
                     return away.library.AssetType.SEGMENT_SET;
                 },
                 enumerable: true,
@@ -7021,10 +7057,10 @@ var away;
             });
 
             Object.defineProperty(SegmentSet.prototype, "castsShadows", {
-                get: /**
+                /**
                 *
                 */
-                function () {
+                get: function () {
                     return false;
                 },
                 enumerable: true,
@@ -7032,10 +7068,10 @@ var away;
             });
 
             Object.defineProperty(SegmentSet.prototype, "material", {
-                get: /**
+                /**
                 *
                 */
-                function () {
+                get: function () {
                     return this._material;
                 },
                 set: function (value) {
@@ -7056,10 +7092,10 @@ var away;
 
 
             Object.defineProperty(SegmentSet.prototype, "subGeometry", {
-                get: /**
+                /**
                 *
                 */
-                function () {
+                get: function () {
                     return this._pSubGeometry;
                 },
                 enumerable: true,
@@ -7067,10 +7103,10 @@ var away;
             });
 
             Object.defineProperty(SegmentSet.prototype, "uvTransform", {
-                get: /**
+                /**
                 *
                 */
-                function () {
+                get: function () {
                     return this._uvTransform;
                 },
                 enumerable: true,
@@ -7195,14 +7231,12 @@ var away;
     })(away.entities || (away.entities = {}));
     var entities = away.entities;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (entities) {
         var Delegate = away.utils.Delegate;
 
-        
-        
         var SubGeometry = away.base.SubGeometry;
         var SubMesh = away.base.SubMesh;
         var Geometry = away.base.Geometry;
@@ -7238,23 +7272,24 @@ var away;
                 this._onSubGeometryAddedDelegate = Delegate.create(this, this.onSubGeometryAdded);
                 this._onSubGeometryRemovedDelegate = Delegate.create(this, this.onSubGeometryRemoved);
 
+                //this should never happen, but if people insist on trying to create their meshes before they have geometry to fill it, it becomes necessary
                 if (geometry == null)
                     this.geometry = new Geometry();
-else
+                else
                     this.geometry = geometry;
 
                 if (material == null)
                     this.material = DefaultMaterialManager.getDefaultMaterial(this);
-else
+                else
                     this.material = material;
 
                 this._uvTransform = new away.geom.UVTransform(this);
             }
             Object.defineProperty(Mesh.prototype, "animator", {
-                get: /**
+                /**
                 * Defines the animator of the mesh. Act on the mesh's geometry.  Default value is <code>null</code>.
                 */
-                function () {
+                get: function () {
                     return this._animator;
                 },
                 set: function (value) {
@@ -7289,10 +7324,10 @@ else
 
 
             Object.defineProperty(Mesh.prototype, "assetType", {
-                get: /**
+                /**
                 *
                 */
-                function () {
+                get: function () {
                     return away.library.AssetType.MESH;
                 },
                 enumerable: true,
@@ -7300,10 +7335,10 @@ else
             });
 
             Object.defineProperty(Mesh.prototype, "castsShadows", {
-                get: /**
+                /**
                 * Indicates whether or not the Mesh can cast shadows. Default value is <code>true</code>.
                 */
-                function () {
+                get: function () {
                     return this._castsShadows;
                 },
                 set: function (value) {
@@ -7315,10 +7350,10 @@ else
 
 
             Object.defineProperty(Mesh.prototype, "geometry", {
-                get: /**
+                /**
                 * The geometry used by the mesh that provides it with its shape.
                 */
-                function () {
+                get: function () {
                     return this._geometry;
                 },
                 set: function (value) {
@@ -7359,10 +7394,10 @@ else
 
 
             Object.defineProperty(Mesh.prototype, "material", {
-                get: /**
+                /**
                 * The material with which to render the Mesh.
                 */
-                function () {
+                get: function () {
                     return this._material;
                 },
                 set: function (value) {
@@ -7383,10 +7418,10 @@ else
 
 
             Object.defineProperty(Mesh.prototype, "shareAnimationGeometry", {
-                get: /**
+                /**
                 * Indicates whether or not the mesh share the same animation geometry.
                 */
-                function () {
+                get: function () {
                     return this._shareAnimationGeometry;
                 },
                 set: function (value) {
@@ -7398,11 +7433,11 @@ else
 
 
             Object.defineProperty(Mesh.prototype, "subMeshes", {
-                get: /**
+                /**
                 * The SubMeshes out of which the Mesh consists. Every SubMesh can be assigned a material to override the Mesh's
                 * material.
                 */
-                function () {
+                get: function () {
                     // Since this getter is invoked every iteration of the render loop, and
                     // the geometry construct could affect the sub-meshes, the geometry is
                     // validated here to give it a chance to rebuild.
@@ -7415,10 +7450,10 @@ else
             });
 
             Object.defineProperty(Mesh.prototype, "uvTransform", {
-                get: /**
+                /**
                 *
                 */
-                function () {
+                get: function () {
                     return this._uvTransform;
                 },
                 enumerable: true,
@@ -7560,21 +7595,21 @@ else
                             var v = vertices[i];
                             if (v < minX)
                                 minX = v;
-else if (v > maxX)
+                            else if (v > maxX)
                                 maxX = v;
 
                             v = vertices[i + 1];
 
                             if (v < minY)
                                 minY = v;
-else if (v > maxY)
+                            else if (v > maxY)
                                 maxY = v;
 
                             v = vertices[i + 2];
 
                             if (v < minZ)
                                 minZ = v;
-else if (v > maxZ)
+                            else if (v > maxZ)
                                 maxZ = v;
 
                             i += stride;
@@ -7670,9 +7705,9 @@ else if (v > maxZ)
     })(away.entities || (away.entities = {}));
     var entities = away.entities;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (entities) {
         /**
         * A Skybox class is used to render a sky in the scene. It's always considered static and 'at infinity', and as
@@ -7705,10 +7740,10 @@ var away;
             });
 
             Object.defineProperty(Skybox.prototype, "uvTransform", {
-                get: /**
+                /**
                 *
                 */
-                function () {
+                get: function () {
                     return this._uvTransform;
                 },
                 enumerable: true,
@@ -7716,10 +7751,10 @@ var away;
             });
 
             Object.defineProperty(Skybox.prototype, "material", {
-                get: /**
+                /**
                 * The material with which to render the object.
                 */
-                function () {
+                get: function () {
                     return this._material;
                 },
                 set: function (value) {
@@ -7785,387 +7820,9 @@ var away;
     })(away.entities || (away.entities = {}));
     var entities = away.entities;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
-    (function (containers) {
-        /**
-        * Dispatched when any asset finishes parsing. Also see specific events for each
-        * individual asset type (meshes, materials et c.)
-        *
-        * @eventType away3d.events.AssetEvent
-        */
-        //[Event(name="assetComplete", type="away3d.events.AssetEvent")]
-        /**
-        * Dispatched when a full resource (including dependencies) finishes loading.
-        *
-        * @eventType away3d.events.LoaderEvent
-        */
-        //[Event(name="resourceComplete", type="away3d.events.LoaderEvent")]
-        /**
-        * Dispatched when a single dependency (which may be the main file of a resource)
-        * finishes loading.
-        *
-        * @eventType away3d.events.LoaderEvent
-        */
-        //[Event(name="dependencyComplete", type="away3d.events.LoaderEvent")]
-        /**
-        * Dispatched when an error occurs during loading. I
-        *
-        * @eventType away3d.events.LoaderEvent
-        */
-        //[Event(name="loadError", type="away3d.events.LoaderEvent")]
-        /**
-        * Dispatched when an error occurs during parsing.
-        *
-        * @eventType away3d.events.ParserEvent
-        */
-        //[Event(name="parseError", type="away3d.events.ParserEvent")]
-        /**
-        * Dispatched when a skybox asset has been costructed from a ressource.
-        *
-        * @eventType away3d.events.AssetEvent
-        */
-        //[Event(name="skyboxComplete", type="away3d.events.AssetEvent")]
-        /**
-        * Dispatched when a camera3d asset has been costructed from a ressource.
-        *
-        * @eventType away3d.events.AssetEvent
-        */
-        //[Event(name="cameraComplete", type="away3d.events.AssetEvent")]
-        /**
-        * Dispatched when a mesh asset has been costructed from a ressource.
-        *
-        * @eventType away3d.events.AssetEvent
-        */
-        //[Event(name="meshComplete", type="away3d.events.AssetEvent")]
-        /**
-        * Dispatched when a geometry asset has been constructed from a resource.
-        *
-        * @eventType away3d.events.AssetEvent
-        */
-        //[Event(name="geometryComplete", type="away3d.events.AssetEvent")]
-        /**
-        * Dispatched when a skeleton asset has been constructed from a resource.
-        *
-        * @eventType away3d.events.AssetEvent
-        */
-        //[Event(name="skeletonComplete", type="away3d.events.AssetEvent")]
-        /**
-        * Dispatched when a skeleton pose asset has been constructed from a resource.
-        *
-        * @eventType away3d.events.AssetEvent
-        */
-        //[Event(name="skeletonPoseComplete", type="away3d.events.AssetEvent")]
-        /**
-        * Dispatched when a container asset has been constructed from a resource.
-        *
-        * @eventType away3d.events.AssetEvent
-        */
-        //[Event(name="containerComplete", type="away3d.events.AssetEvent")]
-        /**
-        * Dispatched when a texture asset has been constructed from a resource.
-        *
-        * @eventType away3d.events.AssetEvent
-        */
-        //[Event(name="textureComplete", type="away3d.events.AssetEvent")]
-        /**
-        * Dispatched when a texture projector asset has been constructed from a resource.
-        *
-        * @eventType away3d.events.AssetEvent
-        */
-        //[Event(name="textureProjectorComplete", type="away3d.events.AssetEvent")]
-        /**
-        * Dispatched when a material asset has been constructed from a resource.
-        *
-        * @eventType away3d.events.AssetEvent
-        */
-        //[Event(name="materialComplete", type="away3d.events.AssetEvent")]
-        /**
-        * Dispatched when a animator asset has been constructed from a resource.
-        *
-        * @eventType away3d.events.AssetEvent
-        */
-        //[Event(name="animatorComplete", type="away3d.events.AssetEvent")]
-        /**
-        * Dispatched when an animation set has been constructed from a group of animation state resources.
-        *
-        * @eventType away3d.events.AssetEvent
-        */
-        //[Event(name="animationSetComplete", type="away3d.events.AssetEvent")]
-        /**
-        * Dispatched when an animation state has been constructed from a group of animation node resources.
-        *
-        * @eventType away3d.events.AssetEvent
-        */
-        //[Event(name="animationStateComplete", type="away3d.events.AssetEvent")]
-        /**
-        * Dispatched when an animation node has been constructed from a resource.
-        *
-        * @eventType away3d.events.AssetEvent
-        */
-        //[Event(name="animationNodeComplete", type="away3d.events.AssetEvent")]
-        /**
-        * Dispatched when an animation state transition has been constructed from a group of animation node resources.
-        *
-        * @eventType away3d.events.AssetEvent
-        */
-        //[Event(name="stateTransitionComplete", type="away3d.events.AssetEvent")]
-        /**
-        * Dispatched when an light asset has been constructed from a resources.
-        *
-        * @eventType away3d.events.AssetEvent
-        */
-        //[Event(name="lightComplete", type="away3d.events.AssetEvent")]
-        /**
-        * Dispatched when an light picker asset has been constructed from a resources.
-        *
-        * @eventType away3d.events.AssetEvent
-        */
-        //[Event(name="lightPickerComplete", type="away3d.events.AssetEvent")]
-        /**
-        * Dispatched when an effect method asset has been constructed from a resources.
-        *
-        * @eventType away3d.events.AssetEvent
-        */
-        //[Event(name="effectMethodComplete", type="away3d.events.AssetEvent")]
-        /**
-        * Dispatched when an shadow map method asset has been constructed from a resources.
-        *
-        * @eventType away3d.events.AssetEvent
-        */
-        //[Event(name="shadowMapMethodComplete", type="away3d.events.AssetEvent")]
-        /**
-        * Dispatched when an image asset dimensions are not a power of 2
-        *
-        * @eventType away3d.events.AssetEvent
-        */
-        //[Event(name="textureSizeError", type="away3d.events.AssetEvent")]
-        /**
-        * Loader3D can load any file format that Away3D supports (or for which a third-party parser
-        * has been plugged in) and be added directly to the scene. As assets are encountered
-        * they are added to the Loader3D container. Assets that can not be displayed in the scene
-        * graph (e.g. unused bitmaps/materials/skeletons etc) will be ignored.
-        *
-        * This provides a fast and easy way to load models (no need for event listeners) but is not
-        * very versatile since many types of assets are ignored.
-        *
-        * Loader3D by default uses the AssetLibrary to load all assets, which means that they also
-        * ends up in the library. To circumvent this, Loader3D can be configured to not use the
-        * AssetLibrary in which case it will use the AssetLoader directly.
-        *
-        * @see away.net.AssetLoader
-        * @see away.library.AssetLibrary
-        */
-        var Loader3D = (function (_super) {
-            __extends(Loader3D, _super);
-            function Loader3D(useAssetLibrary, assetLibraryId) {
-                if (typeof useAssetLibrary === "undefined") { useAssetLibrary = true; }
-                if (typeof assetLibraryId === "undefined") { assetLibraryId = null; }
-                _super.call(this);
-
-                this._loadingSessions = new Array();
-                this._useAssetLib = useAssetLibrary;
-                this._assetLibId = assetLibraryId;
-
-                this._onResourceCompleteDelegate = away.utils.Delegate.create(this, this.onResourceComplete);
-                this._onAssetCompleteDelegate = away.utils.Delegate.create(this, this.onAssetComplete);
-            }
-            /**
-            * Loads a file and (optionally) all of its dependencies.
-            *
-            * @param req The URLRequest object containing the URL of the file to be loaded.
-            * @param context An optional context object providing additional parameters for loading
-            * @param ns An optional namespace string under which the file is to be loaded, allowing the differentiation of two resources with identical assets
-            * @param parser An optional parser object for translating the loaded data into a usable resource. If not provided, AssetLoader will attempt to auto-detect the file type.
-            */
-            Loader3D.prototype.load = function (req, context, ns, parser) {
-                if (typeof context === "undefined") { context = null; }
-                if (typeof ns === "undefined") { ns = null; }
-                if (typeof parser === "undefined") { parser = null; }
-                var token;
-
-                if (this._useAssetLib) {
-                    var lib;
-                    lib = away.library.AssetLibraryBundle.getInstance(this._assetLibId);
-                    token = lib.load(req, context, ns, parser);
-                } else {
-                    var loader = new away.net.AssetLoader();
-                    this._loadingSessions.push(loader);
-                    token = loader.load(req, context, ns, parser);
-                }
-
-                token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this._onResourceCompleteDelegate);
-                token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this._onAssetCompleteDelegate);
-
-                // Error are handled separately (see documentation for addErrorHandler)
-                token._iLoader._iAddErrorHandler(this.onLoadError);
-                token._iLoader._iAddParseErrorHandler(this.onParseError);
-
-                return token;
-            };
-
-            /**
-            * Loads a resource from already loaded data.
-            *
-            * @param data The data object containing all resource information.
-            * @param context An optional context object providing additional parameters for loading
-            * @param ns An optional namespace string under which the file is to be loaded, allowing the differentiation of two resources with identical assets
-            * @param parser An optional parser object for translating the loaded data into a usable resource. If not provided, AssetLoader will attempt to auto-detect the file type.
-            */
-            Loader3D.prototype.loadData = function (data, context, ns, parser) {
-                if (typeof context === "undefined") { context = null; }
-                if (typeof ns === "undefined") { ns = null; }
-                if (typeof parser === "undefined") { parser = null; }
-                var token;
-
-                if (this._useAssetLib) {
-                    var lib;
-                    lib = away.library.AssetLibraryBundle.getInstance(this._assetLibId);
-                    token = lib.loadData(data, context, ns, parser);
-                } else {
-                    var loader = new away.net.AssetLoader();
-                    this._loadingSessions.push(loader);
-                    token = loader.loadData(data, '', context, ns, parser);
-                }
-
-                token.addEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this._onResourceCompleteDelegate);
-                token.addEventListener(away.events.AssetEvent.ASSET_COMPLETE, this._onAssetCompleteDelegate);
-
-                // Error are handled separately (see documentation for addErrorHandler)
-                token._iLoader._iAddErrorHandler(this.onLoadError);
-                token._iLoader._iAddParseErrorHandler(this.onParseError);
-
-                return token;
-            };
-
-            /**
-            * Stop the current loading/parsing process.
-            */
-            Loader3D.prototype.stopLoad = function () {
-                if (this._useAssetLib) {
-                    var lib;
-                    lib = away.library.AssetLibraryBundle.getInstance(this._assetLibId);
-                    lib.stopAllLoadingSessions();
-                    this._loadingSessions = null;
-                    return;
-                }
-                var i/*int*/ ;
-                var length = this._loadingSessions.length;
-                for (i = 0; i < length; i++) {
-                    this.removeListeners(this._loadingSessions[i]);
-                    this._loadingSessions[i].stop();
-                    this._loadingSessions[i] = null;
-                }
-                this._loadingSessions = null;
-            };
-
-            Loader3D.enableParser = /**
-            * Enables a specific parser.
-            * When no specific parser is set for a loading/parsing opperation,
-            * loader3d can autoselect the correct parser to use.
-            * A parser must have been enabled, to be considered when autoselecting the parser.
-            *
-            * @param parserClass The parser class to enable.
-            * @see away.parsers.Parsers
-            */
-            function (parserClass) {
-                away.net.AssetLoader.enableParser(parserClass);
-            };
-
-            Loader3D.enableParsers = /**
-            * Enables a list of parsers.
-            * When no specific parser is set for a loading/parsing opperation,
-            * loader3d can autoselect the correct parser to use.
-            * A parser must have been enabled, to be considered when autoselecting the parser.
-            *
-            * @param parserClasses A Vector of parser classes to enable.
-            * @see away.parsers.Parsers
-            */
-            function (parserClasses) {
-                away.net.AssetLoader.enableParsers(parserClasses);
-            };
-
-            Loader3D.prototype.removeListeners = function (dispatcher) {
-                dispatcher.removeEventListener(away.events.LoaderEvent.RESOURCE_COMPLETE, this._onResourceCompleteDelegate);
-                dispatcher.removeEventListener(away.events.AssetEvent.ASSET_COMPLETE, this._onAssetCompleteDelegate);
-            };
-
-            Loader3D.prototype.onAssetComplete = function (ev) {
-                if (ev.type == away.events.AssetEvent.ASSET_COMPLETE) {
-                    // TODO: not used
-                    // var type : string = ev.asset.assetType;
-                    var obj;
-                    switch (ev.asset.assetType) {
-                        case away.library.AssetType.LIGHT:
-                            obj = ev.asset;
-                            break;
-                        case away.library.AssetType.CONTAINER:
-                            obj = ev.asset;
-                            break;
-                        case away.library.AssetType.MESH:
-                            obj = ev.asset;
-                            break;
-
-                            break;
-
-                            break;
-                        case away.library.AssetType.CAMERA:
-                            obj = ev.asset;
-                            break;
-                        case away.library.AssetType.SEGMENT_SET:
-                            obj = ev.asset;
-                            break;
-                    }
-
-                    if (obj && obj.parent == null)
-                        this.addChild(obj);
-                }
-
-                this.dispatchEvent(ev.clone());
-            };
-
-            /**
-            * Called when an error occurs during loading
-            */
-            Loader3D.prototype.onLoadError = function (event) {
-                if (this.hasEventListener(away.events.IOErrorEvent.IO_ERROR, this.onLoadError)) {
-                    this.dispatchEvent(event);
-                    return true;
-                } else {
-                    return false;
-                }
-            };
-
-            /**
-            * Called when a an error occurs during parsing
-            */
-            Loader3D.prototype.onParseError = function (event) {
-                if (this.hasEventListener(away.events.ParserEvent.PARSE_ERROR, this.onParseError)) {
-                    this.dispatchEvent(event);
-                    return true;
-                } else {
-                    return false;
-                }
-            };
-
-            /**
-            * Called when the resource and all of its dependencies was retrieved.
-            */
-            Loader3D.prototype.onResourceComplete = function (event) {
-                var loader = event.target;
-
-                this.dispatchEvent(event);
-            };
-            return Loader3D;
-        })(away.containers.DisplayObjectContainer);
-        containers.Loader3D = Loader3D;
-    })(away.containers || (away.containers = {}));
-    var containers = away.containers;
-})(away || (away = {}));
-var away;
-(function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (filters) {
         var Filter3DTaskBase = (function () {
             function Filter3DTaskBase(requireDepthRender) {
@@ -8180,10 +7837,10 @@ var away;
                 this._requireDepthRender = requireDepthRender;
             }
             Object.defineProperty(Filter3DTaskBase.prototype, "textureScale", {
-                get: /**
+                /**
                 * The texture scale for the input of this texture. This will define the output of the previous entry in the chain
                 */
-                function () {
+                get: function () {
                     return this._textureScale;
                 },
                 set: function (value) {
@@ -8341,9 +7998,9 @@ var away;
     })(away.filters || (away.filters = {}));
     var filters = away.filters;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (filters) {
         var Filter3DBase = (function () {
             function Filter3DBase() {
@@ -8428,9 +8085,9 @@ var away;
     })(away.filters || (away.filters = {}));
     var filters = away.filters;
 })(away || (away = {}));
+///<reference path="../_definitions.ts" />
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts" />
     (function (lights) {
         var LightBase = (function (_super) {
             __extends(LightBase, _super);
@@ -8543,7 +8200,7 @@ var away;
                 set: function (value) {
                     if (value < 0)
                         value = 0;
-else if (value > 1)
+                    else if (value > 1)
                         value = 1;
 
                     this._ambient = value;
@@ -8579,8 +8236,8 @@ else if (value > 1)
             };
 
             Object.defineProperty(LightBase.prototype, "assetType", {
-                get: //@override
-                function () {
+                //@override
+                get: function () {
                     return away.library.AssetType.LIGHT;
                 },
                 enumerable: true,
@@ -8617,9 +8274,9 @@ else if (value > 1)
     })(away.lights || (away.lights = {}));
     var lights = away.lights;
 })(away || (away = {}));
+///<reference path="../_definitions.ts" />
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts" />
     (function (lights) {
         var LightProbe = (function (_super) {
             __extends(LightProbe, _super);
@@ -8684,9 +8341,9 @@ var away;
     })(away.lights || (away.lights = {}));
     var lights = away.lights;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (lights) {
         var PointLight = (function (_super) {
             __extends(PointLight, _super);
@@ -8811,9 +8468,9 @@ var away;
     })(away.lights || (away.lights = {}));
     var lights = away.lights;
 })(away || (away = {}));
+///<reference path="../_definitions.ts" />
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts" />
     (function (lights) {
         var DirectionalLight = (function (_super) {
             __extends(DirectionalLight, _super);
@@ -8952,9 +8609,9 @@ var away;
     })(away.lights || (away.lights = {}));
     var lights = away.lights;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (lights) {
         var ShadowMapperBase = (function () {
             function ShadowMapperBase() {
@@ -9084,9 +8741,9 @@ var away;
     })(away.lights || (away.lights = {}));
     var lights = away.lights;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (lights) {
         var CubeMapShadowMapper = (function (_super) {
             __extends(CubeMapShadowMapper, _super);
@@ -9162,9 +8819,9 @@ var away;
     })(away.lights || (away.lights = {}));
     var lights = away.lights;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts" />
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts" />
     (function (lights) {
         var DirectionalShadowMapper = (function (_super) {
             __extends(DirectionalShadowMapper, _super);
@@ -9203,8 +8860,8 @@ var away;
 
 
             Object.defineProperty(DirectionalShadowMapper.prototype, "iDepthProjection", {
-                get: //@arcane
-                function () {
+                //@arcane
+                get: function () {
                     return this._pOverallDepthCamera.viewProjection;
                 },
                 enumerable: true,
@@ -9212,8 +8869,8 @@ var away;
             });
 
             Object.defineProperty(DirectionalShadowMapper.prototype, "depth", {
-                get: //@arcane
-                function () {
+                //@arcane
+                get: function () {
                     return this._pMaxZ - this._pMinZ;
                 },
                 enumerable: true,
@@ -9311,7 +8968,7 @@ var away;
                 var d = 1 / (this._pMaxZ - this._pMinZ);
 
                 if (minX < 0) {
-                    minX -= this._pSnap;
+                    minX -= this._pSnap; // because int() rounds up for < 0
                 }
                 if (minY < 0) {
                     minY -= this._pSnap;
@@ -9360,7 +9017,7 @@ var away;
 
         //	import Event					= away.events.Event;
         var EventDispatcher = away.events.EventDispatcher;
-        
+
         var Matrix3D = away.geom.Matrix3D;
         var Rectangle = away.geom.Rectangle;
 
@@ -9378,14 +9035,14 @@ var away;
                 this._changeDispatcher = new EventDispatcher(this);
                 this.init();
             }
-            CascadeShadowMapper.prototype.getSplitRatio = function (index/*uint*/ ) {
+            CascadeShadowMapper.prototype.getSplitRatio = function (index /*uint*/ ) {
                 return this._splitRatios[index];
             };
 
-            CascadeShadowMapper.prototype.setSplitRatio = function (index/*uint*/ , value) {
+            CascadeShadowMapper.prototype.setSplitRatio = function (index /*uint*/ , value) {
                 if (value < 0)
                     value = 0;
-else if (value > 1)
+                else if (value > 1)
                     value = 1;
 
                 if (index >= this._numCascades)
@@ -9394,7 +9051,7 @@ else if (value > 1)
                 this._splitRatios[index] = value;
             };
 
-            CascadeShadowMapper.prototype.getDepthProjections = function (partition/*uint*/ ) {
+            CascadeShadowMapper.prototype.getDepthProjections = function (partition /*uint*/ ) {
                 return this._depthCameras[partition].viewProjection;
             };
 
@@ -9420,7 +9077,7 @@ else if (value > 1)
                 }
             };
 
-            CascadeShadowMapper.prototype._pSetDepthMapSize = function (value/*uint*/ ) {
+            CascadeShadowMapper.prototype._pSetDepthMapSize = function (value /*uint*/ ) {
                 _super.prototype._pSetDepthMapSize.call(this, value);
 
                 this.invalidateScissorRects();
@@ -9434,7 +9091,7 @@ else if (value > 1)
                 get: function () {
                     return this._numCascades;
                 },
-                set: function (value/*int*/ ) {
+                set: function (value /*int*/ ) {
                     if (value == this._numCascades)
                         return;
                     if (value < 1 || value > 4)
@@ -9540,7 +9197,7 @@ else if (value > 1)
                 var d = 1 / (maxZ - minZ);
 
                 if (minX < 0)
-                    minX -= this._pSnap;
+                    minX -= this._pSnap; // because int() rounds up for < 0
                 if (minY < 0)
                     minY -= this._pSnap;
                 minX = Math.floor(minX / this._pSnap) * this._pSnap;
@@ -9595,14 +9252,14 @@ else if (value > 1)
                 configurable: true
             });
             return CascadeShadowMapper;
-        })(lights.DirectionalShadowMapper);
+        })(away.lights.DirectionalShadowMapper);
         lights.CascadeShadowMapper = CascadeShadowMapper;
     })(away.lights || (away.lights = {}));
     var lights = away.lights;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts" />
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts" />
     (function (lights) {
         var Camera = away.entities.Camera;
 
@@ -9614,16 +9271,16 @@ var away;
                 this.coverageRatio = coverageRatio;
             }
             Object.defineProperty(NearDirectionalShadowMapper.prototype, "coverageRatio", {
-                get: /**
+                /**
                 * A value between 0 and 1 to indicate the ratio of the view frustum that needs to be covered by the shadow map.
                 */
-                function () {
+                get: function () {
                     return this._coverageRatio;
                 },
                 set: function (value) {
                     if (value > 1)
                         value = 1;
-else if (value < 0)
+                    else if (value < 0)
                         value = 0;
 
                     this._coverageRatio = value;
@@ -9646,14 +9303,14 @@ else if (value < 0)
                 this._pOverallDepthProjection.matrix = this._pMatrix;
             };
             return NearDirectionalShadowMapper;
-        })(lights.DirectionalShadowMapper);
+        })(away.lights.DirectionalShadowMapper);
         lights.NearDirectionalShadowMapper = NearDirectionalShadowMapper;
     })(away.lights || (away.lights = {}));
     var lights = away.lights;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     // Reference note: http://www.w3schools.com/jsref/dom_obj_event.asp
     (function (managers) {
         //import away3d.arcane;
@@ -9685,7 +9342,7 @@ var away;
                 this._childDepth = 0;
                 if (!Mouse3DManager._view3Ds) {
                     Mouse3DManager._view3Ds = new Object();
-                    Mouse3DManager._view3DLookup = new Array();
+                    Mouse3DManager._view3DLookup = new Array(); //Vector.<View>();
                 }
             }
             // ---------------------------------------------------------------------
@@ -10017,10 +9674,10 @@ var away;
             };
 
             Object.defineProperty(Mouse3DManager.prototype, "forceMouseMove", {
-                get: // ---------------------------------------------------------------------
+                // ---------------------------------------------------------------------
                 // Getters & setters.
                 // ---------------------------------------------------------------------
-                function () {
+                get: function () {
                     return this._forceMouseMove;
                 },
                 set: function (value) {
@@ -10063,9 +9720,9 @@ var away;
     })(away.managers || (away.managers = {}));
     var managers = away.managers;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (managers) {
         var StageGLEvent = away.events.StageGLEvent;
 
@@ -10235,9 +9892,9 @@ var AGALProgramCacheSingletonEnforcer = (function () {
     }
     return AGALProgramCacheSingletonEnforcer;
 })();
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (materials) {
         var ContextGL = away.gl.ContextGL;
         var ContextGLBlendFactor = away.gl.ContextGLBlendFactor;
@@ -10293,10 +9950,10 @@ var away;
                 this._iUniqueId = MaterialPassBase.MATERIALPASS_ID_COUNT++;
             }
             Object.defineProperty(MaterialPassBase.prototype, "material", {
-                get: /**
+                /**
                 * The material to which this pass belongs.
                 */
-                function () {
+                get: function () {
                     return this._pMaterial;
                 },
                 set: function (value) {
@@ -10308,10 +9965,10 @@ var away;
 
 
             Object.defineProperty(MaterialPassBase.prototype, "writeDepth", {
-                get: /**
+                /**
                 * Indicate whether this pass should write to the depth buffer or not. Ignored when blending is enabled.
                 */
-                function () {
+                get: function () {
                     return this._writeDepth;
                 },
                 set: function (value) {
@@ -10323,10 +9980,10 @@ var away;
 
 
             Object.defineProperty(MaterialPassBase.prototype, "mipmap", {
-                get: /**
+                /**
                 * Defines whether any used textures should use mipmapping.
                 */
-                function () {
+                get: function () {
                     return this._pMipmap;
                 },
                 set: function (value) {
@@ -10347,10 +10004,10 @@ var away;
             };
 
             Object.defineProperty(MaterialPassBase.prototype, "smooth", {
-                get: /**
+                /**
                 * Defines whether smoothing should be applied to any used textures.
                 */
-                function () {
+                get: function () {
                     return this._pSmooth;
                 },
                 set: function (value) {
@@ -10367,10 +10024,10 @@ var away;
 
 
             Object.defineProperty(MaterialPassBase.prototype, "repeat", {
-                get: /**
+                /**
                 * Defines whether textures should be tiled.
                 */
-                function () {
+                get: function () {
                     return this._pRepeat;
                 },
                 set: function (value) {
@@ -10387,10 +10044,10 @@ var away;
 
 
             Object.defineProperty(MaterialPassBase.prototype, "bothSides", {
-                get: /**
+                /**
                 * Defines whether or not the material should perform backface culling.
                 */
-                function () {
+                get: function () {
                     return this._pBothSides;
                 },
                 set: function (value) {
@@ -10402,12 +10059,12 @@ var away;
 
 
             Object.defineProperty(MaterialPassBase.prototype, "depthCompareMode", {
-                get: /**
+                /**
                 * The depth compare mode used to render the renderables using this material.
                 *
                 * @see flash.displayGL.ContextGLCompareMode
                 */
-                function () {
+                get: function () {
                     return this._depthCompareMode;
                 },
                 set: function (value) {
@@ -10419,10 +10076,10 @@ var away;
 
 
             Object.defineProperty(MaterialPassBase.prototype, "animationSet", {
-                get: /**
+                /**
                 * Returns the animation data set adding animations to the material.
                 */
-                function () {
+                get: function () {
                     return this._animationSet;
                 },
                 set: function (value) {
@@ -10440,10 +10097,10 @@ var away;
 
 
             Object.defineProperty(MaterialPassBase.prototype, "renderToTexture", {
-                get: /**
+                /**
                 * Specifies whether this pass renders to texture
                 */
-                function () {
+                get: function () {
                     return this._renderToTexture;
                 },
                 enumerable: true,
@@ -10469,10 +10126,10 @@ var away;
             };
 
             Object.defineProperty(MaterialPassBase.prototype, "numUsedStreams", {
-                get: /**
+                /**
                 * The amount of used vertex streams in the vertex code. Used by the animation code generation to know from which index on streams are available.
                 */
-                function () {
+                get: function () {
                     return this._pNumUsedStreams;
                 },
                 enumerable: true,
@@ -10480,10 +10137,10 @@ var away;
             });
 
             Object.defineProperty(MaterialPassBase.prototype, "numUsedVertexConstants", {
-                get: /**
+                /**
                 * The amount of used vertex constants in the vertex code. Used by the animation code generation to know from which index on registers are available.
                 */
-                function () {
+                get: function () {
                     return this._pNumUsedVertexConstants;
                 },
                 enumerable: true,
@@ -10499,10 +10156,10 @@ var away;
             });
 
             Object.defineProperty(MaterialPassBase.prototype, "numUsedFragmentConstants", {
-                get: /**
+                /**
                 * The amount of used fragment constants in the fragment code. Used by the animation code generation to know from which index on registers are available.
                 */
-                function () {
+                get: function () {
                     return this._pNumUsedFragmentConstants;
                 },
                 enumerable: true,
@@ -10518,10 +10175,10 @@ var away;
             });
 
             Object.defineProperty(MaterialPassBase.prototype, "needUVAnimation", {
-                get: /**
+                /**
                 * Indicates whether the pass requires any UV animatin code.
                 */
-                function () {
+                get: function () {
                     return this._pNeedUVAnimation;
                 },
                 enumerable: true,
@@ -10534,7 +10191,7 @@ var away;
             * @private
             */
             MaterialPassBase.prototype.iUpdateAnimationState = function (renderable, stageGL, camera) {
-                (renderable.materialOwner.animator).setRenderState(stageGL, renderable, this._pNumUsedVertexConstants, this._pNumUsedStreams, camera);
+                renderable.materialOwner.animator.setRenderState(stageGL, renderable, this._pNumUsedVertexConstants, this._pNumUsedStreams, camera);
             };
 
             /**
@@ -10686,7 +10343,7 @@ var away;
                     stageGL.scissorRect = this._oldRect;
                 }
 
-                stageGL.contextGL.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL);
+                stageGL.contextGL.setDepthTest(true, ContextGLCompareMode.LESS_EQUAL); // TODO : imeplement
             };
 
             /**
@@ -10752,13 +10409,13 @@ var away;
             };
 
             Object.defineProperty(MaterialPassBase.prototype, "lightPicker", {
-                get: /**
+                /**
                 * The light picker used by the material to provide lights to the material if it supports lighting.
                 *
                 * @see away.materials.LightPickerBase
                 * @see away.materials.StaticLightPicker
                 */
-                function () {
+                get: function () {
                     return this._pLightPicker;
                 },
                 set: function (value) {
@@ -10793,12 +10450,12 @@ var away;
             };
 
             Object.defineProperty(MaterialPassBase.prototype, "alphaPremultiplied", {
-                get: /**
+                /**
                 * Indicates whether visible textures (or other pixels) used by this material have
                 * already been premultiplied. Toggle this if you are seeing black halos around your
                 * blended alpha edges.
                 */
-                function () {
+                get: function () {
                     return this._pAlphaPremultiplied;
                 },
                 set: function (value) {
@@ -10819,9 +10476,9 @@ var away;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (materials) {
         var Matrix = away.geom.Matrix;
         var Matrix3D = away.geom.Matrix3D;
@@ -10865,11 +10522,11 @@ var away;
                 this.init();
             }
             Object.defineProperty(CompiledPass.prototype, "enableLightFallOff", {
-                get: /**
+                /**
                 * Whether or not to use fallOff and radius properties for lights. This can be used to improve performance and
                 * compatibility for constrained mode.
                 */
-                function () {
+                get: function () {
                     return this._enableLightFallOff;
                 },
                 set: function (value) {
@@ -10884,12 +10541,12 @@ var away;
 
 
             Object.defineProperty(CompiledPass.prototype, "forceSeparateMVP", {
-                get: /**
+                /**
                 * Indicates whether the screen projection should be calculated by forcing a separate scene matrix and
                 * view-projection matrix. This is used to prevent rounding errors when using multiple passes with different
                 * projection code.
                 */
-                function () {
+                get: function () {
                     return this._forceSeparateMVP;
                 },
                 set: function (value) {
@@ -10901,10 +10558,10 @@ var away;
 
 
             Object.defineProperty(CompiledPass.prototype, "iNumPointLights", {
-                get: /**
+                /**
                 * The amount of point lights that need to be supported.
                 */
-                function () {
+                get: function () {
                     return this._pNumPointLights;
                 },
                 enumerable: true,
@@ -10912,10 +10569,10 @@ var away;
             });
 
             Object.defineProperty(CompiledPass.prototype, "iNumDirectionalLights", {
-                get: /**
+                /**
                 * The amount of directional lights that need to be supported.
                 */
-                function () {
+                get: function () {
                     return this._pNumDirectionalLights;
                 },
                 enumerable: true,
@@ -10923,10 +10580,10 @@ var away;
             });
 
             Object.defineProperty(CompiledPass.prototype, "iNumLightProbes", {
-                get: /**
+                /**
                 * The amount of light probes that need to be supported.
                 */
-                function () {
+                get: function () {
                     return this._pNumLightProbes;
                 },
                 enumerable: true,
@@ -10949,10 +10606,10 @@ var away;
             CompiledPass.prototype.reset = function (profile) {
                 this.iInitCompiler(profile);
 
-                this.pUpdateShaderProperties();
+                this.pUpdateShaderProperties(); //this.updateShaderProperties();
                 this.initConstantData();
 
-                this.pCleanUp();
+                this.pCleanUp(); //this.cleanUp();
             };
 
             /**
@@ -10974,7 +10631,7 @@ var away;
                 this._pVertexConstantData.length = this._pNumUsedVertexConstants * 4;
                 this._pFragmentConstantData.length = this._pNumUsedFragmentConstants * 4;
 
-                this.pInitCommonsData();
+                this.pInitCommonsData(); //this.initCommonsData();
 
                 if (this._uvTransformIndex >= 0)
                     this.pInitUVTransformData();
@@ -11055,10 +10712,10 @@ var away;
             };
 
             Object.defineProperty(CompiledPass.prototype, "preserveAlpha", {
-                get: /**
+                /**
                 * Indicates whether the output alpha value should remain unchanged compared to the material's original alpha.
                 */
-                function () {
+                get: function () {
                     return this._preserveAlpha;
                 },
                 set: function (value) {
@@ -11074,10 +10731,10 @@ var away;
 
 
             Object.defineProperty(CompiledPass.prototype, "animateUVs", {
-                get: /**
+                /**
                 * Indicate whether UV coordinates need to be animated using the renderable's transformUV matrix.
                 */
-                function () {
+                get: function () {
                     return this._animateUVs;
                 },
                 set: function (value) {
@@ -11092,10 +10749,10 @@ var away;
 
 
             Object.defineProperty(CompiledPass.prototype, "mipmap", {
-                set: /**
+                /**
                 * @inheritDoc
                 */
-                function (value) {
+                set: function (value) {
                     if (this._pMipmap == value)
                         return;
 
@@ -11106,11 +10763,11 @@ var away;
             });
 
             Object.defineProperty(CompiledPass.prototype, "normalMap", {
-                get: /**
+                /**
                 * The normal map to modulate the direction of the surface for each texel. The default normal method expects
                 * tangent-space normal maps, but others could expect object-space maps.
                 */
-                function () {
+                get: function () {
                     return this._pMethodSetup._iNormalMethod.normalMap;
                 },
                 set: function (value) {
@@ -11122,10 +10779,10 @@ var away;
 
 
             Object.defineProperty(CompiledPass.prototype, "normalMethod", {
-                get: /**
+                /**
                 * The method used to generate the per-pixel normals. Defaults to BasicNormalMethod.
                 */
-                function () {
+                get: function () {
                     return this._pMethodSetup.normalMethod;
                 },
                 set: function (value) {
@@ -11137,10 +10794,10 @@ var away;
 
 
             Object.defineProperty(CompiledPass.prototype, "ambientMethod", {
-                get: /**
+                /**
                 * The method that provides the ambient lighting contribution. Defaults to BasicAmbientMethod.
                 */
-                function () {
+                get: function () {
                     return this._pMethodSetup.ambientMethod;
                 },
                 set: function (value) {
@@ -11152,10 +10809,10 @@ var away;
 
 
             Object.defineProperty(CompiledPass.prototype, "shadowMethod", {
-                get: /**
+                /**
                 * The method used to render shadows cast on this surface, or null if no shadows are to be rendered. Defaults to null.
                 */
-                function () {
+                get: function () {
                     return this._pMethodSetup.shadowMethod;
                 },
                 set: function (value) {
@@ -11167,10 +10824,10 @@ var away;
 
 
             Object.defineProperty(CompiledPass.prototype, "diffuseMethod", {
-                get: /**
+                /**
                 * The method that provides the diffuse lighting contribution. Defaults to BasicDiffuseMethod.
                 */
-                function () {
+                get: function () {
                     return this._pMethodSetup.diffuseMethod;
                 },
                 set: function (value) {
@@ -11182,10 +10839,10 @@ var away;
 
 
             Object.defineProperty(CompiledPass.prototype, "specularMethod", {
-                get: /**
+                /**
                 * The method that provides the specular lighting contribution. Defaults to BasicSpecularMethod.
                 */
-                function () {
+                get: function () {
                     return this._pMethodSetup.specularMethod;
                 },
                 set: function (value) {
@@ -11200,7 +10857,7 @@ var away;
             * Initializes the pass.
             */
             CompiledPass.prototype.init = function () {
-                this._pMethodSetup = new materials.ShaderMethodSetup();
+                this._pMethodSetup = new away.materials.ShaderMethodSetup();
 
                 this._pMethodSetup.addEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
             };
@@ -11221,10 +10878,10 @@ var away;
             CompiledPass.prototype.iInvalidateShaderProgram = function (updateMaterial) {
                 if (typeof updateMaterial === "undefined") { updateMaterial = true; }
                 var oldPasses = this._iPasses;
-                this._iPasses = new Array();
+                this._iPasses = new Array(); //= new Vector.<MaterialPassBase>();
 
                 if (this._pMethodSetup) {
-                    this.pAddPassesFromMethods();
+                    this.pAddPassesFromMethods(); //this.addPassesFromMethods();
                 }
 
                 if (!oldPasses || this._iPasses.length != oldPasses.length) {
@@ -11349,7 +11006,7 @@ var away;
             * Called when any method's shader code is invalidated.
             */
             CompiledPass.prototype.onShaderInvalidated = function (event) {
-                this.iInvalidateShaderProgram();
+                this.iInvalidateShaderProgram(); //invalidateShaderProgram();
             };
 
             /**
@@ -11494,14 +11151,14 @@ var away;
             * Indicates whether the shader uses any light probes.
             */
             CompiledPass.prototype.pUsesProbes = function () {
-                return this._pNumLightProbes > 0 && ((this._pDiffuseLightSources | this._pSpecularLightSources) & materials.LightSources.PROBES) != 0;
+                return this._pNumLightProbes > 0 && ((this._pDiffuseLightSources | this._pSpecularLightSources) & away.materials.LightSources.PROBES) != 0;
             };
 
             /**
             * Indicates whether the shader uses any lights.
             */
             CompiledPass.prototype.pUsesLights = function () {
-                return (this._pNumPointLights > 0 || this._pNumDirectionalLights > 0) && ((this._pDiffuseLightSources | this._pSpecularLightSources) & materials.LightSources.LIGHTS) != 0;
+                return (this._pNumPointLights > 0 || this._pNumDirectionalLights > 0) && ((this._pDiffuseLightSources | this._pSpecularLightSources) & away.materials.LightSources.LIGHTS) != 0;
             };
 
             /**
@@ -11525,13 +11182,13 @@ var away;
             };
 
             Object.defineProperty(CompiledPass.prototype, "specularLightSources", {
-                get: /**
+                /**
                 * Define which light source types to use for specular reflections. This allows choosing between regular lights
                 * and/or light probes for specular reflections.
                 *
                 * @see away3d.materials.LightSources
                 */
-                function () {
+                get: function () {
                     return this._pSpecularLightSources;
                 },
                 set: function (value) {
@@ -11543,13 +11200,13 @@ var away;
 
 
             Object.defineProperty(CompiledPass.prototype, "diffuseLightSources", {
-                get: /**
+                /**
                 * Define which light source types to use for diffuse reflections. This allows choosing between regular lights
                 * and/or light probes for diffuse reflections.
                 *
                 * @see away3d.materials.LightSources
                 */
-                function () {
+                get: function () {
                     return this._pDiffuseLightSources;
                 },
                 set: function (value) {
@@ -11560,14 +11217,14 @@ var away;
             });
 
             return CompiledPass;
-        })(materials.MaterialPassBase);
+        })(away.materials.MaterialPassBase);
         materials.CompiledPass = CompiledPass;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (materials) {
         /**
         * SuperShaderPass is a shader pass that uses shader methods to compile a complete program. It includes all methods
@@ -11591,21 +11248,21 @@ var away;
             * @inheritDoc
             */
             SuperShaderPass.prototype.pCreateCompiler = function (profile) {
-                return new materials.SuperShaderCompiler(profile);
+                return new away.materials.SuperShaderCompiler(profile);
             };
 
             Object.defineProperty(SuperShaderPass.prototype, "includeCasters", {
-                get: /**
+                /**
                 * Indicates whether lights that cast shadows should be included in the pass.
                 */
-                function () {
+                get: function () {
                     return this._includeCasters;
                 },
                 set: function (value) {
                     if (this._includeCasters == value)
                         return;
                     this._includeCasters = value;
-                    this.iInvalidateShaderProgram();
+                    this.iInvalidateShaderProgram(); //invalidateShaderProgram();
                 },
                 enumerable: true,
                 configurable: true
@@ -11613,16 +11270,17 @@ var away;
 
 
             Object.defineProperty(SuperShaderPass.prototype, "colorTransform", {
-                get: /**
+                /**
                 * The ColorTransform object to transform the colour of the material with. Defaults to null.
                 */
-                function () {
+                get: function () {
                     return this._pMethodSetup._iColorTransformMethod ? this._pMethodSetup._iColorTransformMethod.colorTransform : null;
                 },
                 set: function (value) {
                     if (value) {
+                        //colorTransformMethod ||= new away.geom.ColorTransform();
                         if (this.colorTransformMethod == null) {
-                            this.colorTransformMethod = new materials.ColorTransformMethod();
+                            this.colorTransformMethod = new away.materials.ColorTransformMethod();
                         }
 
                         this._pMethodSetup._iColorTransformMethod.colorTransform = value;
@@ -11640,10 +11298,10 @@ var away;
 
 
             Object.defineProperty(SuperShaderPass.prototype, "colorTransformMethod", {
-                get: /**
+                /**
                 * The ColorTransformMethod object to transform the colour of the material with. Defaults to null.
                 */
-                function () {
+                get: function () {
                     return this._pMethodSetup._iColorTransformMethod;
                 },
                 set: function (value) {
@@ -11664,10 +11322,10 @@ var away;
             };
 
             Object.defineProperty(SuperShaderPass.prototype, "numMethods", {
-                get: /**
+                /**
                 * The number of "effect" methods added to the material.
                 */
-                function () {
+                get: function () {
                     return this._pMethodSetup.numMethods;
                 },
                 enumerable: true,
@@ -11729,7 +11387,7 @@ var away;
                     this._pNumLightProbes = 0;
                 }
 
-                this.iInvalidateShaderProgram();
+                this.iInvalidateShaderProgram(); //invalidateShaderProgram();
             };
 
             /**
@@ -11798,14 +11456,14 @@ var away;
             * Indicates whether any light probes are used to contribute to the specular shading.
             */
             SuperShaderPass.prototype.usesProbesForSpecular = function () {
-                return this._pNumLightProbes > 0 && (this._pSpecularLightSources & materials.LightSources.PROBES) != 0;
+                return this._pNumLightProbes > 0 && (this._pSpecularLightSources & away.materials.LightSources.PROBES) != 0;
             };
 
             /**
             * Indicates whether any light probes are used to contribute to the diffuse shading.
             */
             SuperShaderPass.prototype.usesProbesForDiffuse = function () {
-                return this._pNumLightProbes > 0 && (this._pDiffuseLightSources & materials.LightSources.PROBES) != 0;
+                return this._pNumLightProbes > 0 && (this._pDiffuseLightSources & away.materials.LightSources.PROBES) != 0;
             };
 
             /**
@@ -11877,6 +11535,7 @@ var away;
                     }
                 }
 
+                // more directional supported than currently picked, need to clamp all to 0
                 if (this._pNumDirectionalLights > total) {
                     i = k + (this._pNumDirectionalLights - total) * 12;
 
@@ -11916,6 +11575,7 @@ var away;
                     }
                 }
 
+                // more directional supported than currently picked, need to clamp all to 0
                 if (this._pNumPointLights > total) {
                     i = k + (total - this._pNumPointLights) * 12;
 
@@ -11944,12 +11604,13 @@ var away;
                 for (var i = 0; i < len; ++i) {
                     probe = lightProbes[i];
 
+                    //away.Debug.throwPIR( 'SuperShaderPass' , 'pUpdateProbes' , 'context.setGLSLTextureAt - Parameters not matching');
                     if (addDiff) {
-                        context.setTextureAt(this._pLightProbeSpecularIndices[i], probe.diffuseMap.getTextureForStageGL(stageGL));
+                        context.setTextureAt(this._pLightProbeSpecularIndices[i], probe.diffuseMap.getTextureForStageGL(stageGL)); //<------ TODO: implement
                     }
 
                     if (addSpec) {
-                        context.setTextureAt(this._pLightProbeSpecularIndices[i], probe.specularMap.getTextureForStageGL(stageGL));
+                        context.setTextureAt(this._pLightProbeSpecularIndices[i], probe.specularMap.getTextureForStageGL(stageGL)); //<------ TODO: implement
                     }
                 }
 
@@ -11964,25 +11625,25 @@ var away;
                 get: function () {
                     return this._ignoreLights;
                 },
-                set: /**
+                /**
                 * Indicates whether lights should be ignored in this pass. This is used when only effect methods are rendered in
                 * a multipass material.
                 */
-                function (ignoreLights) {
+                set: function (ignoreLights) {
                     this._ignoreLights = ignoreLights;
                 },
                 enumerable: true,
                 configurable: true
             });
             return SuperShaderPass;
-        })(materials.CompiledPass);
+        })(away.materials.CompiledPass);
         materials.SuperShaderPass = SuperShaderPass;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (materials) {
         //use namespace arcane;
         /**
@@ -12001,18 +11662,18 @@ var away;
                 this._data = new Array(1.0, 255.0, 65025.0, 16581375.0, 1.0 / 255.0, 1.0 / 255.0, 1.0 / 255.0, 0.0, 0.0, 0.0, 0.0, 0.0);
             }
             Object.defineProperty(DepthMapPass.prototype, "alphaThreshold", {
-                get: /**
+                /**
                 * The minimum alpha value for which pixels should be drawn. This is used for transparency that is either
                 * invisible or entirely opaque, often used with textures for foliage, etc.
                 * Recommended values are 0 to disable alpha, or 0.5 to create smooth edges. Default value is 0 (disabled).
                 */
-                function () {
+                get: function () {
                     return this._alphaThreshold;
                 },
                 set: function (value) {
                     if (value < 0)
                         value = 0;
-else if (value > 1)
+                    else if (value > 1)
                         value = 1;
 
                     if (value == this._alphaThreshold)
@@ -12030,11 +11691,11 @@ else if (value > 1)
 
 
             Object.defineProperty(DepthMapPass.prototype, "alphaMask", {
-                get: /**
+                /**
                 * A texture providing alpha data to be able to prevent semi-transparent pixels to write to the alpha mask.
                 * Usually the diffuse texture when alphaThreshold is used.
                 */
-                function () {
+                get: function () {
                     return this._alphaMask;
                 },
                 set: function (value) {
@@ -12077,12 +11738,14 @@ else if (value > 1)
 
                 if (this._pSmooth)
                     filter = this._pMipmap ? "linear,miplinear" : "linear";
-else
+                else
                     filter = this._pMipmap ? "nearest,mipnearest" : "nearest";
 
                 // TODO: AGAL<>GLSL
                 var codeF = "div ft2, v0, v0.w		\n" + "mul ft0, fc0, ft2.z	\n" + "frc ft0, ft0			\n" + "mul ft1, ft0.yzww, fc1	\n";
 
+                //codeF += "mov ft1.w, fc1.w	\n" +
+                //    "mov ft0.w, fc0.x	\n";
                 if (this._alphaThreshold > 0) {
                     var format;
 
@@ -12140,7 +11803,7 @@ else
                 }
             };
             return DepthMapPass;
-        })(materials.MaterialPassBase);
+        })(away.materials.MaterialPassBase);
         materials.DepthMapPass = DepthMapPass;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -12179,18 +11842,18 @@ var away;
                 this._pNumUsedVertexConstants = 9;
             }
             Object.defineProperty(DistanceMapPass.prototype, "alphaThreshold", {
-                get: /**
+                /**
                 * The minimum alpha value for which pixels should be drawn. This is used for transparency that is either
                 * invisible or entirely opaque, often used with textures for foliage, etc.
                 * Recommended values are 0 to disable alpha, or 0.5 to create smooth edges. Default value is 0 (disabled).
                 */
-                function () {
+                get: function () {
                     return this._alphaThreshold;
                 },
                 set: function (value) {
                     if (value < 0)
                         value = 0;
-else if (value > 1)
+                    else if (value > 1)
                         value = 1;
 
                     if (value == this._alphaThreshold)
@@ -12208,11 +11871,11 @@ else if (value > 1)
 
 
             Object.defineProperty(DistanceMapPass.prototype, "alphaMask", {
-                get: /**
+                /**
                 * A texture providing alpha data to be able to prevent semi-transparent pixels to write to the alpha mask.
                 * Usually the diffuse texture when alphaThreshold is used.
                 */
-                function () {
+                get: function () {
                     return this._alphaMask;
                 },
                 set: function (value) {
@@ -12254,7 +11917,7 @@ else if (value > 1)
 
                 if (this._pSmooth)
                     filter = this._pMipmap ? "linear,miplinear" : "linear";
-else
+                else
                     filter = this._pMipmap ? "nearest,mipnearest" : "nearest";
 
                 //TODO: AGAL<> GLSL
@@ -12341,14 +12004,14 @@ else
                 }
             };
             return DistanceMapPass;
-        })(materials.MaterialPassBase);
+        })(away.materials.MaterialPassBase);
         materials.DistanceMapPass = DistanceMapPass;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (materials) {
         //import away3d.arcane;
         //import away3d.cameras.Camera;
@@ -12385,11 +12048,11 @@ var away;
                 this._maxLights = 3;
             }
             Object.defineProperty(LightingPass.prototype, "directionalLightsOffset", {
-                get: /**
+                /**
                 * Indicates the offset in the light picker's directional light vector for which to start including lights.
                 * This needs to be set before the light picker is assigned.
                 */
-                function () {
+                get: function () {
                     return this._directionalLightsOffset;
                 },
                 set: function (value) {
@@ -12401,11 +12064,11 @@ var away;
 
 
             Object.defineProperty(LightingPass.prototype, "pointLightsOffset", {
-                get: /**
+                /**
                 * Indicates the offset in the light picker's point light vector for which to start including lights.
                 * This needs to be set before the light picker is assigned.
                 */
-                function () {
+                get: function () {
                     return this._pointLightsOffset;
                 },
                 set: function (value) {
@@ -12417,11 +12080,11 @@ var away;
 
 
             Object.defineProperty(LightingPass.prototype, "lightProbesOffset", {
-                get: /**
+                /**
                 * Indicates the offset in the light picker's light probes vector for which to start including lights.
                 * This needs to be set before the light picker is assigned.
                 */
-                function () {
+                get: function () {
                     return this._lightProbesOffset;
                 },
                 set: function (value) {
@@ -12437,14 +12100,14 @@ var away;
             */
             LightingPass.prototype.pCreateCompiler = function (profile) {
                 this._maxLights = profile == "baselineConstrained" ? 1 : 3;
-                return new materials.LightingShaderCompiler(profile);
+                return new away.materials.LightingShaderCompiler(profile);
             };
 
             Object.defineProperty(LightingPass.prototype, "includeCasters", {
-                get: /**
+                /**
                 * Indicates whether or not shadow casting lights need to be included.
                 */
-                function () {
+                get: function () {
                     return this._includeCasters;
                 },
                 set: function (value) {
@@ -12512,10 +12175,10 @@ var away;
             */
             LightingPass.prototype.calculateNumProbes = function (numLightProbes) {
                 var numChannels = 0;
-                if ((this._pSpecularLightSources & materials.LightSources.PROBES) != 0) {
+                if ((this._pSpecularLightSources & away.materials.LightSources.PROBES) != 0) {
                     ++numChannels;
                 }
-                if ((this._pDiffuseLightSources & materials.LightSources.PROBES) != 0)
+                if ((this._pDiffuseLightSources & away.materials.LightSources.PROBES) != 0)
                     ++numChannels;
 
                 // 4 channels available
@@ -12581,14 +12244,14 @@ var away;
             * Indicates whether any light probes are used to contribute to the specular shading.
             */
             LightingPass.prototype.usesProbesForSpecular = function () {
-                return this._pNumLightProbes > 0 && (this._pSpecularLightSources & materials.LightSources.PROBES) != 0;
+                return this._pNumLightProbes > 0 && (this._pSpecularLightSources & away.materials.LightSources.PROBES) != 0;
             };
 
             /**
             * Indicates whether any light probes are used to contribute to the diffuse shading.
             */
             LightingPass.prototype.usesProbesForDiffuse = function () {
-                return this._pNumLightProbes > 0 && (this._pDiffuseLightSources & materials.LightSources.PROBES) != 0;
+                return this._pNumLightProbes > 0 && (this._pDiffuseLightSources & away.materials.LightSources.PROBES) != 0;
             };
 
             /**
@@ -12668,6 +12331,7 @@ var away;
                     }
                 }
 
+                // more directional supported than currently picked, need to clamp all to 0
                 if (this._pNumDirectionalLights > total) {
                     i = k + (this._pNumDirectionalLights - total) * 12;
 
@@ -12739,6 +12403,7 @@ var away;
                     }
                 }
 
+                // more directional supported than currently picked, need to clamp all to 0
                 if (this._pNumPointLights > total) {
                     i = k + (total - this._pNumPointLights) * 12;
                     for (; k < i; ++k) {
@@ -12781,14 +12446,14 @@ var away;
                     this._pFragmentConstantData[this._pProbeWeightsIndex + i] = weights[this._lightProbesOffset + i];
             };
             return LightingPass;
-        })(materials.CompiledPass);
+        })(away.materials.CompiledPass);
         materials.LightingPass = LightingPass;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (materials) {
         /**
         * ShadowCasterPass is a shader pass that uses shader methods to compile a complete program. It only draws the lighting
@@ -12811,7 +12476,7 @@ var away;
             * @inheritDoc
             */
             ShadowCasterPass.prototype.pCreateCompiler = function (profile) {
-                return new materials.LightingShaderCompiler(profile);
+                return new away.materials.LightingShaderCompiler(profile);
             };
 
             /**
@@ -13004,14 +12669,14 @@ var away;
             ShadowCasterPass.prototype.pUpdateProbes = function (stageGL) {
             };
             return ShadowCasterPass;
-        })(materials.CompiledPass);
+        })(away.materials.CompiledPass);
         materials.ShadowCasterPass = ShadowCasterPass;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (materials) {
         /**
         * SegmentPass is a material pass that draws wireframe segments.
@@ -13055,7 +12720,7 @@ var away;
                 this._calcMatrix.copyFrom(renderable.sourceEntity.sceneTransform);
                 this._calcMatrix.append(camera.inverseSceneTransform);
 
-                var subGeometry = (renderable).subGeometry;
+                var subGeometry = renderable.subGeometry;
 
                 var subSetCount = subGeometry.iSubSetCount;
 
@@ -13077,7 +12742,7 @@ var away;
 
                 if (stageGL.scissorRect)
                     this._constants[0] = this._thickness / Math.min(stageGL.scissorRect.width, stageGL.scissorRect.height);
-else
+                else
                     this._constants[0] = this._thickness / Math.min(stageGL.width, stageGL.height);
 
                 // value to convert distance from camera to model length per pixel width
@@ -13104,14 +12769,14 @@ else
             SegmentPass.pONE_VECTOR = Array(1, 1, 1, 1);
             SegmentPass.pFRONT_VECTOR = Array(0, 0, -1, 0);
             return SegmentPass;
-        })(materials.MaterialPassBase);
+        })(away.materials.MaterialPassBase);
         materials.SegmentPass = SegmentPass;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (materials) {
         /**
         * SkyboxPass provides a material pass exclusively used to render sky boxes from a cube texture.
@@ -13128,10 +12793,10 @@ var away;
                 this._vertexData = new Array(0, 0, 0, 0, 1, 1, 1, 1);
             }
             Object.defineProperty(SkyboxPass.prototype, "cubeTexture", {
-                get: /**
+                /**
                 * The cube texture to use as the skybox.
                 */
-                function () {
+                get: function () {
                     return this._cubeTexture;
                 },
                 set: function (value) {
@@ -13200,14 +12865,14 @@ var away;
                 context.setTextureAt(0, this._cubeTexture.getTextureForStageGL(stageGL));
             };
             return SkyboxPass;
-        })(materials.MaterialPassBase);
+        })(away.materials.MaterialPassBase);
         materials.SkyboxPass = SkyboxPass;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (materials) {
         /**
         * MethodVO contains data for a given method for the use within a single material.
@@ -13250,9 +12915,9 @@ var away;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (materials) {
         //import away3d.*;
         //import away3d.cameras.*;
@@ -13294,10 +12959,10 @@ var away;
             };
 
             Object.defineProperty(ShadingMethodBase.prototype, "iSharedRegisters", {
-                get: /**
+                /**
                 * The shared registers created by the compiler and possibly used by methods.
                 */
-                function () {
+                get: function () {
                     return this._sharedRegisters;
                 },
                 set: function (value) {
@@ -13313,10 +12978,10 @@ var away;
             };
 
             Object.defineProperty(ShadingMethodBase.prototype, "passes", {
-                get: /**
+                /**
                 * Any passes required that render to a texture used by this method.
                 */
-                function () {
+                get: function () {
                     return this._passes;
                 },
                 enumerable: true,
@@ -13333,7 +12998,7 @@ var away;
             * Creates a data container that contains material-dependent data. Provided as a factory method so a custom subtype can be overridden when needed.
             */
             ShadingMethodBase.prototype.iCreateMethodVO = function () {
-                return new materials.MethodVO();
+                return new away.materials.MethodVO();
             };
 
             /**
@@ -13410,7 +13075,7 @@ var away;
 
                 if (vo.useSmoothTextures)
                     filter = enableMipMaps ? "linear,miplinear" : "linear";
-else
+                else
                     filter = enableMipMaps ? "nearest,mipnearest" : "nearest";
 
                 if (uvReg == null)
@@ -13434,7 +13099,7 @@ else
 
                 if (vo.useSmoothTextures)
                     filter = enableMipMaps ? "linear,miplinear" : "linear";
-else
+                else
                     filter = enableMipMaps ? "nearest,mipnearest" : "nearest";
 
                 return "tex " + targetReg + ", " + uvReg + ", " + inputReg + " <cube," + format + filter + ">\n";
@@ -13476,9 +13141,9 @@ else
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (materials) {
         /**
         * EffectMethodBase forms an abstract base class for shader methods that are not dependent on light sources,
@@ -13490,10 +13155,10 @@ var away;
                 _super.call(this);
             }
             Object.defineProperty(EffectMethodBase.prototype, "assetType", {
-                get: /**
+                /**
                 * @inheritDoc
                 */
-                function () {
+                get: function () {
                     return away.library.AssetType.EFFECTS_METHOD;
                 },
                 enumerable: true,
@@ -13512,14 +13177,14 @@ var away;
                 return "";
             };
             return EffectMethodBase;
-        })(materials.ShadingMethodBase);
+        })(away.materials.ShadingMethodBase);
         materials.EffectMethodBase = EffectMethodBase;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (materials) {
         //import away3d.arcane;
         /**
@@ -13563,10 +13228,10 @@ var away;
                 this._onShaderInvalidatedDelegate = Delegate.create(this, this.onShaderInvalidated);
 
                 this._iMethods = new Array();
-                this._iNormalMethod = new materials.BasicNormalMethod();
-                this._iAmbientMethod = new materials.BasicAmbientMethod();
-                this._iDiffuseMethod = new materials.BasicDiffuseMethod();
-                this._iSpecularMethod = new materials.BasicSpecularMethod();
+                this._iNormalMethod = new away.materials.BasicNormalMethod();
+                this._iAmbientMethod = new away.materials.BasicAmbientMethod();
+                this._iDiffuseMethod = new away.materials.BasicDiffuseMethod();
+                this._iSpecularMethod = new away.materials.BasicSpecularMethod();
 
                 this._iNormalMethod.addEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
                 this._iDiffuseMethod.addEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
@@ -13593,10 +13258,10 @@ var away;
             };
 
             Object.defineProperty(ShaderMethodSetup.prototype, "normalMethod", {
-                get: /**
+                /**
                 *  The method used to generate the per-pixel normals.
                 */
-                function () {
+                get: function () {
                     return this._iNormalMethod;
                 },
                 set: function (value) {
@@ -13622,10 +13287,10 @@ var away;
 
 
             Object.defineProperty(ShaderMethodSetup.prototype, "ambientMethod", {
-                get: /**
+                /**
                 * The method that provides the ambient lighting contribution.
                 */
-                function () {
+                get: function () {
                     return this._iAmbientMethod;
                 },
                 set: function (value) {
@@ -13651,10 +13316,10 @@ var away;
 
 
             Object.defineProperty(ShaderMethodSetup.prototype, "shadowMethod", {
-                get: /**
+                /**
                 * The method used to render shadows cast on this surface, or null if no shadows are to be rendered.
                 */
-                function () {
+                get: function () {
                     return this._iShadowMethod;
                 },
                 set: function (value) {
@@ -13678,10 +13343,10 @@ var away;
 
 
             Object.defineProperty(ShaderMethodSetup.prototype, "diffuseMethod", {
-                get: /**
+                /**
                 * The method that provides the diffuse lighting contribution.
                 */
-                function () {
+                get: function () {
                     return this._iDiffuseMethod;
                 },
                 set: function (value) {
@@ -13708,10 +13373,10 @@ var away;
 
 
             Object.defineProperty(ShaderMethodSetup.prototype, "specularMethod", {
-                get: /**
+                /**
                 * The method to perform specular shading.
                 */
-                function () {
+                get: function () {
                     return this._iSpecularMethod;
                 },
                 set: function (value) {
@@ -13740,10 +13405,10 @@ var away;
 
 
             Object.defineProperty(ShaderMethodSetup.prototype, "iColorTransformMethod", {
-                get: /**
+                /**
                 * @private
                 */
-                function () {
+                get: function () {
                     return this._iColorTransformMethod;
                 },
                 set: function (value) {
@@ -13800,7 +13465,7 @@ var away;
             * @param method The method to be added.
             */
             ShaderMethodSetup.prototype.addMethod = function (method) {
-                this._iMethods.push(new materials.MethodVOSet(method));
+                this._iMethods.push(new away.materials.MethodVOSet(method));
 
                 method.addEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
 
@@ -13823,7 +13488,7 @@ var away;
             * @param index The index of the method's occurrence
             */
             ShaderMethodSetup.prototype.addMethodAt = function (method, index) {
-                this._iMethods.splice(index, 0, new materials.MethodVOSet(method));
+                this._iMethods.splice(index, 0, new away.materials.MethodVOSet(method));
 
                 method.addEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
 
@@ -13843,10 +13508,10 @@ var away;
             };
 
             Object.defineProperty(ShaderMethodSetup.prototype, "numMethods", {
-                get: /**
+                /**
                 * The number of "effect" methods added to the material.
                 */
-                function () {
+                get: function () {
                     return this._iMethods.length;
                 },
                 enumerable: true,
@@ -13886,9 +13551,9 @@ var away;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (materials) {
         //import away3d.arcane;
         //import away3d.materials.compilation.ShaderRegisterCache;
@@ -13952,14 +13617,14 @@ var away;
                 return "";
             };
             return LightingMethodBase;
-        })(materials.ShadingMethodBase);
+        })(away.materials.ShadingMethodBase);
         materials.LightingMethodBase = LightingMethodBase;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (materials) {
         //import away3d.*;
         //import away3d.errors.*;
@@ -13986,10 +13651,10 @@ var away;
                 this._pShadowMapper = castingLight.shadowMapper;
             }
             Object.defineProperty(ShadowMapMethodBase.prototype, "assetType", {
-                get: /**
+                /**
                 * @inheritDoc
                 */
-                function () {
+                get: function () {
                     return away.library.AssetType.SHADOW_MAP_METHOD;
                 },
                 enumerable: true,
@@ -13997,10 +13662,10 @@ var away;
             });
 
             Object.defineProperty(ShadowMapMethodBase.prototype, "alpha", {
-                get: /**
+                /**
                 * The "transparency" of the shadows. This allows making shadows less strong.
                 */
-                function () {
+                get: function () {
                     return this._pAlpha;
                 },
                 set: function (value) {
@@ -14012,10 +13677,10 @@ var away;
 
 
             Object.defineProperty(ShadowMapMethodBase.prototype, "castingLight", {
-                get: /**
+                /**
                 * The light casting the shadows.
                 */
-                function () {
+                get: function () {
                     return this._pCastingLight;
                 },
                 enumerable: true,
@@ -14023,11 +13688,11 @@ var away;
             });
 
             Object.defineProperty(ShadowMapMethodBase.prototype, "epsilon", {
-                get: /**
+                /**
                 * A small value to counter floating point precision errors when comparing values in the shadow map with the
                 * calculated depth value. Increase this if shadow banding occurs, decrease it if the shadow seems to be too detached.
                 */
-                function () {
+                get: function () {
                     return this._pEpsilon;
                 },
                 set: function (value) {
@@ -14046,14 +13711,14 @@ var away;
                 return null;
             };
             return ShadowMapMethodBase;
-        })(materials.ShadingMethodBase);
+        })(away.materials.ShadingMethodBase);
         materials.ShadowMapMethodBase = ShadowMapMethodBase;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (materials) {
         /**
         * SimpleShadowMapMethodBase provides an abstract method for simple (non-wrapping) shadow map methods.
@@ -14110,10 +13775,10 @@ var away;
             };
 
             Object.defineProperty(SimpleShadowMapMethodBase.prototype, "_iDepthMapCoordReg", {
-                get: /**
+                /**
                 * Wrappers that override the vertex shader need to set this explicitly
                 */
-                function () {
+                get: function () {
                     return this._pDepthMapCoordReg;
                 },
                 set: function (value) {
@@ -14213,7 +13878,7 @@ var away;
             */
             SimpleShadowMapMethodBase.prototype.iSetRenderState = function (vo, renderable, stageGL, camera) {
                 if (!this._pUsePoint)
-                    (this._pShadowMapper).iDepthProjection.copyRawDataTo(vo.vertexData, vo.vertexConstantsIndex + 4, true);
+                    this._pShadowMapper.iDepthProjection.copyRawDataTo(vo.vertexData, vo.vertexConstantsIndex + 4, true);
             };
 
             /**
@@ -14238,9 +13903,9 @@ var away;
                 var index = vo.fragmentConstantsIndex;
 
                 if (this._pUsePoint)
-                    fragmentData[index + 4] = -Math.pow(1 / ((this._pCastingLight).fallOff * this._pEpsilon), 2);
-else
-                    vo.vertexData[vo.vertexConstantsIndex + 3] = -1 / ((this._pShadowMapper).depth * this._pEpsilon);
+                    fragmentData[index + 4] = -Math.pow(1 / (this._pCastingLight.fallOff * this._pEpsilon), 2);
+                else
+                    vo.vertexData[vo.vertexConstantsIndex + 3] = -1 / (this._pShadowMapper.depth * this._pEpsilon);
 
                 fragmentData[index + 5] = 1 - this._pAlpha;
                 if (this._pUsePoint) {
@@ -14250,7 +13915,7 @@ else
                     fragmentData[index + 10] = pos.z;
 
                     // used to decompress distance
-                    var f = (this._pCastingLight).fallOff;
+                    var f = this._pCastingLight.fallOff;
                     fragmentData[index + 11] = 1 / (2 * f * f);
                 }
                 stageGL.contextGL.setTextureAt(vo.texturesIndex, this._pCastingLight.shadowMapper.depthMap.getTextureForStageGL(stageGL));
@@ -14263,14 +13928,14 @@ else
                 throw new Error("This shadow method is incompatible with cascade shadows");
             };
             return SimpleShadowMapMethodBase;
-        })(materials.ShadowMapMethodBase);
+        })(away.materials.ShadowMapMethodBase);
         materials.SimpleShadowMapMethodBase = SimpleShadowMapMethodBase;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (materials) {
         /**
         * DitheredShadowMapMethod provides a softened shadowing technique by bilinearly interpolating shadow comparison
@@ -14361,14 +14026,14 @@ var away;
                 return code;
             };
             return FilteredShadowMapMethod;
-        })(materials.SimpleShadowMapMethodBase);
+        })(away.materials.SimpleShadowMapMethodBase);
         materials.FilteredShadowMapMethod = FilteredShadowMapMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (materials) {
         var StageGL = away.base.StageGL;
 
@@ -14411,10 +14076,10 @@ var away;
             };
 
             Object.defineProperty(FogMethod.prototype, "minDistance", {
-                get: /**
+                /**
                 * The distance from which the fog starts appearing.
                 */
-                function () {
+                get: function () {
                     return this._minDistance;
                 },
                 set: function (value) {
@@ -14426,10 +14091,10 @@ var away;
 
 
             Object.defineProperty(FogMethod.prototype, "maxDistance", {
-                get: /**
+                /**
                 * The distance at which the fog is densest.
                 */
-                function () {
+                get: function () {
                     return this._maxDistance;
                 },
                 set: function (value) {
@@ -14441,13 +14106,13 @@ var away;
 
 
             Object.defineProperty(FogMethod.prototype, "fogColor", {
-                get: /**
+                /**
                 * The colour of the fog.
                 */
-                function () {
+                get: function () {
                     return this._fogColor;
                 },
-                set: function (value/*uint*/ ) {
+                set: function (value /*uint*/ ) {
                     this._fogColor = value;
                     this._fogR = ((value >> 16) & 0xff) / 0xff;
                     this._fogG = ((value >> 8) & 0xff) / 0xff;
@@ -14483,21 +14148,21 @@ var away;
                 var code = "";
                 vo.fragmentConstantsIndex = fogColor.index * 4;
 
-                code += "sub " + temp2 + ".w, " + this._sharedRegisters.projectionFragment + ".z, " + fogData + ".x          \n" + "mul " + temp2 + ".w, " + temp2 + ".w, " + fogData + ".y					\n" + "sat " + temp2 + ".w, " + temp2 + ".w										\n" + "sub " + temp + ", " + fogColor + ", " + targetReg + "\n" + "mul " + temp + ", " + temp + ", " + temp2 + ".w					\n" + "add " + targetReg + ", " + targetReg + ", " + temp + "\n";
+                code += "sub " + temp2 + ".w, " + this._sharedRegisters.projectionFragment + ".z, " + fogData + ".x          \n" + "mul " + temp2 + ".w, " + temp2 + ".w, " + fogData + ".y					\n" + "sat " + temp2 + ".w, " + temp2 + ".w										\n" + "sub " + temp + ", " + fogColor + ", " + targetReg + "\n" + "mul " + temp + ", " + temp + ", " + temp2 + ".w					\n" + "add " + targetReg + ", " + targetReg + ", " + temp + "\n"; // fogRatio*(fogColor- col) + col
 
                 regCache.removeFragmentTempUsage(temp);
 
                 return code;
             };
             return FogMethod;
-        })(materials.EffectMethodBase);
+        })(away.materials.EffectMethodBase);
         materials.FogMethod = FogMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (materials) {
         /**
         * HardShadowMapMethod provides the cheapest shadow map method by using a single tap without any filtering.
@@ -14528,7 +14193,7 @@ var away;
                 vo.fragmentConstantsIndex = decReg.index * 4;
                 vo.texturesIndex = depthMapRegister.index;
 
-                code += "tex " + depthCol + ", " + this._pDepthMapCoordReg + ", " + depthMapRegister + " <2d, nearest, clamp>\n" + "dp4 " + depthCol + ".z, " + depthCol + ", " + decReg + "\n" + "slt " + targetReg + ".w, " + this._pDepthMapCoordReg + ".z, " + depthCol + ".z\n";
+                code += "tex " + depthCol + ", " + this._pDepthMapCoordReg + ", " + depthMapRegister + " <2d, nearest, clamp>\n" + "dp4 " + depthCol + ".z, " + depthCol + ", " + decReg + "\n" + "slt " + targetReg + ".w, " + this._pDepthMapCoordReg + ".z, " + depthCol + ".z\n"; // 0 if in shadow
 
                 return code;
             };
@@ -14549,7 +14214,7 @@ var away;
                 vo.fragmentConstantsIndex = decReg.index * 4;
                 vo.texturesIndex = depthMapRegister.index;
 
-                code += "sub " + lightDir + ", " + this._sharedRegisters.globalPositionVarying + ", " + posReg + "\n" + "dp3 " + lightDir + ".w, " + lightDir + ".xyz, " + lightDir + ".xyz\n" + "mul " + lightDir + ".w, " + lightDir + ".w, " + posReg + ".w\n" + "nrm " + lightDir + ".xyz, " + lightDir + ".xyz\n" + "tex " + depthSampleCol + ", " + lightDir + ", " + depthMapRegister + " <cube, nearest, clamp>\n" + "dp4 " + depthSampleCol + ".z, " + depthSampleCol + ", " + decReg + "\n" + "add " + targetReg + ".w, " + lightDir + ".w, " + epsReg + ".x\n" + "slt " + targetReg + ".w, " + targetReg + ".w, " + depthSampleCol + ".z\n";
+                code += "sub " + lightDir + ", " + this._sharedRegisters.globalPositionVarying + ", " + posReg + "\n" + "dp3 " + lightDir + ".w, " + lightDir + ".xyz, " + lightDir + ".xyz\n" + "mul " + lightDir + ".w, " + lightDir + ".w, " + posReg + ".w\n" + "nrm " + lightDir + ".xyz, " + lightDir + ".xyz\n" + "tex " + depthSampleCol + ", " + lightDir + ", " + depthMapRegister + " <cube, nearest, clamp>\n" + "dp4 " + depthSampleCol + ".z, " + depthSampleCol + ", " + decReg + "\n" + "add " + targetReg + ".w, " + lightDir + ".w, " + epsReg + ".x\n" + "slt " + targetReg + ".w, " + targetReg + ".w, " + depthSampleCol + ".z\n"; // 0 if in shadow
 
                 regCache.removeFragmentTempUsage(depthSampleCol);
 
@@ -14570,14 +14235,14 @@ var away;
             HardShadowMapMethod.prototype.iActivateForCascade = function (vo, stageGL) {
             };
             return HardShadowMapMethod;
-        })(materials.SimpleShadowMapMethodBase);
+        })(away.materials.SimpleShadowMapMethodBase);
         materials.HardShadowMapMethod = HardShadowMapMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (materials) {
         /**
         * SoftShadowMapMethod provides a soft shadowing technique by randomly distributing sample points.
@@ -14600,18 +14265,18 @@ var away;
                 this.range = range;
             }
             Object.defineProperty(SoftShadowMapMethod.prototype, "numSamples", {
-                get: /**
+                /**
                 * The amount of samples to take for dithering. Minimum 1, maximum 32. The actual maximum may depend on the
                 * complexity of the shader.
                 */
-                function () {
+                get: function () {
                     return this._numSamples;
                 },
-                set: function (value/*int*/ ) {
+                set: function (value /*int*/ ) {
                     this._numSamples = value;
                     if (this._numSamples < 1)
                         this._numSamples = 1;
-else if (this._numSamples > 32)
+                    else if (this._numSamples > 32)
                         this._numSamples = 32;
 
                     this._offsets = away.geom.PoissonLookup.getDistribution(this._numSamples);
@@ -14623,10 +14288,10 @@ else if (this._numSamples > 32)
 
 
             Object.defineProperty(SoftShadowMapMethod.prototype, "range", {
-                get: /**
+                /**
                 * The range in the shadow map in which to distribute the samples.
                 */
-                function () {
+                get: function () {
                     return this._range;
                 },
                 set: function (value) {
@@ -14751,7 +14416,7 @@ else if (this._numSamples > 32)
                 for (i = 0; i < this._numSamples; ++i) {
                     if (i == 0) {
                         code = "add " + uvReg + ", " + this._pDepthMapCoordReg + ", " + dataReg + ".zwyy\n";
-                        code += "tex " + temp + ", " + uvReg + ", " + depthTexture + " <2d,nearest,clamp>\n" + "dp4 " + temp + ".z, " + temp + ", " + decodeRegister + "\n" + "slt " + targetRegister + ".w, " + this._pDepthMapCoordReg + ".z, " + temp + ".z\n";
+                        code += "tex " + temp + ", " + uvReg + ", " + depthTexture + " <2d,nearest,clamp>\n" + "dp4 " + temp + ".z, " + temp + ", " + decodeRegister + "\n" + "slt " + targetRegister + ".w, " + this._pDepthMapCoordReg + ".z, " + temp + ".z\n"; // 0 if in shadow;
                     } else {
                         code += "add " + uvReg + ".xy, " + this._pDepthMapCoordReg + ".xy, " + offsets[i] + "\n";
                         code += this.addSample(uvReg, depthTexture, decodeRegister, targetRegister, regCache);
@@ -14759,18 +14424,18 @@ else if (this._numSamples > 32)
                 }
 
                 regCache.removeFragmentTempUsage(uvReg);
-                code += "mul " + targetRegister + ".w, " + targetRegister + ".w, " + dataReg + ".x\n";
+                code += "mul " + targetRegister + ".w, " + targetRegister + ".w, " + dataReg + ".x\n"; // average
                 return code;
             };
             return SoftShadowMapMethod;
-        })(materials.SimpleShadowMapMethodBase);
+        })(away.materials.SimpleShadowMapMethodBase);
         materials.SoftShadowMapMethod = SoftShadowMapMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (materials) {
         /**
         * DitheredShadowMapMethod provides a soft shadowing technique by randomly distributing sample points differently for each fragment.
@@ -14798,18 +14463,18 @@ var away;
                     this.initGrainTexture();
             }
             Object.defineProperty(DitheredShadowMapMethod.prototype, "numSamples", {
-                get: /**
+                /**
                 * The amount of samples to take for dithering. Minimum 1, maximum 24. The actual maximum may depend on the
                 * complexity of the shader.
                 */
-                function () {
+                get: function () {
                     return this._numSamples;
                 },
-                set: function (value/*int*/ ) {
+                set: function (value /*int*/ ) {
                     this._numSamples = value;
                     if (this._numSamples < 1)
                         this._numSamples = 1;
-else if (this._numSamples > 24)
+                    else if (this._numSamples > 24)
                         this._numSamples = 24;
                     this.iInvalidateShaderProgram();
                 },
@@ -14838,10 +14503,10 @@ else if (this._numSamples > 24)
             };
 
             Object.defineProperty(DitheredShadowMapMethod.prototype, "range", {
-                get: /**
+                /**
                 * The range in the shadow map in which to distribute the samples.
                 */
-                function () {
+                get: function () {
                     return this._range * 2;
                 },
                 set: function (value) {
@@ -14867,19 +14532,19 @@ else if (this._numSamples > 24)
                     g = 2 * (Math.random() - .5);
                     if (r < 0)
                         r -= step;
-else
+                    else
                         r += step;
                     if (g < 0)
                         g -= step;
-else
+                    else
                         g += step;
                     if (r > 1)
                         r = 1;
-else if (r < -1)
+                    else if (r < -1)
                         r = -1;
                     if (g > 1)
                         g = 1;
-else if (g < -1)
+                    else if (g < -1)
                         g = -1;
                     vec[i] = (Math.floor((r * .5 + .5) * 0xff) << 16) | (Math.floor((g * .5 + .5) * 0xff) << 8);
                 }
@@ -14950,15 +14615,16 @@ else if (g < -1)
                 while (numSamples > 0) {
                     if (numSamples == this._numSamples)
                         code += "tex " + uvReg + ", " + uvReg + ", " + grainRegister + " <2d,nearest,repeat,mipnone>\n";
-else
+                    else
                         code += "tex " + uvReg + ", " + uvReg + ".zwxy, " + grainRegister + " <2d,nearest,repeat,mipnone>\n";
 
                     // keep grain in uvReg.zw
-                    code += "sub " + uvReg + ".zw, " + uvReg + ".xy, fc0.xx\n" + "mul " + uvReg + ".zw, " + uvReg + ".zw, " + customDataReg + ".w\n";
+                    code += "sub " + uvReg + ".zw, " + uvReg + ".xy, fc0.xx\n" + "mul " + uvReg + ".zw, " + uvReg + ".zw, " + customDataReg + ".w\n"; // (tex unpack scale and tex scale in one)
 
+                    // first sample
                     if (numSamples == this._numSamples) {
                         // first sample
-                        code += "add " + uvReg + ".xy, " + uvReg + ".zw, " + this._pDepthMapCoordReg + ".xy\n" + "tex " + temp + ", " + uvReg + ", " + depthMapRegister + " <2d,nearest,clamp,mipnone>\n" + "dp4 " + temp + ".z, " + temp + ", " + decReg + "\n" + "slt " + targetReg + ".w, " + this._pDepthMapCoordReg + ".z, " + temp + ".z\n";
+                        code += "add " + uvReg + ".xy, " + uvReg + ".zw, " + this._pDepthMapCoordReg + ".xy\n" + "tex " + temp + ", " + uvReg + ", " + depthMapRegister + " <2d,nearest,clamp,mipnone>\n" + "dp4 " + temp + ".z, " + temp + ", " + decReg + "\n" + "slt " + targetReg + ".w, " + this._pDepthMapCoordReg + ".z, " + temp + ".z\n"; // 0 if in shadow
                     } else
                         code += this.addSample(uvReg, depthMapRegister, decReg, targetReg, regCache);
 
@@ -14975,7 +14641,7 @@ else
                     }
 
                     if (numSamples > 2) {
-                        code += "neg " + uvReg + ".w, " + uvReg + ".w\n";
+                        code += "neg " + uvReg + ".w, " + uvReg + ".w\n"; // will be rotated 90 degrees when being accessed as wz
 
                         code += "add " + uvReg + ".xy, " + uvReg + ".wz, " + this._pDepthMapCoordReg + ".xy\n" + this.addSample(uvReg, depthMapRegister, decReg, targetReg, regCache);
                     }
@@ -14996,7 +14662,7 @@ else
                 }
 
                 regCache.removeFragmentTempUsage(uvReg);
-                code += "mul " + targetReg + ".w, " + targetReg + ".w, " + customDataReg + ".x\n";
+                code += "mul " + targetReg + ".w, " + targetReg + ".w, " + customDataReg + ".x\n"; // average
                 return code;
             };
 
@@ -15039,14 +14705,14 @@ else
                 return this.getSampleCode(regCache, dataReg, depthTexture, decodeRegister, targetRegister);
             };
             return DitheredShadowMapMethod;
-        })(materials.SimpleShadowMapMethodBase);
+        })(away.materials.SimpleShadowMapMethodBase);
         materials.DitheredShadowMapMethod = DitheredShadowMapMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (materials) {
         var StageGL = away.base.StageGL;
         var Delegate = away.utils.Delegate;
@@ -15084,10 +14750,10 @@ var away;
                 this._baseMethod.addEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
             }
             Object.defineProperty(NearShadowMapMethod.prototype, "baseMethod", {
-                get: /**
+                /**
                 * The base shadow map method on which this method's shading is based.
                 */
-                function () {
+                get: function () {
                     return this._baseMethod;
                 },
                 set: function (value) {
@@ -15132,10 +14798,10 @@ var away;
             };
 
             Object.defineProperty(NearShadowMapMethod.prototype, "alpha", {
-                get: /**
+                /**
                 * @inheritDoc
                 */
-                function () {
+                get: function () {
                     return this._baseMethod.alpha;
                 },
                 set: function (value) {
@@ -15147,10 +14813,10 @@ var away;
 
 
             Object.defineProperty(NearShadowMapMethod.prototype, "epsilon", {
-                get: /**
+                /**
                 * @inheritDoc
                 */
-                function () {
+                get: function () {
                     return this._baseMethod.epsilon;
                 },
                 set: function (value) {
@@ -15162,10 +14828,10 @@ var away;
 
 
             Object.defineProperty(NearShadowMapMethod.prototype, "fadeRatio", {
-                get: /**
+                /**
                 * The amount of shadow fading to the outer shadow area. A value of 1 would mean the shadows start fading from the camera's near plane.
                 */
-                function () {
+                get: function () {
                     return this._fadeRatio;
                 },
                 set: function (value) {
@@ -15247,10 +14913,10 @@ var away;
             };
 
             Object.defineProperty(NearShadowMapMethod.prototype, "iSharedRegisters", {
-                set: /**
+                /**
                 * @inheritDoc
                 */
-                function (value) {
+                set: function (value) {
                     this._sharedRegisters = this._baseMethod.iSharedRegisters = value;
                 },
                 enumerable: true,
@@ -15264,14 +14930,14 @@ var away;
                 this.iInvalidateShaderProgram();
             };
             return NearShadowMapMethod;
-        })(materials.SimpleShadowMapMethodBase);
+        })(away.materials.SimpleShadowMapMethodBase);
         materials.NearShadowMapMethod = NearShadowMapMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (materials) {
         /**
         * BasicAmbientMethod provides the default shading method for uniform ambient lighting.
@@ -15308,10 +14974,10 @@ var away;
             };
 
             Object.defineProperty(BasicAmbientMethod.prototype, "ambient", {
-                get: /**
+                /**
                 * The strength of the ambient reflection of the surface.
                 */
-                function () {
+                get: function () {
                     return this._ambient;
                 },
                 set: function (value) {
@@ -15323,10 +14989,10 @@ var away;
 
 
             Object.defineProperty(BasicAmbientMethod.prototype, "ambientColor", {
-                get: /**
+                /**
                 * The colour of the ambient reflection of the surface.
                 */
-                function () {
+                get: function () {
                     return this._ambientColor;
                 },
                 set: function (value) {
@@ -15338,19 +15004,25 @@ var away;
 
 
             Object.defineProperty(BasicAmbientMethod.prototype, "texture", {
-                get: /**
+                /**
                 * The bitmapData to use to define the diffuse reflection color per texel.
                 */
-                function () {
+                get: function () {
                     return this._texture;
                 },
                 set: function (value) {
                     var b = (value != null);
 
-                    if (b != this._useTexture || (value && this._texture && (value.hasMipMaps != this._texture.hasMipMaps || value.format != this._texture.format))) {
-                        this.iInvalidateShaderProgram();
+                    /* // ORIGINAL conditional
+                    if (Boolean(value) != _useTexture ||
+                    (value && _texture && (value.hasMipMaps != _texture.hasMipMaps || value.format != _texture.format))) {
+                    invalidateShaderProgram();
                     }
-                    this._useTexture = b;
+                    */
+                    if (b != this._useTexture || (value && this._texture && (value.hasMipMaps != this._texture.hasMipMaps || value.format != this._texture.format))) {
+                        this.iInvalidateShaderProgram(); //invalidateShaderProgram();
+                    }
+                    this._useTexture = b; //Boolean(value);
                     this._texture = value;
                 },
                 enumerable: true,
@@ -15391,7 +15063,7 @@ var away;
                     vo.texturesIndex = this._ambientInputRegister.index;
 
                     // TODO: AGAL <> GLSL
-                    code += this.pGetTex2DSampleCode(vo, targetReg, this._ambientInputRegister, this._texture) + "div " + targetReg + ".xyz, " + targetReg + ".xyz, " + targetReg + ".w\n";
+                    code += this.pGetTex2DSampleCode(vo, targetReg, this._ambientInputRegister, this._texture) + "div " + targetReg + ".xyz, " + targetReg + ".xyz, " + targetReg + ".w\n"; // apparently, still needs to un-premultiply :s
                 } else {
                     this._ambientInputRegister = regCache.getFreeFragmentConstant();
                     vo.fragmentConstantsIndex = this._ambientInputRegister.index * 4;
@@ -15437,14 +15109,14 @@ var away;
                 }
             };
             return BasicAmbientMethod;
-        })(materials.ShadingMethodBase);
+        })(away.materials.ShadingMethodBase);
         materials.BasicAmbientMethod = BasicAmbientMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (materials) {
         //import away3d.arcane;
         //import away3d.base.StageGL;
@@ -15470,10 +15142,10 @@ var away;
                 this._alphaThreshold = 0;
             }
             Object.defineProperty(BasicDiffuseMethod.prototype, "iUseAmbientTexture", {
-                get: /**
+                /**
                 * Set internally if the ambient method uses a texture.
                 */
-                function () {
+                get: function () {
                     return this._useAmbientTexture;
                 },
                 set: function (value) {
@@ -15504,10 +15176,10 @@ var away;
             };
 
             Object.defineProperty(BasicDiffuseMethod.prototype, "diffuseAlpha", {
-                get: /**
+                /**
                 * The alpha component of the diffuse reflection.
                 */
-                function () {
+                get: function () {
                     return this._diffuseA;
                 },
                 set: function (value) {
@@ -15519,10 +15191,10 @@ var away;
 
 
             Object.defineProperty(BasicDiffuseMethod.prototype, "diffuseColor", {
-                get: /**
+                /**
                 * The color of the diffuse reflection when not using a texture.
                 */
-                function () {
+                get: function () {
                     return this._diffuseColor;
                 },
                 set: function (diffuseColor) {
@@ -15535,10 +15207,10 @@ var away;
 
 
             Object.defineProperty(BasicDiffuseMethod.prototype, "texture", {
-                get: /**
+                /**
                 * The bitmapData to use to define the diffuse reflection color per texel.
                 */
-                function () {
+                get: function () {
                     return this._texture;
                 },
                 set: function (value) {
@@ -15557,24 +15229,24 @@ var away;
 
 
             Object.defineProperty(BasicDiffuseMethod.prototype, "alphaThreshold", {
-                get: /**
+                /**
                 * The minimum alpha value for which pixels should be drawn. This is used for transparency that is either
                 * invisible or entirely opaque, often used with textures for foliage, etc.
                 * Recommended values are 0 to disable alpha, or 0.5 to create smooth edges. Default value is 0 (disabled).
                 */
-                function () {
+                get: function () {
                     return this._alphaThreshold;
                 },
                 set: function (value) {
                     if (value < 0)
                         value = 0;
-else if (value > 1)
+                    else if (value > 1)
                         value = 1;
                     if (value == this._alphaThreshold)
                         return;
 
                     if (value == 0 || this._alphaThreshold == 0)
-                        this.iInvalidateShaderProgram();
+                        this.iInvalidateShaderProgram(); //invalidateShaderProgram();
 
                     this._alphaThreshold = value;
                 },
@@ -15639,6 +15311,7 @@ else if (value > 1)
                 var code = "";
                 var t;
 
+                // write in temporary if not first light, so we can add to total diffuse colour
                 if (this._isFirstLight) {
                     t = this.pTotalLightColorReg;
                 } else {
@@ -15682,6 +15355,7 @@ else if (value > 1)
                 var code = "";
                 var t;
 
+                // write in temporary if not first light, so we can add to total diffuse colour
                 if (this._isFirstLight) {
                     t = this.pTotalLightColorReg;
                 } else {
@@ -15718,6 +15392,7 @@ else if (value > 1)
                 var albedo;
                 var cutOffReg;
 
+                // incorporate input from ambient
                 if (vo.numLights > 0) {
                     if (this._shadowRegister)
                         code += this.pApplyShadow(vo, regCache);
@@ -15818,10 +15493,10 @@ else if (value > 1)
             };
 
             Object.defineProperty(BasicDiffuseMethod.prototype, "iShadowRegister", {
-                set: /**
+                /**
                 * Set internally by the compiler, so the method knows the register containing the shadow calculation.
                 */
-                function (value) {
+                set: function (value) {
                     this._shadowRegister = value;
                 },
                 enumerable: true,
@@ -15832,14 +15507,14 @@ else if (value > 1)
                 this._shadowRegister = value;
             };
             return BasicDiffuseMethod;
-        })(materials.LightingMethodBase);
+        })(away.materials.LightingMethodBase);
         materials.BasicDiffuseMethod = BasicDiffuseMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (materials) {
         /**
         * BasicNormalMethod is the default method for standard tangent-space normal mapping.
@@ -15865,10 +15540,10 @@ var away;
             };
 
             Object.defineProperty(BasicNormalMethod.prototype, "iTangentSpace", {
-                get: /**
+                /**
                 * Indicates whether or not this method outputs normals in tangent space. Override for object-space normals.
                 */
-                function () {
+                get: function () {
                     return true;
                 },
                 enumerable: true,
@@ -15876,11 +15551,11 @@ var away;
             });
 
             Object.defineProperty(BasicNormalMethod.prototype, "iHasOutput", {
-                get: /**
+                /**
                 * Indicates if the normal method output is not based on a texture (if not, it will usually always return true)
                 * Override if subclasses are different.
                 */
-                function () {
+                get: function () {
                     return this._useTexture;
                 },
                 enumerable: true,
@@ -15898,10 +15573,10 @@ var away;
             };
 
             Object.defineProperty(BasicNormalMethod.prototype, "normalMap", {
-                get: /**
+                /**
                 * The texture containing the normals per pixel.
                 */
-                function () {
+                get: function () {
                     return this._texture;
                 },
                 set: function (value) {
@@ -15916,7 +15591,7 @@ var away;
                 var b = (value != null);
 
                 if (b != this._useTexture || (value && this._texture && (value.hasMipMaps != this._texture.hasMipMaps || value.format != this._texture.format))) {
-                    this.iInvalidateShaderProgram();
+                    this.iInvalidateShaderProgram(); //invalidateShaderProgram();
                 }
                 this._useTexture = b;
                 this._texture = value;
@@ -15961,14 +15636,14 @@ var away;
                 return this.pGetTex2DSampleCode(vo, targetReg, this._pNormalTextureRegister, this._texture) + "sub " + targetReg + ".xyz, " + targetReg + ".xyz, " + this._sharedRegisters.commons + ".xxx\n" + "nrm " + targetReg + ".xyz, " + targetReg + "\n";
             };
             return BasicNormalMethod;
-        })(materials.ShadingMethodBase);
+        })(away.materials.ShadingMethodBase);
         materials.BasicNormalMethod = BasicNormalMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (materials) {
         //import away3d.*;
         //import away3d.managers.*;
@@ -16003,10 +15678,10 @@ var away;
             };
 
             Object.defineProperty(BasicSpecularMethod.prototype, "gloss", {
-                get: /**
+                /**
                 * The sharpness of the specular highlight.
                 */
-                function () {
+                get: function () {
                     return this._gloss;
                 },
                 set: function (value) {
@@ -16018,10 +15693,10 @@ var away;
 
 
             Object.defineProperty(BasicSpecularMethod.prototype, "specular", {
-                get: /**
+                /**
                 * The overall strength of the specular highlights.
                 */
-                function () {
+                get: function () {
                     return this._specular;
                 },
                 set: function (value) {
@@ -16037,16 +15712,17 @@ var away;
 
 
             Object.defineProperty(BasicSpecularMethod.prototype, "specularColor", {
-                get: /**
+                /**
                 * The colour of the specular reflection of the surface.
                 */
-                function () {
+                get: function () {
                     return this._specularColor;
                 },
                 set: function (value) {
                     if (this._specularColor == value)
                         return;
 
+                    // specular is now either enabled or disabled
                     if (this._specularColor == 0 || value == 0)
                         this.iInvalidateShaderProgram();
 
@@ -16059,12 +15735,12 @@ var away;
 
 
             Object.defineProperty(BasicSpecularMethod.prototype, "texture", {
-                get: /**
+                /**
                 * The bitmapData that encodes the specular highlight strength per texel in the red channel, and the sharpness
                 * in the green channel. You can use SpecularBitmapTexture if you want to easily set specular and gloss maps
                 * from grayscale images, but prepared images are preferred.
                 */
-                function () {
+                get: function () {
                     return this._texture;
                 },
                 set: function (value) {
@@ -16166,12 +15842,14 @@ var away;
                     code += "pow " + t + ".w, " + t + ".w, " + this._pSpecularDataRegister + ".w\n";
                 }
 
+                // attenuate
                 if (vo.useLightFallOff) {
                     //TODO: AGAL <> GLSL
                     code += "mul " + t + ".w, " + t + ".w, " + lightDirReg + ".w\n";
                 }
 
                 if (this._iModulateMethod != null) {
+                    //TODO: AGAL <> GLSL
                     if (this._iModulateMethodScope != null) {
                         code += this._iModulateMethod.apply(this._iModulateMethodScope, [vo, t, regCache, this._sharedRegisters]);
                     } else {
@@ -16202,6 +15880,7 @@ var away;
                 var code = "";
                 var t;
 
+                // write in temporary if not first light, so we can add to total diffuse colour
                 if (this._pIsFirstLight) {
                     t = this._pTotalLightColorReg;
                 } else {
@@ -16216,6 +15895,7 @@ var away;
                 code += "dp3 " + t + ".w, " + normalReg + ", " + viewDirReg + "\n" + "add " + t + ".w, " + t + ".w, " + t + ".w\n" + "mul " + t + ", " + t + ".w, " + normalReg + "\n" + "sub " + t + ", " + t + ", " + viewDirReg + "\n" + "tex " + t + ", " + t + ", " + cubeMapReg + " <cube," + (vo.useSmoothTextures ? "linear" : "nearest") + ",miplinear>\n" + "mul " + t + ".xyz, " + t + ", " + weightRegister + "\n";
 
                 if (this._iModulateMethod != null) {
+                    //TODO: AGAL <> GLSL
                     if (this._iModulateMethodScope != null) {
                         code += this._iModulateMethod.apply(this._iModulateMethodScope, [vo, t, regCache, this._sharedRegisters]);
                     } else {
@@ -16224,6 +15904,15 @@ var away;
                     //code += this._iModulateMethod (vo, t, regCache, this._sharedRegisters);
                 }
 
+                /*
+                if (this._iModulateMethod!= null)
+                {
+                
+                //TODO: AGAL <> GLSL
+                code += this._iModulateMethod(vo, t, regCache, this._sharedRegisters);
+                
+                }
+                */
                 if (!this._pIsFirstLight) {
                     //TODO: AGAL <> GLSL
                     code += "add " + this._pTotalLightColorReg + ".xyz, " + this._pTotalLightColorReg + ", " + t + "\n";
@@ -16271,6 +15960,7 @@ var away;
             * @inheritDoc
             */
             BasicSpecularMethod.prototype.iActivate = function (vo, stageGL) {
+                //var context : ContextGL = stageGL._contextGL;
                 if (vo.numLights == 0)
                     return;
 
@@ -16297,10 +15987,10 @@ var away;
             };
 
             Object.defineProperty(BasicSpecularMethod.prototype, "iShadowRegister", {
-                set: /**
+                /**
                 * Set internally by the compiler, so the method knows the register containing the shadow calculation.
                 */
-                function (shadowReg) {
+                set: function (shadowReg) {
                     this._shadowRegister = shadowReg;
                 },
                 enumerable: true,
@@ -16311,14 +16001,14 @@ var away;
                 this._shadowRegister = shadowReg;
             };
             return BasicSpecularMethod;
-        })(materials.LightingMethodBase);
+        })(away.materials.LightingMethodBase);
         materials.BasicSpecularMethod = BasicSpecularMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (materials) {
         var Camera = away.entities.Camera;
         var StageGL = away.base.StageGL;
@@ -16363,14 +16053,14 @@ var away;
                 });
             }
             Object.defineProperty(CascadeShadowMapMethod.prototype, "baseMethod", {
-                get: /**
+                /**
                 * The shadow map sampling method used to sample individual cascades. These are typically those used in conjunction
                 * with a DirectionalShadowMapper.
                 *
                 * @see HardShadowMapMethod
                 * @see SoftShadowMapMethod
                 */
-                function () {
+                get: function () {
                     return this._baseMethod;
                 },
                 set: function (value) {
@@ -16396,17 +16086,17 @@ var away;
             * @inheritDoc
             */
             CascadeShadowMapMethod.prototype.iInitVO = function (vo) {
-                var tempVO = new materials.MethodVO();
+                var tempVO = new away.materials.MethodVO();
                 this._baseMethod.iInitVO(tempVO);
                 vo.needsGlobalVertexPos = true;
                 vo.needsProjection = true;
             };
 
             Object.defineProperty(CascadeShadowMapMethod.prototype, "iSharedRegisters", {
-                set: /**
+                /**
                 * @inheritDoc
                 */
-                function (value) {
+                set: function (value) {
                     this.setISharedRegisters(value);
                     this._baseMethod.iSharedRegisters = value;
                 },
@@ -16506,7 +16196,7 @@ var away;
                     var uvProjection = this._depthMapCoordVaryings[i];
 
                     // calculate if in texturemap (result == 0 or 1, only 1 for a single partition)
-                    code += "slt " + inQuad + ".z, " + this._sharedRegisters.projectionFragment + ".z, " + planeDistances[i] + "\n";
+                    code += "slt " + inQuad + ".z, " + this._sharedRegisters.projectionFragment + ".z, " + planeDistances[i] + "\n"; // z = x > minX, w = y > minY
 
                     var temp = regCache.getFreeFragmentVectorTemp();
 
@@ -16576,7 +16266,7 @@ var away;
                 this.iInvalidateShaderProgram();
             };
             return CascadeShadowMapMethod;
-        })(materials.ShadowMapMethodBase);
+        })(away.materials.ShadowMapMethodBase);
         materials.CascadeShadowMapMethod = CascadeShadowMapMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -16604,10 +16294,10 @@ var away;
                 _super.call(this);
             }
             Object.defineProperty(ColorTransformMethod.prototype, "colorTransform", {
-                get: /**
+                /**
                 * The ColorTransform object to transform the colour of the material with.
                 */
-                function () {
+                get: function () {
                     return this._colorTransform;
                 },
                 set: function (value) {
@@ -16652,14 +16342,14 @@ var away;
                 data[index + 7] = this._colorTransform.alphaOffset * inv;
             };
             return ColorTransformMethod;
-        })(materials.EffectMethodBase);
+        })(away.materials.EffectMethodBase);
         materials.ColorTransformMethod = ColorTransformMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (materials) {
         /**
         * PhongSpecularMethod provides a specular method that provides Phong highlights.
@@ -16681,7 +16371,7 @@ var away;
 
                 if (this._pIsFirstLight)
                     t = this._pTotalLightColorReg;
-else {
+                else {
                     t = regCache.getFreeFragmentVectorTemp();
                     regCache.addFragmentTempUsages(t, 1);
                 }
@@ -16698,6 +16388,7 @@ else {
                 } else
                     code += "pow " + t + ".w, " + t + ".w, " + this._pSpecularDataRegister + ".w\n";
 
+                // attenuate
                 if (vo.useLightFallOff)
                     code += "mul " + t + ".w, " + t + ".w, " + lightDirReg + ".w\n";
 
@@ -16721,7 +16412,7 @@ else {
                 return code;
             };
             return PhongSpecularMethod;
-        })(materials.BasicSpecularMethod);
+        })(away.materials.BasicSpecularMethod);
         materials.PhongSpecularMethod = PhongSpecularMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -16759,17 +16450,17 @@ var away;
             }
             CompositeDiffuseMethod.prototype._pInitCompositeDiffuseMethod = function (scope, modulateMethod, baseDiffuseMethod) {
                 if (typeof baseDiffuseMethod === "undefined") { baseDiffuseMethod = null; }
-                this.pBaseMethod = baseDiffuseMethod || new materials.BasicDiffuseMethod();
+                this.pBaseMethod = baseDiffuseMethod || new away.materials.BasicDiffuseMethod();
                 this.pBaseMethod._iModulateMethod = modulateMethod;
                 this.pBaseMethod._iModulateMethodScope = scope;
                 this.pBaseMethod.addEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
             };
 
             Object.defineProperty(CompositeDiffuseMethod.prototype, "baseMethod", {
-                get: /**
+                /**
                 * The base diffuse method on which this method's shading is based.
                 */
-                function () {
+                get: function () {
                     return this.pBaseMethod;
                 },
                 set: function (value) {
@@ -16779,7 +16470,7 @@ var away;
                     this.pBaseMethod.removeEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
                     this.pBaseMethod = value;
                     this.pBaseMethod.addEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
-                    this.iInvalidateShaderProgram();
+                    this.iInvalidateShaderProgram(); //invalidateShaderProgram();
                 },
                 enumerable: true,
                 configurable: true
@@ -16809,10 +16500,10 @@ var away;
             };
 
             Object.defineProperty(CompositeDiffuseMethod.prototype, "alphaThreshold", {
-                get: /**
+                /**
                 * @inheritDoc
                 */
-                function () {
+                get: function () {
                     return this.pBaseMethod.alphaThreshold;
                 },
                 set: function (value) {
@@ -16824,16 +16515,16 @@ var away;
 
 
             Object.defineProperty(CompositeDiffuseMethod.prototype, "texture", {
-                get: /**
+                /**
                 * @inheritDoc
                 */
-                function () {
+                get: function () {
                     return this.pBaseMethod.texture;
                 },
-                set: /**
+                /**
                 * @inheritDoc
                 */
-                function (value) {
+                set: function (value) {
                     this.pBaseMethod.texture = value;
                 },
                 enumerable: true,
@@ -16842,16 +16533,16 @@ var away;
 
 
             Object.defineProperty(CompositeDiffuseMethod.prototype, "diffuseAlpha", {
-                get: /**
+                /**
                 * @inheritDoc
                 */
-                function () {
+                get: function () {
                     return this.pBaseMethod.diffuseAlpha;
                 },
-                set: /**
+                /**
                 * @inheritDoc
                 */
-                function (value) {
+                set: function (value) {
                     this.pBaseMethod.diffuseAlpha = value;
                 },
                 enumerable: true,
@@ -16859,16 +16550,16 @@ var away;
             });
 
             Object.defineProperty(CompositeDiffuseMethod.prototype, "diffuseColor", {
-                get: /**
+                /**
                 * @inheritDoc
                 */
-                function () {
+                get: function () {
                     return this.pBaseMethod.diffuseColor;
                 },
-                set: /**
+                /**
                 * @inheritDoc
                 */
-                function (diffuseColor) {
+                set: function (diffuseColor) {
                     this.pBaseMethod.diffuseColor = diffuseColor;
                 },
                 enumerable: true,
@@ -16946,10 +16637,10 @@ var away;
             };
 
             Object.defineProperty(CompositeDiffuseMethod.prototype, "iSharedRegisters", {
-                set: /**
+                /**
                 * @inheritDoc
                 */
-                function (value) {
+                set: function (value) {
                     this.pBaseMethod.setISharedRegisters(value);
                     _super.prototype.setISharedRegisters.call(this, value);
                 },
@@ -16963,10 +16654,10 @@ var away;
             };
 
             Object.defineProperty(CompositeDiffuseMethod.prototype, "iShadowRegister", {
-                set: /**
+                /**
                 * @inheritDoc
                 */
-                function (value) {
+                set: function (value) {
                     _super.prototype.setIShadowRegister.call(this, value);
                     this.pBaseMethod.setIShadowRegister(value);
                 },
@@ -16981,14 +16672,14 @@ var away;
                 this.iInvalidateShaderProgram();
             };
             return CompositeDiffuseMethod;
-        })(materials.BasicDiffuseMethod);
+        })(away.materials.BasicDiffuseMethod);
         materials.CompositeDiffuseMethod = CompositeDiffuseMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (materials) {
         var StageGL = away.base.StageGL;
         var Texture2DBase = away.textures.Texture2DBase;
@@ -17018,7 +16709,7 @@ var away;
             }
             CompositeSpecularMethod.prototype._pInitCompositeSpecularMethod = function (scope, modulateMethod, baseSpecularMethod) {
                 if (typeof baseSpecularMethod === "undefined") { baseSpecularMethod = null; }
-                this._baseMethod = baseSpecularMethod || new materials.BasicSpecularMethod();
+                this._baseMethod = baseSpecularMethod || new away.materials.BasicSpecularMethod();
                 this._baseMethod._iModulateMethod = modulateMethod;
                 this._baseMethod._iModulateMethodScope = scope;
                 this._baseMethod.addEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
@@ -17039,10 +16730,10 @@ var away;
             };
 
             Object.defineProperty(CompositeSpecularMethod.prototype, "baseMethod", {
-                get: /**
+                /**
                 * The base specular method on which this method's shading is based.
                 */
-                function () {
+                get: function () {
                     return this._baseMethod;
                 },
                 set: function (value) {
@@ -17060,10 +16751,10 @@ var away;
 
 
             Object.defineProperty(CompositeSpecularMethod.prototype, "gloss", {
-                get: /**
+                /**
                 * @inheritDoc
                 */
-                function () {
+                get: function () {
                     return this._baseMethod.gloss;
                 },
                 set: function (value) {
@@ -17075,10 +16766,10 @@ var away;
 
 
             Object.defineProperty(CompositeSpecularMethod.prototype, "specular", {
-                get: /**
+                /**
                 * @inheritDoc
                 */
-                function () {
+                get: function () {
                     return this._baseMethod.specular;
                 },
                 set: function (value) {
@@ -17090,10 +16781,10 @@ var away;
 
 
             Object.defineProperty(CompositeSpecularMethod.prototype, "passes", {
-                get: /**
+                /**
                 * @inheritDoc
                 */
-                function () {
+                get: function () {
                     return this._baseMethod.passes;
                 },
                 enumerable: true,
@@ -17109,10 +16800,10 @@ var away;
             };
 
             Object.defineProperty(CompositeSpecularMethod.prototype, "texture", {
-                get: /**
+                /**
                 * @inheritDoc
                 */
-                function () {
+                get: function () {
                     return this._baseMethod.texture;
                 },
                 set: function (value) {
@@ -17138,10 +16829,10 @@ var away;
             };
 
             Object.defineProperty(CompositeSpecularMethod.prototype, "iSharedRegisters", {
-                set: /**
+                /**
                 * @inheritDoc
                 */
-                function (value) {
+                set: function (value) {
                     _super.prototype.setISharedRegisters.call(this, value);
                     this._baseMethod.setISharedRegisters(value);
                 },
@@ -17206,10 +16897,10 @@ var away;
             };
 
             Object.defineProperty(CompositeSpecularMethod.prototype, "iShadowRegister", {
-                set: /**
+                /**
                 * @inheritDoc
                 */
-                function (value) {
+                set: function (value) {
                     this.setIShadowRegister(value);
                     this._baseMethod.setIShadowRegister(value);
                 },
@@ -17224,14 +16915,14 @@ var away;
                 this.iInvalidateShaderProgram();
             };
             return CompositeSpecularMethod;
-        })(materials.BasicSpecularMethod);
+        })(away.materials.BasicSpecularMethod);
         materials.CompositeSpecularMethod = CompositeSpecularMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (materials) {
         /**
         * EnvMapMethod provides a material method to perform reflection mapping using cube maps.
@@ -17250,10 +16941,10 @@ var away;
                 this._alpha = alpha;
             }
             Object.defineProperty(EnvMapMethod.prototype, "mask", {
-                get: /**
+                /**
                 * An optional texture to modulate the reflectivity of the surface.
                 */
-                function () {
+                get: function () {
                     return this._mask;
                 },
                 set: function (value) {
@@ -17283,10 +16974,10 @@ var away;
             };
 
             Object.defineProperty(EnvMapMethod.prototype, "envMap", {
-                get: /**
+                /**
                 * The cubic environment map containing the reflected scene.
                 */
-                function () {
+                get: function () {
                     return this._cubeTexture;
                 },
                 set: function (value) {
@@ -17304,10 +16995,10 @@ var away;
             };
 
             Object.defineProperty(EnvMapMethod.prototype, "alpha", {
-                get: /**
+                /**
                 * The reflectivity of the surface.
                 */
-                function () {
+                get: function () {
                     return this._alpha;
                 },
                 set: function (value) {
@@ -17360,14 +17051,14 @@ var away;
                 return code;
             };
             return EnvMapMethod;
-        })(materials.EffectMethodBase);
+        })(away.materials.EffectMethodBase);
         materials.EnvMapMethod = EnvMapMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (materials) {
         /**
         * FresnelSpecularMethod provides a specular shading method that causes stronger highlights on grazing view angles.
@@ -17401,10 +17092,10 @@ var away;
             };
 
             Object.defineProperty(FresnelSpecularMethod.prototype, "basedOnSurface", {
-                get: /**
+                /**
                 * Defines whether the fresnel effect should be based on the view angle on the surface (if true), or on the angle between the light and the view.
                 */
-                function () {
+                get: function () {
                     return !this._incidentLight;
                 },
                 set: function (value) {
@@ -17421,10 +17112,10 @@ var away;
 
 
             Object.defineProperty(FresnelSpecularMethod.prototype, "fresnelPower", {
-                get: /**
+                /**
                 * The power used in the Fresnel equation. Higher values make the fresnel effect more pronounced. Defaults to 5.
                 */
-                function () {
+                get: function () {
                     return this._fresnelPower;
                 },
                 set: function (value) {
@@ -17444,10 +17135,10 @@ var away;
             };
 
             Object.defineProperty(FresnelSpecularMethod.prototype, "normalReflectance", {
-                get: /**
+                /**
                 * The minimum amount of reflectance, ie the reflectance when the view direction is normal to the surface or light direction.
                 */
-                function () {
+                get: function () {
                     return this._normalReflectance;
                 },
                 set: function (value) {
@@ -17501,14 +17192,14 @@ var away;
                 return code;
             };
             return FresnelSpecularMethod;
-        })(materials.CompositeSpecularMethod);
+        })(away.materials.CompositeSpecularMethod);
         materials.FresnelSpecularMethod = FresnelSpecularMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (materials) {
         /**
         * SimpleWaterNormalMethod provides a basic normal map method to create water ripples by translating two wave normal maps.
@@ -17551,10 +17242,10 @@ var away;
             };
 
             Object.defineProperty(SimpleWaterNormalMethod.prototype, "water1OffsetX", {
-                get: /**
+                /**
                 * The translation of the first wave layer along the X-axis.
                 */
-                function () {
+                get: function () {
                     return this._water1OffsetX;
                 },
                 set: function (value) {
@@ -17566,10 +17257,10 @@ var away;
 
 
             Object.defineProperty(SimpleWaterNormalMethod.prototype, "water1OffsetY", {
-                get: /**
+                /**
                 * The translation of the first wave layer along the Y-axis.
                 */
-                function () {
+                get: function () {
                     return this._water1OffsetY;
                 },
                 set: function (value) {
@@ -17581,10 +17272,10 @@ var away;
 
 
             Object.defineProperty(SimpleWaterNormalMethod.prototype, "water2OffsetX", {
-                get: /**
+                /**
                 * The translation of the second wave layer along the X-axis.
                 */
-                function () {
+                get: function () {
                     return this._water2OffsetX;
                 },
                 set: function (value) {
@@ -17596,10 +17287,10 @@ var away;
 
 
             Object.defineProperty(SimpleWaterNormalMethod.prototype, "water2OffsetY", {
-                get: /**
+                /**
                 * The translation of the second wave layer along the Y-axis.
                 */
-                function () {
+                get: function () {
                     return this._water2OffsetY;
                 },
                 set: function (value) {
@@ -17611,10 +17302,10 @@ var away;
 
 
             Object.defineProperty(SimpleWaterNormalMethod.prototype, "normalMap", {
-                set: /**
+                /**
                 * @inheritDoc
                 */
-                function (value) {
+                set: function (value) {
                     if (!value) {
                         return;
                     }
@@ -17625,10 +17316,10 @@ var away;
             });
 
             Object.defineProperty(SimpleWaterNormalMethod.prototype, "secondaryNormalMap", {
-                get: /**
+                /**
                 * A second normal map that will be combined with the first to create a wave-like animation pattern.
                 */
-                function () {
+                get: function () {
                     return this._texture2;
                 },
                 set: function (value) {
@@ -17669,6 +17360,7 @@ var away;
                 data[index + 6] = this._water2OffsetX;
                 data[index + 7] = this._water2OffsetY;
 
+                //if (this._useSecondNormalMap >= 0)
                 if (this._useSecondNormalMap)
                     stageGL.contextGL.setTextureAt(vo.texturesIndex + 1, this._texture2.getTextureForStageGL(stageGL));
             };
@@ -17688,14 +17380,14 @@ var away;
                 return "add " + temp + ", " + this._sharedRegisters.uvVarying + ", " + dataReg2 + ".xyxy\n" + this.pGetTex2DSampleCode(vo, targetReg, this._pNormalTextureRegister, this.normalMap, temp) + "add " + temp + ", " + this._sharedRegisters.uvVarying + ", " + dataReg2 + ".zwzw\n" + this.pGetTex2DSampleCode(vo, temp, this._normalTextureRegister2, this._texture2, temp) + "add " + targetReg + ", " + targetReg + ", " + temp + "		\n" + "mul " + targetReg + ", " + targetReg + ", " + dataReg + ".x	\n" + "sub " + targetReg + ".xyz, " + targetReg + ".xyz, " + this._sharedRegisters.commons + ".xxx	\n" + "nrm " + targetReg + ".xyz, " + targetReg + ".xyz							\n";
             };
             return SimpleWaterNormalMethod;
-        })(materials.BasicNormalMethod);
+        })(away.materials.BasicNormalMethod);
         materials.SimpleWaterNormalMethod = SimpleWaterNormalMethod;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (materials) {
         /**
         * LightPickerBase provides an abstract base clase for light picker classes. These classes are responsible for
@@ -17724,10 +17416,10 @@ var away;
             };
 
             Object.defineProperty(LightPickerBase.prototype, "assetType", {
-                get: /**
+                /**
                 * @inheritDoc
                 */
-                function () {
+                get: function () {
                     return away.library.AssetType.LIGHT_PICKER;
                 },
                 enumerable: true,
@@ -17735,10 +17427,10 @@ var away;
             });
 
             Object.defineProperty(LightPickerBase.prototype, "numDirectionalLights", {
-                get: /**
+                /**
                 * The maximum amount of directional lights that will be provided.
                 */
-                function () {
+                get: function () {
                     return this._pNumDirectionalLights;
                 },
                 enumerable: true,
@@ -17746,10 +17438,10 @@ var away;
             });
 
             Object.defineProperty(LightPickerBase.prototype, "numPointLights", {
-                get: /**
+                /**
                 * The maximum amount of point lights that will be provided.
                 */
-                function () {
+                get: function () {
                     return this._pNumPointLights;
                 },
                 enumerable: true,
@@ -17757,10 +17449,10 @@ var away;
             });
 
             Object.defineProperty(LightPickerBase.prototype, "numCastingDirectionalLights", {
-                get: /**
+                /**
                 * The maximum amount of directional lights that cast shadows.
                 */
-                function () {
+                get: function () {
                     return this._pNumCastingDirectionalLights;
                 },
                 enumerable: true,
@@ -17768,10 +17460,10 @@ var away;
             });
 
             Object.defineProperty(LightPickerBase.prototype, "numCastingPointLights", {
-                get: /**
+                /**
                 * The amount of point lights that cast shadows.
                 */
-                function () {
+                get: function () {
                     return this._pNumCastingPointLights;
                 },
                 enumerable: true,
@@ -17779,10 +17471,10 @@ var away;
             });
 
             Object.defineProperty(LightPickerBase.prototype, "numLightProbes", {
-                get: /**
+                /**
                 * The maximum amount of light probes that will be provided.
                 */
-                function () {
+                get: function () {
                     return this._pNumLightProbes;
                 },
                 enumerable: true,
@@ -17790,10 +17482,10 @@ var away;
             });
 
             Object.defineProperty(LightPickerBase.prototype, "pointLights", {
-                get: /**
+                /**
                 * The collected point lights to be used for shading.
                 */
-                function () {
+                get: function () {
                     return this._pPointLights;
                 },
                 enumerable: true,
@@ -17801,10 +17493,10 @@ var away;
             });
 
             Object.defineProperty(LightPickerBase.prototype, "directionalLights", {
-                get: /**
+                /**
                 * The collected directional lights to be used for shading.
                 */
-                function () {
+                get: function () {
                     return this._pDirectionalLights;
                 },
                 enumerable: true,
@@ -17812,10 +17504,10 @@ var away;
             });
 
             Object.defineProperty(LightPickerBase.prototype, "castingPointLights", {
-                get: /**
+                /**
                 * The collected point lights that cast shadows to be used for shading.
                 */
-                function () {
+                get: function () {
                     return this._pCastingPointLights;
                 },
                 enumerable: true,
@@ -17823,10 +17515,10 @@ var away;
             });
 
             Object.defineProperty(LightPickerBase.prototype, "castingDirectionalLights", {
-                get: /**
+                /**
                 * The collected directional lights that cast shadows to be used for shading.
                 */
-                function () {
+                get: function () {
                     return this._pCastingDirectionalLights;
                 },
                 enumerable: true,
@@ -17834,10 +17526,10 @@ var away;
             });
 
             Object.defineProperty(LightPickerBase.prototype, "lightProbes", {
-                get: /**
+                /**
                 * The collected light probes to be used for shading.
                 */
-                function () {
+                get: function () {
                     return this._pLightProbes;
                 },
                 enumerable: true,
@@ -17845,10 +17537,10 @@ var away;
             });
 
             Object.defineProperty(LightPickerBase.prototype, "lightProbeWeights", {
-                get: /**
+                /**
                 * The weights for each light probe, defining their influence on the object.
                 */
-                function () {
+                get: function () {
                     return this._pLightProbeWeights;
                 },
                 enumerable: true,
@@ -17856,10 +17548,10 @@ var away;
             });
 
             Object.defineProperty(LightPickerBase.prototype, "allPickedLights", {
-                get: /**
+                /**
                 * A collection of all the collected lights.
                 */
-                function () {
+                get: function () {
                     return this._pAllPickedLights;
                 },
                 enumerable: true,
@@ -17915,9 +17607,9 @@ var away;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (materials) {
         var Delegate = away.utils.Delegate;
 
@@ -17946,10 +17638,10 @@ var away;
                 this.lights = lights;
             }
             Object.defineProperty(StaticLightPicker.prototype, "lights", {
-                get: /**
+                /**
                 * The lights used for shading.
                 */
-                function () {
+                get: function () {
                     return this._lights;
                 },
                 set: function (value) {
@@ -17980,12 +17672,12 @@ var away;
                         if (light instanceof PointLight) {
                             if (light.castsShadows)
                                 this._pCastingPointLights[numCastingPointLights++] = light;
-else
+                            else
                                 this._pPointLights[numPointLights++] = light;
                         } else if (light instanceof DirectionalLight) {
                             if (light.castsShadows)
                                 this._pCastingDirectionalLights[numCastingDirectionalLights++] = light;
-else
+                            else
                                 this._pDirectionalLights[numDirectionalLights++] = light;
                         } else if (light instanceof LightProbe) {
                             this._pLightProbes[numLightProbes++] = light;
@@ -18082,14 +17774,14 @@ else
                 }
             };
             return StaticLightPicker;
-        })(materials.LightPickerBase);
+        })(away.materials.LightPickerBase);
         materials.StaticLightPicker = StaticLightPicker;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (materials) {
         /**
         * ShaderRegister Cache provides the usage management system for all registers during shading compilation.
@@ -18113,15 +17805,15 @@ var away;
             */
             ShaderRegisterCache.prototype.reset = function () {
                 //TODO: AGAL <> GLSL Conversion
-                this._fragmentTempCache = new materials.RegisterPool("ft", 8, false);
-                this._vertexTempCache = new materials.RegisterPool("vt", 8, false);
-                this._varyingCache = new materials.RegisterPool("v", 8);
-                this._textureCache = new materials.RegisterPool("fs", 8);
-                this._vertexAttributesCache = new materials.RegisterPool("va", 8);
-                this._fragmentConstantsCache = new materials.RegisterPool("fc", 28);
-                this._vertexConstantsCache = new materials.RegisterPool("vc", 128);
-                this._fragmentOutputRegister = new materials.ShaderRegisterElement("oc", -1);
-                this._vertexOutputRegister = new materials.ShaderRegisterElement("op", -1);
+                this._fragmentTempCache = new away.materials.RegisterPool("ft", 8, false);
+                this._vertexTempCache = new away.materials.RegisterPool("vt", 8, false);
+                this._varyingCache = new away.materials.RegisterPool("v", 8);
+                this._textureCache = new away.materials.RegisterPool("fs", 8);
+                this._vertexAttributesCache = new away.materials.RegisterPool("va", 8);
+                this._fragmentConstantsCache = new away.materials.RegisterPool("fc", 28);
+                this._vertexConstantsCache = new away.materials.RegisterPool("vc", 128);
+                this._fragmentOutputRegister = new away.materials.ShaderRegisterElement("oc", -1);
+                this._vertexOutputRegister = new away.materials.ShaderRegisterElement("op", -1);
                 this._numUsedVertexConstants = 0;
                 this._numUsedStreams = 0;
                 this._numUsedTextures = 0;
@@ -18268,10 +17960,10 @@ var away;
             };
 
             Object.defineProperty(ShaderRegisterCache.prototype, "vertexConstantOffset", {
-                get: /**
+                /**
                 * Indicates the start index from which to retrieve vertex constants.
                 */
-                function () {
+                get: function () {
                     return this._vertexConstantOffset;
                 },
                 set: function (vertexConstantOffset) {
@@ -18283,10 +17975,10 @@ var away;
 
 
             Object.defineProperty(ShaderRegisterCache.prototype, "vertexAttributesOffset", {
-                get: /**
+                /**
                 * Indicates the start index from which to retrieve vertex attributes.
                 */
-                function () {
+                get: function () {
                     return this._vertexAttributesOffset;
                 },
                 set: function (value) {
@@ -18298,10 +17990,10 @@ var away;
 
 
             Object.defineProperty(ShaderRegisterCache.prototype, "varyingsOffset", {
-                get: /**
+                /**
                 * Indicates the start index from which to retrieve varying registers.
                 */
-                function () {
+                get: function () {
                     return this._varyingsOffset;
                 },
                 set: function (value) {
@@ -18313,10 +18005,10 @@ var away;
 
 
             Object.defineProperty(ShaderRegisterCache.prototype, "fragmentConstantOffset", {
-                get: /**
+                /**
                 * Indicates the start index from which to retrieve fragment constants.
                 */
-                function () {
+                get: function () {
                     return this._fragmentConstantOffset;
                 },
                 set: function (value) {
@@ -18328,10 +18020,10 @@ var away;
 
 
             Object.defineProperty(ShaderRegisterCache.prototype, "fragmentOutputRegister", {
-                get: /**
+                /**
                 * The fragment output register.
                 */
-                function () {
+                get: function () {
                     return this._fragmentOutputRegister;
                 },
                 enumerable: true,
@@ -18339,10 +18031,10 @@ var away;
             });
 
             Object.defineProperty(ShaderRegisterCache.prototype, "numUsedVertexConstants", {
-                get: /**
+                /**
                 * The amount of used vertex constant registers.
                 */
-                function () {
+                get: function () {
                     return this._numUsedVertexConstants;
                 },
                 enumerable: true,
@@ -18350,10 +18042,10 @@ var away;
             });
 
             Object.defineProperty(ShaderRegisterCache.prototype, "numUsedFragmentConstants", {
-                get: /**
+                /**
                 * The amount of used fragment constant registers.
                 */
-                function () {
+                get: function () {
                     return this._numUsedFragmentConstants;
                 },
                 enumerable: true,
@@ -18361,10 +18053,10 @@ var away;
             });
 
             Object.defineProperty(ShaderRegisterCache.prototype, "numUsedStreams", {
-                get: /**
+                /**
                 * The amount of used vertex streams.
                 */
-                function () {
+                get: function () {
                     return this._numUsedStreams;
                 },
                 enumerable: true,
@@ -18372,10 +18064,10 @@ var away;
             });
 
             Object.defineProperty(ShaderRegisterCache.prototype, "numUsedTextures", {
-                get: /**
+                /**
                 * The amount of used texture slots.
                 */
-                function () {
+                get: function () {
                     return this._numUsedTextures;
                 },
                 enumerable: true,
@@ -18383,10 +18075,10 @@ var away;
             });
 
             Object.defineProperty(ShaderRegisterCache.prototype, "numUsedVaryings", {
-                get: /**
+                /**
                 * The amount of used varying registers.
                 */
-                function () {
+                get: function () {
                     return this._numUsedVaryings;
                 },
                 enumerable: true,
@@ -18398,9 +18090,9 @@ var away;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (materials) {
         /**
         * A single register element (an entire register or a single register's component) used by the RegisterPool.
@@ -18436,10 +18128,10 @@ var away;
             };
 
             Object.defineProperty(ShaderRegisterElement.prototype, "regName", {
-                get: /**
+                /**
                 * The register's name.
                 */
-                function () {
+                get: function () {
                     return this._regName;
                 },
                 enumerable: true,
@@ -18447,10 +18139,10 @@ var away;
             });
 
             Object.defineProperty(ShaderRegisterElement.prototype, "index", {
-                get: /**
+                /**
                 * The register's index.
                 */
-                function () {
+                get: function () {
                     return this._index;
                 },
                 enumerable: true,
@@ -18463,9 +18155,9 @@ var away;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (materials) {
         /**
         * ShaderRegisterData contains the "named" registers, generated by the compiler and to be passed on to the methods.
@@ -18566,10 +18258,10 @@ var away;
             };
 
             Object.defineProperty(MethodDependencyCounter.prototype, "tangentDependencies", {
-                get: /**
+                /**
                 * The amount of tangent vector dependencies (fragment shader).
                 */
-                function () {
+                get: function () {
                     return this._tangentDependencies;
                 },
                 enumerable: true,
@@ -18577,10 +18269,10 @@ var away;
             });
 
             Object.defineProperty(MethodDependencyCounter.prototype, "usesGlobalPosFragment", {
-                get: /**
+                /**
                 * Indicates whether there are any dependencies on the world-space position vector.
                 */
-                function () {
+                get: function () {
                     return this._usesGlobalPosFragment;
                 },
                 enumerable: true,
@@ -18588,10 +18280,10 @@ var away;
             });
 
             Object.defineProperty(MethodDependencyCounter.prototype, "projectionDependencies", {
-                get: /**
+                /**
                 * The amount of dependencies on the projected position.
                 */
-                function () {
+                get: function () {
                     return this._projectionDependencies;
                 },
                 enumerable: true,
@@ -18599,10 +18291,10 @@ var away;
             });
 
             Object.defineProperty(MethodDependencyCounter.prototype, "normalDependencies", {
-                get: /**
+                /**
                 * The amount of dependencies on the normal vector.
                 */
-                function () {
+                get: function () {
                     return this._normalDependencies;
                 },
                 enumerable: true,
@@ -18610,10 +18302,10 @@ var away;
             });
 
             Object.defineProperty(MethodDependencyCounter.prototype, "viewDirDependencies", {
-                get: /**
+                /**
                 * The amount of dependencies on the view direction.
                 */
-                function () {
+                get: function () {
                     return this._viewDirDependencies;
                 },
                 enumerable: true,
@@ -18621,10 +18313,10 @@ var away;
             });
 
             Object.defineProperty(MethodDependencyCounter.prototype, "uvDependencies", {
-                get: /**
+                /**
                 * The amount of dependencies on the primary UV coordinates.
                 */
-                function () {
+                get: function () {
                     return this._uvDependencies;
                 },
                 enumerable: true,
@@ -18632,10 +18324,10 @@ var away;
             });
 
             Object.defineProperty(MethodDependencyCounter.prototype, "secondaryUVDependencies", {
-                get: /**
+                /**
                 * The amount of dependencies on the secondary UV coordinates.
                 */
-                function () {
+                get: function () {
                     return this._secondaryUVDependencies;
                 },
                 enumerable: true,
@@ -18643,11 +18335,11 @@ var away;
             });
 
             Object.defineProperty(MethodDependencyCounter.prototype, "globalPosDependencies", {
-                get: /**
+                /**
                 * The amount of dependencies on the global position. This can be 0 while hasGlobalPosDependencies is true when
                 * the global position is used as a temporary value (fe to calculate the view direction)
                 */
-                function () {
+                get: function () {
                     return this._globalPosDependencies;
                 },
                 enumerable: true,
@@ -18662,7 +18354,7 @@ var away;
                     ++this._globalPosDependencies;
                 }
 
-                if (this._numPointLights > 0 && (this._lightSourceMask & materials.LightSources.LIGHTS)) {
+                if (this._numPointLights > 0 && (this._lightSourceMask & away.materials.LightSources.LIGHTS)) {
                     ++this._globalPosDependencies;
 
                     if (fragmentLights) {
@@ -18676,9 +18368,9 @@ var away;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (materials) {
         //import flash.utils.Dictionary;
         /**
@@ -18724,6 +18416,7 @@ var away;
             */
             RegisterPool.prototype.requestFreeRegComponent = function () {
                 for (var i = 0; i < this._regCount; ++i) {
+                    //away.Debug.log( 'RegisterPool' , 'requestFreeRegComponent' , this._regCount , 'this._usedVectorCount:' + this._usedVectorCount[i] );
                     if (this._usedVectorCount[i] > 0)
                         continue;
 
@@ -18802,13 +18495,13 @@ var away;
                 this._vectorRegisters = RegisterPool._regPool[hash];
                 this._registerComponents = RegisterPool._regCompsPool[hash];
 
-                this._usedVectorCount = this._initArray(Array(regCount), 0);
+                this._usedVectorCount = this._initArray(Array(regCount), 0); //new Vector.<uint>(regCount, true);
 
-                this._usedSingleCount = new Array(4);
-                this._usedSingleCount[0] = this._initArray(new Array(regCount), 0);
-                this._usedSingleCount[1] = this._initArray(new Array(regCount), 0);
-                this._usedSingleCount[2] = this._initArray(new Array(regCount), 0);
-                this._usedSingleCount[3] = this._initArray(new Array(regCount), 0);
+                this._usedSingleCount = new Array(4); //this._usedSingleCount = new Vector.<Vector.<uint>>(4, true);
+                this._usedSingleCount[0] = this._initArray(new Array(regCount), 0); //new Array<number>(regCount ) ;//, true);
+                this._usedSingleCount[1] = this._initArray(new Array(regCount), 0); //new Array<number>(regCount ) ;//new Vector.<uint>(regCount, true);
+                this._usedSingleCount[2] = this._initArray(new Array(regCount), 0); //new Array<number>(regCount ) ;//new Vector.<uint>(regCount, true);
+                this._usedSingleCount[3] = this._initArray(new Array(regCount), 0); //new Array<number>(regCount ) ;//new Vector.<uint>(regCount, true);
                 //console.log( 'this._usedVectorCount: ' , this._usedVectorCount );
                 //console.log( 'this._usedSingleCount: ' , this._usedSingleCount );
             };
@@ -18832,10 +18525,10 @@ var away;
                 RegisterPool._regCompsPool[hash] = registerComponents;
 
                 for (var i = 0; i < regCount; ++i) {
-                    vectorRegisters[i] = new materials.ShaderRegisterElement(regName, i);
+                    vectorRegisters[i] = new away.materials.ShaderRegisterElement(regName, i);
 
                     for (var j = 0; j < 4; ++j) {
-                        registerComponents[j][i] = new materials.ShaderRegisterElement(regName, i, j);
+                        registerComponents[j][i] = new away.materials.ShaderRegisterElement(regName, i, j);
                     }
                 }
 
@@ -18878,9 +18571,9 @@ var away;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (materials) {
         /**
         * ShaderCompiler is an abstract base class for shader compilers that use modular shader methods to assemble a
@@ -18908,17 +18601,17 @@ var away;
                 this._pSceneNormalMatrixIndex = -1;
                 this._pCameraPositionIndex = -1;
                 this._pProbeWeightsIndex = -1;
-                this._pSharedRegisters = new materials.ShaderRegisterData();
-                this._pDependencyCounter = new materials.MethodDependencyCounter();
+                this._pSharedRegisters = new away.materials.ShaderRegisterData();
+                this._pDependencyCounter = new away.materials.MethodDependencyCounter();
                 this._pProfile = profile;
                 this.initRegisterCache(profile);
             }
             Object.defineProperty(ShaderCompiler.prototype, "enableLightFallOff", {
-                get: /**
+                /**
                 * Whether or not to use fallOff and radius properties for lights. This can be used to improve performance and
                 * compatibility for constrained mode.
                 */
-                function () {
+                get: function () {
                     return this._pEnableLightFallOff;
                 },
                 set: function (value) {
@@ -18930,10 +18623,10 @@ var away;
 
 
             Object.defineProperty(ShaderCompiler.prototype, "needUVAnimation", {
-                get: /**
+                /**
                 * Indicates whether the compiled code needs UV animation.
                 */
-                function () {
+                get: function () {
                     return this._needUVAnimation;
                 },
                 enumerable: true,
@@ -18941,10 +18634,10 @@ var away;
             });
 
             Object.defineProperty(ShaderCompiler.prototype, "UVTarget", {
-                get: /**
+                /**
                 * The target register to place the animated UV coordinate.
                 */
-                function () {
+                get: function () {
                     return this._UVTarget;
                 },
                 enumerable: true,
@@ -18952,10 +18645,10 @@ var away;
             });
 
             Object.defineProperty(ShaderCompiler.prototype, "UVSource", {
-                get: /**
+                /**
                 * The souce register providing the UV coordinate to animate.
                 */
-                function () {
+                get: function () {
                     return this._UVSource;
                 },
                 enumerable: true,
@@ -18963,12 +18656,12 @@ var away;
             });
 
             Object.defineProperty(ShaderCompiler.prototype, "forceSeperateMVP", {
-                get: /**
+                /**
                 * Indicates whether the screen projection should be calculated by forcing a separate scene matrix and
                 * view-projection matrix. This is used to prevent rounding errors when using multiple passes with different
                 * projection code.
                 */
-                function () {
+                get: function () {
                     return this._forceSeperateMVP;
                 },
                 set: function (value) {
@@ -18984,16 +18677,16 @@ var away;
             * @param profile The compatibility profile of the renderer.
             */
             ShaderCompiler.prototype.initRegisterCache = function (profile) {
-                this._pRegisterCache = new materials.ShaderRegisterCache(profile);
+                this._pRegisterCache = new away.materials.ShaderRegisterCache(profile);
                 this._pRegisterCache.vertexAttributesOffset = 1;
                 this._pRegisterCache.reset();
             };
 
             Object.defineProperty(ShaderCompiler.prototype, "animateUVs", {
-                get: /**
+                /**
                 * Indicate whether UV coordinates need to be animated using the renderable's transformUV matrix.
                 */
-                function () {
+                get: function () {
                     return this._animateUVs;
                 },
                 set: function (value) {
@@ -19005,11 +18698,11 @@ var away;
 
 
             Object.defineProperty(ShaderCompiler.prototype, "alphaPremultiplied", {
-                get: /**
+                /**
                 * Indicates whether visible textures (or other pixels) used by this material have
                 * already been premultiplied.
                 */
-                function () {
+                get: function () {
                     return this._pAlphaPremultiplied;
                 },
                 set: function (value) {
@@ -19021,10 +18714,10 @@ var away;
 
 
             Object.defineProperty(ShaderCompiler.prototype, "preserveAlpha", {
-                get: /**
+                /**
                 * Indicates whether the output alpha value should remain unchanged compared to the material's original alpha.
                 */
-                function () {
+                get: function () {
                     return this._preserveAlpha;
                 },
                 set: function (value) {
@@ -19058,10 +18751,10 @@ var away;
             };
 
             Object.defineProperty(ShaderCompiler.prototype, "methodSetup", {
-                get: /**
+                /**
                 * The shader method setup object containing the method configuration and their value objects for the material being compiled.
                 */
-                function () {
+                get: function () {
                     return this._pMethodSetup;
                 },
                 set: function (value) {
@@ -19079,8 +18772,8 @@ var away;
                 this.pInitRegisterIndices();
                 this.pInitLightData();
 
-                this._pAnimatableAttributes = new Array("va0");
-                this._pAnimationTargetRegisters = new Array("vt0");
+                this._pAnimatableAttributes = new Array("va0"); //Vector.<String>(["va0"]);
+                this._pAnimationTargetRegisters = new Array("vt0"); //Vector.<String>(["vt0"]);
                 this._pVertexCode = "";
                 this._pFragmentCode = "";
 
@@ -19218,6 +18911,7 @@ var away;
                 var pos = (this._pDependencyCounter.globalPosDependencies > 0 || this._forceSeperateMVP) ? this._pSharedRegisters.globalPositionVertex.toString() : this._pAnimationTargetRegisters[0];
                 var code;
 
+                // TODO: AGAL <> GLSL
                 if (this._pDependencyCounter.projectionDependencies > 0) {
                     this._pSharedRegisters.projectionFragment = this._pRegisterCache.getFreeVarying();
 
@@ -19342,10 +19036,10 @@ var away;
             };
 
             Object.defineProperty(ShaderCompiler.prototype, "commonsDataIndex", {
-                get: /**
+                /**
                 * The index for the common data register.
                 */
-                function () {
+                get: function () {
                     return this._commonsDataIndex;
                 },
                 enumerable: true,
@@ -19380,11 +19074,11 @@ var away;
             };
 
             Object.defineProperty(ShaderCompiler.prototype, "numUsedVertexConstants", {
-                get: /**
+                /**
                 * The amount of vertex constants used by the material. Any animation code to be added can append its vertex
                 * constant data after this.
                 */
-                function () {
+                get: function () {
                     return this._pRegisterCache.numUsedVertexConstants;
                 },
                 enumerable: true,
@@ -19392,11 +19086,11 @@ var away;
             });
 
             Object.defineProperty(ShaderCompiler.prototype, "numUsedFragmentConstants", {
-                get: /**
+                /**
                 * The amount of fragment constants used by the material. Any animation code to be added can append its vertex
                 * constant data after this.
                 */
-                function () {
+                get: function () {
                     return this._pRegisterCache.numUsedFragmentConstants;
                 },
                 enumerable: true,
@@ -19404,11 +19098,11 @@ var away;
             });
 
             Object.defineProperty(ShaderCompiler.prototype, "numUsedStreams", {
-                get: /**
+                /**
                 * The amount of vertex attribute streams used by the material. Any animation code to be added can add its
                 * streams after this. Also used to automatically disable attribute slots on pass deactivation.
                 */
-                function () {
+                get: function () {
                     return this._pRegisterCache.numUsedStreams;
                 },
                 enumerable: true,
@@ -19416,10 +19110,10 @@ var away;
             });
 
             Object.defineProperty(ShaderCompiler.prototype, "numUsedTextures", {
-                get: /**
+                /**
                 * The amount of textures used by the material. Used to automatically disable texture slots on pass deactivation.
                 */
-                function () {
+                get: function () {
                     return this._pRegisterCache.numUsedTextures;
                 },
                 enumerable: true,
@@ -19427,10 +19121,10 @@ var away;
             });
 
             Object.defineProperty(ShaderCompiler.prototype, "numUsedVaryings", {
-                get: /**
+                /**
                 * Number of used varyings. Any animation code to be added can add its used varyings after this.
                 */
-                function () {
+                get: function () {
                     return this._pRegisterCache.numUsedVaryings;
                 },
                 enumerable: true,
@@ -19441,14 +19135,14 @@ var away;
             * Indicates whether lights are used for specular reflections.
             */
             ShaderCompiler.prototype.pUsesLightsForSpecular = function () {
-                return this._pNumLights > 0 && (this._specularLightSources & materials.LightSources.LIGHTS) != 0;
+                return this._pNumLights > 0 && (this._specularLightSources & away.materials.LightSources.LIGHTS) != 0;
             };
 
             /**
             * Indicates whether lights are used for diffuse reflections.
             */
             ShaderCompiler.prototype.pUsesLightsForDiffuse = function () {
-                return this._pNumLights > 0 && (this._diffuseLightSources & materials.LightSources.LIGHTS) != 0;
+                return this._pNumLights > 0 && (this._diffuseLightSources & away.materials.LightSources.LIGHTS) != 0;
             };
 
             /**
@@ -19493,13 +19187,13 @@ var away;
             };
 
             Object.defineProperty(ShaderCompiler.prototype, "specularLightSources", {
-                get: /**
+                /**
                 * Define which light source types to use for specular reflections. This allows choosing between regular lights
                 * and/or light probes for specular reflections.
                 *
                 * @see away3d.materials.LightSources
                 */
-                function () {
+                get: function () {
                     return this._specularLightSources;
                 },
                 set: function (value) {
@@ -19511,13 +19205,13 @@ var away;
 
 
             Object.defineProperty(ShaderCompiler.prototype, "diffuseLightSources", {
-                get: /**
+                /**
                 * Define which light source types to use for diffuse reflections. This allows choosing between regular lights
                 * and/or light probes for diffuse reflections.
                 *
                 * @see away3d.materials.LightSources
                 */
-                function () {
+                get: function () {
                     return this._diffuseLightSources;
                 },
                 set: function (value) {
@@ -19532,28 +19226,28 @@ var away;
             * Indicates whether light probes are being used for specular reflections.
             */
             ShaderCompiler.prototype.pUsesProbesForSpecular = function () {
-                return this._pNumLightProbes > 0 && (this._specularLightSources & materials.LightSources.PROBES) != 0;
+                return this._pNumLightProbes > 0 && (this._specularLightSources & away.materials.LightSources.PROBES) != 0;
             };
 
             /**
             * Indicates whether light probes are being used for diffuse reflections.
             */
             ShaderCompiler.prototype.pUsesProbesForDiffuse = function () {
-                return this._pNumLightProbes > 0 && (this._diffuseLightSources & materials.LightSources.PROBES) != 0;
+                return this._pNumLightProbes > 0 && (this._diffuseLightSources & away.materials.LightSources.PROBES) != 0;
             };
 
             /**
             * Indicates whether any light probes are used.
             */
             ShaderCompiler.prototype.pUsesProbes = function () {
-                return this._pNumLightProbes > 0 && ((this._diffuseLightSources | this._specularLightSources) & materials.LightSources.PROBES) != 0;
+                return this._pNumLightProbes > 0 && ((this._diffuseLightSources | this._specularLightSources) & away.materials.LightSources.PROBES) != 0;
             };
 
             Object.defineProperty(ShaderCompiler.prototype, "uvBufferIndex", {
-                get: /**
+                /**
                 * The index for the UV vertex attribute stream.
                 */
-                function () {
+                get: function () {
                     return this._uvBufferIndex;
                 },
                 enumerable: true,
@@ -19561,10 +19255,10 @@ var away;
             });
 
             Object.defineProperty(ShaderCompiler.prototype, "uvTransformIndex", {
-                get: /**
+                /**
                 * The index for the UV transformation matrix vertex constant.
                 */
-                function () {
+                get: function () {
                     return this._uvTransformIndex;
                 },
                 enumerable: true,
@@ -19572,10 +19266,10 @@ var away;
             });
 
             Object.defineProperty(ShaderCompiler.prototype, "secondaryUVBufferIndex", {
-                get: /**
+                /**
                 * The index for the secondary UV vertex attribute stream.
                 */
-                function () {
+                get: function () {
                     return this._secondaryUVBufferIndex;
                 },
                 enumerable: true,
@@ -19583,10 +19277,10 @@ var away;
             });
 
             Object.defineProperty(ShaderCompiler.prototype, "normalBufferIndex", {
-                get: /**
+                /**
                 * The index for the vertex normal attribute stream.
                 */
-                function () {
+                get: function () {
                     return this._pNormalBufferIndex;
                 },
                 enumerable: true,
@@ -19594,10 +19288,10 @@ var away;
             });
 
             Object.defineProperty(ShaderCompiler.prototype, "tangentBufferIndex", {
-                get: /**
+                /**
                 * The index for the vertex tangent attribute stream.
                 */
-                function () {
+                get: function () {
                     return this._pTangentBufferIndex;
                 },
                 enumerable: true,
@@ -19605,10 +19299,10 @@ var away;
             });
 
             Object.defineProperty(ShaderCompiler.prototype, "lightFragmentConstantIndex", {
-                get: /**
+                /**
                 * The first index for the fragment constants containing the light data.
                 */
-                function () {
+                get: function () {
                     return this._pLightFragmentConstantIndex;
                 },
                 enumerable: true,
@@ -19616,10 +19310,10 @@ var away;
             });
 
             Object.defineProperty(ShaderCompiler.prototype, "cameraPositionIndex", {
-                get: /**
+                /**
                 * The index of the vertex constant containing the camera position.
                 */
-                function () {
+                get: function () {
                     return this._pCameraPositionIndex;
                 },
                 enumerable: true,
@@ -19627,10 +19321,10 @@ var away;
             });
 
             Object.defineProperty(ShaderCompiler.prototype, "sceneMatrixIndex", {
-                get: /**
+                /**
                 * The index of the vertex constant containing the scene matrix.
                 */
-                function () {
+                get: function () {
                     return this._sceneMatrixIndex;
                 },
                 enumerable: true,
@@ -19638,10 +19332,10 @@ var away;
             });
 
             Object.defineProperty(ShaderCompiler.prototype, "sceneNormalMatrixIndex", {
-                get: /**
+                /**
                 * The index of the vertex constant containing the uniform scene matrix (the inverse transpose).
                 */
-                function () {
+                get: function () {
                     return this._pSceneNormalMatrixIndex;
                 },
                 enumerable: true,
@@ -19649,10 +19343,10 @@ var away;
             });
 
             Object.defineProperty(ShaderCompiler.prototype, "probeWeightsIndex", {
-                get: /**
+                /**
                 * The index of the fragment constant containing the weights for the light probes.
                 */
-                function () {
+                get: function () {
                     return this._pProbeWeightsIndex;
                 },
                 enumerable: true,
@@ -19660,10 +19354,10 @@ var away;
             });
 
             Object.defineProperty(ShaderCompiler.prototype, "vertexCode", {
-                get: /**
+                /**
                 * The generated vertex code.
                 */
-                function () {
+                get: function () {
                     return this._pVertexCode;
                 },
                 enumerable: true,
@@ -19671,10 +19365,10 @@ var away;
             });
 
             Object.defineProperty(ShaderCompiler.prototype, "fragmentCode", {
-                get: /**
+                /**
                 * The generated fragment code.
                 */
-                function () {
+                get: function () {
                     return this._pFragmentCode;
                 },
                 enumerable: true,
@@ -19682,10 +19376,10 @@ var away;
             });
 
             Object.defineProperty(ShaderCompiler.prototype, "fragmentLightCode", {
-                get: /**
+                /**
                 * The code containing the lighting calculations.
                 */
-                function () {
+                get: function () {
                     return this._fragmentLightCode;
                 },
                 enumerable: true,
@@ -19693,10 +19387,10 @@ var away;
             });
 
             Object.defineProperty(ShaderCompiler.prototype, "fragmentPostLightCode", {
-                get: /**
+                /**
                 * The code containing the post-lighting calculations.
                 */
-                function () {
+                get: function () {
                     return this._fragmentPostLightCode;
                 },
                 enumerable: true,
@@ -19704,10 +19398,10 @@ var away;
             });
 
             Object.defineProperty(ShaderCompiler.prototype, "shadedTarget", {
-                get: /**
+                /**
                 * The register name containing the final shaded colour.
                 */
-                function () {
+                get: function () {
                     return this._pSharedRegisters.shadedTarget.toString();
                 },
                 enumerable: true,
@@ -19715,10 +19409,10 @@ var away;
             });
 
             Object.defineProperty(ShaderCompiler.prototype, "numPointLights", {
-                get: /**
+                /**
                 * The amount of point lights that need to be supported.
                 */
-                function () {
+                get: function () {
                     return this._pNumPointLights;
                 },
                 set: function (numPointLights) {
@@ -19730,10 +19424,10 @@ var away;
 
 
             Object.defineProperty(ShaderCompiler.prototype, "numDirectionalLights", {
-                get: /**
+                /**
                 * The amount of directional lights that need to be supported.
                 */
-                function () {
+                get: function () {
                     return this._pNumDirectionalLights;
                 },
                 set: function (value) {
@@ -19745,10 +19439,10 @@ var away;
 
 
             Object.defineProperty(ShaderCompiler.prototype, "numLightProbes", {
-                get: /**
+                /**
                 * The amount of light probes that need to be supported.
                 */
-                function () {
+                get: function () {
                     return this._pNumLightProbes;
                 },
                 set: function (value) {
@@ -19760,10 +19454,10 @@ var away;
 
 
             Object.defineProperty(ShaderCompiler.prototype, "usingSpecularMethod", {
-                get: /**
+                /**
                 * Indicates whether the specular method is used.
                 */
-                function () {
+                get: function () {
                     return this._usingSpecularMethod;
                 },
                 enumerable: true,
@@ -19771,10 +19465,10 @@ var away;
             });
 
             Object.defineProperty(ShaderCompiler.prototype, "animatableAttributes", {
-                get: /**
+                /**
                 * The attributes that need to be animated by animators.
                 */
-                function () {
+                get: function () {
                     return this._pAnimatableAttributes;
                 },
                 enumerable: true,
@@ -19782,10 +19476,10 @@ var away;
             });
 
             Object.defineProperty(ShaderCompiler.prototype, "animationTargetRegisters", {
-                get: /**
+                /**
                 * The target registers for animated properties, written to by the animators.
                 */
-                function () {
+                get: function () {
                     return this._pAnimationTargetRegisters;
                 },
                 enumerable: true,
@@ -19793,10 +19487,10 @@ var away;
             });
 
             Object.defineProperty(ShaderCompiler.prototype, "usesNormals", {
-                get: /**
+                /**
                 * Indicates whether the compiled shader uses normals.
                 */
-                function () {
+                get: function () {
                     return this._pDependencyCounter.normalDependencies > 0 && this._pMethodSetup._iNormalMethod.iHasOutput;
                 },
                 enumerable: true,
@@ -19807,7 +19501,7 @@ var away;
             * Indicates whether the compiled shader uses lights.
             */
             ShaderCompiler.prototype.pUsesLights = function () {
-                return this._pNumLights > 0 && (this._combinedLightSources & materials.LightSources.LIGHTS) != 0;
+                return this._pNumLights > 0 && (this._combinedLightSources & away.materials.LightSources.LIGHTS) != 0;
             };
 
             /**
@@ -19821,6 +19515,7 @@ var away;
                 var data;
                 var alphaReg;
 
+                // TODO: AGAL <> GLSL
                 if (this._preserveAlpha) {
                     alphaReg = this._pRegisterCache.getFreeFragmentSingleTemp();
                     this._pRegisterCache.addFragmentTempUsages(alphaReg, 1);
@@ -19858,10 +19553,10 @@ var away;
             };
 
             Object.defineProperty(ShaderCompiler.prototype, "lightProbeDiffuseIndices", {
-                get: /**
+                /**
                 * Indices for the light probe diffuse textures.
                 */
-                function () {
+                get: function () {
                     return this._pLightProbeDiffuseIndices;
                 },
                 enumerable: true,
@@ -19869,10 +19564,10 @@ var away;
             });
 
             Object.defineProperty(ShaderCompiler.prototype, "lightProbeSpecularIndices", {
-                get: /**
+                /**
                 * Indices for the light probe specular textures.
                 */
-                function () {
+                get: function () {
                     return this._pLightProbeSpecularIndices;
                 },
                 enumerable: true,
@@ -19884,9 +19579,9 @@ var away;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (materials) {
         //import away3d.arcane;
         /**
@@ -19908,8 +19603,8 @@ var away;
             SuperShaderCompiler.prototype.pInitLightData = function () {
                 _super.prototype.pInitLightData.call(this);
 
-                this._pointLightRegisters = new Array(this._pNumPointLights * 3);
-                this._dirLightRegisters = new Array(this._pNumDirectionalLights * 3);
+                this._pointLightRegisters = new Array(this._pNumPointLights * 3); //Vector.<ShaderRegisterElement>(_numPointLights*3, true);
+                this._dirLightRegisters = new Array(this._pNumDirectionalLights * 3); //Vector.<ShaderRegisterElement>(_numDirectionalLights*3, true);
             };
 
             /**
@@ -20114,6 +19809,8 @@ var away;
                 if (this._pMethodSetup._iShadowMethod) {
                     this._pVertexCode += this._pMethodSetup._iShadowMethod.iGetVertexCode(this._pMethodSetup._iShadowMethodVO, this._pRegisterCache);
 
+                    // using normal to contain shadow data if available is perhaps risky :s
+                    // todo: improve compilation with lifetime analysis so this isn't necessary?
                     if (this._pDependencyCounter.normalDependencies == 0) {
                         shadowReg = this._pRegisterCache.getFreeFragmentVectorTemp();
                         this._pRegisterCache.addFragmentTempUsages(shadowReg, 1);
@@ -20132,6 +19829,7 @@ var away;
                     this._pFragmentCode += "add " + this._pSharedRegisters.shadedTarget + ".w, " + this._pSharedRegisters.shadedTarget + ".w, " + this._pSharedRegisters.commons + ".z\n" + "div " + this._pSharedRegisters.shadedTarget + ".xyz, " + this._pSharedRegisters.shadedTarget + ", " + this._pSharedRegisters.shadedTarget + ".w\n" + "sub " + this._pSharedRegisters.shadedTarget + ".w, " + this._pSharedRegisters.shadedTarget + ".w, " + this._pSharedRegisters.commons + ".z\n" + "sat " + this._pSharedRegisters.shadedTarget + ".xyz, " + this._pSharedRegisters.shadedTarget + "\n";
                 }
 
+                // resolve other dependencies as well?
                 if (this._pMethodSetup._iDiffuseMethodVO.needsNormals) {
                     this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.normalFragment);
                 }
@@ -20265,11 +19963,11 @@ var away;
                 }
 
                 if (addDiff) {
-                    this._pLightProbeDiffuseIndices = new Array();
+                    this._pLightProbeDiffuseIndices = new Array(); //Vector.<uint>();
                 }
 
                 if (addSpec) {
-                    this._pLightProbeSpecularIndices = new Array();
+                    this._pLightProbeSpecularIndices = new Array(); //Vector.<uint>();
                 }
 
                 for (i = 0; i < this._pNumProbeRegisters; ++i) {
@@ -20296,7 +19994,7 @@ var away;
                 }
             };
             return SuperShaderCompiler;
-        })(materials.ShaderCompiler);
+        })(away.materials.ShaderCompiler);
         materials.SuperShaderCompiler = SuperShaderCompiler;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
@@ -20329,9 +20027,9 @@ var away;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (materials) {
         var BlendMode = away.base.BlendMode;
         var ContextGL = away.gl.ContextGL;
@@ -20341,15 +20039,12 @@ var away;
         var AssetType = away.library.AssetType;
         var Delegate = away.utils.Delegate;
 
-        
-        
         var Camera = away.entities.Camera;
         var StageGL = away.base.StageGL;
         var DepthMapPass = away.materials.DepthMapPass;
         var DistanceMapPass = away.materials.DistanceMapPass;
         var MaterialPassBase = away.materials.MaterialPassBase;
         var RenderableBase = away.pool.RenderableBase;
-        
 
         /**
         * MaterialBase forms an abstract base class for any material.
@@ -20403,13 +20098,13 @@ var away;
                 this._pDepthPass.addEventListener(Event.CHANGE, this._onDepthPassChangeDelegate);
                 this._pDistancePass.addEventListener(Event.CHANGE, this._onDistancePassChangeDelegate);
 
-                this.alphaPremultiplied = false;
+                this.alphaPremultiplied = false; //TODO: work out why this is different for WebGL
             }
             Object.defineProperty(MaterialBase.prototype, "assetType", {
-                get: /**
+                /**
                 * @inheritDoc
                 */
-                function () {
+                get: function () {
                     return AssetType.MATERIAL;
                 },
                 enumerable: true,
@@ -20417,13 +20112,13 @@ var away;
             });
 
             Object.defineProperty(MaterialBase.prototype, "lightPicker", {
-                get: /**
+                /**
                 * The light picker used by the material to provide lights to the material if it supports lighting.
                 *
                 * @see LightPickerBase
                 * @see StaticLightPicker
                 */
-                function () {
+                get: function () {
                     return this._pLightPicker;
                 },
                 set: function (value) {
@@ -20445,10 +20140,10 @@ var away;
             };
 
             Object.defineProperty(MaterialBase.prototype, "mipmap", {
-                get: /**
+                /**
                 * Indicates whether or not any used textures should use mipmapping. Defaults to true.
                 */
-                function () {
+                get: function () {
                     return this._pMipmap;
                 },
                 set: function (value) {
@@ -20467,10 +20162,10 @@ var away;
             };
 
             Object.defineProperty(MaterialBase.prototype, "smooth", {
-                get: /**
+                /**
                 * Indicates whether or not any used textures should use smoothing.
                 */
-                function () {
+                get: function () {
                     return this._smooth;
                 },
                 set: function (value) {
@@ -20485,12 +20180,12 @@ var away;
 
 
             Object.defineProperty(MaterialBase.prototype, "depthCompareMode", {
-                get: /**
+                /**
                 * The depth compare mode used to render the renderables using this material.
                 *
                 * @see away.gl.ContextGLCompareMode
                 */
-                function () {
+                get: function () {
                     return this._pDepthCompareMode;
                 },
                 set: function (value) {
@@ -20506,11 +20201,11 @@ var away;
             };
 
             Object.defineProperty(MaterialBase.prototype, "repeat", {
-                get: /**
+                /**
                 * Indicates whether or not any used textures should be tiled. If set to false, texture samples are clamped to
                 * the texture's borders when the uv coordinates are outside the [0, 1] interval.
                 */
-                function () {
+                get: function () {
                     return this._repeat;
                 },
                 set: function (value) {
@@ -20542,10 +20237,10 @@ var away;
             };
 
             Object.defineProperty(MaterialBase.prototype, "bothSides", {
-                get: /**
+                /**
                 * Defines whether or not the material should cull triangles facing away from the camera.
                 */
-                function () {
+                get: function () {
                     return this._bothSides;
                 },
                 set: function (value) {
@@ -20563,7 +20258,7 @@ var away;
 
 
             Object.defineProperty(MaterialBase.prototype, "blendMode", {
-                get: /**
+                /**
                 * The blend mode to use when drawing this renderable. The following blend modes are supported:
                 * <ul>
                 * <li>BlendMode.NORMAL: No blending, unless the material inherently needs it</li>
@@ -20573,7 +20268,7 @@ var away;
                 * <li>BlendMode.ALPHA</li>
                 * </ul>
                 */
-                function () {
+                get: function () {
                     return this.getBlendMode();
                 },
                 set: function (value) {
@@ -20593,12 +20288,12 @@ var away;
             };
 
             Object.defineProperty(MaterialBase.prototype, "alphaPremultiplied", {
-                get: /**
+                /**
                 * Indicates whether visible textures (or other pixels) used by this material have
                 * already been premultiplied. Toggle this if you are seeing black halos around your
                 * blended alpha edges.
                 */
-                function () {
+                get: function () {
                     return this._alphaPremultiplied;
                 },
                 set: function (value) {
@@ -20613,10 +20308,10 @@ var away;
 
 
             Object.defineProperty(MaterialBase.prototype, "requiresBlending", {
-                get: /**
+                /**
                 * Indicates whether or not the material requires alpha blending during rendering.
                 */
-                function () {
+                get: function () {
                     return this.getRequiresBlending();
                 },
                 enumerable: true,
@@ -20628,12 +20323,12 @@ var away;
             };
 
             Object.defineProperty(MaterialBase.prototype, "_iNumPasses", {
-                get: /**
+                /**
                 * The amount of passes used by the material.
                 *
                 * @private
                 */
-                function () {
+                get: function () {
                     return this._numPasses;
                 },
                 enumerable: true,
@@ -20666,7 +20361,7 @@ var away;
 
                 if (distanceBased)
                     this._pDistancePass.iActivate(stageGL, camera);
-else
+                else
                     this._pDepthPass.iActivate(stageGL, camera);
             };
 
@@ -20680,7 +20375,7 @@ else
             MaterialBase.prototype.iDeactivateForDepth = function (stageGL) {
                 if (this._distanceBasedDepthRender)
                     this._pDistancePass.iDeactivate(stageGL);
-else
+                else
                     this._pDepthPass.iDeactivate(stageGL);
             };
 
@@ -20829,12 +20524,12 @@ else
             };
 
             Object.defineProperty(MaterialBase.prototype, "iOwners", {
-                get: /**
+                /**
                 * A list of the IMaterialOwners that use this material
                 *
                 * @private
                 */
-                function () {
+                get: function () {
                     return this._owners;
                 },
                 enumerable: true,
@@ -20876,6 +20571,9 @@ else
                 this._pDepthPass.iInvalidateShaderProgram();
                 this._pDistancePass.iInvalidateShaderProgram();
 
+                // test if the depth and distance passes support animating the animation set in the vertex shader
+                // if any object using this material fails to support accelerated animations for any of the passes,
+                // we should do everything on cpu (otherwise we have the cost of both gpu + cpu animations)
                 if (this._animationSet) {
                     this._animationSet.resetGPUCompatibility();
 
@@ -20893,9 +20591,14 @@ else
                 }
 
                 for (var i = 0; i < this._numPasses; ++i) {
+                    // only invalidate the pass if it wasn't the triggering pass
                     if (this._passes[i] != triggerPass)
                         this._passes[i].iInvalidateShaderProgram(false);
 
+                    // test if animation will be able to run on gpu BEFORE compiling materials
+                    // test if the pass supports animating the animation set in the vertex shader
+                    // if any object using this material fails to support accelerated animations for any of the passes,
+                    // we should do everything on cpu (otherwise we have the cost of both gpu + cpu animations)
                     if (this._animationSet) {
                         l = this._owners.length;
 
@@ -21013,9 +20716,9 @@ else
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (materials) {
         /**
         * SinglePassMaterialBase forms an abstract base class for the default single-pass materials provided by Away3D,
@@ -21030,14 +20733,14 @@ var away;
                 _super.call(this);
                 this._alphaBlending = false;
 
-                this.pAddPass(this._pScreenPass = new materials.SuperShaderPass(this));
+                this.pAddPass(this._pScreenPass = new away.materials.SuperShaderPass(this));
             }
             Object.defineProperty(SinglePassMaterialBase.prototype, "enableLightFallOff", {
-                get: /**
+                /**
                 * Whether or not to use fallOff and radius properties for lights. This can be used to improve performance and
                 * compatibility for constrained mode.
                 */
-                function () {
+                get: function () {
                     return this._pScreenPass.enableLightFallOff;
                 },
                 set: function (value) {
@@ -21049,12 +20752,12 @@ var away;
 
 
             Object.defineProperty(SinglePassMaterialBase.prototype, "alphaThreshold", {
-                get: /**
+                /**
                 * The minimum alpha value for which pixels should be drawn. This is used for transparency that is either
                 * invisible or entirely opaque, often used with textures for foliage, etc.
                 * Recommended values are 0 to disable alpha, or 0.5 to create smooth edges. Default value is 0 (disabled).
                 */
-                function () {
+                get: function () {
                     return this._pScreenPass.diffuseMethod.alphaThreshold;
                 },
                 set: function (value) {
@@ -21069,10 +20772,10 @@ var away;
 
 
             Object.defineProperty(SinglePassMaterialBase.prototype, "blendMode", {
-                set: /**
+                /**
                 * @inheritDoc
                 */
-                function (value) {
+                set: function (value) {
                     _super.prototype.setBlendMode.call(this, value);
                     this._pScreenPass.setBlendMode((this._pBlendMode == away.base.BlendMode.NORMAL) && this.requiresBlending ? away.base.BlendMode.LAYER : this._pBlendMode);
                 },
@@ -21081,10 +20784,10 @@ var away;
             });
 
             Object.defineProperty(SinglePassMaterialBase.prototype, "depthCompareMode", {
-                set: /**
+                /**
                 * @inheritDoc
                 */
-                function (value) {
+                set: function (value) {
                     this._pDepthCompareMode = value;
                     this._pScreenPass.depthCompareMode = value;
                 },
@@ -21107,13 +20810,13 @@ var away;
             };
 
             Object.defineProperty(SinglePassMaterialBase.prototype, "specularLightSources", {
-                get: /**
+                /**
                 * Define which light source types to use for specular reflections. This allows choosing between regular lights
                 * and/or light probes for specular reflections.
                 *
                 * @see away3d.materials.LightSources
                 */
-                function () {
+                get: function () {
                     return this._pScreenPass.specularLightSources;
                 },
                 set: function (value) {
@@ -21125,13 +20828,13 @@ var away;
 
 
             Object.defineProperty(SinglePassMaterialBase.prototype, "diffuseLightSources", {
-                get: /**
+                /**
                 * Define which light source types to use for diffuse reflections. This allows choosing between regular lights
                 * and/or light probes for diffuse reflections.
                 *
                 * @see away3d.materials.LightSources
                 */
-                function () {
+                get: function () {
                     return this._pScreenPass.diffuseLightSources;
                 },
                 set: function (value) {
@@ -21143,10 +20846,10 @@ var away;
 
 
             Object.defineProperty(SinglePassMaterialBase.prototype, "requiresBlending", {
-                get: /**
+                /**
                 * @inheritDoc
                 */
-                function () {
+                get: function () {
                     return this.getRequiresBlending();
                 },
                 enumerable: true,
@@ -21164,10 +20867,10 @@ var away;
             };
 
             Object.defineProperty(SinglePassMaterialBase.prototype, "colorTransform", {
-                get: /**
+                /**
                 * The ColorTransform object to transform the colour of the material with. Defaults to null.
                 */
-                function () {
+                get: function () {
                     return this._pScreenPass.colorTransform;
                 },
                 set: function (value) {
@@ -21183,10 +20886,10 @@ var away;
             };
 
             Object.defineProperty(SinglePassMaterialBase.prototype, "ambientMethod", {
-                get: /**
+                /**
                 * The method that provides the ambient lighting contribution. Defaults to BasicAmbientMethod.
                 */
-                function () {
+                get: function () {
                     return this._pScreenPass.ambientMethod;
                 },
                 set: function (value) {
@@ -21198,10 +20901,10 @@ var away;
 
 
             Object.defineProperty(SinglePassMaterialBase.prototype, "shadowMethod", {
-                get: /**
+                /**
                 * The method used to render shadows cast on this surface, or null if no shadows are to be rendered. Defaults to null.
                 */
-                function () {
+                get: function () {
                     return this._pScreenPass.shadowMethod;
                 },
                 set: function (value) {
@@ -21213,10 +20916,10 @@ var away;
 
 
             Object.defineProperty(SinglePassMaterialBase.prototype, "diffuseMethod", {
-                get: /**
+                /**
                 * The method that provides the diffuse lighting contribution. Defaults to BasicDiffuseMethod.
                 */
-                function () {
+                get: function () {
                     return this._pScreenPass.diffuseMethod;
                 },
                 set: function (value) {
@@ -21228,10 +20931,10 @@ var away;
 
 
             Object.defineProperty(SinglePassMaterialBase.prototype, "normalMethod", {
-                get: /**
+                /**
                 * The method used to generate the per-pixel normals. Defaults to BasicNormalMethod.
                 */
-                function () {
+                get: function () {
                     return this._pScreenPass.normalMethod;
                 },
                 set: function (value) {
@@ -21243,10 +20946,10 @@ var away;
 
 
             Object.defineProperty(SinglePassMaterialBase.prototype, "specularMethod", {
-                get: /**
+                /**
                 * The method that provides the specular lighting contribution. Defaults to BasicSpecularMethod.
                 */
-                function () {
+                get: function () {
                     return this._pScreenPass.specularMethod;
                 },
                 set: function (value) {
@@ -21267,10 +20970,10 @@ var away;
             };
 
             Object.defineProperty(SinglePassMaterialBase.prototype, "numMethods", {
-                get: /**
+                /**
                 * The number of "effect" methods added to the material.
                 */
-                function () {
+                get: function () {
                     return this._pScreenPass.numMethods;
                 },
                 enumerable: true,
@@ -21314,10 +21017,10 @@ var away;
             };
 
             Object.defineProperty(SinglePassMaterialBase.prototype, "mipmap", {
-                set: /**
+                /**
                 * @inheritDoc
                 */
-                function (value) {
+                set: function (value) {
                     if (this._pMipmap == value)
                         return;
 
@@ -21328,11 +21031,11 @@ var away;
             });
 
             Object.defineProperty(SinglePassMaterialBase.prototype, "normalMap", {
-                get: /**
+                /**
                 * The normal map to modulate the direction of the surface for each texel. The default normal method expects
                 * tangent-space normal maps, but others could expect object-space maps.
                 */
-                function () {
+                get: function () {
                     return this._pScreenPass.normalMap;
                 },
                 set: function (value) {
@@ -21344,12 +21047,12 @@ var away;
 
 
             Object.defineProperty(SinglePassMaterialBase.prototype, "specularMap", {
-                get: /**
+                /**
                 * A specular map that defines the strength of specular reflections for each texel in the red channel,
                 * and the gloss factor in the green channel. You can use SpecularBitmapTexture if you want to easily set
                 * specular and gloss maps from grayscale images, but correctly authored images are preferred.
                 */
-                function () {
+                get: function () {
                     return this._pScreenPass.specularMethod.texture;
                 },
                 set: function (value) {
@@ -21365,10 +21068,10 @@ var away;
 
 
             Object.defineProperty(SinglePassMaterialBase.prototype, "gloss", {
-                get: /**
+                /**
                 * The glossiness of the material (sharpness of the specular highlight).
                 */
-                function () {
+                get: function () {
                     return this._pScreenPass.specularMethod ? this._pScreenPass.specularMethod.gloss : 0;
                 },
                 set: function (value) {
@@ -21381,10 +21084,10 @@ var away;
 
 
             Object.defineProperty(SinglePassMaterialBase.prototype, "ambient", {
-                get: /**
+                /**
                 * The strength of the ambient reflection.
                 */
-                function () {
+                get: function () {
                     return this._pScreenPass.ambientMethod.ambient;
                 },
                 set: function (value) {
@@ -21396,10 +21099,10 @@ var away;
 
 
             Object.defineProperty(SinglePassMaterialBase.prototype, "specular", {
-                get: /**
+                /**
                 * The overall strength of the specular reflection.
                 */
-                function () {
+                get: function () {
                     return this._pScreenPass.specularMethod ? this._pScreenPass.specularMethod.specular : 0;
                 },
                 set: function (value) {
@@ -21412,10 +21115,10 @@ var away;
 
 
             Object.defineProperty(SinglePassMaterialBase.prototype, "ambientColor", {
-                get: /**
+                /**
                 * The colour of the ambient reflection.
                 */
-                function () {
+                get: function () {
                     return this._pScreenPass.ambientMethod.ambientColor;
                 },
                 set: function (value) {
@@ -21427,10 +21130,10 @@ var away;
 
 
             Object.defineProperty(SinglePassMaterialBase.prototype, "specularColor", {
-                get: /**
+                /**
                 * The colour of the specular reflection.
                 */
-                function () {
+                get: function () {
                     return this._pScreenPass.specularMethod.specularColor;
                 },
                 set: function (value) {
@@ -21442,11 +21145,11 @@ var away;
 
 
             Object.defineProperty(SinglePassMaterialBase.prototype, "alphaBlending", {
-                get: /**
+                /**
                 * Indicates whether or not the material has transparency. If binary transparency is sufficient, for
                 * example when using textures of foliage, consider using alphaThreshold instead.
                 */
-                function () {
+                get: function () {
                     return this._alphaBlending;
                 },
                 set: function (value) {
@@ -21480,10 +21183,10 @@ var away;
             };
 
             Object.defineProperty(SinglePassMaterialBase.prototype, "lightPicker", {
-                set: /**
+                /**
                 * @inheritDoc
                 */
-                function (value) {
+                set: function (value) {
                     _super.prototype.setLightPicker.call(this, value);
                     this._pScreenPass.lightPicker = value;
                 },
@@ -21491,14 +21194,14 @@ var away;
                 configurable: true
             });
             return SinglePassMaterialBase;
-        })(materials.MaterialBase);
+        })(away.materials.MaterialBase);
         materials.SinglePassMaterialBase = SinglePassMaterialBase;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (materials) {
         var Delegate = away.utils.Delegate;
 
@@ -21519,21 +21222,21 @@ var away;
                 this._alphaThreshold = 0;
                 this._specularLightSources = 0x01;
                 this._diffuseLightSources = 0x03;
-                this._ambientMethod = new materials.BasicAmbientMethod();
-                this._diffuseMethod = new materials.BasicDiffuseMethod();
-                this._normalMethod = new materials.BasicNormalMethod();
-                this._specularMethod = new materials.BasicSpecularMethod();
+                this._ambientMethod = new away.materials.BasicAmbientMethod();
+                this._diffuseMethod = new away.materials.BasicDiffuseMethod();
+                this._normalMethod = new away.materials.BasicNormalMethod();
+                this._specularMethod = new away.materials.BasicSpecularMethod();
                 this._screenPassesInvalid = true;
                 this._enableLightFallOff = true;
 
                 this._onLightChangeDelegate = Delegate.create(this, this.onLightsChange);
             }
             Object.defineProperty(MultiPassMaterialBase.prototype, "enableLightFallOff", {
-                get: /**
+                /**
                 * Whether or not to use fallOff and radius properties for lights. This can be used to improve performance and
                 * compatibility for constrained mode.
                 */
-                function () {
+                get: function () {
                     return this._enableLightFallOff;
                 },
                 set: function (value) {
@@ -21548,12 +21251,12 @@ var away;
 
 
             Object.defineProperty(MultiPassMaterialBase.prototype, "alphaThreshold", {
-                get: /**
+                /**
                 * The minimum alpha value for which pixels should be drawn. This is used for transparency that is either
                 * invisible or entirely opaque, often used with textures for foliage, etc.
                 * Recommended values are 0 to disable alpha, or 0.5 to create smooth edges. Default value is 0 (disabled).
                 */
-                function () {
+                get: function () {
                     return this._alphaThreshold;
                 },
                 set: function (value) {
@@ -21568,10 +21271,10 @@ var away;
 
 
             Object.defineProperty(MultiPassMaterialBase.prototype, "depthCompareMode", {
-                set: /**
+                /**
                 * @inheritDoc
                 */
-                function (value) {
+                set: function (value) {
                     _super.prototype.setDepthCompareMode.call(this, value);
                     this.pInvalidateScreenPasses();
                 },
@@ -21580,10 +21283,10 @@ var away;
             });
 
             Object.defineProperty(MultiPassMaterialBase.prototype, "blendMode", {
-                set: /**
+                /**
                 * @inheritDoc
                 */
-                function (value) {
+                set: function (value) {
                     _super.prototype.setBlendMode.call(this, value);
                     this.pInvalidateScreenPasses();
                 },
@@ -21598,20 +21301,20 @@ var away;
                 if (typeof distanceBased === "undefined") { distanceBased = false; }
                 if (distanceBased)
                     this._pDistancePass.alphaMask = this._diffuseMethod.texture;
-else
+                else
                     this._pDepthPass.alphaMask = this._diffuseMethod.texture;
 
                 _super.prototype.iActivateForDepth.call(this, stageGL, camera, distanceBased);
             };
 
             Object.defineProperty(MultiPassMaterialBase.prototype, "specularLightSources", {
-                get: /**
+                /**
                 * Define which light source types to use for specular reflections. This allows choosing between regular lights
                 * and/or light probes for specular reflections.
                 *
                 * @see away3d.materials.LightSources
                 */
-                function () {
+                get: function () {
                     return this._specularLightSources;
                 },
                 set: function (value) {
@@ -21623,13 +21326,13 @@ else
 
 
             Object.defineProperty(MultiPassMaterialBase.prototype, "diffuseLightSources", {
-                get: /**
+                /**
                 * Define which light source types to use for diffuse reflections. This allows choosing between regular lights
                 * and/or light probes for diffuse reflections.
                 *
                 * @see away3d.materials.LightSources
                 */
-                function () {
+                get: function () {
                     return this._diffuseLightSources;
                 },
                 set: function (value) {
@@ -21641,10 +21344,10 @@ else
 
 
             Object.defineProperty(MultiPassMaterialBase.prototype, "lightPicker", {
-                set: /**
+                /**
                 * @inheritDoc
                 */
-                function (value) {
+                set: function (value) {
                     if (this._pLightPicker)
                         this._pLightPicker.removeEventListener(away.events.Event.CHANGE, this._onLightChangeDelegate);
 
@@ -21660,10 +21363,10 @@ else
             });
 
             Object.defineProperty(MultiPassMaterialBase.prototype, "requiresBlending", {
-                get: /**
+                /**
                 * @inheritDoc
                 */
-                function () {
+                get: function () {
                     return false;
                 },
                 enumerable: true,
@@ -21671,10 +21374,10 @@ else
             });
 
             Object.defineProperty(MultiPassMaterialBase.prototype, "ambientMethod", {
-                get: /**
+                /**
                 * The method that provides the ambient lighting contribution. Defaults to BasicAmbientMethod.
                 */
-                function () {
+                get: function () {
                     return this._ambientMethod;
                 },
                 set: function (value) {
@@ -21688,10 +21391,10 @@ else
 
 
             Object.defineProperty(MultiPassMaterialBase.prototype, "shadowMethod", {
-                get: /**
+                /**
                 * The method used to render shadows cast on this surface, or null if no shadows are to be rendered. Defaults to null.
                 */
-                function () {
+                get: function () {
                     return this._shadowMethod;
                 },
                 set: function (value) {
@@ -21707,10 +21410,10 @@ else
 
 
             Object.defineProperty(MultiPassMaterialBase.prototype, "diffuseMethod", {
-                get: /**
+                /**
                 * The method that provides the diffuse lighting contribution. Defaults to BasicDiffuseMethod.
                 */
-                function () {
+                get: function () {
                     return this._diffuseMethod;
                 },
                 set: function (value) {
@@ -21724,10 +21427,10 @@ else
 
 
             Object.defineProperty(MultiPassMaterialBase.prototype, "specularMethod", {
-                get: /**
+                /**
                 * The method that provides the specular lighting contribution. Defaults to BasicSpecularMethod.
                 */
-                function () {
+                get: function () {
                     return this._specularMethod;
                 },
                 set: function (value) {
@@ -21743,10 +21446,10 @@ else
 
 
             Object.defineProperty(MultiPassMaterialBase.prototype, "normalMethod", {
-                get: /**
+                /**
                 * The method used to generate the per-pixel normals. Defaults to BasicNormalMethod.
                 */
-                function () {
+                get: function () {
                     return this._normalMethod;
                 },
                 set: function (value) {
@@ -21766,17 +21469,17 @@ else
             */
             MultiPassMaterialBase.prototype.addMethod = function (method) {
                 if (this._pEffectsPass == null)
-                    this._pEffectsPass = new materials.SuperShaderPass(this);
+                    this._pEffectsPass = new away.materials.SuperShaderPass(this);
 
                 this._pEffectsPass.addMethod(method);
                 this.pInvalidateScreenPasses();
             };
 
             Object.defineProperty(MultiPassMaterialBase.prototype, "numMethods", {
-                get: /**
+                /**
                 * The number of "effect" methods added to the material.
                 */
-                function () {
+                get: function () {
                     return this._pEffectsPass ? this._pEffectsPass.numMethods : 0;
                 },
                 enumerable: true,
@@ -21809,7 +21512,7 @@ else
             */
             MultiPassMaterialBase.prototype.addMethodAt = function (method, index) {
                 if (this._pEffectsPass == null)
-                    this._pEffectsPass = new materials.SuperShaderPass(this);
+                    this._pEffectsPass = new away.materials.SuperShaderPass(this);
 
                 this._pEffectsPass.addMethodAt(method, index);
                 this.pInvalidateScreenPasses();
@@ -21825,15 +21528,16 @@ else
 
                 this._pEffectsPass.removeMethod(method);
 
+                // reconsider
                 if (this._pEffectsPass.numMethods == 0)
                     this.pInvalidateScreenPasses();
             };
 
             Object.defineProperty(MultiPassMaterialBase.prototype, "mipmap", {
-                set: /**
+                /**
                 * @inheritDoc
                 */
-                function (value) {
+                set: function (value) {
                     if (this._pMipmap == value)
                         return;
 
@@ -21844,11 +21548,11 @@ else
             });
 
             Object.defineProperty(MultiPassMaterialBase.prototype, "normalMap", {
-                get: /**
+                /**
                 * The normal map to modulate the direction of the surface for each texel. The default normal method expects
                 * tangent-space normal maps, but others could expect object-space maps.
                 */
-                function () {
+                get: function () {
                     return this._normalMethod.normalMap;
                 },
                 set: function (value) {
@@ -21860,18 +21564,18 @@ else
 
 
             Object.defineProperty(MultiPassMaterialBase.prototype, "specularMap", {
-                get: /**
+                /**
                 * A specular map that defines the strength of specular reflections for each texel in the red channel,
                 * and the gloss factor in the green channel. You can use SpecularBitmapTexture if you want to easily set
                 * specular and gloss maps from grayscale images, but correctly authored images are preferred.
                 */
-                function () {
+                get: function () {
                     return this._specularMethod.texture;
                 },
                 set: function (value) {
                     if (this._specularMethod)
                         this._specularMethod.texture = value;
-else
+                    else
                         throw new Error("No specular method was set to assign the specularGlossMap to");
                 },
                 enumerable: true,
@@ -21880,10 +21584,10 @@ else
 
 
             Object.defineProperty(MultiPassMaterialBase.prototype, "gloss", {
-                get: /**
+                /**
                 * The glossiness of the material (sharpness of the specular highlight).
                 */
-                function () {
+                get: function () {
                     return this._specularMethod ? this._specularMethod.gloss : 0;
                 },
                 set: function (value) {
@@ -21896,10 +21600,10 @@ else
 
 
             Object.defineProperty(MultiPassMaterialBase.prototype, "ambient", {
-                get: /**
+                /**
                 * The strength of the ambient reflection.
                 */
-                function () {
+                get: function () {
                     return this._ambientMethod.ambient;
                 },
                 set: function (value) {
@@ -21911,10 +21615,10 @@ else
 
 
             Object.defineProperty(MultiPassMaterialBase.prototype, "specular", {
-                get: /**
+                /**
                 * The overall strength of the specular reflection.
                 */
-                function () {
+                get: function () {
                     return this._specularMethod ? this._specularMethod.specular : 0;
                 },
                 set: function (value) {
@@ -21927,10 +21631,10 @@ else
 
 
             Object.defineProperty(MultiPassMaterialBase.prototype, "ambientColor", {
-                get: /**
+                /**
                 * The colour of the ambient reflection.
                 */
-                function () {
+                get: function () {
                     return this._ambientMethod.ambientColor;
                 },
                 set: function (value) {
@@ -21942,10 +21646,10 @@ else
 
 
             Object.defineProperty(MultiPassMaterialBase.prototype, "specularColor", {
-                get: /**
+                /**
                 * The colour of the specular reflection.
                 */
-                function () {
+                get: function () {
                     return this._specularMethod.specularColor;
                 },
                 set: function (value) {
@@ -22070,19 +21774,23 @@ else
             * Initializes all the passes and their dependent passes.
             */
             MultiPassMaterialBase.prototype.initPasses = function () {
+                // let the effects pass handle everything if there are no lights,
+                // or when there are effect methods applied after shading.
                 if (this.numLights == 0 || this.numMethods > 0)
                     this.initEffectsPass();
-else if (this._pEffectsPass && this.numMethods == 0)
+                else if (this._pEffectsPass && this.numMethods == 0)
                     this.removeEffectsPass();
 
+                // only use a caster light pass if shadows need to be rendered
                 if (this._shadowMethod)
                     this.initCasterLightPass();
-else
+                else
                     this.removeCasterLightPass();
 
+                // only use non caster light passes if there are lights that don't cast
                 if (this.numNonCasters > 0)
                     this.initNonCasterLightPasses();
-else
+                else
                     this.removeNonCasterLightPasses();
             };
 
@@ -22092,6 +21800,7 @@ else
             MultiPassMaterialBase.prototype.setBlendAndCompareModes = function () {
                 var forceSeparateMVP = (this._casterLightPass || this._pEffectsPass);
 
+                // caster light pass is always first if it exists, hence it uses normal blending
                 if (this._casterLightPass) {
                     this._casterLightPass.setBlendMode(away.base.BlendMode.NORMAL);
                     this._casterLightPass.depthCompareMode = this._pDepthCompareMode;
@@ -22101,6 +21810,8 @@ else
                 if (this._nonCasterLightPasses) {
                     var firstAdditiveIndex = 0;
 
+                    // if there's no caster light pass, the first non caster light pass will be the first
+                    // and should use normal blending
                     if (!this._casterLightPass) {
                         this._nonCasterLightPasses[0].forceSeparateMVP = forceSeparateMVP;
                         this._nonCasterLightPasses[0].setBlendMode(away.base.BlendMode.NORMAL);
@@ -22116,6 +21827,7 @@ else
                 }
 
                 if (this._casterLightPass || this._nonCasterLightPasses) {
+                    // there are light passes, so this should be blended in
                     if (this._pEffectsPass) {
                         this._pEffectsPass.iIgnoreLights = true;
                         this._pEffectsPass.depthCompareMode = away.gl.ContextGLCompareMode.LESS_EQUAL;
@@ -22136,7 +21848,7 @@ else
 
             MultiPassMaterialBase.prototype.initCasterLightPass = function () {
                 if (this._casterLightPass == null)
-                    this._casterLightPass = new materials.ShadowCasterPass(this);
+                    this._casterLightPass = new away.materials.ShadowCasterPass(this);
 
                 this._casterLightPass.diffuseMethod = null;
                 this._casterLightPass.ambientMethod = null;
@@ -22144,7 +21856,7 @@ else
                 this._casterLightPass.specularMethod = null;
                 this._casterLightPass.shadowMethod = null;
                 this._casterLightPass.enableLightFallOff = this._enableLightFallOff;
-                this._casterLightPass.lightPicker = new materials.StaticLightPicker([this._shadowMethod.castingLight]);
+                this._casterLightPass.lightPicker = new away.materials.StaticLightPicker([this._shadowMethod.castingLight]);
                 this._casterLightPass.shadowMethod = this._shadowMethod;
                 this._casterLightPass.diffuseMethod = this._diffuseMethod;
                 this._casterLightPass.ambientMethod = this._ambientMethod;
@@ -22181,7 +21893,7 @@ else
                 this._nonCasterLightPasses = new Array();
 
                 while (dirLightOffset < numDirLights || pointLightOffset < numPointLights || probeOffset < numLightProbes) {
-                    pass = new materials.LightingPass(this);
+                    pass = new away.materials.LightingPass(this);
                     pass.enableLightFallOff = this._enableLightFallOff;
                     pass.includeCasters = this._shadowMethod == null;
                     pass.directionalLightsOffset = dirLightOffset;
@@ -22228,7 +21940,7 @@ else
 
             MultiPassMaterialBase.prototype.initEffectsPass = function () {
                 if (this._pEffectsPass == null)
-                    this._pEffectsPass = new materials.SuperShaderPass(this);
+                    this._pEffectsPass = new away.materials.SuperShaderPass(this);
 
                 this._pEffectsPass.enableLightFallOff = this._enableLightFallOff;
                 if (this.numLights == 0) {
@@ -22236,7 +21948,7 @@ else
                     this._pEffectsPass.diffuseMethod = this._diffuseMethod;
                 } else {
                     this._pEffectsPass.diffuseMethod = null;
-                    this._pEffectsPass.diffuseMethod = new materials.BasicDiffuseMethod();
+                    this._pEffectsPass.diffuseMethod = new away.materials.BasicDiffuseMethod();
                     this._pEffectsPass.diffuseMethod.diffuseColor = 0x000000;
                     this._pEffectsPass.diffuseMethod.diffuseAlpha = 0;
                 }
@@ -22249,10 +21961,10 @@ else
             };
 
             Object.defineProperty(MultiPassMaterialBase.prototype, "numLights", {
-                get: /**
+                /**
                 * The maximum total number of lights provided by the light picker.
                 */
-                function () {
+                get: function () {
                     return this._pLightPicker ? this._pLightPicker.numLightProbes + this._pLightPicker.numDirectionalLights + this._pLightPicker.numPointLights + this._pLightPicker.numCastingDirectionalLights + this._pLightPicker.numCastingPointLights : 0;
                 },
                 enumerable: true,
@@ -22260,10 +21972,10 @@ else
             });
 
             Object.defineProperty(MultiPassMaterialBase.prototype, "numNonCasters", {
-                get: /**
+                /**
                 * The amount of lights that don't cast shadows.
                 */
-                function () {
+                get: function () {
                     return this._pLightPicker ? this._pLightPicker.numLightProbes + this._pLightPicker.numDirectionalLights + this._pLightPicker.numPointLights : 0;
                 },
                 enumerable: true,
@@ -22284,14 +21996,14 @@ else
                 this.pInvalidateScreenPasses();
             };
             return MultiPassMaterialBase;
-        })(materials.MaterialBase);
+        })(away.materials.MaterialBase);
         materials.MultiPassMaterialBase = MultiPassMaterialBase;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (materials) {
         /**
         * TextureMultiPassMaterial is a multi-pass material that uses a texture to define the surface's diffuse reflection colour (albedo).
@@ -22318,10 +22030,10 @@ var away;
                 this.mipmap = mipmap;
             }
             Object.defineProperty(TextureMultiPassMaterial.prototype, "animateUVs", {
-                get: /**
+                /**
                 * Specifies whether or not the UV coordinates should be animated using a transformation matrix.
                 */
-                function () {
+                get: function () {
                     return this._animateUVs;
                 },
                 set: function (value) {
@@ -22333,10 +22045,10 @@ var away;
 
 
             Object.defineProperty(TextureMultiPassMaterial.prototype, "texture", {
-                get: /**
+                /**
                 * The texture object to use for the albedo colour.
                 */
-                function () {
+                get: function () {
                     return this.diffuseMethod.texture;
                 },
                 set: function (value) {
@@ -22348,10 +22060,10 @@ var away;
 
 
             Object.defineProperty(TextureMultiPassMaterial.prototype, "ambientTexture", {
-                get: /**
+                /**
                 * The texture object to use for the ambient colour.
                 */
-                function () {
+                get: function () {
                     return this.ambientMethod.texture;
                 },
                 set: function (value) {
@@ -22370,14 +22082,14 @@ var away;
                     this._pEffectsPass.animateUVs = this._animateUVs;
             };
             return TextureMultiPassMaterial;
-        })(materials.MultiPassMaterialBase);
+        })(away.materials.MultiPassMaterialBase);
         materials.TextureMultiPassMaterial = TextureMultiPassMaterial;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (materials) {
         /**
         * ColorMultiPassMaterial is a multi-pass material that uses a flat color as the surface's diffuse reflection value.
@@ -22395,10 +22107,10 @@ var away;
                 this.color = color;
             }
             Object.defineProperty(ColorMultiPassMaterial.prototype, "color", {
-                get: /**
+                /**
                 * The diffuse reflectivity color of the surface.
                 */
-                function () {
+                get: function () {
                     return this.diffuseMethod.diffuseColor;
                 },
                 set: function (value) {
@@ -22409,14 +22121,14 @@ var away;
             });
 
             return ColorMultiPassMaterial;
-        })(materials.MultiPassMaterialBase);
+        })(away.materials.MultiPassMaterialBase);
         materials.ColorMultiPassMaterial = ColorMultiPassMaterial;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (materials) {
         //import away3d.*;
         //import away3d.textures.*;
@@ -22449,12 +22161,12 @@ var away;
                 this.mipmap = mipmap;
             }
             Object.defineProperty(TextureMaterial.prototype, "animateUVs", {
-                get: /**
+                /**
                 * Specifies whether or not the UV coordinates should be animated using IRenderable's uvTransform matrix.
                 *
                 * @see IRenderable.uvTransform
                 */
-                function () {
+                get: function () {
                     return this._pScreenPass.animateUVs;
                 },
                 set: function (value) {
@@ -22466,16 +22178,16 @@ var away;
 
 
             Object.defineProperty(TextureMaterial.prototype, "alpha", {
-                get: /**
+                /**
                 * The alpha of the surface.
                 */
-                function () {
+                get: function () {
                     return this._pScreenPass.colorTransform ? this._pScreenPass.colorTransform.alphaMultiplier : 1;
                 },
                 set: function (value) {
                     if (value > 1)
                         value = 1;
-else if (value < 0)
+                    else if (value < 0)
                         value = 0;
 
                     if (this.colorTransform == null) {
@@ -22495,10 +22207,10 @@ else if (value < 0)
 
 
             Object.defineProperty(TextureMaterial.prototype, "texture", {
-                get: /**
+                /**
                 * The texture object to use for the albedo colour.
                 */
-                function () {
+                get: function () {
                     return this._pScreenPass.diffuseMethod.texture;
                 },
                 set: function (value) {
@@ -22510,29 +22222,29 @@ else if (value < 0)
 
 
             Object.defineProperty(TextureMaterial.prototype, "ambientTexture", {
-                get: /**
+                /**
                 * The texture object to use for the ambient colour.
                 */
-                function () {
+                get: function () {
                     return this._pScreenPass.ambientMethod.texture;
                 },
                 set: function (value) {
                     this._pScreenPass.ambientMethod.texture = value;
-                    this._pScreenPass.diffuseMethod.iUseAmbientTexture = !(value == null);
+                    this._pScreenPass.diffuseMethod.iUseAmbientTexture = !(value == null); // Boolean( value ) //<-------- TODO: Check this works as expected
                 },
                 enumerable: true,
                 configurable: true
             });
 
             return TextureMaterial;
-        })(materials.SinglePassMaterialBase);
+        })(away.materials.SinglePassMaterialBase);
         materials.TextureMaterial = TextureMaterial;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (materials) {
         /**
         * ColorMaterial is a single-pass material that uses a flat color as the surface's diffuse reflection value.
@@ -22554,10 +22266,10 @@ var away;
                 this.alpha = alpha;
             }
             Object.defineProperty(ColorMaterial.prototype, "alpha", {
-                get: /**
+                /**
                 * The alpha of the surface.
                 */
-                function () {
+                get: function () {
                     return this._pScreenPass.diffuseMethod.diffuseAlpha;
                 },
                 set: function (value) {
@@ -22577,10 +22289,10 @@ var away;
 
 
             Object.defineProperty(ColorMaterial.prototype, "color", {
-                get: /**
+                /**
                 * The diffuse reflectivity color of the surface.
                 */
-                function () {
+                get: function () {
                     return this._pScreenPass.diffuseMethod.diffuseColor;
                 },
                 set: function (value) {
@@ -22592,24 +22304,24 @@ var away;
 
 
             Object.defineProperty(ColorMaterial.prototype, "requiresBlending", {
-                get: /**
+                /**
                 * @inheritDoc
                 */
-                function () {
+                get: function () {
                     return this.getRequiresBlending() || this._diffuseAlpha < 1;
                 },
                 enumerable: true,
                 configurable: true
             });
             return ColorMaterial;
-        })(materials.SinglePassMaterialBase);
+        })(away.materials.SinglePassMaterialBase);
         materials.ColorMaterial = ColorMaterial;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (materials) {
         //import away3d.arcane;
         /**
@@ -22626,10 +22338,10 @@ var away;
                 _super.call(this, profile);
             }
             Object.defineProperty(LightingShaderCompiler.prototype, "lightVertexConstantIndex", {
-                get: /**
+                /**
                 * The starting index if the vertex constant to which light data needs to be uploaded.
                 */
-                function () {
+                get: function () {
                     return this._lightVertexConstantIndex;
                 },
                 enumerable: true,
@@ -22648,6 +22360,7 @@ var away;
             * @inheritDoc
             */
             LightingShaderCompiler.prototype.pCreateNormalRegisters = function () {
+                // need to be created FIRST and in this order
                 if (this.tangentSpace) {
                     this._pSharedRegisters.animatedTangent = this._pRegisterCache.getFreeVertexVectorTemp();
                     this._pRegisterCache.addVertexTempUsages(this._pSharedRegisters.animatedTangent, 1);
@@ -22672,11 +22385,11 @@ var away;
             };
 
             Object.defineProperty(LightingShaderCompiler.prototype, "tangentSpace", {
-                get: /**
+                /**
                 * Indicates whether or not lighting happens in tangent space. This is only the case if no world-space
                 * dependencies exist.
                 */
-                function () {
+                get: function () {
                     return this._pNumLightProbes == 0 && this._pMethodSetup._iNormalMethod.iHasOutput && this._pMethodSetup._iNormalMethod.iTangentSpace;
                 },
                 enumerable: true,
@@ -22839,6 +22552,7 @@ var away;
                     this._pFragmentCode += "add " + this._pSharedRegisters.shadedTarget + ".w, " + this._pSharedRegisters.shadedTarget + ".w, " + this._pSharedRegisters.commons + ".z\n" + "div " + this._pSharedRegisters.shadedTarget + ".xyz, " + this._pSharedRegisters.shadedTarget + ", " + this._pSharedRegisters.shadedTarget + ".w\n" + "sub " + this._pSharedRegisters.shadedTarget + ".w, " + this._pSharedRegisters.shadedTarget + ".w, " + this._pSharedRegisters.commons + ".z\n" + "sat " + this._pSharedRegisters.shadedTarget + ".xyz, " + this._pSharedRegisters.shadedTarget + "\n";
                 }
 
+                // resolve other dependencies as well?
                 if (this._pMethodSetup._iDiffuseMethodVO.needsNormals)
                     this._pRegisterCache.removeFragmentTempUsage(this._pSharedRegisters.normalFragment);
                 if (this._pMethodSetup._iDiffuseMethodVO.needsView)
@@ -22864,7 +22578,7 @@ var away;
             LightingShaderCompiler.prototype.compileShadowCode = function () {
                 if (this._pSharedRegisters.normalFragment)
                     this._shadowRegister = this._pSharedRegisters.normalFragment;
-else
+                else
                     this._shadowRegister = this._pRegisterCache.getFreeFragmentVectorTemp();
 
                 this._pRegisterCache.addFragmentTempUsages(this._shadowRegister, 1);
@@ -23069,14 +22783,14 @@ else
                 }
             };
             return LightingShaderCompiler;
-        })(materials.ShaderCompiler);
+        })(away.materials.ShaderCompiler);
         materials.LightingShaderCompiler = LightingShaderCompiler;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (materials) {
         /**
         * SegmentMaterial is a material exclusively used to render wireframe objects
@@ -23095,18 +22809,18 @@ var away;
                 _super.call(this);
 
                 this.bothSides = true;
-                this.pAddPass(this._screenPass = new materials.SegmentPass(thickness));
+                this.pAddPass(this._screenPass = new away.materials.SegmentPass(thickness));
                 this._screenPass.material = this;
             }
             return SegmentMaterial;
-        })(materials.MaterialBase);
+        })(away.materials.MaterialBase);
         materials.SegmentMaterial = SegmentMaterial;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (materials) {
         /**
         * SkyboxMaterial is a material exclusively used to render skyboxes
@@ -23123,14 +22837,14 @@ var away;
                 _super.call(this);
 
                 this._cubeMap = cubeMap;
-                this.pAddPass(this._skyboxPass = new materials.SkyboxPass());
+                this.pAddPass(this._skyboxPass = new away.materials.SkyboxPass());
                 this._skyboxPass.cubeTexture = this._cubeMap;
             }
             Object.defineProperty(SkyboxMaterial.prototype, "cubeMap", {
-                get: /**
+                /**
                 * The cube texture to use as the skybox.
                 */
-                function () {
+                get: function () {
                     return this._cubeMap;
                 },
                 set: function (value) {
@@ -23145,14 +22859,14 @@ var away;
             });
 
             return SkyboxMaterial;
-        })(materials.MaterialBase);
+        })(away.materials.MaterialBase);
         materials.SkyboxMaterial = SkyboxMaterial;
     })(away.materials || (away.materials = {}));
     var materials = away.materials;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (primitives) {
         //import away3d.arcane;
         //import away3d.core.base.CompactSubGeometry;
@@ -23180,10 +22894,10 @@ var away;
                 this.addSubGeometry(this._subGeometry);
             }
             Object.defineProperty(PrimitiveBase.prototype, "subGeometries", {
-                get: /**
+                /**
                 * @inheritDoc
                 */
-                function () {
+                get: function () {
                     if (this._geomDirty)
                         this.updateGeometry();
 
@@ -23300,9 +23014,9 @@ var away;
     })(away.primitives || (away.primitives = {}));
     var primitives = away.primitives;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (primitives) {
         var LineSegment = (function (_super) {
             __extends(LineSegment, _super);
@@ -23319,9 +23033,9 @@ var away;
     })(away.primitives || (away.primitives = {}));
     var primitives = away.primitives;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (primitives) {
         //import away3d.arcane;
         //import away3d.core.base.CompactSubGeometry;
@@ -23395,9 +23109,10 @@ var away;
                 this._vertexOffset = target.vertexOffset;
 
                 // evaluate target number of vertices, triangles and indices
-                this._numVertices = (this._segmentsT + 1) * (this._segmentsR + 1);
-                numTriangles = this._segmentsT * this._segmentsR * 2;
+                this._numVertices = (this._segmentsT + 1) * (this._segmentsR + 1); // segmentsT + 1 because of closure, segmentsR + 1 because of closure
+                numTriangles = this._segmentsT * this._segmentsR * 2; // each level has segmentR quads, each of 2 triangles
 
+                // need to initialize raw arrays or can be reused?
                 if (this._numVertices == target.numVertices) {
                     this._rawVertexData = target.vertexData;
 
@@ -23463,11 +23178,12 @@ var away;
                             this.addVertex(x, comp1, comp2, nx, n1, n2, -(length ? ny / length : y / this._radius), t1, t2);
                         }
 
+                        // close triangle
                         if (i > 0 && j > 0) {
-                            a = this._nextVertexIndex - 1;
-                            b = this._nextVertexIndex - 2;
-                            c = b - this._segmentsR - 1;
-                            d = a - this._segmentsR - 1;
+                            a = this._nextVertexIndex - 1; // current
+                            b = this._nextVertexIndex - 2; // previous
+                            c = b - this._segmentsR - 1; // previous of last level
+                            d = a - this._segmentsR - 1; // current of last level
                             this.addTriangleClockWise(a, b, c);
                             this.addTriangleClockWise(a, c, d);
                         }
@@ -23492,11 +23208,12 @@ var away;
                 // evaluate num uvs
                 var numUvs = this._numVertices * stride;
 
+                // need to initialize raw array or can be reused?
                 if (target.UVData && numUvs == target.UVData.length) {
                     data = target.UVData;
                 } else {
                     data = new Array(numUvs);
-                    this.pInvalidateGeometry();
+                    this.pInvalidateGeometry(); //invalidateGeometry();
                 }
 
                 // current uv component index
@@ -23516,10 +23233,10 @@ var away;
             };
 
             Object.defineProperty(TorusGeometry.prototype, "radius", {
-                get: /**
+                /**
                 * The radius of the torus.
                 */
-                function () {
+                get: function () {
                     return this._radius;
                 },
                 set: function (value) {
@@ -23532,10 +23249,10 @@ var away;
 
 
             Object.defineProperty(TorusGeometry.prototype, "tubeRadius", {
-                get: /**
+                /**
                 * The radius of the inner tube of the torus.
                 */
-                function () {
+                get: function () {
                     return this._tubeRadius;
                 },
                 set: function (value) {
@@ -23548,10 +23265,10 @@ var away;
 
 
             Object.defineProperty(TorusGeometry.prototype, "segmentsR", {
-                get: /**
+                /**
                 * Defines the number of horizontal segments that make up the torus. Defaults to 16.
                 */
-                function () {
+                get: function () {
                     return this._segmentsR;
                 },
                 set: function (value) {
@@ -23565,10 +23282,10 @@ var away;
 
 
             Object.defineProperty(TorusGeometry.prototype, "segmentsT", {
-                get: /**
+                /**
                 * Defines the number of vertical segments that make up the torus. Defaults to 8.
                 */
-                function () {
+                get: function () {
                     return this._segmentsT;
                 },
                 set: function (value) {
@@ -23582,10 +23299,10 @@ var away;
 
 
             Object.defineProperty(TorusGeometry.prototype, "yUp", {
-                get: /**
+                /**
                 * Defines whether the torus poles should lay on the Y-axis (true) or on the Z-axis (false).
                 */
-                function () {
+                get: function () {
                     return this._yUp;
                 },
                 set: function (value) {
@@ -23643,10 +23360,10 @@ var away;
                 this._tile6 = tile6;
             }
             Object.defineProperty(CubeGeometry.prototype, "width", {
-                get: /**
+                /**
                 * The size of the cube along its X-axis.
                 */
-                function () {
+                get: function () {
                     return this._width;
                 },
                 set: function (value) {
@@ -23659,10 +23376,10 @@ var away;
 
 
             Object.defineProperty(CubeGeometry.prototype, "height", {
-                get: /**
+                /**
                 * The size of the cube along its Y-axis.
                 */
-                function () {
+                get: function () {
                     return this._height;
                 },
                 set: function (value) {
@@ -23675,10 +23392,10 @@ var away;
 
 
             Object.defineProperty(CubeGeometry.prototype, "depth", {
-                get: /**
+                /**
                 * The size of the cube along its Z-axis.
                 */
-                function () {
+                get: function () {
                     return this._depth;
                 },
                 set: function (value) {
@@ -23691,7 +23408,7 @@ var away;
 
 
             Object.defineProperty(CubeGeometry.prototype, "tile6", {
-                get: /**
+                /**
                 * The type of uv mapping to use. When false, the entire image is mapped on each face.
                 * When true, a texture will be subdivided in a 3x2 grid, each used for a single face.
                 * Reading the tiles from left to right, top to bottom they represent the faces of the
@@ -23699,7 +23416,7 @@ var away;
                 * several shared edges (between the top, front, left and right faces) which simplifies
                 * texture painting.
                 */
-                function () {
+                get: function () {
                     return this._tile6;
                 },
                 set: function (value) {
@@ -23712,10 +23429,10 @@ var away;
 
 
             Object.defineProperty(CubeGeometry.prototype, "segmentsW", {
-                get: /**
+                /**
                 * The number of segments that make up the cube along the X-axis. Defaults to 1.
                 */
-                function () {
+                get: function () {
                     return this._segmentsW;
                 },
                 set: function (value) {
@@ -23729,10 +23446,10 @@ var away;
 
 
             Object.defineProperty(CubeGeometry.prototype, "segmentsH", {
-                get: /**
+                /**
                 * The number of segments that make up the cube along the Y-axis. Defaults to 1.
                 */
-                function () {
+                get: function () {
                     return this._segmentsH;
                 },
                 set: function (value) {
@@ -23746,10 +23463,10 @@ var away;
 
 
             Object.defineProperty(CubeGeometry.prototype, "segmentsD", {
-                get: /**
+                /**
                 * The number of segments that make up the cube along the Z-axis. Defaults to 1.
                 */
-                function () {
+                get: function () {
                     return this._segmentsD;
                 },
                 set: function (value) {
@@ -23767,7 +23484,7 @@ var away;
             */
             CubeGeometry.prototype.pBuildGeometry = function (target) {
                 var data;
-                var indices/*uint*/ ;
+                var indices;
 
                 var tl, tr, bl, br;
                 var i, j, inc = 0;
@@ -23984,7 +23701,7 @@ var away;
 
                 if (target.UVData && numUvs == target.UVData.length)
                     data = target.UVData;
-else {
+                else {
                     data = new Array(numUvs);
                     this.pInvalidateGeometry();
                 }
@@ -24072,9 +23789,9 @@ else {
     })(away.primitives || (away.primitives = {}));
     var primitives = away.primitives;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (primitives) {
         /**
         * A Plane primitive mesh.
@@ -24107,10 +23824,10 @@ var away;
                 this._doubleSided = doubleSided;
             }
             Object.defineProperty(PlaneGeometry.prototype, "segmentsW", {
-                get: /**
+                /**
                 * The number of segments that make up the plane along the X-axis. Defaults to 1.
                 */
-                function () {
+                get: function () {
                     return this._segmentsW;
                 },
                 set: function (value) {
@@ -24125,11 +23842,11 @@ var away;
 
 
             Object.defineProperty(PlaneGeometry.prototype, "segmentsH", {
-                get: /**
+                /**
                 * The number of segments that make up the plane along the Y or Z-axis, depending on whether yUp is true or
                 * false, respectively. Defaults to 1.
                 */
-                function () {
+                get: function () {
                     return this._segmentsH;
                 },
                 set: function (value) {
@@ -24144,10 +23861,10 @@ var away;
 
 
             Object.defineProperty(PlaneGeometry.prototype, "yUp", {
-                get: /**
+                /**
                 *  Defines whether the normal vector of the plane should point along the Y-axis (true) or Z-axis (false). Defaults to true.
                 */
-                function () {
+                get: function () {
                     return this._yUp;
                 },
                 set: function (value) {
@@ -24160,10 +23877,10 @@ var away;
 
 
             Object.defineProperty(PlaneGeometry.prototype, "doubleSided", {
-                get: /**
+                /**
                 * Defines whether the plane will be visible from both sides, with correct vertex normals (as opposed to bothSides on Material). Defaults to false.
                 */
-                function () {
+                get: function () {
                     return this._doubleSided;
                 },
                 set: function (value) {
@@ -24176,10 +23893,10 @@ var away;
 
 
             Object.defineProperty(PlaneGeometry.prototype, "width", {
-                get: /**
+                /**
                 * The width of the plane.
                 */
-                function () {
+                get: function () {
                     return this._width;
                 },
                 set: function (value) {
@@ -24192,15 +23909,15 @@ var away;
 
 
             Object.defineProperty(PlaneGeometry.prototype, "height", {
-                get: /**
+                /**
                 * The height of the plane.
                 */
-                function () {
+                get: function () {
                     return this._height;
                 },
                 set: function (value) {
                     this._height = value;
-                    this.pInvalidateGeometry();
+                    this.pInvalidateGeometry(); //invalidateGeometry();
                 },
                 enumerable: true,
                 configurable: true
@@ -24212,7 +23929,7 @@ var away;
             */
             PlaneGeometry.prototype.pBuildGeometry = function (target) {
                 var data;
-                var indices/*uint*/ ;
+                var indices;
                 var x, y;
                 var numIndices;
                 var base;
@@ -24238,10 +23955,10 @@ var away;
                         indices = target.indexData;
                     }
                 } else {
-                    data = new Array(numVertices * stride);
-                    indices = new Array(numIndices);
+                    data = new Array(numVertices * stride); //new Vector.<Number>(numVertices*stride, true);
+                    indices = new Array(numIndices); //new Vector.<uint>(numIndices, true);
 
-                    this.pInvalidateUVs();
+                    this.pInvalidateUVs(); //invalidateUVs();
                 }
 
                 numIndices = 0;
@@ -24278,6 +23995,7 @@ var away;
 
                         index += skip;
 
+                        // add vertex with same position, but with inverted normal & tangent
                         if (this._doubleSided) {
                             for (var i = 0; i < 3; ++i) {
                                 data[index] = data[index - stride];
@@ -24340,7 +24058,7 @@ var away;
                 if (target.UVData && numUvs == target.UVData.length) {
                     data = target.UVData;
                 } else {
-                    data = new Array(numUvs);
+                    data = new Array(numUvs); //Vector.<Number>(numUvs, true);
                     this.pInvalidateGeometry();
                 }
 
@@ -24368,9 +24086,9 @@ var away;
     })(away.primitives || (away.primitives = {}));
     var primitives = away.primitives;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (primitives) {
         /**
         * A Capsule primitive mesh.
@@ -24404,7 +24122,7 @@ var away;
             */
             CapsuleGeometry.prototype.pBuildGeometry = function (target) {
                 var data;
-                var indices/*uint*/ ;
+                var indices;
                 var i;
                 var j;
                 var triIndex = 0;
@@ -24552,10 +24270,10 @@ var away;
             };
 
             Object.defineProperty(CapsuleGeometry.prototype, "radius", {
-                get: /**
+                /**
                 * The radius of the capsule.
                 */
-                function () {
+                get: function () {
                     return this._radius;
                 },
                 set: function (value) {
@@ -24568,10 +24286,10 @@ var away;
 
 
             Object.defineProperty(CapsuleGeometry.prototype, "height", {
-                get: /**
+                /**
                 * The height of the capsule.
                 */
-                function () {
+                get: function () {
                     return this._height;
                 },
                 set: function (value) {
@@ -24584,10 +24302,10 @@ var away;
 
 
             Object.defineProperty(CapsuleGeometry.prototype, "segmentsW", {
-                get: /**
+                /**
                 * Defines the number of horizontal segments that make up the capsule. Defaults to 16.
                 */
-                function () {
+                get: function () {
                     return this._segmentsW;
                 },
                 set: function (value) {
@@ -24601,10 +24319,10 @@ var away;
 
 
             Object.defineProperty(CapsuleGeometry.prototype, "segmentsH", {
-                get: /**
+                /**
                 * Defines the number of vertical segments that make up the capsule. Defaults to 15. Must be uneven.
                 */
-                function () {
+                get: function () {
                     return this._segmentsH;
                 },
                 set: function (value) {
@@ -24618,10 +24336,10 @@ var away;
 
 
             Object.defineProperty(CapsuleGeometry.prototype, "yUp", {
-                get: /**
+                /**
                 * Defines whether the capsule poles should lay on the Y-axis (true) or on the Z-axis (false).
                 */
-                function () {
+                get: function () {
                     return this._yUp;
                 },
                 set: function (value) {
@@ -24638,9 +24356,9 @@ var away;
     })(away.primitives || (away.primitives = {}));
     var primitives = away.primitives;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (primitives) {
         /**
         * A Cylinder primitive mesh.
@@ -24736,19 +24454,21 @@ var away;
                 this._currentIndex = 0;
                 this._currentTriangleIndex = 0;
 
+                // evaluate target number of vertices, triangles and indices
                 if (this._surfaceClosed) {
-                    this._numVertices += (this._pSegmentsH + 1) * (this._pSegmentsW + 1);
-                    numTriangles += this._pSegmentsH * this._pSegmentsW * 2;
+                    this._numVertices += (this._pSegmentsH + 1) * (this._pSegmentsW + 1); // segmentsH + 1 because of closure, segmentsW + 1 because of UV unwrapping
+                    numTriangles += this._pSegmentsH * this._pSegmentsW * 2; // each level has segmentW quads, each of 2 triangles
                 }
                 if (this._topClosed) {
-                    this._numVertices += 2 * (this._pSegmentsW + 1);
-                    numTriangles += this._pSegmentsW;
+                    this._numVertices += 2 * (this._pSegmentsW + 1); // segmentsW + 1 because of unwrapping
+                    numTriangles += this._pSegmentsW; // one triangle for each segment
                 }
                 if (this._bottomClosed) {
                     this._numVertices += 2 * (this._pSegmentsW + 1);
                     numTriangles += this._pSegmentsW;
                 }
 
+                // need to initialize raw arrays or can be reused?
                 if (this._numVertices == target.numVertices) {
                     this._rawData = target.vertexData;
 
@@ -24766,10 +24486,12 @@ var away;
                 // evaluate revolution steps
                 var revolutionAngleDelta = 2 * Math.PI / this._pSegmentsW;
 
+                // top
                 if (this._topClosed && this._topRadius > 0) {
                     z = -0.5 * this._height;
 
                     for (i = 0; i <= this._pSegmentsW; ++i) {
+                        // central vertex
                         if (this._yUp) {
                             t1 = 1;
                             t2 = 0;
@@ -24799,7 +24521,7 @@ var away;
 
                         if (i == this._pSegmentsW)
                             this.addVertex(this._rawData[startIndex + this._stride], this._rawData[startIndex + this._stride + 1], this._rawData[startIndex + this._stride + 2], 0, t1, t2, 1, 0, 0);
-else
+                        else
                             this.addVertex(x, comp1, comp2, 0, t1, t2, 1, 0, 0);
 
                         if (i > 0)
@@ -24807,6 +24529,7 @@ else
                     }
                 }
 
+                // bottom
                 if (this._bottomClosed && this._pBottomRadius > 0) {
                     z = 0.5 * this._height;
 
@@ -24842,7 +24565,7 @@ else
 
                         if (i == this._pSegmentsW)
                             this.addVertex(x, this._rawData[startIndex + 1], this._rawData[startIndex + 2], 0, t1, t2, 1, 0, 0);
-else
+                        else
                             this.addVertex(x, comp1, comp2, 0, t1, t2, 1, 0, 0);
 
                         if (i > 0)
@@ -24858,6 +24581,7 @@ else
                 latNormElev = dr / this._height;
                 latNormBase = (latNormElev == 0) ? 1 : this._height / dr;
 
+                // lateral surface
                 if (this._surfaceClosed) {
                     var a;
                     var b;
@@ -24901,11 +24625,12 @@ else
                                 this.addVertex(x, comp1, comp2, na0, naComp1, naComp2, -na1, t1, t2);
                             }
 
+                            // close triangle
                             if (i > 0 && j > 0) {
-                                a = this._nextVertexIndex - 1;
-                                b = this._nextVertexIndex - 2;
-                                c = b - this._pSegmentsW - 1;
-                                d = a - this._pSegmentsW - 1;
+                                a = this._nextVertexIndex - 1; // current
+                                b = this._nextVertexIndex - 2; // previous
+                                c = b - this._pSegmentsW - 1; // previous of last level
+                                d = a - this._pSegmentsW - 1; // current of last level
                                 this.addTriangleClockWise(a, b, c);
                                 this.addTriangleClockWise(a, c, d);
                             }
@@ -24934,6 +24659,7 @@ else
                 // evaluate num uvs
                 var numUvs = this._numVertices * stride;
 
+                // need to initialize raw array or can be reused?
                 if (target.UVData && numUvs == target.UVData.length) {
                     UVData = target.UVData;
                 } else {
@@ -24947,36 +24673,39 @@ else
                 // current uv component index
                 var currentUvCompIndex = target.UVOffset;
 
+                // top
                 if (this._topClosed) {
                     for (i = 0; i <= this._pSegmentsW; ++i) {
                         revolutionAngle = i * revolutionAngleDelta;
                         x = 0.5 + 0.5 * -Math.cos(revolutionAngle);
                         y = 0.5 + 0.5 * Math.sin(revolutionAngle);
 
-                        UVData[currentUvCompIndex++] = 0.5 * target.scaleU;
+                        UVData[currentUvCompIndex++] = 0.5 * target.scaleU; // central vertex
                         UVData[currentUvCompIndex++] = 0.5 * target.scaleV;
                         currentUvCompIndex += skip;
-                        UVData[currentUvCompIndex++] = x * target.scaleU;
+                        UVData[currentUvCompIndex++] = x * target.scaleU; // revolution vertex
                         UVData[currentUvCompIndex++] = y * target.scaleV;
                         currentUvCompIndex += skip;
                     }
                 }
 
+                // bottom
                 if (this._bottomClosed) {
                     for (i = 0; i <= this._pSegmentsW; ++i) {
                         revolutionAngle = i * revolutionAngleDelta;
                         x = 0.5 + 0.5 * Math.cos(revolutionAngle);
                         y = 0.5 + 0.5 * Math.sin(revolutionAngle);
 
-                        UVData[currentUvCompIndex++] = 0.5 * target.scaleU;
+                        UVData[currentUvCompIndex++] = 0.5 * target.scaleU; // central vertex
                         UVData[currentUvCompIndex++] = 0.5 * target.scaleV;
                         currentUvCompIndex += skip;
-                        UVData[currentUvCompIndex++] = x * target.scaleU;
+                        UVData[currentUvCompIndex++] = x * target.scaleU; // revolution vertex
                         UVData[currentUvCompIndex++] = y * target.scaleV;
                         currentUvCompIndex += skip;
                     }
                 }
 
+                // lateral surface
                 if (this._surfaceClosed) {
                     for (j = 0; j <= this._pSegmentsH; ++j) {
                         for (i = 0; i <= this._pSegmentsW; ++i) {
@@ -24993,10 +24722,10 @@ else
             };
 
             Object.defineProperty(CylinderGeometry.prototype, "topRadius", {
-                get: /**
+                /**
                 * The radius of the top end of the cylinder.
                 */
-                function () {
+                get: function () {
                     return this._topRadius;
                 },
                 set: function (value) {
@@ -25009,10 +24738,10 @@ else
 
 
             Object.defineProperty(CylinderGeometry.prototype, "bottomRadius", {
-                get: /**
+                /**
                 * The radius of the bottom end of the cylinder.
                 */
-                function () {
+                get: function () {
                     return this._pBottomRadius;
                 },
                 set: function (value) {
@@ -25025,10 +24754,10 @@ else
 
 
             Object.defineProperty(CylinderGeometry.prototype, "height", {
-                get: /**
+                /**
                 * The radius of the top end of the cylinder.
                 */
-                function () {
+                get: function () {
                     return this._height;
                 },
                 set: function (value) {
@@ -25041,10 +24770,10 @@ else
 
 
             Object.defineProperty(CylinderGeometry.prototype, "segmentsW", {
-                get: /**
+                /**
                 * Defines the number of horizontal segments that make up the cylinder. Defaults to 16.
                 */
-                function () {
+                get: function () {
                     return this._pSegmentsW;
                 },
                 set: function (value) {
@@ -25062,10 +24791,10 @@ else
             };
 
             Object.defineProperty(CylinderGeometry.prototype, "segmentsH", {
-                get: /**
+                /**
                 * Defines the number of vertical segments that make up the cylinder. Defaults to 1.
                 */
-                function () {
+                get: function () {
                     return this._pSegmentsH;
                 },
                 set: function (value) {
@@ -25083,10 +24812,10 @@ else
             };
 
             Object.defineProperty(CylinderGeometry.prototype, "topClosed", {
-                get: /**
+                /**
                 * Defines whether the top end of the cylinder is closed (true) or open.
                 */
-                function () {
+                get: function () {
                     return this._topClosed;
                 },
                 set: function (value) {
@@ -25099,10 +24828,10 @@ else
 
 
             Object.defineProperty(CylinderGeometry.prototype, "bottomClosed", {
-                get: /**
+                /**
                 * Defines whether the bottom end of the cylinder is closed (true) or open.
                 */
-                function () {
+                get: function () {
                     return this._bottomClosed;
                 },
                 set: function (value) {
@@ -25115,10 +24844,10 @@ else
 
 
             Object.defineProperty(CylinderGeometry.prototype, "yUp", {
-                get: /**
+                /**
                 * Defines whether the cylinder poles should lay on the Y-axis (true) or on the Z-axis (false).
                 */
-                function () {
+                get: function () {
                     return this._yUp;
                 },
                 set: function (value) {
@@ -25135,9 +24864,9 @@ else
     })(away.primitives || (away.primitives = {}));
     var primitives = away.primitives;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (primitives) {
         /**
         * A UV Cone primitive mesh.
@@ -25162,10 +24891,10 @@ var away;
                 _super.call(this, 0, radius, height, segmentsW, segmentsH, false, closed, true, yUp);
             }
             Object.defineProperty(ConeGeometry.prototype, "radius", {
-                get: /**
+                /**
                 * The radius of the bottom end of the cone.
                 */
-                function () {
+                get: function () {
                     return this._pBottomRadius;
                 },
                 set: function (value) {
@@ -25182,9 +24911,9 @@ var away;
     })(away.primitives || (away.primitives = {}));
     var primitives = away.primitives;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (primitives) {
         /**
         * A UV RegularPolygon primitive mesh.
@@ -25204,10 +24933,10 @@ var away;
                 _super.call(this, radius, 0, 0, sides, 1, true, false, false, yUp);
             }
             Object.defineProperty(RegularPolygonGeometry.prototype, "radius", {
-                get: /**
+                /**
                 * The radius of the regular polygon.
                 */
-                function () {
+                get: function () {
                     return this._pBottomRadius;
                 },
                 set: function (value) {
@@ -25220,10 +24949,10 @@ var away;
 
 
             Object.defineProperty(RegularPolygonGeometry.prototype, "sides", {
-                get: /**
+                /**
                 * The number of sides of the regular polygon.
                 */
-                function () {
+                get: function () {
                     return this._pSegmentsW;
                 },
                 set: function (value) {
@@ -25235,10 +24964,10 @@ var away;
 
 
             Object.defineProperty(RegularPolygonGeometry.prototype, "subdivisions", {
-                get: /**
+                /**
                 * The number of subdivisions from the edge to the center of the regular polygon.
                 */
-                function () {
+                get: function () {
                     return this._pSegmentsH;
                 },
                 set: function (value) {
@@ -25289,7 +25018,7 @@ var away;
             */
             SphereGeometry.prototype.pBuildGeometry = function (target) {
                 var vertices;
-                var indices/*uint*/ ;
+                var indices;
                 var i;
                 var j;
                 var triIndex = 0;
@@ -25414,7 +25143,7 @@ var away;
 
                 if (target.UVData && numUvs == target.UVData.length)
                     data = target.UVData;
-else {
+                else {
                     data = new Array(numUvs);
                     this.pInvalidateGeometry();
                 }
@@ -25432,10 +25161,10 @@ else {
             };
 
             Object.defineProperty(SphereGeometry.prototype, "radius", {
-                get: /**
+                /**
                 * The radius of the sphere.
                 */
-                function () {
+                get: function () {
                     return this._radius;
                 },
                 set: function (value) {
@@ -25448,10 +25177,10 @@ else {
 
 
             Object.defineProperty(SphereGeometry.prototype, "segmentsW", {
-                get: /**
+                /**
                 * Defines the number of horizontal segments that make up the sphere. Defaults to 16.
                 */
-                function () {
+                get: function () {
                     return this._segmentsW;
                 },
                 set: function (value) {
@@ -25465,10 +25194,10 @@ else {
 
 
             Object.defineProperty(SphereGeometry.prototype, "segmentsH", {
-                get: /**
+                /**
                 * Defines the number of vertical segments that make up the sphere. Defaults to 12.
                 */
-                function () {
+                get: function () {
                     return this._segmentsH;
                 },
                 set: function (value) {
@@ -25482,10 +25211,10 @@ else {
 
 
             Object.defineProperty(SphereGeometry.prototype, "yUp", {
-                get: /**
+                /**
                 * Defines whether the sphere poles should lay on the Y-axis (true) or on the Z-axis (false).
                 */
-                function () {
+                get: function () {
                     return this._yUp;
                 },
                 set: function (value) {
@@ -25502,9 +25231,9 @@ else {
     })(away.primitives || (away.primitives = {}));
     var primitives = away.primitives;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (primitives) {
         var WireframePrimitiveBase = (function (_super) {
             __extends(WireframePrimitiveBase, _super);
@@ -25600,9 +25329,9 @@ var away;
     })(away.primitives || (away.primitives = {}));
     var primitives = away.primitives;
 })(away || (away = {}));
+///<reference path="../_definitions.ts" />
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts" />
     (function (primitives) {
         //TODO - convert to geometry primitive
         /**
@@ -25705,9 +25434,9 @@ var away;
     })(away.primitives || (away.primitives = {}));
     var primitives = away.primitives;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (primitives) {
         //TODO - convert to geometry primitive
         /**
@@ -25803,9 +25532,9 @@ var away;
     })(away.primitives || (away.primitives = {}));
     var primitives = away.primitives;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (primitives) {
         //TODO - convert to geometry primitive
         /**
@@ -25879,10 +25608,10 @@ var away;
             };
 
             Object.defineProperty(WireframeCylinder.prototype, "topRadius", {
-                get: /**
+                /**
                 * Top radius of the cylinder
                 */
-                function () {
+                get: function () {
                     return this._topRadius;
                 },
                 set: function (value) {
@@ -25895,10 +25624,10 @@ var away;
 
 
             Object.defineProperty(WireframeCylinder.prototype, "bottomRadius", {
-                get: /**
+                /**
                 * Bottom radius of the cylinder
                 */
-                function () {
+                get: function () {
                     return this._bottomRadius;
                 },
                 set: function (value) {
@@ -25952,10 +25681,10 @@ var away;
                 this.height = height;
             }
             Object.defineProperty(WireframePlane.prototype, "orientation", {
-                get: /**
+                /**
                 * The orientaion in which the plane lies.
                 */
-                function () {
+                get: function () {
                     return this._orientation;
                 },
                 set: function (value) {
@@ -25968,10 +25697,10 @@ var away;
 
 
             Object.defineProperty(WireframePlane.prototype, "segmentsW", {
-                get: /**
+                /**
                 * The number of segments that make up the plane along the X-axis.
                 */
-                function () {
+                get: function () {
                     return this._segmentsW;
                 },
                 set: function (value) {
@@ -25985,10 +25714,10 @@ var away;
 
 
             Object.defineProperty(WireframePlane.prototype, "segmentsH", {
-                get: /**
+                /**
                 * The number of segments that make up the plane along the Y-axis.
                 */
-                function () {
+                get: function () {
                     return this._segmentsH;
                 },
                 set: function (value) {
@@ -26077,9 +25806,9 @@ var away;
     })(away.primitives || (away.primitives = {}));
     var primitives = away.primitives;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (primitives) {
         //TODO - convert to geometry primitive
         /**
@@ -26106,10 +25835,10 @@ var away;
                 this._orientation = orientation;
             }
             Object.defineProperty(WireframeRegularPolygon.prototype, "orientation", {
-                get: /**
+                /**
                 * The orientaion in which the polygon lies.
                 */
-                function () {
+                get: function () {
                     return this._orientation;
                 },
                 set: function (value) {
@@ -26122,10 +25851,10 @@ var away;
 
 
             Object.defineProperty(WireframeRegularPolygon.prototype, "radius", {
-                get: /**
+                /**
                 * The radius of the regular polygon.
                 */
-                function () {
+                get: function () {
                     return this._radius;
                 },
                 set: function (value) {
@@ -26138,10 +25867,10 @@ var away;
 
 
             Object.defineProperty(WireframeRegularPolygon.prototype, "sides", {
-                get: /**
+                /**
                 * The number of sides to the regular polygon.
                 */
-                function () {
+                get: function () {
                     return this._sides;
                 },
                 set: function (value) {
@@ -26236,10 +25965,10 @@ var away;
                 this.height = height;
             }
             Object.defineProperty(WireframeTetrahedron.prototype, "orientation", {
-                get: /**
+                /**
                 * The orientation in which the plane lies
                 */
-                function () {
+                get: function () {
                     return this._orientation;
                 },
                 set: function (value) {
@@ -26308,18 +26037,18 @@ var away;
     })(away.primitives || (away.primitives = {}));
     var primitives = away.primitives;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (utils) {
         var GeometryUtils = (function () {
             function GeometryUtils() {
             }
-            GeometryUtils.fromVectors = /**
+            /**
             * Build a list of sub-geometries from raw data vectors, splitting them up in
             * such a way that they won't exceed buffer length limits.
             */
-            function (verts, indices/*uint*/ , uvs, normals, tangents, weights, jointIndices, triangleOffset) {
+            GeometryUtils.fromVectors = function (verts, indices /*uint*/ , uvs, normals, tangents, weights, jointIndices, triangleOffset) {
                 if (typeof triangleOffset === "undefined") { triangleOffset = 0; }
                 var LIMIT_VERTS = 3 * 0xffff;
                 var LIMIT_INDICES = 15 * 0xffff;
@@ -26479,10 +26208,10 @@ var away;
                 return subs;
             };
 
-            GeometryUtils.constructSubGeometry = /**
+            /**
             * Build a sub-geometry from data vectors.
             */
-            function (verts, indices/*uint*/ , uvs, normals, tangents, weights, jointIndices, triangleOffset) {
+            GeometryUtils.constructSubGeometry = function (verts, indices /*uint*/ , uvs, normals, tangents, weights, jointIndices, triangleOffset) {
                 var sub;
 
                 if (weights && jointIndices) {
@@ -26505,12 +26234,12 @@ var away;
                 return sub;
             };
 
-            GeometryUtils.interleaveBuffers = /*
+            /*
             * Combines a set of separate raw buffers into an interleaved one, compatible
             * with CompactSubGeometry. SubGeometry uses separate buffers, whereas CompactSubGeometry
             * uses a single, combined buffer.
             * */
-            function (numVertices, vertices, normals, tangents, uvs, suvs) {
+            GeometryUtils.interleaveBuffers = function (numVertices, vertices, normals, tangents, uvs, suvs) {
                 if (typeof vertices === "undefined") { vertices = null; }
                 if (typeof normals === "undefined") { normals = null; }
                 if (typeof tangents === "undefined") { tangents = null; }
@@ -26544,10 +26273,10 @@ var away;
                 return interleavedBuffer;
             };
 
-            GeometryUtils.getMeshSubGeometryIndex = /*
+            /*
             * returns the subGeometry index in its parent mesh subgeometries vector
             */
-            function (subGeometry) {
+            GeometryUtils.getMeshSubGeometryIndex = function (subGeometry) {
                 var index;
                 var subGeometries = subGeometry.parentGeometry.subGeometries;
 
@@ -26561,12 +26290,12 @@ var away;
                 return index;
             };
 
-            GeometryUtils.getMeshSubMeshIndex = /*
+            /*
             * returns the subMesh index in its parent mesh subMeshes vector
             */
-            function (subMesh) {
+            GeometryUtils.getMeshSubMeshIndex = function (subMesh) {
                 var index;
-                var subMeshes = (subMesh.sourceEntity).subMeshes;
+                var subMeshes = subMesh.sourceEntity.subMeshes;
 
                 for (var i = 0; i < subMeshes.length; ++i) {
                     if (subMeshes[i] == subMesh) {
@@ -26583,9 +26312,9 @@ var away;
     })(away.utils || (away.utils = {}));
     var utils = away.utils;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (utils) {
         var PerspectiveMatrix3D = (function (_super) {
             __extends(PerspectiveMatrix3D, _super);
@@ -26604,9 +26333,9 @@ var away;
     })(away.utils || (away.utils = {}));
     var utils = away.utils;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var ShaderRegisterElement = away.materials.ShaderRegisterElement;
         var Matrix3D = away.geom.Matrix3D;
@@ -26635,7 +26364,7 @@ var away;
                     this.addVertexTempUsages(this.rotationRegisters[i - 1], 1);
                 }
 
-                this.scaleAndRotateTarget = new ShaderRegisterElement(this.scaleAndRotateTarget.regName, this.scaleAndRotateTarget.index);
+                this.scaleAndRotateTarget = new ShaderRegisterElement(this.scaleAndRotateTarget.regName, this.scaleAndRotateTarget.index); //only use xyz, w is used as vertexLife
 
                 //allot const register
                 this.vertexZeroConst = this.getFreeVertexConstant();
@@ -26670,7 +26399,7 @@ var away;
                 this.uvTarget = new ShaderRegisterElement(this.positionTarget.regName, this.positionTarget.index);
             };
 
-            AnimationRegisterCache.prototype.setRegisterIndex = function (node, parameterIndex/*int*/ , registerIndex/*int*/ ) {
+            AnimationRegisterCache.prototype.setRegisterIndex = function (node, parameterIndex /*int*/ , registerIndex /*int*/ ) {
                 //8 should be enough for any node.
                 var t = this.indexDictionary[node.id];
 
@@ -26680,8 +26409,8 @@ var away;
                 t[parameterIndex] = registerIndex;
             };
 
-            AnimationRegisterCache.prototype.getRegisterIndex = function (node, parameterIndex/*int*/ ) {
-                return (this.indexDictionary[node.id])[parameterIndex];
+            AnimationRegisterCache.prototype.getRegisterIndex = function (node, parameterIndex /*int*/ ) {
+                return this.indexDictionary[node.id][parameterIndex];
             };
 
             AnimationRegisterCache.prototype.getInitCode = function () {
@@ -26771,7 +26500,7 @@ var away;
                 this.fragmentConstantData.length = this._numFragmentConstant * 4;
             };
 
-            AnimationRegisterCache.prototype.setVertexConst = function (index/*int*/ , x, y, z, w) {
+            AnimationRegisterCache.prototype.setVertexConst = function (index /*int*/ , x, y, z, w) {
                 if (typeof x === "undefined") { x = 0; }
                 if (typeof y === "undefined") { y = 0; }
                 if (typeof z === "undefined") { z = 0; }
@@ -26783,13 +26512,13 @@ var away;
                 this.vertexConstantData[_index] = w;
             };
 
-            AnimationRegisterCache.prototype.setVertexConstFromArray = function (index/*int*/ , data) {
+            AnimationRegisterCache.prototype.setVertexConstFromArray = function (index /*int*/ , data) {
                 var _index = (index - this.vertexConstantOffset) * 4;
                 for (var i = 0; i < data.length; i++)
                     this.vertexConstantData[_index++] = data[i];
             };
 
-            AnimationRegisterCache.prototype.setVertexConstFromMatrix = function (index/*int*/ , matrix) {
+            AnimationRegisterCache.prototype.setVertexConstFromMatrix = function (index /*int*/ , matrix) {
                 var rawData = matrix.rawData;
                 var _index = (index - this.vertexConstantOffset) * 4;
                 this.vertexConstantData[_index++] = rawData[0];
@@ -26810,7 +26539,7 @@ var away;
                 this.vertexConstantData[_index] = rawData[15];
             };
 
-            AnimationRegisterCache.prototype.setFragmentConst = function (index/*int*/ , x, y, z, w) {
+            AnimationRegisterCache.prototype.setFragmentConst = function (index /*int*/ , x, y, z, w) {
                 if (typeof x === "undefined") { x = 0; }
                 if (typeof y === "undefined") { y = 0; }
                 if (typeof z === "undefined") { z = 0; }
@@ -26827,9 +26556,9 @@ var away;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var StageGL = away.base.StageGL;
         var ContextGL = away.gl.ContextGL;
@@ -26851,14 +26580,14 @@ var away;
 
                 this._iUniqueId = AnimationSubGeometry.SUBGEOM_ID_COUNT++;
             }
-            AnimationSubGeometry.prototype.createVertexData = function (numVertices/*uint*/ , totalLenOfOneVertex/*uint*/ ) {
+            AnimationSubGeometry.prototype.createVertexData = function (numVertices /*uint*/ , totalLenOfOneVertex /*uint*/ ) {
                 this._numVertices = numVertices;
                 this._totalLenOfOneVertex = totalLenOfOneVertex;
                 this._pVertexData = new Array(numVertices * totalLenOfOneVertex);
             };
 
             //TODO Why does Typescript complain when stageGL type away.base.StageGL is changed to StageGL?
-            AnimationSubGeometry.prototype.activateVertexBuffer = function (index/*int*/ , bufferOffset/*int*/ , stageGL, format) {
+            AnimationSubGeometry.prototype.activateVertexBuffer = function (index /*int*/ , bufferOffset /*int*/ , stageGL, format) {
                 var contextIndex = stageGL.stageGLIndex;
                 var context = stageGL.contextGL;
 
@@ -26919,14 +26648,15 @@ var away;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var ColorTransform = away.geom.ColorTransform;
 
         var ColorSegmentPoint = (function () {
             function ColorSegmentPoint(life, color) {
+                //0<life<1
                 if (life <= 0 || life >= 1)
                     throw (new Error("life exceeds range (0,1)"));
                 this._life = life;
@@ -26953,9 +26683,9 @@ var away;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var Vector3D = away.geom.Vector3D;
         var Matrix3D = away.geom.Matrix3D;
@@ -27018,15 +26748,15 @@ var away;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         /**
         * ...
         */
         var ParticleAnimationData = (function () {
-            function ParticleAnimationData(index/*uint*/ , startTime, duration, delay, particle) {
+            function ParticleAnimationData(index /*uint*/ , startTime, duration, delay, particle) {
                 this.index = index;
                 this.startTime = startTime;
                 this.totalTime = duration + delay;
@@ -27041,9 +26771,9 @@ var away;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var CompactSubGeometry = away.base.CompactSubGeometry;
 
@@ -27056,9 +26786,9 @@ var away;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         /**
         * Dynamic class for holding the local properties of a particle, used for processing the static properties
@@ -27073,9 +26803,9 @@ var away;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         /**
         * Options for setting the properties mode of a particle animation node.
@@ -27094,9 +26824,9 @@ var away;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var AssetType = away.library.AssetType;
 
@@ -27117,10 +26847,10 @@ var away;
                 this.joints = new Array();
             }
             Object.defineProperty(Skeleton.prototype, "numJoints", {
-                get: /**
+                /**
                 * The total number of joints in the skeleton.
                 */
-                function () {
+                get: function () {
                     return this.joints.length;
                 },
                 enumerable: true,
@@ -27139,7 +26869,7 @@ var away;
                 var jointIndex = this.jointIndexFromName(jointName);
                 if (jointIndex != -1)
                     return this.joints[jointIndex];
-else
+                else
                     return null;
             };
 
@@ -27158,9 +26888,9 @@ else
                 // b) it is assumed that it will be called only during load, and not during main loop
                 // c) maintaining a dictionary (for safety) would dictate an interface to access SkeletonJoints,
                 //    rather than direct array access.  this would be sub-optimal.
-                var jointIndex/*int*/ ;
+                var jointIndex;
                 var joint;
-                for (var i/*int*/ ; i < this.joints.length; i++) {
+                for (var i; i < this.joints.length; i++) {
                     joint = this.joints[i];
                     if (joint.name == jointName)
                         return jointIndex;
@@ -27178,10 +26908,10 @@ else
             };
 
             Object.defineProperty(Skeleton.prototype, "assetType", {
-                get: /**
+                /**
                 * @inheritDoc
                 */
-                function () {
+                get: function () {
                     return AssetType.SKELETON;
                 },
                 enumerable: true,
@@ -27193,9 +26923,9 @@ else
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         /**
         * Options for setting the animation mode of a vertex animator object.
@@ -27214,9 +26944,9 @@ var away;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         /**
         * A value obect representing a single joint in a skeleton object.
@@ -27241,9 +26971,9 @@ var away;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var AssetType = away.library.AssetType;
 
@@ -27267,10 +26997,10 @@ var away;
                 this.jointPoses = new Array();
             }
             Object.defineProperty(SkeletonPose.prototype, "numJointPoses", {
-                get: /**
+                /**
                 * The total number of joint poses in the skeleton pose.
                 */
-                function () {
+                get: function () {
                     return this.jointPoses.length;
                 },
                 enumerable: true,
@@ -27278,10 +27008,10 @@ var away;
             });
 
             Object.defineProperty(SkeletonPose.prototype, "assetType", {
-                get: /**
+                /**
                 * @inheritDoc
                 */
-                function () {
+                get: function () {
                     return AssetType.SKELETON_POSE;
                 },
                 enumerable: true,
@@ -27298,7 +27028,7 @@ var away;
                 var jointPoseIndex = this.jointPoseIndexFromName(jointName);
                 if (jointPoseIndex != -1)
                     return this.jointPoses[jointPoseIndex];
-else
+                else
                     return null;
             };
 
@@ -27317,9 +27047,9 @@ else
                 // b) it is assumed that it will be called only during load, and not during main loop
                 // c) maintaining a dictionary (for safety) would dictate an interface to access JointPoses,
                 //    rather than direct array access.  this would be sub-optimal.
-                var jointPoseIndex/*int*/ ;
+                var jointPoseIndex;
                 var jointPose;
-                for (var i/*uint*/ ; i < this.jointPoses.length; i++) {
+                for (var i; i < this.jointPoses.length; i++) {
                     jointPose = this.jointPoses[i];
                     if (jointPose.name == jointName)
                         return jointPoseIndex;
@@ -27338,7 +27068,7 @@ else
                 var clone = new SkeletonPose();
                 var numJointPoses = this.jointPoses.length;
                 for (var i = 0; i < numJointPoses; i++) {
-                    var cloneJointPose = new animators.JointPose();
+                    var cloneJointPose = new away.animators.JointPose();
                     var thisJointPose = this.jointPoses[i];
                     cloneJointPose.name = thisJointPose.name;
                     cloneJointPose.copyFrom(thisJointPose);
@@ -27359,9 +27089,9 @@ else
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         /**
         * Provides an abstract base class for nodes in an animation blend tree.
@@ -27389,10 +27119,10 @@ var away;
             };
 
             Object.defineProperty(AnimationNodeBase.prototype, "assetType", {
-                get: /**
+                /**
                 * @inheritDoc
                 */
-                function () {
+                get: function () {
                     return away.library.AssetType.ANIMATION_NODE;
                 },
                 enumerable: true,
@@ -27404,9 +27134,9 @@ var away;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         /**
         * Provides an abstract base class for nodes with time-based animation data in an animation blend tree.
@@ -27429,10 +27159,10 @@ var away;
                 this.fixedFrameRate = true;
             }
             Object.defineProperty(AnimationClipNodeBase.prototype, "looping", {
-                get: /**
+                /**
                 * Determines whether the contents of the animation node have looping characteristics enabled.
                 */
-                function () {
+                get: function () {
                     return this._pLooping;
                 },
                 set: function (value) {
@@ -27449,11 +27179,11 @@ var away;
 
 
             Object.defineProperty(AnimationClipNodeBase.prototype, "stitchFinalFrame", {
-                get: /**
+                /**
                 * Defines if looping content blends the final frame of animation data with the first (true) or works on the
                 * assumption that both first and last frames are identical (false). Defaults to false.
                 */
-                function () {
+                get: function () {
                     return this._pStitchFinalFrame;
                 },
                 set: function (value) {
@@ -27503,10 +27233,10 @@ var away;
             });
 
             Object.defineProperty(AnimationClipNodeBase.prototype, "durations", {
-                get: /**
+                /**
                 * Returns a vector of time values representing the duration (in milliseconds) of each animation frame in the clip.
                 */
-                function () {
+                get: function () {
                     return this._pDurations;
                 },
                 enumerable: true,
@@ -27529,14 +27259,14 @@ var away;
                 this._pTotalDelta.z = 0;
             };
             return AnimationClipNodeBase;
-        })(animators.AnimationNodeBase);
+        })(away.animators.AnimationNodeBase);
         animators.AnimationClipNodeBase = AnimationClipNodeBase;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var Vector3D = away.geom.Vector3D;
         var MaterialPassBase = away.materials.MaterialPassBase;
@@ -27555,7 +27285,7 @@ var away;
             * @param               dataLength      Defines the length of the data used by the node when in <code>LOCAL_STATIC</code> mode.
             * @param    [optional] priority        the priority of the particle animation node, used to order the agal generated in a particle animation set. Defaults to 1.
             */
-            function ParticleNodeBase(name, mode/*uint*/ , dataLength/*uint*/ , priority) {
+            function ParticleNodeBase(name, mode /*uint*/ , dataLength /*uint*/ , priority) {
                 if (typeof priority === "undefined") { priority = 1; }
                 _super.call(this);
                 this._pDataLength = 3;
@@ -27570,12 +27300,12 @@ var away;
                 this._pOneData = new Array(this._pDataLength);
             }
             Object.defineProperty(ParticleNodeBase.prototype, "mode", {
-                get: /**
+                /**
                 * Returns the property mode of the particle animation node. Typically set in the node constructor
                 *
                 * @see away.animators.ParticlePropertiesMode
                 */
-                function () {
+                get: function () {
                     return this._pMode;
                 },
                 enumerable: true,
@@ -27583,13 +27313,13 @@ var away;
             });
 
             Object.defineProperty(ParticleNodeBase.prototype, "priority", {
-                get: /**
+                /**
                 * Returns the priority of the particle animation node, used to order the agal generated in a particle animation set. Set automatically on instantiation.
                 *
                 * @see away.animators.ParticleAnimationSet
                 * @see #getAGALVertexCode
                 */
-                function () {
+                get: function () {
                     return this._priority;
                 },
                 enumerable: true,
@@ -27597,13 +27327,13 @@ var away;
             });
 
             Object.defineProperty(ParticleNodeBase.prototype, "dataLength", {
-                get: /**
+                /**
                 * Returns the length of the data used by the node when in <code>LOCAL_STATIC</code> mode. Used to generate the local static data of the particle animation set.
                 *
                 * @see away.animators.ParticleAnimationSet
                 * @see #getAGALVertexCode
                 */
-                function () {
+                get: function () {
                     return this._pDataLength;
                 },
                 enumerable: true,
@@ -27611,13 +27341,13 @@ var away;
             });
 
             Object.defineProperty(ParticleNodeBase.prototype, "oneData", {
-                get: /**
+                /**
                 * Returns the generated data vector of the node after one particle pass during the generation of all local static data of the particle animation set.
                 *
                 * @see away.animators.ParticleAnimationSet
                 * @see #generatePropertyOfOneParticle
                 */
-                function () {
+                get: function () {
                     return this._pOneData;
                 },
                 enumerable: true,
@@ -27668,14 +27398,14 @@ var away;
                 2: ParticleNodeBase.LOCAL_DYNAMIC
             };
             return ParticleNodeBase;
-        })(animators.AnimationNodeBase);
+        })(away.animators.AnimationNodeBase);
         animators.ParticleNodeBase = ParticleNodeBase;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var Vector3D = away.geom.Vector3D;
         var MaterialPassBase = away.materials.MaterialPassBase;
@@ -27692,11 +27422,11 @@ var away;
             * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
             * @param    [optional] acceleration    Defines the default acceleration vector of the node, used when in global mode.
             */
-            function ParticleAccelerationNode(mode/*uint*/ , acceleration) {
+            function ParticleAccelerationNode(mode /*uint*/ , acceleration) {
                 if (typeof acceleration === "undefined") { acceleration = null; }
                 _super.call(this, "ParticleAcceleration", mode, 3);
 
-                this._pStateClass = animators.ParticleAccelerationState;
+                this._pStateClass = away.animators.ParticleAccelerationState;
 
                 this._acceleration = acceleration || new Vector3D();
             }
@@ -27704,7 +27434,7 @@ var away;
             * @inheritDoc
             */
             ParticleAccelerationNode.prototype.pGetAGALVertexCode = function (pass, animationRegisterCache) {
-                var accelerationValue = (this._pMode == animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
+                var accelerationValue = (this._pMode == away.animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
                 animationRegisterCache.setRegisterIndex(this, ParticleAccelerationNode.ACCELERATION_INDEX, accelerationValue.index);
 
                 var temp = animationRegisterCache.getFreeVertexVectorTemp();
@@ -27747,14 +27477,14 @@ var away;
 
             ParticleAccelerationNode.ACCELERATION_VECTOR3D = "AccelerationVector3D";
             return ParticleAccelerationNode;
-        })(animators.ParticleNodeBase);
+        })(away.animators.ParticleNodeBase);
         animators.ParticleAccelerationNode = ParticleAccelerationNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var Vector3D = away.geom.Vector3D;
         var MaterialPassBase = away.materials.MaterialPassBase;
@@ -27772,12 +27502,12 @@ var away;
             * @param    [optional] controlPoint    Defines the default control point of the node, used when in global mode.
             * @param    [optional] endPoint        Defines the default end point of the node, used when in global mode.
             */
-            function ParticleBezierCurveNode(mode/*uint*/ , controlPoint, endPoint) {
+            function ParticleBezierCurveNode(mode /*uint*/ , controlPoint, endPoint) {
                 if (typeof controlPoint === "undefined") { controlPoint = null; }
                 if (typeof endPoint === "undefined") { endPoint = null; }
                 _super.call(this, "ParticleBezierCurve", mode, 6);
 
-                this._pStateClass = animators.ParticleBezierCurveState;
+                this._pStateClass = away.animators.ParticleBezierCurveState;
 
                 this._iControlPoint = controlPoint || new Vector3D();
                 this._iEndPoint = endPoint || new Vector3D();
@@ -27787,10 +27517,10 @@ var away;
             */
             ParticleBezierCurveNode.prototype.getAGALVertexCode = function (pass, animationRegisterCache) {
                 pass = pass;
-                var controlValue = (this._pMode == animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
+                var controlValue = (this._pMode == away.animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
                 animationRegisterCache.setRegisterIndex(this, ParticleBezierCurveNode.BEZIER_CONTROL_INDEX, controlValue.index);
 
-                var endValue = (this._pMode == animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
+                var endValue = (this._pMode == away.animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
                 animationRegisterCache.setRegisterIndex(this, ParticleBezierCurveNode.BEZIER_END_INDEX, endValue.index);
 
                 var temp = animationRegisterCache.getFreeVertexVectorTemp();
@@ -27860,14 +27590,14 @@ var away;
 
             ParticleBezierCurveNode.BEZIER_END_VECTOR3D = "BezierEndVector3D";
             return ParticleBezierCurveNode;
-        })(animators.ParticleNodeBase);
+        })(away.animators.ParticleNodeBase);
         animators.ParticleBezierCurveNode = ParticleBezierCurveNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var Vector3D = away.geom.Vector3D;
         var MaterialPassBase = away.materials.MaterialPassBase;
@@ -27883,9 +27613,9 @@ var away;
             */
             function ParticleBillboardNode(billboardAxis) {
                 if (typeof billboardAxis === "undefined") { billboardAxis = null; }
-                _super.call(this, "ParticleBillboard", animators.ParticlePropertiesMode.GLOBAL, 0, 4);
+                _super.call(this, "ParticleBillboard", away.animators.ParticlePropertiesMode.GLOBAL, 0, 4);
 
-                this._pStateClass = animators.ParticleBillboardState;
+                this._pStateClass = away.animators.ParticleBillboardState;
 
                 this._iBillboardAxis = billboardAxis;
             }
@@ -27927,14 +27657,14 @@ var away;
             };
             ParticleBillboardNode.MATRIX_INDEX = 0;
             return ParticleBillboardNode;
-        })(animators.ParticleNodeBase);
+        })(away.animators.ParticleNodeBase);
         animators.ParticleBillboardNode = ParticleBillboardNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var ColorTransform = away.geom.ColorTransform;
         var Vector3D = away.geom.Vector3D;
@@ -27959,7 +27689,7 @@ var away;
             * @param    [optional] cycleDuration   Defines the duration of the animation in seconds, used as a period independent of particle duration when in global mode. Defaults to 1.
             * @param    [optional] cyclePhase      Defines the phase of the cycle in degrees, used as the starting offset of the cycle when in global mode. Defaults to 0.
             */
-            function ParticleColorNode(mode/*uint*/ , usesMultiplier, usesOffset, usesCycle, usesPhase, startColor, endColor, cycleDuration, cyclePhase) {
+            function ParticleColorNode(mode /*uint*/ , usesMultiplier, usesOffset, usesCycle, usesPhase, startColor, endColor, cycleDuration, cyclePhase) {
                 if (typeof usesMultiplier === "undefined") { usesMultiplier = true; }
                 if (typeof usesOffset === "undefined") { usesOffset = true; }
                 if (typeof usesCycle === "undefined") { usesCycle = false; }
@@ -27968,9 +27698,9 @@ var away;
                 if (typeof endColor === "undefined") { endColor = null; }
                 if (typeof cycleDuration === "undefined") { cycleDuration = 1; }
                 if (typeof cyclePhase === "undefined") { cyclePhase = 0; }
-                _super.call(this, "ParticleColor", mode, (usesMultiplier && usesOffset) ? 16 : 8, animators.ParticleAnimationSet.COLOR_PRIORITY);
+                _super.call(this, "ParticleColor", mode, (usesMultiplier && usesOffset) ? 16 : 8, away.animators.ParticleAnimationSet.COLOR_PRIORITY);
 
-                this._pStateClass = animators.ParticleColorState;
+                this._pStateClass = away.animators.ParticleColorState;
 
                 this._iUsesMultiplier = usesMultiplier;
                 this._iUsesOffset = usesOffset;
@@ -28007,8 +27737,8 @@ var away;
                     }
 
                     if (this._iUsesMultiplier) {
-                        var startMultiplierValue = (this._pMode == animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
-                        var deltaMultiplierValue = (this._pMode == animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
+                        var startMultiplierValue = (this._pMode == away.animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
+                        var deltaMultiplierValue = (this._pMode == away.animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
 
                         animationRegisterCache.setRegisterIndex(this, ParticleColorNode.START_MULTIPLIER_INDEX, startMultiplierValue.index);
                         animationRegisterCache.setRegisterIndex(this, ParticleColorNode.DELTA_MULTIPLIER_INDEX, deltaMultiplierValue.index);
@@ -28019,8 +27749,8 @@ var away;
                     }
 
                     if (this._iUsesOffset) {
-                        var startOffsetValue = (this._pMode == animators.ParticlePropertiesMode.LOCAL_STATIC) ? animationRegisterCache.getFreeVertexAttribute() : animationRegisterCache.getFreeVertexConstant();
-                        var deltaOffsetValue = (this._pMode == animators.ParticlePropertiesMode.LOCAL_STATIC) ? animationRegisterCache.getFreeVertexAttribute() : animationRegisterCache.getFreeVertexConstant();
+                        var startOffsetValue = (this._pMode == away.animators.ParticlePropertiesMode.LOCAL_STATIC) ? animationRegisterCache.getFreeVertexAttribute() : animationRegisterCache.getFreeVertexConstant();
+                        var deltaOffsetValue = (this._pMode == away.animators.ParticlePropertiesMode.LOCAL_STATIC) ? animationRegisterCache.getFreeVertexAttribute() : animationRegisterCache.getFreeVertexConstant();
 
                         animationRegisterCache.setRegisterIndex(this, ParticleColorNode.START_OFFSET_INDEX, startOffsetValue.index);
                         animationRegisterCache.setRegisterIndex(this, ParticleColorNode.DELTA_OFFSET_INDEX, deltaOffsetValue.index);
@@ -28066,6 +27796,7 @@ var away;
                 var i = 0;
 
                 if (!this._iUsesCycle) {
+                    //multiplier
                     if (this._iUsesMultiplier) {
                         this._pOneData[i++] = startColor.redMultiplier;
                         this._pOneData[i++] = startColor.greenMultiplier;
@@ -28077,6 +27808,7 @@ var away;
                         this._pOneData[i++] = endColor.alphaMultiplier - startColor.alphaMultiplier;
                     }
 
+                    //offset
                     if (this._iUsesOffset) {
                         this._pOneData[i++] = startColor.redOffset / 255;
                         this._pOneData[i++] = startColor.greenOffset / 255;
@@ -28088,6 +27820,7 @@ var away;
                         this._pOneData[i++] = (endColor.alphaOffset - startColor.alphaOffset) / 255;
                     }
                 } else {
+                    //multiplier
                     if (this._iUsesMultiplier) {
                         this._pOneData[i++] = (startColor.redMultiplier + endColor.redMultiplier) / 2;
                         this._pOneData[i++] = (startColor.greenMultiplier + endColor.greenMultiplier) / 2;
@@ -28099,6 +27832,7 @@ var away;
                         this._pOneData[i++] = (startColor.alphaMultiplier - endColor.alphaMultiplier) / 2;
                     }
 
+                    //offset
                     if (this._iUsesOffset) {
                         this._pOneData[i++] = (startColor.redOffset + endColor.redOffset) / (255 * 2);
                         this._pOneData[i++] = (startColor.greenOffset + endColor.greenOffset) / (255 * 2);
@@ -28125,14 +27859,14 @@ var away;
 
             ParticleColorNode.COLOR_END_COLORTRANSFORM = "ColorEndColorTransform";
             return ParticleColorNode;
-        })(animators.ParticleNodeBase);
+        })(away.animators.ParticleNodeBase);
         animators.ParticleColorNode = ParticleColorNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var Vector3D = away.geom.Vector3D;
         var MaterialPassBase = away.materials.MaterialPassBase;
@@ -28154,9 +27888,9 @@ var away;
                 if (typeof usesPosition === "undefined") { usesPosition = true; }
                 if (typeof usesRotation === "undefined") { usesRotation = true; }
                 if (typeof smooth === "undefined") { smooth = false; }
-                _super.call(this, "ParticleFollow", animators.ParticlePropertiesMode.LOCAL_DYNAMIC, (usesPosition && usesRotation) ? 6 : 3, animators.ParticleAnimationSet.POST_PRIORITY);
+                _super.call(this, "ParticleFollow", away.animators.ParticlePropertiesMode.LOCAL_DYNAMIC, (usesPosition && usesRotation) ? 6 : 3, away.animators.ParticleAnimationSet.POST_PRIORITY);
 
-                this._pStateClass = animators.ParticleFollowState;
+                this._pStateClass = away.animators.ParticleFollowState;
 
                 this._iUsesPosition = usesPosition;
                 this._iUsesRotation = usesRotation;
@@ -28190,7 +27924,7 @@ var away;
                         animationRegisterCache.removeVertexTempUsage(temp3);
 
                     var len = animationRegisterCache.rotationRegisters.length;
-                    var i/*int*/ ;
+                    var i;
 
                     //x axis
                     code += "mov " + temp1 + "," + animationRegisterCache.vertexZeroConst + "\n";
@@ -28204,7 +27938,7 @@ var away;
 
                     if (animationRegisterCache.hasBillboard)
                         code += "m33 " + temp4 + ".xyz," + animationRegisterCache.positionTarget + ".xyz," + temp1 + "\n";
-else {
+                    else {
                         code += "m33 " + animationRegisterCache.scaleAndRotateTarget + ".xyz," + animationRegisterCache.scaleAndRotateTarget + ".xyz," + temp1 + "\n";
                         for (i = 0; i < len; i++)
                             code += "m33 " + animationRegisterCache.rotationRegisters[i] + ".xyz," + animationRegisterCache.rotationRegisters[i] + "," + temp1 + "\n";
@@ -28222,7 +27956,7 @@ else {
 
                     if (animationRegisterCache.hasBillboard)
                         code += "m33 " + temp4 + ".xyz," + temp4 + ".xyz," + temp1 + "\n";
-else {
+                    else {
                         code += "m33 " + animationRegisterCache.scaleAndRotateTarget + ".xyz," + animationRegisterCache.scaleAndRotateTarget + ".xyz," + temp1 + "\n";
                         for (i = 0; i < len; i++)
                             code += "m33 " + animationRegisterCache.rotationRegisters[i] + ".xyz," + animationRegisterCache.rotationRegisters[i] + "," + temp1 + "\n";
@@ -28268,14 +28002,14 @@ else {
 
             ParticleFollowNode.FOLLOW_ROTATION_INDEX = 1;
             return ParticleFollowNode;
-        })(animators.ParticleNodeBase);
+        })(away.animators.ParticleNodeBase);
         animators.ParticleFollowNode = ParticleFollowNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var ColorTransform = away.geom.ColorTransform;
         var Vector3D = away.geom.Vector3D;
@@ -28284,13 +28018,13 @@ var away;
 
         var ParticleInitialColorNode = (function (_super) {
             __extends(ParticleInitialColorNode, _super);
-            function ParticleInitialColorNode(mode/*uint*/ , usesMultiplier, usesOffset, initialColor) {
+            function ParticleInitialColorNode(mode /*uint*/ , usesMultiplier, usesOffset, initialColor) {
                 if (typeof usesMultiplier === "undefined") { usesMultiplier = true; }
                 if (typeof usesOffset === "undefined") { usesOffset = false; }
                 if (typeof initialColor === "undefined") { initialColor = null; }
-                _super.call(this, "ParticleInitialColor", mode, (usesMultiplier && usesOffset) ? 8 : 4, animators.ParticleAnimationSet.COLOR_PRIORITY);
+                _super.call(this, "ParticleInitialColor", mode, (usesMultiplier && usesOffset) ? 8 : 4, away.animators.ParticleAnimationSet.COLOR_PRIORITY);
 
-                this._pStateClass = animators.ParticleInitialColorState;
+                this._pStateClass = away.animators.ParticleInitialColorState;
 
                 this._iUsesMultiplier = usesMultiplier;
                 this._iUsesOffset = usesOffset;
@@ -28303,14 +28037,14 @@ var away;
                 var code = "";
                 if (animationRegisterCache.needFragmentAnimation) {
                     if (this._iUsesMultiplier) {
-                        var multiplierValue = (this._pMode == animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
+                        var multiplierValue = (this._pMode == away.animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
                         animationRegisterCache.setRegisterIndex(this, ParticleInitialColorNode.MULTIPLIER_INDEX, multiplierValue.index);
 
                         code += "mul " + animationRegisterCache.colorMulTarget + "," + multiplierValue + "," + animationRegisterCache.colorMulTarget + "\n";
                     }
 
                     if (this._iUsesOffset) {
-                        var offsetValue = (this._pMode == animators.ParticlePropertiesMode.LOCAL_STATIC) ? animationRegisterCache.getFreeVertexAttribute() : animationRegisterCache.getFreeVertexConstant();
+                        var offsetValue = (this._pMode == away.animators.ParticlePropertiesMode.LOCAL_STATIC) ? animationRegisterCache.getFreeVertexAttribute() : animationRegisterCache.getFreeVertexConstant();
                         animationRegisterCache.setRegisterIndex(this, ParticleInitialColorNode.OFFSET_INDEX, offsetValue.index);
 
                         code += "add " + animationRegisterCache.colorAddTarget + "," + offsetValue + "," + animationRegisterCache.colorAddTarget + "\n";
@@ -28340,6 +28074,7 @@ var away;
 
                 var i = 0;
 
+                //multiplier
                 if (this._iUsesMultiplier) {
                     this._pOneData[i++] = initialColor.redMultiplier;
                     this._pOneData[i++] = initialColor.greenMultiplier;
@@ -28347,6 +28082,7 @@ var away;
                     this._pOneData[i++] = initialColor.alphaMultiplier;
                 }
 
+                //offset
                 if (this._iUsesOffset) {
                     this._pOneData[i++] = initialColor.redOffset / 255;
                     this._pOneData[i++] = initialColor.greenOffset / 255;
@@ -28360,14 +28096,14 @@ var away;
 
             ParticleInitialColorNode.COLOR_INITIAL_COLORTRANSFORM = "ColorInitialColorTransform";
             return ParticleInitialColorNode;
-        })(animators.ParticleNodeBase);
+        })(away.animators.ParticleNodeBase);
         animators.ParticleInitialColorNode = ParticleInitialColorNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var Vector3D = away.geom.Vector3D;
         var MaterialPassBase = away.materials.MaterialPassBase;
@@ -28390,7 +28126,7 @@ var away;
             * @param    [optional] cyclePhase      Defines the phase of the orbit in degrees, used as the starting offset of the cycle when in global mode. Defaults to 0.
             * @param    [optional] eulers          Defines the euler rotation in degrees, applied to the orientation of the orbit when in global mode.
             */
-            function ParticleOrbitNode(mode/*uint*/ , usesEulers, usesCycle, usesPhase, radius, cycleDuration, cyclePhase, eulers) {
+            function ParticleOrbitNode(mode /*uint*/ , usesEulers, usesCycle, usesPhase, radius, cycleDuration, cyclePhase, eulers) {
                 if (typeof usesEulers === "undefined") { usesEulers = true; }
                 if (typeof usesCycle === "undefined") { usesCycle = false; }
                 if (typeof usesPhase === "undefined") { usesPhase = false; }
@@ -28403,7 +28139,7 @@ var away;
                     len++;
                 _super.call(this, "ParticleOrbit", mode, len);
 
-                this._pStateClass = animators.ParticleOrbitState;
+                this._pStateClass = away.animators.ParticleOrbitState;
 
                 this._iUsesEulers = usesEulers;
                 this._iUsesCycle = usesCycle;
@@ -28418,7 +28154,7 @@ var away;
             * @inheritDoc
             */
             ParticleOrbitNode.prototype.getAGALVertexCode = function (pass, animationRegisterCache) {
-                var orbitRegister = (this._pMode == animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
+                var orbitRegister = (this._pMode == away.animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
                 animationRegisterCache.setRegisterIndex(this, ParticleOrbitNode.ORBIT_INDEX, orbitRegister.index);
 
                 var eulersMatrixRegister = animationRegisterCache.getFreeVertexConstant();
@@ -28501,14 +28237,14 @@ var away;
 
             ParticleOrbitNode.ORBIT_VECTOR3D = "OrbitVector3D";
             return ParticleOrbitNode;
-        })(animators.ParticleNodeBase);
+        })(away.animators.ParticleNodeBase);
         animators.ParticleOrbitNode = ParticleOrbitNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var Vector3D = away.geom.Vector3D;
         var MaterialPassBase = away.materials.MaterialPassBase;
@@ -28525,11 +28261,11 @@ var away;
             * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
             * @param    [optional] oscillator      Defines the default oscillator axis (x, y, z) and cycleDuration (w) of the node, used when in global mode.
             */
-            function ParticleOscillatorNode(mode/*uint*/ , oscillator) {
+            function ParticleOscillatorNode(mode /*uint*/ , oscillator) {
                 if (typeof oscillator === "undefined") { oscillator = null; }
                 _super.call(this, "ParticleOscillator", mode, 4);
 
-                this._pStateClass = animators.ParticleOscillatorState;
+                this._pStateClass = away.animators.ParticleOscillatorState;
 
                 this._iOscillator = oscillator || new Vector3D();
             }
@@ -28538,7 +28274,7 @@ var away;
             */
             ParticleOscillatorNode.prototype.getAGALVertexCode = function (pass, animationRegisterCache) {
                 pass = pass;
-                var oscillatorRegister = (this._pMode == animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
+                var oscillatorRegister = (this._pMode == away.animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
                 animationRegisterCache.setRegisterIndex(this, ParticleOscillatorNode.OSCILLATOR_INDEX, oscillatorRegister.index);
                 var temp = animationRegisterCache.getFreeVertexVectorTemp();
                 var dgree = new ShaderRegisterElement(temp.regName, temp.index, 0);
@@ -28591,14 +28327,14 @@ var away;
 
             ParticleOscillatorNode.OSCILLATOR_VECTOR3D = "OscillatorVector3D";
             return ParticleOscillatorNode;
-        })(animators.ParticleNodeBase);
+        })(away.animators.ParticleNodeBase);
         animators.ParticleOscillatorNode = ParticleOscillatorNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var Vector3D = away.geom.Vector3D;
         var MaterialPassBase = away.materials.MaterialPassBase;
@@ -28615,11 +28351,11 @@ var away;
             * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
             * @param    [optional] position        Defines the default position of the particle when in global mode. Defaults to 0,0,0.
             */
-            function ParticlePositionNode(mode/*uint*/ , position) {
+            function ParticlePositionNode(mode /*uint*/ , position) {
                 if (typeof position === "undefined") { position = null; }
                 _super.call(this, "ParticlePosition", mode, 3);
 
-                this._pStateClass = animators.ParticlePositionState;
+                this._pStateClass = away.animators.ParticlePositionState;
 
                 this._iPosition = position || new Vector3D();
             }
@@ -28628,7 +28364,7 @@ var away;
             */
             ParticlePositionNode.prototype.getAGALVertexCode = function (pass, animationRegisterCache) {
                 pass = pass;
-                var positionAttribute = (this._pMode == animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
+                var positionAttribute = (this._pMode == away.animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
                 animationRegisterCache.setRegisterIndex(this, ParticlePositionNode.POSITION_INDEX, positionAttribute.index);
 
                 return "add " + animationRegisterCache.positionTarget + ".xyz," + positionAttribute + ".xyz," + animationRegisterCache.positionTarget + ".xyz\n";
@@ -28657,14 +28393,14 @@ var away;
 
             ParticlePositionNode.POSITION_VECTOR3D = "PositionVector3D";
             return ParticlePositionNode;
-        })(animators.ParticleNodeBase);
+        })(away.animators.ParticleNodeBase);
         animators.ParticlePositionNode = ParticlePositionNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var Vector3D = away.geom.Vector3D;
         var MaterialPassBase = away.materials.MaterialPassBase;
@@ -28679,9 +28415,9 @@ var away;
             * Creates a new <code>ParticleBillboardNode</code>
             */
             function ParticleRotateToHeadingNode() {
-                _super.call(this, "ParticleRotateToHeading", animators.ParticlePropertiesMode.GLOBAL, 0, 3);
+                _super.call(this, "ParticleRotateToHeading", away.animators.ParticlePropertiesMode.GLOBAL, 0, 3);
 
-                this._pStateClass = animators.ParticleRotateToHeadingState;
+                this._pStateClass = away.animators.ParticleRotateToHeadingState;
             }
             /**
             * @inheritDoc
@@ -28689,7 +28425,7 @@ var away;
             ParticleRotateToHeadingNode.prototype.getAGALVertexCode = function (pass, animationRegisterCache) {
                 var code = "";
                 var len = animationRegisterCache.rotationRegisters.length;
-                var i/*int*/ ;
+                var i;
                 if (animationRegisterCache.hasBillboard) {
                     var temp1 = animationRegisterCache.getFreeVertexVectorTemp();
                     animationRegisterCache.addVertexTempUsages(temp1, 1);
@@ -28843,14 +28579,14 @@ var away;
             };
             ParticleRotateToHeadingNode.MATRIX_INDEX = 0;
             return ParticleRotateToHeadingNode;
-        })(animators.ParticleNodeBase);
+        })(away.animators.ParticleNodeBase);
         animators.ParticleRotateToHeadingNode = ParticleRotateToHeadingNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var Vector3D = away.geom.Vector3D;
         var MaterialPassBase = away.materials.MaterialPassBase;
@@ -28864,11 +28600,11 @@ var away;
             /**
             * Creates a new <code>ParticleRotateToPositionNode</code>
             */
-            function ParticleRotateToPositionNode(mode/*uint*/ , position) {
+            function ParticleRotateToPositionNode(mode /*uint*/ , position) {
                 if (typeof position === "undefined") { position = null; }
                 _super.call(this, "ParticleRotateToPosition", mode, 3, 3);
 
-                this._pStateClass = animators.ParticleRotateToPositionState;
+                this._pStateClass = away.animators.ParticleRotateToPositionState;
 
                 this._iPosition = position || new Vector3D();
             }
@@ -28876,12 +28612,12 @@ var away;
             * @inheritDoc
             */
             ParticleRotateToPositionNode.prototype.getAGALVertexCode = function (pass, animationRegisterCache) {
-                var positionAttribute = (this._pMode == animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
+                var positionAttribute = (this._pMode == away.animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
                 animationRegisterCache.setRegisterIndex(this, ParticleRotateToPositionNode.POSITION_INDEX, positionAttribute.index);
 
                 var code = "";
                 var len = animationRegisterCache.rotationRegisters.length;
-                var i/*int*/ ;
+                var i;
                 if (animationRegisterCache.hasBillboard) {
                     var temp1 = animationRegisterCache.getFreeVertexVectorTemp();
                     animationRegisterCache.addVertexTempUsages(temp1, 1);
@@ -29048,14 +28784,14 @@ var away;
 
             ParticleRotateToPositionNode.POSITION_VECTOR3D = "RotateToPositionVector3D";
             return ParticleRotateToPositionNode;
-        })(animators.ParticleNodeBase);
+        })(away.animators.ParticleNodeBase);
         animators.ParticleRotateToPositionNode = ParticleRotateToPositionNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var Vector3D = away.geom.Vector3D;
         var MaterialPassBase = away.materials.MaterialPassBase;
@@ -29071,11 +28807,11 @@ var away;
             *
             * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
             */
-            function ParticleRotationalVelocityNode(mode/*uint*/ , rotationalVelocity) {
+            function ParticleRotationalVelocityNode(mode /*uint*/ , rotationalVelocity) {
                 if (typeof rotationalVelocity === "undefined") { rotationalVelocity = null; }
                 _super.call(this, "ParticleRotationalVelocity", mode, 4);
 
-                this._pStateClass = animators.ParticleRotationalVelocityState;
+                this._pStateClass = away.animators.ParticleRotationalVelocityState;
 
                 this._iRotationalVelocity = rotationalVelocity || new Vector3D();
             }
@@ -29083,7 +28819,7 @@ var away;
             * @inheritDoc
             */
             ParticleRotationalVelocityNode.prototype.getAGALVertexCode = function (pass, animationRegisterCache) {
-                var rotationRegister = (this._pMode == animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
+                var rotationRegister = (this._pMode == away.animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
                 animationRegisterCache.setRegisterIndex(this, ParticleRotationalVelocityNode.ROTATIONALVELOCITY_INDEX, rotationRegister.index);
 
                 var nrmVel = animationRegisterCache.getFreeVertexVectorTemp();
@@ -29177,8 +28913,8 @@ var away;
                     throw (new Error("there is no " + ParticleRotationalVelocityNode.ROTATIONALVELOCITY_VECTOR3D + " in param!"));
 
                 if (rotate.length <= 0)
-                    rotate.z = 1;
-else
+                    rotate.z = 1; //set the default direction
+                else
                     rotate.normalize();
 
                 this._pOneData[0] = rotate.x;
@@ -29194,14 +28930,14 @@ else
 
             ParticleRotationalVelocityNode.ROTATIONALVELOCITY_VECTOR3D = "RotationalVelocityVector3D";
             return ParticleRotationalVelocityNode;
-        })(animators.ParticleNodeBase);
+        })(away.animators.ParticleNodeBase);
         animators.ParticleRotationalVelocityNode = ParticleRotationalVelocityNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var Vector3D = away.geom.Vector3D;
         var MaterialPassBase = away.materials.MaterialPassBase;
@@ -29223,14 +28959,14 @@ var away;
             * @param    [optional] cycleDuration   Defines the default duration of the animation in seconds, used as a period independent of particle duration when in global mode. Defaults to 1.
             * @param    [optional] cyclePhase      Defines the default phase of the cycle in degrees, used as the starting offset of the cycle when in global mode. Defaults to 0.
             */
-            function ParticleScaleNode(mode/*uint*/ , usesCycle, usesPhase, minScale, maxScale, cycleDuration, cyclePhase) {
+            function ParticleScaleNode(mode /*uint*/ , usesCycle, usesPhase, minScale, maxScale, cycleDuration, cyclePhase) {
                 if (typeof minScale === "undefined") { minScale = 1; }
                 if (typeof maxScale === "undefined") { maxScale = 1; }
                 if (typeof cycleDuration === "undefined") { cycleDuration = 1; }
                 if (typeof cyclePhase === "undefined") { cyclePhase = 0; }
                 _super.call(this, "ParticleScale", mode, (usesCycle && usesPhase) ? 4 : ((usesCycle || usesPhase) ? 3 : 2), 3);
 
-                this._pStateClass = animators.ParticleScaleState;
+                this._pStateClass = away.animators.ParticleScaleState;
 
                 this._iUsesCycle = usesCycle;
                 this._iUsesPhase = usesPhase;
@@ -29247,7 +28983,7 @@ var away;
                 var code = "";
                 var temp = animationRegisterCache.getFreeVertexSingleTemp();
 
-                var scaleRegister = (this._pMode == animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
+                var scaleRegister = (this._pMode == away.animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
                 animationRegisterCache.setRegisterIndex(this, ParticleScaleNode.SCALE_INDEX, scaleRegister.index);
 
                 if (this._iUsesCycle) {
@@ -29298,14 +29034,14 @@ var away;
 
             ParticleScaleNode.SCALE_VECTOR3D = "ScaleVector3D";
             return ParticleScaleNode;
-        })(animators.ParticleNodeBase);
+        })(away.animators.ParticleNodeBase);
         animators.ParticleScaleNode = ParticleScaleNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var ColorTransform = away.geom.ColorTransform;
         var Vector3D = away.geom.Vector3D;
@@ -29314,11 +29050,11 @@ var away;
 
         var ParticleSegmentedColorNode = (function (_super) {
             __extends(ParticleSegmentedColorNode, _super);
-            function ParticleSegmentedColorNode(usesMultiplier, usesOffset, numSegmentPoint/*int*/ , startColor, endColor, segmentPoints) {
+            function ParticleSegmentedColorNode(usesMultiplier, usesOffset, numSegmentPoint /*int*/ , startColor, endColor, segmentPoints) {
                 //because of the stage3d register limitation, it only support the global mode
-                _super.call(this, "ParticleSegmentedColor", animators.ParticlePropertiesMode.GLOBAL, 0, animators.ParticleAnimationSet.COLOR_PRIORITY);
+                _super.call(this, "ParticleSegmentedColor", away.animators.ParticlePropertiesMode.GLOBAL, 0, away.animators.ParticleAnimationSet.COLOR_PRIORITY);
 
-                this._pStateClass = animators.ParticleSegmentedColorState;
+                this._pStateClass = away.animators.ParticleSegmentedColorState;
 
                 if (numSegmentPoint > 4)
                     throw (new Error("the numSegmentPoint must be less or equal 4"));
@@ -29347,6 +29083,7 @@ var away;
                 if (animationRegisterCache.needFragmentAnimation) {
                     var accMultiplierColor;
 
+                    //var accOffsetColor:ShaderRegisterElement;
                     if (this._iUsesMultiplier) {
                         accMultiplierColor = animationRegisterCache.getFreeVertexVectorTemp();
                         animationRegisterCache.addVertexTempUsages(accMultiplierColor, 1);
@@ -29368,7 +29105,7 @@ var away;
                     var lifeTimeRegister = animationRegisterCache.getFreeVertexConstant();
                     animationRegisterCache.setRegisterIndex(this, ParticleSegmentedColorNode.TIME_DATA_INDEX, lifeTimeRegister.index);
 
-                    var i/*int*/ ;
+                    var i;
 
                     var startMulValue;
                     var deltaMulValues;
@@ -29426,9 +29163,10 @@ var away;
                         }
                     }
 
+                    //for the last segment:
                     if (this._iNumSegmentPoint == 0)
                         tempTime = animationRegisterCache.vertexLife;
-else {
+                    else {
                         switch (this._iNumSegmentPoint) {
                             case 1:
                                 code += "sub " + accTime + "," + animationRegisterCache.vertexLife + "," + lifeTimeRegister + ".x\n";
@@ -29463,14 +29201,14 @@ else {
 
             ParticleSegmentedColorNode.TIME_DATA_INDEX = 2;
             return ParticleSegmentedColorNode;
-        })(animators.ParticleNodeBase);
+        })(away.animators.ParticleNodeBase);
         animators.ParticleSegmentedColorNode = ParticleSegmentedColorNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var Vector3D = away.geom.Vector3D;
         var MaterialPassBase = away.materials.MaterialPassBase;
@@ -29493,15 +29231,15 @@ var away;
             * @param    [optional] totalFrames     Defines the total number of frames used by the spritesheet, when in global mode. Defaults to the number defined by numColumns and numRows.
             * @param    [optional] looping         Defines whether the spritesheet animation is set to loop indefinitely. Defaults to true.
             */
-            function ParticleSpriteSheetNode(mode/*uint*/ , usesCycle, usesPhase, numColumns, numRows, cycleDuration, cyclePhase, totalFrames) {
+            function ParticleSpriteSheetNode(mode /*uint*/ , usesCycle, usesPhase, numColumns, numRows, cycleDuration, cyclePhase, totalFrames) {
                 if (typeof numColumns === "undefined") { numColumns = 1; }
                 if (typeof numRows === "undefined") { numRows = 1; }
                 if (typeof cycleDuration === "undefined") { cycleDuration = 1; }
                 if (typeof cyclePhase === "undefined") { cyclePhase = 0; }
                 if (typeof totalFrames === "undefined") { totalFrames = Number.MAX_VALUE; }
-                _super.call(this, "ParticleSpriteSheet", mode, usesCycle ? (usesPhase ? 3 : 2) : 1, animators.ParticleAnimationSet.POST_PRIORITY + 1);
+                _super.call(this, "ParticleSpriteSheet", mode, usesCycle ? (usesPhase ? 3 : 2) : 1, away.animators.ParticleAnimationSet.POST_PRIORITY + 1);
 
-                this._pStateClass = animators.ParticleSpriteSheetState;
+                this._pStateClass = away.animators.ParticleSpriteSheetState;
 
                 this._iUsesCycle = usesCycle;
                 this._iUsesPhase = usesPhase;
@@ -29513,10 +29251,10 @@ var away;
                 this._iTotalFrames = Math.min(totalFrames, numColumns * numRows);
             }
             Object.defineProperty(ParticleSpriteSheetNode.prototype, "numColumns", {
-                get: /**
+                /**
                 * Defines the number of columns in the spritesheet, when in global mode. Defaults to 1. Read only.
                 */
-                function () {
+                get: function () {
                     return this._iNumColumns;
                 },
                 enumerable: true,
@@ -29524,10 +29262,10 @@ var away;
             });
 
             Object.defineProperty(ParticleSpriteSheetNode.prototype, "numRows", {
-                get: /**
+                /**
                 * Defines the number of rows in the spritesheet, when in global mode. Defaults to 1. Read only.
                 */
-                function () {
+                get: function () {
                     return this._iNumRows;
                 },
                 enumerable: true,
@@ -29535,10 +29273,10 @@ var away;
             });
 
             Object.defineProperty(ParticleSpriteSheetNode.prototype, "totalFrames", {
-                get: /**
+                /**
                 * Defines the total number of frames used by the spritesheet, when in global mode. Defaults to the number defined by numColumns and numRows. Read only.
                 */
-                function () {
+                get: function () {
                     return this._iTotalFrames;
                 },
                 enumerable: true,
@@ -29551,7 +29289,7 @@ var away;
             ParticleSpriteSheetNode.prototype.getAGALUVCode = function (pass, animationRegisterCache) {
                 //get 2 vc
                 var uvParamConst1 = animationRegisterCache.getFreeVertexConstant();
-                var uvParamConst2 = (this._pMode == animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
+                var uvParamConst2 = (this._pMode == away.animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
                 animationRegisterCache.setRegisterIndex(this, ParticleSpriteSheetNode.UV_INDEX_0, uvParamConst1.index);
                 animationRegisterCache.setRegisterIndex(this, ParticleSpriteSheetNode.UV_INDEX_1, uvParamConst2.index);
 
@@ -29582,7 +29320,7 @@ var away;
                 if (this._iUsesCycle) {
                     if (this._iUsesPhase)
                         code += "add " + time + "," + animationRegisterCache.vertexTime + "," + phaseTime + "\n";
-else
+                    else
                         code += "mov " + time + "," + animationRegisterCache.vertexTime + "\n";
                     code += "div " + time + "," + time + "," + cycle + "\n";
                     code += "frc " + time + "," + time + "\n";
@@ -29647,14 +29385,14 @@ else
 
             ParticleSpriteSheetNode.UV_VECTOR3D = "UVVector3D";
             return ParticleSpriteSheetNode;
-        })(animators.ParticleNodeBase);
+        })(away.animators.ParticleNodeBase);
         animators.ParticleSpriteSheetNode = ParticleSpriteSheetNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var Vector3D = away.geom.Vector3D;
         var MaterialPassBase = away.materials.MaterialPassBase;
@@ -29676,13 +29414,13 @@ var away;
                 if (typeof usesDuration === "undefined") { usesDuration = false; }
                 if (typeof usesLooping === "undefined") { usesLooping = false; }
                 if (typeof usesDelay === "undefined") { usesDelay = false; }
-                this._pStateClass = animators.ParticleTimeState;
+                this._pStateClass = away.animators.ParticleTimeState;
 
                 this._iUsesDuration = usesDuration;
                 this._iUsesLooping = usesLooping;
                 this._iUsesDelay = usesDelay;
 
-                _super.call(this, "ParticleTime", animators.ParticlePropertiesMode.LOCAL_STATIC, 4, 0);
+                _super.call(this, "ParticleTime", away.animators.ParticlePropertiesMode.LOCAL_STATIC, 4, 0);
             }
             /**
             * @inheritDoc
@@ -29744,14 +29482,14 @@ var away;
 
             ParticleTimeNode.TIME_CONSTANT_INDEX = 1;
             return ParticleTimeNode;
-        })(animators.ParticleNodeBase);
+        })(away.animators.ParticleNodeBase);
         animators.ParticleTimeNode = ParticleTimeNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var Vector3D = away.geom.Vector3D;
         var MaterialPassBase = away.materials.MaterialPassBase;
@@ -29770,14 +29508,14 @@ var away;
             * @param    [optional] scale           Defines whether the time track is in loop mode. Defaults to false.
             * @param    [optional] axis            Defines whether the time track is in loop mode. Defaults to false.
             */
-            function ParticleUVNode(mode/*uint*/ , cycle, scale, axis) {
+            function ParticleUVNode(mode /*uint*/ , cycle, scale, axis) {
                 if (typeof cycle === "undefined") { cycle = 1; }
                 if (typeof scale === "undefined") { scale = 1; }
                 if (typeof axis === "undefined") { axis = "x"; }
                 //because of the stage3d register limitation, it only support the global mode
-                _super.call(this, "ParticleUV", animators.ParticlePropertiesMode.GLOBAL, 4, animators.ParticleAnimationSet.POST_PRIORITY + 1);
+                _super.call(this, "ParticleUV", away.animators.ParticlePropertiesMode.GLOBAL, 4, away.animators.ParticleAnimationSet.POST_PRIORITY + 1);
 
-                this._pStateClass = animators.ParticleUVState;
+                this._pStateClass = away.animators.ParticleUVState;
 
                 this._cycle = cycle;
                 this._scale = scale;
@@ -29786,10 +29524,10 @@ var away;
                 this.updateUVData();
             }
             Object.defineProperty(ParticleUVNode.prototype, "cycle", {
-                get: /**
+                /**
                 *
                 */
-                function () {
+                get: function () {
                     return this._cycle;
                 },
                 set: function (value) {
@@ -29803,10 +29541,10 @@ var away;
 
 
             Object.defineProperty(ParticleUVNode.prototype, "scale", {
-                get: /**
+                /**
                 *
                 */
-                function () {
+                get: function () {
                     return this._scale;
                 },
                 set: function (value) {
@@ -29820,10 +29558,10 @@ var away;
 
 
             Object.defineProperty(ParticleUVNode.prototype, "axis", {
-                get: /**
+                /**
                 *
                 */
-                function () {
+                get: function () {
                     return this._axis;
                 },
                 set: function (value) {
@@ -29883,14 +29621,14 @@ var away;
 
             ParticleUVNode.V_AXIS = "y";
             return ParticleUVNode;
-        })(animators.ParticleNodeBase);
+        })(away.animators.ParticleNodeBase);
         animators.ParticleUVNode = ParticleUVNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var Vector3D = away.geom.Vector3D;
         var MaterialPassBase = away.materials.MaterialPassBase;
@@ -29907,11 +29645,11 @@ var away;
             * @param               mode            Defines whether the mode of operation acts on local properties of a particle or global properties of the node.
             * @param    [optional] velocity        Defines the default velocity vector of the node, used when in global mode.
             */
-            function ParticleVelocityNode(mode/*uint*/ , velocity) {
+            function ParticleVelocityNode(mode /*uint*/ , velocity) {
                 if (typeof velocity === "undefined") { velocity = null; }
                 _super.call(this, "ParticleVelocity", mode, 3);
 
-                this._pStateClass = animators.ParticleVelocityState;
+                this._pStateClass = away.animators.ParticleVelocityState;
 
                 this._iVelocity = velocity || new Vector3D();
             }
@@ -29919,7 +29657,7 @@ var away;
             * @inheritDoc
             */
             ParticleVelocityNode.prototype.getAGALVertexCode = function (pass, animationRegisterCache) {
-                var velocityValue = (this._pMode == animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
+                var velocityValue = (this._pMode == away.animators.ParticlePropertiesMode.GLOBAL) ? animationRegisterCache.getFreeVertexConstant() : animationRegisterCache.getFreeVertexAttribute();
                 animationRegisterCache.setRegisterIndex(this, ParticleVelocityNode.VELOCITY_INDEX, velocityValue.index);
 
                 var distance = animationRegisterCache.getFreeVertexVectorTemp();
@@ -29956,14 +29694,14 @@ var away;
 
             ParticleVelocityNode.VELOCITY_VECTOR3D = "VelocityVector3D";
             return ParticleVelocityNode;
-        })(animators.ParticleNodeBase);
+        })(away.animators.ParticleNodeBase);
         animators.ParticleVelocityNode = ParticleVelocityNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         /**
         * A skeleton animation node that uses two animation node inputs to blend a lineraly interpolated output of a skeleton pose.
@@ -29976,7 +29714,7 @@ var away;
             function SkeletonBinaryLERPNode() {
                 _super.call(this);
 
-                this._pStateClass = animators.SkeletonBinaryLERPState;
+                this._pStateClass = away.animators.SkeletonBinaryLERPState;
             }
             /**
             * @inheritDoc
@@ -29985,14 +29723,14 @@ var away;
                 return animator.getAnimationState(this);
             };
             return SkeletonBinaryLERPNode;
-        })(animators.AnimationNodeBase);
+        })(away.animators.AnimationNodeBase);
         animators.SkeletonBinaryLERPNode = SkeletonBinaryLERPNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var Vector3D = away.geom.Vector3D;
 
@@ -30013,13 +29751,13 @@ var away;
                 */
                 this.highQuality = false;
 
-                this._pStateClass = animators.SkeletonClipState;
+                this._pStateClass = away.animators.SkeletonClipState;
             }
             Object.defineProperty(SkeletonClipNode.prototype, "frames", {
-                get: /**
+                /**
                 * Returns a vector of skeleton poses representing the pose of each animation frame in the clip.
                 */
-                function () {
+                get: function () {
                     return this._frames;
                 },
                 enumerable: true,
@@ -30032,7 +29770,7 @@ var away;
             * @param skeletonPose The skeleton pose object to add to the timeline of the node.
             * @param duration The specified duration of the frame in milliseconds.
             */
-            SkeletonClipNode.prototype.addFrame = function (skeletonPose, duration/*number /*uint*/ ) {
+            SkeletonClipNode.prototype.addFrame = function (skeletonPose, duration /*number /*uint*/ ) {
                 this._frames.push(skeletonPose);
                 this._pDurations.push(duration);
 
@@ -30077,14 +29815,14 @@ var away;
                 }
             };
             return SkeletonClipNode;
-        })(animators.AnimationClipNodeBase);
+        })(away.animators.AnimationClipNodeBase);
         animators.SkeletonClipNode = SkeletonClipNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         /**
         * A skeleton animation node that uses a difference input pose with a base input pose to blend a linearly interpolated output of a skeleton pose.
@@ -30097,7 +29835,7 @@ var away;
             function SkeletonDifferenceNode() {
                 _super.call(this);
 
-                this._pStateClass = animators.SkeletonDifferenceState;
+                this._pStateClass = away.animators.SkeletonDifferenceState;
             }
             /**
             * @inheritDoc
@@ -30106,14 +29844,14 @@ var away;
                 return animator.getAnimationState(this);
             };
             return SkeletonDifferenceNode;
-        })(animators.AnimationNodeBase);
+        })(away.animators.AnimationNodeBase);
         animators.SkeletonDifferenceNode = SkeletonDifferenceNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         /**
         * A skeleton animation node that uses four directional input poses with an input direction to blend a linearly interpolated output of a skeleton pose.
@@ -30123,7 +29861,7 @@ var away;
             function SkeletonDirectionalNode() {
                 _super.call(this);
 
-                this._pStateClass = animators.SkeletonDirectionalState;
+                this._pStateClass = away.animators.SkeletonDirectionalState;
             }
             /**
             * @inheritDoc
@@ -30132,14 +29870,14 @@ var away;
                 return animator.getAnimationState(this);
             };
             return SkeletonDirectionalNode;
-        })(animators.AnimationNodeBase);
+        })(away.animators.AnimationNodeBase);
         animators.SkeletonDirectionalNode = SkeletonDirectionalNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         /**
         * A skeleton animation node that uses an n-dimensional array of animation node inputs to blend a lineraly interpolated output of a skeleton pose.
@@ -30153,7 +29891,7 @@ var away;
                 _super.call(this);
                 this._iInputs = new Array();
 
-                this._pStateClass = animators.SkeletonNaryLERPState;
+                this._pStateClass = away.animators.SkeletonNaryLERPState;
             }
             Object.defineProperty(SkeletonNaryLERPNode.prototype, "numInputs", {
                 get: function () {
@@ -30177,7 +29915,7 @@ var away;
             *
             * @param index The input index for which the skeleton animation node is requested.
             */
-            SkeletonNaryLERPNode.prototype.getInputAt = function (index/*uint*/ ) {
+            SkeletonNaryLERPNode.prototype.getInputAt = function (index /*uint*/ ) {
                 return this._iInputs[index];
             };
 
@@ -30195,14 +29933,14 @@ var away;
                 return animator.getAnimationState(this);
             };
             return SkeletonNaryLERPNode;
-        })(animators.AnimationNodeBase);
+        })(away.animators.AnimationNodeBase);
         animators.SkeletonNaryLERPNode = SkeletonNaryLERPNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         /**
         * A vertex animation node containing time-based animation data as individual geometry obejcts.
@@ -30220,10 +29958,10 @@ var away;
                 this._pStateClass = away.animators.VertexClipState;
             }
             Object.defineProperty(VertexClipNode.prototype, "frames", {
-                get: /**
+                /**
                 * Returns a vector of geometry frames representing the vertex values of each animation frame in the clip.
                 */
-                function () {
+                get: function () {
                     return this._frames;
                 },
                 enumerable: true,
@@ -30237,7 +29975,7 @@ var away;
             * @param duration The specified duration of the frame in milliseconds.
             * @param translation The absolute translation of the frame, used in root delta calculations for mesh movement.
             */
-            VertexClipNode.prototype.addFrame = function (geometry, duration/*uint*/ , translation) {
+            VertexClipNode.prototype.addFrame = function (geometry, duration /*uint*/ , translation) {
                 if (typeof translation === "undefined") { translation = null; }
                 this._frames.push(geometry);
                 this._pDurations.push(duration);
@@ -30277,19 +30015,21 @@ var away;
                 }
             };
             return VertexClipNode;
-        })(animators.AnimationClipNodeBase);
+        })(away.animators.AnimationClipNodeBase);
         animators.VertexClipNode = VertexClipNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var Vector3D = away.geom.Vector3D;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
     ///<reference path="../../_definitions.ts"/>
@@ -30306,10 +30046,10 @@ var away;
                 this._pAnimationNode = animationNode;
             }
             Object.defineProperty(AnimationStateBase.prototype, "positionDelta", {
-                get: /**
+                /**
                 * Returns a 3d vector representing the translation delta of the animating entity for the current timestep of animation
                 */
-                function () {
+                get: function () {
                     if (this._pPositionDeltaDirty) {
                         this._pUpdatePositionDelta();
                     }
@@ -30376,9 +30116,9 @@ var away;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var StageGL = away.base.StageGL;
         var Camera = away.entities.Camera;
@@ -30419,11 +30159,11 @@ var away;
                 var totalLenOfOneVertex = animationSubGeometry.totalLenOfOneVertex;
                 var dataLength = this._particleNode.dataLength;
                 var dataOffset = this._particleNode._iDataOffset;
-                var vertexLength/*uint*/ ;
+                var vertexLength;
 
                 //			var particleOffset:number /*uint*/;
-                var startingOffset/*uint*/ ;
-                var vertexOffset/*uint*/ ;
+                var startingOffset;
+                var vertexOffset;
                 var data;
                 var animationParticle;
 
@@ -30471,14 +30211,14 @@ var away;
                 animationSubGeometry.invalidateBuffer();
             };
             return ParticleStateBase;
-        })(animators.AnimationStateBase);
+        })(away.animators.AnimationStateBase);
         animators.ParticleStateBase = ParticleStateBase;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var RenderableBase = away.pool.RenderableBase;
         var Camera = away.entities.Camera;
@@ -30500,10 +30240,10 @@ var away;
                 this.updateAccelerationData();
             }
             Object.defineProperty(ParticleAccelerationState.prototype, "acceleration", {
-                get: /**
+                /**
                 * Defines the acceleration vector of the state, used when in global mode.
                 */
-                function () {
+                get: function () {
                     return this._acceleration;
                 },
                 set: function (value) {
@@ -30522,27 +30262,27 @@ var away;
             * @inheritDoc
             */
             ParticleAccelerationState.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
-                var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleAccelerationNode.ACCELERATION_INDEX);
+                var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleAccelerationNode.ACCELERATION_INDEX);
 
-                if (this._particleAccelerationNode.mode == animators.ParticlePropertiesMode.LOCAL_STATIC)
+                if (this._particleAccelerationNode.mode == away.animators.ParticlePropertiesMode.LOCAL_STATIC)
                     animationSubGeometry.activateVertexBuffer(index, this._particleAccelerationNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
-else
+                else
                     animationRegisterCache.setVertexConst(index, this._halfAcceleration.x, this._halfAcceleration.y, this._halfAcceleration.z);
             };
 
             ParticleAccelerationState.prototype.updateAccelerationData = function () {
-                if (this._particleAccelerationNode.mode == animators.ParticlePropertiesMode.GLOBAL)
+                if (this._particleAccelerationNode.mode == away.animators.ParticlePropertiesMode.GLOBAL)
                     this._halfAcceleration = new Vector3D(this._acceleration.x / 2, this._acceleration.y / 2, this._acceleration.z / 2);
             };
             return ParticleAccelerationState;
-        })(animators.ParticleStateBase);
+        })(away.animators.ParticleStateBase);
         animators.ParticleAccelerationState = ParticleAccelerationState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var RenderableBase = away.pool.RenderableBase;
         var Camera = away.entities.Camera;
@@ -30563,10 +30303,10 @@ var away;
                 this._endPoint = this._particleBezierCurveNode._iEndPoint;
             }
             Object.defineProperty(ParticleBezierCurveState.prototype, "controlPoint", {
-                get: /**
+                /**
                 * Defines the default control point of the node, used when in global mode.
                 */
-                function () {
+                get: function () {
                     return this._controlPoint;
                 },
                 set: function (value) {
@@ -30578,10 +30318,10 @@ var away;
 
 
             Object.defineProperty(ParticleBezierCurveState.prototype, "endPoint", {
-                get: /**
+                /**
                 * Defines the default end point of the node, used when in global mode.
                 */
-                function () {
+                get: function () {
                     return this._endPoint;
                 },
                 set: function (value) {
@@ -30593,10 +30333,10 @@ var away;
 
 
             ParticleBezierCurveState.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
-                var controlIndex = animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleBezierCurveNode.BEZIER_CONTROL_INDEX);
-                var endIndex = animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleBezierCurveNode.BEZIER_END_INDEX);
+                var controlIndex = animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleBezierCurveNode.BEZIER_CONTROL_INDEX);
+                var endIndex = animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleBezierCurveNode.BEZIER_END_INDEX);
 
-                if (this._particleBezierCurveNode.mode == animators.ParticlePropertiesMode.LOCAL_STATIC) {
+                if (this._particleBezierCurveNode.mode == away.animators.ParticlePropertiesMode.LOCAL_STATIC) {
                     animationSubGeometry.activateVertexBuffer(controlIndex, this._particleBezierCurveNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
                     animationSubGeometry.activateVertexBuffer(endIndex, this._particleBezierCurveNode._iDataOffset + 3, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
                 } else {
@@ -30605,14 +30345,14 @@ var away;
                 }
             };
             return ParticleBezierCurveState;
-        })(animators.ParticleStateBase);
+        })(away.animators.ParticleStateBase);
         animators.ParticleBezierCurveState = ParticleBezierCurveState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var RenderableBase = away.pool.RenderableBase;
         var Camera = away.entities.Camera;
@@ -30633,7 +30373,7 @@ var away;
             */
             function ParticleBillboardState(animator, particleNode) {
                 _super.call(this, animator, particleNode);
-                this._matrix = new Matrix3D();
+                this._matrix = new Matrix3D;
 
                 this._billboardAxis = particleNode._iBillboardAxis;
             }
@@ -30669,14 +30409,14 @@ var away;
                 }
 
                 //set a new matrix transform constant
-                animationRegisterCache.setVertexConstFromMatrix(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleBillboardNode.MATRIX_INDEX), this._matrix);
+                animationRegisterCache.setVertexConstFromMatrix(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleBillboardNode.MATRIX_INDEX), this._matrix);
             };
 
             Object.defineProperty(ParticleBillboardState.prototype, "billboardAxis", {
-                get: /**
+                /**
                 * Defines the billboard axis.
                 */
-                function () {
+                get: function () {
                     return this.billboardAxis;
                 },
                 set: function (value) {
@@ -30689,14 +30429,14 @@ var away;
             });
 
             return ParticleBillboardState;
-        })(animators.ParticleStateBase);
+        })(away.animators.ParticleStateBase);
         animators.ParticleBillboardState = ParticleBillboardState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var RenderableBase = away.pool.RenderableBase;
         var Camera = away.entities.Camera;
@@ -30727,10 +30467,10 @@ var away;
                 this.updateColorData();
             }
             Object.defineProperty(ParticleColorState.prototype, "startColor", {
-                get: /**
+                /**
                 * Defines the start color transform of the state, when in global mode.
                 */
-                function () {
+                get: function () {
                     return this._startColor;
                 },
                 set: function (value) {
@@ -30744,10 +30484,10 @@ var away;
 
 
             Object.defineProperty(ParticleColorState.prototype, "endColor", {
-                get: /**
+                /**
                 * Defines the end color transform of the state, when in global mode.
                 */
-                function () {
+                get: function () {
                     return this._endColor;
                 },
                 set: function (value) {
@@ -30761,10 +30501,10 @@ var away;
 
 
             Object.defineProperty(ParticleColorState.prototype, "cycleDuration", {
-                get: /**
+                /**
                 * Defines the duration of the animation in seconds, used as a period independent of particle duration when in global mode. Defaults to 1.
                 */
-                function () {
+                get: function () {
                     return this._cycleDuration;
                 },
                 set: function (value) {
@@ -30778,10 +30518,10 @@ var away;
 
 
             Object.defineProperty(ParticleColorState.prototype, "cyclePhase", {
-                get: /**
+                /**
                 * Defines the phase of the cycle in degrees, used as the starting offset of the cycle when in global mode. Defaults to 0.
                 */
-                function () {
+                get: function () {
                     return this._cyclePhase;
                 },
                 set: function (value) {
@@ -30798,28 +30538,28 @@ var away;
                 if (animationRegisterCache.needFragmentAnimation) {
                     var dataOffset = this._particleColorNode._iDataOffset;
                     if (this._usesCycle)
-                        animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleColorNode.CYCLE_INDEX), this._cycleData.x, this._cycleData.y, this._cycleData.z, this._cycleData.w);
+                        animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleColorNode.CYCLE_INDEX), this._cycleData.x, this._cycleData.y, this._cycleData.z, this._cycleData.w);
 
                     if (this._usesMultiplier) {
-                        if (this._particleColorNode.mode == animators.ParticlePropertiesMode.LOCAL_STATIC) {
-                            animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleColorNode.START_MULTIPLIER_INDEX), dataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
+                        if (this._particleColorNode.mode == away.animators.ParticlePropertiesMode.LOCAL_STATIC) {
+                            animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleColorNode.START_MULTIPLIER_INDEX), dataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
                             dataOffset += 4;
-                            animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleColorNode.DELTA_MULTIPLIER_INDEX), dataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
+                            animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleColorNode.DELTA_MULTIPLIER_INDEX), dataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
                             dataOffset += 4;
                         } else {
-                            animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleColorNode.START_MULTIPLIER_INDEX), this._startMultiplierData.x, this._startMultiplierData.y, this._startMultiplierData.z, this._startMultiplierData.w);
-                            animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleColorNode.DELTA_MULTIPLIER_INDEX), this._deltaMultiplierData.x, this._deltaMultiplierData.y, this._deltaMultiplierData.z, this._deltaMultiplierData.w);
+                            animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleColorNode.START_MULTIPLIER_INDEX), this._startMultiplierData.x, this._startMultiplierData.y, this._startMultiplierData.z, this._startMultiplierData.w);
+                            animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleColorNode.DELTA_MULTIPLIER_INDEX), this._deltaMultiplierData.x, this._deltaMultiplierData.y, this._deltaMultiplierData.z, this._deltaMultiplierData.w);
                         }
                     }
                     if (this._usesOffset) {
-                        if (this._particleColorNode.mode == animators.ParticlePropertiesMode.LOCAL_STATIC) {
-                            animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleColorNode.START_OFFSET_INDEX), dataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
+                        if (this._particleColorNode.mode == away.animators.ParticlePropertiesMode.LOCAL_STATIC) {
+                            animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleColorNode.START_OFFSET_INDEX), dataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
                             dataOffset += 4;
-                            animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleColorNode.DELTA_OFFSET_INDEX), dataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
+                            animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleColorNode.DELTA_OFFSET_INDEX), dataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
                             dataOffset += 4;
                         } else {
-                            animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleColorNode.START_OFFSET_INDEX), this._startOffsetData.x, this._startOffsetData.y, this._startOffsetData.z, this._startOffsetData.w);
-                            animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleColorNode.DELTA_OFFSET_INDEX), this._deltaOffsetData.x, this._deltaOffsetData.y, this._deltaOffsetData.z, this._deltaOffsetData.w);
+                            animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleColorNode.START_OFFSET_INDEX), this._startOffsetData.x, this._startOffsetData.y, this._startOffsetData.z, this._startOffsetData.w);
+                            animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleColorNode.DELTA_OFFSET_INDEX), this._deltaOffsetData.x, this._deltaOffsetData.y, this._deltaOffsetData.z, this._deltaOffsetData.w);
                         }
                     }
                 }
@@ -30831,7 +30571,7 @@ var away;
                         throw (new Error("the cycle duration must be greater than zero"));
                     this._cycleData = new Vector3D(Math.PI * 2 / this._cycleDuration, this._cyclePhase * Math.PI / 180, 0, 0);
                 }
-                if (this._particleColorNode.mode == animators.ParticlePropertiesMode.GLOBAL) {
+                if (this._particleColorNode.mode == away.animators.ParticlePropertiesMode.GLOBAL) {
                     if (this._usesCycle) {
                         if (this._usesMultiplier) {
                             this._startMultiplierData = new Vector3D((this._startColor.redMultiplier + this._endColor.redMultiplier) / 2, (this._startColor.greenMultiplier + this._endColor.greenMultiplier) / 2, (this._startColor.blueMultiplier + this._endColor.blueMultiplier) / 2, (this._startColor.alphaMultiplier + this._endColor.alphaMultiplier) / 2);
@@ -30856,14 +30596,14 @@ var away;
                 }
             };
             return ParticleColorState;
-        })(animators.ParticleStateBase);
+        })(away.animators.ParticleStateBase);
         animators.ParticleColorState = ParticleColorState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var RenderableBase = away.pool.RenderableBase;
         var DisplayObject = away.base.DisplayObject;
@@ -30930,6 +30670,7 @@ var away;
                     }
                 }
 
+                //initialization
                 if (!this._prePos)
                     this._prePos = this._targetPos.clone();
                 if (!this._preEuler)
@@ -30945,18 +30686,18 @@ var away;
                     if (needProcess)
                         this.processPositionAndRotation(currentTime, deltaTime, animationSubGeometry);
 
-                    animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleFollowNode.FOLLOW_POSITION_INDEX), this._particleFollowNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
-                    animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleFollowNode.FOLLOW_ROTATION_INDEX), this._particleFollowNode._iDataOffset + 3, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
+                    animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleFollowNode.FOLLOW_POSITION_INDEX), this._particleFollowNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
+                    animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleFollowNode.FOLLOW_ROTATION_INDEX), this._particleFollowNode._iDataOffset + 3, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
                 } else if (this._particleFollowNode._iUsesPosition) {
                     if (needProcess)
                         this.processPosition(currentTime, deltaTime, animationSubGeometry);
 
-                    animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleFollowNode.FOLLOW_POSITION_INDEX), this._particleFollowNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
+                    animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleFollowNode.FOLLOW_POSITION_INDEX), this._particleFollowNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
                 } else if (this._particleFollowNode._iUsesRotation) {
                     if (needProcess)
                         this.precessRotation(currentTime, deltaTime, animationSubGeometry);
 
-                    animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleFollowNode.FOLLOW_ROTATION_INDEX), this._particleFollowNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
+                    animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleFollowNode.FOLLOW_ROTATION_INDEX), this._particleFollowNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
                 }
 
                 this._prePos.copyFrom(this._targetPos);
@@ -31099,14 +30840,14 @@ var away;
                     animationSubGeometry.invalidateBuffer();
             };
             return ParticleFollowState;
-        })(animators.ParticleStateBase);
+        })(away.animators.ParticleStateBase);
         animators.ParticleFollowState = ParticleFollowState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var RenderableBase = away.pool.RenderableBase;
         var Camera = away.entities.Camera;
@@ -31128,10 +30869,10 @@ var away;
                 this.updateColorData();
             }
             Object.defineProperty(ParticleInitialColorState.prototype, "initialColor", {
-                get: /**
+                /**
                 * Defines the initial color transform of the state, when in global mode.
                 */
-                function () {
+                get: function () {
                     return this._initialColor;
                 },
                 set: function (value) {
@@ -31151,25 +30892,25 @@ var away;
                 camera = camera;
 
                 if (animationRegisterCache.needFragmentAnimation) {
-                    if (this._particleInitialColorNode.mode == animators.ParticlePropertiesMode.LOCAL_STATIC) {
+                    if (this._particleInitialColorNode.mode == away.animators.ParticlePropertiesMode.LOCAL_STATIC) {
                         var dataOffset = this._particleInitialColorNode._iDataOffset;
                         if (this._usesMultiplier) {
-                            animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleInitialColorNode.MULTIPLIER_INDEX), dataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
+                            animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleInitialColorNode.MULTIPLIER_INDEX), dataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
                             dataOffset += 4;
                         }
                         if (this._usesOffset)
-                            animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleInitialColorNode.OFFSET_INDEX), dataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
+                            animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleInitialColorNode.OFFSET_INDEX), dataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
                     } else {
                         if (this._usesMultiplier)
-                            animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleInitialColorNode.MULTIPLIER_INDEX), this._multiplierData.x, this._multiplierData.y, this._multiplierData.z, this._multiplierData.w);
+                            animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleInitialColorNode.MULTIPLIER_INDEX), this._multiplierData.x, this._multiplierData.y, this._multiplierData.z, this._multiplierData.w);
                         if (this._usesOffset)
-                            animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleInitialColorNode.OFFSET_INDEX), this._offsetData.x, this._offsetData.y, this._offsetData.z, this._offsetData.w);
+                            animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleInitialColorNode.OFFSET_INDEX), this._offsetData.x, this._offsetData.y, this._offsetData.z, this._offsetData.w);
                     }
                 }
             };
 
             ParticleInitialColorState.prototype.updateColorData = function () {
-                if (this._particleInitialColorNode.mode == animators.ParticlePropertiesMode.GLOBAL) {
+                if (this._particleInitialColorNode.mode == away.animators.ParticlePropertiesMode.GLOBAL) {
                     if (this._usesMultiplier)
                         this._multiplierData = new Vector3D(this._initialColor.redMultiplier, this._initialColor.greenMultiplier, this._initialColor.blueMultiplier, this._initialColor.alphaMultiplier);
                     if (this._usesOffset)
@@ -31177,14 +30918,14 @@ var away;
                 }
             };
             return ParticleInitialColorState;
-        })(animators.ParticleStateBase);
+        })(away.animators.ParticleStateBase);
         animators.ParticleInitialColorState = ParticleInitialColorState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var RenderableBase = away.pool.RenderableBase;
         var Camera = away.entities.Camera;
@@ -31212,10 +30953,10 @@ var away;
                 this.updateOrbitData();
             }
             Object.defineProperty(ParticleOrbitState.prototype, "radius", {
-                get: /**
+                /**
                 * Defines the radius of the orbit when in global mode. Defaults to 100.
                 */
-                function () {
+                get: function () {
                     return this._radius;
                 },
                 set: function (value) {
@@ -31229,10 +30970,10 @@ var away;
 
 
             Object.defineProperty(ParticleOrbitState.prototype, "cycleDuration", {
-                get: /**
+                /**
                 * Defines the duration of the orbit in seconds, used as a period independent of particle duration when in global mode. Defaults to 1.
                 */
-                function () {
+                get: function () {
                     return this._cycleDuration;
                 },
                 set: function (value) {
@@ -31246,10 +30987,10 @@ var away;
 
 
             Object.defineProperty(ParticleOrbitState.prototype, "cyclePhase", {
-                get: /**
+                /**
                 * Defines the phase of the orbit in degrees, used as the starting offset of the cycle when in global mode. Defaults to 0.
                 */
-                function () {
+                get: function () {
                     return this._cyclePhase;
                 },
                 set: function (value) {
@@ -31263,10 +31004,10 @@ var away;
 
 
             Object.defineProperty(ParticleOrbitState.prototype, "eulers", {
-                get: /**
+                /**
                 * Defines the euler rotation in degrees, applied to the orientation of the orbit when in global mode.
                 */
-                function () {
+                get: function () {
                     return this._eulers;
                 },
                 set: function (value) {
@@ -31280,18 +31021,18 @@ var away;
 
 
             ParticleOrbitState.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
-                var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleOrbitNode.ORBIT_INDEX);
+                var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleOrbitNode.ORBIT_INDEX);
 
-                if (this._particleOrbitNode.mode == animators.ParticlePropertiesMode.LOCAL_STATIC) {
+                if (this._particleOrbitNode.mode == away.animators.ParticlePropertiesMode.LOCAL_STATIC) {
                     if (this._usesPhase)
                         animationSubGeometry.activateVertexBuffer(index, this._particleOrbitNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
-else
+                    else
                         animationSubGeometry.activateVertexBuffer(index, this._particleOrbitNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
                 } else
                     animationRegisterCache.setVertexConst(index, this._orbitData.x, this._orbitData.y, this._orbitData.z, this._orbitData.w);
 
                 if (this._usesEulers)
-                    animationRegisterCache.setVertexConstFromMatrix(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleOrbitNode.EULERS_INDEX), this._eulersMatrix);
+                    animationRegisterCache.setVertexConstFromMatrix(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleOrbitNode.EULERS_INDEX), this._eulersMatrix);
             };
 
             ParticleOrbitState.prototype.updateOrbitData = function () {
@@ -31301,7 +31042,7 @@ else
                     this._eulersMatrix.appendRotation(this._eulers.y, Vector3D.Y_AXIS);
                     this._eulersMatrix.appendRotation(this._eulers.z, Vector3D.Z_AXIS);
                 }
-                if (this._particleOrbitNode.mode == animators.ParticlePropertiesMode.GLOBAL) {
+                if (this._particleOrbitNode.mode == away.animators.ParticlePropertiesMode.GLOBAL) {
                     this._orbitData = new Vector3D(this._radius, 0, this._radius * Math.PI * 2, this._cyclePhase * Math.PI / 180);
                     if (this._usesCycle) {
                         if (this._cycleDuration <= 0)
@@ -31312,14 +31053,14 @@ else
                 }
             };
             return ParticleOrbitState;
-        })(animators.ParticleStateBase);
+        })(away.animators.ParticleStateBase);
         animators.ParticleOrbitState = ParticleOrbitState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var RenderableBase = away.pool.RenderableBase;
         var Camera = away.entities.Camera;
@@ -31341,10 +31082,10 @@ var away;
                 this.updateOscillatorData();
             }
             Object.defineProperty(ParticleOscillatorState.prototype, "oscillator", {
-                get: /**
+                /**
                 * Defines the default oscillator axis (x, y, z) and cycleDuration (w) of the state, used when in global mode.
                 */
-                function () {
+                get: function () {
                     return this._oscillator;
                 },
                 set: function (value) {
@@ -31361,16 +31102,16 @@ var away;
             * @inheritDoc
             */
             ParticleOscillatorState.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
-                var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleOscillatorNode.OSCILLATOR_INDEX);
+                var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleOscillatorNode.OSCILLATOR_INDEX);
 
-                if (this._particleOscillatorNode.mode == animators.ParticlePropertiesMode.LOCAL_STATIC)
+                if (this._particleOscillatorNode.mode == away.animators.ParticlePropertiesMode.LOCAL_STATIC)
                     animationSubGeometry.activateVertexBuffer(index, this._particleOscillatorNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
-else
+                else
                     animationRegisterCache.setVertexConst(index, this._oscillatorData.x, this._oscillatorData.y, this._oscillatorData.z, this._oscillatorData.w);
             };
 
             ParticleOscillatorState.prototype.updateOscillatorData = function () {
-                if (this._particleOscillatorNode.mode == animators.ParticlePropertiesMode.GLOBAL) {
+                if (this._particleOscillatorNode.mode == away.animators.ParticlePropertiesMode.GLOBAL) {
                     if (this._oscillator.w <= 0)
                         throw (new Error("the cycle duration must greater than zero"));
 
@@ -31384,14 +31125,14 @@ else
                 }
             };
             return ParticleOscillatorState;
-        })(animators.ParticleStateBase);
+        })(away.animators.ParticleStateBase);
         animators.ParticleOscillatorState = ParticleOscillatorState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var RenderableBase = away.pool.RenderableBase;
         var Camera = away.entities.Camera;
@@ -31412,10 +31153,10 @@ var away;
                 this._position = this._particlePositionNode._iPosition;
             }
             Object.defineProperty(ParticlePositionState.prototype, "position", {
-                get: /**
+                /**
                 * Defines the position of the particle when in global mode. Defaults to 0,0,0.
                 */
-                function () {
+                get: function () {
                     return this._position;
                 },
                 set: function (value) {
@@ -31443,25 +31184,25 @@ var away;
             * @inheritDoc
             */
             ParticlePositionState.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
-                if (this._particlePositionNode.mode == animators.ParticlePropertiesMode.LOCAL_DYNAMIC && !this._pDynamicPropertiesDirty[animationSubGeometry._iUniqueId])
+                if (this._particlePositionNode.mode == away.animators.ParticlePropertiesMode.LOCAL_DYNAMIC && !this._pDynamicPropertiesDirty[animationSubGeometry._iUniqueId])
                     this._pUpdateDynamicProperties(animationSubGeometry);
 
-                var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticlePositionNode.POSITION_INDEX);
+                var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticlePositionNode.POSITION_INDEX);
 
-                if (this._particlePositionNode.mode == animators.ParticlePropertiesMode.GLOBAL)
+                if (this._particlePositionNode.mode == away.animators.ParticlePropertiesMode.GLOBAL)
                     animationRegisterCache.setVertexConst(index, this._position.x, this._position.y, this._position.z);
-else
+                else
                     animationSubGeometry.activateVertexBuffer(index, this._particlePositionNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
             };
             return ParticlePositionState;
-        })(animators.ParticleStateBase);
+        })(away.animators.ParticleStateBase);
         animators.ParticlePositionState = ParticlePositionState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var RenderableBase = away.pool.RenderableBase;
         var Camera = away.entities.Camera;
@@ -31481,18 +31222,18 @@ var away;
                 if (animationRegisterCache.hasBillboard) {
                     this._matrix.copyFrom(renderable.sourceEntity.sceneTransform);
                     this._matrix.append(camera.inverseSceneTransform);
-                    animationRegisterCache.setVertexConstFromMatrix(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleRotateToHeadingNode.MATRIX_INDEX), this._matrix);
+                    animationRegisterCache.setVertexConstFromMatrix(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleRotateToHeadingNode.MATRIX_INDEX), this._matrix);
                 }
             };
             return ParticleRotateToHeadingState;
-        })(animators.ParticleStateBase);
+        })(away.animators.ParticleStateBase);
         animators.ParticleRotateToHeadingState = ParticleRotateToHeadingState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var RenderableBase = away.pool.RenderableBase;
         var Camera = away.entities.Camera;
@@ -31514,10 +31255,10 @@ var away;
                 this._position = this._particleRotateToPositionNode._iPosition;
             }
             Object.defineProperty(ParticleRotateToPositionState.prototype, "position", {
-                get: /**
+                /**
                 * Defines the position of the point the particle will rotate to face when in global mode. Defaults to 0,0,0.
                 */
-                function () {
+                get: function () {
                     return this._position;
                 },
                 set: function (value) {
@@ -31529,29 +31270,29 @@ var away;
 
 
             ParticleRotateToPositionState.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
-                var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleRotateToPositionNode.POSITION_INDEX);
+                var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleRotateToPositionNode.POSITION_INDEX);
 
                 if (animationRegisterCache.hasBillboard) {
                     this._matrix.copyFrom(renderable.sourceEntity.sceneTransform);
                     this._matrix.append(camera.inverseSceneTransform);
-                    animationRegisterCache.setVertexConstFromMatrix(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleRotateToPositionNode.MATRIX_INDEX), this._matrix);
+                    animationRegisterCache.setVertexConstFromMatrix(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleRotateToPositionNode.MATRIX_INDEX), this._matrix);
                 }
 
-                if (this._particleRotateToPositionNode.mode == animators.ParticlePropertiesMode.GLOBAL) {
+                if (this._particleRotateToPositionNode.mode == away.animators.ParticlePropertiesMode.GLOBAL) {
                     this._offset = renderable.sourceEntity.inverseSceneTransform.transformVector(this._position);
                     animationRegisterCache.setVertexConst(index, this._offset.x, this._offset.y, this._offset.z);
                 } else
                     animationSubGeometry.activateVertexBuffer(index, this._particleRotateToPositionNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
             };
             return ParticleRotateToPositionState;
-        })(animators.ParticleStateBase);
+        })(away.animators.ParticleStateBase);
         animators.ParticleRotateToPositionState = ParticleRotateToPositionState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var RenderableBase = away.pool.RenderableBase;
         var Camera = away.entities.Camera;
@@ -31573,10 +31314,10 @@ var away;
                 this.updateRotationalVelocityData();
             }
             Object.defineProperty(ParticleRotationalVelocityState.prototype, "rotationalVelocity", {
-                get: /**
+                /**
                 * Defines the default rotationalVelocity of the state, used when in global mode.
                 */
-                function () {
+                get: function () {
                     return this._rotationalVelocity;
                 },
                 set: function (value) {
@@ -31606,26 +31347,26 @@ var away;
             * @inheritDoc
             */
             ParticleRotationalVelocityState.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
-                if (this._particleRotationalVelocityNode.mode == animators.ParticlePropertiesMode.LOCAL_DYNAMIC && !this._pDynamicPropertiesDirty[animationSubGeometry._iUniqueId])
+                if (this._particleRotationalVelocityNode.mode == away.animators.ParticlePropertiesMode.LOCAL_DYNAMIC && !this._pDynamicPropertiesDirty[animationSubGeometry._iUniqueId])
                     this._pUpdateDynamicProperties(animationSubGeometry);
 
-                var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleRotationalVelocityNode.ROTATIONALVELOCITY_INDEX);
+                var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleRotationalVelocityNode.ROTATIONALVELOCITY_INDEX);
 
-                if (this._particleRotationalVelocityNode.mode == animators.ParticlePropertiesMode.GLOBAL)
+                if (this._particleRotationalVelocityNode.mode == away.animators.ParticlePropertiesMode.GLOBAL)
                     animationRegisterCache.setVertexConst(index, this._rotationalVelocityData.x, this._rotationalVelocityData.y, this._rotationalVelocityData.z, this._rotationalVelocityData.w);
-else
+                else
                     animationSubGeometry.activateVertexBuffer(index, this._particleRotationalVelocityNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
             };
 
             ParticleRotationalVelocityState.prototype.updateRotationalVelocityData = function () {
-                if (this._particleRotationalVelocityNode.mode == animators.ParticlePropertiesMode.GLOBAL) {
+                if (this._particleRotationalVelocityNode.mode == away.animators.ParticlePropertiesMode.GLOBAL) {
                     if (this._rotationalVelocity.w <= 0)
                         throw (new Error("the cycle duration must greater than zero"));
                     var rotation = this._rotationalVelocity.clone();
 
                     if (rotation.length <= 0)
-                        rotation.z = 1;
-else
+                        rotation.z = 1; //set the default direction
+                    else
                         rotation.normalize();
 
                     // w is used as angle/2 in agal
@@ -31633,14 +31374,14 @@ else
                 }
             };
             return ParticleRotationalVelocityState;
-        })(animators.ParticleStateBase);
+        })(away.animators.ParticleStateBase);
         animators.ParticleRotationalVelocityState = ParticleRotationalVelocityState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var RenderableBase = away.pool.RenderableBase;
         var Camera = away.entities.Camera;
@@ -31667,10 +31408,10 @@ var away;
                 this.updateScaleData();
             }
             Object.defineProperty(ParticleScaleState.prototype, "minScale", {
-                get: /**
+                /**
                 * Defines the end scale of the state, when in global mode. Defaults to 1.
                 */
-                function () {
+                get: function () {
                     return this._minScale;
                 },
                 set: function (value) {
@@ -31684,10 +31425,10 @@ var away;
 
 
             Object.defineProperty(ParticleScaleState.prototype, "maxScale", {
-                get: /**
+                /**
                 * Defines the end scale of the state, when in global mode. Defaults to 1.
                 */
-                function () {
+                get: function () {
                     return this._maxScale;
                 },
                 set: function (value) {
@@ -31701,10 +31442,10 @@ var away;
 
 
             Object.defineProperty(ParticleScaleState.prototype, "cycleDuration", {
-                get: /**
+                /**
                 * Defines the duration of the animation in seconds, used as a period independent of particle duration when in global mode. Defaults to 1.
                 */
-                function () {
+                get: function () {
                     return this._cycleDuration;
                 },
                 set: function (value) {
@@ -31718,10 +31459,10 @@ var away;
 
 
             Object.defineProperty(ParticleScaleState.prototype, "cyclePhase", {
-                get: /**
+                /**
                 * Defines the phase of the cycle in degrees, used as the starting offset of the cycle when in global mode. Defaults to 0.
                 */
-                function () {
+                get: function () {
                     return this._cyclePhase;
                 },
                 set: function (value) {
@@ -31735,13 +31476,13 @@ var away;
 
 
             ParticleScaleState.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
-                var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleScaleNode.SCALE_INDEX);
+                var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleScaleNode.SCALE_INDEX);
 
-                if (this._particleScaleNode.mode == animators.ParticlePropertiesMode.LOCAL_STATIC) {
+                if (this._particleScaleNode.mode == away.animators.ParticlePropertiesMode.LOCAL_STATIC) {
                     if (this._usesCycle) {
                         if (this._usesPhase)
                             animationSubGeometry.activateVertexBuffer(index, this._particleScaleNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
-else
+                        else
                             animationSubGeometry.activateVertexBuffer(index, this._particleScaleNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
                     } else
                         animationSubGeometry.activateVertexBuffer(index, this._particleScaleNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_2);
@@ -31750,7 +31491,7 @@ else
             };
 
             ParticleScaleState.prototype.updateScaleData = function () {
-                if (this._particleScaleNode.mode == animators.ParticlePropertiesMode.GLOBAL) {
+                if (this._particleScaleNode.mode == away.animators.ParticlePropertiesMode.GLOBAL) {
                     if (this._usesCycle) {
                         if (this._cycleDuration <= 0)
                             throw (new Error("the cycle duration must be greater than zero"));
@@ -31760,14 +31501,14 @@ else
                 }
             };
             return ParticleScaleState;
-        })(animators.ParticleStateBase);
+        })(away.animators.ParticleStateBase);
         animators.ParticleScaleState = ParticleScaleState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var RenderableBase = away.pool.RenderableBase;
         var Camera = away.entities.Camera;
@@ -31790,10 +31531,10 @@ var away;
                 this.updateColorData();
             }
             Object.defineProperty(ParticleSegmentedColorState.prototype, "startColor", {
-                get: /**
+                /**
                 * Defines the start color transform of the state, when in global mode.
                 */
-                function () {
+                get: function () {
                     return this._startColor;
                 },
                 set: function (value) {
@@ -31807,10 +31548,10 @@ var away;
 
 
             Object.defineProperty(ParticleSegmentedColorState.prototype, "endColor", {
-                get: /**
+                /**
                 * Defines the end color transform of the state, when in global mode.
                 */
-                function () {
+                get: function () {
                     return this._endColor;
                 },
                 set: function (value) {
@@ -31823,10 +31564,10 @@ var away;
 
 
             Object.defineProperty(ParticleSegmentedColorState.prototype, "numSegmentPoint", {
-                get: /**
+                /**
                 * Defines the number of segments.
                 */
-                function () {
+                get: function () {
                     return this._numSegmentPoint;
                 },
                 enumerable: true,
@@ -31834,10 +31575,10 @@ var away;
             });
 
             Object.defineProperty(ParticleSegmentedColorState.prototype, "segmentPoints", {
-                get: /**
+                /**
                 * Defines the key points of color
                 */
-                function () {
+                get: function () {
                     return this._segmentPoints;
                 },
                 set: function (value) {
@@ -31868,11 +31609,11 @@ var away;
             ParticleSegmentedColorState.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
                 if (animationRegisterCache.needFragmentAnimation) {
                     if (this._numSegmentPoint > 0)
-                        animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleSegmentedColorNode.TIME_DATA_INDEX), this._timeLifeData[0], this._timeLifeData[1], this._timeLifeData[2], this._timeLifeData[3]);
+                        animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleSegmentedColorNode.TIME_DATA_INDEX), this._timeLifeData[0], this._timeLifeData[1], this._timeLifeData[2], this._timeLifeData[3]);
                     if (this._usesMultiplier)
-                        animationRegisterCache.setVertexConstFromArray(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleSegmentedColorNode.START_MULTIPLIER_INDEX), this._multiplierData);
+                        animationRegisterCache.setVertexConstFromArray(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleSegmentedColorNode.START_MULTIPLIER_INDEX), this._multiplierData);
                     if (this._usesOffset)
-                        animationRegisterCache.setVertexConstFromArray(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleSegmentedColorNode.START_OFFSET_INDEX), this._offsetData);
+                        animationRegisterCache.setVertexConstFromArray(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleSegmentedColorNode.START_OFFSET_INDEX), this._offsetData);
                 }
             };
 
@@ -31880,16 +31621,16 @@ var away;
                 this._timeLifeData = new Array();
                 this._multiplierData = new Array();
                 this._offsetData = new Array();
-                var i/*int*/ ;
+                var i;
                 for (i = 0; i < this._numSegmentPoint; i++) {
                     if (i == 0)
                         this._timeLifeData.push(this._segmentPoints[i].life);
-else
+                    else
                         this._timeLifeData.push(this._segmentPoints[i].life - this._segmentPoints[i - 1].life);
                 }
                 if (this._numSegmentPoint == 0)
                     this._timeLifeData.push(1);
-else
+                else
                     this._timeLifeData.push(1 - this._segmentPoints[i - 1].life);
 
                 if (this._usesMultiplier) {
@@ -31897,12 +31638,12 @@ else
                     for (i = 0; i < this._numSegmentPoint; i++) {
                         if (i == 0)
                             this._multiplierData.push((this._segmentPoints[i].color.redMultiplier - this._startColor.redMultiplier) / this._timeLifeData[i], (this._segmentPoints[i].color.greenMultiplier - this._startColor.greenMultiplier) / this._timeLifeData[i], (this._segmentPoints[i].color.blueMultiplier - this._startColor.blueMultiplier) / this._timeLifeData[i], (this._segmentPoints[i].color.alphaMultiplier - this._startColor.alphaMultiplier) / this._timeLifeData[i]);
-else
+                        else
                             this._multiplierData.push((this._segmentPoints[i].color.redMultiplier - this._segmentPoints[i - 1].color.redMultiplier) / this._timeLifeData[i], (this._segmentPoints[i].color.greenMultiplier - this._segmentPoints[i - 1].color.greenMultiplier) / this._timeLifeData[i], (this._segmentPoints[i].color.blueMultiplier - this._segmentPoints[i - 1].color.blueMultiplier) / this._timeLifeData[i], (this._segmentPoints[i].color.alphaMultiplier - this._segmentPoints[i - 1].color.alphaMultiplier) / this._timeLifeData[i]);
                     }
                     if (this._numSegmentPoint == 0)
                         this._multiplierData.push(this._endColor.redMultiplier - this._startColor.redMultiplier, this._endColor.greenMultiplier - this._startColor.greenMultiplier, this._endColor.blueMultiplier - this._startColor.blueMultiplier, this._endColor.alphaMultiplier - this._startColor.alphaMultiplier);
-else
+                    else
                         this._multiplierData.push((this._endColor.redMultiplier - this._segmentPoints[i - 1].color.redMultiplier) / this._timeLifeData[i], (this._endColor.greenMultiplier - this._segmentPoints[i - 1].color.greenMultiplier) / this._timeLifeData[i], (this._endColor.blueMultiplier - this._segmentPoints[i - 1].color.blueMultiplier) / this._timeLifeData[i], (this._endColor.alphaMultiplier - this._segmentPoints[i - 1].color.alphaMultiplier) / this._timeLifeData[i]);
                 }
 
@@ -31911,12 +31652,12 @@ else
                     for (i = 0; i < this._numSegmentPoint; i++) {
                         if (i == 0)
                             this._offsetData.push((this._segmentPoints[i].color.redOffset - this._startColor.redOffset) / this._timeLifeData[i] / 255, (this._segmentPoints[i].color.greenOffset - this._startColor.greenOffset) / this._timeLifeData[i] / 255, (this._segmentPoints[i].color.blueOffset - this._startColor.blueOffset) / this._timeLifeData[i] / 255, (this._segmentPoints[i].color.alphaOffset - this._startColor.alphaOffset) / this._timeLifeData[i] / 255);
-else
+                        else
                             this._offsetData.push((this._segmentPoints[i].color.redOffset - this._segmentPoints[i - 1].color.redOffset) / this._timeLifeData[i] / 255, (this._segmentPoints[i].color.greenOffset - this._segmentPoints[i - 1].color.greenOffset) / this._timeLifeData[i] / 255, (this._segmentPoints[i].color.blueOffset - this._segmentPoints[i - 1].color.blueOffset) / this._timeLifeData[i] / 255, (this._segmentPoints[i].color.alphaOffset - this._segmentPoints[i - 1].color.alphaOffset) / this._timeLifeData[i] / 255);
                     }
                     if (this._numSegmentPoint == 0)
                         this._offsetData.push((this._endColor.redOffset - this._startColor.redOffset) / 255, (this._endColor.greenOffset - this._startColor.greenOffset) / 255, (this._endColor.blueOffset - this._startColor.blueOffset) / 255, (this._endColor.alphaOffset - this._startColor.alphaOffset) / 255);
-else
+                    else
                         this._offsetData.push((this._endColor.redOffset - this._segmentPoints[i - 1].color.redOffset) / this._timeLifeData[i] / 255, (this._endColor.greenOffset - this._segmentPoints[i - 1].color.greenOffset) / this._timeLifeData[i] / 255, (this._endColor.blueOffset - this._segmentPoints[i - 1].color.blueOffset) / this._timeLifeData[i] / 255, (this._endColor.alphaOffset - this._segmentPoints[i - 1].color.alphaOffset) / this._timeLifeData[i] / 255);
                 }
 
@@ -31924,14 +31665,14 @@ else
                 this._timeLifeData.length = 4;
             };
             return ParticleSegmentedColorState;
-        })(animators.ParticleStateBase);
+        })(away.animators.ParticleStateBase);
         animators.ParticleSegmentedColorState = ParticleSegmentedColorState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var RenderableBase = away.pool.RenderableBase;
         var Camera = away.entities.Camera;
@@ -31960,10 +31701,10 @@ var away;
                 this.updateSpriteSheetData();
             }
             Object.defineProperty(ParticleSpriteSheetState.prototype, "cyclePhase", {
-                get: /**
+                /**
                 * Defines the cycle phase, when in global mode. Defaults to zero.
                 */
-                function () {
+                get: function () {
                     return this._cyclePhase;
                 },
                 set: function (value) {
@@ -31977,10 +31718,10 @@ var away;
 
 
             Object.defineProperty(ParticleSpriteSheetState.prototype, "cycleDuration", {
-                get: /**
+                /**
                 * Defines the cycle duration in seconds, when in global mode. Defaults to 1.
                 */
-                function () {
+                get: function () {
                     return this._cycleDuration;
                 },
                 set: function (value) {
@@ -31995,13 +31736,13 @@ var away;
 
             ParticleSpriteSheetState.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
                 if (animationRegisterCache.needUVAnimation) {
-                    animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleSpriteSheetNode.UV_INDEX_0), this._spriteSheetData[0], this._spriteSheetData[1], this._spriteSheetData[2], this._spriteSheetData[3]);
+                    animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleSpriteSheetNode.UV_INDEX_0), this._spriteSheetData[0], this._spriteSheetData[1], this._spriteSheetData[2], this._spriteSheetData[3]);
                     if (this._usesCycle) {
-                        var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleSpriteSheetNode.UV_INDEX_1);
-                        if (this._particleSpriteSheetNode.mode == animators.ParticlePropertiesMode.LOCAL_STATIC) {
+                        var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleSpriteSheetNode.UV_INDEX_1);
+                        if (this._particleSpriteSheetNode.mode == away.animators.ParticlePropertiesMode.LOCAL_STATIC) {
                             if (this._usesPhase)
                                 animationSubGeometry.activateVertexBuffer(index, this._particleSpriteSheetNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
-else
+                            else
                                 animationSubGeometry.activateVertexBuffer(index, this._particleSpriteSheetNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_2);
                         } else
                             animationRegisterCache.setVertexConst(index, this._spriteSheetData[4], this._spriteSheetData[5]);
@@ -32028,14 +31769,14 @@ else
                 }
             };
             return ParticleSpriteSheetState;
-        })(animators.ParticleStateBase);
+        })(away.animators.ParticleStateBase);
         animators.ParticleSpriteSheetState = ParticleSpriteSheetState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var RenderableBase = away.pool.RenderableBase;
         var Camera = away.entities.Camera;
@@ -32054,20 +31795,20 @@ var away;
                 this._particleTimeNode = particleTimeNode;
             }
             ParticleTimeState.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
-                animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleTimeNode.TIME_STREAM_INDEX), this._particleTimeNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
+                animationSubGeometry.activateVertexBuffer(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleTimeNode.TIME_STREAM_INDEX), this._particleTimeNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_4);
 
                 var particleTime = this._pTime / 1000;
-                animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleTimeNode.TIME_CONSTANT_INDEX), particleTime, particleTime, particleTime, particleTime);
+                animationRegisterCache.setVertexConst(animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleTimeNode.TIME_CONSTANT_INDEX), particleTime, particleTime, particleTime, particleTime);
             };
             return ParticleTimeState;
-        })(animators.ParticleStateBase);
+        })(away.animators.ParticleStateBase);
         animators.ParticleTimeState = ParticleTimeState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var RenderableBase = away.pool.RenderableBase;
         var Camera = away.entities.Camera;
@@ -32087,20 +31828,20 @@ var away;
             }
             ParticleUVState.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
                 if (animationRegisterCache.needUVAnimation) {
-                    var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleUVNode.UV_INDEX);
+                    var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleUVNode.UV_INDEX);
                     var data = this._particleUVNode._iUvData;
                     animationRegisterCache.setVertexConst(index, data.x, data.y);
                 }
             };
             return ParticleUVState;
-        })(animators.ParticleStateBase);
+        })(away.animators.ParticleStateBase);
         animators.ParticleUVState = ParticleUVState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var RenderableBase = away.pool.RenderableBase;
         var Camera = away.entities.Camera;
@@ -32120,10 +31861,10 @@ var away;
                 this._velocity = this._particleVelocityNode._iVelocity;
             }
             Object.defineProperty(ParticleVelocityState.prototype, "velocity", {
-                get: /**
+                /**
                 * Defines the default velocity vector of the state, used when in global mode.
                 */
-                function () {
+                get: function () {
                     return this._velocity;
                 },
                 set: function (value) {
@@ -32148,18 +31889,18 @@ var away;
             };
 
             ParticleVelocityState.prototype.setRenderState = function (stageGL, renderable, animationSubGeometry, animationRegisterCache, camera) {
-                if (this._particleVelocityNode.mode == animators.ParticlePropertiesMode.LOCAL_DYNAMIC && !this._pDynamicPropertiesDirty[animationSubGeometry._iUniqueId])
+                if (this._particleVelocityNode.mode == away.animators.ParticlePropertiesMode.LOCAL_DYNAMIC && !this._pDynamicPropertiesDirty[animationSubGeometry._iUniqueId])
                     this._pUpdateDynamicProperties(animationSubGeometry);
 
-                var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, animators.ParticleVelocityNode.VELOCITY_INDEX);
+                var index = animationRegisterCache.getRegisterIndex(this._pAnimationNode, away.animators.ParticleVelocityNode.VELOCITY_INDEX);
 
-                if (this._particleVelocityNode.mode == animators.ParticlePropertiesMode.GLOBAL)
+                if (this._particleVelocityNode.mode == away.animators.ParticlePropertiesMode.GLOBAL)
                     animationRegisterCache.setVertexConst(index, this._velocity.x, this._velocity.y, this._velocity.z);
-else
+                else
                     animationSubGeometry.activateVertexBuffer(index, this._particleVelocityNode._iDataOffset, stageGL, ContextGLVertexBufferFormat.FLOAT_3);
             };
             return ParticleVelocityState;
-        })(animators.ParticleStateBase);
+        })(away.animators.ParticleStateBase);
         animators.ParticleVelocityState = ParticleVelocityState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -32180,14 +31921,14 @@ var away;
                 this._animationClipNode = animationClipNode;
             }
             Object.defineProperty(AnimationClipState.prototype, "blendWeight", {
-                get: /**
+                /**
                 * Returns a fractional value between 0 and 1 representing the blending ratio of the current playhead position
                 * between the current frame (0) and next frame (1) of the animation.
                 *
                 * @see #currentFrame
                 * @see #nextFrame
                 */
-                function () {
+                get: function () {
                     if (this._pFramesDirty)
                         this._pUpdateFrames();
 
@@ -32198,10 +31939,10 @@ var away;
             });
 
             Object.defineProperty(AnimationClipState.prototype, "currentFrame", {
-                get: /**
+                /**
                 * Returns the current frame of animation in the clip based on the internal playhead position.
                 */
-                function () {
+                get: function () {
                     if (this._pFramesDirty)
                         this._pUpdateFrames();
 
@@ -32212,10 +31953,10 @@ var away;
             });
 
             Object.defineProperty(AnimationClipState.prototype, "nextFrame", {
-                get: /**
+                /**
                 * Returns the next frame of animation in the clip based on the internal playhead position.
                 */
-                function () {
+                get: function () {
                     if (this._pFramesDirty)
                         this._pUpdateFrames();
 
@@ -32228,11 +31969,11 @@ var away;
             /**
             * @inheritDoc
             */
-            AnimationClipState.prototype.update = function (time/*int*/ ) {
+            AnimationClipState.prototype.update = function (time /*int*/ ) {
                 if (!this._animationClipNode.looping) {
                     if (time > this._pStartTime + this._animationClipNode.totalDuration)
                         time = this._pStartTime + this._animationClipNode.totalDuration;
-else if (time < this._pStartTime)
+                    else if (time < this._pStartTime)
                         time = this._pStartTime;
                 }
 
@@ -32257,7 +31998,7 @@ else if (time < this._pStartTime)
             /**
             * @inheritDoc
             */
-            AnimationClipState.prototype._pUpdateTime = function (time/*int*/ ) {
+            AnimationClipState.prototype._pUpdateTime = function (time /*int*/ ) {
                 this._pFramesDirty = true;
 
                 this._pTimeDir = (time - this._pStartTime > this._pTime) ? 1 : -1;
@@ -32280,6 +32021,7 @@ else if (time < this._pStartTime)
                 var lastFrame = this._animationClipNode.lastFrame;
                 var time = this._pTime;
 
+                //trace("time", time, totalDuration)
                 if (looping && (time >= totalDuration || time < 0)) {
                     time %= totalDuration;
                     if (time < 0)
@@ -32304,7 +32046,7 @@ else if (time < this._pStartTime)
                     this._pCurrentFrame = 0;
                     this._pNextFrame = 0;
 
-                    var dur = 0/*uint*/ , frameTime;
+                    var dur = 0, frameTime;
                     var durations = this._animationClipNode.durations;
 
                     do {
@@ -32329,14 +32071,14 @@ else if (time < this._pStartTime)
                 this._animationClipNode.dispatchEvent(this._animationStatePlaybackComplete);
             };
             return AnimationClipState;
-        })(animators.AnimationStateBase);
+        })(away.animators.AnimationStateBase);
         animators.AnimationClipState = AnimationClipState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var Vector3D = away.geom.Vector3D;
 
@@ -32348,7 +32090,7 @@ var away;
             function SkeletonBinaryLERPState(animator, skeletonAnimationNode) {
                 _super.call(this, animator, skeletonAnimationNode);
                 this._blendWeight = 0;
-                this._skeletonPose = new animators.SkeletonPose();
+                this._skeletonPose = new away.animators.SkeletonPose();
                 this._skeletonPoseDirty = true;
 
                 this._skeletonAnimationNode = skeletonAnimationNode;
@@ -32357,14 +32099,14 @@ var away;
                 this._inputB = animator.getAnimationState(this._skeletonAnimationNode.inputB);
             }
             Object.defineProperty(SkeletonBinaryLERPState.prototype, "blendWeight", {
-                get: /**
+                /**
                 * Defines a fractional value between 0 and 1 representing the blending ratio between inputA (0) and inputB (1),
                 * used to produce the skeleton pose output.
                 *
                 * @see inputA
                 * @see inputB
                 */
-                function () {
+                get: function () {
                     return this._blendWeight;
                 },
                 set: function (value) {
@@ -32393,7 +32135,7 @@ var away;
             /**
             * @inheritDoc
             */
-            SkeletonBinaryLERPState.prototype._pUpdateTime = function (time/*int*/ ) {
+            SkeletonBinaryLERPState.prototype._pUpdateTime = function (time /*int*/ ) {
                 this._skeletonPoseDirty = true;
 
                 this._inputA.update(time);
@@ -32443,6 +32185,7 @@ var away;
                 var tr;
                 var numJoints = skeleton.numJoints;
 
+                // :s
                 if (endPoses.length != numJoints)
                     endPoses.length = numJoints;
 
@@ -32450,7 +32193,7 @@ var away;
                     endPose = endPoses[i];
 
                     if (endPose == null)
-                        endPose = endPoses[i] = new animators.JointPose();
+                        endPose = endPoses[i] = new away.animators.JointPose();
 
                     pose1 = poses1[i];
                     pose2 = poses2[i];
@@ -32466,14 +32209,14 @@ var away;
                 }
             };
             return SkeletonBinaryLERPState;
-        })(animators.AnimationStateBase);
+        })(away.animators.AnimationStateBase);
         animators.SkeletonBinaryLERPState = SkeletonBinaryLERPState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var Vector3D = away.geom.Vector3D;
 
@@ -32485,17 +32228,17 @@ var away;
             function SkeletonClipState(animator, skeletonClipNode) {
                 _super.call(this, animator, skeletonClipNode);
                 this._rootPos = new Vector3D();
-                this._skeletonPose = new animators.SkeletonPose();
+                this._skeletonPose = new away.animators.SkeletonPose();
                 this._skeletonPoseDirty = true;
 
                 this._skeletonClipNode = skeletonClipNode;
                 this._frames = this._skeletonClipNode.frames;
             }
             Object.defineProperty(SkeletonClipState.prototype, "currentPose", {
-                get: /**
+                /**
                 * Returns the current skeleton pose frame of animation in the clip based on the internal playhead position.
                 */
-                function () {
+                get: function () {
                     if (this._pFramesDirty)
                         this._pUpdateFrames();
 
@@ -32506,10 +32249,10 @@ var away;
             });
 
             Object.defineProperty(SkeletonClipState.prototype, "nextPose", {
-                get: /**
+                /**
                 * Returns the next skeleton pose frame of animation in the clip based on the internal playhead position.
                 */
-                function () {
+                get: function () {
                     if (this._pFramesDirty)
                         this._pUpdateFrames();
 
@@ -32532,7 +32275,7 @@ var away;
             /**
             * @inheritDoc
             */
-            SkeletonClipState.prototype._pUpdateTime = function (time/*int*/ ) {
+            SkeletonClipState.prototype._pUpdateTime = function (time /*int*/ ) {
                 this._skeletonPoseDirty = true;
 
                 _super.prototype._pUpdateTime.call(this, time);
@@ -32548,7 +32291,7 @@ var away;
 
                 if (this._skeletonClipNode.looping && this._pNextFrame >= this._skeletonClipNode.lastFrame) {
                     this._nextPose = this._frames[0];
-                    (this._pAnimator).dispatchCycleEvent();
+                    this._pAnimator.dispatchCycleEvent();
                 } else
                     this._nextPose = this._frames[this._pNextFrame];
             };
@@ -32576,6 +32319,7 @@ var away;
                 var endPose;
                 var tr;
 
+                // :s
                 if (endPoses.length != numJoints)
                     endPoses.length = numJoints;
 
@@ -32586,7 +32330,7 @@ var away;
                     endPose = endPoses[i];
 
                     if (endPose == null)
-                        endPose = endPoses[i] = new animators.JointPose();
+                        endPose = endPoses[i] = new away.animators.JointPose();
 
                     pose1 = currentPose[i];
                     pose2 = nextPose[i];
@@ -32595,7 +32339,7 @@ var away;
 
                     if (this._skeletonClipNode.highQuality)
                         endPose.orientation.slerp(pose1.orientation, pose2.orientation, this._pBlendWeight);
-else
+                    else
                         endPose.orientation.lerp(pose1.orientation, pose2.orientation, this._pBlendWeight);
 
                     if (i > 0) {
@@ -32619,6 +32363,7 @@ else
                 var p1, p2, p3;
                 var totalDelta = this._skeletonClipNode.totalDelta;
 
+                // jumping back, need to reset position
                 if ((this._pTimeDir > 0 && this._pNextFrame < this._pOldFrame) || (this._pTimeDir < 0 && this._pNextFrame > this._pOldFrame)) {
                     this._rootPos.x -= totalDelta.x * this._pTimeDir;
                     this._rootPos.y -= totalDelta.y * this._pTimeDir;
@@ -32639,7 +32384,7 @@ else
                     this._rootPos.z = p3.z + p1.z + this._pBlendWeight * (p2.z - p1.z);
                 } else {
                     p1 = this._currentPose.jointPoses[0].translation;
-                    p2 = this._frames[this._pNextFrame].jointPoses[0].translation;
+                    p2 = this._frames[this._pNextFrame].jointPoses[0].translation; //cover the instances where we wrap the pose but still want the final frame translation values
                     this._rootPos.x = p1.x + this._pBlendWeight * (p2.x - p1.x);
                     this._rootPos.y = p1.y + this._pBlendWeight * (p2.y - p1.y);
                     this._rootPos.z = p1.z + this._pBlendWeight * (p2.z - p1.z);
@@ -32652,14 +32397,14 @@ else
                 this._pOldFrame = this._pNextFrame;
             };
             return SkeletonClipState;
-        })(animators.AnimationClipState);
+        })(away.animators.AnimationClipState);
         animators.SkeletonClipState = SkeletonClipState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var Vector3D = away.geom.Vector3D;
         var Quaternion = away.geom.Quaternion;
@@ -32672,7 +32417,7 @@ var away;
             function SkeletonDifferenceState(animator, skeletonAnimationNode) {
                 _super.call(this, animator, skeletonAnimationNode);
                 this._blendWeight = 0;
-                this._skeletonPose = new animators.SkeletonPose();
+                this._skeletonPose = new away.animators.SkeletonPose();
                 this._skeletonPoseDirty = true;
 
                 this._skeletonAnimationNode = skeletonAnimationNode;
@@ -32681,14 +32426,14 @@ var away;
                 this._differenceInput = animator.getAnimationState(this._skeletonAnimationNode.differenceInput);
             }
             Object.defineProperty(SkeletonDifferenceState.prototype, "blendWeight", {
-                get: /**
+                /**
                 * Defines a fractional value between 0 and 1 representing the blending ratio between the base input (0) and difference input (1),
                 * used to produce the skeleton pose output.
                 *
                 * @see #baseInput
                 * @see #differenceInput
                 */
-                function () {
+                get: function () {
                     return this._blendWeight;
                 },
                 set: function (value) {
@@ -32717,7 +32462,7 @@ var away;
             /**
             * @inheritDoc
             */
-            SkeletonDifferenceState.prototype._pUpdateTime = function (time/*int*/ ) {
+            SkeletonDifferenceState.prototype._pUpdateTime = function (time /*int*/ ) {
                 this._skeletonPoseDirty = true;
 
                 this._baseInput.update(time);
@@ -32767,6 +32512,7 @@ var away;
                 var tr;
                 var numJoints = skeleton.numJoints;
 
+                // :s
                 if (endPoses.length != numJoints)
                     endPoses.length = numJoints;
 
@@ -32774,7 +32520,7 @@ var away;
                     endPose = endPoses[i];
 
                     if (endPose == null)
-                        endPose = endPoses[i] = new animators.JointPose();
+                        endPose = endPoses[i] = new away.animators.JointPose();
 
                     base = basePoses[i];
                     diff = diffPoses[i];
@@ -32792,14 +32538,14 @@ var away;
             };
             SkeletonDifferenceState._tempQuat = new Quaternion();
             return SkeletonDifferenceState;
-        })(animators.AnimationStateBase);
+        })(away.animators.AnimationStateBase);
         animators.SkeletonDifferenceState = SkeletonDifferenceState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var Vector3D = away.geom.Vector3D;
 
@@ -32810,7 +32556,7 @@ var away;
             __extends(SkeletonDirectionalState, _super);
             function SkeletonDirectionalState(animator, skeletonAnimationNode) {
                 _super.call(this, animator, skeletonAnimationNode);
-                this._skeletonPose = new animators.SkeletonPose();
+                this._skeletonPose = new away.animators.SkeletonPose();
                 this._skeletonPoseDirty = true;
                 this._blendWeight = 0;
                 this._direction = 0;
@@ -32828,11 +32574,11 @@ var away;
                 get: function () {
                     return this._direction;
                 },
-                set: /**
+                /**
                 * Defines the direction in degrees of the aniamtion between the forwards (0), right(90) backwards (180) and left(270) input nodes,
                 * used to produce the skeleton pose output.
                 */
-                function (value) {
+                set: function (value) {
                     if (this._direction == value)
                         return;
 
@@ -32865,7 +32611,7 @@ var away;
             /**
             * @inheritDoc
             */
-            SkeletonDirectionalState.prototype._pUdateTime = function (time/*int*/ ) {
+            SkeletonDirectionalState.prototype._pUdateTime = function (time /*int*/ ) {
                 if (this._blendDirty)
                     this.updateBlend();
 
@@ -32924,6 +32670,7 @@ var away;
                 var tr;
                 var numJoints = skeleton.numJoints;
 
+                // :s
                 if (endPoses.length != numJoints)
                     endPoses.length = numJoints;
 
@@ -32931,7 +32678,7 @@ var away;
                     endPose = endPoses[i];
 
                     if (endPose == null)
-                        endPose = endPoses[i] = new animators.JointPose();
+                        endPose = endPoses[i] = new away.animators.JointPose();
 
                     pose1 = poses1[i];
                     pose2 = poses2[i];
@@ -32980,14 +32727,14 @@ var away;
                 }
             };
             return SkeletonDirectionalState;
-        })(animators.AnimationStateBase);
+        })(away.animators.AnimationStateBase);
         animators.SkeletonDirectionalState = SkeletonDirectionalState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var Vector3D = away.geom.Vector3D;
         var Quaternion = away.geom.Quaternion;
@@ -32999,7 +32746,7 @@ var away;
             __extends(SkeletonNaryLERPState, _super);
             function SkeletonNaryLERPState(animator, skeletonAnimationNode) {
                 _super.call(this, animator, skeletonAnimationNode);
-                this._skeletonPose = new animators.SkeletonPose();
+                this._skeletonPose = new away.animators.SkeletonPose();
                 this._skeletonPoseDirty = true;
                 this._blendWeights = new Array();
                 this._inputs = new Array();
@@ -33028,7 +32775,7 @@ var away;
             /**
             * @inheritDoc
             */
-            SkeletonNaryLERPState.prototype._pUdateTime = function (time/*int*/ ) {
+            SkeletonNaryLERPState.prototype._pUdateTime = function (time /*int*/ ) {
                 for (var j = 0; j < this._skeletonAnimationNode.numInputs; ++j) {
                     if (this._blendWeights[j])
                         this._inputs[j].update(time);
@@ -33052,7 +32799,7 @@ var away;
             *
             * @param index The input index for which the skeleton animation node blend weight is requested.
             */
-            SkeletonNaryLERPState.prototype.getBlendWeightAt = function (index/*uint*/ ) {
+            SkeletonNaryLERPState.prototype.getBlendWeightAt = function (index /*uint*/ ) {
                 return this._blendWeights[index];
             };
 
@@ -33062,7 +32809,7 @@ var away;
             * @param index The input index on which the skeleton animation node blend weight is to be set.
             * @param blendWeight The blend weight value to use for the given skeleton animation node index.
             */
-            SkeletonNaryLERPState.prototype.setBlendWeightAt = function (index/*uint*/ , blendWeight) {
+            SkeletonNaryLERPState.prototype.setBlendWeightAt = function (index /*uint*/ , blendWeight) {
                 this._blendWeights[index] = blendWeight;
 
                 this._pPositionDeltaDirty = true;
@@ -33109,11 +32856,12 @@ var away;
                 var endTr, tr;
                 var endQuat, q;
                 var firstPose;
-                var i/*uint*/ ;
+                var i;
                 var w0, x0, y0, z0;
                 var w1, x1, y1, z1;
                 var numJoints = skeleton.numJoints;
 
+                // :s
                 if (endPoses.length != numJoints)
                     endPoses.length = numJoints;
 
@@ -33131,7 +32879,7 @@ var away;
                             endPose = endPoses[i];
 
                             if (endPose == null)
-                                endPose = endPoses[i] = new animators.JointPose();
+                                endPose = endPoses[i] = new away.animators.JointPose();
 
                             pose = poses[i];
                             q = pose.orientation;
@@ -33168,6 +32916,7 @@ var away;
                             z1 = q.z;
                             w1 = q.w;
 
+                            // find shortest direction
                             if (x0 * x1 + y0 * y1 + z0 * z1 + w0 * w1 < 0) {
                                 x1 = -x1;
                                 y1 = -y1;
@@ -33192,14 +32941,14 @@ var away;
                     endPoses[i].orientation.normalize();
             };
             return SkeletonNaryLERPState;
-        })(animators.AnimationStateBase);
+        })(away.animators.AnimationStateBase);
         animators.SkeletonNaryLERPState = SkeletonNaryLERPState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         /**
         *
@@ -33213,10 +32962,10 @@ var away;
                 this._frames = this._vertexClipNode.frames;
             }
             Object.defineProperty(VertexClipState.prototype, "currentGeometry", {
-                get: /**
+                /**
                 * @inheritDoc
                 */
-                function () {
+                get: function () {
                     if (this._pFramesDirty)
                         this._pUpdateFrames();
 
@@ -33227,10 +32976,10 @@ var away;
             });
 
             Object.defineProperty(VertexClipState.prototype, "nextGeometry", {
-                get: /**
+                /**
                 * @inheritDoc
                 */
-                function () {
+                get: function () {
                     if (this._pFramesDirty)
                         this._pUpdateFrames();
 
@@ -33250,7 +32999,7 @@ var away;
 
                 if (this._vertexClipNode.looping && this._pNextFrame >= this._vertexClipNode.lastFrame) {
                     this._nextGeometry = this._frames[0];
-                    (this._pAnimator).dispatchCycleEvent();
+                    this._pAnimator.dispatchCycleEvent();
                 } else
                     this._nextGeometry = this._frames[this._pNextFrame];
             };
@@ -33262,22 +33011,23 @@ var away;
                 //TODO:implement positiondelta functionality for vertex animations
             };
             return VertexClipState;
-        })(animators.AnimationClipState);
+        })(away.animators.AnimationClipState);
         animators.VertexClipState = VertexClipState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var CrossfadeTransition = (function () {
             function CrossfadeTransition(blendSpeed) {
                 this.blendSpeed = 0.5;
                 this.blendSpeed = blendSpeed;
             }
-            CrossfadeTransition.prototype.getAnimationNode = function (animator, startNode, endNode, startBlend/*int*/ ) {
-                var crossFadeTransitionNode = new animators.CrossfadeTransitionNode();
+            CrossfadeTransition.prototype.getAnimationNode = function (animator, startNode, endNode, startBlend /*int*/ ) {
+                var crossFadeTransitionNode = new away.animators.CrossfadeTransitionNode();
                 crossFadeTransitionNode.inputA = startNode;
                 crossFadeTransitionNode.inputB = endNode;
                 crossFadeTransitionNode.blendSpeed = this.blendSpeed;
@@ -33291,9 +33041,9 @@ var away;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         /**
         * A skeleton animation node that uses two animation node inputs to blend a lineraly interpolated output of a skeleton pose.
@@ -33306,17 +33056,17 @@ var away;
             function CrossfadeTransitionNode() {
                 _super.call(this);
 
-                this._pStateClass = animators.CrossfadeTransitionState;
+                this._pStateClass = away.animators.CrossfadeTransitionState;
             }
             return CrossfadeTransitionNode;
-        })(animators.SkeletonBinaryLERPNode);
+        })(away.animators.SkeletonBinaryLERPNode);
         animators.CrossfadeTransitionNode = CrossfadeTransitionNode;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (animators) {
         var AnimationStateEvent = away.events.AnimationStateEvent;
 
@@ -33333,7 +33083,7 @@ var away;
             /**
             * @inheritDoc
             */
-            CrossfadeTransitionState.prototype._pUpdateTime = function (time/*int*/ ) {
+            CrossfadeTransitionState.prototype._pUpdateTime = function (time /*int*/ ) {
                 this.blendWeight = Math.abs(time - this._crossfadeTransitionNode.startBlend) / (1000 * this._crossfadeTransitionNode.blendSpeed);
 
                 if (this.blendWeight >= 1) {
@@ -33348,14 +33098,14 @@ var away;
                 _super.prototype._pUpdateTime.call(this, time);
             };
             return CrossfadeTransitionState;
-        })(animators.SkeletonBinaryLERPState);
+        })(away.animators.SkeletonBinaryLERPState);
         animators.CrossfadeTransitionState = CrossfadeTransitionState;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (animators) {
         /**
         * Provides an abstract base class for data set classes that hold animation data for use in animator classes.
@@ -33394,12 +33144,12 @@ var away;
             };
 
             Object.defineProperty(AnimationSetBase.prototype, "usesCPU", {
-                get: /**
+                /**
                 * Indicates whether the properties of the animation data contained within the set combined with
                 * the vertex registers aslready in use on shading materials allows the animation data to utilise
                 * GPU calls.
                 */
-                function () {
+                get: function () {
                     return this._usesCPU;
                 },
                 enumerable: true,
@@ -33421,10 +33171,10 @@ var away;
             };
 
             Object.defineProperty(AnimationSetBase.prototype, "assetType", {
-                get: /**
+                /**
                 * @inheritDoc
                 */
-                function () {
+                get: function () {
                     return away.library.AssetType.ANIMATION_SET;
                 },
                 enumerable: true,
@@ -33432,10 +33182,10 @@ var away;
             });
 
             Object.defineProperty(AnimationSetBase.prototype, "animations", {
-                get: /**
+                /**
                 * Returns a vector of animation state objects that make up the contents of the animation data set.
                 */
-                function () {
+                get: function () {
                     return this._animations;
                 },
                 enumerable: true,
@@ -33443,10 +33193,10 @@ var away;
             });
 
             Object.defineProperty(AnimationSetBase.prototype, "animationNames", {
-                get: /**
+                /**
                 * Returns a vector of animation state objects that make up the contents of the animation data set.
                 */
-                function () {
+                get: function () {
                     return this._animationNames;
                 },
                 enumerable: true,
@@ -33499,9 +33249,9 @@ var away;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (animators) {
         var StageGL = away.base.StageGL;
         var Camera = away.entities.Camera;
@@ -33572,13 +33322,13 @@ var away;
             };
 
             Object.defineProperty(AnimatorBase.prototype, "absoluteTime", {
-                get: /**
+                /**
                 * Returns the internal absolute time of the animator, calculated by the current time and the playback speed.
                 *
                 * @see #time
                 * @see #playbackSpeed
                 */
-                function () {
+                get: function () {
                     return this._pAbsoluteTime;
                 },
                 enumerable: true,
@@ -33586,10 +33336,10 @@ var away;
             });
 
             Object.defineProperty(AnimatorBase.prototype, "animationSet", {
-                get: /**
+                /**
                 * Returns the animation data set in use by the animator.
                 */
-                function () {
+                get: function () {
                     return this._pAnimationSet;
                 },
                 enumerable: true,
@@ -33597,10 +33347,10 @@ var away;
             });
 
             Object.defineProperty(AnimatorBase.prototype, "activeState", {
-                get: /**
+                /**
                 * Returns the current active animation state.
                 */
-                function () {
+                get: function () {
                     return this._pActiveState;
                 },
                 enumerable: true,
@@ -33608,10 +33358,10 @@ var away;
             });
 
             Object.defineProperty(AnimatorBase.prototype, "activeAnimation", {
-                get: /**
+                /**
                 * Returns the current active animation node.
                 */
-                function () {
+                get: function () {
                     return this._pAnimationSet.getAnimation(this._pActiveAnimationName);
                 },
                 enumerable: true,
@@ -33619,10 +33369,10 @@ var away;
             });
 
             Object.defineProperty(AnimatorBase.prototype, "activeAnimationName", {
-                get: /**
+                /**
                 * Returns the current active animation node.
                 */
-                function () {
+                get: function () {
                     return this._pActiveAnimationName;
                 },
                 enumerable: true,
@@ -33630,7 +33380,7 @@ var away;
             });
 
             Object.defineProperty(AnimatorBase.prototype, "autoUpdate", {
-                get: /**
+                /**
                 * Determines whether the animators internal update mechanisms are active. Used in cases
                 * where manual updates are required either via the <code>time</code> property or <code>update()</code> method.
                 * Defaults to true.
@@ -33638,7 +33388,7 @@ var away;
                 * @see #time
                 * @see #update()
                 */
-                function () {
+                get: function () {
                     return this._autoUpdate;
                 },
                 set: function (value) {
@@ -33649,7 +33399,7 @@ var away;
 
                     if (this._autoUpdate)
                         this.start();
-else
+                    else
                         this.stop();
                 },
                 enumerable: true,
@@ -33658,13 +33408,13 @@ else
 
 
             Object.defineProperty(AnimatorBase.prototype, "time", {
-                get: /**
+                /**
                 * Gets and sets the internal time clock of the animator.
                 */
-                function () {
+                get: function () {
                     return this._time;
                 },
-                set: function (value/*int*/ ) {
+                set: function (value /*int*/ ) {
                     if (this._time == value)
                         return;
 
@@ -33685,10 +33435,10 @@ else
             };
 
             Object.defineProperty(AnimatorBase.prototype, "playbackSpeed", {
-                get: /**
+                /**
                 * The amount by which passed time should be scaled. Used to slow down or speed up animations. Defaults to 1.
                 */
-                function () {
+                get: function () {
                     return this._playbackSpeed;
                 },
                 set: function (value) {
@@ -33699,7 +33449,7 @@ else
             });
 
 
-            AnimatorBase.prototype.setRenderState = function (stageGL, renderable, vertexConstantOffset/*int*/ , vertexStreamOffset/*int*/ , camera) {
+            AnimatorBase.prototype.setRenderState = function (stageGL, renderable, vertexConstantOffset /*int*/ , vertexStreamOffset /*int*/ , camera) {
                 throw new away.errors.AbstractMethodError();
             };
 
@@ -33756,7 +33506,7 @@ else
             * @see #stop()
             * @see #autoUpdate
             */
-            AnimatorBase.prototype.update = function (time/*int*/ ) {
+            AnimatorBase.prototype.update = function (time /*int*/ ) {
                 var dt = (time - this._time) * this.playbackSpeed;
 
                 this._pUpdateDeltaTime(dt);
@@ -33812,7 +33562,7 @@ else
             AnimatorBase.prototype.applyPositionDelta = function () {
                 var delta = this._pActiveState.positionDelta;
                 var dist = delta.length;
-                var len/*uint*/ ;
+                var len;
                 if (dist > 0) {
                     len = this._pOwners.length;
                     for (var i = 0; i < len; ++i)
@@ -33855,10 +33605,10 @@ else
             };
 
             Object.defineProperty(AnimatorBase.prototype, "assetType", {
-                get: /**
+                /**
                 * @inheritDoc
                 */
-                function () {
+                get: function () {
                     return away.library.AssetType.ANIMATOR;
                 },
                 enumerable: true,
@@ -33870,11 +33620,11 @@ else
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (animators) {
-        
         var ParticleGeometry = away.base.ParticleGeometry;
         var SubMesh = away.base.SubMesh;
         var ContextGL = away.gl.ContextGL;
@@ -33908,13 +33658,13 @@ var away;
                 this._totalLenOfOneVertex = 0;
 
                 //automatically add a particle time node to the set
-                this.addAnimation(this._timeNode = new animators.ParticleTimeNode(usesDuration, usesLooping, usesDelay));
+                this.addAnimation(this._timeNode = new away.animators.ParticleTimeNode(usesDuration, usesLooping, usesDelay));
             }
             Object.defineProperty(ParticleAnimationSet.prototype, "particleNodes", {
-                get: /**
+                /**
                 * Returns a vector of the particle animation nodes contained within the set.
                 */
-                function () {
+                get: function () {
                     return this._particleNodes;
                 },
                 enumerable: true,
@@ -33925,14 +33675,14 @@ var away;
             * @inheritDoc
             */
             ParticleAnimationSet.prototype.addAnimation = function (node) {
-                var i/*int*/ ;
+                var i;
                 var n = node;
                 n._iProcessAnimationSetting(this);
-                if (n.mode == animators.ParticlePropertiesMode.LOCAL_STATIC) {
+                if (n.mode == away.animators.ParticlePropertiesMode.LOCAL_STATIC) {
                     n._iDataOffset = this._totalLenOfOneVertex;
                     this._totalLenOfOneVertex += n.dataLength;
                     this._localStaticNodes.push(n);
-                } else if (n.mode == animators.ParticlePropertiesMode.LOCAL_DYNAMIC)
+                } else if (n.mode == away.animators.ParticlePropertiesMode.LOCAL_DYNAMIC)
                     this._localDynamicNodes.push(n);
 
                 for (i = this._particleNodes.length - 1; i >= 0; i--) {
@@ -33971,7 +33721,7 @@ var away;
                 this._iAnimationRegisterCache = pass.animationRegisterCache;
 
                 if (this._iAnimationRegisterCache == null)
-                    this._iAnimationRegisterCache = pass.animationRegisterCache = new animators.AnimationRegisterCache(profile);
+                    this._iAnimationRegisterCache = pass.animationRegisterCache = new away.animators.AnimationRegisterCache(profile);
 
                 //reset animationRegisterCache
                 this._iAnimationRegisterCache.vertexConstantOffset = pass.numUsedVertexConstants;
@@ -33994,7 +33744,7 @@ var away;
                 code += this._iAnimationRegisterCache.getInitCode();
 
                 var node;
-                var i/*int*/ ;
+                var i;
 
                 for (i = 0; i < this._particleNodes.length; i++) {
                     node = this._particleNodes[i];
@@ -34057,10 +33807,10 @@ var away;
             };
 
             Object.defineProperty(ParticleAnimationSet.prototype, "usesCPU", {
-                get: /**
+                /**
                 * @inheritDoc
                 */
-                function () {
+                get: function () {
                     return false;
                 },
                 enumerable: true,
@@ -34075,7 +33825,7 @@ var away;
 
             ParticleAnimationSet.prototype.dispose = function () {
                 for (var key in this._animationSubGeometries)
-                    (this._animationSubGeometries[key]).dispose();
+                    this._animationSubGeometries[key].dispose();
 
                 _super.prototype.dispose.call(this);
             };
@@ -34090,7 +33840,7 @@ var away;
                 if (!geometry)
                     throw (new Error("Particle animation can only be performed on a ParticleGeometry object"));
 
-                var i/*int*/ , j, k;
+                var i, j, k;
                 var animationSubGeometry;
                 var newAnimationSubGeometry = false;
                 var subGeometry;
@@ -34109,7 +33859,7 @@ var away;
                         }
                     }
 
-                    animationSubGeometry = subMesh.animationSubGeometry = new animators.AnimationSubGeometry();
+                    animationSubGeometry = subMesh.animationSubGeometry = new away.animators.AnimationSubGeometry();
                     if (mesh.shareAnimationGeometry)
                         this._animationSubGeometries[subGeometry.id] = animationSubGeometry;
 
@@ -34125,19 +33875,19 @@ var away;
                 var particles = geometry.particles;
                 var particlesLength = particles.length;
                 var numParticles = geometry.numParticles;
-                var particleProperties = new animators.ParticleProperties();
+                var particleProperties = new away.animators.ParticleProperties();
                 var particle;
 
-                var oneDataLen/*int*/ ;
-                var oneDataOffset/*int*/ ;
-                var counterForVertex/*int*/ ;
-                var counterForOneData/*int*/ ;
+                var oneDataLen;
+                var oneDataOffset;
+                var counterForVertex;
+                var counterForOneData;
                 var oneData;
-                var numVertices/*uint*/ ;
+                var numVertices;
                 var vertexData;
-                var vertexLength/*uint*/ ;
-                var startingOffset/*uint*/ ;
-                var vertexOffset/*uint*/ ;
+                var vertexLength;
+                var startingOffset;
+                var vertexOffset;
 
                 //default values for particle param
                 particleProperties.total = numParticles;
@@ -34183,8 +33933,9 @@ var away;
                             }
                         }
 
+                        //store particle properties if they need to be retreived for dynamic local nodes
                         if (this._localDynamicNodes.length)
-                            animationSubGeometry.animationParticles.push(new animators.ParticleAnimationData(i, particleProperties.startTime, particleProperties.duration, particleProperties.delay, particle));
+                            animationSubGeometry.animationParticles.push(new away.animators.ParticleAnimationData(i, particleProperties.startTime, particleProperties.duration, particleProperties.delay, particle));
 
                         animationSubGeometry.numProcessedVertices += numVertices;
 
@@ -34200,16 +33951,15 @@ var away;
 
             ParticleAnimationSet.COLOR_PRIORITY = 18;
             return ParticleAnimationSet;
-        })(animators.AnimationSetBase);
+        })(away.animators.AnimationSetBase);
         animators.ParticleAnimationSet = ParticleAnimationSet;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (animators) {
-        
         var SubMesh = away.base.SubMesh;
         var StageGL = away.base.StageGL;
         var Camera = away.entities.Camera;
@@ -34250,7 +34000,7 @@ var away;
                 for (var i = 0; i < this._particleAnimationSet.particleNodes.length; i++) {
                     node = this._particleAnimationSet.particleNodes[i];
                     state = this.getAnimationState(node);
-                    if (node.mode == animators.ParticlePropertiesMode.LOCAL_DYNAMIC) {
+                    if (node.mode == away.animators.ParticlePropertiesMode.LOCAL_DYNAMIC) {
                         this._animatorParticleStates.push(state);
                         node._iDataOffset = this._totalLenOfOneVertex;
                         this._totalLenOfOneVertex += node.dataLength;
@@ -34270,16 +34020,17 @@ var away;
             /**
             * @inheritDoc
             */
-            ParticleAnimator.prototype.setRenderState = function (stageGL, renderable, vertexConstantOffset/*int*/ , vertexStreamOffset/*int*/ , camera) {
+            ParticleAnimator.prototype.setRenderState = function (stageGL, renderable, vertexConstantOffset /*int*/ , vertexStreamOffset /*int*/ , camera) {
                 var animationRegisterCache = this._particleAnimationSet._iAnimationRegisterCache;
 
-                var subMesh = (renderable).subMesh;
+                var subMesh = renderable.subMesh;
                 var state;
                 var i;
 
                 if (!subMesh)
                     throw (new Error("Must be subMesh"));
 
+                //process animation sub geometries
                 if (!subMesh.animationSubGeometry)
                     this._particleAnimationSet._iGenerateAnimationSubGeometries(renderable.sourceEntity);
 
@@ -34288,6 +34039,7 @@ var away;
                 for (i = 0; i < this._animationParticleStates.length; i++)
                     this._animationParticleStates[i].setRenderState(stageGL, renderable, animationSubGeometry, animationRegisterCache, camera);
 
+                //process animator subgeometries
                 if (!subMesh.animatorSubGeometry && this._animatorParticleStates.length)
                     this.generateAnimatorSubGeometry(subMesh);
 
@@ -34340,12 +34092,12 @@ var away;
 
             ParticleAnimator.prototype.dispose = function () {
                 for (var key in this._animatorSubGeometries)
-                    (this._animatorSubGeometries[key]).dispose();
+                    this._animatorSubGeometries[key].dispose();
             };
 
             ParticleAnimator.prototype.generateAnimatorSubGeometry = function (subMesh) {
                 var subGeometry = subMesh.subGeometry;
-                var animatorSubGeometry = subMesh.animatorSubGeometry = this._animatorSubGeometries[subGeometry.id] = new animators.AnimationSubGeometry();
+                var animatorSubGeometry = subMesh.animatorSubGeometry = this._animatorSubGeometries[subGeometry.id] = new away.animators.AnimationSubGeometry();
 
                 //create the vertexData vector that will be used for local state data
                 animatorSubGeometry.createVertexData(subGeometry.numVertices, this._totalLenOfOneVertex);
@@ -34354,14 +34106,14 @@ var away;
                 animatorSubGeometry.animationParticles = subMesh.animationSubGeometry.animationParticles;
             };
             return ParticleAnimator;
-        })(animators.AnimatorBase);
+        })(away.animators.AnimatorBase);
         animators.ParticleAnimator = ParticleAnimator;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (animators) {
         var SkinnedSubGeometry = away.base.SkinnedSubGeometry;
         var SubMesh = away.base.SubMesh;
@@ -34392,7 +34144,7 @@ var away;
             function SkeletonAnimator(animationSet, skeleton, forceCPU) {
                 if (typeof forceCPU === "undefined") { forceCPU = false; }
                 _super.call(this, animationSet);
-                this._globalPose = new animators.SkeletonPose();
+                this._globalPose = new away.animators.SkeletonPose();
                 this._subGeomAnimationStates = new Object();
 
                 this._skeleton = skeleton;
@@ -34421,12 +34173,12 @@ var away;
                 this._onTransitionCompleteDelegate = away.utils.Delegate.create(this, this.onTransitionComplete);
             }
             Object.defineProperty(SkeletonAnimator.prototype, "globalMatrices", {
-                get: /**
+                /**
                 * returns the calculated global matrices of the current skeleton pose.
                 *
                 * @see #globalPose
                 */
-                function () {
+                get: function () {
                     if (this._globalPropertiesDirty)
                         this.updateGlobalProperties();
 
@@ -34437,12 +34189,12 @@ var away;
             });
 
             Object.defineProperty(SkeletonAnimator.prototype, "globalPose", {
-                get: /**
+                /**
                 * returns the current skeleton pose output from the animator.
                 *
                 * @see away.animators.data.SkeletonPose
                 */
-                function () {
+                get: function () {
                     if (this._globalPropertiesDirty)
                         this.updateGlobalProperties();
 
@@ -34453,11 +34205,11 @@ var away;
             });
 
             Object.defineProperty(SkeletonAnimator.prototype, "skeleton", {
-                get: /**
+                /**
                 * Returns the skeleton object in use by the animator - this defines the number and heirarchy of joints used by the
                 * skinned geoemtry to which skeleon animator is applied.
                 */
-                function () {
+                get: function () {
                     return this._skeleton;
                 },
                 enumerable: true,
@@ -34465,11 +34217,11 @@ var away;
             });
 
             Object.defineProperty(SkeletonAnimator.prototype, "forceCPU", {
-                get: /**
+                /**
                 * Indicates whether the skeleton animator is disabled by default for GPU rendering, something that allows the animator to perform calculation on the GPU.
                 * Defaults to false.
                 */
-                function () {
+                get: function () {
                     return this._forceCPU;
                 },
                 enumerable: true,
@@ -34477,12 +34229,12 @@ var away;
             });
 
             Object.defineProperty(SkeletonAnimator.prototype, "useCondensedIndices", {
-                get: /**
+                /**
                 * Offers the option of enabling GPU accelerated animation on skeletons larger than 32 joints
                 * by condensing the number of joint index values required per mesh. Only applicable to
                 * skeleton animations that utilise more than one mesh object. Defaults to false.
                 */
-                function () {
+                get: function () {
                     return this._useCondensedIndices;
                 },
                 set: function (value) {
@@ -34539,6 +34291,7 @@ var away;
 
                 this.start();
 
+                //apply a time offset if specified
                 if (!isNaN(offset))
                     this.reset(name, offset);
             };
@@ -34546,11 +34299,12 @@ var away;
             /**
             * @inheritDoc
             */
-            SkeletonAnimator.prototype.setRenderState = function (stageGL, renderable, vertexConstantOffset/*int*/ , vertexStreamOffset/*int*/ , camera) {
+            SkeletonAnimator.prototype.setRenderState = function (stageGL, renderable, vertexConstantOffset /*int*/ , vertexStreamOffset /*int*/ , camera) {
+                // do on request of globalProperties
                 if (this._globalPropertiesDirty)
                     this.updateGlobalProperties();
 
-                var skinnedGeom = ((renderable).subMesh).subGeometry;
+                var skinnedGeom = renderable.subMesh.subGeometry;
 
                 // using condensed data
                 var numCondensedJoints = skinnedGeom.numCondensedJoints;
@@ -34600,13 +34354,13 @@ var away;
                 this._globalPropertiesDirty = true;
 
                 for (var key in this._subGeomAnimationStates)
-                    (this._subGeomAnimationStates[key]).dirty = true;
+                    this._subGeomAnimationStates[key].dirty = true;
             };
 
-            SkeletonAnimator.prototype.updateCondensedMatrices = function (condensedIndexLookUp/*uint*/ , numJoints/*uint*/ ) {
+            SkeletonAnimator.prototype.updateCondensedMatrices = function (condensedIndexLookUp /*uint*/ , numJoints /*uint*/ ) {
                 var i = 0, j = 0;
-                var len/*uint*/ ;
-                var srcIndex/*uint*/ ;
+                var len;
+                var srcIndex;
 
                 this._condensedMatrices = new Array();
 
@@ -34722,7 +34476,7 @@ var away;
                 var jointWeights = subGeom.iJointWeightsData;
                 var index = 0;
                 var j = 0;
-                var k/*uint*/ ;
+                var k;
                 var vx, vy, vz;
                 var nx, ny, nz;
                 var tx, ty, tz;
@@ -34813,7 +34567,7 @@ var away;
                 var joints = skeleton.joints;
                 var len = sourcePose.numJointPoses;
                 var jointPoses = sourcePose.jointPoses;
-                var parentIndex/*int*/ ;
+                var parentIndex;
                 var joint;
                 var parentPose;
                 var pose;
@@ -34826,6 +34580,7 @@ var away;
                 var x2, y2, z2, w2;
                 var x3, y3, z3;
 
+                // :s
                 if (globalPoses.length != len)
                     globalPoses.length = len;
 
@@ -34833,7 +34588,7 @@ var away;
                     globalJointPose = globalPoses[i];
 
                     if (globalJointPose == null)
-                        globalJointPose = globalPoses[i] = new animators.JointPose();
+                        globalJointPose = globalPoses[i] = new away.animators.JointPose();
 
                     joint = joints[i];
                     parentIndex = joint.parentIndex;
@@ -34901,6 +34656,7 @@ var away;
                 if (event.type == AnimationStateEvent.TRANSITION_COMPLETE) {
                     event.animationNode.removeEventListener(AnimationStateEvent.TRANSITION_COMPLETE, this._onTransitionCompleteDelegate);
 
+                    //if this is the current active state transition, revert control to the active node
                     if (this._pActiveState == event.animationState) {
                         this._pActiveNode = this._pAnimationSet.getAnimation(this._pActiveAnimationName);
                         this._pActiveState = this.getAnimationState(this._pActiveNode);
@@ -34909,7 +34665,7 @@ var away;
                 }
             };
             return SkeletonAnimator;
-        })(animators.AnimatorBase);
+        })(away.animators.AnimatorBase);
         animators.SkeletonAnimator = SkeletonAnimator;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
@@ -34924,9 +34680,9 @@ var SubGeomAnimationState = (function () {
     }
     return SubGeomAnimationState;
 })();
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (animators) {
         var ContextGL = away.gl.ContextGL;
         var StageGL = away.base.StageGL;
@@ -34951,11 +34707,11 @@ var away;
                 this._jointsPerVertex = jointsPerVertex;
             }
             Object.defineProperty(SkeletonAnimationSet.prototype, "jointsPerVertex", {
-                get: /**
+                /**
                 * Returns the amount of skeleton joints that can be linked to a single vertex via skinned weight values. For GPU-base animation, the
                 * maximum allowed value is 4.
                 */
-                function () {
+                get: function () {
                     return this._jointsPerVertex;
                 },
                 enumerable: true,
@@ -34984,11 +34740,12 @@ var away;
                     var src = sourceRegisters[i];
 
                     for (var j = 0; j < this._jointsPerVertex; ++j) {
-                        code += dot + " " + temp1 + ".x, " + src + ", vc[" + indices[j] + "+" + indexOffset0 + "]		\n" + dot + " " + temp1 + ".y, " + src + ", vc[" + indices[j] + "+" + indexOffset1 + "]    	\n" + dot + " " + temp1 + ".z, " + src + ", vc[" + indices[j] + "+" + indexOffset2 + "]		\n" + "mov " + temp1 + ".w, " + src + ".w		\n" + "mul " + temp1 + ", " + temp1 + ", " + weights[j] + "\n";
+                        code += dot + " " + temp1 + ".x, " + src + ", vc[" + indices[j] + "+" + indexOffset0 + "]		\n" + dot + " " + temp1 + ".y, " + src + ", vc[" + indices[j] + "+" + indexOffset1 + "]    	\n" + dot + " " + temp1 + ".z, " + src + ", vc[" + indices[j] + "+" + indexOffset2 + "]		\n" + "mov " + temp1 + ".w, " + src + ".w		\n" + "mul " + temp1 + ", " + temp1 + ", " + weights[j] + "\n"; // apply weight
 
+                        // add or mov to target. Need to write to a temp reg first, because an output can be a target
                         if (j == 0)
                             code += "mov " + temp2 + ", " + temp1 + "\n";
-else
+                        else
                             code += "add " + temp2 + ", " + temp2 + ", " + temp1 + "\n";
                     }
 
@@ -35036,14 +34793,14 @@ else
             SkeletonAnimationSet.prototype.doneAGALCode = function (pass) {
             };
             return SkeletonAnimationSet;
-        })(animators.AnimationSetBase);
+        })(away.animators.AnimationSetBase);
         animators.SkeletonAnimationSet = SkeletonAnimationSet;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (animators) {
         /**
         * The animation data set used by vertex-based animators, containing vertex animation state data.
@@ -35071,10 +34828,10 @@ var away;
                 this._blendMode = blendMode;
             }
             Object.defineProperty(VertexAnimationSet.prototype, "numPoses", {
-                get: /**
+                /**
                 * Returns the number of poses made available at once to the GPU animation code.
                 */
-                function () {
+                get: function () {
                     return this._numPoses;
                 },
                 enumerable: true,
@@ -35082,10 +34839,10 @@ var away;
             });
 
             Object.defineProperty(VertexAnimationSet.prototype, "blendMode", {
-                get: /**
+                /**
                 * Returns the active blend mode of the vertex animator object.
                 */
-                function () {
+                get: function () {
                     return this._blendMode;
                 },
                 enumerable: true,
@@ -35093,10 +34850,10 @@ var away;
             });
 
             Object.defineProperty(VertexAnimationSet.prototype, "useNormals", {
-                get: /**
+                /**
                 * Returns whether or not normal data is used in last set GPU pass of the vertex shader.
                 */
-                function () {
+                get: function () {
                     return this._uploadNormals;
                 },
                 enumerable: true,
@@ -35109,7 +34866,7 @@ var away;
             VertexAnimationSet.prototype.getAGALVertexCode = function (pass, sourceRegisters, targetRegisters, profile) {
                 if (this._blendMode == away.animators.VertexAnimationMode.ABSOLUTE)
                     return this.getAbsoluteAGALCode(pass, sourceRegisters, targetRegisters);
-else
+                else
                     return this.getAdditiveAGALCode(pass, sourceRegisters, targetRegisters);
             };
 
@@ -35189,6 +34946,7 @@ else
                     code += "add " + targetRegisters[i] + ", " + temp1 + ", " + temp2 + "\n";
                 }
 
+                // add code for bitangents if tangents are used
                 if (useTangents) {
                     code += "dp3 " + temp1 + ".x, " + sourceRegisters[2] + ", " + targetRegisters[1] + "\n" + "mul " + temp1 + ", " + targetRegisters[1] + ", " + temp1 + ".x			 \n" + "sub " + targetRegisters[2] + ", " + sourceRegisters[2] + ", " + temp1 + "\n";
                 }
@@ -35204,7 +34962,7 @@ else
                 var len = sourceRegisters.length;
                 var regs = ["x", "y", "z", "w"];
                 var temp1 = this._pFindTempReg(targetRegisters);
-                var k/*uint*/ ;
+                var k;
                 var useTangents = this._useTangents[uID] = (len > 2);
                 var useNormals = this._useNormals[uID] = (len > 1);
                 var streamIndex = this._streamIndices[uID] = pass.numUsedStreams;
@@ -35230,16 +34988,15 @@ else
                 return code;
             };
             return VertexAnimationSet;
-        })(animators.AnimationSetBase);
+        })(away.animators.AnimationSetBase);
         animators.VertexAnimationSet = VertexAnimationSet;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (animators) {
-        
         var SubMesh = away.base.SubMesh;
         var Geometry = away.base.Geometry;
         var StageGL = away.base.StageGL;
@@ -35286,6 +35043,7 @@ var away;
 
                 this._pActiveAnimationName = name;
 
+                //TODO: implement transitions in vertex animator
                 if (!this._pAnimationSet.hasAnimation(name))
                     throw new Error("Animation root node " + name + " not found!");
 
@@ -35303,6 +35061,7 @@ var away;
 
                 this.start();
 
+                //apply a time offset if specified
                 if (!isNaN(offset))
                     this.reset(name, offset);
             };
@@ -35321,26 +35080,29 @@ var away;
             /**
             * @inheritDoc
             */
-            VertexAnimator.prototype.setRenderState = function (stageGL, renderable, vertexConstantOffset/*int*/ , vertexStreamOffset/*int*/ , camera) {
+            VertexAnimator.prototype.setRenderState = function (stageGL, renderable, vertexConstantOffset /*int*/ , vertexStreamOffset /*int*/ , camera) {
+                // todo: add code for when running on cpu
+                // if no poses defined, set temp data
                 if (!this._poses.length) {
                     this.setNullPose(stageGL, renderable, vertexConstantOffset, vertexStreamOffset);
                     return;
                 }
 
                 // this type of animation can only be SubMesh
-                var subMesh = (renderable).subMesh;
+                var subMesh = renderable.subMesh;
                 var subGeom;
-                var i/*uint*/ ;
+                var i;
                 var len = this._numPoses;
 
                 stageGL.contextGL.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, vertexConstantOffset, this._weights, 1);
 
-                if (this._blendMode == animators.VertexAnimationMode.ABSOLUTE) {
+                if (this._blendMode == away.animators.VertexAnimationMode.ABSOLUTE) {
                     i = 1;
                     subGeom = this._poses[0].subGeometries[subMesh._iIndex];
 
+                    // set the base sub-geometry so the material can simply pick up on this data
                     if (subGeom)
-                        renderable.subGeometry = subGeom;
+                        renderable.subGeometry = subGeom; //TODO more elegant way to swap subgeometry that doesn't involve changing it on the SubMesh
                 } else
                     i = 0;
 
@@ -35354,10 +35116,10 @@ var away;
                 }
             };
 
-            VertexAnimator.prototype.setNullPose = function (stageGL, renderable, vertexConstantOffset/*int*/ , vertexStreamOffset/*int*/ ) {
+            VertexAnimator.prototype.setNullPose = function (stageGL, renderable, vertexConstantOffset /*int*/ , vertexStreamOffset /*int*/ ) {
                 stageGL.contextGL.setProgramConstantsFromArray(away.gl.ContextGLProgramType.VERTEX, vertexConstantOffset, this._weights, 1);
 
-                if (this._blendMode == animators.VertexAnimationMode.ABSOLUTE) {
+                if (this._blendMode == away.animators.VertexAnimationMode.ABSOLUTE) {
                     var len = this._numPoses;
                     for (var i = 1; i < len; ++i) {
                         renderable.subGeometry.activateVertexBuffer(vertexStreamOffset++, stageGL);
@@ -35376,14 +35138,14 @@ var away;
             VertexAnimator.prototype.testGPUCompatibility = function (pass) {
             };
             return VertexAnimator;
-        })(animators.AnimatorBase);
+        })(away.animators.AnimatorBase);
         animators.VertexAnimator = VertexAnimator;
     })(away.animators || (away.animators = {}));
     var animators = away.animators;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (parsers) {
         var Mesh = away.entities.Mesh;
         var DefaultMaterialManager = away.materials.DefaultMaterialManager;
@@ -35413,34 +35175,34 @@ var away;
                 this._scale = scale;
             }
             Object.defineProperty(OBJParser.prototype, "scale", {
-                set: /**
+                /**
                 * Scaling factor applied directly to vertices data
                 * @param value The scaling factor.
                 */
-                function (value) {
+                set: function (value) {
                     this._scale = value;
                 },
                 enumerable: true,
                 configurable: true
             });
 
-            OBJParser.supportsType = /**
+            /**
             * Indicates whether or not a given file extension is supported by the parser.
             * @param extension The file extension of a potential file to be parsed.
             * @return Whether or not the given file type is supported.
             */
-            function (extension) {
+            OBJParser.supportsType = function (extension) {
                 extension = extension.toLowerCase();
                 return extension == "obj";
             };
 
-            OBJParser.supportsData = /**
+            /**
             * Tests whether a data block can be parsed by the parser.
             * @param data The data block to potentially be parsed.
             * @return Whether or not the given data is supported.
             */
-            function (data) {
-                var content = parsers.ParserUtils.toString(data);
+            OBJParser.supportsData = function (data) {
+                var content = away.parsers.ParserUtils.toString(data);
                 var hasV = false;
                 var hasF = false;
 
@@ -35457,7 +35219,7 @@ var away;
             */
             OBJParser.prototype._iResolveDependency = function (resourceDependency) {
                 if (resourceDependency.id == 'mtl') {
-                    var str = parsers.ParserUtils.toString(resourceDependency.data);
+                    var str = away.parsers.ParserUtils.toString(resourceDependency.data);
                     this.parseMtl(str);
                 } else {
                     var asset;
@@ -35546,23 +35308,33 @@ var away;
                     this._oldIndex = this._charIndex + 1;
                     this.parseLine(trunk);
 
+                    // If whatever was parsed on this line resulted in the
+                    // parsing being paused to retrieve dependencies, break
+                    // here and do not continue parsing until un-paused.
                     if (this.parsingPaused) {
-                        return parsers.ParserBase.MORE_TO_PARSE;
+                        return away.parsers.ParserBase.MORE_TO_PARSE;
                     }
                 }
 
                 if (this._charIndex >= this._stringLength) {
                     if (this._mtlLib && !this._mtlLibLoaded) {
-                        return parsers.ParserBase.MORE_TO_PARSE;
+                        return away.parsers.ParserBase.MORE_TO_PARSE;
                     }
 
                     this.translate();
                     this.applyMaterials();
 
-                    return parsers.ParserBase.PARSING_DONE;
+                    return away.parsers.ParserBase.PARSING_DONE;
                 }
 
-                return parsers.ParserBase.MORE_TO_PARSE;
+                return away.parsers.ParserBase.MORE_TO_PARSE;
+            };
+
+            OBJParser.prototype._pStartParsing = function (frameLimit) {
+                _super.prototype._pStartParsing.call(this, frameLimit);
+
+                //create a content object for Loaders
+                this._pContent = new away.containers.DisplayObjectContainer();
             };
 
             /**
@@ -35649,11 +35421,11 @@ var away;
                             continue;
 
                         // Finalize and force type-based name
-                        this._pFinalizeAsset(geometry);
+                        this._pFinalizeAsset(geometry); //, "");
 
                         if (this.materialMode < 2)
                             bmMaterial = new TextureMaterial(DefaultMaterialManager.getDefaultTexture());
-else
+                        else
                             bmMaterial = new TextureMultiPassMaterial(DefaultMaterialManager.getDefaultTexture());
 
                         //bmMaterial = new TextureMaterial(DefaultMaterialManager.getDefaultTexture());
@@ -35675,13 +35447,16 @@ else
 
                         if (groups[g].materialID != "")
                             bmMaterial.name = groups[g].materialID + "~" + mesh.name;
-else
+                        else
                             bmMaterial.name = this._lastMtlID + "~" + mesh.name;
 
                         if (mesh.subMeshes.length > 1) {
                             for (sm = 1; sm < mesh.subMeshes.length; ++sm)
                                 mesh.subMeshes[sm].material = bmMaterial;
                         }
+
+                        //add to the content property
+                        this._pContent.addChild(mesh);
 
                         this._pFinalizeAsset(mesh);
                     }
@@ -35727,7 +35502,7 @@ else
                 }
             };
 
-            OBJParser.prototype.translateVertexData = function (face, vertexIndex, vertices, uvs, indices/*uint*/ , normals) {
+            OBJParser.prototype.translateVertexData = function (face, vertexIndex, vertices, uvs, indices /*uint*/ , normals) {
                 var index;
                 var vertex;
                 var vertexNormal;
@@ -35917,7 +35692,7 @@ else
             OBJParser.prototype.parseIndex = function (index, length) {
                 if (index < 0)
                     return index + length + 1;
-else
+                else
                     return index;
             };
 
@@ -35940,6 +35715,7 @@ else
                 for (var i = 0; i < materialDefinitions.length; ++i) {
                     lines = (materialDefinitions[i].split('\r')).join("").split('\n');
 
+                    //lines = (materialDefinitions[i].split('\r') as Array).join("").split('\n');
                     if (lines.length == 1)
                         lines = materialDefinitions[i].split(String.fromCharCode(13));
 
@@ -36082,15 +35858,15 @@ else
                         case "-cc":
                         case "-clamp":
                         case "-texres":
-                            i += 2;
+                            i += 2; //Skip ahead 1 attribute
                             break;
                         case "-mm":
-                            i += 3;
+                            i += 3; //Skip ahead 2 attributes
                             break;
                         case "-o":
                         case "-s":
                         case "-t":
-                            i += 4;
+                            i += 4; //Skip ahead 3 attributes
                             continue;
                         default:
                             breakflag = true;
@@ -36116,7 +35892,7 @@ else
                 // Add raw-data dependency to queue and load dependencies now,
                 // which will pause the parsing in the meantime.
                 this._pAddDependency('mtl', new away.net.URLRequest(mtlurl), true);
-                this._pPauseAndRetrieveDependencies();
+                this._pPauseAndRetrieveDependencies(); //
             };
 
             OBJParser.prototype.applyMaterial = function (lm) {
@@ -36158,7 +35934,7 @@ else
                                         specularData = this._materialSpecularData[j];
 
                                         if (specularData.materialID == lm.materialID) {
-                                            tm.specularMethod = null;
+                                            tm.specularMethod = null; // Prevent property overwrite (see above)
                                             tm.specularMethod = specularData.basicSpecularMethod;
                                             tm.ambientColor = specularData.ambientColor;
                                             tm.alpha = specularData.alpha;
@@ -36187,7 +35963,7 @@ else
                                         specularData = this._materialSpecularData[j];
 
                                         if (specularData.materialID == lm.materialID) {
-                                            tmMult.specularMethod = null;
+                                            tmMult.specularMethod = null; // Prevent property overwrite (see above)
                                             tmMult.specularMethod = specularData.basicSpecularMethod;
                                             tmMult.ambientColor = specularData.ambientColor;
 
@@ -36216,7 +35992,7 @@ else
                     this.applyMaterial(this._materialLoaded[i]);
             };
             return OBJParser;
-        })(parsers.ParserBase);
+        })(away.parsers.ParserBase);
         parsers.OBJParser = OBJParser;
     })(away.parsers || (away.parsers = {}));
     var parsers = away.parsers;
@@ -36290,10 +36066,10 @@ var UV = (function () {
         this._v = v;
     }
     Object.defineProperty(UV.prototype, "v", {
-        get: /**
+        /**
         * Defines the vertical coordinate of the texture value.
         */
-        function () {
+        get: function () {
             return this._v;
         },
         set: function (value) {
@@ -36305,10 +36081,10 @@ var UV = (function () {
 
 
     Object.defineProperty(UV.prototype, "u", {
-        get: /**
+        /**
         * Defines the horizontal coordinate of the texture value.
         */
-        function () {
+        get: function () {
             return this._u;
         },
         set: function (value) {
@@ -36359,11 +36135,11 @@ var Vertex = (function () {
         get: function () {
             return this._index;
         },
-        set: /**
+        /**
         * To define/store the index of value object
         * @param    ind        The index
         */
-        function (ind) {
+        set: function (ind) {
             this._index = ind;
         },
         enumerable: true,
@@ -36371,11 +36147,11 @@ var Vertex = (function () {
     });
 
     Object.defineProperty(Vertex.prototype, "x", {
-        get: /**
+        /**
         * To define/store the x value of the value object
         * @param    value        The x value
         */
-        function () {
+        get: function () {
             return this._x;
         },
         set: function (value) {
@@ -36387,11 +36163,11 @@ var Vertex = (function () {
 
 
     Object.defineProperty(Vertex.prototype, "y", {
-        get: /**
+        /**
         * To define/store the y value of the value object
         * @param    value        The y value
         */
-        function () {
+        get: function () {
             return this._y;
         },
         set: function (value) {
@@ -36403,11 +36179,11 @@ var Vertex = (function () {
 
 
     Object.defineProperty(Vertex.prototype, "z", {
-        get: /**
+        /**
         * To define/store the z value of the value object
         * @param    value        The z value
         */
-        function () {
+        get: function () {
             return this._z;
         },
         set: function (value) {
@@ -36426,9 +36202,9 @@ var Vertex = (function () {
     };
     return Vertex;
 })();
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (parsers) {
         var AnimationSetBase = away.animators.AnimationSetBase;
         var AnimatorBase = away.animators.AnimatorBase;
@@ -36480,9 +36256,9 @@ var away;
 
                 this._blocks = new Array();
                 this._blocks[0] = new AWDBlock();
-                this._blocks[0].data = null;
+                this._blocks[0].data = null; // Zero address means null in AWD
 
-                this.blendModeDic = new Array();
+                this.blendModeDic = new Array(); // used to translate ints to blendMode-strings
                 this.blendModeDic.push(BlendMode.NORMAL);
                 this.blendModeDic.push(BlendMode.ADD);
                 this.blendModeDic.push(BlendMode.ALPHA);
@@ -36500,29 +36276,29 @@ var away;
                 this.blendModeDic.push(BlendMode.SHADER);
                 this.blendModeDic.push(BlendMode.OVERLAY);
 
-                this._depthSizeDic = new Array();
+                this._depthSizeDic = new Array(); // used to translate ints to depthSize-values
                 this._depthSizeDic.push(256);
                 this._depthSizeDic.push(512);
                 this._depthSizeDic.push(2048);
                 this._depthSizeDic.push(1024);
-                this._version = Array();
+                this._version = Array(); //[]; // will contain 2 int (major-version, minor-version) for awd-version-check
             }
-            AWDParser.supportsType = /**
+            /**
             * Indicates whether or not a given file extension is supported by the parser.
             * @param extension The file extension of a potential file to be parsed.
             * @return Whether or not the given file type is supported.
             */
-            function (extension) {
+            AWDParser.supportsType = function (extension) {
                 extension = extension.toLowerCase();
                 return extension == "awd";
             };
 
-            AWDParser.supportsData = /**
+            /**
             * Tests whether a data block can be parsed by the parser.
             * @param data The data block to potentially be parsed.
             * @return Whether or not the given data is supported.
             */
-            function (data) {
+            AWDParser.supportsData = function (data) {
                 return (away.parsers.ParserUtils.toString(data, 3) == 'AWD');
             };
 
@@ -36530,6 +36306,10 @@ var away;
             * @inheritDoc
             */
             AWDParser.prototype._iResolveDependency = function (resourceDependency) {
+                // this will be called when Dependency has finished loading.
+                // the Assets waiting for this Bitmap, can be Texture or CubeTexture.
+                // if the Bitmap is awaited by a CubeTexture, we need to check if its the last Bitmap of the CubeTexture,
+                // so we know if we have to finalize the Asset (CubeTexture) or not.
                 if (resourceDependency.assets.length == 1) {
                     var isCubeTextureArray = resourceDependency.id.split("#");
                     var ressourceID = isCubeTextureArray[0];
@@ -36544,7 +36324,7 @@ var away;
                             var users;
 
                             block = this._blocks[resourceDependency.id];
-                            block.data = asset;
+                            block.data = asset; // Store finished asset
 
                             // Reset name of texture to the one defined in the AWD file,
                             // as opposed to whatever the image parser came up with.
@@ -36567,7 +36347,7 @@ var away;
 
                         var tx = thisBitmapTexture;
 
-                        this._cubeTextures[isCubeTextureArray[1]] = tx.htmlImageElement;
+                        this._cubeTextures[isCubeTextureArray[1]] = tx.htmlImageElement; // ?
                         this._texture_users[ressourceID].push(1);
 
                         if (this._debug) {
@@ -36583,7 +36363,7 @@ var away;
 
                             asset = new away.textures.ImageCubeTexture(posX, negX, posY, negY, posZ, negZ);
                             block = this._blocks[ressourceID];
-                            block.data = asset;
+                            block.data = asset; // Store finished asset
 
                             // Reset name of texture to the one defined in the AWD file,
                             // as opposed to whatever the image parser came up with.
@@ -36637,7 +36417,7 @@ var away;
             */
             AWDParser.prototype._pProceedParsing = function () {
                 if (!this._startedParsing) {
-                    this._byteData = this._pGetByteData();
+                    this._byteData = this._pGetByteData(); //getByteData();
                     this._startedParsing = true;
                 }
 
@@ -36675,6 +36455,8 @@ var away;
                         this.parseNextBlock();
                     }
 
+                    //----------------------------------------------------------------------------
+                    // Return complete status
                     if (this._body.getBytesAvailable() == 0) {
                         this.dispose();
                         return away.parsers.ParserBase.PARSING_DONE;
@@ -36695,6 +36477,13 @@ var away;
                     // Error - most likely _body not set because we do not support compression.
                     return away.parsers.ParserBase.PARSING_DONE;
                 }
+            };
+
+            AWDParser.prototype._pStartParsing = function (frameLimit) {
+                _super.prototype._pStartParsing.call(this, frameLimit);
+
+                //create a content object for Loaders
+                this._pContent = new away.containers.DisplayObjectContainer();
             };
 
             AWDParser.prototype.dispose = function () {
@@ -36757,6 +36546,8 @@ var away;
 
                 this._body.readBytes(this._newBlockBytes, 0, len);
 
+                //----------------------------------------------------------------------------
+                // Compressed AWD Formats not yet supported
                 if (blockCompression) {
                     this._pDieWithError('Compressed AWD formats not yet supported');
                     /*
@@ -36858,6 +36649,7 @@ var away;
                     //*/
                 }
 
+                //*
                 if (isParsed == false) {
                     switch (type) {
                         case 1:
@@ -37008,7 +36800,7 @@ var away;
                             w_indices = Array();
 
                             while (this._newBlockBytes.position < str_end) {
-                                w_indices[idx++] = this._newBlockBytes.readUnsignedShort() * 3;
+                                w_indices[idx++] = this._newBlockBytes.readUnsignedShort() * 3; // TODO: Respect stream field type
                             }
                         } else if (str_type == 7) {
                             weights = new Array();
@@ -37021,7 +36813,7 @@ var away;
                         }
                     }
 
-                    this.parseUserAttributes();
+                    this.parseUserAttributes(); // Ignore sub-mesh attributes for now
 
                     sub_geoms = away.utils.GeometryUtils.fromVectors(verts, indices, uvs, normals, null, weights, w_indices);
 
@@ -37085,13 +36877,13 @@ var away;
                         break;
 
                     case 4:
-                        geom = new away.primitives.CylinderGeometry(props.get(101, 50), props.get(102, 50), props.get(103, 100), props.get(301, 16), props.get(302, 1), true, true, true);
+                        geom = new away.primitives.CylinderGeometry(props.get(101, 50), props.get(102, 50), props.get(103, 100), props.get(301, 16), props.get(302, 1), true, true, true); // bool701, bool702, bool703, bool704);
                         if (!props.get(701, true))
-                            (geom).topClosed = false;
+                            geom.topClosed = false;
                         if (!props.get(702, true))
-                            (geom).bottomClosed = false;
+                            geom.bottomClosed = false;
                         if (!props.get(703, true))
-                            (geom).yUp = false;
+                            geom.yUp = false;
 
                         break;
 
@@ -37150,12 +36942,16 @@ var away;
                 var returnedArray = this.getAssetByID(par_id, [AssetType.CONTAINER, AssetType.LIGHT, AssetType.MESH, AssetType.SEGMENT_SET]);
 
                 if (returnedArray[0]) {
-                    var obj = (returnedArray[1]).addChild(ctr);
-                    parentName = (returnedArray[1]).name;
+                    var obj = returnedArray[1].addChild(ctr);
+                    parentName = returnedArray[1].name;
                 } else if (par_id > 0) {
                     this._blocks[blockID].addError("Could not find a parent for this ObjectContainer3D");
+                } else {
+                    //add to the content property
+                    this._pContent.addChild(ctr);
                 }
 
+                // in AWD version 2.1 we read the Container properties
                 if ((this._version[0] == 2) && (this._version[1] == 1)) {
                     var props = this.parseProperties({ 1: this._matrixNrType, 2: this._matrixNrType, 3: this._matrixNrType, 4: AWDParser.UINT8 });
                     ctr.pivotPoint = new away.geom.Vector3D(props.get(1, 0), props.get(2, 0), props.get(3, 0));
@@ -37230,6 +37026,9 @@ var away;
                     parentName = objC.name;
                 } else if (par_id > 0) {
                     this._blocks[blockID].addError("Could not find a parent for this Mesh");
+                } else {
+                    //add to the content property
+                    this._pContent.addChild(mesh);
                 }
 
                 if (materials.length >= 1 && mesh.subMeshes.length == 1) {
@@ -37274,7 +37073,7 @@ var away;
                 this._pFinalizeAsset(asset, name);
                 this._blocks[blockID].data = asset;
                 if (this._debug)
-                    console.log("Parsed a Skybox: Name = '" + name + "' | CubeTexture-Name = " + (returnedArrayCubeTex[1]).name);
+                    console.log("Parsed a Skybox: Name = '" + name + "' | CubeTexture-Name = " + returnedArrayCubeTex[1].name);
             };
 
             //Block ID = 41
@@ -37295,8 +37094,8 @@ var away;
                 if (lightType == 1) {
                     light = new away.lights.PointLight();
 
-                    (light).radius = props.get(1, 90000);
-                    (light).fallOff = props.get(2, 100000);
+                    light.radius = props.get(1, 90000);
+                    light.fallOff = props.get(2, 100000);
 
                     if (shadowMapperType > 0) {
                         if (shadowMapperType == 4) {
@@ -37326,6 +37125,7 @@ var away;
                 light.ambientColor = props.get(7, 0xffffff);
                 light.ambient = props.get(8, 0.0);
 
+                // if a shadowMapper has been created, adjust the depthMapSize if needed, assign to light and set castShadows to true
                 if (newShadowMapper) {
                     if (newShadowMapper instanceof away.lights.CubeMapShadowMapper) {
                         if (props.get(10, 1) != 1) {
@@ -37345,11 +37145,14 @@ var away;
                     var returnedArrayParent = this.getAssetByID(par_id, [AssetType.CONTAINER, AssetType.LIGHT, AssetType.MESH, AssetType.SEGMENT_SET]);
 
                     if (returnedArrayParent[0]) {
-                        (returnedArrayParent[1]).addChild(light);
-                        parentName = (returnedArrayParent[1]).name;
+                        returnedArrayParent[1].addChild(light);
+                        parentName = returnedArrayParent[1].name;
                     } else {
                         this._blocks[blockID].addError("Could not find a parent for this Light");
                     }
+                } else {
+                    //add to the content property
+                    this._pContent.addChild(light);
                 }
 
                 this.parseUserAttributes();
@@ -37370,8 +37173,8 @@ var away;
                 var parentName = "Root (TopLevel)";
                 var projection;
 
-                this._newBlockBytes.readUnsignedByte();
-                this._newBlockBytes.readShort();
+                this._newBlockBytes.readUnsignedByte(); //set as active camera
+                this._newBlockBytes.readShort(); //lengthof lenses - not used yet
 
                 var projectiontype = this._newBlockBytes.readShort();
                 var props = this.parseProperties({ 101: this._propsNrType, 102: this._propsNrType, 103: this._propsNrType, 104: this._propsNrType });
@@ -37403,6 +37206,9 @@ var away;
                     parentName = objC.name;
                 } else if (par_id > 0) {
                     this._blocks[blockID].addError("Could not find a parent for this Camera");
+                } else {
+                    //add to the content property
+                    this._pContent.addChild(camera);
                 }
 
                 camera.name = name;
@@ -37436,7 +37242,7 @@ var away;
 
                     if (returnedArrayLight[0]) {
                         lightsArray.push(returnedArrayLight[1]);
-                        lightsArrayNames.push((returnedArrayLight[1]).name);
+                        lightsArrayNames.push(returnedArrayLight[1].name);
                     } else {
                         this._blocks[blockID].addError("Could not find a Light Nr " + k + " (ID = " + lightID + " ) for this LightPicker");
                     }
@@ -37499,7 +37305,7 @@ var away;
                     color = props.get(1, 0xcccccc);
                     if (this.materialMode < 2)
                         mat = new away.materials.ColorMaterial(color, props.get(10, 1.0));
-else
+                    else
                         mat = new away.materials.ColorMultiPassMaterial(color);
                 } else if (type === 2) {
                     var tex_addr = props.get(2, 0);
@@ -37575,7 +37381,7 @@ else
                             debugString += "Parsed a ColorMaterial(MultiPass): Name = '" + name + "' | ";
                         } else {
                             mat = new away.materials.ColorMaterial(color, props.get(10, 1.0));
-                            (mat).alphaBlending = props.get(11, false);
+                            mat.alphaBlending = props.get(11, false);
                             debugString += "Parsed a ColorMaterial(SinglePass): Name = '" + name + "' | ";
                         }
                     } else if (type == 2) {
@@ -37604,7 +37410,7 @@ else
                             debugString += "Parsed a TextureMaterial(MultiPass): Name = '" + name + "' | Texture-Name = " + texture.name;
 
                             if (ambientTexture) {
-                                (mat).ambientTexture = ambientTexture;
+                                mat.ambientTexture = ambientTexture;
                                 debugString += " | AmbientTexture-Name = " + ambientTexture.name;
                             }
                         } else {
@@ -37612,12 +37418,12 @@ else
                             debugString += "Parsed a TextureMaterial(SinglePass): Name = '" + name + "' | Texture-Name = " + texture.name;
 
                             if (ambientTexture) {
-                                (mat).ambientTexture = ambientTexture;
+                                mat.ambientTexture = ambientTexture;
                                 debugString += " | AmbientTexture-Name = " + ambientTexture.name;
                             }
 
-                            (mat).alpha = props.get(10, 1.0);
-                            (mat).alphaBlending = props.get(11, false);
+                            mat.alpha = props.get(10, 1.0);
+                            mat.alphaBlending = props.get(11, false);
                         }
                     }
 
@@ -37651,45 +37457,45 @@ else
                     if ((!returnedArray[0]) && (lightPickerAddr)) {
                         this._blocks[blockID].addError("Could not find the LightPicker (ID = " + lightPickerAddr + " ) for this TextureMaterial");
                     } else {
-                        (mat).lightPicker = returnedArray[1];
+                        mat.lightPicker = returnedArray[1];
                         //debugString+=" | Lightpicker-Name = "+LightPickerBase(returnedArray[1]).name;
                     }
 
-                    (mat).smooth = props.get(5, true);
-                    (mat).mipmap = props.get(6, true);
-                    (mat).bothSides = props.get(7, false);
-                    (mat).alphaPremultiplied = props.get(8, false);
-                    (mat).blendMode = this.blendModeDic[props.get(9, 0)];
-                    (mat).repeat = props.get(13, false);
+                    mat.smooth = props.get(5, true);
+                    mat.mipmap = props.get(6, true);
+                    mat.bothSides = props.get(7, false);
+                    mat.alphaPremultiplied = props.get(8, false);
+                    mat.blendMode = this.blendModeDic[props.get(9, 0)];
+                    mat.repeat = props.get(13, false);
 
                     if (spezialType == 0) {
                         if (normalTexture) {
-                            (mat).normalMap = normalTexture;
+                            mat.normalMap = normalTexture;
                         }
                         if (specTexture) {
-                            (mat).specularMap = specTexture;
+                            mat.specularMap = specTexture;
                         }
 
-                        (mat).alphaThreshold = props.get(12, 0.0);
-                        (mat).ambient = props.get(15, 1.0);
-                        (mat).ambientColor = props.get(16, 0xffffff);
-                        (mat).specular = props.get(18, 1.0);
-                        (mat).gloss = props.get(19, 50);
-                        (mat).specularColor = props.get(20, 0xffffff);
+                        mat.alphaThreshold = props.get(12, 0.0);
+                        mat.ambient = props.get(15, 1.0);
+                        mat.ambientColor = props.get(16, 0xffffff);
+                        mat.specular = props.get(18, 1.0);
+                        mat.gloss = props.get(19, 50);
+                        mat.specularColor = props.get(20, 0xffffff);
                     } else {
                         if (normalTexture) {
-                            (mat).normalMap = normalTexture;
+                            mat.normalMap = normalTexture;
                         }
                         if (specTexture) {
-                            (mat).specularMap = specTexture;
+                            mat.specularMap = specTexture;
                         }
 
-                        (mat).alphaThreshold = props.get(12, 0.0);
-                        (mat).ambient = props.get(15, 1.0);
-                        (mat).ambientColor = props.get(16, 0xffffff);
-                        (mat).specular = props.get(18, 1.0);
-                        (mat).gloss = props.get(19, 50);
-                        (mat).specularColor = props.get(20, 0xffffff);
+                        mat.alphaThreshold = props.get(12, 0.0);
+                        mat.ambient = props.get(15, 1.0);
+                        mat.ambientColor = props.get(16, 0xffffff);
+                        mat.specular = props.get(18, 1.0);
+                        mat.gloss = props.get(19, 50);
+                        mat.specularColor = props.get(20, 0xffffff);
                     }
 
                     var methods_parsed = 0;
@@ -37710,13 +37516,13 @@ else
                                     this._blocks[blockID].addError("Could not find the EffectMethod (ID = " + targetID + " ) for this Material");
                                 } else {
                                     if (spezialType == 0) {
-                                        (mat).addMethod(returnedArray[1]);
+                                        mat.addMethod(returnedArray[1]);
                                     }
                                     if (spezialType == 1) {
-                                        (mat).addMethod(returnedArray[1]);
+                                        mat.addMethod(returnedArray[1]);
                                     }
 
-                                    debugString += " | EffectMethod-Name = " + (returnedArray[1]).name;
+                                    debugString += " | EffectMethod-Name = " + returnedArray[1].name;
                                 }
 
                                 break;
@@ -37729,36 +37535,36 @@ else
                                     this._blocks[blockID].addError("Could not find the ShadowMethod (ID = " + targetID + " ) for this Material");
                                 } else {
                                     if (spezialType == 0) {
-                                        (mat).shadowMethod = returnedArray[1];
+                                        mat.shadowMethod = returnedArray[1];
                                     }
 
                                     if (spezialType == 1) {
-                                        (mat).shadowMethod = returnedArray[1];
+                                        mat.shadowMethod = returnedArray[1];
                                     }
 
-                                    debugString += " | ShadowMethod-Name = " + (returnedArray[1]).name;
+                                    debugString += " | ShadowMethod-Name = " + returnedArray[1].name;
                                 }
 
                                 break;
 
                             case 102:
                                 if (spezialType == 0)
-                                    (mat).specularMethod = new PhongSpecularMethod();
+                                    mat.specularMethod = new PhongSpecularMethod();
                                 if (spezialType == 1)
-                                    (mat).specularMethod = new PhongSpecularMethod();
+                                    mat.specularMethod = new PhongSpecularMethod();
                                 debugString += " | PhongSpecularMethod";
                                 break;
 
                             case 104:
                                 if (spezialType == 0) {
-                                    (mat).specularMethod = new FresnelSpecularMethod(props.get(701, true), (mat).specularMethod);
-                                    ((mat).specularMethod).fresnelPower = props.get(101, 5);
-                                    ((mat).specularMethod).normalReflectance = props.get(102, 0.1);
+                                    mat.specularMethod = new FresnelSpecularMethod(props.get(701, true), mat.specularMethod);
+                                    mat.specularMethod.fresnelPower = props.get(101, 5);
+                                    mat.specularMethod.normalReflectance = props.get(102, 0.1);
                                 }
                                 if (spezialType == 1) {
-                                    (mat).specularMethod = new FresnelSpecularMethod(props.get(701, true), (mat).specularMethod);
-                                    ((mat).specularMethod).fresnelPower = props.get(101, 5);
-                                    ((mat).specularMethod).normalReflectance = props.get(102, 0.1);
+                                    mat.specularMethod = new FresnelSpecularMethod(props.get(701, true), mat.specularMethod);
+                                    mat.specularMethod.fresnelPower = props.get(101, 5);
+                                    mat.specularMethod.normalReflectance = props.get(102, 0.1);
                                 }
                                 debugString += " | FresnelSpecularMethod";
                                 break;
@@ -37767,7 +37573,7 @@ else
                         methods_parsed += 1;
                     }
                 }
-                (mat).extra = this.parseUserAttributes();
+                mat.extra = this.parseUserAttributes();
                 this._pFinalizeAsset(mat, name);
 
                 this._blocks[blockID].data = mat;
@@ -37787,6 +37593,7 @@ else
 
                 this._texture_users[this._cur_block_id.toString()] = [];
 
+                // External
                 if (type == 0) {
                     data_len = this._newBlockBytes.readUnsignedInt();
                     var url;
@@ -37838,6 +37645,7 @@ else
                     this._texture_users[this._cur_block_id.toString()] = [];
                     this._cubeTextures.push(null);
 
+                    // External
                     if (type == 0) {
                         data_len = this._newBlockBytes.readUnsignedInt();
                         var url;
@@ -37904,12 +37712,12 @@ else
                 if (!asset)
                     return;
 
-                this.parseUserAttributes();
+                this.parseUserAttributes(); // Ignore for now
                 this._pFinalizeAsset(asset, this._blocks[blockID].name);
                 this._blocks[blockID].data = asset;
 
                 if (this._debug) {
-                    console.log("Parsed a ShadowMapMethodMethod: Name = " + asset.name + " | Type = " + asset + " | Light-Name = ", (returnedArray[1]).name);
+                    console.log("Parsed a ShadowMapMethodMethod: Name = " + asset.name + " | Type = " + asset + " | Light-Name = ", returnedArray[1].name);
                 }
             };
 
@@ -38010,28 +37818,28 @@ else
                         break;
                     case 1101:
                         shadowMethod = new FilteredShadowMapMethod(light);
-                        (shadowMethod).alpha = props.get(101, 1);
-                        (shadowMethod).epsilon = props.get(102, 0.002);
+                        shadowMethod.alpha = props.get(101, 1);
+                        shadowMethod.epsilon = props.get(102, 0.002);
                         break;
 
                     case 1102:
                         shadowMethod = new DitheredShadowMapMethod(light, props.get(201, 5));
-                        (shadowMethod).alpha = props.get(101, 1);
-                        (shadowMethod).epsilon = props.get(102, 0.002);
-                        (shadowMethod).range = props.get(103, 1);
+                        shadowMethod.alpha = props.get(101, 1);
+                        shadowMethod.epsilon = props.get(102, 0.002);
+                        shadowMethod.range = props.get(103, 1);
 
                         break;
                     case 1103:
                         shadowMethod = new SoftShadowMapMethod(light, props.get(201, 5));
-                        (shadowMethod).alpha = props.get(101, 1);
-                        (shadowMethod).epsilon = props.get(102, 0.002);
-                        (shadowMethod).range = props.get(103, 1);
+                        shadowMethod.alpha = props.get(101, 1);
+                        shadowMethod.epsilon = props.get(102, 0.002);
+                        shadowMethod.range = props.get(103, 1);
 
                         break;
                     case 1104:
                         shadowMethod = new HardShadowMapMethod(light);
-                        (shadowMethod).alpha = props.get(101, 1);
-                        (shadowMethod).epsilon = props.get(102, 0.002);
+                        shadowMethod.alpha = props.get(101, 1);
+                        shadowMethod.epsilon = props.get(102, 0.002);
                         break;
                 }
                 this.parseUserAttributes();
@@ -38039,11 +37847,11 @@ else
             };
 
             //Block ID 101
-            AWDParser.prototype.parseSkeleton = function (blockID/*uint*/ ) {
+            AWDParser.prototype.parseSkeleton = function (blockID /*uint*/ ) {
                 var name = this.parseVarStr();
                 var num_joints = this._newBlockBytes.readUnsignedShort();
                 var skeleton = new Skeleton();
-                this.parseProperties(null);
+                this.parseProperties(null); // Discard properties for now
 
                 var joints_parsed = 0;
                 while (joints_parsed < num_joints) {
@@ -38053,7 +37861,7 @@ else
                     // Ignore joint id
                     this._newBlockBytes.readUnsignedShort();
                     joint = new SkeletonJoint();
-                    joint.parentIndex = this._newBlockBytes.readUnsignedShort() - 1;
+                    joint.parentIndex = this._newBlockBytes.readUnsignedShort() - 1; // 0=null in AWD
                     joint.name = this.parseVarStr();
 
                     ibp = this.parseMatrix3D();
@@ -38075,17 +37883,17 @@ else
             };
 
             //Block ID = 102
-            AWDParser.prototype.parseSkeletonPose = function (blockID/*uint*/ ) {
+            AWDParser.prototype.parseSkeletonPose = function (blockID /*uint*/ ) {
                 var name = this.parseVarStr();
                 var num_joints = this._newBlockBytes.readUnsignedShort();
-                this.parseProperties(null);
+                this.parseProperties(null); // Ignore properties for now
 
                 var pose = new SkeletonPose();
 
                 var joints_parsed = 0;
                 while (joints_parsed < num_joints) {
                     var joint_pose;
-                    var has_transform/*uint*/ ;
+                    var has_transform;
                     joint_pose = new JointPose();
                     has_transform = this._newBlockBytes.readUnsignedByte();
                     if (has_transform == 1) {
@@ -38109,13 +37917,13 @@ else
             };
 
             //blockID 103
-            AWDParser.prototype.parseSkeletonAnimation = function (blockID/*uint*/ ) {
+            AWDParser.prototype.parseSkeletonAnimation = function (blockID /*uint*/ ) {
                 var frame_dur;
-                var pose_addr/*uint*/ ;
+                var pose_addr;
                 var name = this.parseVarStr();
                 var clip = new SkeletonClipNode();
                 var num_frames = this._newBlockBytes.readUnsignedShort();
-                this.parseProperties(null);
+                this.parseProperties(null); // Ignore properties for now
 
                 var frames_parsed = 0;
                 var returnedArray;
@@ -38125,7 +37933,7 @@ else
                     returnedArray = this.getAssetByID(pose_addr, [AssetType.SKELETON_POSE]);
                     if (!returnedArray[0])
                         this._blocks[blockID].addError("Could not find the SkeletonPose Frame # " + frames_parsed + " (ID = " + pose_addr + " ) for this SkeletonClipNode");
-else
+                    else
                         clip.addFrame(this._blocks[pose_addr].data, frame_dur);
                     frames_parsed++;
                 }
@@ -38143,12 +37951,12 @@ else
             };
 
             //Block ID = 111 /  Block ID = 112
-            AWDParser.prototype.parseMeshPoseAnimation = function (blockID/*uint*/ , poseOnly) {
+            AWDParser.prototype.parseMeshPoseAnimation = function (blockID /*uint*/ , poseOnly) {
                 if (typeof poseOnly === "undefined") { poseOnly = false; }
                 var num_frames = 1;
-                var num_submeshes/*uint*/ ;
-                var frames_parsed/*uint*/ ;
-                var subMeshParsed/*uint*/ ;
+                var num_submeshes;
+                var frames_parsed;
+                var subMeshParsed;
                 var frame_dur;
                 var x;
                 var y;
@@ -38159,11 +37967,11 @@ else
                 var subGeom;
                 var idx = 0;
                 var clip = new VertexClipNode();
-                var indices/*uint*/ ;
+                var indices;
                 var verts;
                 var num_Streams = 0;
                 var streamsParsed = 0;
-                var streamtypes = new Array()/*int*/ ;
+                var streamtypes = new Array();
                 var props;
                 var thisGeo;
                 var name = this.parseVarStr();
@@ -38200,7 +38008,7 @@ else
                         str_end = this._newBlockBytes.position + str_len;
                         while (streamsParsed < num_Streams) {
                             if (streamtypes[streamsParsed] == 1) {
-                                indices = (returnedArray[1]).subGeometries[subMeshParsed].indexData;
+                                indices = returnedArray[1].subGeometries[subMeshParsed].indexData;
                                 verts = new Array();
                                 idx = 0;
                                 while (this._newBlockBytes.position < str_end) {
@@ -38233,11 +38041,11 @@ else
 
                 this._blocks[blockID].data = clip;
                 if (this._debug)
-                    console.log("Parsed a VertexClipNode: Name = " + clip.name + " | Target-Geometry-Name = " + (returnedArray[1]).name + " | Number of Frames = " + clip.frames.length);
+                    console.log("Parsed a VertexClipNode: Name = " + clip.name + " | Target-Geometry-Name = " + returnedArray[1].name + " | Number of Frames = " + clip.frames.length);
             };
 
             //BlockID 113
-            AWDParser.prototype.parseVertexAnimationSet = function (blockID/*uint*/ ) {
+            AWDParser.prototype.parseVertexAnimationSet = function (blockID /*uint*/ ) {
                 var poseBlockAdress;
                 var outputString = "";
                 var name = this.parseVarStr();
@@ -38251,7 +38059,7 @@ else
                     var returnedArray = this.getAssetByID(poseBlockAdress, [AssetType.ANIMATION_NODE]);
                     if (!returnedArray[0])
                         this._blocks[blockID].addError("Could not find the AnimationClipNode Nr " + frames_parsed + " ( " + poseBlockAdress + " ) for this AnimationSet");
-else {
+                    else {
                         if (returnedArray[1] instanceof VertexClipNode)
                             vertexFrames.push(returnedArray[1]);
                         if (returnedArray[1] instanceof SkeletonClipNode)
@@ -38285,7 +38093,7 @@ else {
             };
 
             //BlockID 122
-            AWDParser.prototype.parseAnimatorSet = function (blockID/*uint*/ ) {
+            AWDParser.prototype.parseAnimatorSet = function (blockID /*uint*/ ) {
                 var targetMesh;
                 var animSetBlockAdress;
                 var targetAnimationSet;
@@ -38297,7 +38105,7 @@ else {
 
                 animSetBlockAdress = this._newBlockBytes.readUnsignedInt();
                 var targetMeshLength = this._newBlockBytes.readUnsignedShort();
-                var meshAdresses = new Array()/*uint*/ ;
+                var meshAdresses = new Array();
                 for (var i = 0; i < targetMeshLength; i++)
                     meshAdresses.push(this._newBlockBytes.readUnsignedInt());
 
@@ -38336,9 +38144,9 @@ else {
                 this._blocks[blockID].data = thisAnimator;
                 for (i = 0; i < targetMeshes.length; i++) {
                     if (type == 1)
-                        targetMeshes[i].animator = (thisAnimator);
+                        targetMeshes[i].animator = thisAnimator;
                     if (type == 2)
-                        targetMeshes[i].animator = (thisAnimator);
+                        targetMeshes[i].animator = thisAnimator;
                 }
                 if (this._debug)
                     console.log("Parsed a Animator: Name = " + name);
@@ -38566,7 +38374,7 @@ else {
                     var num_elems = len / elem_len;
 
                     while (num_read < num_elems) {
-                        list.push(read_func.apply(this._newBlockBytes));
+                        list.push(read_func.apply(this._newBlockBytes)); // list.push(read_func());
                         num_read++;
                     }
 
@@ -38581,12 +38389,12 @@ else {
                 var flags;
                 var body_len;
 
-                this._byteData.position = 3;
+                this._byteData.position = 3; // Skip magic string and parse version
 
                 this._version[0] = this._byteData.readUnsignedByte();
                 this._version[1] = this._byteData.readUnsignedByte();
 
-                flags = this._byteData.readUnsignedShort();
+                flags = this._byteData.readUnsignedShort(); // Parse bit flags
 
                 this._streaming = bitFlags.test(flags, bitFlags.FLAG1);
 
@@ -38616,7 +38424,7 @@ else {
                     this._propsNrType = AWDParser.FLOAT64;
                 }
 
-                this._compression = this._byteData.readUnsignedByte();
+                this._compression = this._byteData.readUnsignedByte(); // compression
 
                 if (this._debug) {
                     console.log("Import AWDFile of version = " + this._version[0] + " - " + this._version[1]);
@@ -38631,18 +38439,18 @@ else {
             };
 
             // Helper - functions
-            AWDParser.prototype.getUVForVertexAnimation = function (meshID/*uint*/ ) {
+            AWDParser.prototype.getUVForVertexAnimation = function (meshID /*uint*/ ) {
                 if (this._blocks[meshID].data instanceof Mesh)
                     meshID = this._blocks[meshID].geoID;
                 if (this._blocks[meshID].uvsForVertexAnimation)
                     return this._blocks[meshID].uvsForVertexAnimation;
-                var geometry = (this._blocks[meshID].data);
+                var geometry = this._blocks[meshID].data;
                 var geoCnt = 0;
                 var ud;
-                var uStride/*uint*/ ;
-                var uOffs/*uint*/ ;
-                var numPoints/*uint*/ ;
-                var i/*int*/ ;
+                var uStride;
+                var uOffs;
+                var numPoints;
+                var i;
                 var newUvs;
                 this._blocks[meshID].uvsForVertexAnimation = new Array();
                 while (geoCnt < geometry.subGeometries.length) {
@@ -38677,6 +38485,7 @@ else {
                                 var iasset = this._blocks[assetID].data;
 
                                 if (iasset.assetType == assetTypesToGet[typeCnt]) {
+                                    //if the right assetType was found
                                     if ((assetTypesToGet[typeCnt] == AssetType.TEXTURE) && (extraTypeInfo == "CubeTexture")) {
                                         if (this._blocks[assetID].data instanceof away.textures.ImageCubeTexture) {
                                             returnArray.push(true);
@@ -38697,6 +38506,7 @@ else {
                                     }
                                 }
 
+                                //if ((assetTypesToGet[typeCnt] == AssetType.GEOMETRY) && (IAsset(_blocks[assetID].data).assetType == AssetType.MESH)) {
                                 if ((assetTypesToGet[typeCnt] == AssetType.GEOMETRY) && (iasset.assetType == AssetType.MESH)) {
                                     var mesh = this._blocks[assetID].data;
 
@@ -38803,6 +38613,7 @@ else {
                 mtx_raw[14] = this.readNumber(this._accuracyMatrix);
                 mtx_raw[15] = 1.0;
 
+                //TODO: fix max exporter to remove NaN values in joint 0 inverse bind pose
                 if (isNaN(mtx_raw[0])) {
                     mtx_raw[0] = 1;
                     mtx_raw[1] = 0;
@@ -38912,9 +38723,9 @@ var AWDProperties = (function () {
     };
     return AWDProperties;
 })();
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (parsers) {
         var ColorMaterial = away.materials.ColorMaterial;
         var ColorMultiPassMaterial = away.materials.ColorMultiPassMaterial;
@@ -38945,25 +38756,25 @@ var away;
 
                 this._useSmoothingGroups = useSmoothingGroups;
             }
-            Max3DSParser.supportsType = /**
+            /**
             * Indicates whether or not a given file extension is supported by the parser.
             * @param extension The file extension of a potential file to be parsed.
             * @return Whether or not the given file type is supported.
             */
-            function (extension) {
+            Max3DSParser.supportsType = function (extension) {
                 extension = extension.toLowerCase();
                 return extension == "3ds";
             };
 
-            Max3DSParser.supportsData = /**
+            /**
             * Tests whether a data block can be parsed by the parser.
             * @param data The data block to potentially be parsed.
             * @return Whether or not the given data is supported.
             */
-            function (data) {
+            Max3DSParser.supportsData = function (data) {
                 var ba;
 
-                ba = parsers.ParserUtils.toByteArray(data);
+                ba = away.parsers.ParserUtils.toByteArray(data);
                 if (ba) {
                     ba.position = 0;
                     if (ba.readShort() == 0x4d4d)
@@ -39016,21 +38827,22 @@ var away;
                 }
 
                 while (this._pHasTime()) {
+                    // If we are currently working on an object, and the most recent chunk was
+                    // the last one in that object, finalize the current object.
                     if (this._cur_mat && this._byteData.position >= this._cur_mat_end)
                         this.finalizeCurrentMaterial();
-else if (this._cur_obj && this._byteData.position >= this._cur_obj_end) {
+                    else if (this._cur_obj && this._byteData.position >= this._cur_obj_end) {
                         // Can't finalize at this point, because we have to wait until the full
                         // animation section has been parsed for any potential pivot definitions
                         this._unfinalized_objects[this._cur_obj.name] = this._cur_obj;
                         this._cur_obj_end = Number.MAX_VALUE;
-                        ;
                         this._cur_obj = null;
                     }
 
                     if (this._byteData.getBytesAvailable() > 0) {
-                        var cid/*uint*/ ;
-                        var len/*uint*/ ;
-                        var end/*uint*/ ;
+                        var cid;
+                        var len;
+                        var end;
 
                         cid = this._byteData.readUnsignedShort();
                         len = this._byteData.readUnsignedInt();
@@ -39094,6 +38906,9 @@ else if (this._cur_obj && this._byteData.position >= this._cur_obj_end) {
                                 break;
                         }
 
+                        // Pause parsing if there were any dependencies found during this
+                        // iteration (i.e. if there are any dependencies that need to be
+                        // retrieved at this time.)
                         if (this.dependencies.length) {
                             this._pPauseAndRetrieveDependencies();
                             break;
@@ -39101,20 +38916,34 @@ else if (this._cur_obj && this._byteData.position >= this._cur_obj_end) {
                     }
                 }
 
-                if (this._byteData.getBytesAvailable() || this._cur_obj || this._cur_mat)
-                    return parsers.ParserBase.MORE_TO_PARSE;
-else {
+                // More parsing is required if the entire byte array has not yet
+                // been read, or if there is a currently non-finalized object in
+                // the pipeline.
+                if (this._byteData.getBytesAvailable() || this._cur_obj || this._cur_mat) {
+                    return away.parsers.ParserBase.MORE_TO_PARSE;
+                } else {
                     var name;
 
                     for (name in this._unfinalized_objects) {
                         var obj;
                         obj = this.constructObject(this._unfinalized_objects[name]);
-                        if (obj)
+                        if (obj) {
+                            //add to the content property
+                            this._pContent.addChild(obj);
+
                             this._pFinalizeAsset(obj, name);
+                        }
                     }
 
-                    return parsers.ParserBase.PARSING_DONE;
+                    return away.parsers.ParserBase.PARSING_DONE;
                 }
+            };
+
+            Max3DSParser.prototype._pStartParsing = function (frameLimit) {
+                _super.prototype._pStartParsing.call(this, frameLimit);
+
+                //create a content object for Loaders
+                this._pContent = new away.containers.DisplayObjectContainer();
             };
 
             Max3DSParser.prototype.parseMaterial = function () {
@@ -39123,9 +38952,9 @@ else {
                 mat = new MaterialVO();
 
                 while (this._byteData.position < this._cur_mat_end) {
-                    var cid/*uint*/ ;
-                    var len/*uint*/ ;
-                    var end/*uint*/ ;
+                    var cid;
+                    var len;
+                    var end;
 
                     cid = this._byteData.readUnsignedShort();
                     len = this._byteData.readUnsignedInt();
@@ -39169,14 +38998,14 @@ else {
                 return mat;
             };
 
-            Max3DSParser.prototype.parseTexture = function (end/*uint*/ ) {
+            Max3DSParser.prototype.parseTexture = function (end /*uint*/ ) {
                 var tex;
 
                 tex = new TextureVO();
 
                 while (this._byteData.position < end) {
-                    var cid/*uint*/ ;
-                    var len/*uint*/ ;
+                    var cid;
+                    var len;
 
                     cid = this._byteData.readUnsignedShort();
                     len = this._byteData.readUnsignedInt();
@@ -39200,9 +39029,9 @@ else {
             };
 
             Max3DSParser.prototype.parseVertexList = function () {
-                var i/*uint*/ ;
-                var len/*uint*/ ;
-                var count/*uint*/ ;
+                var i;
+                var len;
+                var count;
 
                 count = this._byteData.readUnsignedShort();
                 this._cur_obj.verts = new Array(count * 3);
@@ -39223,9 +39052,9 @@ else {
             };
 
             Max3DSParser.prototype.parseFaceList = function () {
-                var i/*uint*/ ;
-                var len/*uint*/ ;
-                var count/*uint*/ ;
+                var i;
+                var len;
+                var count;
 
                 count = this._byteData.readUnsignedShort();
                 this._cur_obj.indices = new Array(count * 3);
@@ -39233,7 +39062,7 @@ else {
                 i = 0;
                 len = this._cur_obj.indices.length;
                 while (i < len) {
-                    var i0/*uint*/ , i1, i2;
+                    var i0, i1, i2;
 
                     i0 = this._byteData.readUnsignedShort();
                     i1 = this._byteData.readUnsignedShort();
@@ -39260,9 +39089,9 @@ else {
             };
 
             Max3DSParser.prototype.parseUVList = function () {
-                var i/*uint*/ ;
-                var len/*uint*/ ;
-                var count/*uint*/ ;
+                var i;
+                var len;
+                var count;
 
                 count = this._byteData.readUnsignedShort();
                 this._cur_obj.uvs = new Array(count * 2);
@@ -39277,9 +39106,9 @@ else {
 
             Max3DSParser.prototype.parseFaceMaterialList = function () {
                 var mat;
-                var count/*uint*/ ;
-                var i/*uint*/ ;
-                var faces/*uint*/ ;
+                var count;
+                var i;
+                var faces;
 
                 mat = this.readNulTermstring();
                 count = this._byteData.readUnsignedShort();
@@ -39298,14 +39127,14 @@ else {
                 var obj;
                 var pivot;
                 var name;
-                var hier/*uint*/ ;
+                var hier;
 
                 // Pivot defaults to origin
-                pivot = new away.geom.Vector3D();
+                pivot = new away.geom.Vector3D;
 
                 while (this._byteData.position < end) {
-                    var cid/*uint*/ ;
-                    var len/*uint*/ ;
+                    var cid;
+                    var len;
 
                     cid = this._byteData.readUnsignedShort();
                     len = this._byteData.readUnsignedInt();
@@ -39329,12 +39158,19 @@ else {
                     }
                 }
 
+                // If name is "$$$DUMMY" this is an empty object (e.g. a container)
+                // and will be ignored in this version of the parser
+                // TODO: Implement containers in 3DS parser.
                 if (name != '$$$DUMMY' && this._unfinalized_objects.hasOwnProperty(name)) {
                     vo = this._unfinalized_objects[name];
                     obj = this.constructObject(vo, pivot);
 
-                    if (obj)
+                    if (obj) {
+                        //add to the content property
+                        this._pContent.addChild(obj);
+
                         this._pFinalizeAsset(obj, vo.name);
+                    }
 
                     delete this._unfinalized_objects[name];
                 }
@@ -39343,7 +39179,7 @@ else {
             Max3DSParser.prototype.constructObject = function (obj, pivot) {
                 if (typeof pivot === "undefined") { pivot = null; }
                 if (obj.type == away.library.AssetType.MESH) {
-                    var i/*uint*/ ;
+                    var i;
                     var subs;
                     var geom;
                     var mat;
@@ -39355,6 +39191,7 @@ else {
                     if (obj.materials.length > 1)
                         console.log("The Away3D 3DS parser does not support multiple materials per mesh at this point.");
 
+                    // Ignore empty objects
                     if (!obj.indices || obj.indices.length == 0)
                         return null;
 
@@ -39373,7 +39210,7 @@ else {
                         obj.verts[i * 3 + 2] = vertices[i].z;
                     }
                     obj.indices = new Array(faces.length * 3);
-                    ;
+
                     for (i = 0; i < faces.length; i++) {
                         obj.indices[i * 3] = faces[i].a;
                         obj.indices[i * 3 + 1] = faces[i].b;
@@ -39405,6 +39242,8 @@ else {
                         mat = this._materials[mname].material;
                     }
 
+                    // Apply pivot translation to geometry if a pivot was
+                    // found while parsing the keyframe chunk earlier.
                     if (pivot) {
                         if (obj.transform) {
                             // If a transform was found while parsing the
@@ -39424,6 +39263,8 @@ else {
                         geom.applyTransformation(mtx);
                     }
 
+                    // Apply transformation to geometry if a transformation
+                    // was found while parsing the object chunk earlier.
                     if (obj.transform) {
                         mtx = new away.geom.Matrix3D(obj.transform);
                         mtx.invert();
@@ -39446,12 +39287,12 @@ else {
 
             Max3DSParser.prototype.prepareData = function (vertices, faces, obj) {
                 // convert raw ObjectVO's data to structured VertexVO and FaceVO
-                var i/*int*/ ;
-                var j/*int*/ ;
-                var k/*int*/ ;
+                var i;
+                var j;
+                var k;
                 var len = obj.verts.length;
                 for (i = 0, j = 0, k = 0; i < len;) {
-                    var v = new VertexVO();
+                    var v = new VertexVO;
                     v.x = obj.verts[i++];
                     v.y = obj.verts[i++];
                     v.z = obj.verts[i++];
@@ -39476,16 +39317,16 @@ else {
                 // clone vertices according to following rule:
                 // clone if vertex's in faces from groups 1+2 and 3
                 // don't clone if vertex's in faces from groups 1+2, 3 and 1+3
-                var i/*int*/ ;
-                var j/*int*/ ;
-                var k/*int*/ ;
-                var l/*int*/ ;
-                var len/*int*/ ;
+                var i;
+                var j;
+                var k;
+                var l;
+                var len;
                 var numVerts = vertices.length;
                 var numFaces = faces.length;
 
                 // extract groups data for vertices
-                var vGroups = new Array(numVerts)/*uint*/ ;
+                var vGroups = new Array(numVerts);
                 for (i = 0; i < numVerts; i++)
                     vGroups[i] = new Array();
                 for (i = 0; i < numFaces; i++) {
@@ -39505,16 +39346,16 @@ else {
                 }
 
                 // clone vertices
-                var vClones = new Array(numVerts)/*uint*/ ;
+                var vClones = new Array(numVerts);
                 for (i = 0; i < numVerts; i++) {
                     if ((len = vGroups[i].length) < 1)
                         continue;
-                    var clones = new Array(len)/*uint*/ ;
+                    var clones = new Array(len);
                     vClones[i] = clones;
                     clones[0] = i;
                     var v0 = vertices[i];
                     for (j = 1; j < len; j++) {
-                        var v1 = new VertexVO();
+                        var v1 = new VertexVO;
                         v1.x = v0.x;
                         v1.y = v0.y;
                         v1.z = v0.z;
@@ -39544,9 +39385,9 @@ else {
                                 }
                                 if (j == 0)
                                     face.a = index;
-else if (j == 1)
+                                else if (j == 1)
                                     face.b = index;
-else
+                                else
                                     face.c = index;
                                 l = len;
                             }
@@ -39560,17 +39401,17 @@ else
                 if (this.materialMode < 2) {
                     if (this._cur_mat.colorMap)
                         mat = new TextureMaterial(this._cur_mat.colorMap.texture || DefaultMaterialManager.getDefaultTexture());
-else
+                    else
                         mat = new ColorMaterial(this._cur_mat.diffuseColor);
-                    (mat).ambientColor = this._cur_mat.ambientColor;
-                    (mat).specularColor = this._cur_mat.specularColor;
+                    mat.ambientColor = this._cur_mat.ambientColor;
+                    mat.specularColor = this._cur_mat.specularColor;
                 } else {
                     if (this._cur_mat.colorMap)
                         mat = new TextureMultiPassMaterial(this._cur_mat.colorMap.texture || DefaultMaterialManager.getDefaultTexture());
-else
+                    else
                         mat = new ColorMultiPassMaterial(this._cur_mat.diffuseColor);
-                    (mat).ambientColor = this._cur_mat.ambientColor;
-                    (mat).specularColor = this._cur_mat.specularColor;
+                    mat.ambientColor = this._cur_mat.ambientColor;
+                    mat.specularColor = this._cur_mat.specularColor;
                 }
 
                 mat.bothSides = this._cur_mat.twoSided;
@@ -39584,7 +39425,7 @@ else
             };
 
             Max3DSParser.prototype.readNulTermstring = function () {
-                var chr/*int*/ ;
+                var chr;
                 var str = "";
 
                 while ((chr = this._byteData.readUnsignedByte()) > 0)
@@ -39599,36 +39440,36 @@ else
                 data = new Array(16);
 
                 // X axis
-                data[0] = this._byteData.readFloat();
-                data[2] = this._byteData.readFloat();
-                data[1] = this._byteData.readFloat();
+                data[0] = this._byteData.readFloat(); // X
+                data[2] = this._byteData.readFloat(); // Z
+                data[1] = this._byteData.readFloat(); // Y
                 data[3] = 0;
 
                 // Z axis
-                data[8] = this._byteData.readFloat();
-                data[10] = this._byteData.readFloat();
-                data[9] = this._byteData.readFloat();
+                data[8] = this._byteData.readFloat(); // X
+                data[10] = this._byteData.readFloat(); // Z
+                data[9] = this._byteData.readFloat(); // Y
                 data[11] = 0;
 
                 // Y Axis
-                data[4] = this._byteData.readFloat();
-                data[6] = this._byteData.readFloat();
-                data[5] = this._byteData.readFloat();
+                data[4] = this._byteData.readFloat(); // X
+                data[6] = this._byteData.readFloat(); // Z
+                data[5] = this._byteData.readFloat(); // Y
                 data[7] = 0;
 
                 // Translation
-                data[12] = this._byteData.readFloat();
-                data[14] = this._byteData.readFloat();
-                data[13] = this._byteData.readFloat();
+                data[12] = this._byteData.readFloat(); // X
+                data[14] = this._byteData.readFloat(); // Z
+                data[13] = this._byteData.readFloat(); // Y
                 data[15] = 1;
 
                 return data;
             };
 
             Max3DSParser.prototype.readColor = function () {
-                var cid/*int*/ ;
-                var len/*int*/ ;
-                var r/*int*/ , g, b;
+                var cid;
+                var len;
+                var r, g, b;
 
                 cid = this._byteData.readUnsignedShort();
                 len = this._byteData.readUnsignedInt();
@@ -39652,7 +39493,7 @@ else
                 return (r << 16) | (g << 8) | b;
             };
             return Max3DSParser;
-        })(parsers.ParserBase);
+        })(away.parsers.ParserBase);
         parsers.Max3DSParser = Max3DSParser;
     })(away.parsers || (away.parsers = {}));
     var parsers = away.parsers;
@@ -39689,9 +39530,9 @@ var FaceVO = (function () {
     }
     return FaceVO;
 })();
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (parsers) {
         var Geometry = away.base.Geometry;
         var CompactSubGeometry = away.base.CompactSubGeometry;
@@ -39723,23 +39564,23 @@ var away;
                 this._textureType = textureType;
                 this._ignoreTexturePath = ignoreTexturePath;
             }
-            MD2Parser.supportsType = /**
+            /**
             * Indicates whether or not a given file extension is supported by the parser.
             * @param extension The file extension of a potential file to be parsed.
             * @return Whether or not the given file type is supported.
             */
-            function (extension) {
+            MD2Parser.supportsType = function (extension) {
                 extension = extension.toLowerCase();
                 return extension == "md2";
             };
 
-            MD2Parser.supportsData = /**
+            /**
             * Tests whether a data block can be parsed by the parser.
             * @param data The data block to potentially be parsed.
             * @return Whether or not the given data is supported.
             */
-            function (data) {
-                return (parsers.ParserUtils.toString(data, 4) == 'IDP2');
+            MD2Parser.supportsData = function (data) {
+                return (away.parsers.ParserUtils.toString(data, 4) == 'IDP2');
             };
 
             /**
@@ -39754,8 +39595,11 @@ var away;
                     var material;
                     if (this.materialMode < 2)
                         material = new away.materials.TextureMaterial(asset);
-else
+                    else
                         material = new away.materials.TextureMultiPassMaterial(asset);
+
+                    //add to the content property
+                    this._pContent.addChild(this._mesh);
 
                     material.name = this._mesh.material.name;
                     this._mesh.material = material;
@@ -39770,10 +39614,14 @@ else
             * @inheritDoc
             */
             MD2Parser.prototype._iResolveDependencyFailure = function (resourceDependency) {
+                // apply system default
                 if (this.materialMode < 2)
                     this._mesh.material = away.materials.DefaultMaterialManager.getDefaultMaterial();
-else
+                else
                     this._mesh.material = new away.materials.TextureMultiPassMaterial(away.materials.DefaultMaterialManager.getDefaultTexture());
+
+                //add to the content property
+                this._pContent.addChild(this._mesh);
 
                 this._pFinalizeAsset(this._mesh.geometry);
                 this._pFinalizeAsset(this._mesh);
@@ -39805,7 +39653,7 @@ else
                         this._mesh = new away.entities.Mesh(this._geometry, null);
                         if (this.materialMode < 2)
                             this._mesh.material = away.materials.DefaultMaterialManager.getDefaultMaterial();
-else
+                        else
                             this._mesh.material = new away.materials.TextureMultiPassMaterial(away.materials.DefaultMaterialManager.getDefaultTexture());
 
                         //_geometry.animation = new VertexAnimation(2, VertexAnimationMode.ABSOLUTE);
@@ -39813,21 +39661,24 @@ else
                         // Parse header and decompress body
                         this.parseHeader();
                         this.parseMaterialNames();
-                    } else if (!this._parsedUV)
+                    } else if (!this._parsedUV) {
                         this.parseUV();
-else if (!this._parsedFaces)
+                    } else if (!this._parsedFaces) {
                         this.parseFaces();
-else if (!this._parsedFrames)
+                    } else if (!this._parsedFrames) {
                         this.parseFrames();
-else if ((this.geoCreated) && (this.materialFinal))
+                    } else if ((this.geoCreated) && (this.materialFinal)) {
                         return away.parsers.ParserBase.PARSING_DONE;
-else if (!this.geoCreated) {
+                    } else if (!this.geoCreated) {
                         this.geoCreated = true;
                         this.createDefaultSubGeometry();
 
                         // Force name to be chosen by this._pFinalizeAsset()
                         this._mesh.name = "";
                         if (this.materialFinal) {
+                            //add to the content property
+                            this._pContent.addChild(this._mesh);
+
                             this._pFinalizeAsset(this._mesh.geometry);
                             this._pFinalizeAsset(this._mesh);
                         }
@@ -39837,6 +39688,13 @@ else if (!this.geoCreated) {
                 }
 
                 return away.parsers.ParserBase.MORE_TO_PARSE;
+            };
+
+            MD2Parser.prototype._pStartParsing = function (frameLimit) {
+                _super.prototype._pStartParsing.call(this, frameLimit);
+
+                //create a content object for Loaders
+                this._pContent = new away.containers.DisplayObjectContainer();
             };
 
             /**
@@ -39877,8 +39735,8 @@ else if (!this.geoCreated) {
             MD2Parser.prototype.parseMaterialNames = function () {
                 var url;
                 var name;
-                var extIndex/*int*/ ;
-                var slashIndex/*int*/ ;
+                var extIndex;
+                var slashIndex;
                 this._materialNames = new Array();
                 this._byteData.position = this._offsetSkins;
 
@@ -39892,18 +39750,20 @@ else if (!this.geoCreated) {
                     if (name.toLowerCase().indexOf(".jpg") == -1 && name.toLowerCase().indexOf(".png") == -1) {
                         name = name.substring(slashIndex + 1, extIndex);
                         url = name + "." + this._textureType;
-                    } else
+                    } else {
                         url = name;
+                    }
 
                     this._materialNames[i] = name;
 
+                    // only support 1 skin TODO: really?
                     if (this.dependencies.length == 0)
                         this._pAddDependency(name, new away.net.URLRequest(url));
                 }
 
                 if (this._materialNames.length > 0)
                     this._mesh.material.name = this._materialNames[0];
-else
+                else
                     this.materialFinal = true;
             };
 
@@ -39927,8 +39787,8 @@ else
             * Parses unique indices for the faces.
             */
             MD2Parser.prototype.parseFaces = function () {
-                var a/*uint*/ , b, c, ta, tb, tc;
-                var i/*uint*/ ;
+                var a, b, c, ta, tb, tc;
+                var i;
 
                 this._vertIndices = new Array();
                 this._uvIndices = new Array();
@@ -39969,7 +39829,7 @@ else
             * @param vertexIndex The original index in the vertex list.
             * @param uvIndex The original index in the uv list.
             */
-            MD2Parser.prototype.addIndex = function (vertexIndex/*uint*/ , uvIndex/*uint*/ ) {
+            MD2Parser.prototype.addIndex = function (vertexIndex /*uint*/ , uvIndex /*uint*/ ) {
                 var index = this.findIndex(vertexIndex, uvIndex);
 
                 if (index == -1) {
@@ -39986,7 +39846,7 @@ else
             * @param uvIndex The original index in the uv list.
             * @return The index of the final mesh corresponding to the original vertex and uv index. -1 if it doesn't exist yet.
             */
-            MD2Parser.prototype.findIndex = function (vertexIndex/*uint*/ , uvIndex/*uint*/ ) {
+            MD2Parser.prototype.findIndex = function (vertexIndex /*uint*/ , uvIndex /*uint*/ ) {
                 var len = this._vertIndices.length;
 
                 for (var i = 0; i < len; ++i) {
@@ -40008,7 +39868,7 @@ else
                 var vertLen = this._vertIndices.length;
                 var fvertices;
                 var tvertices;
-                var i/*uint*/ , j, k;
+                var i, j, k;
 
                 //var ch : number /*uint*/;
                 var name = "";
@@ -40057,6 +39917,9 @@ else
                     var clip = this._clipNodes[name];
 
                     if (!clip) {
+                        // If another sequence was parsed before this one, starting
+                        // a new state means the previous one is complete and can
+                        // hence be finalized.
                         if (prevClip) {
                             this._pFinalizeAsset(prevClip);
                             this._animationSet.addAnimation(prevClip);
@@ -40073,6 +39936,7 @@ else
                     clip.addFrame(geometry, 1000 / away.parsers.MD2Parser.FPS);
                 }
 
+                // Finalize the last state
                 if (prevClip) {
                     this._pFinalizeAsset(prevClip);
                     this._animationSet.addAnimation(prevClip);
@@ -40107,14 +39971,14 @@ else
             };
             MD2Parser.FPS = 6;
             return MD2Parser;
-        })(parsers.ParserBase);
+        })(away.parsers.ParserBase);
         parsers.MD2Parser = MD2Parser;
     })(away.parsers || (away.parsers = {}));
     var parsers = away.parsers;
 })(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (parsers) {
         var JointPose = away.animators.JointPose;
         var SkeletonPose = away.animators.SkeletonPose;
@@ -40157,22 +40021,22 @@ var away;
                     this._rotationQuat.multiply(t1, this._rotationQuat);
                 }
             }
-            MD5AnimParser.supportsType = /**
+            /**
             * Indicates whether or not a given file extension is supported by the parser.
             * @param extension The file extension of a potential file to be parsed.
             * @return Whether or not the given file type is supported.
             */
-            function (extension) {
+            MD5AnimParser.supportsType = function (extension) {
                 extension = extension.toLowerCase();
                 return extension == "md5anim";
             };
 
-            MD5AnimParser.supportsData = /**
+            /**
             * Tests whether a data block can be parsed by the parser.
             * @param data The data block to potentially be parsed.
             * @return Whether or not the given data is supported.
             */
-            function (data) {
+            MD5AnimParser.supportsData = function (data) {
                 return false;
             };
 
@@ -40240,10 +40104,10 @@ var away;
                         this._clip = new SkeletonClipNode();
                         this.translateClip();
                         this._pFinalizeAsset(this._clip);
-                        return parsers.ParserBase.PARSING_DONE;
+                        return away.parsers.ParserBase.PARSING_DONE;
                     }
                 }
-                return parsers.ParserBase.MORE_TO_PARSE;
+                return away.parsers.ParserBase.MORE_TO_PARSE;
             };
 
             /**
@@ -40263,8 +40127,8 @@ var away;
                 var hierarchy;
                 var pose;
                 var base;
-                var flags/*int*/ ;
-                var j/*int*/ ;
+                var flags;
+                var j;
                 var translate = new Vector3D();
                 var orientation = new Quaternion();
                 var components = frameData.components;
@@ -40433,7 +40297,7 @@ var away;
                 var ch;
                 var data;
                 var token;
-                var frameIndex/*int*/ ;
+                var frameIndex;
 
                 frameIndex = this.getNextInt();
 
@@ -40668,7 +40532,7 @@ var away;
 
             MD5AnimParser.COMMENT_TOKEN = "//";
             return MD5AnimParser;
-        })(parsers.ParserBase);
+        })(away.parsers.ParserBase);
         parsers.MD5AnimParser = MD5AnimParser;
     })(away.parsers || (away.parsers = {}));
     var parsers = away.parsers;
@@ -40706,9 +40570,9 @@ var FrameData = (function () {
     };
     return FrameData;
 })();
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (parsers) {
         var SkeletonAnimationSet = away.animators.SkeletonAnimationSet;
         var Skeleton = away.animators.Skeleton;
@@ -40749,22 +40613,22 @@ var away;
                     this._rotationQuat.multiply(this._rotationQuat, quat);
                 }
             }
-            MD5MeshParser.supportsType = /**
+            /**
             * Indicates whether or not a given file extension is supported by the parser.
             * @param extension The file extension of a potential file to be parsed.
             * @return Whether or not the given file type is supported.
             */
-            function (extension) {
+            MD5MeshParser.supportsType = function (extension) {
                 extension = extension.toLowerCase();
                 return extension == "md5mesh";
             };
 
-            MD5MeshParser.supportsData = /**
+            /**
             * Tests whether a data block can be parsed by the parser.
             * @param data The data block to potentially be parsed.
             * @return Whether or not the given data is supported.
             */
-            function (data) {
+            MD5MeshParser.supportsData = function (data) {
                 return false;
             };
 
@@ -40823,14 +40687,24 @@ var away;
 
                         //_geometry.animation = _animation;
                         //					_mesh.animationController = _animationController;
+                        //add to the content property
+                        this._pContent.addChild(this._mesh);
+
                         this._pFinalizeAsset(this._geometry);
                         this._pFinalizeAsset(this._mesh);
                         this._pFinalizeAsset(this._skeleton);
                         this._pFinalizeAsset(this._animationSet);
-                        return parsers.ParserBase.PARSING_DONE;
+                        return away.parsers.ParserBase.PARSING_DONE;
                     }
                 }
-                return parsers.ParserBase.MORE_TO_PARSE;
+                return away.parsers.ParserBase.MORE_TO_PARSE;
+            };
+
+            MD5MeshParser.prototype._pStartParsing = function (frameLimit) {
+                _super.prototype._pStartParsing.call(this, frameLimit);
+
+                //create a content object for Loaders
+                this._pContent = new away.containers.DisplayObjectContainer();
             };
 
             MD5MeshParser.prototype.calculateMaxJointCount = function () {
@@ -40933,7 +40807,7 @@ var away;
                 var ch;
                 var vertexData;
                 var weights;
-                var indices/*uint*/ ;
+                var indices;
 
                 if (token != "{")
                     this.sendUnknownKeywordError();
@@ -40988,9 +40862,9 @@ var away;
             * @param indices The indices for the faces.
             * @return A SkinnedSubGeometry instance containing all geometrical data for the current mesh.
             */
-            MD5MeshParser.prototype.translateGeom = function (vertexData, weights, indices/*uint*/ ) {
+            MD5MeshParser.prototype.translateGeom = function (vertexData, weights, indices /*uint*/ ) {
                 var len = vertexData.length;
-                var v1/*int*/ , v2, v3;
+                var v1, v2, v3;
                 var vertex;
                 var weight;
                 var bindPose;
@@ -41001,7 +40875,7 @@ var away;
                 var jointIndices = new Array(len * this._maxJointCount);
                 var jointWeights = new Array(len * this._maxJointCount);
                 var l = 0;
-                var nonZeroWeights/*int*/ ;
+                var nonZeroWeights;
 
                 for (var i = 0; i < len; ++i) {
                     vertex = vertexData[i];
@@ -41057,7 +40931,7 @@ var away;
             * Retrieve the next triplet of vertex indices that form a face.
             * @param indices The index list in which to store the read data.
             */
-            MD5MeshParser.prototype.parseTri = function (indices/*uint*/ ) {
+            MD5MeshParser.prototype.parseTri = function (indices /*uint*/ ) {
                 var index = this.getNextInt() * 3;
                 indices[index] = this.getNextInt();
                 indices[index + 1] = this.getNextInt();
@@ -41303,7 +41177,7 @@ var away;
             MD5MeshParser.MESH_NUM_WEIGHTS_TOKEN = "numweights";
             MD5MeshParser.MESH_WEIGHT_TOKEN = "weight";
             return MD5MeshParser;
-        })(parsers.ParserBase);
+        })(away.parsers.ParserBase);
         parsers.MD5MeshParser = MD5MeshParser;
     })(away.parsers || (away.parsers = {}));
     var parsers = away.parsers;
@@ -41326,14 +41200,14 @@ var MeshData = (function () {
     }
     return MeshData;
 })();
+///<reference path="../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../_definitions.ts"/>
     (function (parsers) {
         var Parsers = (function () {
             function Parsers() {
             }
-            Parsers.enableAllBundled = /**
+            /**
             * Short-hand function to enable all bundled parsers for auto-detection. In practice,
             * this is the same as invoking enableParsers(Parsers.ALL_BUNDLED) on any of the
             * loader classes SingleFileLoader, AssetLoader, AssetLibrary or Loader3D.
@@ -41342,7 +41216,7 @@ var away;
             *
             * @see away.parsers.parsers.Parsers.ALL_BUNDLED
             */
-            function () {
+            Parsers.enableAllBundled = function () {
                 away.net.AssetLoader.enableParsers(this.ALL_BUNDLED);
             };
             Parsers.ALL_BUNDLED = Array(away.parsers.AWDParser, away.parsers.Max3DSParser, away.parsers.MD2Parser, away.parsers.OBJParser);
@@ -41352,13 +41226,13 @@ var away;
     })(away.parsers || (away.parsers = {}));
     var parsers = away.parsers;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (commands) {
         var DisplayObjectContainer = away.containers.DisplayObjectContainer;
         var Geometry = away.base.Geometry;
-        
+
         var Matrix3DUtils = away.geom.Matrix3DUtils;
         var Mesh = away.entities.Mesh;
         var GeometryUtils = away.utils.GeometryUtils;
@@ -41387,10 +41261,10 @@ var away;
                 get: function () {
                     return this._disposeSources;
                 },
-                set: /**
+                /**
                 * Determines if the mesh and geometry source(s) used for the merging are disposed. Defaults to false.
                 */
-                function (b) {
+                set: function (b) {
                     this._disposeSources = b;
                 },
                 enumerable: true,
@@ -41402,10 +41276,10 @@ var away;
                 get: function () {
                     return this._keepMaterial;
                 },
-                set: /**
+                /**
                 * Determines if the material source(s) used for the merging are disposed. Defaults to false.
                 */
-                function (b) {
+                set: function (b) {
                     this._keepMaterial = b;
                 },
                 enumerable: true,
@@ -41417,10 +41291,10 @@ var away;
                 get: function () {
                     return this._objectSpace;
                 },
-                set: /**
+                /**
                 * Determines if source mesh(es) is/are merged using objectSpace or worldspace. Defaults to false.
                 */
-                function (b) {
+                set: function (b) {
                     this._objectSpace = b;
                 },
                 enumerable: true,
@@ -41496,8 +41370,8 @@ var away;
             };
 
             Merge.prototype.merge = function (destMesh, dispose) {
-                var i/*uint*/ ;
-                var subIdx/*uint*/ ;
+                var i;
+                var subIdx;
                 var oldGeom;
                 var destGeom;
                 var useSubMaterials;
@@ -41511,7 +41385,7 @@ var away;
                 useSubMaterials = (this._geomVOs.length > 1);
 
                 for (i = 0; i < this._geomVOs.length; i++) {
-                    var s/*uint*/ ;
+                    var s;
                     var data;
                     var subs;
 
@@ -41549,20 +41423,20 @@ var away;
 
             Merge.prototype.collect = function (mesh, dispose) {
                 if (mesh.geometry) {
-                    var subIdx/*uint*/ ;
+                    var subIdx;
                     var subGeometries = mesh.geometry.subGeometries;
-                    var calc/*uint*/ ;
+                    var calc;
                     for (subIdx = 0; subIdx < subGeometries.length; subIdx++) {
-                        var i/*uint*/ ;
-                        var len/*uint*/ ;
-                        var iIdx/*uint*/ , vIdx, nIdx, uIdx;
-                        var indexOffset/*uint*/ ;
+                        var i;
+                        var len;
+                        var iIdx, vIdx, nIdx, uIdx;
+                        var indexOffset;
                         var subGeom;
                         var vo;
                         var vertices;
                         var normals;
-                        var vStride/*uint*/ , nStride, uStride;
-                        var vOffs/*uint*/ , nOffs, uOffs;
+                        var vStride, nStride, uStride;
+                        var vOffs, nOffs, uOffs;
                         var vd, nd, ud;
 
                         subGeom = subGeometries[subIdx];
@@ -41644,8 +41518,8 @@ var away;
                 var data;
 
                 if (this._keepMaterial) {
-                    var i/*uint*/ ;
-                    var len/*uint*/ ;
+                    var i;
+                    var len;
 
                     len = this._geomVOs.length;
                     for (i = 0; i < len; i++) {
@@ -41660,6 +41534,7 @@ var away;
                     data = this._geomVOs[0];
                 }
 
+                // No data (for this material) found, create new.
                 if (!data) {
                     data = new GeometryVO();
                     data.vertices = new Array();
@@ -41676,9 +41551,9 @@ var away;
 
             Merge.prototype.parseContainer = function (receiver, object) {
                 var child;
-                var i/*uint*/ ;
+                var i;
 
-                if (object instanceof Mesh && object != (receiver))
+                if (object instanceof Mesh && object != receiver)
                     this.collect(object, this._disposeSources);
 
                 for (i = 0; i < object.numChildren; ++i) {
@@ -41698,9 +41573,9 @@ var GeometryVO = (function () {
     }
     return GeometryVO;
 })();
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (tools) {
         var Matrix = away.geom.Matrix;
         var Matrix3D = away.geom.Matrix3D;
@@ -41751,15 +41626,15 @@ var away;
     })(away.tools || (away.tools = {}));
     var tools = away.tools;
 })(away || (away = {}));
+///<reference path="../../_definitions.ts"/>
 var away;
 (function (away) {
-    ///<reference path="../../_definitions.ts"/>
     (function (tools) {
         var ParticleData = away.animators.ParticleData;
         var ParticleGeometry = away.base.ParticleGeometry;
         var CompactSubGeometry = away.base.CompactSubGeometry;
         var Geometry = away.base.Geometry;
-        
+
         var Matrix = away.geom.Matrix;
         var Matrix3D = away.geom.Matrix3D;
         var Point = away.geom.Point;
@@ -41774,32 +41649,33 @@ var away;
             ParticleGeometryHelper.generateGeometry = function (geometries, transforms) {
                 if (typeof transforms === "undefined") { transforms = null; }
                 var verticesVector = new Array();
-                var indicesVector = new Array()/*uint*/ ;
-                var vertexCounters = new Array()/*uint*/ ;
+                var indicesVector = new Array();
+                var vertexCounters = new Array();
                 var particles = new Array();
                 var subGeometries = new Array();
                 var numParticles = geometries.length;
 
                 var sourceSubGeometries;
                 var sourceSubGeometry;
-                var numSubGeometries/*uint*/ ;
+                var numSubGeometries;
                 var vertices;
-                var indices/*uint*/ ;
-                var vertexCounter/*uint*/ ;
+                var indices;
+                var vertexCounter;
                 var subGeometry;
-                var i/*int*/ ;
-                var j/*int*/ ;
-                var sub2SubMap = new Array()/*int*/ ;
+                var i;
+                var j;
+                var sub2SubMap = new Array();
 
-                var tempVertex = new Vector3D();
-                var tempNormal = new Vector3D();
-                var tempTangents = new Vector3D();
-                var tempUV = new Point();
+                var tempVertex = new Vector3D;
+                var tempNormal = new Vector3D;
+                var tempTangents = new Vector3D;
+                var tempUV = new Point;
 
                 for (i = 0; i < numParticles; i++) {
                     sourceSubGeometries = geometries[i].subGeometries;
                     numSubGeometries = sourceSubGeometries.length;
                     for (var srcIndex = 0; srcIndex < numSubGeometries; srcIndex++) {
+                        //create a different particle subgeometry group for each source subgeometry in a particle.
                         if (sub2SubMap.length <= srcIndex) {
                             sub2SubMap.push(subGeometries.length);
                             verticesVector.push(new Array());
@@ -41810,6 +41686,7 @@ var away;
 
                         sourceSubGeometry = sourceSubGeometries[srcIndex];
 
+                        //add a new particle subgeometry if this source subgeometry will take us over the maxvertex limit
                         if (sourceSubGeometry.numVertices + vertexCounters[sub2SubMap[srcIndex]] > ParticleGeometryHelper.MAX_VERTEX) {
                             //update submap and add new subgeom vectors
                             sub2SubMap[srcIndex] = subGeometries.length;
@@ -41836,10 +41713,10 @@ var away;
 
                         vertexCounters[j] += sourceSubGeometry.numVertices;
 
-                        var k/*int*/ ;
-                        var tempLen/*int*/ ;
+                        var k;
+                        var tempLen;
                         var compact = sourceSubGeometry;
-                        var product/*uint*/ ;
+                        var product;
                         var sourceVertices;
 
                         if (compact) {

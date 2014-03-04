@@ -138,7 +138,7 @@ module examples
 
             this._scene.addChild(this._light2);
 
-            this._lightPicker = new away.materials.StaticLightPicker([this._light1, this._light2]);
+            this._lightPicker = new away.materials.StaticLightPicker([this._light2]);
         }
 
         /**

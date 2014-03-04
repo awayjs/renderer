@@ -71,8 +71,6 @@
 ///<reference path="entities/Mesh.ts"/>
 ///<reference path="entities/Skybox.ts" />
 
-///<reference path="containers/Loader3D.ts" />
-
 ///<reference path="filters/tasks/Filter3DTaskBase.ts"/>
 ///<reference path="filters/Filter3DBase.ts"/>
 

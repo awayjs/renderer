@@ -37,7 +37,7 @@ THE SOFTWARE.
 */
 var examples;
 (function (examples) {
-    var Loader3D = away.containers.Loader3D;
+    var Loader = away.containers.Loader;
     var View = away.containers.View;
     var FirstPersonController = away.controllers.FirstPersonController;
     var Geometry = away.base.Geometry;
@@ -444,23 +444,23 @@ var examples;
         Advanced_MultiPassSponzaDemo.prototype.parseAWD = function (e) {
             var _this = this;
             console.log("Parsing Data");
-            var loader = e.target;
-            var loader3d = new Loader3D(false);
+            var urlLoader = e.target;
+            var loader = new Loader(false);
             var context = new AssetLoaderContext();
             context.includeDependencies = false;
 
             //context.dependencyBaseUrl = "assets/sponza/";
-            loader3d.addEventListener(AssetEvent.ASSET_COMPLETE, function (event) {
+            loader.addEventListener(AssetEvent.ASSET_COMPLETE, function (event) {
                 return _this.onAssetComplete(event);
             });
-            loader3d.addEventListener(LoaderEvent.RESOURCE_COMPLETE, function (event) {
+            loader.addEventListener(LoaderEvent.RESOURCE_COMPLETE, function (event) {
                 return _this.onResourceComplete(event);
             });
-            loader3d.loadData(loader.data, context, null, new AWDParser());
+            loader.loadData(urlLoader.data, context, null, new AWDParser());
 
-            loader.removeEventListener(ProgressEvent.PROGRESS, this.loadProgress);
-            loader.removeEventListener(Event.COMPLETE, this.parseAWD);
-            loader = null;
+            urlLoader.removeEventListener(ProgressEvent.PROGRESS, this.loadProgress);
+            urlLoader.removeEventListener(Event.COMPLETE, this.parseAWD);
+            urlLoader = null;
         };
 
         /**
@@ -479,9 +479,9 @@ var examples;
         Advanced_MultiPassSponzaDemo.prototype.onResourceComplete = function (e) {
             var merge = new Merge(false, false, true);
 
-            var loader3d = e.target;
-            loader3d.removeEventListener(AssetEvent.ASSET_COMPLETE, this.onAssetComplete);
-            loader3d.removeEventListener(LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete);
+            var loader = e.target;
+            loader.removeEventListener(AssetEvent.ASSET_COMPLETE, this.onAssetComplete);
+            loader.removeEventListener(LoaderEvent.RESOURCE_COMPLETE, this.onResourceComplete);
 
             //reassign materials
             var mesh;
