@@ -14789,7 +14789,7 @@ var away;
                 _super.call(this, null, baseMethod);
                 this._smoothness = .1;
 
-                baseMethod._iModulateMethod = function (vo, target, regCache, sharedRegisters) {
+                this.baseMethod._iModulateMethod = function (vo, target, regCache, sharedRegisters) {
                     return _this.clampDiffuse(vo, target, regCache, sharedRegisters);
                 };
 
@@ -16850,7 +16850,8 @@ var away;
                 var s = method;
                 var bnm = method;
 
-                this.normalMap = bnm.normalMap;
+                if (bnm.normalMap != null)
+                    this.normalMap = bnm.normalMap;
             };
 
             Object.defineProperty(NormalBasicMethod.prototype, "normalMap", {
@@ -16861,22 +16862,18 @@ var away;
                     return this._texture;
                 },
                 set: function (value) {
-                    this.setNormalMap(value);
+                    var b = (value != null);
+
+                    if (b != this._useTexture || (value && this._texture && (value.hasMipMaps != this._texture.hasMipMaps || value.format != this._texture.format)))
+                        this.iInvalidateShaderProgram();
+
+                    this._useTexture = b;
+                    this._texture = value;
                 },
                 enumerable: true,
                 configurable: true
             });
 
-
-            NormalBasicMethod.prototype.setNormalMap = function (value) {
-                var b = (value != null);
-
-                if (b != this._useTexture || (value && this._texture && (value.hasMipMaps != this._texture.hasMipMaps || value.format != this._texture.format))) {
-                    this.iInvalidateShaderProgram();
-                }
-                this._useTexture = b;
-                this._texture = value;
-            };
 
             /**
             * @inheritDoc
@@ -16890,9 +16887,8 @@ var away;
             * @inheritDoc
             */
             NormalBasicMethod.prototype.dispose = function () {
-                if (this._texture) {
+                if (this._texture)
                     this._texture = null;
-                }
             };
 
             /**
@@ -16913,7 +16909,6 @@ var away;
 
                 vo.texturesIndex = this._pNormalTextureRegister.index;
 
-                // TODO: AGAL <> GLSL
                 return this.pGetTex2DSampleCode(vo, targetReg, this._pNormalTextureRegister, this._texture) + "sub " + targetReg + ".xyz, " + targetReg + ".xyz, " + this._sharedRegisters.commons + ".xxx\n" + "nrm " + targetReg + ".xyz, " + targetReg + "\n";
             };
             return NormalBasicMethod;
@@ -17104,20 +17099,6 @@ var away;
             });
 
 
-            Object.defineProperty(NormalSimpleWaterMethod.prototype, "normalMap", {
-                /**
-                * @inheritDoc
-                */
-                set: function (value) {
-                    if (!value) {
-                        return;
-                    }
-                    this.setNormalMap(value);
-                },
-                enumerable: true,
-                configurable: true
-            });
-
             Object.defineProperty(NormalSimpleWaterMethod.prototype, "secondaryNormalMap", {
                 /**
                 * A second normal map that will be combined with the first to create a wave-like animation pattern.
@@ -17171,7 +17152,7 @@ var away;
             /**
             * @inheritDoc
             */
-            NormalSimpleWaterMethod.prototype.getFragmentCode = function (vo, regCache, targetReg) {
+            NormalSimpleWaterMethod.prototype.iGetFragmentCode = function (vo, regCache, targetReg) {
                 var temp = regCache.getFreeFragmentVectorTemp();
                 var dataReg = regCache.getFreeFragmentConstant();
                 var dataReg2 = regCache.getFreeFragmentConstant();
@@ -17180,6 +17161,7 @@ var away;
                 vo.texturesIndex = this._pNormalTextureRegister.index;
 
                 vo.fragmentConstantsIndex = dataReg.index * 4;
+
                 return "add " + temp + ", " + this._sharedRegisters.uvVarying + ", " + dataReg2 + ".xyxy\n" + this.pGetTex2DSampleCode(vo, targetReg, this._pNormalTextureRegister, this.normalMap, temp) + "add " + temp + ", " + this._sharedRegisters.uvVarying + ", " + dataReg2 + ".zwzw\n" + this.pGetTex2DSampleCode(vo, temp, this._normalTextureRegister2, this._texture2, temp) + "add " + targetReg + ", " + targetReg + ", " + temp + "		\n" + "mul " + targetReg + ", " + targetReg + ", " + dataReg + ".x	\n" + "sub " + targetReg + ".xyz, " + targetReg + ".xyz, " + this._sharedRegisters.commons + ".xxx	\n" + "nrm " + targetReg + ".xyz, " + targetReg + ".xyz							\n";
             };
             return NormalSimpleWaterMethod;
@@ -19230,7 +19212,7 @@ var away;
                 this._smoothness = .1;
                 this._specularCutOff = .1;
 
-                baseMethod._iModulateMethod = function (vo, target, regCache, sharedRegisters) {
+                this.baseMethod._iModulateMethod = function (vo, target, regCache, sharedRegisters) {
                     return _this.clampSpecular(vo, target, regCache, sharedRegisters);
                 };
 
@@ -19337,7 +19319,7 @@ var away;
                 this._fresnelPower = 5;
                 this._normalReflectance = .028;
 
-                baseMethod._iModulateMethod = function (vo, target, regCache, sharedRegisters) {
+                this.baseMethod._iModulateMethod = function (vo, target, regCache, sharedRegisters) {
                     return _this.modulateSpecular(vo, target, regCache, sharedRegisters);
                 };
 

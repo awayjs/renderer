@@ -103,17 +103,6 @@ module away.materials
 		}
 
 		/**
-		 * @inheritDoc
-		 */
-		public set normalMap(value:away.textures.Texture2DBase)
-		{
-			if (!value) {
-				return;
-			}
-			this.setNormalMap(value);
-		}
-
-		/**
 		 * A second normal map that will be combined with the first to create a wave-like animation pattern.
 		 */
 		public get secondaryNormalMap():away.textures.Texture2DBase
@@ -167,7 +156,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public getFragmentCode(vo:MethodVO, regCache:ShaderRegisterCache, targetReg:ShaderRegisterElement):string
+		public iGetFragmentCode(vo:MethodVO, regCache:ShaderRegisterCache, targetReg:ShaderRegisterElement):string
 		{
 			var temp:ShaderRegisterElement = regCache.getFreeFragmentVectorTemp();
 			var dataReg:ShaderRegisterElement = regCache.getFreeFragmentConstant();
@@ -177,7 +166,15 @@ module away.materials
 			vo.texturesIndex = this._pNormalTextureRegister.index;
 
 			vo.fragmentConstantsIndex = dataReg.index*4;
-			return "add " + temp + ", " + this._sharedRegisters.uvVarying + ", " + dataReg2 + ".xyxy\n" + this.pGetTex2DSampleCode(vo, targetReg, this._pNormalTextureRegister, this.normalMap, temp) + "add " + temp + ", " + this._sharedRegisters.uvVarying + ", " + dataReg2 + ".zwzw\n" + this.pGetTex2DSampleCode(vo, temp, this._normalTextureRegister2, this._texture2, temp) + "add " + targetReg + ", " + targetReg + ", " + temp + "		\n" + "mul " + targetReg + ", " + targetReg + ", " + dataReg + ".x	\n" + "sub " + targetReg + ".xyz, " + targetReg + ".xyz, " + this._sharedRegisters.commons + ".xxx	\n" + "nrm " + targetReg + ".xyz, " + targetReg + ".xyz							\n";
+
+			return "add " + temp + ", " + this._sharedRegisters.uvVarying + ", " + dataReg2 + ".xyxy\n" +
+				this.pGetTex2DSampleCode(vo, targetReg, this._pNormalTextureRegister, this.normalMap, temp) +
+				"add " + temp + ", " + this._sharedRegisters.uvVarying + ", " + dataReg2 + ".zwzw\n" +
+				this.pGetTex2DSampleCode(vo, temp, this._normalTextureRegister2, this._texture2, temp) +
+				"add " + targetReg + ", " + targetReg + ", " + temp + "		\n" +
+				"mul " + targetReg + ", " + targetReg + ", " + dataReg + ".x	\n" +
+				"sub " + targetReg + ".xyz, " + targetReg + ".xyz, " + this._sharedRegisters.commons + ".xxx	\n" +
+				"nrm " + targetReg + ".xyz, " + targetReg + ".xyz							\n";
 
 		}
 	}

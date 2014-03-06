@@ -5180,7 +5180,6 @@ declare module away.materials {
         * The texture containing the normals per pixel.
         */
         public normalMap : away.textures.Texture2DBase;
-        public setNormalMap(value: away.textures.Texture2DBase): void;
         /**
         * @inheritDoc
         */
@@ -5276,10 +5275,6 @@ declare module away.materials {
         */
         public water2OffsetY : number;
         /**
-        * @inheritDoc
-        */
-        public normalMap : away.textures.Texture2DBase;
-        /**
         * A second normal map that will be combined with the first to create a wave-like animation pattern.
         */
         public secondaryNormalMap : away.textures.Texture2DBase;
@@ -5298,7 +5293,7 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public getFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+        public iGetFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
     }
 }
 declare module away.materials {

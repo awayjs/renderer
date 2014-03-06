@@ -60,12 +60,11 @@ module away.materials
 		 */
 		public copyFrom(method:ShadingMethodBase)
 		{
-
 			var s:any = method;
 			var bnm:NormalBasicMethod = <NormalBasicMethod> method;
 
-			this.normalMap = bnm.normalMap;
-
+			if (bnm.normalMap != null)
+				this.normalMap = bnm.normalMap;
 		}
 
 		/**
@@ -78,19 +77,11 @@ module away.materials
 
 		public set normalMap(value:away.textures.Texture2DBase)
 		{
-
-			this.setNormalMap(value);
-
-		}
-
-		public setNormalMap(value:away.textures.Texture2DBase)
-		{
-
 			var b:boolean = ( value != null );
 
-			if (b != this._useTexture || (value && this._texture && (value.hasMipMaps != this._texture.hasMipMaps || value.format != this._texture.format))) {
+			if (b != this._useTexture || (value && this._texture && (value.hasMipMaps != this._texture.hasMipMaps || value.format != this._texture.format)))
 				this.iInvalidateShaderProgram();
-			}
+
 			this._useTexture = b;
 			this._texture = value;
 
@@ -110,12 +101,8 @@ module away.materials
 		 */
 		public dispose()
 		{
-			if (this._texture) {
-
+			if (this._texture)
 				this._texture = null;
-
-			}
-
 		}
 
 
@@ -125,12 +112,9 @@ module away.materials
 		public iActivate(vo:MethodVO, stageGL:away.base.StageGL)
 		{
 			if (vo.texturesIndex >= 0) {
-
 				stageGL.contextGL.setSamplerStateAt(vo.texturesIndex, vo.repeatTextures? away.gl.ContextGLWrapMode.REPEAT:away.gl.ContextGLWrapMode.CLAMP, vo.useSmoothTextures? away.gl.ContextGLTextureFilter.LINEAR:away.gl.ContextGLTextureFilter.NEAREST, vo.useMipmapping? away.gl.ContextGLMipFilter.MIPLINEAR:away.gl.ContextGLMipFilter.MIPNONE);
 				stageGL.contextGL.setTextureAt(vo.texturesIndex, this._texture.getTextureForStageGL(stageGL));
-
 			}
-
 		}
 
 		/**
@@ -141,8 +125,6 @@ module away.materials
 			this._pNormalTextureRegister = regCache.getFreeTextureReg();
 
 			vo.texturesIndex = this._pNormalTextureRegister.index;
-
-			// TODO: AGAL <> GLSL
 
 			return this.pGetTex2DSampleCode(vo, targetReg, this._pNormalTextureRegister, this._texture) + "sub " + targetReg + ".xyz, " + targetReg + ".xyz, " + this._sharedRegisters.commons + ".xxx\n" + "nrm " + targetReg + ".xyz, " + targetReg + "\n";
 

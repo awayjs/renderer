@@ -20,7 +20,7 @@ module away.materials
 		{
 			super(null, baseMethod);
 
-			baseMethod._iModulateMethod = (vo:MethodVO, target:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData) => this.clampSpecular(vo, target, regCache, sharedRegisters);
+			this.baseMethod._iModulateMethod = (vo:MethodVO, target:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData) => this.clampSpecular(vo, target, regCache, sharedRegisters);
 
 			this._specularCutOff = specularCutOff;
 		}

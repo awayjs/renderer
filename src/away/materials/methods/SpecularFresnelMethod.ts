@@ -23,7 +23,7 @@ module away.materials
 			// may want to offer diff speculars
 			super(null, baseMethod);
 
-			baseMethod._iModulateMethod = (vo:MethodVO, target:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData) => this.modulateSpecular(vo, target, regCache, sharedRegisters);
+			this.baseMethod._iModulateMethod = (vo:MethodVO, target:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData) => this.modulateSpecular(vo, target, regCache, sharedRegisters);
 				
 			this._incidentLight = !basedOnSurface;
 		}
