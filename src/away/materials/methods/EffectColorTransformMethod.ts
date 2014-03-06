@@ -1,25 +1,25 @@
 ///<reference path="../../_definitions.ts"/>
 module away.materials
 {
-	//import away3d.arcane;
-	//import away3d.base.StageGL;
-	//import away3d.materials.compilation.ShaderRegisterCache;
-	//import away3d.materials.compilation.ShaderRegisterElement;
+	//import away.arcane;
+	//import away.base.StageGL;
+	//import away.materials.compilation.ShaderRegisterCache;
+	//import away.materials.compilation.ShaderRegisterElement;
 
 	//import flash.geom.ColorTransform;
 
 	//use namespace arcane;
 
 	/**
-	 * ColorTransformMethod provides a shading method that changes the colour of a material analogous to a
+	 * EffectColorTransformMethod provides a shading method that changes the colour of a material analogous to a
 	 * ColorTransform object.
 	 */
-	export class ColorTransformMethod extends EffectMethodBase
+	export class EffectColorTransformMethod extends EffectMethodBase
 	{
 		private _colorTransform:away.geom.ColorTransform;
 
 		/**
-		 * Creates a new ColorTransformMethod.
+		 * Creates a new EffectColorTransformMethod.
 		 */
 		constructor()
 		{

@@ -12,14 +12,14 @@ module away.materials
 
 	// TODO: shadow mappers references in materials should be an interface so that this class should NOT extend ShadowMapMethodBase just for some delegation work
 	/**
-	 * NearShadowMapMethod provides a shadow map method that restricts the shadowed area near the camera to optimize
+	 * ShadowNearMethod provides a shadow map method that restricts the shadowed area near the camera to optimize
 	 * shadow map usage. This method needs to be used in conjunction with a NearDirectionalShadowMapper.
 	 *
 	 * @see away.lights.NearDirectionalShadowMapper
 	 */
-	export class NearShadowMapMethod extends SimpleShadowMapMethodBase
+	export class ShadowNearMethod extends ShadowMethodBase
 	{
-		private _baseMethod:SimpleShadowMapMethodBase;
+		private _baseMethod:ShadowMethodBase;
 
 		private _fadeRatio:number;
 		private _nearShadowMapper:NearDirectionalShadowMapper;
@@ -27,11 +27,11 @@ module away.materials
 		private _onShaderInvalidatedDelegate:Function;
 
 		/**
-		 * Creates a new NearShadowMapMethod object.
-		 * @param baseMethod The shadow map sampling method used to sample individual cascades (fe: HardShadowMapMethod, SoftShadowMapMethod)
+		 * Creates a new ShadowNearMethod object.
+		 * @param baseMethod The shadow map sampling method used to sample individual cascades (fe: ShadowHardMethod, ShadowSoftMethod)
 		 * @param fadeRatio The amount of shadow fading to the outer shadow area. A value of 1 would mean the shadows start fading from the camera's near plane.
 		 */
-		constructor(baseMethod:SimpleShadowMapMethodBase, fadeRatio:number = .1)
+		constructor(baseMethod:ShadowMethodBase, fadeRatio:number = .1)
 		{
 			super(baseMethod.castingLight);
 
@@ -41,19 +41,19 @@ module away.materials
 			this._fadeRatio = fadeRatio;
 			this._nearShadowMapper = <NearDirectionalShadowMapper> this._pCastingLight.shadowMapper;
 			if (!this._nearShadowMapper)
-				throw new Error("NearShadowMapMethod requires a light that has a NearDirectionalShadowMapper instance assigned to shadowMapper.");
+				throw new Error("ShadowNearMethod requires a light that has a NearDirectionalShadowMapper instance assigned to shadowMapper.");
 			this._baseMethod.addEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
 		}
 
 		/**
 		 * The base shadow map method on which this method's shading is based.
 		 */
-		public get baseMethod():SimpleShadowMapMethodBase
+		public get baseMethod():ShadowMethodBase
 		{
 			return this._baseMethod;
 		}
 
-		public set baseMethod(value:SimpleShadowMapMethodBase)
+		public set baseMethod(value:ShadowMethodBase)
 		{
 			if (this._baseMethod == value)
 				return;
@@ -66,7 +66,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iInitConstants(vo:MethodVO):void
+		public iInitConstants(vo:MethodVO)
 		{
 			super.iInitConstants(vo);
 			this._baseMethod.iInitConstants(vo);
@@ -80,7 +80,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iInitVO(vo:MethodVO):void
+		public iInitVO(vo:MethodVO)
 		{
 			this._baseMethod.iInitVO(vo);
 			vo.needsProjection = true;
@@ -151,7 +151,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGL:StageGL):void
+		public iActivate(vo:MethodVO, stageGL:StageGL)
 		{
 			this._baseMethod.iActivate(vo, stageGL);
 		}
@@ -159,7 +159,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iDeactivate(vo:MethodVO, stageGL:StageGL):void
+		public iDeactivate(vo:MethodVO, stageGL:StageGL)
 		{
 			this._baseMethod.iDeactivate(vo, stageGL);
 		}
@@ -167,7 +167,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iSetRenderState(vo:MethodVO, renderable:IRenderable, stageGL:StageGL, camera:Camera):void
+		public iSetRenderState(vo:MethodVO, renderable:IRenderable, stageGL:StageGL, camera:Camera)
 		{
 			// todo: move this to activate (needs camera)
 			var near:number = camera.projection.near;
@@ -221,7 +221,7 @@ module away.materials
 		/**
 		 * Called when the base method's shader code is invalidated.
 		 */
-		private onShaderInvalidated(event:ShadingMethodEvent):void
+		private onShaderInvalidated(event:ShadingMethodEvent)
 		{
 			this.iInvalidateShaderProgram();
 		}

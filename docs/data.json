@@ -1227,56 +1227,56 @@
             "namespaces": {}
         },
         "src/away/materials/methods/BasicAmbientMethod.ts": {
-            "name": "src/away/materials/methods/BasicAmbientMethod.ts",
+            "name": "src/away/materials/methods/AmbientBasicMethod.ts",
             "modules": {},
             "classes": {},
             "fors": {},
             "namespaces": {}
         },
         "src/away/materials/methods/BasicDiffuseMethod.ts": {
-            "name": "src/away/materials/methods/BasicDiffuseMethod.ts",
+            "name": "src/away/materials/methods/DiffuseBasicMethod.ts",
             "modules": {},
             "classes": {},
             "fors": {},
             "namespaces": {}
         },
         "src/away/materials/methods/BasicNormalMethod.ts": {
-            "name": "src/away/materials/methods/BasicNormalMethod.ts",
+            "name": "src/away/materials/methods/NormalBasicMethod.ts",
             "modules": {},
             "classes": {},
             "fors": {},
             "namespaces": {}
         },
         "src/away/materials/methods/BasicSpecularMethod.ts": {
-            "name": "src/away/materials/methods/BasicSpecularMethod.ts",
+            "name": "src/away/materials/methods/SpecularBasicMethod.ts",
             "modules": {},
             "classes": {},
             "fors": {},
             "namespaces": {}
         },
         "src/away/materials/methods/ColorTransformMethod.ts": {
-            "name": "src/away/materials/methods/ColorTransformMethod.ts",
+            "name": "src/away/materials/methods/EffectColorTransformMethod.ts",
             "modules": {},
             "classes": {},
             "fors": {},
             "namespaces": {}
         },
         "src/away/materials/methods/CompositeDiffuseMethod.ts": {
-            "name": "src/away/materials/methods/CompositeDiffuseMethod.ts",
+            "name": "src/away/materials/methods/DiffuseCompositeMethod.ts",
             "modules": {},
             "classes": {},
             "fors": {},
             "namespaces": {}
         },
         "src/away/materials/methods/CompositeSpecularMethod.ts": {
-            "name": "src/away/materials/methods/CompositeSpecularMethod.ts",
+            "name": "src/away/materials/methods/SpecularCompositeMethod.ts",
             "modules": {},
             "classes": {},
             "fors": {},
             "namespaces": {}
         },
         "src/away/materials/methods/DitheredShadowMapMethod.ts": {
-            "name": "src/away/materials/methods/DitheredShadowMapMethod.ts",
+            "name": "src/away/materials/methods/ShadowDitheredMethod.ts",
             "modules": {},
             "classes": {},
             "fors": {},
@@ -1290,35 +1290,35 @@
             "namespaces": {}
         },
         "src/away/materials/methods/EnvMapMethod.ts": {
-            "name": "src/away/materials/methods/EnvMapMethod.ts",
+            "name": "src/away/materials/methods/EffectEnvMapMethod.ts",
             "modules": {},
             "classes": {},
             "fors": {},
             "namespaces": {}
         },
         "src/away/materials/methods/FilteredShadowMapMethod.ts": {
-            "name": "src/away/materials/methods/FilteredShadowMapMethod.ts",
+            "name": "src/away/materials/methods/ShadowFilteredMethod.ts",
             "modules": {},
             "classes": {},
             "fors": {},
             "namespaces": {}
         },
         "src/away/materials/methods/FogMethod.ts": {
-            "name": "src/away/materials/methods/FogMethod.ts",
+            "name": "src/away/materials/methods/EffectFogMethod.ts",
             "modules": {},
             "classes": {},
             "fors": {},
             "namespaces": {}
         },
         "src/away/materials/methods/FresnelSpecularMethod.ts": {
-            "name": "src/away/materials/methods/FresnelSpecularMethod.ts",
+            "name": "src/away/materials/methods/SpecularFresnelMethod.ts",
             "modules": {},
             "classes": {},
             "fors": {},
             "namespaces": {}
         },
         "src/away/materials/methods/HardShadowMapMethod.ts": {
-            "name": "src/away/materials/methods/HardShadowMapMethod.ts",
+            "name": "src/away/materials/methods/ShadowHardMethod.ts",
             "modules": {},
             "classes": {},
             "fors": {},
@@ -1353,7 +1353,7 @@
             "namespaces": {}
         },
         "src/away/materials/methods/PhongSpecularMethod.ts": {
-            "name": "src/away/materials/methods/PhongSpecularMethod.ts",
+            "name": "src/away/materials/methods/SpecularPhongMethod.ts",
             "modules": {},
             "classes": {},
             "fors": {},
@@ -1381,14 +1381,14 @@
             "namespaces": {}
         },
         "src/away/materials/methods/SimpleShadowMapMethodBase.ts": {
-            "name": "src/away/materials/methods/SimpleShadowMapMethodBase.ts",
+            "name": "src/away/materials/methods/ShadowMethodBase.ts",
             "modules": {},
             "classes": {},
             "fors": {},
             "namespaces": {}
         },
         "src/away/materials/methods/SimpleWaterNormalMethod.ts": {
-            "name": "src/away/materials/methods/SimpleWaterNormalMethod.ts",
+            "name": "src/away/materials/methods/NormalSimpleWaterMethod.ts",
             "modules": {},
             "classes": {},
             "fors": {},
@@ -12231,119 +12231,119 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicAmbientMethod.ts",
+            "file": "src/away/materials/methods/AmbientBasicMethod.ts",
             "line": 6,
-            "description": "BasicAmbientMethod provides the default shading method for uniform ambient lighting.",
+            "description": "AmbientBasicMethod provides the default shading method for uniform ambient lighting.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicAmbientMethod.ts",
+            "file": "src/away/materials/methods/AmbientBasicMethod.ts",
             "line": 28,
-            "description": "Creates a new BasicAmbientMethod object.",
+            "description": "Creates a new AmbientBasicMethod object.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicAmbientMethod.ts",
+            "file": "src/away/materials/methods/AmbientBasicMethod.ts",
             "line": 36,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicAmbientMethod.ts",
+            "file": "src/away/materials/methods/AmbientBasicMethod.ts",
             "line": 44,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicAmbientMethod.ts",
+            "file": "src/away/materials/methods/AmbientBasicMethod.ts",
             "line": 52,
             "description": "The strength of the ambient reflection of the surface.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicAmbientMethod.ts",
+            "file": "src/away/materials/methods/AmbientBasicMethod.ts",
             "line": 65,
             "description": "The colour of the ambient reflection of the surface.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicAmbientMethod.ts",
+            "file": "src/away/materials/methods/AmbientBasicMethod.ts",
             "line": 78,
             "description": "The bitmapData to use to define the diffuse reflection color per texel.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicAmbientMethod.ts",
+            "file": "src/away/materials/methods/AmbientBasicMethod.ts",
             "line": 104,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicAmbientMethod.ts",
+            "file": "src/away/materials/methods/AmbientBasicMethod.ts",
             "line": 118,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicAmbientMethod.ts",
+            "file": "src/away/materials/methods/AmbientBasicMethod.ts",
             "line": 127,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicAmbientMethod.ts",
+            "file": "src/away/materials/methods/AmbientBasicMethod.ts",
             "line": 156,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicAmbientMethod.ts",
+            "file": "src/away/materials/methods/AmbientBasicMethod.ts",
             "line": 171,
             "description": "Updates the ambient color data used by the render state.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicAmbientMethod.ts",
+            "file": "src/away/materials/methods/AmbientBasicMethod.ts",
             "line": 181,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicDiffuseMethod.ts",
+            "file": "src/away/materials/methods/DiffuseBasicMethod.ts",
             "line": 13,
-            "description": "BasicDiffuseMethod provides the default shading method for Lambert (dot3) diffuse lighting.",
+            "description": "DiffuseBasicMethod provides the default shading method for Lambert (dot3) diffuse lighting.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicDiffuseMethod.ts",
+            "file": "src/away/materials/methods/DiffuseBasicMethod.ts",
             "line": 38,
-            "description": "Creates a new BasicDiffuseMethod object.",
+            "description": "Creates a new DiffuseBasicMethod object.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicDiffuseMethod.ts",
+            "file": "src/away/materials/methods/DiffuseBasicMethod.ts",
             "line": 46,
             "description": "Set internally if the ambient method uses a texture.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicDiffuseMethod.ts",
+            "file": "src/away/materials/methods/DiffuseBasicMethod.ts",
             "line": 73,
             "description": "Forces the creation of the texture.",
             "params": [
@@ -12356,84 +12356,84 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicDiffuseMethod.ts",
+            "file": "src/away/materials/methods/DiffuseBasicMethod.ts",
             "line": 83,
             "description": "The alpha component of the diffuse reflection.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicDiffuseMethod.ts",
+            "file": "src/away/materials/methods/DiffuseBasicMethod.ts",
             "line": 96,
             "description": "The color of the diffuse reflection when not using a texture.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicDiffuseMethod.ts",
+            "file": "src/away/materials/methods/DiffuseBasicMethod.ts",
             "line": 111,
             "description": "The bitmapData to use to define the diffuse reflection color per texel.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicDiffuseMethod.ts",
+            "file": "src/away/materials/methods/DiffuseBasicMethod.ts",
             "line": 135,
             "description": "The minimum alpha value for which pixels should be drawn. This is used for transparency that is either\ninvisible or entirely opaque, often used with textures for foliage, etc.\nRecommended values are 0 to disable alpha, or 0.5 to create smooth edges. Default value is 0 (disabled).",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicDiffuseMethod.ts",
+            "file": "src/away/materials/methods/DiffuseBasicMethod.ts",
             "line": 159,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicDiffuseMethod.ts",
+            "file": "src/away/materials/methods/DiffuseBasicMethod.ts",
             "line": 167,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicDiffuseMethod.ts",
+            "file": "src/away/materials/methods/DiffuseBasicMethod.ts",
             "line": 184,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicDiffuseMethod.ts",
+            "file": "src/away/materials/methods/DiffuseBasicMethod.ts",
             "line": 196,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicDiffuseMethod.ts",
+            "file": "src/away/materials/methods/DiffuseBasicMethod.ts",
             "line": 213,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicDiffuseMethod.ts",
+            "file": "src/away/materials/methods/DiffuseBasicMethod.ts",
             "line": 265,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicDiffuseMethod.ts",
+            "file": "src/away/materials/methods/DiffuseBasicMethod.ts",
             "line": 313,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicDiffuseMethod.ts",
+            "file": "src/away/materials/methods/DiffuseBasicMethod.ts",
             "line": 408,
             "description": "Generate the code that applies the calculated shadow to the diffuse light",
             "params": [
@@ -12450,261 +12450,261 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicDiffuseMethod.ts",
+            "file": "src/away/materials/methods/DiffuseBasicMethod.ts",
             "line": 421,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicDiffuseMethod.ts",
+            "file": "src/away/materials/methods/DiffuseBasicMethod.ts",
             "line": 446,
             "description": "Updates the diffuse color data used by the render state.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicDiffuseMethod.ts",
+            "file": "src/away/materials/methods/DiffuseBasicMethod.ts",
             "line": 456,
             "description": "Set internally by the compiler, so the method knows the register containing the shadow calculation.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicNormalMethod.ts",
+            "file": "src/away/materials/methods/NormalBasicMethod.ts",
             "line": 6,
-            "description": "BasicNormalMethod is the default method for standard tangent-space normal mapping.",
+            "description": "NormalBasicMethod is the default method for standard tangent-space normal mapping.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicNormalMethod.ts",
+            "file": "src/away/materials/methods/NormalBasicMethod.ts",
             "line": 15,
-            "description": "Creates a new BasicNormalMethod object.",
+            "description": "Creates a new NormalBasicMethod object.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicNormalMethod.ts",
+            "file": "src/away/materials/methods/NormalBasicMethod.ts",
             "line": 23,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicNormalMethod.ts",
+            "file": "src/away/materials/methods/NormalBasicMethod.ts",
             "line": 41,
             "description": "Indicates whether or not this method outputs normals in tangent space. Override for object-space normals.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicNormalMethod.ts",
+            "file": "src/away/materials/methods/NormalBasicMethod.ts",
             "line": 49,
             "description": "Indicates if the normal method output is not based on a texture (if not, it will usually always return true)\nOverride if subclasses are different.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicNormalMethod.ts",
+            "file": "src/away/materials/methods/NormalBasicMethod.ts",
             "line": 58,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicNormalMethod.ts",
+            "file": "src/away/materials/methods/NormalBasicMethod.ts",
             "line": 71,
             "description": "The texture containing the normals per pixel.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicNormalMethod.ts",
+            "file": "src/away/materials/methods/NormalBasicMethod.ts",
             "line": 99,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicNormalMethod.ts",
+            "file": "src/away/materials/methods/NormalBasicMethod.ts",
             "line": 108,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicNormalMethod.ts",
+            "file": "src/away/materials/methods/NormalBasicMethod.ts",
             "line": 122,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicNormalMethod.ts",
+            "file": "src/away/materials/methods/NormalBasicMethod.ts",
             "line": 136,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularBasicMethod.ts",
             "line": 12,
-            "description": "BasicSpecularMethod provides the default shading method for Blinn-Phong specular highlights (an optimized but approximated\nversion of Phong specularity).",
+            "description": "SpecularBasicMethod provides the default shading method for Blinn-Phong specular highlights (an optimized but approximated\nversion of Phong specularity).",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularBasicMethod.ts",
             "line": 35,
-            "description": "Creates a new BasicSpecularMethod object.",
+            "description": "Creates a new SpecularBasicMethod object.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularBasicMethod.ts",
             "line": 43,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularBasicMethod.ts",
             "line": 53,
             "description": "The sharpness of the specular highlight.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularBasicMethod.ts",
             "line": 66,
             "description": "The overall strength of the specular highlights.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularBasicMethod.ts",
             "line": 83,
             "description": "The colour of the specular reflection of the surface.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularBasicMethod.ts",
             "line": 104,
             "description": "The bitmapData that encodes the specular highlight strength per texel in the red channel, and the sharpness\nin the green channel. You can use SpecularBitmapTexture if you want to easily set specular and gloss maps\nfrom grayscale images, but prepared images are preferred.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularBasicMethod.ts",
             "line": 127,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularBasicMethod.ts",
             "line": 143,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularBasicMethod.ts",
             "line": 156,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularBasicMethod.ts",
             "line": 191,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularBasicMethod.ts",
             "line": 279,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularBasicMethod.ts",
             "line": 345,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularBasicMethod.ts",
             "line": 386,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularBasicMethod.ts",
             "line": 411,
             "description": "Updates the specular color data used by the render state.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/BasicSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularBasicMethod.ts",
             "line": 421,
             "description": "Set internally by the compiler, so the method knows the register containing the shadow calculation.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/ColorTransformMethod.ts",
+            "file": "src/away/materials/methods/EffectColorTransformMethod.ts",
             "line": 13,
-            "description": "ColorTransformMethod provides a shading method that changes the colour of a material analogous to a\nColorTransform object.",
+            "description": "EffectColorTransformMethod provides a shading method that changes the colour of a material analogous to a\nColorTransform object.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/ColorTransformMethod.ts",
+            "file": "src/away/materials/methods/EffectColorTransformMethod.ts",
             "line": 21,
-            "description": "Creates a new ColorTransformMethod.",
+            "description": "Creates a new EffectColorTransformMethod.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/ColorTransformMethod.ts",
+            "file": "src/away/materials/methods/EffectColorTransformMethod.ts",
             "line": 29,
             "description": "The ColorTransform object to transform the colour of the material with.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/ColorTransformMethod.ts",
+            "file": "src/away/materials/methods/EffectColorTransformMethod.ts",
             "line": 42,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/ColorTransformMethod.ts",
+            "file": "src/away/materials/methods/EffectColorTransformMethod.ts",
             "line": 60,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeDiffuseMethod.ts",
+            "file": "src/away/materials/methods/DiffuseCompositeMethod.ts",
             "line": 10,
-            "description": "CompositeDiffuseMethod provides a base class for diffuse methods that wrap a diffuse method to alter the\ncalculated diffuse reflection strength.",
+            "description": "DiffuseCompositeMethod provides a base class for diffuse methods that wrap a diffuse method to alter the\ncalculated diffuse reflection strength.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeDiffuseMethod.ts",
+            "file": "src/away/materials/methods/DiffuseCompositeMethod.ts",
             "line": 20,
-            "description": "Creates a new WrapDiffuseMethod object.",
+            "description": "Creates a new DiffuseWrapMethod object.",
             "params": [
                 {
                     "name": "modulateMethod",
@@ -12719,175 +12719,175 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeDiffuseMethod.ts",
+            "file": "src/away/materials/methods/DiffuseCompositeMethod.ts",
             "line": 43,
             "description": "The base diffuse method on which this method's shading is based.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeDiffuseMethod.ts",
+            "file": "src/away/materials/methods/DiffuseCompositeMethod.ts",
             "line": 62,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeDiffuseMethod.ts",
+            "file": "src/away/materials/methods/DiffuseCompositeMethod.ts",
             "line": 70,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeDiffuseMethod.ts",
+            "file": "src/away/materials/methods/DiffuseCompositeMethod.ts",
             "line": 78,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeDiffuseMethod.ts",
+            "file": "src/away/materials/methods/DiffuseCompositeMethod.ts",
             "line": 87,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeDiffuseMethod.ts",
+            "file": "src/away/materials/methods/DiffuseCompositeMethod.ts",
             "line": 100,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeDiffuseMethod.ts",
+            "file": "src/away/materials/methods/DiffuseCompositeMethod.ts",
             "line": 108,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeDiffuseMethod.ts",
+            "file": "src/away/materials/methods/DiffuseCompositeMethod.ts",
             "line": 116,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeDiffuseMethod.ts",
+            "file": "src/away/materials/methods/DiffuseCompositeMethod.ts",
             "line": 124,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeDiffuseMethod.ts",
+            "file": "src/away/materials/methods/DiffuseCompositeMethod.ts",
             "line": 132,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeDiffuseMethod.ts",
+            "file": "src/away/materials/methods/DiffuseCompositeMethod.ts",
             "line": 140,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeDiffuseMethod.ts",
+            "file": "src/away/materials/methods/DiffuseCompositeMethod.ts",
             "line": 148,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeDiffuseMethod.ts",
+            "file": "src/away/materials/methods/DiffuseCompositeMethod.ts",
             "line": 156,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeDiffuseMethod.ts",
+            "file": "src/away/materials/methods/DiffuseCompositeMethod.ts",
             "line": 166,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeDiffuseMethod.ts",
+            "file": "src/away/materials/methods/DiffuseCompositeMethod.ts",
             "line": 176,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeDiffuseMethod.ts",
+            "file": "src/away/materials/methods/DiffuseCompositeMethod.ts",
             "line": 184,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeDiffuseMethod.ts",
+            "file": "src/away/materials/methods/DiffuseCompositeMethod.ts",
             "line": 192,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeDiffuseMethod.ts",
+            "file": "src/away/materials/methods/DiffuseCompositeMethod.ts",
             "line": 200,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeDiffuseMethod.ts",
+            "file": "src/away/materials/methods/DiffuseCompositeMethod.ts",
             "line": 208,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeDiffuseMethod.ts",
+            "file": "src/away/materials/methods/DiffuseCompositeMethod.ts",
             "line": 216,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeDiffuseMethod.ts",
+            "file": "src/away/materials/methods/DiffuseCompositeMethod.ts",
             "line": 225,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeDiffuseMethod.ts",
+            "file": "src/away/materials/methods/DiffuseCompositeMethod.ts",
             "line": 243,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeDiffuseMethod.ts",
+            "file": "src/away/materials/methods/DiffuseCompositeMethod.ts",
             "line": 252,
             "description": "Called when the base method's shader code is invalidated.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularCompositeMethod.ts",
             "line": 11,
             "description": "CompositeSpecularMethod provides a base class for specular methods that wrap a specular method to alter the\ncalculated specular reflection strength.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularCompositeMethod.ts",
             "line": 21,
             "description": "Creates a new <code>CompositeSpecularMethod</code> object.",
             "params": [
@@ -12904,105 +12904,105 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularCompositeMethod.ts",
             "line": 44,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularCompositeMethod.ts",
             "line": 52,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularCompositeMethod.ts",
             "line": 60,
             "description": "The base specular method on which this method's shading is based.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularCompositeMethod.ts",
             "line": 79,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularCompositeMethod.ts",
             "line": 92,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularCompositeMethod.ts",
             "line": 105,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularCompositeMethod.ts",
             "line": 113,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularCompositeMethod.ts",
             "line": 122,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularCompositeMethod.ts",
             "line": 135,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularCompositeMethod.ts",
             "line": 143,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularCompositeMethod.ts",
             "line": 151,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularCompositeMethod.ts",
             "line": 166,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularCompositeMethod.ts",
             "line": 174,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularCompositeMethod.ts",
             "line": 182,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularCompositeMethod.ts",
             "line": 190,
             "inheritdoc": "",
             "return": {
@@ -13012,51 +13012,51 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularCompositeMethod.ts",
             "line": 199,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularCompositeMethod.ts",
             "line": 207,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularCompositeMethod.ts",
             "line": 215,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularCompositeMethod.ts",
             "line": 224,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/CompositeSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularCompositeMethod.ts",
             "line": 234,
             "description": "Called when the base method's shader code is invalidated.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/DitheredShadowMapMethod.ts",
+            "file": "src/away/materials/methods/ShadowDitheredMethod.ts",
             "line": 5,
-            "description": "DitheredShadowMapMethod provides a soft shadowing technique by randomly distributing sample points differently for each fragment.",
+            "description": "ShadowDitheredMethod provides a soft shadowing technique by randomly distributing sample points differently for each fragment.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/DitheredShadowMapMethod.ts",
+            "file": "src/away/materials/methods/ShadowDitheredMethod.ts",
             "line": 17,
-            "description": "Creates a new DitheredShadowMapMethod object.",
+            "description": "Creates a new ShadowDitheredMethod object.",
             "params": [
                 {
                     "name": "castingLight",
@@ -13071,63 +13071,63 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/DitheredShadowMapMethod.ts",
+            "file": "src/away/materials/methods/ShadowDitheredMethod.ts",
             "line": 37,
             "description": "The amount of samples to take for dithering. Minimum 1, maximum 24. The actual maximum may depend on the\ncomplexity of the shader.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/DitheredShadowMapMethod.ts",
+            "file": "src/away/materials/methods/ShadowDitheredMethod.ts",
             "line": 55,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/DitheredShadowMapMethod.ts",
+            "file": "src/away/materials/methods/ShadowDitheredMethod.ts",
             "line": 64,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/DitheredShadowMapMethod.ts",
+            "file": "src/away/materials/methods/ShadowDitheredMethod.ts",
             "line": 76,
             "description": "The range in the shadow map in which to distribute the samples.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/DitheredShadowMapMethod.ts",
+            "file": "src/away/materials/methods/ShadowDitheredMethod.ts",
             "line": 89,
             "description": "Creates a texture containing the dithering noise texture.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/DitheredShadowMapMethod.ts",
+            "file": "src/away/materials/methods/ShadowDitheredMethod.ts",
             "line": 122,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/DitheredShadowMapMethod.ts",
+            "file": "src/away/materials/methods/ShadowDitheredMethod.ts",
             "line": 134,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/DitheredShadowMapMethod.ts",
+            "file": "src/away/materials/methods/ShadowDitheredMethod.ts",
             "line": 148,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/DitheredShadowMapMethod.ts",
+            "file": "src/away/materials/methods/ShadowDitheredMethod.ts",
             "line": 164,
             "description": "Get the actual shader code for shadow mapping",
             "params": [
@@ -13152,7 +13152,7 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/DitheredShadowMapMethod.ts",
+            "file": "src/away/materials/methods/ShadowDitheredMethod.ts",
             "line": 240,
             "description": "Adds the code for another tap to the shader code.",
             "params": [
@@ -13184,14 +13184,14 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/DitheredShadowMapMethod.ts",
+            "file": "src/away/materials/methods/ShadowDitheredMethod.ts",
             "line": 256,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/DitheredShadowMapMethod.ts",
+            "file": "src/away/materials/methods/ShadowDitheredMethod.ts",
             "line": 270,
             "inheritdoc": "",
             "class": "",
@@ -13235,16 +13235,16 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/EnvMapMethod.ts",
+            "file": "src/away/materials/methods/EffectEnvMapMethod.ts",
             "line": 6,
-            "description": "EnvMapMethod provides a material method to perform reflection mapping using cube maps.",
+            "description": "EffectEnvMapMethod provides a material method to perform reflection mapping using cube maps.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/EnvMapMethod.ts",
+            "file": "src/away/materials/methods/EffectEnvMapMethod.ts",
             "line": 15,
-            "description": "Creates an EnvMapMethod object.",
+            "description": "Creates an EffectEnvMapMethod object.",
             "params": [
                 {
                     "name": "envMap",
@@ -13259,65 +13259,65 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/EnvMapMethod.ts",
+            "file": "src/away/materials/methods/EffectEnvMapMethod.ts",
             "line": 28,
             "description": "An optional texture to modulate the reflectivity of the surface.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/EnvMapMethod.ts",
+            "file": "src/away/materials/methods/EffectEnvMapMethod.ts",
             "line": 53,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/EnvMapMethod.ts",
+            "file": "src/away/materials/methods/EffectEnvMapMethod.ts",
             "line": 63,
             "description": "The cubic environment map containing the reflected scene.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/EnvMapMethod.ts",
+            "file": "src/away/materials/methods/EffectEnvMapMethod.ts",
             "line": 76,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/EnvMapMethod.ts",
+            "file": "src/away/materials/methods/EffectEnvMapMethod.ts",
             "line": 83,
             "description": "The reflectivity of the surface.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/EnvMapMethod.ts",
+            "file": "src/away/materials/methods/EffectEnvMapMethod.ts",
             "line": 96,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/EnvMapMethod.ts",
+            "file": "src/away/materials/methods/EffectEnvMapMethod.ts",
             "line": 110,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/FilteredShadowMapMethod.ts",
+            "file": "src/away/materials/methods/ShadowFilteredMethod.ts",
             "line": 5,
-            "description": "DitheredShadowMapMethod provides a softened shadowing technique by bilinearly interpolating shadow comparison\nresults of neighbouring pixels.",
+            "description": "ShadowDitheredMethod provides a softened shadowing technique by bilinearly interpolating shadow comparison\nresults of neighbouring pixels.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/FilteredShadowMapMethod.ts",
+            "file": "src/away/materials/methods/ShadowFilteredMethod.ts",
             "line": 11,
-            "description": "Creates a new BasicDiffuseMethod object.",
+            "description": "Creates a new DiffuseBasicMethod object.",
             "params": [
                 {
                     "name": "castingLight",
@@ -13328,44 +13328,44 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/FilteredShadowMapMethod.ts",
+            "file": "src/away/materials/methods/ShadowFilteredMethod.ts",
             "line": 21,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/FilteredShadowMapMethod.ts",
+            "file": "src/away/materials/methods/ShadowFilteredMethod.ts",
             "line": 36,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/FilteredShadowMapMethod.ts",
+            "file": "src/away/materials/methods/ShadowFilteredMethod.ts",
             "line": 85,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/FilteredShadowMapMethod.ts",
+            "file": "src/away/materials/methods/ShadowFilteredMethod.ts",
             "line": 97,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/FogMethod.ts",
+            "file": "src/away/materials/methods/EffectFogMethod.ts",
             "line": 6,
-            "description": "FogMethod provides a method to add distance-based fog to a material.",
+            "description": "EffectFogMethod provides a method to add distance-based fog to a material.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/FogMethod.ts",
+            "file": "src/away/materials/methods/EffectFogMethod.ts",
             "line": 18,
-            "description": "Creates a new FogMethod object.",
+            "description": "Creates a new EffectFogMethod object.",
             "params": [
                 {
                     "name": "minDistance",
@@ -13384,65 +13384,65 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/FogMethod.ts",
+            "file": "src/away/materials/methods/EffectFogMethod.ts",
             "line": 32,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/FogMethod.ts",
+            "file": "src/away/materials/methods/EffectFogMethod.ts",
             "line": 40,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/FogMethod.ts",
+            "file": "src/away/materials/methods/EffectFogMethod.ts",
             "line": 52,
             "description": "The distance from which the fog starts appearing.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/FogMethod.ts",
+            "file": "src/away/materials/methods/EffectFogMethod.ts",
             "line": 65,
             "description": "The distance at which the fog is densest.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/FogMethod.ts",
+            "file": "src/away/materials/methods/EffectFogMethod.ts",
             "line": 78,
             "description": "The colour of the fog.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/FogMethod.ts",
+            "file": "src/away/materials/methods/EffectFogMethod.ts",
             "line": 94,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/FogMethod.ts",
+            "file": "src/away/materials/methods/EffectFogMethod.ts",
             "line": 108,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/FresnelSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularFresnelMethod.ts",
             "line": 6,
-            "description": "FresnelSpecularMethod provides a specular shading method that causes stronger highlights on grazing view angles.",
+            "description": "SpecularFresnelMethod provides a specular shading method that causes stronger highlights on grazing view angles.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/FresnelSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularFresnelMethod.ts",
             "line": 16,
-            "description": "Creates a new FresnelSpecularMethod object.",
+            "description": "Creates a new SpecularFresnelMethod object.",
             "params": [
                 {
                     "name": "basedOnSurface",
@@ -13450,63 +13450,63 @@
                 },
                 {
                     "name": "baseSpecularMethod",
-                    "description": "The specular method to which the fresnel equation. Defaults to BasicSpecularMethod."
+                    "description": "The specular method to which the fresnel equation. Defaults to SpecularBasicMethod."
                 }
             ],
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/FresnelSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularFresnelMethod.ts",
             "line": 31,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/FresnelSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularFresnelMethod.ts",
             "line": 42,
             "description": "Defines whether the fresnel effect should be based on the view angle on the surface (if true), or on the angle between the light and the view.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/FresnelSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularFresnelMethod.ts",
             "line": 60,
             "description": "The power used in the Fresnel equation. Higher values make the fresnel effect more pronounced. Defaults to 5.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/FresnelSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularFresnelMethod.ts",
             "line": 73,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/FresnelSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularFresnelMethod.ts",
             "line": 82,
             "description": "The minimum amount of reflectance, ie the reflectance when the view direction is normal to the surface or light direction.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/FresnelSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularFresnelMethod.ts",
             "line": 95,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/FresnelSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularFresnelMethod.ts",
             "line": 108,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/FresnelSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularFresnelMethod.ts",
             "line": 121,
             "description": "Applies the fresnel effect to the specular strength.",
             "params": [
@@ -13534,42 +13534,42 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/HardShadowMapMethod.ts",
+            "file": "src/away/materials/methods/ShadowHardMethod.ts",
             "line": 5,
-            "description": "HardShadowMapMethod provides the cheapest shadow map method by using a single tap without any filtering.",
+            "description": "ShadowHardMethod provides the cheapest shadow map method by using a single tap without any filtering.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/HardShadowMapMethod.ts",
+            "file": "src/away/materials/methods/ShadowHardMethod.ts",
             "line": 10,
-            "description": "Creates a new HardShadowMapMethod object.",
+            "description": "Creates a new ShadowHardMethod object.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/HardShadowMapMethod.ts",
+            "file": "src/away/materials/methods/ShadowHardMethod.ts",
             "line": 18,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/HardShadowMapMethod.ts",
+            "file": "src/away/materials/methods/ShadowHardMethod.ts",
             "line": 40,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/HardShadowMapMethod.ts",
+            "file": "src/away/materials/methods/ShadowHardMethod.ts",
             "line": 68,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/HardShadowMapMethod.ts",
+            "file": "src/away/materials/methods/ShadowHardMethod.ts",
             "line": 77,
             "inheritdoc": "",
             "class": "",
@@ -13760,7 +13760,7 @@
             "params": [
                 {
                     "name": "baseMethod",
-                    "description": "The shadow map sampling method used to sample individual cascades (fe: HardShadowMapMethod, SoftShadowMapMethod)"
+                    "description": "The shadow map sampling method used to sample individual cascades (fe: ShadowHardMethod, SoftShadowMapMethod)"
                 },
                 {
                     "name": "fadeRatio",
@@ -13883,21 +13883,21 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/PhongSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularPhongMethod.ts",
             "line": 5,
-            "description": "PhongSpecularMethod provides a specular method that provides Phong highlights.",
+            "description": "SpecularPhongMethod provides a specular method that provides Phong highlights.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/PhongSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularPhongMethod.ts",
             "line": 10,
-            "description": "Creates a new PhongSpecularMethod object.",
+            "description": "Creates a new SpecularPhongMethod object.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/PhongSpecularMethod.ts",
+            "file": "src/away/materials/methods/SpecularPhongMethod.ts",
             "line": 18,
             "inheritdoc": "",
             "class": "",
@@ -14395,16 +14395,16 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/SimpleShadowMapMethodBase.ts",
+            "file": "src/away/materials/methods/ShadowMethodBase.ts",
             "line": 5,
-            "description": "SimpleShadowMapMethodBase provides an abstract method for simple (non-wrapping) shadow map methods.",
+            "description": "SimpleShadowMethodBase provides an abstract method for simple (non-wrapping) shadow map methods.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/SimpleShadowMapMethodBase.ts",
+            "file": "src/away/materials/methods/ShadowMethodBase.ts",
             "line": 13,
-            "description": "Creates a new SimpleShadowMapMethodBase object.",
+            "description": "Creates a new SimpleShadowMethodBase object.",
             "params": [
                 {
                     "name": "castingLight",
@@ -14415,42 +14415,42 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/SimpleShadowMapMethodBase.ts",
+            "file": "src/away/materials/methods/ShadowMethodBase.ts",
             "line": 23,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/SimpleShadowMapMethodBase.ts",
+            "file": "src/away/materials/methods/ShadowMethodBase.ts",
             "line": 34,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/SimpleShadowMapMethodBase.ts",
+            "file": "src/away/materials/methods/ShadowMethodBase.ts",
             "line": 66,
             "description": "Wrappers that override the vertex shader need to set this explicitly",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/SimpleShadowMapMethodBase.ts",
+            "file": "src/away/materials/methods/ShadowMethodBase.ts",
             "line": 79,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/SimpleShadowMapMethodBase.ts",
+            "file": "src/away/materials/methods/ShadowMethodBase.ts",
             "line": 89,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/SimpleShadowMapMethodBase.ts",
+            "file": "src/away/materials/methods/ShadowMethodBase.ts",
             "line": 97,
             "description": "Gets the vertex code for shadow mapping with a point light.",
             "params": [
@@ -14467,7 +14467,7 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/SimpleShadowMapMethodBase.ts",
+            "file": "src/away/materials/methods/ShadowMethodBase.ts",
             "line": 109,
             "description": "Gets the vertex code for shadow mapping with a planar shadow map (fe: directional lights).",
             "params": [
@@ -14484,14 +14484,14 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/SimpleShadowMapMethodBase.ts",
+            "file": "src/away/materials/methods/ShadowMethodBase.ts",
             "line": 135,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/SimpleShadowMapMethodBase.ts",
+            "file": "src/away/materials/methods/ShadowMethodBase.ts",
             "line": 145,
             "description": "Gets the fragment code for shadow mapping with a planar shadow map.",
             "params": [
@@ -14515,7 +14515,7 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/SimpleShadowMapMethodBase.ts",
+            "file": "src/away/materials/methods/ShadowMethodBase.ts",
             "line": 158,
             "description": "Gets the fragment code for shadow mapping with a point light.",
             "params": [
@@ -14539,14 +14539,14 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/SimpleShadowMapMethodBase.ts",
+            "file": "src/away/materials/methods/ShadowMethodBase.ts",
             "line": 171,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/SimpleShadowMapMethodBase.ts",
+            "file": "src/away/materials/methods/ShadowMethodBase.ts",
             "line": 180,
             "description": "Gets the fragment code for combining this method with a cascaded shadow map method.",
             "params": [
@@ -14582,30 +14582,30 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/SimpleShadowMapMethodBase.ts",
+            "file": "src/away/materials/methods/ShadowMethodBase.ts",
             "line": 195,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/SimpleShadowMapMethodBase.ts",
+            "file": "src/away/materials/methods/ShadowMethodBase.ts",
             "line": 220,
             "description": "Sets the method state for cascade shadow mapping.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/SimpleWaterNormalMethod.ts",
+            "file": "src/away/materials/methods/NormalSimpleWaterMethod.ts",
             "line": 6,
-            "description": "SimpleWaterNormalMethod provides a basic normal map method to create water ripples by translating two wave normal maps.",
+            "description": "NormalSimpleWaterMethod provides a basic normal map method to create water ripples by translating two wave normal maps.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/SimpleWaterNormalMethod.ts",
+            "file": "src/away/materials/methods/NormalSimpleWaterMethod.ts",
             "line": 19,
-            "description": "Creates a new SimpleWaterNormalMethod object.",
+            "description": "Creates a new NormalSimpleWaterMethod object.",
             "params": [
                 {
                     "name": "waveMap1",
@@ -14620,84 +14620,84 @@
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/SimpleWaterNormalMethod.ts",
+            "file": "src/away/materials/methods/NormalSimpleWaterMethod.ts",
             "line": 31,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/SimpleWaterNormalMethod.ts",
+            "file": "src/away/materials/methods/NormalSimpleWaterMethod.ts",
             "line": 43,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/SimpleWaterNormalMethod.ts",
+            "file": "src/away/materials/methods/NormalSimpleWaterMethod.ts",
             "line": 53,
             "description": "The translation of the first wave layer along the X-axis.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/SimpleWaterNormalMethod.ts",
+            "file": "src/away/materials/methods/NormalSimpleWaterMethod.ts",
             "line": 66,
             "description": "The translation of the first wave layer along the Y-axis.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/SimpleWaterNormalMethod.ts",
+            "file": "src/away/materials/methods/NormalSimpleWaterMethod.ts",
             "line": 79,
             "description": "The translation of the second wave layer along the X-axis.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/SimpleWaterNormalMethod.ts",
+            "file": "src/away/materials/methods/NormalSimpleWaterMethod.ts",
             "line": 92,
             "description": "The translation of the second wave layer along the Y-axis.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/SimpleWaterNormalMethod.ts",
+            "file": "src/away/materials/methods/NormalSimpleWaterMethod.ts",
             "line": 105,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/SimpleWaterNormalMethod.ts",
+            "file": "src/away/materials/methods/NormalSimpleWaterMethod.ts",
             "line": 116,
             "description": "A second normal map that will be combined with the first to create a wave-like animation pattern.",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/SimpleWaterNormalMethod.ts",
+            "file": "src/away/materials/methods/NormalSimpleWaterMethod.ts",
             "line": 129,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/SimpleWaterNormalMethod.ts",
+            "file": "src/away/materials/methods/NormalSimpleWaterMethod.ts",
             "line": 138,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/SimpleWaterNormalMethod.ts",
+            "file": "src/away/materials/methods/NormalSimpleWaterMethod.ts",
             "line": 147,
             "inheritdoc": "",
             "class": "",
             "module": "away.events"
         },
         {
-            "file": "src/away/materials/methods/SimpleWaterNormalMethod.ts",
+            "file": "src/away/materials/methods/NormalSimpleWaterMethod.ts",
             "line": 167,
             "inheritdoc": "",
             "class": "",
@@ -14713,7 +14713,7 @@
         {
             "file": "src/away/materials/methods/SoftShadowMapMethod.ts",
             "line": 14,
-            "description": "Creates a new BasicDiffuseMethod object.",
+            "description": "Creates a new DiffuseBasicMethod object.",
             "params": [
                 {
                     "name": "castingLight",
@@ -14997,14 +14997,14 @@
         {
             "file": "src/away/materials/passes/CompiledPass.ts",
             "line": 332,
-            "description": "The method used to generate the per-pixel normals. Defaults to BasicNormalMethod.",
+            "description": "The method used to generate the per-pixel normals. Defaults to NormalBasicMethod.",
             "class": "",
             "module": "away.events"
         },
         {
             "file": "src/away/materials/passes/CompiledPass.ts",
             "line": 346,
-            "description": "The method that provides the ambient lighting contribution. Defaults to BasicAmbientMethod.",
+            "description": "The method that provides the ambient lighting contribution. Defaults to AmbientBasicMethod.",
             "class": "",
             "module": "away.events"
         },
@@ -15018,14 +15018,14 @@
         {
             "file": "src/away/materials/passes/CompiledPass.ts",
             "line": 374,
-            "description": "The method that provides the diffuse lighting contribution. Defaults to BasicDiffuseMethod.",
+            "description": "The method that provides the diffuse lighting contribution. Defaults to DiffuseBasicMethod.",
             "class": "",
             "module": "away.events"
         },
         {
             "file": "src/away/materials/passes/CompiledPass.ts",
             "line": 387,
-            "description": "The method that provides the specular lighting contribution. Defaults to BasicSpecularMethod.",
+            "description": "The method that provides the specular lighting contribution. Defaults to SpecularBasicMethod.",
             "class": "",
             "module": "away.events"
         },
@@ -15980,7 +15980,7 @@
         {
             "file": "src/away/materials/passes/SuperShaderPass.ts",
             "line": 88,
-            "description": "The ColorTransformMethod object to transform the colour of the material with. Defaults to null.",
+            "description": "The EffectColorTransformMethod object to transform the colour of the material with. Defaults to null.",
             "class": "",
             "module": "away.events"
         },
@@ -16772,7 +16772,7 @@
         {
             "file": "src/away/materials/MultiPassMaterialBase.ts",
             "line": 167,
-            "description": "The method that provides the ambient lighting contribution. Defaults to BasicAmbientMethod.",
+            "description": "The method that provides the ambient lighting contribution. Defaults to AmbientBasicMethod.",
             "class": "",
             "module": "away.events"
         },
@@ -16786,21 +16786,21 @@
         {
             "file": "src/away/materials/MultiPassMaterialBase.ts",
             "line": 199,
-            "description": "The method that provides the diffuse lighting contribution. Defaults to BasicDiffuseMethod.",
+            "description": "The method that provides the diffuse lighting contribution. Defaults to DiffuseBasicMethod.",
             "class": "",
             "module": "away.events"
         },
         {
             "file": "src/away/materials/MultiPassMaterialBase.ts",
             "line": 214,
-            "description": "The method that provides the specular lighting contribution. Defaults to BasicSpecularMethod.",
+            "description": "The method that provides the specular lighting contribution. Defaults to SpecularBasicMethod.",
             "class": "",
             "module": "away.events"
         },
         {
             "file": "src/away/materials/MultiPassMaterialBase.ts",
             "line": 231,
-            "description": "The method used to generate the per-pixel normals. Defaults to BasicNormalMethod.",
+            "description": "The method used to generate the per-pixel normals. Defaults to NormalBasicMethod.",
             "class": "",
             "module": "away.events"
         },
@@ -17141,7 +17141,7 @@
         {
             "file": "src/away/materials/SinglePassMaterialBase.ts",
             "line": 176,
-            "description": "The method that provides the ambient lighting contribution. Defaults to BasicAmbientMethod.",
+            "description": "The method that provides the ambient lighting contribution. Defaults to AmbientBasicMethod.",
             "class": "",
             "module": "away.events"
         },
@@ -17155,21 +17155,21 @@
         {
             "file": "src/away/materials/SinglePassMaterialBase.ts",
             "line": 203,
-            "description": "The method that provides the diffuse lighting contribution. Defaults to BasicDiffuseMethod.",
+            "description": "The method that provides the diffuse lighting contribution. Defaults to DiffuseBasicMethod.",
             "class": "",
             "module": "away.events"
         },
         {
             "file": "src/away/materials/SinglePassMaterialBase.ts",
             "line": 217,
-            "description": "The method used to generate the per-pixel normals. Defaults to BasicNormalMethod.",
+            "description": "The method used to generate the per-pixel normals. Defaults to NormalBasicMethod.",
             "class": "",
             "module": "away.events"
         },
         {
             "file": "src/away/materials/SinglePassMaterialBase.ts",
             "line": 231,
-            "description": "The method that provides the specular lighting contribution. Defaults to BasicSpecularMethod.",
+            "description": "The method that provides the specular lighting contribution. Defaults to SpecularBasicMethod.",
             "class": "",
             "module": "away.events"
         },
@@ -20809,311 +20809,311 @@
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/BasicAmbientMethod.ts:36"
+            "line": " src/away/materials/methods/AmbientBasicMethod.ts:36"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/BasicAmbientMethod.ts:44"
+            "line": " src/away/materials/methods/AmbientBasicMethod.ts:44"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/BasicAmbientMethod.ts:104"
+            "line": " src/away/materials/methods/AmbientBasicMethod.ts:104"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/BasicAmbientMethod.ts:118"
+            "line": " src/away/materials/methods/AmbientBasicMethod.ts:118"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/BasicAmbientMethod.ts:127"
+            "line": " src/away/materials/methods/AmbientBasicMethod.ts:127"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/BasicAmbientMethod.ts:156"
+            "line": " src/away/materials/methods/AmbientBasicMethod.ts:156"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/BasicAmbientMethod.ts:181"
+            "line": " src/away/materials/methods/AmbientBasicMethod.ts:181"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/BasicDiffuseMethod.ts:159"
+            "line": " src/away/materials/methods/DiffuseBasicMethod.ts:159"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/BasicDiffuseMethod.ts:167"
+            "line": " src/away/materials/methods/DiffuseBasicMethod.ts:167"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/BasicDiffuseMethod.ts:184"
+            "line": " src/away/materials/methods/DiffuseBasicMethod.ts:184"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/BasicDiffuseMethod.ts:196"
+            "line": " src/away/materials/methods/DiffuseBasicMethod.ts:196"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/BasicDiffuseMethod.ts:213"
+            "line": " src/away/materials/methods/DiffuseBasicMethod.ts:213"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/BasicDiffuseMethod.ts:265"
+            "line": " src/away/materials/methods/DiffuseBasicMethod.ts:265"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/BasicDiffuseMethod.ts:313"
+            "line": " src/away/materials/methods/DiffuseBasicMethod.ts:313"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/BasicDiffuseMethod.ts:421"
+            "line": " src/away/materials/methods/DiffuseBasicMethod.ts:421"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/BasicNormalMethod.ts:23"
+            "line": " src/away/materials/methods/NormalBasicMethod.ts:23"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/BasicNormalMethod.ts:58"
+            "line": " src/away/materials/methods/NormalBasicMethod.ts:58"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/BasicNormalMethod.ts:99"
+            "line": " src/away/materials/methods/NormalBasicMethod.ts:99"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/BasicNormalMethod.ts:108"
+            "line": " src/away/materials/methods/NormalBasicMethod.ts:108"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/BasicNormalMethod.ts:122"
+            "line": " src/away/materials/methods/NormalBasicMethod.ts:122"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/BasicNormalMethod.ts:136"
+            "line": " src/away/materials/methods/NormalBasicMethod.ts:136"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/BasicSpecularMethod.ts:43"
+            "line": " src/away/materials/methods/SpecularBasicMethod.ts:43"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/BasicSpecularMethod.ts:127"
+            "line": " src/away/materials/methods/SpecularBasicMethod.ts:127"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/BasicSpecularMethod.ts:143"
+            "line": " src/away/materials/methods/SpecularBasicMethod.ts:143"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/BasicSpecularMethod.ts:156"
+            "line": " src/away/materials/methods/SpecularBasicMethod.ts:156"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/BasicSpecularMethod.ts:191"
+            "line": " src/away/materials/methods/SpecularBasicMethod.ts:191"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/BasicSpecularMethod.ts:279"
+            "line": " src/away/materials/methods/SpecularBasicMethod.ts:279"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/BasicSpecularMethod.ts:345"
+            "line": " src/away/materials/methods/SpecularBasicMethod.ts:345"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/BasicSpecularMethod.ts:386"
+            "line": " src/away/materials/methods/SpecularBasicMethod.ts:386"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/ColorTransformMethod.ts:42"
+            "line": " src/away/materials/methods/EffectColorTransformMethod.ts:42"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/ColorTransformMethod.ts:60"
+            "line": " src/away/materials/methods/EffectColorTransformMethod.ts:60"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:62"
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:62"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:70"
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:70"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:78"
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:78"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:87"
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:87"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:100"
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:100"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:108"
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:108"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:116"
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:116"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:124"
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:124"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:132"
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:132"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:140"
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:140"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:148"
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:148"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:156"
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:156"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:166"
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:166"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:176"
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:176"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:184"
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:184"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:192"
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:192"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:200"
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:200"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:208"
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:208"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:216"
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:216"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:225"
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:225"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:243"
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:243"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/CompositeSpecularMethod.ts:44"
+            "line": " src/away/materials/methods/SpecularCompositeMethod.ts:44"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/CompositeSpecularMethod.ts:52"
+            "line": " src/away/materials/methods/SpecularCompositeMethod.ts:52"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/CompositeSpecularMethod.ts:79"
+            "line": " src/away/materials/methods/SpecularCompositeMethod.ts:79"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/CompositeSpecularMethod.ts:92"
+            "line": " src/away/materials/methods/SpecularCompositeMethod.ts:92"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/CompositeSpecularMethod.ts:105"
+            "line": " src/away/materials/methods/SpecularCompositeMethod.ts:105"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/CompositeSpecularMethod.ts:113"
+            "line": " src/away/materials/methods/SpecularCompositeMethod.ts:113"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/CompositeSpecularMethod.ts:122"
+            "line": " src/away/materials/methods/SpecularCompositeMethod.ts:122"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/CompositeSpecularMethod.ts:135"
+            "line": " src/away/materials/methods/SpecularCompositeMethod.ts:135"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/CompositeSpecularMethod.ts:143"
+            "line": " src/away/materials/methods/SpecularCompositeMethod.ts:143"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/CompositeSpecularMethod.ts:151"
+            "line": " src/away/materials/methods/SpecularCompositeMethod.ts:151"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/CompositeSpecularMethod.ts:166"
+            "line": " src/away/materials/methods/SpecularCompositeMethod.ts:166"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/CompositeSpecularMethod.ts:174"
+            "line": " src/away/materials/methods/SpecularCompositeMethod.ts:174"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/CompositeSpecularMethod.ts:182"
+            "line": " src/away/materials/methods/SpecularCompositeMethod.ts:182"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/CompositeSpecularMethod.ts:190"
+            "line": " src/away/materials/methods/SpecularCompositeMethod.ts:190"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/CompositeSpecularMethod.ts:199"
+            "line": " src/away/materials/methods/SpecularCompositeMethod.ts:199"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/CompositeSpecularMethod.ts:207"
+            "line": " src/away/materials/methods/SpecularCompositeMethod.ts:207"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/CompositeSpecularMethod.ts:215"
+            "line": " src/away/materials/methods/SpecularCompositeMethod.ts:215"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/CompositeSpecularMethod.ts:224"
+            "line": " src/away/materials/methods/SpecularCompositeMethod.ts:224"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/DitheredShadowMapMethod.ts:55"
+            "line": " src/away/materials/methods/ShadowDitheredMethod.ts:55"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/DitheredShadowMapMethod.ts:64"
+            "line": " src/away/materials/methods/ShadowDitheredMethod.ts:64"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/DitheredShadowMapMethod.ts:122"
+            "line": " src/away/materials/methods/ShadowDitheredMethod.ts:122"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/DitheredShadowMapMethod.ts:134"
+            "line": " src/away/materials/methods/ShadowDitheredMethod.ts:134"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/DitheredShadowMapMethod.ts:148"
+            "line": " src/away/materials/methods/ShadowDitheredMethod.ts:148"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/DitheredShadowMapMethod.ts:256"
+            "line": " src/away/materials/methods/ShadowDitheredMethod.ts:256"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/DitheredShadowMapMethod.ts:270"
+            "line": " src/away/materials/methods/ShadowDitheredMethod.ts:270"
         },
         {
             "message": "unknown tag: inheritdoc",
@@ -21121,83 +21121,83 @@
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/EnvMapMethod.ts:53"
+            "line": " src/away/materials/methods/EffectEnvMapMethod.ts:53"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/EnvMapMethod.ts:76"
+            "line": " src/away/materials/methods/EffectEnvMapMethod.ts:76"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/EnvMapMethod.ts:96"
+            "line": " src/away/materials/methods/EffectEnvMapMethod.ts:96"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/EnvMapMethod.ts:110"
+            "line": " src/away/materials/methods/EffectEnvMapMethod.ts:110"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/FilteredShadowMapMethod.ts:21"
+            "line": " src/away/materials/methods/ShadowFilteredMethod.ts:21"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/FilteredShadowMapMethod.ts:36"
+            "line": " src/away/materials/methods/ShadowFilteredMethod.ts:36"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/FilteredShadowMapMethod.ts:85"
+            "line": " src/away/materials/methods/ShadowFilteredMethod.ts:85"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/FilteredShadowMapMethod.ts:97"
+            "line": " src/away/materials/methods/ShadowFilteredMethod.ts:97"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/FogMethod.ts:32"
+            "line": " src/away/materials/methods/EffectFogMethod.ts:32"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/FogMethod.ts:40"
+            "line": " src/away/materials/methods/EffectFogMethod.ts:40"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/FogMethod.ts:94"
+            "line": " src/away/materials/methods/EffectFogMethod.ts:94"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/FogMethod.ts:108"
+            "line": " src/away/materials/methods/EffectFogMethod.ts:108"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/FresnelSpecularMethod.ts:31"
+            "line": " src/away/materials/methods/SpecularFresnelMethod.ts:31"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/FresnelSpecularMethod.ts:73"
+            "line": " src/away/materials/methods/SpecularFresnelMethod.ts:73"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/FresnelSpecularMethod.ts:95"
+            "line": " src/away/materials/methods/SpecularFresnelMethod.ts:95"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/FresnelSpecularMethod.ts:108"
+            "line": " src/away/materials/methods/SpecularFresnelMethod.ts:108"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/HardShadowMapMethod.ts:18"
+            "line": " src/away/materials/methods/ShadowHardMethod.ts:18"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/HardShadowMapMethod.ts:40"
+            "line": " src/away/materials/methods/ShadowHardMethod.ts:40"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/HardShadowMapMethod.ts:68"
+            "line": " src/away/materials/methods/ShadowHardMethod.ts:68"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/HardShadowMapMethod.ts:77"
+            "line": " src/away/materials/methods/ShadowHardMethod.ts:77"
         },
         {
             "message": "unknown tag: inheritdoc",
@@ -21253,7 +21253,7 @@
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/PhongSpecularMethod.ts:18"
+            "line": " src/away/materials/methods/SpecularPhongMethod.ts:18"
         },
         {
             "message": "unknown tag: inheritdoc",
@@ -21265,59 +21265,59 @@
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/SimpleShadowMapMethodBase.ts:23"
+            "line": " src/away/materials/methods/ShadowMethodBase.ts:23"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/SimpleShadowMapMethodBase.ts:34"
+            "line": " src/away/materials/methods/ShadowMethodBase.ts:34"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/SimpleShadowMapMethodBase.ts:79"
+            "line": " src/away/materials/methods/ShadowMethodBase.ts:79"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/SimpleShadowMapMethodBase.ts:89"
+            "line": " src/away/materials/methods/ShadowMethodBase.ts:89"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/SimpleShadowMapMethodBase.ts:135"
+            "line": " src/away/materials/methods/ShadowMethodBase.ts:135"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/SimpleShadowMapMethodBase.ts:171"
+            "line": " src/away/materials/methods/ShadowMethodBase.ts:171"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/SimpleShadowMapMethodBase.ts:195"
+            "line": " src/away/materials/methods/ShadowMethodBase.ts:195"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/SimpleWaterNormalMethod.ts:31"
+            "line": " src/away/materials/methods/NormalSimpleWaterMethod.ts:31"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/SimpleWaterNormalMethod.ts:43"
+            "line": " src/away/materials/methods/NormalSimpleWaterMethod.ts:43"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/SimpleWaterNormalMethod.ts:105"
+            "line": " src/away/materials/methods/NormalSimpleWaterMethod.ts:105"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/SimpleWaterNormalMethod.ts:129"
+            "line": " src/away/materials/methods/NormalSimpleWaterMethod.ts:129"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/SimpleWaterNormalMethod.ts:138"
+            "line": " src/away/materials/methods/NormalSimpleWaterMethod.ts:138"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/SimpleWaterNormalMethod.ts:147"
+            "line": " src/away/materials/methods/NormalSimpleWaterMethod.ts:147"
         },
         {
             "message": "unknown tag: inheritdoc",
-            "line": " src/away/materials/methods/SimpleWaterNormalMethod.ts:167"
+            "line": " src/away/materials/methods/NormalSimpleWaterMethod.ts:167"
         },
         {
             "message": "unknown tag: inheritdoc",
@@ -26524,504 +26524,504 @@
             "line": " src/away/materials/lightpickers/StaticLightPicker.ts:164"
         },
         {
-            "message": "Missing item type\nBasicAmbientMethod provides the default shading method for uniform ambient lighting.",
-            "line": " src/away/materials/methods/BasicAmbientMethod.ts:6"
+            "message": "Missing item type\nAmbientBasicMethod provides the default shading method for uniform ambient lighting.",
+            "line": " src/away/materials/methods/AmbientBasicMethod.ts:6"
         },
         {
-            "message": "Missing item type\nCreates a new BasicAmbientMethod object.",
-            "line": " src/away/materials/methods/BasicAmbientMethod.ts:28"
-        },
-        {
-            "message": "Missing item type",
-            "line": " src/away/materials/methods/BasicAmbientMethod.ts:36"
+            "message": "Missing item type\nCreates a new AmbientBasicMethod object.",
+            "line": " src/away/materials/methods/AmbientBasicMethod.ts:28"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/BasicAmbientMethod.ts:44"
+            "line": " src/away/materials/methods/AmbientBasicMethod.ts:36"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/away/materials/methods/AmbientBasicMethod.ts:44"
         },
         {
             "message": "Missing item type\nThe strength of the ambient reflection of the surface.",
-            "line": " src/away/materials/methods/BasicAmbientMethod.ts:52"
+            "line": " src/away/materials/methods/AmbientBasicMethod.ts:52"
         },
         {
             "message": "Missing item type\nThe colour of the ambient reflection of the surface.",
-            "line": " src/away/materials/methods/BasicAmbientMethod.ts:65"
+            "line": " src/away/materials/methods/AmbientBasicMethod.ts:65"
         },
         {
             "message": "Missing item type\nThe bitmapData to use to define the diffuse reflection color per texel.",
-            "line": " src/away/materials/methods/BasicAmbientMethod.ts:78"
+            "line": " src/away/materials/methods/AmbientBasicMethod.ts:78"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/BasicAmbientMethod.ts:104"
+            "line": " src/away/materials/methods/AmbientBasicMethod.ts:104"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/BasicAmbientMethod.ts:118"
+            "line": " src/away/materials/methods/AmbientBasicMethod.ts:118"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/BasicAmbientMethod.ts:127"
+            "line": " src/away/materials/methods/AmbientBasicMethod.ts:127"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/BasicAmbientMethod.ts:156"
+            "line": " src/away/materials/methods/AmbientBasicMethod.ts:156"
         },
         {
             "message": "Missing item type\nUpdates the ambient color data used by the render state.",
-            "line": " src/away/materials/methods/BasicAmbientMethod.ts:171"
+            "line": " src/away/materials/methods/AmbientBasicMethod.ts:171"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/BasicAmbientMethod.ts:181"
+            "line": " src/away/materials/methods/AmbientBasicMethod.ts:181"
         },
         {
-            "message": "Missing item type\nBasicDiffuseMethod provides the default shading method for Lambert (dot3) diffuse lighting.",
-            "line": " src/away/materials/methods/BasicDiffuseMethod.ts:13"
+            "message": "Missing item type\nDiffuseBasicMethod provides the default shading method for Lambert (dot3) diffuse lighting.",
+            "line": " src/away/materials/methods/DiffuseBasicMethod.ts:13"
         },
         {
-            "message": "Missing item type\nCreates a new BasicDiffuseMethod object.",
-            "line": " src/away/materials/methods/BasicDiffuseMethod.ts:38"
+            "message": "Missing item type\nCreates a new DiffuseBasicMethod object.",
+            "line": " src/away/materials/methods/DiffuseBasicMethod.ts:38"
         },
         {
             "message": "Missing item type\nSet internally if the ambient method uses a texture.",
-            "line": " src/away/materials/methods/BasicDiffuseMethod.ts:46"
+            "line": " src/away/materials/methods/DiffuseBasicMethod.ts:46"
         },
         {
             "message": "Missing item type\nForces the creation of the texture.",
-            "line": " src/away/materials/methods/BasicDiffuseMethod.ts:73"
+            "line": " src/away/materials/methods/DiffuseBasicMethod.ts:73"
         },
         {
             "message": "Missing item type\nThe alpha component of the diffuse reflection.",
-            "line": " src/away/materials/methods/BasicDiffuseMethod.ts:83"
+            "line": " src/away/materials/methods/DiffuseBasicMethod.ts:83"
         },
         {
             "message": "Missing item type\nThe color of the diffuse reflection when not using a texture.",
-            "line": " src/away/materials/methods/BasicDiffuseMethod.ts:96"
+            "line": " src/away/materials/methods/DiffuseBasicMethod.ts:96"
         },
         {
             "message": "Missing item type\nThe bitmapData to use to define the diffuse reflection color per texel.",
-            "line": " src/away/materials/methods/BasicDiffuseMethod.ts:111"
+            "line": " src/away/materials/methods/DiffuseBasicMethod.ts:111"
         },
         {
             "message": "Missing item type\nThe minimum alpha value for which pixels should be drawn. This is used for transparency that is either\ninvisible or entirely opaque, often used with textures for foliage, etc.\nRecommended values are 0 to disable alpha, or 0.5 to create smooth edges. Default value is 0 (disabled).",
-            "line": " src/away/materials/methods/BasicDiffuseMethod.ts:135"
+            "line": " src/away/materials/methods/DiffuseBasicMethod.ts:135"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/BasicDiffuseMethod.ts:159"
+            "line": " src/away/materials/methods/DiffuseBasicMethod.ts:159"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/BasicDiffuseMethod.ts:167"
+            "line": " src/away/materials/methods/DiffuseBasicMethod.ts:167"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/BasicDiffuseMethod.ts:184"
+            "line": " src/away/materials/methods/DiffuseBasicMethod.ts:184"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/BasicDiffuseMethod.ts:196"
+            "line": " src/away/materials/methods/DiffuseBasicMethod.ts:196"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/BasicDiffuseMethod.ts:213"
+            "line": " src/away/materials/methods/DiffuseBasicMethod.ts:213"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/BasicDiffuseMethod.ts:265"
+            "line": " src/away/materials/methods/DiffuseBasicMethod.ts:265"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/BasicDiffuseMethod.ts:313"
+            "line": " src/away/materials/methods/DiffuseBasicMethod.ts:313"
         },
         {
             "message": "Missing item type\nGenerate the code that applies the calculated shadow to the diffuse light",
-            "line": " src/away/materials/methods/BasicDiffuseMethod.ts:408"
+            "line": " src/away/materials/methods/DiffuseBasicMethod.ts:408"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/BasicDiffuseMethod.ts:421"
+            "line": " src/away/materials/methods/DiffuseBasicMethod.ts:421"
         },
         {
             "message": "Missing item type\nUpdates the diffuse color data used by the render state.",
-            "line": " src/away/materials/methods/BasicDiffuseMethod.ts:446"
+            "line": " src/away/materials/methods/DiffuseBasicMethod.ts:446"
         },
         {
             "message": "Missing item type\nSet internally by the compiler, so the method knows the register containing the shadow calculation.",
-            "line": " src/away/materials/methods/BasicDiffuseMethod.ts:456"
+            "line": " src/away/materials/methods/DiffuseBasicMethod.ts:456"
         },
         {
-            "message": "Missing item type\nBasicNormalMethod is the default method for standard tangent-space normal mapping.",
-            "line": " src/away/materials/methods/BasicNormalMethod.ts:6"
+            "message": "Missing item type\nNormalBasicMethod is the default method for standard tangent-space normal mapping.",
+            "line": " src/away/materials/methods/NormalBasicMethod.ts:6"
         },
         {
-            "message": "Missing item type\nCreates a new BasicNormalMethod object.",
-            "line": " src/away/materials/methods/BasicNormalMethod.ts:15"
+            "message": "Missing item type\nCreates a new NormalBasicMethod object.",
+            "line": " src/away/materials/methods/NormalBasicMethod.ts:15"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/BasicNormalMethod.ts:23"
+            "line": " src/away/materials/methods/NormalBasicMethod.ts:23"
         },
         {
             "message": "Missing item type\nIndicates whether or not this method outputs normals in tangent space. Override for object-space normals.",
-            "line": " src/away/materials/methods/BasicNormalMethod.ts:41"
+            "line": " src/away/materials/methods/NormalBasicMethod.ts:41"
         },
         {
             "message": "Missing item type\nIndicates if the normal method output is not based on a texture (if not, it will usually always return true)\nOverride if subclasses are different.",
-            "line": " src/away/materials/methods/BasicNormalMethod.ts:49"
+            "line": " src/away/materials/methods/NormalBasicMethod.ts:49"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/BasicNormalMethod.ts:58"
+            "line": " src/away/materials/methods/NormalBasicMethod.ts:58"
         },
         {
             "message": "Missing item type\nThe texture containing the normals per pixel.",
-            "line": " src/away/materials/methods/BasicNormalMethod.ts:71"
+            "line": " src/away/materials/methods/NormalBasicMethod.ts:71"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/BasicNormalMethod.ts:99"
+            "line": " src/away/materials/methods/NormalBasicMethod.ts:99"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/BasicNormalMethod.ts:108"
+            "line": " src/away/materials/methods/NormalBasicMethod.ts:108"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/BasicNormalMethod.ts:122"
+            "line": " src/away/materials/methods/NormalBasicMethod.ts:122"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/BasicNormalMethod.ts:136"
+            "line": " src/away/materials/methods/NormalBasicMethod.ts:136"
         },
         {
-            "message": "Missing item type\nBasicSpecularMethod provides the default shading method for Blinn-Phong specular highlights (an optimized but approximated\nversion of Phong specularity).",
-            "line": " src/away/materials/methods/BasicSpecularMethod.ts:12"
+            "message": "Missing item type\nSpecularBasicMethod provides the default shading method for Blinn-Phong specular highlights (an optimized but approximated\nversion of Phong specularity).",
+            "line": " src/away/materials/methods/SpecularBasicMethod.ts:12"
         },
         {
-            "message": "Missing item type\nCreates a new BasicSpecularMethod object.",
-            "line": " src/away/materials/methods/BasicSpecularMethod.ts:35"
+            "message": "Missing item type\nCreates a new SpecularBasicMethod object.",
+            "line": " src/away/materials/methods/SpecularBasicMethod.ts:35"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/BasicSpecularMethod.ts:43"
+            "line": " src/away/materials/methods/SpecularBasicMethod.ts:43"
         },
         {
             "message": "Missing item type\nThe sharpness of the specular highlight.",
-            "line": " src/away/materials/methods/BasicSpecularMethod.ts:53"
+            "line": " src/away/materials/methods/SpecularBasicMethod.ts:53"
         },
         {
             "message": "Missing item type\nThe overall strength of the specular highlights.",
-            "line": " src/away/materials/methods/BasicSpecularMethod.ts:66"
+            "line": " src/away/materials/methods/SpecularBasicMethod.ts:66"
         },
         {
             "message": "Missing item type\nThe colour of the specular reflection of the surface.",
-            "line": " src/away/materials/methods/BasicSpecularMethod.ts:83"
+            "line": " src/away/materials/methods/SpecularBasicMethod.ts:83"
         },
         {
             "message": "Missing item type\nThe bitmapData that encodes the specular highlight strength per texel in the red channel, and the sharpness\nin the green channel. You can use SpecularBitmapTexture if you want to easily set specular and gloss maps\nfrom grayscale images, but prepared images are preferred.",
-            "line": " src/away/materials/methods/BasicSpecularMethod.ts:104"
+            "line": " src/away/materials/methods/SpecularBasicMethod.ts:104"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/BasicSpecularMethod.ts:127"
+            "line": " src/away/materials/methods/SpecularBasicMethod.ts:127"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/BasicSpecularMethod.ts:143"
+            "line": " src/away/materials/methods/SpecularBasicMethod.ts:143"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/BasicSpecularMethod.ts:156"
+            "line": " src/away/materials/methods/SpecularBasicMethod.ts:156"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/BasicSpecularMethod.ts:191"
+            "line": " src/away/materials/methods/SpecularBasicMethod.ts:191"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/BasicSpecularMethod.ts:279"
+            "line": " src/away/materials/methods/SpecularBasicMethod.ts:279"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/BasicSpecularMethod.ts:345"
+            "line": " src/away/materials/methods/SpecularBasicMethod.ts:345"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/BasicSpecularMethod.ts:386"
+            "line": " src/away/materials/methods/SpecularBasicMethod.ts:386"
         },
         {
             "message": "Missing item type\nUpdates the specular color data used by the render state.",
-            "line": " src/away/materials/methods/BasicSpecularMethod.ts:411"
+            "line": " src/away/materials/methods/SpecularBasicMethod.ts:411"
         },
         {
             "message": "Missing item type\nSet internally by the compiler, so the method knows the register containing the shadow calculation.",
-            "line": " src/away/materials/methods/BasicSpecularMethod.ts:421"
+            "line": " src/away/materials/methods/SpecularBasicMethod.ts:421"
         },
         {
-            "message": "Missing item type\nColorTransformMethod provides a shading method that changes the colour of a material analogous to a\nColorTransform object.",
-            "line": " src/away/materials/methods/ColorTransformMethod.ts:13"
+            "message": "Missing item type\nEffectColorTransformMethod provides a shading method that changes the colour of a material analogous to a\nColorTransform object.",
+            "line": " src/away/materials/methods/EffectColorTransformMethod.ts:13"
         },
         {
-            "message": "Missing item type\nCreates a new ColorTransformMethod.",
-            "line": " src/away/materials/methods/ColorTransformMethod.ts:21"
+            "message": "Missing item type\nCreates a new EffectColorTransformMethod.",
+            "line": " src/away/materials/methods/EffectColorTransformMethod.ts:21"
         },
         {
             "message": "Missing item type\nThe ColorTransform object to transform the colour of the material with.",
-            "line": " src/away/materials/methods/ColorTransformMethod.ts:29"
+            "line": " src/away/materials/methods/EffectColorTransformMethod.ts:29"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/ColorTransformMethod.ts:42"
+            "line": " src/away/materials/methods/EffectColorTransformMethod.ts:42"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/ColorTransformMethod.ts:60"
+            "line": " src/away/materials/methods/EffectColorTransformMethod.ts:60"
         },
         {
-            "message": "Missing item type\nCompositeDiffuseMethod provides a base class for diffuse methods that wrap a diffuse method to alter the\ncalculated diffuse reflection strength.",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:10"
+            "message": "Missing item type\nDiffuseCompositeMethod provides a base class for diffuse methods that wrap a diffuse method to alter the\ncalculated diffuse reflection strength.",
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:10"
         },
         {
-            "message": "Missing item type\nCreates a new WrapDiffuseMethod object.",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:20"
+            "message": "Missing item type\nCreates a new DiffuseWrapMethod object.",
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:20"
         },
         {
             "message": "Missing item type\nThe base diffuse method on which this method's shading is based.",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:43"
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:43"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:62"
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:62"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:70"
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:70"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:78"
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:78"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:87"
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:87"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:100"
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:100"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:108"
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:108"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:116"
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:116"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:124"
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:124"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:132"
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:132"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:140"
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:140"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:148"
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:148"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:156"
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:156"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:166"
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:166"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:176"
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:176"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:184"
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:184"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:192"
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:192"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:200"
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:200"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:208"
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:208"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:216"
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:216"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:225"
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:225"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:243"
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:243"
         },
         {
             "message": "Missing item type\nCalled when the base method's shader code is invalidated.",
-            "line": " src/away/materials/methods/CompositeDiffuseMethod.ts:252"
+            "line": " src/away/materials/methods/DiffuseCompositeMethod.ts:252"
         },
         {
             "message": "Missing item type\nCompositeSpecularMethod provides a base class for specular methods that wrap a specular method to alter the\ncalculated specular reflection strength.",
-            "line": " src/away/materials/methods/CompositeSpecularMethod.ts:11"
+            "line": " src/away/materials/methods/SpecularCompositeMethod.ts:11"
         },
         {
             "message": "Missing item type\nCreates a new <code>CompositeSpecularMethod</code> object.",
-            "line": " src/away/materials/methods/CompositeSpecularMethod.ts:21"
+            "line": " src/away/materials/methods/SpecularCompositeMethod.ts:21"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/CompositeSpecularMethod.ts:44"
+            "line": " src/away/materials/methods/SpecularCompositeMethod.ts:44"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/CompositeSpecularMethod.ts:52"
+            "line": " src/away/materials/methods/SpecularCompositeMethod.ts:52"
         },
         {
             "message": "Missing item type\nThe base specular method on which this method's shading is based.",
-            "line": " src/away/materials/methods/CompositeSpecularMethod.ts:60"
+            "line": " src/away/materials/methods/SpecularCompositeMethod.ts:60"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/CompositeSpecularMethod.ts:79"
+            "line": " src/away/materials/methods/SpecularCompositeMethod.ts:79"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/CompositeSpecularMethod.ts:92"
+            "line": " src/away/materials/methods/SpecularCompositeMethod.ts:92"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/CompositeSpecularMethod.ts:105"
+            "line": " src/away/materials/methods/SpecularCompositeMethod.ts:105"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/CompositeSpecularMethod.ts:113"
+            "line": " src/away/materials/methods/SpecularCompositeMethod.ts:113"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/CompositeSpecularMethod.ts:122"
+            "line": " src/away/materials/methods/SpecularCompositeMethod.ts:122"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/CompositeSpecularMethod.ts:135"
+            "line": " src/away/materials/methods/SpecularCompositeMethod.ts:135"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/CompositeSpecularMethod.ts:143"
+            "line": " src/away/materials/methods/SpecularCompositeMethod.ts:143"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/CompositeSpecularMethod.ts:151"
+            "line": " src/away/materials/methods/SpecularCompositeMethod.ts:151"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/CompositeSpecularMethod.ts:166"
+            "line": " src/away/materials/methods/SpecularCompositeMethod.ts:166"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/CompositeSpecularMethod.ts:174"
+            "line": " src/away/materials/methods/SpecularCompositeMethod.ts:174"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/CompositeSpecularMethod.ts:182"
+            "line": " src/away/materials/methods/SpecularCompositeMethod.ts:182"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/CompositeSpecularMethod.ts:190"
+            "line": " src/away/materials/methods/SpecularCompositeMethod.ts:190"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/CompositeSpecularMethod.ts:199"
+            "line": " src/away/materials/methods/SpecularCompositeMethod.ts:199"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/CompositeSpecularMethod.ts:207"
+            "line": " src/away/materials/methods/SpecularCompositeMethod.ts:207"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/CompositeSpecularMethod.ts:215"
+            "line": " src/away/materials/methods/SpecularCompositeMethod.ts:215"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/CompositeSpecularMethod.ts:224"
+            "line": " src/away/materials/methods/SpecularCompositeMethod.ts:224"
         },
         {
             "message": "Missing item type\nCalled when the base method's shader code is invalidated.",
-            "line": " src/away/materials/methods/CompositeSpecularMethod.ts:234"
+            "line": " src/away/materials/methods/SpecularCompositeMethod.ts:234"
         },
         {
-            "message": "Missing item type\nDitheredShadowMapMethod provides a soft shadowing technique by randomly distributing sample points differently for each fragment.",
-            "line": " src/away/materials/methods/DitheredShadowMapMethod.ts:5"
+            "message": "Missing item type\nShadowDitheredMethod provides a soft shadowing technique by randomly distributing sample points differently for each fragment.",
+            "line": " src/away/materials/methods/ShadowDitheredMethod.ts:5"
         },
         {
-            "message": "Missing item type\nCreates a new DitheredShadowMapMethod object.",
-            "line": " src/away/materials/methods/DitheredShadowMapMethod.ts:17"
+            "message": "Missing item type\nCreates a new ShadowDitheredMethod object.",
+            "line": " src/away/materials/methods/ShadowDitheredMethod.ts:17"
         },
         {
             "message": "Missing item type\nThe amount of samples to take for dithering. Minimum 1, maximum 24. The actual maximum may depend on the\ncomplexity of the shader.",
-            "line": " src/away/materials/methods/DitheredShadowMapMethod.ts:37"
+            "line": " src/away/materials/methods/ShadowDitheredMethod.ts:37"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/DitheredShadowMapMethod.ts:55"
+            "line": " src/away/materials/methods/ShadowDitheredMethod.ts:55"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/DitheredShadowMapMethod.ts:64"
+            "line": " src/away/materials/methods/ShadowDitheredMethod.ts:64"
         },
         {
             "message": "Missing item type\nThe range in the shadow map in which to distribute the samples.",
-            "line": " src/away/materials/methods/DitheredShadowMapMethod.ts:76"
+            "line": " src/away/materials/methods/ShadowDitheredMethod.ts:76"
         },
         {
             "message": "Missing item type\nCreates a texture containing the dithering noise texture.",
-            "line": " src/away/materials/methods/DitheredShadowMapMethod.ts:89"
+            "line": " src/away/materials/methods/ShadowDitheredMethod.ts:89"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/DitheredShadowMapMethod.ts:122"
+            "line": " src/away/materials/methods/ShadowDitheredMethod.ts:122"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/DitheredShadowMapMethod.ts:134"
+            "line": " src/away/materials/methods/ShadowDitheredMethod.ts:134"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/DitheredShadowMapMethod.ts:148"
+            "line": " src/away/materials/methods/ShadowDitheredMethod.ts:148"
         },
         {
             "message": "Missing item type\nGet the actual shader code for shadow mapping",
-            "line": " src/away/materials/methods/DitheredShadowMapMethod.ts:164"
+            "line": " src/away/materials/methods/ShadowDitheredMethod.ts:164"
         },
         {
             "message": "Missing item type\nAdds the code for another tap to the shader code.",
-            "line": " src/away/materials/methods/DitheredShadowMapMethod.ts:240"
+            "line": " src/away/materials/methods/ShadowDitheredMethod.ts:240"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/DitheredShadowMapMethod.ts:256"
+            "line": " src/away/materials/methods/ShadowDitheredMethod.ts:256"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/DitheredShadowMapMethod.ts:270"
+            "line": " src/away/materials/methods/ShadowDitheredMethod.ts:270"
         },
         {
             "message": "Missing item type\nEffectMethodBase forms an abstract base class for shader methods that are not dependent on light sources,\nand are in essence post-process effects on the materials.",
@@ -27036,164 +27036,164 @@
             "line": " src/away/materials/methods/EffectMethodBase.ts:25"
         },
         {
-            "message": "Missing item type\nEnvMapMethod provides a material method to perform reflection mapping using cube maps.",
-            "line": " src/away/materials/methods/EnvMapMethod.ts:6"
+            "message": "Missing item type\nEffectEnvMapMethod provides a material method to perform reflection mapping using cube maps.",
+            "line": " src/away/materials/methods/EffectEnvMapMethod.ts:6"
         },
         {
-            "message": "Missing item type\nCreates an EnvMapMethod object.",
-            "line": " src/away/materials/methods/EnvMapMethod.ts:15"
+            "message": "Missing item type\nCreates an EffectEnvMapMethod object.",
+            "line": " src/away/materials/methods/EffectEnvMapMethod.ts:15"
         },
         {
             "message": "Missing item type\nAn optional texture to modulate the reflectivity of the surface.",
-            "line": " src/away/materials/methods/EnvMapMethod.ts:28"
+            "line": " src/away/materials/methods/EffectEnvMapMethod.ts:28"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/EnvMapMethod.ts:53"
+            "line": " src/away/materials/methods/EffectEnvMapMethod.ts:53"
         },
         {
             "message": "Missing item type\nThe cubic environment map containing the reflected scene.",
-            "line": " src/away/materials/methods/EnvMapMethod.ts:63"
+            "line": " src/away/materials/methods/EffectEnvMapMethod.ts:63"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/EnvMapMethod.ts:76"
+            "line": " src/away/materials/methods/EffectEnvMapMethod.ts:76"
         },
         {
             "message": "Missing item type\nThe reflectivity of the surface.",
-            "line": " src/away/materials/methods/EnvMapMethod.ts:83"
+            "line": " src/away/materials/methods/EffectEnvMapMethod.ts:83"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/EnvMapMethod.ts:96"
+            "line": " src/away/materials/methods/EffectEnvMapMethod.ts:96"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/EnvMapMethod.ts:110"
+            "line": " src/away/materials/methods/EffectEnvMapMethod.ts:110"
         },
         {
-            "message": "Missing item type\nDitheredShadowMapMethod provides a softened shadowing technique by bilinearly interpolating shadow comparison\nresults of neighbouring pixels.",
-            "line": " src/away/materials/methods/FilteredShadowMapMethod.ts:5"
+            "message": "Missing item type\nShadowDitheredMethod provides a softened shadowing technique by bilinearly interpolating shadow comparison\nresults of neighbouring pixels.",
+            "line": " src/away/materials/methods/ShadowFilteredMethod.ts:5"
         },
         {
-            "message": "Missing item type\nCreates a new BasicDiffuseMethod object.",
-            "line": " src/away/materials/methods/FilteredShadowMapMethod.ts:11"
-        },
-        {
-            "message": "Missing item type",
-            "line": " src/away/materials/methods/FilteredShadowMapMethod.ts:21"
+            "message": "Missing item type\nCreates a new DiffuseBasicMethod object.",
+            "line": " src/away/materials/methods/ShadowFilteredMethod.ts:11"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/FilteredShadowMapMethod.ts:36"
+            "line": " src/away/materials/methods/ShadowFilteredMethod.ts:21"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/FilteredShadowMapMethod.ts:85"
+            "line": " src/away/materials/methods/ShadowFilteredMethod.ts:36"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/FilteredShadowMapMethod.ts:97"
-        },
-        {
-            "message": "Missing item type\nFogMethod provides a method to add distance-based fog to a material.",
-            "line": " src/away/materials/methods/FogMethod.ts:6"
-        },
-        {
-            "message": "Missing item type\nCreates a new FogMethod object.",
-            "line": " src/away/materials/methods/FogMethod.ts:18"
+            "line": " src/away/materials/methods/ShadowFilteredMethod.ts:85"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/FogMethod.ts:32"
+            "line": " src/away/materials/methods/ShadowFilteredMethod.ts:97"
+        },
+        {
+            "message": "Missing item type\nEffectFogMethod provides a method to add distance-based fog to a material.",
+            "line": " src/away/materials/methods/EffectFogMethod.ts:6"
+        },
+        {
+            "message": "Missing item type\nCreates a new EffectFogMethod object.",
+            "line": " src/away/materials/methods/EffectFogMethod.ts:18"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/FogMethod.ts:40"
+            "line": " src/away/materials/methods/EffectFogMethod.ts:32"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/away/materials/methods/EffectFogMethod.ts:40"
         },
         {
             "message": "Missing item type\nThe distance from which the fog starts appearing.",
-            "line": " src/away/materials/methods/FogMethod.ts:52"
+            "line": " src/away/materials/methods/EffectFogMethod.ts:52"
         },
         {
             "message": "Missing item type\nThe distance at which the fog is densest.",
-            "line": " src/away/materials/methods/FogMethod.ts:65"
+            "line": " src/away/materials/methods/EffectFogMethod.ts:65"
         },
         {
             "message": "Missing item type\nThe colour of the fog.",
-            "line": " src/away/materials/methods/FogMethod.ts:78"
+            "line": " src/away/materials/methods/EffectFogMethod.ts:78"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/FogMethod.ts:94"
+            "line": " src/away/materials/methods/EffectFogMethod.ts:94"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/FogMethod.ts:108"
+            "line": " src/away/materials/methods/EffectFogMethod.ts:108"
         },
         {
-            "message": "Missing item type\nFresnelSpecularMethod provides a specular shading method that causes stronger highlights on grazing view angles.",
-            "line": " src/away/materials/methods/FresnelSpecularMethod.ts:6"
+            "message": "Missing item type\nSpecularFresnelMethod provides a specular shading method that causes stronger highlights on grazing view angles.",
+            "line": " src/away/materials/methods/SpecularFresnelMethod.ts:6"
         },
         {
-            "message": "Missing item type\nCreates a new FresnelSpecularMethod object.",
-            "line": " src/away/materials/methods/FresnelSpecularMethod.ts:16"
+            "message": "Missing item type\nCreates a new SpecularFresnelMethod object.",
+            "line": " src/away/materials/methods/SpecularFresnelMethod.ts:16"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/FresnelSpecularMethod.ts:31"
+            "line": " src/away/materials/methods/SpecularFresnelMethod.ts:31"
         },
         {
             "message": "Missing item type\nDefines whether the fresnel effect should be based on the view angle on the surface (if true), or on the angle between the light and the view.",
-            "line": " src/away/materials/methods/FresnelSpecularMethod.ts:42"
+            "line": " src/away/materials/methods/SpecularFresnelMethod.ts:42"
         },
         {
             "message": "Missing item type\nThe power used in the Fresnel equation. Higher values make the fresnel effect more pronounced. Defaults to 5.",
-            "line": " src/away/materials/methods/FresnelSpecularMethod.ts:60"
+            "line": " src/away/materials/methods/SpecularFresnelMethod.ts:60"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/FresnelSpecularMethod.ts:73"
+            "line": " src/away/materials/methods/SpecularFresnelMethod.ts:73"
         },
         {
             "message": "Missing item type\nThe minimum amount of reflectance, ie the reflectance when the view direction is normal to the surface or light direction.",
-            "line": " src/away/materials/methods/FresnelSpecularMethod.ts:82"
+            "line": " src/away/materials/methods/SpecularFresnelMethod.ts:82"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/FresnelSpecularMethod.ts:95"
+            "line": " src/away/materials/methods/SpecularFresnelMethod.ts:95"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/FresnelSpecularMethod.ts:108"
+            "line": " src/away/materials/methods/SpecularFresnelMethod.ts:108"
         },
         {
             "message": "Missing item type\nApplies the fresnel effect to the specular strength.",
-            "line": " src/away/materials/methods/FresnelSpecularMethod.ts:121"
+            "line": " src/away/materials/methods/SpecularFresnelMethod.ts:121"
         },
         {
-            "message": "Missing item type\nHardShadowMapMethod provides the cheapest shadow map method by using a single tap without any filtering.",
-            "line": " src/away/materials/methods/HardShadowMapMethod.ts:5"
+            "message": "Missing item type\nShadowHardMethod provides the cheapest shadow map method by using a single tap without any filtering.",
+            "line": " src/away/materials/methods/ShadowHardMethod.ts:5"
         },
         {
-            "message": "Missing item type\nCreates a new HardShadowMapMethod object.",
-            "line": " src/away/materials/methods/HardShadowMapMethod.ts:10"
-        },
-        {
-            "message": "Missing item type",
-            "line": " src/away/materials/methods/HardShadowMapMethod.ts:18"
+            "message": "Missing item type\nCreates a new ShadowHardMethod object.",
+            "line": " src/away/materials/methods/ShadowHardMethod.ts:10"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/HardShadowMapMethod.ts:40"
+            "line": " src/away/materials/methods/ShadowHardMethod.ts:18"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/HardShadowMapMethod.ts:68"
+            "line": " src/away/materials/methods/ShadowHardMethod.ts:40"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/HardShadowMapMethod.ts:77"
+            "line": " src/away/materials/methods/ShadowHardMethod.ts:68"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/away/materials/methods/ShadowHardMethod.ts:77"
         },
         {
             "message": "Missing item type\nLightingMethodBase provides an abstract base method for shading methods that uses lights.\nUsed for diffuse and specular shaders only.",
@@ -27324,16 +27324,16 @@
             "line": " src/away/materials/methods/NearShadowMapMethod.ts:221"
         },
         {
-            "message": "Missing item type\nPhongSpecularMethod provides a specular method that provides Phong highlights.",
-            "line": " src/away/materials/methods/PhongSpecularMethod.ts:5"
+            "message": "Missing item type\nSpecularPhongMethod provides a specular method that provides Phong highlights.",
+            "line": " src/away/materials/methods/SpecularPhongMethod.ts:5"
         },
         {
-            "message": "Missing item type\nCreates a new PhongSpecularMethod object.",
-            "line": " src/away/materials/methods/PhongSpecularMethod.ts:10"
+            "message": "Missing item type\nCreates a new SpecularPhongMethod object.",
+            "line": " src/away/materials/methods/SpecularPhongMethod.ts:10"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/PhongSpecularMethod.ts:18"
+            "line": " src/away/materials/methods/SpecularPhongMethod.ts:18"
         },
         {
             "message": "Missing item type\nShaderMethodSetup contains the method configuration for an entire material.",
@@ -27512,131 +27512,131 @@
             "line": " src/away/materials/methods/ShadowMapMethodBase.ts:81"
         },
         {
-            "message": "Missing item type\nSimpleShadowMapMethodBase provides an abstract method for simple (non-wrapping) shadow map methods.",
-            "line": " src/away/materials/methods/SimpleShadowMapMethodBase.ts:5"
+            "message": "Missing item type\nSimpleShadowMethodBase provides an abstract method for simple (non-wrapping) shadow map methods.",
+            "line": " src/away/materials/methods/ShadowMethodBase.ts:5"
         },
         {
-            "message": "Missing item type\nCreates a new SimpleShadowMapMethodBase object.",
-            "line": " src/away/materials/methods/SimpleShadowMapMethodBase.ts:13"
-        },
-        {
-            "message": "Missing item type",
-            "line": " src/away/materials/methods/SimpleShadowMapMethodBase.ts:23"
+            "message": "Missing item type\nCreates a new SimpleShadowMethodBase object.",
+            "line": " src/away/materials/methods/ShadowMethodBase.ts:13"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/SimpleShadowMapMethodBase.ts:34"
+            "line": " src/away/materials/methods/ShadowMethodBase.ts:23"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/away/materials/methods/ShadowMethodBase.ts:34"
         },
         {
             "message": "Missing item type\nWrappers that override the vertex shader need to set this explicitly",
-            "line": " src/away/materials/methods/SimpleShadowMapMethodBase.ts:66"
+            "line": " src/away/materials/methods/ShadowMethodBase.ts:66"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/SimpleShadowMapMethodBase.ts:79"
+            "line": " src/away/materials/methods/ShadowMethodBase.ts:79"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/SimpleShadowMapMethodBase.ts:89"
+            "line": " src/away/materials/methods/ShadowMethodBase.ts:89"
         },
         {
             "message": "Missing item type\nGets the vertex code for shadow mapping with a point light.",
-            "line": " src/away/materials/methods/SimpleShadowMapMethodBase.ts:97"
+            "line": " src/away/materials/methods/ShadowMethodBase.ts:97"
         },
         {
             "message": "Missing item type\nGets the vertex code for shadow mapping with a planar shadow map (fe: directional lights).",
-            "line": " src/away/materials/methods/SimpleShadowMapMethodBase.ts:109"
+            "line": " src/away/materials/methods/ShadowMethodBase.ts:109"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/SimpleShadowMapMethodBase.ts:135"
+            "line": " src/away/materials/methods/ShadowMethodBase.ts:135"
         },
         {
             "message": "Missing item type\nGets the fragment code for shadow mapping with a planar shadow map.",
-            "line": " src/away/materials/methods/SimpleShadowMapMethodBase.ts:145"
+            "line": " src/away/materials/methods/ShadowMethodBase.ts:145"
         },
         {
             "message": "Missing item type\nGets the fragment code for shadow mapping with a point light.",
-            "line": " src/away/materials/methods/SimpleShadowMapMethodBase.ts:158"
+            "line": " src/away/materials/methods/ShadowMethodBase.ts:158"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/SimpleShadowMapMethodBase.ts:171"
+            "line": " src/away/materials/methods/ShadowMethodBase.ts:171"
         },
         {
             "message": "Missing item type\nGets the fragment code for combining this method with a cascaded shadow map method.",
-            "line": " src/away/materials/methods/SimpleShadowMapMethodBase.ts:180"
+            "line": " src/away/materials/methods/ShadowMethodBase.ts:180"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/SimpleShadowMapMethodBase.ts:195"
+            "line": " src/away/materials/methods/ShadowMethodBase.ts:195"
         },
         {
             "message": "Missing item type\nSets the method state for cascade shadow mapping.",
-            "line": " src/away/materials/methods/SimpleShadowMapMethodBase.ts:220"
+            "line": " src/away/materials/methods/ShadowMethodBase.ts:220"
         },
         {
-            "message": "Missing item type\nSimpleWaterNormalMethod provides a basic normal map method to create water ripples by translating two wave normal maps.",
-            "line": " src/away/materials/methods/SimpleWaterNormalMethod.ts:6"
+            "message": "Missing item type\nNormalSimpleWaterMethod provides a basic normal map method to create water ripples by translating two wave normal maps.",
+            "line": " src/away/materials/methods/NormalSimpleWaterMethod.ts:6"
         },
         {
-            "message": "Missing item type\nCreates a new SimpleWaterNormalMethod object.",
-            "line": " src/away/materials/methods/SimpleWaterNormalMethod.ts:19"
-        },
-        {
-            "message": "Missing item type",
-            "line": " src/away/materials/methods/SimpleWaterNormalMethod.ts:31"
+            "message": "Missing item type\nCreates a new NormalSimpleWaterMethod object.",
+            "line": " src/away/materials/methods/NormalSimpleWaterMethod.ts:19"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/SimpleWaterNormalMethod.ts:43"
+            "line": " src/away/materials/methods/NormalSimpleWaterMethod.ts:31"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/away/materials/methods/NormalSimpleWaterMethod.ts:43"
         },
         {
             "message": "Missing item type\nThe translation of the first wave layer along the X-axis.",
-            "line": " src/away/materials/methods/SimpleWaterNormalMethod.ts:53"
+            "line": " src/away/materials/methods/NormalSimpleWaterMethod.ts:53"
         },
         {
             "message": "Missing item type\nThe translation of the first wave layer along the Y-axis.",
-            "line": " src/away/materials/methods/SimpleWaterNormalMethod.ts:66"
+            "line": " src/away/materials/methods/NormalSimpleWaterMethod.ts:66"
         },
         {
             "message": "Missing item type\nThe translation of the second wave layer along the X-axis.",
-            "line": " src/away/materials/methods/SimpleWaterNormalMethod.ts:79"
+            "line": " src/away/materials/methods/NormalSimpleWaterMethod.ts:79"
         },
         {
             "message": "Missing item type\nThe translation of the second wave layer along the Y-axis.",
-            "line": " src/away/materials/methods/SimpleWaterNormalMethod.ts:92"
+            "line": " src/away/materials/methods/NormalSimpleWaterMethod.ts:92"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/SimpleWaterNormalMethod.ts:105"
+            "line": " src/away/materials/methods/NormalSimpleWaterMethod.ts:105"
         },
         {
             "message": "Missing item type\nA second normal map that will be combined with the first to create a wave-like animation pattern.",
-            "line": " src/away/materials/methods/SimpleWaterNormalMethod.ts:116"
+            "line": " src/away/materials/methods/NormalSimpleWaterMethod.ts:116"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/SimpleWaterNormalMethod.ts:129"
+            "line": " src/away/materials/methods/NormalSimpleWaterMethod.ts:129"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/SimpleWaterNormalMethod.ts:138"
+            "line": " src/away/materials/methods/NormalSimpleWaterMethod.ts:138"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/SimpleWaterNormalMethod.ts:147"
+            "line": " src/away/materials/methods/NormalSimpleWaterMethod.ts:147"
         },
         {
             "message": "Missing item type",
-            "line": " src/away/materials/methods/SimpleWaterNormalMethod.ts:167"
+            "line": " src/away/materials/methods/NormalSimpleWaterMethod.ts:167"
         },
         {
             "message": "Missing item type\nSoftShadowMapMethod provides a soft shadowing technique by randomly distributing sample points.",
             "line": " src/away/materials/methods/SoftShadowMapMethod.ts:5"
         },
         {
-            "message": "Missing item type\nCreates a new BasicDiffuseMethod object.",
+            "message": "Missing item type\nCreates a new DiffuseBasicMethod object.",
             "line": " src/away/materials/methods/SoftShadowMapMethod.ts:14"
         },
         {
@@ -27752,11 +27752,11 @@
             "line": " src/away/materials/passes/CompiledPass.ts:318"
         },
         {
-            "message": "Missing item type\nThe method used to generate the per-pixel normals. Defaults to BasicNormalMethod.",
+            "message": "Missing item type\nThe method used to generate the per-pixel normals. Defaults to NormalBasicMethod.",
             "line": " src/away/materials/passes/CompiledPass.ts:332"
         },
         {
-            "message": "Missing item type\nThe method that provides the ambient lighting contribution. Defaults to BasicAmbientMethod.",
+            "message": "Missing item type\nThe method that provides the ambient lighting contribution. Defaults to AmbientBasicMethod.",
             "line": " src/away/materials/passes/CompiledPass.ts:346"
         },
         {
@@ -27764,11 +27764,11 @@
             "line": " src/away/materials/passes/CompiledPass.ts:360"
         },
         {
-            "message": "Missing item type\nThe method that provides the diffuse lighting contribution. Defaults to BasicDiffuseMethod.",
+            "message": "Missing item type\nThe method that provides the diffuse lighting contribution. Defaults to DiffuseBasicMethod.",
             "line": " src/away/materials/passes/CompiledPass.ts:374"
         },
         {
-            "message": "Missing item type\nThe method that provides the specular lighting contribution. Defaults to BasicSpecularMethod.",
+            "message": "Missing item type\nThe method that provides the specular lighting contribution. Defaults to SpecularBasicMethod.",
             "line": " src/away/materials/passes/CompiledPass.ts:387"
         },
         {
@@ -28240,7 +28240,7 @@
             "line": " src/away/materials/passes/SuperShaderPass.ts:52"
         },
         {
-            "message": "Missing item type\nThe ColorTransformMethod object to transform the colour of the material with. Defaults to null.",
+            "message": "Missing item type\nThe EffectColorTransformMethod object to transform the colour of the material with. Defaults to null.",
             "line": " src/away/materials/passes/SuperShaderPass.ts:88"
         },
         {
@@ -28568,7 +28568,7 @@
             "line": " src/away/materials/MultiPassMaterialBase.ts:159"
         },
         {
-            "message": "Missing item type\nThe method that provides the ambient lighting contribution. Defaults to BasicAmbientMethod.",
+            "message": "Missing item type\nThe method that provides the ambient lighting contribution. Defaults to AmbientBasicMethod.",
             "line": " src/away/materials/MultiPassMaterialBase.ts:167"
         },
         {
@@ -28576,15 +28576,15 @@
             "line": " src/away/materials/MultiPassMaterialBase.ts:182"
         },
         {
-            "message": "Missing item type\nThe method that provides the diffuse lighting contribution. Defaults to BasicDiffuseMethod.",
+            "message": "Missing item type\nThe method that provides the diffuse lighting contribution. Defaults to DiffuseBasicMethod.",
             "line": " src/away/materials/MultiPassMaterialBase.ts:199"
         },
         {
-            "message": "Missing item type\nThe method that provides the specular lighting contribution. Defaults to BasicSpecularMethod.",
+            "message": "Missing item type\nThe method that provides the specular lighting contribution. Defaults to SpecularBasicMethod.",
             "line": " src/away/materials/MultiPassMaterialBase.ts:214"
         },
         {
-            "message": "Missing item type\nThe method used to generate the per-pixel normals. Defaults to BasicNormalMethod.",
+            "message": "Missing item type\nThe method used to generate the per-pixel normals. Defaults to NormalBasicMethod.",
             "line": " src/away/materials/MultiPassMaterialBase.ts:231"
         },
         {
@@ -28748,7 +28748,7 @@
             "line": " src/away/materials/SinglePassMaterialBase.ts:158"
         },
         {
-            "message": "Missing item type\nThe method that provides the ambient lighting contribution. Defaults to BasicAmbientMethod.",
+            "message": "Missing item type\nThe method that provides the ambient lighting contribution. Defaults to AmbientBasicMethod.",
             "line": " src/away/materials/SinglePassMaterialBase.ts:176"
         },
         {
@@ -28756,15 +28756,15 @@
             "line": " src/away/materials/SinglePassMaterialBase.ts:190"
         },
         {
-            "message": "Missing item type\nThe method that provides the diffuse lighting contribution. Defaults to BasicDiffuseMethod.",
+            "message": "Missing item type\nThe method that provides the diffuse lighting contribution. Defaults to DiffuseBasicMethod.",
             "line": " src/away/materials/SinglePassMaterialBase.ts:203"
         },
         {
-            "message": "Missing item type\nThe method used to generate the per-pixel normals. Defaults to BasicNormalMethod.",
+            "message": "Missing item type\nThe method used to generate the per-pixel normals. Defaults to NormalBasicMethod.",
             "line": " src/away/materials/SinglePassMaterialBase.ts:217"
         },
         {
-            "message": "Missing item type\nThe method that provides the specular lighting contribution. Defaults to BasicSpecularMethod.",
+            "message": "Missing item type\nThe method that provides the specular lighting contribution. Defaults to SpecularBasicMethod.",
             "line": " src/away/materials/SinglePassMaterialBase.ts:231"
         },
         {

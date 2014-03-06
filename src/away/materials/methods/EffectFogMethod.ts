@@ -4,9 +4,9 @@ module away.materials
 {
 	import StageGL = away.base.StageGL;
 	/**
-	 * FogMethod provides a method to add distance-based fog to a material.
+	 * EffectFogMethod provides a method to add distance-based fog to a material.
 	 */
-	export class FogMethod extends EffectMethodBase
+	export class EffectFogMethod extends EffectMethodBase
 	{
 		private _minDistance:number = 0;
 		private _maxDistance:number = 1000;
@@ -16,7 +16,7 @@ module away.materials
 		private _fogB:number;
 
 		/**
-		 * Creates a new FogMethod object.
+		 * Creates a new EffectFogMethod object.
 		 * @param minDistance The distance from which the fog starts appearing.
 		 * @param maxDistance The distance at which the fog is densest.
 		 * @param fogColor The colour of the fog.
@@ -32,7 +32,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iInitVO(vo:MethodVO):void
+		public iInitVO(vo:MethodVO)
 		{
 			vo.needsProjection = true;
 		}
@@ -40,7 +40,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iInitConstants(vo:MethodVO):void
+		public iInitConstants(vo:MethodVO)
 		{
 			var data:Array<number> = vo.fragmentData;
 			var index:number /*int*/ = vo.fragmentConstantsIndex;
@@ -94,7 +94,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGL:StageGL):void
+		public iActivate(vo:MethodVO, stageGL:StageGL)
 		{
 			var data:Array<number> = vo.fragmentData;
 			var index:number /*int*/ = vo.fragmentConstantsIndex;

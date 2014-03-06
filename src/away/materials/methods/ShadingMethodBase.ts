@@ -2,20 +2,6 @@
 
 module away.materials
 {
-	//import away3d.*;
-	//import away3d.cameras.*;
-	//import away3d.core.base.*;
-	//import away3d.managers.*;
-	//import away3d.events.*;
-	//import away3d.library.assets.*;
-	//import away3d.materials.compilation.*;
-	//import away3d.materials.passes.*;
-	//import away3d.textures.*;
-
-	//import flash.displayGL.*;
-
-	//use namespace arcane;
-
 	/**
 	 * ShadingMethodBase provides an abstract base method for shading methods, used by compiled passes to compile
 	 * the final shading program.
@@ -23,21 +9,22 @@ module away.materials
 	export class ShadingMethodBase extends away.library.NamedAssetBase
 	{
 		public _sharedRegisters:ShaderRegisterData; // should be protected
-		private _passes:MaterialPassBase[];//Vector.<MaterialPassBase>;
+		public _passes:MaterialPassBase[]; // should be protected
 
 		/**
 		 * Create a new ShadingMethodBase object.
-		 * @param needsNormals Defines whether or not the method requires normals.
-		 * @param needsView Defines whether or not the method requires the view direction.
 		 */
-		constructor() // needsNormals : boolean, needsView : boolean, needsGlobalPos : boolean
+		constructor()
 		{
 			super();
 		}
 
 		/**
 		 * Initializes the properties for a MethodVO, including register and texture indices.
+		 *
 		 * @param vo The MethodVO object linking this method with the pass currently being compiled.
+		 *
+		 * @internal
 		 */
 		public iInitVO(vo:MethodVO)
 		{
@@ -46,7 +33,10 @@ module away.materials
 
 		/**
 		 * Initializes unchanging shader constants using the data from a MethodVO.
+		 *
 		 * @param vo The MethodVO object linking this method with the pass currently being compiled.
+		 *
+		 * @internal
 		 */
 		public iInitConstants(vo:MethodVO)
 		{
@@ -56,12 +46,17 @@ module away.materials
 
 		/**
 		 * The shared registers created by the compiler and possibly used by methods.
+		 *
+		 * @internal
 		 */
 		public get iSharedRegisters():ShaderRegisterData
 		{
 			return this._sharedRegisters;
 		}
 
+		/**
+		 * @internal
+		 */
 		public set iSharedRegisters(value:ShaderRegisterData)
 		{
 			this._sharedRegisters = value;
@@ -75,7 +70,7 @@ module away.materials
 		/**
 		 * Any passes required that render to a texture used by this method.
 		 */
-		public get passes():MaterialPassBase[]//Vector.<MaterialPassBase>
+		public get passes():MaterialPassBase[]//Array<MaterialPassBase>
 		{
 			return this._passes;
 		}
@@ -90,6 +85,8 @@ module away.materials
 
 		/**
 		 * Creates a data container that contains material-dependent data. Provided as a factory method so a custom subtype can be overridden when needed.
+		 *
+		 * @internal
 		 */
 		public iCreateMethodVO():MethodVO
 		{
@@ -98,6 +95,8 @@ module away.materials
 
 		/**
 		 * Resets the compilation state of the method.
+		 *
+		 * @internal
 		 */
 		public iReset()
 		{
@@ -106,7 +105,8 @@ module away.materials
 
 		/**
 		 * Resets the method's state for compilation.
-		 * @private
+		 *
+		 * @internal
 		 */
 		public iCleanCompilationData()
 		{
@@ -116,7 +116,8 @@ module away.materials
 		 * Get the vertex shader code for this method.
 		 * @param vo The MethodVO object linking this method with the pass currently being compiled.
 		 * @param regCache The register cache used during the compilation.
-		 * @private
+		 *
+		 * @internal
 		 */
 		public iGetVertexCode(vo:MethodVO, regCache:ShaderRegisterCache):string
 		{
@@ -128,7 +129,8 @@ module away.materials
 		 *
 		 * @param vo The MethodVO object linking this method with the pass currently being compiled.
 		 * @param stageGL The StageGL object currently used for rendering.
-		 * @private
+		 *
+		 * @internal
 		 */
 		public iActivate(vo:MethodVO, stageGL:away.base.StageGL)
 		{
@@ -142,6 +144,8 @@ module away.materials
 		 * @param renderable The renderable currently being rendered.
 		 * @param stageGL The StageGL object currently used for rendering.
 		 * @param camera The camera from which the scene is currently rendered.
+		 *
+		 * @internal
 		 */
 		public iSetRenderState(vo:MethodVO, renderable:away.pool.RenderableBase, stageGL:away.base.StageGL, camera:away.entities.Camera)
 		{
@@ -152,6 +156,8 @@ module away.materials
 		 * Clears the render state for this method.
 		 * @param vo The MethodVO object linking this method with the pass currently being compiled.
 		 * @param stageGL The StageGL object currently used for rendering.
+		 *
+		 * @internal
 		 */
 		public iDeactivate(vo:MethodVO, stageGL:away.base.StageGL)
 		{
@@ -167,19 +173,21 @@ module away.materials
 		 * @param uvReg An optional uv register if coordinates different from the primary uv coordinates are to be used.
 		 * @param forceWrap If true, texture wrapping is enabled regardless of the material setting.
 		 * @return The fragment code that performs the sampling.
+		 *
+		 * @protected
 		 */
 		public pGetTex2DSampleCode(vo:MethodVO, targetReg:ShaderRegisterElement, inputReg:ShaderRegisterElement, texture:away.textures.TextureProxyBase, uvReg:ShaderRegisterElement = null, forceWrap:string = null):string
 		{
-			var wrap:string = forceWrap || (vo.repeatTextures? "wrap" : "clamp");
+			var wrap:string = forceWrap || (vo.repeatTextures? "wrap":"clamp");
 			var filter:string;
 
 			var format:string = this.getFormatStringForTexture(texture);
 			var enableMipMaps:boolean = vo.useMipmapping && texture.hasMipMaps;
 
 			if (vo.useSmoothTextures)
-				filter = enableMipMaps? "linear,miplinear" : "linear";
+				filter = enableMipMaps? "linear,miplinear":"linear";
 			else
-				filter = enableMipMaps? "nearest,mipnearest" : "nearest";
+				filter = enableMipMaps? "nearest,mipnearest":"nearest";
 
 			if (uvReg == null)
 				uvReg = this._sharedRegisters.uvVarying;
@@ -195,6 +203,8 @@ module away.materials
 		 * @param inputReg The texture stream register.
 		 * @param texture The cube map which will be assigned to the given slot.
 		 * @param uvReg The direction vector with which to sample the cube map.
+		 *
+		 * @protected
 		 */
 		public pGetTexCubeSampleCode(vo:MethodVO, targetReg:ShaderRegisterElement, inputReg:ShaderRegisterElement, texture:away.textures.TextureProxyBase, uvReg:ShaderRegisterElement):string
 		{
@@ -203,8 +213,8 @@ module away.materials
 			var enableMipMaps:boolean = vo.useMipmapping && texture.hasMipMaps;
 
 			if (vo.useSmoothTextures)
-				filter = enableMipMaps? "linear,miplinear" : "linear"; else
-				filter = enableMipMaps? "nearest,mipnearest" : "nearest";
+				filter = enableMipMaps? "linear,miplinear":"linear"; else
+				filter = enableMipMaps? "nearest,mipnearest":"nearest";
 
 			return "tex " + targetReg + ", " + uvReg + ", " + inputReg + " <cube," + format + filter + ">\n";
 		}
@@ -213,6 +223,8 @@ module away.materials
 		 * Generates a texture format string for the sample instruction.
 		 * @param texture The texture for which to get the format string.
 		 * @return
+		 *
+		 * @protected
 		 */
 		private getFormatStringForTexture(texture:away.textures.TextureProxyBase):string
 		{
@@ -230,6 +242,8 @@ module away.materials
 
 		/**
 		 * Marks the shader program as invalid, so it will be recompiled before the next render.
+		 *
+		 * @internal
 		 */
 		public iInvalidateShaderProgram()
 		{

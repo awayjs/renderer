@@ -20,16 +20,16 @@ module away.parsers
 	import Mesh								= away.entities.Mesh;
 	import Matrix3D							= away.geom.Matrix3D;
 	import AssetType						= away.library.AssetType;
-	import DitheredShadowMapMethod			= away.materials.DitheredShadowMapMethod;
-	import FilteredShadowMapMethod			= away.materials.FilteredShadowMapMethod;
-	import FresnelSpecularMethod			= away.materials.FresnelSpecularMethod;
-	import HardShadowMapMethod				= away.materials.HardShadowMapMethod;
-	import PhongSpecularMethod				= away.materials.PhongSpecularMethod;
+	import ShadowDitheredMethod				= away.materials.ShadowDitheredMethod;
+	import ShadowFilteredMethod				= away.materials.ShadowFilteredMethod;
+	import SpecularFresnelMethod			= away.materials.SpecularFresnelMethod;
+	import ShadowHardMethod					= away.materials.ShadowHardMethod;
+	import SpecularPhongMethod				= away.materials.SpecularPhongMethod;
 	import MultiPassMaterialBase			= away.materials.MultiPassMaterialBase;
-	import NearShadowMapMethod				= away.materials.NearShadowMapMethod;
-	import SimpleShadowMapMethodBase		= away.materials.SimpleShadowMapMethodBase;
+	import ShadowNearMethod					= away.materials.ShadowNearMethod;
+	import ShadowMethodBase					= away.materials.ShadowMethodBase;
 	import SinglePassMaterialBase			= away.materials.SinglePassMaterialBase;
-	import SoftShadowMapMethod				= away.materials.SoftShadowMapMethod;
+	import ShadowSoftMethod					= away.materials.ShadowSoftMethod;
 	import URLLoaderDataFormat				= away.net.URLLoaderDataFormat;
 
 	/**
@@ -126,7 +126,7 @@ module away.parsers
 			this._depthSizeDic.push(512);
 			this._depthSizeDic.push(2048);
 			this._depthSizeDic.push(1024);
-			this._version = Array<number>();//[]; // will contain 2 int (major-version, minor-version) for awd-version-check
+			this._version = Array<number>(); // will contain 2 int (major-version, minor-version) for awd-version-check
 		}
 
 		/**
@@ -1601,12 +1601,12 @@ module away.parsers
 						//								MultiPassMaterialBase(mat).specularMethod = new AnisotropicSpecularMethod();
 						//							debugString += " | AnisotropicSpecularMethod";
 						//							break;
-						case 102: //PhongSpecularMethod
+						case 102: //SpecularPhongMethod
 							if (spezialType == 0)
-								(<SinglePassMaterialBase> mat).specularMethod = new PhongSpecularMethod();
+								(<SinglePassMaterialBase> mat).specularMethod = new SpecularPhongMethod();
 							if (spezialType == 1)
-								(<MultiPassMaterialBase> mat).specularMethod = new PhongSpecularMethod();
-							debugString += " | PhongSpecularMethod";
+								(<MultiPassMaterialBase> mat).specularMethod = new SpecularPhongMethod();
+							debugString += " | SpecularPhongMethod";
 							break;
 						//						case 103: //CellSpecularMethod
 						//							if (spezialType == 0) {
@@ -1619,18 +1619,18 @@ module away.parsers
 						//							}
 						//							debugString += " | CellSpecularMethod";
 						//							break;
-						case 104: //FresnelSpecularMethod
+						case 104: //SpecularFresnelMethod
 							if (spezialType == 0) {
-								(<SinglePassMaterialBase> mat).specularMethod = new FresnelSpecularMethod(props.get(701, true), (<SinglePassMaterialBase> mat).specularMethod);
-								(<FresnelSpecularMethod> (<SinglePassMaterialBase> mat).specularMethod).fresnelPower = props.get(101, 5);
-								(<FresnelSpecularMethod> (<SinglePassMaterialBase> mat).specularMethod).normalReflectance = props.get(102, 0.1);
+								(<SinglePassMaterialBase> mat).specularMethod = new SpecularFresnelMethod(props.get(701, true), (<SinglePassMaterialBase> mat).specularMethod);
+								(<SpecularFresnelMethod> (<SinglePassMaterialBase> mat).specularMethod).fresnelPower = props.get(101, 5);
+								(<SpecularFresnelMethod> (<SinglePassMaterialBase> mat).specularMethod).normalReflectance = props.get(102, 0.1);
 							}
 							if (spezialType == 1) {
-								(<MultiPassMaterialBase> mat).specularMethod = new FresnelSpecularMethod(props.get(701, true), (<MultiPassMaterialBase> mat).specularMethod);
-								(<FresnelSpecularMethod> (<MultiPassMaterialBase> mat).specularMethod).fresnelPower = props.get(101, 5);
-								(<FresnelSpecularMethod> (<MultiPassMaterialBase> mat).specularMethod).normalReflectance = props.get(102, 0.1);
+								(<MultiPassMaterialBase> mat).specularMethod = new SpecularFresnelMethod(props.get(701, true), (<MultiPassMaterialBase> mat).specularMethod);
+								(<SpecularFresnelMethod> (<MultiPassMaterialBase> mat).specularMethod).fresnelPower = props.get(101, 5);
+								(<SpecularFresnelMethod> (<MultiPassMaterialBase> mat).specularMethod).normalReflectance = props.get(102, 0.1);
 							}
-							debugString += " | FresnelSpecularMethod";
+							debugString += " | SpecularFresnelMethod";
 							break;
 						//						//case 151://HeightMapNormalMethod - thios is not implemented for now, but might appear later
 						//						//break;
@@ -1921,43 +1921,43 @@ module away.parsers
 				//					}
 				//					shadowMethod = new CascadeShadowMapMethod(returnedArray[1]);
 				//					break;
-				case 1002: //NearShadowMapMethod
+				case 1002: //ShadowNearMethod
 					targetID = props.get(1, 0);
 					returnedArray = this.getAssetByID(targetID, [AssetType.SHADOW_MAP_METHOD]);
 					if (!returnedArray[0]) {
-						this._blocks[blockID].addError("Could not find the ShadowBaseMethod (ID = " + targetID + " ) for this NearShadowMapMethod - ShadowMethod not created");
+						this._blocks[blockID].addError("Could not find the ShadowBaseMethod (ID = " + targetID + " ) for this ShadowNearMethod - ShadowMethod not created");
 						return shadowMethod;
 					}
-					shadowMethod = new NearShadowMapMethod(<SimpleShadowMapMethodBase> returnedArray[1]);
+					shadowMethod = new ShadowNearMethod(<ShadowMethodBase> returnedArray[1]);
 					break;
-				case 1101: //FilteredShadowMapMethod
+				case 1101: //ShadowFilteredMethod
 
-					shadowMethod = new FilteredShadowMapMethod(<away.lights.DirectionalLight> light);
-					(<FilteredShadowMapMethod> shadowMethod).alpha = props.get(101, 1);
-					(<FilteredShadowMapMethod> shadowMethod).epsilon = props.get(102, 0.002);
+					shadowMethod = new ShadowFilteredMethod(<away.lights.DirectionalLight> light);
+					(<ShadowFilteredMethod> shadowMethod).alpha = props.get(101, 1);
+					(<ShadowFilteredMethod> shadowMethod).epsilon = props.get(102, 0.002);
 					break;
 
-				case 1102: //DitheredShadowMapMethod
+				case 1102: //ShadowDitheredMethod
 
 
-					shadowMethod = new DitheredShadowMapMethod(<away.lights.DirectionalLight> light, <number> props.get(201, 5));
-					(<DitheredShadowMapMethod> shadowMethod).alpha = props.get(101, 1);
-					(<DitheredShadowMapMethod> shadowMethod).epsilon = props.get(102, 0.002);
-					(<DitheredShadowMapMethod> shadowMethod).range = props.get(103, 1);
-
-					break;
-				case 1103: //SoftShadowMapMethod
-
-					shadowMethod = new SoftShadowMapMethod(<away.lights.DirectionalLight> light, <number> props.get(201, 5));
-					(<SoftShadowMapMethod> shadowMethod).alpha = props.get(101, 1);
-					(<SoftShadowMapMethod> shadowMethod).epsilon = props.get(102, 0.002);
-					(<SoftShadowMapMethod> shadowMethod).range = props.get(103, 1);
+					shadowMethod = new ShadowDitheredMethod(<away.lights.DirectionalLight> light, <number> props.get(201, 5));
+					(<ShadowDitheredMethod> shadowMethod).alpha = props.get(101, 1);
+					(<ShadowDitheredMethod> shadowMethod).epsilon = props.get(102, 0.002);
+					(<ShadowDitheredMethod> shadowMethod).range = props.get(103, 1);
 
 					break;
-				case 1104: //HardShadowMapMethod
-					shadowMethod = new HardShadowMapMethod(light);
-					(<HardShadowMapMethod> shadowMethod).alpha = props.get(101, 1);
-					(<HardShadowMapMethod> shadowMethod).epsilon = props.get(102, 0.002);
+				case 1103: //ShadowSoftMethod
+
+					shadowMethod = new ShadowSoftMethod(<away.lights.DirectionalLight> light, <number> props.get(201, 5));
+					(<ShadowSoftMethod> shadowMethod).alpha = props.get(101, 1);
+					(<ShadowSoftMethod> shadowMethod).epsilon = props.get(102, 0.002);
+					(<ShadowSoftMethod> shadowMethod).range = props.get(103, 1);
+
+					break;
+				case 1104: //ShadowHardMethod
+					shadowMethod = new ShadowHardMethod(light);
+					(<ShadowHardMethod> shadowMethod).alpha = props.get(101, 1);
+					(<ShadowHardMethod> shadowMethod).epsilon = props.get(102, 0.002);
 					break;
 
 			}
@@ -2307,7 +2307,7 @@ module away.parsers
 					returnedArray = this.getAssetByID(targetID, [ AssetType.TEXTURE ], "CubeTexture");
 					if (!returnedArray[0])
 						this._blocks[blockID].addError("Could not find the EnvMap (ID = " + targetID + " ) for this EnvMapMethod");
-					effectMethodReturn = new away.materials.EnvMapMethod(<away.textures.CubeTextureBase> returnedArray[1], <number> props.get(101, 1));
+					effectMethodReturn = new away.materials.EffectEnvMapMethod(<away.textures.CubeTextureBase> returnedArray[1], <number> props.get(101, 1));
 					targetID = props.get(2, 0);
 					if (targetID > 0) {
 						returnedArray = this.getAssetByID(targetID, [AssetType.TEXTURE]);
@@ -2925,9 +2925,6 @@ class AWDProperties
 
 	public get(key:number, fallback:any):any
 	{
-
-		console.log('this.hasOwnProperty(key.toString());', key, fallback, this.hasOwnProperty(key.toString()));
-
 		if (this.hasOwnProperty(key.toString())) {
 			return this[key.toString()];
 		} else {

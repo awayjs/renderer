@@ -22,9 +22,9 @@ module away.lights
 
 		public get sceneDirection():away.geom.Vector3D
 		{
-			if (this._pSceneTransformDirty) {
+			if (this._pSceneTransformDirty)
 				this.pUpdateSceneTransform();
-			}
+
 			return this._sceneDirection;
 		}
 
@@ -37,9 +37,9 @@ module away.lights
 		{
 			this._direction = value;
 
-			if (!this._tmpLookAt) {
+			if (!this._tmpLookAt)
 				this._tmpLookAt = new away.geom.Vector3D();
-			}
+
 			this._tmpLookAt.x = this.x + this._direction.x;
 			this._tmpLookAt.y = this.y + this._direction.y;
 			this._tmpLookAt.z = this.z + this._direction.z;
@@ -90,9 +90,9 @@ module away.lights
 			m.copyFrom(entity.getRenderSceneTransform(camera));
 			m.append(this.inverseSceneTransform);
 
-			if (!this._projAABBPoints) {
+			if (!this._projAABBPoints)
 				this._projAABBPoints = [];
-			}
+
 			m.transformVectors(bounds.aabbPoints, this._projAABBPoints);
 
 			var xMin:number = Infinity, xMax:number = -Infinity;
@@ -101,18 +101,26 @@ module away.lights
 			var d:number;
 			for (var i:number = 0; i < 24;) {
 				d = this._projAABBPoints[i++];
+
 				if (d < xMin)
 					xMin = d;
+
 				if (d > xMax)
 					xMax = d;
+
 				d = this._projAABBPoints[i++];
+
 				if (d < yMin)
 					yMin = d;
+
 				if (d > yMax)
 					yMax = d;
+
 				d = this._projAABBPoints[i++];
+
 				if (d < zMin)
 					zMin = d;
+
 				if (d > zMax)
 					zMax = d;
 			}
@@ -129,9 +137,9 @@ module away.lights
 			raw[1] = raw[2] = raw[3] = raw[4] = raw[6] = raw[7] = raw[8] = raw[9] = raw[11] = 0;
 			raw[15] = 1;
 
-			if (!target) {
+			if (!target)
 				target = new away.geom.Matrix3D();
-			}
+
 			target.copyRawDataFrom(raw);
 			target.prepend(m);
 

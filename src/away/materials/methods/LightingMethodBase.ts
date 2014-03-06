@@ -2,9 +2,9 @@
 
 module away.materials
 {
-	//import away3d.arcane;
-	//import away3d.materials.compilation.ShaderRegisterCache;
-	//import away3d.materials.compilation.ShaderRegisterElement;
+	//import away.arcane;
+	//import away.materials.compilation.ShaderRegisterCache;
+	//import away.materials.compilation.ShaderRegisterElement;
 
 	//use namespace arcane;
 
@@ -18,7 +18,6 @@ module away.materials
 		 * A method that is exposed to wrappers in case the strength needs to be controlled
 		 */
 		public _iModulateMethod;
-		public _iModulateMethodScope:Object;
 
 		/**
 		 * Creates a new LightingMethodBase.

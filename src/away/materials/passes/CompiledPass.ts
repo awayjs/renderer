@@ -330,29 +330,29 @@ module away.materials
 		}
 
 		/**
-		 * The method used to generate the per-pixel normals. Defaults to BasicNormalMethod.
+		 * The method used to generate the per-pixel normals. Defaults to NormalBasicMethod.
 		 */
 
-		public get normalMethod():BasicNormalMethod
+		public get normalMethod():NormalBasicMethod
 		{
 			return this._pMethodSetup.normalMethod;
 		}
 
-		public set normalMethod(value:BasicNormalMethod)
+		public set normalMethod(value:NormalBasicMethod)
 		{
 			this._pMethodSetup.normalMethod = value;
 		}
 
 		/**
-		 * The method that provides the ambient lighting contribution. Defaults to BasicAmbientMethod.
+		 * The method that provides the ambient lighting contribution. Defaults to AmbientBasicMethod.
 		 */
 
-		public get ambientMethod():BasicAmbientMethod
+		public get ambientMethod():AmbientBasicMethod
 		{
 			return this._pMethodSetup.ambientMethod;
 		}
 
-		public set ambientMethod(value:BasicAmbientMethod)
+		public set ambientMethod(value:AmbientBasicMethod)
 		{
 			this._pMethodSetup.ambientMethod = value;
 		}
@@ -372,28 +372,28 @@ module away.materials
 		}
 
 		/**
-		 * The method that provides the diffuse lighting contribution. Defaults to BasicDiffuseMethod.
+		 * The method that provides the diffuse lighting contribution. Defaults to DiffuseBasicMethod.
 		 */
-		public get diffuseMethod():BasicDiffuseMethod
+		public get diffuseMethod():DiffuseBasicMethod
 		{
 			return this._pMethodSetup.diffuseMethod;
 		}
 
-		public set diffuseMethod(value:BasicDiffuseMethod)
+		public set diffuseMethod(value:DiffuseBasicMethod)
 		{
 			this._pMethodSetup.diffuseMethod = value;
 		}
 
 		/**
-		 * The method that provides the specular lighting contribution. Defaults to BasicSpecularMethod.
+		 * The method that provides the specular lighting contribution. Defaults to SpecularBasicMethod.
 		 */
 
-		public get specularMethod():BasicSpecularMethod
+		public get specularMethod():SpecularBasicMethod
 		{
 			return this._pMethodSetup.specularMethod;
 		}
 
-		public set specularMethod(value:BasicSpecularMethod)
+		public set specularMethod(value:SpecularBasicMethod)
 		{
 			this._pMethodSetup.specularMethod = value;
 		}
@@ -687,7 +687,7 @@ module away.materials
 			if (this._usesNormals)
 				this._pMethodSetup._iNormalMethod.iSetRenderState(this._pMethodSetup._iNormalMethodVO, renderable, stageGL, camera);
 
-			var ambientMethod:BasicAmbientMethod = this._pMethodSetup._iAmbientMethod;
+			var ambientMethod:AmbientBasicMethod = this._pMethodSetup._iAmbientMethod;
 			ambientMethod._iLightAmbientR = this._pAmbientLightR;
 			ambientMethod._iLightAmbientG = this._pAmbientLightG;
 			ambientMethod._iLightAmbientB = this._pAmbientLightB;

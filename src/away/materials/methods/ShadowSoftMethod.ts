@@ -3,16 +3,16 @@
 module away.materials
 {
 	/**
-	 * SoftShadowMapMethod provides a soft shadowing technique by randomly distributing sample points.
+	 * ShadowSoftMethod provides a soft shadowing technique by randomly distributing sample points.
 	 */
-	export class SoftShadowMapMethod extends SimpleShadowMapMethodBase
+	export class ShadowSoftMethod extends ShadowMethodBase
 	{
 		private _range:number = 1;
 		private _numSamples:number /*int*/;
 		private _offsets:Array<number>;
 
 		/**
-		 * Creates a new BasicDiffuseMethod object.
+		 * Creates a new DiffuseBasicMethod object.
 		 *
 		 * @param castingLight The light casting the shadows
 		 * @param numSamples The amount of samples to take for dithering. Minimum 1, maximum 32.
@@ -61,7 +61,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iInitConstants(vo:MethodVO):void
+		public iInitConstants(vo:MethodVO)
 		{
 			super.iInitConstants(vo);
 
@@ -72,7 +72,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGL:away.base.StageGL):void
+		public iActivate(vo:MethodVO, stageGL:away.base.StageGL)
 		{
 			super.iActivate(vo, stageGL);
 			var texRange:number = .5*this._range/this._pCastingLight.shadowMapper.depthMapSize;
@@ -120,7 +120,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivateForCascade(vo:MethodVO, stageGL:away.base.StageGL):void
+		public iActivateForCascade(vo:MethodVO, stageGL:away.base.StageGL)
 		{
 			super.iActivate(vo, stageGL);
 			var texRange:number = this._range/this._pCastingLight.shadowMapper.depthMapSize;

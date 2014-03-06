@@ -4,16 +4,16 @@ module away.materials
 {
 
 	/**
-	 * BasicNormalMethod is the default method for standard tangent-space normal mapping.
+	 * NormalBasicMethod is the default method for standard tangent-space normal mapping.
 	 */
-	export class BasicNormalMethod extends ShadingMethodBase
+	export class NormalBasicMethod extends ShadingMethodBase
 	{
 		private _texture:away.textures.Texture2DBase;
 		private _useTexture:boolean;
 		public _pNormalTextureRegister:ShaderRegisterElement;
 
 		/**
-		 * Creates a new BasicNormalMethod object.
+		 * Creates a new NormalBasicMethod object.
 		 */
 		constructor()
 		{
@@ -62,7 +62,7 @@ module away.materials
 		{
 
 			var s:any = method;
-			var bnm:BasicNormalMethod = <BasicNormalMethod> method;
+			var bnm:NormalBasicMethod = <NormalBasicMethod> method;
 
 			this.normalMap = bnm.normalMap;
 
@@ -89,7 +89,7 @@ module away.materials
 			var b:boolean = ( value != null );
 
 			if (b != this._useTexture || (value && this._texture && (value.hasMipMaps != this._texture.hasMipMaps || value.format != this._texture.format))) {
-				this.iInvalidateShaderProgram();//invalidateShaderProgram();
+				this.iInvalidateShaderProgram();
 			}
 			this._useTexture = b;
 			this._texture = value;
@@ -126,7 +126,7 @@ module away.materials
 		{
 			if (vo.texturesIndex >= 0) {
 
-				stageGL.contextGL.setSamplerStateAt(vo.texturesIndex, vo.repeatTextures? away.gl.ContextGLWrapMode.REPEAT : away.gl.ContextGLWrapMode.CLAMP, vo.useSmoothTextures? away.gl.ContextGLTextureFilter.LINEAR : away.gl.ContextGLTextureFilter.NEAREST, vo.useMipmapping? away.gl.ContextGLMipFilter.MIPLINEAR : away.gl.ContextGLMipFilter.MIPNONE);
+				stageGL.contextGL.setSamplerStateAt(vo.texturesIndex, vo.repeatTextures? away.gl.ContextGLWrapMode.REPEAT:away.gl.ContextGLWrapMode.CLAMP, vo.useSmoothTextures? away.gl.ContextGLTextureFilter.LINEAR:away.gl.ContextGLTextureFilter.NEAREST, vo.useMipmapping? away.gl.ContextGLMipFilter.MIPLINEAR:away.gl.ContextGLMipFilter.MIPNONE);
 				stageGL.contextGL.setTextureAt(vo.texturesIndex, this._texture.getTextureForStageGL(stageGL));
 
 			}

@@ -3,12 +3,12 @@
 module away.materials
 {
 	/**
-	 * PhongSpecularMethod provides a specular method that provides Phong highlights.
+	 * SpecularPhongMethod provides a specular method that provides Phong highlights.
 	 */
-	export class PhongSpecularMethod extends BasicSpecularMethod
+	export class SpecularPhongMethod extends SpecularBasicMethod
 	{
 		/**
-		 * Creates a new PhongSpecularMethod object.
+		 * Creates a new SpecularPhongMethod object.
 		 */
 		constructor()
 		{
@@ -23,8 +23,9 @@ module away.materials
 			var code:string = "";
 			var t:ShaderRegisterElement;
 
-			if (this._pIsFirstLight)
-				t = this._pTotalLightColorReg; else {
+			if (this._pIsFirstLight) {
+				t = this._pTotalLightColorReg;
+			} else {
 				t = regCache.getFreeFragmentVectorTemp();
 				regCache.addFragmentTempUsages(t, 1);
 			}
@@ -59,13 +60,8 @@ module away.materials
 			if (vo.useLightFallOff)
 				code += "mul " + t + ".w, " + t + ".w, " + lightDirReg + ".w\n";
 
-			if (this._iModulateMethod != null) {
-				if (this._iModulateMethodScope != null) {
-					code += this._iModulateMethod.apply(this._iModulateMethodScope, [vo, t, regCache, this._sharedRegisters]);
-				} else {
-					throw "Modulated methods needs a scope";
-				}
-			}
+			if (this._iModulateMethod != null)
+				code += this._iModulateMethod(vo, t, regCache, this._sharedRegisters);
 
 			code += "mul " + t + ".xyz, " + lightColReg + ".xyz, " + t + ".w\n";
 

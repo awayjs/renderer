@@ -4,7 +4,7 @@ module away.parsers
 {
 	import Mesh								= away.entities.Mesh;
 	import DefaultMaterialManager			= away.materials.DefaultMaterialManager;
-	import BasicSpecularMethod				= away.materials.BasicSpecularMethod;
+	import BasicSpecularMethod				= away.materials.SpecularBasicMethod;
 	import ColorMaterial					= away.materials.ColorMaterial;
 	import ColorMultiPassMaterial			= away.materials.ColorMultiPassMaterial;
 	import MaterialBase						= away.materials.MaterialBase;
@@ -942,7 +942,7 @@ module away.parsers
 	}
 }
 
-import BasicSpecularMethod				= away.materials.BasicSpecularMethod;
+import BasicSpecularMethod				= away.materials.SpecularBasicMethod;
 import MaterialBase						= away.materials.MaterialBase;
 import Texture2DBase					= away.textures.Texture2DBase;
 

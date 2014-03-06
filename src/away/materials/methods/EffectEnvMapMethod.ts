@@ -4,16 +4,16 @@ module away.materials
 {
 
 	/**
-	 * EnvMapMethod provides a material method to perform reflection mapping using cube maps.
+	 * EffectEnvMapMethod provides a material method to perform reflection mapping using cube maps.
 	 */
-	export class EnvMapMethod extends EffectMethodBase
+	export class EffectEnvMapMethod extends EffectMethodBase
 	{
 		private _cubeTexture:away.textures.CubeTextureBase;
 		private _alpha:number;
 		private _mask:away.textures.Texture2DBase;
 
 		/**
-		 * Creates an EnvMapMethod object.
+		 * Creates an EffectEnvMapMethod object.
 		 * @param envMap The environment map containing the reflected scene.
 		 * @param alpha The reflectivity of the surface.
 		 */
@@ -41,7 +41,7 @@ module away.materials
 			/*
 			 if (Boolean(value) != Boolean(_mask) ||
 			 (value && _mask && (value.hasMipMaps != _mask.hasMipMaps || value.format != _mask.format))) {
-			 invalidateShaderProgram();
+			 iInvalidateShaderProgram();
 			 }
 			 */
 
@@ -94,7 +94,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGL:away.base.StageGL):void
+		public iActivate(vo:MethodVO, stageGL:away.base.StageGL)
 		{
 			var context:away.gl.ContextGL = stageGL.contextGL;
 			vo.fragmentData[vo.fragmentConstantsIndex] = this._alpha;

@@ -2,7 +2,7 @@
 
 module away.materials
 {
-	//import away3d.arcane;
+	//import away.arcane;
 
 	/**
 	 * MethodVOSet provides a EffectMethodBase and MethodVO combination to be used by a material, allowing methods

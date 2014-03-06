@@ -3,9 +3,9 @@
 module away.materials
 {
 	/**
-	 * DitheredShadowMapMethod provides a soft shadowing technique by randomly distributing sample points differently for each fragment.
+	 * ShadowDitheredMethod provides a soft shadowing technique by randomly distributing sample points differently for each fragment.
 	 */
-	export class DitheredShadowMapMethod extends SimpleShadowMapMethodBase
+	export class ShadowDitheredMethod extends ShadowMethodBase
 	{
 		private static _grainTexture:away.textures.BitmapTexture;
 		private static _grainUsages:number /*int*/;
@@ -15,7 +15,7 @@ module away.materials
 		private _numSamples:number /*int*/;
 
 		/**
-		 * Creates a new DitheredShadowMapMethod object.
+		 * Creates a new ShadowDitheredMethod object.
 		 * @param castingLight The light casting the shadows
 		 * @param numSamples The amount of samples to take for dithering. Minimum 1, maximum 24.
 		 */
@@ -28,9 +28,9 @@ module away.materials
 			this.numSamples = numSamples;
 			this.range = range;
 
-			++DitheredShadowMapMethod._grainUsages;
+			++ShadowDitheredMethod._grainUsages;
 
-			if (!DitheredShadowMapMethod._grainTexture)
+			if (!ShadowDitheredMethod._grainTexture)
 				this.initGrainTexture();
 		}
 
@@ -55,7 +55,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iInitVO(vo:MethodVO):void
+		public iInitVO(vo:MethodVO)
 		{
 			super.iInitVO(vo);
 			vo.needsProjection = true;
@@ -64,7 +64,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iInitConstants(vo:MethodVO):void
+		public iInitConstants(vo:MethodVO)
 		{
 			super.iInitConstants(vo);
 
@@ -89,9 +89,9 @@ module away.materials
 		/**
 		 * Creates a texture containing the dithering noise texture.
 		 */
-		private initGrainTexture():void
+		private initGrainTexture()
 		{
-			DitheredShadowMapMethod._grainBitmapData = new away.base.BitmapData(64, 64, false);
+			ShadowDitheredMethod._grainBitmapData = new away.base.BitmapData(64, 64, false);
 			var vec:Array<number> /*uint*/ = new Array<number>();
 			var len:number /*uint*/ = 4096;
 			var step:number = 1/(this._depthMapSize*this._range);
@@ -115,26 +115,26 @@ module away.materials
 				vec[i] = (Math.floor((r*.5 + .5)*0xff) << 16) | (Math.floor((g*.5 + .5)*0xff) << 8);
 			}
 
-			DitheredShadowMapMethod._grainBitmapData.setVector(DitheredShadowMapMethod._grainBitmapData.rect, vec);
-			DitheredShadowMapMethod._grainTexture = new away.textures.BitmapTexture(DitheredShadowMapMethod._grainBitmapData);
+			ShadowDitheredMethod._grainBitmapData.setVector(ShadowDitheredMethod._grainBitmapData.rect, vec);
+			ShadowDitheredMethod._grainTexture = new away.textures.BitmapTexture(ShadowDitheredMethod._grainBitmapData);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public dispose():void
+		public dispose()
 		{
-			if (--DitheredShadowMapMethod._grainUsages == 0) {
-				DitheredShadowMapMethod._grainTexture.dispose();
-				DitheredShadowMapMethod._grainBitmapData.dispose();
-				DitheredShadowMapMethod._grainTexture = null;
+			if (--ShadowDitheredMethod._grainUsages == 0) {
+				ShadowDitheredMethod._grainTexture.dispose();
+				ShadowDitheredMethod._grainBitmapData.dispose();
+				ShadowDitheredMethod._grainTexture = null;
 			}
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGL:away.base.StageGL):void
+		public iActivate(vo:MethodVO, stageGL:away.base.StageGL)
 		{
 			super.iActivate(vo, stageGL);
 			var data:Array<number> = vo.fragmentData;
@@ -142,7 +142,7 @@ module away.materials
 			data[index + 9] = (stageGL.width - 1)/63;
 			data[index + 10] = (stageGL.height - 1)/63;
 			data[index + 11] = 2*this._range/this._depthMapSize;
-			stageGL.contextGL.setTextureAt(vo.texturesIndex + 1, DitheredShadowMapMethod._grainTexture.getTextureForStageGL(stageGL));
+			stageGL.contextGL.setTextureAt(vo.texturesIndex + 1, ShadowDitheredMethod._grainTexture.getTextureForStageGL(stageGL));
 		}
 
 		/**
@@ -256,7 +256,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivateForCascade(vo:MethodVO, stageGL:away.base.StageGL):void
+		public iActivateForCascade(vo:MethodVO, stageGL:away.base.StageGL)
 		{
 			var data:Array<number> = vo.fragmentData;
 			var index:number /*uint*/ = vo.secondaryFragmentConstantsIndex;
@@ -264,7 +264,7 @@ module away.materials
 			data[index + 1] = (stageGL.width - 1)/63;
 			data[index + 2] = (stageGL.height - 1)/63;
 			data[index + 3] = 2*this._range/this._depthMapSize;
-			stageGL.contextGL.setTextureAt(vo.texturesIndex + 1, DitheredShadowMapMethod._grainTexture.getTextureForStageGL(stageGL));
+			stageGL.contextGL.setTextureAt(vo.texturesIndex + 1, ShadowDitheredMethod._grainTexture.getTextureForStageGL(stageGL));
 		}
 
 		/**

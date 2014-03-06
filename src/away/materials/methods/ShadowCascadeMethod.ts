@@ -12,35 +12,35 @@ module away.materials
 	import Event							= away.events.Event;
 
 	/**
-	 * CascadeShadowMapMethod is a shadow map method to apply cascade shadow mapping on materials.
+	 * ShadowCascadeMethod is a shadow map method to apply cascade shadow mapping on materials.
 	 * Must be used with a DirectionalLight with a CascadeShadowMapper assigned to its shadowMapper property.
 	 *
 	 * @see away.lights.CascadeShadowMapper
 	 */
-	export class CascadeShadowMapMethod extends ShadowMapMethodBase
+	export class ShadowCascadeMethod extends ShadowMapMethodBase
 	{
-		private _baseMethod:SimpleShadowMapMethodBase;
+		private _baseMethod:ShadowMethodBase;
 		private _cascadeShadowMapper:CascadeShadowMapper;
 		private _depthMapCoordVaryings:ShaderRegisterElement[];
 		private _cascadeProjections:ShaderRegisterElement[];
 		
 		/**
-		 * Creates a new CascadeShadowMapMethod object.
+		 * Creates a new ShadowCascadeMethod object.
 		 *
-		 * @param shadowMethodBase The shadow map sampling method used to sample individual cascades (fe: HardShadowMapMethod, SoftShadowMapMethod)
+		 * @param shadowMethodBase The shadow map sampling method used to sample individual cascades (fe: ShadowHardMethod, ShadowSoftMethod)
 		 */
-		constructor(shadowMethodBase:SimpleShadowMapMethodBase)
+		constructor(shadowMethodBase:ShadowMethodBase)
 		{
 			super(shadowMethodBase.castingLight);
 			
 			this._baseMethod = shadowMethodBase;
 			if (!(this._pCastingLight instanceof DirectionalLight))
-				throw new Error("CascadeShadowMapMethod is only compatible with DirectionalLight");
+				throw new Error("ShadowCascadeMethod is only compatible with DirectionalLight");
 			
 			this._cascadeShadowMapper = <CascadeShadowMapper> this._pCastingLight.shadowMapper;
 			
 			if (!this._cascadeShadowMapper)
-				throw new Error("CascadeShadowMapMethod requires a light that has a CascadeShadowMapper instance assigned to shadowMapper.");
+				throw new Error("ShadowCascadeMethod requires a light that has a CascadeShadowMapper instance assigned to shadowMapper.");
 			
 			this._cascadeShadowMapper.addEventListener(Event.CHANGE, (event:Event) => this.onCascadeChange(event));
 			this._baseMethod.addEventListener(ShadingMethodEvent.SHADER_INVALIDATED, (event:ShadingMethodEvent) => this.onShaderInvalidated(event));
@@ -50,15 +50,15 @@ module away.materials
 		 * The shadow map sampling method used to sample individual cascades. These are typically those used in conjunction
 		 * with a DirectionalShadowMapper.
 		 *
-		 * @see HardShadowMapMethod
-		 * @see SoftShadowMapMethod
+		 * @see ShadowHardMethod
+		 * @see ShadowSoftMethod
 		 */
-		public get baseMethod():SimpleShadowMapMethodBase
+		public get baseMethod():ShadowMethodBase
 		{
 			return this._baseMethod;
 		}
 		
-		public set baseMethod(value:SimpleShadowMapMethodBase)
+		public set baseMethod(value:ShadowMethodBase)
 		{
 			if (this._baseMethod == value)
 				return;

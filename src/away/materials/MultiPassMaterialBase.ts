@@ -21,11 +21,11 @@ module away.materials
 		private _specularLightSources:number = 0x01;
 		private _diffuseLightSources:number = 0x03;
 
-		private _ambientMethod:BasicAmbientMethod = new BasicAmbientMethod();
+		private _ambientMethod:AmbientBasicMethod = new AmbientBasicMethod();
 		private _shadowMethod:ShadowMapMethodBase;
-		private _diffuseMethod:BasicDiffuseMethod = new BasicDiffuseMethod();
-		private _normalMethod:BasicNormalMethod = new BasicNormalMethod();
-		private _specularMethod:BasicSpecularMethod = new BasicSpecularMethod();
+		private _diffuseMethod:DiffuseBasicMethod = new DiffuseBasicMethod();
+		private _normalMethod:NormalBasicMethod = new NormalBasicMethod();
+		private _specularMethod:SpecularBasicMethod = new SpecularBasicMethod();
 
 		private _screenPassesInvalid:boolean = true;
 		private _enableLightFallOff:boolean = true;
@@ -165,14 +165,14 @@ module away.materials
 		}
 
 		/**
-		 * The method that provides the ambient lighting contribution. Defaults to BasicAmbientMethod.
+		 * The method that provides the ambient lighting contribution. Defaults to AmbientBasicMethod.
 		 */
-		public get ambientMethod():BasicAmbientMethod
+		public get ambientMethod():AmbientBasicMethod
 		{
 			return this._ambientMethod;
 		}
 
-		public set ambientMethod(value:BasicAmbientMethod)
+		public set ambientMethod(value:AmbientBasicMethod)
 		{
 			value.copyFrom(this._ambientMethod);
 			this._ambientMethod = value;
@@ -197,14 +197,14 @@ module away.materials
 		}
 
 		/**
-		 * The method that provides the diffuse lighting contribution. Defaults to BasicDiffuseMethod.
+		 * The method that provides the diffuse lighting contribution. Defaults to DiffuseBasicMethod.
 		 */
-		public get diffuseMethod():BasicDiffuseMethod
+		public get diffuseMethod():DiffuseBasicMethod
 		{
 			return this._diffuseMethod;
 		}
 
-		public set diffuseMethod(value:BasicDiffuseMethod)
+		public set diffuseMethod(value:DiffuseBasicMethod)
 		{
 			value.copyFrom(this._diffuseMethod);
 			this._diffuseMethod = value;
@@ -212,14 +212,14 @@ module away.materials
 		}
 
 		/**
-		 * The method that provides the specular lighting contribution. Defaults to BasicSpecularMethod.
+		 * The method that provides the specular lighting contribution. Defaults to SpecularBasicMethod.
 		 */
-		public get specularMethod():BasicSpecularMethod
+		public get specularMethod():SpecularBasicMethod
 		{
 			return this._specularMethod;
 		}
 
-		public set specularMethod(value:BasicSpecularMethod)
+		public set specularMethod(value:SpecularBasicMethod)
 		{
 			if (value && this._specularMethod)
 				value.copyFrom(this._specularMethod);
@@ -229,14 +229,14 @@ module away.materials
 		}
 
 		/**
-		 * The method used to generate the per-pixel normals. Defaults to BasicNormalMethod.
+		 * The method used to generate the per-pixel normals. Defaults to NormalBasicMethod.
 		 */
-		public get normalMethod():BasicNormalMethod
+		public get normalMethod():NormalBasicMethod
 		{
 			return this._normalMethod;
 		}
 
-		public set normalMethod(value:BasicNormalMethod)
+		public set normalMethod(value:NormalBasicMethod)
 		{
 			value.copyFrom(this._normalMethod);
 			this._normalMethod = value;
@@ -735,7 +735,7 @@ module away.materials
 
 			} else {
 				this._pEffectsPass.diffuseMethod = null;
-				this._pEffectsPass.diffuseMethod = new BasicDiffuseMethod();
+				this._pEffectsPass.diffuseMethod = new DiffuseBasicMethod();
 				this._pEffectsPass.diffuseMethod.diffuseColor = 0x000000;
 				this._pEffectsPass.diffuseMethod.diffuseAlpha = 0;
 			}

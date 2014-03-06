@@ -67,7 +67,7 @@ module away.materials
 				if (this.colorTransformMethod == null) {
 
 
-					this.colorTransformMethod = new ColorTransformMethod();
+					this.colorTransformMethod = new EffectColorTransformMethod();
 
 				}
 
@@ -86,15 +86,15 @@ module away.materials
 		}
 
 		/**
-		 * The ColorTransformMethod object to transform the colour of the material with. Defaults to null.
+		 * The EffectColorTransformMethod object to transform the colour of the material with. Defaults to null.
 		 */
-		public get colorTransformMethod():ColorTransformMethod
+		public get colorTransformMethod():EffectColorTransformMethod
 		{
 
 			return this._pMethodSetup._iColorTransformMethod;
 		}
 
-		public set colorTransformMethod(value:ColorTransformMethod)
+		public set colorTransformMethod(value:EffectColorTransformMethod)
 		{
 			this._pMethodSetup.iColorTransformMethod = value;
 		}

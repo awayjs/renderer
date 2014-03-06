@@ -2,12 +2,12 @@
 
 module away.materials
 {
-	//import away3d.*;
-	//import away3d.errors.*;
-	//import away3d.library.assets.*;
-	//import away3d.lights.*;
-	//import away3d.lights.shadowmaps.*;
-	//import away3d.materials.compilation.*;
+	//import away.*;
+	//import away.errors.*;
+	//import away.library.assets.*;
+	//import away.lights.*;
+	//import away.lights.shadowmaps.*;
+	//import away.materials.compilation.*;
 
 	//use namespace arcane;
 

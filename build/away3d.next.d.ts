@@ -3144,25 +3144,25 @@ declare module away.materials {
         */
         public normalMap : away.textures.Texture2DBase;
         /**
-        * The method used to generate the per-pixel normals. Defaults to BasicNormalMethod.
+        * The method used to generate the per-pixel normals. Defaults to NormalBasicMethod.
         */
-        public normalMethod : materials.BasicNormalMethod;
+        public normalMethod : materials.NormalBasicMethod;
         /**
-        * The method that provides the ambient lighting contribution. Defaults to BasicAmbientMethod.
+        * The method that provides the ambient lighting contribution. Defaults to AmbientBasicMethod.
         */
-        public ambientMethod : materials.BasicAmbientMethod;
+        public ambientMethod : materials.AmbientBasicMethod;
         /**
         * The method used to render shadows cast on this surface, or null if no shadows are to be rendered. Defaults to null.
         */
         public shadowMethod : materials.ShadowMapMethodBase;
         /**
-        * The method that provides the diffuse lighting contribution. Defaults to BasicDiffuseMethod.
+        * The method that provides the diffuse lighting contribution. Defaults to DiffuseBasicMethod.
         */
-        public diffuseMethod : materials.BasicDiffuseMethod;
+        public diffuseMethod : materials.DiffuseBasicMethod;
         /**
-        * The method that provides the specular lighting contribution. Defaults to BasicSpecularMethod.
+        * The method that provides the specular lighting contribution. Defaults to SpecularBasicMethod.
         */
-        public specularMethod : materials.BasicSpecularMethod;
+        public specularMethod : materials.SpecularBasicMethod;
         /**
         * Initializes the pass.
         */
@@ -3286,9 +3286,9 @@ declare module away.materials {
         */
         public colorTransform : away.geom.ColorTransform;
         /**
-        * The ColorTransformMethod object to transform the colour of the material with. Defaults to null.
+        * The EffectColorTransformMethod object to transform the colour of the material with. Defaults to null.
         */
-        public colorTransformMethod : materials.ColorTransformMethod;
+        public colorTransformMethod : materials.EffectColorTransformMethod;
         /**
         * Appends an "effect" shading method to the shader. Effect methods are those that do not influence the lighting
         * but modulate the shaded colour, used for fog, outlines, etc. The method will be applied to the result of the
@@ -3613,6 +3613,65 @@ declare module away.materials {
 }
 declare module away.materials {
     /**
+    * The SingleObjectDepthPass provides a material pass that renders a single object to a depth map from the point
+    * of view from a light.
+    */
+    class SingleObjectDepthPass extends materials.MaterialPassBase {
+        private _textures;
+        private _projections;
+        private _textureSize;
+        private _polyOffset;
+        private _enc;
+        private _projectionTexturesInvalid;
+        /**
+        * Creates a new SingleObjectDepthPass object.
+        * @param textureSize The size of the depth map texture to render to.
+        * @param polyOffset The amount by which the rendered object will be inflated, to prevent depth map rounding errors.
+        *
+        * todo: provide custom vertex code to assembler
+        */
+        constructor(textureSize?: number, polyOffset?: number);
+        /**
+        * @inheritDoc
+        */
+        public dispose(): void;
+        /**
+        * Updates the projection textures used to contain the depth renders.
+        */
+        private updateProjectionTextures();
+        /**
+        * @inheritDoc
+        */
+        public iGetVertexCode(): string;
+        /**
+        * @inheritDoc
+        */
+        public iGetFragmentCode(animationCode: string): string;
+        /**
+        * Gets the depth maps rendered for this object from all lights.
+        * @param renderable The renderable for which to retrieve the depth maps.
+        * @param stage3DProxy The Stage3DProxy object currently used for rendering.
+        * @return A list of depth map textures for all supported lights.
+        */
+        public _iGetDepthMap(renderable: away.pool.RenderableBase, stageGL: away.base.StageGL): away.gl.Texture;
+        /**
+        * Retrieves the depth map projection maps for all lights.
+        * @param renderable The renderable for which to retrieve the projection maps.
+        * @return A list of projection maps for all supported lights.
+        */
+        public _iGetProjection(renderable: away.pool.RenderableBase): away.geom.Matrix3D;
+        /**
+        * @inheritDoc
+        */
+        public iRender(renderable: away.pool.RenderableBase, stageGL: away.base.StageGL, camera: away.entities.Camera, viewProjection: away.geom.Matrix3D): void;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(stageGL: away.base.StageGL, camera: away.entities.Camera): void;
+    }
+}
+declare module away.materials {
+    /**
     * SegmentPass is a material pass that draws wireframe segments.
     */
     class SegmentPass extends materials.MaterialPassBase {
@@ -3722,143 +3781,6 @@ declare module away.materials {
 }
 declare module away.materials {
     /**
-    * ShadingMethodBase provides an abstract base method for shading methods, used by compiled passes to compile
-    * the final shading program.
-    */
-    class ShadingMethodBase extends away.library.NamedAssetBase {
-        public _sharedRegisters: materials.ShaderRegisterData;
-        private _passes;
-        /**
-        * Create a new ShadingMethodBase object.
-        * @param needsNormals Defines whether or not the method requires normals.
-        * @param needsView Defines whether or not the method requires the view direction.
-        */
-        constructor();
-        /**
-        * Initializes the properties for a MethodVO, including register and texture indices.
-        * @param vo The MethodVO object linking this method with the pass currently being compiled.
-        */
-        public iInitVO(vo: materials.MethodVO): void;
-        /**
-        * Initializes unchanging shader constants using the data from a MethodVO.
-        * @param vo The MethodVO object linking this method with the pass currently being compiled.
-        */
-        public iInitConstants(vo: materials.MethodVO): void;
-        /**
-        * The shared registers created by the compiler and possibly used by methods.
-        */
-        public iSharedRegisters : materials.ShaderRegisterData;
-        public setISharedRegisters(value: materials.ShaderRegisterData): void;
-        /**
-        * Any passes required that render to a texture used by this method.
-        */
-        public passes : materials.MaterialPassBase[];
-        /**
-        * Cleans up any resources used by the current object.
-        */
-        public dispose(): void;
-        /**
-        * Creates a data container that contains material-dependent data. Provided as a factory method so a custom subtype can be overridden when needed.
-        */
-        public iCreateMethodVO(): materials.MethodVO;
-        /**
-        * Resets the compilation state of the method.
-        */
-        public iReset(): void;
-        /**
-        * Resets the method's state for compilation.
-        * @private
-        */
-        public iCleanCompilationData(): void;
-        /**
-        * Get the vertex shader code for this method.
-        * @param vo The MethodVO object linking this method with the pass currently being compiled.
-        * @param regCache The register cache used during the compilation.
-        * @private
-        */
-        public iGetVertexCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache): string;
-        /**
-        * Sets the render state for this method.
-        *
-        * @param vo The MethodVO object linking this method with the pass currently being compiled.
-        * @param stageGL The StageGL object currently used for rendering.
-        * @private
-        */
-        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
-        /**
-        * Sets the render state for a single renderable.
-        *
-        * @param vo The MethodVO object linking this method with the pass currently being compiled.
-        * @param renderable The renderable currently being rendered.
-        * @param stageGL The StageGL object currently used for rendering.
-        * @param camera The camera from which the scene is currently rendered.
-        */
-        public iSetRenderState(vo: materials.MethodVO, renderable: away.pool.RenderableBase, stageGL: away.base.StageGL, camera: away.entities.Camera): void;
-        /**
-        * Clears the render state for this method.
-        * @param vo The MethodVO object linking this method with the pass currently being compiled.
-        * @param stageGL The StageGL object currently used for rendering.
-        */
-        public iDeactivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
-        /**
-        * A helper method that generates standard code for sampling from a texture using the normal uv coordinates.
-        * @param vo The MethodVO object linking this method with the pass currently being compiled.
-        * @param targetReg The register in which to store the sampled colour.
-        * @param inputReg The texture stream register.
-        * @param texture The texture which will be assigned to the given slot.
-        * @param uvReg An optional uv register if coordinates different from the primary uv coordinates are to be used.
-        * @param forceWrap If true, texture wrapping is enabled regardless of the material setting.
-        * @return The fragment code that performs the sampling.
-        */
-        public pGetTex2DSampleCode(vo: materials.MethodVO, targetReg: materials.ShaderRegisterElement, inputReg: materials.ShaderRegisterElement, texture: away.textures.TextureProxyBase, uvReg?: materials.ShaderRegisterElement, forceWrap?: string): string;
-        /**
-        * A helper method that generates standard code for sampling from a cube texture.
-        * @param vo The MethodVO object linking this method with the pass currently being compiled.
-        * @param targetReg The register in which to store the sampled colour.
-        * @param inputReg The texture stream register.
-        * @param texture The cube map which will be assigned to the given slot.
-        * @param uvReg The direction vector with which to sample the cube map.
-        */
-        public pGetTexCubeSampleCode(vo: materials.MethodVO, targetReg: materials.ShaderRegisterElement, inputReg: materials.ShaderRegisterElement, texture: away.textures.TextureProxyBase, uvReg: materials.ShaderRegisterElement): string;
-        /**
-        * Generates a texture format string for the sample instruction.
-        * @param texture The texture for which to get the format string.
-        * @return
-        */
-        private getFormatStringForTexture(texture);
-        /**
-        * Marks the shader program as invalid, so it will be recompiled before the next render.
-        */
-        public iInvalidateShaderProgram(): void;
-        /**
-        * Copies the state from a ShadingMethodBase object into the current object.
-        */
-        public copyFrom(method: ShadingMethodBase): void;
-    }
-}
-declare module away.materials {
-    /**
-    * EffectMethodBase forms an abstract base class for shader methods that are not dependent on light sources,
-    * and are in essence post-process effects on the materials.
-    */
-    class EffectMethodBase extends materials.ShadingMethodBase implements away.library.IAsset {
-        constructor();
-        /**
-        * @inheritDoc
-        */
-        public assetType : string;
-        /**
-        * Get the fragment shader code that should be added after all per-light code. Usually composits everything to the target register.
-        * @param vo The MethodVO object containing the method data for the currently compiled material pass.
-        * @param regCache The register cache used during the compilation.
-        * @param targetReg The register that will be containing the method's output.
-        * @private
-        */
-        public iGetFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
-    }
-}
-declare module away.materials {
-    /**
     * MethodVOSet provides a EffectMethodBase and MethodVO combination to be used by a material, allowing methods
     * to be shared across different materials while their internal state changes.
     */
@@ -3880,101 +3802,146 @@ declare module away.materials {
 }
 declare module away.materials {
     /**
-    * ShaderMethodSetup contains the method configuration for an entire material.
+    * ShadingMethodBase provides an abstract base method for shading methods, used by compiled passes to compile
+    * the final shading program.
     */
-    class ShaderMethodSetup extends away.events.EventDispatcher {
-        public _iColorTransformMethod: materials.ColorTransformMethod;
-        public _iColorTransformMethodVO: materials.MethodVO;
-        public _iNormalMethod: materials.BasicNormalMethod;
-        public _iNormalMethodVO: materials.MethodVO;
-        public _iAmbientMethod: materials.BasicAmbientMethod;
-        public _iAmbientMethodVO: materials.MethodVO;
-        public _iShadowMethod: materials.ShadowMapMethodBase;
-        public _iShadowMethodVO: materials.MethodVO;
-        public _iDiffuseMethod: materials.BasicDiffuseMethod;
-        public _iDiffuseMethodVO: materials.MethodVO;
-        public _iSpecularMethod: materials.BasicSpecularMethod;
-        public _iSpecularMethodVO: materials.MethodVO;
-        public _iMethods: materials.MethodVOSet[];
-        private _onShaderInvalidatedDelegate;
+    class ShadingMethodBase extends away.library.NamedAssetBase {
+        public _sharedRegisters: materials.ShaderRegisterData;
+        public _passes: materials.MaterialPassBase[];
         /**
-        * Creates a new <code>ShaderMethodSetup</code> object.
+        * Create a new ShadingMethodBase object.
         */
         constructor();
         /**
-        * Called when any method's code is invalidated.
+        * Initializes the properties for a MethodVO, including register and texture indices.
+        *
+        * @param vo The MethodVO object linking this method with the pass currently being compiled.
+        *
+        * @internal
         */
-        private onShaderInvalidated(event);
+        public iInitVO(vo: materials.MethodVO): void;
         /**
-        * Invalidates the material's shader code.
+        * Initializes unchanging shader constants using the data from a MethodVO.
+        *
+        * @param vo The MethodVO object linking this method with the pass currently being compiled.
+        *
+        * @internal
         */
-        private invalidateShaderProgram();
+        public iInitConstants(vo: materials.MethodVO): void;
         /**
-        *  The method used to generate the per-pixel normals.
+        * The shared registers created by the compiler and possibly used by methods.
+        *
+        * @internal
         */
-        public normalMethod : materials.BasicNormalMethod;
         /**
-        * The method that provides the ambient lighting contribution.
+        * @internal
         */
-        public ambientMethod : materials.BasicAmbientMethod;
+        public iSharedRegisters : materials.ShaderRegisterData;
+        public setISharedRegisters(value: materials.ShaderRegisterData): void;
         /**
-        * The method used to render shadows cast on this surface, or null if no shadows are to be rendered.
+        * Any passes required that render to a texture used by this method.
         */
-        public shadowMethod : materials.ShadowMapMethodBase;
+        public passes : materials.MaterialPassBase[];
         /**
-        * The method that provides the diffuse lighting contribution.
-        */
-        public diffuseMethod : materials.BasicDiffuseMethod;
-        /**
-        * The method to perform specular shading.
-        */
-        public specularMethod : materials.BasicSpecularMethod;
-        /**
-        * @private
-        */
-        public iColorTransformMethod : materials.ColorTransformMethod;
-        /**
-        * Disposes the object.
+        * Cleans up any resources used by the current object.
         */
         public dispose(): void;
         /**
-        * Removes all listeners from a method.
-        */
-        private clearListeners(method);
-        /**
-        * Adds a method to change the material after all lighting is performed.
-        * @param method The method to be added.
-        */
-        public addMethod(method: materials.EffectMethodBase): void;
-        /**
-        * Queries whether a given effect method was added to the material.
+        * Creates a data container that contains material-dependent data. Provided as a factory method so a custom subtype can be overridden when needed.
         *
-        * @param method The method to be queried.
-        * @return true if the method was added to the material, false otherwise.
+        * @internal
         */
-        public hasMethod(method: materials.EffectMethodBase): boolean;
+        public iCreateMethodVO(): materials.MethodVO;
         /**
-        * Inserts a method to change the material after all lighting is performed at the given index.
-        * @param method The method to be added.
-        * @param index The index of the method's occurrence
+        * Resets the compilation state of the method.
+        *
+        * @internal
         */
-        public addMethodAt(method: materials.EffectMethodBase, index: number): void;
+        public iReset(): void;
         /**
-        * Returns the method added at the given index.
-        * @param index The index of the method to retrieve.
-        * @return The method at the given index.
+        * Resets the method's state for compilation.
+        *
+        * @internal
         */
-        public getMethodAt(index: number): materials.EffectMethodBase;
+        public iCleanCompilationData(): void;
         /**
-        * The number of "effect" methods added to the material.
+        * Get the vertex shader code for this method.
+        * @param vo The MethodVO object linking this method with the pass currently being compiled.
+        * @param regCache The register cache used during the compilation.
+        *
+        * @internal
         */
-        public numMethods : number;
+        public iGetVertexCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache): string;
         /**
-        * Removes a method from the pass.
-        * @param method The method to be removed.
+        * Sets the render state for this method.
+        *
+        * @param vo The MethodVO object linking this method with the pass currently being compiled.
+        * @param stageGL The StageGL object currently used for rendering.
+        *
+        * @internal
         */
-        public removeMethod(method: materials.EffectMethodBase): void;
-        private getMethodSetForMethod(method);
+        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
+        /**
+        * Sets the render state for a single renderable.
+        *
+        * @param vo The MethodVO object linking this method with the pass currently being compiled.
+        * @param renderable The renderable currently being rendered.
+        * @param stageGL The StageGL object currently used for rendering.
+        * @param camera The camera from which the scene is currently rendered.
+        *
+        * @internal
+        */
+        public iSetRenderState(vo: materials.MethodVO, renderable: away.pool.RenderableBase, stageGL: away.base.StageGL, camera: away.entities.Camera): void;
+        /**
+        * Clears the render state for this method.
+        * @param vo The MethodVO object linking this method with the pass currently being compiled.
+        * @param stageGL The StageGL object currently used for rendering.
+        *
+        * @internal
+        */
+        public iDeactivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
+        /**
+        * A helper method that generates standard code for sampling from a texture using the normal uv coordinates.
+        * @param vo The MethodVO object linking this method with the pass currently being compiled.
+        * @param targetReg The register in which to store the sampled colour.
+        * @param inputReg The texture stream register.
+        * @param texture The texture which will be assigned to the given slot.
+        * @param uvReg An optional uv register if coordinates different from the primary uv coordinates are to be used.
+        * @param forceWrap If true, texture wrapping is enabled regardless of the material setting.
+        * @return The fragment code that performs the sampling.
+        *
+        * @protected
+        */
+        public pGetTex2DSampleCode(vo: materials.MethodVO, targetReg: materials.ShaderRegisterElement, inputReg: materials.ShaderRegisterElement, texture: away.textures.TextureProxyBase, uvReg?: materials.ShaderRegisterElement, forceWrap?: string): string;
+        /**
+        * A helper method that generates standard code for sampling from a cube texture.
+        * @param vo The MethodVO object linking this method with the pass currently being compiled.
+        * @param targetReg The register in which to store the sampled colour.
+        * @param inputReg The texture stream register.
+        * @param texture The cube map which will be assigned to the given slot.
+        * @param uvReg The direction vector with which to sample the cube map.
+        *
+        * @protected
+        */
+        public pGetTexCubeSampleCode(vo: materials.MethodVO, targetReg: materials.ShaderRegisterElement, inputReg: materials.ShaderRegisterElement, texture: away.textures.TextureProxyBase, uvReg: materials.ShaderRegisterElement): string;
+        /**
+        * Generates a texture format string for the sample instruction.
+        * @param texture The texture for which to get the format string.
+        * @return
+        *
+        * @protected
+        */
+        private getFormatStringForTexture(texture);
+        /**
+        * Marks the shader program as invalid, so it will be recompiled before the next render.
+        *
+        * @internal
+        */
+        public iInvalidateShaderProgram(): void;
+        /**
+        * Copies the state from a ShadingMethodBase object into the current object.
+        */
+        public copyFrom(method: ShadingMethodBase): void;
     }
 }
 declare module away.materials {
@@ -3987,7 +3954,6 @@ declare module away.materials {
         * A method that is exposed to wrappers in case the strength needs to be controlled
         */
         public _iModulateMethod: any;
-        public _iModulateMethodScope: Object;
         /**
         * Creates a new LightingMethodBase.
         */
@@ -4067,13 +4033,1283 @@ declare module away.materials {
 }
 declare module away.materials {
     /**
-    * SimpleShadowMapMethodBase provides an abstract method for simple (non-wrapping) shadow map methods.
+    * ShaderMethodSetup contains the method configuration for an entire material.
     */
-    class SimpleShadowMapMethodBase extends materials.ShadowMapMethodBase {
+    class ShaderMethodSetup extends away.events.EventDispatcher {
+        public _iColorTransformMethod: materials.EffectColorTransformMethod;
+        public _iColorTransformMethodVO: materials.MethodVO;
+        public _iNormalMethod: materials.NormalBasicMethod;
+        public _iNormalMethodVO: materials.MethodVO;
+        public _iAmbientMethod: materials.AmbientBasicMethod;
+        public _iAmbientMethodVO: materials.MethodVO;
+        public _iShadowMethod: materials.ShadowMapMethodBase;
+        public _iShadowMethodVO: materials.MethodVO;
+        public _iDiffuseMethod: materials.DiffuseBasicMethod;
+        public _iDiffuseMethodVO: materials.MethodVO;
+        public _iSpecularMethod: materials.SpecularBasicMethod;
+        public _iSpecularMethodVO: materials.MethodVO;
+        public _iMethods: materials.MethodVOSet[];
+        private _onShaderInvalidatedDelegate;
+        /**
+        * Creates a new <code>ShaderMethodSetup</code> object.
+        */
+        constructor();
+        /**
+        * Called when any method's code is invalidated.
+        */
+        private onShaderInvalidated(event);
+        /**
+        * Invalidates the material's shader code.
+        */
+        private iInvalidateShaderProgram();
+        /**
+        *  The method used to generate the per-pixel normals.
+        */
+        public normalMethod : materials.NormalBasicMethod;
+        /**
+        * The method that provides the ambient lighting contribution.
+        */
+        public ambientMethod : materials.AmbientBasicMethod;
+        /**
+        * The method used to render shadows cast on this surface, or null if no shadows are to be rendered.
+        */
+        public shadowMethod : materials.ShadowMapMethodBase;
+        /**
+        * The method that provides the diffuse lighting contribution.
+        */
+        public diffuseMethod : materials.DiffuseBasicMethod;
+        /**
+        * The method to perform specular shading.
+        */
+        public specularMethod : materials.SpecularBasicMethod;
+        /**
+        * @private
+        */
+        public iColorTransformMethod : materials.EffectColorTransformMethod;
+        /**
+        * Disposes the object.
+        */
+        public dispose(): void;
+        /**
+        * Removes all listeners from a method.
+        */
+        private clearListeners(method);
+        /**
+        * Adds a method to change the material after all lighting is performed.
+        * @param method The method to be added.
+        */
+        public addMethod(method: materials.EffectMethodBase): void;
+        /**
+        * Queries whether a given effect method was added to the material.
+        *
+        * @param method The method to be queried.
+        * @return true if the method was added to the material, false otherwise.
+        */
+        public hasMethod(method: materials.EffectMethodBase): boolean;
+        /**
+        * Inserts a method to change the material after all lighting is performed at the given index.
+        * @param method The method to be added.
+        * @param index The index of the method's occurrence
+        */
+        public addMethodAt(method: materials.EffectMethodBase, index: number): void;
+        /**
+        * Returns the method added at the given index.
+        * @param index The index of the method to retrieve.
+        * @return The method at the given index.
+        */
+        public getMethodAt(index: number): materials.EffectMethodBase;
+        /**
+        * The number of "effect" methods added to the material.
+        */
+        public numMethods : number;
+        /**
+        * Removes a method from the pass.
+        * @param method The method to be removed.
+        */
+        public removeMethod(method: materials.EffectMethodBase): void;
+        private getMethodSetForMethod(method);
+    }
+}
+declare module away.materials {
+    /**
+    * AmbientBasicMethod provides the default shading method for uniform ambient lighting.
+    */
+    class AmbientBasicMethod extends materials.ShadingMethodBase {
+        private _useTexture;
+        private _texture;
+        public _pAmbientInputRegister: materials.ShaderRegisterElement;
+        private _ambientColor;
+        private _ambientR;
+        private _ambientG;
+        private _ambientB;
+        private _ambient;
+        public _iLightAmbientR: number;
+        public _iLightAmbientG: number;
+        public _iLightAmbientB: number;
+        /**
+        * Creates a new AmbientBasicMethod object.
+        */
+        constructor();
+        /**
+        * @inheritDoc
+        */
+        public iInitVO(vo: materials.MethodVO): void;
+        /**
+        * @inheritDoc
+        */
+        public iInitConstants(vo: materials.MethodVO): void;
+        /**
+        * The strength of the ambient reflection of the surface.
+        */
+        public ambient : number;
+        /**
+        * The colour of the ambient reflection of the surface.
+        */
+        public ambientColor : number;
+        /**
+        * The bitmapData to use to define the diffuse reflection color per texel.
+        */
+        public texture : away.textures.Texture2DBase;
+        /**
+        * @inheritDoc
+        */
+        public copyFrom(method: materials.ShadingMethodBase): void;
+        /**
+        * @inheritDoc
+        */
+        public iCleanCompilationData(): void;
+        /**
+        * @inheritDoc
+        */
+        public iGetFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
+        /**
+        * Updates the ambient color data used by the render state.
+        */
+        private updateAmbient();
+        /**
+        * @inheritDoc
+        */
+        public iSetRenderState(vo: materials.MethodVO, renderable: away.pool.RenderableBase, stageGL: away.base.StageGL, camera: away.entities.Camera): void;
+    }
+}
+declare module away.materials {
+    /**
+    * AmbientEnvMapMethod provides a diffuse shading method that uses a diffuse irradiance environment map to
+    * approximate global lighting rather than lights.
+    */
+    class AmbientEnvMapMethod extends materials.AmbientBasicMethod {
+        private _cubeTexture;
+        /**
+        * Creates a new <code>AmbientEnvMapMethod</code> object.
+        *
+        * @param envMap The cube environment map to use for the ambient lighting.
+        */
+        constructor(envMap: away.textures.CubeTextureBase);
+        /**
+        * @inheritDoc
+        */
+        public iInitVO(vo: materials.MethodVO): void;
+        /**
+        * The cube environment map to use for the diffuse lighting.
+        */
+        public envMap : away.textures.CubeTextureBase;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
+        /**
+        * @inheritDoc
+        */
+        public iGetFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+    }
+}
+declare module away.materials {
+    /**
+    * DiffuseBasicMethod provides the default shading method for Lambert (dot3) diffuse lighting.
+    */
+    class DiffuseBasicMethod extends materials.LightingMethodBase {
+        private _useAmbientTexture;
+        public _pUseTexture: boolean;
+        public _pTotalLightColorReg: materials.ShaderRegisterElement;
+        public _pDiffuseInputRegister: materials.ShaderRegisterElement;
+        private _texture;
+        private _diffuseColor;
+        private _diffuseR;
+        private _diffuseG;
+        private _diffuseB;
+        private _diffuseA;
+        public _pShadowRegister: materials.ShaderRegisterElement;
+        private _alphaThreshold;
+        public _pIsFirstLight: boolean;
+        /**
+        * Creates a new DiffuseBasicMethod object.
+        */
+        constructor();
+        /**
+        * Set internally if the ambient method uses a texture.
+        */
+        public iUseAmbientTexture : boolean;
+        public iInitVO(vo: materials.MethodVO): void;
+        /**
+        * Forces the creation of the texture.
+        * @param stageGL The StageGL used by the renderer
+        */
+        public generateMip(stageGL: away.base.StageGL): void;
+        /**
+        * The alpha component of the diffuse reflection.
+        */
+        public diffuseAlpha : number;
+        /**
+        * The color of the diffuse reflection when not using a texture.
+        */
+        public diffuseColor : number;
+        /**
+        * The bitmapData to use to define the diffuse reflection color per texel.
+        */
+        public texture : away.textures.Texture2DBase;
+        /**
+        * The minimum alpha value for which pixels should be drawn. This is used for transparency that is either
+        * invisible or entirely opaque, often used with textures for foliage, etc.
+        * Recommended values are 0 to disable alpha, or 0.5 to create smooth edges. Default value is 0 (disabled).
+        */
+        public alphaThreshold : number;
+        /**
+        * @inheritDoc
+        */
+        public dispose(): void;
+        /**
+        * @inheritDoc
+        */
+        public copyFrom(method: materials.ShadingMethodBase): void;
+        /**
+        * @inheritDoc
+        */
+        public iCleanCompilationData(): void;
+        /**
+        * @inheritDoc
+        */
+        public iGetFragmentPreLightingCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
+        public iGetFragmentCodePerLight(vo: materials.MethodVO, lightDirReg: materials.ShaderRegisterElement, lightColReg: materials.ShaderRegisterElement, regCache: materials.ShaderRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
+        public iGetFragmentCodePerProbe(vo: materials.MethodVO, cubeMapReg: materials.ShaderRegisterElement, weightRegister: string, regCache: materials.ShaderRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
+        public iGetFragmentPostLightingCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+        /**
+        * Generate the code that applies the calculated shadow to the diffuse light
+        * @param vo The MethodVO object for which the compilation is currently happening.
+        * @param regCache The register cache the compiler is currently using for the register management.
+        */
+        public pApplyShadow(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
+        /**
+        * Updates the diffuse color data used by the render state.
+        */
+        private updateDiffuse();
+        /**
+        * Set internally by the compiler, so the method knows the register containing the shadow calculation.
+        */
+        public iShadowRegister : materials.ShaderRegisterElement;
+        public setIShadowRegister(value: materials.ShaderRegisterElement): void;
+    }
+}
+declare module away.materials {
+    /**
+    * DiffuseCompositeMethod provides a base class for diffuse methods that wrap a diffuse method to alter the
+    * calculated diffuse reflection strength.
+    */
+    class DiffuseCompositeMethod extends materials.DiffuseBasicMethod {
+        public pBaseMethod: materials.DiffuseBasicMethod;
+        private _onShaderInvalidatedDelegate;
+        /**
+        * Creates a new <code>DiffuseCompositeMethod</code> object.
+        *
+        * @param modulateMethod The method which will add the code to alter the base method's strength. It needs to have the signature clampDiffuse(t:ShaderRegisterElement, regCache:ShaderRegisterCache):string, in which t.w will contain the diffuse strength.
+        * @param baseMethod The base diffuse method on which this method's shading is based.
+        */
+        constructor(modulateMethod: Function, baseMethod?: materials.DiffuseBasicMethod);
+        /**
+        * The base diffuse method on which this method's shading is based.
+        */
+        public baseMethod : materials.DiffuseBasicMethod;
+        /**
+        * @inheritDoc
+        */
+        public iInitVO(vo: materials.MethodVO): void;
+        /**
+        * @inheritDoc
+        */
+        public iInitConstants(vo: materials.MethodVO): void;
+        /**
+        * @inheritDoc
+        */
+        public dispose(): void;
+        /**
+        * @inheritDoc
+        */
+        public alphaThreshold : number;
+        /**
+        * @inheritDoc
+        */
+        /**
+        * @inheritDoc
+        */
+        public texture : away.textures.Texture2DBase;
+        /**
+        * @inheritDoc
+        */
+        /**
+        * @inheritDoc
+        */
+        public diffuseAlpha : number;
+        /**
+        * @inheritDoc
+        */
+        /**
+        * @inheritDoc
+        */
+        public diffuseColor : number;
+        /**
+        * @inheritDoc
+        */
+        public iGetFragmentPreLightingCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
+        public iGetFragmentCodePerLight(vo: materials.MethodVO, lightDirReg: materials.ShaderRegisterElement, lightColReg: materials.ShaderRegisterElement, regCache: materials.ShaderRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
+        public iGetFragmentCodePerProbe(vo: materials.MethodVO, cubeMapReg: materials.ShaderRegisterElement, weightRegister: string, regCache: materials.ShaderRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
+        /**
+        * @inheritDoc
+        */
+        public iDeactivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
+        /**
+        * @inheritDoc
+        */
+        public iGetVertexCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
+        public iGetFragmentPostLightingCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+        /**
+        * @inheritDoc
+        */
+        public iReset(): void;
+        /**
+        * @inheritDoc
+        */
+        public iCleanCompilationData(): void;
+        /**
+        * @inheritDoc
+        */
+        public iSharedRegisters : materials.ShaderRegisterData;
+        public setISharedRegisters(value: materials.ShaderRegisterData): void;
+        /**
+        * @inheritDoc
+        */
+        public iShadowRegister : materials.ShaderRegisterElement;
+        /**
+        * Called when the base method's shader code is invalidated.
+        */
+        private onShaderInvalidated(event);
+    }
+}
+declare module away.materials {
+    /**
+    * DiffuseCelMethod provides a shading method to add diffuse cel (cartoon) shading.
+    */
+    class DiffuseCelMethod extends materials.DiffuseCompositeMethod {
+        private _levels;
+        private _dataReg;
+        private _smoothness;
+        /**
+        * Creates a new DiffuseCelMethod object.
+        * @param levels The amount of shadow gradations.
+        * @param baseMethod An optional diffuse method on which the cartoon shading is based. If omitted, DiffuseBasicMethod is used.
+        */
+        constructor(levels?: number, baseMethod?: materials.DiffuseBasicMethod);
+        /**
+        * @inheritDoc
+        */
+        public iInitConstants(vo: materials.MethodVO): void;
+        /**
+        * The amount of shadow gradations.
+        */
+        public levels : number;
+        /**
+        * The smoothness of the edge between 2 shading levels.
+        */
+        public smoothness : number;
+        /**
+        * @inheritDoc
+        */
+        public iCleanCompilationData(): void;
+        /**
+        * @inheritDoc
+        */
+        public iGetFragmentPreLightingCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
+        /**
+        * Snaps the diffuse shading of the wrapped method to one of the levels.
+        * @param vo The MethodVO used to compile the current shader.
+        * @param t The register containing the diffuse strength in the "w" component.
+        * @param regCache The register cache used for the shader compilation.
+        * @param sharedRegisters The shared register data for this shader.
+        * @return The AGAL fragment code for the method.
+        */
+        private clampDiffuse(vo, t, regCache, sharedRegisters);
+    }
+}
+declare module away.materials {
+    /**
+    * DiffuseDepthMethod provides a debug method to visualise depth maps
+    */
+    class DiffuseDepthMethod extends materials.DiffuseBasicMethod {
+        /**
+        * Creates a new DiffuseBasicMethod object.
+        */
+        constructor();
+        /**
+        * @inheritDoc
+        */
+        public iInitConstants(vo: materials.MethodVO): void;
+        /**
+        * @inheritDoc
+        */
+        public iGetFragmentPostLightingCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+    }
+}
+declare module away.materials {
+    /**
+    * DiffuseGradientMethod is an alternative to DiffuseBasicMethod in which the shading can be modulated with a gradient
+    * to introduce color-tinted shading as opposed to the single-channel diffuse strength. This can be used as a crude
+    * approximation to subsurface scattering (for instance, the mid-range shading for skin can be tinted red to similate
+    * scattered light within the skin attributing to the final colour)
+    */
+    class DiffuseGradientMethod extends materials.DiffuseBasicMethod {
+        private _gradientTextureRegister;
+        private _gradient;
+        /**
+        * Creates a new DiffuseGradientMethod object.
+        * @param gradient A texture that contains the light colour based on the angle. This can be used to change
+        * the light colour due to subsurface scattering when the surface faces away from the light.
+        */
+        constructor(gradient: away.textures.Texture2DBase);
+        /**
+        * A texture that contains the light colour based on the angle. This can be used to change the light colour
+        * due to subsurface scattering when the surface faces away from the light.
+        */
+        public gradient : away.textures.Texture2DBase;
+        /**
+        * @inheritDoc
+        */
+        public iCleanCompilationData(): void;
+        /**
+        * @inheritDoc
+        */
+        public iGetFragmentPreLightingCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
+        public iGetFragmentCodePerLight(vo: materials.MethodVO, lightDirReg: materials.ShaderRegisterElement, lightColReg: materials.ShaderRegisterElement, regCache: materials.ShaderRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
+        public pApplyShadow(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
+    }
+}
+declare module away.materials {
+    /**
+    * DiffuseLightMapMethod provides a diffuse shading method that uses a light map to modulate the calculated diffuse
+    * lighting. It is different from EffectLightMapMethod in that the latter modulates the entire calculated pixel color, rather
+    * than only the diffuse lighting value.
+    */
+    class DiffuseLightMapMethod extends materials.DiffuseCompositeMethod {
+        /**
+        * Indicates the light map should be multiplied with the calculated shading result.
+        * This can be used to add pre-calculated shadows or occlusion.
+        */
+        static MULTIPLY: string;
+        /**
+        * Indicates the light map should be added into the calculated shading result.
+        * This can be used to add pre-calculated lighting or global illumination.
+        */
+        static ADD: string;
+        private _lightMapTexture;
+        private _blendMode;
+        private _useSecondaryUV;
+        /**
+        * Creates a new DiffuseLightMapMethod method.
+        *
+        * @param lightMap The texture containing the light map.
+        * @param blendMode The blend mode with which the light map should be applied to the lighting result.
+        * @param useSecondaryUV Indicates whether the secondary UV set should be used to map the light map.
+        * @param baseMethod The diffuse method used to calculate the regular diffuse-based lighting.
+        */
+        constructor(lightMap: away.textures.Texture2DBase, blendMode?: string, useSecondaryUV?: boolean, baseMethod?: materials.DiffuseBasicMethod);
+        /**
+        * @inheritDoc
+        */
+        public iInitVO(vo: materials.MethodVO): void;
+        /**
+        * The blend mode with which the light map should be applied to the lighting result.
+        *
+        * @see DiffuseLightMapMethod.ADD
+        * @see DiffuseLightMapMethod.MULTIPLY
+        */
+        public blendMode : string;
+        /**
+        * The texture containing the light map data.
+        */
+        public lightMapTexture : away.textures.Texture2DBase;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
+        /**
+        * @inheritDoc
+        */
+        public iGetFragmentPostLightingCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+    }
+}
+declare module away.materials {
+    /**
+    * DiffuseSubSurfaceMethod provides a depth map-based diffuse shading method that mimics the scattering of
+    * light inside translucent surfaces. It allows light to shine through an object and to soften the diffuse shading.
+    * It can be used for candle wax, ice, skin, ...
+    */
+    class DiffuseSubSurfaceMethod extends materials.DiffuseCompositeMethod {
+        private _depthPass;
+        private _lightProjVarying;
+        private _propReg;
+        private _scattering;
+        private _translucency;
+        private _lightColorReg;
+        private _scatterColor;
+        private _colorReg;
+        private _decReg;
+        private _scatterR;
+        private _scatterG;
+        private _scatterB;
+        private _targetReg;
+        /**
+        * Creates a new <code>DiffuseSubSurfaceMethod</code> object.
+        *
+        * @param depthMapSize The size of the depth map used.
+        * @param depthMapOffset The amount by which the rendered object will be inflated, to prevent depth map rounding errors.
+        * @param baseMethod The diffuse method used to calculate the regular diffuse-based lighting.
+        */
+        constructor(depthMapSize?: number, depthMapOffset?: number, baseMethod?: materials.DiffuseBasicMethod);
+        /**
+        * @inheritDoc
+        */
+        public iInitConstants(vo: materials.MethodVO): void;
+        public iCleanCompilationData(): void;
+        /**
+        * The amount by which the light scatters. It can be used to set the translucent surface's thickness. Use low
+        * values for skin.
+        */
+        public scattering : number;
+        /**
+        * The translucency of the object.
+        */
+        public translucency : number;
+        /**
+        * The colour of the "insides" of the object, ie: the colour the light becomes after leaving the object.
+        */
+        public scatterColor : number;
+        /**
+        * @inheritDoc
+        */
+        public iGetVertexCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
+        public iGetFragmentPreLightingCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
+        public iGetFragmentCodePerLight(vo: materials.MethodVO, lightDirReg: materials.ShaderRegisterElement, lightColReg: materials.ShaderRegisterElement, regCache: materials.ShaderRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
+        public iGetFragmentPostLightingCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
+        /**
+        * @inheritDoc
+        */
+        public setRenderState(vo: materials.MethodVO, renderable: away.pool.RenderableBase, stageGL: away.base.StageGL, camera: away.entities.Camera): void;
+        /**
+        * Generates the code for this method
+        */
+        private scatterLight(vo, targetReg, regCache, sharedRegisters);
+    }
+}
+declare module away.materials {
+    /**
+    * DiffuseWrapMethod is an alternative to DiffuseBasicMethod in which the light is allowed to be "wrapped around" the normally dark area, to some extent.
+    * It can be used as a crude approximation to Oren-Nayar or simple subsurface scattering.
+    */
+    class DiffuseWrapMethod extends materials.DiffuseBasicMethod {
+        private _wrapDataRegister;
+        private _wrapFactor;
+        /**
+        * Creates a new DiffuseWrapMethod object.
+        * @param wrapFactor A factor to indicate the amount by which the light is allowed to wrap
+        */
+        constructor(wrapFactor?: number);
+        /**
+        * @inheritDoc
+        */
+        public iCleanCompilationData(): void;
+        /**
+        * A factor to indicate the amount by which the light is allowed to wrap.
+        */
+        public wrapFactor : number;
+        /**
+        * @inheritDoc
+        */
+        public iGetFragmentPreLightingCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
+        public iGetFragmentCodePerLight(vo: materials.MethodVO, lightDirReg: materials.ShaderRegisterElement, lightColReg: materials.ShaderRegisterElement, regCache: materials.ShaderRegisterCache): string;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
+    }
+}
+declare module away.materials {
+    /**
+    * EffectMethodBase forms an abstract base class for shader methods that are not dependent on light sources,
+    * and are in essence post-process effects on the materials.
+    */
+    class EffectMethodBase extends materials.ShadingMethodBase implements away.library.IAsset {
+        constructor();
+        /**
+        * @inheritDoc
+        */
+        public assetType : string;
+        /**
+        * Get the fragment shader code that should be added after all per-light code. Usually composits everything to the target register.
+        * @param vo The MethodVO object containing the method data for the currently compiled material pass.
+        * @param regCache The register cache used during the compilation.
+        * @param targetReg The register that will be containing the method's output.
+        * @private
+        */
+        public iGetFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+    }
+}
+declare module away.materials {
+    /**
+    * EffectAlphaMaskMethod allows the use of an additional texture to specify the alpha value of the material. When used
+    * with the secondary uv set, it allows for a tiled main texture with independently varying alpha (useful for water
+    * etc).
+    */
+    class EffectAlphaMaskMethod extends materials.EffectMethodBase {
+        private _texture;
+        private _useSecondaryUV;
+        /**
+        * Creates a new EffectAlphaMaskMethod object.
+        *
+        * @param texture The texture to use as the alpha mask.
+        * @param useSecondaryUV Indicated whether or not the secondary uv set for the mask. This allows mapping alpha independently.
+        */
+        constructor(texture: away.textures.Texture2DBase, useSecondaryUV?: boolean);
+        /**
+        * @inheritDoc
+        */
+        public iInitVO(vo: materials.MethodVO): void;
+        /**
+        * Indicated whether or not the secondary uv set for the mask. This allows mapping alpha independently, for
+        * instance to tile the main texture and normal map while providing untiled alpha, for example to define the
+        * transparency over a tiled water surface.
+        */
+        public useSecondaryUV : boolean;
+        /**
+        * The texture to use as the alpha mask.
+        */
+        public texture : away.textures.Texture2DBase;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
+        /**
+        * @inheritDoc
+        */
+        public iGetFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+    }
+}
+declare module away.materials {
+    /**
+    * EffectColorMatrixMethod provides a shading method that changes the colour of a material analogous to a ColorMatrixFilter.
+    */
+    class EffectColorMatrixMethod extends materials.EffectMethodBase {
+        private _matrix;
+        /**
+        * Creates a new EffectColorTransformMethod.
+        *
+        * @param matrix An array of 20 items for 4 x 5 color transform.
+        */
+        constructor(matrix: number[]);
+        /**
+        * The 4 x 5 matrix to transform the color of the material.
+        */
+        public colorMatrix : number[];
+        /**
+        * @inheritDoc
+        */
+        public iGetFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
+    }
+}
+declare module away.materials {
+    /**
+    * EffectColorTransformMethod provides a shading method that changes the colour of a material analogous to a
+    * ColorTransform object.
+    */
+    class EffectColorTransformMethod extends materials.EffectMethodBase {
+        private _colorTransform;
+        /**
+        * Creates a new EffectColorTransformMethod.
+        */
+        constructor();
+        /**
+        * The ColorTransform object to transform the colour of the material with.
+        */
+        public colorTransform : away.geom.ColorTransform;
+        /**
+        * @inheritDoc
+        */
+        public iGetFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
+    }
+}
+declare module away.materials {
+    /**
+    * EffectEnvMapMethod provides a material method to perform reflection mapping using cube maps.
+    */
+    class EffectEnvMapMethod extends materials.EffectMethodBase {
+        private _cubeTexture;
+        private _alpha;
+        private _mask;
+        /**
+        * Creates an EffectEnvMapMethod object.
+        * @param envMap The environment map containing the reflected scene.
+        * @param alpha The reflectivity of the surface.
+        */
+        constructor(envMap: away.textures.CubeTextureBase, alpha?: number);
+        /**
+        * An optional texture to modulate the reflectivity of the surface.
+        */
+        public mask : away.textures.Texture2DBase;
+        /**
+        * @inheritDoc
+        */
+        public iInitVO(vo: materials.MethodVO): void;
+        /**
+        * The cubic environment map containing the reflected scene.
+        */
+        public envMap : away.textures.CubeTextureBase;
+        /**
+        * @inheritDoc
+        */
+        public dispose(): void;
+        /**
+        * The reflectivity of the surface.
+        */
+        public alpha : number;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
+        /**
+        * @inheritDoc
+        */
+        public iGetFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+    }
+}
+declare module away.materials {
+    /**
+    * EffectFogMethod provides a method to add distance-based fog to a material.
+    */
+    class EffectFogMethod extends materials.EffectMethodBase {
+        private _minDistance;
+        private _maxDistance;
+        private _fogColor;
+        private _fogR;
+        private _fogG;
+        private _fogB;
+        /**
+        * Creates a new EffectFogMethod object.
+        * @param minDistance The distance from which the fog starts appearing.
+        * @param maxDistance The distance at which the fog is densest.
+        * @param fogColor The colour of the fog.
+        */
+        constructor(minDistance: number, maxDistance: number, fogColor?: number);
+        /**
+        * @inheritDoc
+        */
+        public iInitVO(vo: materials.MethodVO): void;
+        /**
+        * @inheritDoc
+        */
+        public iInitConstants(vo: materials.MethodVO): void;
+        /**
+        * The distance from which the fog starts appearing.
+        */
+        public minDistance : number;
+        /**
+        * The distance at which the fog is densest.
+        */
+        public maxDistance : number;
+        /**
+        * The colour of the fog.
+        */
+        public fogColor : number;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
+        /**
+        * @inheritDoc
+        */
+        public iGetFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+    }
+}
+declare module away.materials {
+    /**
+    * EffectFresnelEnvMapMethod provides a method to add fresnel-based reflectivity to an object using cube maps, which gets
+    * stronger as the viewing angle becomes more grazing.
+    */
+    class EffectFresnelEnvMapMethod extends materials.EffectMethodBase {
+        private _cubeTexture;
+        private _fresnelPower;
+        private _normalReflectance;
+        private _alpha;
+        private _mask;
+        /**
+        * Creates a new <code>EffectFresnelEnvMapMethod</code> object.
+        *
+        * @param envMap The environment map containing the reflected scene.
+        * @param alpha The reflectivity of the material.
+        */
+        constructor(envMap: away.textures.CubeTextureBase, alpha?: number);
+        /**
+        * @inheritDoc
+        */
+        public iInitVO(vo: materials.MethodVO): void;
+        /**
+        * @inheritDoc
+        */
+        public iInitConstants(vo: materials.MethodVO): void;
+        /**
+        * An optional texture to modulate the reflectivity of the surface.
+        */
+        public mask : away.textures.Texture2DBase;
+        /**
+        * The power used in the Fresnel equation. Higher values make the fresnel effect more pronounced. Defaults to 5.
+        */
+        public fresnelPower : number;
+        /**
+        * The cubic environment map containing the reflected scene.
+        */
+        public envMap : away.textures.CubeTextureBase;
+        /**
+        * The reflectivity of the surface.
+        */
+        public alpha : number;
+        /**
+        * The minimum amount of reflectance, ie the reflectance when the view direction is normal to the surface or light direction.
+        */
+        public normalReflectance : number;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
+        /**
+        * @inheritDoc
+        */
+        public iGetFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+    }
+}
+declare module away.materials {
+    /**
+    * EffectLightMapMethod provides a method that allows applying a light map texture to the calculated pixel colour.
+    * It is different from DiffuseLightMapMethod in that the latter only modulates the diffuse shading value rather
+    * than the whole pixel colour.
+    */
+    class EffectLightMapMethod extends materials.EffectMethodBase {
+        /**
+        * Indicates the light map should be multiplied with the calculated shading result.
+        */
+        static MULTIPLY: string;
+        /**
+        * Indicates the light map should be added into the calculated shading result.
+        */
+        static ADD: string;
+        private _texture;
+        private _blendMode;
+        private _useSecondaryUV;
+        /**
+        * Creates a new EffectLightMapMethod object.
+        *
+        * @param texture The texture containing the light map.
+        * @param blendMode The blend mode with which the light map should be applied to the lighting result.
+        * @param useSecondaryUV Indicates whether the secondary UV set should be used to map the light map.
+        */
+        constructor(texture: away.textures.Texture2DBase, blendMode?: string, useSecondaryUV?: boolean);
+        /**
+        * @inheritDoc
+        */
+        public iInitVO(vo: materials.MethodVO): void;
+        /**
+        * The blend mode with which the light map should be applied to the lighting result.
+        *
+        * @see EffectLightMapMethod.ADD
+        * @see EffectLightMapMethod.MULTIPLY
+        */
+        public blendMode : string;
+        /**
+        * The texture containing the light map.
+        */
+        public texture : away.textures.Texture2DBase;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
+        /**
+        * @inheritDoc
+        */
+        public iGetFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+    }
+}
+declare module away.materials {
+    /**
+    * EffectRefractionEnvMapMethod provides a method to add refracted transparency based on cube maps.
+    */
+    class EffectRefractionEnvMapMethod extends materials.EffectMethodBase {
+        private _envMap;
+        private _dispersionR;
+        private _dispersionG;
+        private _dispersionB;
+        private _useDispersion;
+        private _refractionIndex;
+        private _alpha;
+        /**
+        * Creates a new EffectRefractionEnvMapMethod object. Example values for dispersion are: dispersionR: -0.03, dispersionG: -0.01, dispersionB: = .0015
+        *
+        * @param envMap The environment map containing the refracted scene.
+        * @param refractionIndex The refractive index of the material.
+        * @param dispersionR The amount of chromatic dispersion of the red channel. Defaults to 0 (none).
+        * @param dispersionG The amount of chromatic dispersion of the green channel. Defaults to 0 (none).
+        * @param dispersionB The amount of chromatic dispersion of the blue channel. Defaults to 0 (none).
+        */
+        constructor(envMap: away.textures.CubeTextureBase, refractionIndex?: number, dispersionR?: number, dispersionG?: number, dispersionB?: number);
+        /**
+        * @inheritDoc
+        */
+        public iInitConstants(vo: materials.MethodVO): void;
+        /**
+        * @inheritDoc
+        */
+        public iInitVO(vo: materials.MethodVO): void;
+        /**
+        * The cube environment map to use for the refraction.
+        */
+        public envMap : away.textures.CubeTextureBase;
+        /**
+        * The refractive index of the material.
+        */
+        public refractionIndex : number;
+        /**
+        * The amount of chromatic dispersion of the red channel. Defaults to 0 (none).
+        */
+        public dispersionR : number;
+        /**
+        * The amount of chromatic dispersion of the green channel. Defaults to 0 (none).
+        */
+        public dispersionG : number;
+        /**
+        * The amount of chromatic dispersion of the blue channel. Defaults to 0 (none).
+        */
+        public dispersionB : number;
+        /**
+        * The amount of transparency of the object. Warning: the alpha applies to the refracted color, not the actual
+        * material. A value of 1 will make it appear fully transparent.
+        */
+        public alpha : number;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
+        /**
+        * @inheritDoc
+        */
+        public iGetFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+    }
+}
+declare module away.materials {
+    /**
+    * EffectRimLightMethod provides a method to add rim lighting to a material. This adds a glow-like effect to edges of objects.
+    */
+    class EffectRimLightMethod extends materials.EffectMethodBase {
+        static ADD: string;
+        static MULTIPLY: string;
+        static MIX: string;
+        private _color;
+        private _blendMode;
+        private _colorR;
+        private _colorG;
+        private _colorB;
+        private _strength;
+        private _power;
+        /**
+        * Creates a new <code>EffectRimLightMethod</code> object.
+        *
+        * @param color The colour of the rim light.
+        * @param strength The strength of the rim light.
+        * @param power The power of the rim light. Higher values will result in a higher edge fall-off.
+        * @param blend The blend mode with which to add the light to the object.
+        */
+        constructor(color?: number, strength?: number, power?: number, blend?: string);
+        /**
+        * @inheritDoc
+        */
+        public iInitConstants(vo: materials.MethodVO): void;
+        /**
+        * @inheritDoc
+        */
+        public iInitVO(vo: materials.MethodVO): void;
+        /**
+        * The blend mode with which to add the light to the object.
+        *
+        * EffectRimLightMethod.MULTIPLY multiplies the rim light with the material's colour.
+        * EffectRimLightMethod.ADD adds the rim light with the material's colour.
+        * EffectRimLightMethod.MIX provides normal alpha blending.
+        */
+        public blendMode : string;
+        /**
+        * The color of the rim light.
+        */
+        public color : number;
+        /**
+        * The strength of the rim light.
+        */
+        public strength : number;
+        /**
+        * The power of the rim light. Higher values will result in a higher edge fall-off.
+        */
+        public power : number;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
+        /**
+        * @inheritDoc
+        */
+        public iGetFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+    }
+}
+declare module away.materials {
+    /**
+    * NormalBasicMethod is the default method for standard tangent-space normal mapping.
+    */
+    class NormalBasicMethod extends materials.ShadingMethodBase {
+        private _texture;
+        private _useTexture;
+        public _pNormalTextureRegister: materials.ShaderRegisterElement;
+        /**
+        * Creates a new NormalBasicMethod object.
+        */
+        constructor();
+        /**
+        * @inheritDoc
+        */
+        public iInitVO(vo: materials.MethodVO): void;
+        /**
+        * Indicates whether or not this method outputs normals in tangent space. Override for object-space normals.
+        */
+        public iTangentSpace : boolean;
+        /**
+        * Indicates if the normal method output is not based on a texture (if not, it will usually always return true)
+        * Override if subclasses are different.
+        */
+        public iHasOutput : boolean;
+        /**
+        * @inheritDoc
+        */
+        public copyFrom(method: materials.ShadingMethodBase): void;
+        /**
+        * The texture containing the normals per pixel.
+        */
+        public normalMap : away.textures.Texture2DBase;
+        public setNormalMap(value: away.textures.Texture2DBase): void;
+        /**
+        * @inheritDoc
+        */
+        public iCleanCompilationData(): void;
+        /**
+        * @inheritDoc
+        */
+        public dispose(): void;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
+        /**
+        * @inheritDoc
+        */
+        public iGetFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+    }
+}
+declare module away.materials {
+    /**
+    * NormalHeightMapMethod provides a normal map method that uses a height map to calculate the normals.
+    */
+    class NormalHeightMapMethod extends materials.NormalBasicMethod {
+        private _worldXYRatio;
+        private _worldXZRatio;
+        /**
+        * Creates a new NormalHeightMapMethod method.
+        *
+        * @param heightMap The texture containing the height data. 0 means low, 1 means high.
+        * @param worldWidth The width of the 'world'. This is used to map uv coordinates' u component to scene dimensions.
+        * @param worldHeight The height of the 'world'. This is used to map the height map values to scene dimensions.
+        * @param worldDepth The depth of the 'world'. This is used to map uv coordinates' v component to scene dimensions.
+        */
+        constructor(heightMap: away.textures.Texture2DBase, worldWidth: number, worldHeight: number, worldDepth: number);
+        /**
+        * @inheritDoc
+        */
+        public iInitConstants(vo: materials.MethodVO): void;
+        /**
+        * @inheritDoc
+        */
+        public tangentSpace : boolean;
+        /**
+        * @inheritDoc
+        */
+        public copyFrom(method: materials.ShadingMethodBase): void;
+        /**
+        * @inheritDoc
+        */
+        public iGetFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+    }
+}
+declare module away.materials {
+    /**
+    * NormalSimpleWaterMethod provides a basic normal map method to create water ripples by translating two wave normal maps.
+    */
+    class NormalSimpleWaterMethod extends materials.NormalBasicMethod {
+        private _texture2;
+        private _normalTextureRegister2;
+        private _useSecondNormalMap;
+        private _water1OffsetX;
+        private _water1OffsetY;
+        private _water2OffsetX;
+        private _water2OffsetY;
+        /**
+        * Creates a new NormalSimpleWaterMethod object.
+        * @param waveMap1 A normal map containing one layer of a wave structure.
+        * @param waveMap2 A normal map containing a second layer of a wave structure.
+        */
+        constructor(waveMap1: away.textures.Texture2DBase, waveMap2: away.textures.Texture2DBase);
+        /**
+        * @inheritDoc
+        */
+        public iInitConstants(vo: materials.MethodVO): void;
+        /**
+        * @inheritDoc
+        */
+        public iInitVO(vo: materials.MethodVO): void;
+        /**
+        * The translation of the first wave layer along the X-axis.
+        */
+        public water1OffsetX : number;
+        /**
+        * The translation of the first wave layer along the Y-axis.
+        */
+        public water1OffsetY : number;
+        /**
+        * The translation of the second wave layer along the X-axis.
+        */
+        public water2OffsetX : number;
+        /**
+        * The translation of the second wave layer along the Y-axis.
+        */
+        public water2OffsetY : number;
+        /**
+        * @inheritDoc
+        */
+        public normalMap : away.textures.Texture2DBase;
+        /**
+        * A second normal map that will be combined with the first to create a wave-like animation pattern.
+        */
+        public secondaryNormalMap : away.textures.Texture2DBase;
+        /**
+        * @inheritDoc
+        */
+        public iCleanCompilationData(): void;
+        /**
+        * @inheritDoc
+        */
+        public dispose(): void;
+        /**
+        * @inheritDoc
+        */
+        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
+        /**
+        * @inheritDoc
+        */
+        public getFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+    }
+}
+declare module away.materials {
+    /**
+    * ShadowMethodBase provides an abstract method for simple (non-wrapping) shadow map methods.
+    */
+    class ShadowMethodBase extends materials.ShadowMapMethodBase {
         public _pDepthMapCoordReg: materials.ShaderRegisterElement;
         public _pUsePoint: boolean;
         /**
-        * Creates a new SimpleShadowMapMethodBase object.
+        * Creates a new ShadowMethodBase object.
         * @param castingLight The light used to cast shadows.
         */
         constructor(castingLight: away.lights.LightBase);
@@ -4158,52 +5394,30 @@ declare module away.materials {
 }
 declare module away.materials {
     /**
-    * DitheredShadowMapMethod provides a softened shadowing technique by bilinearly interpolating shadow comparison
-    * results of neighbouring pixels.
+    * ShadowCascadeMethod is a shadow map method to apply cascade shadow mapping on materials.
+    * Must be used with a DirectionalLight with a CascadeShadowMapper assigned to its shadowMapper property.
+    *
+    * @see away.lights.CascadeShadowMapper
     */
-    class FilteredShadowMapMethod extends materials.SimpleShadowMapMethodBase {
+    class ShadowCascadeMethod extends materials.ShadowMapMethodBase {
+        private _baseMethod;
+        private _cascadeShadowMapper;
+        private _depthMapCoordVaryings;
+        private _cascadeProjections;
         /**
-        * Creates a new BasicDiffuseMethod object.
+        * Creates a new ShadowCascadeMethod object.
         *
-        * @param castingLight The light casting the shadow
+        * @param shadowMethodBase The shadow map sampling method used to sample individual cascades (fe: ShadowHardMethod, ShadowSoftMethod)
         */
-        constructor(castingLight: away.lights.DirectionalLight);
+        constructor(shadowMethodBase: materials.ShadowMethodBase);
         /**
-        * @inheritDoc
+        * The shadow map sampling method used to sample individual cascades. These are typically those used in conjunction
+        * with a DirectionalShadowMapper.
+        *
+        * @see ShadowHardMethod
+        * @see ShadowSoftMethod
         */
-        public iInitConstants(vo: materials.MethodVO): void;
-        /**
-        * @inheritDoc
-        */
-        public _pGetPlanarFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
-        /**
-        * @inheritDoc
-        */
-        public iActivateForCascade(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
-        /**
-        * @inheritDoc
-        */
-        public _iGetCascadeFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, decodeRegister: materials.ShaderRegisterElement, depthTexture: materials.ShaderRegisterElement, depthProjection: materials.ShaderRegisterElement, targetRegister: materials.ShaderRegisterElement): string;
-    }
-}
-declare module away.materials {
-    /**
-    * FogMethod provides a method to add distance-based fog to a material.
-    */
-    class FogMethod extends materials.EffectMethodBase {
-        private _minDistance;
-        private _maxDistance;
-        private _fogColor;
-        private _fogR;
-        private _fogG;
-        private _fogB;
-        /**
-        * Creates a new FogMethod object.
-        * @param minDistance The distance from which the fog starts appearing.
-        * @param maxDistance The distance at which the fog is densest.
-        * @param fogColor The colour of the fog.
-        */
-        constructor(minDistance: number, maxDistance: number, fogColor?: number);
+        public baseMethod : materials.ShadowMethodBase;
         /**
         * @inheritDoc
         */
@@ -4211,84 +5425,27 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iInitConstants(vo: materials.MethodVO): void;
-        /**
-        * The distance from which the fog starts appearing.
-        */
-        public minDistance : number;
-        /**
-        * The distance at which the fog is densest.
-        */
-        public maxDistance : number;
-        /**
-        * The colour of the fog.
-        */
-        public fogColor : number;
+        public iSharedRegisters : materials.ShaderRegisterData;
         /**
         * @inheritDoc
         */
-        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
+        public iInitConstants(vo: materials.MethodVO): void;
+        /**
+        * @inheritDoc
+        */
+        public iCleanCompilationData(): void;
+        /**
+        * @inheritDoc
+        */
+        public iGetVertexCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache): string;
+        /**
+        * Creates the registers for the cascades' projection coordinates.
+        */
+        private initProjectionsRegs(regCache);
         /**
         * @inheritDoc
         */
         public iGetFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
-    }
-}
-declare module away.materials {
-    /**
-    * HardShadowMapMethod provides the cheapest shadow map method by using a single tap without any filtering.
-    */
-    class HardShadowMapMethod extends materials.SimpleShadowMapMethodBase {
-        /**
-        * Creates a new HardShadowMapMethod object.
-        */
-        constructor(castingLight: away.lights.LightBase);
-        /**
-        * @inheritDoc
-        */
-        public _pGetPlanarFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
-        /**
-        * @inheritDoc
-        */
-        public _pGetPointFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
-        /**
-        * @inheritDoc
-        */
-        public _iGetCascadeFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, decodeRegister: materials.ShaderRegisterElement, depthTexture: materials.ShaderRegisterElement, depthProjection: materials.ShaderRegisterElement, targetRegister: materials.ShaderRegisterElement): string;
-        /**
-        * @inheritDoc
-        */
-        public iActivateForCascade(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
-    }
-}
-declare module away.materials {
-    /**
-    * SoftShadowMapMethod provides a soft shadowing technique by randomly distributing sample points.
-    */
-    class SoftShadowMapMethod extends materials.SimpleShadowMapMethodBase {
-        private _range;
-        private _numSamples;
-        private _offsets;
-        /**
-        * Creates a new BasicDiffuseMethod object.
-        *
-        * @param castingLight The light casting the shadows
-        * @param numSamples The amount of samples to take for dithering. Minimum 1, maximum 32.
-        */
-        constructor(castingLight: away.lights.DirectionalLight, numSamples?: number, range?: number);
-        /**
-        * The amount of samples to take for dithering. Minimum 1, maximum 32. The actual maximum may depend on the
-        * complexity of the shader.
-        */
-        public numSamples : number;
-        /**
-        * The range in the shadow map in which to distribute the samples.
-        */
-        public range : number;
-        /**
-        * @inheritDoc
-        */
-        public iInitConstants(vo: materials.MethodVO): void;
         /**
         * @inheritDoc
         */
@@ -4296,41 +5453,22 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public _pGetPlanarFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+        public iSetRenderState(vo: materials.MethodVO, renderable: away.pool.RenderableBase, stageGL: away.base.StageGL, camera: away.entities.Camera): void;
         /**
-        * Adds the code for another tap to the shader code.
-        * @param uv The uv register for the tap.
-        * @param texture The texture register containing the depth map.
-        * @param decode The register containing the depth map decoding data.
-        * @param target The target register to add the tap comparison result.
-        * @param regCache The register cache managing the registers.
-        * @return
+        * Called when the shadow mappers cascade configuration changes.
         */
-        private addSample(uv, texture, decode, target, regCache);
+        private onCascadeChange(event);
         /**
-        * @inheritDoc
+        * Called when the base method's shader code is invalidated.
         */
-        public iActivateForCascade(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
-        /**
-        * @inheritDoc
-        */
-        public _iGetCascadeFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, decodeRegister: materials.ShaderRegisterElement, depthTexture: materials.ShaderRegisterElement, depthProjection: materials.ShaderRegisterElement, targetRegister: materials.ShaderRegisterElement): string;
-        /**
-        * Get the actual shader code for shadow mapping
-        * @param regCache The register cache managing the registers.
-        * @param depthTexture The texture register containing the depth map.
-        * @param decodeRegister The register containing the depth map decoding data.
-        * @param targetReg The target register to add the shadow coverage.
-        * @param dataReg The register containing additional data.
-        */
-        private getSampleCode(regCache, depthTexture, decodeRegister, targetRegister, dataReg);
+        private onShaderInvalidated(event);
     }
 }
 declare module away.materials {
     /**
-    * DitheredShadowMapMethod provides a soft shadowing technique by randomly distributing sample points differently for each fragment.
+    * ShadowDitheredMethod provides a soft shadowing technique by randomly distributing sample points differently for each fragment.
     */
-    class DitheredShadowMapMethod extends materials.SimpleShadowMapMethodBase {
+    class ShadowDitheredMethod extends materials.ShadowMethodBase {
         private static _grainTexture;
         private static _grainUsages;
         private static _grainBitmapData;
@@ -4338,7 +5476,7 @@ declare module away.materials {
         private _range;
         private _numSamples;
         /**
-        * Creates a new DitheredShadowMapMethod object.
+        * Creates a new ShadowDitheredMethod object.
         * @param castingLight The light casting the shadows
         * @param numSamples The amount of samples to take for dithering. Minimum 1, maximum 24.
         */
@@ -4406,26 +5544,83 @@ declare module away.materials {
 }
 declare module away.materials {
     /**
-    * NearShadowMapMethod provides a shadow map method that restricts the shadowed area near the camera to optimize
+    * ShadowFilteredMethod provides a softened shadowing technique by bilinearly interpolating shadow comparison
+    * results of neighbouring pixels.
+    */
+    class ShadowFilteredMethod extends materials.ShadowMethodBase {
+        /**
+        * Creates a new DiffuseBasicMethod object.
+        *
+        * @param castingLight The light casting the shadow
+        */
+        constructor(castingLight: away.lights.DirectionalLight);
+        /**
+        * @inheritDoc
+        */
+        public iInitConstants(vo: materials.MethodVO): void;
+        /**
+        * @inheritDoc
+        */
+        public _pGetPlanarFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+        /**
+        * @inheritDoc
+        */
+        public iActivateForCascade(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
+        /**
+        * @inheritDoc
+        */
+        public _iGetCascadeFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, decodeRegister: materials.ShaderRegisterElement, depthTexture: materials.ShaderRegisterElement, depthProjection: materials.ShaderRegisterElement, targetRegister: materials.ShaderRegisterElement): string;
+    }
+}
+declare module away.materials {
+    /**
+    * ShadowHardMethod provides the cheapest shadow map method by using a single tap without any filtering.
+    */
+    class ShadowHardMethod extends materials.ShadowMethodBase {
+        /**
+        * Creates a new ShadowHardMethod object.
+        */
+        constructor(castingLight: away.lights.LightBase);
+        /**
+        * @inheritDoc
+        */
+        public _pGetPlanarFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+        /**
+        * @inheritDoc
+        */
+        public _pGetPointFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+        /**
+        * @inheritDoc
+        */
+        public _iGetCascadeFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, decodeRegister: materials.ShaderRegisterElement, depthTexture: materials.ShaderRegisterElement, depthProjection: materials.ShaderRegisterElement, targetRegister: materials.ShaderRegisterElement): string;
+        /**
+        * @inheritDoc
+        */
+        public iActivateForCascade(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
+    }
+}
+declare module away.materials {
+    /**
+    * ShadowNearMethod provides a shadow map method that restricts the shadowed area near the camera to optimize
     * shadow map usage. This method needs to be used in conjunction with a NearDirectionalShadowMapper.
     *
     * @see away.lights.NearDirectionalShadowMapper
     */
-    class NearShadowMapMethod extends materials.SimpleShadowMapMethodBase {
+    class ShadowNearMethod extends materials.ShadowMethodBase {
         private _baseMethod;
         private _fadeRatio;
         private _nearShadowMapper;
         private _onShaderInvalidatedDelegate;
         /**
-        * Creates a new NearShadowMapMethod object.
-        * @param baseMethod The shadow map sampling method used to sample individual cascades (fe: HardShadowMapMethod, SoftShadowMapMethod)
+        * Creates a new ShadowNearMethod object.
+        * @param baseMethod The shadow map sampling method used to sample individual cascades (fe: ShadowHardMethod, ShadowSoftMethod)
         * @param fadeRatio The amount of shadow fading to the outer shadow area. A value of 1 would mean the shadows start fading from the camera's near plane.
         */
-        constructor(baseMethod: materials.SimpleShadowMapMethodBase, fadeRatio?: number);
+        constructor(baseMethod: materials.ShadowMethodBase, fadeRatio?: number);
         /**
         * The base shadow map method on which this method's shading is based.
         */
-        public baseMethod : materials.SimpleShadowMapMethodBase;
+        public baseMethod : materials.ShadowMethodBase;
         /**
         * @inheritDoc
         */
@@ -4490,227 +5685,75 @@ declare module away.materials {
 }
 declare module away.materials {
     /**
-    * BasicAmbientMethod provides the default shading method for uniform ambient lighting.
+    * ShadowSoftMethod provides a soft shadowing technique by randomly distributing sample points.
     */
-    class BasicAmbientMethod extends materials.ShadingMethodBase {
-        private _useTexture;
-        private _texture;
-        private _ambientInputRegister;
-        private _ambientColor;
-        private _ambientR;
-        private _ambientG;
-        private _ambientB;
-        private _ambient;
-        public _iLightAmbientR: number;
-        public _iLightAmbientG: number;
-        public _iLightAmbientB: number;
+    class ShadowSoftMethod extends materials.ShadowMethodBase {
+        private _range;
+        private _numSamples;
+        private _offsets;
         /**
-        * Creates a new BasicAmbientMethod object.
+        * Creates a new DiffuseBasicMethod object.
+        *
+        * @param castingLight The light casting the shadows
+        * @param numSamples The amount of samples to take for dithering. Minimum 1, maximum 32.
         */
-        constructor();
+        constructor(castingLight: away.lights.DirectionalLight, numSamples?: number, range?: number);
         /**
-        * @inheritDoc
+        * The amount of samples to take for dithering. Minimum 1, maximum 32. The actual maximum may depend on the
+        * complexity of the shader.
         */
-        public iInitVO(vo: materials.MethodVO): void;
+        public numSamples : number;
+        /**
+        * The range in the shadow map in which to distribute the samples.
+        */
+        public range : number;
         /**
         * @inheritDoc
         */
         public iInitConstants(vo: materials.MethodVO): void;
         /**
-        * The strength of the ambient reflection of the surface.
-        */
-        public ambient : number;
-        /**
-        * The colour of the ambient reflection of the surface.
-        */
-        public ambientColor : number;
-        /**
-        * The bitmapData to use to define the diffuse reflection color per texel.
-        */
-        public texture : away.textures.Texture2DBase;
-        /**
-        * @inheritDoc
-        */
-        public copyFrom(method: materials.ShadingMethodBase): void;
-        /**
-        * @inheritDoc
-        */
-        public iCleanCompilationData(): void;
-        /**
-        * @inheritDoc
-        */
-        public iGetFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
-        /**
-        * @inheritDoc
-        */
-        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
-        /**
-        * Updates the ambient color data used by the render state.
-        */
-        private updateAmbient();
-        /**
-        * @inheritDoc
-        */
-        public iSetRenderState(vo: materials.MethodVO, renderable: away.pool.RenderableBase, stageGL: away.base.StageGL, camera: away.entities.Camera): void;
-    }
-}
-declare module away.materials {
-    /**
-    * BasicDiffuseMethod provides the default shading method for Lambert (dot3) diffuse lighting.
-    */
-    class BasicDiffuseMethod extends materials.LightingMethodBase {
-        private _useAmbientTexture;
-        private _useTexture;
-        public pTotalLightColorReg: materials.ShaderRegisterElement;
-        private _diffuseInputRegister;
-        private _texture;
-        private _diffuseColor;
-        private _diffuseR;
-        private _diffuseG;
-        private _diffuseB;
-        private _diffuseA;
-        private _shadowRegister;
-        private _alphaThreshold;
-        private _isFirstLight;
-        /**
-        * Creates a new BasicDiffuseMethod object.
-        */
-        constructor();
-        /**
-        * Set internally if the ambient method uses a texture.
-        */
-        public iUseAmbientTexture : boolean;
-        public iInitVO(vo: materials.MethodVO): void;
-        /**
-        * Forces the creation of the texture.
-        * @param stageGL The StageGL used by the renderer
-        */
-        public generateMip(stageGL: away.base.StageGL): void;
-        /**
-        * The alpha component of the diffuse reflection.
-        */
-        public diffuseAlpha : number;
-        /**
-        * The color of the diffuse reflection when not using a texture.
-        */
-        public diffuseColor : number;
-        /**
-        * The bitmapData to use to define the diffuse reflection color per texel.
-        */
-        public texture : away.textures.Texture2DBase;
-        /**
-        * The minimum alpha value for which pixels should be drawn. This is used for transparency that is either
-        * invisible or entirely opaque, often used with textures for foliage, etc.
-        * Recommended values are 0 to disable alpha, or 0.5 to create smooth edges. Default value is 0 (disabled).
-        */
-        public alphaThreshold : number;
-        /**
-        * @inheritDoc
-        */
-        public dispose(): void;
-        /**
-        * @inheritDoc
-        */
-        public copyFrom(method: materials.ShadingMethodBase): void;
-        /**
-        * @inheritDoc
-        */
-        public iCleanCompilationData(): void;
-        /**
-        * @inheritDoc
-        */
-        public iGetFragmentPreLightingCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache): string;
-        /**
-        * @inheritDoc
-        */
-        public iGetFragmentCodePerLight(vo: materials.MethodVO, lightDirReg: materials.ShaderRegisterElement, lightColReg: materials.ShaderRegisterElement, regCache: materials.ShaderRegisterCache): string;
-        /**
-        * @inheritDoc
-        */
-        public iGetFragmentCodePerProbe(vo: materials.MethodVO, cubeMapReg: materials.ShaderRegisterElement, weightRegister: string, regCache: materials.ShaderRegisterCache): string;
-        /**
-        * @inheritDoc
-        */
-        public iGetFragmentPostLightingCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
-        /**
-        * Generate the code that applies the calculated shadow to the diffuse light
-        * @param vo The MethodVO object for which the compilation is currently happening.
-        * @param regCache The register cache the compiler is currently using for the register management.
-        */
-        public pApplyShadow(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache): string;
-        /**
-        * @inheritDoc
-        */
-        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
-        /**
-        * Updates the diffuse color data used by the render state.
-        */
-        private updateDiffuse();
-        /**
-        * Set internally by the compiler, so the method knows the register containing the shadow calculation.
-        */
-        public iShadowRegister : materials.ShaderRegisterElement;
-        public setIShadowRegister(value: materials.ShaderRegisterElement): void;
-    }
-}
-declare module away.materials {
-    /**
-    * BasicNormalMethod is the default method for standard tangent-space normal mapping.
-    */
-    class BasicNormalMethod extends materials.ShadingMethodBase {
-        private _texture;
-        private _useTexture;
-        public _pNormalTextureRegister: materials.ShaderRegisterElement;
-        /**
-        * Creates a new BasicNormalMethod object.
-        */
-        constructor();
-        /**
-        * @inheritDoc
-        */
-        public iInitVO(vo: materials.MethodVO): void;
-        /**
-        * Indicates whether or not this method outputs normals in tangent space. Override for object-space normals.
-        */
-        public iTangentSpace : boolean;
-        /**
-        * Indicates if the normal method output is not based on a texture (if not, it will usually always return true)
-        * Override if subclasses are different.
-        */
-        public iHasOutput : boolean;
-        /**
-        * @inheritDoc
-        */
-        public copyFrom(method: materials.ShadingMethodBase): void;
-        /**
-        * The texture containing the normals per pixel.
-        */
-        public normalMap : away.textures.Texture2DBase;
-        public setNormalMap(value: away.textures.Texture2DBase): void;
-        /**
-        * @inheritDoc
-        */
-        public iCleanCompilationData(): void;
-        /**
-        * @inheritDoc
-        */
-        public dispose(): void;
-        /**
         * @inheritDoc
         */
         public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
         /**
         * @inheritDoc
         */
-        public iGetFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+        public _pGetPlanarFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+        /**
+        * Adds the code for another tap to the shader code.
+        * @param uv The uv register for the tap.
+        * @param texture The texture register containing the depth map.
+        * @param decode The register containing the depth map decoding data.
+        * @param target The target register to add the tap comparison result.
+        * @param regCache The register cache managing the registers.
+        * @return
+        */
+        private addSample(uv, texture, decode, target, regCache);
+        /**
+        * @inheritDoc
+        */
+        public iActivateForCascade(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
+        /**
+        * @inheritDoc
+        */
+        public _iGetCascadeFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, decodeRegister: materials.ShaderRegisterElement, depthTexture: materials.ShaderRegisterElement, depthProjection: materials.ShaderRegisterElement, targetRegister: materials.ShaderRegisterElement): string;
+        /**
+        * Get the actual shader code for shadow mapping
+        * @param regCache The register cache managing the registers.
+        * @param depthTexture The texture register containing the depth map.
+        * @param decodeRegister The register containing the depth map decoding data.
+        * @param targetReg The target register to add the shadow coverage.
+        * @param dataReg The register containing additional data.
+        */
+        private getSampleCode(regCache, depthTexture, decodeRegister, targetRegister, dataReg);
     }
 }
 declare module away.materials {
     /**
-    * BasicSpecularMethod provides the default shading method for Blinn-Phong specular highlights (an optimized but approximated
+    * SpecularBasicMethod provides the default shading method for Blinn-Phong specular highlights (an optimized but approximated
     * version of Phong specularity).
     */
-    class BasicSpecularMethod extends materials.LightingMethodBase {
+    class SpecularBasicMethod extends materials.LightingMethodBase {
         public _pUseTexture: boolean;
         public _pTotalLightColorReg: materials.ShaderRegisterElement;
         public _pSpecularTextureRegister: materials.ShaderRegisterElement;
@@ -4726,7 +5769,7 @@ declare module away.materials {
         private _shadowRegister;
         public _pIsFirstLight: boolean;
         /**
-        * Creates a new BasicSpecularMethod object.
+        * Creates a new SpecularBasicMethod object.
         */
         constructor();
         /**
@@ -4792,238 +5835,19 @@ declare module away.materials {
 }
 declare module away.materials {
     /**
-    * CascadeShadowMapMethod is a shadow map method to apply cascade shadow mapping on materials.
-    * Must be used with a DirectionalLight with a CascadeShadowMapper assigned to its shadowMapper property.
-    *
-    * @see away.lights.CascadeShadowMapper
-    */
-    class CascadeShadowMapMethod extends materials.ShadowMapMethodBase {
-        private _baseMethod;
-        private _cascadeShadowMapper;
-        private _depthMapCoordVaryings;
-        private _cascadeProjections;
-        /**
-        * Creates a new CascadeShadowMapMethod object.
-        *
-        * @param shadowMethodBase The shadow map sampling method used to sample individual cascades (fe: HardShadowMapMethod, SoftShadowMapMethod)
-        */
-        constructor(shadowMethodBase: materials.SimpleShadowMapMethodBase);
-        /**
-        * The shadow map sampling method used to sample individual cascades. These are typically those used in conjunction
-        * with a DirectionalShadowMapper.
-        *
-        * @see HardShadowMapMethod
-        * @see SoftShadowMapMethod
-        */
-        public baseMethod : materials.SimpleShadowMapMethodBase;
-        /**
-        * @inheritDoc
-        */
-        public iInitVO(vo: materials.MethodVO): void;
-        /**
-        * @inheritDoc
-        */
-        public iSharedRegisters : materials.ShaderRegisterData;
-        /**
-        * @inheritDoc
-        */
-        public iInitConstants(vo: materials.MethodVO): void;
-        /**
-        * @inheritDoc
-        */
-        public iCleanCompilationData(): void;
-        /**
-        * @inheritDoc
-        */
-        public iGetVertexCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache): string;
-        /**
-        * Creates the registers for the cascades' projection coordinates.
-        */
-        private initProjectionsRegs(regCache);
-        /**
-        * @inheritDoc
-        */
-        public iGetFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
-        /**
-        * @inheritDoc
-        */
-        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
-        /**
-        * @inheritDoc
-        */
-        public iSetRenderState(vo: materials.MethodVO, renderable: away.pool.RenderableBase, stageGL: away.base.StageGL, camera: away.entities.Camera): void;
-        /**
-        * Called when the shadow mappers cascade configuration changes.
-        */
-        private onCascadeChange(event);
-        /**
-        * Called when the base method's shader code is invalidated.
-        */
-        private onShaderInvalidated(event);
-    }
-}
-declare module away.materials {
-    /**
-    * ColorTransformMethod provides a shading method that changes the colour of a material analogous to a
-    * ColorTransform object.
-    */
-    class ColorTransformMethod extends materials.EffectMethodBase {
-        private _colorTransform;
-        /**
-        * Creates a new ColorTransformMethod.
-        */
-        constructor();
-        /**
-        * The ColorTransform object to transform the colour of the material with.
-        */
-        public colorTransform : away.geom.ColorTransform;
-        /**
-        * @inheritDoc
-        */
-        public iGetFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
-        /**
-        * @inheritDoc
-        */
-        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
-    }
-}
-declare module away.materials {
-    /**
-    * PhongSpecularMethod provides a specular method that provides Phong highlights.
-    */
-    class PhongSpecularMethod extends materials.BasicSpecularMethod {
-        /**
-        * Creates a new PhongSpecularMethod object.
-        */
-        constructor();
-        /**
-        * @inheritDoc
-        */
-        public iGetFragmentCodePerLight(vo: materials.MethodVO, lightDirReg: materials.ShaderRegisterElement, lightColReg: materials.ShaderRegisterElement, regCache: materials.ShaderRegisterCache): string;
-    }
-}
-declare module away.materials {
-    /**
-    * CompositeDiffuseMethod provides a base class for diffuse methods that wrap a diffuse method to alter the
-    * calculated diffuse reflection strength.
-    */
-    class CompositeDiffuseMethod extends materials.BasicDiffuseMethod {
-        public pBaseMethod: materials.BasicDiffuseMethod;
-        private _onShaderInvalidatedDelegate;
-        /**
-        * Creates a new WrapDiffuseMethod object.
-        * @param modulateMethod The method which will add the code to alter the base method's strength. It needs to have the signature clampDiffuse(t : ShaderRegisterElement, regCache : ShaderRegisterCache) : string, in which t.w will contain the diffuse strength.
-        * @param baseDiffuseMethod The base diffuse method on which this method's shading is based.
-        */
-        constructor(scope: Object, modulateMethod?: Function, baseDiffuseMethod?: materials.BasicDiffuseMethod);
-        public _pInitCompositeDiffuseMethod(scope: Object, modulateMethod: Function, baseDiffuseMethod?: materials.BasicDiffuseMethod): void;
-        /**
-        * The base diffuse method on which this method's shading is based.
-        */
-        public baseMethod : materials.BasicDiffuseMethod;
-        /**
-        * @inheritDoc
-        */
-        public iInitVO(vo: materials.MethodVO): void;
-        /**
-        * @inheritDoc
-        */
-        public iInitConstants(vo: materials.MethodVO): void;
-        /**
-        * @inheritDoc
-        */
-        public dispose(): void;
-        /**
-        * @inheritDoc
-        */
-        public alphaThreshold : number;
-        /**
-        * @inheritDoc
-        */
-        /**
-        * @inheritDoc
-        */
-        public texture : away.textures.Texture2DBase;
-        /**
-        * @inheritDoc
-        */
-        /**
-        * @inheritDoc
-        */
-        public diffuseAlpha : number;
-        /**
-        * @inheritDoc
-        */
-        /**
-        * @inheritDoc
-        */
-        public diffuseColor : number;
-        /**
-        * @inheritDoc
-        */
-        public iGetFragmentPreLightingCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache): string;
-        /**
-        * @inheritDoc
-        */
-        public iGetFragmentCodePerLight(vo: materials.MethodVO, lightDirReg: materials.ShaderRegisterElement, lightColReg: materials.ShaderRegisterElement, regCache: materials.ShaderRegisterCache): string;
-        /**
-        * @inheritDoc
-        */
-        public iGetFragmentCodePerProbe(vo: materials.MethodVO, cubeMapReg: materials.ShaderRegisterElement, weightRegister: string, regCache: materials.ShaderRegisterCache): string;
-        /**
-        * @inheritDoc
-        */
-        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
-        /**
-        * @inheritDoc
-        */
-        public iDeactivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
-        /**
-        * @inheritDoc
-        */
-        public iGetVertexCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache): string;
-        /**
-        * @inheritDoc
-        */
-        public iGetFragmentPostLightingCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
-        /**
-        * @inheritDoc
-        */
-        public iReset(): void;
-        /**
-        * @inheritDoc
-        */
-        public iCleanCompilationData(): void;
-        /**
-        * @inheritDoc
-        */
-        public iSharedRegisters : materials.ShaderRegisterData;
-        public setISharedRegisters(value: materials.ShaderRegisterData): void;
-        /**
-        * @inheritDoc
-        */
-        public iShadowRegister : materials.ShaderRegisterElement;
-        /**
-        * Called when the base method's shader code is invalidated.
-        */
-        private onShaderInvalidated(event);
-    }
-}
-declare module away.materials {
-    /**
-    * CompositeSpecularMethod provides a base class for specular methods that wrap a specular method to alter the
+    * SpecularCompositeMethod provides a base class for specular methods that wrap a specular method to alter the
     * calculated specular reflection strength.
     */
-    class CompositeSpecularMethod extends materials.BasicSpecularMethod {
+    class SpecularCompositeMethod extends materials.SpecularBasicMethod {
         private _baseMethod;
         private _onShaderInvalidatedDelegate;
         /**
-        * Creates a new <code>CompositeSpecularMethod</code> object.
-        * @param modulateMethod The method which will add the code to alter the base method's strength. It needs to have the signature modSpecular(t : ShaderRegisterElement, regCache : ShaderRegisterCache) : string, in which t.w will contain the specular strength and t.xyz will contain the half-vector or the reflection vector.
-        * @param baseSpecularMethod The base specular method on which this method's shading is based.
+        * Creates a new <code>SpecularCompositeMethod</code> object.
+        *
+        * @param modulateMethod The method which will add the code to alter the base method's strength. It needs to have the signature modSpecular(t:ShaderRegisterElement, regCache:ShaderRegisterCache):string, in which t.w will contain the specular strength and t.xyz will contain the half-vector or the reflection vector.
+        * @param baseMethod The base specular method on which this method's shading is based.
         */
-        constructor(scope: Object, modulateMethod: Function, baseSpecularMethod?: materials.BasicSpecularMethod);
-        public _pInitCompositeSpecularMethod(scope: Object, modulateMethod: Function, baseSpecularMethod?: materials.BasicSpecularMethod): void;
+        constructor(modulateMethod: Function, baseMethod?: materials.SpecularBasicMethod);
         /**
         * @inheritDoc
         */
@@ -5035,7 +5859,7 @@ declare module away.materials {
         /**
         * The base specular method on which this method's shading is based.
         */
-        public baseMethod : materials.BasicSpecularMethod;
+        public baseMethod : materials.SpecularBasicMethod;
         /**
         * @inheritDoc
         */
@@ -5108,40 +5932,52 @@ declare module away.materials {
         private onShaderInvalidated(event);
     }
 }
+/**
+*
+*/
 declare module away.materials {
     /**
-    * EnvMapMethod provides a material method to perform reflection mapping using cube maps.
+    * SpecularAnisotropicMethod provides a specular method resulting in anisotropic highlights. These are typical for
+    * surfaces with microfacet details such as tiny grooves. In particular, this uses the Heidrich-Seidel distrubution.
+    * The tangent vectors are used as the surface groove directions.
     */
-    class EnvMapMethod extends materials.EffectMethodBase {
-        private _cubeTexture;
-        private _alpha;
-        private _mask;
+    class SpecularAnisotropicMethod extends materials.SpecularBasicMethod {
         /**
-        * Creates an EnvMapMethod object.
-        * @param envMap The environment map containing the reflected scene.
-        * @param alpha The reflectivity of the surface.
+        * Creates a new SpecularAnisotropicMethod object.
         */
-        constructor(envMap: away.textures.CubeTextureBase, alpha?: number);
-        /**
-        * An optional texture to modulate the reflectivity of the surface.
-        */
-        public mask : away.textures.Texture2DBase;
+        constructor();
         /**
         * @inheritDoc
         */
         public iInitVO(vo: materials.MethodVO): void;
         /**
-        * The cubic environment map containing the reflected scene.
-        */
-        public envMap : away.textures.CubeTextureBase;
-        /**
         * @inheritDoc
         */
-        public dispose(): void;
+        public iGetFragmentCodePerLight(vo: materials.MethodVO, lightDirReg: materials.ShaderRegisterElement, lightColReg: materials.ShaderRegisterElement, regCache: materials.ShaderRegisterCache): string;
+    }
+}
+declare module away.materials {
+    /**
+    * SpecularCelMethod provides a shading method to add specular cel (cartoon) shading.
+    */
+    class SpecularCelMethod extends materials.SpecularCompositeMethod {
+        private _dataReg;
+        private _smoothness;
+        private _specularCutOff;
         /**
-        * The reflectivity of the surface.
+        * Creates a new SpecularCelMethod object.
+        * @param specularCutOff The threshold at which the specular highlight should be shown.
+        * @param baseMethod An optional specular method on which the cartoon shading is based. If ommitted, SpecularBasicMethod is used.
         */
-        public alpha : number;
+        constructor(specularCutOff?: number, baseMethod?: materials.SpecularBasicMethod);
+        /**
+        * The smoothness of the highlight edge.
+        */
+        public smoothness : number;
+        /**
+        * The threshold at which the specular highlight should be shown.
+        */
+        public specularCutOff : number;
         /**
         * @inheritDoc
         */
@@ -5149,24 +5985,37 @@ declare module away.materials {
         /**
         * @inheritDoc
         */
-        public iGetFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+        public iCleanCompilationData(): void;
+        /**
+        * Snaps the specular shading strength of the wrapped method to zero or one, depending on whether or not it exceeds the specularCutOff
+        * @param vo The MethodVO used to compile the current shader.
+        * @param t The register containing the specular strength in the "w" component, and either the half-vector or the reflection vector in "xyz".
+        * @param regCache The register cache used for the shader compilation.
+        * @param sharedRegisters The shared register data for this shader.
+        * @return The AGAL fragment code for the method.
+        */
+        private clampSpecular(methodVO, target, regCache, sharedRegisters);
+        /**
+        * @inheritDoc
+        */
+        public iGetFragmentPreLightingCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache): string;
     }
 }
 declare module away.materials {
     /**
-    * FresnelSpecularMethod provides a specular shading method that causes stronger highlights on grazing view angles.
+    * SpecularFresnelMethod provides a specular shading method that causes stronger highlights on grazing view angles.
     */
-    class FresnelSpecularMethod extends materials.CompositeSpecularMethod {
+    class SpecularFresnelMethod extends materials.SpecularCompositeMethod {
         private _dataReg;
         private _incidentLight;
         private _fresnelPower;
         private _normalReflectance;
         /**
-        * Creates a new FresnelSpecularMethod object.
+        * Creates a new SpecularFresnelMethod object.
         * @param basedOnSurface Defines whether the fresnel effect should be based on the view angle on the surface (if true), or on the angle between the light and the view.
-        * @param baseSpecularMethod The specular method to which the fresnel equation. Defaults to BasicSpecularMethod.
+        * @param baseMethod The specular method to which the fresnel equation. Defaults to SpecularBasicMethod.
         */
-        constructor(basedOnSurface?: boolean, baseSpecularMethod?: materials.BasicSpecularMethod);
+        constructor(basedOnSurface?: boolean, baseMethod?: materials.SpecularBasicMethod);
         /**
         * @inheritDoc
         */
@@ -5209,70 +6058,17 @@ declare module away.materials {
 }
 declare module away.materials {
     /**
-    * SimpleWaterNormalMethod provides a basic normal map method to create water ripples by translating two wave normal maps.
+    * SpecularPhongMethod provides a specular method that provides Phong highlights.
     */
-    class SimpleWaterNormalMethod extends materials.BasicNormalMethod {
-        private _texture2;
-        private _normalTextureRegister2;
-        private _useSecondNormalMap;
-        private _water1OffsetX;
-        private _water1OffsetY;
-        private _water2OffsetX;
-        private _water2OffsetY;
+    class SpecularPhongMethod extends materials.SpecularBasicMethod {
         /**
-        * Creates a new SimpleWaterNormalMethod object.
-        * @param waveMap1 A normal map containing one layer of a wave structure.
-        * @param waveMap2 A normal map containing a second layer of a wave structure.
+        * Creates a new SpecularPhongMethod object.
         */
-        constructor(waveMap1: away.textures.Texture2DBase, waveMap2: away.textures.Texture2DBase);
+        constructor();
         /**
         * @inheritDoc
         */
-        public iInitConstants(vo: materials.MethodVO): void;
-        /**
-        * @inheritDoc
-        */
-        public iInitVO(vo: materials.MethodVO): void;
-        /**
-        * The translation of the first wave layer along the X-axis.
-        */
-        public water1OffsetX : number;
-        /**
-        * The translation of the first wave layer along the Y-axis.
-        */
-        public water1OffsetY : number;
-        /**
-        * The translation of the second wave layer along the X-axis.
-        */
-        public water2OffsetX : number;
-        /**
-        * The translation of the second wave layer along the Y-axis.
-        */
-        public water2OffsetY : number;
-        /**
-        * @inheritDoc
-        */
-        public normalMap : away.textures.Texture2DBase;
-        /**
-        * A second normal map that will be combined with the first to create a wave-like animation pattern.
-        */
-        public secondaryNormalMap : away.textures.Texture2DBase;
-        /**
-        * @inheritDoc
-        */
-        public iCleanCompilationData(): void;
-        /**
-        * @inheritDoc
-        */
-        public dispose(): void;
-        /**
-        * @inheritDoc
-        */
-        public iActivate(vo: materials.MethodVO, stageGL: away.base.StageGL): void;
-        /**
-        * @inheritDoc
-        */
-        public getFragmentCode(vo: materials.MethodVO, regCache: materials.ShaderRegisterCache, targetReg: materials.ShaderRegisterElement): string;
+        public iGetFragmentCodePerLight(vo: materials.MethodVO, lightDirReg: materials.ShaderRegisterElement, lightColReg: materials.ShaderRegisterElement, regCache: materials.ShaderRegisterCache): string;
     }
 }
 declare module away.materials {
@@ -6543,25 +7339,25 @@ declare module away.materials {
         public colorTransform : away.geom.ColorTransform;
         public setColorTransform(value: away.geom.ColorTransform): void;
         /**
-        * The method that provides the ambient lighting contribution. Defaults to BasicAmbientMethod.
+        * The method that provides the ambient lighting contribution. Defaults to AmbientBasicMethod.
         */
-        public ambientMethod : materials.BasicAmbientMethod;
+        public ambientMethod : materials.AmbientBasicMethod;
         /**
         * The method used to render shadows cast on this surface, or null if no shadows are to be rendered. Defaults to null.
         */
         public shadowMethod : materials.ShadowMapMethodBase;
         /**
-        * The method that provides the diffuse lighting contribution. Defaults to BasicDiffuseMethod.
+        * The method that provides the diffuse lighting contribution. Defaults to DiffuseBasicMethod.
         */
-        public diffuseMethod : materials.BasicDiffuseMethod;
+        public diffuseMethod : materials.DiffuseBasicMethod;
         /**
-        * The method used to generate the per-pixel normals. Defaults to BasicNormalMethod.
+        * The method used to generate the per-pixel normals. Defaults to NormalBasicMethod.
         */
-        public normalMethod : materials.BasicNormalMethod;
+        public normalMethod : materials.NormalBasicMethod;
         /**
-        * The method that provides the specular lighting contribution. Defaults to BasicSpecularMethod.
+        * The method that provides the specular lighting contribution. Defaults to SpecularBasicMethod.
         */
-        public specularMethod : materials.BasicSpecularMethod;
+        public specularMethod : materials.SpecularBasicMethod;
         /**
         * Appends an "effect" shading method to the shader. Effect methods are those that do not influence the lighting
         * but modulate the shaded colour, used for fog, outlines, etc. The method will be applied to the result of the
@@ -6716,25 +7512,25 @@ declare module away.materials {
         */
         public requiresBlending : boolean;
         /**
-        * The method that provides the ambient lighting contribution. Defaults to BasicAmbientMethod.
+        * The method that provides the ambient lighting contribution. Defaults to AmbientBasicMethod.
         */
-        public ambientMethod : materials.BasicAmbientMethod;
+        public ambientMethod : materials.AmbientBasicMethod;
         /**
         * The method used to render shadows cast on this surface, or null if no shadows are to be rendered. Defaults to null.
         */
         public shadowMethod : materials.ShadowMapMethodBase;
         /**
-        * The method that provides the diffuse lighting contribution. Defaults to BasicDiffuseMethod.
+        * The method that provides the diffuse lighting contribution. Defaults to DiffuseBasicMethod.
         */
-        public diffuseMethod : materials.BasicDiffuseMethod;
+        public diffuseMethod : materials.DiffuseBasicMethod;
         /**
-        * The method that provides the specular lighting contribution. Defaults to BasicSpecularMethod.
+        * The method that provides the specular lighting contribution. Defaults to SpecularBasicMethod.
         */
-        public specularMethod : materials.BasicSpecularMethod;
+        public specularMethod : materials.SpecularBasicMethod;
         /**
-        * The method used to generate the per-pixel normals. Defaults to BasicNormalMethod.
+        * The method used to generate the per-pixel normals. Defaults to NormalBasicMethod.
         */
-        public normalMethod : materials.BasicNormalMethod;
+        public normalMethod : materials.NormalBasicMethod;
         /**
         * Appends an "effect" shading method to the shader. Effect methods are those that do not influence the lighting
         * but modulate the shaded colour, used for fog, outlines, etc. The method will be applied to the result of the
@@ -10927,7 +11723,7 @@ declare class MaterialGroup {
 }
 declare class SpecularData {
     public materialID: string;
-    public basicSpecularMethod: away.materials.BasicSpecularMethod;
+    public basicSpecularMethod: away.materials.SpecularBasicMethod;
     public ambientColor: number;
     public alpha: number;
 }
@@ -10935,7 +11731,7 @@ declare class LoadedMaterial {
     public materialID: string;
     public texture: away.textures.Texture2DBase;
     public cm: away.materials.MaterialBase;
-    public specularMethod: away.materials.BasicSpecularMethod;
+    public specularMethod: away.materials.SpecularBasicMethod;
     public ambientColor: number;
     public alpha: number;
 }

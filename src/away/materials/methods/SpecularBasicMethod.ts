@@ -2,18 +2,18 @@
 
 module away.materials
 {
-	//import away3d.*;
-	//import away3d.managers.*;
-	//import away3d.materials.compilation.*;
-	//import away3d.textures.*;
+	//import away.*;
+	//import away.managers.*;
+	//import away.materials.compilation.*;
+	//import away.textures.*;
 
 	//use namespace arcane;
 
 	/**
-	 * BasicSpecularMethod provides the default shading method for Blinn-Phong specular highlights (an optimized but approximated
+	 * SpecularBasicMethod provides the default shading method for Blinn-Phong specular highlights (an optimized but approximated
 	 * version of Phong specularity).
 	 */
-	export class BasicSpecularMethod extends LightingMethodBase
+	export class SpecularBasicMethod extends LightingMethodBase
 	{
 		public _pUseTexture:boolean;
 		public _pTotalLightColorReg:ShaderRegisterElement;
@@ -33,7 +33,7 @@ module away.materials
 		public _pIsFirstLight:boolean;
 
 		/**
-		 * Creates a new BasicSpecularMethod object.
+		 * Creates a new SpecularBasicMethod object.
 		 */
 		constructor()
 		{
@@ -131,9 +131,9 @@ module away.materials
 		{
 
 			var m:any = method;
-			var bsm:BasicSpecularMethod = <BasicSpecularMethod> method;
+			var bsm:SpecularBasicMethod = <SpecularBasicMethod> method;
 
-			var spec:BasicSpecularMethod = bsm;//BasicSpecularMethod(method);
+			var spec:SpecularBasicMethod = bsm;//SpecularBasicMethod(method);
 			this.texture = spec.texture;
 			this.specular = spec.specular;
 			this.specularColor = spec.specularColor;
@@ -245,19 +245,8 @@ module away.materials
 			}
 
 
-			if (this._iModulateMethod != null) {
-
-				//TODO: AGAL <> GLSL
-
-				if (this._iModulateMethodScope != null) {
-					code += this._iModulateMethod.apply(this._iModulateMethodScope, [vo, t, regCache, this._sharedRegisters]);
-				} else {
-					throw "Modulated methods needs a scope";
-				}
-
-				//code += this._iModulateMethod (vo, t, regCache, this._sharedRegisters);
-
-			}
+			if (this._iModulateMethod != null)
+				code += this._iModulateMethod(vo, t, regCache, this._sharedRegisters);
 
 
 			//TODO: AGAL <> GLSL
@@ -301,22 +290,11 @@ module away.materials
 
 			//TODO: AGAL <> GLSL
 
-			code += "dp3 " + t + ".w, " + normalReg + ", " + viewDirReg + "\n" + "add " + t + ".w, " + t + ".w, " + t + ".w\n" + "mul " + t + ", " + t + ".w, " + normalReg + "\n" + "sub " + t + ", " + t + ", " + viewDirReg + "\n" + "tex " + t + ", " + t + ", " + cubeMapReg + " <cube," + (vo.useSmoothTextures? "linear" : "nearest") + ",miplinear>\n" + "mul " + t + ".xyz, " + t + ", " + weightRegister + "\n";
+			code += "dp3 " + t + ".w, " + normalReg + ", " + viewDirReg + "\n" + "add " + t + ".w, " + t + ".w, " + t + ".w\n" + "mul " + t + ", " + t + ".w, " + normalReg + "\n" + "sub " + t + ", " + t + ", " + viewDirReg + "\n" + "tex " + t + ", " + t + ", " + cubeMapReg + " <cube," + (vo.useSmoothTextures? "linear":"nearest") + ",miplinear>\n" + "mul " + t + ".xyz, " + t + ", " + weightRegister + "\n";
 
 
-			if (this._iModulateMethod != null) {
-
-				//TODO: AGAL <> GLSL
-
-				if (this._iModulateMethodScope != null) {
-					code += this._iModulateMethod.apply(this._iModulateMethodScope, [vo, t, regCache, this._sharedRegisters]);
-				} else {
-					throw "Modulated methods needs a scope";
-				}
-
-				//code += this._iModulateMethod (vo, t, regCache, this._sharedRegisters);
-
-			}
+			if (this._iModulateMethod != null)
+				code += this._iModulateMethod(vo, t, regCache, this._sharedRegisters);
 
 			/*
 			 if (this._iModulateMethod!= null)
@@ -388,14 +366,14 @@ module away.materials
 		 */
 		public iActivate(vo:MethodVO, stageGL:away.base.StageGL)
 		{
-			//var context : ContextGL = stageGL._contextGL;
+			//var context:ContextGL = stageGL._contextGL;
 
 			if (vo.numLights == 0)
 				return;
 
 			if (this._pUseTexture) {
 
-				stageGL.contextGL.setSamplerStateAt(vo.texturesIndex, vo.repeatTextures? away.gl.ContextGLWrapMode.REPEAT : away.gl.ContextGLWrapMode.CLAMP, vo.useSmoothTextures? away.gl.ContextGLTextureFilter.LINEAR : away.gl.ContextGLTextureFilter.NEAREST, vo.useMipmapping? away.gl.ContextGLMipFilter.MIPLINEAR : away.gl.ContextGLMipFilter.MIPNONE);
+				stageGL.contextGL.setSamplerStateAt(vo.texturesIndex, vo.repeatTextures? away.gl.ContextGLWrapMode.REPEAT:away.gl.ContextGLWrapMode.CLAMP, vo.useSmoothTextures? away.gl.ContextGLTextureFilter.LINEAR:away.gl.ContextGLTextureFilter.NEAREST, vo.useMipmapping? away.gl.ContextGLMipFilter.MIPLINEAR:away.gl.ContextGLMipFilter.MIPNONE);
 				stageGL.contextGL.setTextureAt(vo.texturesIndex, this._texture.getTextureForStageGL(stageGL));
 
 			}

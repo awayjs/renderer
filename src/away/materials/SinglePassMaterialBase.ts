@@ -174,15 +174,15 @@ module away.materials
 		}
 
 		/**
-		 * The method that provides the ambient lighting contribution. Defaults to BasicAmbientMethod.
+		 * The method that provides the ambient lighting contribution. Defaults to AmbientBasicMethod.
 		 */
 
-		public get ambientMethod():BasicAmbientMethod
+		public get ambientMethod():AmbientBasicMethod
 		{
 			return this._pScreenPass.ambientMethod;
 		}
 
-		public set ambientMethod(value:BasicAmbientMethod)
+		public set ambientMethod(value:AmbientBasicMethod)
 		{
 			this._pScreenPass.ambientMethod = value;
 		}
@@ -201,43 +201,43 @@ module away.materials
 		}
 
 		/**
-		 * The method that provides the diffuse lighting contribution. Defaults to BasicDiffuseMethod.
+		 * The method that provides the diffuse lighting contribution. Defaults to DiffuseBasicMethod.
 		 */
 
-		public get diffuseMethod():BasicDiffuseMethod
+		public get diffuseMethod():DiffuseBasicMethod
 		{
 			return this._pScreenPass.diffuseMethod;
 		}
 
-		public set diffuseMethod(value:BasicDiffuseMethod)
+		public set diffuseMethod(value:DiffuseBasicMethod)
 		{
 			this._pScreenPass.diffuseMethod = value;
 		}
 
 		/**
-		 * The method used to generate the per-pixel normals. Defaults to BasicNormalMethod.
+		 * The method used to generate the per-pixel normals. Defaults to NormalBasicMethod.
 		 */
 
-		public get normalMethod():BasicNormalMethod
+		public get normalMethod():NormalBasicMethod
 		{
 			return this._pScreenPass.normalMethod;
 		}
 
-		public set normalMethod(value:BasicNormalMethod)
+		public set normalMethod(value:NormalBasicMethod)
 		{
 			this._pScreenPass.normalMethod = value;
 		}
 
 		/**
-		 * The method that provides the specular lighting contribution. Defaults to BasicSpecularMethod.
+		 * The method that provides the specular lighting contribution. Defaults to SpecularBasicMethod.
 		 */
 
-		public get specularMethod():BasicSpecularMethod
+		public get specularMethod():SpecularBasicMethod
 		{
 			return this._pScreenPass.specularMethod;
 		}
 
-		public set specularMethod(value:BasicSpecularMethod)
+		public set specularMethod(value:SpecularBasicMethod)
 		{
 			this._pScreenPass.specularMethod = value;
 		}

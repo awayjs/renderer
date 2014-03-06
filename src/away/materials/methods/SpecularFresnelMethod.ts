@@ -4,9 +4,9 @@ module away.materials
 {
 
 	/**
-	 * FresnelSpecularMethod provides a specular shading method that causes stronger highlights on grazing view angles.
+	 * SpecularFresnelMethod provides a specular shading method that causes stronger highlights on grazing view angles.
 	 */
-	export class FresnelSpecularMethod extends CompositeSpecularMethod
+	export class SpecularFresnelMethod extends SpecularCompositeMethod
 	{
 		private _dataReg:ShaderRegisterElement;
 		private _incidentLight:boolean;
@@ -14,24 +14,24 @@ module away.materials
 		private _normalReflectance:number = .028; // default value for skin
 
 		/**
-		 * Creates a new FresnelSpecularMethod object.
+		 * Creates a new SpecularFresnelMethod object.
 		 * @param basedOnSurface Defines whether the fresnel effect should be based on the view angle on the surface (if true), or on the angle between the light and the view.
-		 * @param baseSpecularMethod The specular method to which the fresnel equation. Defaults to BasicSpecularMethod.
+		 * @param baseMethod The specular method to which the fresnel equation. Defaults to SpecularBasicMethod.
 		 */
-		constructor(basedOnSurface:boolean = true, baseSpecularMethod:BasicSpecularMethod = null)
+		constructor(basedOnSurface:boolean = true, baseMethod:SpecularBasicMethod = null)
 		{
 			// may want to offer diff speculars
-			super(null, null);
+			super(null, baseMethod);
 
-			this._pInitCompositeSpecularMethod(this, this.modulateSpecular, baseSpecularMethod);
-
+			baseMethod._iModulateMethod = (vo:MethodVO, target:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData) => this.modulateSpecular(vo, target, regCache, sharedRegisters);
+				
 			this._incidentLight = !basedOnSurface;
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iInitConstants(vo:MethodVO):void
+		public iInitConstants(vo:MethodVO)
 		{
 
 			var index:number = vo.secondaryFragmentConstantsIndex;
@@ -73,7 +73,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iCleanCompilationData():void
+		public iCleanCompilationData()
 		{
 			super.iCleanCompilationData();
 			this._dataReg = null;
@@ -95,7 +95,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGL:away.base.StageGL):void
+		public iActivate(vo:MethodVO, stageGL:away.base.StageGL)
 		{
 			super.iActivate(vo, stageGL);
 			var fragmentData:Array<number> = vo.fragmentData;
@@ -112,7 +112,7 @@ module away.materials
 		{
 			this._dataReg = regCache.getFreeFragmentConstant();
 
-			console.log('FresnelSpecularMethod', 'iGetFragmentPreLightingCode', this._dataReg);
+			console.log('SpecularFresnelMethod', 'iGetFragmentPreLightingCode', this._dataReg);
 
 			vo.secondaryFragmentConstantsIndex = this._dataReg.index*4;
 			return super.iGetFragmentPreLightingCode(vo, regCache);
@@ -131,7 +131,7 @@ module away.materials
 		{
 			var code:string;
 
-			code = "dp3 " + target + ".y, " + sharedRegisters.viewDirFragment + ".xyz, " + (this._incidentLight? target + ".xyz\n" : sharedRegisters.normalFragment + ".xyz\n") +   // dot(V, H)
+			code = "dp3 " + target + ".y, " + sharedRegisters.viewDirFragment + ".xyz, " + (this._incidentLight? target + ".xyz\n":sharedRegisters.normalFragment + ".xyz\n") +   // dot(V, H)
 				"sub " + target + ".y, " + this._dataReg + ".z, " + target + ".y\n" +             // base = 1-dot(V, H)
 				"pow " + target + ".x, " + target + ".y, " + this._dataReg + ".y\n" +             // exp = pow(base, 5)
 				"sub " + target + ".y, " + this._dataReg + ".z, " + target + ".y\n" +             // 1 - exp
@@ -140,7 +140,7 @@ module away.materials
 				"mul " + target + ".w, " + target + ".w, " + target + ".y\n";
 
 
-			console.log('FresnelSpecularMethod', 'modulateSpecular', code);
+			console.log('SpecularFresnelMethod', 'modulateSpecular', code);
 
 			return code;
 		}

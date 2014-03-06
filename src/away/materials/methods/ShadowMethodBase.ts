@@ -3,15 +3,15 @@
 module away.materials
 {
 	/**
-	 * SimpleShadowMapMethodBase provides an abstract method for simple (non-wrapping) shadow map methods.
+	 * ShadowMethodBase provides an abstract method for simple (non-wrapping) shadow map methods.
 	 */
-	export class SimpleShadowMapMethodBase extends ShadowMapMethodBase
+	export class ShadowMethodBase extends ShadowMapMethodBase
 	{
 		public _pDepthMapCoordReg:ShaderRegisterElement;
 		public _pUsePoint:boolean;
 
 		/**
-		 * Creates a new SimpleShadowMapMethodBase object.
+		 * Creates a new ShadowMethodBase object.
 		 * @param castingLight The light used to cast shadows.
 		 */
 		constructor(castingLight:away.lights.LightBase)
@@ -23,7 +23,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iInitVO(vo:MethodVO):void
+		public iInitVO(vo:MethodVO)
 		{
 			vo.needsView = true;
 			vo.needsGlobalVertexPos = true;
@@ -34,7 +34,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iInitConstants(vo:MethodVO):void
+		public iInitConstants(vo:MethodVO)
 		{
 			var fragmentData:Array<number> = vo.fragmentData;
 			var vertexData:Array<number> = vo.vertexData;
@@ -79,7 +79,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iCleanCompilationData():void
+		public iCleanCompilationData()
 		{
 			super.iCleanCompilationData();
 
@@ -91,7 +91,7 @@ module away.materials
 		 */
 		public iGetVertexCode(vo:MethodVO, regCache:ShaderRegisterCache):string
 		{
-			return this._pUsePoint? this._pGetPointVertexCode(vo, regCache) : this.pGetPlanarVertexCode(vo, regCache);
+			return this._pUsePoint? this._pGetPointVertexCode(vo, regCache):this.pGetPlanarVertexCode(vo, regCache);
 		}
 
 		/**
@@ -137,7 +137,7 @@ module away.materials
 		 */
 		public iGetFragmentCode(vo:MethodVO, regCache:ShaderRegisterCache, targetReg:ShaderRegisterElement):string
 		{
-			var code:string = this._pUsePoint? this._pGetPointFragmentCode(vo, regCache, targetReg) : this._pGetPlanarFragmentCode(vo, regCache, targetReg);
+			var code:string = this._pUsePoint? this._pGetPointFragmentCode(vo, regCache, targetReg):this._pGetPlanarFragmentCode(vo, regCache, targetReg);
 			code += "add " + targetReg + ".w, " + targetReg + ".w, fc" + (vo.fragmentConstantsIndex/4 + 1) + ".y\n" + "sat " + targetReg + ".w, " + targetReg + ".w\n";
 			return code;
 		}
@@ -171,7 +171,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iSetRenderState(vo:MethodVO, renderable:away.pool.RenderableBase, stageGL:away.base.StageGL, camera:away.entities.Camera):void
+		public iSetRenderState(vo:MethodVO, renderable:away.pool.RenderableBase, stageGL:away.base.StageGL, camera:away.entities.Camera)
 		{
 			if (!this._pUsePoint)
 				(<away.lights.DirectionalShadowMapper> this._pShadowMapper).iDepthProjection.copyRawDataTo(vo.vertexData, vo.vertexConstantsIndex + 4, true);
@@ -195,7 +195,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGL:away.base.StageGL):void
+		public iActivate(vo:MethodVO, stageGL:away.base.StageGL)
 		{
 			var fragmentData:Array<number> = vo.fragmentData;
 			var index:number /*int*/ = vo.fragmentConstantsIndex;
@@ -220,7 +220,7 @@ module away.materials
 		/**
 		 * Sets the method state for cascade shadow mapping.
 		 */
-		public iActivateForCascade(vo:MethodVO, stageGL:away.base.StageGL):void
+		public iActivateForCascade(vo:MethodVO, stageGL:away.base.StageGL)
 		{
 			throw new Error("This shadow method is incompatible with cascade shadows");
 		}

@@ -3,12 +3,12 @@
 module away.materials
 {
 	/**
-	 * HardShadowMapMethod provides the cheapest shadow map method by using a single tap without any filtering.
+	 * ShadowHardMethod provides the cheapest shadow map method by using a single tap without any filtering.
 	 */
-	export class HardShadowMapMethod extends SimpleShadowMapMethodBase
+	export class ShadowHardMethod extends ShadowMethodBase
 	{
 		/**
-		 * Creates a new HardShadowMapMethod object.
+		 * Creates a new ShadowHardMethod object.
 		 */
 		constructor(castingLight:away.lights.LightBase)
 		{
@@ -77,7 +77,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivateForCascade(vo:MethodVO, stageGL:away.base.StageGL):void
+		public iActivateForCascade(vo:MethodVO, stageGL:away.base.StageGL)
 		{
 		}
 	}

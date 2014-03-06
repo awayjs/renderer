@@ -94,35 +94,59 @@
 ///<reference path="materials/passes/DistanceMapPass.ts"/>
 ///<reference path="materials/passes/LightingPass.ts"/>
 ///<reference path="materials/passes/ShadowCasterPass.ts"/>
+///<reference path="materials/passes/SingleObjectDepthPass.ts"/>
 ///<reference path="materials/passes/SegmentPass.ts"/>
 ///<reference path="materials/passes/SkyboxPass.ts"/>
 
 ///<reference path="materials/methods/MethodVO.ts"/>
-///<reference path="materials/methods/ShadingMethodBase.ts"/>
-///<reference path="materials/methods/EffectMethodBase.ts"/>
 ///<reference path="materials/methods/MethodVOSet.ts"/>
-///<reference path="materials/methods/ShaderMethodSetup.ts"/>
+///<reference path="materials/methods/ShadingMethodBase.ts"/>
 ///<reference path="materials/methods/LightingMethodBase.ts"/>
 ///<reference path="materials/methods/ShadowMapMethodBase.ts"/>
-///<reference path="materials/methods/SimpleShadowMapMethodBase.ts"/>
-///<reference path="materials/methods/FilteredShadowMapMethod.ts"/>
-///<reference path="materials/methods/FogMethod.ts"/>
-///<reference path="materials/methods/HardShadowMapMethod.ts"/>
-///<reference path="materials/methods/SoftShadowMapMethod.ts"/>
-///<reference path="materials/methods/DitheredShadowMapMethod.ts"/>
-///<reference path="materials/methods/NearShadowMapMethod.ts"/>
-///<reference path="materials/methods/BasicAmbientMethod.ts"/>
-///<reference path="materials/methods/BasicDiffuseMethod.ts"/>
-///<reference path="materials/methods/BasicNormalMethod.ts"/>
-///<reference path="materials/methods/BasicSpecularMethod.ts"/>
-///<reference path="materials/methods/CascadeShadowMapMethod.ts"/>
-///<reference path="materials/methods/ColorTransformMethod.ts"/>
-///<reference path="materials/methods/PhongSpecularMethod.ts"/>
-///<reference path="materials/methods/CompositeDiffuseMethod.ts"/>
-///<reference path="materials/methods/CompositeSpecularMethod.ts"/>
-///<reference path="materials/methods/EnvMapMethod.ts"/>
-///<reference path="materials/methods/FresnelSpecularMethod.ts"/>
-///<reference path="materials/methods/SimpleWaterNormalMethod.ts"/>
+///<reference path="materials/methods/ShaderMethodSetup.ts"/>
+
+///<reference path="materials/methods/AmbientBasicMethod.ts"/>
+///<reference path="materials/methods/AmbientEnvMapMethod.ts"/>
+
+///<reference path="materials/methods/DiffuseBasicMethod.ts"/>
+///<reference path="materials/methods/DiffuseCompositeMethod.ts"/>
+///<reference path="materials/methods/DiffuseCelMethod.ts"/>
+///<reference path="materials/methods/DiffuseDepthMethod.ts"/>
+///<reference path="materials/methods/DiffuseGradientMethod.ts"/>
+///<reference path="materials/methods/DiffuseLightMapMethod.ts"/>
+///<reference path="materials/methods/DiffuseSubSurfaceMethod.ts"/>
+///<reference path="materials/methods/DiffuseWrapMethod.ts"/>
+
+///<reference path="materials/methods/EffectMethodBase.ts"/>
+///<reference path="materials/methods/EffectAlphaMaskMethod.ts"/>
+///<reference path="materials/methods/EffectColorMatrixMethod.ts"/>
+///<reference path="materials/methods/EffectColorTransformMethod.ts"/>
+///<reference path="materials/methods/EffectEnvMapMethod.ts"/>
+///<reference path="materials/methods/EffectFogMethod.ts"/>
+///<reference path="materials/methods/EffectFresnelEnvMapMethod.ts"/>
+///<reference path="materials/methods/EffectLightMapMethod.ts"/>
+///<reference path="materials/methods/EffectRefractionEnvMapMethod.ts"/>
+///<reference path="materials/methods/EffectRimLightMethod.ts"/>
+
+///<reference path="materials/methods/NormalBasicMethod.ts"/>
+///<reference path="materials/methods/NormalHeightMapMethod.ts"/>
+///<reference path="materials/methods/NormalSimpleWaterMethod.ts"/>
+
+///<reference path="materials/methods/ShadowMethodBase.ts"/>
+///<reference path="materials/methods/ShadowCascadeMethod.ts"/>
+///<reference path="materials/methods/ShadowDitheredMethod.ts"/>
+///<reference path="materials/methods/ShadowFilteredMethod.ts"/>
+///<reference path="materials/methods/ShadowHardMethod.ts"/>
+///<reference path="materials/methods/ShadowNearMethod.ts"/>
+///<reference path="materials/methods/ShadowSoftMethod.ts"/>
+
+///<reference path="materials/methods/SpecularBasicMethod.ts"/>
+///<reference path="materials/methods/SpecularCompositeMethod.ts"/>
+///<reference path="materials/methods/SpecularAnisotropicMethod.ts"/>
+///<reference path="materials/methods/SpecularCelMethod.ts"/>
+///<reference path="materials/methods/SpecularFresnelMethod.ts"/>
+///<reference path="materials/methods/SpecularPhongMethod.ts"/>
+
 
 ///<reference path="materials/lightpickers/LightPickerBase.ts"/>
 ///<reference path="materials/lightpickers/StaticLightPicker.ts"/>

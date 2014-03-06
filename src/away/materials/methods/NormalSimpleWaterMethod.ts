@@ -4,9 +4,9 @@ module away.materials
 {
 
 	/**
-	 * SimpleWaterNormalMethod provides a basic normal map method to create water ripples by translating two wave normal maps.
+	 * NormalSimpleWaterMethod provides a basic normal map method to create water ripples by translating two wave normal maps.
 	 */
-	export class SimpleWaterNormalMethod extends BasicNormalMethod
+	export class NormalSimpleWaterMethod extends NormalBasicMethod
 	{
 		private _texture2:away.textures.Texture2DBase;
 		private _normalTextureRegister2:ShaderRegisterElement;
@@ -17,7 +17,7 @@ module away.materials
 		private _water2OffsetY:number = 0;
 
 		/**
-		 * Creates a new SimpleWaterNormalMethod object.
+		 * Creates a new NormalSimpleWaterMethod object.
 		 * @param waveMap1 A normal map containing one layer of a wave structure.
 		 * @param waveMap2 A normal map containing a second layer of a wave structure.
 		 */
@@ -173,7 +173,7 @@ module away.materials
 			var dataReg:ShaderRegisterElement = regCache.getFreeFragmentConstant();
 			var dataReg2:ShaderRegisterElement = regCache.getFreeFragmentConstant();
 			this._pNormalTextureRegister = regCache.getFreeTextureReg();
-			this._normalTextureRegister2 = this._useSecondNormalMap? regCache.getFreeTextureReg() : this._pNormalTextureRegister;
+			this._normalTextureRegister2 = this._useSecondNormalMap? regCache.getFreeTextureReg():this._pNormalTextureRegister;
 			vo.texturesIndex = this._pNormalTextureRegister.index;
 
 			vo.fragmentConstantsIndex = dataReg.index*4;

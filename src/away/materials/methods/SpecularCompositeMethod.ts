@@ -2,49 +2,43 @@
 
 module away.materials
 {
-	import StageGL                     = away.base.StageGL;
+	import StageGL                    		= away.base.StageGL;
 	import Texture2DBase					= away.textures.Texture2DBase;
 	import Delegate							= away.utils.Delegate;
 
 	import ShadingMethodEvent               = away.events.ShadingMethodEvent;
 
 	/**
-	 * CompositeSpecularMethod provides a base class for specular methods that wrap a specular method to alter the
+	 * SpecularCompositeMethod provides a base class for specular methods that wrap a specular method to alter the
 	 * calculated specular reflection strength.
 	 */
-	export class CompositeSpecularMethod extends BasicSpecularMethod
+	export class SpecularCompositeMethod extends SpecularBasicMethod
 	{
-		private _baseMethod:BasicSpecularMethod;
+		private _baseMethod:SpecularBasicMethod;
 
 		private _onShaderInvalidatedDelegate:Function;
 
 		/**
-		 * Creates a new <code>CompositeSpecularMethod</code> object.
-		 * @param modulateMethod The method which will add the code to alter the base method's strength. It needs to have the signature modSpecular(t : ShaderRegisterElement, regCache : ShaderRegisterCache) : string, in which t.w will contain the specular strength and t.xyz will contain the half-vector or the reflection vector.
-		 * @param baseSpecularMethod The base specular method on which this method's shading is based.
+		 * Creates a new <code>SpecularCompositeMethod</code> object.
+		 *
+		 * @param modulateMethod The method which will add the code to alter the base method's strength. It needs to have the signature modSpecular(t:ShaderRegisterElement, regCache:ShaderRegisterCache):string, in which t.w will contain the specular strength and t.xyz will contain the half-vector or the reflection vector.
+		 * @param baseMethod The base specular method on which this method's shading is based.
 		 */
-		constructor(scope:Object, modulateMethod:Function, baseSpecularMethod:BasicSpecularMethod = null)
+		constructor(modulateMethod:Function, baseMethod:SpecularBasicMethod = null)
 		{
 			super();
 
 			this._onShaderInvalidatedDelegate = Delegate.create(this, this.onShaderInvalidated);
 
-			if (scope != null && modulateMethod != null)
-				this._pInitCompositeSpecularMethod(scope, modulateMethod, baseSpecularMethod);
-		}
-
-		public _pInitCompositeSpecularMethod(scope:Object, modulateMethod:Function, baseSpecularMethod:BasicSpecularMethod = null)
-		{
-			this._baseMethod = baseSpecularMethod || new BasicSpecularMethod();
+			this._baseMethod = baseMethod || new SpecularBasicMethod();
 			this._baseMethod._iModulateMethod = modulateMethod;
-			this._baseMethod._iModulateMethodScope = scope;
 			this._baseMethod.addEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public iInitVO(vo:MethodVO):void
+		public iInitVO(vo:MethodVO)
 		{
 			this._baseMethod.iInitVO(vo);
 		}
@@ -52,7 +46,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iInitConstants(vo:MethodVO):void
+		public iInitConstants(vo:MethodVO)
 		{
 			this._baseMethod.iInitConstants(vo);
 		}
@@ -60,12 +54,12 @@ module away.materials
 		/**
 		 * The base specular method on which this method's shading is based.
 		 */
-		public get baseMethod():BasicSpecularMethod
+		public get baseMethod():SpecularBasicMethod
 		{
 			return this._baseMethod;
 		}
 
-		public set baseMethod(value:BasicSpecularMethod)
+		public set baseMethod(value:SpecularBasicMethod)
 		{
 			if (this._baseMethod == value)
 				return;
@@ -113,7 +107,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public dispose():void
+		public dispose()
 		{
 			this._baseMethod.removeEventListener(ShadingMethodEvent.SHADER_INVALIDATED, this._onShaderInvalidatedDelegate);
 			this._baseMethod.dispose();
@@ -135,7 +129,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivate(vo:MethodVO, stageGL:StageGL):void
+		public iActivate(vo:MethodVO, stageGL:StageGL)
 		{
 			this._baseMethod.iActivate(vo, stageGL);
 		}
@@ -143,7 +137,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iDeactivate(vo:MethodVO, stageGL:StageGL):void
+		public iDeactivate(vo:MethodVO, stageGL:StageGL)
 		{
 			this._baseMethod.iDeactivate(vo, stageGL);
 		}
@@ -215,7 +209,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iCleanCompilationData():void
+		public iCleanCompilationData()
 		{
 			super.iCleanCompilationData();
 			this._baseMethod.iCleanCompilationData();
@@ -234,7 +228,7 @@ module away.materials
 		/**
 		 * Called when the base method's shader code is invalidated.
 		 */
-		private onShaderInvalidated(event:ShadingMethodEvent):void
+		private onShaderInvalidated(event:ShadingMethodEvent)
 		{
 			this.iInvalidateShaderProgram();
 		}

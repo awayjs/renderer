@@ -4,14 +4,14 @@ module away.materials
 {
 
 	/**
-	 * BasicAmbientMethod provides the default shading method for uniform ambient lighting.
+	 * AmbientBasicMethod provides the default shading method for uniform ambient lighting.
 	 */
-	export class BasicAmbientMethod extends ShadingMethodBase
+	export class AmbientBasicMethod extends ShadingMethodBase
 	{
 		private _useTexture:boolean = false;
 		private _texture:away.textures.Texture2DBase;
 
-		private _ambientInputRegister:ShaderRegisterElement;
+		public _pAmbientInputRegister:ShaderRegisterElement;
 
 		private _ambientColor:number = 0xffffff;
 
@@ -26,7 +26,7 @@ module away.materials
 		public _iLightAmbientB:number = 0;
 
 		/**
-		 * Creates a new BasicAmbientMethod object.
+		 * Creates a new AmbientBasicMethod object.
 		 */
 		constructor()
 		{
@@ -91,11 +91,11 @@ module away.materials
 			/* // ORIGINAL conditional
 			 if (Boolean(value) != _useTexture ||
 			 (value && _texture && (value.hasMipMaps != _texture.hasMipMaps || value.format != _texture.format))) {
-			 invalidateShaderProgram();
+			 iInvalidateShaderProgram();
 			 }
 			 */
 			if (b != this._useTexture || (value && this._texture && (value.hasMipMaps != this._texture.hasMipMaps || value.format != this._texture.format))) {
-				this.iInvalidateShaderProgram();//invalidateShaderProgram();
+				this.iInvalidateShaderProgram();
 			}
 			this._useTexture = b;//Boolean(value);
 			this._texture = value;
@@ -107,9 +107,9 @@ module away.materials
 		public copyFrom(method:ShadingMethodBase)
 		{
 			var m:any = method;
-			var b:BasicAmbientMethod = <BasicAmbientMethod> m;
+			var b:AmbientBasicMethod = <AmbientBasicMethod> m;
 
-			var diff:BasicAmbientMethod = b;//BasicAmbientMethod(method);
+			var diff:AmbientBasicMethod = b;//AmbientBasicMethod(method);
 
 			this.ambient = diff.ambient;
 			this.ambientColor = diff.ambientColor;
@@ -121,7 +121,7 @@ module away.materials
 		public iCleanCompilationData()
 		{
 			super.iCleanCompilationData();
-			this._ambientInputRegister = null;
+			this._pAmbientInputRegister = null;
 		}
 
 		/**
@@ -134,19 +134,19 @@ module away.materials
 
 			if (this._useTexture) {
 
-				this._ambientInputRegister = regCache.getFreeTextureReg();
+				this._pAmbientInputRegister = regCache.getFreeTextureReg();
 
-				vo.texturesIndex = this._ambientInputRegister.index;
+				vo.texturesIndex = this._pAmbientInputRegister.index;
 
 				// TODO: AGAL <> GLSL
-				code += this.pGetTex2DSampleCode(vo, targetReg, this._ambientInputRegister, this._texture) + "div " + targetReg + ".xyz, " + targetReg + ".xyz, " + targetReg + ".w\n"; // apparently, still needs to un-premultiply :s
+				code += this.pGetTex2DSampleCode(vo, targetReg, this._pAmbientInputRegister, this._texture) + "div " + targetReg + ".xyz, " + targetReg + ".xyz, " + targetReg + ".w\n"; // apparently, still needs to un-premultiply :s
 
 			} else {
 
-				this._ambientInputRegister = regCache.getFreeFragmentConstant();
-				vo.fragmentConstantsIndex = this._ambientInputRegister.index*4;
+				this._pAmbientInputRegister = regCache.getFreeFragmentConstant();
+				vo.fragmentConstantsIndex = this._pAmbientInputRegister.index*4;
 
-				code += "mov " + targetReg + ", " + this._ambientInputRegister + "\n";
+				code += "mov " + targetReg + ", " + this._pAmbientInputRegister + "\n";
 
 			}
 
@@ -160,7 +160,7 @@ module away.materials
 		{
 			if (this._useTexture) {
 
-				stageGL.contextGL.setSamplerStateAt(vo.texturesIndex, vo.repeatTextures? away.gl.ContextGLWrapMode.REPEAT : away.gl.ContextGLWrapMode.CLAMP, vo.useSmoothTextures? away.gl.ContextGLTextureFilter.LINEAR : away.gl.ContextGLTextureFilter.NEAREST, vo.useMipmapping? away.gl.ContextGLMipFilter.MIPLINEAR : away.gl.ContextGLMipFilter.MIPNONE);
+				stageGL.contextGL.setSamplerStateAt(vo.texturesIndex, vo.repeatTextures? away.gl.ContextGLWrapMode.REPEAT:away.gl.ContextGLWrapMode.CLAMP, vo.useSmoothTextures? away.gl.ContextGLTextureFilter.LINEAR:away.gl.ContextGLTextureFilter.NEAREST, vo.useMipmapping? away.gl.ContextGLMipFilter.MIPLINEAR:away.gl.ContextGLMipFilter.MIPNONE);
 
 				stageGL.contextGL.setTextureAt(vo.texturesIndex, this._texture.getTextureForStageGL(stageGL));
 

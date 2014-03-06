@@ -3,13 +3,13 @@
 module away.materials
 {
 	/**
-	 * DitheredShadowMapMethod provides a softened shadowing technique by bilinearly interpolating shadow comparison
+	 * ShadowFilteredMethod provides a softened shadowing technique by bilinearly interpolating shadow comparison
 	 * results of neighbouring pixels.
 	 */
-	export class FilteredShadowMapMethod extends SimpleShadowMapMethodBase
+	export class ShadowFilteredMethod extends ShadowMethodBase
 	{
 		/**
-		 * Creates a new BasicDiffuseMethod object.
+		 * Creates a new DiffuseBasicMethod object.
 		 *
 		 * @param castingLight The light casting the shadow
 		 */
@@ -21,7 +21,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iInitConstants(vo:MethodVO):void
+		public iInitConstants(vo:MethodVO)
 		{
 			super.iInitConstants(vo);
 
@@ -85,7 +85,7 @@ module away.materials
 		/**
 		 * @inheritDoc
 		 */
-		public iActivateForCascade(vo:MethodVO, stageGL:away.base.StageGL):void
+		public iActivateForCascade(vo:MethodVO, stageGL:away.base.StageGL)
 		{
 			var size:number /*int*/ = this.castingLight.shadowMapper.depthMapSize;
 			var index:number /*int*/ = vo.secondaryFragmentConstantsIndex;
