@@ -294,7 +294,7 @@ module away
             html += '               padding: 0px;';
             html += '          }';
             html += '       </style>';
-	        html += '   <script src="http://gist-it.appspot.com/github/away3d/away3d-core-ts/tree/master/tests/' + url + '?footer=no"></script>';
+	        html += '   <script src="http://gist-it.appspot.com/github/awayjs/awayjs-core-ts/tree/master/tests/' + url + '?footer=no"></script>';
             html += '</head>';
             html += '<body>';
             html += '</body>';

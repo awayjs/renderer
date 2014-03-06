@@ -252,7 +252,7 @@ var away;
             html += '               padding: 0px;';
             html += '          }';
             html += '       </style>';
-            html += '   <script src="http://gist-it.appspot.com/github/away3d/away3d-core-ts/tree/master/tests/' + url + '?footer=no"></script>';
+            html += '   <script src="http://gist-it.appspot.com/github/awayjs/awayjs-core-ts/tree/master/tests/' + url + '?footer=no"></script>';
             html += '</head>';
             html += '<body>';
             html += '</body>';
@@ -339,14 +339,14 @@ var away;
 
             for (var c = 0; c < createPath.length; c++) {
                 if (obj == null) {
-                    obj = window[createPath[c]];
+                    obj = window[createPath[c]]; // reference base module ( will be a child of the window )
                 } else {
-                    obj = obj[createPath[c]];
+                    obj = obj[createPath[c]]; // reference sub module / Class
                 }
             }
 
             if (obj != null) {
-                new obj();
+                new obj(); // if Class has been found - start the test
             }
         };
         return AppFrame;
@@ -358,14 +358,14 @@ var away;
     var Utils = (function () {
         function Utils() {
         }
-        Utils.getQueryParams = /**
+        /**
         *
         * Utility function - Parse a Query formatted string
         *
         * @param qs
         * @returns {{}}
         */
-        function (qs) {
+        Utils.getQueryParams = function (qs) {
             qs = qs.split("+").join(" ");
 
             var params = {}, tokens, re = /[?&]?([^=]+)=([^&]*)/g;

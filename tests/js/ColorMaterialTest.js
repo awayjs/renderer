@@ -42,7 +42,7 @@ var tests;
                 this.matTx = new away.materials.TextureMaterial(this.imgTx);
                 this.matTx.colorTransform = new away.geom.ColorTransform(1, 1, 1, 1);
 
-                this.specM = new away.materials.BasicSpecularMethod();
+                this.specM = new away.materials.SpecularBasicMethod();
                 this.specM.texture = this.imgTx;
                 this.specM.gloss = 3;
                 this.specM.specularColor = 0xff0000;
