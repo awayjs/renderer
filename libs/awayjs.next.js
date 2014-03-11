@@ -346,7 +346,7 @@ var away;
                 enumerable: true,
                 configurable: true
             });
-            CameraEvent.LENS_CHANGED = "projectionChanged";
+            CameraEvent.PROJECTION_CHANGED = "projectionChanged";
             return CameraEvent;
         })(away.events.Event);
         events.CameraEvent = CameraEvent;
@@ -665,6 +665,25 @@ var away;
             return ParserEvent;
         })(away.events.Event);
         events.ParserEvent = ParserEvent;
+    })(away.events || (away.events = {}));
+    var events = away.events;
+})(away || (away = {}));
+var away;
+(function (away) {
+    ///<reference path="../_definitions.ts"/>
+    /**
+    * @module away.events
+    */
+    (function (events) {
+        var MaterialEvent = (function (_super) {
+            __extends(MaterialEvent, _super);
+            function MaterialEvent(type) {
+                _super.call(this, type);
+            }
+            MaterialEvent.SIZE_CHANGED = "sizeChanged";
+            return MaterialEvent;
+        })(away.events.Event);
+        events.MaterialEvent = MaterialEvent;
     })(away.events || (away.events = {}));
     var events = away.events;
 })(away || (away = {}));
@@ -2616,7 +2635,7 @@ var away;
                     //				this.dispatchEvent(new away.events.AssetEvent(away.events.AssetEvent.TEXTURE_SIZE_ERROR, <away.library.IAsset> asset));
                 }
 
-                this._pContent = new away.entities.Billboard(new away.materials.CSSMaterialBase(asset), asset.width, asset.height);
+                this._pContent = new away.entities.Billboard(new away.materials.CSSMaterialBase(asset));
 
                 return away.parsers.ParserBase.PARSING_DONE;
             };
@@ -4634,7 +4653,7 @@ var away;
             }
             AlignmentMode.REGISTRATION_POINT = "registrationPoint";
 
-            AlignmentMode.PIVOT_POINT = "pivotPoint";
+            AlignmentMode.PIVOT_POINT = "pivot";
             return AlignmentMode;
         })();
         base.AlignmentMode = AlignmentMode;
@@ -5363,7 +5382,7 @@ var away;
                 this._x = 0;
                 this._y = 0;
                 this._z = 0;
-                this._pivotPoint = new away.geom.Vector3D();
+                this._pivot = new away.geom.Vector3D();
                 this._orientationMatrix = new away.geom.Matrix3D();
                 this._pivotZero = true;
                 this._pivotDirty = true;
@@ -5832,15 +5851,15 @@ var away;
             });
 
 
-            Object.defineProperty(DisplayObject.prototype, "pivotPoint", {
+            Object.defineProperty(DisplayObject.prototype, "pivot", {
                 /**
                 * Defines the local point around which the object rotates.
                 */
                 get: function () {
-                    return this._pivotPoint;
+                    return this._pivot;
                 },
                 set: function (pivot) {
-                    this._pivotPoint = pivot.clone();
+                    this._pivot = pivot.clone();
 
                     this.invalidatePivot();
                 },
@@ -6049,8 +6068,9 @@ var away;
                 get: function () {
                     if (this._scenePositionDirty) {
                         if (!this._pivotZero && this.alignmentMode == away.base.AlignmentMode.PIVOT_POINT) {
-                            this._scenePosition = this.sceneTransform.transformVector(this._pivotPoint);
-                            //this._scenePosition.decrementBy(new away.geom.Vector3D(this._pivotPoint.x*this._pScaleX, this._pivotPoint.y*this._pScaleY, this._pivotPoint.z*this._pScaleZ));
+                            var pivotScale = new away.geom.Vector3D(this._pivot.x / this._pScaleX, this._pivot.y / this._pScaleY, this._pivot.z / this._pScaleZ);
+                            this._scenePosition = this.sceneTransform.transformVector(pivotScale);
+                            //this._scenePosition.decrementBy(new away.geom.Vector3D(this._pivot.x*this._pScaleX, this._pivot.y*this._pScaleY, this._pivot.z*this._pScaleZ));
                         } else {
                             this.sceneTransform.copyColumnTo(3, this._scenePosition);
                         }
@@ -6352,7 +6372,7 @@ var away;
             */
             DisplayObject.prototype.clone = function () {
                 var clone = new DisplayObject();
-                clone.pivotPoint = this.pivotPoint;
+                clone.pivot = this.pivot;
                 clone._iMatrix3D = this._iMatrix3D;
                 clone.name = name;
 
@@ -6367,9 +6387,8 @@ var away;
                 if (this.parent)
                     this.parent.removeChild(this);
 
-                var len = this._pRenderables.length;
-                for (var i = 0; i < len; i++)
-                    this._pRenderables[i].dispose();
+                while (this._pRenderables.length)
+                    this._pRenderables[0].dispose();
             };
 
             /**
@@ -6672,12 +6691,12 @@ var away;
             * @param    dz        The amount of movement along the local z axis.
             */
             DisplayObject.prototype.movePivot = function (dx, dy, dz) {
-                if (this._pivotPoint == null)
-                    this._pivotPoint = new away.geom.Vector3D();
+                if (this._pivot == null)
+                    this._pivot = new away.geom.Vector3D();
 
-                this._pivotPoint.x += dx;
-                this._pivotPoint.y += dy;
-                this._pivotPoint.z += dz;
+                this._pivot.x += dx;
+                this._pivot.y += dy;
+                this._pivot.z += dz;
 
                 this.invalidatePivot();
             };
@@ -6701,11 +6720,12 @@ var away;
                     comps[0] = this.scenePosition;
                     scale.x = this._pScaleX;
                     scale.y = this._pScaleY;
+                    scale.z = this._pScaleZ;
                     this._orientationMatrix.recompose(comps);
 
                     //add in case of pivot
                     if (!this._pivotZero && this.alignmentMode == away.base.AlignmentMode.PIVOT_POINT)
-                        this._orientationMatrix.prependTranslation(-this._pivotPoint.x, -this._pivotPoint.y, -this._pivotPoint.z);
+                        this._orientationMatrix.prependTranslation(-this._pivot.x / this._pScaleX, -this._pivot.y / this._pScaleY, -this._pivot.z / this._pScaleZ);
 
                     return this._orientationMatrix;
                 }
@@ -7028,9 +7048,9 @@ var away;
                 this._matrix3D.recompose(this._transformComponents);
 
                 if (!this._pivotZero) {
-                    this._matrix3D.prependTranslation(-this._pivotPoint.x, -this._pivotPoint.y, -this._pivotPoint.z);
+                    this._matrix3D.prependTranslation(-this._pivot.x / this._pScaleX, -this._pivot.y / this._pScaleY, -this._pivot.z / this._pScaleZ);
                     if (this.alignmentMode != away.base.AlignmentMode.PIVOT_POINT)
-                        this._matrix3D.appendTranslation(this._pivotPoint.x * this._pScaleX, this._pivotPoint.y * this._pScaleY, this._pivotPoint.z * this._pScaleZ);
+                        this._matrix3D.appendTranslation(this._pivot.x, this._pivot.y, this._pivot.z);
                 }
 
                 this._matrix3DDirty = false;
@@ -7227,7 +7247,7 @@ var away;
             * @private
             */
             DisplayObject.prototype.invalidatePivot = function () {
-                this._pivotZero = (this._pivotPoint.x == 0) && (this._pivotPoint.y == 0) && (this._pivotPoint.z == 0);
+                this._pivotZero = (this._pivot.x == 0) && (this._pivot.y == 0) && (this._pivot.z == 0);
 
                 if (this._pivotDirty)
                     return;
@@ -9300,6 +9320,8 @@ var away;
             };
 
             RenderablePool.prototype.disposeItem = function (materialOwner) {
+                materialOwner._iRemoveRenderable(this._pool[materialOwner.id]);
+
                 this._pool[materialOwner.id] = null;
             };
             return RenderablePool;
@@ -9332,8 +9354,18 @@ var away;
                 this.sourceEntity = sourceEntity;
                 this.materialOwner = materialOwner;
             }
+            /**
+            *
+            */
             CSSRenderableBase.prototype.dispose = function () {
                 this._pool.disposeItem(this.materialOwner);
+            };
+
+            /**
+            *
+            */
+            CSSRenderableBase.prototype._iUpdate = function () {
+                //nothing to do here
             };
             return CSSRenderableBase;
         })();
@@ -10422,6 +10454,13 @@ var away;
                 //			}
                 //
                 //			var which:number = target? DefaultRenderer.SCREEN_PASSES : DefaultRenderer.ALL_PASSES;
+                var sheet = document.styleSheets[document.styleSheets.length - 1];
+
+                for (var i = 0; i < sheet.cssRules.length; i++) {
+                    var style = sheet.cssRules[i].style;
+                    style.transform = style["-webkit-transform"] = style["-moz-transform"] = style["-o-transform"] = style["-ms-transform"] = (entityCollector.camera.projection.coordinateSystem == away.projections.CoordinateSystem.RIGHT_HANDED) ? "" : "scale3d(1, -1, 1) translateY(-" + style.height + ")";
+                }
+
                 this.drawRenderables(this._renderableHead, entityCollector);
 
                 //			if (this._activeMaterial)
@@ -11607,17 +11646,18 @@ var away;
                 this._gl.colorMask(red, green, blue, alpha);
             };
 
-            ContextGL.prototype.setCulling = function (triangleFaceToCull) {
+            ContextGL.prototype.setCulling = function (triangleFaceToCull, coordinateSystem) {
+                if (typeof coordinateSystem === "undefined") { coordinateSystem = "leftHanded"; }
                 if (triangleFaceToCull == away.gl.ContextGLTriangleFace.NONE) {
                     this._gl.disable(this._gl.CULL_FACE);
                 } else {
                     this._gl.enable(this._gl.CULL_FACE);
                     switch (triangleFaceToCull) {
-                        case away.gl.ContextGLTriangleFace.FRONT:
-                            this._gl.cullFace(this._gl.BACK);
-                            break;
                         case away.gl.ContextGLTriangleFace.BACK:
-                            this._gl.cullFace(this._gl.FRONT);
+                            this._gl.cullFace((coordinateSystem == "leftHanded") ? this._gl.FRONT : this._gl.BACK);
+                            break;
+                        case away.gl.ContextGLTriangleFace.FRONT:
+                            this._gl.cullFace((coordinateSystem == "leftHanded") ? this._gl.BACK : this._gl.FRONT);
                             break;
                         case away.gl.ContextGLTriangleFace.FRONT_AND_BACK:
                             this._gl.cullFace(this._gl.FRONT_AND_BACK);
@@ -11966,7 +12006,6 @@ var away;
             __extends(AGLSLContextGL, _super);
             function AGLSLContextGL(canvas) {
                 _super.call(this, canvas);
-                this._yFlip = -1;
             }
             //@override
             AGLSLContextGL.prototype.setProgramConstantsFromMatrix = function (programType, firstRegister, matrix, transposedMatrix) {
@@ -11996,38 +12035,7 @@ var away;
             AGLSLContextGL.prototype.drawTriangles = function (indexBuffer, firstIndex, numTriangles) {
                 if (typeof firstIndex === "undefined") { firstIndex = 0; }
                 if (typeof numTriangles === "undefined") { numTriangles = -1; }
-                /*
-                console.log( "======= drawTriangles ========" );
-                console.log( indexBuffer );
-                console.log( "firstIndex: " +  firstIndex );
-                console.log( "numTriangles:" + numTriangles );
-                */
-                var location = this._gl.getUniformLocation(this._currentProgram.glProgram, "yflip");
-                this._gl.uniform1f(location, this._yFlip);
                 _super.prototype.drawTriangles.call(this, indexBuffer, firstIndex, numTriangles);
-            };
-
-            //@override
-            AGLSLContextGL.prototype.setCulling = function (triangleFaceToCull) {
-                _super.prototype.setCulling.call(this, triangleFaceToCull);
-
-                switch (triangleFaceToCull) {
-                    case away.gl.ContextGLTriangleFace.FRONT:
-                        this._yFlip = -1;
-                        break;
-                    case away.gl.ContextGLTriangleFace.BACK:
-                        this._yFlip = 1; // checked
-                        break;
-                    case away.gl.ContextGLTriangleFace.FRONT_AND_BACK:
-                        this._yFlip = 1;
-                        break;
-                    case away.gl.ContextGLTriangleFace.NONE:
-                        this._yFlip = 1; // checked
-                        break;
-                    default:
-                        throw "Unknown culling mode " + triangleFaceToCull + ".";
-                        break;
-                }
             };
             return AGLSLContextGL;
         })(away.gl.ContextGL);
@@ -13791,9 +13799,9 @@ var away;
                 var m = Matrix3D.getAxisRotation(axis.x, axis.y, axis.z, degrees);
 
                 /*
-                if ( pivotPoint != null )
+                if ( pivot != null )
                 {
-                var p:Vector3D = pivotPoint;
+                var p:Vector3D = pivot;
                 m.appendTranslation( p.x, p.y, p.z );
                 }
                 */
@@ -19108,7 +19116,7 @@ var away;
             */
             DisplayObjectContainer.prototype.clone = function () {
                 var clone = new away.containers.DisplayObjectContainer();
-                clone.pivotPoint = this.pivotPoint;
+                clone.pivot = this.pivot;
                 clone._iMatrix3D = this._iMatrix3D;
                 clone.partition = this.partition;
                 clone.name = name;
@@ -19482,26 +19490,30 @@ var away;
     * contains the Billboard object.</p>
     */
     (function (entities) {
+        var MaterialEvent = away.events.MaterialEvent;
+        var Matrix3D = away.geom.Matrix3D;
+        var UVTransform = away.geom.UVTransform;
+
         var Billboard = (function (_super) {
             __extends(Billboard, _super);
-            function Billboard(material, width, height, pixelSnapping, smoothing) {
+            function Billboard(material, pixelSnapping, smoothing) {
                 if (typeof pixelSnapping === "undefined") { pixelSnapping = "auto"; }
                 if (typeof smoothing === "undefined") { smoothing = false; }
+                var _this = this;
                 _super.call(this);
 
                 this._pIsEntity = true;
 
+                this.onSizeChangedDelegate = function (event) {
+                    return _this.onSizeChanged(event);
+                };
+
                 this.material = material;
 
-                //TODO don't rely on scaling for the width and height of the billboard
-                this.width = width;
-                this.height = height;
+                this._billboardWidth = material.width;
+                this._billboardHeight = material.height;
 
-                this.pivotPoint = new away.geom.Vector3D(0.5, 0.5, 0);
-
-                this._bitmapMatrix = new away.geom.Matrix3D();
-
-                this._uvTransform = new away.geom.UVTransform(this);
+                this._uvTransform = new UVTransform(this);
             }
             Object.defineProperty(Billboard.prototype, "animator", {
                 /**
@@ -19525,6 +19537,28 @@ var away;
                 configurable: true
             });
 
+            Object.defineProperty(Billboard.prototype, "billboardHeight", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._billboardHeight;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(Billboard.prototype, "billboardWidth", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._billboardWidth;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
             Object.defineProperty(Billboard.prototype, "material", {
                 /**
                 *
@@ -19536,13 +19570,17 @@ var away;
                     if (value == this._material)
                         return;
 
-                    if (this._material)
+                    if (this._material) {
                         this._material.iRemoveOwner(this);
+                        this._material.removeEventListener(MaterialEvent.SIZE_CHANGED, this.onSizeChangedDelegate);
+                    }
 
                     this._material = value;
 
-                    if (this._material)
+                    if (this._material) {
                         this._material.iAddOwner(this);
+                        this._material.addEventListener(MaterialEvent.SIZE_CHANGED, this.onSizeChangedDelegate);
+                    }
                 },
                 enumerable: true,
                 configurable: true
@@ -19571,7 +19609,7 @@ var away;
             * @protected
             */
             Billboard.prototype.pUpdateBounds = function () {
-                this._pBounds.fromExtremes(0, 0, 0, 1, 1, 0);
+                this._pBounds.fromExtremes(0, 0, 0, this._billboardWidth, this._billboardHeight, 0);
 
                 _super.prototype.pUpdateBounds.call(this);
             };
@@ -19590,6 +19628,18 @@ var away;
             * @internal
             */
             Billboard.prototype._iSetUVMatrixComponents = function (offsetU, offsetV, scaleU, scaleV, rotationUV) {
+            };
+
+            /**
+            * @private
+            */
+            Billboard.prototype.onSizeChanged = function (event) {
+                this._billboardWidth = this._material.width;
+                this._billboardHeight = this._material.height;
+
+                var len = this._pRenderables.length;
+                for (var i = 0; i < len; i++)
+                    this._pRenderables[i]._iUpdate();
             };
             return Billboard;
         })(away.base.DisplayObject);
@@ -19796,7 +19846,7 @@ var away;
                     this._projection.removeEventListener(away.events.ProjectionEvent.MATRIX_CHANGED, this._onProjectionMatrixChangedDelegate);
                     this._projection = value;
                     this._projection.addEventListener(away.events.ProjectionEvent.MATRIX_CHANGED, this._onProjectionMatrixChangedDelegate);
-                    this.dispatchEvent(new away.events.CameraEvent(away.events.CameraEvent.LENS_CHANGED, this));
+                    this.dispatchEvent(new away.events.CameraEvent(away.events.CameraEvent.PROJECTION_CHANGED, this));
                 },
                 enumerable: true,
                 configurable: true
@@ -20501,14 +20551,37 @@ var away;
     })(away.entities || (away.entities = {}));
     var entities = away.entities;
 })(away || (away = {}));
+var away;
+(function (away) {
+    (function (projections) {
+        /**
+        * Provides constant values for camera lens projection options use the the <code>coordinateSystem</code> property
+        *
+        * @see away.projections.PerspectiveLens#coordinateSystem
+        */
+        var CoordinateSystem = (function () {
+            function CoordinateSystem() {
+            }
+            CoordinateSystem.LEFT_HANDED = "leftHanded";
+
+            CoordinateSystem.RIGHT_HANDED = "rightHanded";
+            return CoordinateSystem;
+        })();
+        projections.CoordinateSystem = CoordinateSystem;
+    })(away.projections || (away.projections = {}));
+    var projections = away.projections;
+})(away || (away = {}));
+///<reference path="../_definitions.ts"/>
 ///<reference path="../_definitions.ts" />
 var away;
 (function (away) {
     (function (projections) {
         var ProjectionBase = (function (_super) {
             __extends(ProjectionBase, _super);
-            function ProjectionBase() {
+            function ProjectionBase(coordinateSystem) {
+                if (typeof coordinateSystem === "undefined") { coordinateSystem = "leftHanded"; }
                 _super.call(this);
+                this._pMatrix = new away.geom.Matrix3D();
                 this._pScissorRect = new away.geom.Rectangle();
                 this._pViewPort = new away.geom.Rectangle();
                 this._pNear = 20;
@@ -20517,8 +20590,29 @@ var away;
                 this._pMatrixInvalid = true;
                 this._pFrustumCorners = [];
                 this._unprojectionInvalid = true;
-                this._pMatrix = new away.geom.Matrix3D();
+
+                this.coordinateSystem = coordinateSystem;
             }
+            Object.defineProperty(ProjectionBase.prototype, "coordinateSystem", {
+                /**
+                * The handedness of the coordinate system projection. The default is LEFT_HANDED.
+                */
+                get: function () {
+                    return this._pCoordinateSystem;
+                },
+                set: function (value) {
+                    if (this._pCoordinateSystem == value)
+                        return;
+
+                    this._pCoordinateSystem = value;
+
+                    this.pInvalidateMatrix();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
             Object.defineProperty(ProjectionBase.prototype, "frustumCorners", {
                 get: function () {
                     return this._pFrustumCorners;
@@ -20615,15 +20709,16 @@ var away;
                 throw new away.errors.AbstractMethodError();
             };
 
-            Object.defineProperty(ProjectionBase.prototype, "iAspectRatio", {
+            Object.defineProperty(ProjectionBase.prototype, "_iAspectRatio", {
                 get: function () {
                     return this._pAspectRatio;
                 },
                 set: function (value) {
-                    if (this._pAspectRatio == value) {
+                    if (this._pAspectRatio == value)
                         return;
-                    }
+
                     this._pAspectRatio = value;
+
                     this.pInvalidateMatrix();
                 },
                 enumerable: true,
@@ -20641,7 +20736,7 @@ var away;
                 throw new away.errors.AbstractMethodError();
             };
 
-            ProjectionBase.prototype.iUpdateScissorRect = function (x, y, width, height) {
+            ProjectionBase.prototype._iUpdateScissorRect = function (x, y, width, height) {
                 this._pScissorRect.x = x;
                 this._pScissorRect.y = y;
                 this._pScissorRect.width = width;
@@ -20649,7 +20744,7 @@ var away;
                 this.pInvalidateMatrix();
             };
 
-            ProjectionBase.prototype.iUpdateViewport = function (x, y, width, height) {
+            ProjectionBase.prototype._iUpdateViewport = function (x, y, width, height) {
                 this._pViewPort.x = x;
                 this._pViewPort.y = y;
                 this._pViewPort.width = width;
@@ -20668,23 +20763,49 @@ var away;
     (function (projections) {
         var PerspectiveProjection = (function (_super) {
             __extends(PerspectiveProjection, _super);
-            function PerspectiveProjection(fieldOfView) {
+            function PerspectiveProjection(fieldOfView, coordinateSystem) {
                 if (typeof fieldOfView === "undefined") { fieldOfView = 60; }
-                _super.call(this);
+                if (typeof coordinateSystem === "undefined") { coordinateSystem = "leftHanded"; }
+                _super.call(this, coordinateSystem);
+                this._preserveAspectRatio = true;
+                this._origin = new away.geom.Point(0.5, 0.5);
                 this.fieldOfView = fieldOfView;
             }
+            Object.defineProperty(PerspectiveProjection.prototype, "preserveAspectRatio", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._preserveAspectRatio;
+                },
+                set: function (value) {
+                    if (this._preserveAspectRatio == value)
+                        return;
+
+                    this._preserveAspectRatio = value;
+
+                    if (this._preserveAspectRatio)
+                        this.hFocalLength = this._focalLength / this._pAspectRatio;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
             Object.defineProperty(PerspectiveProjection.prototype, "fieldOfView", {
+                /**
+                *
+                */
                 get: function () {
                     return this._fieldOfView;
                 },
                 set: function (value) {
-                    if (value == this._fieldOfView) {
+                    if (this._fieldOfView == value)
                         return;
-                    }
+
                     this._fieldOfView = value;
 
-                    this._focalLengthInv = Math.tan(this._fieldOfView * Math.PI / 360);
-                    this._focalLength = 1 / this._focalLengthInv;
+                    this._focalLength = 1 / Math.tan(this._fieldOfView * Math.PI / 360);
 
                     this.pInvalidateMatrix();
                 },
@@ -20694,19 +20815,80 @@ var away;
 
 
             Object.defineProperty(PerspectiveProjection.prototype, "focalLength", {
+                /**
+                *
+                */
                 get: function () {
                     return this._focalLength;
                 },
                 set: function (value) {
-                    if (value == this._focalLength) {
+                    if (this._focalLength == value)
                         return;
-                    }
+
                     this._focalLength = value;
 
-                    this._focalLengthInv = 1 / this._focalLength;
-                    this._fieldOfView = Math.atan(this._focalLengthInv) * 360 / Math.PI;
+                    this._fieldOfView = Math.atan(1 / this._focalLength) * 360 / Math.PI;
 
                     this.pInvalidateMatrix();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PerspectiveProjection.prototype, "hFieldOfView", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._hFieldOfView;
+                },
+                set: function (value) {
+                    if (this._hFieldOfView == value)
+                        return;
+
+                    this._hFieldOfView = value;
+
+                    this._hFocalLength = 1 / Math.tan(this._hFieldOfView * Math.PI / 360);
+
+                    this.pInvalidateMatrix();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PerspectiveProjection.prototype, "hFocalLength", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._hFocalLength;
+                },
+                set: function (value) {
+                    if (this._hFocalLength == value)
+                        return;
+
+                    this._hFocalLength = value;
+
+                    this._hFieldOfView = Math.atan(1 / this._hFocalLength) * 360 / Math.PI;
+
+                    this.pInvalidateMatrix();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PerspectiveProjection.prototype, "origin", {
+                get: function () {
+                    return this._origin;
+                },
+                set: function (value) {
+                    if (this._origin == value)
+                        return;
+
+                    this._origin = value;
                 },
                 enumerable: true,
                 configurable: true
@@ -20734,6 +20916,7 @@ var away;
                 clone._pNear = this._pNear;
                 clone._pFar = this._pFar;
                 clone._pAspectRatio = this._pAspectRatio;
+                clone._pCoordinateSystem = this._pCoordinateSystem;
                 return clone;
             };
 
@@ -20741,61 +20924,54 @@ var away;
             PerspectiveProjection.prototype.pUpdateMatrix = function () {
                 var raw = [];
 
-                this._yMax = this._pNear * this._focalLengthInv;
-                this._xMax = this._yMax * this._pAspectRatio;
+                if (this._preserveAspectRatio)
+                    this.hFocalLength = this._focalLength / this._pAspectRatio;
 
-                var left, right, top, bottom;
+                var tanMinX = -(this._origin.x + 0.5) / this._hFocalLength;
+                var tanMaxX = (1.5 - this._origin.x) / this._hFocalLength;
+                var tanMinY = -(this._origin.y + 0.5) / this._focalLength;
+                var tanMaxY = (1.5 - this._origin.y) / this._focalLength;
 
-                if (this._pScissorRect.x == 0 && this._pScissorRect.y == 0 && this._pScissorRect.width == this._pViewPort.width && this._pScissorRect.height == this._pViewPort.height) {
-                    // assume unscissored frustum
-                    left = -this._xMax;
-                    right = this._xMax;
-                    top = -this._yMax;
-                    bottom = this._yMax;
+                var minLengthFracX = -tanMinX / (tanMaxX - tanMinX);
+                var minLengthFracY = -tanMinY / (tanMaxY - tanMinY);
 
-                    // assume unscissored frustum
-                    raw[0] = this._pNear / this._xMax;
-                    raw[5] = this._pNear / this._yMax;
-                    raw[10] = this._pFar / (this._pFar - this._pNear);
-                    raw[11] = 1;
-                    raw[1] = raw[2] = raw[3] = raw[4] = raw[6] = raw[7] = raw[8] = raw[9] = raw[12] = raw[13] = raw[15] = 0;
-                    raw[14] = -this._pNear * raw[10];
-                } else {
-                    // assume scissored frustum
-                    var xWidth = this._xMax * (this._pViewPort.width / this._pScissorRect.width);
-                    var yHgt = this._yMax * (this._pViewPort.height / this._pScissorRect.height);
-                    var center = this._xMax * (this._pScissorRect.x * 2 - this._pViewPort.width) / this._pScissorRect.width + this._xMax;
-                    var middle = -this._yMax * (this._pScissorRect.y * 2 - this._pViewPort.height) / this._pScissorRect.height - this._yMax;
+                var left;
+                var right;
+                var top;
+                var bottom;
 
-                    left = center - xWidth;
-                    right = center + xWidth;
-                    top = middle - yHgt;
-                    bottom = middle + yHgt;
+                // assume scissored frustum
+                var center = -tanMinX * (this._pScissorRect.x + this._pScissorRect.width * minLengthFracX) / (this._pScissorRect.width * minLengthFracX);
+                var middle = tanMinY * (this._pScissorRect.y + this._pScissorRect.height * minLengthFracY) / (this._pScissorRect.height * minLengthFracY);
 
-                    raw[0] = 2 * this._pNear / (right - left);
-                    raw[5] = 2 * this._pNear / (bottom - top);
-                    raw[8] = (right + left) / (right - left);
-                    raw[9] = (bottom + top) / (bottom - top);
-                    raw[10] = (this._pFar + this._pNear) / (this._pFar - this._pNear);
-                    raw[11] = 1;
-                    raw[1] = raw[2] = raw[3] = raw[4] = raw[6] = raw[7] = raw[12] = raw[13] = raw[15] = 0;
-                    raw[14] = -2 * this._pFar * this._pNear / (this._pFar - this._pNear);
-                }
+                left = center - (tanMaxX - tanMinX) * (this._pViewPort.width / this._pScissorRect.width);
+                right = center;
+                top = middle;
+                bottom = middle + (tanMaxY - tanMinY) * (this._pViewPort.height / this._pScissorRect.height);
+
+                raw[0] = 2 / (right - left);
+                raw[5] = 2 / (bottom - top);
+                raw[8] = (right + left) / (right - left);
+                raw[9] = (bottom + top) / (bottom - top);
+                raw[10] = (this._pFar + this._pNear) / (this._pFar - this._pNear);
+                raw[11] = 1;
+                raw[1] = raw[2] = raw[3] = raw[4] = raw[6] = raw[7] = raw[12] = raw[13] = raw[15] = 0;
+                raw[14] = -2 * this._pFar * this._pNear / (this._pFar - this._pNear);
+
+                if (this._pCoordinateSystem == away.projections.CoordinateSystem.RIGHT_HANDED)
+                    raw[5] = -raw[5];
 
                 this._pMatrix.copyRawDataFrom(raw);
 
-                var yMaxFar = this._pFar * this._focalLengthInv;
-                var xMaxFar = yMaxFar * this._pAspectRatio;
+                this._pFrustumCorners[0] = this._pFrustumCorners[9] = this._pNear * left;
+                this._pFrustumCorners[3] = this._pFrustumCorners[6] = this._pNear * right;
+                this._pFrustumCorners[1] = this._pFrustumCorners[4] = this._pNear * top;
+                this._pFrustumCorners[7] = this._pFrustumCorners[10] = this._pNear * bottom;
 
-                this._pFrustumCorners[0] = this._pFrustumCorners[9] = left;
-                this._pFrustumCorners[3] = this._pFrustumCorners[6] = right;
-                this._pFrustumCorners[1] = this._pFrustumCorners[4] = top;
-                this._pFrustumCorners[7] = this._pFrustumCorners[10] = bottom;
-
-                this._pFrustumCorners[12] = this._pFrustumCorners[21] = -xMaxFar;
-                this._pFrustumCorners[15] = this._pFrustumCorners[18] = xMaxFar;
-                this._pFrustumCorners[13] = this._pFrustumCorners[16] = -yMaxFar;
-                this._pFrustumCorners[19] = this._pFrustumCorners[22] = yMaxFar;
+                this._pFrustumCorners[12] = this._pFrustumCorners[21] = this._pFar * left;
+                this._pFrustumCorners[15] = this._pFrustumCorners[18] = this._pFar * right;
+                this._pFrustumCorners[13] = this._pFrustumCorners[16] = this._pFar * top;
+                this._pFrustumCorners[19] = this._pFrustumCorners[22] = this._pFar * bottom;
 
                 this._pFrustumCorners[2] = this._pFrustumCorners[5] = this._pFrustumCorners[8] = this._pFrustumCorners[11] = this._pNear;
                 this._pFrustumCorners[14] = this._pFrustumCorners[17] = this._pFrustumCorners[20] = this._pFrustumCorners[23] = this._pFar;
@@ -21308,11 +21484,11 @@ var away;
             Object.defineProperty(ObliqueNearPlaneProjection.prototype, "iAspectRatio", {
                 //@override
                 get: function () {
-                    return this._baseProjection.iAspectRatio;
+                    return this._baseProjection._iAspectRatio;
                 },
                 //@override
                 set: function (value) {
-                    this._baseProjection.iAspectRatio = value;
+                    this._baseProjection._iAspectRatio = value;
                 },
                 enumerable: true,
                 configurable: true
@@ -22295,7 +22471,7 @@ var away;
                         return;
 
                     if (this._pCamera)
-                        this._pCamera.removeEventListener(CameraEvent.LENS_CHANGED, this._onProjectionChangedDelegate);
+                        this._pCamera.removeEventListener(CameraEvent.PROJECTION_CHANGED, this._onProjectionChangedDelegate);
 
                     this._pCamera = value;
 
@@ -22305,7 +22481,7 @@ var away;
                     if (this._pScene)
                         this._pCamera.partition = this._pScene.partition;
 
-                    this._pCamera.addEventListener(CameraEvent.LENS_CHANGED, this._onProjectionChangedDelegate);
+                    this._pCamera.addEventListener(CameraEvent.PROJECTION_CHANGED, this._onProjectionChangedDelegate);
                     this._scissorDirty = true;
                     this._viewportDirty = true;
                 },
@@ -22369,7 +22545,7 @@ var away;
 
                     this._width = value;
                     this._aspectRatio = this._width / this._height;
-                    this._pCamera.projection.iAspectRatio = this._aspectRatio;
+                    this._pCamera.projection._iAspectRatio = this._aspectRatio;
                     this._pRenderer.width = value;
                 },
                 enumerable: true,
@@ -22390,7 +22566,7 @@ var away;
 
                     this._height = value;
                     this._aspectRatio = this._width / this._height;
-                    this._pCamera.projection.iAspectRatio = this._aspectRatio;
+                    this._pCamera.projection._iAspectRatio = this._aspectRatio;
                     this._pRenderer.height = value;
                 },
                 enumerable: true,
@@ -22469,16 +22645,16 @@ var away;
                 this.pUpdateTime();
 
                 //update view and size data
-                this._pCamera.projection.iAspectRatio = this._aspectRatio;
+                this._pCamera.projection._iAspectRatio = this._aspectRatio;
 
                 if (this._scissorDirty) {
                     this._scissorDirty = false;
-                    this._pCamera.projection.iUpdateScissorRect(this._pRenderer.scissorRect.x, this._pRenderer.scissorRect.y, this._pRenderer.scissorRect.width, this._pRenderer.scissorRect.height);
+                    this._pCamera.projection._iUpdateScissorRect(this._pRenderer.scissorRect.x, this._pRenderer.scissorRect.y, this._pRenderer.scissorRect.width, this._pRenderer.scissorRect.height);
                 }
 
                 if (this._viewportDirty) {
                     this._viewportDirty = false;
-                    this._pCamera.projection.iUpdateViewport(this._pRenderer.viewPort.x, this._pRenderer.viewPort.y, this._pRenderer.viewPort.width, this._pRenderer.viewPort.height);
+                    this._pCamera.projection._iUpdateViewport(this._pRenderer.viewPort.x, this._pRenderer.viewPort.y, this._pRenderer.viewPort.width, this._pRenderer.viewPort.height);
                 }
 
                 //clear entity collector ready for collection
@@ -24255,7 +24431,7 @@ var away;
 (function (away) {
     (function (materials) {
         var BlendMode = away.base.BlendMode;
-        var Event = away.events.Event;
+        var MaterialEvent = away.events.MaterialEvent;
         var Matrix3D = away.geom.Matrix3D;
         var AssetType = away.library.AssetType;
         var Delegate = away.utils.Delegate;
@@ -24301,6 +24477,17 @@ var away;
 
                 this._owners = new Array();
             }
+            Object.defineProperty(CSSMaterialBase.prototype, "height", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._height;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
             Object.defineProperty(CSSMaterialBase.prototype, "imageElement", {
                 get: function () {
                     return this._imageElement;
@@ -24380,13 +24567,28 @@ var away;
                         style.width = this._imageElement.width + "px";
                         style.height = this._imageElement.height + "px";
                         style.transformOrigin = style["-webkit-transform-origin"] = style["-moz-transform-origin"] = style["-o-transform-origin"] = style["-ms-transform-origin"] = "0% 0%";
-                        style.transform = style["-webkit-transform"] = style["-moz-transform"] = style["-o-transform"] = style["-ms-transform"] = "scale3d(" + 1 / this._imageElement.width + ", -" + 1 / this._imageElement.height + ", 1) translateY(-" + this._imageElement.height + "px)";
+
+                        this._height = this._imageElement.height;
+                        this._width = this._imageElement.width;
+
+                        this.notifySizeChanged();
                     }
                 },
                 enumerable: true,
                 configurable: true
             });
 
+
+            Object.defineProperty(CSSMaterialBase.prototype, "width", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._width;
+                },
+                enumerable: true,
+                configurable: true
+            });
 
             Object.defineProperty(CSSMaterialBase.prototype, "assetType", {
                 /**
@@ -24470,8 +24672,10 @@ var away;
             * @private
             */
             CSSMaterialBase.prototype.iAddOwner = function (owner) {
-                this._owners.push(owner);
-                //TODO
+                var index = this._owners.indexOf(owner);
+
+                if (index == -1)
+                    this._owners.push(owner);
             };
 
             /**
@@ -24481,7 +24685,10 @@ var away;
             * @internal
             */
             CSSMaterialBase.prototype.iRemoveOwner = function (owner) {
-                //TODO
+                var index = this._owners.indexOf(owner);
+
+                if (index != -1)
+                    this._owners.splice(index, 1);
             };
 
             Object.defineProperty(CSSMaterialBase.prototype, "iOwners", {
@@ -24496,6 +24703,13 @@ var away;
                 enumerable: true,
                 configurable: true
             });
+
+            CSSMaterialBase.prototype.notifySizeChanged = function () {
+                if (!this._sizeChanged)
+                    this._sizeChanged = new away.events.MaterialEvent(away.events.MaterialEvent.SIZE_CHANGED);
+
+                this.dispatchEvent(this._sizeChanged);
+            };
             return CSSMaterialBase;
         })(away.library.NamedAssetBase);
         materials.CSSMaterialBase = CSSMaterialBase;
@@ -27197,7 +27411,7 @@ var aglsl;
 
             // adjust z from opengl range of -1..1 to 0..1 as in d3d, this also enforces a left handed coordinate system
             if (desc.header.type == "vertex") {
-                body += "  gl_Position = vec4(outpos.x, yflip*outpos.y, outpos.z*2.0 - outpos.w, outpos.w);\n";
+                body += "  gl_Position = vec4(outpos.x, outpos.y, outpos.z*2.0 - outpos.w, outpos.w);\n";
             }
 
             // clamp fragment depth

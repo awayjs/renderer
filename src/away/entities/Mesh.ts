@@ -287,7 +287,7 @@ module away.entities
 			var clone:Mesh = new Mesh(this._geometry, this._material);
 
 			clone._iMatrix3D = this._iMatrix3D;
-			clone.pivotPoint = this.pivotPoint;
+			clone.pivot = this.pivot;
 			clone.partition = this.partition;
 			clone.bounds = this.bounds.clone();
 

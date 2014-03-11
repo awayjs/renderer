@@ -1219,7 +1219,7 @@ declare module away.pool {
     /**
     * @class away.pool.RenderableListItem
     */
-    class RenderableBase {
+    class RenderableBase implements pool.IRenderable {
         /**
         *
         */
@@ -1273,6 +1273,10 @@ declare module away.pool {
         */
         constructor(pool: pool.RenderablePool, sourceEntity: away.entities.IEntity, materialOwner: away.base.IMaterialOwner, subGeometry: away.base.ISubGeometry, animationSubGeometry: away.animators.AnimationSubGeometry);
         public dispose(): void;
+        /**
+        *
+        */
+        public _iUpdate(): void;
     }
 }
 /**
@@ -1283,8 +1287,14 @@ declare module away.pool {
     * @class away.pool.RenderableListItem
     */
     class BillboardRenderable extends pool.RenderableBase {
-        private static _geometry;
+        private static _materialGeometry;
+        private _billboard;
         constructor(pool: pool.RenderablePool, billboard: away.entities.Billboard);
+        /**
+        *
+        */
+        public _iUpdate(): void;
+        private getGeometry(material);
     }
 }
 /**
@@ -7049,6 +7059,8 @@ declare module away.materials {
         public _pLightPicker: materials.LightPickerBase;
         private _distanceBasedDepthRender;
         public _pDepthCompareMode: string;
+        public _pHeight: number;
+        public _pWidth: number;
         private _onPassChangeDelegate;
         private _onDepthPassChangeDelegate;
         private _onDistancePassChangeDelegate;
@@ -7060,6 +7072,10 @@ declare module away.materials {
         * @inheritDoc
         */
         public assetType : string;
+        /**
+        *
+        */
+        public height : number;
         /**
         * The light picker used by the material to provide lights to the material if it supports lighting.
         *
@@ -7121,6 +7137,10 @@ declare module away.materials {
         * Indicates whether or not the material requires alpha blending during rendering.
         */
         public requiresBlending : boolean;
+        /**
+        *
+        */
+        public width : number;
         public getRequiresBlending(): boolean;
         /**
         * The amount of passes used by the material.

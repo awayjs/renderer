@@ -8,7 +8,7 @@ module away.pool
 	/**
 	 * @class away.pool.RenderableListItem
 	 */
-	export class RenderableBase
+	export class RenderableBase implements IRenderable
 	{
 		/**
 		 *
@@ -86,6 +86,14 @@ module away.pool
 		public dispose()
 		{
 			this._pool.disposeItem(this.materialOwner);
+		}
+
+		/**
+		 *
+		 */
+		public _iUpdate()
+		{
+			//nothing to do here
 		}
 	}
 }

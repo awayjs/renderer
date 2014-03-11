@@ -210,7 +210,7 @@ module away.pick
 
 				this._potentialFound = true;
 
-				this._context.setCulling((<away.materials.MaterialBase> renderable.materialOwner.material).bothSides? away.gl.ContextGLTriangleFace.NONE : away.gl.ContextGLTriangleFace.BACK);
+				this._context.setCulling((<away.materials.MaterialBase> renderable.materialOwner.material).bothSides? away.gl.ContextGLTriangleFace.NONE : away.gl.ContextGLTriangleFace.BACK, camera.projection.coordinateSystem);
 
 				this._interactives[this._interactiveId++] = renderable;
 				// color code so that reading from bitmapdata will contain the correct value

@@ -90,8 +90,12 @@ var tests;
                             material.texture = away.library.AssetLibrary.getAsset(asset.name);
 
                             var s;
-                            s = new away.entities.Billboard(material, 300, 300);
-                            s.rotationX = 45;
+                            s = new away.entities.Billboard(material);
+                            s.pivot = new away.geom.Vector3D(150, 150, 0);
+                            s.width = 300;
+                            s.height = 300;
+
+                            //s.rotationX = 45;
                             s.orientationMode = away.base.OrientationMode.CAMERA_PLANE;
                             s.alignmentMode = away.base.AlignmentMode.PIVOT_POINT;
 
@@ -99,7 +103,10 @@ var tests;
 
                             for (var c = 0; c < 100; c++) {
                                 var size = this.getRandom(5, 50);
-                                s = new away.entities.Billboard(material, size, size);
+                                s = new away.entities.Billboard(material);
+                                s.pivot = new away.geom.Vector3D(size / 2, size / 2, 0);
+                                s.width = size;
+                                s.height = size;
                                 s.orientationMode = away.base.OrientationMode.CAMERA_PLANE;
                                 s.alignmentMode = away.base.AlignmentMode.PIVOT_POINT;
                                 s.x = this.getRandom(-400, 400);

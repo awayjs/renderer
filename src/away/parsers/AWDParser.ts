@@ -881,7 +881,7 @@ module away.parsers
 			// in AWD version 2.1 we read the Container properties
 			if ((this._version[0] == 2) && (this._version[1] == 1)) {
 				var props:AWDProperties = this.parseProperties({1:this._matrixNrType, 2:this._matrixNrType, 3:this._matrixNrType, 4:AWDParser.UINT8});
-				ctr.pivotPoint = new away.geom.Vector3D(props.get(1, 0), props.get(2, 0), props.get(3, 0));
+				ctr.pivot = new away.geom.Vector3D(props.get(1, 0), props.get(2, 0), props.get(3, 0));
 			}
 			// in other versions we do not read the Container properties
 			else {
@@ -974,7 +974,7 @@ module away.parsers
 			}
 			if ((this._version[0] == 2) && (this._version[1] == 1)) {
 				var props:AWDProperties = this.parseProperties({1:this._matrixNrType, 2:this._matrixNrType, 3:this._matrixNrType, 4:AWDParser.UINT8, 5:AWDParser.BOOL});
-				mesh.pivotPoint = new away.geom.Vector3D(<number>props.get(1, 0), <number>props.get(2, 0), <number> props.get(3, 0));
+				mesh.pivot = new away.geom.Vector3D(<number>props.get(1, 0), <number>props.get(2, 0), <number> props.get(3, 0));
 				mesh.castsShadows = props.get(5, true);
 			} else {
 				this.parseProperties(null);
@@ -1160,7 +1160,7 @@ module away.parsers
 
 			camera.name = name;
 			props = this.parseProperties({1:this._matrixNrType, 2:this._matrixNrType, 3:this._matrixNrType, 4:AWDParser.UINT8});
-			camera.pivotPoint = new away.geom.Vector3D(props.get(1, 0), props.get(2, 0), props.get(3, 0));
+			camera.pivot = new away.geom.Vector3D(props.get(1, 0), props.get(2, 0), props.get(3, 0));
 			camera.extra = this.parseUserAttributes();
 
 			this._pFinalizeAsset(camera, name);
@@ -1864,7 +1864,7 @@ module away.parsers
 			if (targetObject) {
 				props = this.parseProperties({1:this._matrixNrType, 2:this._matrixNrType, 3:this._matrixNrType, 4:AWDParser.UINT8});
 
-				targetObject.pivotPoint = new away.geom.Vector3D(props.get(1, 0), props.get(2, 0), props.get(3, 0));
+				targetObject.pivot = new away.geom.Vector3D(props.get(1, 0), props.get(2, 0), props.get(3, 0));
 				targetObject.extra = this.parseUserAttributes();
 
 			}

@@ -19,6 +19,8 @@ var demos;
                 this.view.camera.z = -50;
                 this.view.camera.y = 20;
                 this.view.camera.projection.near = 0.1;
+
+                //(<away.projections.PerspectiveProjection> this.view.camera.projection).coordinateSystem = away.projections.CoordinateSystem.RIGHT_HANDED;
                 this.view.backgroundColor = 0xCEC8C6;
 
                 //this.view.backgroundColor   = 0xFF0000;

@@ -4,7 +4,7 @@ module away.lights
 {
 	import Camera					= away.entities.Camera;
 	import FreeMatrixProjection		= away.projections.FreeMatrixProjection;
-	import ProjectionBase			= away.projections.ProjectionBase;
+	import IProjection				= away.projections.IProjection;
 	import Scene					= away.containers.Scene;
 	import Matrix3DUtils			= away.geom.Matrix3DUtils;
 	import DepthRenderer			= away.render.DepthRenderer;
@@ -147,7 +147,7 @@ module away.lights
 		public pUpdateDepthProjection(viewCamera:Camera)
 		{
 			var matrix:Matrix3D;
-			var projection:ProjectionBase = viewCamera.projection;
+			var projection:IProjection = viewCamera.projection;
 			var projectionNear:number = projection.near;
 			var projectionRange:number = projection.far - projectionNear;
 			

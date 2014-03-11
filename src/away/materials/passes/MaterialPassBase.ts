@@ -483,7 +483,7 @@ module away.materials
 
 			context.setProgram(this._iPrograms[contextIndex]);
 
-			context.setCulling(this._pBothSides? ContextGLTriangleFace.NONE : this._defaultCulling);
+			context.setCulling(this._pBothSides? ContextGLTriangleFace.NONE : this._defaultCulling, camera.projection.coordinateSystem);
 
 			if (this._renderToTexture) {
 				this._oldTarget = stageGL.renderTarget;

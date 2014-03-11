@@ -182,7 +182,7 @@ declare module away.events {
     * @class away.events.CameraEvent
     */
     class CameraEvent extends events.Event {
-        static LENS_CHANGED: string;
+        static PROJECTION_CHANGED: string;
         private _camera;
         constructor(type: string, camera: away.entities.Camera);
         public camera : away.entities.Camera;
@@ -320,8 +320,8 @@ declare module away.events {
     class ProjectionEvent extends events.Event {
         static MATRIX_CHANGED: string;
         private _projection;
-        constructor(type: string, projection: away.projections.ProjectionBase);
-        public projection : away.projections.ProjectionBase;
+        constructor(type: string, projection: away.projections.IProjection);
+        public projection : away.projections.IProjection;
     }
 }
 /**
@@ -390,6 +390,15 @@ declare module away.events {
         */
         public message : string;
         public clone(): events.Event;
+    }
+}
+/**
+* @module away.events
+*/
+declare module away.events {
+    class MaterialEvent extends events.Event {
+        static SIZE_CHANGED: string;
+        constructor(type: string);
     }
 }
 /**
@@ -2170,7 +2179,7 @@ declare module away.base {
         private _x;
         private _y;
         private _z;
-        private _pivotPoint;
+        private _pivot;
         private _orientationMatrix;
         private _pivotZero;
         private _pivotDirty;
@@ -2466,7 +2475,7 @@ declare module away.base {
         /**
         * Defines the local point around which the object rotates.
         */
-        public pivotPoint : away.geom.Vector3D;
+        public pivot : away.geom.Vector3D;
         /**
         * For a display object in a loaded SWF file, the <code>root</code> property
         * is the top-most display object in the portion of the display list's tree
@@ -4547,6 +4556,10 @@ declare module away.pool {
         *
         */
         dispose(): any;
+        /**
+        *
+        */
+        _iUpdate(): any;
     }
 }
 /**
@@ -4619,7 +4632,14 @@ declare module away.pool {
         * @param animator
         */
         constructor(pool: pool.RenderablePool, sourceEntity: away.entities.IEntity, materialOwner: away.base.IMaterialOwner);
+        /**
+        *
+        */
         public dispose(): void;
+        /**
+        *
+        */
+        public _iUpdate(): void;
     }
 }
 /**
@@ -5512,7 +5532,7 @@ declare module away.gl {
         public present(): void;
         public setBlendFactors(sourceFactor: string, destinationFactor: string): void;
         public setColorMask(red: boolean, green: boolean, blue: boolean, alpha: boolean): void;
-        public setCulling(triangleFaceToCull: string): void;
+        public setCulling(triangleFaceToCull: string, coordinateSystem?: string): void;
         public setDepthTest(depthMask: boolean, passCompareMode: string): void;
         public setProgram(program: gl.Program): void;
         private getUniformLocationNameFromAgalRegisterIndex(programType, firstRegister);
@@ -5534,11 +5554,9 @@ declare module away.gl {
 }
 declare module away.gl {
     class AGLSLContextGL extends gl.ContextGL {
-        private _yFlip;
         constructor(canvas: HTMLCanvasElement);
         public setProgramConstantsFromMatrix(programType: string, firstRegister: number, matrix: away.geom.Matrix3D, transposedMatrix?: boolean): void;
         public drawTriangles(indexBuffer: gl.IndexBuffer, firstIndex?: number, numTriangles?: number): void;
-        public setCulling(triangleFaceToCull: string): void;
     }
 }
 /**
@@ -10279,9 +10297,11 @@ declare module away.entities {
 declare module away.entities {
     class Billboard extends away.base.DisplayObject implements entities.IEntity, away.base.IMaterialOwner, away.library.IAsset {
         private _animator;
-        private _bitmapMatrix;
+        private _billboardWidth;
+        private _billboardHeight;
         private _material;
         private _uvTransform;
+        private onSizeChangedDelegate;
         /**
         * Defines the animator of the mesh. Act on the mesh's geometry. Defaults to null
         */
@@ -10294,6 +10314,14 @@ declare module away.entities {
         * The BitmapData object being referenced.
         */
         public bitmapData: away.base.BitmapData;
+        /**
+        *
+        */
+        public billboardHeight : number;
+        /**
+        *
+        */
+        public billboardWidth : number;
         /**
         *
         */
@@ -10325,7 +10353,7 @@ declare module away.entities {
         *
         */
         public uvTransform : away.geom.UVTransform;
-        constructor(material: away.materials.IMaterial, width: number, height: number, pixelSnapping?: string, smoothing?: boolean);
+        constructor(material: away.materials.IMaterial, pixelSnapping?: string, smoothing?: boolean);
         /**
         * @protected
         */
@@ -10342,6 +10370,10 @@ declare module away.entities {
         * @internal
         */
         public _iSetUVMatrixComponents(offsetU: number, offsetV: number, scaleU: number, scaleV: number, rotationUV: number): void;
+        /**
+        * @private
+        */
+        private onSizeChanged(event);
     }
 }
 declare module away.entities {
@@ -10352,7 +10384,7 @@ declare module away.entities {
         private _frustumPlanes;
         private _frustumPlanesDirty;
         private _onProjectionMatrixChangedDelegate;
-        constructor(projection?: away.projections.ProjectionBase);
+        constructor(projection?: away.projections.IProjection);
         public pCreateDefaultBoundingVolume(): away.bounds.BoundingVolumeBase;
         /**
         * @protected
@@ -10373,7 +10405,7 @@ declare module away.entities {
         /**
         *
         */
-        public projection : away.projections.ProjectionBase;
+        public projection : away.projections.IProjection;
         /**
         *
         */
@@ -11309,7 +11341,46 @@ declare module away.entities {
     }
 }
 declare module away.projections {
-    class ProjectionBase extends away.events.EventDispatcher {
+    /**
+    * Provides constant values for camera lens projection options use the the <code>coordinateSystem</code> property
+    *
+    * @see away.projections.PerspectiveLens#coordinateSystem
+    */
+    class CoordinateSystem {
+        /**
+        * Default option, projects to a left-handed coordinate system
+        */
+        static LEFT_HANDED: string;
+        /**
+        * Projects to a right-handed coordinate system
+        */
+        static RIGHT_HANDED: string;
+    }
+}
+/**
+* @module away.base
+*/
+declare module away.projections {
+    /**
+    * IMaterialOwner provides an interface for objects that can use materials.
+    *
+    * @interface away.base.IMaterialOwner
+    */
+    interface IProjection extends away.events.IEventDispatcher {
+        coordinateSystem: string;
+        frustumCorners: number[];
+        matrix: away.geom.Matrix3D;
+        near: number;
+        far: number;
+        _iAspectRatio: number;
+        project(point3d: away.geom.Vector3D): away.geom.Vector3D;
+        unproject(nX: number, nY: number, sZ: number): away.geom.Vector3D;
+        _iUpdateScissorRect(x: number, y: number, width: number, height: number): any;
+        _iUpdateViewport(x: number, y: number, width: number, height: number): any;
+    }
+}
+declare module away.projections {
+    class ProjectionBase extends away.events.EventDispatcher implements projections.IProjection {
         public _pMatrix: away.geom.Matrix3D;
         public _pScissorRect: away.geom.Rectangle;
         public _pViewPort: away.geom.Rectangle;
@@ -11318,9 +11389,14 @@ declare module away.projections {
         public _pAspectRatio: number;
         public _pMatrixInvalid: boolean;
         public _pFrustumCorners: number[];
+        public _pCoordinateSystem: string;
         private _unprojection;
         private _unprojectionInvalid;
-        constructor();
+        constructor(coordinateSystem?: string);
+        /**
+        * The handedness of the coordinate system projection. The default is LEFT_HANDED.
+        */
+        public coordinateSystem : string;
         public frustumCorners : number[];
         public matrix : away.geom.Matrix3D;
         public near : number;
@@ -11329,23 +11405,43 @@ declare module away.projections {
         public unprojectionMatrix : away.geom.Matrix3D;
         public unproject(nX: number, nY: number, sZ: number): away.geom.Vector3D;
         public clone(): ProjectionBase;
-        public iAspectRatio : number;
+        public _iAspectRatio : number;
         public pInvalidateMatrix(): void;
         public pUpdateMatrix(): void;
-        public iUpdateScissorRect(x: number, y: number, width: number, height: number): void;
-        public iUpdateViewport(x: number, y: number, width: number, height: number): void;
+        public _iUpdateScissorRect(x: number, y: number, width: number, height: number): void;
+        public _iUpdateViewport(x: number, y: number, width: number, height: number): void;
     }
 }
 declare module away.projections {
     class PerspectiveProjection extends projections.ProjectionBase {
         private _fieldOfView;
         private _focalLength;
-        private _focalLengthInv;
-        private _yMax;
-        private _xMax;
-        constructor(fieldOfView?: number);
+        private _hFieldOfView;
+        private _hFocalLength;
+        private _preserveAspectRatio;
+        private _origin;
+        constructor(fieldOfView?: number, coordinateSystem?: string);
+        /**
+        *
+        */
+        public preserveAspectRatio : boolean;
+        /**
+        *
+        */
         public fieldOfView : number;
+        /**
+        *
+        */
         public focalLength : number;
+        /**
+        *
+        */
+        public hFieldOfView : number;
+        /**
+        *
+        */
+        public hFocalLength : number;
+        public origin : away.geom.Point;
         public unproject(nX: number, nY: number, sZ: number): away.geom.Vector3D;
         public clone(): projections.ProjectionBase;
         public pUpdateMatrix(): void;
@@ -11418,13 +11514,13 @@ declare module away.projections {
         private _baseProjection;
         private _plane;
         private _onProjectionMatrixChangedDelegate;
-        constructor(baseProjection: projections.ProjectionBase, plane: away.geom.Plane3D);
+        constructor(baseProjection: projections.IProjection, plane: away.geom.Plane3D);
         public frustumCorners : number[];
         public near : number;
         public far : number;
         public iAspectRatio : number;
         public plane : away.geom.Plane3D;
-        public baseProjection : projections.ProjectionBase;
+        public baseProjection : projections.IProjection;
         private onProjectionMatrixChanged(event);
         public pUpdateMatrix(): void;
     }
@@ -12420,8 +12516,16 @@ declare module away.materials {
     /**
     * @class away.materials.IMaterial
     */
-    interface IMaterial {
+    interface IMaterial extends away.events.IEventDispatcher {
         id: string;
+        /**
+        *
+        */
+        height: number;
+        /**
+        *
+        */
+        width: number;
         /**
         *
         *
@@ -12449,6 +12553,9 @@ declare module away.materials {
     * shaders, or entire new material frameworks.
     */
     class CSSMaterialBase extends away.library.NamedAssetBase implements away.library.IAsset, materials.IMaterial {
+        private _height;
+        private _sizeChanged;
+        private _width;
         /**
         * An object to contain any extra data.
         */
@@ -12482,6 +12589,10 @@ declare module away.materials {
         private _repeat;
         private _smooth;
         private _texture;
+        /**
+        *
+        */
+        public height : number;
         public imageElement : HTMLImageElement;
         public imageStyle : MSStyleCSSProperties;
         /**
@@ -12497,6 +12608,10 @@ declare module away.materials {
         * The texture object to use for the albedo colour.
         */
         public texture : away.textures.Texture2DBase;
+        /**
+        *
+        */
+        public width : number;
         /**
         * Creates a new MaterialBase object.
         */
@@ -12552,6 +12667,7 @@ declare module away.materials {
         * @internal
         */
         public iOwners : away.base.IMaterialOwner[];
+        private notifySizeChanged();
     }
 }
 declare module away.managers {

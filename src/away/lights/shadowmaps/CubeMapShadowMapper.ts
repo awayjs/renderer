@@ -42,7 +42,7 @@ module away.lights
 			var projection:away.projections.PerspectiveProjection = <away.projections.PerspectiveProjection> cam.projection;
 			projection.fieldOfView = 90;
 			this._projections.push(projection);
-			cam.projection.iAspectRatio = 1;
+			cam.projection._iAspectRatio = 1;
 			this._depthCameras.push(cam);
 		}
 

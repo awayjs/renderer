@@ -3797,6 +3797,13 @@ var away;
             RenderableBase.prototype.dispose = function () {
                 this._pool.disposeItem(this.materialOwner);
             };
+
+            /**
+            *
+            */
+            RenderableBase.prototype._iUpdate = function () {
+                //nothing to do here
+            };
             return RenderableBase;
         })();
         pool.RenderableBase = RenderableBase;
@@ -3818,17 +3825,34 @@ var away;
             function BillboardRenderable(pool, billboard) {
                 _super.call(this, pool, billboard, billboard, null, null);
 
-                if (!BillboardRenderable._geometry) {
-                    BillboardRenderable._geometry = new away.base.SubGeometry();
-                    BillboardRenderable._geometry.updateVertexData(Array(0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0));
-                    BillboardRenderable._geometry.updateUVData(Array(0, 0, 1, 0, 1, 1, 0, 1));
-                    BillboardRenderable._geometry.updateIndexData(Array(0, 1, 2, 0, 2, 3));
-                    BillboardRenderable._geometry.updateVertexTangentData(Array(1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0));
-                    BillboardRenderable._geometry.updateVertexNormalData(Array(0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1));
+                this._billboard = billboard;
+
+                this.subGeometry = this.getGeometry(billboard.material);
+            }
+            /**
+            *
+            */
+            BillboardRenderable.prototype._iUpdate = function () {
+                var material = this._billboard.material;
+
+                this.getGeometry(material).updateVertexData(Array(0, material.height, 0, material.width, material.height, 0, material.width, 0, 0, 0, 0, 0));
+            };
+
+            BillboardRenderable.prototype.getGeometry = function (material) {
+                var geometry = BillboardRenderable._materialGeometry[material.id];
+
+                if (!geometry) {
+                    geometry = BillboardRenderable._materialGeometry[material.id] = new away.base.SubGeometry();
+                    geometry.updateVertexData(Array(0, material.height, 0, material.width, material.height, 0, material.width, 0, 0, 0, 0, 0));
+                    geometry.updateUVData(Array(0, 0, 1, 0, 1, 1, 0, 1));
+                    geometry.updateIndexData(Array(0, 1, 2, 0, 2, 3));
+                    geometry.updateVertexTangentData(Array(1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0));
+                    geometry.updateVertexNormalData(Array(0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1));
                 }
 
-                this.subGeometry = BillboardRenderable._geometry;
-            }
+                return geometry;
+            };
+            BillboardRenderable._materialGeometry = new Object();
             return BillboardRenderable;
         })(away.pool.RenderableBase);
         pool.BillboardRenderable = BillboardRenderable;
@@ -4817,7 +4841,7 @@ var away;
 
                     this._potentialFound = true;
 
-                    this._context.setCulling(renderable.materialOwner.material.bothSides ? away.gl.ContextGLTriangleFace.NONE : away.gl.ContextGLTriangleFace.BACK);
+                    this._context.setCulling(renderable.materialOwner.material.bothSides ? away.gl.ContextGLTriangleFace.NONE : away.gl.ContextGLTriangleFace.BACK, camera.projection.coordinateSystem);
 
                     this._interactives[this._interactiveId++] = renderable;
 
@@ -7518,7 +7542,7 @@ var away;
                 var clone = new Mesh(this._geometry, this._material);
 
                 clone._iMatrix3D = this._iMatrix3D;
-                clone.pivotPoint = this.pivotPoint;
+                clone.pivot = this.pivot;
                 clone.partition = this.partition;
                 clone.bounds = this.bounds.clone();
 
@@ -8785,7 +8809,7 @@ var away;
                 var projection = cam.projection;
                 projection.fieldOfView = 90;
                 this._projections.push(projection);
-                cam.projection.iAspectRatio = 1;
+                cam.projection._iAspectRatio = 1;
                 this._depthCameras.push(cam);
             };
 
@@ -9016,7 +9040,7 @@ var away;
     (function (lights) {
         var Camera = away.entities.Camera;
         var FreeMatrixProjection = away.projections.FreeMatrixProjection;
-        var ProjectionBase = away.projections.ProjectionBase;
+
         var Scene = away.containers.Scene;
         var Matrix3DUtils = away.geom.Matrix3DUtils;
         var DepthRenderer = away.render.DepthRenderer;
@@ -10320,7 +10344,7 @@ var away;
 
                 context.setProgram(this._iPrograms[contextIndex]);
 
-                context.setCulling(this._pBothSides ? ContextGLTriangleFace.NONE : this._defaultCulling);
+                context.setCulling(this._pBothSides ? ContextGLTriangleFace.NONE : this._defaultCulling, camera.projection.coordinateSystem);
 
                 if (this._renderToTexture) {
                     this._oldTarget = stageGL.renderTarget;
@@ -22203,6 +22227,8 @@ var away;
                 this._smooth = true;
                 this._repeat = false;
                 this._pDepthCompareMode = ContextGLCompareMode.LESS_EQUAL;
+                this._pHeight = 1;
+                this._pWidth = 1;
 
                 this._iMaterialId = Number(this.id);
 
@@ -22226,6 +22252,17 @@ var away;
                 */
                 get: function () {
                     return AssetType.MATERIAL;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(MaterialBase.prototype, "height", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._pHeight;
                 },
                 enumerable: true,
                 configurable: true
@@ -22433,6 +22470,17 @@ var away;
                 */
                 get: function () {
                     return this.getRequiresBlending();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(MaterialBase.prototype, "width", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._pWidth;
                 },
                 enumerable: true,
                 configurable: true
@@ -24173,6 +24221,11 @@ var away;
                 },
                 set: function (value) {
                     this.diffuseMethod.texture = value;
+
+                    if (value) {
+                        this._pHeight = value.height;
+                        this._pWidth = value.width;
+                    }
                 },
                 enumerable: true,
                 configurable: true
@@ -24335,6 +24388,11 @@ var away;
                 },
                 set: function (value) {
                     this._pScreenPass.diffuseMethod.texture = value;
+
+                    if (value) {
+                        this._pHeight = value.height;
+                        this._pWidth = value.width;
+                    }
                 },
                 enumerable: true,
                 configurable: true
@@ -39074,7 +39132,7 @@ var away;
                 // in AWD version 2.1 we read the Container properties
                 if ((this._version[0] == 2) && (this._version[1] == 1)) {
                     var props = this.parseProperties({ 1: this._matrixNrType, 2: this._matrixNrType, 3: this._matrixNrType, 4: AWDParser.UINT8 });
-                    ctr.pivotPoint = new away.geom.Vector3D(props.get(1, 0), props.get(2, 0), props.get(3, 0));
+                    ctr.pivot = new away.geom.Vector3D(props.get(1, 0), props.get(2, 0), props.get(3, 0));
                 } else {
                     this.parseProperties(null);
                 }
@@ -39162,7 +39220,7 @@ var away;
                 }
                 if ((this._version[0] == 2) && (this._version[1] == 1)) {
                     var props = this.parseProperties({ 1: this._matrixNrType, 2: this._matrixNrType, 3: this._matrixNrType, 4: AWDParser.UINT8, 5: AWDParser.BOOL });
-                    mesh.pivotPoint = new away.geom.Vector3D(props.get(1, 0), props.get(2, 0), props.get(3, 0));
+                    mesh.pivot = new away.geom.Vector3D(props.get(1, 0), props.get(2, 0), props.get(3, 0));
                     mesh.castsShadows = props.get(5, true);
                 } else {
                     this.parseProperties(null);
@@ -39333,7 +39391,7 @@ var away;
 
                 camera.name = name;
                 props = this.parseProperties({ 1: this._matrixNrType, 2: this._matrixNrType, 3: this._matrixNrType, 4: AWDParser.UINT8 });
-                camera.pivotPoint = new away.geom.Vector3D(props.get(1, 0), props.get(2, 0), props.get(3, 0));
+                camera.pivot = new away.geom.Vector3D(props.get(1, 0), props.get(2, 0), props.get(3, 0));
                 camera.extra = this.parseUserAttributes();
 
                 this._pFinalizeAsset(camera, name);
@@ -39886,7 +39944,7 @@ var away;
                 if (targetObject) {
                     props = this.parseProperties({ 1: this._matrixNrType, 2: this._matrixNrType, 3: this._matrixNrType, 4: AWDParser.UINT8 });
 
-                    targetObject.pivotPoint = new away.geom.Vector3D(props.get(1, 0), props.get(2, 0), props.get(3, 0));
+                    targetObject.pivot = new away.geom.Vector3D(props.get(1, 0), props.get(2, 0), props.get(3, 0));
                     targetObject.extra = this.parseUserAttributes();
                 }
                 this._blocks[blockID].data = targetObject;

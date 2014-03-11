@@ -89,6 +89,11 @@ module away.materials
 		public set texture(value:away.textures.Texture2DBase)
 		{
 			this._pScreenPass.diffuseMethod.texture = value;
+
+			if (value) {
+				this._pHeight = value.height;
+				this._pWidth = value.width;
+			}
 		}
 
 		/**

@@ -95,6 +95,9 @@ module away.materials
 		private _distanceBasedDepthRender:boolean;
 		public _pDepthCompareMode:string = ContextGLCompareMode.LESS_EQUAL;
 
+		public _pHeight:number = 1;
+		public _pWidth:number = 1;
+
 		private _onPassChangeDelegate:Function;
 		private _onDepthPassChangeDelegate:Function;
 		private _onDistancePassChangeDelegate:Function;
@@ -129,6 +132,14 @@ module away.materials
 		public get assetType():string
 		{
 			return AssetType.MATERIAL;
+		}
+
+		/**
+		 *
+		 */
+		public get height():number
+		{
+			return this._pHeight;
 		}
 
 		/**
@@ -329,7 +340,14 @@ module away.materials
 		public get requiresBlending():boolean
 		{
 			return this.getRequiresBlending();
+		}
 
+		/**
+		 *
+		 */
+		public get width():number
+		{
+			return this._pWidth;
 		}
 
 		public getRequiresBlending():boolean
@@ -639,6 +657,7 @@ module away.materials
 							animator.testGPUCompatibility(this._passes[i]);
 					}
 				}
+
 			}
 		}
 
