@@ -10477,8 +10477,8 @@ var away;
                 this._container.style.clip = "rect(0px, " + this._width + "px, " + this._height + "px, 0px)";
 
                 //update context matrix
-                this._contextMatrix.rawData[0] = this._width;
-                this._contextMatrix.rawData[5] = -this._height;
+                this._contextMatrix.rawData[0] = this._width / 2;
+                this._contextMatrix.rawData[5] = -this._height / 2;
                 this._contextMatrix.rawData[10] = -1; //fix for innaccurate z-sort
                 this._contextMatrix.rawData[12] = this._width / 2;
                 this._contextMatrix.rawData[13] = this._height / 2;
@@ -12010,13 +12010,7 @@ var away;
             //@override
             AGLSLContextGL.prototype.setProgramConstantsFromMatrix = function (programType, firstRegister, matrix, transposedMatrix) {
                 if (typeof transposedMatrix === "undefined") { transposedMatrix = false; }
-                /*
-                console.log( "======== setProgramConstantsFromMatrix ========" );
-                console.log( "programType       >>> " + programType );
-                console.log( "firstRegister     >>> " + firstRegister );
-                console.log( "matrix            >>> " + matrix.rawData );
-                console.log( "transposedMatrix  >>> " + transposedMatrix );
-                */
+                //TODO remove special case for WebGL matrix calls?
                 var d = matrix.rawData;
                 if (transposedMatrix) {
                     this.setProgramConstantsFromArray(programType, firstRegister, [d[0], d[4], d[8], d[12]], 1);
@@ -12029,13 +12023,6 @@ var away;
                     this.setProgramConstantsFromArray(programType, firstRegister + 2, [d[8], d[9], d[10], d[11]], 1);
                     this.setProgramConstantsFromArray(programType, firstRegister + 3, [d[12], d[13], d[14], d[15]], 1);
                 }
-            };
-
-            //@override
-            AGLSLContextGL.prototype.drawTriangles = function (indexBuffer, firstIndex, numTriangles) {
-                if (typeof firstIndex === "undefined") { firstIndex = 0; }
-                if (typeof numTriangles === "undefined") { numTriangles = -1; }
-                _super.prototype.drawTriangles.call(this, indexBuffer, firstIndex, numTriangles);
             };
             return AGLSLContextGL;
         })(away.gl.ContextGL);
@@ -20767,7 +20754,12 @@ var away;
                 if (typeof fieldOfView === "undefined") { fieldOfView = 60; }
                 if (typeof coordinateSystem === "undefined") { coordinateSystem = "leftHanded"; }
                 _super.call(this, coordinateSystem);
+                this._fieldOfView = 60;
+                this._focalLength = 1000;
+                this._hFieldOfView = 60;
+                this._hFocalLength = 1000;
                 this._preserveAspectRatio = true;
+                this._preserveFocalLength = false;
                 this._origin = new away.geom.Point(0.5, 0.5);
                 this.fieldOfView = fieldOfView;
             }
@@ -20785,7 +20777,27 @@ var away;
                     this._preserveAspectRatio = value;
 
                     if (this._preserveAspectRatio)
-                        this.hFocalLength = this._focalLength / this._pAspectRatio;
+                        this.pInvalidateMatrix();
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
+            Object.defineProperty(PerspectiveProjection.prototype, "preserveFocalLength", {
+                /**
+                *
+                */
+                get: function () {
+                    return this._preserveFocalLength;
+                },
+                set: function (value) {
+                    if (this._preserveFocalLength == value)
+                        return;
+
+                    this._preserveFocalLength = value;
+
+                    this.pInvalidateMatrix();
                 },
                 enumerable: true,
                 configurable: true
@@ -20804,8 +20816,6 @@ var away;
                         return;
 
                     this._fieldOfView = value;
-
-                    this._focalLength = 1 / Math.tan(this._fieldOfView * Math.PI / 360);
 
                     this.pInvalidateMatrix();
                 },
@@ -20826,8 +20836,6 @@ var away;
                         return;
 
                     this._focalLength = value;
-
-                    this._fieldOfView = Math.atan(1 / this._focalLength) * 360 / Math.PI;
 
                     this.pInvalidateMatrix();
                 },
@@ -20870,8 +20878,6 @@ var away;
                         return;
 
                     this._hFocalLength = value;
-
-                    this._hFieldOfView = Math.atan(1 / this._hFocalLength) * 360 / Math.PI;
 
                     this.pInvalidateMatrix();
                 },
@@ -20924,16 +20930,25 @@ var away;
             PerspectiveProjection.prototype.pUpdateMatrix = function () {
                 var raw = [];
 
-                if (this._preserveAspectRatio)
-                    this.hFocalLength = this._focalLength / this._pAspectRatio;
+                if (this._preserveFocalLength) {
+                    if (this._preserveAspectRatio)
+                        this._hFocalLength = this._focalLength;
 
-                var tanMinX = -(this._origin.x + 0.5) / this._hFocalLength;
-                var tanMaxX = (1.5 - this._origin.x) / this._hFocalLength;
-                var tanMinY = -(this._origin.y + 0.5) / this._focalLength;
-                var tanMaxY = (1.5 - this._origin.y) / this._focalLength;
+                    this._fieldOfView = Math.atan(0.5 * this._pScissorRect.height / this._focalLength) * 360 / Math.PI;
+                    this._hFieldOfView = Math.atan(0.5 * this._pScissorRect.width / this._hFocalLength) * 360 / Math.PI;
+                } else {
+                    this._focalLength = 0.5 * this._pScissorRect.height / Math.tan(this._fieldOfView * Math.PI / 360);
 
-                var minLengthFracX = -tanMinX / (tanMaxX - tanMinX);
-                var minLengthFracY = -tanMinY / (tanMaxY - tanMinY);
+                    if (this._preserveAspectRatio)
+                        this._hFocalLength = this._focalLength;
+                    else
+                        this._hFocalLength = 0.5 * this._pScissorRect.width / Math.tan(this._hFieldOfView * Math.PI / 360);
+                }
+
+                var tanMinX = -this._origin.x / this._hFocalLength;
+                var tanMaxX = (1 - this._origin.x) / this._hFocalLength;
+                var tanMinY = -this._origin.y / this._focalLength;
+                var tanMaxY = (1 - this._origin.y) / this._focalLength;
 
                 var left;
                 var right;
@@ -20941,13 +20956,13 @@ var away;
                 var bottom;
 
                 // assume scissored frustum
-                var center = -tanMinX * (this._pScissorRect.x + this._pScissorRect.width * minLengthFracX) / (this._pScissorRect.width * minLengthFracX);
-                var middle = tanMinY * (this._pScissorRect.y + this._pScissorRect.height * minLengthFracY) / (this._pScissorRect.height * minLengthFracY);
+                var center = -((tanMinX - tanMaxX) * this._pScissorRect.x + tanMinX * this._pScissorRect.width);
+                var middle = ((tanMinY - tanMaxY) * this._pScissorRect.y + tanMinY * this._pScissorRect.height);
 
-                left = center - (tanMaxX - tanMinX) * (this._pViewPort.width / this._pScissorRect.width);
+                left = center - (tanMaxX - tanMinX) * this._pViewPort.width;
                 right = center;
                 top = middle;
-                bottom = middle + (tanMaxY - tanMinY) * (this._pViewPort.height / this._pScissorRect.height);
+                bottom = middle + (tanMaxY - tanMinY) * this._pViewPort.height;
 
                 raw[0] = 2 / (right - left);
                 raw[5] = 2 / (bottom - top);
@@ -21268,166 +21283,6 @@ var away;
             return OrthographicOffCenterProjection;
         })(away.projections.ProjectionBase);
         projections.OrthographicOffCenterProjection = OrthographicOffCenterProjection;
-    })(away.projections || (away.projections = {}));
-    var projections = away.projections;
-})(away || (away = {}));
-///<reference path="../_definitions.ts" />
-var away;
-(function (away) {
-    (function (projections) {
-        var PerspectiveOffCenterProjection = (function (_super) {
-            __extends(PerspectiveOffCenterProjection, _super);
-            function PerspectiveOffCenterProjection(minAngleX, maxAngleX, minAngleY, maxAngleY) {
-                if (typeof minAngleX === "undefined") { minAngleX = -40; }
-                if (typeof maxAngleX === "undefined") { maxAngleX = 40; }
-                if (typeof minAngleY === "undefined") { minAngleY = -40; }
-                if (typeof maxAngleY === "undefined") { maxAngleY = 40; }
-                _super.call(this);
-
-                this.minAngleX = minAngleX;
-                this.maxAngleX = maxAngleX;
-                this.minAngleY = minAngleY;
-                this.maxAngleY = maxAngleY;
-            }
-            Object.defineProperty(PerspectiveOffCenterProjection.prototype, "minAngleX", {
-                get: function () {
-                    return this._minAngleX;
-                },
-                set: function (value) {
-                    this._minAngleX = value;
-                    this._tanMinX = Math.tan(this._minAngleX * Math.PI / 180);
-                    this.pInvalidateMatrix();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(PerspectiveOffCenterProjection.prototype, "maxAngleX", {
-                get: function () {
-                    return this._maxAngleX;
-                },
-                set: function (value) {
-                    this._maxAngleX = value;
-                    this._tanMaxX = Math.tan(this._maxAngleX * Math.PI / 180);
-                    this.pInvalidateMatrix();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(PerspectiveOffCenterProjection.prototype, "minAngleY", {
-                get: function () {
-                    return this._minAngleY;
-                },
-                set: function (value) {
-                    this._minAngleY = value;
-                    this._tanMinY = Math.tan(this._minAngleY * Math.PI / 180);
-                    this.pInvalidateMatrix();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            Object.defineProperty(PerspectiveOffCenterProjection.prototype, "maxAngleY", {
-                get: function () {
-                    return this._maxAngleY;
-                },
-                set: function (value) {
-                    this._maxAngleY = value;
-                    this._tanMaxY = Math.tan(this._maxAngleY * Math.PI / 180);
-                    this.pInvalidateMatrix();
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-
-            //@override
-            PerspectiveOffCenterProjection.prototype.unproject = function (nX, nY, sZ) {
-                var v = new away.geom.Vector3D(nX, -nY, sZ, 1.0);
-
-                v.x *= sZ;
-                v.y *= sZ;
-                v = this.unprojectionMatrix.transformVector(v);
-
-                //z is unaffected by transform
-                v.z = sZ;
-
-                return v;
-            };
-
-            //@override
-            PerspectiveOffCenterProjection.prototype.clone = function () {
-                var clone = new PerspectiveOffCenterProjection(this._minAngleX, this._maxAngleX, this._minAngleY, this._maxAngleY);
-                clone._pNear = this._pNear;
-                clone._pFar = this._pFar;
-                clone._pAspectRatio = this._pAspectRatio;
-                return clone;
-            };
-
-            //@override
-            PerspectiveOffCenterProjection.prototype.pUpdateMatrix = function () {
-                var raw = [];
-
-                this._minLengthX = this._pNear * this._tanMinX;
-                this._maxLengthX = this._pNear * this._tanMaxX;
-                this._minLengthY = this._pNear * this._tanMinY;
-                this._maxLengthY = this._pNear * this._tanMaxY;
-
-                var minLengthFracX = -this._minLengthX / (this._maxLengthX - this._minLengthX);
-                var minLengthFracY = -this._minLengthY / (this._maxLengthY - this._minLengthY);
-
-                var left;
-                var right;
-                var top;
-                var bottom;
-
-                // assume scissored frustum
-                var center = -this._minLengthX * (this._pScissorRect.x + this._pScissorRect.width * minLengthFracX) / (this._pScissorRect.width * minLengthFracX);
-                var middle = this._minLengthY * (this._pScissorRect.y + this._pScissorRect.height * minLengthFracY) / (this._pScissorRect.height * minLengthFracY);
-
-                left = center - (this._maxLengthX - this._minLengthX) * (this._pViewPort.width / this._pScissorRect.width);
-                right = center;
-                top = middle;
-                bottom = middle + (this._maxLengthY - this._minLengthY) * (this._pViewPort.height / this._pScissorRect.height);
-
-                raw[0] = 2 * this._pNear / (right - left);
-                raw[5] = 2 * this._pNear / (bottom - top);
-                raw[8] = (right + left) / (right - left);
-                raw[9] = (bottom + top) / (bottom - top);
-                raw[10] = (this._pFar + this._pNear) / (this._pFar - this._pNear);
-                raw[11] = 1;
-                raw[1] = raw[2] = raw[3] = raw[4] = raw[6] = raw[7] = raw[12] = raw[13] = raw[15] = 0;
-                raw[14] = -2 * this._pFar * this._pNear / (this._pFar - this._pNear);
-
-                this._pMatrix.copyRawDataFrom(raw);
-
-                this._minLengthX = this._pFar * this._tanMinX;
-                this._maxLengthX = this._pFar * this._tanMaxX;
-                this._minLengthY = this._pFar * this._tanMinY;
-                this._maxLengthY = this._pFar * this._tanMaxY;
-
-                this._pFrustumCorners[0] = this._pFrustumCorners[9] = left;
-                this._pFrustumCorners[3] = this._pFrustumCorners[6] = right;
-                this._pFrustumCorners[1] = this._pFrustumCorners[4] = top;
-                this._pFrustumCorners[7] = this._pFrustumCorners[10] = bottom;
-
-                this._pFrustumCorners[12] = this._pFrustumCorners[21] = this._minLengthX;
-                this._pFrustumCorners[15] = this._pFrustumCorners[18] = this._maxLengthX;
-                this._pFrustumCorners[13] = this._pFrustumCorners[16] = this._minLengthY;
-                this._pFrustumCorners[19] = this._pFrustumCorners[22] = this._maxLengthY;
-
-                this._pFrustumCorners[2] = this._pFrustumCorners[5] = this._pFrustumCorners[8] = this._pFrustumCorners[11] = this._pNear;
-                this._pFrustumCorners[14] = this._pFrustumCorners[17] = this._pFrustumCorners[20] = this._pFrustumCorners[23] = this._pFar;
-
-                this._pMatrixInvalid = false;
-            };
-            return PerspectiveOffCenterProjection;
-        })(away.projections.ProjectionBase);
-        projections.PerspectiveOffCenterProjection = PerspectiveOffCenterProjection;
     })(away.projections || (away.projections = {}));
     var projections = away.projections;
 })(away || (away = {}));

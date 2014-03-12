@@ -5556,7 +5556,6 @@ declare module away.gl {
     class AGLSLContextGL extends gl.ContextGL {
         constructor(canvas: HTMLCanvasElement);
         public setProgramConstantsFromMatrix(programType: string, firstRegister: number, matrix: away.geom.Matrix3D, transposedMatrix?: boolean): void;
-        public drawTriangles(indexBuffer: gl.IndexBuffer, firstIndex?: number, numTriangles?: number): void;
     }
 }
 /**
@@ -11419,12 +11418,17 @@ declare module away.projections {
         private _hFieldOfView;
         private _hFocalLength;
         private _preserveAspectRatio;
+        private _preserveFocalLength;
         private _origin;
         constructor(fieldOfView?: number, coordinateSystem?: string);
         /**
         *
         */
         public preserveAspectRatio : boolean;
+        /**
+        *
+        */
+        public preserveFocalLength : boolean;
         /**
         *
         */
@@ -11480,30 +11484,6 @@ declare module away.projections {
         public maxX : number;
         public minY : number;
         public maxY : number;
-        public unproject(nX: number, nY: number, sZ: number): away.geom.Vector3D;
-        public clone(): projections.ProjectionBase;
-        public pUpdateMatrix(): void;
-    }
-}
-declare module away.projections {
-    class PerspectiveOffCenterProjection extends projections.ProjectionBase {
-        private _minAngleX;
-        private _minLengthX;
-        private _tanMinX;
-        private _maxAngleX;
-        private _maxLengthX;
-        private _tanMaxX;
-        private _minAngleY;
-        private _minLengthY;
-        private _tanMinY;
-        private _maxAngleY;
-        private _maxLengthY;
-        private _tanMaxY;
-        constructor(minAngleX?: number, maxAngleX?: number, minAngleY?: number, maxAngleY?: number);
-        public minAngleX : number;
-        public maxAngleX : number;
-        public minAngleY : number;
-        public maxAngleY : number;
         public unproject(nX: number, nY: number, sZ: number): away.geom.Vector3D;
         public clone(): projections.ProjectionBase;
         public pUpdateMatrix(): void;
